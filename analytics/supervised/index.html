@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Supervised learning · Business analytics · Sunflower Intelligence</title>
+  <meta name="description" content="Predict a yes-or-no outcome, comparing logistic regression, a decision tree, nearest neighbours and a random forest fairly.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/analytics/supervised/">
+  <meta property="og:title" content="Supervised learning · Sunflower Intelligence">
+  <meta property="og:description" content="Predict a yes-or-no outcome, comparing logistic regression, a decision tree, nearest neighbours and a random forest fairly.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/css/base.css?v=5">
+  <link rel="stylesheet" href="../../assets/css/rooms.css?v=5">
+</head>
+<body class="room room--analytics room--sub">
+  <a class="skip-link" href="#ledger">Skip to the tools</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../finance/">Finance</a></li>
+        <li><a href="../../analytics/" aria-current="page">Business analytics</a></li>
+        <li><a href="../../marketing/">Marketing</a></li>
+        <li><a href="../../models/">How I build the models</a></li>
+        <li><a href="../../contact/">Contact</a></li>
+        <li><a href="../../learn/">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../"><img src="../../assets/img/flower-analytics-160.webp" alt="" width="56" height="56"><span>Business analytics</span></a>
+      <h1 id="room-title" class="display is-long">Supervised learning</h1>
+      <p class="chapter-note">Predict a yes-or-no outcome, comparing logistic regression, a decision tree, nearest neighbours and a random forest fairly.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Business analytics pages">
+        <ul role="list">
+          <li><a href="../">Overview</a></li>
+          <li><a href="../explore/">Explore your data</a></li>
+          <li><a href="../supervised/" aria-current="page">Supervised learning</a></li>
+          <li><a href="../unsupervised/">Unsupervised learning</a></li>
+          <li><a href="../forecast/">Forecasting</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <!-- chrome:toc -->
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#data">Your data</a></li><li><a href="#compare">Compare models</a></li><li><a href="#tree">A tree you can read</a></li><li><a href="#importance">Feature importance</a></li><li><a href="#classify">Logistic regression in depth</a></li></ul></nav>
+      <!-- /chrome:toc -->
+    </header>
+
+    <div class="ledger on-night" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../">The painting</a></li><li><a href="../">Business analytics</a></li><li aria-current="page">Supervised learning</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">Supervised learning learns from rows where the answer is known, then predicts it for rows where it isn’t. Four models answer the same question here, and every one is judged only on rows it never trained on.</p>
+      </div>
+
+      <!-- ============================================================ DATA -->
+      <section class="tool" id="data" aria-labelledby="ds-title">
+        <div class="tool-head">
+          <h2 id="ds-title">Your data</h2>
+          <p>Choose a table, then the yes-or-no column to predict (any column with exactly two values) and the columns to predict it from. Every section below uses this choice. A table you loaded under Explore appears here too.</p>
+        </div>
+        <div class="bench bench-stack">
+          <div id="ds" class="data-source"></div>
+          <div class="question">
+            <div class="field"><label for="sup-y">Outcome to predict</label><select class="select" id="sup-y"></select><p class="field-hint" id="sup-y-note"></p></div>
+            <fieldset><legend>Predictors</legend><div class="chips" id="sup-x"></div></fieldset>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ COMPARE -->
+      <section class="tool" id="compare" aria-labelledby="cmp-title">
+        <div class="tool-head">
+          <h2 id="cmp-title">Compare models</h2>
+          <p>Logistic regression, a decision tree, nearest neighbours and a random forest, scored the same fair way: the rows are dealt into five folds that keep the yes/no balance, and each model is trained on four folds and scored on the fifth, five times over. Every row ends up predicted by a model that never saw it.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="slider-field">
+              <div class="slider-top"><label for="cmp-k">Nearest neighbours: how many to ask</label><output for="cmp-k" id="cmp-k-out"></output></div>
+              <input type="range" id="cmp-k" min="1" max="51" step="2" value="15">
+            </div>
+            <div class="slider-field">
+              <div class="slider-top"><label for="cmp-trees">Random forest: number of trees</label><output for="cmp-trees" id="cmp-trees-out"></output></div>
+              <input type="range" id="cmp-trees" min="25" max="300" step="25" value="100">
+            </div>
+            <div class="field"><span class="field-label" id="cmp-pick-label">Look closely at</span><div class="segmented" role="radiogroup" aria-labelledby="cmp-pick-label" id="cmp-pick"></div><p class="field-hint">Drawn in colour on the charts and used for feature importance below. The decision tree’s depth is set under <a href="#tree">A tree you can read</a>.</p></div>
+            <button class="btn btn-secondary" type="button" id="cmp-csv">Download out-of-fold predictions (CSV)</button>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="cmp-error"></div>
+            <p class="work-status" id="cmp-status" role="status"></p>
+            <div id="cmp-body" class="reg-body" hidden>
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="cmp-best">—</span><span class="hero-label" id="cmp-best-label">mean AUC across the five held-out folds</span></div>
+                <p class="hero-label" id="cmp-line"></p>
+              </div>
+              <figure>
+                <figcaption class="figure-title">AUC on each held-out fold</figcaption>
+                <p class="figure-sub">Small dots are the five folds; the diamond is their mean, with a line one standard deviation either side. Models whose lines overlap are hard to tell apart on this data.</p>
+                <div class="chart" id="cmp-folds"></div>
+              </figure>
+              <figure>
+                <figcaption class="figure-title">The scores, side by side</figcaption>
+                <div class="table-scroll" id="cmp-table"></div>
+              </figure>
+              <figure>
+                <figcaption class="figure-title">ROC curves from the out-of-fold predictions</figcaption>
+                <p class="figure-sub">How many of the yes rows each model catches (up) for how many no rows it wrongly flags (across). Higher and further left is better; the diagonal is a coin flip. The figure in brackets is the AUC of all the out-of-fold predictions pooled, which can differ a little from the average of the five fold scores.</p>
+                <div class="chart" id="cmp-roc"></div>
+              </figure>
+              <ul class="caveats" id="cmp-caveats"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ TREE -->
+      <section class="tool" id="tree" aria-labelledby="tree-title">
+        <div class="tool-head">
+          <h2 id="tree-title">A tree you can read</h2>
+          <p>A decision tree asks one yes-or-no question at a time, choosing at each step the split that leaves the two sides purest (lowest Gini impurity). A shallow tree is a set of rules a person can check; a deep one fits the training rows better and new rows worse.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="slider-field">
+              <div class="slider-top"><label for="tree-depth">Questions deep (maximum depth)</label><output for="tree-depth" id="tree-depth-out"></output></div>
+              <input type="range" id="tree-depth" min="1" max="6" step="1" value="3">
+            </div>
+            <div class="slider-field">
+              <div class="slider-top"><label for="tree-leaf">Fewest rows in a leaf</label><output for="tree-leaf" id="tree-leaf-out"></output></div>
+              <input type="range" id="tree-leaf" min="1" max="60" step="1" value="10">
+            </div>
+            <p class="field-hint">These settings also drive the decision tree in Compare models above.</p>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="tree-error"></div>
+            <div id="tree-body" class="reg-body">
+              <dl class="stats-row">
+                <div class="stat"><dt>Leaves (rules)</dt><dd class="num" id="tree-leaves">—</dd></div>
+                <div class="stat"><dt>AUC across folds</dt><dd class="num" id="tree-auc">—</dd></div>
+                <div class="stat"><dt>AUC on its own training rows</dt><dd class="num" id="tree-train-auc">—</dd></div>
+              </dl>
+              <figure>
+                <figcaption class="figure-title" id="tree-fig-title">The tree, grown on every row</figcaption>
+                <p class="figure-sub">Read down from the top: go left when the answer is yes. Each leaf shows the share of its rows that were yes. Point at a leaf, or focus the tree and use the arrow keys, to see the rules that lead there.</p>
+                <div id="tree-chart"></div>
+              </figure>
+              <details class="table-twin" id="tree-rules-box">
+                <summary>Show the rules as text</summary>
+                <ol class="tree-rules" id="tree-rules"></ol>
+              </details>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ IMPORTANCE -->
+      <section class="tool" id="importance" aria-labelledby="imp-title">
+        <div class="tool-head">
+          <h2 id="imp-title">Feature importance</h2>
+          <p>Which columns does a model lean on? Permutation importance shuffles one column among the held-out rows, breaking its link to the outcome, and measures how far the AUC falls. It works the same way for every model, so the answers are comparable.</p>
+        </div>
+        <div class="bench bench-stack">
+          <div class="bench-results" aria-live="polite">
+            <div id="imp-error"></div>
+            <div id="imp-body" class="reg-body" hidden>
+              <figure>
+                <figcaption class="figure-title" id="imp-title-fig">Fall in AUC when a column is shuffled</figcaption>
+                <p class="figure-sub" id="imp-sub"></p>
+                <div class="chart" id="imp-chart"></div>
+              </figure>
+              <figure>
+                <figcaption class="figure-title">Inside the readable tree: impurity removed by each column’s splits</figcaption>
+                <p class="figure-sub">Measured on the rows the tree was grown on, so it flatters columns with many distinct values. Read it alongside the chart above.</p>
+                <div class="chart" id="imp-tree"></div>
+              </figure>
+              <ul class="caveats">
+                <li>Two columns that carry the same information share the credit: shuffle one and the model leans on the other, so both can look minor.</li>
+                <li>A small negative value means the column didn’t help; shuffling it changed the score by chance.</li>
+                <li>Importance says what this model uses to predict, not what causes the outcome.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ CLASSIFY (logistic regression in depth) -->
+      <section class="tool" id="classify" aria-labelledby="cls-title">
+        <div class="tool-head">
+          <h2 id="cls-title">Logistic regression in depth</h2>
+          <p>Logistic regression is the model you can explain line by line: each coefficient becomes an odds ratio with a confidence interval. Fitted on every row for the reading, and judged on the 30% of rows held back from a separate fit.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="slider-field">
+              <div class="slider-top"><label for="cls-t">Flag a row when its probability is at least</label><output for="cls-t" id="cls-t-out"></output></div>
+              <input type="range" id="cls-t" min="5" max="95" step="5" value="50">
+            </div>
+            <button class="btn btn-secondary" type="button" id="cls-csv">Download predictions (CSV)</button>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="cls-error"></div>
+            <div id="cls-body" class="reg-body">
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="cls-auc">—</span><span class="hero-label">area under the ROC curve, on the 30% of rows held back</span></div>
+                <p class="hero-label" id="cls-auc-line"></p>
+                <p class="hero-label" id="cls-split-note"></p>
+              </div>
+              <dl class="stats-row">
+                <div class="stat"><dt>Accuracy</dt><dd class="num" id="cls-acc">—</dd></div>
+                <div class="stat"><dt>Precision</dt><dd class="num" id="cls-prec">—</dd></div>
+                <div class="stat"><dt>Recall</dt><dd class="num" id="cls-rec">—</dd></div>
+                <div class="stat"><dt>McFadden pseudo-R²</dt><dd class="num" id="cls-r2">—</dd></div>
+              </dl>
+              <figure>
+                <figcaption class="figure-title">Odds ratios, fitted on every row</figcaption>
+                <div class="table-scroll" id="cls-coefs"></div>
+              </figure>
+              <ul class="reading" id="cls-reading" role="list"></ul>
+              <div class="cls-pair">
+                <figure>
+                  <figcaption class="figure-title">ROC curve on the held-back rows</figcaption>
+                  <div class="chart" id="cls-roc"></div>
+                </figure>
+                <figure>
+                  <figcaption class="figure-title" id="cls-cm-title">At this threshold</figcaption>
+                  <div id="cls-cm"></div>
+                </figure>
+              </div>
+              <div id="cls-checks"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- tools:end -->
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources</h2>
+        <ol>
+          <li>Breiman, L., Friedman, J., Olshen, R. &amp; Stone, C. (1984). <i>Classification and Regression Trees</i>. Wadsworth. Breiman, L. (2001). Random forests. <i>Machine Learning</i> 45, 5–32.</li>
+          <li>Cover, T. &amp; Hart, P. (1967). Nearest neighbor pattern classification. <i>IEEE Transactions on Information Theory</i> 13(1), 21–27. Hastie, T., Tibshirani, R. &amp; Friedman, J. (2009). <i>The Elements of Statistical Learning</i>, 2nd ed., ch. 7 (cross-validation) and ch. 15 (random forests). Springer.</li>
+          <li>Fisher, A., Rudin, C. &amp; Dominici, F. (2019). All models are wrong, but many are useful: learning a variable’s importance by studying an entire class of prediction models simultaneously. <i>Journal of Machine Learning Research</i> 20(177), 1–81.</li>
+          <li>Hosmer, D. W., Lemeshow, S. &amp; Sturdivant, R. X. (2013). <i>Applied Logistic Regression</i>, 3rd ed. Wiley. McFadden, D. (1974). Conditional logit analysis of qualitative choice behavior. In <i>Frontiers in Econometrics</i>.</li>
+          <li>Everything here is computed in your browser. The tree, nearest neighbours and AUC are checked against scikit-learn, and logistic regression against statsmodels, in the site’s automated tests.</li>
+          <li>All example datasets are synthetic, generated for this page.</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../finance/" data-portal="#E8B923"><img src="../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../marketing/" data-portal="#56632C"><img src="../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../models/" data-portal="#252A31"><img src="../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../contact/" data-portal="#F6E7C1"><img src="../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../../learn/" data-portal="#C96F36"><img src="../../assets/img/flower-learn-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Learn</strong><span>Learning by doing</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../assets/js/pages/analytics-supervised.js?v=5"></script>
+</body>
+</html>

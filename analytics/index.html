@@ -15,11 +15,12 @@
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
   <link rel="preload" href="../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/css/base.css?v=3">
-  <link rel="stylesheet" href="../assets/css/rooms.css?v=3">
+  <link rel="stylesheet" href="../assets/css/base.css?v=5">
+  <link rel="stylesheet" href="../assets/css/rooms.css?v=5">
 </head>
-<body class="room room--analytics">
-  <a class="skip-link" href="#ledger">Skip to the tools</a>
+<body class="room room--analytics room--hub">
+  <script>/* links made before the room had sub-pages (e.g. #dcf) still land on the right tool */(function(){var m={"data": "explore", "describe": "explore", "correlate": "explore", "regress": "explore", "classify": "supervised", "segment": "unsupervised", "forecast": "forecast"},k=location.hash.slice(1);if(m[k])location.replace(m[k]+'/#'+k);})();</script>
+  <a class="skip-link" href="#ledger">Skip to the pages</a>
   <!-- chrome:header -->
   <header class="site-header">
     <a class="wordmark" href="../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
@@ -52,354 +53,37 @@
       <p class="chapter">The golden spiral</p>
       <p class="chapter-note">Look into a sunflower and its seeds line up in spirals, usually a Fibonacci number of them. Usually: in a citizen-science study published in 2016, volunteers counted the spirals on 657 sunflowers, and roughly a quarter of the counts broke the rule. Analytics is finding the pattern, then counting the exceptions honestly.</p>
       <p class="quote-cite">Swinton, Ochu &amp; MSI Turing’s Sunflower Consortium, <i>Royal Society Open Science</i>, 2016</p>
-      <nav aria-label="In this room"><ul class="toc" role="list"><li><a href="#data">Your data</a></li><li><a href="#describe">Describe</a></li><li><a href="#correlate">Correlate</a></li><li><a href="#regress">Regress</a></li><li><a href="#classify">Classify</a></li><li><a href="#segment">Segment</a></li><li><a href="#forecast">Forecast</a></li></ul></nav>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Business analytics pages">
+        <ul role="list">
+          <li><a href="./" aria-current="page">Overview</a></li>
+          <li><a href="./explore/">Explore your data</a></li>
+          <li><a href="./supervised/">Supervised learning</a></li>
+          <li><a href="./unsupervised/">Unsupervised learning</a></li>
+          <li><a href="./forecast/">Forecasting</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
     </header>
 
     <div class="ledger on-night" id="ledger">
       <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../">The painting</a></li><li aria-current="page">Business analytics</li></ol></nav>
       <div class="ledger-intro">
-        <p class="lead">Bring a table, or start with an example. The room checks its quality before any analysis, then lets you describe each column, look for relationships, fit a regression with its diagnostics, predict a yes-or-no outcome, find natural groups and forecast a seasonal series. Your file never leaves your browser.</p>
+        <p class="lead">Bring a table, or start with an example. Explore it first, then predict an outcome, find structure without labels, or forecast a seasonal series. A table loaded under Explore is available on the other pages, and nothing leaves your browser.</p>
       </div>
-
-      <!-- ============================================================ DATA -->
-      <section class="tool" id="data" aria-labelledby="data-title">
-        <div class="tool-head">
-          <h2 id="data-title">Your data</h2>
-          <p>Paste a table or upload a CSV. Column types, gaps and unusual values are flagged, and nothing is changed without your say.</p>
-        </div>
-        <div class="bench bench-stack">
-          <div class="data-source">
-            <div class="field">
-              <span class="field-label" id="source-label">Dataset</span>
-              <div class="segmented" role="radiogroup" aria-labelledby="source-label">
-                <input type="radio" id="src-trials" name="source" value="trials" checked><label for="src-trials">Sunflower field trials</label>
-                <input type="radio" id="src-cafe" name="source" value="cafe"><label for="src-cafe">Café weekly sales</label>
-                <input type="radio" id="src-churn" name="source" value="churn"><label for="src-churn">Seed club members</label>
-                <input type="radio" id="src-own" name="source" value="own"><label for="src-own">Your own table</label>
-              </div>
-            </div>
-            <div id="own-data" class="own-data" hidden>
-              <div class="field">
-                <label for="paste">Paste a table, with column names in the first row</label>
-                <textarea id="paste" class="textarea" spellcheck="false" placeholder="month,ad_spend,sales&#10;2026-01,1200,18400&#10;2026-02,950,16100"></textarea>
-              </div>
-              <div class="input-actions">
-                <button class="btn btn-primary" type="button" id="read-paste">Read the table</button>
-                <label class="btn btn-secondary file-btn">Upload a CSV<input type="file" id="file" accept=".csv,.tsv,.txt,text/csv,text/plain" class="visually-hidden"></label>
-              </div>
-              <p class="field-hint">Comma, semicolon or tab separated. Files are read in this browser tab and never uploaded.</p>
-              <p class="error-text" id="read-error" role="alert"></p>
-            </div>
-            <p class="dataset-note" id="dataset-note"></p>
-          </div>
-          <div class="quality-grid">
-            <div class="quality-score">
-              <p class="hero-label">Data quality</p>
-              <p class="hero-value"><span id="q-score">—</span><span class="hero-of"> / 100</span></p>
-              <ul class="q-parts" id="q-parts" role="list"></ul>
-            </div>
-            <div class="quality-actions">
-              <h3>Suggested clean-up</h3>
-              <ul class="q-suggestions" id="q-suggestions" role="list"></ul>
-              <h3>What has changed</h3>
-              <ol class="q-history" id="q-history"></ol>
-            </div>
-          </div>
-          <figure>
-            <figcaption class="figure-title">Columns</figcaption>
-            <div class="table-scroll" id="columns-table"></div>
-          </figure>
-          <figure>
-            <figcaption class="figure-title">First rows</figcaption>
-            <div class="table-scroll" id="preview"></div>
-          </figure>
-        </div>
-      </section>
-
-      <!-- ============================================================ DESCRIBE -->
-      <section class="tool" id="describe" aria-labelledby="describe-title">
-        <div class="tool-head">
-          <h2 id="describe-title">Describe</h2>
-          <p>Centre, spread and shape for any numeric column, with a 95% confidence interval for its mean.</p>
-        </div>
-        <div class="bench">
-          <div class="bench-inputs">
-            <div class="field"><label for="desc-col">Column</label><select class="select" id="desc-col"></select></div>
-            <p class="note" id="desc-read"></p>
-            <button class="btn btn-secondary" type="button" id="desc-csv">Download all summaries (CSV)</button>
-          </div>
-          <div class="bench-results" aria-live="polite">
-            <div>
-              <div class="figure-hero"><span class="hero-value" id="desc-mean">—</span><span class="hero-label">mean</span></div>
-              <p class="hero-label" id="desc-ci"></p>
-            </div>
-            <dl class="stats-row stats-dense" id="desc-stats"></dl>
-            <figure>
-              <figcaption class="figure-title" id="desc-hist-title">Distribution</figcaption>
-              <div class="chart" id="desc-hist"></div>
-              <div id="desc-table"></div>
-            </figure>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============================================================ CORRELATE -->
-      <section class="tool" id="correlate" aria-labelledby="corr-title">
-        <div class="tool-head">
-          <h2 id="corr-title">Correlate</h2>
-          <p>How strongly do two columns move together? Pick the columns, then choose a cell to see the pair up close.</p>
-        </div>
-        <div class="bench bench-top">
-          <div class="bench-inputs">
-            <div class="field">
-              <span class="field-label" id="method-label">Method</span>
-              <div class="segmented" role="radiogroup" aria-labelledby="method-label">
-                <input type="radio" id="c-pearson" name="cmethod" value="pearson" checked><label for="c-pearson">Pearson</label>
-                <input type="radio" id="c-spearman" name="cmethod" value="spearman"><label for="c-spearman">Spearman</label>
-              </div>
-              <p class="field-hint">Pearson measures straight-line relationships; Spearman ranks the values first, so it catches any steady rise or fall and resists outliers.</p>
-            </div>
-            <div class="field">
-              <span class="field-label" id="miss-label">Empty cells</span>
-              <div class="segmented" role="radiogroup" aria-labelledby="miss-label">
-                <input type="radio" id="c-pair" name="cmissing" value="pairwise" checked><label for="c-pair">Pairwise</label>
-                <input type="radio" id="c-list" name="cmissing" value="listwise"><label for="c-list">Listwise</label>
-              </div>
-              <p class="field-hint">Pairwise keeps every row that has both values; listwise keeps only rows complete in every chosen column.</p>
-            </div>
-            <fieldset><legend>Columns</legend><div class="chips" id="corr-cols"></div></fieldset>
-          </div>
-          <div class="bench-results" aria-live="polite">
-            <figure>
-              <figcaption class="figure-title" id="corr-title-fig">Correlation matrix</figcaption>
-              <p class="figure-sub">Blue is positive, orange negative, grey near zero. Use the arrow keys to move between cells and Enter to open one.</p>
-              <div id="corr-heat"></div>
-              <div id="corr-table"></div>
-            </figure>
-            <figure class="pair-figure">
-              <figcaption class="figure-title" id="pair-title">Pair</figcaption>
-              <p class="note" id="pair-read"></p>
-              <div class="chart" id="pair-chart"></div>
-            </figure>
-            <div class="verdict is-warn causation">
-              <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 5.5v5.2M10 14.2v.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              <p><strong>Correlation is not causation.</strong> Two columns can move together because one drives the other, because a third factor drives both, or by chance. Treat a strong correlation as a question to investigate, not an answer.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============================================================ REGRESS -->
-      <section class="tool" id="regress" aria-labelledby="reg-title">
-        <div class="tool-head">
-          <h2 id="reg-title">Regress</h2>
-          <p>Ordinary least squares: how much does the outcome change with each predictor, holding the others fixed, and can the model be trusted?</p>
-        </div>
-        <div class="bench bench-top">
-          <div class="bench-inputs">
-            <div class="field"><label for="reg-y">Outcome</label><select class="select" id="reg-y"></select></div>
-            <fieldset><legend>Predictors</legend><div class="chips" id="reg-x"></div></fieldset>
-            <label class="check"><input type="checkbox" id="reg-sq"> Add squared terms (lets effects curve)</label>
-            <label class="check"><input type="checkbox" id="reg-robust"> Robust standard errors (HC3), for errors whose spread is uneven</label>
-            <button class="btn btn-secondary" type="button" id="reg-csv">Download coefficients (CSV)</button>
-          </div>
-          <div class="bench-results" aria-live="polite">
-            <div id="reg-error"></div>
-            <div class="reg-body" id="reg-body">
-              <div>
-                <div class="figure-hero"><span class="hero-value" id="reg-r2">—</span><span class="hero-label">of the variation explained (R²)</span></div>
-                <p class="hero-label" id="reg-adj"></p>
-              </div>
-              <dl class="stats-row">
-                <div class="stat"><dt>Rows used</dt><dd class="num" id="reg-n">—</dd></div>
-                <div class="stat"><dt>Model F-test</dt><dd class="num" id="reg-f">—</dd></div>
-                <div class="stat"><dt>Typical error (RMSE)</dt><dd class="num" id="reg-rmse">—</dd></div>
-                <div class="stat"><dt>Mean absolute error</dt><dd class="num" id="reg-mae">—</dd></div>
-              </dl>
-              <figure>
-                <figcaption class="figure-title">Coefficients</figcaption>
-                <div class="table-scroll" id="reg-coefs"></div>
-              </figure>
-              <ul class="reading" id="reg-reading" role="list"></ul>
-              <figure>
-                <figcaption class="figure-title">Diagnostics</figcaption>
-                <div class="segmented" role="radiogroup" aria-label="Diagnostic plot">
-                  <input type="radio" id="d-resid" name="dplot" value="resid" checked><label for="d-resid">Residuals vs fitted</label>
-                  <input type="radio" id="d-avp" name="dplot" value="avp"><label for="d-avp">Actual vs predicted</label>
-                </div>
-                <div class="chart" id="reg-plot"></div>
-              </figure>
-              <div id="reg-checks"></div>
-              <div class="predict">
-                <h3>Predict</h3>
-                <p class="field-hint">Enter values for each predictor. The range shows where 95% of individual outcomes should fall.</p>
-                <div class="predict-grid" id="pred-inputs"></div>
-                <p class="predict-out" id="pred-out" aria-live="polite"></p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============================================================ CLASSIFY -->
-      <section class="tool" id="classify" aria-labelledby="cls-title">
-        <div class="tool-head">
-          <h2 id="cls-title">Classify</h2>
-          <p>Logistic regression predicts a yes-or-no outcome, such as whether a customer cancels. Each coefficient becomes an odds ratio, and the model is judged on rows it never saw. Try it on the seed club members.</p>
-        </div>
-        <div class="bench bench-top">
-          <div class="bench-inputs">
-            <div class="field"><label for="cls-y">Outcome (a column with two values)</label><select class="select" id="cls-y"></select><p class="field-hint" id="cls-y-note"></p></div>
-            <fieldset><legend>Predictors</legend><div class="chips" id="cls-x"></div></fieldset>
-            <div class="slider-field">
-              <div class="slider-top"><label for="cls-t">Flag a row when its probability is at least</label><output for="cls-t" id="cls-t-out"></output></div>
-              <input type="range" id="cls-t" min="5" max="95" step="5" value="50">
-            </div>
-            <button class="btn btn-secondary" type="button" id="cls-csv">Download predictions (CSV)</button>
-          </div>
-          <div class="bench-results" aria-live="polite">
-            <div id="cls-error"></div>
-            <div id="cls-body">
-              <div>
-                <div class="figure-hero"><span class="hero-value" id="cls-auc">—</span><span class="hero-label">area under the ROC curve, on the 30% of rows held back</span></div>
-                <p class="hero-label" id="cls-auc-line"></p>
-              </div>
-              <dl class="stats-row">
-                <div class="stat"><dt>Accuracy</dt><dd class="num" id="cls-acc">—</dd></div>
-                <div class="stat"><dt>Precision</dt><dd class="num" id="cls-prec">—</dd></div>
-                <div class="stat"><dt>Recall</dt><dd class="num" id="cls-rec">—</dd></div>
-                <div class="stat"><dt>McFadden pseudo-R²</dt><dd class="num" id="cls-r2">—</dd></div>
-              </dl>
-              <figure>
-                <figcaption class="figure-title">Odds ratios, fitted on every row</figcaption>
-                <div class="table-scroll" id="cls-coefs"></div>
-              </figure>
-              <ul class="reading" id="cls-reading" role="list"></ul>
-              <div class="cls-pair">
-                <figure>
-                  <figcaption class="figure-title">ROC curve on the held-back rows</figcaption>
-                  <div class="chart" id="cls-roc"></div>
-                </figure>
-                <figure>
-                  <figcaption class="figure-title" id="cls-cm-title">At this threshold</figcaption>
-                  <div id="cls-cm"></div>
-                </figure>
-              </div>
-              <div id="cls-checks"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============================================================ SEGMENT -->
-      <section class="tool" id="segment" aria-labelledby="seg-title">
-        <div class="tool-head">
-          <h2 id="seg-title">Segment</h2>
-          <p>k-means clustering finds groups of rows that sit close together across the columns you choose. Columns are put on a common scale first, and the silhouette score says how cleanly the groups separate.</p>
-        </div>
-        <div class="bench bench-top">
-          <div class="bench-inputs">
-            <fieldset><legend>Columns to group on</legend><div class="chips" id="seg-x"></div></fieldset>
-            <div class="slider-field">
-              <div class="slider-top"><label for="seg-k">Number of groups</label><output for="seg-k" id="seg-k-out"></output></div>
-              <input type="range" id="seg-k" min="2" max="6" step="1" value="3">
-            </div>
-            <button class="btn btn-secondary" type="button" id="seg-best">Use the best-separated number</button>
-            <button class="btn btn-secondary" type="button" id="seg-csv">Download groups (CSV)</button>
-          </div>
-          <div class="bench-results" aria-live="polite">
-            <div id="seg-error"></div>
-            <div id="seg-body">
-              <div>
-                <div class="figure-hero"><span class="hero-value" id="seg-sil">—</span><span class="hero-label">silhouette score (−1 to 1; above 0.5 is a clear structure)</span></div>
-                <p class="hero-label" id="seg-line"></p>
-              </div>
-              <figure>
-                <figcaption class="figure-title">How cleanly each number of groups separates</figcaption>
-                <div class="chart" id="seg-k-chart"></div>
-              </figure>
-              <figure>
-                <figcaption class="figure-title">The groups, by their averages</figcaption>
-                <div class="table-scroll" id="seg-profile"></div>
-              </figure>
-              <figure>
-                <figcaption class="figure-title" id="seg-plot-title">Rows on the first two columns</figcaption>
-                <div class="field"><span class="field-label" id="seg-show-label">Highlight group</span><div class="segmented" role="radiogroup" aria-labelledby="seg-show-label" id="seg-show"></div></div>
-                <div class="chart" id="seg-plot"></div>
-              </figure>
-              <ul class="caveats">
-                <li>k-means always returns the number of groups you ask for, structure or not; a low silhouette says the groups are a convenient cut, not a discovery.</li>
-                <li>It favours round, similar-sized groups and is pulled by outliers. Results are seeded so they repeat.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============================================================ FORECAST -->
-      <section class="tool" id="forecast" aria-labelledby="fc-title">
-        <div class="tool-head">
-          <h2 id="fc-title">Forecast</h2>
-          <p>Holt-Winters exponential smoothing carries a series’ level, trend and seasonal pattern forward, with a range for how far off the forecast could be. Before trusting it, the tool hides the last season, forecasts it, and compares the result with simply repeating last year.</p>
-        </div>
-        <div class="bench bench-top">
-          <div class="bench-inputs">
-            <div class="field"><label for="fc-src">Series</label><select class="select" id="fc-src"></select><p class="field-hint" id="fc-src-note"></p></div>
-            <div class="field">
-              <label for="fc-m">Season length</label>
-              <div class="affix"><input class="input" id="fc-m" type="number" inputmode="numeric" min="2" max="104" step="1" value="12"><span class="affix-post">periods</span></div>
-              <p class="field-hint">12 for months in a year, 4 for quarters, 52 for weeks, 7 for days in a week.</p>
-            </div>
-            <div class="slider-field">
-              <div class="slider-top"><label for="fc-h">Forecast ahead</label><output for="fc-h" id="fc-h-out"></output></div>
-              <input type="range" id="fc-h" min="1" max="36" step="1" value="12">
-            </div>
-            <div class="field">
-              <span class="field-label" id="fc-mode-label">Seasonal swings</span>
-              <div class="segmented" role="radiogroup" aria-labelledby="fc-mode-label">
-                <input type="radio" id="fc-auto" name="fc-mode" value="auto" checked><label for="fc-auto">Auto</label>
-                <input type="radio" id="fc-mul" name="fc-mode" value="multiplicative"><label for="fc-mul">Grow with level</label>
-                <input type="radio" id="fc-add" name="fc-mode" value="additive"><label for="fc-add">Fixed size</label>
-              </div>
-            </div>
-            <button class="btn btn-secondary" type="button" id="fc-csv">Download forecast (CSV)</button>
-          </div>
-          <div class="bench-results" aria-live="polite">
-            <div id="fc-error"></div>
-            <div id="fc-body">
-              <div>
-                <div class="figure-hero"><span class="hero-value" id="fc-next">—</span><span class="hero-label" id="fc-next-label">next period</span></div>
-                <p class="hero-label" id="fc-range"></p>
-              </div>
-              <dl class="stats-row">
-                <div class="stat"><dt>Error on the hidden season</dt><dd class="num" id="fc-bt-model">—</dd></div>
-                <div class="stat"><dt>Repeating last season</dt><dd class="num" id="fc-bt-naive">—</dd></div>
-                <div class="stat"><dt>Hidden values inside the 95% range</dt><dd class="num" id="fc-bt-cover">—</dd></div>
-                <div class="stat"><dt>Seasonal swings</dt><dd id="fc-kind">—</dd></div>
-              </dl>
-              <figure>
-                <figcaption class="figure-title" id="fc-chart-title">History and forecast</figcaption>
-                <p class="figure-sub">The shaded band is where 95% of future values should fall if the pattern holds. It widens with every step ahead.</p>
-                <div class="chart" id="fc-chart"></div>
-              </figure>
-              <ul class="reading" id="fc-reading" role="list"></ul>
-              <div id="fc-table"></div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <!-- chrome:hub -->
+      <ul class="hub-grid" role="list">
+        <li><a class="hub-card" href="explore/"><h2>Explore your data</h2><p>Bring a table: a quality check, descriptive statistics, correlations, and regression with its diagnostics.</p><ul class="hub-tools" role="list"><li>Data-quality audit</li><li>Describe</li><li>Correlate</li><li>Regress (with HC3)</li></ul><span class="hub-go">Open <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li>
+        <li><a class="hub-card" href="supervised/"><h2>Supervised learning</h2><p>Predict a yes-or-no outcome, comparing logistic regression, a decision tree, nearest neighbours and a random forest fairly.</p><ul class="hub-tools" role="list"><li>Model comparison by cross-validation</li><li>Decision tree you can read</li><li>Feature importance</li><li>Logistic regression in depth</li></ul><span class="hub-go">Open <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li>
+        <li><a class="hub-card" href="unsupervised/"><h2>Unsupervised learning</h2><p>Find structure without labels: groups of similar rows and the few directions that explain most of the variation.</p><ul class="hub-tools" role="list"><li>k-means</li><li>Hierarchical clustering</li><li>Principal components</li></ul><span class="hub-go">Open <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li>
+        <li><a class="hub-card" href="forecast/"><h2>Forecasting</h2><p>Carry a seasonal series forward with a range, after checking the method on a season it never saw.</p><ul class="hub-tools" role="list"><li>Holt-Winters with 95% intervals</li><li>Held-back-season check</li></ul><span class="hub-go">Open <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li>
+      </ul>
+      <!-- /chrome:hub -->
 
       <section class="sources" aria-labelledby="sources-title">
-        <h2 id="sources-title">Sources and methods</h2>
+        <h2 id="sources-title">Sources</h2>
         <ol>
           <li>Swinton, J., Ochu, E. &amp; MSI Turing’s Sunflower Consortium (2016). Novel Fibonacci and non-Fibonacci structure in the sunflower: results of a citizen science experiment. <i>Royal Society Open Science</i> 3(5). <a href="https://doi.org/10.1098/rsos.160091">doi:10.1098/rsos.160091</a>. Spiral-count shares as summarised by <a href="https://plus.maths.org/sunflowers">Plus Magazine</a>.</li>
-          <li>Breusch, T. S. &amp; Pagan, A. R. (1979). A simple test for heteroscedasticity and random coefficient variation. <i>Econometrica</i> 47(5); studentized form after Koenker, R. (1981), <i>Journal of Econometrics</i> 17(1).</li>
-          <li>Hosmer, D. W., Lemeshow, S. &amp; Sturdivant, R. X. (2013). <i>Applied Logistic Regression</i>, 3rd ed. Wiley. McFadden, D. (1974). Conditional logit analysis of qualitative choice behavior. In <i>Frontiers in Econometrics</i>.</li>
-          <li>Arthur, D. &amp; Vassilvitskii, S. (2007). k-means++: the advantages of careful seeding. <i>SODA</i>. Rousseeuw, P. J. (1987). Silhouettes: a graphical aid to the interpretation and validation of cluster analysis. <i>Journal of Computational and Applied Mathematics</i> 20, 53–65.</li>
-          <li>MacKinnon, J. G. &amp; White, H. (1985). Some heteroskedasticity-consistent covariance matrix estimators with improved finite sample properties. <i>Journal of Econometrics</i> 29(3). (HC3 standard errors.)</li>
-          <li>Hyndman, R. J. &amp; Athanasopoulos, G. <i>Forecasting: Principles and Practice</i>, 2nd ed., chapter 7 (<a href="https://otexts.com/fpp2/holt-winters.html">Holt-Winters</a>); prediction intervals for the additive model after Hyndman, Koehler, Ord &amp; Snyder (2008), <i>Forecasting with Exponential Smoothing</i>. Seasonal swings that grow with the level are modelled on logarithms.</li>
-          <li>Statistics here are computed in your browser and checked against SciPy and statsmodels in the site’s automated tests.</li>
-          <li>All example datasets are synthetic, generated for this page.</li>
         </ol>
       </section>
     </div>
@@ -422,6 +106,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../assets/js/pages/analytics.js?v=3"></script>
+  <script type="module" src="../assets/js/pages/hub.js?v=5"></script>
 </body>
 </html>

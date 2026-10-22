@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pricing · Marketing · Sunflower Intelligence</title>
+  <meta name="description" content="How much units fall when price rises, and the price that earns the most.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/marketing/pricing/">
+  <meta property="og:title" content="Pricing · Sunflower Intelligence">
+  <meta property="og:description" content="How much units fall when price rises, and the price that earns the most.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/css/base.css?v=5">
+  <link rel="stylesheet" href="../../assets/css/rooms.css?v=5">
+</head>
+<body class="room room--marketing room--sub">
+  <a class="skip-link" href="#ledger">Skip to the tools</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../finance/">Finance</a></li>
+        <li><a href="../../analytics/">Business analytics</a></li>
+        <li><a href="../../marketing/" aria-current="page">Marketing</a></li>
+        <li><a href="../../models/">How I build the models</a></li>
+        <li><a href="../../contact/">Contact</a></li>
+        <li><a href="../../learn/">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../"><img src="../../assets/img/flower-marketing-160.webp" alt="" width="56" height="56"><span>Marketing</span></a>
+      <h1 id="room-title" class="display">Pricing</h1>
+      <p class="chapter-note">How much units fall when price rises, and the price that earns the most.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Marketing pages">
+        <ul role="list">
+          <li><a href="../">Overview</a></li>
+          <li><a href="../segmentation/">Market segmentation</a></li>
+          <li><a href="../map/">Market map</a></li>
+          <li><a href="../pricing/" aria-current="page">Pricing</a></li>
+          <li><a href="../growth/">Growth and experiments</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <!-- chrome:toc -->
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#elasticity">Price sensitivity</a></li></ul></nav>
+      <!-- /chrome:toc -->
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../">The painting</a></li><li><a href="../">Marketing</a></li><li aria-current="page">Pricing</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">How sensitive buyers are to price, from price tests, and what that implies for revenue and profit.</p>
+      </div>
+
+      <!-- ============================================================ ELASTICITY -->
+      <section class="tool" id="elasticity" aria-labelledby="el-title">
+        <div class="tool-head">
+          <h2 id="el-title">Price sensitivity</h2>
+          <p>Fit demand on a log-log scale, ln(units) = a + b · ln(price), so the slope b reads directly as the price elasticity: the percentage change in units for a 1% change in price.</p>
+        </div>
+        <div class="bench">
+          <div class="bench-inputs">
+            <div class="field">
+              <span class="field-label" id="el-src-label">Price tests</span>
+              <div class="segmented segmented-stack" role="radiogroup" aria-labelledby="el-src-label">
+                <input type="radio" id="el-seeds" name="elsrc" value="seeds" checked><label for="el-seeds">Seed-mix gift box</label>
+                <input type="radio" id="el-oil" name="elsrc" value="oil"><label for="el-oil">Sunflower oil, 1 L</label>
+                <input type="radio" id="el-own" name="elsrc" value="own"><label for="el-own">Your own data</label>
+              </div>
+              <p class="field-hint" id="el-note"></p>
+            </div>
+            <div class="field" id="el-own-box" hidden>
+              <label for="el-paste">Paste rows with a price and the units sold at that price</label>
+              <textarea class="textarea" id="el-paste" spellcheck="false" placeholder="price,units&#10;4.50,1210&#10;5.00,1040"></textarea>
+              <button class="btn btn-primary" type="button" id="el-read">Read the table</button>
+              <p class="error-text" id="el-error" role="alert"></p>
+            </div>
+            <div class="field-row">
+              <div class="field"><label for="el-p">Price column</label><select class="select" id="el-p"></select></div>
+              <div class="field"><label for="el-q">Units column</label><select class="select" id="el-q"></select></div>
+            </div>
+            <div class="slider-field">
+              <div class="slider-top"><label for="el-change">Try a price change</label><output for="el-change" id="el-change-out"></output></div>
+              <input type="range" id="el-change" min="-30" max="30" step="1" value="10">
+            </div>
+            <div class="field">
+              <label for="el-cost">Unit cost (optional)</label>
+              <div class="affix"><span class="affix-pre">$</span><input class="input" id="el-cost" type="number" inputmode="decimal" step="any" min="0" placeholder="e.g. 2.10"></div>
+              <p class="field-hint">With a cost, the tool estimates the profit-maximising price.</p>
+            </div>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="el-error-box"></div>
+            <div>
+              <div class="figure-hero"><span class="hero-value" id="el-b">—</span><span class="hero-label">price elasticity</span></div>
+              <p class="hero-label" id="el-ci"></p>
+            </div>
+            <div id="el-verdict"></div>
+            <dl class="whatif" id="el-whatif"></dl>
+            <figure>
+              <figcaption class="figure-title">Units sold against price, with the fitted demand curve</figcaption>
+              <div class="chart" id="el-chart"></div>
+              <div id="el-table"></div>
+            </figure>
+            <ul class="caveats">
+              <li>The model assumes the same elasticity at every price. Trust it inside the range you tested; demand often turns sharply elastic near a price ceiling.</li>
+              <li>The “1% rule” (units change ≈ elasticity × price change) is a small-change approximation; the exact figure above uses the full curve.</li>
+              <li>Prices that moved with promotions, seasons or competitors will blur the estimate. Randomised price tests are the cleanest evidence.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <!-- tools:end -->
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources</h2>
+        <ol>
+          <li>All example data on this page is synthetic, generated for the demo.</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../finance/" data-portal="#E8B923"><img src="../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../analytics/" data-portal="#192B49"><img src="../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../models/" data-portal="#252A31"><img src="../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../contact/" data-portal="#F6E7C1"><img src="../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../../learn/" data-portal="#C96F36"><img src="../../assets/img/flower-learn-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Learn</strong><span>Learning by doing</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../assets/js/pages/marketing-pricing.js?v=5"></script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Market map · Marketing · Sunflower Intelligence</title>
+  <meta name="description" content="Compare countries on a world map and rank where to expand, with your own weights.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/marketing/map/">
+  <meta property="og:title" content="Market map · Sunflower Intelligence">
+  <meta property="og:description" content="Compare countries on a world map and rank where to expand, with your own weights.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/css/base.css?v=5">
+  <link rel="stylesheet" href="../../assets/css/rooms.css?v=5">
+</head>
+<body class="room room--marketing room--sub">
+  <a class="skip-link" href="#ledger">Skip to the tools</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../finance/">Finance</a></li>
+        <li><a href="../../analytics/">Business analytics</a></li>
+        <li><a href="../../marketing/" aria-current="page">Marketing</a></li>
+        <li><a href="../../models/">How I build the models</a></li>
+        <li><a href="../../contact/">Contact</a></li>
+        <li><a href="../../learn/">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../"><img src="../../assets/img/flower-marketing-160.webp" alt="" width="56" height="56"><span>Marketing</span></a>
+      <h1 id="room-title" class="display">Market map</h1>
+      <p class="chapter-note">Compare countries on a world map and rank where to expand, with your own weights.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Marketing pages">
+        <ul role="list">
+          <li><a href="../">Overview</a></li>
+          <li><a href="../segmentation/">Market segmentation</a></li>
+          <li><a href="../map/" aria-current="page">Market map</a></li>
+          <li><a href="../pricing/">Pricing</a></li>
+          <li><a href="../growth/">Growth and experiments</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <!-- chrome:toc -->
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#world">World map</a></li><li><a href="#score">Attractiveness score</a></li><li><a href="#reach">Attractiveness against reach</a></li><li><a href="#own">Add your own measures</a></li></ul></nav>
+      <!-- /chrome:toc -->
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../">The painting</a></li><li><a href="../">Marketing</a></li><li aria-current="page">Market map</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">Where to sell next: compare countries on any measure, weight what matters to you, rank markets by attractiveness, then weigh that against how far each one is from home.</p>
+      </div>
+
+      <!-- ============================================================ MAP -->
+      <section class="tool" id="world" aria-labelledby="world-title">
+        <div class="tool-head">
+          <h2 id="world-title">World map</h2>
+          <p>Colour the world by any measure, or by the attractiveness score you set below. Point at a country, or find it by name, to read its numbers. Choosing a region zooms in and sets which countries the score compares.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs map-controls">
+            <div class="field"><label for="map-measure">Colour by</label><select class="select" id="map-measure"></select></div>
+            <div class="field"><label for="map-region">Region</label><select class="select region-select" id="map-region"></select></div>
+            <div class="field">
+              <label for="map-find">Find a country</label>
+              <div class="find-row"><input class="input" id="map-find" type="search" list="map-names" autocomplete="off" placeholder="Type a name"><datalist id="map-names"></datalist></div>
+              <p class="error-text" id="map-find-error" role="alert"></p>
+            </div>
+          </div>
+          <div class="bench-results">
+            <figure class="map-figure">
+              <figcaption><span class="figure-title" id="map-title">Attractiveness score</span><span class="figure-sub" id="map-sub"></span></figcaption>
+              <div class="map-wrap" id="map-box"><p class="map-loading">Loading the map…</p></div>
+              <ul class="map-legend" id="map-legend" role="list" aria-label="Map key"></ul>
+            </figure>
+            <div class="map-detail" id="map-detail" aria-live="polite"></div>
+            <div id="map-twin"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ SCORE -->
+      <section class="tool" id="score" aria-labelledby="score-title">
+        <div class="tool-head">
+          <h2 id="score-title">Attractiveness score</h2>
+          <p>A weighted score from 0 to 100 over the measures you care about. Each measure is first put on a common 0–100 scale across the countries in view, so the weights decide what matters, not the units.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs score-inputs">
+            <fieldset id="score-weights">
+              <legend>How much each measure counts</legend>
+            </fieldset>
+            <div id="score-extra"></div>
+            <div class="field"><label for="score-region">Compare countries in</label><select class="select region-select" id="score-region"></select></div>
+            <div class="field score-reset"><button class="btn btn-secondary" type="button" id="score-reset">Reset the weights</button></div>
+            <p class="field-hint score-how">How the 0–100 scale is made: market size and wealth are taken on a log scale (a jump from $1 to $2 trillion counts like $10 to $20 billion); every measure is capped at its 5th and 95th percentile so one outlier can’t squash the rest; then the lowest country scores 0 and the highest 100.</p>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="score-error"></div>
+            <dl class="stats-row" id="score-stats"></dl>
+            <figure>
+              <figcaption class="figure-title" id="score-table-title">Ranking</figcaption>
+              <div class="table-scroll" id="score-table"></div>
+            </figure>
+            <div class="input-actions">
+              <button class="btn btn-secondary" type="button" id="score-more" aria-expanded="false">Show every country</button>
+              <button class="btn btn-secondary" type="button" id="score-csv">Download the ranking (CSV)</button>
+            </div>
+            <ul class="caveats">
+              <li>GDP in US dollars moves with exchange rates, so the growth figure mixes real growth, inflation and currency swings. It also overstates spending power where multinationals book profits, as in Ireland and Luxembourg.</li>
+              <li>The score ranks countries against each other; it doesn’t say any market is good in absolute terms. Change the region and every score is recomputed against the new set.</li>
+              <li>Countries missing a measure with a non-zero weight are left out of the ranking rather than guessed.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ REACH -->
+      <section class="tool" id="reach" aria-labelledby="reach-title">
+        <div class="tool-head">
+          <h2 id="reach-title">Attractiveness against reach</h2>
+          <p>An attractive market far away can cost more to serve than a modest one next door. This chart sets the score against reach, in the style of the GE–McKinsey matrix: markets in the shaded top-right cells are the ones to grow into first.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="field"><label for="reach-home">Home country</label><select class="select" id="reach-home"></select><p class="field-hint" id="reach-home-note"></p></div>
+            <div class="field"><span class="field-label">Reach</span><p class="field-hint reach-def">100 next door, 0 on the far side of the planet, falling in a straight line with the great-circle distance between capitals.</p></div>
+          </div>
+          <div class="bench-results">
+            <figure>
+              <figcaption class="figure-title" id="reach-plot-title">Score against reach</figcaption>
+              <div class="chart" id="reach-plot"></div>
+            </figure>
+            <div id="reach-list"></div>
+            <ul class="caveats">
+              <li>Distance stands in for the real costs of reach: language, time zones, trade agreements, shipping and regulation can make a far market easier than a near one.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ OWN DATA -->
+      <section class="tool" id="own" aria-labelledby="own-title">
+        <div class="tool-head">
+          <h2 id="own-title">Add your own measures</h2>
+          <p>Bring what you know that a public dataset can’t: your sales by country, the number of competitors, a tariff rate. Each number column becomes a measure on the map and a weight in the score.</p>
+        </div>
+        <div class="bench">
+          <div class="bench-inputs">
+            <div class="field">
+              <label for="own-paste">Paste a table: one row per country, with its three-letter code (or its name) and any number columns</label>
+              <textarea class="textarea" id="own-paste" spellcheck="false" placeholder="iso3,my_sales,competitors&#10;DEU,420000,12&#10;FRA,310000,9"></textarea>
+            </div>
+            <div class="input-actions">
+              <button class="btn btn-primary" type="button" id="own-read">Add the measures</button>
+              <label class="btn btn-secondary file-btn">Upload a CSV<input type="file" id="own-file" accept=".csv,.tsv,.txt,text/csv,text/plain" class="visually-hidden"></label>
+            </div>
+            <div class="input-actions"><button class="btn btn-secondary" type="button" id="own-template">Download a template</button><button class="btn btn-secondary" type="button" id="own-example">Try a made-up example</button><button class="btn btn-secondary" type="button" id="own-clear" hidden>Remove my measures</button></div>
+            <p class="field-hint">Codes are ISO 3166 alpha-3 (DEU, BRA, JPN); names work too. Read in this browser tab and never uploaded.</p>
+            <p class="error-text" id="own-error" role="alert"></p>
+          </div>
+          <div class="bench-results" aria-live="polite" id="own-result">
+            <p class="note">No measures of your own yet. The template lists every country with its code and an empty column to fill in; the made-up example (fictional sales and rival counts for 30 markets) shows what happens.</p>
+          </div>
+        </div>
+      </section>
+      <!-- tools:end -->
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources</h2>
+        <ol>
+          <li>GDP (current US$, NY.GDP.MKTP.CD) and population (SP.POP.TOTL): World Bank, <a href="https://data.worldbank.org/indicator/NY.GDP.MKTP.CD">World Development Indicators</a>, CC BY 4.0, as packaged by <a href="https://github.com/datasets/gdp">datasets/gdp</a> and <a href="https://github.com/datasets/population">datasets/population</a>. The latest year is 2023 for most countries; 2021 or 2022 where 2023 is not yet published (marked).</li>
+          <li>Country outlines and capitals: <a href="https://www.naturalearthdata.com/">Natural Earth</a> (public domain), via <a href="https://github.com/topojson/world-atlas">world-atlas</a>, drawn in the Equal Earth projection (Šavrič, Patterson and Jenny, 2018). Country codes and regions: UN M49 via <a href="https://github.com/datasets/country-codes">datasets/country-codes</a>.</li>
+          <li>The GE–McKinsey nine-box matrix: McKinsey &amp; Company, <a href="https://www.mckinsey.com/capabilities/strategy-and-corporate-finance/our-insights/enduring-ideas-the-ge-and-mckinsey-nine-box-matrix">“Enduring Ideas: The GE–McKinsey nine-box matrix”</a> (2008).</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../finance/" data-portal="#E8B923"><img src="../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../analytics/" data-portal="#192B49"><img src="../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../models/" data-portal="#252A31"><img src="../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../contact/" data-portal="#F6E7C1"><img src="../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../../learn/" data-portal="#C96F36"><img src="../../assets/img/flower-learn-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Learn</strong><span>Learning by doing</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../assets/js/pages/marketing-map.js?v=5"></script>
+</body>
+</html>

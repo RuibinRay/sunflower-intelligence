@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Valuation · Finance · Sunflower Intelligence</title>
+  <meta name="description" content="What a business is worth: the cost of capital, then its cash flows discounted at that rate.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/finance/valuation/">
+  <meta property="og:title" content="Valuation · Sunflower Intelligence">
+  <meta property="og:description" content="What a business is worth: the cost of capital, then its cash flows discounted at that rate.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/css/base.css?v=5">
+  <link rel="stylesheet" href="../../assets/css/rooms.css?v=5">
+</head>
+<body class="room room--finance room--sub">
+  <a class="skip-link" href="#ledger">Skip to the tools</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../finance/" aria-current="page">Finance</a></li>
+        <li><a href="../../analytics/">Business analytics</a></li>
+        <li><a href="../../marketing/">Marketing</a></li>
+        <li><a href="../../models/">How I build the models</a></li>
+        <li><a href="../../contact/">Contact</a></li>
+        <li><a href="../../learn/">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../"><img src="../../assets/img/flower-finance-160.webp" alt="" width="56" height="56"><span>Finance</span></a>
+      <h1 id="room-title" class="display">Valuation</h1>
+      <p class="chapter-note">What a business is worth: the cost of capital, then its cash flows discounted at that rate.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Finance pages">
+        <ul role="list">
+          <li><a href="../">Overview</a></li>
+          <li><a href="../valuation/" aria-current="page">Valuation</a></li>
+          <li><a href="../investment/">Investment decisions</a></li>
+          <li><a href="../stocks/">Stock analysis</a></li>
+          <li><a href="../risk/">Risk management</a></li>
+          <li><a href="../markets/">Bonds and options</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <!-- chrome:toc -->
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#cost-of-capital">Cost of capital</a></li><li><a href="#dcf">Discounted cash flow</a></li></ul></nav>
+      <!-- /chrome:toc -->
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../">The painting</a></li><li><a href="../">Finance</a></li><li aria-current="page">Valuation</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">Start with the rate investors require, then value the business on the cash it should generate. The rate from the first tool can be sent straight into the second.</p>
+      </div>
+
+      <!-- ============================================================ COST OF CAPITAL -->
+      <section class="tool" id="cost-of-capital" aria-labelledby="cc-title">
+        <div class="tool-head">
+          <h2 id="cc-title">Cost of capital</h2>
+          <p>The return investors expect for the risk they carry. Shareholders’ cost comes from the capital asset pricing model; lenders’ cost is cheaper after tax because interest is deductible. Weighted by market values, the two give the discount rate the DCF below uses.</p>
+        </div>
+        <div class="bench">
+          <form class="bench-inputs" id="cc-form" novalidate>
+            <fieldset>
+              <legend>Shareholders (CAPM)</legend>
+              <div class="slider-field"><div class="slider-top"><label for="cc-rf">Risk-free rate</label><output for="cc-rf" id="cc-rf-out"></output></div><input type="range" id="cc-rf" min="0" max="10" step="0.1" value="4.2"></div>
+              <div class="field"><label for="cc-beta">Beta</label><div class="affix"><input class="input" id="cc-beta" type="number" inputmode="decimal" step="any" value="1.1"></div><p class="field-hint">How much the share moves with the market: 1 moves with it, above 1 swings more.</p></div>
+              <div class="slider-field"><div class="slider-top"><label for="cc-erp">Equity risk premium</label><output for="cc-erp" id="cc-erp-out"></output></div><input type="range" id="cc-erp" min="2" max="9" step="0.1" value="5"></div>
+            </fieldset>
+            <fieldset>
+              <legend>Lenders</legend>
+              <div class="slider-field"><div class="slider-top"><label for="cc-kd">Cost of debt, before tax</label><output for="cc-kd" id="cc-kd-out"></output></div><input type="range" id="cc-kd" min="0" max="15" step="0.1" value="6"></div>
+              <div class="slider-field"><div class="slider-top"><label for="cc-tax">Tax rate</label><output for="cc-tax" id="cc-tax-out"></output></div><input type="range" id="cc-tax" min="0" max="45" step="1" value="25"></div>
+            </fieldset>
+            <fieldset>
+              <legend>Mix, at market values</legend>
+              <div class="field-row">
+              <div class="field"><label for="cc-e">Equity</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="cc-e" type="number" inputmode="decimal" step="any" value="1900"><span class="affix-post">m</span></div></div>
+              <div class="field"><label for="cc-d">Debt</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="cc-d" type="number" inputmode="decimal" step="any" value="300"><span class="affix-post">m</span></div></div>
+              </div>
+            </fieldset>
+          </form>
+          <div class="bench-results" aria-live="polite">
+            <div id="cc-error"></div>
+            <div>
+              <div class="figure-hero"><span class="hero-value" id="cc-wacc">—</span><span class="hero-label">weighted average cost of capital</span></div>
+              <p class="hero-label" id="cc-line"></p>
+            </div>
+            <dl class="stats-row">
+              <div class="stat"><dt>Cost of equity</dt><dd class="num" id="cc-ke">—</dd></div>
+              <div class="stat"><dt>Cost of debt after tax</dt><dd class="num" id="cc-kd-after">—</dd></div>
+              <div class="stat"><dt>Equity share of capital</dt><dd class="num" id="cc-we">—</dd></div>
+              <div class="stat"><dt>Debt share of capital</dt><dd class="num" id="cc-wd">—</dd></div>
+            </dl>
+            <figure>
+              <figcaption class="figure-title">What each source of money adds to the rate</figcaption>
+              <div class="chart" id="cc-chart"></div>
+            </figure>
+            <div class="input-actions"><button class="btn btn-primary" type="button" id="cc-use">Use this rate in the DCF</button></div>
+            <ul class="caveats">
+              <li>Beta is measured from past share prices, so it is an estimate with its own error; for a private company, borrow the beta of listed peers and adjust for debt.</li>
+              <li>Using market values matters: book equity usually understates what shareholders have at stake.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <!-- ============================================================ DCF -->
+      <section class="tool" id="dcf" aria-labelledby="dcf-title">
+        <div class="tool-head">
+          <h2 id="dcf-title">Discounted cash flow</h2>
+          <p>What is a business worth today? Forecast its free cash flow, add a terminal value for everything after the forecast, and discount both at the cost of capital.</p>
+        </div>
+        <div class="bench">
+          <form class="bench-inputs" id="dcf-form" novalidate>
+            <fieldset>
+              <legend>Cash flow</legend>
+              <div class="field">
+                <label for="fcf0">Free cash flow, latest year</label>
+                <div class="affix"><span class="affix-pre">$</span><input class="input" id="fcf0" name="fcf0" type="number" inputmode="decimal" step="any" value="120"><span class="affix-post">m</span></div>
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="g1">Growth in year 1</label><output for="g1" id="g1-out"></output></div>
+                <input type="range" id="g1" name="g1" min="-10" max="30" step="0.5" value="9">
+              </div>
+              <div class="field">
+                <span class="field-label" id="years-label">Forecast years</span>
+                <div class="segmented" role="radiogroup" aria-labelledby="years-label">
+                  <input type="radio" id="y5" name="years" value="5" checked><label for="y5">5</label>
+                  <input type="radio" id="y7" name="years" value="7"><label for="y7">7</label>
+                  <input type="radio" id="y10" name="years" value="10"><label for="y10">10</label>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label" id="path-label">Growth path</span>
+                <div class="segmented" role="radiogroup" aria-labelledby="path-label">
+                  <input type="radio" id="p-fade" name="path" value="fade" checked><label for="p-fade">Fades to terminal</label>
+                  <input type="radio" id="p-flat" name="path" value="flat"><label for="p-flat">Constant</label>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Discounting</legend>
+              <div class="slider-field">
+                <div class="slider-top"><label for="wacc">WACC (cost of capital)</label><output for="wacc" id="wacc-out"></output></div>
+                <input type="range" id="wacc" name="wacc" min="4" max="20" step="0.1" value="9">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="gt">Terminal growth</label><output for="gt" id="gt-out"></output></div>
+                <input type="range" id="gt" name="gt" min="-2" max="6" step="0.1" value="2.5">
+              </div>
+              <label class="check"><input type="checkbox" id="mid" name="mid"> Mid-year discounting</label>
+            </fieldset>
+            <fieldset>
+              <legend>From enterprise value to equity</legend>
+              <div class="field-row">
+                <div class="field">
+                  <label for="debt">Net debt</label>
+                  <div class="affix"><span class="affix-pre">$</span><input class="input" id="debt" name="debt" type="number" inputmode="decimal" step="any" value="300"><span class="affix-post">m</span></div>
+                </div>
+                <div class="field">
+                  <label for="shares">Shares</label>
+                  <div class="affix"><input class="input" id="shares" name="shares" type="number" inputmode="decimal" step="any" min="0" value="85"><span class="affix-post">m</span></div>
+                </div>
+              </div>
+              <p class="field-hint">Use a negative net debt for net cash.</p>
+            </fieldset>
+            <div class="input-actions">
+              <button class="btn btn-secondary" type="button" id="dcf-reset">Reset to the example</button>
+              <button class="btn btn-secondary" type="button" id="dcf-csv">Download the schedule (CSV)</button>
+            </div>
+          </form>
+
+          <div class="bench-results" aria-live="polite" id="dcf-results">
+            <div>
+              <div class="figure-hero"><span class="hero-value" id="dcf-ev">—</span><span class="hero-label">enterprise value</span></div>
+              <p class="hero-label" id="dcf-share-line"></p>
+            </div>
+            <div id="dcf-warn"></div>
+            <dl class="stats-row">
+              <div class="stat"><dt>PV of forecast cash flows</dt><dd class="num" id="dcf-pv">—</dd></div>
+              <div class="stat"><dt>PV of terminal value</dt><dd class="num" id="dcf-pvtv">—</dd></div>
+              <div class="stat"><dt>Terminal value share</dt><dd class="num" id="dcf-tvshare">—</dd></div>
+              <div class="stat"><dt>Implied FCF multiple at exit</dt><dd class="num" id="dcf-mult">—</dd></div>
+            </dl>
+            <figure>
+              <figcaption class="figure-title">Free cash flow by year, before and after discounting</figcaption>
+              <div class="chart" id="dcf-chart"></div>
+              <div id="dcf-table"></div>
+            </figure>
+            <figure>
+              <figcaption class="figure-title">Where the value sits</figcaption>
+              <div id="dcf-split"></div>
+            </figure>
+            <figure>
+              <figcaption class="figure-title" id="sens-title">Sensitivity</figcaption>
+              <p class="figure-sub">Rows change the cost of capital; columns change terminal growth. The centre cell is your case.</p>
+              <div class="table-scroll" id="dcf-sens"></div>
+            </figure>
+            <ul class="caveats">
+              <li>A DCF is only as good as its forecast. Small changes in WACC or terminal growth move the answer a lot, which is what the sensitivity table is for.</li>
+              <li>Terminal value uses the growing perpetuity (Gordon) formula on the year after the forecast.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <!-- tools:end -->
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources</h2>
+        <ol>
+          <li>Sharpe, W. F. (1964). Capital asset prices: a theory of market equilibrium under conditions of risk. <i>The Journal of Finance</i>, 19(3), 425–442. (CAPM.)</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../analytics/" data-portal="#192B49"><img src="../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../marketing/" data-portal="#56632C"><img src="../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../models/" data-portal="#252A31"><img src="../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../contact/" data-portal="#F6E7C1"><img src="../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../../learn/" data-portal="#C96F36"><img src="../../assets/img/flower-learn-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Learn</strong><span>Learning by doing</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../assets/js/pages/finance-valuation.js?v=5"></script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Explore your data · Business analytics · Sunflower Intelligence</title>
+  <meta name="description" content="Bring a table: a quality check, descriptive statistics, correlations, and regression with its diagnostics.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/analytics/explore/">
+  <meta property="og:title" content="Explore your data · Sunflower Intelligence">
+  <meta property="og:description" content="Bring a table: a quality check, descriptive statistics, correlations, and regression with its diagnostics.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/css/base.css?v=5">
+  <link rel="stylesheet" href="../../assets/css/rooms.css?v=5">
+</head>
+<body class="room room--analytics room--sub">
+  <a class="skip-link" href="#ledger">Skip to the tools</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../finance/">Finance</a></li>
+        <li><a href="../../analytics/" aria-current="page">Business analytics</a></li>
+        <li><a href="../../marketing/">Marketing</a></li>
+        <li><a href="../../models/">How I build the models</a></li>
+        <li><a href="../../contact/">Contact</a></li>
+        <li><a href="../../learn/">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../"><img src="../../assets/img/flower-analytics-160.webp" alt="" width="56" height="56"><span>Business analytics</span></a>
+      <h1 id="room-title" class="display is-long">Explore your data</h1>
+      <p class="chapter-note">Bring a table: a quality check, descriptive statistics, correlations, and regression with its diagnostics.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Business analytics pages">
+        <ul role="list">
+          <li><a href="../">Overview</a></li>
+          <li><a href="../explore/" aria-current="page">Explore your data</a></li>
+          <li><a href="../supervised/">Supervised learning</a></li>
+          <li><a href="../unsupervised/">Unsupervised learning</a></li>
+          <li><a href="../forecast/">Forecasting</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <!-- chrome:toc -->
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#data">Your data</a></li><li><a href="#describe">Describe</a></li><li><a href="#correlate">Correlate</a></li><li><a href="#regress">Regress</a></li></ul></nav>
+      <!-- /chrome:toc -->
+    </header>
+
+    <div class="ledger on-night" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../">The painting</a></li><li><a href="../">Business analytics</a></li><li aria-current="page">Explore your data</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">The room checks a table’s quality before any analysis, then describes each column, looks for relationships and fits a regression with its diagnostics. Your file never leaves your browser.</p>
+      </div>
+
+      <!-- ============================================================ DATA -->
+      <section class="tool" id="data" aria-labelledby="data-title">
+        <div class="tool-head">
+          <h2 id="data-title">Your data</h2>
+          <p>Paste a table or upload a CSV. Column types, gaps and unusual values are flagged, and nothing is changed without your say.</p>
+        </div>
+        <div class="bench bench-stack">
+          <div class="data-source">
+            <div class="field">
+              <span class="field-label" id="source-label">Dataset</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="source-label">
+                <input type="radio" id="src-trials" name="source" value="trials" checked><label for="src-trials">Sunflower field trials</label>
+                <input type="radio" id="src-cafe" name="source" value="cafe"><label for="src-cafe">Café weekly sales</label>
+                <input type="radio" id="src-churn" name="source" value="churn"><label for="src-churn">Seed club members</label>
+                <input type="radio" id="src-own" name="source" value="own"><label for="src-own">Your own table</label>
+              </div>
+            </div>
+            <div id="own-data" class="own-data" hidden>
+              <div class="field">
+                <label for="paste">Paste a table, with column names in the first row</label>
+                <textarea id="paste" class="textarea" spellcheck="false" placeholder="month,ad_spend,sales&#10;2026-01,1200,18400&#10;2026-02,950,16100"></textarea>
+              </div>
+              <div class="input-actions">
+                <button class="btn btn-primary" type="button" id="read-paste">Read the table</button>
+                <label class="btn btn-secondary file-btn">Upload a CSV<input type="file" id="file" accept=".csv,.tsv,.txt,text/csv,text/plain" class="visually-hidden"></label>
+              </div>
+              <p class="field-hint">Comma, semicolon or tab separated. Files are read in this browser tab and never uploaded.</p>
+              <p class="error-text" id="read-error" role="alert"></p>
+            </div>
+            <p class="dataset-note" id="dataset-note"></p>
+          </div>
+          <div class="quality-grid">
+            <div class="quality-score">
+              <p class="hero-label">Data quality</p>
+              <p class="hero-value"><span id="q-score">—</span><span class="hero-of"> / 100</span></p>
+              <ul class="q-parts" id="q-parts" role="list"></ul>
+            </div>
+            <div class="quality-actions">
+              <h3>Suggested clean-up</h3>
+              <ul class="q-suggestions" id="q-suggestions" role="list"></ul>
+              <h3>What has changed</h3>
+              <ol class="q-history" id="q-history"></ol>
+            </div>
+          </div>
+          <figure>
+            <figcaption class="figure-title">Columns</figcaption>
+            <div class="table-scroll" id="columns-table"></div>
+          </figure>
+          <figure>
+            <figcaption class="figure-title">First rows</figcaption>
+            <div class="table-scroll" id="preview"></div>
+          </figure>
+        </div>
+      </section>
+      <!-- ============================================================ DESCRIBE -->
+      <section class="tool" id="describe" aria-labelledby="describe-title">
+        <div class="tool-head">
+          <h2 id="describe-title">Describe</h2>
+          <p>Centre, spread and shape for any numeric column, with a 95% confidence interval for its mean.</p>
+        </div>
+        <div class="bench">
+          <div class="bench-inputs">
+            <div class="field"><label for="desc-col">Column</label><select class="select" id="desc-col"></select></div>
+            <p class="note" id="desc-read"></p>
+            <button class="btn btn-secondary" type="button" id="desc-csv">Download all summaries (CSV)</button>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div>
+              <div class="figure-hero"><span class="hero-value" id="desc-mean">—</span><span class="hero-label">mean</span></div>
+              <p class="hero-label" id="desc-ci"></p>
+            </div>
+            <dl class="stats-row stats-dense" id="desc-stats"></dl>
+            <figure>
+              <figcaption class="figure-title" id="desc-hist-title">Distribution</figcaption>
+              <div class="chart" id="desc-hist"></div>
+              <div id="desc-table"></div>
+            </figure>
+          </div>
+        </div>
+      </section>
+      <!-- ============================================================ CORRELATE -->
+      <section class="tool" id="correlate" aria-labelledby="corr-title">
+        <div class="tool-head">
+          <h2 id="corr-title">Correlate</h2>
+          <p>How strongly do two columns move together? Pick the columns, then choose a cell to see the pair up close.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="field">
+              <span class="field-label" id="method-label">Method</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="method-label">
+                <input type="radio" id="c-pearson" name="cmethod" value="pearson" checked><label for="c-pearson">Pearson</label>
+                <input type="radio" id="c-spearman" name="cmethod" value="spearman"><label for="c-spearman">Spearman</label>
+              </div>
+              <p class="field-hint">Pearson measures straight-line relationships; Spearman ranks the values first, so it catches any steady rise or fall and resists outliers.</p>
+            </div>
+            <div class="field">
+              <span class="field-label" id="miss-label">Empty cells</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="miss-label">
+                <input type="radio" id="c-pair" name="cmissing" value="pairwise" checked><label for="c-pair">Pairwise</label>
+                <input type="radio" id="c-list" name="cmissing" value="listwise"><label for="c-list">Listwise</label>
+              </div>
+              <p class="field-hint">Pairwise keeps every row that has both values; listwise keeps only rows complete in every chosen column.</p>
+            </div>
+            <fieldset><legend>Columns</legend><div class="chips" id="corr-cols"></div></fieldset>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <figure>
+              <figcaption class="figure-title" id="corr-title-fig">Correlation matrix</figcaption>
+              <p class="figure-sub">Blue is positive, orange negative, grey near zero. Use the arrow keys to move between cells and Enter to open one.</p>
+              <div id="corr-heat"></div>
+              <div id="corr-table"></div>
+            </figure>
+            <figure class="pair-figure">
+              <figcaption class="figure-title" id="pair-title">Pair</figcaption>
+              <p class="note" id="pair-read"></p>
+              <div class="chart" id="pair-chart"></div>
+            </figure>
+            <div class="verdict is-warn causation">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 5.5v5.2M10 14.2v.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <p><strong>Correlation is not causation.</strong> Two columns can move together because one drives the other, because a third factor drives both, or by chance. Treat a strong correlation as a question to investigate, not an answer.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ============================================================ REGRESS -->
+      <section class="tool" id="regress" aria-labelledby="reg-title">
+        <div class="tool-head">
+          <h2 id="reg-title">Regress</h2>
+          <p>Ordinary least squares: how much does the outcome change with each predictor, holding the others fixed, and can the model be trusted?</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="field"><label for="reg-y">Outcome</label><select class="select" id="reg-y"></select></div>
+            <fieldset><legend>Predictors</legend><div class="chips" id="reg-x"></div></fieldset>
+            <label class="check"><input type="checkbox" id="reg-sq"> Add squared terms (lets effects curve)</label>
+            <label class="check"><input type="checkbox" id="reg-robust"> Robust standard errors (HC3), for errors whose spread is uneven</label>
+            <button class="btn btn-secondary" type="button" id="reg-csv">Download coefficients (CSV)</button>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="reg-error"></div>
+            <div class="reg-body" id="reg-body">
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="reg-r2">—</span><span class="hero-label">of the variation explained (R²)</span></div>
+                <p class="hero-label" id="reg-adj"></p>
+              </div>
+              <dl class="stats-row">
+                <div class="stat"><dt>Rows used</dt><dd class="num" id="reg-n">—</dd></div>
+                <div class="stat"><dt>Model F-test</dt><dd class="num" id="reg-f">—</dd></div>
+                <div class="stat"><dt>Typical error (RMSE)</dt><dd class="num" id="reg-rmse">—</dd></div>
+                <div class="stat"><dt>Mean absolute error</dt><dd class="num" id="reg-mae">—</dd></div>
+              </dl>
+              <figure>
+                <figcaption class="figure-title">Coefficients</figcaption>
+                <div class="table-scroll" id="reg-coefs"></div>
+              </figure>
+              <ul class="reading" id="reg-reading" role="list"></ul>
+              <figure>
+                <figcaption class="figure-title">Diagnostics</figcaption>
+                <div class="segmented" role="radiogroup" aria-label="Diagnostic plot">
+                  <input type="radio" id="d-resid" name="dplot" value="resid" checked><label for="d-resid">Residuals vs fitted</label>
+                  <input type="radio" id="d-avp" name="dplot" value="avp"><label for="d-avp">Actual vs predicted</label>
+                </div>
+                <div class="chart" id="reg-plot"></div>
+              </figure>
+              <div id="reg-checks"></div>
+              <div class="predict">
+                <h3>Predict</h3>
+                <p class="field-hint">Enter values for each predictor. The range shows where 95% of individual outcomes should fall.</p>
+                <div class="predict-grid" id="pred-inputs"></div>
+                <p class="predict-out" id="pred-out" aria-live="polite"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- tools:end -->
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources</h2>
+        <ol>
+          <li>Breusch, T. S. &amp; Pagan, A. R. (1979). A simple test for heteroscedasticity and random coefficient variation. <i>Econometrica</i> 47(5); studentized form after Koenker, R. (1981), <i>Journal of Econometrics</i> 17(1).</li>
+          <li>MacKinnon, J. G. &amp; White, H. (1985). Some heteroskedasticity-consistent covariance matrix estimators with improved finite sample properties. <i>Journal of Econometrics</i> 29(3). (HC3 standard errors.)</li>
+          <li>Statistics here are computed in your browser and checked against SciPy and statsmodels in the site’s automated tests.</li>
+          <li>All example datasets are synthetic, generated for this page.</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../finance/" data-portal="#E8B923"><img src="../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../marketing/" data-portal="#56632C"><img src="../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../models/" data-portal="#252A31"><img src="../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../contact/" data-portal="#F6E7C1"><img src="../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../../learn/" data-portal="#C96F36"><img src="../../assets/img/flower-learn-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Learn</strong><span>Learning by doing</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../assets/js/pages/analytics-explore.js?v=5"></script>
+</body>
+</html>

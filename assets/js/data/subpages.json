@@ -1,0 +1,21 @@
+{
+  "finance": [
+    { "slug": "valuation", "name": "Valuation", "blurb": "What a business is worth: the cost of capital, then its cash flows discounted at that rate.", "tools": ["Cost of capital (CAPM, WACC)", "Discounted cash flow with sensitivity"] },
+    { "slug": "investment", "name": "Investment decisions", "blurb": "Which projects to fund, compared on NPV, IRR, MIRR, payback and profitability index.", "tools": ["Capital budgeting for up to three projects", "NPV profile and crossover rate", "Capital rationing"] },
+    { "slug": "stocks", "name": "Stock analysis", "blurb": "Return, risk and beta for a share against the market, and the portfolio mix with the best return for its risk.", "tools": ["Returns, volatility, drawdown, Sharpe", "Beta and alpha by CAPM regression", "Efficient frontier"] },
+    { "slug": "risk", "name": "Risk management", "blurb": "How much a portfolio could lose on a bad day, whether the model has been right, and how a company’s credit looks.", "tools": ["Value at Risk and Expected Shortfall", "Kupiec backtest", "Stress scenarios", "Altman Z-score"] },
+    { "slug": "markets", "name": "Bonds and options", "blurb": "Bond prices, yields, duration and convexity; option values, Greeks and implied volatility.", "tools": ["Bonds", "Options (Black–Scholes–Merton)"] }
+  ],
+  "analytics": [
+    { "slug": "explore", "name": "Explore your data", "blurb": "Bring a table: a quality check, descriptive statistics, correlations, and regression with its diagnostics.", "tools": ["Data-quality audit", "Describe", "Correlate", "Regress (with HC3)"] },
+    { "slug": "supervised", "name": "Supervised learning", "blurb": "Predict a yes-or-no outcome, comparing logistic regression, a decision tree, nearest neighbours and a random forest fairly.", "tools": ["Model comparison by cross-validation", "Decision tree you can read", "Feature importance", "Logistic regression in depth"] },
+    { "slug": "unsupervised", "name": "Unsupervised learning", "blurb": "Find structure without labels: groups of similar rows and the few directions that explain most of the variation.", "tools": ["k-means", "Hierarchical clustering", "Principal components"] },
+    { "slug": "forecast", "name": "Forecasting", "blurb": "Carry a seasonal series forward with a range, after checking the method on a season it never saw.", "tools": ["Holt-Winters with 95% intervals", "Held-back-season check"] }
+  ],
+  "marketing": [
+    { "slug": "segmentation", "name": "Market segmentation", "blurb": "Split a market into groups that want different things, size them, and decide which to target.", "tools": ["Survey-based segmentation", "Segment profiles and targeting", "RFM customer value"] },
+    { "slug": "map", "name": "Market map", "blurb": "Compare countries on a world map and rank where to expand, with your own weights.", "tools": ["World map of any measure", "Weighted market-attractiveness score", "Attractiveness against reach"] },
+    { "slug": "pricing", "name": "Pricing", "blurb": "How much units fall when price rises, and the price that earns the most.", "tools": ["Price elasticity (log-log)", "Profit-maximising price"] },
+    { "slug": "growth", "name": "Growth and experiments", "blurb": "Whether customers are worth what they cost to win, and whether a test result is real.", "tools": ["Unit economics", "A/B test and sample size"] }
+  ]
+}

@@ -3,19 +3,19 @@ export const ROOMS = [
   {
     id: 'finance', name: 'Finance', path: 'finance/', color: '#E8B923',
     chapter: 'An obsession with yellow',
-    blurb: 'Value a business from its cash flows, and screen a company for financial distress.',
+    blurb: 'Value a business, choose between projects, analyse stocks and portfolios, and measure risk with Value at Risk.',
     where: 'the golden bloom at the centre',
   },
   {
     id: 'analytics', name: 'Business analytics', path: 'analytics/', color: '#192B49',
     chapter: 'The golden spiral',
-    blurb: 'Check a table’s quality, describe it, find correlations, fit a regression and forecast the next season.',
+    blurb: 'Explore a table, predict outcomes with four machine-learning models, find groups without labels, and forecast.',
     where: 'the dark-eyed bloom on the left',
   },
   {
     id: 'marketing', name: 'Marketing', path: 'marketing/', color: '#56632C',
     chapter: 'Personal identity',
-    blurb: 'Segment customers, measure price sensitivity and test the unit economics of growth.',
+    blurb: 'Segment a market, map where to expand, find the best price and check that growth pays.',
     where: 'the head turned aside, on the right',
   },
   {

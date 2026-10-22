@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Risk management · Finance · Sunflower Intelligence</title>
+  <meta name="description" content="How much a portfolio could lose on a bad day, whether the model has been right, and how a company’s credit looks.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/finance/risk/">
+  <meta property="og:title" content="Risk management · Sunflower Intelligence">
+  <meta property="og:description" content="How much a portfolio could lose on a bad day, whether the model has been right, and how a company’s credit looks.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/css/base.css?v=5">
+  <link rel="stylesheet" href="../../assets/css/rooms.css?v=5">
+</head>
+<body class="room room--finance room--sub">
+  <a class="skip-link" href="#ledger">Skip to the tools</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../finance/" aria-current="page">Finance</a></li>
+        <li><a href="../../analytics/">Business analytics</a></li>
+        <li><a href="../../marketing/">Marketing</a></li>
+        <li><a href="../../models/">How I build the models</a></li>
+        <li><a href="../../contact/">Contact</a></li>
+        <li><a href="../../learn/">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../"><img src="../../assets/img/flower-finance-160.webp" alt="" width="56" height="56"><span>Finance</span></a>
+      <h1 id="room-title" class="display is-long">Risk management</h1>
+      <p class="chapter-note">How much a portfolio could lose on a bad day, whether the model has been right, and how a company’s credit looks.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Finance pages">
+        <ul role="list">
+          <li><a href="../">Overview</a></li>
+          <li><a href="../valuation/">Valuation</a></li>
+          <li><a href="../investment/">Investment decisions</a></li>
+          <li><a href="../stocks/">Stock analysis</a></li>
+          <li><a href="../risk/" aria-current="page">Risk management</a></li>
+          <li><a href="../markets/">Bonds and options</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <!-- chrome:toc -->
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#var">Value at Risk</a></li><li><a href="#backtest">Backtest</a></li><li><a href="#stress">Stress scenarios</a></li><li><a href="#altman">Altman Z-score</a></li></ul></nav>
+      <!-- /chrome:toc -->
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../">The painting</a></li><li><a href="../">Finance</a></li><li aria-current="page">Risk management</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">Market risk first: how much a portfolio could lose, measured three ways and checked against what actually happened. Then credit risk: a screen for a company in financial distress.</p>
+      </div>
+
+      <!-- ============================================================ VAR -->
+      <section class="tool" id="var" aria-labelledby="var-title">
+        <div class="tool-head">
+          <h2 id="var-title">Value at Risk</h2>
+          <p>The loss a portfolio should exceed only rarely: at 99% confidence, on one day in a hundred. Expected Shortfall answers the next question, how bad those days are on average. Three ways to estimate both, side by side.</p>
+        </div>
+        <div class="bench">
+          <form class="bench-inputs" id="var-form" novalidate>
+            <div class="field">
+              <span class="field-label" id="var-src-label">Returns</span>
+              <div class="segmented segmented-stack" role="radiogroup" aria-labelledby="var-src-label">
+                <input type="radio" id="var-sim" name="var-src" value="sim" checked><label for="var-sim">Simulated: invented portfolio, 10 years daily</label>
+                <input type="radio" id="var-sp" name="var-src" value="sp"><label for="var-sp">S&amp;P 500, monthly, 1950–2023 (real)</label>
+                <input type="radio" id="var-own" name="var-src" value="own"><label for="var-own">Paste or upload your own</label>
+              </div>
+            </div>
+            <div class="own-data" id="var-own-box" hidden>
+              <div class="field">
+                <label for="var-paste">Paste daily returns or prices (one column, or dates and a column)</label>
+                <textarea class="textarea" id="var-paste" spellcheck="false" placeholder="Date,Close&#10;2025-01-02,100.0&#10;2025-01-03,101.2"></textarea>
+              </div>
+              <div class="field" id="var-kind-field">
+                <span class="field-label" id="var-kind-label">The numbers are</span>
+                <div class="segmented" role="radiogroup" aria-labelledby="var-kind-label">
+                  <input type="radio" id="var-k-px" name="var-kind" value="prices" checked><label for="var-k-px">Prices</label>
+                  <input type="radio" id="var-k-r" name="var-kind" value="returns"><label for="var-k-r">Returns</label>
+                </div>
+              </div>
+              <div class="input-actions">
+                <button class="btn btn-primary" type="button" id="var-read">Read</button>
+                <label class="btn btn-secondary file-btn">Upload a CSV<input type="file" id="var-file" class="visually-hidden" accept=".csv,.tsv,.txt,text/csv,text/plain"></label>
+              </div>
+              <p class="field-hint">Uses an “Adj Close” or “Close” column if there is one, otherwise the last column of numbers. Returns can be decimals (0.012) or percentages (1.2%). Read in this browser tab only.</p>
+              <p class="error-text" role="alert" id="var-err"></p>
+            </div>
+            <p class="dataset-note" id="var-note"></p>
+            <div class="field">
+              <label for="var-value">Portfolio value</label>
+              <div class="affix"><span class="affix-pre">$</span><input class="input" id="var-value" type="number" inputmode="decimal" step="any" min="0" value="1000000"></div>
+            </div>
+            <div class="field">
+              <span class="field-label" id="var-conf-label">Confidence</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="var-conf-label">
+                <input type="radio" id="var-c95" name="var-conf" value="0.95"><label for="var-c95">95%</label>
+                <input type="radio" id="var-c975" name="var-conf" value="0.975"><label for="var-c975">97.5%</label>
+                <input type="radio" id="var-c99" name="var-conf" value="0.99" checked><label for="var-c99">99%</label>
+              </div>
+            </div>
+            <div class="slider-field">
+              <div class="slider-top"><label for="var-h" id="var-h-label">Horizon</label><output for="var-h" id="var-h-out"></output></div>
+              <input type="range" id="var-h" min="1" max="20" step="1" value="1">
+            </div>
+          </form>
+          <div class="bench-results" aria-live="polite">
+            <div class="figure-hero"><span class="hero-value" id="var-hero">—</span><span class="hero-label" id="var-hero-label"></span></div>
+            <div id="var-verdict"></div>
+            <div class="table-scroll"><table class="data-table" id="var-table"></table></div>
+            <figure>
+              <figcaption class="figure-title" id="var-hist-title">Distribution of returns</figcaption>
+              <p class="figure-sub">The lines mark each method’s VaR as a return. Everything to their left is the tail they summarise.</p>
+              <div class="chart" id="var-hist"></div>
+            </figure>
+            <ul class="caveats">
+              <li><strong>Historical</strong> replays past returns as they were; it knows nothing worse than its sample. <strong>Normal</strong> assumes the bell curve, which understates fat tails. <strong>Monte Carlo</strong> here simulates 20,000 outcomes from a Student-t fitted to the returns’ mean, volatility and tail weight (kurtosis), compounding across the horizon.</li>
+              <li>Longer horizons scale the historical numbers by the square root of time, the Basel convention. That assumes returns are independent from one period to the next, which calm-then-stormy markets break.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ BACKTEST -->
+      <section class="tool" id="backtest" aria-labelledby="bt-title">
+        <div class="tool-head">
+          <h2 id="bt-title">Backtest</h2>
+          <p>Was the model right? Each day, estimate VaR from the window of returns before it, then check whether that day’s loss broke it. A 99% VaR should be broken on about 1% of days, and the breaks shouldn’t bunch together.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="field">
+              <span class="field-label" id="bt-m-label">Method</span>
+              <div class="segmented segmented-stack" role="radiogroup" aria-labelledby="bt-m-label">
+                <input type="radio" id="bt-hist" name="bt-m" value="historical" checked><label for="bt-hist">Historical, rolling window</label>
+                <input type="radio" id="bt-norm" name="bt-m" value="normal"><label for="bt-norm">Normal, rolling window</label>
+                <input type="radio" id="bt-ewma" name="bt-m" value="ewma"><label for="bt-ewma">Normal with EWMA volatility (RiskMetrics)</label>
+              </div>
+            </div>
+            <div class="field">
+              <span class="field-label" id="bt-w-label">Window</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="bt-w-label" id="bt-windows"></div>
+              <p class="field-hint">The confidence level is the one set under Value at Risk.</p>
+            </div>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <dl class="stats-row" id="bt-stats"></dl>
+            <div id="bt-verdict"></div>
+            <figure>
+              <figcaption class="figure-title" id="bt-chart-title">Returns against the VaR forecast</figcaption>
+              <p class="figure-sub">Red dots are days that lost more than the forecast allowed.</p>
+              <div class="chart" id="bt-chart"></div>
+            </figure>
+            <figure>
+              <figcaption class="figure-title">All three methods on the same returns</figcaption>
+              <div class="table-scroll" id="bt-table"></div>
+            </figure>
+            <ul class="caveats">
+              <li><strong>Kupiec’s test</strong> asks whether the share of breaks is consistent with the confidence level. <strong>Christoffersen’s test</strong> asks whether a break makes another more likely the next day; bunched breaks mean the model reacts too slowly.</li>
+              <li>The Basel traffic light grades a bank’s 99% model on its last 250 days: up to 4 breaks is green, 5 to 9 yellow, 10 or more red. Here it is applied to the whole backtest, scaled by the same binomial probabilities.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ STRESS -->
+      <section class="tool" id="stress" aria-labelledby="st-title">
+        <div class="tool-head">
+          <h2 id="st-title">Stress scenarios</h2>
+          <p>VaR describes ordinary bad days. A stress test asks what a specific shock would do: shares fall, rates jump, credit spreads widen. Each position is revalued under the scenario.</p>
+        </div>
+        <div class="bench">
+          <form class="bench-inputs" id="st-form" novalidate>
+            <fieldset>
+              <legend>The portfolio ($m)</legend>
+              <div class="field-row field-row-keep">
+                <div class="field"><label for="st-eq">Shares</label><input class="input" id="st-eq" type="number" inputmode="decimal" step="any" value="60"></div>
+                <div class="field"><label for="st-fx">Foreign-currency assets</label><input class="input" id="st-fx" type="number" inputmode="decimal" step="any" value="10"></div>
+              </div>
+              <div class="field-row field-row-3 field-row-keep">
+                <div class="field"><label for="st-gv">Govt bonds</label><input class="input" id="st-gv" type="number" inputmode="decimal" step="any" value="25"></div>
+                <div class="field"><label for="st-gd">Duration</label><input class="input" id="st-gd" type="number" inputmode="decimal" step="any" value="7"></div>
+                <div class="field"><label for="st-gc">Convexity</label><input class="input" id="st-gc" type="number" inputmode="decimal" step="any" value="60"></div>
+              </div>
+              <div class="field-row field-row-3 field-row-keep">
+                <div class="field"><label for="st-cv">Corp. bonds</label><input class="input" id="st-cv" type="number" inputmode="decimal" step="any" value="15"></div>
+                <div class="field"><label for="st-cd">Duration</label><input class="input" id="st-cd" type="number" inputmode="decimal" step="any" value="5"></div>
+                <div class="field"><label for="st-cc">Convexity</label><input class="input" id="st-cc" type="number" inputmode="decimal" step="any" value="30"></div>
+              </div>
+              <div class="field"><label for="st-co">Commodities</label><input class="input" id="st-co" type="number" inputmode="decimal" step="any" value="5"></div>
+            </fieldset>
+            <fieldset>
+              <legend>The scenario</legend>
+              <div class="field">
+                <label for="st-scn">Start from</label>
+                <select class="select" id="st-scn"></select>
+              </div>
+              <div class="slider-field"><div class="slider-top"><label for="st-s-eq">Share prices</label><output for="st-s-eq" id="st-s-eq-out"></output></div><input type="range" id="st-s-eq" min="-60" max="30" step="1" value="0"></div>
+              <div class="slider-field"><div class="slider-top"><label for="st-s-r">Interest rates</label><output for="st-s-r" id="st-s-r-out"></output></div><input type="range" id="st-s-r" min="-300" max="400" step="5" value="0"></div>
+              <div class="slider-field"><div class="slider-top"><label for="st-s-s">Credit spreads</label><output for="st-s-s" id="st-s-s-out"></output></div><input type="range" id="st-s-s" min="-100" max="600" step="5" value="0"></div>
+              <div class="slider-field"><div class="slider-top"><label for="st-s-fx">Foreign currencies against yours</label><output for="st-s-fx" id="st-s-fx-out"></output></div><input type="range" id="st-s-fx" min="-30" max="30" step="1" value="0"></div>
+              <div class="slider-field"><div class="slider-top"><label for="st-s-co">Commodity prices</label><output for="st-s-co" id="st-s-co-out"></output></div><input type="range" id="st-s-co" min="-60" max="80" step="1" value="0"></div>
+              <p class="field-hint">Illustrative shocks, not forecasts. Move any slider to make the scenario your own.</p>
+            </fieldset>
+          </form>
+          <div class="bench-results" aria-live="polite">
+            <div class="figure-hero"><span class="hero-value" id="st-hero">—</span><span class="hero-label" id="st-hero-label"></span></div>
+            <div id="st-verdict"></div>
+            <figure>
+              <figcaption class="figure-title">Profit and loss by position</figcaption>
+              <div class="chart" id="st-chart"></div>
+              <div id="st-table"></div>
+            </figure>
+            <figure>
+              <figcaption class="figure-title">Every scenario on this portfolio</figcaption>
+              <div class="table-scroll" id="st-all"></div>
+            </figure>
+            <ul class="caveats">
+              <li>Bonds are revalued with duration and convexity: price change ≈ −duration × change in yield + ½ × convexity × change in yield². Corporate bonds feel rates and spreads together.</li>
+              <li>A first-order revaluation: no second-round effects, no options, no liquidity costs of selling into a falling market.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ ALTMAN -->
+      <section class="tool" id="altman" aria-labelledby="altman-title">
+        <div class="tool-head">
+          <h2 id="altman-title">Altman Z-score</h2>
+          <p>A five-ratio screen for financial distress, from Edward Altman’s 1968 study of manufacturers, with his later versions for private companies and for non-manufacturers.</p>
+        </div>
+        <div class="bench">
+          <form class="bench-inputs" id="z-form" novalidate>
+            <div class="field">
+              <span class="field-label" id="model-label">Which company is it?</span>
+              <div class="segmented segmented-stack" role="radiogroup" aria-labelledby="model-label">
+                <input type="radio" id="m-z" name="model" value="z" checked><label for="m-z">Public manufacturer (Z)</label>
+                <input type="radio" id="m-zp" name="model" value="zp"><label for="m-zp">Private manufacturer (Z′)</label>
+                <input type="radio" id="m-zpp" name="model" value="zpp"><label for="m-zpp">Non-manufacturer (Z″)</label>
+              </div>
+            </div>
+            <fieldset>
+              <legend>From the balance sheet and income statement ($m)</legend>
+              <div class="field-row">
+                <div class="field"><label for="ca">Current assets</label><input class="input" id="ca" type="number" inputmode="decimal" step="any"></div>
+                <div class="field"><label for="cl">Current liabilities</label><input class="input" id="cl" type="number" inputmode="decimal" step="any"></div>
+              </div>
+              <div class="field-row">
+                <div class="field"><label for="ta">Total assets</label><input class="input" id="ta" type="number" inputmode="decimal" step="any" min="0"></div>
+                <div class="field"><label for="tl">Total liabilities</label><input class="input" id="tl" type="number" inputmode="decimal" step="any" min="0"></div>
+              </div>
+              <div class="field-row">
+                <div class="field"><label for="re">Retained earnings</label><input class="input" id="re" type="number" inputmode="decimal" step="any"></div>
+                <div class="field"><label for="ebit">EBIT</label><input class="input" id="ebit" type="number" inputmode="decimal" step="any"></div>
+              </div>
+              <div class="field-row">
+                <div class="field" id="sales-field"><label for="sales">Sales</label><input class="input" id="sales" type="number" inputmode="decimal" step="any" min="0"></div>
+                <div class="field" id="mve-field"><label for="mve">Market value of equity</label><input class="input" id="mve" type="number" inputmode="decimal" step="any" min="0"></div>
+                <div class="field" id="bve-field" hidden><label for="bve">Book value of equity</label><input class="input" id="bve" type="number" inputmode="decimal" step="any"></div>
+              </div>
+            </fieldset>
+            <div class="field">
+              <span class="field-label">Load an illustrative company</span>
+              <div class="input-actions">
+                <button class="btn btn-secondary" type="button" data-preset="steady">Steady manufacturer</button>
+                <button class="btn btn-secondary" type="button" data-preset="stretched">Stretched retailer</button>
+              </div>
+              <p class="field-hint">Invented figures for practice, not real companies.</p>
+            </div>
+          </form>
+
+          <div class="bench-results" aria-live="polite">
+            <div class="figure-hero"><span class="hero-value" id="z-score">—</span><span class="hero-label" id="z-name"></span></div>
+            <div id="z-verdict"></div>
+            <figure>
+              <figcaption class="figure-title">Where the score falls</figcaption>
+              <div id="z-scale" class="chart"></div>
+            </figure>
+            <figure>
+              <figcaption class="figure-title">What builds the score</figcaption>
+              <p class="figure-sub">Each ratio multiplied by its weight. Bars to the left pull the score down.</p>
+              <div class="chart" id="z-chart"></div>
+              <div id="z-table"></div>
+            </figure>
+            <ul class="caveats">
+              <li>It is a screen, not a forecast. Altman built it on 66 US manufacturers from 1946–1965; treat the zones as prompts for a closer look.</li>
+              <li>Not meant for banks, insurers or other financial firms, whose balance sheets work differently.</li>
+              <li>Each version has its own cut-offs. Use Z″ for retailers and service companies, which carry fewer assets per dollar of sales.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <!-- tools:end -->
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources</h2>
+        <ol>
+          <li>Altman, E. I. (1968). Financial ratios, discriminant analysis and the prediction of corporate bankruptcy. <i>The Journal of Finance</i>, 23(4), 589–609.</li>
+          <li>Altman, E. I. (2000). Predicting financial distress of companies: revisiting the Z-score and ZETA models (Z′ and Z″ coefficients and zones).</li>
+          <li>J.P. Morgan/Reuters (1996). <i>RiskMetrics: Technical Document</i>, 4th ed. (EWMA volatility, λ = 0.94).</li>
+          <li>Kupiec, P. H. (1995). Techniques for verifying the accuracy of risk measurement models. <i>The Journal of Derivatives</i>, 3(2), 73–84.</li>
+          <li>Christoffersen, P. F. (1998). Evaluating interval forecasts. <i>International Economic Review</i>, 39(4), 841–862.</li>
+          <li>Basel Committee on Banking Supervision (1996). Supervisory framework for the use of “backtesting” in conjunction with the internal models approach to market risk capital requirements.</li>
+          <li>S&amp;P 500 monthly prices and dividends: Robert Shiller’s data, via <a href="https://github.com/datasets/s-and-p-500">github.com/datasets/s-and-p-500</a>. His prices are monthly averages of daily closes.</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../analytics/" data-portal="#192B49"><img src="../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../marketing/" data-portal="#56632C"><img src="../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../models/" data-portal="#252A31"><img src="../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../contact/" data-portal="#F6E7C1"><img src="../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../../learn/" data-portal="#C96F36"><img src="../../assets/img/flower-learn-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Learn</strong><span>Learning by doing</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../assets/js/pages/finance-risk.js?v=5"></script>
+</body>
+</html>

@@ -78,6 +78,8 @@
   --series-2: #A97A0C;              /* gold  — light surface */
   --series-1-night: #6A93D6;
   --series-2-night: #B88A12;
+  --series-3: #8E3B5E;              /* plum — passes all-pairs with blue and gold (dataviz validator) */
+  --series-3-night: #C26E9A;
   --grid: #EBE1CB;
   --axis: #CDBB93;
   --neg: #B4532A;                   /* diverging warm pole */

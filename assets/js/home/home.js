@@ -1,11 +1,11 @@
 // home.js — the homepage: frames the painting, places the five doorways, runs the living painting,
 // and opens a room through the chosen flower. Works without WebGL (still image + CSS) and without JS (plain links).
-import meta from '../../painting/meta.js?v=3';
-import { ROOMS, byId } from '../data/rooms.js?v=3';
-import { LivingPainting } from './painting.js?v=3';
-import { initSite } from '../core/site.js?v=3';
-import { leave, reset as resetPortal } from '../core/portal.js?v=3';
-import { $, $$, h, reducedMotion } from '../core/dom.js?v=3';
+import meta from '../../painting/meta.js?v=5';
+import { ROOMS, byId } from '../data/rooms.js?v=5';
+import { LivingPainting } from './painting.js?v=5';
+import { initSite } from '../core/site.js?v=5';
+import { leave, reset as resetPortal } from '../core/portal.js?v=5';
+import { $, $$, h, reducedMotion } from '../core/dom.js?v=5';
 
 initSite();
 
@@ -20,8 +20,6 @@ const coarse = matchMedia('(pointer: coarse)').matches;
 const calm = reducedMotion();
 const flowers = Object.fromEntries(meta.flowers.map((f) => [f.id, f]));
 const doors = meta.doorways.map((id) => ({ id, f: flowers[id], room: byId[id] }));
-// where each flower's number sits on its petals (degrees, 0 = east, clockwise), chosen to stay clear of its neighbours
-const MARK_ANGLE = { finance: -50, analytics: -135, marketing: -45, models: 20, contact: 205, learn: 30 };
 
 // ---------------------------------------------------------------- framing
 let frameState = { view: [0, 0, meta.width, meta.height], s: 1, w: 1, h: 1 };
@@ -62,12 +60,8 @@ function placeDoors() {
     const size = Math.max(44, d.f.r * 2 * frameState.s * 0.86);
     const el = doorEls[k];
     Object.assign(el.style, { left: `${cx - size / 2}px`, top: `${cy - size / 2}px`, width: `${size}px`, height: `${size}px` });
-    // the number sits on the flower's own petals; near the right edge its name opens leftward
-    const a = (MARK_ANGLE[d.id] ?? -40) * Math.PI / 180, rim = d.f.r * frameState.s * 0.64;
-    const mx = size / 2 + Math.cos(a) * rim, my = size / 2 + Math.sin(a) * rim;
-    el.style.setProperty('--mx', `${mx.toFixed(1)}px`);
-    el.style.setProperty('--my', `${my.toFixed(1)}px`);
-    el.classList.toggle('opens-left', cx + Math.cos(a) * rim > frameState.w * 0.68);
+    // the room's name appears just under the flower's head while it is pointed at or focused
+    el.style.setProperty('--below', `${(size / 2 + d.f.r * frameState.s * 0.78).toFixed(1)}px`);
     el.dataset.ready = '1';
   });
 }

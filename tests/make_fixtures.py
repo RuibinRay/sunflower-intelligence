@@ -127,5 +127,110 @@ def lik(t):
 Z = integrate.quad(lik, -8, 8, epsabs=1e-13)[0]; m1 = integrate.quad(lambda t: t * lik(t), -8, 8, epsabs=1e-13)[0] / Z
 m2 = integrate.quad(lambda t: (t - m1) ** 2 * lik(t), -8, 8, epsabs=1e-13)[0] / Z
 fx["eap"] = {"items": items, "resp": resp, "theta": m1, "se": float(np.sqrt(m2))}
+
+# ---------------------------------------------------------------- round 4: investment decisions, portfolios, market risk
+import numpy_financial as npf
+from scipy.optimize import milp, LinearConstraint, Bounds, minimize
+
+def py_payback(fl, rate=None):
+    cum = 0.0
+    for t, f in enumerate(fl):
+        f = f if rate is None else f / (1 + rate) ** t
+        if t == 0 and f >= 0: return 0.0
+        if cum < 0 <= cum + f and t > 0: return t - 1 + (-cum) / f
+        cum += f
+    return None
+def all_irr(fl):
+    # NPV = sum f_t x^t with x = 1/(1+r): real positive roots x give the IRRs
+    roots = np.roots(fl[::-1])
+    out = sorted(1 / x.real - 1 for x in roots if abs(x.imag) < 1e-9 and x.real > 0)
+    return [r for r in out if -0.99 < r < 10]
+flow_sets = {"A": [-1000, 300, 400, 500, 200], "B": [-1000, 600, 400, 200, 100], "small": [-100, 60, 70],
+             "mine": [-1600, 10000, -10000], "late": [-500, 0, 0, 0, 900]}
+fx["invest"] = {"rate": 0.1, "cases": {k: {"flows": f, "npv": npf.npv(0.1, f), "irrs": all_irr(f),
+    "irr": (float(npf.irr(f)) if len(all_irr(f)) == 1 else None), "mirr": float(npf.mirr(f, 0.1, 0.12)),
+    "payback": py_payback(f), "disc": py_payback(f, 0.1)} for k, f in flow_sets.items()},
+    "crossAB": all_irr([a - b for a, b in zip(flow_sets["A"], flow_sets["B"])])}
+projs = [(400, 120), (250, 90), (300, 85), (150, 60), (500, 140), (200, 30), (350, 110)]
+budget = 1000
+res = milp(c=-np.array([v for _, v in projs], float), constraints=LinearConstraint(np.array([[o for o, _ in projs]], float), -np.inf, budget),
+           integrality=np.ones(len(projs)), bounds=Bounds(0, 1))
+fx["ration"] = {"projects": projs, "budget": budget, "npv": float(-res.fun), "pick": [int(round(v)) for v in res.x]}
+
+# portfolio statistics on simulated correlated returns
+prng = np.random.default_rng(7)
+k, T = 5, 600
+L = prng.normal(0, 1, (k, k)); C = (L @ L.T) / k * 1e-4 + np.eye(k) * 4e-5
+R = prng.multivariate_normal(np.array([4, 6, 3, 8, 5]) * 1e-4, C, T)
+mu = R.mean(0) * 252; cov = np.cov(R.T, ddof=1) * 252
+cons = [{"type": "eq", "fun": lambda w: w.sum() - 1}]
+def best(fun, extra=()):
+    sols = [minimize(fun, w0, method="SLSQP", bounds=[(0, 1)] * k, constraints=cons + list(extra), options={"ftol": 1e-15, "maxiter": 1000})
+            for w0 in [np.ones(k) / k] + list(np.eye(k) * 0.6 + 0.4 / k)]
+    sols = [s for s in sols if s.success]
+    return min(sols, key=lambda s: s.fun).x
+gmv = best(lambda w: w @ cov @ w)
+tgt = float(mu @ gmv + 0.4 * (mu.max() - mu @ gmv))
+wt = best(lambda w: w @ cov @ w, [{"type": "eq", "fun": lambda w: w @ mu - tgt}])
+rf = 0.03
+ms = best(lambda w: -(w @ mu - rf) / np.sqrt(w @ cov @ w))
+s0 = pd.Series(R[:, 3])
+dd_den = np.sqrt(np.mean(np.minimum(0, R[:, 3] - rf / 252) ** 2)) * np.sqrt(252)
+price = 50 * np.cumprod(np.r_[1, 1 + R[:, 3]])
+dd = price / np.maximum.accumulate(price) - 1
+mk = R[:, 0] * 0.5 + R[:, 1] * 0.5
+fitc = sm.OLS(R[:, 3] - rf / 252, sm.add_constant(mk - rf / 252)).fit()
+rb = pd.Series(R[:, 3]).rolling(60).cov(pd.Series(mk)) / pd.Series(mk).rolling(60).var()
+fx["port"] = {"R": R.tolist(), "mu": mu.tolist(), "cov": cov.tolist(), "gmv": gmv.tolist(), "gmvVar": float(gmv @ cov @ gmv),
+    "target": tgt, "wt": wt.tolist(), "wtVar": float(wt @ cov @ wt), "rf": rf, "ms": ms.tolist(),
+    "msSharpe": float((ms @ mu - rf) / np.sqrt(ms @ cov @ ms)),
+    "stats": {"annMean": s0.mean() * 252, "vol": s0.std() * np.sqrt(252), "sortino": (s0.mean() * 252 - rf) / dd_den,
+              "cagr": float(np.prod(1 + R[:, 3]) ** (252 / T) - 1), "skew": s0.skew(), "kurt": s0.kurt()},
+    "mdd": float(dd.min()), "trough": int(dd.argmin()), "peak": int(np.argmax(price[: dd.argmin() + 1])),
+    "capm": {"beta": fitc.params[1], "alpha": fitc.params[0], "seBeta": fitc.bse[1], "r2": fitc.rsquared},
+    "rollBeta": [[i, rb[i]] for i in (59, 200, 599)]}
+
+# market risk
+qrng = np.random.default_rng(11)
+rr = qrng.standard_t(4, 1500) * 0.009 + 0.0003
+c = 0.99
+q = np.quantile(rr, 1 - c)
+mu_r, sd_r = rr.mean(), rr.std(ddof=1)
+z = st.norm.ppf(1 - c)
+kap = pd.Series(rr).kurt(); nu = min(200, max(4.2, 4 + 6 / kap)) if kap > 0.03 else 200
+sc = sd_r * np.sqrt((nu - 2) / nu); tq = st.t.ppf(1 - c, nu)
+def py_backtest(r, c, method, W=250, lam=0.94):
+    hits, fc, v = [], [], None
+    for t in range(W, len(r)):
+        past = r[t - W:t]
+        if method == "historical": VaR = -np.quantile(past, 1 - c)
+        elif method == "normal": VaR = -(past.mean() + past.std(ddof=1) * st.norm.ppf(1 - c))
+        else:
+            v = past.std(ddof=1) ** 2 if v is None else lam * v + (1 - lam) * r[t - 1] ** 2
+            VaR = -np.sqrt(v) * st.norm.ppf(1 - c)
+        fc.append(VaR); hits.append(bool(r[t] < -VaR))
+    return fc, hits
+bt = {m: py_backtest(rr, c, m) for m in ("historical", "normal", "ewma")}
+def py_kupiec(x, n, p):
+    ph = x / n
+    ll0 = (n - x) * np.log(1 - p) + (x * np.log(p) if x else 0)
+    ll1 = ((n - x) * np.log(1 - ph) if x < n else 0) + (x * np.log(ph) if x else 0)
+    lr = -2 * (ll0 - ll1); return [x, n, p, lr, st.chi2.sf(lr, 1)]
+def py_christ(h):
+    h = np.asarray(h, int); a, b = h[:-1], h[1:]
+    n00 = int(((a == 0) & (b == 0)).sum()); n01 = int(((a == 0) & (b == 1)).sum()); n10 = int(((a == 1) & (b == 0)).sum()); n11 = int(((a == 1) & (b == 1)).sum())
+    p0, p1, pi = n01 / (n00 + n01), (n11 / (n10 + n11) if n10 + n11 else 0), (n01 + n11) / (n00 + n01 + n10 + n11)
+    L = lambda n, p: n * np.log(p) if n else 0.0
+    lr = -2 * (L(n00 + n10, 1 - pi) + L(n01 + n11, pi) - L(n00, 1 - p0) - L(n01, p0) - L(n10, 1 - p1) - L(n11, p1))
+    return [lr, st.chi2.sf(lr, 1)]
+hits_demo = [0] * 40 + [1, 1, 0, 1] + [0] * 60 + [1] + [0] * 95
+fx["risk"] = {"r": rr.tolist(), "c": c, "hist": [-q, -rr[rr <= q].mean()],
+    "param": [-(mu_r + sd_r * z), -(mu_r - sd_r * st.norm.pdf(z) / (1 - c))],
+    "param10": [-(mu_r * 10 + sd_r * np.sqrt(10) * z)],
+    "tdist": {"nu": nu, "var": -(mu_r + sc * tq), "es": -(mu_r - sc * (nu + tq ** 2) / (nu - 1) * st.t.pdf(tq, nu) / (1 - c))},
+    "bt": {m: {"n": len(v[0]), "x": int(sum(v[1])), "first": v[0][0], "last": v[0][-1], "hits": [int(b) for b in v[1]]} for m, v in bt.items()},
+    "kupiec": [py_kupiec(8, 250, 0.01), py_kupiec(0, 250, 0.01), py_kupiec(31, 500, 0.05), py_kupiec(2, 250, 0.01)],
+    "christ": {"hits": hits_demo, "out": py_christ(hits_demo), "pof": py_kupiec(sum(hits_demo), len(hits_demo), 0.01)},
+    "binom": [[x, 250, 0.01, st.binom.cdf(x, 250, 0.01)] for x in (0, 4, 5, 9, 10)]}
 json.dump(fx, open(__file__.replace("make_fixtures.py", "fixtures.json"), "w"), indent=1)
 print("ok", fit.params.round(3).tolist(), round(lm, 3), round(lmp, 4))

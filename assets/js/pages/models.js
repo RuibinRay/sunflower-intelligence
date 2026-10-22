@@ -1,10 +1,10 @@
 // models.js — the life cycle of a model (as a flower) and the overfitting lab.
-import { initSite } from '../core/site.js?v=3';
-import { $, $$, h, s, onResize, debounce } from '../core/dom.js?v=3';
-import * as F from '../core/format.js?v=3';
-import * as S from '../core/stats.js?v=3';
-import { curvePoints, mulberry32 } from '../core/rng.js?v=3';
-import { scatter, lineChart, tableTwin } from '../core/charts.js?v=3';
+import { initSite } from '../core/site.js?v=5';
+import { $, $$, h, s, onResize, debounce } from '../core/dom.js?v=5';
+import * as F from '../core/format.js?v=5';
+import * as S from '../core/stats.js?v=5';
+import { curvePoints, mulberry32 } from '../core/rng.js?v=5';
+import { scatter, lineChart, tableTwin } from '../core/charts.js?v=5';
 
 initSite();
 
@@ -15,21 +15,21 @@ const STAGES = [
     doing: 'I write down the decision the model will inform, the outcome it predicts, who will use it and how success is measured. Then I set a naive baseline: the average, last year’s value, the most common answer.',
     ask: 'What decision changes if this model is right?',
     risk: 'Optimising a number nobody acts on.',
-    see: { text: 'The DCF in Finance makes every forecast assumption explicit before any number appears.', href: '../finance/#dcf' },
+    see: { text: 'The DCF in Finance makes every forecast assumption explicit before any number appears.', href: '../finance/valuation/#dcf' },
   },
   {
     life: 'Sprout', title: 'Audit the data',
     doing: 'Before analysis, I check where the data came from, its types, gaps, repeats and outliers, and score its quality. Fixes are suggested and logged, never applied silently.',
     ask: 'Would I trust this table if someone else had cleaned it?',
     risk: 'A quiet fix that changes the answer.',
-    see: { text: 'The quality score and change log in Business analytics.', href: '../analytics/#data' },
+    see: { text: 'The quality score and change log in Business analytics.', href: '../analytics/explore/#data' },
   },
   {
     life: 'Leaf', title: 'Explore and shape the features',
     doing: 'I plot distributions and relationships, transform skewed variables (logs turn a demand curve into a straight line), encode categories and scale where a model needs it. Each step learns from training data only.',
     ask: 'Does the shape of the data match the shape of the model?',
     risk: 'Leakage: information from the test set, or from the future, slipping into training.',
-    see: { text: 'The log-log transform behind Price sensitivity in Marketing.', href: '../marketing/#elasticity' },
+    see: { text: 'The log-log transform behind Price sensitivity in Marketing.', href: '../marketing/pricing/#elasticity' },
   },
   {
     life: 'Bloom', title: 'Train with honest validation',
@@ -43,7 +43,7 @@ const STAGES = [
     doing: 'I report error on held-out data with its uncertainty, check residuals and assumptions (constant error spread, overlapping predictors) and explain the drivers in plain language, including when the model should not be used.',
     ask: 'Can I explain why it predicts what it predicts?',
     risk: 'A high R² on a model whose assumptions have failed.',
-    see: { text: 'The diagnostics under Regress in Business analytics.', href: '../analytics/#regress' },
+    see: { text: 'The diagnostics under Regress in Business analytics.', href: '../analytics/explore/#regress' },
   },
   {
     life: 'Wilt and reseed', title: 'Monitor, retrain, retire',

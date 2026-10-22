@@ -1,11 +1,11 @@
 // learn.js — the Learn room: adaptive placement (IRT), practice by mastery (BKT) and spaced review (HLR).
-import { initSite, syncRanges } from '../core/site.js?v=3';
-import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=3';
-import * as F from '../core/format.js?v=3';
-import { lineChart, tableTwin } from '../core/charts.js?v=3';
-import { mulberry32 } from '../core/rng.js?v=3';
-import * as L from '../core/learn.js?v=3';
-import { SKILLS, ITEMS } from '../data/learn-items.js?v=3';
+import { initSite, syncRanges } from '../core/site.js?v=5';
+import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=5';
+import * as F from '../core/format.js?v=5';
+import { lineChart, tableTwin } from '../core/charts.js?v=5';
+import { mulberry32 } from '../core/rng.js?v=5';
+import * as L from '../core/learn.js?v=5';
+import { SKILLS, ITEMS } from '../data/learn-items.js?v=5';
 
 initSite();
 
@@ -182,7 +182,7 @@ function renderPractice() {
     const nx = pick.next;
     const when = nx ? Math.max(0, nx.h - nx.lag) : NaN;
     box.replaceChildren(h('div', { class: 'q-card' },
-      h('p', { class: 'q-kicker' }, 'All twelve skills mastered'),
+      h('p', { class: 'q-kicker' }, `All ${SKILLS.length} skills mastered`),
       h('p', { class: 'q-stem' }, 'Every petal is gold.'),
       h('p', {}, nx ? `Nothing is due yet. ${nx.skill.name} comes back first, in about ${durationWords(when)}.` : 'Come back later for reviews.')));
     return;
@@ -245,7 +245,7 @@ function renderGarden() {
   const W = 360, C = W / 2, inner = 46;
   const svg = s('svg', { viewBox: `0 0 ${W} ${W}`, class: 'garden', role: 'img', 'aria-label': `Progress flower: ${rows.filter((r) => r.st.L >= L.BKT.mastered).length} of ${rows.length} skills mastered` });
   rows.forEach((r, i) => {
-    const ang = (i / rows.length) * 360 - 90, len = 34 + 92 * r.st.L, wid = 15 + 6 * r.st.L;
+    const ang = (i / rows.length) * 360 - 90, len = 34 + 92 * r.st.L, wid = (15 + 6 * r.st.L) * Math.min(1, Math.sqrt(12 / rows.length));
     const gold = r.st.L >= L.BKT.mastered;
     const g = s('g', { transform: `translate(${C} ${C}) rotate(${ang})` });
     g.append(s('title', {}, `${r.sk.name}: ${F.pct(r.st.L, 0)} mastered${r.due ? ', due for review' : ''}`));

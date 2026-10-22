@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Bonds and options · Finance · Sunflower Intelligence</title>
+  <meta name="description" content="Bond prices, yields, duration and convexity; option values, Greeks and implied volatility.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/finance/markets/">
+  <meta property="og:title" content="Bonds and options · Sunflower Intelligence">
+  <meta property="og:description" content="Bond prices, yields, duration and convexity; option values, Greeks and implied volatility.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/css/base.css?v=5">
+  <link rel="stylesheet" href="../../assets/css/rooms.css?v=5">
+</head>
+<body class="room room--finance room--sub">
+  <a class="skip-link" href="#ledger">Skip to the tools</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../finance/" aria-current="page">Finance</a></li>
+        <li><a href="../../analytics/">Business analytics</a></li>
+        <li><a href="../../marketing/">Marketing</a></li>
+        <li><a href="../../models/">How I build the models</a></li>
+        <li><a href="../../contact/">Contact</a></li>
+        <li><a href="../../learn/">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../"><img src="../../assets/img/flower-finance-160.webp" alt="" width="56" height="56"><span>Finance</span></a>
+      <h1 id="room-title" class="display is-long">Bonds and options</h1>
+      <p class="chapter-note">Bond prices, yields, duration and convexity; option values, Greeks and implied volatility.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Finance pages">
+        <ul role="list">
+          <li><a href="../">Overview</a></li>
+          <li><a href="../valuation/">Valuation</a></li>
+          <li><a href="../investment/">Investment decisions</a></li>
+          <li><a href="../stocks/">Stock analysis</a></li>
+          <li><a href="../risk/">Risk management</a></li>
+          <li><a href="../markets/" aria-current="page">Bonds and options</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <!-- chrome:toc -->
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#bonds">Bonds</a></li><li><a href="#options">Options</a></li></ul></nav>
+      <!-- /chrome:toc -->
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../">The painting</a></li><li><a href="../">Finance</a></li><li aria-current="page">Bonds and options</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">How fixed-income and derivative prices respond to rates, time and volatility.</p>
+      </div>
+
+      <!-- ============================================================ BONDS -->
+      <section class="tool" id="bonds" aria-labelledby="bd-title">
+        <div class="tool-head">
+          <h2 id="bd-title">Bonds</h2>
+          <p>A bond’s price is its coupons and principal discounted at the market yield. Duration says how far the price falls when yields rise; convexity says how much that straight-line estimate misses.</p>
+        </div>
+        <div class="bench">
+          <form class="bench-inputs" id="bd-form" novalidate>
+            <fieldset>
+              <legend>The bond</legend>
+              <div class="field-row">
+              <div class="field"><label for="bd-face">Face value</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="bd-face" type="number" inputmode="decimal" step="any" value="1000"></div></div>
+              <div class="field"><label for="bd-coupon">Coupon rate</label><div class="affix"><input class="input" id="bd-coupon" type="number" inputmode="decimal" step="any" value="5"><span class="affix-post">%</span></div></div>
+              </div>
+              <div class="field"><label for="bd-years">Years to maturity</label><div class="affix"><input class="input" id="bd-years" type="number" inputmode="decimal" step="0.25" value="10"><span class="affix-post">years</span></div></div>
+              <div class="field">
+                <span class="field-label" id="bd-freq-label">Coupons paid</span>
+                <div class="segmented" role="radiogroup" aria-labelledby="bd-freq-label">
+                  <input type="radio" id="bd-freq-1" name="bd-freq" value="1"><label for="bd-freq-1">Yearly</label>
+                  <input type="radio" id="bd-freq-2" name="bd-freq" value="2" checked><label for="bd-freq-2">Twice a year</label>
+                  <input type="radio" id="bd-freq-4" name="bd-freq" value="4"><label for="bd-freq-4">Quarterly</label>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>The market</legend>
+              <div class="field">
+                <span class="field-label" id="bd-mode-label">I know the</span>
+                <div class="segmented" role="radiogroup" aria-labelledby="bd-mode-label">
+                  <input type="radio" id="bd-mode-yield" name="bd-mode" value="yield" checked><label for="bd-mode-yield">Yield</label>
+                  <input type="radio" id="bd-mode-price" name="bd-mode" value="price"><label for="bd-mode-price">Price</label>
+                </div>
+              </div>
+              <div id="bd-yield-box">              <div class="field"><label for="bd-ytm">Yield to maturity</label><div class="affix"><input class="input" id="bd-ytm" type="number" inputmode="decimal" step="any" value="6.2"><span class="affix-post">%</span></div></div></div>
+              <div id="bd-price-box" hidden>              <div class="field"><label for="bd-price">Market price</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="bd-price" type="number" inputmode="decimal" step="any" value="950"></div></div></div>
+            </fieldset>
+          </form>
+          <div class="bench-results" aria-live="polite">
+            <div id="bd-error"></div>
+            <div id="bd-body">
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="bd-hero">—</span><span class="hero-label" id="bd-hero-label">price</span></div>
+                <p class="hero-label" id="bd-line"></p>
+              </div>
+              <dl class="stats-row">
+                <div class="stat"><dt>Current yield</dt><dd class="num" id="bd-cy">—</dd></div>
+                <div class="stat"><dt>Macaulay duration</dt><dd class="num" id="bd-mac">—</dd></div>
+                <div class="stat"><dt>Modified duration</dt><dd class="num" id="bd-mod">—</dd></div>
+                <div class="stat"><dt>Convexity</dt><dd class="num" id="bd-conv">—</dd></div>
+              </dl>
+              <figure>
+                <figcaption class="figure-title">Price against yield</figcaption>
+                <p class="figure-sub">The straight line is what duration alone predicts. The gap to the curve is convexity: prices rise more when yields fall than they drop when yields rise.</p>
+                <div class="chart" id="bd-chart"></div>
+              </figure>
+              <figure>
+                <figcaption class="figure-title">If yields move</figcaption>
+                <div class="table-scroll" id="bd-shocks"></div>
+              </figure>
+              <ul class="caveats">
+                <li>Priced on a coupon date with no accrued interest; between coupon dates, quoted (clean) prices exclude the interest built up since the last coupon.</li>
+                <li>Duration and convexity assume every yield on the curve moves by the same amount.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ============================================================ OPTIONS -->
+      <section class="tool" id="options" aria-labelledby="op-title">
+        <div class="tool-head">
+          <h2 id="op-title">Options</h2>
+          <p>The Black–Scholes–Merton value of a European call or put, with the Greeks: how the value moves with the share price, time, volatility and interest rates. Add a market price to back out the volatility it implies.</p>
+        </div>
+        <div class="bench">
+          <form class="bench-inputs" id="op-form" novalidate>
+              <div class="field">
+                <span class="field-label" id="op-type-label">Option</span>
+                <div class="segmented" role="radiogroup" aria-labelledby="op-type-label">
+                  <input type="radio" id="op-type-call" name="op-type" value="call" checked><label for="op-type-call">Call (right to buy)</label>
+                  <input type="radio" id="op-type-put" name="op-type" value="put"><label for="op-type-put">Put (right to sell)</label>
+                </div>
+              </div>
+            <div class="field-row">
+              <div class="field"><label for="op-s">Share price</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="op-s" type="number" inputmode="decimal" step="any" value="100"></div></div>
+              <div class="field"><label for="op-k">Strike price</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="op-k" type="number" inputmode="decimal" step="any" value="105"></div></div>
+            </div>
+              <div class="slider-field"><div class="slider-top"><label for="op-t">Time to expiry</label><output for="op-t" id="op-t-out"></output></div><input type="range" id="op-t" min="1" max="36" step="1" value="6"></div>
+              <div class="slider-field"><div class="slider-top"><label for="op-vol">Volatility</label><output for="op-vol" id="op-vol-out"></output></div><input type="range" id="op-vol" min="5" max="100" step="1" value="25"></div>
+              <div class="slider-field"><div class="slider-top"><label for="op-r">Risk-free rate</label><output for="op-r" id="op-r-out"></output></div><input type="range" id="op-r" min="0" max="10" step="0.1" value="4"></div>
+              <div class="slider-field"><div class="slider-top"><label for="op-q">Dividend yield</label><output for="op-q" id="op-q-out"></output></div><input type="range" id="op-q" min="0" max="8" step="0.1" value="1"></div>
+              <div class="field"><label for="op-market">Market price of the option (optional)</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="op-market" type="number" inputmode="decimal" step="any" value=""></div><p class="field-hint">To find the volatility the market is pricing in.</p></div>
+          </form>
+          <div class="bench-results" aria-live="polite">
+            <div id="op-error"></div>
+            <div id="op-body">
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="op-price">—</span><span class="hero-label" id="op-price-label">call value</span></div>
+                <p class="hero-label" id="op-line"></p>
+              </div>
+              <div id="op-iv"></div>
+              <dl class="stats-row">
+                <div class="stat"><dt>Delta</dt><dd class="num" id="op-delta">—</dd></div>
+                <div class="stat"><dt>Gamma</dt><dd class="num" id="op-gamma">—</dd></div>
+                <div class="stat"><dt>Vega, per vol point</dt><dd class="num" id="op-vega">—</dd></div>
+                <div class="stat"><dt>Theta, per day</dt><dd class="num" id="op-theta">—</dd></div>
+                <div class="stat"><dt>Rho, per rate point</dt><dd class="num" id="op-rho">—</dd></div>
+              </dl>
+              <figure>
+                <figcaption class="figure-title">Value today and payoff at expiry, across share prices</figcaption>
+                <div class="chart" id="op-chart"></div>
+              </figure>
+              <ul class="reading" id="op-reading" role="list"></ul>
+              <ul class="caveats">
+                <li>Black–Scholes assumes constant volatility and rates, and prices European options (exercised only at expiry). Real markets show a volatility “smile”, which is why implied volatility differs by strike.</li>
+                <li>The chance of finishing in the money is the risk-neutral N(d₂), not a forecast of what will happen.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- tools:end -->
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources</h2>
+        <ol>
+          <li>Macaulay, F. R. (1938). <i>Some Theoretical Problems Suggested by the Movements of Interest Rates, Bond Yields and Stock Prices in the United States since 1856</i>. NBER. (Duration.)</li>
+          <li>Black, F. &amp; Scholes, M. (1973). The pricing of options and corporate liabilities. <i>Journal of Political Economy</i>, 81(3), 637–654; Merton, R. C. (1973). Theory of rational option pricing. <i>Bell Journal of Economics</i>, 4(1), 141–183. (Dividend yield.)</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../analytics/" data-portal="#192B49"><img src="../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../marketing/" data-portal="#56632C"><img src="../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../models/" data-portal="#252A31"><img src="../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../contact/" data-portal="#F6E7C1"><img src="../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../../learn/" data-portal="#C96F36"><img src="../../assets/img/flower-learn-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Learn</strong><span>Learning by doing</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../assets/js/pages/finance-markets.js?v=5"></script>
+</body>
+</html>

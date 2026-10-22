@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Market segmentation · Marketing · Sunflower Intelligence</title>
+  <meta name="description" content="Split a market into groups that want different things, size them, and decide which to target.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/marketing/segmentation/">
+  <meta property="og:title" content="Market segmentation · Sunflower Intelligence">
+  <meta property="og:description" content="Split a market into groups that want different things, size them, and decide which to target.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/css/base.css?v=5">
+  <link rel="stylesheet" href="../../assets/css/rooms.css?v=5">
+</head>
+<body class="room room--marketing room--sub">
+  <a class="skip-link" href="#ledger">Skip to the tools</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../finance/">Finance</a></li>
+        <li><a href="../../analytics/">Business analytics</a></li>
+        <li><a href="../../marketing/" aria-current="page">Marketing</a></li>
+        <li><a href="../../models/">How I build the models</a></li>
+        <li><a href="../../contact/">Contact</a></li>
+        <li><a href="../../learn/">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../"><img src="../../assets/img/flower-marketing-160.webp" alt="" width="56" height="56"><span>Marketing</span></a>
+      <h1 id="room-title" class="display is-long">Market segmentation</h1>
+      <p class="chapter-note">Split a market into groups that want different things, size them, and decide which to target.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Marketing pages">
+        <ul role="list">
+          <li><a href="../">Overview</a></li>
+          <li><a href="../segmentation/" aria-current="page">Market segmentation</a></li>
+          <li><a href="../map/">Market map</a></li>
+          <li><a href="../pricing/">Pricing</a></li>
+          <li><a href="../growth/">Growth and experiments</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <!-- chrome:toc -->
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#needs">Segment by needs</a></li><li><a href="#target">Choose the target</a></li><li><a href="#rfm">Customer value (RFM)</a></li></ul></nav>
+      <!-- /chrome:toc -->
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../">The painting</a></li><li><a href="../">Marketing</a></li><li aria-current="page">Market segmentation</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">Segmentation, targeting and positioning start here: split a market by what people want, size each group, and decide which to serve. Then, among the customers you already have, see who is warm and who is cooling.</p>
+      </div>
+
+      <!-- ============================================================ NEEDS -->
+      <section class="tool" id="needs" aria-labelledby="needs-title">
+        <div class="tool-head">
+          <h2 id="needs-title">Segment by needs</h2>
+          <p>Groups that want different things need different offers. Here k-means groups survey respondents who answered alike about what matters to them when they buy; the profile then shows what sets each group apart, and how big each one is in people and in spend.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div id="sv-ds"></div>
+            <div class="field">
+              <span class="field-label" id="sv-needs-label">Questions to segment on</span>
+              <div class="chips" id="sv-needs" role="group" aria-labelledby="sv-needs-label"></div>
+              <p class="field-hint">Rating questions work best. Each is standardised first, so a 1–7 scale and a 1–10 scale count the same.</p>
+            </div>
+            <div class="field"><label for="sv-spend">Spend column, for sizing</label><select class="select" id="sv-spend"></select></div>
+            <div class="field">
+              <div class="slider-field"><div class="slider-top"><label for="sv-k">Number of segments</label><output for="sv-k" id="sv-k-out">5</output></div><input type="range" id="sv-k" min="2" max="7" step="1" value="5"></div>
+              <div class="input-actions"><button class="btn btn-secondary" type="button" id="sv-best">Use the best-separated number</button></div>
+            </div>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="sv-error"></div>
+            <div id="sv-body">
+              <dl class="stats-row" id="sv-stats"></dl>
+              <figure>
+                <figcaption class="figure-title">How clearly the groups separate, for each number of segments</figcaption>
+                <p class="figure-sub">Silhouette width: near 1, every respondent sits firmly in its group; near 0, groups overlap. A rough guide (Kaufman and Rousseeuw): above 0.5 reasonable, 0.25 to 0.5 weak, below 0.25 no real structure.</p>
+                <div class="chart" id="sv-k-chart"></div>
+              </figure>
+              <figure>
+                <figcaption class="figure-title">Segment profiles: index against the average respondent</figcaption>
+                <p class="figure-sub">100 = average. Blue: above the average respondent; terracotta: below. The small number is the segment’s mean answer. Names come from each segment’s needs indexing 110 or more.</p>
+                <div class="table-scroll" id="sv-profile"></div>
+                <div class="heat-key" aria-hidden="true"><span>Below average</span><i></i><span>Above average</span></div>
+              </figure>
+              <figure>
+                <figcaption class="figure-title" id="sv-size-title">Each segment’s share of respondents and of spend</figcaption>
+                <div class="chart" id="sv-size"></div>
+              </figure>
+              <div class="input-actions"><button class="btn btn-secondary" type="button" id="sv-csv">Download the segments (CSV)</button></div>
+              <ul class="caveats">
+                <li>k-means finds the groups the numbers support, not the ones that exist: change the questions or the number of segments and the groups change. Keep a split only if each group is big enough to serve and different enough to need its own offer.</li>
+                <li>Segments are lettered by size, largest first. The names describe the answers and are not personas.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ TARGET -->
+      <section class="tool" id="target" aria-labelledby="target-title">
+        <div class="tool-head">
+          <h2 id="target-title">Choose the target</h2>
+          <p>Segmentation pays only when you pick. Score each segment above on its size, how much each person spends, and how well its needs match what you are good at, with weights you set.</p>
+        </div>
+        <div class="bench">
+          <div class="bench-inputs">
+            <fieldset><legend>What you are good at</legend><div class="strengths" id="tg-strengths"></div></fieldset>
+            <fieldset id="tg-weights"><legend>How much each counts</legend>
+              <div class="slider-field"><div class="slider-top"><label for="tg-w-size">Segment size</label><output for="tg-w-size" id="tg-w-size-out">30</output></div><input type="range" id="tg-w-size" min="0" max="100" step="5" value="30"></div>
+              <div class="slider-field"><div class="slider-top"><label for="tg-w-spend">Spend per person</label><output for="tg-w-spend" id="tg-w-spend-out">30</output></div><input type="range" id="tg-w-spend" min="0" max="100" step="5" value="30"></div>
+              <div class="slider-field"><div class="slider-top"><label for="tg-w-fit">Fit with your strengths</label><output for="tg-w-fit" id="tg-w-fit-out">40</output></div><input type="range" id="tg-w-fit" min="0" max="100" step="5" value="40"></div>
+            </fieldset>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="tg-verdict"></div>
+            <figure>
+              <figcaption class="figure-title">Targeting scorecard</figcaption>
+              <div class="table-scroll" id="tg-table"></div>
+            </figure>
+            <ul class="caveats">
+              <li>Size and spend are scored against the best segment (100 = the biggest, or the highest spenders). Fit is 50 for a segment whose needs are average, rising when it cares most about your strengths and least about your weaknesses.</li>
+              <li>The scorecard ranks the segments in this survey. Check that the winner is reachable through channels you can use, and big enough in the real market, before committing.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ RFM -->
+      <section class="tool" id="rfm" aria-labelledby="rfm-title">
+        <div class="tool-head">
+          <h2 id="rfm-title">Customer value (RFM)</h2>
+          <p>RFM scores every customer from 1 to 5 on <strong>recency</strong> (days since the last order), <strong>frequency</strong> (number of orders) and <strong>monetary</strong> value (total spend), then groups them so each group can get the message that fits.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="field">
+              <span class="field-label" id="rfm-src-label">Orders</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="rfm-src-label">
+                <input type="radio" id="rfm-ex" name="rfmsrc" value="example" checked><label for="rfm-ex">Online shop example</label>
+                <input type="radio" id="rfm-own" name="rfmsrc" value="own"><label for="rfm-own">Your own orders</label>
+              </div>
+              <p class="field-hint" id="rfm-note"></p>
+            </div>
+            <div class="field" id="rfm-own-box" hidden>
+              <label for="rfm-paste">Paste orders: one row per order, with customer, date and amount</label>
+              <textarea class="textarea" id="rfm-paste" spellcheck="false" placeholder="customer_id,order_date,amount&#10;C001,2026-03-14,42.50&#10;C002,2026-03-15,18.00"></textarea>
+              <div class="input-actions">
+                <button class="btn btn-primary" type="button" id="rfm-read">Read the orders</button>
+                <label class="btn btn-secondary file-btn">Upload a CSV<input type="file" id="rfm-file" accept=".csv,.tsv,.txt,text/csv,text/plain" class="visually-hidden"></label>
+              </div>
+              <p class="error-text" id="rfm-error" role="alert"></p>
+            </div>
+            <div class="field-row field-row-3">
+              <div class="field"><label for="rfm-id">Customer column</label><select class="select" id="rfm-id"></select></div>
+              <div class="field"><label for="rfm-date">Date column</label><select class="select" id="rfm-date"></select></div>
+              <div class="field"><label for="rfm-amt">Amount column</label><select class="select" id="rfm-amt"></select></div>
+            </div>
+            <div class="field"><label for="rfm-asof">Measure recency from</label><input class="input" type="date" id="rfm-asof"><p class="field-hint">Defaults to the day after the latest order.</p></div>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="rfm-error-box"></div>
+            <dl class="stats-row" id="rfm-stats"></dl>
+            <div class="seedhead-wrap">
+              <figure class="seedhead-fig">
+                <figcaption class="figure-title">Every customer as a seed</figcaption>
+                <p class="figure-sub">Placed like a sunflower’s seeds, 137.5° apart: the best customers sit at the dark heart, the faintest at the rim. Point at a seed, or pick a segment in the table, to find them.</p>
+                <div class="chart seedhead" id="seedhead"></div>
+                <div class="scale-legend" aria-hidden="true"><span>Lapsed, rare, low spend</span><i></i><span>Recent, frequent, high spend</span></div>
+              </figure>
+              <figure class="rfm-grid-fig">
+                <figcaption class="figure-title">How the segments are assigned</figcaption>
+                <p class="figure-sub">Rows are the recency score; columns average the frequency and monetary scores. Each cell shows its segment and number of customers.</p>
+                <div class="table-scroll" id="rfm-grid"></div>
+              </figure>
+            </div>
+            <figure>
+              <figcaption class="figure-title">Segments</figcaption>
+              <div class="table-scroll" id="rfm-table"></div>
+            </figure>
+            <figure>
+              <figcaption class="figure-title">Share of customers and share of revenue</figcaption>
+              <div class="chart" id="rfm-bars"></div>
+            </figure>
+            <div class="input-actions"><button class="btn btn-secondary" type="button" id="rfm-csv">Download scored customers (CSV)</button></div>
+            <ul class="caveats">
+              <li>Scores are quintiles within this customer base, so a “5” means top fifth here, not an absolute standard. Customers with identical values share a score.</li>
+              <li>RFM looks backwards. Pair it with margins and acquisition cost before deciding where to spend.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <!-- tools:end -->
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources</h2>
+        <ol>
+          <li>All example data on this page is fictional, generated for the demo: the shopper survey (600 answers from five planted kinds of shopper, with noise) and the online-shop orders.</li>
+          <li>k-means with k-means++ starts: Arthur and Vassilvitskii, “k-means++: The advantages of careful seeding”, <i>Proc. SODA</i> (2007). Silhouette width: Rousseeuw, <i>Journal of Computational and Applied Mathematics</i> 20 (1987); the rough guide to reading it: Kaufman and Rousseeuw, <i>Finding Groups in Data</i> (Wiley, 1990).</li>
+          <li>Needs-based segmentation and targeting: Kotler and Keller, <i>Marketing Management</i>, chapter on identifying market segments and targets.</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../finance/" data-portal="#E8B923"><img src="../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../analytics/" data-portal="#192B49"><img src="../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../models/" data-portal="#252A31"><img src="../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../contact/" data-portal="#F6E7C1"><img src="../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../../learn/" data-portal="#C96F36"><img src="../../assets/img/flower-learn-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Learn</strong><span>Learning by doing</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../assets/js/pages/marketing-segmentation.js?v=5"></script>
+</body>
+</html>

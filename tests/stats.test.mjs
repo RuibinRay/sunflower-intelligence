@@ -7,6 +7,9 @@ import * as FIN from '../assets/js/core/fin.js';
 import * as CL from '../assets/js/core/classify.js';
 import * as AB from '../assets/js/core/abtest.js';
 import * as LE from '../assets/js/core/learn.js';
+import * as IV from '../assets/js/core/invest.js';
+import * as PF from '../assets/js/core/portfolio.js';
+import * as RK from '../assets/js/core/risk.js';
 
 const fx = JSON.parse(readFileSync(new URL('./fixtures.json', import.meta.url)));
 let fails = 0, checks = 0;
@@ -169,6 +172,80 @@ close('HLR: recall is 50% after one half-life', LE.recall(3, 3), 0.5, 1e-14);
 close('HLR: one more √correct doubles the half-life', LE.halfLife({ nCorrect: 4, nWrong: 0 }) / LE.halfLife({ nCorrect: 1, nWrong: 0 }), 2, 1e-12);
 close('HLR: one more √wrong halves it', LE.halfLife({ nCorrect: 1, nWrong: 1 }) / LE.halfLife({ nCorrect: 1, nWrong: 0 }), 0.5, 1e-12);
 close('individualised start: θ = 0 keeps the skill prior', LE.startMastery(0, 0.25), 0.25, 1e-12);
+
+
+// ---------------------------------------------------------------- investment decisions (numpy-financial, NumPy roots, SciPy MILP)
+const ok = (label, cond, detail = '') => { checks++; if (!cond) { fails++; console.log(`FAIL ${label} ${detail}`); } };
+for (const [k, c] of Object.entries(fx.invest.cases)) {
+  const a = IV.appraise(c.flows, { rate: fx.invest.rate, financeRate: 0.1, reinvestRate: 0.12 });
+  close(`NPV ${k}`, a.npv, c.npv, 1e-12);
+  ok(`IRR count ${k}`, a.irrs.length === c.irrs.length, `${a.irrs} vs ${c.irrs}`);
+  a.irrs.forEach((r, i) => close(`IRR ${k} #${i + 1}`, r, c.irrs[i], 1e-9));
+  if (c.irr != null) close(`IRR ${k} (numpy-financial)`, a.irr, c.irr, 1e-9); else ok(`IRR ${k} undefined when several`, Number.isNaN(a.irr));
+  close(`MIRR ${k}`, a.mirr, c.mirr, 1e-12);
+  close(`payback ${k}`, a.payback, c.payback ?? NaN, 1e-12);
+  close(`discounted payback ${k}`, a.discPayback, c.disc ?? NaN, 1e-12);
+}
+{ const x = IV.crossover(fx.invest.cases.A.flows, fx.invest.cases.B.flows); ok('crossover count', x.length === fx.invest.crossAB.length); close('crossover rate', x[0], fx.invest.crossAB[0], 1e-9); }
+{ const P = fx.ration.projects.map(([outlay, v], i) => ({ name: `P${i}`, outlay, npv: v })); const r = IV.ration(P, fx.ration.budget);
+  close('rationing best NPV (SciPy MILP)', r.exactNpv, fx.ration.npv, 1e-12);
+  ok('rationing picks the same projects', r.exact.every((v, i) => +v === fx.ration.pick[i]), JSON.stringify(r.exact));
+  ok('PI ranking never beats the exact answer', r.greedyNpv <= r.exactNpv + 1e-9);
+  ok('divisible projects never do worse', r.fractionalNpv >= r.exactNpv - 1e-9); }
+
+// ---------------------------------------------------------------- portfolios (NumPy, pandas, statsmodels, SciPy SLSQP)
+{ const R = fx.port.R, cols = R[0].map((_, j) => R.map((row) => row[j]));
+  const m = PF.moments(cols);
+  m.mu.forEach((v, i) => close(`annual mean ${i}`, v, fx.port.mu[i], 1e-12));
+  m.cov.forEach((row, i) => row.forEach((v, j) => close(`annual cov ${i},${j}`, v, fx.port.cov[i][j], 1e-10)));
+  const g = PF.minVariance(m.mu, m.cov);
+  close('minimum-variance portfolio variance (SLSQP)', PF.portVar(g, m.cov), fx.port.gmvVar, 1e-7);
+  g.forEach((w, i) => close(`minimum-variance weight ${i}`, w, fx.port.gmv[i], 2e-5));
+  const wt = PF.minVariance(m.mu, m.cov, fx.port.target);
+  close('target-return portfolio variance (SLSQP)', PF.portVar(wt, m.cov), fx.port.wtVar, 1e-7);
+  close('target return hit', PF.portRet(wt, m.mu), fx.port.target, 1e-10);
+  wt.forEach((w, i) => close(`target-return weight ${i}`, w, fx.port.wt[i], 2e-5));
+  const ms = PF.maxSharpe(m.mu, m.cov, fx.port.rf);
+  close('max-Sharpe ratio (SLSQP)', (PF.portRet(ms, m.mu) - fx.port.rf) / Math.sqrt(PF.portVar(ms, m.cov)), fx.port.msSharpe, 1e-8);
+  ms.forEach((w, i) => close(`max-Sharpe weight ${i}`, w, fx.port.ms[i], 2e-5));
+  const fr = PF.frontier(m.mu, m.cov, 25);
+  ok('frontier rises in return and risk', fr.points.every((p, i) => !i || (p.ret >= fr.points[i - 1].ret - 1e-12 && p.vol >= fr.points[i - 1].vol - 1e-12)));
+  ok('every frontier mix is long-only and sums to one', fr.points.every((p) => p.w.every((w) => w >= 0) && Math.abs(p.w.reduce((a, b) => a + b, 0) - 1) < 1e-12));
+  const rs = PF.riskReturn(cols[3], { rf: fx.port.rf });
+  for (const key of ['annMean', 'vol', 'sortino', 'cagr', 'skew', 'kurt']) close(`riskReturn ${key}`, rs[key], fx.port.stats[key], 1e-9);
+  const price = [50]; cols[3].forEach((r) => price.push(price[price.length - 1] * (1 + r)));
+  const dd = PF.drawdowns(price);
+  close('max drawdown', dd.max, fx.port.mdd, 1e-12); ok('drawdown trough and peak', dd.trough === fx.port.trough && dd.peak === fx.port.peak, `${dd.peak}-${dd.trough}`);
+  const mk = cols[0].map((v, i) => 0.5 * v + 0.5 * cols[1][i]);
+  const cp = PF.capm(cols[3], mk, { rf: fx.port.rf });
+  close('CAPM beta (statsmodels)', cp.beta.estimate, fx.port.capm.beta, 1e-10); close('CAPM alpha', cp.alpha.estimate, fx.port.capm.alpha, 1e-10);
+  close('CAPM beta SE', cp.beta.se, fx.port.capm.seBeta, 1e-9); close('CAPM R²', cp.r2, fx.port.capm.r2, 1e-10);
+  const rb = PF.rollingBeta(cols[3], mk, 60);
+  fx.port.rollBeta.forEach(([i, v]) => close(`rolling beta at ${i} (pandas)`, rb[i], v, 1e-9));
+  const ma = PF.sma([1, 2, 3, 4, 5], 3); ok('moving average', Number.isNaN(ma[1]) && ma[2] === 2 && ma[4] === 4); }
+
+// ---------------------------------------------------------------- market risk (NumPy, SciPy)
+{ const r = fx.risk.r, c = fx.risk.c;
+  const hs = RK.historical(r, c); close('historical VaR', hs.var, fx.risk.hist[0], 1e-12); close('historical ES', hs.es, fx.risk.hist[1], 1e-12);
+  const pm = RK.parametric(r, c); close('normal VaR', pm.var, fx.risk.param[0], 1e-9); close('normal ES', pm.es, fx.risk.param[1], 1e-9);
+  close('normal VaR, 10 periods', RK.parametric(r, c, 10).var, fx.risk.param10[0], 1e-9);
+  close('Student-t degrees of freedom from kurtosis', RK.tDegrees(r), fx.risk.tdist.nu, 1e-9);
+  const mc = RK.monteCarlo(r, c, 1, { draws: 200000 });
+  close('Monte Carlo VaR ≈ Student-t VaR', mc.var, fx.risk.tdist.var, 0.03); close('Monte Carlo ES ≈ Student-t ES', mc.es, fx.risk.tdist.es, 0.03);
+  for (const m of ['historical', 'normal', 'ewma']) {
+    const b = RK.backtest(r, c, { method: m }), want = fx.risk.bt[m];
+    ok(`backtest ${m}: same days and exceptions`, b.n === want.n && b.exceptions === want.x && b.hit.every((h, i) => +h === want.hits[i]), `${b.exceptions} vs ${want.x}`);
+    close(`backtest ${m}: first forecast`, b.var[0], want.first, 1e-10); close(`backtest ${m}: last forecast`, b.var[b.n - 1], want.last, 1e-10);
+  }
+  for (const [x, n, p, lr, pv] of fx.risk.kupiec) { const k = RK.kupiec(x, n, p); close(`Kupiec LR x=${x}`, k.lr, lr, 1e-10); close(`Kupiec p x=${x}`, k.p, pv, 1e-9); }
+  const ch = RK.christoffersen(fx.risk.christ.hits.map(Boolean), 0.01);
+  close('Christoffersen independence LR', ch.lrInd, fx.risk.christ.out[0], 1e-10); close('Christoffersen p', ch.pInd, fx.risk.christ.out[1], 1e-9);
+  close('conditional coverage = POF + independence', ch.lrCC, fx.risk.christ.out[0] + fx.risk.christ.pof[3], 1e-10);
+  for (const [x, n, p, cum] of fx.risk.binom) close(`binomial CDF x=${x}`, RK.binomCdf(x, n, p), cum, 1e-10);
+  ok('traffic light zones at 250 days, 99%', [[4, 'green'], [5, 'yellow'], [9, 'yellow'], [10, 'red']].every(([x, z]) => RK.trafficLight(x, 250, 0.01).zone === z));
+  const book = { equity: 100, govt: { value: 100, duration: 7, convexity: 60 }, corp: { value: 50, duration: 5, convexity: 30 }, fx: 20, commodity: 10 };
+  const st = RK.stress(book, { equity: -0.3, rates: 100, spreads: 200, fx: 0.1, commodity: -0.2 });
+  close('stress P&L by hand', st.total, -30 + 100 * (-0.07 + 0.5 * 60 * 1e-4) + 50 * (-0.15 + 0.5 * 30 * 9e-4) + 2 - 2, 1e-12); }
 
 console.log(fails ? `${fails} of ${checks} checks failed` : `all ${checks} checks passed`);
 process.exit(fails ? 1 : 0);

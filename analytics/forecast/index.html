@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Forecasting · Business analytics · Sunflower Intelligence</title>
+  <meta name="description" content="Carry a seasonal series forward with a range, after checking the method on a season it never saw.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/analytics/forecast/">
+  <meta property="og:title" content="Forecasting · Sunflower Intelligence">
+  <meta property="og:description" content="Carry a seasonal series forward with a range, after checking the method on a season it never saw.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/css/base.css?v=5">
+  <link rel="stylesheet" href="../../assets/css/rooms.css?v=5">
+</head>
+<body class="room room--analytics room--sub">
+  <a class="skip-link" href="#ledger">Skip to the tools</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../finance/">Finance</a></li>
+        <li><a href="../../analytics/" aria-current="page">Business analytics</a></li>
+        <li><a href="../../marketing/">Marketing</a></li>
+        <li><a href="../../models/">How I build the models</a></li>
+        <li><a href="../../contact/">Contact</a></li>
+        <li><a href="../../learn/">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../"><img src="../../assets/img/flower-analytics-160.webp" alt="" width="56" height="56"><span>Business analytics</span></a>
+      <h1 id="room-title" class="display">Forecasting</h1>
+      <p class="chapter-note">Carry a seasonal series forward with a range, after checking the method on a season it never saw.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Business analytics pages">
+        <ul role="list">
+          <li><a href="../">Overview</a></li>
+          <li><a href="../explore/">Explore your data</a></li>
+          <li><a href="../supervised/">Supervised learning</a></li>
+          <li><a href="../unsupervised/">Unsupervised learning</a></li>
+          <li><a href="../forecast/" aria-current="page">Forecasting</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <!-- chrome:toc -->
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#forecast">Forecast</a></li></ul></nav>
+      <!-- /chrome:toc -->
+    </header>
+
+    <div class="ledger on-night" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../">The painting</a></li><li><a href="../">Business analytics</a></li><li aria-current="page">Forecasting</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">A seasonal series carried forward with an honest range, after the method proves itself on a season it never saw.</p>
+      </div>
+
+      <!-- ============================================================ FORECAST -->
+      <section class="tool" id="forecast" aria-labelledby="fc-title">
+        <div class="tool-head">
+          <h2 id="fc-title">Forecast</h2>
+          <p>Holt-Winters exponential smoothing carries a series’ level, trend and seasonal pattern forward, with a range for how far off the forecast could be. Before trusting it, the tool hides the last season, forecasts it, and compares the result with simply repeating last year.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="field"><label for="fc-src">Series</label><select class="select" id="fc-src"></select><p class="field-hint" id="fc-src-note"></p></div>
+            <div class="field">
+              <label for="fc-m">Season length</label>
+              <div class="affix"><input class="input" id="fc-m" type="number" inputmode="numeric" min="2" max="104" step="1" value="12"><span class="affix-post">periods</span></div>
+              <p class="field-hint">12 for months in a year, 4 for quarters, 52 for weeks, 7 for days in a week.</p>
+            </div>
+            <div class="slider-field">
+              <div class="slider-top"><label for="fc-h">Forecast ahead</label><output for="fc-h" id="fc-h-out"></output></div>
+              <input type="range" id="fc-h" min="1" max="36" step="1" value="12">
+            </div>
+            <div class="field">
+              <span class="field-label" id="fc-mode-label">Seasonal swings</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="fc-mode-label">
+                <input type="radio" id="fc-auto" name="fc-mode" value="auto" checked><label for="fc-auto">Auto</label>
+                <input type="radio" id="fc-mul" name="fc-mode" value="multiplicative"><label for="fc-mul">Grow with level</label>
+                <input type="radio" id="fc-add" name="fc-mode" value="additive"><label for="fc-add">Fixed size</label>
+              </div>
+            </div>
+            <button class="btn btn-secondary" type="button" id="fc-csv">Download forecast (CSV)</button>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="fc-error"></div>
+            <div id="fc-body">
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="fc-next">—</span><span class="hero-label" id="fc-next-label">next period</span></div>
+                <p class="hero-label" id="fc-range"></p>
+              </div>
+              <dl class="stats-row">
+                <div class="stat"><dt>Error on the hidden season</dt><dd class="num" id="fc-bt-model">—</dd></div>
+                <div class="stat"><dt>Repeating last season</dt><dd class="num" id="fc-bt-naive">—</dd></div>
+                <div class="stat"><dt>Hidden values inside the 95% range</dt><dd class="num" id="fc-bt-cover">—</dd></div>
+                <div class="stat"><dt>Seasonal swings</dt><dd id="fc-kind">—</dd></div>
+              </dl>
+              <figure>
+                <figcaption class="figure-title" id="fc-chart-title">History and forecast</figcaption>
+                <p class="figure-sub">The shaded band is where 95% of future values should fall if the pattern holds. It widens with every step ahead.</p>
+                <div class="chart" id="fc-chart"></div>
+              </figure>
+              <ul class="reading" id="fc-reading" role="list"></ul>
+              <div id="fc-table"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- tools:end -->
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources</h2>
+        <ol>
+          <li>Hyndman, R. J. &amp; Athanasopoulos, G. <i>Forecasting: Principles and Practice</i>, 2nd ed., chapter 7 (<a href="https://otexts.com/fpp2/holt-winters.html">Holt-Winters</a>); prediction intervals for the additive model after Hyndman, Koehler, Ord &amp; Snyder (2008), <i>Forecasting with Exponential Smoothing</i>. Seasonal swings that grow with the level are modelled on logarithms.</li>
+          <li>Statistics here are computed in your browser and checked against SciPy and statsmodels in the site’s automated tests.</li>
+          <li>All example datasets are synthetic, generated for this page.</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../finance/" data-portal="#E8B923"><img src="../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../marketing/" data-portal="#56632C"><img src="../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../models/" data-portal="#252A31"><img src="../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../contact/" data-portal="#F6E7C1"><img src="../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../../learn/" data-portal="#C96F36"><img src="../../assets/img/flower-learn-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Learn</strong><span>Learning by doing</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../assets/js/pages/analytics-forecast.js?v=5"></script>
+</body>
+</html>

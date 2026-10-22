@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Unsupervised learning · Business analytics · Sunflower Intelligence</title>
+  <meta name="description" content="Find structure without labels: groups of similar rows and the few directions that explain most of the variation.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/analytics/unsupervised/">
+  <meta property="og:title" content="Unsupervised learning · Sunflower Intelligence">
+  <meta property="og:description" content="Find structure without labels: groups of similar rows and the few directions that explain most of the variation.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/css/base.css?v=5">
+  <link rel="stylesheet" href="../../assets/css/rooms.css?v=5">
+</head>
+<body class="room room--analytics room--sub">
+  <a class="skip-link" href="#ledger">Skip to the tools</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../finance/">Finance</a></li>
+        <li><a href="../../analytics/" aria-current="page">Business analytics</a></li>
+        <li><a href="../../marketing/">Marketing</a></li>
+        <li><a href="../../models/">How I build the models</a></li>
+        <li><a href="../../contact/">Contact</a></li>
+        <li><a href="../../learn/">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../"><img src="../../assets/img/flower-analytics-160.webp" alt="" width="56" height="56"><span>Business analytics</span></a>
+      <h1 id="room-title" class="display is-long">Unsupervised learning</h1>
+      <p class="chapter-note">Find structure without labels: groups of similar rows and the few directions that explain most of the variation.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Business analytics pages">
+        <ul role="list">
+          <li><a href="../">Overview</a></li>
+          <li><a href="../explore/">Explore your data</a></li>
+          <li><a href="../supervised/">Supervised learning</a></li>
+          <li><a href="../unsupervised/" aria-current="page">Unsupervised learning</a></li>
+          <li><a href="../forecast/">Forecasting</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <!-- chrome:toc -->
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#data">Your data</a></li><li><a href="#segment">k-means</a></li><li><a href="#hierarchy">Hierarchical clustering</a></li><li><a href="#pca">Principal components</a></li></ul></nav>
+      <!-- /chrome:toc -->
+    </header>
+
+    <div class="ledger on-night" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../">The painting</a></li><li><a href="../">Business analytics</a></li><li aria-current="page">Unsupervised learning</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">No answer column here. These methods look for structure on their own: groups of rows that sit close together, and the few directions that carry most of the variation. Columns are put on a common scale first, so a column measured in thousands doesn’t drown one measured in units.</p>
+      </div>
+
+      <!-- ============================================================ DATA -->
+      <section class="tool" id="data" aria-labelledby="ds-title">
+        <div class="tool-head">
+          <h2 id="ds-title">Your data</h2>
+          <p>Choose a table, then the numeric columns to look for structure in. Every section below uses this choice. A table you loaded under Explore appears here too.</p>
+        </div>
+        <div class="bench bench-stack">
+          <div id="ds" class="data-source"></div>
+          <div class="question question--one">
+            <fieldset><legend>Columns to use</legend><div class="chips" id="uns-x"></div><p class="field-hint" id="uns-note"></p></fieldset>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ SEGMENT -->
+      <section class="tool" id="segment" aria-labelledby="seg-title">
+        <div class="tool-head">
+          <h2 id="seg-title">k-means</h2>
+          <p>k-means splits the rows into the number of groups you choose, moving each group’s centre until every row sits with its nearest centre. The silhouette score says how cleanly the groups separate.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="slider-field">
+              <div class="slider-top"><label for="seg-k">Number of groups</label><output for="seg-k" id="seg-k-out"></output></div>
+              <input type="range" id="seg-k" min="2" max="6" step="1" value="3">
+            </div>
+            <button class="btn btn-secondary" type="button" id="seg-best">Use the best-separated number</button>
+            <button class="btn btn-secondary" type="button" id="seg-csv">Download groups (CSV)</button>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="seg-error"></div>
+            <div id="seg-body" class="reg-body">
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="seg-sil">—</span><span class="hero-label">silhouette score (−1 to 1; above 0.5 is a clear structure)</span></div>
+                <p class="hero-label" id="seg-line"></p>
+              </div>
+              <figure>
+                <figcaption class="figure-title">How cleanly each number of groups separates</figcaption>
+                <div class="chart" id="seg-k-chart"></div>
+              </figure>
+              <figure>
+                <figcaption class="figure-title">The groups, by their averages</figcaption>
+                <div class="table-scroll" id="seg-profile"></div>
+              </figure>
+              <figure>
+                <figcaption class="figure-title" id="seg-plot-title">Rows on the first two columns</figcaption>
+                <div class="field highlight-field"><span class="field-label" id="seg-show-label">Highlight group</span><div class="segmented" role="radiogroup" aria-labelledby="seg-show-label" id="seg-show"></div></div>
+                <div class="chart" id="seg-plot"></div>
+              </figure>
+              <ul class="caveats">
+                <li>k-means always returns the number of groups you ask for, structure or not; a low silhouette says the groups are a convenient cut, not a discovery.</li>
+                <li>It favours round, similar-sized groups and is pulled by outliers. Results are seeded so they repeat.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ HIERARCHICAL -->
+      <section class="tool" id="hierarchy" aria-labelledby="hc-title">
+        <div class="tool-head">
+          <h2 id="hc-title">Hierarchical clustering</h2>
+          <p>Start with every row on its own and keep merging the two closest groups until one remains. Ward’s method merges whichever pair adds least to the spread inside groups. The tree of merges, a dendrogram, shows every grouping at once: cut it lower for more groups, higher for fewer.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="slider-field">
+              <div class="slider-top"><label for="hc-k">Cut into this many groups</label><output for="hc-k" id="hc-k-out"></output></div>
+              <input type="range" id="hc-k" min="2" max="8" step="1" value="3">
+            </div>
+            <button class="btn btn-secondary" type="button" id="hc-best">Use the best-separated number</button>
+            <button class="btn btn-secondary" type="button" id="hc-csv">Download groups (CSV)</button>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="hc-error"></div>
+            <div id="hc-body" class="reg-body">
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="hc-between">—</span><span class="hero-label">of the spread lies between the groups at this cut</span></div>
+                <p class="hero-label" id="hc-line"></p>
+              </div>
+              <figure>
+                <figcaption class="figure-title" id="hc-fig-title">The dendrogram</figcaption>
+                <p class="figure-sub">Each row is a leaf along the bottom; a join’s height is how much spread that merge added. The dashed line is the cut.</p>
+                <div class="field highlight-field"><span class="field-label" id="hc-show-label">Highlight group</span><div class="segmented" role="radiogroup" aria-labelledby="hc-show-label" id="hc-show"></div></div>
+                <div class="chart" id="hc-chart"></div>
+              </figure>
+              <figure>
+                <figcaption class="figure-title">The groups, by their averages</figcaption>
+                <div class="table-scroll" id="hc-profile"></div>
+              </figure>
+              <ul class="caveats" id="hc-caveats"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ PCA -->
+      <section class="tool" id="pca" aria-labelledby="pca-title">
+        <div class="tool-head">
+          <h2 id="pca-title">Principal components</h2>
+          <p>Principal component analysis finds new axes, each a weighted mix of your columns, ordered by how much of the variation they carry. If the first two carry most of it, a flat map of the rows on those two loses little, and the weights say what each axis means.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="pc-pick">
+              <div class="field"><label for="pca-a">Across</label><select class="select" id="pca-a"></select></div>
+              <div class="field"><label for="pca-b">Up</label><select class="select" id="pca-b"></select></div>
+            </div>
+            <div class="field"><label for="pca-flag">Colour rows where</label><select class="select" id="pca-flag"></select><p class="field-hint">Any column with two values; the rows at its higher value are drawn in colour.</p></div>
+            <button class="btn btn-secondary" type="button" id="pca-csv">Download component scores (CSV)</button>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="pca-error"></div>
+            <div id="pca-body" class="reg-body">
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="pca-two">—</span><span class="hero-label" id="pca-two-label">of the variation is carried by the first two components</span></div>
+                <p class="hero-label" id="pca-line"></p>
+              </div>
+              <figure>
+                <figcaption class="figure-title">How much each component carries</figcaption>
+                <div class="chart" id="pca-scree"></div>
+              </figure>
+              <figure>
+                <figcaption class="figure-title" id="pca-bi-title">The rows on two components, with each column as an arrow</figcaption>
+                <p class="figure-sub">Arrows pointing the same way are columns that rise together; a long arrow is a column the two components describe well. Dots near an arrow’s tip are high on that column.</p>
+                <div class="chart" id="pca-biplot"></div>
+              </figure>
+              <figure>
+                <figcaption class="figure-title">What each component is made of</figcaption>
+                <p class="figure-sub">Correlation between each column and each component (−1 to 1). Values beyond ±0.5 are in bold: they say what the component means.</p>
+                <div class="table-scroll" id="pca-loadings"></div>
+              </figure>
+              <ul class="caveats">
+                <li>Working on the correlation matrix treats every column equally, whatever its units.</li>
+                <li>The sign of a component is arbitrary: flipping every weight describes the same axis. Here each is signed so its largest weight is positive.</li>
+                <li>PCA finds straight-line structure only, and a two-valued column contributes little more than its proportion; components summarise variation, they don’t explain it.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- tools:end -->
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources</h2>
+        <ol>
+          <li>Arthur, D. &amp; Vassilvitskii, S. (2007). k-means++: the advantages of careful seeding. <i>SODA</i>. Rousseeuw, P. J. (1987). Silhouettes: a graphical aid to the interpretation and validation of cluster analysis. <i>Journal of Computational and Applied Mathematics</i> 20, 53–65.</li>
+          <li>Ward, J. H. (1963). Hierarchical grouping to optimize an objective function. <i>Journal of the American Statistical Association</i> 58(301), 236–244. Lance, G. N. &amp; Williams, W. T. (1967). A general theory of classificatory sorting strategies. <i>The Computer Journal</i> 9(4), 373–380.</li>
+          <li>Hubert, L. &amp; Arabie, P. (1985). Comparing partitions. <i>Journal of Classification</i> 2, 193–218. Jolliffe, I. T. &amp; Cadima, J. (2016). Principal component analysis: a review and recent developments. <i>Philosophical Transactions of the Royal Society A</i> 374, 20150202.</li>
+          <li>Everything here is computed in your browser. Ward clustering is checked against SciPy, and k-means, the silhouette, the adjusted Rand index and principal components against scikit-learn and NumPy, in the site’s automated tests.</li>
+          <li>All example datasets are synthetic, generated for this page.</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../finance/" data-portal="#E8B923"><img src="../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../marketing/" data-portal="#56632C"><img src="../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../models/" data-portal="#252A31"><img src="../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../contact/" data-portal="#F6E7C1"><img src="../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../../learn/" data-portal="#C96F36"><img src="../../assets/img/flower-learn-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Learn</strong><span>Learning by doing</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../assets/js/pages/analytics-unsupervised.js?v=5"></script>
+</body>
+</html>

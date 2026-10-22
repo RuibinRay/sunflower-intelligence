@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Stock analysis · Finance · Sunflower Intelligence</title>
+  <meta name="description" content="Return, risk and beta for a share against the market, and the portfolio mix with the best return for its risk.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/finance/stocks/">
+  <meta property="og:title" content="Stock analysis · Sunflower Intelligence">
+  <meta property="og:description" content="Return, risk and beta for a share against the market, and the portfolio mix with the best return for its risk.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/css/base.css?v=5">
+  <link rel="stylesheet" href="../../assets/css/rooms.css?v=5">
+</head>
+<body class="room room--finance room--sub">
+  <a class="skip-link" href="#ledger">Skip to the tools</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../finance/" aria-current="page">Finance</a></li>
+        <li><a href="../../analytics/">Business analytics</a></li>
+        <li><a href="../../marketing/">Marketing</a></li>
+        <li><a href="../../models/">How I build the models</a></li>
+        <li><a href="../../contact/">Contact</a></li>
+        <li><a href="../../learn/">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../"><img src="../../assets/img/flower-finance-160.webp" alt="" width="56" height="56"><span>Finance</span></a>
+      <h1 id="room-title" class="display">Stock analysis</h1>
+      <p class="chapter-note">Return, risk and beta for a share against the market, and the portfolio mix with the best return for its risk.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Finance pages">
+        <ul role="list">
+          <li><a href="../">Overview</a></li>
+          <li><a href="../valuation/">Valuation</a></li>
+          <li><a href="../investment/">Investment decisions</a></li>
+          <li><a href="../stocks/" aria-current="page">Stock analysis</a></li>
+          <li><a href="../risk/">Risk management</a></li>
+          <li><a href="../markets/">Bonds and options</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <!-- chrome:toc -->
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#prices">Prices</a></li><li><a href="#returns">Return and risk</a></li><li><a href="#capm">Beta and alpha</a></li><li><a href="#frontier">Efficient frontier</a></li></ul></nav>
+      <!-- /chrome:toc -->
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../">The painting</a></li><li><a href="../">Finance</a></li><li aria-current="page">Stock analysis</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">Describe a share’s return and risk, measure its beta against the market, and find the portfolio mix that earns the most for the risk it takes.</p>
+      </div>
+
+      <!-- ============================================================ PRICES -->
+      <section class="tool" id="prices" aria-labelledby="prices-title">
+        <div class="tool-head">
+          <h2 id="prices-title">Prices</h2>
+          <p>Daily closing prices for a few shares and a market index. Use the simulated set, or bring your own: a table with dates in the first column and one column of prices per share, or one or more price files downloaded from a site such as Yahoo Finance.</p>
+        </div>
+        <div class="bench bench-stack">
+          <div class="bench-inputs">
+            <div class="field">
+              <span class="field-label" id="px-src-label">Prices</span>
+              <div class="segmented segmented-stack" role="radiogroup" aria-labelledby="px-src-label">
+                <input type="radio" id="px-sim" name="px-src" value="sim" checked><label for="px-sim">Simulated: five invented companies and a market index, three years</label>
+                <input type="radio" id="px-own" name="px-src" value="own"><label for="px-own">Paste or upload your own prices</label>
+              </div>
+            </div>
+            <div class="own-data" id="px-own-box" hidden>
+              <div class="field">
+                <label for="px-paste">Paste a table: dates, then one column of prices per share</label>
+                <textarea class="textarea" id="px-paste" spellcheck="false" placeholder="Date,Share A,Share B,Index&#10;2025-01-02,41.20,118.5,1000&#10;2025-01-03,41.65,117.9,1004.2"></textarea>
+              </div>
+              <div class="input-actions">
+                <button class="btn btn-primary" type="button" id="px-read">Read the table</button>
+                <label class="btn btn-secondary file-btn">Upload price files<input type="file" id="px-file" class="visually-hidden" accept=".csv,.tsv,.txt,text/csv,text/plain" multiple></label>
+              </div>
+              <p class="field-hint">A file with an “Adj Close” or “Close” column becomes one share, named after the file. Several files are lined up on their common dates. Read in this browser tab and never uploaded.</p>
+              <p class="error-text" role="alert" id="px-err"></p>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="px-market">The market (for beta)</label>
+                <select class="select" id="px-market"></select>
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="px-rf">Risk-free rate, per year</label><output for="px-rf" id="px-rf-out"></output></div>
+                <input type="range" id="px-rf" min="0" max="8" step="0.25" value="4">
+              </div>
+            </div>
+            <p class="dataset-note" id="px-note"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ RETURNS -->
+      <section class="tool" id="returns" aria-labelledby="returns-title">
+        <div class="tool-head">
+          <h2 id="returns-title">Return and risk</h2>
+          <p>How much a share earned, how bumpy the ride was, and the worst fall from a peak. Every share is in the table; the charts follow the one you pick.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="field">
+              <label for="rt-stock">Share</label>
+              <select class="select" id="rt-stock"></select>
+            </div>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <dl class="stats-row" id="rt-stats"></dl>
+            <div id="rt-verdict"></div>
+            <figure>
+              <figcaption class="figure-title" id="rt-growth-title">Growth of $100</figcaption>
+              <div class="chart" id="rt-growth"></div>
+            </figure>
+            <figure>
+              <figcaption class="figure-title">Price with its 50- and 200-day moving averages</figcaption>
+              <p class="figure-sub">When the short average crosses above the long one, traders call it a golden cross; below, a death cross. A description of the past, not a forecast.</p>
+              <div class="chart" id="rt-ma"></div>
+            </figure>
+            <figure>
+              <figcaption class="figure-title">Drawdown: distance below the last peak</figcaption>
+              <div class="chart" id="rt-dd"></div>
+            </figure>
+            <figure>
+              <figcaption class="figure-title">Every share side by side</figcaption>
+              <div class="table-scroll" id="rt-table"></div>
+            </figure>
+            <ul class="caveats">
+              <li>Annual return is the average daily return × 252; growth rate (CAGR) is what the price actually compounded at. Volatility drags the second below the first.</li>
+              <li>Sharpe divides the return above the risk-free rate by volatility; Sortino counts only the downside.</li>
+              <li>Prices should be adjusted for dividends and splits, or the returns will be wrong on those days.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ CAPM -->
+      <section class="tool" id="capm" aria-labelledby="capm-title">
+        <div class="tool-head">
+          <h2 id="capm-title">Beta and alpha</h2>
+          <p>The capital asset pricing model regresses a share’s daily excess return on the market’s. The slope, beta, is the market risk you can’t diversify away; the intercept, alpha, is return the market doesn’t explain.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="field">
+              <label for="cp-stock">Share</label>
+              <select class="select" id="cp-stock"></select>
+            </div>
+            <div class="slider-field">
+              <div class="slider-top"><label for="cp-erp">Market risk premium, per year</label><output for="cp-erp" id="cp-erp-out"></output></div>
+              <input type="range" id="cp-erp" min="2" max="9" step="0.25" value="5">
+            </div>
+            <div class="field">
+              <span class="field-label" id="cp-win-label">Rolling beta window</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="cp-win-label">
+                <input type="radio" id="cp-w63" name="cp-win" value="63"><label for="cp-w63">3 months</label>
+                <input type="radio" id="cp-w126" name="cp-win" value="126" checked><label for="cp-w126">6 months</label>
+                <input type="radio" id="cp-w252" name="cp-win" value="252"><label for="cp-w252">1 year</label>
+              </div>
+            </div>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <dl class="stats-row" id="cp-stats"></dl>
+            <div id="cp-verdict"></div>
+            <figure>
+              <figcaption class="figure-title" id="cp-scatter-title">Daily excess returns</figcaption>
+              <p class="figure-sub">Each dot is a day. The line’s slope is beta.</p>
+              <div class="chart" id="cp-scatter"></div>
+            </figure>
+            <figure>
+              <figcaption class="figure-title">Beta over time</figcaption>
+              <p class="figure-sub">Measured over a trailing window. Betas drift, which is one reason to treat a single estimate with care.</p>
+              <div class="chart" id="cp-roll"></div>
+            </figure>
+            <div id="cp-table"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ FRONTIER -->
+      <section class="tool" id="frontier" aria-labelledby="frontier-title">
+        <div class="tool-head">
+          <h2 id="frontier-title">Efficient frontier</h2>
+          <p>Markowitz’s question: of all the ways to split money between these shares, which give the most return for each level of risk? No short selling: every weight is zero or more.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="field">
+              <span class="field-label" id="ef-assets-label">Shares to combine (two to eight)</span>
+              <div class="chips" id="ef-assets" role="group" aria-labelledby="ef-assets-label"></div>
+            </div>
+            <div class="field">
+              <span class="field-label" id="ef-pick-label">Portfolio to show</span>
+              <div class="segmented segmented-stack" role="radiogroup" aria-labelledby="ef-pick-label">
+                <input type="radio" id="ef-p-ms" name="ef-pick" value="ms" checked><label for="ef-p-ms">Best return for its risk (max Sharpe)</label>
+                <input type="radio" id="ef-p-gmv" name="ef-pick" value="gmv"><label for="ef-p-gmv">Least risk (minimum variance)</label>
+                <input type="radio" id="ef-p-t" name="ef-pick" value="target"><label for="ef-p-t">A target return</label>
+              </div>
+            </div>
+            <div class="slider-field" id="ef-target-field" hidden>
+              <div class="slider-top"><label for="ef-target">Target return, per year</label><output for="ef-target" id="ef-target-out"></output></div>
+              <input type="range" id="ef-target" min="0" max="100" step="1" value="50">
+            </div>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="ef-verdict"></div>
+            <figure>
+              <figcaption class="figure-title">Risk and return, per year</figcaption>
+              <p class="figure-sub">The curve is the efficient frontier; the straight line from the risk-free rate touches it at the max-Sharpe mix (the capital market line).</p>
+              <div class="chart" id="ef-chart"></div>
+              <div id="ef-table"></div>
+            </figure>
+            <figure>
+              <figcaption class="figure-title" id="ef-w-title">Weights</figcaption>
+              <div class="chart" id="ef-weights"></div>
+            </figure>
+            <figure>
+              <figcaption class="figure-title">Stability check: the same method on each half of the data</figcaption>
+              <p class="figure-sub">Average returns are measured with a lot of noise, and the optimiser leans hard on them. If the weights swing between halves, don’t trust the decimals.</p>
+              <div class="table-scroll" id="ef-stab"></div>
+            </figure>
+            <ul class="caveats">
+              <li>Built from past average returns, volatilities and correlations, assumed to hold in future. They won’t exactly.</li>
+              <li>Solved exactly: for every subset of shares the best mix has a closed form, and the best subset with no negative weights is the answer.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <!-- tools:end -->
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources</h2>
+        <ol>
+          <li>Markowitz, H. (1952). Portfolio selection. <i>The Journal of Finance</i>, 7(1), 77–91.</li>
+          <li>Sharpe, W. F. (1964). Capital asset prices: a theory of market equilibrium under conditions of risk. <i>The Journal of Finance</i>, 19(3), 425–442.</li>
+          <li>Sortino, F. A. and Price, L. N. (1994). Performance measurement in a downside risk framework. <i>The Journal of Investing</i>, 3(3), 59–64.</li>
+          <li>The simulated prices follow a GARCH(1,1) market with Student-t shocks (Bollerslev, 1986) and a one-factor model for each share. The companies are invented.</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../analytics/" data-portal="#192B49"><img src="../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../marketing/" data-portal="#56632C"><img src="../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../models/" data-portal="#252A31"><img src="../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../contact/" data-portal="#F6E7C1"><img src="../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../../learn/" data-portal="#C96F36"><img src="../../assets/img/flower-learn-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Learn</strong><span>Learning by doing</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../assets/js/pages/finance-stocks.js?v=5"></script>
+</body>
+</html>
