@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sunflower Intelligence</title>
+  <meta name="description" content="Finance, business analytics and marketing tools by Ruibin Jin Yao, set inside a living sunflower painting after Van Gogh. Each flower opens a room.">
+  <meta name="author" content="Ruibin Jin Yao">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Sunflower Intelligence">
+  <meta property="og:description" content="Finance, analytics and marketing tools inside a living sunflower painting. Each flower opens a room.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <meta property="og:url" content="https://ruibinray.github.io/sunflower-intelligence/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="preload" href="assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="modulepreload" href="assets/js/home/painting.js?v=1">
+  <link rel="stylesheet" href="assets/css/base.css?v=1">
+  <link rel="stylesheet" href="assets/css/home.css?v=1">
+</head>
+<body class="home">
+  <a class="skip-link" href="#rooms">Skip to the rooms</a>
+
+  <header class="home-header">
+    <p class="home-mark"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></p>
+    <div class="header-tools">
+      <button class="pill-btn" type="button" data-open-why>Why sunflowers?</button>
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="stage" aria-label="The painting. Five of its sunflowers open the five rooms of this site.">
+      <picture class="stage-still">
+        <source type="image/webp" srcset="assets/painting/painting-800.webp 800w, assets/painting/painting-1280.webp 1280w, assets/painting/painting-1920.webp 1920w, assets/painting/painting-2576.webp 2576w" sizes="(max-aspect-ratio: 23/20) 210vw, 100vw">
+        <img src="assets/painting/painting-1280.jpg" width="2576" height="1438" fetchpriority="high" decoding="async"
+          alt="A painted vase of sunflowers after Van Gogh: golden blooms, heavy brown seed heads and wilting flowers fan out over a yellow wall from a pale vase signed Vincent.">
+      </picture>
+      <canvas class="stage-canvas" aria-hidden="true"></canvas>
+      <div class="doors">
+        <a class="door" href="finance/" data-room="finance" aria-describedby="door-tip"><span class="door-label">Finance</span><span class="visually-hidden">: an obsession with yellow</span></a>
+        <a class="door" href="analytics/" data-room="analytics" aria-describedby="door-tip"><span class="door-label">Business analytics</span><span class="visually-hidden">: the golden spiral</span></a>
+        <a class="door" href="marketing/" data-room="marketing" aria-describedby="door-tip"><span class="door-label">Marketing</span><span class="visually-hidden">: personal identity</span></a>
+        <a class="door" href="models/" data-room="models" aria-describedby="door-tip"><span class="door-label">How I build the models</span><span class="visually-hidden">: the cycle of life</span></a>
+        <a class="door" href="contact/" data-room="contact" aria-describedby="door-tip"><span class="door-label">Contact</span><span class="visually-hidden">: gratitude and friendship</span></a>
+      </div>
+      <div class="door-tip" id="door-tip" role="tooltip" hidden>
+        <p class="tip-name"></p>
+        <p class="tip-chapter"></p>
+        <p class="tip-blurb"></p>
+      </div>
+    </section>
+
+    <aside class="label-card" id="rooms" aria-labelledby="site-title">
+      <h1 id="site-title" class="display">Sunflower Intelligence</h1>
+      <p class="label-sub">Finance, analytics and marketing tools by Ruibin Jin Yao.</p>
+      <p class="label-medium">Oil on canvas after Van Gogh, made to move. Each flower opens a room.</p>
+      <ol class="label-rooms" role="list">
+        <li><a class="room-entry" href="finance/" data-room="finance"><span class="room-name">Finance</span><span class="room-where">the golden bloom at the centre</span></a></li>
+        <li><a class="room-entry" href="analytics/" data-room="analytics"><span class="room-name">Business analytics</span><span class="room-where">the dark-eyed bloom on the left</span></a></li>
+        <li><a class="room-entry" href="marketing/" data-room="marketing"><span class="room-name">Marketing</span><span class="room-where">the head turned aside, on the right</span></a></li>
+        <li><a class="room-entry" href="models/" data-room="models"><span class="room-name">How I build the models</span><span class="room-where">the crown at the top</span></a></li>
+        <li><a class="room-entry" href="contact/" data-room="contact"><span class="room-name">Contact</span><span class="room-where">the seed head resting on the vase</span></a></li>
+      </ol>
+    </aside>
+  </main>
+
+  <!-- frame:start (generated by tools/build_assets.py: frames the still painting before first paint, so nothing shifts) -->
+  <script>(function(){var W=2576,H=1438,S={x:685,y:6,w:1250,h:979},b=document.body,st=document.querySelector('.stage'),im=st.querySelector('.stage-still img');var band=innerWidth/innerHeight<1.15;b.classList.add(band?'home--band':'home--cover');if(band||innerHeight<600)b.classList.add('label-below');if(band)st.style.height=Math.round(Math.min(innerWidth*(H/S.w),innerHeight*.88))+'px';var vw=st.clientWidth,vh=st.clientHeight,s=Math.min(Math.max(vw/W,vh/H),Math.min(vw/S.w,vh/S.h)),iw=vw/s,ih=vh/s,x0=S.x+S.w/2-iw/2,y0=S.y+S.h/2+90-ih/2;x0=iw<=W?Math.min(Math.max(x0,0),W-iw):(W-iw)/2;y0=ih<=H?Math.min(Math.max(y0,0),H-ih):(H-ih)/2;im.style.width=W*s+'px';im.style.height=H*s+'px';im.style.transform='translate('+(-x0*s)+'px,'+(-y0*s)+'px)';})();</script>
+  <!-- frame:end -->
+
+  <dialog class="why" id="why" aria-labelledby="why-title">
+    <form method="dialog" class="why-close-form"><button class="icon-btn why-close" aria-label="Close">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></form>
+    <h2 id="why-title" class="display">Why sunflowers?</h2>
+    <p class="why-intro">Van Gogh painted sunflowers again and again in Arles in 1888 and 1889. Four meanings run through them, and each one became a room here. A fifth comes from the flower itself.</p>
+    <ol class="why-list" role="list">
+      <li>
+        <h3>Gratitude and friendship <span>Contact</span></h3>
+        <p>He began the series in August 1888 to decorate the studio he hoped to share with Paul Gauguin: “Nothing but large Sunflowers.” In 1890 he wrote that the canvases “express an idea symbolizing ‘gratitude’.”</p>
+      </li>
+      <li>
+        <h3>The cycle of life <span>How I build the models</span></h3>
+        <p>The flowers appear at every stage, from bud to full bloom to “one flower that’s gone to seed and lost its petals”, in the spirit of the Dutch vanitas still life: every season passes.</p>
+      </li>
+      <li>
+        <h3>An obsession with yellow <span>Finance</span></h3>
+        <p>Yellow carried warmth, the southern sun and light itself. He admitted he “had to key myself up a bit to reach the high yellow note”.</p>
+      </li>
+      <li>
+        <h3>Personal identity <span>Marketing</span></h3>
+        <p>“Jeannin has the peony, Quost has the hollyhock, but I have the sunflower, in a way.” The flower became his signature.</p>
+      </li>
+      <li>
+        <h3>The golden spiral <span>Business analytics</span></h3>
+        <p>Not one of Van Gogh’s meanings but the flower’s own: its seeds pack in spirals whose counts are usually Fibonacci numbers. Usually, not always, which is where analysis begins.</p>
+      </li>
+    </ol>
+    <p class="why-note">A small detail: in the painting, the open blooms turn toward your cursor the way young sunflowers follow the sun, while the heavy seed heads hold still. Mature sunflowers stop tracking and settle facing east.</p>
+    <details class="why-sources">
+      <summary>Sources</summary>
+      <ol>
+        <li>Van Gogh to Theo, Arles, 21 or 22 August 1888, <a href="https://vangoghletters.org/vg/letters/let666/letter.html">letter 666</a>.</li>
+        <li>Van Gogh to Theo, Arles, 22 January 1889, <a href="https://vangoghletters.org/vg/letters/let741/letter.html">letter 741</a>.</li>
+        <li>Van Gogh to Theo, Arles, 24 March 1889, <a href="https://vangoghletters.org/vg/letters/let752/letter.html">letter 752</a>.</li>
+        <li>Van Gogh to Albert Aurier, Saint-Rémy, 9 or 10 February 1890, <a href="https://vangoghletters.org/vg/letters/let853/letter.html">letter 853</a>.</li>
+        <li>Swinton, J., Ochu, E. &amp; MSI Turing’s Sunflower Consortium (2016). Novel Fibonacci and non-Fibonacci structure in the sunflower. <i>Royal Society Open Science</i> 3(5). <a href="https://doi.org/10.1098/rsos.160091">doi:10.1098/rsos.160091</a></li>
+        <li>Atamian, H. S. et al. (2016). Circadian regulation of sunflower heliotropism, floral orientation, and pollinator visits. <i>Science</i> 353(6299), 587–590.</li>
+      </ol>
+    </details>
+  </dialog>
+
+  <noscript><style>.door { display: none; } .stage-still img { width: 100%; height: 100%; object-fit: cover; }</style></noscript>
+  <script type="module" src="assets/js/home/home.js?v=1"></script>
+</body>
+</html>

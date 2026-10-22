@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Finance · Sunflower Intelligence</title>
+  <meta name="description" content="Value a business with a discounted cash flow model and screen a company for financial distress with the Altman Z-score. Free, in your browser.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/finance/">
+  <meta property="og:title" content="Finance · Sunflower Intelligence">
+  <meta property="og:description" content="Discounted cash flow valuation and the Altman Z-score, with every assumption visible.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/base.css?v=1">
+  <link rel="stylesheet" href="../assets/css/rooms.css?v=1">
+</head>
+<body class="room room--finance">
+  <a class="skip-link" href="#ledger">Skip to the tools</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../finance/" aria-current="page">Finance</a></li>
+        <li><a href="../analytics/">Business analytics</a></li>
+        <li><a href="../marketing/">Marketing</a></li>
+        <li><a href="../models/">How I build the models</a></li>
+        <li><a href="../contact/">Contact</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas" aria-labelledby="room-title">
+      <div class="canvas-flower"><img src="../assets/img/flower-finance.webp" width="720" height="720" alt="The golden bloom from the centre of the painting, petals flaring around an orange heart."></div>
+      <h1 id="room-title" class="display is-short">Finance</h1>
+      <p class="chapter">An obsession with yellow</p>
+      <p class="chapter-note">In Arles, Van Gogh chased a yellow so intense he had to steel himself to reach it. This room chases the business equivalent: the cash a company really produces, and how safely it can keep producing it.</p>
+      <blockquote class="quote">“I had to key myself up a bit to reach the high yellow note…”<cite class="quote-cite">Vincent van Gogh to Theo, Arles, 24 March 1889</cite></blockquote>
+      <nav aria-label="In this room"><ul class="toc" role="list"><li><a href="#dcf">Discounted cash flow</a></li><li><a href="#altman">Altman Z-score</a></li></ul></nav>
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../">The painting</a></li><li aria-current="page">Finance</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">Two tools: one values a business from the cash it should generate, the other screens a company for financial distress. Results update as you type, and every assumption stays on the page.</p>
+      </div>
+
+      <!-- ============================================================ DCF -->
+      <section class="tool" id="dcf" aria-labelledby="dcf-title">
+        <div class="tool-head">
+          <h2 id="dcf-title">Discounted cash flow</h2>
+          <p>What is a business worth today? Forecast its free cash flow, add a terminal value for everything after the forecast, and discount both at the cost of capital.</p>
+        </div>
+        <div class="bench">
+          <form class="bench-inputs" id="dcf-form" novalidate>
+            <fieldset>
+              <legend>Cash flow</legend>
+              <div class="field">
+                <label for="fcf0">Free cash flow, latest year</label>
+                <div class="affix"><span class="affix-pre">$</span><input class="input" id="fcf0" name="fcf0" type="number" inputmode="decimal" step="any" value="120"><span class="affix-post">m</span></div>
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="g1">Growth in year 1</label><output for="g1" id="g1-out"></output></div>
+                <input type="range" id="g1" name="g1" min="-10" max="30" step="0.5" value="9">
+              </div>
+              <div class="field">
+                <span class="field-label" id="years-label">Forecast years</span>
+                <div class="segmented" role="radiogroup" aria-labelledby="years-label">
+                  <input type="radio" id="y5" name="years" value="5" checked><label for="y5">5</label>
+                  <input type="radio" id="y7" name="years" value="7"><label for="y7">7</label>
+                  <input type="radio" id="y10" name="years" value="10"><label for="y10">10</label>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label" id="path-label">Growth path</span>
+                <div class="segmented" role="radiogroup" aria-labelledby="path-label">
+                  <input type="radio" id="p-fade" name="path" value="fade" checked><label for="p-fade">Fades to terminal</label>
+                  <input type="radio" id="p-flat" name="path" value="flat"><label for="p-flat">Constant</label>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Discounting</legend>
+              <div class="slider-field">
+                <div class="slider-top"><label for="wacc">WACC (cost of capital)</label><output for="wacc" id="wacc-out"></output></div>
+                <input type="range" id="wacc" name="wacc" min="4" max="20" step="0.1" value="9">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="gt">Terminal growth</label><output for="gt" id="gt-out"></output></div>
+                <input type="range" id="gt" name="gt" min="-2" max="6" step="0.1" value="2.5">
+              </div>
+              <label class="check"><input type="checkbox" id="mid" name="mid"> Mid-year discounting</label>
+            </fieldset>
+            <fieldset>
+              <legend>From enterprise value to equity</legend>
+              <div class="field-row">
+                <div class="field">
+                  <label for="debt">Net debt</label>
+                  <div class="affix"><span class="affix-pre">$</span><input class="input" id="debt" name="debt" type="number" inputmode="decimal" step="any" value="300"><span class="affix-post">m</span></div>
+                </div>
+                <div class="field">
+                  <label for="shares">Shares</label>
+                  <div class="affix"><input class="input" id="shares" name="shares" type="number" inputmode="decimal" step="any" min="0" value="85"><span class="affix-post">m</span></div>
+                </div>
+              </div>
+              <p class="field-hint">Use a negative net debt for net cash.</p>
+            </fieldset>
+            <div class="input-actions">
+              <button class="btn btn-secondary" type="button" id="dcf-reset">Reset to the example</button>
+              <button class="btn btn-secondary" type="button" id="dcf-csv">Download the schedule (CSV)</button>
+            </div>
+          </form>
+
+          <div class="bench-results" aria-live="polite" id="dcf-results">
+            <div>
+              <div class="figure-hero"><span class="hero-value" id="dcf-ev">—</span><span class="hero-label">enterprise value</span></div>
+              <p class="hero-label" id="dcf-share-line"></p>
+            </div>
+            <div id="dcf-warn"></div>
+            <dl class="stats-row">
+              <div class="stat"><dt>PV of forecast cash flows</dt><dd class="num" id="dcf-pv">—</dd></div>
+              <div class="stat"><dt>PV of terminal value</dt><dd class="num" id="dcf-pvtv">—</dd></div>
+              <div class="stat"><dt>Terminal value share</dt><dd class="num" id="dcf-tvshare">—</dd></div>
+              <div class="stat"><dt>Implied FCF multiple at exit</dt><dd class="num" id="dcf-mult">—</dd></div>
+            </dl>
+            <figure>
+              <figcaption class="figure-title">Free cash flow by year, before and after discounting</figcaption>
+              <div class="chart" id="dcf-chart"></div>
+              <div id="dcf-table"></div>
+            </figure>
+            <figure>
+              <figcaption class="figure-title">Where the value sits</figcaption>
+              <div id="dcf-split"></div>
+            </figure>
+            <figure>
+              <figcaption class="figure-title" id="sens-title">Sensitivity</figcaption>
+              <p class="figure-sub">Rows change the cost of capital; columns change terminal growth. The centre cell is your case.</p>
+              <div class="table-scroll" id="dcf-sens"></div>
+            </figure>
+            <ul class="caveats">
+              <li>A DCF is only as good as its forecast. Small changes in WACC or terminal growth move the answer a lot, which is what the sensitivity table is for.</li>
+              <li>Terminal value uses the growing perpetuity (Gordon) formula on the year after the forecast.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ ALTMAN -->
+      <section class="tool" id="altman" aria-labelledby="altman-title">
+        <div class="tool-head">
+          <h2 id="altman-title">Altman Z-score</h2>
+          <p>A five-ratio screen for financial distress, from Edward Altman’s 1968 study of manufacturers, with his later versions for private companies and for non-manufacturers.</p>
+        </div>
+        <div class="bench">
+          <form class="bench-inputs" id="z-form" novalidate>
+            <div class="field">
+              <span class="field-label" id="model-label">Which company is it?</span>
+              <div class="segmented segmented-stack" role="radiogroup" aria-labelledby="model-label">
+                <input type="radio" id="m-z" name="model" value="z" checked><label for="m-z">Public manufacturer (Z)</label>
+                <input type="radio" id="m-zp" name="model" value="zp"><label for="m-zp">Private manufacturer (Z′)</label>
+                <input type="radio" id="m-zpp" name="model" value="zpp"><label for="m-zpp">Non-manufacturer (Z″)</label>
+              </div>
+            </div>
+            <fieldset>
+              <legend>From the balance sheet and income statement ($m)</legend>
+              <div class="field-row">
+                <div class="field"><label for="ca">Current assets</label><input class="input" id="ca" type="number" inputmode="decimal" step="any"></div>
+                <div class="field"><label for="cl">Current liabilities</label><input class="input" id="cl" type="number" inputmode="decimal" step="any"></div>
+              </div>
+              <div class="field-row">
+                <div class="field"><label for="ta">Total assets</label><input class="input" id="ta" type="number" inputmode="decimal" step="any" min="0"></div>
+                <div class="field"><label for="tl">Total liabilities</label><input class="input" id="tl" type="number" inputmode="decimal" step="any" min="0"></div>
+              </div>
+              <div class="field-row">
+                <div class="field"><label for="re">Retained earnings</label><input class="input" id="re" type="number" inputmode="decimal" step="any"></div>
+                <div class="field"><label for="ebit">EBIT</label><input class="input" id="ebit" type="number" inputmode="decimal" step="any"></div>
+              </div>
+              <div class="field-row">
+                <div class="field" id="sales-field"><label for="sales">Sales</label><input class="input" id="sales" type="number" inputmode="decimal" step="any" min="0"></div>
+                <div class="field" id="mve-field"><label for="mve">Market value of equity</label><input class="input" id="mve" type="number" inputmode="decimal" step="any" min="0"></div>
+                <div class="field" id="bve-field" hidden><label for="bve">Book value of equity</label><input class="input" id="bve" type="number" inputmode="decimal" step="any"></div>
+              </div>
+            </fieldset>
+            <div class="field">
+              <span class="field-label">Load an illustrative company</span>
+              <div class="input-actions">
+                <button class="btn btn-secondary" type="button" data-preset="steady">Steady manufacturer</button>
+                <button class="btn btn-secondary" type="button" data-preset="stretched">Stretched retailer</button>
+              </div>
+              <p class="field-hint">Invented figures for practice, not real companies.</p>
+            </div>
+          </form>
+
+          <div class="bench-results" aria-live="polite">
+            <div class="figure-hero"><span class="hero-value" id="z-score">—</span><span class="hero-label" id="z-name"></span></div>
+            <div id="z-verdict"></div>
+            <figure>
+              <figcaption class="figure-title">Where the score falls</figcaption>
+              <div id="z-scale" class="chart"></div>
+            </figure>
+            <figure>
+              <figcaption class="figure-title">What builds the score</figcaption>
+              <p class="figure-sub">Each ratio multiplied by its weight. Bars to the left pull the score down.</p>
+              <div class="chart" id="z-chart"></div>
+              <div id="z-table"></div>
+            </figure>
+            <ul class="caveats">
+              <li>It is a screen, not a forecast. Altman built it on 66 US manufacturers from 1946–1965; treat the zones as prompts for a closer look.</li>
+              <li>Not meant for banks, insurers or other financial firms, whose balance sheets work differently.</li>
+              <li>Each version has its own cut-offs. Use Z″ for retailers and service companies, which carry fewer assets per dollar of sales.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources</h2>
+        <ol>
+          <li>Altman, E. I. (1968). Financial ratios, discriminant analysis and the prediction of corporate bankruptcy. <i>The Journal of Finance</i>, 23(4), 589–609.</li>
+          <li>Altman, E. I. (2000). Predicting financial distress of companies: revisiting the Z-score and ZETA models (Z′ and Z″ coefficients and zones).</li>
+          <li>Van Gogh to Theo, Arles, 24 March 1889, <a href="https://vangoghletters.org/vg/letters/let752/letter.html">letter 752</a>.</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../analytics/" data-portal="#192B49"><img src="../assets/img/flower-analytics.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../marketing/" data-portal="#56632C"><img src="../assets/img/flower-marketing.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../models/" data-portal="#252A31"><img src="../assets/img/flower-models.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../contact/" data-portal="#F6E7C1"><img src="../assets/img/flower-contact.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../assets/js/pages/finance.js?v=1"></script>
+</body>
+</html>
