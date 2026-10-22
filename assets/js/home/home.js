@@ -1,11 +1,11 @@
 // home.js — the homepage: frames the painting, places the five doorways, runs the living painting,
 // and opens a room through the chosen flower. Works without WebGL (still image + CSS) and without JS (plain links).
-import meta from '../../painting/meta.js?v=2';
-import { ROOMS, byId } from '../data/rooms.js?v=2';
-import { LivingPainting } from './painting.js?v=2';
-import { initSite } from '../core/site.js?v=2';
-import { leave, reset as resetPortal } from '../core/portal.js?v=2';
-import { $, $$, h, reducedMotion } from '../core/dom.js?v=2';
+import meta from '../../painting/meta.js?v=3';
+import { ROOMS, byId } from '../data/rooms.js?v=3';
+import { LivingPainting } from './painting.js?v=3';
+import { initSite } from '../core/site.js?v=3';
+import { leave, reset as resetPortal } from '../core/portal.js?v=3';
+import { $, $$, h, reducedMotion } from '../core/dom.js?v=3';
 
 initSite();
 
@@ -21,7 +21,7 @@ const calm = reducedMotion();
 const flowers = Object.fromEntries(meta.flowers.map((f) => [f.id, f]));
 const doors = meta.doorways.map((id) => ({ id, f: flowers[id], room: byId[id] }));
 // where each flower's number sits on its petals (degrees, 0 = east, clockwise), chosen to stay clear of its neighbours
-const MARK_ANGLE = { finance: -50, analytics: -135, marketing: -45, models: 20, contact: 205 };
+const MARK_ANGLE = { finance: -50, analytics: -135, marketing: -45, models: 20, contact: 205, learn: 30 };
 
 // ---------------------------------------------------------------- framing
 let frameState = { view: [0, 0, meta.width, meta.height], s: 1, w: 1, h: 1 };
@@ -72,7 +72,7 @@ function placeDoors() {
   });
 }
 
-const hoverTarget = new Float32Array(5);
+const hoverTarget = new Float32Array(doors.length);
 let activeDoor = -1, engaged = false;
 function setActive(k, on) {
   if (on && !engaged) { engaged = true; body.classList.add('is-engaged'); }
@@ -153,7 +153,7 @@ function tick(now) {
 
   let changing = false;
   const hk = 1 - Math.exp(-dt * 11);
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < doors.length; i++) {
     const before = painting.hover[i];
     painting.hover[i] += (hoverTarget[i] - painting.hover[i]) * hk;
     if (Math.abs(painting.hover[i] - before) > 1e-4) changing = true;

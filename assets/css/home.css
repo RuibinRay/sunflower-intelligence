@@ -78,6 +78,7 @@
 .is-still:not(.is-engaged) .door:nth-child(3)::after { animation-delay: .8s; }
 .is-still:not(.is-engaged) .door:nth-child(4)::after { animation-delay: 1.2s; }
 .is-still:not(.is-engaged) .door:nth-child(5)::after { animation-delay: 1.6s; }
+.is-still:not(.is-engaged) .door:nth-child(6)::after { animation-delay: 2s; }
 @keyframes door-breathe { 0%, 70%, 100% { opacity: 0; transform: scale(.94); } 82% { opacity: .5; transform: none; } }
 
 /* ---------------------------------------------------------------- the plaque (the painting's key) */
@@ -126,7 +127,7 @@
   .home--cover:not(.label-below) .room-entry { padding-block: 4px; }
   .home--cover:not(.label-below) .plaque-rooms { margin-top: 10px; }
 }
-@media (max-height: 700px) {
+@media (max-height: 760px) {
   .home--cover:not(.label-below) .plaque-sub { display: none; }
 }
 

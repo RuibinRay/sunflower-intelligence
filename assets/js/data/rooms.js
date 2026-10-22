@@ -30,5 +30,11 @@ export const ROOMS = [
     blurb: 'Write me a letter, or find me on LinkedIn and GitHub.',
     where: 'the seed head resting on the vase',
   },
+  {
+    id: 'learn', name: 'Learn', path: 'learn/', color: '#C96F36',
+    chapter: 'Learning by doing',
+    blurb: 'An adaptive check of where you stand, then practice that tracks what you’ve mastered and when to review it.',
+    where: 'the open bloom right of the vase',
+  },
 ];
 export const byId = Object.fromEntries(ROOMS.map((r) => [r.id, r]));

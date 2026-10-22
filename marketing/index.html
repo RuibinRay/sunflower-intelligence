@@ -15,8 +15,8 @@
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
   <link rel="preload" href="../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/css/base.css?v=2">
-  <link rel="stylesheet" href="../assets/css/rooms.css?v=2">
+  <link rel="stylesheet" href="../assets/css/base.css?v=3">
+  <link rel="stylesheet" href="../assets/css/rooms.css?v=3">
 </head>
 <body class="room room--marketing">
   <a class="skip-link" href="#ledger">Skip to the tools</a>
@@ -30,6 +30,7 @@
         <li><a href="../marketing/" aria-current="page">Marketing</a></li>
         <li><a href="../models/">How I build the models</a></li>
         <li><a href="../contact/">Contact</a></li>
+        <li><a href="../learn/">Learn</a></li>
       </ul>
     </nav>
     <div class="header-tools">
@@ -51,13 +52,13 @@
       <p class="chapter">Personal identity</p>
       <p class="chapter-note">Van Gogh painted the sunflower so often that it became his signature, the way a brand comes to own a colour. Owning a place in people’s minds starts with knowing them: who buys, how often, and what they will pay.</p>
       <blockquote class="quote">“You know that Jeannin has the peony, Quost has the hollyhock, but I have the sunflower, in a way.”<cite class="quote-cite">Vincent van Gogh to Theo, Arles, 22 January 1889</cite></blockquote>
-      <nav aria-label="In this room"><ul class="toc" role="list"><li><a href="#rfm">Customer segments</a></li><li><a href="#elasticity">Price sensitivity</a></li><li><a href="#unit-economics">Unit economics</a></li></ul></nav>
+      <nav aria-label="In this room"><ul class="toc" role="list"><li><a href="#rfm">Customer segments</a></li><li><a href="#elasticity">Price sensitivity</a></li><li><a href="#unit-economics">Unit economics</a></li><li><a href="#ab-test">A/B test</a></li></ul></nav>
     </header>
 
     <div class="ledger" id="ledger">
       <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../">The painting</a></li><li aria-current="page">Marketing</li></ol></nav>
       <div class="ledger-intro">
-        <p class="lead">Young sunflowers turn through the day to follow the sun; once mature, they settle facing east, where the morning warms them first and bees visit most. Customers move too. These tools show who is warm, who is cooling, how much a price change will cost you, and whether each new customer is worth what it costs to win.</p>
+        <p class="lead">Young sunflowers turn through the day to follow the sun; once mature, they settle facing east, where the morning warms them first and bees visit most. Customers move too. These tools show who is warm, who is cooling, how much a price change will cost you, whether each new customer is worth what it costs to win, and whether a test result is real.</p>
       </div>
 
       <!-- ============================================================ RFM -->
@@ -248,6 +249,55 @@
         </div>
       </section>
 
+      <!-- ============================================================ A/B TEST -->
+      <section class="tool" id="ab-test" aria-labelledby="ab-title">
+        <div class="tool-head">
+          <h2 id="ab-title">A/B test</h2>
+          <p>Did the new version really convert better, or is the gap the noise you’d expect from chance? And before running a test: how many visitors does it need to find the change you care about?</p>
+        </div>
+        <div class="bench">
+          <div class="bench-inputs">
+            <fieldset class="ue-group"><legend>Results so far</legend>
+              <div class="field-row"><div class="field"><label for="ab-na">Visitors, current version (A)</label><div class="affix"><input class="input" id="ab-na" type="number" inputmode="numeric" step="any" min="0" value="5000"></div></div><div class="field"><label for="ab-ca">Conversions, A</label><div class="affix"><input class="input" id="ab-ca" type="number" inputmode="numeric" step="any" min="0" value="260"></div></div></div>
+              <div class="field-row"><div class="field"><label for="ab-nb">Visitors, new version (B)</label><div class="affix"><input class="input" id="ab-nb" type="number" inputmode="numeric" step="any" min="0" value="5000"></div></div><div class="field"><label for="ab-cb">Conversions, B</label><div class="affix"><input class="input" id="ab-cb" type="number" inputmode="numeric" step="any" min="0" value="312"></div></div></div>
+            </fieldset>
+            <fieldset class="ue-group"><legend>Planning the next test</legend>
+              <div class="field"><label for="ab-base">Current conversion rate</label><div class="affix"><input class="input" id="ab-base" type="number" inputmode="numeric" step="any" min="0" value="5.2"><span class="affix-post">%</span></div></div>
+              <div class="slider-field"><div class="slider-top"><label for="ab-mde">Smallest lift worth finding</label><output for="ab-mde" id="ab-mde-out"></output></div><input type="range" id="ab-mde" min="2" max="50" step="1" value="10"></div>
+              <div class="field"><label for="ab-daily">Visitors per day, split across both versions</label><div class="affix"><input class="input" id="ab-daily" type="number" inputmode="numeric" step="any" min="0" value="1200"></div></div>
+            </fieldset>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="ab-error"></div>
+            <div id="ab-body">
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="ab-lift">—</span><span class="hero-label">relative lift of B over A</span></div>
+                <p class="hero-label" id="ab-ci"></p>
+              </div>
+              <div id="ab-verdict"></div>
+              <dl class="stats-row">
+                <div class="stat"><dt>Conversion, A</dt><dd class="num" id="ab-pa">—</dd></div>
+                <div class="stat"><dt>Conversion, B</dt><dd class="num" id="ab-pb">—</dd></div>
+                <div class="stat"><dt>z statistic</dt><dd class="num" id="ab-z">—</dd></div>
+                <div class="stat"><dt>p-value (two-sided)</dt><dd class="num" id="ab-p">—</dd></div>
+              </dl>
+              <figure>
+                <figcaption class="figure-title">Each version’s conversion rate with its 95% interval</figcaption>
+                <div class="chart" id="ab-chart"></div>
+              </figure>
+              <div class="predict">
+                <h3>Planning</h3>
+                <p class="predict-out" id="ab-plan"></p>
+              </div>
+              <ul class="caveats">
+                <li>Decide the sample size before you start and read the result once at the end. Checking every day and stopping at the first p below 0.05 makes false wins far more likely.</li>
+                <li>The test uses the normal approximation, which needs at least about ten conversions and ten non-conversions in each version.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="sources" aria-labelledby="sources-title">
         <h2 id="sources-title">Sources</h2>
         <ol>
@@ -255,6 +305,7 @@
           <li>Atamian, H. S., Creux, N. M., Brown, E. A., Garner, A. G., Blackman, B. K. &amp; Harmer, S. L. (2016). Circadian regulation of sunflower heliotropism, floral orientation, and pollinator visits. <i>Science</i> 353(6299), 587–590.</li>
           <li>Skok, D. <a href="https://forentrepreneurs.com/saas-metrics-2-definitions-2/">SaaS Metrics 2.0: detailed definitions</a>, For Entrepreneurs (lifetime value above three times acquisition cost; months to recover acquisition cost under twelve).</li>
           <li>Magic number as annualised new recurring revenue over the previous quarter’s sales and marketing spend: Chang, D. (2021), <a href="https://www.scalevp.com/blog/from-0-to-1m-the-magic-number">From $0 to $1M: the magic number</a>, Scale Venture Partners; thresholds of 0.5 and 0.75 as summarised by <a href="https://klipfolio.com/metrics/saas/magic-number">Klipfolio</a>.</li>
+          <li>Fleiss, J. L., Levin, B. &amp; Paik, M. C. (2003). <i>Statistical Methods for Rates and Proportions</i>, 3rd ed. Wiley (two-proportion test and sample size). Kohavi, R., Tang, D. &amp; Xu, Y. (2020). <i>Trustworthy Online Controlled Experiments</i>. Cambridge University Press.</li>
           <li>All example data on this page is synthetic, generated for the demo.</li>
         </ol>
       </section>
@@ -269,6 +320,7 @@
       <li><a class="room-link" href="../analytics/" data-portal="#192B49"><img src="../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
       <li><a class="room-link" href="../models/" data-portal="#252A31"><img src="../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
       <li><a class="room-link" href="../contact/" data-portal="#F6E7C1"><img src="../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../learn/" data-portal="#C96F36"><img src="../assets/img/flower-learn-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Learn</strong><span>Learning by doing</span></span></a></li>
     </ul>
     <div class="footer-meta">
       <p><a href="../">Back to the painting</a></p>
@@ -277,6 +329,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../assets/js/pages/marketing.js?v=2"></script>
+  <script type="module" src="../assets/js/pages/marketing.js?v=3"></script>
 </body>
 </html>

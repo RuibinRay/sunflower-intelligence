@@ -16,6 +16,7 @@ const ROOMS = [
   { id: 'marketing', name: 'Marketing', chapter: 'Personal identity', color: '#56632C' },
   { id: 'models', name: 'How I build the models', chapter: 'The cycle of life', color: '#252A31' },
   { id: 'contact', name: 'Contact', chapter: 'Gratitude and friendship', color: '#F6E7C1' },
+  { id: 'learn', name: 'Learn', chapter: 'Learning by doing', color: '#C96F36' },
 ];
 
 const glyph = `<svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs>${Array.from({ length: 13 }, (_, i) => `<use href="#wm-p"${i ? ` transform="rotate(${(i * 360 / 13).toFixed(1)})"` : ''}/>`).join('')}<circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg>`;

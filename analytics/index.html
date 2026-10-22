@@ -15,8 +15,8 @@
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
   <link rel="preload" href="../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/css/base.css?v=2">
-  <link rel="stylesheet" href="../assets/css/rooms.css?v=2">
+  <link rel="stylesheet" href="../assets/css/base.css?v=3">
+  <link rel="stylesheet" href="../assets/css/rooms.css?v=3">
 </head>
 <body class="room room--analytics">
   <a class="skip-link" href="#ledger">Skip to the tools</a>
@@ -30,6 +30,7 @@
         <li><a href="../marketing/">Marketing</a></li>
         <li><a href="../models/">How I build the models</a></li>
         <li><a href="../contact/">Contact</a></li>
+        <li><a href="../learn/">Learn</a></li>
       </ul>
     </nav>
     <div class="header-tools">
@@ -51,13 +52,13 @@
       <p class="chapter">The golden spiral</p>
       <p class="chapter-note">Look into a sunflower and its seeds line up in spirals, usually a Fibonacci number of them. Usually: in a citizen-science study published in 2016, volunteers counted the spirals on 657 sunflowers, and roughly a quarter of the counts broke the rule. Analytics is finding the pattern, then counting the exceptions honestly.</p>
       <p class="quote-cite">Swinton, Ochu &amp; MSI Turing’s Sunflower Consortium, <i>Royal Society Open Science</i>, 2016</p>
-      <nav aria-label="In this room"><ul class="toc" role="list"><li><a href="#data">Your data</a></li><li><a href="#describe">Describe</a></li><li><a href="#correlate">Correlate</a></li><li><a href="#regress">Regress</a></li><li><a href="#forecast">Forecast</a></li></ul></nav>
+      <nav aria-label="In this room"><ul class="toc" role="list"><li><a href="#data">Your data</a></li><li><a href="#describe">Describe</a></li><li><a href="#correlate">Correlate</a></li><li><a href="#regress">Regress</a></li><li><a href="#classify">Classify</a></li><li><a href="#segment">Segment</a></li><li><a href="#forecast">Forecast</a></li></ul></nav>
     </header>
 
     <div class="ledger on-night" id="ledger">
       <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../">The painting</a></li><li aria-current="page">Business analytics</li></ol></nav>
       <div class="ledger-intro">
-        <p class="lead">Bring a table, or start with an example. The room checks its quality before any analysis, then lets you describe each column, look for relationships, fit a regression with its diagnostics and forecast a seasonal series. Your file never leaves your browser.</p>
+        <p class="lead">Bring a table, or start with an example. The room checks its quality before any analysis, then lets you describe each column, look for relationships, fit a regression with its diagnostics, predict a yes-or-no outcome, find natural groups and forecast a seasonal series. Your file never leaves your browser.</p>
       </div>
 
       <!-- ============================================================ DATA -->
@@ -73,6 +74,7 @@
               <div class="segmented" role="radiogroup" aria-labelledby="source-label">
                 <input type="radio" id="src-trials" name="source" value="trials" checked><label for="src-trials">Sunflower field trials</label>
                 <input type="radio" id="src-cafe" name="source" value="cafe"><label for="src-cafe">Café weekly sales</label>
+                <input type="radio" id="src-churn" name="source" value="churn"><label for="src-churn">Seed club members</label>
                 <input type="radio" id="src-own" name="source" value="own"><label for="src-own">Your own table</label>
               </div>
             </div>
@@ -239,6 +241,101 @@
         </div>
       </section>
 
+      <!-- ============================================================ CLASSIFY -->
+      <section class="tool" id="classify" aria-labelledby="cls-title">
+        <div class="tool-head">
+          <h2 id="cls-title">Classify</h2>
+          <p>Logistic regression predicts a yes-or-no outcome, such as whether a customer cancels. Each coefficient becomes an odds ratio, and the model is judged on rows it never saw. Try it on the seed club members.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="field"><label for="cls-y">Outcome (a column with two values)</label><select class="select" id="cls-y"></select><p class="field-hint" id="cls-y-note"></p></div>
+            <fieldset><legend>Predictors</legend><div class="chips" id="cls-x"></div></fieldset>
+            <div class="slider-field">
+              <div class="slider-top"><label for="cls-t">Flag a row when its probability is at least</label><output for="cls-t" id="cls-t-out"></output></div>
+              <input type="range" id="cls-t" min="5" max="95" step="5" value="50">
+            </div>
+            <button class="btn btn-secondary" type="button" id="cls-csv">Download predictions (CSV)</button>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="cls-error"></div>
+            <div id="cls-body">
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="cls-auc">—</span><span class="hero-label">area under the ROC curve, on the 30% of rows held back</span></div>
+                <p class="hero-label" id="cls-auc-line"></p>
+              </div>
+              <dl class="stats-row">
+                <div class="stat"><dt>Accuracy</dt><dd class="num" id="cls-acc">—</dd></div>
+                <div class="stat"><dt>Precision</dt><dd class="num" id="cls-prec">—</dd></div>
+                <div class="stat"><dt>Recall</dt><dd class="num" id="cls-rec">—</dd></div>
+                <div class="stat"><dt>McFadden pseudo-R²</dt><dd class="num" id="cls-r2">—</dd></div>
+              </dl>
+              <figure>
+                <figcaption class="figure-title">Odds ratios, fitted on every row</figcaption>
+                <div class="table-scroll" id="cls-coefs"></div>
+              </figure>
+              <ul class="reading" id="cls-reading" role="list"></ul>
+              <div class="cls-pair">
+                <figure>
+                  <figcaption class="figure-title">ROC curve on the held-back rows</figcaption>
+                  <div class="chart" id="cls-roc"></div>
+                </figure>
+                <figure>
+                  <figcaption class="figure-title" id="cls-cm-title">At this threshold</figcaption>
+                  <div id="cls-cm"></div>
+                </figure>
+              </div>
+              <div id="cls-checks"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ SEGMENT -->
+      <section class="tool" id="segment" aria-labelledby="seg-title">
+        <div class="tool-head">
+          <h2 id="seg-title">Segment</h2>
+          <p>k-means clustering finds groups of rows that sit close together across the columns you choose. Columns are put on a common scale first, and the silhouette score says how cleanly the groups separate.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <fieldset><legend>Columns to group on</legend><div class="chips" id="seg-x"></div></fieldset>
+            <div class="slider-field">
+              <div class="slider-top"><label for="seg-k">Number of groups</label><output for="seg-k" id="seg-k-out"></output></div>
+              <input type="range" id="seg-k" min="2" max="6" step="1" value="3">
+            </div>
+            <button class="btn btn-secondary" type="button" id="seg-best">Use the best-separated number</button>
+            <button class="btn btn-secondary" type="button" id="seg-csv">Download groups (CSV)</button>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="seg-error"></div>
+            <div id="seg-body">
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="seg-sil">—</span><span class="hero-label">silhouette score (−1 to 1; above 0.5 is a clear structure)</span></div>
+                <p class="hero-label" id="seg-line"></p>
+              </div>
+              <figure>
+                <figcaption class="figure-title">How cleanly each number of groups separates</figcaption>
+                <div class="chart" id="seg-k-chart"></div>
+              </figure>
+              <figure>
+                <figcaption class="figure-title">The groups, by their averages</figcaption>
+                <div class="table-scroll" id="seg-profile"></div>
+              </figure>
+              <figure>
+                <figcaption class="figure-title" id="seg-plot-title">Rows on the first two columns</figcaption>
+                <div class="field"><span class="field-label" id="seg-show-label">Highlight group</span><div class="segmented" role="radiogroup" aria-labelledby="seg-show-label" id="seg-show"></div></div>
+                <div class="chart" id="seg-plot"></div>
+              </figure>
+              <ul class="caveats">
+                <li>k-means always returns the number of groups you ask for, structure or not; a low silhouette says the groups are a convenient cut, not a discovery.</li>
+                <li>It favours round, similar-sized groups and is pulled by outliers. Results are seeded so they repeat.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- ============================================================ FORECAST -->
       <section class="tool" id="forecast" aria-labelledby="fc-title">
         <div class="tool-head">
@@ -297,6 +394,8 @@
         <ol>
           <li>Swinton, J., Ochu, E. &amp; MSI Turing’s Sunflower Consortium (2016). Novel Fibonacci and non-Fibonacci structure in the sunflower: results of a citizen science experiment. <i>Royal Society Open Science</i> 3(5). <a href="https://doi.org/10.1098/rsos.160091">doi:10.1098/rsos.160091</a>. Spiral-count shares as summarised by <a href="https://plus.maths.org/sunflowers">Plus Magazine</a>.</li>
           <li>Breusch, T. S. &amp; Pagan, A. R. (1979). A simple test for heteroscedasticity and random coefficient variation. <i>Econometrica</i> 47(5); studentized form after Koenker, R. (1981), <i>Journal of Econometrics</i> 17(1).</li>
+          <li>Hosmer, D. W., Lemeshow, S. &amp; Sturdivant, R. X. (2013). <i>Applied Logistic Regression</i>, 3rd ed. Wiley. McFadden, D. (1974). Conditional logit analysis of qualitative choice behavior. In <i>Frontiers in Econometrics</i>.</li>
+          <li>Arthur, D. &amp; Vassilvitskii, S. (2007). k-means++: the advantages of careful seeding. <i>SODA</i>. Rousseeuw, P. J. (1987). Silhouettes: a graphical aid to the interpretation and validation of cluster analysis. <i>Journal of Computational and Applied Mathematics</i> 20, 53–65.</li>
           <li>MacKinnon, J. G. &amp; White, H. (1985). Some heteroskedasticity-consistent covariance matrix estimators with improved finite sample properties. <i>Journal of Econometrics</i> 29(3). (HC3 standard errors.)</li>
           <li>Hyndman, R. J. &amp; Athanasopoulos, G. <i>Forecasting: Principles and Practice</i>, 2nd ed., chapter 7 (<a href="https://otexts.com/fpp2/holt-winters.html">Holt-Winters</a>); prediction intervals for the additive model after Hyndman, Koehler, Ord &amp; Snyder (2008), <i>Forecasting with Exponential Smoothing</i>. Seasonal swings that grow with the level are modelled on logarithms.</li>
           <li>Statistics here are computed in your browser and checked against SciPy and statsmodels in the site’s automated tests.</li>
@@ -314,6 +413,7 @@
       <li><a class="room-link" href="../marketing/" data-portal="#56632C"><img src="../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
       <li><a class="room-link" href="../models/" data-portal="#252A31"><img src="../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
       <li><a class="room-link" href="../contact/" data-portal="#F6E7C1"><img src="../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../learn/" data-portal="#C96F36"><img src="../assets/img/flower-learn-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Learn</strong><span>Learning by doing</span></span></a></li>
     </ul>
     <div class="footer-meta">
       <p><a href="../">Back to the painting</a></p>
@@ -322,6 +422,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../assets/js/pages/analytics.js?v=2"></script>
+  <script type="module" src="../assets/js/pages/analytics.js?v=3"></script>
 </body>
 </html>

@@ -1,16 +1,18 @@
-// analytics.js — data quality, describe, correlate, regress, forecast.
-import { initSite } from '../core/site.js?v=2';
-import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=2';
-import * as F from '../core/format.js?v=2';
-import * as S from '../core/stats.js?v=2';
-import { parseTable, audit, applyTransforms, isNumeric } from '../core/csv.js?v=2';
-import { sunflowerTrials, cafeWeeks, monthlySales } from '../core/rng.js?v=2';
-import { histogramChart, scatter, heatmap, tableTwin, lineChart } from '../core/charts.js?v=2';
-import { holtWinters, backtest } from '../core/forecast.js?v=2';
+// analytics.js — data quality, describe, correlate, regress, classify, segment, forecast.
+import { initSite } from '../core/site.js?v=3';
+import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=3';
+import * as F from '../core/format.js?v=3';
+import * as S from '../core/stats.js?v=3';
+import { parseTable, audit, applyTransforms, isNumeric } from '../core/csv.js?v=3';
+import { sunflowerTrials, cafeWeeks, monthlySales, subscriberChurn, mulberry32 } from '../core/rng.js?v=3';
+import { logit, confusion, roc, kmeans, silhouette, standardise } from '../core/classify.js?v=3';
+import { syncRanges } from '../core/site.js?v=3';
+import { histogramChart, scatter, heatmap, tableTwin, lineChart, barChart } from '../core/charts.js?v=3';
+import { holtWinters, backtest } from '../core/forecast.js?v=3';
 
 initSite();
 
-const EXAMPLES = { trials: sunflowerTrials, cafe: cafeWeeks };
+const EXAMPLES = { trials: sunflowerTrials, cafe: cafeWeeks, churn: subscriberChurn };
 const TYPE_LABEL = { number: 'Number', currency: 'Money', percent: 'Percent', date: 'Date', category: 'Category', text: 'Text', id: 'Identifier' };
 const state = { original: null, table: null, name: '', note: '', dropDup: false, history: [], corrCols: null, corrPair: null, regX: null };
 
@@ -27,6 +29,8 @@ function refresh() {
   renderDescribeOptions();
   renderCorrelate();
   renderRegressOptions();
+  renderClassifyOptions();
+  renderSegmentOptions();
   renderForecastOptions();
 }
 function loadExample(key) {
@@ -345,6 +349,190 @@ $('#reg-csv').addEventListener('click', () => {
   download('regression-coefficients.csv', toCSV(['term', 'estimate', robust ? 'std_error_hc3' : 'std_error', 't', 'p_value', 'ci95_low', 'ci95_high'], coefs.map((c) => [c.name, c.estimate, c.se, c.t, c.p, c.low, c.high]).concat([[], ['r_squared', fit.r2], ['adj_r_squared', fit.adjR2], ['n', fit.n], ['rmse', fit.rmse]])));
 });
 
+// ---------------------------------------------------------------- classify (logistic regression)
+let lastCls = null;
+const twoValued = (c) => { const v = new Set(c.values.filter(Number.isFinite)); return v.size === 2; };
+function renderClassifyOptions() {
+  const bin = numCols().filter(twoValued).map((c) => c.name);
+  const sel = $('#cls-y'), prev = sel.value;
+  fillSelect(sel, bin, prev);
+  if (!bin.includes(prev)) sel.value = bin.includes('churned') ? 'churned' : bin[bin.length - 1] || '';
+  state.clsX = null;
+  renderClassifyChips();
+}
+function renderClassifyChips() {
+  const y = $('#cls-y').value;
+  const names = numCols().map((c) => c.name).filter((n) => n !== y);
+  if (!state.clsX) state.clsX = names.slice(0, 6);
+  state.clsX = state.clsX.filter((n) => names.includes(n));
+  chips($('#cls-x'), names, state.clsX, 'cx', () => { state.clsX = checkedIn($('#cls-x')); renderClassify(); });
+  renderClassify();
+}
+function splitRows(n, seed = 7) {
+  const r = mulberry32(seed), idx = Array.from({ length: n }, (_, i) => i);
+  for (let i = n - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+  const cut = Math.round(n * 0.7);
+  return { train: idx.slice(0, cut), test: idx.slice(cut) };
+}
+function renderClassify() {
+  const err = $('#cls-error'), body = $('#cls-body');
+  err.replaceChildren(); lastCls = null;
+  const t = +$('#cls-t').value / 100;
+  $('#cls-t-out').textContent = F.pct(t, 0);
+  const fail = (msg) => { err.append(h('div', { class: 'verdict is-bad' }, h('p', {}, h('strong', {}, 'No model yet. '), msg))); body.hidden = true; };
+  const yName = $('#cls-y').value;
+  if (!yName) { $('#cls-y-note').textContent = ''; return fail('This table has no column with exactly two values. Choose “Seed club members” above to try it.'); }
+  const xNames = state.clsX;
+  if (!xNames.length) return fail('Choose at least one predictor.');
+  const ycol = colBy(yName).values, xcols = xNames.map((n) => colBy(n).values);
+  const vals = [...new Set(ycol.filter(Number.isFinite))].sort((a, b) => a - b);
+  $('#cls-y-note').textContent = `Predicting ${yName} = ${F.auto(vals[1])} (the other value, ${F.auto(vals[0])}, counts as no).`;
+  const keep = ycol.map((v, i) => Number.isFinite(v) && xcols.every((x) => Number.isFinite(x[i])));
+  const rowsIdx = keep.map((k, i) => (k ? i : -1)).filter((i) => i >= 0);
+  const y = rowsIdx.map((i) => (ycol[i] === vals[1] ? 1 : 0));
+  const X = xcols.map((x) => rowsIdx.map((i) => x[i]));
+  const fit = logit(X, y, { names: xNames });
+  if (fit.error) return fail(fit.error);
+  // judge it on rows it never saw: fit on 70%, score the other 30%
+  const sp = splitRows(y.length);
+  const fitTr = logit(X.map((c) => sp.train.map((i) => c[i])), sp.train.map((i) => y[i]), { names: xNames });
+  if (fitTr.error) return fail(`On the 70% training split: ${fitTr.error}`);
+  const yTe = sp.test.map((i) => y[i]), pTe = sp.test.map((i) => fitTr.predict(X.map((c) => c[i])));
+  if (new Set(yTe).size < 2) return fail('The held-back rows contain only one class, so the model can’t be judged. Use a larger table.');
+  body.hidden = false;
+  const rc = roc(yTe, pTe), cm = confusion(yTe, pTe, t);
+  lastCls = { fit, rowsIdx, y, yName };
+  $('#cls-auc').textContent = F.num(rc.auc, 2);
+  $('#cls-auc-line').textContent = `${rc.auc >= 0.8 ? 'Strong' : rc.auc >= 0.7 ? 'Useful' : rc.auc > 0.6 ? 'Weak' : 'Little better than chance'}: pick one yes and one no at random, and the model ranks the yes higher ${F.pct(rc.auc, 0)} of the time (0.5 is a coin flip). Base rate: ${F.pct(fit.base, 0)} yes.`;
+  $('#cls-acc').textContent = F.pct(cm.accuracy, 0);
+  $('#cls-prec').textContent = F.pct(cm.precision, 0);
+  $('#cls-rec').textContent = F.pct(cm.recall, 0);
+  $('#cls-r2').textContent = F.num(fit.pseudoR2, 2);
+  $('#cls-coefs').replaceChildren(h('table', { class: 'data-table' },
+    h('thead', {}, h('tr', {}, ['Term', 'Coefficient', 'Odds ratio', '95% CI', 'p'].map((c, i) => h('th', { scope: 'col', class: i ? 'is-num' : '' }, c)))),
+    h('tbody', {}, fit.coefs.map((c, i) => h('tr', { class: i && c.p < 0.05 ? 'is-strong' : '' },
+      h('th', { scope: 'row' }, c.name), h('td', { class: 'is-num' }, F.num(c.estimate, 3)), h('td', { class: 'is-num' }, i ? F.num(c.or, 3) : ''),
+      h('td', { class: 'is-num' }, i ? `${F.num(c.orLow, 2)} to ${F.num(c.orHigh, 2)}` : ''), h('td', { class: 'is-num' }, F.pValue(c.p)))))));
+  const reading = $('#cls-reading'); reading.replaceChildren();
+  fit.coefs.slice(1).forEach((c) => {
+    if (c.p >= 0.05) { reading.append(h('li', { class: 'muted' }, `${c.name}: no clear effect once the others are held fixed (p ${F.pValue(c.p)}).`)); return; }
+    const change = c.or >= 1 ? `${F.pct(c.or - 1, 0)} higher` : `${F.pct(1 - c.or, 0)} lower`;
+    const bin = new Set(colBy(c.name).values.filter(Number.isFinite)).size === 2;
+    reading.append(h('li', {}, bin ? `${c.name} at its higher value: odds of ${yName} ${change} (×${F.num(c.or, 2)}), holding the others fixed.` : `Each extra unit of ${c.name}: odds of ${yName} ${change} (×${F.num(c.or, 2)}), holding the others fixed.`));
+  });
+  reading.append(h('li', { class: 'muted' }, 'Odds ratios describe association in this data, not cause.'));
+  // ROC
+  const pts = rc.pts;
+  lineChart($('#cls-roc'), {
+    xs: pts.map((q) => q.fpr), series: [{ name: 'Model', values: pts.map((q) => q.tpr), cls: 'm-s2' }, { name: 'Coin flip', values: pts.map((q) => q.fpr), cls: 'm-s1' }],
+    height: 260, xLabel: 'False-positive rate', yLabel: 'True-positive rate', xFormat: (v) => F.pct(v, 0), yFormat: (v) => F.pct(v, 0), yDomain: [0, 1], endLabels: false,
+    label: `ROC curve on held-back rows, area ${F.num(rc.auc, 2)}`,
+  });
+  // confusion matrix at the threshold
+  $('#cls-cm-title').textContent = `At a ${F.pct(t, 0)} threshold, on the held-back rows`;
+  $('#cls-cm').replaceChildren(h('table', { class: 'data-table cm-table' },
+    h('caption', { class: 'visually-hidden' }, 'Confusion matrix'),
+    h('thead', {}, h('tr', {}, h('th', { scope: 'col' }, ''), h('th', { scope: 'col', class: 'is-num' }, 'Flagged'), h('th', { scope: 'col', class: 'is-num' }, 'Not flagged'))),
+    h('tbody', {},
+      h('tr', {}, h('th', { scope: 'row' }, `Actually ${yName}`), h('td', { class: 'is-num cell-hi' }, `${cm.tp} caught`), h('td', { class: 'is-num' }, `${cm.fn} missed`)),
+      h('tr', {}, h('th', { scope: 'row' }, 'Actually not'), h('td', { class: 'is-num' }, `${cm.fp} false alarms`), h('td', { class: 'is-num' }, `${cm.tn} correctly left`)))),
+    h('p', { class: 'figure-sub' }, `Raising the threshold flags fewer rows: fewer false alarms, more misses.`));
+  // checks
+  const checks = $('#cls-checks'); checks.replaceChildren();
+  const minority = Math.min(fit.base, 1 - fit.base) * fit.n;
+  if (fit.separated) checks.append(h('div', { class: 'verdict is-warn' }, h('p', {}, h('strong', {}, 'Near-perfect separation. '), 'One predictor (or a mix) almost perfectly splits the classes, so some coefficients run off towards infinity and their standard errors can’t be trusted.')));
+  if (minority / xNames.length < 10) checks.append(h('div', { class: 'verdict is-warn' }, h('p', {}, h('strong', {}, 'Few events per predictor. '), `${Math.round(minority)} cases in the rarer class for ${xNames.length} predictor${xNames.length > 1 ? 's' : ''}. Aim for at least ten per predictor, or coefficients will be unstable.`)));
+}
+$('#cls-y').addEventListener('change', () => { state.clsX = null; renderClassifyChips(); });
+$('#cls-t').addEventListener('input', renderClassify);
+$('#cls-csv').addEventListener('click', () => {
+  if (!lastCls) return;
+  const { fit, rowsIdx, y, yName } = lastCls, t = +$('#cls-t').value / 100;
+  const idCol = state.table.columns.find((c) => c.type === 'id');
+  download('logistic-predictions.csv', toCSV([idCol ? idCol.name : 'row', `actual_${yName}`, 'probability', 'flagged'],
+    rowsIdx.map((r, i) => [idCol ? idCol.raw[r] : r + 1, y[i], fit.prob[i], fit.prob[i] >= t ? 1 : 0])));
+});
+
+// ---------------------------------------------------------------- segment (k-means)
+let lastSeg = null;
+function renderSegmentOptions() {
+  const names = numCols().map((c) => c.name);
+  const cont = numCols().filter((c) => !twoValued(c)).map((c) => c.name);
+  state.segX = state.segX ? state.segX.filter((n) => names.includes(n)) : null;
+  if (!state.segX || state.segX.length < 2) state.segX = cont.slice(0, 3).length >= 2 ? cont.slice(0, 3) : names.slice(0, 3);
+  chips($('#seg-x'), names, state.segX, 'sx', () => { state.segX = checkedIn($('#seg-x')); state.segShow = 0; renderSegment(); });
+  state.segShow = 0;
+  renderSegment();
+}
+function renderSegment() {
+  const err = $('#seg-error'), body = $('#seg-body');
+  err.replaceChildren(); lastSeg = null;
+  const k = +$('#seg-k').value;
+  $('#seg-k-out').textContent = String(k);
+  const fail = (msg) => { err.append(h('div', { class: 'verdict is-bad' }, h('p', {}, h('strong', {}, 'No groups yet. '), msg))); body.hidden = true; };
+  const xNames = state.segX || [];
+  if (xNames.length < 2) return fail('Choose at least two columns.');
+  const cols = xNames.map((n) => colBy(n).values);
+  const keep = cols[0].map((_, i) => cols.every((c) => Number.isFinite(c[i])));
+  const idx = keep.map((v, i) => (v ? i : -1)).filter((i) => i >= 0);
+  if (idx.length < 12) return fail('Needs at least 12 complete rows.');
+  const data = cols.map((c) => idx.map((i) => c[i]));
+  const { rows } = standardise(data);
+  // silhouette is O(n²): above 1,500 rows it is scored on a seeded sample
+  const sampleIdx = rows.length > 1500 ? splitRows(rows.length, 3).train.slice(0, 1500) : null;
+  const silOf = (labels) => (sampleIdx ? silhouette(sampleIdx.map((i) => rows[i]), sampleIdx.map((i) => labels[i])) : silhouette(rows, labels));
+  const runs = [2, 3, 4, 5, 6].filter((kk) => kk < rows.length).map((kk) => { const km = kmeans(rows, kk); return { k: kk, km, sil: silOf(km.labels) }; });
+  const run = runs.find((r) => r.k === k) || runs[runs.length - 1];
+  const best = runs.reduce((a, b) => (b.sil > a.sil ? b : a));
+  body.hidden = false;
+  lastSeg = { idx, km: run.km, xNames, data, best };
+  $('#seg-sil').textContent = F.num(run.sil, 2);
+  $('#seg-line').textContent = `${run.sil >= 0.5 ? 'Clear groups' : run.sil >= 0.25 ? 'Some structure, with overlap' : 'Weak structure: these groups are a convenient cut more than a natural one'}. Best-separated: ${best.k} groups (${F.num(best.sil, 2)})${sampleIdx ? '; scored on a sample of 1,500 rows' : ''}.`;
+  barChart($('#seg-k-chart'), {
+    categories: runs.map((r) => `${r.k} groups`), height: 200, legend: false, valueLabels: true, label: 'Silhouette score for each number of groups',
+    series: [{ name: 'Silhouette', values: runs.map((r) => r.sil), cls: 'm-s2' }], format: (v) => F.num(v, 2),
+  });
+  // profiles in original units
+  const { labels, sizes } = run.km, n = idx.length;
+  const means = Array.from({ length: run.k }, (_, c) => data.map((col) => S.mean(col.filter((_, i) => labels[i] === c))));
+  const overall = data.map((col) => S.mean(col)), sds = data.map((col) => S.sd(col) || 1);
+  const describeGroup = (c) => {
+    const z = means[c].map((m, j) => ({ j, z: (m - overall[j]) / sds[j] })).sort((a, b) => Math.abs(b.z) - Math.abs(a.z)).filter((d) => Math.abs(d.z) >= 0.3).slice(0, 2);
+    return z.length ? z.map((d) => `${d.z > 0 ? 'high' : 'low'} ${xNames[d.j]}`).join(', ') : 'close to average';
+  };
+  $('#seg-profile').replaceChildren(h('table', { class: 'data-table' },
+    h('thead', {}, h('tr', {}, ['Group', 'Rows', ...xNames, 'Stands out for'].map((c, i) => h('th', { scope: 'col', class: i && i <= xNames.length + 1 ? 'is-num' : '' }, c)))),
+    h('tbody', {},
+      ...means.map((m, c) => h('tr', {}, h('th', { scope: 'row' }, `Group ${c + 1}`), h('td', { class: 'is-num' }, `${F.int(sizes[c])} (${F.pct(sizes[c] / n, 0)})`), ...m.map((v) => h('td', { class: 'is-num' }, F.auto(v))), h('td', {}, describeGroup(c)))),
+      h('tr', { class: 'is-total' }, h('th', { scope: 'row' }, 'All rows'), h('td', { class: 'is-num' }, F.int(n)), ...overall.map((v) => h('td', { class: 'is-num' }, F.auto(v))), h('td', {}, '')))));
+  // highlight one group at a time (scatter colours stay readable for any number of groups)
+  if (!(state.segShow < run.k)) state.segShow = 0;
+  const box = $('#seg-show');
+  box.replaceChildren(...Array.from({ length: run.k }, (_, c) => [
+    Object.assign(h('input', { type: 'radio', id: `seg-show-${c}`, name: 'seg-show', value: String(c) }), { checked: c === state.segShow }),
+    h('label', { for: `seg-show-${c}` }, `${c + 1}`),
+  ]).flat());
+  $$('input', box).forEach((el) => el.addEventListener('change', () => { state.segShow = +el.value; drawSegPlot(); }));
+  drawSegPlot();
+}
+function drawSegPlot() {
+  if (!lastSeg) return;
+  const { km, data, xNames } = lastSeg, c = state.segShow;
+  $('#seg-plot-title').textContent = `${xNames[1]} against ${xNames[0]}: group ${c + 1} highlighted`;
+  const pts = data[0].map((x, i) => ({ x, y: data[1][i], cls: km.labels[i] === c ? 'm-s2' : 'm-muted', title: `Group ${km.labels[i] + 1}` }));
+  pts.sort((a, b) => (a.cls === 'm-s2') - (b.cls === 'm-s2'));          // highlighted group drawn on top
+  scatter($('#seg-plot'), { points: pts, height: 300, xLabel: xNames[0], yLabel: xNames[1], label: `Rows by ${xNames[0]} and ${xNames[1]}, group ${c + 1} highlighted`,
+    legend: [{ name: `Group ${c + 1}`, cls: 'm-s2' }, { name: 'Other groups', cls: 'm-muted' }] });
+}
+$('#seg-k').addEventListener('input', renderSegment);
+$('#seg-best').addEventListener('click', () => { if (!lastSeg) return; $('#seg-k').value = String(lastSeg.best.k); syncRanges($('#segment')); renderSegment(); });
+$('#seg-csv').addEventListener('click', () => {
+  if (!lastSeg) return;
+  const { idx, km, xNames, data } = lastSeg;
+  const idCol = state.table.columns.find((c) => c.type === 'id');
+  download('kmeans-groups.csv', toCSV([idCol ? idCol.name : 'row', ...xNames, 'group'], idx.map((r, i) => [idCol ? idCol.raw[r] : r + 1, ...data.map((col) => col[i]), km.labels[i] + 1])));
+});
+
 // ---------------------------------------------------------------- forecast
 const SALES = monthlySales();
 let lastForecast = null;
@@ -443,5 +631,5 @@ $('#fc-csv').addEventListener('click', () => {
 
 // ---------------------------------------------------------------- go
 loadExample('trials');
-const redraw = debounce(() => { if (!state.table) return; renderDescribe(); drawCorrelation(); drawDiagnostic(); if (lastForecast) renderForecast(); }, 150);
+const redraw = debounce(() => { if (!state.table) return; renderDescribe(); drawCorrelation(); drawDiagnostic(); if (lastCls) renderClassify(); if (lastSeg) drawSegPlot(); if (lastForecast) renderForecast(); }, 150);
 onResize($('#desc-hist'), redraw);

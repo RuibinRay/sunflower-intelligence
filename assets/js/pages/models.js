@@ -1,10 +1,10 @@
 // models.js — the life cycle of a model (as a flower) and the overfitting lab.
-import { initSite } from '../core/site.js?v=2';
-import { $, $$, h, s, onResize, debounce } from '../core/dom.js?v=2';
-import * as F from '../core/format.js?v=2';
-import * as S from '../core/stats.js?v=2';
-import { curvePoints } from '../core/rng.js?v=2';
-import { scatter, lineChart, tableTwin } from '../core/charts.js?v=2';
+import { initSite } from '../core/site.js?v=3';
+import { $, $$, h, s, onResize, debounce } from '../core/dom.js?v=3';
+import * as F from '../core/format.js?v=3';
+import * as S from '../core/stats.js?v=3';
+import { curvePoints, mulberry32 } from '../core/rng.js?v=3';
+import { scatter, lineChart, tableTwin } from '../core/charts.js?v=3';
 
 initSite();
 
@@ -116,6 +116,28 @@ function errors(pts) {
   });
 }
 let errs = errors(data.pts);
+/** k-fold cross-validation over all points: mean RMSE and its standard error for each degree. */
+function cvErrors(pts, k = 5) {
+  const r = mulberry32(seed * 31 + 7), idx = pts.map((_, i) => i);
+  for (let i = idx.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+  const fold = new Array(pts.length); idx.forEach((p, i) => { fold[p] = i % k; });
+  return Array.from({ length: 12 }, (_, dd) => {
+    const scores = [];
+    for (let f = 0; f < k; f++) {
+      const tr = pts.filter((_, i) => fold[i] !== f), te = pts.filter((_, i) => fold[i] === f);
+      const fit = S.polyfit(tr.map((p) => p.x), tr.map((p) => p.y), dd + 1);
+      scores.push(fit ? S.rmse(te.map((p) => fit(p.x)), te.map((p) => p.y)) : NaN);
+    }
+    const m = S.mean(scores), se = S.sd(scores) / Math.sqrt(k);
+    return { d: dd + 1, mean: m, se };
+  });
+}
+let cv = cvErrors(data.pts);
+function cvChoice() {
+  const best = cv.reduce((a, b) => (b.mean < a.mean ? b : a));
+  const pick = cv.find((c) => c.mean <= best.mean + best.se);
+  return { best, pick };
+}
 function renderLab() {
   const d = +deg.value;
   $('#deg-out').textContent = String(d);
@@ -145,6 +167,23 @@ function renderLab() {
     xs: errs.map((x) => x.d), series: [{ name: 'Held-out', values: errs.map((x) => x.val), cls: 'm-s1' }, { name: 'Training', values: errs.map((x) => x.train), cls: 'm-s2' }],
     height: 240, xLabel: 'Degree', yLabel: 'RMSE', highlightX: d, yDomain: [0, cap], xTicks: errs.map((x) => x.d), label: 'Training and held-out error for each polynomial degree', xFormat: (v) => String(v), yFormat: (v) => F.num(v, 2),
   });
+  const { best: cvBest, pick } = cvChoice();
+  $('#cv-best').textContent = String(pick.d);
+  const capCV = Math.min(cvBest.mean * 3.2, Math.max(...cv.map((c) => c.mean + c.se).filter(Number.isFinite)));
+  lineChart($('#cv-curve'), {
+    xs: cv.map((c) => c.d), series: [{ name: 'Cross-validated', values: cv.map((c) => c.mean), cls: 'm-s1' }],
+    band: { lo: cv.map((c) => Math.max(0, c.mean - c.se)), hi: cv.map((c) => Math.min(capCV, c.mean + c.se)), cls: 'm-s1', label: '± 1 standard error' },
+    height: 220, xLabel: 'Degree', yLabel: 'RMSE', highlightX: pick.d, yDomain: [0, capCV], xTicks: cv.map((c) => c.d), endLabels: false,
+    label: 'Five-fold cross-validated error for each polynomial degree', xFormat: (v) => String(v), yFormat: (v) => F.num(v, 2),
+  });
+  $('#cv-story').textContent = pick.d === cvBest.d
+    ? `Cross-validation picks degree ${pick.d}: lowest average error across the five folds (${F.num(cvBest.mean, 3)}).`
+    : `The lowest average error is at degree ${cvBest.d} (${F.num(cvBest.mean, 3)}), but degree ${pick.d} is within one standard error of it, so the one-standard-error rule takes the simpler degree ${pick.d}.`;
+  $('#cv-table').replaceChildren();
+  tableTwin($('#cv-table'), {
+    caption: 'Cross-validated error by degree', columns: [{ label: 'Degree' }, { label: 'Mean RMSE', num: true }, { label: 'Standard error', num: true }],
+    rows: cv.map((c) => [String(c.d), F.num(c.mean, 3), F.num(c.se, 3)]),
+  });
   $('#lab-table').replaceChildren();
   tableTwin($('#lab-table'), {
     caption: 'Error by degree', columns: [{ label: 'Degree' }, { label: 'Training RMSE', num: true }, { label: 'Held-out RMSE', num: true }],
@@ -153,6 +192,6 @@ function renderLab() {
 }
 deg.addEventListener('input', renderLab);
 $('#truth').addEventListener('change', renderLab);
-$('#resample').addEventListener('click', () => { seed += 1; data = curvePoints(seed); errs = errors(data.pts); renderLab(); });
+$('#resample').addEventListener('click', () => { seed += 1; data = curvePoints(seed); errs = errors(data.pts); cv = cvErrors(data.pts); renderLab(); });
 renderLab();
 onResize($('#lab-fit'), debounce(renderLab, 100));

@@ -1,18 +1,19 @@
 # Sunflower Intelligence
 
-Finance, business analytics and marketing tools set inside a living sunflower painting after Van Gogh. The homepage is the painting: five numbered flowers open five rooms, keyed by a plaque in the corner like a gallery label.
+Finance, business analytics and marketing tools set inside a living sunflower painting after Van Gogh. The homepage is the painting: six numbered flowers open six rooms, keyed by a plaque in the corner like a gallery label.
 
 **Live:** https://ruibinray.github.io/sunflower-intelligence/
 
 | Room | Flower | What it does |
 |---|---|---|
-| [Finance](finance/) | 1, the golden bloom at the centre | Discounted cash flow valuation with a sensitivity table; Altman Z, Z′ and Z″ distress screens |
-| [Business analytics](analytics/) | 2, the dark-eyed bloom on the left | Data-quality audit with a reversible change log, descriptive statistics, Pearson/Spearman correlation matrix, OLS regression with Breusch–Pagan, VIF, optional HC3 robust standard errors and prediction intervals; Holt-Winters forecasting with 95% intervals, checked on a held-back season against repeating last season |
-| [Marketing](marketing/) | 3, the head turned aside, on the right | RFM customer segmentation drawn as a sunflower seed head; price elasticity from a log-log regression with a what-if and an optional profit-maximising price; subscription unit economics (LTV:CAC, CAC payback with and without churn, magic number, net and gross revenue retention) |
-| [How I build the models](models/) | 4, the crown at the top | The six-stage model life cycle, and an overfitting lab (polynomial degree vs training and held-out error) |
+| [Finance](finance/) | 1, the golden bloom at the centre | Cost of capital (CAPM and WACC, feeding the DCF); discounted cash flow valuation with a sensitivity table; bond price, yield, duration and convexity; Black–Scholes–Merton option value, Greeks and implied volatility; Altman Z, Z′ and Z″ distress screens |
+| [Business analytics](analytics/) | 2, the dark-eyed bloom on the left | Data-quality audit with a reversible change log, descriptive statistics, Pearson/Spearman correlation matrix, OLS regression with Breusch–Pagan, VIF, optional HC3 robust standard errors and prediction intervals; logistic regression with odds ratios, ROC/AUC and a confusion matrix on held-back rows; k-means clustering with silhouette scores and group profiles; Holt-Winters forecasting with 95% intervals, checked on a held-back season against repeating last season |
+| [Marketing](marketing/) | 3, the head turned aside, on the right | RFM customer segmentation drawn as a sunflower seed head; price elasticity from a log-log regression with a what-if and an optional profit-maximising price; subscription unit economics (LTV:CAC, CAC payback with and without churn, magic number, net and gross revenue retention); A/B test significance with a lift interval and a sample-size planner |
+| [How I build the models](models/) | 4, the crown at the top | The six-stage model life cycle, and an overfitting lab (polynomial degree vs training and held-out error, plus five-fold cross-validation with the one-standard-error rule) |
 | [Contact](contact/) | 5, the seed head resting on the vase | A letter that opens in the visitor’s own email app, plus LinkedIn, GitHub and portfolio links |
+| [Learn](learn/) | 6, the open bloom right of the vase | 44 questions in 12 skills behind the tools: an adaptive placement check (3PL item response theory, EAP ability estimate, most-informative next question), practice routed by Bayesian knowledge tracing, and spaced review by half-life regression. Progress stays in the visitor’s browser. |
 
-Each room takes one of the meanings of Van Gogh’s sunflowers as its chapter: gratitude and friendship, the cycle of life, an obsession with yellow, personal identity, and (from the flower itself) the golden spiral. Quotes are from the Van Gogh Letters edition and cited on each page.
+Each room takes one of the meanings of Van Gogh’s sunflowers as its chapter: gratitude and friendship, the cycle of life, an obsession with yellow, personal identity, (from the flower itself) the golden spiral, and (from how he taught himself to paint) learning by doing. Quotes are from the Van Gogh Letters edition and cited on each page.
 
 ## How it works
 
@@ -30,16 +31,18 @@ Each room takes one of the meanings of Van Gogh’s sunflowers as its chapter: g
 
 ```
 index.html                 the painting (homepage)
-finance/ analytics/ marketing/ models/ contact/   one folder per room (index.html)
+finance/ analytics/ marketing/ models/ contact/ learn/   one folder per room (index.html)
 404.html
 assets/css/base.css        fonts, colour and type tokens, controls, header, footer, portal
 assets/css/home.css        homepage
 assets/css/rooms.css       room layout, tools, charts, tables
-assets/js/core/            stats.js (numerics), forecast.js (Holt-Winters), saas.js (unit economics), csv.js (parsing + quality audit), charts.js (SVG charts),
+assets/js/core/            stats.js (numerics), fin.js (WACC, bonds, options), classify.js (logistic regression, k-means), abtest.js,
+                           forecast.js (Holt-Winters), saas.js (unit economics), learn.js (IRT, BKT, HLR), csv.js (parsing + quality audit), charts.js (SVG charts),
                            portal.js, site.js, dom.js, format.js, rng.js (seeded example data)
 assets/js/home/            home.js (framing, doorways, render loop), painting.js (WebGL)
 assets/js/pages/           one module per room
-assets/js/data/rooms.js    the five rooms: names, chapters, colours, one-line descriptions
+assets/js/data/rooms.js    the six rooms: names, chapters, colours, one-line descriptions
+assets/js/data/learn-items.js  the Learn room's skills and questions (with author-set item parameters)
 assets/painting/           the painting at four widths, flow map, relief map, meta.js (flower positions)
 assets/img/                room flowers, social image, icons, canvas texture
 assets/fonts/              Bodoni Moda and Atkinson Hyperlegible Next (self-hosted, SIL OFL)
@@ -79,7 +82,8 @@ grep -rl '/sunflower-intelligence/' --exclude-dir=.git . | xargs perl -pi -e 's#
 ```
 pip install numpy pandas scipy statsmodels   # only needed to regenerate fixtures
 python3 tests/make_fixtures.py               # reference values from SciPy / statsmodels
-node tests/stats.test.mjs                    # 148 checks: distributions, descriptives, correlation, OLS, BP, VIF, HC3, Holt-Winters, unit economics
+node tests/stats.test.mjs                    # 218 checks: distributions, descriptives, correlation, OLS, BP, VIF, HC3, Holt-Winters, unit economics,
+                                             # options, bonds, WACC, logistic regression, ROC, k-means, silhouette, A/B test, IRT, BKT, HLR
 ```
 
 ## Rebuilding the painting assets
@@ -106,4 +110,4 @@ python3 tools/build_assets.py tools/source/painting-master.png
 
 ## Roadmap
 
-From the original brief, not yet built: clustering and PCA, a machine-learning lab running scikit-learn in the browser via Pyodide, financial statements and ratio analysis, portfolio analysis, saved datasets and PDF reports.
+From the original brief, not yet built: PCA, a machine-learning lab running scikit-learn in the browser via Pyodide, financial statements and ratio analysis, portfolio analysis, saved datasets and PDF reports.

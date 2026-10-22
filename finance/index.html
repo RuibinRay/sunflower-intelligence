@@ -15,8 +15,8 @@
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
   <link rel="preload" href="../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/css/base.css?v=2">
-  <link rel="stylesheet" href="../assets/css/rooms.css?v=2">
+  <link rel="stylesheet" href="../assets/css/base.css?v=3">
+  <link rel="stylesheet" href="../assets/css/rooms.css?v=3">
 </head>
 <body class="room room--finance">
   <a class="skip-link" href="#ledger">Skip to the tools</a>
@@ -30,6 +30,7 @@
         <li><a href="../marketing/">Marketing</a></li>
         <li><a href="../models/">How I build the models</a></li>
         <li><a href="../contact/">Contact</a></li>
+        <li><a href="../learn/">Learn</a></li>
       </ul>
     </nav>
     <div class="header-tools">
@@ -51,14 +52,66 @@
       <p class="chapter">An obsession with yellow</p>
       <p class="chapter-note">In Arles, Van Gogh chased a yellow so intense he had to steel himself to reach it. This room chases the business equivalent: the cash a company really produces, and how safely it can keep producing it.</p>
       <blockquote class="quote">“I had to key myself up a bit to reach the high yellow note…”<cite class="quote-cite">Vincent van Gogh to Theo, Arles, 24 March 1889</cite></blockquote>
-      <nav aria-label="In this room"><ul class="toc" role="list"><li><a href="#dcf">Discounted cash flow</a></li><li><a href="#altman">Altman Z-score</a></li></ul></nav>
+      <nav aria-label="In this room"><ul class="toc" role="list"><li><a href="#cost-of-capital">Cost of capital</a></li><li><a href="#dcf">Discounted cash flow</a></li><li><a href="#bonds">Bonds</a></li><li><a href="#options">Options</a></li><li><a href="#altman">Altman Z-score</a></li></ul></nav>
     </header>
 
     <div class="ledger" id="ledger">
       <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../">The painting</a></li><li aria-current="page">Finance</li></ol></nav>
       <div class="ledger-intro">
-        <p class="lead">Two tools: one values a business from the cash it should generate, the other screens a company for financial distress. Results update as you type, and every assumption stays on the page.</p>
+        <p class="lead">Five tools, in the order a valuation runs: the cost of capital, the value of a business from its cash flows, the price and interest-rate risk of a bond, the value of an option, and a screen for financial distress. Results update as you type, and every assumption stays on the page.</p>
       </div>
+
+      <!-- ============================================================ COST OF CAPITAL -->
+      <section class="tool" id="cost-of-capital" aria-labelledby="cc-title">
+        <div class="tool-head">
+          <h2 id="cc-title">Cost of capital</h2>
+          <p>The return investors expect for the risk they carry. Shareholders’ cost comes from the capital asset pricing model; lenders’ cost is cheaper after tax because interest is deductible. Weighted by market values, the two give the discount rate the DCF below uses.</p>
+        </div>
+        <div class="bench">
+          <form class="bench-inputs" id="cc-form" novalidate>
+            <fieldset>
+              <legend>Shareholders (CAPM)</legend>
+              <div class="slider-field"><div class="slider-top"><label for="cc-rf">Risk-free rate</label><output for="cc-rf" id="cc-rf-out"></output></div><input type="range" id="cc-rf" min="0" max="10" step="0.1" value="4.2"></div>
+              <div class="field"><label for="cc-beta">Beta</label><div class="affix"><input class="input" id="cc-beta" type="number" inputmode="decimal" step="any" value="1.1"></div><p class="field-hint">How much the share moves with the market: 1 moves with it, above 1 swings more.</p></div>
+              <div class="slider-field"><div class="slider-top"><label for="cc-erp">Equity risk premium</label><output for="cc-erp" id="cc-erp-out"></output></div><input type="range" id="cc-erp" min="2" max="9" step="0.1" value="5"></div>
+            </fieldset>
+            <fieldset>
+              <legend>Lenders</legend>
+              <div class="slider-field"><div class="slider-top"><label for="cc-kd">Cost of debt, before tax</label><output for="cc-kd" id="cc-kd-out"></output></div><input type="range" id="cc-kd" min="0" max="15" step="0.1" value="6"></div>
+              <div class="slider-field"><div class="slider-top"><label for="cc-tax">Tax rate</label><output for="cc-tax" id="cc-tax-out"></output></div><input type="range" id="cc-tax" min="0" max="45" step="1" value="25"></div>
+            </fieldset>
+            <fieldset>
+              <legend>Mix, at market values</legend>
+              <div class="field-row">
+              <div class="field"><label for="cc-e">Equity</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="cc-e" type="number" inputmode="decimal" step="any" value="1900"><span class="affix-post">m</span></div></div>
+              <div class="field"><label for="cc-d">Debt</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="cc-d" type="number" inputmode="decimal" step="any" value="300"><span class="affix-post">m</span></div></div>
+              </div>
+            </fieldset>
+          </form>
+          <div class="bench-results" aria-live="polite">
+            <div id="cc-error"></div>
+            <div>
+              <div class="figure-hero"><span class="hero-value" id="cc-wacc">—</span><span class="hero-label">weighted average cost of capital</span></div>
+              <p class="hero-label" id="cc-line"></p>
+            </div>
+            <dl class="stats-row">
+              <div class="stat"><dt>Cost of equity</dt><dd class="num" id="cc-ke">—</dd></div>
+              <div class="stat"><dt>Cost of debt after tax</dt><dd class="num" id="cc-kd-after">—</dd></div>
+              <div class="stat"><dt>Equity share of capital</dt><dd class="num" id="cc-we">—</dd></div>
+              <div class="stat"><dt>Debt share of capital</dt><dd class="num" id="cc-wd">—</dd></div>
+            </dl>
+            <figure>
+              <figcaption class="figure-title">What each source of money adds to the rate</figcaption>
+              <div class="chart" id="cc-chart"></div>
+            </figure>
+            <div class="input-actions"><button class="btn btn-primary" type="button" id="cc-use">Use this rate in the DCF</button></div>
+            <ul class="caveats">
+              <li>Beta is measured from past share prices, so it is an estimate with its own error; for a private company, borrow the beta of listed peers and adjust for debt.</li>
+              <li>Using market values matters: book equity usually understates what shareholders have at stake.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
 
       <!-- ============================================================ DCF -->
       <section class="tool" id="dcf" aria-labelledby="dcf-title">
@@ -160,6 +213,128 @@
         </div>
       </section>
 
+      <!-- ============================================================ BONDS -->
+      <section class="tool" id="bonds" aria-labelledby="bd-title">
+        <div class="tool-head">
+          <h2 id="bd-title">Bonds</h2>
+          <p>A bond’s price is its coupons and principal discounted at the market yield. Duration says how far the price falls when yields rise; convexity says how much that straight-line estimate misses.</p>
+        </div>
+        <div class="bench">
+          <form class="bench-inputs" id="bd-form" novalidate>
+            <fieldset>
+              <legend>The bond</legend>
+              <div class="field-row">
+              <div class="field"><label for="bd-face">Face value</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="bd-face" type="number" inputmode="decimal" step="any" value="1000"></div></div>
+              <div class="field"><label for="bd-coupon">Coupon rate</label><div class="affix"><input class="input" id="bd-coupon" type="number" inputmode="decimal" step="any" value="5"><span class="affix-post">%</span></div></div>
+              </div>
+              <div class="field"><label for="bd-years">Years to maturity</label><div class="affix"><input class="input" id="bd-years" type="number" inputmode="decimal" step="0.25" value="10"><span class="affix-post">years</span></div></div>
+              <div class="field">
+                <span class="field-label" id="bd-freq-label">Coupons paid</span>
+                <div class="segmented" role="radiogroup" aria-labelledby="bd-freq-label">
+                  <input type="radio" id="bd-freq-1" name="bd-freq" value="1"><label for="bd-freq-1">Yearly</label>
+                  <input type="radio" id="bd-freq-2" name="bd-freq" value="2" checked><label for="bd-freq-2">Twice a year</label>
+                  <input type="radio" id="bd-freq-4" name="bd-freq" value="4"><label for="bd-freq-4">Quarterly</label>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>The market</legend>
+              <div class="field">
+                <span class="field-label" id="bd-mode-label">I know the</span>
+                <div class="segmented" role="radiogroup" aria-labelledby="bd-mode-label">
+                  <input type="radio" id="bd-mode-yield" name="bd-mode" value="yield" checked><label for="bd-mode-yield">Yield</label>
+                  <input type="radio" id="bd-mode-price" name="bd-mode" value="price"><label for="bd-mode-price">Price</label>
+                </div>
+              </div>
+              <div id="bd-yield-box">              <div class="field"><label for="bd-ytm">Yield to maturity</label><div class="affix"><input class="input" id="bd-ytm" type="number" inputmode="decimal" step="any" value="6.2"><span class="affix-post">%</span></div></div></div>
+              <div id="bd-price-box" hidden>              <div class="field"><label for="bd-price">Market price</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="bd-price" type="number" inputmode="decimal" step="any" value="950"></div></div></div>
+            </fieldset>
+          </form>
+          <div class="bench-results" aria-live="polite">
+            <div id="bd-error"></div>
+            <div id="bd-body">
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="bd-hero">—</span><span class="hero-label" id="bd-hero-label">price</span></div>
+                <p class="hero-label" id="bd-line"></p>
+              </div>
+              <dl class="stats-row">
+                <div class="stat"><dt>Current yield</dt><dd class="num" id="bd-cy">—</dd></div>
+                <div class="stat"><dt>Macaulay duration</dt><dd class="num" id="bd-mac">—</dd></div>
+                <div class="stat"><dt>Modified duration</dt><dd class="num" id="bd-mod">—</dd></div>
+                <div class="stat"><dt>Convexity</dt><dd class="num" id="bd-conv">—</dd></div>
+              </dl>
+              <figure>
+                <figcaption class="figure-title">Price against yield</figcaption>
+                <p class="figure-sub">The straight line is what duration alone predicts. The gap to the curve is convexity: prices rise more when yields fall than they drop when yields rise.</p>
+                <div class="chart" id="bd-chart"></div>
+              </figure>
+              <figure>
+                <figcaption class="figure-title">If yields move</figcaption>
+                <div class="table-scroll" id="bd-shocks"></div>
+              </figure>
+              <ul class="caveats">
+                <li>Priced on a coupon date with no accrued interest; between coupon dates, quoted (clean) prices exclude the interest built up since the last coupon.</li>
+                <li>Duration and convexity assume every yield on the curve moves by the same amount.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ OPTIONS -->
+      <section class="tool" id="options" aria-labelledby="op-title">
+        <div class="tool-head">
+          <h2 id="op-title">Options</h2>
+          <p>The Black–Scholes–Merton value of a European call or put, with the Greeks: how the value moves with the share price, time, volatility and interest rates. Add a market price to back out the volatility it implies.</p>
+        </div>
+        <div class="bench">
+          <form class="bench-inputs" id="op-form" novalidate>
+              <div class="field">
+                <span class="field-label" id="op-type-label">Option</span>
+                <div class="segmented" role="radiogroup" aria-labelledby="op-type-label">
+                  <input type="radio" id="op-type-call" name="op-type" value="call" checked><label for="op-type-call">Call (right to buy)</label>
+                  <input type="radio" id="op-type-put" name="op-type" value="put"><label for="op-type-put">Put (right to sell)</label>
+                </div>
+              </div>
+            <div class="field-row">
+              <div class="field"><label for="op-s">Share price</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="op-s" type="number" inputmode="decimal" step="any" value="100"></div></div>
+              <div class="field"><label for="op-k">Strike price</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="op-k" type="number" inputmode="decimal" step="any" value="105"></div></div>
+            </div>
+              <div class="slider-field"><div class="slider-top"><label for="op-t">Time to expiry</label><output for="op-t" id="op-t-out"></output></div><input type="range" id="op-t" min="1" max="36" step="1" value="6"></div>
+              <div class="slider-field"><div class="slider-top"><label for="op-vol">Volatility</label><output for="op-vol" id="op-vol-out"></output></div><input type="range" id="op-vol" min="5" max="100" step="1" value="25"></div>
+              <div class="slider-field"><div class="slider-top"><label for="op-r">Risk-free rate</label><output for="op-r" id="op-r-out"></output></div><input type="range" id="op-r" min="0" max="10" step="0.1" value="4"></div>
+              <div class="slider-field"><div class="slider-top"><label for="op-q">Dividend yield</label><output for="op-q" id="op-q-out"></output></div><input type="range" id="op-q" min="0" max="8" step="0.1" value="1"></div>
+              <div class="field"><label for="op-market">Market price of the option (optional)</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="op-market" type="number" inputmode="decimal" step="any" value=""></div><p class="field-hint">To find the volatility the market is pricing in.</p></div>
+          </form>
+          <div class="bench-results" aria-live="polite">
+            <div id="op-error"></div>
+            <div id="op-body">
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="op-price">—</span><span class="hero-label" id="op-price-label">call value</span></div>
+                <p class="hero-label" id="op-line"></p>
+              </div>
+              <div id="op-iv"></div>
+              <dl class="stats-row">
+                <div class="stat"><dt>Delta</dt><dd class="num" id="op-delta">—</dd></div>
+                <div class="stat"><dt>Gamma</dt><dd class="num" id="op-gamma">—</dd></div>
+                <div class="stat"><dt>Vega, per vol point</dt><dd class="num" id="op-vega">—</dd></div>
+                <div class="stat"><dt>Theta, per day</dt><dd class="num" id="op-theta">—</dd></div>
+                <div class="stat"><dt>Rho, per rate point</dt><dd class="num" id="op-rho">—</dd></div>
+              </dl>
+              <figure>
+                <figcaption class="figure-title">Value today and payoff at expiry, across share prices</figcaption>
+                <div class="chart" id="op-chart"></div>
+              </figure>
+              <ul class="reading" id="op-reading" role="list"></ul>
+              <ul class="caveats">
+                <li>Black–Scholes assumes constant volatility and rates, and prices European options (exercised only at expiry). Real markets show a volatility “smile”, which is why implied volatility differs by strike.</li>
+                <li>The chance of finishing in the money is the risk-neutral N(d₂), not a forecast of what will happen.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- ============================================================ ALTMAN -->
       <section class="tool" id="altman" aria-labelledby="altman-title">
         <div class="tool-head">
@@ -231,6 +406,9 @@
       <section class="sources" aria-labelledby="sources-title">
         <h2 id="sources-title">Sources</h2>
         <ol>
+          <li>Sharpe, W. F. (1964). Capital asset prices: a theory of market equilibrium under conditions of risk. <i>The Journal of Finance</i>, 19(3), 425–442. (CAPM.)</li>
+          <li>Macaulay, F. R. (1938). <i>Some Theoretical Problems Suggested by the Movements of Interest Rates, Bond Yields and Stock Prices in the United States since 1856</i>. NBER. (Duration.)</li>
+          <li>Black, F. &amp; Scholes, M. (1973). The pricing of options and corporate liabilities. <i>Journal of Political Economy</i>, 81(3), 637–654; Merton, R. C. (1973). Theory of rational option pricing. <i>Bell Journal of Economics</i>, 4(1), 141–183. (Dividend yield.)</li>
           <li>Altman, E. I. (1968). Financial ratios, discriminant analysis and the prediction of corporate bankruptcy. <i>The Journal of Finance</i>, 23(4), 589–609.</li>
           <li>Altman, E. I. (2000). Predicting financial distress of companies: revisiting the Z-score and ZETA models (Z′ and Z″ coefficients and zones).</li>
           <li>Van Gogh to Theo, Arles, 24 March 1889, <a href="https://vangoghletters.org/vg/letters/let752/letter.html">letter 752</a>.</li>
@@ -247,6 +425,7 @@
       <li><a class="room-link" href="../marketing/" data-portal="#56632C"><img src="../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
       <li><a class="room-link" href="../models/" data-portal="#252A31"><img src="../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
       <li><a class="room-link" href="../contact/" data-portal="#F6E7C1"><img src="../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../learn/" data-portal="#C96F36"><img src="../assets/img/flower-learn-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Learn</strong><span>Learning by doing</span></span></a></li>
     </ul>
     <div class="footer-meta">
       <p><a href="../">Back to the painting</a></p>
@@ -255,6 +434,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../assets/js/pages/finance.js?v=2"></script>
+  <script type="module" src="../assets/js/pages/finance.js?v=3"></script>
 </body>
 </html>

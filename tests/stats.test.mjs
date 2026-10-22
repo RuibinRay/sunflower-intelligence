@@ -3,6 +3,10 @@ import { readFileSync } from 'node:fs';
 import * as S from '../assets/js/core/stats.js';
 import * as HW from '../assets/js/core/forecast.js';
 import { unitEconomics, PRESETS } from '../assets/js/core/saas.js';
+import * as FIN from '../assets/js/core/fin.js';
+import * as CL from '../assets/js/core/classify.js';
+import * as AB from '../assets/js/core/abtest.js';
+import * as LE from '../assets/js/core/learn.js';
 
 const fx = JSON.parse(readFileSync(new URL('./fixtures.json', import.meta.url)));
 let fails = 0, checks = 0;
@@ -110,6 +114,61 @@ close('GRR', ue.grr, 0.87, 1e-12);
   checks++; if (!(ue.paybackChurn > month - 1 && ue.paybackChurn <= month)) { fails++; console.log(`FAIL churn payback ${ue.paybackChurn} vs month ${month}`); }
 }
 checks++; if (!unitEconomics({ ...PRESETS.saas, churn: 0 }).error) { fails++; console.log('FAIL zero churn accepted'); }
+
+// ---------------------------------------------------------------- finance: options, bonds, WACC
+for (const c of fx.bs) {
+  const r = FIN.blackScholes(c);
+  const tag = `BS ${c.type} S=${c.S} K=${c.K}`;
+  close(`${tag} price`, r.price, c.price, 1e-10);
+  close(`${tag} delta`, r.delta, c.delta, 1e-6); close(`${tag} gamma`, r.gamma, c.gamma, 1e-4);
+  close(`${tag} vega`, r.vega, c.vega, 1e-6); close(`${tag} theta`, r.theta, c.theta, 1e-5); close(`${tag} rho`, r.rho, c.rho, 1e-6);
+  close(`${tag} put-call parity`, r.call - r.put, c.S * Math.exp(-c.q * c.T) - c.K * Math.exp(-c.r * c.T), 1e-12);
+  close(`${tag} implied vol`, FIN.impliedVol(c, c.price), c.sigma, 1e-7);
+}
+for (const c of fx.bonds) {
+  const tag = `bond ${c.couponRate * 100}% ${c.years}y m=${c.freq}`;
+  const r = FIN.bond({ ...c, mode: 'yield', ytm: c.y });
+  close(`${tag} price`, r.price, c.price, 1e-11);
+  close(`${tag} modified duration`, r.modified, c.modified, 1e-6);
+  close(`${tag} convexity`, r.convexity, c.convexity, 1e-4);
+  close(`${tag} yield from price`, FIN.bond({ ...c, mode: 'price', price: c.price2 }).ytm, c.ytm2, 1e-9);
+}
+{ const w = FIN.wacc({ rf: 0.04, beta: 1.2, erp: 0.055, kd: 0.06, tax: 0.25, equity: 600, debt: 400 });
+  close('CAPM cost of equity', w.ke, 0.04 + 1.2 * 0.055, 1e-12); close('WACC', w.wacc, 0.6 * 0.106 + 0.4 * 0.045, 1e-12); }
+
+// ---------------------------------------------------------------- logistic regression, ROC, k-means, silhouette
+const lg = CL.logit(fx.logit.x, fx.logit.y);
+lg.coefs.forEach((c, i) => { close(`logit coef ${i}`, c.estimate, fx.logit.params[i], 1e-6); close(`logit se ${i}`, c.se, fx.logit.bse[i], 1e-5); close(`logit p ${i}`, c.p, fx.logit.pvalues[i], 1e-5); });
+close('logit log-likelihood', lg.ll, fx.logit.llf, 1e-9); close('logit null log-likelihood', lg.ll0, fx.logit.llnull, 1e-9);
+close('logit McFadden R²', lg.pseudoR2, fx.logit.prsquared, 1e-8);
+close('ROC AUC', CL.roc(fx.logit.y, Array.from(lg.prob)).auc, fx.logit.auc, 1e-10);
+const km = CL.kmeans(fx.kmeans.rows, 3);
+close('k-means inertia', km.inertia, fx.kmeans.inertia, 1e-8);
+close('silhouette (same labels as scikit-learn)', CL.silhouette(fx.kmeans.rows, fx.kmeans.labels), fx.kmeans.silhouette, 1e-10);
+
+// ---------------------------------------------------------------- A/B test
+const ab = AB.compareRates({ n: fx.ab.a[0], conv: fx.ab.a[1] }, { n: fx.ab.b[0], conv: fx.ab.b[1] });
+close('A/B z', ab.z, fx.ab.z, 1e-10); close('A/B p', ab.p, fx.ab.p, 1e-9);
+{ const n = AB.sampleSize(0.05, 0.06); checks++; const pw = AB.power(0.05, 0.06, n), pwLess = AB.power(0.05, 0.06, n - 1);
+  if (!(pw >= 0.8 && pwLess < 0.8)) { fails++; console.log(`FAIL sample size ${n}: power ${pw}, one fewer ${pwLess}`); } }
+
+// ---------------------------------------------------------------- learning engine
+const est = LE.eap(fx.eap.items.map((item, i) => ({ item, correct: !!fx.eap.resp[i] })));
+close('IRT EAP ability', est.theta, fx.eap.theta, 1e-5); close('IRT EAP standard error', est.se, fx.eap.se, 1e-5);
+close('3PL at difficulty = (1 + c)/2', LE.p3pl(0.7, { a: 1.3, b: 0.7, c: 0.2 }), 0.6, 1e-12);
+{ const it = { a: 1.4, b: 0.2, c: 0.25 }, h = 1e-5, t = -0.3;           // information = P′² / (PQ), P′ by finite differences
+  const dP = (LE.p3pl(t + h, it) - LE.p3pl(t - h, it)) / (2 * h), P = LE.p3pl(t, it);
+  close('3PL item information', LE.info3pl(t, it), dP * dP / (P * (1 - P)), 1e-8); }
+{ const L = 0.3, s = 0.08, g = 0.2, T = 0.15;                             // BKT by hand, the document's equations
+  const post = L * (1 - s) / (L * (1 - s) + (1 - L) * g);
+  close('BKT update after a correct answer', LE.bktUpdate(L, true), post + (1 - post) * T, 1e-14);
+  const postW = L * s / (L * s + (1 - L) * (1 - g));
+  close('BKT update after a wrong answer', LE.bktUpdate(L, false), postW + (1 - postW) * T, 1e-14);
+  close('BKT predicted correct', LE.bktPredict(L), L * (1 - s) + (1 - L) * g, 1e-14); }
+close('HLR: recall is 50% after one half-life', LE.recall(3, 3), 0.5, 1e-14);
+close('HLR: one more √correct doubles the half-life', LE.halfLife({ nCorrect: 4, nWrong: 0 }) / LE.halfLife({ nCorrect: 1, nWrong: 0 }), 2, 1e-12);
+close('HLR: one more √wrong halves it', LE.halfLife({ nCorrect: 1, nWrong: 1 }) / LE.halfLife({ nCorrect: 1, nWrong: 0 }), 0.5, 1e-12);
+close('individualised start: θ = 0 keeps the skill prior', LE.startMastery(0, 0.25), 0.25, 1e-12);
 
 console.log(fails ? `${fails} of ${checks} checks failed` : `all ${checks} checks passed`);
 process.exit(fails ? 1 : 0);

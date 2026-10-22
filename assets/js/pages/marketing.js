@@ -1,12 +1,14 @@
-// marketing.js — RFM customer segments (drawn as a seed head), price elasticity and unit economics.
-import { initSite } from '../core/site.js?v=2';
-import { $, $$, h, download, toCSV, onResize, debounce } from '../core/dom.js?v=2';
-import * as F from '../core/format.js?v=2';
-import * as S from '../core/stats.js?v=2';
-import { parseTable, isNumeric } from '../core/csv.js?v=2';
-import { customerOrders, priceTests } from '../core/rng.js?v=2';
-import { barChart, scatter, tableTwin, Tooltip, lineChart } from '../core/charts.js?v=2';
-import { unitEconomics, readUnitEconomics, PRESETS } from '../core/saas.js?v=2';
+// marketing.js — RFM customer segments (drawn as a seed head), price elasticity, unit economics and A/B tests.
+import { initSite } from '../core/site.js?v=3';
+import { $, $$, h, download, toCSV, onResize, debounce } from '../core/dom.js?v=3';
+import * as F from '../core/format.js?v=3';
+import * as S from '../core/stats.js?v=3';
+import { parseTable, isNumeric } from '../core/csv.js?v=3';
+import { customerOrders, priceTests } from '../core/rng.js?v=3';
+import { barChart, scatter, tableTwin, Tooltip, lineChart } from '../core/charts.js?v=3';
+import { unitEconomics, readUnitEconomics, PRESETS } from '../core/saas.js?v=3';
+import { compareRates, sampleSize } from '../core/abtest.js?v=3';
+import { syncRanges } from '../core/site.js?v=3';
 
 initSite();
 
@@ -328,6 +330,7 @@ function setPreset(key) {
   Object.entries(UE_FIELDS).forEach(([k, id]) => { $(`#${id}`).value = String(pr[k]); });
   $('#ue-margin').value = String(Math.round(pr.margin * 100));
   $('#ue-churn').value = String(+(pr.churn * 100).toFixed(1));
+  syncRanges($('#unit-economics'));
   renderUE();
 }
 function renderUE() {
@@ -387,9 +390,51 @@ function renderUE() {
 $$('input[name="uepreset"]').forEach((el) => el.addEventListener('change', () => setPreset(el.value)));
 [...Object.values(UE_FIELDS), 'ue-margin', 'ue-churn'].forEach((id) => $(`#${id}`).addEventListener('input', renderUE));
 
+// ================================================================ A/B test
+function renderAB() {
+  const v = (id) => parseFloat($(`#${id}`).value);
+  $('#ab-mde-out').textContent = `${v('ab-mde')}%`;
+  const r = compareRates({ n: v('ab-na'), conv: v('ab-ca') }, { n: v('ab-nb'), conv: v('ab-cb') });
+  const err = $('#ab-error'), body = $('#ab-body'); err.replaceChildren();
+  if (r.error) { err.append(h('div', { class: 'verdict is-bad' }, h('p', {}, h('strong', {}, 'Can’t compare yet. '), r.error))); body.hidden = true; return; }
+  body.hidden = false;
+  $('#ab-lift').textContent = Number.isFinite(r.lift) ? `${r.lift >= 0 ? '+' : '−'}${F.pct(Math.abs(r.lift), 1)}` : '—';
+  $('#ab-ci').textContent = Number.isFinite(r.liftLow) ? `95% interval for the lift: ${F.pct(r.liftLow, 1)} to ${F.pct(r.liftHigh, 1)} (${F.pct(r.low, 2)} to ${F.pct(r.high, 2)} in conversion rate).` : '';
+  $('#ab-pa').textContent = F.pct(r.pa, 2); $('#ab-pb').textContent = F.pct(r.pb, 2);
+  $('#ab-z').textContent = F.num(r.z, 2); $('#ab-p').textContent = F.pValue(r.p);
+  const sig = r.p < 0.05;
+  const verdict = r.small
+    ? ['is-warn', 'Too few conversions to judge. ', 'With under ten conversions or non-conversions in a version, keep the test running.']
+    : sig
+      ? (r.diff > 0 ? ['is-good', 'B is better, beyond chance. ', `A gap this large would turn up by chance alone less than ${r.p < 0.001 ? '0.1%' : F.pct(Math.max(r.p, 0.001), 1)} of the time if the versions were really the same.`]
+        : ['is-bad', 'B is worse, beyond chance. ', 'Keep version A.'])
+      : ['is-warn', 'No clear winner yet. ', `A gap this size would turn up by chance ${F.pct(r.p, 0)} of the time even if the versions were the same; the interval for the lift still includes zero.`];
+  $('#ab-verdict').replaceChildren(h('div', { class: `verdict ${verdict[0]}` }, h('p', {}, h('strong', {}, verdict[1]), verdict[2])));
+  const z = 1.959963984540054;
+  const ci = (p, n) => [Math.max(0, p - z * Math.sqrt(p * (1 - p) / n)), Math.min(1, p + z * Math.sqrt(p * (1 - p) / n))];
+  const [aLo, aHi] = ci(r.pa, v('ab-na')), [bLo, bHi] = ci(r.pb, v('ab-nb'));
+  scatter($('#ab-chart'), {
+    points: [{ x: 1, y: r.pa, title: 'Version A', cls: 'm-s1' }, { x: 2, y: r.pb, title: 'Version B', cls: 'm-s2' }],
+    curves: [{ pts: [[1, aLo], [1, aHi]], cls: 'm-s1' }, { pts: [[2, bLo], [2, bHi]], cls: 'm-s2' }],
+    xDomain: [0.5, 2.5], yDomain: [Math.max(0, Math.min(aLo, bLo) * 0.9), Math.min(1, Math.max(aHi, bHi) * 1.1)], height: 220,
+    xFormat: (x) => (Math.abs(x - 1) < 0.01 ? 'A' : Math.abs(x - 2) < 0.01 ? 'B' : ''), yFormat: (y) => F.pct(y, 1), yLabel: 'Conversion rate', xLabel: 'Version',
+    label: `Conversion rates with 95% intervals: A ${F.pct(r.pa, 2)}, B ${F.pct(r.pb, 2)}`,
+    legend: [{ name: 'Version A', cls: 'm-s1' }, { name: 'Version B', cls: 'm-s2' }],
+  });
+  // planning
+  const base = v('ab-base') / 100, mde = v('ab-mde') / 100, daily = v('ab-daily');
+  const plan = $('#ab-plan');
+  if (!(base > 0 && base < 1) || !(base * (1 + mde) < 1)) { plan.textContent = 'Enter a current conversion rate between 0% and 100%.'; return; }
+  const n = sampleSize(base, base * (1 + mde));
+  const days = daily > 0 ? Math.ceil((2 * n) / daily) : NaN;
+  plan.replaceChildren(h('strong', {}, `${F.int(n)} visitors per version`), ` (${F.int(2 * n)} in all) to detect a ${F.pct(mde, 0)} lift from ${F.pct(base, 1)} to ${F.pct(base * (1 + mde), 2)}, with 80% power at the 5% significance level${Number.isFinite(days) ? `: about ${F.int(days)} day${days === 1 ? '' : 's'} at ${F.int(daily)} visitors a day` : ''}. Halving the lift you want to detect roughly quadruples the visitors needed.`);
+}
+$('#ab-test').addEventListener('input', renderAB);
+
 loadRFMExample();
 loadElExample('seeds');
 setPreset('club');
+renderAB();
 const redraw = debounce(() => { drawSeedhead(); renderRFMBarsOnly(); renderEl(); renderUE(); }, 150);
 function renderRFMBarsOnly() { if (rfmResult) renderRFM(); }
 onResize($('#rfm-bars'), redraw);

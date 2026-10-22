@@ -135,3 +135,26 @@ export function monthlySales(seed = 1892) {
   }
   return { name: 'Seed and oil shop, monthly sales', note: 'Synthetic: 72 months generated for this demo.', m: 12, rows };
 }
+
+/**
+ * Seed club subscribers: who cancelled in the last quarter. Churn is more likely for newer members, higher fees and
+ * more support calls, and less likely on an annual plan. Synthetic, for logistic regression and clustering.
+ */
+export function subscriberChurn(seed = 1893) {
+  const r = mulberry32(seed), N = normalGen(r);
+  const head = ['member_id', 'tenure_months', 'monthly_fee', 'support_calls', 'annual_plan', 'boxes_skipped', 'churned'];
+  const rows = [];
+  let calls = 0;
+  for (let i = 0; i < 480; i++) {
+    const veteran = r() < 0.45;
+    const tenure = Math.max(1, Math.round(veteran ? 18 + r() * 30 : 1 + r() * 14));
+    const fee = round(clamp(veteran ? N(42, 8) : N(30, 7), 18, 64), 2);
+    const lam = 0.6 + (fee > 40 ? 0.9 : 0.2) + (r() < 0.2 ? 2 : 0);
+    let k = 0, p = Math.exp(-lam), sum = p; const u = r(); while (u > sum && k < 12) { k++; p *= lam / k; sum += p; } calls = k;
+    const annual = r() < (veteran ? 0.55 : 0.2) ? 1 : 0;
+    const skipped = Math.max(0, Math.round(N(veteran ? 1.2 : 0.8, 1.1)));
+    const eta = -0.35 - 0.075 * tenure + 0.04 * (fee - 35) + 0.5 * calls - 1.2 * annual + 0.3 * skipped;
+    rows.push([`M${String(1001 + i)}`, tenure, fee, calls, annual, skipped, r() < 1 / (1 + Math.exp(-eta)) ? 1 : 0]);
+  }
+  return { name: 'Seed club members', note: 'Synthetic: 480 subscribers and whether each cancelled last quarter, generated for this demo.', csv: [head, ...rows].map((x) => x.join(',')).join('\n') };
+}

@@ -1,6 +1,6 @@
 // site.js — behaviour shared by every page: rooms menu, motion switch, arrival through the portal.
-import { $, $$, store } from './dom.js?v=2';
-import { arrive, reset, leave } from './portal.js?v=2';
+import { $, $$, store } from './dom.js?v=3';
+import { arrive, reset, leave } from './portal.js?v=3';
 
 const root = document.documentElement;
 
@@ -68,7 +68,16 @@ function fitCanvas() {
   let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(check, 120); });
 }
 
+/** Range sliders paint their filled track from --fill; keep it in step with the value. */
+export function fillRange(el) {
+  const min = el.min === '' ? 0 : +el.min, max = el.max === '' ? 100 : +el.max;
+  el.style.setProperty('--fill', `${((+el.value - min) / (max - min || 1)) * 100}%`);
+}
+export function syncRanges(scope = document) { $$('input[type="range"]', scope).forEach(fillRange); }
+
 export function initSite() {
+  document.addEventListener('input', (e) => { if (e.target instanceof HTMLInputElement && e.target.type === 'range') fillRange(e.target); });
+  syncRanges();
   initMotion();
   initMenu();
   initPortalLinks();

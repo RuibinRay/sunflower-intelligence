@@ -8,7 +8,7 @@ attribute vec2 aPos;
 varying vec2 vUv;
 void main() { vUv = aPos * 0.5 + 0.5; gl_Position = vec4(aPos, 0.0, 1.0); }`;
 
-const frag = (lite) => `
+const frag = (lite, nDoors) => `
 precision highp float;
 varying vec2 vUv;
 uniform sampler2D uPaint;
@@ -22,7 +22,7 @@ uniform float uFlowRate;
 uniform float uSway;
 uniform vec3 uLight;
 uniform vec4 uHeads[18];
-uniform vec4 uDoors[5];
+uniform vec4 uDoors[${nDoors}];
 uniform float uAnyHover;
 uniform vec4 uPortal;
 uniform vec2 uHeightTexel;
@@ -53,7 +53,7 @@ void main() {
   }
 
   float headMask = 0.0, glow = 0.0, halo = 0.0;
-  for (int k = 0; k < 5; k++) {
+  for (int k = 0; k < ${nDoors}; k++) {
     vec4 dr = uDoors[k];
     vec2 d = p - dr.xy;
     float q = length(d) / dr.z;
@@ -129,7 +129,7 @@ export class LivingPainting {
     this.view = [0, 0, meta.width, meta.height];
     this.heads = meta.flowers.map((f, i) => [f.x, f.y, f.r * 1.02, (i * 2.399) % (Math.PI * 2)]);
     this.doors = meta.doorways.map((id) => meta.flowers.find((f) => f.id === id));
-    this.hover = new Float32Array(5);
+    this.hover = new Float32Array(meta.doorways.length);
     this.light = [meta.width * 0.3, meta.height * 0.2, 0];
     this.portal = [0, 0, 0, 0];
     this.time = 0;
@@ -168,7 +168,7 @@ export class LivingPainting {
     for (const tier of ['full', 'lite']) {
       const prog = gl.createProgram();
       gl.attachShader(prog, compile(gl, gl.VERTEX_SHADER, VERT));
-      gl.attachShader(prog, compile(gl, gl.FRAGMENT_SHADER, frag(tier === 'lite')));
+      gl.attachShader(prog, compile(gl, gl.FRAGMENT_SHADER, frag(tier === 'lite', this.doors.length)));
       gl.bindAttribLocation(prog, 0, 'aPos');
       gl.linkProgram(prog);
       if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));

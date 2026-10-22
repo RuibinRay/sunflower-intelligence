@@ -40,14 +40,14 @@ FLOWERS = [
     ("j",          775, 840, 110, "bloom"),
     ("contact",   1267, 787, 128, "seedhead"),   # K - big seed head held by the vase
     ("l",         1430, 750,  95, "seedhead"),
-    ("m",         1626, 668, 110, "bloom"),
+    ("learn",     1626, 668, 110, "bloom"),      # M - open bloom right of the vase
     ("n",         1930, 769, 120, "bloom"),
     ("o",         2210, 677, 115, "turning"),
     ("p",          960, 1000, 70, "bud"),
     ("q",         1580, 960,  90, "wilting"),
     ("r",         1250, 925,  75, "seedhead"),
 ]
-DOORWAYS = ["finance", "analytics", "marketing", "models", "contact"]
+DOORWAYS = ["finance", "analytics", "marketing", "models", "contact", "learn"]
 VASE = [(1100, 1020), (1500, 1020), (1505, 1120), (1480, 1260), (1440, 1370), (1170, 1375), (1125, 1270), (1098, 1130)]
 FRAME = 95          # painted frame border (px) - never moves
 TABLE_Y = 1130      # back edge of the table
