@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 // The site's path on GitHub Pages (the repository name). Only 404.html uses it: GitHub Pages serves that page
 // at any missing address, so its links can't be relative. See "Renaming the repository" in README.md.
-const SITE_PATH = '/RuibinRay-sunflower-intelligence/';
+const SITE_PATH = '/sunflower-intelligence/';
 const ROOMS = [
   { id: 'finance', name: 'Finance', chapter: 'An obsession with yellow', color: '#E8B923' },
   { id: 'analytics', name: 'Business analytics', chapter: 'The golden spiral', color: '#192B49' },

@@ -2,7 +2,7 @@
 
 Finance, business analytics and marketing tools set inside a living sunflower painting after Van Gogh. The homepage is the painting: five of its flowers open five rooms.
 
-**Live:** https://ruibinray.github.io/RuibinRay-sunflower-intelligence/
+**Live:** https://ruibinray.github.io/sunflower-intelligence/
 
 | Room | Flower | What it does |
 |---|---|---|
@@ -71,7 +71,7 @@ GitHub Pages publishes the `main` branch as it is: Settings → Pages → Build 
 The repository name appears in the address, so it is written into the canonical and social-preview URLs, `sitemap.xml`, `robots.txt`, `404.html` and `SITE_PATH` in `tools/chrome.mjs`. After renaming the repository, update them all at once (replace `NEW-NAME`; works on macOS and Linux):
 
 ```
-grep -rl 'RuibinRay-sunflower-intelligence' --exclude-dir=.git . | xargs perl -pi -e 's#RuibinRay-sunflower-intelligence#NEW-NAME#g'
+grep -rl '/sunflower-intelligence/' --exclude-dir=.git . | xargs perl -pi -e 's#/sunflower-intelligence/#/NEW-NAME/#g'
 ```
 
 ## Tests

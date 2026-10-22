@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://ruibinray.github.io/RuibinRay-sunflower-intelligence/sitemap.xml
+Sitemap: https://ruibinray.github.io/sunflower-intelligence/sitemap.xml
