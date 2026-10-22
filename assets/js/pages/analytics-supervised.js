@@ -1,16 +1,16 @@
 // analytics-supervised.js — supervised learning: model comparison by cross-validation, a decision tree you can read,
 // feature importance, and logistic regression in depth. One outcome and one set of predictors drive every section.
-import { initSite, syncRanges } from '../core/site.js?v=5';
-import { $, $$, h, download, toCSV, onResize, debounce } from '../core/dom.js?v=5';
-import * as F from '../core/format.js?v=5';
-import { isNumeric } from '../core/csv.js?v=5';
-import { lineChart, barChart, tableTwin } from '../core/charts.js?v=5';
-import { fillSelect, chips, checkedIn, splitRows, verdict } from '../core/ui.js?v=5';
-import { dataSource } from '../core/datasource.js?v=5';
-import { subscriberChurn, cafeWeeks } from '../core/rng.js?v=5';
-import { logit, confusion, roc } from '../core/classify.js?v=5';
-import { cart, leafRules, compareModels, sampleIndices } from '../core/ml.js?v=5';
-import { foldPlot, rocOverlay, treeDiagram, tprAt } from '../core/ml-charts.js?v=5';
+import { initSite, syncRanges } from '../core/site.js?v=6';
+import { $, $$, h, download, toCSV, onResize, debounce } from '../core/dom.js?v=6';
+import * as F from '../core/format.js?v=6';
+import { isNumeric } from '../core/csv.js?v=6';
+import { lineChart, barChart, tableTwin } from '../core/charts.js?v=6';
+import { fillSelect, chips, checkedIn, splitRows, verdict } from '../core/ui.js?v=6';
+import { dataSource } from '../core/datasource.js?v=6';
+import { subscriberChurn, cafeWeeks } from '../core/rng.js?v=6';
+import { logit, confusion, roc } from '../core/classify.js?v=6';
+import { cart, leafRules, compareModels, sampleIndices } from '../core/ml.js?v=6';
+import { foldPlot, rocOverlay, treeDiagram, tprAt } from '../core/ml-charts.js?v=6';
 
 initSite();
 
@@ -85,7 +85,7 @@ function showError(prefix, msg) {
 let worker = null, reqId = 0, lastReq = null, statusTimer = 0;
 const localCache = {};
 try {
-  worker = new Worker(new URL('../core/ml-worker.js?v=5', import.meta.url), { type: 'module' });
+  worker = new Worker(new URL('../core/ml-worker.js?v=6', import.meta.url), { type: 'module' });
   worker.onmessage = (e) => onResults(e.data);
   worker.onerror = (e) => { e.preventDefault?.(); worker = null; if (lastReq) runHere(lastReq); };
 } catch { worker = null; }

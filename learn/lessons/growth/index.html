@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Unit economics and experiments · Lessons · Sunflower Intelligence</title>
+  <meta name="description" content="Is each customer worth more than it costs to win? Lifetime value against acquisition cost, how fast that cost comes back, and how to read a test of a new idea.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/lessons/growth/">
+  <meta property="og:title" content="Unit economics and experiments · Lessons · Sunflower Intelligence">
+  <meta property="og:description" content="Is each customer worth more than it costs to win? Lifetime value against acquisition cost, how fast that cost comes back, and how to read a test of a new idea.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=6">
+</head>
+<body class="room room--learn room--sub room--lesson">
+  <a class="skip-link" href="#ledger">Skip to the lesson</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../../finance/">Finance</a></li>
+        <li><a href="../../../analytics/">Business analytics</a></li>
+        <li><a href="../../../marketing/">Marketing</a></li>
+        <li><a href="../../../models/">How I build the models</a></li>
+        <li><a href="../../../contact/">Contact</a></li>
+        <li><a href="../../../learn/" aria-current="page">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../../"><img src="../../../assets/img/flower-learn-160.webp" alt="" width="56" height="56"><span>Learn</span></a>
+      <p class="plate-no">Plate 18 of 19 · Marketing</p>
+      <h1 id="room-title" class="display is-long">Unit economics and experiments</h1>
+      <p class="chapter-note">About 7 minutes to read, then three questions that count toward your mastery.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Learn pages">
+        <ul role="list">
+          <li><a href="../../">Check and practise</a></li>
+          <li><a href="../../lessons/" aria-current="true">Lessons</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <nav aria-label="In this lesson"><ul class="toc" role="list"><li><a href="#idea">The idea</a></li><li><a href="#formula">The formula</a></li><li><a href="#example">A worked example</a></li><li><a href="#try">Try it</a></li><li><a href="#mistake">The common mistake</a></li><li><a href="#remember">Remember</a></li><li><a href="#check">Check yourself</a></li><li><a href="#use">Use it on real numbers</a></li></ul></nav>
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../../">The painting</a></li><li><a href="../../">Learn</a></li><li><a href="../">Lessons</a></li><li aria-current="page">Unit economics and experiments</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">Is each customer worth more than it costs to win? Lifetime value against acquisition cost, how fast that cost comes back, and how to read a test of a new idea.</p>
+        <p class="lesson-status" id="lesson-status" aria-live="polite"></p>
+      </div>
+
+      <article class="lesson" data-lesson="growth" data-plate="18">
+        <section class="lesson-part" id="idea" aria-labelledby="idea-h">
+          <h2 id="idea-h">The idea</h2>
+          <p>A subscriber pays every month until they cancel. The gross profit they bring each month is revenue × gross margin, and if a share <i>c</i> of customers cancels each month, the average customer stays 1 ÷ <i>c</i> months. <b>Lifetime value</b> (LTV) is that monthly gross profit × the lifetime.</p>
+          <p><b>Customer acquisition cost</b> (CAC) is sales and marketing spend ÷ customers won. An LTV:CAC of 3 or more is the usual comfort zone, and <b>payback</b> (CAC ÷ monthly gross profit) says how many months the cost takes to come back. <b>Net revenue retention</b> follows last year’s customers: above 100% means their upgrades outweigh cancellations.</p>
+          <p>Growth ideas get tested. An A/B test’s p-value is the chance of a gap at least this large <em>if the two versions were really the same</em>; it is not the chance that B is better. To detect a lift half the size, you need about four times the visitors, because the sample grows with 1 ÷ (lift)².</p>
+        </section>
+        <section class="lesson-part" id="formula" aria-labelledby="formula-h">
+          <h2 id="formula-h">The formula</h2>
+          <div class="formula-box">
+            <p class="lesson-formula"><span class="f-part">LTV = <span class="frac"><span>revenue per month × margin</span><span>monthly churn</span></span></span><span class="f-sep">, </span><span class="f-part">CAC = <span class="frac"><span>acquisition spend</span><span>customers won</span></span></span><span class="f-sep">, </span><span class="f-part">payback = <span class="frac"><span>CAC</span><span>revenue per month × margin</span></span></span></p>
+            <dl class="terms"><div><dt>margin</dt><dd>gross margin: the share of revenue left after the cost of serving the customer</dd></div><div><dt>churn</dt><dd>the share of customers who cancel each month</dd></div><div><dt>LTV:CAC</dt><dd>gross profit a customer returns per dollar spent winning one</dd></div><div><dt>NRR</dt><dd>net revenue retention: what last year’s customers pay now ÷ what they paid then</dd></div></dl>
+          </div>
+        </section>
+        <section class="lesson-part" id="example" aria-labelledby="example-h">
+          <h2 id="example-h">A worked example</h2>
+          <figure class="plate">
+            <figcaption class="plate-cap">Plate 18</figcaption>
+            <p class="plate-setup">A subscription box charges $32 a month at a 45% gross margin, and 6% of subscribers cancel each month. Last quarter it spent $54,000 on marketing and won 1,200 subscribers.</p>
+            <ol class="plate-steps">
+              <li><span>Gross profit per subscriber per month: $32 × 0.45 = <b>$14.40</b>.</span></li>
+              <li><span>Lifetime value: $14.40 ÷ 0.06 = <b>$240</b>, over an average lifetime of 1 ÷ 0.06 ≈ <b>16.7 months</b>.</span></li>
+              <li><span>Acquisition cost: $54,000 ÷ 1,200 = <b>$45</b>, so LTV:CAC = 240 ÷ 45 = <b>5.3</b>.</span></li>
+              <li><span>Payback: $45 ÷ $14.40 = <b>3.1 months</b>.</span></li>
+            </ol>
+            <p class="plate-result">Each subscriber returns more than five times what it cost to win, and the cost is back in about three months: room to spend more on growth, as long as churn holds as the business scales.</p>
+          </figure>
+        </section>
+        <section class="lesson-part" id="try" aria-labelledby="try-h">
+          <h2 id="try-h">Try it</h2>
+          <div class="bench lesson-calc" id="calc">
+            <form class="bench-inputs" id="calc-form" novalidate>
+              <p class="calc-intro">Monthly figures for one average customer.</p>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-arpa">Revenue per customer per month</label><output for="c-arpa" id="c-arpa-out">$32</output></div>
+                <input type="range" id="c-arpa" name="arpa" min="5" max="500" step="1" value="32">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-margin">Gross margin</label><output for="c-margin" id="c-margin-out">45%</output></div>
+                <input type="range" id="c-margin" name="margin" min="10" max="95" step="1" value="45">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-churn">Customers cancelling each month</label><output for="c-churn" id="c-churn-out">6.0%</output></div>
+                <input type="range" id="c-churn" name="churn" min="0.5" max="20" step="0.5" value="6">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-cac">Cost to win a customer</label><output for="c-cac" id="c-cac-out">$45</output></div>
+                <input type="range" id="c-cac" name="cac" min="5" max="2000" step="5" value="45">
+              </div>
+            </form>
+            <div class="bench-results" aria-live="polite" id="calc-out">
+              <p class="figure-title">What a customer is worth</p>
+              <div class="figure-hero"><span class="hero-value" id="calc-hero">5.3 : 1</span><span class="hero-label" id="calc-hero-label">LTV:CAC</span></div>
+              <dl class="stats-row stats-dense" id="calc-rows"><div class="stat"><dt>Lifetime value (gross profit)</dt><dd class="num">$240</dd></div><div class="stat"><dt>Payback, ignoring churn</dt><dd class="num">3.1 months</dd></div><div class="stat"><dt>Payback, allowing for churn</dt><dd class="num">3.4 months</dd></div></dl>
+              <p class="note" id="calc-note">Comfortably above 3: each customer returns well over what it costs to win.</p>
+            </div>
+          </div>
+        </section>
+        <section class="lesson-part" id="mistake" aria-labelledby="mistake-h">
+          <h2 id="mistake-h">The common mistake</h2>
+          <div class="mistake"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 5.5v5.2M10 14.2v.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><h3>Using revenue instead of gross profit</h3><p>Dividing revenue by churn gives $32 ÷ 0.06 = $533 and an LTV:CAC of 11.9, more than twice the real 5.3. Revenue also pays for the boxes; only gross profit is left to repay the cost of winning the customer.</p></div></div>
+        </section>
+        <section class="lesson-part" id="remember" aria-labelledby="remember-h">
+          <h2 id="remember-h">Remember</h2>
+          <ul class="remember" role="list">
+            <li>LTV = monthly gross profit ÷ monthly churn; CAC = acquisition spend ÷ customers won. Aim for an LTV:CAC of 3 or more.</li>
+            <li>Payback = CAC ÷ monthly gross profit. Net revenue retention above 100% means existing customers grow on their own.</li>
+            <li>p = 0.03 means a gap this big would turn up 3% of the time if the versions were the same, not that B is 97% likely to be better. Halving the lift you want to detect quadruples the sample.</li>
+          </ul>
+        </section>
+        <section class="lesson-part" id="check" aria-labelledby="check-h">
+          <h2 id="check-h">Check yourself</h2>
+          <p>Three questions from the Learn room’s bank. Your answers update your mastery of this skill, the same as in Practise.</p>
+          <div class="bench learn-bench lesson-check">
+            <div class="quiz" id="lesson-quiz"><noscript><p class="note">The questions need JavaScript.</p></noscript></div>
+            <div class="bench-results" id="lesson-mastery" aria-live="polite"></div>
+          </div>
+        </section>
+        <section class="lesson-part" id="use" aria-labelledby="use-h">
+          <h2 id="use-h">Use it on real numbers</h2>
+          <p>Open <a href="../../../marketing/growth/#unit-economics">Unit economics, in Marketing › Growth and experiments</a> and try the idea on your own numbers.</p>
+        </section>
+      </article>
+
+      <nav class="lesson-pager" aria-label="More lessons">
+        <a class="pager-prev" href="../markets/" rel="prev"><span>Plate 17</span>Choosing markets: attractiveness and reach</a>
+        <a class="pager-all" href="../">All lessons</a>
+        <a class="pager-next" href="../validation/" rel="next"><span>Plate 19</span>Validating a model: held-out data and cross-validation</a>
+      </nav>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../../finance/" data-portal="#E8B923"><img src="../../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../../analytics/" data-portal="#192B49"><img src="../../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../../marketing/" data-portal="#56632C"><img src="../../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../../models/" data-portal="#252A31"><img src="../../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../../contact/" data-portal="#F6E7C1"><img src="../../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../../assets/js/pages/learn-lesson.js?v=6"></script>
+</body>
+</html>

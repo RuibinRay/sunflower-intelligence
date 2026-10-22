@@ -1,10 +1,10 @@
 // finance-markets.js — bonds and options.
-import { initSite, syncRanges } from '../core/site.js?v=5';
-import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=5';
-import * as F from '../core/format.js?v=5';
-import { barChart, tableTwin, lineChart, scatter } from '../core/charts.js?v=5';
-import { verdict } from '../core/ui.js?v=5';
-import { bond, blackScholes, impliedVol } from '../core/fin.js?v=5';
+import { initSite, syncRanges } from '../core/site.js?v=6';
+import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=6';
+import * as F from '../core/format.js?v=6';
+import { barChart, tableTwin, lineChart, scatter } from '../core/charts.js?v=6';
+import { verdict } from '../core/ui.js?v=6';
+import { bond, blackScholes, impliedVol } from '../core/fin.js?v=6';
 initSite();
 
 const ccVal = (id) => parseFloat($(`#${id}`).value);

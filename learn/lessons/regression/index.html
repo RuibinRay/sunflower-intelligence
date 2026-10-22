@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Regression: what the coefficients and R² say · Lessons · Sunflower Intelligence</title>
+  <meta name="description" content="A regression line turns “these move together” into “this much more of y for each unit of x”. Its numbers come with uncertainty, and the diagnostics say when to doubt them.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/lessons/regression/">
+  <meta property="og:title" content="Regression: what the coefficients and R² say · Lessons · Sunflower Intelligence">
+  <meta property="og:description" content="A regression line turns “these move together” into “this much more of y for each unit of x”. Its numbers come with uncertainty, and the diagnostics say when to doubt them.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=6">
+</head>
+<body class="room room--learn room--sub room--lesson">
+  <a class="skip-link" href="#ledger">Skip to the lesson</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../../finance/">Finance</a></li>
+        <li><a href="../../../analytics/">Business analytics</a></li>
+        <li><a href="../../../marketing/">Marketing</a></li>
+        <li><a href="../../../models/">How I build the models</a></li>
+        <li><a href="../../../contact/">Contact</a></li>
+        <li><a href="../../../learn/" aria-current="page">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../../"><img src="../../../assets/img/flower-learn-160.webp" alt="" width="56" height="56"><span>Learn</span></a>
+      <p class="plate-no">Plate 10 of 19 · Business analytics</p>
+      <h1 id="room-title" class="display is-long">Regression: what the coefficients and R² say</h1>
+      <p class="chapter-note">About 7 minutes to read, then three questions that count toward your mastery.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Learn pages">
+        <ul role="list">
+          <li><a href="../../">Check and practise</a></li>
+          <li><a href="../../lessons/" aria-current="true">Lessons</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <nav aria-label="In this lesson"><ul class="toc" role="list"><li><a href="#idea">The idea</a></li><li><a href="#formula">The formula</a></li><li><a href="#example">A worked example</a></li><li><a href="#try">Try it</a></li><li><a href="#mistake">The common mistake</a></li><li><a href="#remember">Remember</a></li><li><a href="#check">Check yourself</a></li><li><a href="#use">Use it on real numbers</a></li></ul></nav>
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../../">The painting</a></li><li><a href="../../">Learn</a></li><li><a href="../">Lessons</a></li><li aria-current="page">Regression: what the coefficients and R² say</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">A regression line turns “these move together” into “this much more of y for each unit of x”. Its numbers come with uncertainty, and the diagnostics say when to doubt them.</p>
+        <p class="lesson-status" id="lesson-status" aria-live="polite"></p>
+      </div>
+
+      <article class="lesson" data-lesson="regression" data-plate="10">
+        <section class="lesson-part" id="idea" aria-labelledby="idea-h">
+          <h2 id="idea-h">The idea</h2>
+          <p>Ordinary least squares (OLS) draws the line that makes the squared vertical distances from the points, the <b>residuals</b>, as small as possible. Each slope is the expected change in the outcome for one more unit of that predictor, <em>holding the other predictors fixed</em>.</p>
+          <p><b>R²</b> is the share of the outcome’s variation the model accounts for: 1 minus the leftover squared error over the total. With one predictor it equals the squared correlation. Adjusted R² charges for each extra predictor, so adding noise columns cannot raise it for free.</p>
+          <p>Each coefficient has a standard error, a t statistic (estimate ÷ standard error) and a <b>p-value</b>: how often a slope this far from zero would turn up by chance if the true effect were zero. If the residuals fan out (uneven spread), use robust HC3 standard errors; if two predictors overlap heavily (variance inflation factors above about 10), their separate effects can’t be pinned down.</p>
+        </section>
+        <section class="lesson-part" id="formula" aria-labelledby="formula-h">
+          <h2 id="formula-h">The formula</h2>
+          <div class="formula-box">
+            <p class="lesson-formula"><span class="f-part">ŷ = b<sub>0</sub> + b<sub>1</sub>x</span><span class="f-sep">, </span><span class="f-part">b<sub>1</sub> = <span class="frac"><span>Σ (x − x̄)(y − ȳ)</span><span>Σ (x − x̄)<sup>2</sup></span></span></span><span class="f-sep">, </span><span class="f-part">b<sub>0</sub> = ȳ − b<sub>1</sub>x̄</span><span class="f-sep">, </span><span class="f-part">R<sup>2</sup> = 1 − <span class="frac"><span>SSE</span><span>SST</span></span></span><span class="f-sep">, </span><span class="f-part">t = <span class="frac"><span>b<sub>1</sub></span><span>SE(b<sub>1</sub>)</span></span></span></p>
+            <dl class="terms"><div><dt>b<sub>1</sub></dt><dd>the slope: change in y for one more unit of x</dd></div><div><dt>b<sub>0</sub></dt><dd>the intercept: the predicted y when x is 0</dd></div><div><dt>SSE</dt><dd>sum of squared residuals, Σ (y − ŷ)²</dd></div><div><dt>SST</dt><dd>total sum of squares around the mean, Σ (y − ȳ)²</dd></div><div><dt>t</dt><dd>the estimate in standard errors; its p-value comes from a t distribution with n − 2 degrees of freedom here</dd></div></dl>
+          </div>
+        </section>
+        <section class="lesson-part" id="example" aria-labelledby="example-h">
+          <h2 id="example-h">A worked example</h2>
+          <figure class="plate">
+            <figcaption class="plate-cap">Plate 10</figcaption>
+            <p class="plate-setup">Over eight weeks a shop spent $2k to $9k on advertising and sold $14k, $13k, $18k, $15k, $20k, $17k, $22k and $19k. How strongly are they linked?</p>
+            <ol class="plate-steps">
+              <li><span>Means: advertising x̄ = <b>5.5</b>, sales ȳ = <b>17.25</b>. Σ (x − x̄)² = <b>42</b> and Σ (x − x̄)(y − ȳ) = <b>41.0</b>.</span></li>
+              <li><span>Slope b<sub>1</sub> = 41.0 ÷ 42 = <b>0.976</b>: each extra $1k of advertising goes with about $0.98k more sales. Intercept b<sub>0</sub> = 17.25 − 0.976 × 5.5 = <b>11.88</b>.</span></li>
+              <li><span>R² = 1 − 27.5 ÷ 67.5 = <b>0.59</b>: the line accounts for 59% of the week-to-week variation in sales.</span></li>
+              <li><span>Standard error of the slope <b>0.330</b>, so t = 0.976 ÷ 0.330 = <b>2.96</b>, with a p-value of <b>0.025</b> on 6 degrees of freedom.</span></li>
+              <li><span>Predicted sales for a $10k week: 11.88 + 0.976 × 10 = <b>$21.64k</b>.</span></li>
+            </ol>
+            <p class="plate-result">The data support a positive link: about <b>$0.98k</b> of sales per $1k of advertising, unlikely to be chance (p = 0.025). Eight weeks is little evidence, and a third factor such as season could drive both.</p>
+          </figure>
+        </section>
+        <section class="lesson-part" id="try" aria-labelledby="try-h">
+          <h2 id="try-h">Try it</h2>
+          <div class="bench lesson-calc" id="calc">
+            <form class="bench-inputs" id="calc-form" novalidate>
+              <p class="calc-intro">Sales = 10 + true slope × week + noise. The same fixed noise is reused, so only your settings change the sample.</p>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-slope">True slope</label><output for="c-slope" id="c-slope-out">0.5</output></div>
+                <input type="range" id="c-slope" name="slope" min="-1" max="2" step="0.1" value="0.5">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-noise">Noise (standard deviation)</label><output for="c-noise" id="c-noise-out">3.0</output></div>
+                <input type="range" id="c-noise" name="noise" min="0.5" max="10" step="0.5" value="3">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-n">Weeks of data</label><output for="c-n" id="c-n-out">12</output></div>
+                <input type="range" id="c-n" name="n" min="6" max="60" step="1" value="12">
+              </div>
+            </form>
+            <div class="bench-results" aria-live="polite" id="calc-out">
+              <p class="figure-title">How much can a sample tell you?</p>
+              <div class="figure-hero"><span class="hero-value" id="calc-hero">0.54</span><span class="hero-label" id="calc-hero-label">estimated slope (true 0.5)</span></div>
+              <dl class="stats-row stats-dense" id="calc-rows"><div class="stat"><dt>95% interval for the slope</dt><dd class="num">0.11 to 0.97</dd></div><div class="stat"><dt>p-value</dt><dd class="num">0.02</dd></div><div class="stat"><dt>R²</dt><dd class="num">0.44</dd></div></dl>
+              <p class="note" id="calc-note">The interval excludes zero, so the data can tell the slope from no effect.</p>
+            </div>
+          </div>
+        </section>
+        <section class="lesson-part" id="mistake" aria-labelledby="mistake-h">
+          <h2 id="mistake-h">The common mistake</h2>
+          <div class="mistake"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 5.5v5.2M10 14.2v.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><h3>Reading a p-value as the chance the effect is real</h3><p>Suppose the slope’s p-value had been 0.30. That does <em>not</em> mean a 70% chance that advertising works. It means that if advertising had no effect at all, a slope at least this far from zero would appear in about 30% of samples like this one. The right reading is “the data can’t tell the effect apart from zero”, not “probably real”.</p></div></div>
+        </section>
+        <section class="lesson-part" id="remember" aria-labelledby="remember-h">
+          <h2 id="remember-h">Remember</h2>
+          <ul class="remember" role="list">
+            <li>A slope is the change in y per unit of x, with the other predictors held fixed, and it describes association, not cause.</li>
+            <li>R² is the share of variation explained; with one predictor it is the correlation squared (R² = 0.64 means r = 0.8).</li>
+            <li>A p-value is not the probability the effect is real. Fanning residuals call for robust (HC3) standard errors; high VIFs mean overlapping predictors.</li>
+          </ul>
+        </section>
+        <section class="lesson-part" id="check" aria-labelledby="check-h">
+          <h2 id="check-h">Check yourself</h2>
+          <p>Three questions from the Learn room’s bank. Your answers update your mastery of this skill, the same as in Practise.</p>
+          <div class="bench learn-bench lesson-check">
+            <div class="quiz" id="lesson-quiz"><noscript><p class="note">The questions need JavaScript.</p></noscript></div>
+            <div class="bench-results" id="lesson-mastery" aria-live="polite"></div>
+          </div>
+        </section>
+        <section class="lesson-part" id="use" aria-labelledby="use-h">
+          <h2 id="use-h">Use it on real numbers</h2>
+          <p>Open <a href="../../../analytics/explore/#regress">Regress, in Business analytics › Explore your data</a> and try the idea on your own numbers.</p>
+        </section>
+      </article>
+
+      <nav class="lesson-pager" aria-label="More lessons">
+        <a class="pager-prev" href="../describe/" rel="prev"><span>Plate 9</span>Describing data: centre, spread and correlation</a>
+        <a class="pager-all" href="../">All lessons</a>
+        <a class="pager-next" href="../classify/" rel="next"><span>Plate 11</span>Classification: odds, thresholds and the confusion matrix</a>
+      </nav>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../../finance/" data-portal="#E8B923"><img src="../../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../../analytics/" data-portal="#192B49"><img src="../../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../../marketing/" data-portal="#56632C"><img src="../../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../../models/" data-portal="#252A31"><img src="../../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../../contact/" data-portal="#F6E7C1"><img src="../../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../../assets/js/pages/learn-lesson.js?v=6"></script>
+</body>
+</html>

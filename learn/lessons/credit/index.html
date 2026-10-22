@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Spotting financial distress · Lessons · Sunflower Intelligence</title>
+  <meta name="description" content="Five ratios from the accounts, weighted into one score, separated manufacturers that went bankrupt from those that didn’t. Altman’s Z-score is still the standard first screen.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/lessons/credit/">
+  <meta property="og:title" content="Spotting financial distress · Lessons · Sunflower Intelligence">
+  <meta property="og:description" content="Five ratios from the accounts, weighted into one score, separated manufacturers that went bankrupt from those that didn’t. Altman’s Z-score is still the standard first screen.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=6">
+</head>
+<body class="room room--learn room--sub room--lesson">
+  <a class="skip-link" href="#ledger">Skip to the lesson</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../../finance/">Finance</a></li>
+        <li><a href="../../../analytics/">Business analytics</a></li>
+        <li><a href="../../../marketing/">Marketing</a></li>
+        <li><a href="../../../models/">How I build the models</a></li>
+        <li><a href="../../../contact/">Contact</a></li>
+        <li><a href="../../../learn/" aria-current="page">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../../"><img src="../../../assets/img/flower-learn-160.webp" alt="" width="56" height="56"><span>Learn</span></a>
+      <p class="plate-no">Plate 8 of 19 · Finance</p>
+      <h1 id="room-title" class="display is-long">Spotting financial distress</h1>
+      <p class="chapter-note">About 6 minutes to read, then three questions that count toward your mastery.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Learn pages">
+        <ul role="list">
+          <li><a href="../../">Check and practise</a></li>
+          <li><a href="../../lessons/" aria-current="true">Lessons</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <nav aria-label="In this lesson"><ul class="toc" role="list"><li><a href="#idea">The idea</a></li><li><a href="#formula">The formula</a></li><li><a href="#example">A worked example</a></li><li><a href="#try">Try it</a></li><li><a href="#mistake">The common mistake</a></li><li><a href="#remember">Remember</a></li><li><a href="#check">Check yourself</a></li><li><a href="#use">Use it on real numbers</a></li></ul></nav>
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../../">The painting</a></li><li><a href="../../">Learn</a></li><li><a href="../">Lessons</a></li><li aria-current="page">Spotting financial distress</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">Five ratios from the accounts, weighted into one score, separated manufacturers that went bankrupt from those that didn’t. Altman’s Z-score is still the standard first screen.</p>
+        <p class="lesson-status" id="lesson-status" aria-live="polite"></p>
+      </div>
+
+      <article class="lesson" data-lesson="credit" data-plate="8">
+        <section class="lesson-part" id="idea" aria-labelledby="idea-h">
+          <h2 id="idea-h">The idea</h2>
+          <p>In 1968 Edward Altman took 66 US manufacturers, half of which had gone bankrupt, and asked which combination of financial ratios best told the two groups apart. The answer, found by discriminant analysis, was five ratios with fixed weights, added into a single <b>Z-score</b>.</p>
+          <p>The ratios cover liquidity (working capital), accumulated profit (retained earnings), <b>earning power</b> (EBIT, the largest weight at 3.3), leverage (market value of equity against liabilities) and asset turnover (sales). In the original model a score below 1.81 is the <b>distress zone</b>, above 2.99 the <b>safe zone</b>, and in between a grey zone where the model can’t call it.</p>
+          <p>Altman later fitted versions for other firms. <b>Z′</b> for private companies uses book equity. <b>Z″</b> for non-manufacturers drops sales ÷ assets, because asset turnover differs so much between industries that it would make asset-light firms look strong; it has its own cut-offs, 1.1 and 2.6. It is a screen, not a forecast, and not meant for banks or insurers.</p>
+        </section>
+        <section class="lesson-part" id="formula" aria-labelledby="formula-h">
+          <h2 id="formula-h">The formula</h2>
+          <div class="formula-box">
+            <p class="lesson-formula"><span class="f-part">Z = 1.2 X<sub>1</sub> + 1.4 X<sub>2</sub> + 3.3 X<sub>3</sub> + 0.6 X<sub>4</sub> + 1.0 X<sub>5</sub></span></p>
+            <dl class="terms"><div><dt>X<sub>1</sub></dt><dd>working capital ÷ total assets</dd></div><div><dt>X<sub>2</sub></dt><dd>retained earnings ÷ total assets</dd></div><div><dt>X<sub>3</sub></dt><dd>EBIT (operating profit) ÷ total assets</dd></div><div><dt>X<sub>4</sub></dt><dd>market value of equity ÷ total liabilities</dd></div><div><dt>X<sub>5</sub></dt><dd>sales ÷ total assets</dd></div></dl>
+            <p class="note">Zones for this original model: below 1.81 distress, 1.81 to 2.99 grey, above 2.99 safe.</p>
+          </div>
+        </section>
+        <section class="lesson-part" id="example" aria-labelledby="example-h">
+          <h2 id="example-h">A worked example</h2>
+          <figure class="plate">
+            <figcaption class="plate-cap">Plate 8</figcaption>
+            <p class="plate-setup">A listed manufacturer has total assets of $1,000m, working capital of $150m, retained earnings of $300m, EBIT of $120m, sales of $1,100m, total liabilities of $500m, and shares worth $700m. Where does it fall?</p>
+            <ol class="plate-steps">
+              <li><span>The ratios: X<sub>1</sub> = 0.15, X<sub>2</sub> = 0.30, X<sub>3</sub> = 0.12, X<sub>4</sub> = 700 ÷ 500 = 1.40, X<sub>5</sub> = 1.10.</span></li>
+              <li><span>Weighted: 1.2 × 0.15 = 0.18; 1.4 × 0.30 = 0.42; 3.3 × 0.12 = 0.40; 0.6 × 1.40 = 0.84; 1.0 × 1.10 = 1.10.</span></li>
+              <li><span>Z = 0.18 + 0.42 + 0.40 + 0.84 + 1.10 = <b>2.94</b>.</span></li>
+              <li><span>That is between 1.81 and 2.99: the <b>grey zone</b>, just short of safe.</span></li>
+            </ol>
+            <p class="plate-result">Not a distress signal, but not a clean bill of health either. Turnover and the market’s valuation of the equity carry most of the score; operating profit of 12% of assets is modest for the 3.3 weight it gets. Look closer at profitability and liquidity.</p>
+          </figure>
+        </section>
+        <section class="lesson-part" id="try" aria-labelledby="try-h">
+          <h2 id="try-h">Try it</h2>
+          <div class="bench lesson-calc" id="calc">
+            <form class="bench-inputs" id="calc-form" novalidate>
+              <p class="calc-intro">The original Z for a listed manufacturer. Enter each ratio as a decimal (0.15 for 15%).</p>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-x1">Working capital ÷ total assets</label><output for="c-x1" id="c-x1-out">0.15</output></div>
+                <input type="range" id="c-x1" name="x1" min="-0.3" max="0.6" step="0.01" value="0.15">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-x2">Retained earnings ÷ total assets</label><output for="c-x2" id="c-x2-out">0.30</output></div>
+                <input type="range" id="c-x2" name="x2" min="-0.5" max="0.8" step="0.01" value="0.3">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-x3">EBIT ÷ total assets</label><output for="c-x3" id="c-x3-out">0.12</output></div>
+                <input type="range" id="c-x3" name="x3" min="-0.2" max="0.3" step="0.01" value="0.12">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-x4">Market value of equity ÷ total liabilities</label><output for="c-x4" id="c-x4-out">1.40</output></div>
+                <input type="range" id="c-x4" name="x4" min="0" max="4" step="0.05" value="1.4">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-x5">Sales ÷ total assets</label><output for="c-x5" id="c-x5-out">1.10</output></div>
+                <input type="range" id="c-x5" name="x5" min="0" max="3" step="0.05" value="1.1">
+              </div>
+            </form>
+            <div class="bench-results" aria-live="polite" id="calc-out">
+              <p class="figure-title">Score a manufacturer</p>
+              <div class="figure-hero"><span class="hero-value" id="calc-hero">Z = 2.94</span><span class="hero-label" id="calc-hero-label">grey zone</span></div>
+              <dl class="stats-row stats-dense" id="calc-rows"><div class="stat"><dt>Largest contribution</dt><dd class="num">Sales ÷ total assets (+1.10)</dd></div><div class="stat"><dt>EBIT ÷ assets needed for the safe zone, others unchanged</dt><dd class="num">0.14</dd></div><div class="stat"><dt>Share of the score from sales ÷ assets</dt><dd class="num">37%</dd></div></dl>
+              <p class="note" id="calc-note">The grey zone: the model can’t separate this company from either group. Look closer at the ratios that pull the score down.</p>
+            </div>
+          </div>
+        </section>
+        <section class="lesson-part" id="mistake" aria-labelledby="mistake-h">
+          <h2 id="mistake-h">The common mistake</h2>
+          <div class="mistake"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 5.5v5.2M10 14.2v.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><h3>Mixing the two printed forms of the model</h3><p>Altman’s 1968 paper wrote the first four ratios as percentages (15 for 15%), so its weights read 0.012, 0.014, 0.033 and 0.006, with 0.999 on sales ÷ assets. Using those weights with ratios written as decimals gives 1.12 for this company: a false distress signal. Use 1.2, 1.4, 3.3, 0.6 and 1.0 with decimals.</p></div></div>
+        </section>
+        <section class="lesson-part" id="remember" aria-labelledby="remember-h">
+          <h2 id="remember-h">Remember</h2>
+          <ul class="remember" role="list">
+            <li>Original Z: below 1.81 distress, 1.81–2.99 grey, above 2.99 safe.</li>
+            <li>EBIT ÷ total assets carries the largest weight, 3.3: earning power matters most for survival.</li>
+            <li>Use Z′ for private firms and Z″ for non-manufacturers, each with its own cut-offs; none of them suit banks or insurers.</li>
+          </ul>
+        </section>
+        <section class="lesson-part" id="check" aria-labelledby="check-h">
+          <h2 id="check-h">Check yourself</h2>
+          <p>Three questions from the Learn room’s bank. Your answers update your mastery of this skill, the same as in Practise.</p>
+          <div class="bench learn-bench lesson-check">
+            <div class="quiz" id="lesson-quiz"><noscript><p class="note">The questions need JavaScript.</p></noscript></div>
+            <div class="bench-results" id="lesson-mastery" aria-live="polite"></div>
+          </div>
+        </section>
+        <section class="lesson-part" id="use" aria-labelledby="use-h">
+          <h2 id="use-h">Use it on real numbers</h2>
+          <p>Open <a href="../../../finance/risk/#altman">Altman Z-score, in Finance › Risk management</a> and try the idea on your own numbers.</p>
+        </section>
+      </article>
+
+      <nav class="lesson-pager" aria-label="More lessons">
+        <a class="pager-prev" href="../mrisk/" rel="prev"><span>Plate 7</span>Value at Risk and Expected Shortfall</a>
+        <a class="pager-all" href="../">All lessons</a>
+        <a class="pager-next" href="../describe/" rel="next"><span>Plate 9</span>Describing data: centre, spread and correlation</a>
+      </nav>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../../finance/" data-portal="#E8B923"><img src="../../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../../analytics/" data-portal="#192B49"><img src="../../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../../marketing/" data-portal="#56632C"><img src="../../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../../models/" data-portal="#252A31"><img src="../../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../../contact/" data-portal="#F6E7C1"><img src="../../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../../assets/js/pages/learn-lesson.js?v=6"></script>
+</body>
+</html>

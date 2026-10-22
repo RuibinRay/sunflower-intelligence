@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Unsupervised learning: groups and directions · Lessons · Sunflower Intelligence</title>
+  <meta name="description" content="With no outcome to predict, the question becomes: which rows are alike, and which few directions carry most of the variation? Clustering answers the first; principal components the second.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/lessons/mlunsup/">
+  <meta property="og:title" content="Unsupervised learning: groups and directions · Lessons · Sunflower Intelligence">
+  <meta property="og:description" content="With no outcome to predict, the question becomes: which rows are alike, and which few directions carry most of the variation? Clustering answers the first; principal components the second.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=6">
+</head>
+<body class="room room--learn room--sub room--lesson">
+  <a class="skip-link" href="#ledger">Skip to the lesson</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../../finance/">Finance</a></li>
+        <li><a href="../../../analytics/">Business analytics</a></li>
+        <li><a href="../../../marketing/">Marketing</a></li>
+        <li><a href="../../../models/">How I build the models</a></li>
+        <li><a href="../../../contact/">Contact</a></li>
+        <li><a href="../../../learn/" aria-current="page">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../../"><img src="../../../assets/img/flower-learn-160.webp" alt="" width="56" height="56"><span>Learn</span></a>
+      <p class="plate-no">Plate 13 of 19 · Business analytics</p>
+      <h1 id="room-title" class="display is-long">Unsupervised learning: groups and directions</h1>
+      <p class="chapter-note">About 7 minutes to read, then three questions that count toward your mastery.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Learn pages">
+        <ul role="list">
+          <li><a href="../../">Check and practise</a></li>
+          <li><a href="../../lessons/" aria-current="true">Lessons</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <nav aria-label="In this lesson"><ul class="toc" role="list"><li><a href="#idea">The idea</a></li><li><a href="#formula">The formula</a></li><li><a href="#example">A worked example</a></li><li><a href="#try">Try it</a></li><li><a href="#mistake">The common mistake</a></li><li><a href="#remember">Remember</a></li><li><a href="#check">Check yourself</a></li><li><a href="#use">Use it on real numbers</a></li></ul></nav>
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../../">The painting</a></li><li><a href="../../">Learn</a></li><li><a href="../">Lessons</a></li><li aria-current="page">Unsupervised learning: groups and directions</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">With no outcome to predict, the question becomes: which rows are alike, and which few directions carry most of the variation? Clustering answers the first; principal components the second.</p>
+        <p class="lesson-status" id="lesson-status" aria-live="polite"></p>
+      </div>
+
+      <article class="lesson" data-lesson="mlunsup" data-plate="13">
+        <section class="lesson-part" id="idea" aria-labelledby="idea-h">
+          <h2 id="idea-h">The idea</h2>
+          <p><b>k-means</b> places k centres and assigns each row to the nearest, moving the centres until the within-group squared distance is as small as it gets. You choose k. <b>Ward’s hierarchical clustering</b> starts with every row alone and keeps merging the two groups whose merge adds least spread. The <b>dendrogram</b> draws every merge at its height: cut it lower for more, smaller groups; higher for fewer. Standardise the columns first in both.</p>
+          <p>Two methods rarely agree exactly. The <b>adjusted Rand index</b> measures how alike two groupings are: 1 means identical, about 0 means no more alike than chance. Low agreement often means there is little real structure to find, not that one method is wrong.</p>
+          <p><b>Principal component analysis</b> (PCA) finds new axes, each a weighted mix of the standardised columns, ordered by how much variation they carry. Each one’s share is its eigenvalue divided by the number of columns. In a biplot, long arrows pointing the same way mean positively correlated columns, and opposite ways negatively correlated.</p>
+        </section>
+        <section class="lesson-part" id="formula" aria-labelledby="formula-h">
+          <h2 id="formula-h">The formula</h2>
+          <div class="formula-box">
+            <p class="lesson-formula"><span class="f-part">Ward merge cost Δ(A, B) = <span class="frac"><span>n<sub>A</sub> n<sub>B</sub></span><span>n<sub>A</sub> + n<sub>B</sub></span></span> ‖c<sub>A</sub> − c<sub>B</sub>‖<sup>2</sup></span><span class="f-sep">, </span><span class="f-part">share of PC<sub>k</sub> = <span class="frac"><span>λ<sub>k</sub></span><span>p</span></span></span></p>
+            <dl class="terms"><div><dt>n<sub>A</sub>, c<sub>A</sub></dt><dd>the size and centre (mean) of group A; Ward merges the pair with the smallest cost</dd></div><div><dt>λ<sub>k</sub></dt><dd>the k-th largest eigenvalue of the correlation matrix</dd></div><div><dt>p</dt><dd>the number of columns (the eigenvalues add up to p)</dd></div><div><dt>score</dt><dd>a row’s position on component k: Σ w<sub>jk</sub>z<sub>j</sub>, each column’s weight times the row’s standardised value</dd></div></dl>
+            <p class="note">The dendrogram draws each merge at √(2Δ), the same heights as SciPy.</p>
+          </div>
+        </section>
+        <section class="lesson-part" id="example" aria-labelledby="example-h">
+          <h2 id="example-h">A worked example</h2>
+          <figure class="plate">
+            <figcaption class="plate-cap">Plate 13</figcaption>
+            <p class="plate-setup">Customers’ annual spend and store visits, both standardised, correlate at 0.8. Run PCA on the two columns.</p>
+            <ol class="plate-steps">
+              <li><span>The correlation matrix is [1, 0.8; 0.8, 1]. For two columns its eigenvalues are 1 + r = <b>1.8</b> and 1 − r = <b>0.2</b>; they add up to 2, the number of columns.</span></li>
+              <li><span>The first component carries 1.8 ÷ 2 = <b>90%</b> of the variation; the second, <b>10%</b>.</span></li>
+              <li><span>Its weights are <b>0.707</b> on each column: an equal mix, best read as overall engagement. The second component’s weights are 0.707 and −0.707: spend relative to visits.</span></li>
+              <li><span>A customer 1.2 standard deviations above average on spend and 0.8 on visits scores 0.707 × 1.2 + 0.707 × 0.8 = <b>1.41</b> on the first component and 0.707 × 1.2 − 0.707 × 0.8 = <b>0.28</b> on the second.</span></li>
+            </ol>
+            <p class="plate-result">Two columns become one engagement score that keeps <b>90%</b> of their spread. Each column correlates <b>0.95</b> with it, which is why their biplot arrows are long and point the same way.</p>
+          </figure>
+        </section>
+        <section class="lesson-part" id="try" aria-labelledby="try-h">
+          <h2 id="try-h">Try it</h2>
+          <div class="bench lesson-calc" id="calc">
+            <form class="bench-inputs" id="calc-form" novalidate>
+              <p class="calc-intro">Set the correlations between three standardised columns and see how the variation splits across components.</p>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-r12">Correlation, columns 1 and 2</label><output for="c-r12" id="c-r12-out">0.70</output></div>
+                <input type="range" id="c-r12" name="r12" min="-0.9" max="0.9" step="0.05" value="0.7">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-r13">Correlation, columns 1 and 3</label><output for="c-r13" id="c-r13-out">0.50</output></div>
+                <input type="range" id="c-r13" name="r13" min="-0.9" max="0.9" step="0.05" value="0.5">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-r23">Correlation, columns 2 and 3</label><output for="c-r23" id="c-r23-out">0.40</output></div>
+                <input type="range" id="c-r23" name="r23" min="-0.9" max="0.9" step="0.05" value="0.4">
+              </div>
+            </form>
+            <div class="bench-results" aria-live="polite" id="calc-out">
+              <p class="figure-title">How many directions do three columns need?</p>
+              <div class="figure-hero"><span class="hero-value" id="calc-hero">69%</span><span class="hero-label" id="calc-hero-label">of the variation on the first component</span></div>
+              <dl class="stats-row stats-dense" id="calc-rows"><div class="stat"><dt>Second component</dt><dd class="num">21%</dd></div><div class="stat"><dt>First two together</dt><dd class="num">90%</dd></div><div class="stat"><dt>First component’s weights</dt><dd class="num">+0.62, +0.59, +0.51</dd></div></dl>
+              <p class="note" id="calc-note">Two directions carry almost everything: a two-dimensional map of the rows loses little.</p>
+            </div>
+          </div>
+        </section>
+        <section class="lesson-part" id="mistake" aria-labelledby="mistake-h">
+          <h2 id="mistake-h">The common mistake</h2>
+          <div class="mistake"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 5.5v5.2M10 14.2v.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><h3>Running PCA or clustering on unscaled columns</h3><p>Take income in dollars (standard deviation $20,000) and age in years (standard deviation 12), correlated at 0.3. Without standardising, the first component carries over <b>99.99%</b> of the variance and is income alone, because its numbers are bigger. Standardised, the first component carries <b>65%</b> and weighs both columns equally. Distances in k-means and Ward suffer the same way.</p></div></div>
+        </section>
+        <section class="lesson-part" id="remember" aria-labelledby="remember-h">
+          <h2 id="remember-h">Remember</h2>
+          <ul class="remember" role="list">
+            <li>Cutting a dendrogram lower gives more, smaller groups. Standardise before any distance-based method.</li>
+            <li>Adjusted Rand: 1 is identical groupings, about 0 is chance. Low agreement can mean there is no strong structure.</li>
+            <li>A component is a weighted mix of all the columns; its share of variance is its eigenvalue ÷ the number of columns.</li>
+          </ul>
+        </section>
+        <section class="lesson-part" id="check" aria-labelledby="check-h">
+          <h2 id="check-h">Check yourself</h2>
+          <p>Three questions from the Learn room’s bank. Your answers update your mastery of this skill, the same as in Practise.</p>
+          <div class="bench learn-bench lesson-check">
+            <div class="quiz" id="lesson-quiz"><noscript><p class="note">The questions need JavaScript.</p></noscript></div>
+            <div class="bench-results" id="lesson-mastery" aria-live="polite"></div>
+          </div>
+        </section>
+        <section class="lesson-part" id="use" aria-labelledby="use-h">
+          <h2 id="use-h">Use it on real numbers</h2>
+          <p>Open <a href="../../../analytics/unsupervised/#pca">Principal components, in Business analytics › Unsupervised learning</a> and try the idea on your own numbers.</p>
+        </section>
+      </article>
+
+      <nav class="lesson-pager" aria-label="More lessons">
+        <a class="pager-prev" href="../mlsup/" rel="prev"><span>Plate 12</span>Supervised learning: comparing models fairly</a>
+        <a class="pager-all" href="../">All lessons</a>
+        <a class="pager-next" href="../forecast/" rel="next"><span>Plate 14</span>Seasonal forecasting with Holt-Winters</a>
+      </nav>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../../finance/" data-portal="#E8B923"><img src="../../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../../analytics/" data-portal="#192B49"><img src="../../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../../marketing/" data-portal="#56632C"><img src="../../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../../models/" data-portal="#252A31"><img src="../../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../../contact/" data-portal="#F6E7C1"><img src="../../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../../assets/js/pages/learn-lesson.js?v=6"></script>
+</body>
+</html>

@@ -1,80 +1,23 @@
 // learn.js — the Learn room: adaptive placement (IRT), practice by mastery (BKT) and spaced review (HLR).
-import { initSite, syncRanges } from '../core/site.js?v=5';
-import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=5';
-import * as F from '../core/format.js?v=5';
-import { lineChart, tableTwin } from '../core/charts.js?v=5';
-import { mulberry32 } from '../core/rng.js?v=5';
-import * as L from '../core/learn.js?v=5';
-import { SKILLS, ITEMS } from '../data/learn-items.js?v=5';
+import { initSite, syncRanges } from '../core/site.js?v=6';
+import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=6';
+import * as F from '../core/format.js?v=6';
+import { lineChart, tableTwin } from '../core/charts.js?v=6';
+import * as L from '../core/learn.js?v=6';
+import { SKILLS, ITEMS } from '../data/learn-items.js?v=6';
+import { LESSON_META } from '../data/lessons/meta.js?v=6';
+import { DAY, ITEM, SKILL, loadState, saveState, clearState, updateTheta as thetaOf, questionCard as card, meter, button, listWords, durationWords, lessonHref, toolHref, nextLesson } from './learn-common.js?v=6';
 
 initSite();
+const LESSON = Object.fromEntries(LESSON_META.map((m) => [m.id, m]));
 
-const KEY = 'si:learn';
-const DAY = 86400000;
-const ITEM = Object.fromEntries(ITEMS.map((it) => [it.id, it]));
-const SKILL = Object.fromEntries(SKILLS.map((sk) => [sk.id, sk]));
-
-// ---------------------------------------------------------------- state (kept in this browser only)
-function load() {
-  try {
-    const st = JSON.parse(localStorage.getItem(KEY) || 'null');
-    if (st && st.version === 1 && st.skills && Array.isArray(st.responses)) {
-      SKILLS.forEach((sk) => { if (!st.skills[sk.id]) st.skills[sk.id] = { L: L.BKT.prior, nCorrect: 0, nWrong: 0, last: 0 }; });
-      st.responses = st.responses.filter((r) => ITEM[r.id]);
-      st.placement = (st.placement || []).filter((r) => ITEM[r.id]);
-      return st;
-    }
-  } catch { /* storage blocked or corrupt: start fresh */ }
-  return { ...L.newState(SKILLS), placed: false };
-}
-function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* private mode: progress lasts for this visit */ } }
-let state = load();
-
-/** Ability from every first answer to each question (repeat answers to the same question are not new evidence). */
-function updateTheta() {
-  const seen = new Set(), rs = [];
-  for (const r of [...state.placement, ...state.responses]) { if (seen.has(r.id)) continue; seen.add(r.id); rs.push({ item: ITEM[r.id], correct: r.correct }); }
-  const e = L.eap(rs); state.theta = e.theta; state.se = e.se;
-}
-
-// ---------------------------------------------------------------- a question card
-function shuffled(item) {
-  const attempts = state.responses.filter((r) => r.id === item.id).length + state.placement.filter((r) => r.id === item.id).length;
-  let hsh = 0; for (const ch of `${item.id}:${attempts}`) hsh = (hsh * 31 + ch.charCodeAt(0)) >>> 0;
-  const r = mulberry32(hsh), order = item.options.map((_, i) => i);
-  for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
-  return order;
-}
-let qCount = 0;
-function questionCard(box, item, { kicker, onAnswer, nextLabel, onNext }) {
-  const name = `q${++qCount}`, order = shuffled(item), sk = SKILL[item.skill];
-  const check = h('button', { class: 'btn btn-primary', type: 'submit', disabled: true }, 'Check my answer');
-  const opts = order.map((oi, k) => h('label', { class: 'option' },
-    h('input', { type: 'radio', name, value: String(oi) }), h('span', { class: 'option-key', 'aria-hidden': 'true' }, 'ABCD'[k]), h('span', { class: 'option-text' }, item.options[oi])));
-  const feedback = h('div', { class: 'q-feedback' });
-  const form = h('form', { class: 'q-card', novalidate: true },
-    h('p', { class: 'q-kicker' }, kicker),
-    h('fieldset', {}, h('legend', { class: 'q-stem' }, item.stem), h('div', { class: 'options' }, opts)),
-    h('div', { class: 'q-actions' }, check), feedback);
-  form.addEventListener('change', () => { check.disabled = false; });
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const picked = form.querySelector('input:checked'); if (!picked) return;
-    const correct = +picked.value === item.answer;
-    $$('input', form).forEach((inp) => { inp.disabled = true; const lab = inp.closest('.option'); if (+inp.value === item.answer) lab.classList.add('is-right'); else if (inp === picked) lab.classList.add('is-wrong'); });
-    check.remove();
-    const nextBtn = h('button', { class: 'btn btn-primary', type: 'button' }, nextLabel || 'Next question');
-    nextBtn.addEventListener('click', onNext);
-    feedback.append(
-      h('div', { class: `verdict ${correct ? 'is-good' : 'is-bad'}` }, h('p', {}, h('strong', {}, correct ? 'Right. ' : `Not quite: the answer is “${item.options[item.answer]}”. `), item.why)),
-      h('p', { class: 'q-more' }, 'Learn more: ', h('a', { href: sk.href }, `${sk.name} in ${sk.room}`)),
-      nextBtn);
-    onAnswer(correct);
-    nextBtn.focus({ preventScroll: true });
-  });
-  box.replaceChildren(form);
-  return form;
-}
+// ---------------------------------------------------------------- state (kept in this browser only; shared with the lessons)
+let state = loadState();
+const save = () => saveState(state);
+const updateTheta = () => thetaOf(state);
+/** After an answer: the lesson (if there is one) and the tool that uses the idea. */
+const linksFor = (sk) => [...(LESSON[sk.id] ? [{ href: lessonHref(sk.id, '../'), text: `Read the lesson: ${LESSON[sk.id].title}` }] : []), { href: toolHref(sk, '../'), text: `Use it: ${sk.name} in ${sk.room}` }];
+const questionCard = (box, item, opts) => card(box, item, state, { links: linksFor(SKILL[item.skill]), ...opts });
 
 // ---------------------------------------------------------------- placement check
 function asked() { return state.placement.map((r) => ({ item: ITEM[r.id], correct: r.correct })); }
@@ -222,13 +165,6 @@ function renderPracticeStats() {
   $('#pr-answered').textContent = F.int(all.length);
   $('#pr-right').textContent = all.length ? F.pct(all.filter((r) => r.correct).length / all.length, 0) : '—';
 }
-function meter(a, b) {
-  return h('div', { class: 'meter', role: 'img', 'aria-label': `Mastery ${F.pct(a, 0)} before, ${F.pct(b, 0)} now` },
-    h('span', { class: 'meter-before', style: { width: `${Math.min(a, b) * 100}%` } }),
-    h('span', { class: b >= a ? 'meter-gain' : 'meter-loss', style: { left: `${Math.min(a, b) * 100}%`, width: `${Math.abs(b - a) * 100}%` } }),
-    h('span', { class: 'meter-goal', style: { left: `${L.BKT.mastered * 100}%` } }));
-}
-
 // ---------------------------------------------------------------- progress: one petal per skill
 function skillRows() {
   const now = Date.now();
@@ -261,9 +197,10 @@ function renderGarden() {
     h('li', {}, h('i', { class: 'legend-key key-petal' }), 'Growing'), h('li', {}, h('i', { class: 'legend-key key-gold' }), 'Mastered (95%+)'), h('li', {}, h('i', { class: 'legend-key key-due' }), 'Due for review')));
   $('#gd-table').replaceChildren(h('table', { class: 'data-table' },
     h('caption', { class: 'visually-hidden' }, 'Mastery and review schedule by skill'),
-    h('thead', {}, h('tr', {}, ['Skill', 'Mastery', 'Recall now', 'Next review'].map((c, i) => h('th', { scope: 'col', class: i ? 'is-num' : '' }, c)))),
+    h('thead', {}, h('tr', {}, ['Skill', 'Lesson', 'Mastery', 'Recall now', 'Next review'].map((c, i) => h('th', { scope: 'col', class: i > 1 ? 'is-num' : '' }, c)))),
     h('tbody', {}, rows.map((r) => h('tr', { class: r.st.L >= L.BKT.mastered ? 'is-strong' : '' },
-      h('th', { scope: 'row' }, h('a', { href: r.sk.href }, r.sk.name)),
+      h('th', { scope: 'row' }, h('a', { href: toolHref(r.sk, '../') }, r.sk.name)),
+      h('td', {}, LESSON[r.sk.id] ? h('a', { href: lessonHref(r.sk.id, '../') }, state.read[r.sk.id] ? 'Read ✓' : `Read (${LESSON[r.sk.id].minutes} min)`) : '—'),
       h('td', { class: 'is-num' }, F.pct(r.st.L, 0)),
       h('td', { class: 'is-num' }, Number.isFinite(r.rec) ? F.pct(r.rec, 0) : 'not yet practised'),
       h('td', { class: 'is-num' }, !r.st.last ? '—' : r.due ? 'due now' : `in ${durationWords(r.nextIn)}`))))));
@@ -302,14 +239,6 @@ $('#en-clear').addEventListener('click', () => { engineSeq = []; renderEngine();
 $$('#engine input[type="range"]').forEach((el) => el.addEventListener('input', renderEngine));
 
 // ---------------------------------------------------------------- helpers and wiring
-function button(label, onClick, cls = 'btn-secondary') { const b = h('button', { class: `btn ${cls}`, type: 'button' }, label); b.addEventListener('click', onClick); return b; }
-function listWords(a) { return a.length < 2 ? a.join('') : `${a.slice(0, -1).join(', ')} and ${a[a.length - 1]}`; }
-function durationWords(days) {
-  if (!Number.isFinite(days)) return '—';
-  if (days < 1 / 24) return 'a few minutes';
-  if (days < 23.5 / 24) { const hrs = Math.max(1, Math.round(days * 24)); return `${hrs} hour${hrs === 1 ? '' : 's'}`; }
-  const d = Math.round(days); return `${d} day${d === 1 ? '' : 's'}`;
-}
 $('#gd-export').addEventListener('click', () => {
   const rows = skillRows();
   download('learning-progress.csv', toCSV(['skill', 'room', 'mastery', 'right', 'wrong', 'last_practised', 'half_life_days', 'recall_now', 'next_review'],
@@ -320,13 +249,25 @@ $('#gd-reset').addEventListener('click', (e) => {
   const btn = e.currentTarget;
   if (Date.now() - resetArmed > 5000) { resetArmed = Date.now(); btn.textContent = 'Click again to erase progress'; $('#gd-reset-note').textContent = 'This clears your answers and mastery in this browser.'; setTimeout(() => { if (Date.now() - resetArmed >= 5000) { btn.textContent = 'Start again'; $('#gd-reset-note').textContent = ''; } }, 5100); return; }
   resetArmed = 0; btn.textContent = 'Start again';
-  try { localStorage.removeItem(KEY); } catch { /* nothing stored */ }
-  state = load(); delete $('#pl-quiz').dataset.started;
+  clearState();
+  state = loadState(); delete $('#pl-quiz').dataset.started;
   $('#gd-reset-note').textContent = 'Progress cleared.';
   renderAll();
 });
 
-function renderAll() { renderPlacement(); renderPractice(); renderGarden(); }
+// ---------------------------------------------------------------- the lesson to read next
+function renderLessonNext() {
+  if (!LESSON_META.length) return;
+  const nx = nextLesson(state, LESSON_META);
+  const started = state.placed || Object.keys(state.read).length > 0;
+  $('#ls-kicker').textContent = started ? 'Next lesson for you' : 'Start here';
+  $('#ls-link').textContent = `Plate ${nx.plate}: ${nx.title}`;
+  $('#ls-link').href = lessonHref(nx.id, '../');
+  $('#ls-why').textContent = !started ? 'The first plate. Or take the check below, and this will point you to your weakest skill.'
+    : `Your least-mastered skill among the lessons you haven’t read: ${F.pct(state.skills[nx.id].L, 0)} mastered. About ${nx.minutes} minutes.`;
+}
+
+function renderAll() { renderLessonNext(); renderPlacement(); renderPractice(); renderGarden(); }
 renderAll();
 renderEngine();
 syncRanges();

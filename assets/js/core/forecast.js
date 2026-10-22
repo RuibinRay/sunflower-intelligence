@@ -10,7 +10,7 @@
 // so its forecasts are medians and its intervals stay exact under a log-normal error.
 // h-step variance: σ² [1 + Σ_{j=1}^{h−1} (α + αβ j + γ·[j mod m = 0])²]  (Hyndman et al. 2008, class 1 models).
 
-import { normQuantile } from './stats.js?v=5';
+import { normQuantile } from './stats.js?v=6';
 
 /** Starting states from the first two seasons: level and trend from the seasonal means, seasonals from detrended values. */
 export function initialStates(y, m) {

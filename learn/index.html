@@ -15,8 +15,8 @@
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
   <link rel="preload" href="../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/css/base.css?v=5">
-  <link rel="stylesheet" href="../assets/css/rooms.css?v=5">
+  <link rel="stylesheet" href="../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../assets/css/rooms.css?v=6">
 </head>
 <body class="room room--learn">
   <a class="skip-link" href="#ledger">Skip to the lessons</a>
@@ -52,14 +52,36 @@
       <p class="chapter">Learning by doing</p>
       <p class="chapter-note">Van Gogh was largely self-taught. He worked through drawing courses page by page and copied the painters he admired, long before the sunflowers. Practice that is a little beyond you, repeated before you forget it, is still how skills grow.</p>
       <blockquote class="quote">“I keep on making what I can’t do yet in order to learn to be able to do it.”<cite class="quote-cite">Vincent van Gogh to Anthon van Rappard, Nuenen, about 18 August 1885</cite></blockquote>
-      <nav aria-label="In this room"><ul class="toc" role="list"><li><a href="#placement">Where you stand</a></li><li><a href="#practice">Practise</a></li><li><a href="#garden">Your progress</a></li><li><a href="#engine">How it works</a></li></ul></nav>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Learn pages">
+        <ul role="list">
+          <li><a href="./" aria-current="page">Check and practise</a></li>
+          <li><a href="./lessons/">Lessons</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <nav aria-label="In this room"><ul class="toc" role="list"><li><a href="#lessons">Lessons</a></li><li><a href="#placement">Where you stand</a></li><li><a href="#practice">Practise</a></li><li><a href="#garden">Your progress</a></li><li><a href="#engine">How it works</a></li></ul></nav>
     </header>
 
     <div class="ledger" id="ledger">
       <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../">The painting</a></li><li aria-current="page">Learn</li></ol></nav>
       <div class="ledger-intro">
-        <p class="lead">Eighty questions on the ideas behind every tool on this site, in nineteen skills. A short adaptive check finds your level, practice goes to what you haven’t mastered, and skills come back for review just as you’re likely to forget them. Your progress stays in this browser.</p>
+        <p class="lead">Nineteen skills behind every tool on this site, each with a short lesson and a bank of questions, eighty in all. A short adaptive check finds your level, practice goes to what you haven’t mastered, and skills come back for review just as you’re likely to forget them. Your progress stays in this browser.</p>
       </div>
+
+      <!-- ============================================================ LESSONS -->
+      <section class="tool" id="lessons" aria-labelledby="ls-title">
+        <div class="tool-head">
+          <h2 id="ls-title">Lessons</h2>
+          <p>One short lesson per skill: the idea, the formula, a worked example, a calculator to try, and three questions that count toward your mastery here.</p>
+        </div>
+        <div class="lesson-next">
+          <p class="q-kicker" id="ls-kicker">Start here</p>
+          <h3 class="lesson-next-title"><a id="ls-link" href="lessons/tvm/">Plate 1: Time value and discounted cash flow</a></h3>
+          <p id="ls-why">The first plate. Or take the check below, and this will point you to your weakest skill.</p>
+          <p><a class="btn btn-secondary" href="lessons/">See all nineteen lessons</a></p>
+        </div>
+      </section>
 
       <!-- ============================================================ PLACEMENT -->
       <section class="tool" id="placement" aria-labelledby="pl-title">
@@ -202,6 +224,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../assets/js/pages/learn.js?v=5"></script>
+  <script type="module" src="../assets/js/pages/learn.js?v=6"></script>
 </body>
 </html>

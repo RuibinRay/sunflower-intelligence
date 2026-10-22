@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Return, risk and diversification · Lessons · Sunflower Intelligence</title>
+  <meta name="description" content="A share is judged by the return it earns for the risk it carries. Combining shares that don’t move together cuts risk faster than it cuts return.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/lessons/stocks/">
+  <meta property="og:title" content="Return, risk and diversification · Lessons · Sunflower Intelligence">
+  <meta property="og:description" content="A share is judged by the return it earns for the risk it carries. Combining shares that don’t move together cuts risk faster than it cuts return.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=6">
+</head>
+<body class="room room--learn room--sub room--lesson">
+  <a class="skip-link" href="#ledger">Skip to the lesson</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../../finance/">Finance</a></li>
+        <li><a href="../../../analytics/">Business analytics</a></li>
+        <li><a href="../../../marketing/">Marketing</a></li>
+        <li><a href="../../../models/">How I build the models</a></li>
+        <li><a href="../../../contact/">Contact</a></li>
+        <li><a href="../../../learn/" aria-current="page">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../../"><img src="../../../assets/img/flower-learn-160.webp" alt="" width="56" height="56"><span>Learn</span></a>
+      <p class="plate-no">Plate 5 of 19 · Finance</p>
+      <h1 id="room-title" class="display is-long">Return, risk and diversification</h1>
+      <p class="chapter-note">About 7 minutes to read, then three questions that count toward your mastery.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Learn pages">
+        <ul role="list">
+          <li><a href="../../">Check and practise</a></li>
+          <li><a href="../../lessons/" aria-current="true">Lessons</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <nav aria-label="In this lesson"><ul class="toc" role="list"><li><a href="#idea">The idea</a></li><li><a href="#formula">The formula</a></li><li><a href="#example">A worked example</a></li><li><a href="#try">Try it</a></li><li><a href="#mistake">The common mistake</a></li><li><a href="#remember">Remember</a></li><li><a href="#check">Check yourself</a></li><li><a href="#use">Use it on real numbers</a></li></ul></nav>
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../../">The painting</a></li><li><a href="../../">Learn</a></li><li><a href="../">Lessons</a></li><li aria-current="page">Return, risk and diversification</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">A share is judged by the return it earns for the risk it carries. Combining shares that don’t move together cuts risk faster than it cuts return.</p>
+        <p class="lesson-status" id="lesson-status" aria-live="polite"></p>
+      </div>
+
+      <article class="lesson" data-lesson="stocks" data-plate="5">
+        <section class="lesson-part" id="idea" aria-labelledby="idea-h">
+          <h2 id="idea-h">The idea</h2>
+          <p>Risk here means how much returns swing: <b>volatility</b>, the standard deviation of returns, quoted per year (daily volatility × √252). The <b>Sharpe ratio</b> divides the return above the risk-free rate by volatility, so shares of different riskiness can be compared. The Sortino ratio does the same but counts only the downside swings.</p>
+          <p><b>Beta</b> is the slope of a share’s excess returns against the market’s: a beta of 1.5 means the share tends to move 1.5% when the market moves 1%. The intercept of that regression, <b>alpha</b>, is return the market doesn’t explain. Daily returns are noisy, so an alpha needs a low p-value before it means skill rather than luck.</p>
+          <p>A portfolio’s return is the weighted average of its shares’ returns, but its volatility is not, because the shares’ bad days don’t all coincide. The lower the <b>correlation</b>, the more the swings cancel. The <b>efficient frontier</b> traces the best mixes, though the weights it suggests move a lot when the noisy average returns are re-estimated.</p>
+        </section>
+        <section class="lesson-part" id="formula" aria-labelledby="formula-h">
+          <h2 id="formula-h">The formula</h2>
+          <div class="formula-box">
+            <p class="lesson-formula"><span class="f-part">Sharpe = <span class="frac"><span>R − r<sub>f</sub></span><span>σ</span></span></span><span class="f-sep">, </span><span class="f-part">σ<sub>P</sub><sup>2</sup> = w<sub>A</sub><sup>2</sup>σ<sub>A</sub><sup>2</sup> + w<sub>B</sub><sup>2</sup>σ<sub>B</sub><sup>2</sup> + 2 w<sub>A</sub>w<sub>B</sub> ρ σ<sub>A</sub>σ<sub>B</sub></span></p>
+            <dl class="terms"><div><dt>R</dt><dd>expected (or average) return per year</dd></div><div><dt>r<sub>f</sub></dt><dd>risk-free rate per year</dd></div><div><dt>σ</dt><dd>volatility: the standard deviation of returns per year</dd></div><div><dt>w</dt><dd>the share of the money in each holding; the weights add up to 1</dd></div><div><dt>ρ</dt><dd>correlation between the two shares’ returns, from −1 to +1</dd></div></dl>
+          </div>
+        </section>
+        <section class="lesson-part" id="example" aria-labelledby="example-h">
+          <h2 id="example-h">A worked example</h2>
+          <figure class="plate">
+            <figcaption class="plate-cap">Plate 5</figcaption>
+            <p class="plate-setup">Share A is expected to return 10% a year with 20% volatility; share B 6% with 12%. Their correlation is 0.2 and the risk-free rate is 4%. Is a 50:50 mix better than either?</p>
+            <ol class="plate-steps">
+              <li><span>Sharpe ratios alone: A (10% − 4%) ÷ 20% = <b>0.30</b>; B (6% − 4%) ÷ 12% = <b>0.17</b>.</span></li>
+              <li><span>The mix returns 0.5 × 10% + 0.5 × 6% = <b>8%</b>.</span></li>
+              <li><span>Its variance is 0.25 × 0.20² + 0.25 × 0.12² + 2 × 0.25 × 0.2 × 0.20 × 0.12 = 0.0100 + 0.0036 + 0.0024 = 0.0160, so its volatility is √0.0160 = <b>12.6%</b>.</span></li>
+              <li><span>Its Sharpe ratio is (8% − 4%) ÷ 12.6% = <b>0.32</b>.</span></li>
+            </ol>
+            <p class="plate-result">The mix beats both shares on return per unit of risk. Its volatility, 12.6%, is barely above B’s alone and well below the 16% average of the two: that gap is the gain from diversification.</p>
+          </figure>
+        </section>
+        <section class="lesson-part" id="try" aria-labelledby="try-h">
+          <h2 id="try-h">Try it</h2>
+          <div class="bench lesson-calc" id="calc">
+            <form class="bench-inputs" id="calc-form" novalidate>
+              <p class="calc-intro">Shares A and B from the example: 10% return and 20% volatility, against 6% and 12%.</p>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-w">Money in share A</label><output for="c-w" id="c-w-out">50%</output></div>
+                <input type="range" id="c-w" name="w" min="0" max="100" step="5" value="50">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-rho">Correlation between A and B</label><output for="c-rho" id="c-rho-out">0.2</output></div>
+                <input type="range" id="c-rho" name="rho" min="-1" max="1" step="0.1" value="0.2">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-rf">Risk-free rate</label><output for="c-rf" id="c-rf-out">4.0%</output></div>
+                <input type="range" id="c-rf" name="rf" min="0" max="6" step="0.25" value="4">
+              </div>
+            </form>
+            <div class="bench-results" aria-live="polite" id="calc-out">
+              <p class="figure-title">Mix two shares</p>
+              <div class="figure-hero"><span class="hero-value" id="calc-hero">0.32</span><span class="hero-label" id="calc-hero-label">Sharpe ratio of the mix</span></div>
+              <dl class="stats-row stats-dense" id="calc-rows"><div class="stat"><dt>Expected return</dt><dd class="num">8.0%</dd></div><div class="stat"><dt>Volatility</dt><dd class="num">12.6%</dd></div><div class="stat"><dt>Risk saved against the average volatility</dt><dd class="num">3.4 points</dd></div><div class="stat"><dt>Best Sharpe ratio of either share alone</dt><dd class="num">0.30</dd></div></dl>
+              <p class="note" id="calc-note">This mix beats both shares on return per unit of risk. The best mix here puts about 60% in A.</p>
+            </div>
+          </div>
+        </section>
+        <section class="lesson-part" id="mistake" aria-labelledby="mistake-h">
+          <h2 id="mistake-h">The common mistake</h2>
+          <div class="mistake"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 5.5v5.2M10 14.2v.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><h3>Averaging the volatilities</h3><p>Taking 0.5 × 20% + 0.5 × 12% = 16% as the mix’s risk assumes the shares always move together (a correlation of 1). It understates the Sharpe ratio, 4% ÷ 16% = 0.25 instead of 0.32, and hides the reason to diversify.</p></div></div>
+        </section>
+        <section class="lesson-part" id="remember" aria-labelledby="remember-h">
+          <h2 id="remember-h">Remember</h2>
+          <ul class="remember" role="list">
+            <li>Sharpe ratio = (return − risk-free rate) ÷ volatility. Forgetting to subtract the risk-free rate flatters every share.</li>
+            <li>Beta scales the market’s move: beta 1.5 and a 2% market day means about 3%. Alpha needs a small p-value to mean anything.</li>
+            <li>Portfolio return averages; portfolio risk doesn’t. Low correlation is what makes diversification pay.</li>
+          </ul>
+        </section>
+        <section class="lesson-part" id="check" aria-labelledby="check-h">
+          <h2 id="check-h">Check yourself</h2>
+          <p>Three questions from the Learn room’s bank. Your answers update your mastery of this skill, the same as in Practise.</p>
+          <div class="bench learn-bench lesson-check">
+            <div class="quiz" id="lesson-quiz"><noscript><p class="note">The questions need JavaScript.</p></noscript></div>
+            <div class="bench-results" id="lesson-mastery" aria-live="polite"></div>
+          </div>
+        </section>
+        <section class="lesson-part" id="use" aria-labelledby="use-h">
+          <h2 id="use-h">Use it on real numbers</h2>
+          <p>Open <a href="../../../finance/stocks/#returns">Return and risk, in Finance › Stock analysis</a> and try the idea on your own numbers.</p>
+        </section>
+      </article>
+
+      <nav class="lesson-pager" aria-label="More lessons">
+        <a class="pager-prev" href="../bonds/" rel="prev"><span>Plate 4</span>Bonds, yields and duration</a>
+        <a class="pager-all" href="../">All lessons</a>
+        <a class="pager-next" href="../options/" rel="next"><span>Plate 6</span>Options and what drives their value</a>
+      </nav>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../../finance/" data-portal="#E8B923"><img src="../../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../../analytics/" data-portal="#192B49"><img src="../../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../../marketing/" data-portal="#56632C"><img src="../../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../../models/" data-portal="#252A31"><img src="../../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../../contact/" data-portal="#F6E7C1"><img src="../../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../../assets/js/pages/learn-lesson.js?v=6"></script>
+</body>
+</html>

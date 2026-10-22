@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Value at Risk and Expected Shortfall · Lessons · Sunflower Intelligence</title>
+  <meta name="description" content="Value at Risk is the loss a portfolio should exceed only rarely. Expected Shortfall asks how bad those rare days are, and a backtest asks whether the model was right.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/lessons/mrisk/">
+  <meta property="og:title" content="Value at Risk and Expected Shortfall · Lessons · Sunflower Intelligence">
+  <meta property="og:description" content="Value at Risk is the loss a portfolio should exceed only rarely. Expected Shortfall asks how bad those rare days are, and a backtest asks whether the model was right.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=6">
+</head>
+<body class="room room--learn room--sub room--lesson">
+  <a class="skip-link" href="#ledger">Skip to the lesson</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../../finance/">Finance</a></li>
+        <li><a href="../../../analytics/">Business analytics</a></li>
+        <li><a href="../../../marketing/">Marketing</a></li>
+        <li><a href="../../../models/">How I build the models</a></li>
+        <li><a href="../../../contact/">Contact</a></li>
+        <li><a href="../../../learn/" aria-current="page">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../../"><img src="../../../assets/img/flower-learn-160.webp" alt="" width="56" height="56"><span>Learn</span></a>
+      <p class="plate-no">Plate 7 of 19 · Finance</p>
+      <h1 id="room-title" class="display is-long">Value at Risk and Expected Shortfall</h1>
+      <p class="chapter-note">About 7 minutes to read, then three questions that count toward your mastery.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Learn pages">
+        <ul role="list">
+          <li><a href="../../">Check and practise</a></li>
+          <li><a href="../../lessons/" aria-current="true">Lessons</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <nav aria-label="In this lesson"><ul class="toc" role="list"><li><a href="#idea">The idea</a></li><li><a href="#formula">The formula</a></li><li><a href="#example">A worked example</a></li><li><a href="#try">Try it</a></li><li><a href="#mistake">The common mistake</a></li><li><a href="#remember">Remember</a></li><li><a href="#check">Check yourself</a></li><li><a href="#use">Use it on real numbers</a></li></ul></nav>
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../../">The painting</a></li><li><a href="../../">Learn</a></li><li><a href="../">Lessons</a></li><li aria-current="page">Value at Risk and Expected Shortfall</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">Value at Risk is the loss a portfolio should exceed only rarely. Expected Shortfall asks how bad those rare days are, and a backtest asks whether the model was right.</p>
+        <p class="lesson-status" id="lesson-status" aria-live="polite"></p>
+      </div>
+
+      <article class="lesson" data-lesson="mrisk" data-plate="7">
+        <section class="lesson-part" id="idea" aria-labelledby="idea-h">
+          <h2 id="idea-h">The idea</h2>
+          <p>A one-day 99% <b>Value at Risk</b> of $1m means losses should exceed $1m on about one day in a hundred. It is a threshold, not a worst case: it says nothing about how far beyond it the bad days go. <b>Expected Shortfall</b> answers that, as the average loss on the days beyond VaR, which is why bank capital rules now use it, at 97.5%.</p>
+          <p>There are three common ways to estimate them. <b>Historical simulation</b> replays past returns. The <b>normal</b> (variance–covariance) method uses only the average and volatility, and so understates risk when returns have fat tails. <b>Monte Carlo</b> simulates many outcomes from a fitted model. Longer horizons are often scaled by √time, which assumes one day’s return tells you nothing about the next.</p>
+          <p>A model is checked by <b>backtesting</b>: count the days its VaR was broken. <b>Kupiec’s test</b> asks whether the count fits the confidence level; <b>Christoffersen’s test</b> asks whether breaks bunch together, the sign of a model slow to notice stormy weather. Banks’ 99% models are graded on 250 days: 0–4 breaks is green, 5–9 yellow, 10 or more red.</p>
+        </section>
+        <section class="lesson-part" id="formula" aria-labelledby="formula-h">
+          <h2 id="formula-h">The formula</h2>
+          <div class="formula-box">
+            <p class="lesson-formula"><span class="f-part">VaR<sub>c</sub> = z<sub>c</sub> × σ × √h × V</span><span class="f-sep">, </span><span class="f-part">ES<sub>c</sub> = <span class="frac"><span>φ(z<sub>c</sub>)</span><span>1 − c</span></span> × σ × √h × V</span></p>
+            <dl class="terms"><div><dt>c</dt><dd>confidence level, such as 99%</dd></div><div><dt>z<sub>c</sub></dt><dd>the normal quantile for c: 2.326 at 99%, 1.645 at 95%</dd></div><div><dt>σ</dt><dd>daily volatility of the portfolio’s returns</dd></div><div><dt>h, V</dt><dd>horizon in days, and the portfolio’s value</dd></div><div><dt>φ</dt><dd>the standard normal density</dd></div></dl>
+            <p class="note">This is the normal method with an average daily return of zero, the usual simplification over short horizons.</p>
+          </div>
+        </section>
+        <section class="lesson-part" id="example" aria-labelledby="example-h">
+          <h2 id="example-h">A worked example</h2>
+          <figure class="plate">
+            <figcaption class="plate-cap">Plate 7</figcaption>
+            <p class="plate-setup">A $10m portfolio has a daily volatility of 1.2%. Using the normal method at 99%, what are its one-day VaR and Expected Shortfall, and its ten-day VaR?</p>
+            <ol class="plate-steps">
+              <li><span>One-day VaR: 2.326 × 1.2% × $10m = <b>$279k</b>.</span></li>
+              <li><span>Expected Shortfall: φ(2.326) ÷ 0.01 = 2.665, so 2.665 × 1.2% × $10m = <b>$320k</b>. On the worst 1% of days, the average loss is about 15% beyond VaR.</span></li>
+              <li><span>Ten days by the square-root-of-time rule: $279k × √10 ≈ $279k × 3.16 = <b>$882k</b>.</span></li>
+              <li><span>Backtest: over the last 250 days the loss beat the VaR 6 times, against 2.5 expected. That is the Basel <b>yellow</b> zone; Kupiec’s p-value is 0.06, so the count alone is not quite enough to reject the model at the usual 5% level.</span></li>
+            </ol>
+            <p class="plate-result">Report <b>$279k</b> as the one-day 99% VaR and <b>$320k</b> as Expected Shortfall. Six breaks is a warning: check whether returns have fatter tails than the normal curve, and whether the breaks came in a cluster.</p>
+          </figure>
+        </section>
+        <section class="lesson-part" id="try" aria-labelledby="try-h">
+          <h2 id="try-h">Try it</h2>
+          <div class="bench lesson-calc" id="calc">
+            <form class="bench-inputs" id="calc-form" novalidate>
+              <p class="calc-intro">The normal method, with an average daily return of zero.</p>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-value">Portfolio value</label><output for="c-value" id="c-value-out">$10m</output></div>
+                <input type="range" id="c-value" name="value" min="1" max="100" step="1" value="10">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-vol">Daily volatility</label><output for="c-vol" id="c-vol-out">1.2%</output></div>
+                <input type="range" id="c-vol" name="vol" min="0.2" max="4" step="0.1" value="1.2">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-conf">Confidence</label><output for="c-conf" id="c-conf-out">99.0%</output></div>
+                <input type="range" id="c-conf" name="conf" min="90" max="99.5" step="0.5" value="99">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-h">Horizon in days</label><output for="c-h" id="c-h-out">1</output></div>
+                <input type="range" id="c-h" name="h" min="1" max="20" step="1" value="1">
+              </div>
+            </form>
+            <div class="bench-results" aria-live="polite" id="calc-out">
+              <p class="figure-title">Size the risk</p>
+              <div class="figure-hero"><span class="hero-value" id="calc-hero">$279k</span><span class="hero-label" id="calc-hero-label">99.0% one-day VaR</span></div>
+              <dl class="stats-row stats-dense" id="calc-rows"><div class="stat"><dt>Expected Shortfall</dt><dd class="num">$320k</dd></div><div class="stat"><dt>As a share of the portfolio</dt><dd class="num">2.79% VaR; 3.20% ES</dd></div><div class="stat"><dt>Breaks to expect in 250 days</dt><dd class="num">2.5</dd></div></dl>
+              <p class="note" id="calc-note">Far out in the tail the normal curve is at its weakest: real returns usually have fatter tails, so historical or Monte Carlo estimates often come out higher.</p>
+            </div>
+          </div>
+        </section>
+        <section class="lesson-part" id="mistake" aria-labelledby="mistake-h">
+          <h2 id="mistake-h">The common mistake</h2>
+          <div class="mistake"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 5.5v5.2M10 14.2v.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><h3>Scaling VaR by the number of days</h3><p>Multiplying by 10 instead of √10 gives $2.79m for ten days, more than three times the √time answer. Risk grows with the square root of time when returns are independent, because good and bad days partly cancel.</p></div></div>
+        </section>
+        <section class="lesson-part" id="remember" aria-labelledby="remember-h">
+          <h2 id="remember-h">Remember</h2>
+          <ul class="remember" role="list">
+            <li>A 99% one-day VaR should be broken on about one day in a hundred; it is not the most you can lose.</li>
+            <li>Expected Shortfall is the average loss beyond VaR. The normal method understates both when tails are fat.</li>
+            <li>Ten-day VaR ≈ one-day VaR × √10. Backtest the count (Kupiec) and the clustering (Christoffersen).</li>
+          </ul>
+        </section>
+        <section class="lesson-part" id="check" aria-labelledby="check-h">
+          <h2 id="check-h">Check yourself</h2>
+          <p>Three questions from the Learn room’s bank. Your answers update your mastery of this skill, the same as in Practise.</p>
+          <div class="bench learn-bench lesson-check">
+            <div class="quiz" id="lesson-quiz"><noscript><p class="note">The questions need JavaScript.</p></noscript></div>
+            <div class="bench-results" id="lesson-mastery" aria-live="polite"></div>
+          </div>
+        </section>
+        <section class="lesson-part" id="use" aria-labelledby="use-h">
+          <h2 id="use-h">Use it on real numbers</h2>
+          <p>Open <a href="../../../finance/risk/#var">Value at Risk, in Finance › Risk management</a> and try the idea on your own numbers.</p>
+        </section>
+      </article>
+
+      <nav class="lesson-pager" aria-label="More lessons">
+        <a class="pager-prev" href="../options/" rel="prev"><span>Plate 6</span>Options and what drives their value</a>
+        <a class="pager-all" href="../">All lessons</a>
+        <a class="pager-next" href="../credit/" rel="next"><span>Plate 8</span>Spotting financial distress</a>
+      </nav>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../../finance/" data-portal="#E8B923"><img src="../../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../../analytics/" data-portal="#192B49"><img src="../../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../../marketing/" data-portal="#56632C"><img src="../../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../../models/" data-portal="#252A31"><img src="../../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../../contact/" data-portal="#F6E7C1"><img src="../../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../../assets/js/pages/learn-lesson.js?v=6"></script>
+</body>
+</html>

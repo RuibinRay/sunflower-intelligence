@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Bonds, yields and duration · Lessons · Sunflower Intelligence</title>
+  <meta name="description" content="A bond’s price is its fixed payments discounted at today’s yield. Duration says how far that price moves when yields do.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/lessons/bonds/">
+  <meta property="og:title" content="Bonds, yields and duration · Lessons · Sunflower Intelligence">
+  <meta property="og:description" content="A bond’s price is its fixed payments discounted at today’s yield. Duration says how far that price moves when yields do.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=6">
+</head>
+<body class="room room--learn room--sub room--lesson">
+  <a class="skip-link" href="#ledger">Skip to the lesson</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../../finance/">Finance</a></li>
+        <li><a href="../../../analytics/">Business analytics</a></li>
+        <li><a href="../../../marketing/">Marketing</a></li>
+        <li><a href="../../../models/">How I build the models</a></li>
+        <li><a href="../../../contact/">Contact</a></li>
+        <li><a href="../../../learn/" aria-current="page">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../../"><img src="../../../assets/img/flower-learn-160.webp" alt="" width="56" height="56"><span>Learn</span></a>
+      <p class="plate-no">Plate 4 of 19 · Finance</p>
+      <h1 id="room-title" class="display is-long">Bonds, yields and duration</h1>
+      <p class="chapter-note">About 7 minutes to read, then three questions that count toward your mastery.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Learn pages">
+        <ul role="list">
+          <li><a href="../../">Check and practise</a></li>
+          <li><a href="../../lessons/" aria-current="true">Lessons</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <nav aria-label="In this lesson"><ul class="toc" role="list"><li><a href="#idea">The idea</a></li><li><a href="#formula">The formula</a></li><li><a href="#example">A worked example</a></li><li><a href="#try">Try it</a></li><li><a href="#mistake">The common mistake</a></li><li><a href="#remember">Remember</a></li><li><a href="#check">Check yourself</a></li><li><a href="#use">Use it on real numbers</a></li></ul></nav>
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../../">The painting</a></li><li><a href="../../">Learn</a></li><li><a href="../">Lessons</a></li><li aria-current="page">Bonds, yields and duration</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">A bond’s price is its fixed payments discounted at today’s yield. Duration says how far that price moves when yields do.</p>
+        <p class="lesson-status" id="lesson-status" aria-live="polite"></p>
+      </div>
+
+      <article class="lesson" data-lesson="bonds" data-plate="4">
+        <section class="lesson-part" id="idea" aria-labelledby="idea-h">
+          <h2 id="idea-h">The idea</h2>
+          <p>A plain bond pays a fixed <b>coupon</b> every year and its <b>face value</b> at maturity. Its price is those payments discounted at the market’s required return, the <b>yield to maturity</b>. Because the payments are fixed, a higher yield means a lower price: prices and yields always move in opposite directions.</p>
+          <p>If the coupon is above the yield, buyers pay more than face value (a <b>premium</b>) until their overall return falls to the yield; if it is below, the bond trades at a <b>discount</b>; if they are equal, it trades at face value.</p>
+          <p><b>Duration</b> measures sensitivity. Macaulay duration is the average time until you are paid, each payment weighted by its present value. Modified duration, Macaulay ÷ (1 + y), turns that into a rule: price changes by about −modified duration × the change in yield. <b>Convexity</b> corrects for the curve: for big moves, the straight-line estimate overstates the fall and understates the rise.</p>
+        </section>
+        <section class="lesson-part" id="formula" aria-labelledby="formula-h">
+          <h2 id="formula-h">The formula</h2>
+          <div class="formula-box">
+            <p class="lesson-formula"><span class="f-part">P = <span class="frac"><span>C</span><span>(1 + y)</span></span> + … + <span class="frac"><span>C + FV</span><span>(1 + y)<sup>N</sup></span></span></span><span class="f-sep">, </span><span class="f-part"><span class="frac"><span>ΔP</span><span>P</span></span> ≈ −D<sub>mod</sub> × Δy + ½ × Conv × Δy<sup>2</sup></span></p>
+            <dl class="terms"><div><dt>C, FV</dt><dd>the annual coupon and the face value repaid at maturity</dd></div><div><dt>y</dt><dd>yield to maturity, per year</dd></div><div><dt>D<sub>mac</sub></dt><dd>Macaulay duration: Σ t × PV(payment at t) ÷ P, in years</dd></div><div><dt>D<sub>mod</sub></dt><dd>modified duration: D<sub>mac</sub> ÷ (1 + y)</dd></div><div><dt>Conv</dt><dd>convexity: how much the price–yield curve bends</dd></div></dl>
+          </div>
+        </section>
+        <section class="lesson-part" id="example" aria-labelledby="example-h">
+          <h2 id="example-h">A worked example</h2>
+          <figure class="plate">
+            <figcaption class="plate-cap">Plate 4</figcaption>
+            <p class="plate-setup">A five-year bond with a $1,000 face value pays a 6% coupon ($60) once a year. The market yield is 5%. What is it worth, and what happens if the yield rises to 6%?</p>
+            <ol class="plate-steps">
+              <li><span>Price: the five coupons are worth $259.8 today and the $1,000 repayment $783.5, so the bond is worth <b>$1,043.3</b>, a premium, because its 6% coupon beats the 5% yield.</span></li>
+              <li><span>Duration: Macaulay duration is <b>4.478 years</b>; modified duration is 4.478 ÷ 1.05 = <b>4.265</b>.</span></li>
+              <li><span>Duration’s estimate for a one-point rise in yield: −4.265 × 1% × $1,043.3 = <b>−$44.5</b>.</span></li>
+              <li><span>Convexity (23.44) adds back ½ × 23.44 × 0.01² × $1,043.3 = $1.2, for an estimate of <b>−$43.3</b>.</span></li>
+            </ol>
+            <p class="plate-result">At a 6% yield the coupon equals the yield, so the bond is worth exactly <b>$1,000.0</b>: a fall of <b>$43.3</b>. Duration alone was close; with convexity it is almost exact.</p>
+          </figure>
+        </section>
+        <section class="lesson-part" id="try" aria-labelledby="try-h">
+          <h2 id="try-h">Try it</h2>
+          <div class="bench lesson-calc" id="calc">
+            <form class="bench-inputs" id="calc-form" novalidate>
+              <p class="calc-intro">Face value $100, one coupon a year.</p>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-c">Coupon rate</label><output for="c-c" id="c-c-out">5.0%</output></div>
+                <input type="range" id="c-c" name="c" min="0" max="12" step="0.25" value="5">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-n">Years to maturity</label><output for="c-n" id="c-n-out">10</output></div>
+                <input type="range" id="c-n" name="n" min="1" max="30" step="1" value="10">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-y">Yield to maturity</label><output for="c-y" id="c-y-out">5.0%</output></div>
+                <input type="range" id="c-y" name="y" min="0.5" max="12" step="0.25" value="5">
+              </div>
+            </form>
+            <div class="bench-results" aria-live="polite" id="calc-out">
+              <p class="figure-title">Price a bond and its sensitivity</p>
+              <div class="figure-hero"><span class="hero-value" id="calc-hero">$100.00</span><span class="hero-label" id="calc-hero-label">per $100 of face value, at face value</span></div>
+              <dl class="stats-row stats-dense" id="calc-rows"><div class="stat"><dt>Macaulay duration</dt><dd class="num">8.11 years</dd></div><div class="stat"><dt>Modified duration</dt><dd class="num">7.72</dd></div><div class="stat"><dt>Convexity</dt><dd class="num">75.0</dd></div><div class="stat"><dt>If the yield rises one point</dt><dd class="num">−7.72% by duration; −7.36% exactly</dd></div></dl>
+              <p class="note" id="calc-note">Duration gets you most of the way; convexity explains the small difference from the exact change.</p>
+            </div>
+          </div>
+        </section>
+        <section class="lesson-part" id="mistake" aria-labelledby="mistake-h">
+          <h2 id="mistake-h">The common mistake</h2>
+          <div class="mistake"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 5.5v5.2M10 14.2v.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><h3>Using Macaulay duration as the price sensitivity</h3><p>Macaulay duration is a time in years, not a sensitivity. Plugging it in directly gives −4.478 × 1% × $1,043.3 = −$46.7, overstating the fall by $3.4. Divide by (1 + y) first.</p></div></div>
+        </section>
+        <section class="lesson-part" id="remember" aria-labelledby="remember-h">
+          <h2 id="remember-h">Remember</h2>
+          <ul class="remember" role="list">
+            <li>Price and yield move in opposite directions. Coupon above the yield means a premium; below, a discount.</li>
+            <li>Price change ≈ −modified duration × yield change. A modified duration of 7 means about −7% for a one-point rise.</li>
+            <li>Longer maturities and lower coupons mean more duration. More convexity helps the holder whichever way yields move sharply.</li>
+          </ul>
+        </section>
+        <section class="lesson-part" id="check" aria-labelledby="check-h">
+          <h2 id="check-h">Check yourself</h2>
+          <p>Three questions from the Learn room’s bank. Your answers update your mastery of this skill, the same as in Practise.</p>
+          <div class="bench learn-bench lesson-check">
+            <div class="quiz" id="lesson-quiz"><noscript><p class="note">The questions need JavaScript.</p></noscript></div>
+            <div class="bench-results" id="lesson-mastery" aria-live="polite"></div>
+          </div>
+        </section>
+        <section class="lesson-part" id="use" aria-labelledby="use-h">
+          <h2 id="use-h">Use it on real numbers</h2>
+          <p>Open <a href="../../../finance/markets/#bonds">Bonds, in Finance › Bonds and options</a> and try the idea on your own numbers.</p>
+        </section>
+      </article>
+
+      <nav class="lesson-pager" aria-label="More lessons">
+        <a class="pager-prev" href="../invest/" rel="prev"><span>Plate 3</span>Choosing between projects</a>
+        <a class="pager-all" href="../">All lessons</a>
+        <a class="pager-next" href="../stocks/" rel="next"><span>Plate 5</span>Return, risk and diversification</a>
+      </nav>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../../finance/" data-portal="#E8B923"><img src="../../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../../analytics/" data-portal="#192B49"><img src="../../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../../marketing/" data-portal="#56632C"><img src="../../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../../models/" data-portal="#252A31"><img src="../../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../../contact/" data-portal="#F6E7C1"><img src="../../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../../assets/js/pages/learn-lesson.js?v=6"></script>
+</body>
+</html>

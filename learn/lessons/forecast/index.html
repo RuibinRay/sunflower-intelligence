@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Seasonal forecasting with Holt-Winters · Lessons · Sunflower Intelligence</title>
+  <meta name="description" content="A seasonal series has a level, a trend and a pattern that repeats every year. Holt-Winters tracks all three, updating each as new figures arrive, and a fair test tells you whether to trust it.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/lessons/forecast/">
+  <meta property="og:title" content="Seasonal forecasting with Holt-Winters · Lessons · Sunflower Intelligence">
+  <meta property="og:description" content="A seasonal series has a level, a trend and a pattern that repeats every year. Holt-Winters tracks all three, updating each as new figures arrive, and a fair test tells you whether to trust it.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=6">
+</head>
+<body class="room room--learn room--sub room--lesson">
+  <a class="skip-link" href="#ledger">Skip to the lesson</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../../finance/">Finance</a></li>
+        <li><a href="../../../analytics/">Business analytics</a></li>
+        <li><a href="../../../marketing/">Marketing</a></li>
+        <li><a href="../../../models/">How I build the models</a></li>
+        <li><a href="../../../contact/">Contact</a></li>
+        <li><a href="../../../learn/" aria-current="page">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../../"><img src="../../../assets/img/flower-learn-160.webp" alt="" width="56" height="56"><span>Learn</span></a>
+      <p class="plate-no">Plate 14 of 19 · Business analytics</p>
+      <h1 id="room-title" class="display is-long">Seasonal forecasting with Holt-Winters</h1>
+      <p class="chapter-note">About 7 minutes to read, then three questions that count toward your mastery.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Learn pages">
+        <ul role="list">
+          <li><a href="../../">Check and practise</a></li>
+          <li><a href="../../lessons/" aria-current="true">Lessons</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <nav aria-label="In this lesson"><ul class="toc" role="list"><li><a href="#idea">The idea</a></li><li><a href="#formula">The formula</a></li><li><a href="#example">A worked example</a></li><li><a href="#try">Try it</a></li><li><a href="#mistake">The common mistake</a></li><li><a href="#remember">Remember</a></li><li><a href="#check">Check yourself</a></li><li><a href="#use">Use it on real numbers</a></li></ul></nav>
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../../">The painting</a></li><li><a href="../../">Learn</a></li><li><a href="../">Lessons</a></li><li aria-current="page">Seasonal forecasting with Holt-Winters</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">A seasonal series has a level, a trend and a pattern that repeats every year. Holt-Winters tracks all three, updating each as new figures arrive, and a fair test tells you whether to trust it.</p>
+        <p class="lesson-status" id="lesson-status" aria-live="polite"></p>
+      </div>
+
+      <article class="lesson" data-lesson="forecast" data-plate="14">
+        <section class="lesson-part" id="idea" aria-labelledby="idea-h">
+          <h2 id="idea-h">The idea</h2>
+          <p>Split the series into three parts. The <b>level</b> is where sales are now, the <b>trend</b> is how much they grow each period, and the <b>seasonal</b> part is the repeating pattern within the year, such as a December peak. A forecast adds them up: level, plus trend for each period ahead, plus that period’s seasonal effect.</p>
+          <p>After each new figure, every part moves part of the way toward what the surprise suggests. Three smoothing weights between 0 and 1 set how far: α for the level, β for the trend, γ for the season. High weights react fast but chase noise; low weights are steady but slow to notice change. If the seasonal swings grow as sales grow, they are <b>multiplicative</b>: model the logarithm, where they become constant.</p>
+          <p>Before trusting a forecast, hold back the last season, forecast it from the rest, and compare the errors with <b>seasonal naive</b>: simply repeating last season. That baseline is free and often hard to beat; a model has to earn its complexity against it.</p>
+        </section>
+        <section class="lesson-part" id="formula" aria-labelledby="formula-h">
+          <h2 id="formula-h">The formula</h2>
+          <div class="formula-box">
+            <p class="lesson-formula"><span class="f-part">ŷ<sub>t</sub> = ℓ<sub>t−1</sub> + b<sub>t−1</sub> + s<sub>t−m</sub></span><span class="f-sep">, </span><span class="f-part">e<sub>t</sub> = y<sub>t</sub> − ŷ<sub>t</sub></span><span class="f-sep">, </span><span class="f-part">ℓ<sub>t</sub> = ℓ<sub>t−1</sub> + b<sub>t−1</sub> + αe<sub>t</sub></span><span class="f-sep">, </span><span class="f-part">b<sub>t</sub> = b<sub>t−1</sub> + αβe<sub>t</sub></span><span class="f-sep">, </span><span class="f-part">s<sub>t</sub> = s<sub>t−m</sub> + γe<sub>t</sub></span></p>
+            <dl class="terms"><div><dt>ℓ, b, s</dt><dd>level, trend per period, and seasonal effect</dd></div><div><dt>m</dt><dd>the season length: 4 for quarters, 12 for months</dd></div><div><dt>e<sub>t</sub></dt><dd>the surprise: actual minus forecast</dd></div><div><dt>α, β, γ</dt><dd>smoothing weights for level, trend and season, chosen to minimise one-step errors</dd></div></dl>
+            <p class="note">Forecasting h periods ahead: ℓ + h × b + the seasonal effect for that period. The 95% interval widens with h.</p>
+          </div>
+        </section>
+        <section class="lesson-part" id="example" aria-labelledby="example-h">
+          <h2 id="example-h">A worked example</h2>
+          <figure class="plate">
+            <figcaption class="plate-cap">Plate 14</figcaption>
+            <p class="plate-setup">A shop’s quarterly sales ($k) end last year with level 200, trend +5 a quarter and seasonal effects of −30, −10, 0 and +40 for quarters 1–4. The weights are α = 0.3, β = 0.1, γ = 0.2. First-quarter sales come in at 181.</p>
+            <ol class="plate-steps">
+              <li><span>The forecast was 200 + 5 − 30 = <b>175</b>, so the surprise is 181 − 175 = <b>+6</b>.</span></li>
+              <li><span>Update: level 200 + 5 + 0.3 × 6 = <b>206.8</b>; trend 5 + 0.3 × 0.1 × 6 = <b>5.18</b>; the first quarter’s seasonal effect −30 + 0.2 × 6 = <b>−28.8</b>.</span></li>
+              <li><span>Next quarter: 206.8 + 5.18 − 10 = <b>202.0</b>.</span></li>
+              <li><span>The same quarter next year, four quarters ahead: 206.8 + 4 × 5.18 − 28.8 = <b>198.7</b>.</span></li>
+            </ol>
+            <p class="plate-result">One good quarter nudged all three parts up a little, not all the way. Over many quarters, those small corrections are how the model learns the business’s rhythm.</p>
+          </figure>
+        </section>
+        <section class="lesson-part" id="try" aria-labelledby="try-h">
+          <h2 id="try-h">Try it</h2>
+          <div class="bench lesson-calc" id="calc">
+            <form class="bench-inputs" id="calc-form" novalidate>
+              <p class="calc-intro">The shop above. The forecast for the first quarter was 175; set what actually happened and how strongly the model reacts. The trend weight β stays at 0.1.</p>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-actual">First-quarter sales came in at</label><output for="c-actual" id="c-actual-out">$181k</output></div>
+                <input type="range" id="c-actual" name="actual" min="150" max="220" step="1" value="181">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-alpha">Level weight α</label><output for="c-alpha" id="c-alpha-out">0.30</output></div>
+                <input type="range" id="c-alpha" name="alpha" min="0" max="1" step="0.05" value="0.3">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-gamma">Season weight γ</label><output for="c-gamma" id="c-gamma-out">0.20</output></div>
+                <input type="range" id="c-gamma" name="gamma" min="0" max="1" step="0.05" value="0.2">
+              </div>
+            </form>
+            <div class="bench-results" aria-live="polite" id="calc-out">
+              <p class="figure-title">Watch one update</p>
+              <div class="figure-hero"><span class="hero-value" id="calc-hero">$202.0k</span><span class="hero-label" id="calc-hero-label">forecast for next quarter</span></div>
+              <dl class="stats-row stats-dense" id="calc-rows"><div class="stat"><dt>Surprise this quarter</dt><dd class="num">+$6k</dd></div><div class="stat"><dt>New level</dt><dd class="num">$206.8k</dd></div><div class="stat"><dt>First quarter’s seasonal effect</dt><dd class="num">−$28.8k</dd></div><div class="stat"><dt>Same quarter next year</dt><dd class="num">$198.7k</dd></div></dl>
+              <p class="note" id="calc-note">A moderate weight: the model moves part of the way toward each surprise.</p>
+            </div>
+          </div>
+        </section>
+        <section class="lesson-part" id="mistake" aria-labelledby="mistake-h">
+          <h2 id="mistake-h">The common mistake</h2>
+          <div class="mistake"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 5.5v5.2M10 14.2v.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><h3>Using additive seasonality when the swings grow with the level</h3><p>December runs 40% above a level of 100, so +40. When the level reaches 200, a multiplicative season predicts 200 × 1.4 = <b>280</b>; an additive one still adds 40, forecasting <b>240</b> and missing by <b>14%</b>. If the peaks grow as sales grow, model the logarithm (the forecasting tool tries both and keeps the better fit).</p></div></div>
+        </section>
+        <section class="lesson-part" id="remember" aria-labelledby="remember-h">
+          <h2 id="remember-h">Remember</h2>
+          <ul class="remember" role="list">
+            <li>Level, trend and season: the seasonal component carries the repeating pattern within the year.</li>
+            <li>Swings that grow with the level are multiplicative; on a log scale they become constant.</li>
+            <li>Hold back the last season and beat repeating last season before trusting a forecast.</li>
+          </ul>
+        </section>
+        <section class="lesson-part" id="check" aria-labelledby="check-h">
+          <h2 id="check-h">Check yourself</h2>
+          <p>Three questions from the Learn room’s bank. Your answers update your mastery of this skill, the same as in Practise.</p>
+          <div class="bench learn-bench lesson-check">
+            <div class="quiz" id="lesson-quiz"><noscript><p class="note">The questions need JavaScript.</p></noscript></div>
+            <div class="bench-results" id="lesson-mastery" aria-live="polite"></div>
+          </div>
+        </section>
+        <section class="lesson-part" id="use" aria-labelledby="use-h">
+          <h2 id="use-h">Use it on real numbers</h2>
+          <p>Open <a href="../../../analytics/forecast/#forecast">Forecast, in Business analytics › Forecasting</a> and try the idea on your own numbers.</p>
+        </section>
+      </article>
+
+      <nav class="lesson-pager" aria-label="More lessons">
+        <a class="pager-prev" href="../mlunsup/" rel="prev"><span>Plate 13</span>Unsupervised learning: groups and directions</a>
+        <a class="pager-all" href="../">All lessons</a>
+        <a class="pager-next" href="../pricing/" rel="next"><span>Plate 15</span>Price elasticity and the best price</a>
+      </nav>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../../finance/" data-portal="#E8B923"><img src="../../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../../analytics/" data-portal="#192B49"><img src="../../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../../marketing/" data-portal="#56632C"><img src="../../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../../models/" data-portal="#252A31"><img src="../../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../../contact/" data-portal="#F6E7C1"><img src="../../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../../assets/js/pages/learn-lesson.js?v=6"></script>
+</body>
+</html>

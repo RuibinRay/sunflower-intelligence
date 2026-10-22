@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Options and what drives their value · Lessons · Sunflower Intelligence</title>
+  <meta name="description" content="An option is a right without an obligation. Its value comes from what the share might do before expiry, which is why volatility matters so much.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/lessons/options/">
+  <meta property="og:title" content="Options and what drives their value · Lessons · Sunflower Intelligence">
+  <meta property="og:description" content="An option is a right without an obligation. Its value comes from what the share might do before expiry, which is why volatility matters so much.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=6">
+</head>
+<body class="room room--learn room--sub room--lesson">
+  <a class="skip-link" href="#ledger">Skip to the lesson</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../../finance/">Finance</a></li>
+        <li><a href="../../../analytics/">Business analytics</a></li>
+        <li><a href="../../../marketing/">Marketing</a></li>
+        <li><a href="../../../models/">How I build the models</a></li>
+        <li><a href="../../../contact/">Contact</a></li>
+        <li><a href="../../../learn/" aria-current="page">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../../"><img src="../../../assets/img/flower-learn-160.webp" alt="" width="56" height="56"><span>Learn</span></a>
+      <p class="plate-no">Plate 6 of 19 · Finance</p>
+      <h1 id="room-title" class="display is-long">Options and what drives their value</h1>
+      <p class="chapter-note">About 8 minutes to read, then three questions that count toward your mastery.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Learn pages">
+        <ul role="list">
+          <li><a href="../../">Check and practise</a></li>
+          <li><a href="../../lessons/" aria-current="true">Lessons</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <nav aria-label="In this lesson"><ul class="toc" role="list"><li><a href="#idea">The idea</a></li><li><a href="#formula">The formula</a></li><li><a href="#example">A worked example</a></li><li><a href="#try">Try it</a></li><li><a href="#mistake">The common mistake</a></li><li><a href="#remember">Remember</a></li><li><a href="#check">Check yourself</a></li><li><a href="#use">Use it on real numbers</a></li></ul></nav>
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../../">The painting</a></li><li><a href="../../">Learn</a></li><li><a href="../">Lessons</a></li><li aria-current="page">Options and what drives their value</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">An option is a right without an obligation. Its value comes from what the share might do before expiry, which is why volatility matters so much.</p>
+        <p class="lesson-status" id="lesson-status" aria-live="polite"></p>
+      </div>
+
+      <article class="lesson" data-lesson="options" data-plate="6">
+        <section class="lesson-part" id="idea" aria-labelledby="idea-h">
+          <h2 id="idea-h">The idea</h2>
+          <p>A <b>call</b> is the right to buy a share at a fixed <b>strike</b> price on or before expiry; a <b>put</b> is the right to sell. At expiry a call is worth max(S − K, 0) and a put max(K − S, 0). The holder pays a premium up front and can never lose more than that.</p>
+          <p>Before expiry an option is worth more than its payoff today, because the share may still move in the holder’s favour. The Black–Scholes–Merton model prices that from five inputs: share price, strike, time, interest rate and <b>volatility</b>. More volatility raises both calls and puts, since big moves help the holder and losses are capped.</p>
+          <p>The <b>Greeks</b> measure sensitivities. <b>Delta</b> is the change in option value per $1 move in the share; vega, per point of volatility; theta, the value lost as time passes. <b>Put–call parity</b> ties the two together: a call minus a put behaves like owning the share and owing the present value of the strike. <b>Implied volatility</b> is the volatility that makes the model match a market price.</p>
+        </section>
+        <section class="lesson-part" id="formula" aria-labelledby="formula-h">
+          <h2 id="formula-h">The formula</h2>
+          <div class="formula-box">
+            <p class="lesson-formula"><span class="f-part">C = S × N(d<sub>1</sub>) − K e<sup>−rT</sup> × N(d<sub>2</sub>)</span><span class="f-sep">, </span><span class="f-part">d<sub>1</sub> = <span class="frac"><span>ln(S/K) + (r + σ<sup>2</sup>/2)T</span><span>σ√T</span></span></span><span class="f-sep">, </span><span class="f-part">d<sub>2</sub> = d<sub>1</sub> − σ√T</span></p>
+            <dl class="terms"><div><dt>S, K</dt><dd>share price today and strike price</dd></div><div><dt>T</dt><dd>time to expiry in years</dd></div><div><dt>r</dt><dd>risk-free rate, continuously compounded</dd></div><div><dt>σ</dt><dd>volatility of the share’s returns per year</dd></div><div><dt>N(x)</dt><dd>the standard normal cumulative probability; N(d<sub>1</sub>) is the call’s delta</dd></div></dl>
+            <p class="note">Put–call parity: C − P = S − K e<sup>−rT</sup>. Both are the versions for a share that pays no dividend before expiry; the tool also takes a dividend yield.</p>
+          </div>
+        </section>
+        <section class="lesson-part" id="example" aria-labelledby="example-h">
+          <h2 id="example-h">A worked example</h2>
+          <figure class="plate">
+            <figcaption class="plate-cap">Plate 6</figcaption>
+            <p class="plate-setup">A share trades at $50. A six-month call with a $52 strike: the risk-free rate is 4% and volatility 30%. What are the call and the matching put worth?</p>
+            <ol class="plate-steps">
+              <li><span>The model’s inputs give d<sub>1</sub> = 0.015 and d<sub>2</sub> = −0.197, so N(d<sub>1</sub>) = 0.5062 and N(d<sub>2</sub>) = 0.4220.</span></li>
+              <li><span>The strike’s present value is 52 × e<sup>−0.04 × 0.5</sup> = $50.97. The call is 50 × 0.5062 − 50.97 × 0.4220 = 25.31 − 21.51 = <b>$3.80</b>.</span></li>
+              <li><span>Put–call parity gives the put: 3.80 − 50 + 50.97 = <b>$4.77</b>.</span></li>
+              <li><span>Delta is 0.51: if the share rises $1, the call gains about $0.51. Raise volatility to 40% and the call is worth <b>$5.21</b>.</span></li>
+            </ol>
+            <p class="plate-result">The call is out of the money (the share is below the strike), so all of its <b>$3.80</b> is time value: the chance the share climbs above $52 in six months.</p>
+          </figure>
+        </section>
+        <section class="lesson-part" id="try" aria-labelledby="try-h">
+          <h2 id="try-h">Try it</h2>
+          <div class="bench lesson-calc" id="calc">
+            <form class="bench-inputs" id="calc-form" novalidate>
+              <p class="calc-intro">Black–Scholes–Merton with a 4% risk-free rate and no dividends.</p>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-S">Share price</label><output for="c-S" id="c-S-out">$50</output></div>
+                <input type="range" id="c-S" name="S" min="20" max="100" step="1" value="50">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-K">Strike price</label><output for="c-K" id="c-K-out">$52</output></div>
+                <input type="range" id="c-K" name="K" min="20" max="100" step="1" value="52">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-vol">Volatility</label><output for="c-vol" id="c-vol-out">30%</output></div>
+                <input type="range" id="c-vol" name="vol" min="5" max="80" step="1" value="30">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-months">Months to expiry</label><output for="c-months" id="c-months-out">6</output></div>
+                <input type="range" id="c-months" name="months" min="1" max="24" step="1" value="6">
+              </div>
+            </form>
+            <div class="bench-results" aria-live="polite" id="calc-out">
+              <p class="figure-title">Price an option</p>
+              <div class="figure-hero"><span class="hero-value" id="calc-hero">$3.80</span><span class="hero-label" id="calc-hero-label">call value</span></div>
+              <dl class="stats-row stats-dense" id="calc-rows"><div class="stat"><dt>Put value</dt><dd class="num">$4.77</dd></div><div class="stat"><dt>Call delta</dt><dd class="num">0.51</dd></div><div class="stat"><dt>Call’s time value (above its payoff today)</dt><dd class="num">$3.80</dd></div><div class="stat"><dt>Risk-neutral chance the call ends in the money</dt><dd class="num">42%</dd></div></dl>
+              <p class="note" id="calc-note">The call is out of the money: every cent of its value is time value, the chance the share rises above the strike before expiry.</p>
+            </div>
+          </div>
+        </section>
+        <section class="lesson-part" id="mistake" aria-labelledby="mistake-h">
+          <h2 id="mistake-h">The common mistake</h2>
+          <div class="mistake"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 5.5v5.2M10 14.2v.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><h3>Forgetting to discount the strike in put–call parity</h3><p>Writing P = C − S + K gives 3.80 − 50 + 52 = $5.80, overpricing the put by $1.03. The strike is paid at expiry, so parity uses its present value, K e<sup>−rT</sup>.</p></div></div>
+        </section>
+        <section class="lesson-part" id="remember" aria-labelledby="remember-h">
+          <h2 id="remember-h">Remember</h2>
+          <ul class="remember" role="list">
+            <li>A call is the right to buy at the strike, a put the right to sell; the most a holder can lose is the premium.</li>
+            <li>Higher volatility makes both calls and puts more valuable. Value change ≈ delta × share move.</li>
+            <li>Call − put = S − K e<sup>−rT</sup> for European options on a share without dividends.</li>
+          </ul>
+        </section>
+        <section class="lesson-part" id="check" aria-labelledby="check-h">
+          <h2 id="check-h">Check yourself</h2>
+          <p>Three questions from the Learn room’s bank. Your answers update your mastery of this skill, the same as in Practise.</p>
+          <div class="bench learn-bench lesson-check">
+            <div class="quiz" id="lesson-quiz"><noscript><p class="note">The questions need JavaScript.</p></noscript></div>
+            <div class="bench-results" id="lesson-mastery" aria-live="polite"></div>
+          </div>
+        </section>
+        <section class="lesson-part" id="use" aria-labelledby="use-h">
+          <h2 id="use-h">Use it on real numbers</h2>
+          <p>Open <a href="../../../finance/markets/#options">Options, in Finance › Bonds and options</a> and try the idea on your own numbers.</p>
+        </section>
+      </article>
+
+      <nav class="lesson-pager" aria-label="More lessons">
+        <a class="pager-prev" href="../stocks/" rel="prev"><span>Plate 5</span>Return, risk and diversification</a>
+        <a class="pager-all" href="../">All lessons</a>
+        <a class="pager-next" href="../mrisk/" rel="next"><span>Plate 7</span>Value at Risk and Expected Shortfall</a>
+      </nav>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../../finance/" data-portal="#E8B923"><img src="../../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../../analytics/" data-portal="#192B49"><img src="../../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../../marketing/" data-portal="#56632C"><img src="../../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../../models/" data-portal="#252A31"><img src="../../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../../contact/" data-portal="#F6E7C1"><img src="../../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../../assets/js/pages/learn-lesson.js?v=6"></script>
+</body>
+</html>

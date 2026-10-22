@@ -1,5 +1,5 @@
 // abtest.js — comparing two conversion rates, and planning how many visitors a test needs.
-import { normCdf, normQuantile } from './stats.js?v=5';
+import { normCdf, normQuantile } from './stats.js?v=6';
 
 /**
  * Two-proportion z-test (pooled standard error for the test, unpooled for the interval).

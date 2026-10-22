@@ -7,7 +7,7 @@
 //   <!-- chrome:subnav --> … <!-- /chrome:subnav -->   a room's pages (hub and sub-pages)
 //   <!-- chrome:hub -->    … <!-- /chrome:hub -->      the cards on a room's hub page
 //   <!-- chrome:toc -->    … <!-- /chrome:toc -->      a sub-page's own tools, read from its <section class="tool"> headings
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -24,6 +24,7 @@ const ROOMS = [
   { id: 'learn', name: 'Learn', chapter: 'Learning by doing', color: '#C96F36' },
 ];
 const SUB = JSON.parse(readFileSync(join(ROOT, 'assets/js/data/subpages.json'), 'utf8'));
+const OVERVIEW = { learn: 'Check and practise' };   // the first item of a room's page menu, if not "Overview"
 
 const glyph = `<svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs>${Array.from({ length: 13 }, (_, i) => `<use href="#wm-p"${i ? ` transform="rotate(${(i * 360 / 13).toFixed(1)})"` : ''}/>`).join('')}<circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg>`;
 const arrow = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -62,14 +63,15 @@ ${ROOMS.filter((r) => r.id !== current).map((r) => `      <li><a class="room-lin
   </footer>
   `;
 
-/** The room's pages; `here` is '' on the hub or a sub-page slug. `up` reaches the hub from this page. */
-const subnav = (room, here, up) => {
+/** The room's pages; `here` is '' on the hub or a sub-page slug. `up` reaches the hub from this page.
+ *  `deep` marks a page below a sub-page (a lesson): its parent is the current section, not the current page. */
+const subnav = (room, here, up, deep = false) => {
   const r = ROOMS.find((x) => x.id === room);
   return `
       <nav class="subnav" aria-label="${r.name} pages">
         <ul role="list">
-          <li><a href="${up}"${here === '' ? ' aria-current="page"' : ''}>Overview</a></li>
-${SUB[room].map((p) => `          <li><a href="${up}${p.slug}/"${p.slug === here ? ' aria-current="page"' : ''}>${p.name}</a></li>`).join('\n')}
+          <li><a href="${up}"${here === '' ? ' aria-current="page"' : ''}>${OVERVIEW[room] || 'Overview'}</a></li>
+${SUB[room].map((p) => `          <li><a href="${up}${p.slug}/"${p.slug === here ? ` aria-current="${deep ? 'true' : 'page'}"` : ''}>${p.name}</a></li>`).join('\n')}
         </ul>
       </nav>
       `;
@@ -86,6 +88,9 @@ ROOMS.forEach((r) => {
   pages.push({ file: `${r.id}/index.html`, current: r.id, root: '../', room: SUB[r.id] ? r.id : null, here: '', up: './' });
   (SUB[r.id] || []).forEach((p) => pages.push({ file: `${r.id}/${p.slug}/index.html`, current: r.id, root: '../../', room: r.id, here: p.slug, up: '../' }));
 });
+// lesson pages, one level below Learn › Lessons
+const lessonDir = join(ROOT, 'learn/lessons');
+if (existsSync(lessonDir)) readdirSync(lessonDir, { withFileTypes: true }).filter((d) => d.isDirectory()).forEach((d) => pages.push({ file: `learn/lessons/${d.name}/index.html`, current: 'learn', root: '../../../', room: 'learn', here: 'lessons', up: '../../', deep: true }));
 pages.push({ file: '404.html', current: '', root: SITE_PATH });
 
 const block = (html, name, body) => html.replace(new RegExp(`<!-- chrome:${name} -->[\\s\\S]*?<!-- /chrome:${name} -->`), `<!-- chrome:${name} -->${body}<!-- /chrome:${name} -->`);
@@ -95,9 +100,9 @@ for (const p of pages) {
   let html = readFileSync(path, 'utf8');
   html = block(html, 'header', header(p.current, p.root));
   html = block(html, 'footer', footer(p.current, p.root));
-  if (p.room) html = block(html, 'subnav', subnav(p.room, p.here, p.up));
+  if (p.room) html = block(html, 'subnav', subnav(p.room, p.here, p.up, p.deep));
   if (p.room && p.here === '') html = block(html, 'hub', hub(p.room));
-  if (p.room && p.here !== '') {
+  if (p.room && p.here !== '' && !p.deep) {
     const items = [...html.matchAll(/<section class="tool" id="([^"]+)"[^>]*>\s*<div class="tool-head">\s*<h2 id="[^"]*">([^<]+)<\/h2>/g)];
     html = block(html, 'toc', `\n      <nav aria-label="On this page"><ul class="toc" role="list">${items.map((m) => `<li><a href="#${m[1]}">${m[2]}</a></li>`).join('')}</ul></nav>\n      `);
   }

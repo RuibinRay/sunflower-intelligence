@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Validating a model: held-out data and cross-validation · Lessons · Sunflower Intelligence</title>
+  <meta name="description" content="A model always looks better on the data it learned from. Holding data back, and choosing the simplest model that is as good as the best, is how you find out what it will really do.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/lessons/validation/">
+  <meta property="og:title" content="Validating a model: held-out data and cross-validation · Lessons · Sunflower Intelligence">
+  <meta property="og:description" content="A model always looks better on the data it learned from. Holding data back, and choosing the simplest model that is as good as the best, is how you find out what it will really do.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=6">
+</head>
+<body class="room room--learn room--sub room--lesson">
+  <a class="skip-link" href="#ledger">Skip to the lesson</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../../finance/">Finance</a></li>
+        <li><a href="../../../analytics/">Business analytics</a></li>
+        <li><a href="../../../marketing/">Marketing</a></li>
+        <li><a href="../../../models/">How I build the models</a></li>
+        <li><a href="../../../contact/">Contact</a></li>
+        <li><a href="../../../learn/" aria-current="page">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../../"><img src="../../../assets/img/flower-learn-160.webp" alt="" width="56" height="56"><span>Learn</span></a>
+      <p class="plate-no">Plate 19 of 19 · How I build the models</p>
+      <h1 id="room-title" class="display is-long">Validating a model: held-out data and cross-validation</h1>
+      <p class="chapter-note">About 6 minutes to read, then three questions that count toward your mastery.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Learn pages">
+        <ul role="list">
+          <li><a href="../../">Check and practise</a></li>
+          <li><a href="../../lessons/" aria-current="true">Lessons</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <nav aria-label="In this lesson"><ul class="toc" role="list"><li><a href="#idea">The idea</a></li><li><a href="#formula">The formula</a></li><li><a href="#example">A worked example</a></li><li><a href="#try">Try it</a></li><li><a href="#mistake">The common mistake</a></li><li><a href="#remember">Remember</a></li><li><a href="#check">Check yourself</a></li><li><a href="#use">Use it on real numbers</a></li></ul></nav>
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../../">The painting</a></li><li><a href="../../">Learn</a></li><li><a href="../">Lessons</a></li><li aria-current="page">Validating a model: held-out data and cross-validation</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">A model always looks better on the data it learned from. Holding data back, and choosing the simplest model that is as good as the best, is how you find out what it will really do.</p>
+        <p class="lesson-status" id="lesson-status" aria-live="polite"></p>
+      </div>
+
+      <article class="lesson" data-lesson="validation" data-plate="19">
+        <section class="lesson-part" id="idea" aria-labelledby="idea-h">
+          <h2 id="idea-h">The idea</h2>
+          <p>Error on the training data flatters a model, and a more complex model drives it ever lower. Error on <b>held-out</b> data, which the model never saw, falls at first and then rises once the model starts fitting noise. That rise is <b>overfitting</b>: the model has memorised the sample instead of the pattern.</p>
+          <p>One small held-out set is a shaky judge. <b>k-fold cross-validation</b> splits the data into k folds and holds each out in turn, so every row is tested once. Average the k errors, and measure their wobble with a standard error. The <b>one-standard-error rule</b> takes the simplest model whose average error is within one standard error of the best: models that close can’t really be told apart, and simpler ones travel better.</p>
+          <p>Every preparation step, such as scaling, filling gaps or choosing columns, must be fitted on the training part only. Otherwise information from the test rows <b>leaks</b> into training and flatters the score. For data over time, train on the past and test on the future.</p>
+        </section>
+        <section class="lesson-part" id="formula" aria-labelledby="formula-h">
+          <h2 id="formula-h">The formula</h2>
+          <div class="formula-box">
+            <p class="lesson-formula"><span class="f-part">SE = <span class="frac"><span>s<sub>folds</sub></span><span>√k</span></span></span><span class="f-sep">, </span><span class="f-part">choose the simplest model with CV ≤ CV<sub>best</sub> + SE<sub>best</sub></span><span class="f-sep">, </span><span class="f-part">E[training MSE] = σ<sup>2</sup><span class="frac"><span>n − p</span><span>n</span></span></span><span class="f-sep">, </span><span class="f-part">E[new-data MSE] = σ<sup>2</sup><span class="frac"><span>n + p</span><span>n</span></span></span></p>
+            <dl class="terms"><div><dt>s<sub>folds</sub>, k</dt><dd>the standard deviation of the k fold errors, and the number of folds</dd></div><div><dt>CV</dt><dd>a model’s average error across the folds</dd></div><div><dt>n, p, σ</dt><dd>rows, fitted coefficients and noise, for a straight-line (least-squares) model; new data at the same inputs</dd></div></dl>
+          </div>
+        </section>
+        <section class="lesson-part" id="example" aria-labelledby="example-h">
+          <h2 id="example-h">A worked example</h2>
+          <figure class="plate">
+            <figcaption class="plate-cap">Plate 19</figcaption>
+            <p class="plate-setup">Five-fold cross-validation scores polynomial curves of degree 1 to 5 on the same data. Which degree should you choose?</p>
+            <ol class="plate-steps">
+              <li><span>Average each degree’s five fold errors: <b>2.15</b>, <b>1.24</b>, <b>1.18</b>, <b>1.17</b> and <b>1.28</b>. The lowest is degree 4, at 1.17.</span></li>
+              <li><span>Degree 4’s fold errors have a standard deviation of <b>0.212</b>, so its standard error is 0.212 ÷ √5 = <b>0.095</b>.</span></li>
+              <li><span>The threshold is 1.17 + 0.095 = <b>1.265</b>. Degrees 2, 3 and 4 all fall within it.</span></li>
+              <li><span>Take the simplest of them: <b>degree 2</b>.</span></li>
+            </ol>
+            <p class="plate-result">Degree 2’s error of <b>1.24</b> is within the noise of degree 4’s 1.17, and its curve bends far less, so it is the safer bet on new data. Degree 5’s rise to 1.28 is overfitting starting to show.</p>
+          </figure>
+        </section>
+        <section class="lesson-part" id="try" aria-labelledby="try-h">
+          <h2 id="try-h">Try it</h2>
+          <div class="bench lesson-calc" id="calc">
+            <form class="bench-inputs" id="calc-form" novalidate>
+              <p class="calc-intro">A least-squares model with p coefficients fitted to n rows, noise of 1. The gap is pure optimism: the model has fitted part of the noise.</p>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-n">Rows of data</label><output for="c-n" id="c-n-out">40</output></div>
+                <input type="range" id="c-n" name="n" min="20" max="200" step="10" value="40">
+              </div>
+              <div class="slider-field">
+                <div class="slider-top"><label for="c-p">Coefficients in the model</label><output for="c-p" id="c-p-out">5</output></div>
+                <input type="range" id="c-p" name="p" min="1" max="19" step="1" value="5">
+              </div>
+            </form>
+            <div class="bench-results" aria-live="polite" id="calc-out">
+              <p class="figure-title">How much training error flatters a model</p>
+              <div class="figure-hero"><span class="hero-value" id="calc-hero">1.13×</span><span class="hero-label" id="calc-hero-label">new-data error ÷ training error</span></div>
+              <dl class="stats-row stats-dense" id="calc-rows"><div class="stat"><dt>Expected training error (RMSE)</dt><dd class="num">0.94</dd></div><div class="stat"><dt>Expected error on new data</dt><dd class="num">1.06</dd></div><div class="stat"><dt>True noise</dt><dd class="num">1.00</dd></div></dl>
+              <p class="note" id="calc-note">Plenty of rows for this many coefficients: training error is only mildly optimistic, though held-out data is still the honest test.</p>
+            </div>
+          </div>
+        </section>
+        <section class="lesson-part" id="mistake" aria-labelledby="mistake-h">
+          <h2 id="mistake-h">The common mistake</h2>
+          <div class="mistake"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 5.5v5.2M10 14.2v.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><div><h3>Letting the test data leak into training</h3><p>Scaling the whole table before splitting lets the test rows set the means and standard deviations the model trains with, so the test score comes out too good. A stronger leak: a churn model that includes “refund issued”, a column recorded only after a customer cancels, can score near perfectly in testing and be useless in practice, because at prediction time that column is always empty. Fit every step on training rows, and use only what you would know at the moment of prediction.</p></div></div>
+        </section>
+        <section class="lesson-part" id="remember" aria-labelledby="remember-h">
+          <h2 id="remember-h">Remember</h2>
+          <ul class="remember" role="list">
+            <li>Training error only falls with complexity; held-out error falls, then rises. The rise is overfitting.</li>
+            <li>Cross-validation tests every row once. Prefer the simplest model within one standard error of the best.</li>
+            <li>Fit scaling and every other preparation step on the training rows only, and never use information from after the prediction.</li>
+          </ul>
+        </section>
+        <section class="lesson-part" id="check" aria-labelledby="check-h">
+          <h2 id="check-h">Check yourself</h2>
+          <p>Three questions from the Learn room’s bank. Your answers update your mastery of this skill, the same as in Practise.</p>
+          <div class="bench learn-bench lesson-check">
+            <div class="quiz" id="lesson-quiz"><noscript><p class="note">The questions need JavaScript.</p></noscript></div>
+            <div class="bench-results" id="lesson-mastery" aria-live="polite"></div>
+          </div>
+        </section>
+        <section class="lesson-part" id="use" aria-labelledby="use-h">
+          <h2 id="use-h">Use it on real numbers</h2>
+          <p>Open <a href="../../../models/#lab">Why I hold data back, in How I build the models</a> and try the idea on your own numbers.</p>
+        </section>
+      </article>
+
+      <nav class="lesson-pager" aria-label="More lessons">
+        <a class="pager-prev" href="../growth/" rel="prev"><span>Plate 18</span>Unit economics and experiments</a>
+        <a class="pager-all" href="../">All lessons</a>
+        <span></span>
+      </nav>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../../finance/" data-portal="#E8B923"><img src="../../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../../analytics/" data-portal="#192B49"><img src="../../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../../marketing/" data-portal="#56632C"><img src="../../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../../models/" data-portal="#252A31"><img src="../../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../../contact/" data-portal="#F6E7C1"><img src="../../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../../assets/js/pages/learn-lesson.js?v=6"></script>
+</body>
+</html>
