@@ -7,6 +7,9 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+// The site's path on GitHub Pages (the repository name). Only 404.html uses it: GitHub Pages serves that page
+// at any missing address, so its links can't be relative. See "Renaming the repository" in README.md.
+const SITE_PATH = '/RuibinRay-sunflower-intelligence/';
 const ROOMS = [
   { id: 'finance', name: 'Finance', chapter: 'An obsession with yellow', color: '#E8B923' },
   { id: 'analytics', name: 'Business analytics', chapter: 'The golden spiral', color: '#192B49' },
@@ -51,7 +54,7 @@ ${ROOMS.filter((r) => r.id !== current).map((r) => `      <li><a class="room-lin
   </footer>
   `;
 
-const pages = [...ROOMS.map((r) => ({ file: `${r.id}/index.html`, current: r.id, root: '../' })), { file: '404.html', current: '', root: '/sunflower-intelligence/' }];
+const pages = [...ROOMS.map((r) => ({ file: `${r.id}/index.html`, current: r.id, root: '../' })), { file: '404.html', current: '', root: SITE_PATH }];
 for (const p of pages) {
   const path = join(ROOT, p.file);
   if (!existsSync(path)) continue;

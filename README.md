@@ -2,7 +2,7 @@
 
 Finance, business analytics and marketing tools set inside a living sunflower painting after Van Gogh. The homepage is the painting: five of its flowers open five rooms.
 
-**Live:** https://ruibinray.github.io/sunflower-intelligence/
+**Live:** https://ruibinray.github.io/RuibinRay-sunflower-intelligence/
 
 | Room | Flower | What it does |
 |---|---|---|
@@ -57,15 +57,22 @@ tests/                     statistics tests against SciPy and statsmodels
 
 ## Run locally
 
-Serve the parent folder so the site sits at the same path as on GitHub Pages:
-
 ```
-cd ..
 python3 -m http.server 8000
-# open http://localhost:8000/sunflower-intelligence/
+# open http://localhost:8000/
 ```
 
-(Opening the HTML files directly from disk won’t work: browsers block JavaScript modules on `file://`.)
+(Opening the HTML files directly from disk won’t work: browsers block JavaScript modules on `file://`.) Every link is relative except in `404.html`, which only GitHub Pages serves.
+
+## Publishing and renaming
+
+GitHub Pages publishes the `main` branch as it is: Settings → Pages → Build and deployment → Source: *Deploy from a branch*, Branch: `main`, folder `/ (root)`. Each push to `main` usually goes live within a couple of minutes.
+
+The repository name appears in the address, so it is written into the canonical and social-preview URLs, `sitemap.xml`, `robots.txt`, `404.html` and `SITE_PATH` in `tools/chrome.mjs`. After renaming the repository, update them all at once (replace `NEW-NAME`; works on macOS and Linux):
+
+```
+grep -rl 'RuibinRay-sunflower-intelligence' --exclude-dir=.git . | xargs perl -pi -e 's#RuibinRay-sunflower-intelligence#NEW-NAME#g'
+```
 
 ## Tests
 
