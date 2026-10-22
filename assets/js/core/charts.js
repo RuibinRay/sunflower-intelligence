@@ -1,7 +1,7 @@
 // charts.js — small SVG chart kit. Thin marks, hairline grid, hover + keyboard tooltips, table twins.
 // Colours come from CSS classes (see tools.css) so light and night rooms share one code path.
-import { s, h } from './dom.js?v=1';
-import * as F from './format.js?v=1';
+import { s, h } from './dom.js?v=2';
+import * as F from './format.js?v=2';
 
 export function niceTicks(min, max, count = 5) {
   if (!Number.isFinite(min) || !Number.isFinite(max)) return { ticks: [], min: 0, max: 1, step: 1 };
@@ -231,14 +231,22 @@ export function scatter(container, { points, curves = [], band, height = 320, xL
 }
 
 /** Multi-series line chart with a snapping crosshair. xs: numbers; series: [{name, values, cls}] */
-export function lineChart(container, { xs, series, height = 260, xLabel, yLabel, xFormat = (v) => F.auto(v), yFormat = (v) => F.auto(v), label, highlightX, yDomain, endLabels = true, xTicks } = {}) {
+export function lineChart(container, { xs, series, height = 260, xLabel, yLabel, xFormat = (v) => F.auto(v), yFormat = (v) => F.auto(v), label, highlightX, yDomain, endLabels = true, xTicks, band } = {}) {
   const fr = frame(container, { height, label, margin: { r: endLabels ? 96 : 16 } });
-  const all = series.flatMap((se) => se.values).filter(Number.isFinite);
+  const all = series.flatMap((se) => se.values).concat(band ? [...band.lo, ...band.hi] : []).filter(Number.isFinite);
   const nx = niceTicks(Math.min(...xs), Math.max(...xs), Math.min(xs.length, Math.max(3, Math.floor(fr.iw / 70))));
   const ny = niceTicks(yDomain ? yDomain[0] : Math.min(...all), yDomain ? yDomain[1] : Math.max(...all), 5);
   const x = xTicks ? lin(Math.min(...xs), Math.max(...xs), 0, fr.iw) : lin(nx.min, nx.max, 0, fr.iw), y = lin(ny.min, ny.max, fr.ih, 0);
   axisY(fr, y, ny.ticks, { format: yFormat, label: yLabel });
   axisX(fr, x, xTicks || nx.ticks.filter((t) => t >= Math.min(...xs) && t <= Math.max(...xs)), { format: xFormat, label: xLabel });
+  if (band) {
+    // band: {lo: [], hi: [], cls} aligned with xs; drawn wherever both edges exist
+    const idx = xs.map((_, i) => i).filter((i) => Number.isFinite(band.lo[i]) && Number.isFinite(band.hi[i]));
+    if (idx.length > 1) {
+      const top = idx.map((i) => `${x(xs[i]).toFixed(1)},${y(band.hi[i]).toFixed(1)}`), bot = idx.slice().reverse().map((i) => `${x(xs[i]).toFixed(1)},${y(band.lo[i]).toFixed(1)}`);
+      fr.g.append(s('polygon', { points: top.concat(bot).join(' '), class: `band ${band.cls || 'm-s2'}` }));
+    }
+  }
   if (highlightX != null) fr.g.append(s('line', { x1: x(highlightX), x2: x(highlightX), y1: 0, y2: fr.ih, class: 'ref-line is-strong' }));
   series.forEach((se) => {
     const d = se.values.map((v, i) => (Number.isFinite(v) ? `${i && Number.isFinite(se.values[i - 1]) ? 'L' : 'M'}${x(xs[i]).toFixed(1)},${y(Math.min(ny.max, v)).toFixed(1)}` : '')).join('');
@@ -253,7 +261,9 @@ export function lineChart(container, { xs, series, height = 260, xLabel, yLabel,
     if (i < 0) { cross.style.display = 'none'; markers.forEach((mk) => { mk.style.display = 'none'; }); fr.tip.hide(); return; }
     cross.setAttribute('x1', x(xs[i])); cross.setAttribute('x2', x(xs[i])); cross.style.display = '';
     series.forEach((se, k) => { const v = se.values[i]; const mk = markers[k]; if (Number.isFinite(v) && v <= ny.max) { mk.setAttribute('cx', x(xs[i])); mk.setAttribute('cy', y(v)); mk.style.display = ''; } else mk.style.display = 'none'; });
-    fr.tip.show(fr.m.l + x(xs[i]), fr.m.t + 8, `${xLabel || 'x'} ${xFormat(xs[i])}`, series.map((se) => ({ value: yFormat(se.values[i]), label: se.name, key: se.cls })));
+    const rowsTip = series.filter((se) => Number.isFinite(se.values[i])).map((se) => ({ value: yFormat(se.values[i]), label: se.name, key: se.cls }));
+    if (band && Number.isFinite(band.lo[i]) && band.label) rowsTip.push({ value: `${yFormat(band.lo[i])} to ${yFormat(band.hi[i])}`, label: band.label, key: band.cls || 'm-s2' });
+    fr.tip.show(fr.m.l + x(xs[i]), fr.m.t + 8, `${xLabel ? `${xLabel} ` : ''}${xFormat(xs[i])}`, rowsTip);
   };
   const hit = s('rect', { x: 0, y: 0, width: fr.iw, height: fr.ih, class: 'hit' });
   hit.addEventListener('pointermove', (e) => {

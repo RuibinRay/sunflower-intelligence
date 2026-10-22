@@ -15,8 +15,8 @@
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
   <link rel="preload" href="../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/css/base.css?v=1">
-  <link rel="stylesheet" href="../assets/css/rooms.css?v=1">
+  <link rel="stylesheet" href="../assets/css/base.css?v=2">
+  <link rel="stylesheet" href="../assets/css/rooms.css?v=2">
 </head>
 <body class="room room--analytics">
   <a class="skip-link" href="#ledger">Skip to the tools</a>
@@ -51,13 +51,13 @@
       <p class="chapter">The golden spiral</p>
       <p class="chapter-note">Look into a sunflower and its seeds line up in spirals, usually a Fibonacci number of them. Usually: in a citizen-science study published in 2016, volunteers counted the spirals on 657 sunflowers, and roughly a quarter of the counts broke the rule. Analytics is finding the pattern, then counting the exceptions honestly.</p>
       <p class="quote-cite">Swinton, Ochu &amp; MSI Turing’s Sunflower Consortium, <i>Royal Society Open Science</i>, 2016</p>
-      <nav aria-label="In this room"><ul class="toc" role="list"><li><a href="#data">Your data</a></li><li><a href="#describe">Describe</a></li><li><a href="#correlate">Correlate</a></li><li><a href="#regress">Regress</a></li></ul></nav>
+      <nav aria-label="In this room"><ul class="toc" role="list"><li><a href="#data">Your data</a></li><li><a href="#describe">Describe</a></li><li><a href="#correlate">Correlate</a></li><li><a href="#regress">Regress</a></li><li><a href="#forecast">Forecast</a></li></ul></nav>
     </header>
 
     <div class="ledger on-night" id="ledger">
       <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../">The painting</a></li><li aria-current="page">Business analytics</li></ol></nav>
       <div class="ledger-intro">
-        <p class="lead">Bring a table, or start with an example. The room checks its quality before any analysis, then lets you describe each column, look for relationships and fit a regression with its diagnostics. Your file never leaves your browser.</p>
+        <p class="lead">Bring a table, or start with an example. The room checks its quality before any analysis, then lets you describe each column, look for relationships, fit a regression with its diagnostics and forecast a seasonal series. Your file never leaves your browser.</p>
       </div>
 
       <!-- ============================================================ DATA -->
@@ -198,6 +198,7 @@
             <div class="field"><label for="reg-y">Outcome</label><select class="select" id="reg-y"></select></div>
             <fieldset><legend>Predictors</legend><div class="chips" id="reg-x"></div></fieldset>
             <label class="check"><input type="checkbox" id="reg-sq"> Add squared terms (lets effects curve)</label>
+            <label class="check"><input type="checkbox" id="reg-robust"> Robust standard errors (HC3), for errors whose spread is uneven</label>
             <button class="btn btn-secondary" type="button" id="reg-csv">Download coefficients (CSV)</button>
           </div>
           <div class="bench-results" aria-live="polite">
@@ -238,13 +239,68 @@
         </div>
       </section>
 
+      <!-- ============================================================ FORECAST -->
+      <section class="tool" id="forecast" aria-labelledby="fc-title">
+        <div class="tool-head">
+          <h2 id="fc-title">Forecast</h2>
+          <p>Holt-Winters exponential smoothing carries a series’ level, trend and seasonal pattern forward, with a range for how far off the forecast could be. Before trusting it, the tool hides the last season, forecasts it, and compares the result with simply repeating last year.</p>
+        </div>
+        <div class="bench bench-top">
+          <div class="bench-inputs">
+            <div class="field"><label for="fc-src">Series</label><select class="select" id="fc-src"></select><p class="field-hint" id="fc-src-note"></p></div>
+            <div class="field">
+              <label for="fc-m">Season length</label>
+              <div class="affix"><input class="input" id="fc-m" type="number" inputmode="numeric" min="2" max="104" step="1" value="12"><span class="affix-post">periods</span></div>
+              <p class="field-hint">12 for months in a year, 4 for quarters, 52 for weeks, 7 for days in a week.</p>
+            </div>
+            <div class="slider-field">
+              <div class="slider-top"><label for="fc-h">Forecast ahead</label><output for="fc-h" id="fc-h-out"></output></div>
+              <input type="range" id="fc-h" min="1" max="36" step="1" value="12">
+            </div>
+            <div class="field">
+              <span class="field-label" id="fc-mode-label">Seasonal swings</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="fc-mode-label">
+                <input type="radio" id="fc-auto" name="fc-mode" value="auto" checked><label for="fc-auto">Auto</label>
+                <input type="radio" id="fc-mul" name="fc-mode" value="multiplicative"><label for="fc-mul">Grow with level</label>
+                <input type="radio" id="fc-add" name="fc-mode" value="additive"><label for="fc-add">Fixed size</label>
+              </div>
+            </div>
+            <button class="btn btn-secondary" type="button" id="fc-csv">Download forecast (CSV)</button>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="fc-error"></div>
+            <div id="fc-body">
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="fc-next">—</span><span class="hero-label" id="fc-next-label">next period</span></div>
+                <p class="hero-label" id="fc-range"></p>
+              </div>
+              <dl class="stats-row">
+                <div class="stat"><dt>Error on the hidden season</dt><dd class="num" id="fc-bt-model">—</dd></div>
+                <div class="stat"><dt>Repeating last season</dt><dd class="num" id="fc-bt-naive">—</dd></div>
+                <div class="stat"><dt>Hidden values inside the 95% range</dt><dd class="num" id="fc-bt-cover">—</dd></div>
+                <div class="stat"><dt>Seasonal swings</dt><dd id="fc-kind">—</dd></div>
+              </dl>
+              <figure>
+                <figcaption class="figure-title" id="fc-chart-title">History and forecast</figcaption>
+                <p class="figure-sub">The shaded band is where 95% of future values should fall if the pattern holds. It widens with every step ahead.</p>
+                <div class="chart" id="fc-chart"></div>
+              </figure>
+              <ul class="reading" id="fc-reading" role="list"></ul>
+              <div id="fc-table"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="sources" aria-labelledby="sources-title">
         <h2 id="sources-title">Sources and methods</h2>
         <ol>
           <li>Swinton, J., Ochu, E. &amp; MSI Turing’s Sunflower Consortium (2016). Novel Fibonacci and non-Fibonacci structure in the sunflower: results of a citizen science experiment. <i>Royal Society Open Science</i> 3(5). <a href="https://doi.org/10.1098/rsos.160091">doi:10.1098/rsos.160091</a>. Spiral-count shares as summarised by <a href="https://plus.maths.org/sunflowers">Plus Magazine</a>.</li>
           <li>Breusch, T. S. &amp; Pagan, A. R. (1979). A simple test for heteroscedasticity and random coefficient variation. <i>Econometrica</i> 47(5); studentized form after Koenker, R. (1981), <i>Journal of Econometrics</i> 17(1).</li>
+          <li>MacKinnon, J. G. &amp; White, H. (1985). Some heteroskedasticity-consistent covariance matrix estimators with improved finite sample properties. <i>Journal of Econometrics</i> 29(3). (HC3 standard errors.)</li>
+          <li>Hyndman, R. J. &amp; Athanasopoulos, G. <i>Forecasting: Principles and Practice</i>, 2nd ed., chapter 7 (<a href="https://otexts.com/fpp2/holt-winters.html">Holt-Winters</a>); prediction intervals for the additive model after Hyndman, Koehler, Ord &amp; Snyder (2008), <i>Forecasting with Exponential Smoothing</i>. Seasonal swings that grow with the level are modelled on logarithms.</li>
           <li>Statistics here are computed in your browser and checked against SciPy and statsmodels in the site’s automated tests.</li>
-          <li>Both example datasets are synthetic, generated for this page.</li>
+          <li>All example datasets are synthetic, generated for this page.</li>
         </ol>
       </section>
     </div>
@@ -254,10 +310,10 @@
   <footer class="site-footer">
     <h2>The other rooms</h2>
     <ul class="rooms" role="list">
-      <li><a class="room-link" href="../finance/" data-portal="#E8B923"><img src="../assets/img/flower-finance.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
-      <li><a class="room-link" href="../marketing/" data-portal="#56632C"><img src="../assets/img/flower-marketing.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
-      <li><a class="room-link" href="../models/" data-portal="#252A31"><img src="../assets/img/flower-models.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
-      <li><a class="room-link" href="../contact/" data-portal="#F6E7C1"><img src="../assets/img/flower-contact.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../finance/" data-portal="#E8B923"><img src="../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../marketing/" data-portal="#56632C"><img src="../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../models/" data-portal="#252A31"><img src="../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../contact/" data-portal="#F6E7C1"><img src="../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
     </ul>
     <div class="footer-meta">
       <p><a href="../">Back to the painting</a></p>
@@ -266,6 +322,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../assets/js/pages/analytics.js?v=1"></script>
+  <script type="module" src="../assets/js/pages/analytics.js?v=2"></script>
 </body>
 </html>

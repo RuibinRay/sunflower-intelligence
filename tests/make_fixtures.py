@@ -37,5 +37,26 @@ fx = {
   "bp": {"lm": lm, "p": lmp},
   "vif": vifs,
 }
+# robust (HC3) standard errors, t-based p-values and the robust Wald F, same heteroscedastic data
+hc3 = sm.OLS(y, X).fit(cov_type="HC3", use_t=True)
+fx["hc3"] = {"bse": hc3.bse.tolist(), "pvalues": hc3.pvalues.tolist(), "f": float(np.squeeze(hc3.fvalue)), "fp": float(np.squeeze(hc3.f_pvalue))}
+
+# Holt-Winters (ETS(A,A,A)) with known starting states: one-step fits, forecasts and h-step variance multipliers
+import warnings; warnings.filterwarnings("ignore")
+from statsmodels.tsa.exponential_smoothing.ets import ETSModel
+hw_rng = np.random.default_rng(7); m = 12; nh = 60; tt = np.arange(nh)
+hy = 100 + 0.8 * tt + 12 * np.sin(2 * np.pi * tt / m) + hw_rng.normal(0, 3, nh)
+c1, c2 = hy[:m].mean(), hy[m:2 * m].mean(); b0 = (c2 - c1) / m; mid = (m - 1) / 2; l0 = c1 - b0 * (mid + 1)
+s0 = np.array([((hy[i] - (c1 + b0 * (i - mid))) + (hy[i + m] - (c2 + b0 * (i - mid)))) / 2 for i in range(m)]); s0 -= s0.mean()
+al, bstar, ga = 0.35, 0.12, 0.2
+hs = pd.Series(hy, index=pd.RangeIndex(nh))
+known = ETSModel(hs, error="add", trend="add", seasonal="add", seasonal_periods=m, initialization_method="known", initial_level=l0, initial_trend=b0, initial_seasonal=s0)
+res = known.smooth([al, al * bstar, ga])
+pf = res.get_prediction(start=nh, end=nh + 17).summary_frame()
+var = ((pf["pi_upper"] - pf["mean"]) / st.norm.ppf(0.975)).values ** 2
+best = known.fit(disp=False)
+fx["hw"] = {"y": hy.tolist(), "m": m, "l0": l0, "b0": b0, "s0": s0.tolist(), "alpha": al, "beta": bstar, "gamma": ga,
+            "fitted": np.asarray(res.fittedvalues).tolist(), "mean": pf["mean"].tolist(), "mult": (var / res.mse).tolist(),
+            "best_sse": float(best.sse)}
 json.dump(fx, open(__file__.replace("make_fixtures.py", "fixtures.json"), "w"), indent=1)
 print("ok", fit.params.round(3).tolist(), round(lm, 3), round(lmp, 4))

@@ -1,6 +1,8 @@
 // Run: node tests/stats.test.mjs   (compares assets/js/core/stats.js with SciPy/statsmodels fixtures)
 import { readFileSync } from 'node:fs';
 import * as S from '../assets/js/core/stats.js';
+import * as HW from '../assets/js/core/forecast.js';
+import { unitEconomics, PRESETS } from '../assets/js/core/saas.js';
 
 const fx = JSON.parse(readFileSync(new URL('./fixtures.json', import.meta.url)));
 let fails = 0, checks = 0;
@@ -72,6 +74,42 @@ checks++; if (!(q[0] === q[1] && q[1] === q[2] && q[9] === 5)) { fails++; consol
 const xs = Array.from({ length: 20 }, (_, i) => i / 2), ys = xs.map((v) => 2 - v + 0.5 * v ** 2 - 0.05 * v ** 3);
 const f3 = S.polyfit(xs, ys, 3);
 close('polyfit cubic', f3(3.3), 2 - 3.3 + 0.5 * 3.3 ** 2 - 0.05 * 3.3 ** 3, 1e-9);
+
+// robust (HC3) standard errors and robust Wald F against statsmodels cov_type="HC3", use_t=True
+const rb = fit.robust();
+rb.coefs.forEach((c, i) => { close(`HC3 se ${c.name}`, c.se, fx.hc3.bse[i], 1e-8); close(`HC3 p ${c.name}`, c.p, fx.hc3.pvalues[i], 1e-7); });
+close('HC3 Wald F', rb.F, fx.hc3.f, 1e-8);
+close('HC3 Wald F p', rb.pF, fx.hc3.fp, 1e-7);
+
+// Holt-Winters: starting states, one-step fits, forecasts and interval variance against statsmodels ETSModel
+const hw = fx.hw;
+const init = HW.initialStates(hw.y, hw.m);
+close('HW l0', init.l0, hw.l0, 1e-10); close('HW b0', init.b0, hw.b0, 1e-10);
+init.s0.forEach((v, i) => close(`HW s0[${i}]`, v, hw.s0[i], 1e-9));
+const params = { alpha: hw.alpha, beta: hw.beta, gamma: hw.gamma };
+const run = HW.filter(hw.y, hw.m, params, init);
+let worstFit = 0; hw.fitted.forEach((v, i) => { worstFit = Math.max(worstFit, Math.abs(run.fitted[i] - v)); });
+close('HW one-step fits (max error)', worstFit, 0, 1e-9);
+const hwp = HW.project(run, hw.m, params, hw.mean.length);
+hw.mean.forEach((v, i) => close(`HW forecast h=${i + 1}`, hwp.mean[i], v, 1e-9));
+hw.mult.forEach((v, i) => close(`HW variance multiplier h=${i + 1}`, hwp.mult[i], v, 1e-9));
+const best = HW.fitAdditive(hw.y, hw.m);
+checks++; if (!(best.run.sse <= hw.best_sse * (1 + 1e-4))) { fails++; console.log(`FAIL HW optimiser: SSE ${best.run.sse} vs statsmodels ${hw.best_sse}`); }
+
+// unit economics: hand-worked business-subscription example
+const ue = unitEconomics(PRESETS.saas);
+close('CAC', ue.cac, 900000 / 150, 1e-12);
+close('LTV', ue.ltv, 420 * 0.8 / 0.012, 1e-12);
+close('LTV:CAC', ue.ratio, (420 * 0.8 / 0.012) / 6000, 1e-12);
+close('simple payback', ue.paybackSimple, 6000 / 336, 1e-12);
+close('magic number', ue.magic, 0.7, 1e-12);
+close('NRR', ue.nrr, 1.02, 1e-12);
+close('GRR', ue.grr, 0.87, 1e-12);
+{ // churn-adjusted payback falls between the months where the summed margin first reaches CAC
+  let cum = 0, month = 0; while (cum < ue.cac) { cum += 336 * (1 - 0.012) ** month; month++; }
+  checks++; if (!(ue.paybackChurn > month - 1 && ue.paybackChurn <= month)) { fails++; console.log(`FAIL churn payback ${ue.paybackChurn} vs month ${month}`); }
+}
+checks++; if (!unitEconomics({ ...PRESETS.saas, churn: 0 }).error) { fails++; console.log('FAIL zero churn accepted'); }
 
 console.log(fails ? `${fails} of ${checks} checks failed` : `all ${checks} checks passed`);
 process.exit(fails ? 1 : 0);

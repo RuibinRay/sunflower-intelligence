@@ -1,10 +1,8 @@
 // contact.js — the letter: composes an email in the visitor's own mail app. Nothing is sent from the page.
-import { initSite } from '../core/site.js?v=1';
-import { $, copyText } from '../core/dom.js?v=1';
-import { initFlower } from './flower.js?v=1';
+import { initSite } from '../core/site.js?v=2';
+import { $, copyText } from '../core/dom.js?v=2';
 
 initSite();
-initFlower();
 
 const ADDRESS = 'ruibinjinyao@gmail.com';
 const form = $('#letter'), msg = $('#msg'), email = $('#email'), name = $('#name'), status = $('#status');

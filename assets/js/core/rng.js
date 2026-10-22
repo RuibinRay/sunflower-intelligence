@@ -119,3 +119,19 @@ export function curvePoints(seed, n = 32, sigma = 0.32) {
   order.forEach((idx, k) => { pts[idx].train = k < cut; });
   return { pts, truth };
 }
+
+/**
+ * Monthly sales of a seed and oil shop, six years: steady growth, a summer peak that grows with the business
+ * (multiplicative seasonality) and noise. Synthetic, for the forecasting tool.
+ */
+export function monthlySales(seed = 1892) {
+  const r = mulberry32(seed), N = normalGen(r);
+  const peak = [0.78, 0.8, 0.9, 1.0, 1.08, 1.2, 1.3, 1.28, 1.1, 0.96, 0.84, 0.76];   // Jan…Dec
+  const rows = [];
+  for (let t = 0; t < 72; t++) {
+    const year = 2020 + Math.floor(t / 12), month = t % 12;
+    const level = 42000 * Math.exp(0.0085 * t);
+    rows.push({ date: `${year}-${String(month + 1).padStart(2, '0')}`, value: Math.round(level * peak[month] * Math.exp(N(0, 0.035))) });
+  }
+  return { name: 'Seed and oil shop, monthly sales', note: 'Synthetic: 72 months generated for this demo.', m: 12, rows };
+}

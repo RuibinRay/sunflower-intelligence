@@ -298,6 +298,36 @@ export function ols(Xcols, y, opts = {}) {
     n, p, k, df, names, beta: Array.from(beta), coefs, fitted, resid, sse, sst, s2, sigma: Math.sqrt(s2),
     r2, adjR2, F, pF: dfModel > 0 ? fPUpper(F, dfModel, df) : NaN, dfModel,
     rmse: Math.sqrt(sse / n), mae: sae / n, XtXinv, intercept, conf, tq,
+    /**
+     * Heteroscedasticity-consistent (HC3) standard errors, MacKinnon & White (1985):
+     * V = (X'X)⁻¹ X' diag(eᵢ² / (1 − hᵢᵢ)²) X (X'X)⁻¹. t-tests keep n − p degrees of freedom;
+     * the model F becomes a robust Wald test that all slopes are zero.
+     */
+    robust() {
+      const meat = Array.from({ length: p }, () => new Float64Array(p));
+      for (let i = 0; i < n; i++) {
+        const xi = X[i];
+        let h = 0; for (let a = 0; a < p; a++) for (let b = 0; b < p; b++) h += xi[a] * XtXinv[a][b] * xi[b];
+        const w = resid[i] ** 2 / Math.max(1e-12, (1 - h) ** 2);
+        for (let a = 0; a < p; a++) for (let b = 0; b < p; b++) meat[a][b] += w * xi[a] * xi[b];
+      }
+      const V = sandwich(XtXinv, meat);
+      const rc = names.map((name, j) => {
+        const se = Math.sqrt(V[j][j]), t = beta[j] / se;
+        return { name, estimate: beta[j], se, t, p: tPTwo(t, df), low: beta[j] - tq * se, high: beta[j] + tq * se };
+      });
+      let Fw = NaN, pFw = NaN;
+      const off = intercept ? 1 : 0, q = p - off;
+      if (q > 0) {
+        const Vs = Array.from({ length: q }, (_, a) => Array.from({ length: q }, (_, b) => V[a + off][b + off]));
+        const Vi = invert(Vs);
+        if (Vi) {
+          let w = 0; for (let a = 0; a < q; a++) for (let b = 0; b < q; b++) w += beta[a + off] * Vi[a][b] * beta[b + off];
+          Fw = w / q; pFw = fPUpper(Fw, q, df);
+        }
+      }
+      return { coefs: rc, F: Fw, pF: pFw, V };
+    },
     predict(xs) {
       const row = intercept ? [1, ...xs] : [...xs];
       let yhat = 0; for (let j = 0; j < p; j++) yhat += row[j] * beta[j];
@@ -306,6 +336,25 @@ export function ols(Xcols, y, opts = {}) {
       return { yhat, seMean, sePred, ciLow: yhat - tq * seMean, ciHigh: yhat + tq * seMean, piLow: yhat - tq * sePred, piHigh: yhat + tq * sePred };
     },
   };
+}
+
+function sandwich(B, M) {
+  const p = B.length, T = Array.from({ length: p }, () => new Float64Array(p)), V = Array.from({ length: p }, () => new Float64Array(p));
+  for (let i = 0; i < p; i++) for (let j = 0; j < p; j++) { let s = 0; for (let k = 0; k < p; k++) s += B[i][k] * M[k][j]; T[i][j] = s; }
+  for (let i = 0; i < p; i++) for (let j = 0; j < p; j++) { let s = 0; for (let k = 0; k < p; k++) s += T[i][k] * B[k][j]; V[i][j] = s; }
+  return V;
+}
+/** Gauss–Jordan inverse with partial pivoting; null if singular. */
+export function invert(A) {
+  const n = A.length, M = A.map((row, i) => [...row, ...Array.from({ length: n }, (_, j) => (i === j ? 1 : 0))]);
+  for (let c = 0; c < n; c++) {
+    let piv = c; for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[piv][c])) piv = r;
+    if (Math.abs(M[piv][c]) < 1e-14) return null;
+    [M[c], M[piv]] = [M[piv], M[c]];
+    const d = M[c][c]; for (let j = 0; j < 2 * n; j++) M[c][j] /= d;
+    for (let r = 0; r < n; r++) if (r !== c) { const f = M[r][c]; if (f) for (let j = 0; j < 2 * n; j++) M[r][j] -= f * M[c][j]; }
+  }
+  return M.map((row) => row.slice(n));
 }
 
 /** Breusch–Pagan test, Koenker's studentized form: LM = n·R² of e² on the regressors. */

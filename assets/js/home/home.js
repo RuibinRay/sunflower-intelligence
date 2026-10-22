@@ -1,11 +1,11 @@
 // home.js — the homepage: frames the painting, places the five doorways, runs the living painting,
 // and opens a room through the chosen flower. Works without WebGL (still image + CSS) and without JS (plain links).
-import meta from '../../painting/meta.js?v=1';
-import { ROOMS, byId } from '../data/rooms.js?v=1';
-import { LivingPainting } from './painting.js?v=1';
-import { initSite } from '../core/site.js?v=1';
-import { leave, reset as resetPortal } from '../core/portal.js?v=1';
-import { $, $$, h, reducedMotion } from '../core/dom.js?v=1';
+import meta from '../../painting/meta.js?v=2';
+import { ROOMS, byId } from '../data/rooms.js?v=2';
+import { LivingPainting } from './painting.js?v=2';
+import { initSite } from '../core/site.js?v=2';
+import { leave, reset as resetPortal } from '../core/portal.js?v=2';
+import { $, $$, h, reducedMotion } from '../core/dom.js?v=2';
 
 initSite();
 
@@ -13,13 +13,15 @@ const body = document.body;
 const stage = $('.stage');
 const canvas = $('.stage-canvas');
 const still = $('.stage-still img');
-const tip = $('#door-tip');
+const caption = $('.plaque-caption');
+const captionDefault = caption?.textContent ?? '';
 const diag = new URLSearchParams(location.search).has('why');
 const coarse = matchMedia('(pointer: coarse)').matches;
 const calm = reducedMotion();
 const flowers = Object.fromEntries(meta.flowers.map((f) => [f.id, f]));
 const doors = meta.doorways.map((id) => ({ id, f: flowers[id], room: byId[id] }));
-const YOUNG = new Set(['bloom']);          // young blooms follow the light; heavy seed heads hold still
+// where each flower's number sits on its petals (degrees, 0 = east, clockwise), chosen to stay clear of its neighbours
+const MARK_ANGLE = { finance: -50, analytics: -135, marketing: -45, models: 20, contact: 205 };
 
 // ---------------------------------------------------------------- framing
 let frameState = { view: [0, 0, meta.width, meta.height], s: 1, w: 1, h: 1 };
@@ -51,7 +53,6 @@ function computeFrame() {
   if (painting) { painting.setView(x0, y0, iw, ih); dirty = true; }
 }
 const toScreen = (x, y) => [(x - frameState.view[0]) * frameState.s, (y - frameState.view[1]) * frameState.s];
-const toImage = (sx, sy) => [frameState.view[0] + sx / frameState.s, frameState.view[1] + sy / frameState.s];
 
 // ---------------------------------------------------------------- doorways
 const doorEls = doors.map((d) => $(`.door[data-room="${d.id}"]`));
@@ -59,10 +60,16 @@ function placeDoors() {
   doors.forEach((d, k) => {
     const [cx, cy] = toScreen(d.f.x, d.f.y);
     const size = Math.max(44, d.f.r * 2 * frameState.s * 0.86);
-    Object.assign(doorEls[k].style, { left: `${cx - size / 2}px`, top: `${cy - size / 2}px`, width: `${size}px`, height: `${size}px` });
-    doorEls[k].dataset.ready = '1';
+    const el = doorEls[k];
+    Object.assign(el.style, { left: `${cx - size / 2}px`, top: `${cy - size / 2}px`, width: `${size}px`, height: `${size}px` });
+    // the number sits on the flower's own petals; near the right edge its name opens leftward
+    const a = (MARK_ANGLE[d.id] ?? -40) * Math.PI / 180, rim = d.f.r * frameState.s * 0.64;
+    const mx = size / 2 + Math.cos(a) * rim, my = size / 2 + Math.sin(a) * rim;
+    el.style.setProperty('--mx', `${mx.toFixed(1)}px`);
+    el.style.setProperty('--my', `${my.toFixed(1)}px`);
+    el.classList.toggle('opens-left', cx + Math.cos(a) * rim > frameState.w * 0.68);
+    el.dataset.ready = '1';
   });
-  if (activeDoor >= 0) showTip(activeDoor);
 }
 
 const hoverTarget = new Float32Array(5);
@@ -74,23 +81,11 @@ function setActive(k, on) {
   activeDoor = on ? k : -1;
   $$('.room-entry').forEach((el) => el.classList.toggle('is-lit', on && el.dataset.room === doors[k].id));
   doorEls.forEach((el, i) => el.classList.toggle('is-lit', on && i === k));
-  if (on) showTip(k); else tip.hidden = true;
+  if (caption) {
+    caption.textContent = on ? doors[k].room.blurb : captionDefault;
+    caption.classList.toggle('is-room', on);
+  }
   dirty = true;
-}
-function showTip(k) {
-  const d = doors[k];
-  tip.querySelector('.tip-name').textContent = d.room.name;
-  tip.querySelector('.tip-chapter').textContent = d.room.chapter;
-  tip.querySelector('.tip-blurb').textContent = d.room.blurb;
-  tip.hidden = false;
-  const [cx, cy] = toScreen(d.f.x, d.f.y);
-  const r = d.f.r * frameState.s;
-  const tw = tip.offsetWidth, th = tip.offsetHeight;
-  let x = cx + r * 1.05 + 14, y = cy - th / 2;
-  if (x + tw > frameState.w - 12) x = cx - r * 1.05 - 14 - tw;
-  if (x < 12) { x = Math.min(Math.max(12, cx - tw / 2), frameState.w - tw - 12); y = cy + r + 12; }
-  y = Math.min(Math.max(12 + (body.classList.contains('home--cover') ? 64 : 0), y), frameState.h - th - 12);
-  tip.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
 }
 
 function enter(k, origin) {
@@ -129,18 +124,8 @@ $$('.room-entry').forEach((el) => {
   });
 });
 
-// ---------------------------------------------------------------- pointer = the sun
-const light = { x: meta.width * 0.32, y: meta.height * 0.18, tx: meta.width * 0.32, ty: meta.height * 0.18, amt: 0, tamt: 0.85 };
-let lastPointer = 0;
-stage.addEventListener('pointermove', (e) => {
-  if (e.pointerType === 'touch') return;
-  const r = stage.getBoundingClientRect();
-  const [ix, iy] = toImage(e.clientX - r.left, e.clientY - r.top);
-  light.tx = ix; light.ty = iy; light.tamt = 1;
-  lastPointer = performance.now();
-  dirty = true;
-});
-stage.addEventListener('pointerleave', () => { lastPointer = 0; });
+// ---------------------------------------------------------------- the sun crosses the wall slowly, on its own
+const light = { x: meta.width * 0.32, y: meta.height * 0.18, amt: 0 };
 
 // ---------------------------------------------------------------- the render loop
 let painting = null, dirty = true, last = performance.now(), wakeStart = 0;
@@ -157,17 +142,13 @@ function tick(now) {
   const running = !document.documentElement.classList.contains('motion-paused');
   if (running) painting.time += dt * (calm ? 0.35 : 1);
 
-  // idle: the sun walks its arc across the painting; the young blooms follow it
-  if (!lastPointer || now - lastPointer > 5000) {
-    if (running) {
-      const t = (now / 1000) / 46;
-      light.tx = meta.width * (0.5 + 0.38 * Math.sin(t * Math.PI * 2));
-      light.ty = meta.height * (0.16 + 0.1 * Math.cos(t * Math.PI * 2));
-    }
-    light.tamt = 0.8;
+  // the light walks a slow arc across the painting (one crossing every 46 s); the pointer never moves it
+  if (running) {
+    const t = (painting.time) / 46;
+    light.x = meta.width * (0.5 + 0.38 * Math.sin(t * Math.PI * 2));
+    light.y = meta.height * (0.16 + 0.1 * Math.cos(t * Math.PI * 2));
   }
-  const k = 1 - Math.exp(-dt * (lastPointer ? 6 : 2));
-  light.x += (light.tx - light.x) * k; light.y += (light.ty - light.y) * k; light.amt += (light.tamt - light.amt) * k;
+  light.amt += (0.8 - light.amt) * (1 - Math.exp(-dt * 2));
   painting.light = [light.x, light.y, light.amt];
 
   let changing = false;
@@ -176,12 +157,6 @@ function tick(now) {
     const before = painting.hover[i];
     painting.hover[i] += (hoverTarget[i] - painting.hover[i]) * hk;
     if (Math.abs(painting.hover[i] - before) > 1e-4) changing = true;
-    const d = doors[i].f;
-    let tx = (light.x - d.x) / (d.r * 7), ty = (light.y - d.y) / (d.r * 7);
-    const len = Math.hypot(tx, ty), cap = hoverTarget[i] ? 0.15 : YOUNG.has(d.kind) ? 0.1 : 0;
-    if (len > cap) { tx *= cap / len; ty *= cap / len; }
-    painting.tilt[i * 2] += (tx - painting.tilt[i * 2]) * hk;
-    painting.tilt[i * 2 + 1] += (ty - painting.tilt[i * 2 + 1]) * hk;
   }
   painting.anyHover = Math.max(...painting.hover);
   if (wakeStart) {
@@ -198,7 +173,7 @@ function tick(now) {
     painting.portal = [d.x, d.y, p * p, 0];
     changing = true;
   }
-  if (running || changing || dirty || lastPointer) { painting.render(); dirty = false; }
+  if (running || changing || dirty) { painting.render(); dirty = false; }
 
   // performance ladder, judged on wall-clock time: full shader -> lighter shader -> still image
   if (!checkedQuality && running) {

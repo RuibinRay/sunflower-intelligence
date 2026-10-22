@@ -44,7 +44,7 @@ const footer = (current, root) => `
   <footer class="site-footer">
     <h2>The other rooms</h2>
     <ul class="rooms" role="list">
-${ROOMS.filter((r) => r.id !== current).map((r) => `      <li><a class="room-link" href="${root}${r.id}/" data-portal="${r.color}"><img src="${root}assets/img/flower-${r.id}.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>${r.name}</strong><span>${r.chapter}</span></span></a></li>`).join('\n')}
+${ROOMS.filter((r) => r.id !== current).map((r) => `      <li><a class="room-link" href="${root}${r.id}/" data-portal="${r.color}"><img src="${root}assets/img/flower-${r.id}-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>${r.name}</strong><span>${r.chapter}</span></span></a></li>`).join('\n')}
     </ul>
     <div class="footer-meta">
       <p><a href="${root}">Back to the painting</a></p>

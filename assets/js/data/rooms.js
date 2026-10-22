@@ -9,13 +9,13 @@ export const ROOMS = [
   {
     id: 'analytics', name: 'Business analytics', path: 'analytics/', color: '#192B49',
     chapter: 'The golden spiral',
-    blurb: 'Check a table’s quality, then describe it, find correlations and fit a regression.',
+    blurb: 'Check a table’s quality, describe it, find correlations, fit a regression and forecast the next season.',
     where: 'the dark-eyed bloom on the left',
   },
   {
     id: 'marketing', name: 'Marketing', path: 'marketing/', color: '#56632C',
     chapter: 'Personal identity',
-    blurb: 'Segment customers by how recently, how often and how much they buy, and measure price sensitivity.',
+    blurb: 'Segment customers, measure price sensitivity and test the unit economics of growth.',
     where: 'the head turned aside, on the right',
   },
   {

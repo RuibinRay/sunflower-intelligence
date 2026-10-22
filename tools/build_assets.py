@@ -12,7 +12,7 @@ Outputs (all under assets/):
   painting/flow.png      R,G = direction the paint drifts (along its brushstrokes), B = how far it may drift
   painting/height.webp   relief of the impasto (band-passed luminance) for the raking light
   painting/meta.json     flower positions, doorways, phone-safe framing, tiny blurred preview (also meta.js)
-  img/flower-<room>.webp each doorway flower cut out with a soft round edge (used in its room)
+  img/flower-<room>.webp each doorway flower cut out with a soft round edge (used in its room); -160.webp thumbnail for footers and notes
   img/og-image.jpg       1200 x 630 social preview
 
 Coordinates below are pixels in the 2576 x 1438 painting. If the painting changes, re-measure FLOWERS,
@@ -153,6 +153,7 @@ def main(master_path):
         mask = mask.filter(ImageFilter.GaussianBlur(14))
         crop.putalpha(mask)
         crop.save(OUT_I / f"flower-{fid}.webp", "WEBP", quality=84, method=6)
+        crop.resize((160, 160), Image.LANCZOS).save(OUT_I / f"flower-{fid}-160.webp", "WEBP", quality=82, method=6)  # footers, notes
 
     # 5. social preview ----------------------------------------------------------------------------
     og = pil.resize((1200, round(H * 1200 / W)), Image.LANCZOS)

@@ -1,14 +1,12 @@
 // models.js — the life cycle of a model (as a flower) and the overfitting lab.
-import { initSite } from '../core/site.js?v=1';
-import { $, $$, h, s, onResize, debounce } from '../core/dom.js?v=1';
-import * as F from '../core/format.js?v=1';
-import * as S from '../core/stats.js?v=1';
-import { curvePoints } from '../core/rng.js?v=1';
-import { scatter, lineChart, tableTwin } from '../core/charts.js?v=1';
-import { initFlower } from './flower.js?v=1';
+import { initSite } from '../core/site.js?v=2';
+import { $, $$, h, s, onResize, debounce } from '../core/dom.js?v=2';
+import * as F from '../core/format.js?v=2';
+import * as S from '../core/stats.js?v=2';
+import { curvePoints } from '../core/rng.js?v=2';
+import { scatter, lineChart, tableTwin } from '../core/charts.js?v=2';
 
 initSite();
-initFlower();
 
 // ================================================================ the cycle
 const STAGES = [

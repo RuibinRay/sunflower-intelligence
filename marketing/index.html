@@ -15,8 +15,8 @@
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
   <link rel="preload" href="../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/css/base.css?v=1">
-  <link rel="stylesheet" href="../assets/css/rooms.css?v=1">
+  <link rel="stylesheet" href="../assets/css/base.css?v=2">
+  <link rel="stylesheet" href="../assets/css/rooms.css?v=2">
 </head>
 <body class="room room--marketing">
   <a class="skip-link" href="#ledger">Skip to the tools</a>
@@ -51,13 +51,13 @@
       <p class="chapter">Personal identity</p>
       <p class="chapter-note">Van Gogh painted the sunflower so often that it became his signature, the way a brand comes to own a colour. Owning a place in people’s minds starts with knowing them: who buys, how often, and what they will pay.</p>
       <blockquote class="quote">“You know that Jeannin has the peony, Quost has the hollyhock, but I have the sunflower, in a way.”<cite class="quote-cite">Vincent van Gogh to Theo, Arles, 22 January 1889</cite></blockquote>
-      <nav aria-label="In this room"><ul class="toc" role="list"><li><a href="#rfm">Customer segments</a></li><li><a href="#elasticity">Price sensitivity</a></li></ul></nav>
+      <nav aria-label="In this room"><ul class="toc" role="list"><li><a href="#rfm">Customer segments</a></li><li><a href="#elasticity">Price sensitivity</a></li><li><a href="#unit-economics">Unit economics</a></li></ul></nav>
     </header>
 
     <div class="ledger" id="ledger">
       <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../">The painting</a></li><li aria-current="page">Marketing</li></ol></nav>
       <div class="ledger-intro">
-        <p class="lead">Young sunflowers turn through the day to follow the sun; once mature, they settle facing east, where the morning warms them first and bees visit most. Customers move too. These tools show who is warm, who is cooling, and how much a price change will cost you.</p>
+        <p class="lead">Young sunflowers turn through the day to follow the sun; once mature, they settle facing east, where the morning warms them first and bees visit most. Customers move too. These tools show who is warm, who is cooling, how much a price change will cost you, and whether each new customer is worth what it costs to win.</p>
       </div>
 
       <!-- ============================================================ RFM -->
@@ -184,11 +184,77 @@
         </div>
       </section>
 
+      <!-- ============================================================ UNIT ECONOMICS -->
+      <section class="tool" id="unit-economics" aria-labelledby="ue-title">
+        <div class="tool-head">
+          <h2 id="ue-title">Unit economics</h2>
+          <p>Is each new customer worth what it costs to win? Four numbers that investors in subscription businesses check first: lifetime value against acquisition cost, months to earn that cost back, the magic number, and net revenue retention.</p>
+        </div>
+        <div class="bench">
+          <div class="bench-inputs">
+            <div class="field">
+              <span class="field-label" id="ue-preset-label">Start from</span>
+              <div class="segmented segmented-stack" role="radiogroup" aria-labelledby="ue-preset-label">
+                <input type="radio" id="ue-club" name="uepreset" value="club" checked><label for="ue-club">Seed club (consumer subscription box)</label>
+                <input type="radio" id="ue-saas" name="uepreset" value="saas"><label for="ue-saas">Shop software (business subscription)</label>
+              </div>
+              <p class="field-hint">Both are made-up businesses. Change any number to use your own.</p>
+            </div>
+            <fieldset class="ue-group"><legend>Each customer</legend>
+              <div class="field"><label for="ue-arpa">Revenue per customer per month</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="ue-arpa" type="number" inputmode="decimal" step="any" min="0" value="32"></div></div>
+              <div class="slider-field"><div class="slider-top"><label for="ue-margin">Gross margin</label><output for="ue-margin" id="ue-margin-out"></output></div><input type="range" id="ue-margin" min="5" max="95" step="1" value="45"></div>
+              <div class="slider-field"><div class="slider-top"><label for="ue-churn">Customers lost per month</label><output for="ue-churn" id="ue-churn-out"></output></div><input type="range" id="ue-churn" min="0.2" max="15" step="0.1" value="6"></div>
+            </fieldset>
+            <fieldset class="ue-group"><legend>Winning customers, last quarter</legend>
+              <div class="field"><label for="ue-sm">Sales and marketing spend</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="ue-sm" type="number" inputmode="decimal" step="any" min="0" value="54000"></div></div>
+              <div class="field"><label for="ue-new">New customers won</label><div class="affix"><input class="input" id="ue-new" type="number" inputmode="decimal" step="any" min="0" value="1200"></div></div>
+              <div class="field"><label for="ue-netnew">Annual recurring revenue added this quarter, net</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="ue-netnew" type="number" inputmode="decimal" step="any" min="0" value="40000"></div><p class="field-hint">This quarter’s recurring revenue minus last quarter’s, times four.</p></div>
+            </fieldset>
+            <fieldset class="ue-group"><legend>Customers you had a year ago</legend>
+              <div class="field"><label for="ue-start">Their annual recurring revenue then</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="ue-start" type="number" inputmode="decimal" step="any" min="0" value="1150000"></div></div>
+              <div class="field"><label for="ue-up">Upgrades since</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="ue-up" type="number" inputmode="decimal" step="any" min="0" value="60000"></div></div>
+              <div class="field"><label for="ue-loss">Downgrades and cancellations since</label><div class="affix"><span class="affix-pre">$</span><input class="input" id="ue-loss" type="number" inputmode="decimal" step="any" min="0" value="600000"></div></div>
+            </fieldset>
+          </div>
+          <div class="bench-results" aria-live="polite">
+            <div id="ue-error"></div>
+            <div id="ue-body">
+              <div>
+                <div class="figure-hero"><span class="hero-value" id="ue-ratio">—</span><span class="hero-label">lifetime value for each dollar spent winning a customer</span></div>
+                <p class="hero-label" id="ue-ratio-sub"></p>
+              </div>
+              <div id="ue-call"></div>
+              <dl class="stats-row ue-stats">
+                <div class="stat"><dt>Cost to win a customer</dt><dd class="num" id="ue-cac">—</dd></div>
+                <div class="stat"><dt>Lifetime value (gross profit)</dt><dd class="num" id="ue-ltv">—</dd></div>
+                <div class="stat"><dt>Months to earn the cost back</dt><dd class="num" id="ue-payback">—</dd></div>
+                <div class="stat"><dt>Magic number</dt><dd class="num" id="ue-magic">—</dd></div>
+                <div class="stat"><dt>Net revenue retention</dt><dd class="num" id="ue-nrr">—</dd></div>
+                <div class="stat"><dt>Gross revenue retention</dt><dd class="num" id="ue-grr">—</dd></div>
+              </dl>
+              <figure>
+                <figcaption class="figure-title">Gross profit earned back from one new customer, month by month</figcaption>
+                <p class="figure-sub">Allowing for customers who leave. Where the curve crosses the cost line, the customer has paid for itself.</p>
+                <div class="chart" id="ue-chart"></div>
+                <div id="ue-table"></div>
+              </figure>
+              <ul class="reading ue-reading" id="ue-reading" role="list"></ul>
+              <ul class="caveats">
+                <li>Lifetime value here is gross profit, not revenue, and assumes churn stays at today’s rate. A stricter measure than the revenue-based figure often quoted.</li>
+                <li>The thresholds are investors’ rules of thumb: lifetime value above three times acquisition cost and the cost earned back within twelve months (Skok), a magic number above about 0.75. Businesses that sell to large companies often run longer paybacks on purpose.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="sources" aria-labelledby="sources-title">
         <h2 id="sources-title">Sources</h2>
         <ol>
           <li>Van Gogh to Theo, Arles, 22 January 1889, <a href="https://vangoghletters.org/vg/letters/let741/letter.html">letter 741</a>.</li>
           <li>Atamian, H. S., Creux, N. M., Brown, E. A., Garner, A. G., Blackman, B. K. &amp; Harmer, S. L. (2016). Circadian regulation of sunflower heliotropism, floral orientation, and pollinator visits. <i>Science</i> 353(6299), 587–590.</li>
+          <li>Skok, D. <a href="https://forentrepreneurs.com/saas-metrics-2-definitions-2/">SaaS Metrics 2.0: detailed definitions</a>, For Entrepreneurs (lifetime value above three times acquisition cost; months to recover acquisition cost under twelve).</li>
+          <li>Magic number as annualised new recurring revenue over the previous quarter’s sales and marketing spend: Chang, D. (2021), <a href="https://www.scalevp.com/blog/from-0-to-1m-the-magic-number">From $0 to $1M: the magic number</a>, Scale Venture Partners; thresholds of 0.5 and 0.75 as summarised by <a href="https://klipfolio.com/metrics/saas/magic-number">Klipfolio</a>.</li>
           <li>All example data on this page is synthetic, generated for the demo.</li>
         </ol>
       </section>
@@ -199,10 +265,10 @@
   <footer class="site-footer">
     <h2>The other rooms</h2>
     <ul class="rooms" role="list">
-      <li><a class="room-link" href="../finance/" data-portal="#E8B923"><img src="../assets/img/flower-finance.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
-      <li><a class="room-link" href="../analytics/" data-portal="#192B49"><img src="../assets/img/flower-analytics.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
-      <li><a class="room-link" href="../models/" data-portal="#252A31"><img src="../assets/img/flower-models.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
-      <li><a class="room-link" href="../contact/" data-portal="#F6E7C1"><img src="../assets/img/flower-contact.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+      <li><a class="room-link" href="../finance/" data-portal="#E8B923"><img src="../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../analytics/" data-portal="#192B49"><img src="../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../models/" data-portal="#252A31"><img src="../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../contact/" data-portal="#F6E7C1"><img src="../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
     </ul>
     <div class="footer-meta">
       <p><a href="../">Back to the painting</a></p>
@@ -211,6 +277,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../assets/js/pages/marketing.js?v=1"></script>
+  <script type="module" src="../assets/js/pages/marketing.js?v=2"></script>
 </body>
 </html>

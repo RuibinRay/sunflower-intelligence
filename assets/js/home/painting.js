@@ -1,7 +1,7 @@
 // painting.js — the living painting.
-// Paint drifts along its own brushstrokes (flow map), a raking light catches the impasto (height map),
-// flower heads sway, doorway flowers lean toward the light and swell when chosen, and a click dives
-// into the chosen flower. One fragment shader; a lighter variant drops the light for slow GPUs.
+// Paint drifts along its own brushstrokes (flow map), a slow raking light crosses the impasto (height map),
+// flower heads sway in the air, a chosen doorway flower glows and swells a little, and a click dives
+// into it. Nothing follows the pointer. One fragment shader; a lighter variant drops the light for slow GPUs.
 
 const VERT = `
 attribute vec2 aPos;
@@ -23,7 +23,6 @@ uniform float uSway;
 uniform vec3 uLight;
 uniform vec4 uHeads[18];
 uniform vec4 uDoors[5];
-uniform vec2 uTilt[5];
 uniform float uAnyHover;
 uniform vec4 uPortal;
 uniform vec2 uHeightTexel;
@@ -62,9 +61,7 @@ void main() {
       float hov = dr.w;
       float fall = 1.0 - smoothstep(0.6, 1.6, q);
       float inner = 1.0 - min(q * q, 1.0);
-      vec2 dd = d / (1.0 + 0.14 * hov * fall);
-      dd -= uTilt[k] * dr.z * inner * fall;
-      disp += dd - d;
+      disp += d / (1.0 + 0.06 * hov * inner * fall) - d;
       headMask = max(headMask, hov * (1.0 - smoothstep(0.95, 1.4, q)));
       glow += hov * (1.0 - smoothstep(0.0, 0.6, q));
       halo += (hov + uWake * 0.6) * smoothstep(1.5, 1.08, q) * smoothstep(0.84, 1.04, q);
@@ -133,7 +130,6 @@ export class LivingPainting {
     this.heads = meta.flowers.map((f, i) => [f.x, f.y, f.r * 1.02, (i * 2.399) % (Math.PI * 2)]);
     this.doors = meta.doorways.map((id) => meta.flowers.find((f) => f.id === id));
     this.hover = new Float32Array(5);
-    this.tilt = new Float32Array(10);
     this.light = [meta.width * 0.3, meta.height * 0.2, 0];
     this.portal = [0, 0, 0, 0];
     this.time = 0;
@@ -247,7 +243,6 @@ export class LivingPainting {
     const doors = [];
     this.doors.forEach((d, k) => doors.push(d.x, d.y, d.r, this.hover[k]));
     gl.uniform4fv(u.uDoors, doors);
-    gl.uniform2fv(u.uTilt, this.tilt);
     gl.uniform1f(u.uAnyHover, this.anyHover);
     gl.uniform4f(u.uPortal, ...this.portal);
     gl.uniform1f(u.uWake, this.wake);

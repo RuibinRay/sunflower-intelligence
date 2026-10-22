@@ -283,6 +283,12 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 1.5px va
   .header-tools { margin-left: auto; }
 }
 
+/* the narrowest phones: the wordmark keeps its flower; its words stay for screen readers only */
+@media (max-width: 380px) {
+  .site-header { gap: var(--s-3); }
+  .wordmark span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+
 /* ---------- footer: the other rooms ---------- */
 .site-footer { background: var(--midnight); color: var(--on-night); padding: var(--s-8) clamp(16px, 4vw, 56px) var(--s-6); }
 .site-footer h2 { font-size: var(--t-lg); color: var(--ivory); }

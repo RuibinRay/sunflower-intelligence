@@ -1,12 +1,10 @@
 // finance.js — discounted cash flow and Altman Z-score.
-import { initSite } from '../core/site.js?v=1';
-import { $, $$, h, s, download, toCSV, onResize } from '../core/dom.js?v=1';
-import * as F from '../core/format.js?v=1';
-import { barChart, tableTwin } from '../core/charts.js?v=1';
-import { initFlower } from './flower.js?v=1';
+import { initSite } from '../core/site.js?v=2';
+import { $, $$, h, s, download, toCSV, onResize } from '../core/dom.js?v=2';
+import * as F from '../core/format.js?v=2';
+import { barChart, tableTwin } from '../core/charts.js?v=2';
 
 initSite();
-initFlower();
 
 // ================================================================ DCF
 export function dcf({ fcf0, g1, years, path, wacc, gT, mid, debt, shares }) {
