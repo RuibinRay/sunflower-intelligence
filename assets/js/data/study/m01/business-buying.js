@@ -59,7 +59,15 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: `Harbor Tech, a ${H.employees}-person software firm, has been a Lantern catering client since its first month: in March 2026 it paid a $2,400 deposit for three catered events at $800 each. Lantern’s catering now has ${C.clients} corporate clients, each booking about ${C.eventsPerClientYear} events a year at about $${C.revenuePerEvent} an event. When Ana asks how Harbor Tech decides to book, five answers come back. ${hana.name}, the ${hana.role}, ${hana.part}. ${tom.name}, the ${tom.role}, ${tom.part}. ${lena.name}, the ${lena.role}, ${lena.part}. The staff, about ${H.employees} people, drink the coffee and fill in the event feedback form. And ${marco.name}, the ${marco.role}, decides which sales calls and samples reach Hana. Harbor Tech and its people are fictional.` },
+    { case: `Harbor Tech, a ${H.employees}-person software firm, has been a Lantern catering client since its first month: in March 2026 it paid a $2,400 deposit for three catered events at $800 each. Lantern’s catering now has ${C.clients} corporate clients, each booking about ${C.eventsPerClientYear} events a year at about $${C.revenuePerEvent} an event.` },
+    { case: 'When Ana asks how Harbor Tech decides to book, five answers come back. Harbor Tech and its people are fictional.' },
+    { list: [
+      `${hana.name}, the ${hana.role}, ${hana.part}.`,
+      `${tom.name}, the ${tom.role}, ${tom.part}.`,
+      `${lena.name}, the ${lena.role}, ${lena.part}.`,
+      `The staff, about ${H.employees} people, drink the coffee and fill in the event feedback form.`,
+      `${marco.name}, the ${marco.role}, decides which sales calls and samples reach Hana.`,
+    ] },
     { p: 'None of those five people is “the customer”. Each takes part in the decision in a different way, and a caterer who talks only to the person who places the order may never reach the people who started the idea, who drink the coffee or who sign the larger cheques. This is what makes organisational buying different, and this lesson gives you the tools to analyse it.' },
     { p: 'Organisations that buy include businesses buying inputs and services to produce what they sell, resellers such as wholesalers and retailers buying goods to sell on, governments, and institutions such as hospitals, universities and charities. Selling to them is <g>business-to-business</g> marketing, and their purchases together make up the <g>business market</g>.' },
 
@@ -97,20 +105,21 @@ export default {
       alt: 'A circle labelled “The purchase decision” is joined by lines to six boxes, three on each side. On the left: Initiator, who suggests the purchase; Users, who will use the product; Influencers, who shape the specification. On the right: Gatekeepers, who control access to the others; Buyers, who deal with suppliers; Deciders, who choose or approve. A note says one person can hold several roles, several people can share one role, and the roles change from purchase to purchase.',
     } },
     { define: [
-      ['<g>Initiator</g>', 'The person who first suggests the purchase, often because they notice a problem.'],
-      ['<g>User</g>', 'The people who will use the product or service. They often start the purchase and help define what is needed, and their experience decides whether it is bought again.'],
-      ['<g>Influencer</g>', 'People whose views or expertise shape the specification or the choice without making the final decision: engineers, specialists, consultants, and users whose feedback is asked for.'],
-      ['<g>Buyer</g>', 'The person with formal responsibility for dealing with suppliers and arranging the terms, often a purchasing professional or office manager. In this sense “buyer” is a role, not the whole organisation.'],
-      ['<g>Decider</g>', 'The person or group with the power to choose the supplier or approve the purchase. For a large purchase this is often someone senior, or a committee.'],
-      ['<g>Gatekeeper</g>', 'Anyone who controls what information and which salespeople reach the others: an assistant, a receptionist, a purchasing department that insists all contact goes through it.'],
+      ['Initiator', 'The person who first suggests the purchase, often because they notice a problem.'],
+      ['User', 'The people who will use the product or service. They often start the purchase and help define what is needed, and their experience decides whether it is bought again.'],
+      ['Influencer', 'People whose views or expertise shape the specification or the choice without making the final decision: engineers, specialists, consultants, and users whose feedback is asked for. Not to be confused with a social-media influencer.'],
+      ['Buyer', 'The person with formal responsibility for dealing with suppliers and arranging the terms, often a purchasing professional or, in a small firm, whoever handles the paperwork. In this sense “buyer” is a role, not the whole organisation.'],
+      ['Decider', 'The person or group with the power to choose the supplier or approve the purchase. For a large purchase this is often someone senior, or a committee.'],
+      ['Gatekeeper', 'Anyone who controls what information and which salespeople reach the others: an executive assistant, an IT manager who vets software suppliers, a purchasing department that insists all contact goes through it.'],
     ] },
-    { callout: 'key', title: 'Classify people by what they do, not by their title', html: 'A job title rarely tells you a role. A receptionist can be a gatekeeper, an office manager can be both buyer and decider for small orders and only the buyer for large ones, and a user can be an initiator. One person can hold several roles and several people can share one. Ask, for this purchase: who started it, who will use it, who shapes it, who deals with suppliers, who can say yes, and who controls access?' },
-    { case: `Harbor Tech’s five people fill all six roles in its catering purchases between them, and some fill more than one. Working out who plays which role is the first stage of the course project, so this lesson leaves the map to you. Two features of the case will matter when you draw it. First, ${hana.name} can sign orders up to $2,000 and ${tom.name} approves contracts above that, so the decider may depend on the size of the purchase. Second, the staff’s feedback forms give the people who drink the coffee a voice in whether Lantern is booked again.` },
+    { callout: 'key', title: 'Classify people by what they do, not by their title', html: 'A job title rarely tells you a role. An IT manager can be a gatekeeper, a plant manager can be the decider for small orders and only an influencer for large ones, and a user can be an initiator. One person can hold several roles and several people can share one. Ask, for this purchase: who started it, who will use it, who shapes it, who deals with suppliers, who can say yes, and who controls access?' },
+    { case: `Harbor Tech’s five people fill all six roles in its catering purchases between them, and some fill more than one. Working out who plays which role is the first stage of the course project, so this lesson leaves the map to you. When you draw it, use everything the case says about each person, not just their job title.` },
   ],
 
   theory: [
     { h: 'Derived demand and the acceleration effect' },
-    { p: 'Derived demand has a consequence that surprises people. Demand for equipment and other durable inputs depends not only on how much the customer’s own customers buy, but on how fast that is <i>changing</i>. A courier with a fleet of vans replaces a share of the fleet each year as vans wear out. If parcel volumes grow, it must also buy extra vans; if they stop growing, it buys replacements only; if they fall, it may buy nothing at all. So a modest change in end demand produces a large swing in orders for vans. Economists call this the acceleration principle; this lesson calls it the <g>acceleration effect</g>. The challenging example works it through with numbers, and the formula is below.' },
+    { p: 'Derived demand has a consequence that surprises people. Demand for equipment and other durable inputs depends not only on how much the customer’s own customers buy, but on how fast that is <i>changing</i>. A courier with a fleet of vans replaces a share of the fleet each year as vans wear out. If parcel volumes grow, it must also buy extra vans; if they stop growing, it buys replacements only; if they fall, it may buy nothing at all.' },
+    { p: 'So a modest change in end demand produces a large swing in orders for vans. Economists call this the acceleration principle; this lesson calls it the <g>acceleration effect</g>. The challenging example works it through with numbers, and the formula is below.' },
     { p: 'For a supplier of equipment, the lesson is to forecast its customers’ customers. A van maker that read last year’s orders as its trend would expand just as orders were about to halve. The same logic, less sharply, applies to any business input bought in advance of demand: the catering a firm books for staff it plans to hire, the stock a retailer orders for a season it expects to be good.' },
 
     { h: 'The business buying process' },
@@ -156,7 +165,8 @@ export default {
       '<b>Separation of duties.</b> The person who requests a purchase, the one who approves it and the one who pays for it are kept apart, the <g>segregation of duties</g> that F01 introduced as an internal control.',
       '<b>Ethics rules.</b> Limits on gifts and hospitality, declarations of conflicts of interest and, during a tender, rules that suppliers may contact only the named procurement officer. Bribery is illegal; in the United States, the Foreign Corrupt Practices Act forbids bribing foreign officials, and OpenStax discusses it in its chapter on business buying.',
     ] },
-    { p: 'Public bodies have the strictest rules, because they spend public money. In the United States, the Federal Acquisition Regulation (FAR) governs purchases by federal agencies. In its current version (effective 13 March 2026) a purchase at or below the micro-purchase threshold of $15,000 may be made without seeking competing quotations if the price is reasonable, and such purchases are to be spread fairly among qualified suppliers as far as practicable. Between that and the simplified acquisition threshold of $350,000, the contracting officer must promote competition as far as practicable and, where the purchase is not advertised publicly, should consider asking at least three sources. Larger purchases follow more formal procedures still. Other countries’ governments, and many hospitals, universities and companies, have equivalent rules with their own thresholds.' },
+    { p: 'Public bodies have the strictest rules, because they spend public money. In the United States, the Federal Acquisition Regulation (FAR) governs purchases by federal agencies. Its thresholds are adjusted for inflation: the current ones took effect on 1 October 2025, up from $10,000 and $250,000, and the version in force is FAC 2026-01, effective 13 March 2026.' },
+    { p: 'Under the FAR, a purchase at or below the micro-purchase threshold of $15,000 may be made without seeking competing quotations if the price is reasonable, and such purchases are to be spread fairly among qualified suppliers as far as practicable. Between that and the simplified acquisition threshold of $350,000, the contracting officer must promote competition as far as practicable and, where the purchase is not advertised publicly, should consider asking at least three sources. A requirement may not be split into several smaller purchases just to get under a threshold. Larger purchases follow more formal procedures still. Other countries’ governments, and many hospitals, universities and companies, have equivalent rules with their own thresholds.' },
     { callout: 'warn', title: 'Rules change and differ', html: 'Thresholds are revised from time to time, and every organisation sets its own. Treat the figures here as an illustration of how procurement rules work, and check the current rules of any organisation you sell to before you plan the sale.' },
 
     { h: 'Selling to organisations' },
@@ -165,16 +175,17 @@ export default {
 
   formulas: [
     { id: 'equipment-orders', name: 'Equipment orders under derived demand (acceleration effect)',
-      tex: String.raw`O_t = \max\bigl(0,\; K_t - (1 - d)\,K_{t-1}\bigr)`,
+      tex: String.raw`O_t = \max\bigl(0,\; K_t - (1 - d)\,F_{t-1}\bigr) \qquad F_t = \max\bigl(K_t,\; (1 - d)\,F_{t-1}\bigr)`,
       where: [
         [String.raw`O_t`, 'Units of equipment ordered in year t (for example, vans)', 'units'],
         [String.raw`K_t`, 'Units needed in year t, in proportion to the customer’s own demand', 'units'],
-        [String.raw`K_{t-1}`, 'Units in service at the end of the previous year', 'units'],
+        [String.raw`F_t`, 'Units in service at the end of year t, including any spare units kept when demand falls', 'units'],
+        [String.raw`F_{t-1}`, 'Units in service at the end of the previous year', 'units'],
         [String.raw`d`, 'Share of the units in service that wear out and are retired each year', 'decimal (0.1 = 10%)'],
         [String.raw`t`, 'Year', ''],
       ],
       assumptions: 'The equipment needed is proportional to the customer’s demand; a fixed share wears out each year; spare equipment is kept rather than sold, so orders can’t fall below zero.',
-      note: 'Equivalently, orders = replacements (d × last year’s units) + growth in units needed (K_t − K_{t−1}). Because the growth term depends on the change in demand, orders swing by a far larger percentage than demand itself.' },
+      note: 'Equivalently, when no units are spare, orders = d × K_{t−1} + (K_t − K_{t−1}): replacements plus growth in the units needed. Because the growth term depends on the change in demand, orders swing by a far larger percentage than demand itself.' },
   ],
 
   examples: [
@@ -215,7 +226,7 @@ export default {
       setup: `Kessler Medical wants to sell Westmere General Hospital 120 “smart” infusion pumps, which check each dose against a library of drugs before delivering it, at $3,200 each, with a five-year service contract at $18,000 a year. The hospital has never used smart pumps. Its rules say any purchase over $250,000 needs a formal tender, evaluated by a panel, and approval by the capital committee, chaired by the chief financial officer, Petra Nakamura. During a tender, suppliers may contact only the procurement manager, Joel Pike. The account manager has learned the following. Greta Ashby, the director of nursing, asked for the review after ward staff reported two near-misses with doses. About 400 ward nurses will use the pumps, and a panel of six nurses will try the shortlisted models on wards. Felix Moss, head of biomedical engineering, will write the technical specification and maintain the pumps. Sana Yusuf, the infection-prevention lead, must confirm that the pumps can be cleaned to the hospital’s standard before any can be bought. Map the buying centre and plan Kessler’s approach. Every name is fictional.`,
       steps: [
         'Buying situation: the hospital has bought infusion pumps before, but never smart pumps, a new technology with new software, training and risks. That makes it a new task: the most information, the most people and the most uncertainty.',
-        String.raw`Size and rules: <m>120 \times \$3{,}200 = \$384{,}000</m> for the pumps, plus <m>5 \times \$18{,}000 = \$90{,}000</m> of service, <m>\$474{,}000</m> in all. Either figure is above the $250,000 threshold, so there will be a formal tender and the capital committee must approve it.`,
+        String.raw`Size and rules: <m>120 \times \$3{,}200 = \$384{,}000</m> for the pumps, plus <m>5 \times \$18{,}000 = \$90{,}000</m> of service, <m>\$474{,}000</m> in all. Whether the hospital counts the pumps alone ($384,000) or the whole contract ($474,000), the purchase is above the $250,000 threshold, so there will be a formal tender and the capital committee must approve it.`,
         'Roles, by what each person does in this purchase. Greta started it: the initiator, and as director of nursing a strong influencer. The ward nurses are the users, and the six on the trial panel are also influencers. Felix shapes the specification: an influencer. Sana can block any pump that fails her cleaning standard: an influencer with a veto, a role some textbooks call an approver. Joel runs the tender and handles all supplier contact: the buyer, and during the tender the gatekeeper. Petra and the capital committee approve the purchase: the deciders.',
         'Plan by role. For the nurses, a ward trial with good training and quick support, because their experience will decide the panel’s view. For Greta, evidence on how dose checking prevents errors, the outcome she cares about. For Felix, full technical documentation and maintenance terms. For Sana, validated cleaning instructions before the tender closes. For Petra’s committee, the five-year cost of ownership and the cost of the errors the pumps are meant to prevent. For Joel, a complete, compliant bid on time, and no attempt to lobby the others behind his back during the tender, which could disqualify Kessler.',
       ],
@@ -229,7 +240,7 @@ export default {
 
   mistakes: [
     { title: '“The buyer is the person who decides.”', html: 'In a buying centre, the buyer is the role that deals with suppliers and terms. The decider may be someone else, and for a large purchase often is. Find out who can say yes, and up to what amount.' },
-    { title: '“A job title tells you someone’s role.”', html: 'Roles are defined by what people do in a particular purchase. A receptionist can be a gatekeeper, a user can be the initiator, and one person can be the decider for small orders and only an influencer for large ones.' },
+    { title: '“A job title tells you someone’s role.”', html: 'Roles are defined by what people do in a particular purchase. An IT manager can be a gatekeeper, a nurse can be the initiator, and a plant manager can be the decider for small orders and only an influencer for large ones.' },
     { title: '“Win over the person you talk to and you have won the sale.”', html: 'Organisational purchases are shared decisions. A seller who reaches only one member of the buying centre leaves the others to be persuaded by someone else, or not at all.' },
     { title: '“Business buyers only care about price.”', html: 'They care about total cost of ownership, reliability, risk and service, and the people involved care about how the decision reflects on them. A higher price can win if it lowers total cost or risk.' },
     { title: '“Orders for business equipment move in step with consumer demand.”', html: 'Derived demand for equipment depends on the change in end demand, so it swings far more. In the Swiftline example a 10% rise in parcels doubled van orders and a halt in growth cut them by 45%.' },
@@ -240,7 +251,8 @@ export default {
     { case: 'Corvid Energy, a fictional supplier of battery-storage systems for warehouses and depots, has heard that Swiftline Couriers is looking at battery storage for its main depot. Its key account manager, Amara Rhee, prepares an account plan before she makes contact.' },
     { p: 'She starts with derived demand. Swiftline’s electricity use, and its need for storage, follows its parcel volumes, and its interest in cutting costs follows its margins. Amara reads Swiftline’s annual report and the forecasts for parcel volumes in its region, and notes that a firm whose volumes have just stopped growing will want a short payback.' },
     { p: 'Next, the buying situation and the rules. Swiftline has never bought storage: a new task, so it will need education, and the supplier that helps it understand peak-demand charges may shape the specification. Swiftline’s published guide for suppliers says that any purchase over $100,000 needs three written proposals and board approval, so a request for proposal is likely. She makes sure Corvid is on Swiftline’s approved supplier list before the request goes out, because it can take weeks to be added.' },
-    { p: 'Then the buying centre. The operations director raised the idea after the depot’s electricity bill rose: the initiator. The site electricians will live with the system: users, and influencers through their view of safety and maintenance. An outside energy consultant will draft the specification: an influencer. The procurement team will run the request for proposal and control contact with suppliers while it is open: buyer and gatekeeper. The finance director and the board will decide. Amara’s plan gives each a reason to favour Corvid: a site survey and safety briefing for the electricians, open data on performance for the consultant, a ten-year total cost of ownership for finance, and a performance guarantee to lower the board’s risk.' },
+    { p: 'Then the buying centre. The operations director raised the idea after the depot’s electricity bill rose: the initiator. The site electricians will live with the system: users, and influencers through their view of safety and maintenance. An outside energy consultant will draft the specification: an influencer. The procurement team will run the request for proposal and control contact with suppliers while it is open: buyer and gatekeeper. The finance director and the board will decide.' },
+    { p: 'Amara’s plan gives each a reason to favour Corvid: a site survey and safety briefing for the electricians, open data on performance for the consultant, a ten-year total cost of ownership for finance, and a performance guarantee to lower the board’s risk.' },
     { p: 'Finally, the relationship. If Corvid wins, the first installation becomes a reference for Swiftline’s other depots, which would be modified rebuys rather than new tasks, and the maintenance contract becomes a straight rebuy that Corvid must defend with good service. Amara’s plan therefore runs past the sale, to the performance review that will decide the next one. The same reasoning lets Lantern plan its catering sales: the course project asks you to apply it to Harbor Tech.' },
   ],
 
@@ -262,12 +274,12 @@ export default {
     { term: 'Modified rebuy', def: 'A buying situation in which an organisation wants to change the specification, price, terms or supplier of something it has bought before.' },
     { term: 'New task', def: 'A buying situation in which an organisation buys something for the first time, with the most uncertainty, information search and people involved.' },
     { term: 'Buying centre', def: 'All the people in an organisation who take part in a purchase decision, each in one or more roles; also called the decision-making unit.' },
-    { term: 'Initiator', def: 'In a buying centre, the person who first suggests the purchase.' },
-    { term: 'User', def: 'In a buying centre, the people who will use the product or service; they often help define the need and judge the supplier afterwards.' },
-    { term: 'Influencer', def: 'In a buying centre, a person whose views or expertise shape the specification or the choice without making the final decision, such as an engineer or a specialist.' },
-    { term: 'Buyer', def: 'In a buying centre, the person with formal responsibility for dealing with suppliers and arranging the terms of the purchase.' },
-    { term: 'Decider', def: 'In a buying centre, the person or group with the power to choose the supplier or approve the purchase.' },
-    { term: 'Gatekeeper', def: 'In a buying centre, a person who controls what information and which salespeople reach the others.' },
+    { term: 'Initiator (buying centre)', def: 'In a buying centre, the person who first suggests the purchase.' },
+    { term: 'User (buying centre)', def: 'In a buying centre, the people who will use the product or service; they often help define the need and judge the supplier afterwards.' },
+    { term: 'Influencer (buying centre)', def: 'In a buying centre, a person whose views or expertise shape the specification or the choice without making the final decision, such as an engineer or a specialist. Not to be confused with a social-media influencer.' },
+    { term: 'Buyer (buying centre)', def: 'In a buying centre, the person with formal responsibility for dealing with suppliers and arranging the terms of the purchase.' },
+    { term: 'Decider (buying centre)', def: 'In a buying centre, the person or group with the power to choose the supplier or approve the purchase.' },
+    { term: 'Gatekeeper (buying centre)', def: 'In a buying centre, a person who controls what information and which salespeople reach the others.' },
     { term: 'Business buying process', def: 'The stages of an organisational purchase: problem recognition, general need description, product specification, supplier search, proposal solicitation, supplier selection, order-routine specification and performance review.' },
     { term: 'Request for proposal', def: 'A formal invitation to suppliers to propose how they would meet a stated need and at what price, used when the buyer wants to compare solutions as well as prices.' },
     { term: 'Total cost of ownership', def: 'Everything an organisation pays to acquire, use, maintain and eventually replace or dispose of a product over its life, not just the purchase price.' },
@@ -280,7 +292,8 @@ export default {
     { text: 'Robinson, P. J. &amp; Faris, C. W., with Wind, Y. (1967). <i>Industrial Buying and Creative Marketing</i>. Boston: Allyn &amp; Bacon, for the Marketing Science Institute. Catalogue record consulted; the book was not.', url: 'https://catalog.hathitrust.org/Record/001321445', checked: '2026-10-23' },
     { text: 'Webster, F. E., Jr. &amp; Wind, Y. (1972). A general model for understanding organizational buying behavior. <i>Journal of Marketing</i>, 36(2), 12–19. Abstract consulted; the five roles as summarised in The Open University’s OpenLearn course <i>Understanding your customers</i>, section 3.4.', url: 'https://doi.org/10.1177/002224297203600204', checked: '2026-10-23' },
     { text: 'Bonoma, T. V. (1982). Major sales: who really does the buying? <i>Harvard Business Review</i>, May–June 1982; reprinted as an HBR Classic (product R0607P), whose description was consulted.', url: 'https://store.hbr.org/product/major-sales-who-really-does-the-buying-hbr-classic/R0607P', checked: '2026-10-23' },
-    { text: 'Federal Acquisition Regulation, part 2.101 (definitions of the micro-purchase and simplified acquisition thresholds) and part 13 (simplified acquisition procedures), FAC 2026-01, effective 13 March 2026. Acquisition.gov.', url: 'https://www.acquisition.gov/far/part-13', checked: '2026-10-23' },
+    { text: 'Federal Acquisition Regulation, section 2.101 (definitions of the micro-purchase and simplified acquisition thresholds) and part 13, sections 13.003(c)(2) (no splitting of requirements), 13.104 (promoting competition) and 13.203 (micro-purchases), FAC 2026-01, effective 13 March 2026. Acquisition.gov.', url: 'https://www.acquisition.gov/far/part-13', checked: '2026-10-23' },
+    { text: 'Pillsbury Winthrop Shaw Pittman. “Federal Acquisition Regulatory Council inflation thresholds”: the micro-purchase threshold rose from $10,000 to $15,000 and the simplified acquisition threshold from $250,000 to $350,000 on 1 October 2025.', url: 'https://www.pillsburylaw.com/en/news-and-insights/federal-acquisition-regulatory-council-inflation-thresholds.html', checked: '2026-10-23' },
   ],
 
   checks: [
@@ -313,6 +326,8 @@ export default {
     { what: 'Pumps: above the threshold', value: PUMPS.units * PUMPS.price > PUMPS.limit ? 1 : 0, shown: 1 },
     { what: 'Pumps: threshold', value: PUMPS.limit, shown: 250000 },
     { what: 'FAR micro-purchase threshold', value: 15000, shown: 15000 },
+    { what: 'FAR micro-purchase threshold before 1 October 2025', value: 10000, shown: 10000 },
+    { what: 'FAR simplified acquisition threshold before 1 October 2025', value: 250000, shown: 250000 },
     { what: 'FAR simplified acquisition threshold', value: 350000, shown: 350000 },
     { what: 'Swiftline policy threshold (fictional)', value: 100000, shown: 100000 },
   ],

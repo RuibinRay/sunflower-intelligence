@@ -76,7 +76,7 @@ export default {
       '<b>Vague:</b> “Attract more patients next year.”',
       '<b>SMART:</b> “Raise new-patient registrations from 40 to 55 a month by June 2027, measured from the booking system, while keeping the share of patients who return within 12 months at 80% or more.”',
     ] },
-    { p: 'The second version can be checked by anyone with the booking data, says by when, and builds in a second measure so that the first can’t be met by recruiting patients who never come back. The letters themselves vary between sources: OpenStax’s marketing textbook expands them as specific, measurable, attainable, realistic and time-bound in one chapter and uses actionable for the A in another. The questions behind the letters are what count.' },
+    { p: 'The second version can be checked by anyone with the booking data, says by when, and builds in a second measure so that the first can’t be met by recruiting patients who never come back. The letters themselves vary between sources: OpenStax’s <i>Principles of Marketing</i> expands them as specific, measurable, attainable, realistic (or relevant) and time-bound in section 2.1, and as specific, measurable, actionable, realistic and time-bound in section 2.3. The questions behind the letters are what count.' },
     { callout: 'key', title: 'The anatomy of a marketing objective', html: 'Who (which customers) · does what (the behaviour) · measured how (the measure and its source) · from what to what (the starting point and the level) · by when (the date or period). If any part is missing, the objective can’t be checked.' },
   ],
 
@@ -123,7 +123,7 @@ export default {
 
     { h: 'Objectives that work together' },
     { p: 'Objectives interact. A plan to raise prices by 10%, double the number of new customers won and cut the promotion budget by a third sets three objectives that pull against each other: the price rise and the smaller budget both make winning customers harder. Check every pair of objectives, as M02 checks every pair of marketing-mix decisions, and keep the set small: three to five objectives that a team can remember will be pursued; fifteen will be ignored.' },
-    { p: 'Objectives also change behaviour, not always as intended. <g>Goodhart’s law</g>, met in B01, warns that a measure stops tracking what it was meant to track once people are rewarded for moving it. Reward a sales team for new clients alone and it may win them with discounts that destroy the margin, or sign clients who leave after three months. The remedy is a <g>guardrail metric</g>: a second measure that must not get worse, such as the average price won or the share of new clients still buying after a year. Finally, prefer objectives that track profit to ones that track revenue when the two can diverge: a customer won at a loss adds to revenue and subtracts from the goal.' },
+    { p: 'Objectives also change behaviour, not always as intended. <g>Goodhart’s law</g>, met in B01, warns that a measure stops tracking what it was meant to track once people are rewarded for moving it. Reward a sales team for new clients alone and it may win them with discounts that destroy the margin, or sign clients who leave after three months. The remedy is a <g>guardrail metric</g>: a second measure that must not get worse, such as the average price won or the share of new clients still buying after a year. Finally, prefer objectives that track profit to ones that track revenue when the two can diverge: a customer won at a loss adds to revenue and subtracts from profit.' },
     { callout: 'warn', title: 'A target is not a forecast', html: 'A forecast says what is likely to happen; a target says what the business intends to make happen. Plans go wrong when a hopeful target is treated as a forecast, for example when stock, staff or cash are planned around it. Keep both numbers, and plan resources around the forecast, with the target as the stretch.' },
   ],
 
@@ -156,7 +156,7 @@ export default {
         [String.raw`N_{\text{new}}`, 'New customers needed', 'customers'],
         [String.raw`c_i`, 'Conversion rate from each stage to the next, for stages 1 to k', 'decimal'],
       ],
-      assumptions: 'The conversion rates are stable and don’t fall as volume rises (in practice, extra leads are often of lower quality).',
+      assumptions: 'The conversion rates are stable and don’t fall as volume rises (in practice, extra leads are often of lower quality), and leads convert within the period. In business markets a lead can take months to become a client, so leads that arrive late in the year count towards next year’s wins, and this year’s target needs leads earlier than an even monthly spread suggests.',
       note: 'Round up. Multiply the rates; never add or average them.' },
   ],
 
@@ -173,16 +173,16 @@ export default {
       interpretation: String.raw`Three-quarters of the recruiting effort (<m>360 \div 480 = 75\%</m>) goes into standing still. If the gym could raise retention to 75%, it would need <m>1{,}200 \times 0.35 = 420</m>, 60 fewer. That is why a growth plan for a business with high churn should usually include a retention objective, not just a recruitment target.` },
 
     { level: 'challenging', title: 'From a revenue goal to a lead target', fictional: true,
-      setup: 'Harrowby Payroll runs payroll for small firms. It has 400 client firms, each paying $3,000 a year, so revenue is $1,200,000. The board wants revenue 15% higher next year. Harrowby will raise its fee by 4% for all clients, and expects to keep 85% of them. In its sales funnel 30% of qualified leads receive a proposal and 25% of proposals are won. How many new clients, proposals and leads does the goal need? What happens if the fee rise pushes retention down to 82%?',
+      setup: 'Harrowby Payroll runs payroll for small firms. It has 400 client firms, each paying $3,000 a year, so revenue is $1,200,000. The board wants revenue 15% higher next year. Harrowby will raise its fee by 4% for all clients, and expects to keep 85% of them. In its sales funnel 30% of qualified leads receive a proposal and 25% of proposals are won. Assume, as the formula does, that clients join or leave at the start of the year. How many new clients, proposals and leads does the goal need? What happens if the fee rise pushes retention down to 82%?',
       steps: [
         String.raw`Revenue target: <m>1{,}200{,}000 \times 1.15 = 1{,}380{,}000</m> dollars. Revenue per client next year: <m>3{,}000 \times 1.04 = 3{,}120</m> dollars.`,
         String.raw`Clients needed: <m>1{,}380{,}000 \div 3{,}120 \approx 442.3</m>. Clients kept: <m>400 \times 0.85 = 340</m>.`,
         String.raw`New clients: <m>442.3 - 340 = 102.3</m>, rounded up at the end to 103. Without the fee rise Harrowby would need <m>1{,}380{,}000 \div 3{,}000 - 340 = 460 - 340 = 120</m>, so the price rise does the work of 17 new clients.`,
-        String.raw`Through the funnel: proposals <m>103 \div 0.25 = 412</m>; leads <m>412 \div 0.30 \approx 1{,}373.3</m>, rounded up to 1,374. Equivalently, each lead has a <m>0.30 \times 0.25 = 0.075</m> chance of becoming a client, and <m>103 \div 0.075 \approx 1{,}373.3</m>.`,
+        String.raw`Through the funnel. The client target is a whole number, 103, and the funnel is worked back from it (working from the unrounded 102.3 would give 1,365 leads, a difference too small to matter). Proposals <m>103 \div 0.25 = 412</m>; leads <m>412 \div 0.30 \approx 1{,}373.3</m>, rounded up to 1,374. Equivalently, each lead has a <m>0.30 \times 0.25 = 0.075</m> chance of becoming a client, and <m>103 \div 0.075 \approx 1{,}373.3</m>.`,
         String.raw`Test the interaction. If the fee rise cuts retention to 82%, Harrowby keeps <m>400 \times 0.82 = 328</m> clients and needs <m>442.3 - 328 = 114.3</m>, so 115 new clients and <m>115 \div 0.075 \approx 1{,}533.3</m>, or 1,534 leads: 160 more leads for a three-point fall in retention.`,
       ],
       answer: '103 new clients, 412 proposals and 1,374 qualified leads. If retention falls to 82%, the need rises to 115 new clients and 1,534 leads.',
-      interpretation: 'The price rise and the retention objective interact: the price rise saves 17 new clients only if clients don’t leave because of it. A sound plan therefore sets a retention objective alongside the acquisition target, and watches retention closely after the fee rise. The leads figure, about 115 a month, is what turns the goal into a workload the sales team can plan for.' },
+      interpretation: 'The price rise and the retention objective interact: the price rise saves 17 new clients only if clients don’t leave because of it. A sound plan therefore sets a retention objective alongside the acquisition target, and watches retention closely after the fee rise. The leads figure, about 115 a month on average, is what turns the goal into a workload the sales team can plan for, provided leads convert within the year. In business markets a lead can take months to become a client, so leads that arrive late in the year count towards next year’s wins, and this year’s target needs leads earlier than an even monthly spread suggests.' },
 
     { level: 'applied', title: 'Objectives for Lantern’s workshops', fictional: true,
       setup: `Lantern’s barista-training workshops are separate from its catering. From March to December 2026 Lantern held ${w.held} workshops with an average of ${w.avgParticipants} participants at $${w.pricePerPerson} a person. For this example, suppose Ana sets a business goal of $30,000 of workshop revenue in 2027, at the same price and class size, and that her records show (both figures invented for this example) that about half of all enquiries turn into a booking and that 4% of visits to the workshop pages produce an enquiry. She also plans an advanced class that she expects past participants to book 40 places on. Set the 2027 workshop objectives.`,
@@ -283,6 +283,7 @@ export default {
     { what: 'Harrowby: proposals', value: calderNew / 0.25, shown: 412 },
     { what: 'Harrowby: leads unrounded', value: 412 / 0.30, shown: 1373.3, tol: 0.05 },
     { what: 'Harrowby: leads', value: Math.ceil(calderNew / 0.075), shown: 1374 },
+    { what: 'Harrowby: leads from unrounded new clients', value: Math.ceil((calderReq - 340) / 0.075), shown: 1365 },
     { what: 'Harrowby: kept at 82%', value: 400 * 0.82, shown: 328 },
     { what: 'Harrowby: new at 82% unrounded', value: calderReq - 328, shown: 114.3, tol: 0.05 },
     { what: 'Harrowby: new at 82%', value: Math.ceil(calderReq - 328), shown: 115 },

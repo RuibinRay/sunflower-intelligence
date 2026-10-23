@@ -21,6 +21,7 @@ export const widgets = {
       const vf = v.wf - v.cf, vr = v.wr - v.cr;
       const surplusR = v.wr - v.pr;
       const pmax = v.pr + (v.wf - v.wr);
+      if (pmax <= 0) return { error: 'Customers value the rival’s offer so much more than yours that even a free offer from you would leave them worse off than buying from the rival: no price wins them. Raise your customers’ willingness to pay, or lower their willingness to pay for the rival.' };
       const mf = pmax - v.cf, mr = v.pr - v.cr;
       const prem = (pmax / v.pr - 1) * 100;
       const who = vf > vr ? 'You create more value than the rival: you have the competitive advantage.'
@@ -62,7 +63,7 @@ export const guided = [
     prompt: 'Which of Porter’s generic strategies is each fictional business following?',
     items: [
       'An airline with one type of aircraft, no free meals and the lowest fares on every route it flies',
-      'A furniture maker whose handmade pieces sell at high prices in department stores across the country',
+      'A furniture maker selling a full range, from sofas to office desks, to households and businesses nationwide at above-average prices, on the strength of its design and a 25-year guarantee',
       'A bakery that makes only gluten-free bread, at premium prices, for people who can’t eat gluten',
       'A uniform supplier serving only schools, with the lowest prices in that niche from a few standard designs made in long runs',
       'A software firm whose accounting package has features no rival offers, sold to businesses of every size',
@@ -71,15 +72,15 @@ export const guided = [
     categories: GENERIC,
     answer: [0, 1, 3, 2, 1, 2],
     hints: [
-      'Ask two questions of each: is the advantage low cost or something customers value and pay more for? And does the business serve the whole market or one segment?',
-      'Schools and small trade customers are single segments; “across the country” and “every size” mean the whole market.',
+      'Ask two questions of each: is the advantage low cost or something customers value and pay more for? And does the business serve many customer segments or just one?',
+      'Scope means the range of customer segments served, not geography. Schools and small trade customers are single segments; households and businesses of every kind, or businesses of every size, are many.',
     ],
     feedback: {
       2: 'One segment (people who can’t eat gluten), served with something they value and pay more for: differentiation focus.',
       3: 'One segment (schools), served at the lowest cost through standard designs and long runs: cost focus.',
       5: 'A narrow target (small trade customers) with a low-cost model: cost focus, not broad cost leadership.',
     },
-    solution: 'Cost leadership: the airline. Differentiation: the furniture maker and the software firm (unique, valued, whole market). Cost focus: the uniform supplier and the builders’ merchant (lowest cost for one segment). Differentiation focus: the gluten-free bakery (unique for one segment).',
+    solution: 'Cost leadership: the airline. Differentiation: the furniture maker and the software firm (unique, valued, many segments). Cost focus: the uniform supplier and the builders’ merchant (lowest cost for one segment). Differentiation focus: the gluten-free bakery (unique for one segment).',
   },
   {
     id: 'm01-ca-g2', type: 'steps', kind: 'numerical',
@@ -107,7 +108,7 @@ export const guided = [
       { id: 'm01-ca-g2-s4', type: 'mc',
         prompt: 'What does the comparison show?',
         options: [
-          'School B has the advantage: it creates more value per lesson even though it costs more to run',
+          'School B: it creates more value per lesson, though it costs more to run',
           'School A has the advantage, because it is cheaper to run and charges less',
           'Neither has an advantage, because both leave learners exactly $10 at those prices',
           'School B has the advantage only if it charges the same $40 as School A',
@@ -125,7 +126,7 @@ export const guided = [
     id: 'm01-ca-g3', type: 'mc', kind: 'applied',
     prompt: 'A fictional city hotel lists four things it believes give it an edge. Which is most likely to be a source of sustained competitive advantage?',
     options: [
-      'A 40-year arrangement with the city’s main conference centre, which books its speakers into the hotel',
+      'A 40-year deal under which the city’s conference centre books its speakers into the hotel',
       'New mattresses in every room, bought from the supplier that the city’s other hotels also use',
       'A booking website built on a standard platform that any hotel can buy and set up in a week',
       'A 10% discount for guests who book directly, which any rival could copy the next morning',
@@ -137,7 +138,7 @@ export const guided = [
       2: 'A standard platform anyone can buy is neither rare nor hard to imitate.',
       3: 'A discount is easy to copy and moves value to guests rather than creating it.',
     },
-    why: 'The arrangement is valuable, rare and hard to copy because it rests on a long history and a relationship, the kinds of resource rivals can’t simply buy.',
+    why: 'The arrangement is valuable, rare and hard to copy because it rests on a long history and a relationship, the kinds of resource rivals can’t buy.',
     solution: 'Only the conference-centre arrangement passes the rarity and imitability tests: it was built over 40 years and rests on a relationship. It still needs the O of VRIO: the hotel must be organised to keep the arrangement working and to make the most of the guests it brings.',
   },
   {
@@ -156,7 +157,7 @@ export const guided = [
 export const independent = [
   {
     id: 'm01-ca-i1', type: 'num', kind: 'numerical',
-    prompt: 'A rival’s accounting software costs $40 a month, and a typical small business would pay up to $55 a month for it. The same business would pay up to $70 for a fictional firm’s software. What is the highest monthly price at which the firm still leaves the business at least as well off as the rival does?',
+    prompt: 'A rival’s accounting software is priced at $40 a month, and a typical small business would pay up to $55 a month for it. The same business would pay up to $70 for a fictional firm’s software. What is the highest monthly price at which the firm still leaves the business at least as well off as the rival does?',
     answer: 55, check: () => 40 + (70 - 55), tol: 0.5, unit: '$', places: 0,
     wrong: [
       { value: 70, say: 'At $70 the business keeps nothing with the firm, but $15 with the rival, so it would choose the rival.' },
@@ -188,7 +189,7 @@ export const independent = [
     id: 'm01-ca-i3', type: 'mc', kind: 'conceptual',
     prompt: 'A fictional restaurant chain cut its prices to compete with fast-food outlets and, at the same time, added table service and a longer menu to compete with fine dining. Its costs rose as its prices fell, and diners of both kinds went elsewhere. In Porter’s terms, what happened?',
     options: [
-      'It became stuck in the middle: neither cheap enough nor distinctive enough for either kind of diner',
+      'It became stuck in the middle: neither cheap nor distinctive enough for either kind of diner',
       'It moved into cost focus, because it narrowed its target to a single segment of diners',
       'It moved into differentiation focus, because it added service that only some diners value',
       'It achieved cost leadership, because it now charges the lowest prices among sit-down restaurants',
@@ -199,7 +200,7 @@ export const independent = [
       2: 'Focus means serving one segment especially well. The chain tried to serve two at once, and served neither well.',
       3: 'Cost leadership needs the lowest costs, not just low prices. Its costs rose.',
     },
-    solution: 'The chain pursued low price and differentiation at once without the cost base for the first or a clear difference for the second: Porter’s “stuck in the middle”. Hill (1988) showed that cost and differentiation can sometimes be combined, but through a mechanism such as scale won by a valued product, not by cutting prices while adding costs.',
+    solution: 'The chain pursued low price and differentiation at once without the cost base for the first or a clear difference for the second: Porter’s “stuck in the middle”. Hill (1988) argued that cost and differentiation can sometimes be combined, but that needs a mechanism, such as the scale a popular differentiated product can bring, not price cuts made while costs rise.',
   },
   {
     id: 'm01-ca-i4', type: 'multi', kind: 'conceptual',
@@ -209,8 +210,8 @@ export const independent = [
       'A simpler, standardised offer',
       'Cheaper inputs through long-term contracts with suppliers',
       'Experienced staff who do the work faster and waste less',
-      'A better-known brand than any rival',
-      'A wider range of products than any rival',
+      'A better-known brand than any rival, built up over many years of advertising',
+      'A wider range of products than any rival, so customers find everything in one place',
     ],
     answer: [0, 1, 2, 3],
     feedback: {
@@ -247,7 +248,7 @@ export const check = [
     id: 'm01-ca-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Which statement best describes a competitive advantage?',
     options: [
-      'Creating more value than rivals: a wider gap between willingness to pay and the cost of serving customers',
+      'Creating more value than rivals: a wider gap between willingness to pay and cost',
       'Charging a lower price than every rival, whatever it costs the business to serve its customers',
       'Having more customers than any rival, measured by market share in the most recent year',
       'Spending more on advertising than rivals, so that customers hear about the business first',
@@ -291,7 +292,7 @@ export const check = [
     id: 'm01-ca-k4', type: 'mc', kind: 'applied',
     prompt: 'A fictional engineering firm’s best team has worked together for 15 years and solves problems no rival can. But the firm assigns the team to routine jobs and never mentions it in proposals. What does VRIO conclude about the team?',
     options: [
-      'It is valuable, rare and hard to copy, but the firm isn’t organised to exploit it: an unused advantage',
+      'Valuable, rare and hard to copy, but not organised for use: an unused advantage',
       'It is not valuable, because customers don’t know about it and so won’t pay more for it',
       'It is easy to imitate, because any rival could hire engineers with similar qualifications',
       'It is already a sustained advantage, whatever the firm does with it, because it is rare',
@@ -322,8 +323,8 @@ export const check = [
       'A firm without a cost advantage that matches a cheaper rival’s price gives up margin on every sale.',
       'Differentiation pays only if customers value the difference by more than it costs to provide.',
       'Porter’s focus strategies serve a narrow segment, through either lower cost or differentiation.',
-      'Any resource a firm owns is a source of sustained competitive advantage.',
-      'A higher price always means the customer gets less value than from a cheaper rival.',
+      'Any resource a firm owns, such as its equipment or its premises, is a source of sustained competitive advantage.',
+      'A higher price always means that the customer gets less value than they would get from a cheaper rival.',
     ],
     answer: [0, 1, 2],
     feedback: {

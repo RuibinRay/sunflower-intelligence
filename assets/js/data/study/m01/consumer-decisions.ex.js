@@ -98,7 +98,7 @@ export const guided = [
       { id: 'm01-cd-g2-s3', type: 'mc',
         prompt: 'Hotel B scores 6.6. Which hotel does the model expect her to choose, and why?',
         options: [
-          'Hotel C: location carries half the weight, and C is best on location and reviews.',
+          'Hotel C: it leads on location, which carries half the weight.',
           'Hotel B: it is the cheapest, and price is what most travellers look at first.',
           'Hotel A: it has no score below 5, so it is the safest all-round choice.',
           'None of them: scores this close are too similar for the model to rank.',
@@ -139,7 +139,7 @@ export const guided = [
     id: 'm01-cd-g4', type: 'mc', kind: 'applied',
     prompt: 'A fictional furniture shop sells a sofa for $1,900. Delivery takes four weeks, and some customers cancel before it arrives. Which action is most likely to reduce post-purchase dissonance?',
     options: [
-      'An e-mail after payment with the delivery date, fabric care tips and reviews from owners of the sofa.',
+      'An e-mail after payment with the delivery date, care tips and other owners’ reviews.',
       'A discount code for the customer’s next furniture purchase, sent the day after payment.',
       'More advertising for the sofa, aimed at people who haven’t bought one yet.',
       'A rule that paid orders can’t be cancelled, so customers can’t change their minds.',
@@ -164,7 +164,7 @@ export const independent = [
     id: 'm01-cd-i1', type: 'classify', kind: 'applied',
     prompt: 'Lantern plans several marketing actions for its online shop and workshops. Classify each by the stage of the buying decision process it mainly targets.',
     items: [
-      'A reorder reminder e-mailed when a subscriber’s beans should be running low',
+      'A reorder reminder e-mailed to a customer who bought a bag of beans a few weeks ago',
       'Paying to appear in search results for “latte art class”',
       'A table on the workshop page comparing what each Lantern workshop covers',
       'Removing one step from the online checkout',
@@ -173,7 +173,7 @@ export const independent = [
     categories: STAGES,
     answer: [0, 1, 2, 3, 4],
     feedback: {
-      0: 'The reminder prompts the customer to notice a gap (beans running out) before she would otherwise: need recognition.',
+      0: 'The reminder prompts the customer to notice a gap (her beans may be running low) before she would otherwise: need recognition.',
       2: 'A comparison table helps buyers weigh options against each other: evaluation of alternatives.',
       4: 'The guide arrives after the purchase. It supports satisfaction and reduces doubt: post-purchase behaviour.',
     },
@@ -211,12 +211,12 @@ export const independent = [
     id: 'm01-cd-i4', type: 'multi', kind: 'conceptual',
     prompt: 'Which statements about online customer journeys and the limits of the five-stage model are supported by the lesson? Select all that apply.',
     options: [
-      'Buyers can add brands to their consideration set during evaluation, not only remove them.',
-      'A review written after one customer’s purchase can become part of another customer’s information search.',
+      'Buyers can add brands to their consideration set during evaluation.',
+      'One customer’s review can become part of another customer’s information search.',
       'A habitual buyer may go from need recognition straight to purchase.',
       'Online, buyers narrow their options steadily from many brands to one, like a funnel.',
       'Once a buyer has paid, the seller can no longer influence whether she buys again.',
-      'Every purchase passes through all five stages in the same order.',
+      'Every purchase, routine or not, passes through all five stages in the same order.',
     ],
     answer: [0, 1, 2],
     feedback: {
@@ -228,7 +228,7 @@ export const independent = [
   },
   {
     id: 'm01-cd-i5', type: 'num', kind: 'applied',
-    prompt: 'A buyer compares three phone plans (fictional) with weights of 0.4 for network coverage, 0.4 for price and 0.2 for data allowance. Plan 1 scores 9, 8 and 4; Plan 2 scores 7, 6 and 7; Plan 3 scores 6, 5 and 9. But she won’t consider any plan with less than 20 GB of data a month, and Plan 1 offers 15 GB. What is the weighted score of the plan she chooses? Give one decimal place.',
+    prompt: 'A buyer compares three phone plans (fictional) with weights of 0.4 for network coverage, 0.4 for price and 0.2 for data allowance. Plan 1 scores 9, 8 and 4; Plan 2 scores 7, 6 and 7; Plan 3 scores 6, 5 and 9. But she won’t consider any plan with less than 20 GB of data a month, Plan 1 offers 15 GB, while Plans 2 and 3 offer 30 GB and 50 GB. What is the weighted score of the plan she chooses? Give one decimal place.',
     answer: 6.6, check: () => Math.max(0.4 * 7 + 0.4 * 6 + 0.2 * 7, 0.4 * 6 + 0.4 * 5 + 0.2 * 9), tol: 0.05, unit: 'points', places: 1,
     wrong: [
       { value: 7.6, say: 'That is Plan 1’s score, the highest of the three, but Plan 1 fails her 20 GB cut-off. A non-compensatory cut-off removes an option before any scores are compared.' },
@@ -298,7 +298,7 @@ export const check = [
     id: 'm01-cd-k4', type: 'mc', kind: 'applied',
     prompt: 'Lantern’s shop data show that many visitors add the Gift Box Trio to their basket in December and then leave at the last step of the checkout, where the delivery date first appears. Where in the buying process is Lantern losing them, and what is the best first response?',
     options: [
-      'At the purchase decision: an unwelcome delivery date stops them, so show it on the product page.',
+      'At the purchase decision: the delivery date stops them, so show it on the product page.',
       'At need recognition: they don’t really want a gift box, so Lantern should advertise it more.',
       'At evaluation of alternatives: the box scores too low, so Lantern should cut its price.',
       'At post-purchase: buyers are suffering dissonance, so Lantern should send a reassuring e-mail.',
@@ -338,6 +338,6 @@ export const check = [
       2: 'Brands can enter during evaluation: car shoppers in the study added 2.2 brands on average to an initial 3.8.',
       3: 'The study shows the opposite: being considered at each phase of the journey matters, and two-thirds of active-evaluation touchpoints were consumer-driven.',
     },
-    solution: 'Court and colleagues described a circular journey (initial consideration, active evaluation, the moment of purchase, post-purchase experience) in which brands can be added during active evaluation, for example 2.2 brands on average to an initial set of 3.8 for car shoppers.',
+    solution: 'Court and colleagues described a circular journey (initial consideration, active evaluation, closure or the moment of purchase, and the post-purchase experience) in which brands can be added during active evaluation, for example 2.2 brands on average to an initial set of 3.8 for car shoppers.',
   },
 ];

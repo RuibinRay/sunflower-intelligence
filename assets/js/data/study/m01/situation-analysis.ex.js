@@ -34,8 +34,8 @@ export const widgets = {
           ...FIRMS.map((f, i) => [`${f.name}`, scores[i].toFixed(2)]),
           ['Weights used (reliability, quality, price, design)', w.map((x) => x.toFixed(2)).join(', ')],
         ],
-        note: gap < 0.05
-          ? `${order[0][0]} and ${order[1][0]} are effectively level (${gap.toFixed(2)} points apart): a small change in the weights, or in one rating, would swap them. Treat the ranking as undecided.`
+        note: gap < 0.15
+          ? `${order[0][0]} and ${order[1][0]} are effectively level (${gap.toFixed(2)} points apart): on judgement ratings from 1 to 5, a gap this small means little, and a small change in the weights or in one rating would swap them. Treat the ranking as undecided.`
           : `${order[0][0]} leads ${order[1][0]} by ${gap.toFixed(2)} points. Price carries ${(w[2] * 100).toFixed(0)}% of the weight here; Larkhill’s weak price rating matters more as that share rises.`,
         chart: {
           kind: 'bar',
@@ -55,7 +55,7 @@ export const guided = [
     items: [
       'The interest rate on the hotel’s bank loan has risen',
       'Keyless room locks that guests open with their phones have become cheap enough for small hotels',
-      'The government has introduced a new tax on overnight stays',
+      'A coming regional election may change the funding for tourism promotion',
       'Rising sea levels threaten the hotel’s seafront car park with flooding',
       'Retired people make up a growing share of the region’s visitors',
       'A court ruling makes hotels liable for guests’ belongings left in their rooms',
@@ -64,14 +64,14 @@ export const guided = [
     answer: [1, 3, 0, 4, 2, 5],
     hints: [
       'Ask where each change comes from: government policy, the economy, people’s habits and make-up, new technology, the natural world, or the law and the courts.',
-      'A tax is a policy decision (political). A change in who visits the region is about the population (social). A court ruling is legal.',
+      'An election is political. A change in who visits the region is about the population (social). A court ruling is legal.',
     ],
     feedback: {
-      2: 'Taxes are set by government policy, so political is the usual letter, even though a tax also has an economic effect. Some analysts would write political/economic, and that is fine.',
+      2: 'An election and the public spending that may follow it are political factors: they come from government and the political process.',
       4: 'The age mix of visitors is a demographic change, which PESTEL puts under social.',
       5: 'A court ruling changes what the law requires of the hotel: legal, not political.',
     },
-    solution: 'Loan interest rate: economic. Cheap keyless locks: technological. Tax on overnight stays: political (a policy decision). Sea levels: environmental. More retired visitors: social (demographics). Court ruling: legal. Where a factor fits two letters, such as a tax, choose the one that helps the discussion; the classification serves the analysis, not the other way round.',
+    solution: 'Loan interest rate: economic. Cheap keyless locks: technological. The coming election and tourism funding: political. Sea levels: environmental. More retired visitors: social (demographics). Court ruling: legal. Where a factor could fit two letters, such as a tax (political and economic), choose the one that helps the discussion; the classification serves the analysis, not the other way round.',
   },
   {
     id: 'm01-sa-g2', type: 'steps', kind: 'numerical',
@@ -102,7 +102,7 @@ export const guided = [
       { id: 'm01-sa-g2-s4', type: 'mc',
         prompt: 'Which single improvement would put Orchard Lane ahead of the superstore, if customers’ priorities stay the same?',
         options: [
-          'Longer opening hours, raising its rating on hours from 2 to 4',
+          'Longer hours, raising its rating on hours from 2 to 4',
           'Lower prices, raising its rating on price from 3 to 5',
           'Better grooming, raising its rating on quality from 5 to 6',
           'A better location, raising its rating on location from 3 to 4',
@@ -118,7 +118,7 @@ export const guided = [
   },
   {
     id: 'm01-sa-g3', type: 'classify', kind: 'applied',
-    prompt: 'Bellweather Bakery (fictional) asks you to sort its notes into a SWOT. Classify each note.',
+    prompt: 'Elstow Bakery (fictional) asks you to sort its notes into a SWOT. Classify each note.',
     items: [
       'Its sourdough has won a regional baking award two years running',
       'Its oven is old and breaks down about once a month',
@@ -144,7 +144,7 @@ export const guided = [
     id: 'm01-sa-g4', type: 'mc', kind: 'conceptual',
     prompt: 'A consultant’s SWOT for a city hotel lists one opportunity: “Launch a spa.” What is wrong with this entry?',
     options: [
-      'It is an action, not an external condition; whatever makes a spa attractive is the opportunity.',
+      'It is an action; whatever makes a spa attractive is the opportunity.',
       'A spa would be part of the hotel, so it belongs under Strengths, not Opportunities.',
       'Opportunities should be stated in money, so it needs the spa’s expected revenue.',
       'Nothing is wrong: any idea that could raise revenue counts as an opportunity.',
@@ -197,24 +197,24 @@ export const independent = [
     prompt: 'Which practices make a SWOT analysis more useful? Select all that apply.',
     options: [
       'Giving each item its source of evidence',
-      'Listing as many items as possible in each box',
+      'Listing as many items as possible in each box, so that nothing important is missed',
       'Ranking the items in each box by importance',
-      'Putting planned actions under Opportunities',
+      'Putting the actions the business plans to take under Opportunities',
       'Judging strengths against competitors, as customers see them',
-      'Linking each important item to an objective, an option or a research question',
+      'Linking each important item to an objective, option or research question',
     ],
     answer: [0, 2, 4, 5],
     feedback: {
       1: 'Long lists were exactly the failure Hill and Westbrook found: vague, unprioritised and never used. A few well-supported items are worth more.',
       3: 'Actions are options for the strategy stage. Listing them as opportunities skips the analysis.',
     },
-    solution: 'Evidence, priorities, a competitor-relative and customer-judged test for strengths, and a clear link to what happens next are what separate a useful SWOT from a list. Length and premature actions are what made the SWOTs in Hill and Westbrook’s study useless.',
+    solution: 'Evidence, priorities, a competitor-relative and customer-judged test for strengths, and a clear link to what happens next are what separate a useful SWOT from a list. Long, unprioritised, unverified lists that nobody used were the failings Hill and Westbrook found; listing actions as opportunities is a further common mistake.',
   },
   {
     id: 'm01-sa-i4', type: 'mc', kind: 'applied',
     prompt: 'A fictional window-cleaning firm interviewed 15 of its current business clients about why they chose it; only 2 mentioned price. Last year it also lost 8 tenders, 7 of them to a rival whose prices are about a fifth lower. Which conclusion does this evidence support?',
     options: [
-      'Price mattered little to the clients who chose the firm, but the interviews say little about the buyers who didn’t.',
+      'Price mattered little to its own clients; the interviews say little about the buyers it lost.',
       'Price matters little to buyers of window cleaning in general, so the firm can leave it out of its plans.',
       'About 13% of the local window-cleaning market chooses its supplier mainly on price.',
       'The firm’s prices are lower than its current clients expected to pay when they signed.',
@@ -254,20 +254,20 @@ export const independent = [
 export const check = [
   {
     id: 'm01-sa-k1', type: 'mc', kind: 'conceptual',
-    prompt: 'In a SWOT for a fictional neighbourhood bakery, which of these belongs in the external half of the grid?',
+    prompt: 'In a SWOT for a fictional garden centre, which of these belongs in the external half of the grid?',
     options: [
-      'A large office block opening on the bakery’s street next year',
-      'The bakery’s award-winning sourdough recipe',
-      'The bakery’s plan to start opening on Sundays from next spring',
-      'The bakery’s ageing oven',
+      'A housing estate being built on the edge of town',
+      'The garden centre’s staff, who all hold horticulture qualifications',
+      'The garden centre’s plan to stay open late on Thursdays from next spring',
+      'The garden centre’s leaking glasshouse roof',
     ],
     answer: 0,
     feedback: {
-      1: 'The recipe belongs to the bakery: internal, and a strength if customers value it and rivals can’t match it.',
-      2: 'A plan is an action the bakery could take. It isn’t a SWOT item at all; it is an option to evaluate later.',
-      3: 'The oven is the bakery’s own equipment: internal, and a weakness if it is unreliable.',
+      1: 'Its staff belong to the garden centre: internal, and a strength if customers value their advice and rivals can’t match it.',
+      2: 'A plan is an action the garden centre could take. It isn’t a SWOT item at all; it is an option to evaluate later.',
+      3: 'The glasshouse is the garden centre’s own building: internal, and a weakness while it leaks.',
     },
-    solution: 'External factors are conditions the business doesn’t control. The office block is one: an opportunity if the bakery acts on it. The recipe and the oven are internal; the Sunday opening is an action.',
+    solution: 'External factors are conditions the business doesn’t control. The housing estate is one: new households with new gardens are an opportunity if the garden centre acts on it. The staff and the glasshouse are internal; the late opening is an action.',
   },
   {
     id: 'm01-sa-k2', type: 'num', kind: 'numerical',
@@ -318,13 +318,13 @@ export const check = [
   },
   {
     id: 'm01-sa-k5', type: 'multi', kind: 'applied',
-    prompt: 'Ana wants to find out who Lantern’s real competitors are for catering. Which sources of evidence would help? Select all that apply.',
+    prompt: 'Ana wants to find out who Lantern’s real competitors are for catering, and how they compare. Which sources of evidence would help? Select all that apply.',
     options: [
       'Asking prospects who chose another option what they chose instead',
       'Notes from the bids Lantern lost in 2026',
       'Asking current clients what they would do if Lantern stopped catering',
-      'Counting the cafés in the whole country',
-      'Assuming the competitors are the firms that advertise most',
+      'Counting the number of cafés in the whole country, from national business statistics',
+      'Assuming the real competitors are the firms that spend the most on advertising',
       'Comparing other caterers’ published prices and services',
     ],
     answer: [0, 1, 2, 5],

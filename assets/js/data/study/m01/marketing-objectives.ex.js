@@ -25,8 +25,8 @@ export const widgets = {
       const gap = req - kept;
       const need = gap <= 1e-9 ? 0 : Math.ceil(gap - 1e-9);
       const replace = v.n0 * (1 - r);
-      const proposals = Math.ceil(need / c2 - 1e-9);
-      const leads = Math.ceil(need / (c1 * c2) - 1e-9);
+      const proposals = Math.max(0, Math.ceil(need / c2 - 1e-9));
+      const leads = Math.max(0, Math.ceil(need / (c1 * c2) - 1e-9));
       return {
         headline: { label: 'New customers needed', value: `${n(need)}` },
         rows: [
@@ -54,27 +54,27 @@ export const widgets = {
 export const guided = [
   {
     id: 'm01-obj-g1', type: 'classify', kind: 'conceptual',
-    prompt: 'Ironbridge Fitness (fictional) has written its plan for next year. Classify each statement as a business goal, a marketing objective, a strategy or a tactic.',
+    prompt: 'Wexley Picturehouse (fictional), an independent cinema, has written its plan for next year. Classify each statement as a business goal, a marketing objective, a strategy or a tactic.',
     items: [
-      'Increase the gym’s profit by 12% next year',
-      'Keep at least 75% of the members on 1 January as members until 31 December',
-      'Win members by becoming the area’s specialist in strength training for beginners',
-      'Run a free first-month offer in February, advertised on local radio',
-      'Have 30% of people aged 25–40 living within two miles recognise the gym’s name by June',
-      'Put the monthly fee up from $40 to $42 in January',
+      'Increase the cinema’s profit by 12% next year',
+      'Keep at least 75% of the members of its film club on 1 January as members until 31 December',
+      'Win audiences by becoming the town’s home for independent and foreign-language films',
+      'Sell half-price tickets on Tuesdays in February, advertised on local radio',
+      'Have 30% of adults living within five miles recognise the cinema’s name by June',
+      'Put the film-club fee up from $40 to $42 a year in January',
     ],
     categories: ['Business goal', 'Marketing objective', 'Strategy', 'Tactic'],
     answer: [0, 1, 2, 3, 1, 3],
     hints: [
       'A goal is about the business as a whole; an objective names a customer behaviour, a measure, a level and a date; a strategy is a choice of whom to serve and how to compete; a tactic is a specific action.',
-      'Recognising the gym’s name is something customers do, with a measure and a date. Changing the fee is a single action.',
+      'Recognising the cinema’s name is something customers do, with a measure and a date. Changing the fee is a single action.',
     ],
     feedback: {
-      2: 'Specialising in beginners’ strength training is a choice of whom to serve and how to compete: a strategy. It has no measure or date.',
+      2: 'Specialising in independent and foreign-language films is a choice of whom to serve and how to compete: a strategy. It has no measure or date.',
       4: 'Awareness among a defined group, with a level and a date, is a marketing objective at the top of the funnel.',
       5: 'A fee change is a specific marketing-mix action (price), so it is a tactic. It serves the profit goal and may affect the retention objective.',
     },
-    solution: 'Business goal: 12% more profit. Marketing objectives: 75% retention for the year; 30% awareness among 25–40-year-olds nearby by June. Strategy: specialise in strength training for beginners. Tactics: the February free-month offer and the $2 fee rise.',
+    solution: 'Business goal: 12% more profit. Marketing objectives: 75% of film-club members kept for the year; 30% awareness among adults within five miles by June. Strategy: become the home for independent and foreign-language films. Tactics: the February half-price Tuesdays and the $2 fee rise.',
   },
   {
     id: 'm01-obj-g2', type: 'steps', kind: 'numerical',
@@ -103,22 +103,22 @@ export const guided = [
   },
   {
     id: 'm01-obj-g3', type: 'mc', kind: 'conceptual',
-    prompt: 'A fictional dental clinic wants more patients. Which is the best SMART marketing objective?',
+    prompt: 'A fictional veterinary practice wants more clients. Which is the best SMART marketing objective?',
     options: [
-      'Raise new-patient registrations from 40 to 55 a month by June 2027, with retention kept at 80% or more',
-      'Become the best-known dental clinic in the city by advertising on local radio throughout 2027',
-      'Raise new-patient registrations from 40 to 200 a month by the end of next month, using a new website',
-      'Increase the clinic’s social-media followers by 25% by June 2027 to help the practice grow',
+      'Register 12 new pet owners a month by June 2027, up from 8, with at least 75% of them returning within a year',
+      'Become the best-known veterinary practice in the county by advertising on local radio throughout 2027',
+      'Register 50 new pet owners a month, up from 8, by the end of next month, using a new website and leaflets',
+      'Increase the practice’s social-media followers by 25% by June 2027 to help the practice grow',
     ],
     answer: 0,
-    hints: ['Test each against the five letters: specific, measurable, achievable, relevant, time-bound.', 'Which ones have a measure, a level, a date, a realistic size and a direct link to more patients?'],
+    hints: ['Test each against the five letters: specific, measurable, achievable, relevant, time-bound.', 'Which ones have a measure, a level, a date, a realistic size and a direct link to more clients?'],
     feedback: {
       1: '“Best-known” has no measure or level, and advertising on the radio is a tactic, not an objective.',
-      2: 'It is specific and dated, but a fivefold rise in a month is not achievable for most clinics.',
-      3: 'Measurable and dated, but followers are not patients. The objective is not relevant to the goal unless followers are shown to lead to registrations.',
+      2: 'It is specific and dated, but a sixfold rise in a month is not achievable for most practices.',
+      3: 'Measurable and dated, but followers are not clients. The objective is not relevant to the goal unless followers are shown to lead to registrations.',
     },
-    why: 'It names the behaviour, the measure, the starting point and level, and the date, and its guardrail stops the target being met with patients who never return.',
-    solution: 'The first option is specific (new-patient registrations), measurable (40 to 55 a month), plausibly achievable, relevant (more patients) and time-bound (by June 2027), with a retention guardrail. The others fail at least one test: no measure, not achievable, or not relevant.',
+    why: 'It names the behaviour, the measure, the starting point and level, and the date, and its guardrail stops the target being met with clients who never return.',
+    solution: 'The first option is specific (new pet owners registering), measurable (8 to 12 a month), plausibly achievable, relevant (more clients) and time-bound (by June 2027), with a retention guardrail. The others fail at least one test: no measure, not achievable, or not relevant.',
   },
   {
     id: 'm01-obj-g4', type: 'classify', kind: 'applied',
@@ -149,7 +149,7 @@ export const guided = [
 export const independent = [
   {
     id: 'm01-obj-i1', type: 'num', kind: 'numerical',
-    prompt: 'A fictional software firm has 600 customers, each paying $1,200 a year. It wants revenue 10% higher next year, will raise its price by 5% for everyone, and expects to keep 80% of its customers. How many new customers must it win? Round up only at the end.',
+    prompt: 'A fictional software firm has 600 customers, each paying $1,200 a year. It wants revenue 10% higher next year, will raise its price by 5% for everyone, and expects to keep 80% of its customers. Assume, as the formula does, that customers join or leave at the start of the year. How many new customers must it win? Round up only at the end.',
     answer: 149, check: () => Math.ceil(600 * 1200 * 1.10 / (1200 * 1.05) - 600 * 0.80), tol: 0.5, unit: 'customers', places: 0,
     wrong: [
       { value: 180, say: 'That ignores the price rise: with each customer paying 5% more, fewer customers are needed (660 ÷ 1.05 ≈ 628.6, not 660).' },
@@ -173,7 +173,7 @@ export const independent = [
     id: 'm01-obj-i3', type: 'mc', kind: 'applied',
     prompt: 'A fictional office-supplies firm rewarded its sales team for the number of new clients won. New clients doubled, but many were won with 30% discounts and left within three months. Which change to its objectives best fixes the problem?',
     options: [
-      'Keep the new-client target but add guardrails: average discount at most 10%, and 70% of new clients still buying after a year',
+      'Keep the target but add guardrails: discounts of at most 10%, and 70% of new clients kept a year',
       'Drop numerical objectives altogether and let the sales team judge which clients are worth winning',
       'Raise the new-client target, so that the team wins enough full-price clients alongside the discounted ones',
       'Reward the team on the revenue each new client brings in during the month the client signs up',
@@ -194,8 +194,8 @@ export const independent = [
       'With 70% retention, a business must win new customers equal to 30% of its starting base just to stay the same size.',
       'Raising retention by 5 percentage points cuts the new customers needed by 5% of the starting base.',
       'If revenue per customer rises, fewer customers are needed to reach the same revenue target.',
-      'Growth of 10% needs new customers equal to 10% of the starting base, whatever the retention rate.',
-      'Retention affects profit but not the number of new customers a growth target needs.',
+      'Growth of 10% needs new customers equal to 10% of the starting base, whatever the retention rate turns out to be.',
+      'Retention affects the profit a business makes from its customers, but not the number of new customers a growth target needs.',
     ],
     answer: [0, 1, 2],
     feedback: {
@@ -234,8 +234,8 @@ export const check = [
     id: 'm01-obj-k1', type: 'mc', kind: 'conceptual',
     prompt: 'What is the difference between a business goal and a marketing objective?',
     options: [
-      'A goal says what the business wants overall; an objective says what customers must do to deliver it',
-      'A business goal covers several years, while a marketing objective is any target for a single month',
+      'A goal says what the business wants; an objective, what customers must do to deliver it',
+      'A business goal covers several years, while a marketing objective is any target set for a single month or less',
       'There is none: they are the same target, written up by different departments',
       'A marketing objective describes which advertising the business will run to meet the goal',
     ],
@@ -290,7 +290,7 @@ export const check = [
     id: 'm01-obj-k5', type: 'mc', kind: 'applied',
     prompt: 'A fictional events venue sets three objectives for next year: raise its room-hire prices by 15%, double the share of enquiries it converts into bookings, and keep every one of its regular corporate clients. What is the main problem with this set?',
     options: [
-      'The objectives pull against each other: a 15% price rise makes converting enquiries and keeping clients harder',
+      'They conflict: a 15% price rise makes converting enquiries and keeping clients harder',
       'None of the three objectives can be measured, because they give no numbers for the venue to aim at',
       'Three objectives are too few for a business plan; a venue should set at least ten objectives',
       'Price objectives belong to the finance department, so the price rise should be left out of the marketing plan',
@@ -306,12 +306,12 @@ export const check = [
   },
   {
     id: 'm01-obj-k6', type: 'num', kind: 'applied',
-    prompt: 'A fictional college wants 120 students to enrol on a new course. From past years: 25% of enquiries become applications, 60% of applications get an offer, 50% of offers are accepted, and 80% of those who accept actually enrol. How many enquiries does it need?',
-    answer: 2000, check: () => 120 / (0.25 * 0.60 * 0.50 * 0.80), tol: 0.5, unit: 'enquiries', places: 0,
+    prompt: 'A fictional coding bootcamp wants 135 students to start its spring course. From past courses: 30% of enquiries become applications, 50% of applications pass the entry test and get an offer, 60% of offers are accepted, and 75% of those who accept actually start. How many enquiries does it need?',
+    answer: 2000, check: () => 135 / (0.30 * 0.50 * 0.60 * 0.75), tol: 0.5, unit: 'enquiries', places: 0,
     wrong: [
-      { value: 1600, say: 'You left out the last stage: only 80% of those who accept actually enrol.' },
-      { value: 480, say: 'That uses only the first stage. Divide by all four rates multiplied together: 0.25 × 0.60 × 0.50 × 0.80 = 0.06.' },
+      { value: 1500, say: 'You left out the last stage: only 75% of those who accept actually start.' },
+      { value: 450, say: 'That uses only the first stage. Divide by all four rates multiplied together: 0.30 × 0.50 × 0.60 × 0.75 = 0.0675.' },
     ],
-    solution: 'Each enquiry becomes an enrolment with probability 0.25 × 0.60 × 0.50 × 0.80 = 0.06. Enquiries needed = 120 ÷ 0.06 = 2,000. Check: 2,000 → 500 applications → 300 offers → 150 acceptances → 120 enrolments.',
+    solution: 'Each enquiry becomes a student with probability 0.30 × 0.50 × 0.60 × 0.75 = 0.0675. Enquiries needed = 135 ÷ 0.0675 = 2,000. Check: 2,000 → 600 applications → 300 offers → 180 acceptances → 135 students.',
   },
 ];

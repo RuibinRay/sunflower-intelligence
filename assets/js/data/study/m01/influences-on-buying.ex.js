@@ -136,7 +136,7 @@ export const guided = [
     prompt: 'Which behavioural effect does each selling tactic mainly rely on?',
     items: [
       'A car dealer opens the conversation with the most expensive version before showing the model the buyer asked about.',
-      'An airline’s booking page has seat insurance already selected.',
+      'An airline’s booking page has a $9 priority-boarding add-on already selected.',
       'A loyalty scheme’s e-mail says: “Don’t lose the 2,000 points you’ve earned: renew by Friday.”',
       'A wine list puts a $120 bottle at the top, so the $45 bottles look reasonable.',
       'A software firm enrols trial users in its annual plan unless they choose monthly billing.',
@@ -152,7 +152,7 @@ export const guided = [
       2: 'The e-mail frames not renewing as losing something already earned, which feels worse than failing to earn points: loss aversion.',
       5: 'Calling the same fee a cash discount avoids presenting card users with a loss (a surcharge), which buyers resent more than a missed discount: loss aversion through framing.',
     },
-    solution: 'The expensive car first and the $120 wine are anchors. The pre-selected insurance and the automatic annual plan are defaults. The “don’t lose your points” e-mail and the cash-discount framing rely on loss aversion. Whether each is acceptable depends on the four questions: is it true, in the customer’s interest, easy to reverse, and would the customer accept it if they saw how it worked?',
+    solution: 'The expensive car first and the $120 wine are anchors. The pre-selected priority boarding and the automatic annual plan are defaults. The “don’t lose your points” e-mail and the cash-discount framing rely on loss aversion. Whether each is acceptable depends on the four questions: is it true, in the customer’s interest, easy to reverse, and would the customer accept it if they saw how it worked?',
   },
 ];
 
@@ -161,7 +161,7 @@ export const independent = [
     id: 'm01-ib-i1', type: 'mc', kind: 'conceptual',
     prompt: 'Which situation shows loss aversion rather than risk aversion?',
     options: [
-      'Shoppers object more to a $5 surcharge for paying by card than to missing a $5 discount for paying in cash.',
+      'Shoppers resent a $5 card surcharge more than a missed $5 cash discount.',
       'An investor prefers a certain $1,000 to a 50% chance of $2,000 and nothing otherwise.',
       'A buyer keeps choosing the same familiar brand because it has always worked well for her.',
       'A shopper judges what a sofa should cost from the first price tag she happened to see that day.',
@@ -226,10 +226,10 @@ export const independent = [
     prompt: 'Complete the sentences.',
     text: 'A colleague who knows a lot about cameras, and whose advice others seek, is an [[0]]. The group of people a teenager wants to look like is a [[1]]. Customers telling each other about a product, in person or online, is [[2]]. Showing a $3,000 camera first so that a $900 camera seems affordable relies on [[3]].',
     blanks: [
-      { options: ['opinion leader', 'initiator', 'influencer in a buying centre'], answer: 0 },
-      { options: ['subculture', 'reference group', 'social class'], answer: 1 },
-      { options: ['word of mouth', 'personal selling', 'advertising'], answer: 0 },
-      { options: ['anchoring', 'the default effect', 'loss aversion'], answer: 0 },
+      { options: ['initiator', 'influencer in a buying centre', 'opinion leader'], answer: 2 },
+      { options: ['reference group', 'subculture', 'social class'], answer: 0 },
+      { options: ['personal selling', 'word of mouth', 'advertising'], answer: 1 },
+      { options: ['the default effect', 'loss aversion', 'anchoring'], answer: 2 },
     ],
     solution: 'Opinion leader; reference group (an aspirational one); word of mouth; anchoring. A subculture is a group within a culture sharing values, and a social class is a lasting division by income, occupation and education; neither is defined by whom a person wants to resemble.',
   },
@@ -297,7 +297,7 @@ export const check = [
     id: 'm01-ib-k4', type: 'mc', kind: 'applied',
     prompt: 'Office workers tell Lantern that its coffee tastes excellent, but they don’t think freshness matters much when choosing beans. Lantern roasts every week. Which action aims to change the importance buyers give an attribute, rather than their belief about Lantern?',
     options: [
-      'A tasting that sets a week-old roast beside a two-month-old one, showing how flavour fades.',
+      'A side-by-side tasting of a week-old and a two-month-old roast.',
       'Free samples so that more office workers taste how good Lantern’s coffee is.',
       'Information about the farms Lantern buys from, an attribute buyers hadn’t considered.',
       'A lower price, so that Lantern scores higher on value for money.',
