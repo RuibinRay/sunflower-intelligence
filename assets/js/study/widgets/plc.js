@@ -72,7 +72,7 @@ export const STAGES = {
 };
 const CORE = ['introduction', 'growth', 'maturity', 'decline'];
 const TYPICAL = [0.17, 0.42, 0.70]; // introduction|growth, growth|maturity, maturity|decline
-const GAP = 0.04;
+let GAP = 0.04; // the closest two boundaries may come; widened on narrow charts so the handles never overlap
 
 const pct = (v) => `${Math.round(v * 100)}%`;
 let seq = 0;
@@ -152,7 +152,7 @@ export async function mount(el, config = {}, ctx = {}) {
     readout, card,
     h('div', { class: 'plc-actions' }, reset),
     twin,
-    h('p', { class: 'mix-caveat plc-caveat' }, h('strong', {}, 'An idealised curve.'), ' Real products often don’t follow it: some never take off and go straight from introduction to decline, fads rise and fall quickly, maturity can last decades, and some products are revived. Where one stage ends is a judgement, not a rule.'),
+    h('p', { class: 'mix-caveat plc-caveat' }, h('span', {}, h('strong', {}, 'An idealised curve.'), ' Real products often don’t follow it: some never take off and go straight from introduction to decline, fads rise and fall quickly, maturity can last decades, and some products are revived. Where one stage ends is a judgement, not a rule.')),
     config.note ? h('p', { class: 'mix-note' }, safeHTML(config.note)) : '',
     h('p', { class: 'plc-source' }, 'Stage descriptions follow standard textbook treatments, for example OpenStax, ', h('i', {}, 'Principles of Marketing'), ', sections ', h('a', { href: 'https://openstax.org/books/principles-marketing/pages/9-3-the-product-life-cycle' }, '9.3'), ' and ', h('a', { href: 'https://openstax.org/books/principles-marketing/pages/9-4-marketing-strategies-at-each-stage-of-the-product-life-cycle' }, '9.4'), '.'),
     live,
@@ -188,10 +188,11 @@ export async function mount(el, config = {}, ctx = {}) {
   function draw() {
     const width = Math.max(280, Math.floor(chart.clientWidth || 640));
     const narrow = width < 460;
-    const m = { l: 18, r: 16, t: 40, b: 64 };
+    const m = { l: 18, r: 16, t: 40, b: 72 };
     const H = narrow ? 270 : 310;
     const iw = width - m.l - m.r, ih = H - m.t - m.b;
     geo = { width, m, iw };
+    GAP = Math.max(0.04, Math.ceil((38 / iw) * (1 - t0) * 100) / 100);
     const x = (t) => ((t - t0) / (1 - t0)) * iw;
     const y = (v) => ih - ((v + 0.38) / 1.46) * ih; // −0.38 … 1.08 in "share of peak sales"
     chart.replaceChildren();
@@ -214,23 +215,22 @@ export async function mount(el, config = {}, ctx = {}) {
     g.append(s('path', { d: pts.map((t, k) => `${k ? 'L' : 'M'}${x(t).toFixed(1)},${y(sales(t)).toFixed(1)}`).join(''), class: 'curve m-s1' }));
     g.append(s('path', { d: pts.map((t, k) => `${k ? 'L' : 'M'}${x(t).toFixed(1)},${y(profit(t) / PMAX * 0.42).toFixed(1)}`).join(''), class: 'curve m-s2' }));
     // landmarks on the sales curve
-    for (const [t, label, anchor] of [[T_FAST, 'fastest growth', 'end'], [T_PEAK, 'peak sales', 'middle']]) {
+    for (const [t, label, anchor, dy] of [[T_FAST, 'fastest growth', 'end', -10], [T_PEAK, 'peak sales', 'middle', 20]]) {
       g.append(s('circle', { cx: x(t), cy: y(sales(t)), r: 4.5, class: 'dot m-s1' }));
-      g.append(s('text', { x: x(t) + (anchor === 'end' ? -8 : 0), y: y(sales(t)) - 10, 'text-anchor': anchor, class: 'pt-label is-muted' }, label));
+      g.append(s('text', { x: x(t) + (anchor === 'end' ? -8 : 0), y: y(sales(t)) + dy, 'text-anchor': anchor, class: 'pt-label is-muted' }, label));
     }
     // axes
     g.append(s('line', { x1: 0, x2: iw, y1: ih, y2: ih, class: 'axis-line' }));
-    if (dev) g.append(s('line', { x1: x(0), x2: x(0), y1: -26, y2: ih, class: 'ref-line' }), s('text', { x: x(0) + 4, y: ih - 6, class: 'tick' }, 'launch'));
-    TYPICAL.forEach((t) => g.append(s('path', { d: `M${x(t)},${ih + 2}l-4,7h8z`, class: 'plc-typical' })));
-    b.forEach((t) => g.append(s('line', { x1: x(t), x2: x(t), y1: -26, y2: ih + 14, class: 'plc-boundary' })));
-    g.append(s('text', { x: 0, y: ih + 48, class: 'axis-label' }, 'Time since launch →'));
-    g.append(s('text', { x: iw, y: ih + 48, 'text-anchor': 'end', class: 'axis-label' }, 'stylised: no units'));
-    g.append(s('text', { x: 4, y: y(1.04), class: 'axis-label' }, 'Sales and profit'));
+    if (dev) g.append(s('line', { x1: x(0), x2: x(0), y1: -26, y2: ih, class: 'ref-line' }), s('text', { x: x(0) + 4, y: 10, class: 'tick' }, 'launch'));
+    TYPICAL.forEach((t) => g.append(s('path', { d: `M${x(t)},-27l-4,-7h8z`, class: 'plc-typical' })));
+    b.forEach((t) => g.append(s('line', { x1: x(t), x2: x(t), y1: -26, y2: ih + 8, class: 'plc-boundary' })));
+    g.append(s('text', { x: 0, y: ih + 58, class: 'axis-label' }, 'Time since launch →'));
+    g.append(s('text', { x: iw, y: ih + 58, 'text-anchor': 'end', class: 'axis-label' }, 'stylised: no units'));
     chart.append(svg);
     handles.forEach((hd, i) => {
       const [lo, hi] = limits(i);
       hd.style.left = `${m.l + x(b[i])}px`;
-      hd.style.top = `${m.t + ih + 14}px`;
+      hd.style.top = `${m.t + ih + 4}px`;
       hd.setAttribute('aria-valuemin', String(Math.round(lo * 100)));
       hd.setAttribute('aria-valuemax', String(Math.round(hi * 100)));
       hd.setAttribute('aria-valuenow', String(Math.round(b[i] * 100)));

@@ -121,6 +121,10 @@ export default {
     { h: 'Articulation: checking that the statements fit' },
     { p: 'Because the statements are built from one set of accounts, their shared figures must agree, and checking them is the quickest test of a set of statements. Net income of $990 on the income statement must be the net income added in the statement of changes in equity. Ending equity of $20,690 there must be the equity on the balance sheet. Total assets of $42,500 must equal total liabilities of $21,810 plus equity of $20,690. Cash at the end of the statement of cash flows, $26,650, must be the cash on the balance sheet. If any link fails, something has been omitted, misclassified or copied wrongly.' },
     { p: 'Articulation also explains a fact that surprises many students: the balance sheet balances only after the statement of changes in equity has been prepared. The trial balance still shows revenue, expense and dividend accounts separately; until net income and dividends are carried into retained earnings, assets ($42,500) exceed liabilities plus contributed capital ($41,810) by exactly <m>990 - 300 = 690</m>. Lesson 11 moves those amounts into Retained Earnings in the ledger itself by closing the books.' },
+    { h: 'Why operating cash flow is not net income' },
+    { p: 'Net income ($990) and net cash provided by operating activities ($950) both describe running the business, so readers often expect them to match. They differ by every deferral and accrual you met in lesson 8: revenue earned but not collected (the $1,200 still owed by Meridian and the $600 Pier Nine breakfast), cash collected before it was earned (the $1,600 of Harbor Tech’s deposit still owed in events), costs paid in advance (the $1,650 of insurance for later months and $100 of supplies paid for but unused), and expenses not yet paid in cash (wages of $1,400, utilities of $260, interest of $50, depreciation of $200). The indirect method in F02 starts from net income and adjusts for exactly these items to reach operating cash flow. Over a business’s whole life the two totals converge; within a month or a year they can differ greatly, which is why both statements are required.' },
+    { h: 'The notes' },
+    { p: 'The four statements are not the whole report. Under the <g>full disclosure principle</g>, information a reader needs to understand them goes in the notes: the accounting policies used (Lantern’s straight-line depreciation with a full month in the month of purchase, for example), the terms of the bank loan, the non-cash purchase of equipment, and commitments such as a catering contract signed for a later month. A lender reading Lantern’s statements would expect at least the loan terms and the depreciation policy to be stated, because both affect how the figures should be read.' },
     { h: 'Presentation conventions' },
     { list: [
       'A dollar sign goes on the first amount in each column and on totals; the amounts in between have none.',
@@ -179,7 +183,7 @@ export default {
         'Cash: after paying suppliers and wages, <m>26{,}650 - 8{,}760 - 1{,}400 = 16{,}490</m> remains before April’s receipts. A $2,000 dividend is affordable in cash terms.',
         'Earnings: retained earnings are only $690. A $2,000 dividend would leave <m>690 - 2{,}000 = -1{,}310</m>, a deficit, unless April’s profit covered the difference: Lantern would be paying out more than it has ever earned.',
         'Where the cash came from: financing provided $29,700 of March’s cash, operations only $950. The dividend would in effect hand back part of the bank’s loan and Ana’s own investment.',
-        'The lender’s view: equity would fall to <m>20{,}690 - 2{,}000 = 18{,}690</m>, raising liabilities to equity from <m>21{,}810 \div 20{,}690 \approx 1.05</m> to <m>21{,}810 \div 18{,}690 \approx 1.17</m>.',
+        String.raw`The lender’s view: equity would fall to <m>20{,}690 - 2{,}000 = 18{,}690</m>, raising liabilities to equity from <m>21{,}810 \div 20{,}690 \approx 1.05</m> to <m>21{,}810 \div 18{,}690 \approx 1.17</m>.`,
       ],
       answer: 'Lantern has the cash, but not the earnings: a $2,000 dividend is almost three times its retained earnings and would weaken the cushion its lender relies on. A dividend within accumulated profit, or waiting until April’s results are in, is the defensible choice.',
       interpretation: 'Each statement answers a different part of the question. The balance sheet shows the cash and the claims on it, the statement of changes in equity shows how much profit has been kept, and the statement of cash flows shows that the cash is mostly borrowed or contributed, not earned.' },
@@ -297,5 +301,6 @@ export default {
     // application
     { what: 'Profit per dollar of revenue (about 14 cents)', value: 990 / 7100 * 100, shown: 14, tol: 0.5 },
     { what: 'Equipment payable due in April', value: 8760 - 500 - 260, shown: 8000 },
+    { what: 'Net income to operating cash flow (lesson 8 items)', value: 990 - 1200 - 600 + 1600 - 1650 - 100 + 1400 + 260 + 50 + 200, shown: 950 },
   ],
 };

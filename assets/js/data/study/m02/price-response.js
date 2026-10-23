@@ -7,7 +7,7 @@ export default {
   status: 'draft',
   objectives: [
     'Calculate price elasticity of demand with the point and midpoint formulas and classify demand as elastic, inelastic or unit-elastic.',
-    'Predict the direction of a revenue change from the elasticity, and explain what makes demand more or less elastic.',
+    'Determine the direction of a revenue change from the elasticity, and explain what makes demand more or less elastic.',
     'Calculate the volume change a price change needs to keep total contribution unchanged, and explain why a price cut that raises revenue can lower profit.',
     'Choose between skimming and penetration pricing for a new product and justify the choice with evidence.',
     'Evaluate charm prices, reference prices, discounts, bundling and price discrimination against the research evidence and their legal and ethical limits.',
