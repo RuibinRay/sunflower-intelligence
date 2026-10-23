@@ -113,7 +113,7 @@ node tests/cleaning.test.mjs    # 721 checks: the cleaning engine and the datase
 node tests/mixsim.test.mjs      # 738 checks: the marketing mix simulator (shares, elasticity, awareness, profit)
 node tests/csv.test.mjs         # the table reader's date handling
 node tools/study-check.mjs      # every course: content contract, numbers, answer keys, TeX, catalogue order
-node tests/study-playthrough.mjs <local site URL>   # every lesson, test and project answer through the real pages (needs Playwright)
+node tests/study-playthrough.mjs <local site URL>   # every lesson, test and project answer (1,743) through the real pages (needs Playwright)
 ```
 
 ## Rebuilding the painting assets
