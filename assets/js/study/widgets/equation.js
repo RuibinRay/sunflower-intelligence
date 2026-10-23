@@ -130,7 +130,7 @@ export async function mount(el, config = {}, ctx = {}) {
             : `${label} ${one ? 'doesn’t' : 'don’t'} change: no ${k === 'equity' ? 'revenue, expense, dividend or stock' : k === 'assets' ? 'asset' : 'liability'} is involved.`));
         }
       }
-      if (Math.round(got.assets * 100) !== Math.round((got.liabilities + got.equity) * 100)) notes.push(h('p', {}, `Your prediction doesn’t balance: ${U.signed(got.assets)} ≠ ${U.signed(got.liabilities)} + ${U.signed(got.equity)}. The change in assets always equals the change in liabilities plus the change in equity.`));
+      if (Math.round(got.assets * 100) !== Math.round((got.liabilities + got.equity) * 100)) notes.push(h('p', {}, `Your prediction doesn’t balance: assets ${U.signed(got.assets)}, but liabilities plus equity come to ${U.signed(got.liabilities + got.equity)}. The change in assets always equals the change in liabilities plus the change in equity.`));
       const perfect = right === 3;
       if (perfect) score++;
       form.querySelectorAll('input, button').forEach((x) => { x.disabled = true; });

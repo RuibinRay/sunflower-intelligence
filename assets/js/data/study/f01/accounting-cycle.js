@@ -79,7 +79,7 @@ export default {
     } },
     { p: 'The worksheet also produces net income before any statement is written. Across all of Lantern’s accounts, the income statement columns hold $6,110 of debits (the expenses) and $7,100 of credits (the revenue); the difference, $990, is net income. The balance sheet columns differ by the same amount: $43,000 of debits (assets of $42,700 before accumulated depreciation is deducted, plus dividends of $300) against $42,010 of credits (accumulated depreciation, liabilities and common stock). Adding the $990 to the credit side balances them, because the period’s profit is the one change in equity that has not yet reached the balance sheet accounts. Closing is what puts it there.' },
     { h: 'Reversing entries (optional)' },
-    { p: 'A <g>reversing entry</g> is made on the first day of a new period and is the exact opposite of an adjusting entry made at the end of the previous one. It is optional and is normally used for accruals, accrued expenses and accrued revenues, which a later payment or receipt will settle. Its purpose is convenience: whoever records that later payment can do it the routine way, without having to know that part of it was accrued last period.' },
+    { p: 'A <g>reversing entry</g> is made on the first day of a new period and is the exact opposite of an adjusting entry made at the end of the previous one. It is optional and is normally used for accruals (accrued expenses and accrued revenues), which a later payment or receipt will settle. Its purpose is convenience: whoever records that later payment can do it the routine way, without having to know that part of it was accrued last period.' },
     { p: 'Take Lantern’s accrued wages. At 31 March, adjustment a5 recorded $1,400 of wages that the baristas earned on 16–31 March, to be paid on 5 April: debit Wages Expense, credit Wages Payable. Closing then took Wages Expense to zero. There are two ways to record the 5 April payroll, and they end in the same place.' },
     { journal: {
       caption: 'With a reversing entry (fictional)',
@@ -165,7 +165,7 @@ export default {
         { date: '2026-05-29', lines: [{ acct: 'Dividends', dr: 200 }, { acct: 'Cash', cr: 200 }], memo: 'Dividend paid to Marta.' },
       ],
     } },
-    { p: 'Step 4: posted to the ledger, the entries give an unadjusted trial balance of $8,860 on each side (first column of the table below). Step 5: two facts at 31 May need adjusting entries. The equipment has been used for one month of its 36: <m>3{,}600 \div 36 = 100</m>. And four of the six puppy classes have been held, so <m>2{,}160 \times 4 \div 6 = 1{,}440</m> of the advance payments has been earned.' },
+    { p: 'Step 4: posted to the ledger, the entries give an unadjusted trial balance of $8,860 on each side (first column of the table below). Step 5: two facts at 31 May need adjusting entries. The equipment has been used for one month of its 36: <m>3{,}600 \\div 36 = 100</m>. And four of the six puppy classes have been held, so <m>2{,}160 \\times 4 \\div 6 = 1{,}440</m> of the advance payments has been earned.' },
     { journal: {
       caption: 'Fetchwell: adjusting entries at 31 May (fictional)',
       entries: [
@@ -270,7 +270,7 @@ export default {
         'Entry made: debit Insurance Expense 2,400, credit Cash 2,400.',
         'Entry that should have been made: debit Prepaid Insurance 2,400, credit Cash 2,400, because the payment buys cover for twelve months and is an asset until it is used.',
         'The difference: Cash is the same in both and drops out. Prepaid Insurance needs a debit of 2,400 and Insurance Expense a credit of 2,400. That is the correcting entry.',
-        'Now adjust as usual: one month has expired, <m>2{,}400 \div 12 = 200</m>. Debit Insurance Expense 200, credit Prepaid Insurance 200.',
+        'Now adjust as usual: one month has expired, <m>2{,}400 \\div 12 = 200</m>. Debit Insurance Expense 200, credit Prepaid Insurance 200.',
         'Balances at 30 September: Prepaid Insurance <m>2{,}400 - 200 = 2{,}200</m>; Insurance Expense <m>2{,}400 - 2{,}400 + 200 = 200</m>. A single entry, debit Prepaid Insurance 2,200 and credit Insurance Expense 2,200, would reach the same balances in one step.',
       ],
       answer: 'Correcting entry: debit Prepaid Insurance $2,400, credit Insurance Expense $2,400; then the adjustment of $200. Prepaid Insurance is $2,200 and Insurance Expense $200 at 30 September.',
@@ -296,10 +296,10 @@ export default {
         ],
       },
       steps: [
-        'Pay per day: <m>9{,}800 \div 14 = 700</m>. Four days (28–31 December) fall in 2026, so the accrual at 31 December is <m>700 \times 4 = 2{,}800</m>: debit Wages Expense, credit Wages Payable. Closing carries this 2,800 into 2026’s profit.',
+        'Pay per day: <m>9{,}800 \\div 14 = 700</m>. Four days (28–31 December) fall in 2026, so the accrual at 31 December is <m>700 \\times 4 = 2{,}800</m>: debit Wages Expense, credit Wages Payable. Closing carries this 2,800 into 2026’s profit.',
         'With a reversal: on 1 January debit Wages Payable 2,800 and credit Wages Expense 2,800, which leaves Wages Expense with a credit balance of 2,800. On 15 January the payroll clerk records the whole 9,800 as Wages Expense. January’s expense from this payroll is <m>9{,}800 - 2{,}800 = 7{,}000</m>.',
         'Without a reversal: on 15 January the entry must split the payment, debiting Wages Payable 2,800 (settling the accrual) and Wages Expense 7,000. January’s expense is again 7,000, and Wages Payable is zero by both routes.',
-        'Check against the days: 10 days (1–10 January) fall in 2027, and <m>10 \times 700 = 7{,}000</m>.',
+        'Check against the days: 10 days (1–10 January) fall in 2027, and <m>10 \\times 700 = 7{,}000</m>.',
         'The risk the reversal removes: a clerk who records the whole 9,800 as expense <i>without</i> a reversal would overstate January’s wages by 2,800 and leave 2,800 in Wages Payable that nobody is owed.',
       ],
       answer: 'January bears $7,000 of this payroll by either route, and Wages Payable returns to zero. The reversing entry lets the full $9,800 be recorded as a routine expense.',
@@ -316,8 +316,8 @@ export default {
       },
       steps: [
         'Wrong account. Made: debit Repairs Expense 6,500, credit Cash 6,500. Correct: debit Equipment 6,500, credit Cash 6,500. Difference: debit Equipment 6,500, credit Repairs Expense 6,500.',
-        'Once the rig is recognised as equipment it must be depreciated from 1 October: <m>6{,}500 \div 5 = 1{,}300</m> a year, and for three months <m>1{,}300 \times 3 \div 12 = 325</m>. Debit Depreciation Expense 325, credit Accumulated Depreciation—Equipment 325.',
-        'Omitted accrual. December’s interest is <m>18{,}000 \times 6\% \times 1 \div 12 = 90</m>. Debit Interest Receivable 90, credit Interest Revenue 90.',
+        'Once the rig is recognised as equipment it must be depreciated from 1 October: <m>6{,}500 \\div 5 = 1{,}300</m> a year, and for three months <m>1{,}300 \\times 3 \\div 12 = 325</m>. Debit Depreciation Expense 325, credit Accumulated Depreciation—Equipment 325.',
+        'Omitted accrual. December’s interest is <m>18{,}000 \\times 6\\% \\times 1 \\div 12 = 90</m>. Debit Interest Receivable 90, credit Interest Revenue 90.',
         'Effect on net income: expenses fall by 6,500 and rise by 325, and revenue rises by 90, so net income rises by <m>6{,}500 - 325 + 90 = 6{,}265</m>. Total assets rise by the same amount.',
         'Timing: before closing. The corrections change 2026 revenue and expense accounts, which must still be open; posted after closing, they would land in 2027. And once the statements are issued, a material error would have to be corrected by restating them.',
       ],

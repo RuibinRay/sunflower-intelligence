@@ -471,7 +471,7 @@ export function priceChart(container, { rows, price, units, profit, best, height
   const same = best && Math.abs(best.price - price) < 0.005;
   const x0 = lin(PRICE.min, PRICE.max, 0, width - (narrow ? 52 : 64) - 14);
   const near = best && !same && Math.abs(x0(best.price) - x0(price)) < 120; // too close for separate labels
-  const m = { l: narrow ? 52 : 64, r: 14, t: near ? 44 : 30 };
+  const m = { l: narrow ? 52 : 64, r: 14, t: near ? 62 : 48 };
   const ph = narrow ? 112 : 128, gap = 44, bottom = 40;
   const H = height || m.t + ph + gap + ph + bottom;
   const iw = width - m.l - m.r;
@@ -507,7 +507,7 @@ export function priceChart(container, { rows, price, units, profit, best, height
     g.append(s('path', { d: `M${bx},${by - 7}L${bx + 6},${by}L${bx},${by + 7}L${bx - 6},${by}Z`, class: 'mix-best-mark' }));
   }
   const cx = x(price);
-  g.append(s('line', { x1: cx, x2: cx, y1: m.t - 4, y2: yAxis, class: 'ref-line is-strong' }));
+  g.append(s('line', { x1: cx, x2: cx, y1: (near ? 2 : 1) * 15 + 2, y2: yAxis, class: 'ref-line is-strong' }));
   g.append(s('circle', { cx, cy: yP(profit), r: 5, class: 'dot m-s1' }));
   g.append(s('circle', { cx, cy: yU(units), r: 5, class: 'dot m-s2' }));
   // labels above the plot: your price, and the most profitable price on a second line when the two are close
@@ -516,7 +516,7 @@ export function priceChart(container, { rows, price, units, profit, best, height
   const estW = Math.max(...lines.map((t) => t.length * 6.6));
   const right = cx < iw * 0.55;
   const lx = right ? Math.min(cx + 6, iw + m.r - 2 - estW) : Math.max(cx - 6, -m.l + 2 + estW);
-  lines.forEach((t, k) => g.append(s('text', { x: lx, y: m.t - (lines.length - 1 - k) * 15 - 6, 'text-anchor': right ? 'start' : 'end', class: `pt-label${k ? ' is-muted' : ''}` }, t)));
+  lines.forEach((t, k) => g.append(s('text', { x: lx, y: 13 + k * 15, 'text-anchor': right ? 'start' : 'end', class: `pt-label${k ? ' is-muted' : ''}` }, t)));
   if (best && !same && !near) {
     const bx = x(best.price), up = yP(best.profit) - 12;
     const anchorRight = best.price > price ? 'start' : 'end';

@@ -31,7 +31,7 @@ export default {
     } },
     { p: 'The model is simple, but it explains why so much promotion fails. Lantern means “worth paying more for”; a shopper may decode “fancy” or “overpriced”. The fix is to encode in the receiver’s terms, test how messages are understood, choose media where the target audience is paying attention, repeat the message, and watch the feedback.' },
     { h: 'The five tools of the promotion mix' },
-    { p: 'The <g>promotion mix</g> is the combination of communication tools a business uses. Most textbooks list five.' },
+    { p: 'The <g>promotion mix</g> is the combination of communication tools a business uses. Many textbooks list five; some, including OpenStax, treat direct marketing and digital marketing separately and list six.' },
     { define: [
       ['<g>Advertising</g>', 'Paid, non-personal communication from an identified sponsor through mass or digital media: television, radio, outdoor posters, print, online video and social and search ads.'],
       ['<g>Sales promotion</g>', 'Short-term incentives to buy or sell now. <i>Consumer</i> promotions target shoppers: coupons, free samples, temporary price cuts, multi-buy offers, contests. <i>Trade</i> promotions target intermediaries: allowances that fund retailers’ price cuts, payments for displays, extra margin for featuring the product.'],
@@ -122,8 +122,8 @@ export default {
     { level: 'simple', title: 'Three quick budgets for a hotel', fictional: true,
       setup: 'Harborview Hotel, a fictional 80-room city hotel, forecasts $3,600,000 of revenue next year. Its owners usually spend 4% of revenue on promotion. Estimates put three rival hotels’ promotion spending at $120,000, $180,000 and $150,000. After its other costs and the owners’ profit target, the hotel could afford $100,000. What budget does each method give?',
       steps: [
-        'Percentage of sales: <m>0.04 \times 3{,}600{,}000 = 144{,}000</m>.',
-        'Competitive parity, matching the rivals’ average: <m>(120{,}000 + 180{,}000 + 150{,}000) \div 3 = 150{,}000</m>.',
+        'Percentage of sales: <m>0.04 \\times 3{,}600{,}000 = 144{,}000</m>.',
+        'Competitive parity, matching the rivals’ average: <m>(120{,}000 + 180{,}000 + 150{,}000) \\div 3 = 150{,}000</m>.',
         'Affordable: $100,000, by definition what is left after other costs and the profit target.',
         'Compare: the methods give a range from $100,000 to $150,000. None of them says what the money is meant to achieve, such as how many more rooms to sell to which guests.',
       ],
@@ -133,9 +133,9 @@ export default {
       setup: 'Build Lantern’s first-year promotion budget from objectives and tasks. All costs are hypothetical quotes. Lantern’s hypothetical sales forecast is 250,000 cans at an average net price of $2.40. Compare the result with a budget of 15% of forecast sales, and show what a cut to that level would mean.',
       steps: [
         'Set objectives that can be checked: (1) raise awareness among Harbour City’s cold-brew buyers from 12% to 30% by the end of the year; (2) give 40,000 shoppers a taste in stores in the first two quarters; (3) win features in the stocking supermarkets in the launch months; (4) earn local food-media coverage at launch.',
-        'Cost the tasks. Awareness: a media agency quotes $8 per thousand ad impressions, and plans 6,250,000 geo-targeted impressions: <m>6{,}250{,}000 \div 1{,}000 \times 8 = 50{,}000</m>. Trial: 160 demonstration days at $225 a day (staff, kit and product), each serving about 250 tastings, <m>160 \times 225 = 36{,}000</m> for <m>160 \times 250 = 40{,}000</m> tastings, plus displays in 20 stores at $200 each, <m>4{,}000</m>: $40,000 in all. Features: four promotion windows at $5,000 each, <m>20{,}000</m>. Coverage: a launch event at $6,000 and a freelance PR adviser for four months at $1,000 a month, <m>10{,}000</m>.',
+        'Cost the tasks. Awareness: a media agency quotes $8 per thousand ad impressions, and plans 6,250,000 geo-targeted impressions: <m>6{,}250{,}000 \\div 1{,}000 \\times 8 = 50{,}000</m>. Trial: 160 demonstration days at $225 a day (staff, kit and product), each serving about 250 tastings, <m>160 \\times 225 = 36{,}000</m> for <m>160 \\times 250 = 40{,}000</m> tastings, plus displays in 20 stores at $200 each, <m>4{,}000</m>: $40,000 in all. Features: four promotion windows at $5,000 each, <m>20{,}000</m>. Coverage: a launch event at $6,000 and a freelance PR adviser for four months at $1,000 a month, <m>10{,}000</m>.',
         'Add the tasks: <m>50{,}000 + 40{,}000 + 20{,}000 + 10{,}000 = 120{,}000</m>, which is the split in Lantern’s first plan.',
-        'Cross-check with percentage of sales: forecast revenue is <m>250{,}000 \times 2.40 = 600{,}000</m>, and 15% of that is <m>90{,}000</m>, so the task budget is $30,000 higher.',
+        'Cross-check with percentage of sales: forecast revenue is <m>250{,}000 \\times 2.40 = 600{,}000</m>, and 15% of that is <m>90{,}000</m>, so the task budget is $30,000 higher.',
         'If the budget must be $90,000, cut tasks and name what is lost. For example: 4,375,000 impressions instead of 6,250,000 (−$15,000, a lower awareness target); 120 demonstration days instead of 160 (−$9,000, 30,000 tastings instead of 40,000); three promotion windows instead of four (−$5,000); three months of PR support instead of four (−$1,000). The cuts total $30,000.',
       ],
       answer: 'The objective-and-task budget is $120,000 (digital $50,000, sampling and displays $40,000, trade $20,000, PR $10,000), $30,000 more than 15% of forecast sales.',
@@ -209,7 +209,7 @@ export default {
     { text: 'Gomez Albrecht, M., Green, M. &amp; Hoffman, L. (2023). <i>Principles of Marketing</i>, section 15.6, “Main Types of Sales Promotion” (consumer-oriented pull and trade-oriented push promotions). OpenStax.', url: 'https://openstax.org/books/principles-marketing/pages/15-6-main-types-of-sales-promotion', checked: '2026-10-22' },
     { text: 'Lavidge, R. J. &amp; Steiner, G. A. (1961). A model for predictive measurements of advertising effectiveness. <i>Journal of Marketing</i>, 25(6), 59–62.', url: 'https://journals.sagepub.com/doi/10.1177/002224296102500611', checked: '2026-10-22' },
     { text: 'Vakratsas, D. &amp; Ambler, T. (1999). How advertising works: what do we really know? <i>Journal of Marketing</i>, 63(1), 26–43.', url: 'https://journals.sagepub.com/doi/10.1177/002224299906300103', checked: '2026-10-22' },
-    { text: 'Iwamoto, A. (2024). The origin of the AIDA model: who invented and formulated the AIDA model? (in Japanese). <i>Journal of Marketing History Research</i> (マーケティング史研究), 3(2), 150–166.', url: 'https://www.jstage.jst.go.jp/article/jmhr/3/2/3_150/_article/-char/ja', checked: '2026-10-22' },
+    { text: 'Iwamoto, A. (2024). The origin of AIDA: who invented and formulated the AIDA model? (in Japanese, with an English abstract). <i>Japan Marketing History Review</i>, 3(2), 150–166.', url: 'https://www.jstage.jst.go.jp/article/jmhr/3/2/3_150/_article/-char/en', checked: '2026-10-22' },
   ],
 
   checks: [

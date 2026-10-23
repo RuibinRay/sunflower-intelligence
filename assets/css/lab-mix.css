@@ -234,3 +234,8 @@ html.motion-paused .mix-card, html.motion-paused .plc-grip { transition: none; }
 
 /* the sticky running total must never hide the control that has focus (WCAG 2.2, 2.4.11) */
 html:has(.mix-pulse) { scroll-padding-bottom: 80px; }
+/* on a phone the statement keeps its two essential columns; the changes still show in the tiles above */
+@container (max-width: 459px) {
+  .mix-statement thead th:nth-child(3), .mix-statement td.mix-delta { display: none; }
+  .mix-statement th[scope="row"] { min-width: 0; }
+}

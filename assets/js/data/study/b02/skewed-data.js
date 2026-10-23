@@ -41,7 +41,7 @@ export default {
     { h: 'Why skewness matters' },
     { list: [
       '<b>Summaries mislead.</b> The mean of a right-skewed variable describes almost nobody, as Lantern’s $35 shows. The median and quartiles describe the typical customer far better.',
-      '<b>Outlier rules flag too much.</b> The fences and z-scores of the previous lesson assume roughly symmetric data. On a long right tail they flag many perfectly genuine large values, so an analyst who deletes “outliers” from skewed data deletes real customers.',
+      '<b>Outlier rules flag too much.</b> The fences and z-scores of the previous lesson assume roughly symmetric data. On a long right tail they flag many perfectly genuine large values: if the logs of order totals were normal with a standard deviation of 1, about 7.8% of genuine orders would lie above the upper Tukey fence, against 0.35% for normal data. An analyst who deletes “outliers” from skewed data deletes real customers.',
       '<b>Some models struggle.</b> Methods that minimise squared errors, such as linear regression, let a few huge values dominate the fit, and the usual confidence intervals and tests assume errors that are roughly normal with constant spread. A skewed outcome often produces skewed errors whose spread grows with the size of the prediction.',
       '<b>The process may be multiplicative.</b> Prices, revenues and populations tend to change by percentages rather than fixed amounts. On their original scale such variables look skewed; on a log scale the percentage changes become equal steps.',
     ] },
@@ -94,7 +94,7 @@ export default {
     { h: 'In a spreadsheet or pandas' },
     { list: [
       '<b>Spreadsheet</b>: <code>LN(x)</code>, <code>LN(1 + x)</code> and <code>SQRT(x)</code> in a new column; <code>SKEW(range)</code> for the adjusted Fisher–Pearson coefficient; <code>EXP(AVERAGE(log column))</code> or <code>GEOMEAN(range)</code> for the geometric mean.',
-      `<b>pandas</b>: <code>np.log(s)</code>, <code>np.log1p(s)</code> and <code>np.sqrt(s)</code> transform a column; <code>s.skew()</code> measures skewness; <code>PowerTransformer(method='box-cox')</code> from scikit-learn estimates λ (use <code>'yeo-johnson'</code> when there are zeros or negatives).`,
+      `<b>pandas</b>: <code>np.log(s)</code>, <code>np.log1p(s)</code> and <code>np.sqrt(s)</code> transform a column; <code>s.skew()</code> measures skewness; <code>PowerTransformer(method='box-cox')</code> from scikit-learn estimates λ (use <code>method='yeo-johnson'</code> when there are zeros or negatives).`,
     ] },
   ],
 
@@ -286,5 +286,6 @@ export default {
     { what: 'e^0.405 − 1', value: Math.exp(Math.log(1.5)) - 1, shown: 0.5, tol: 1e-9 },
     // normal vs log-normal fences (theory, outlier rules on long tails)
     { what: 'Normal upper-tail share beyond the upper fence (%)', value: 100 * (1 - Phi(0.6744898 * 4)), shown: 0.35, tol: 0.005 },
+    { what: 'Log-normal (sigma 1) share above the upper fence (%)', value: 100 * (1 - Phi(Math.log(Math.exp(0.6744898) + 1.5 * (Math.exp(0.6744898) - Math.exp(-0.6744898))))), shown: 7.8, tol: 0.05 },
   ],
 };

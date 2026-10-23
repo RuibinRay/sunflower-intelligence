@@ -55,8 +55,10 @@
 .acc-q-inline { margin-bottom: calc(var(--s-3) * -1); }
 .acc-q-fb { display: grid; gap: 6px; font-size: var(--t-sm); color: var(--ink); max-width: 66ch; }
 .acc-q-fb:empty { display: none; }
-.acc-add { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-3); align-items: center; }
-.acc-add .select { flex: 1 1 240px; width: auto; max-width: 420px; }
+.acc-add { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-3); align-items: center; min-width: 0; max-width: 100%; }
+.acc-add > * { min-width: 0; max-width: 100%; }
+.acc-add .select { flex: 1 1 12rem; width: auto; min-width: 0; max-width: min(100%, 420px); }
+.acc-acct-select { min-width: 0; max-width: 100%; }
 
 /* one account's row in the drill */
 .acc-rows { display: grid; gap: var(--s-3); }
@@ -123,7 +125,7 @@
 .acc-score { max-width: 30rem; }
 
 /* ---------- the general journal ---------- */
-.acc-journal { font-size: var(--t-sm); }
+.acc-journal { font-size: var(--t-sm); max-width: 42rem; }
 .acc-journal caption { caption-side: top; text-align: left; font-weight: 700; padding-bottom: 6px; }
 .acc-journal td, .acc-journal th { border-bottom: 0; padding-top: 4px; padding-bottom: 4px; }
 .acc-journal thead th { border-bottom: 1.5px solid var(--rule-strong); }
@@ -138,7 +140,7 @@
 .acc-journal td.acc-j-cr { padding-left: 2.6em; }
 .acc-journal .acc-j-ref { width: 1%; color: var(--ink-3); text-align: center; font-size: var(--t-xs); }
 .acc-journal th.acc-j-ref abbr { text-decoration: underline dotted; cursor: help; }
-.acc-journal .acc-j-memo td { padding-top: 0; padding-bottom: 9px; font-size: var(--t-xs); font-style: italic; color: var(--ink-3); white-space: normal; min-width: 16rem; max-width: 34rem; line-height: 1.45; }
+.acc-journal .acc-j-memo td { padding-top: 0; padding-bottom: 9px; font-size: var(--t-xs); font-style: italic; color: var(--ink-3); white-space: normal; min-width: 12rem; max-width: 34rem; line-height: 1.45; }
 .acc-journal tbody.is-next tr td { background: #FBF5E6; }
 .acc-journal tbody.is-next tr:first-child td:first-child { box-shadow: inset 3px 0 0 var(--midnight); }
 .acc-journal tbody.is-new td { background: var(--acc-hi); }

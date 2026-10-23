@@ -528,7 +528,8 @@ export function mountDrill(el, { transactions, chart = CHART, ask, onDone, onPro
       return fs;
     }
     function drawRows() {
-      rowsBox.replaceChildren(...(rows.length ? rows.map(rowEl) : [h('p', { class: 'acc-empty' }, 'No accounts added yet.')]));
+      // each row keeps its element, so adding or removing an account never clears answers already given
+      rowsBox.replaceChildren(...(rows.length ? rows.map((r) => (r.el ||= rowEl(r))) : [h('p', { class: 'acc-empty' }, 'No accounts added yet.')]));
     }
 
     // 1. accounts
@@ -691,7 +692,7 @@ export function mountDrill(el, { transactions, chart = CHART, ask, onDone, onPro
         }
       }
       if (Number.isFinite(got.assets + got.liabilities + got.equity) && C(got.assets) !== C(got.liabilities) + C(got.equity)) {
-        notes.push(h('p', {}, `Your three changes don’t balance: ${signed(got.assets)} ≠ ${signed(got.liabilities)} + ${signed(got.equity)}. Every transaction keeps assets equal to liabilities plus equity.`));
+        notes.push(h('p', {}, `Your three changes don’t balance: assets ${signed(got.assets)}, but liabilities plus equity come to ${signed(got.liabilities + got.equity)}. Every transaction keeps assets equal to liabilities plus equity.`));
       }
       box.querySelector('.acc-q-fb').replaceChildren(...notes);
     }
