@@ -152,7 +152,7 @@ const ALL = [
 
   // ================================================================ Business Analytics & Data Science
   C({
-    id: 'b01', school: 'analytics', code: 'B01', level: 'intro', status: 'reviewed',
+    id: 'b01', school: 'analytics', code: 'B01', level: 'intro', status: 'complete',
     title: 'Introduction to Business Analytics',
     blurb: 'The four kinds of analytics, turning business questions into measurable ones, and reading data sensibly.',
     case: 'lantern',
