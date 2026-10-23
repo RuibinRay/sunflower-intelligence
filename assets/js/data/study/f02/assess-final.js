@@ -1,8 +1,8 @@
 // assess-final.js — F02 cumulative final: 25 items, every lesson two or three times; eight conceptual, eight numerical
 // and nine applied. Four items follow one business across several statements: a membership deferral (revenue, unearned
-// revenue, operating cash and the indirect method), an inventory count error over two years (income statement and
-// balance sheet), a disposal through all three statements, and Lantern’s van note in 2027 (interest expense, interest
-// payable, the current portion and the split of the payment between operating and financing cash flows).
+// revenue, operating cash and the indirect method), two inventory count errors in successive years, after tax (income
+// statement and balance sheet), a disposal through all three statements, and Lantern’s van note in 2027 (interest
+// expense, interest payable, the current portion and the split of the payment between operating and financing).
 // New questions, not copies of lesson exercises, module-test or project items: every other business here is fictional
 // and appears nowhere else in the site. Lantern’s 2027 events are hypothetical (“Suppose…”) and agree with case.js.
 // No hints; solutions show in review. 70% passes. Gains and losses on disposals sit inside operating income
@@ -44,7 +44,7 @@ export const items = [
     prompt: 'Pembury Home, a fictional online homeware shop, keeps perpetual inventory records. On 14 January 2027 a customer returns two table lamps bought on 6 January for $95 each, which had cost Pembury $52 each. Pembury refunds $190 to the customer’s card and puts the undamaged lamps back on sale. Record the return in one compound entry.',
     accounts: ['Cash', 'Accounts Receivable', 'Online Sales Revenue', 'Sales Returns and Allowances', 'Sales Discounts', 'Inventory', 'Cost of Goods Sold', 'Unearned Revenue', 'Miscellaneous Expense'],
     lines: [{ acct: 'Sales Returns and Allowances', dr: 190 }, { acct: 'Inventory', dr: 104 }, { acct: 'Cash', cr: 190 }, { acct: 'Cost of Goods Sold', cr: 104 }],
-    solution: 'The return undoes both halves of the sale. Revenue side: debit Sales Returns and Allowances 190 (a contra-revenue account, so the original sale stays visible in Online Sales Revenue) and credit Cash 190. Cost side: the lamps can be sold again, so they go back into inventory at their cost, 2 × 52 = $104: debit Inventory 104 and credit Cost of Goods Sold 104. Debits 190 + 104 = 294 = credits 190 + 104. Gross profit falls by 190 − 104 = $86, the margin on the sale that was lost. Had the lamps been broken and thrown away, only the first pair of lines would be recorded.',
+    solution: 'The return undoes both halves of the sale. Revenue side: debit Sales Returns and Allowances 190 (a contra-revenue account, so the original sale stays visible in Online Sales Revenue) and credit Cash 190. Cost side: the lamps can be sold again, so they go back into inventory at their cost, 2 × 52 = $104: debit Inventory 104 and credit Cost of Goods Sold 104. Debits and credits both total $294, and gross profit falls by 190 − 104 = $86, the margin on the lost sale. Had the lamps been broken and thrown away, only the first pair of lines would be recorded.',
   },
   {
     id: 'f02-fn-3', lesson: 'revenue-recognition', type: 'multi', kind: 'applied',
@@ -72,48 +72,34 @@ export const items = [
   // ---------------------------------------------------------------- inventory-and-cost-of-goods-sold
   {
     id: 'f02-fn-4', lesson: 'inventory-and-cost-of-goods-sold', type: 'num', kind: 'numerical',
-    prompt: 'Kerbside Skates, a fictional shop, keeps perpetual records and costs its sales by the moving average method. On 1 May it holds 40 skateboards at $50. It buys 60 at $55 on 8 May, sells 70 on 12 May, buys 50 at $58 on 20 May and sells 45 on 27 May. What is cost of goods sold for May? Keep unit costs to four decimal places and round the answer to the nearest dollar.',
-    answer: 6236,
-    check: () => {
-      const avg1 = (40 * 50 + 60 * 55) / (40 + 60);                 // 53 after 8 May
-      const sale1 = 70 * avg1;                                       // 3,710
-      const avg2 = ((100 - 70) * avg1 + 50 * 58) / (30 + 50);        // 56.125 after 20 May
-      return Math.round(sale1 + 45 * avg2);                          // 3,710 + 2,525.63
+    prompt: 'Dunlin Wines, a fictional merchant, uses a periodic system. It starts the year with 200 cases of a house red costing $60 a case, buys 300 cases at $66 and then 500 at $72, and sells 800 cases at $100 each. By how many percentage points is its gross margin on the wine higher under FIFO than under LIFO? Give two decimal places.',
+    answer: 3, check: () => {
+      const sales = 800 * 100;
+      const fifo = 200 * 60 + 300 * 66 + 300 * 72;                  // oldest first: 53,400
+      const lifo = 500 * 72 + 300 * 66;                             // newest first: 55,800
+      return ((sales - fifo) - (sales - lifo)) / sales * 100;
     },
-    unit: '$', places: 0, tol: 1,
+    unit: 'percentage points', places: 2, tol: 0.005,
     wrong: [
-      { value: 6287, say: 'That is the periodic weighted average, one average ($54.67) for the whole month. The moving average recalculates after each purchase, so the 12 May sale is costed at $53.' },
-      { value: 6170, say: 'That is FIFO: the oldest boards first. The moving average gives every board on hand the same cost at the date of each sale.' },
-      { value: 6450, say: 'That is periodic LIFO. The moving average blends the layers instead of taking the newest first.' },
-      { value: 6410, say: 'That is perpetual LIFO. The moving average blends the layers on hand at each sale.' },
-      { value: 6248, say: 'That uses a simple average of the three prices. Each average must be weighted by the number of boards at each cost.' },
-      { value: 1964, say: 'That is the cost of the 35 boards left at the end of May. The question asks for the 115 sold.' },
+      { value: 33.25, say: 'That is the FIFO gross margin itself. The question asks for the gap between the FIFO and LIFO margins.' },
+      { value: 30.25, say: 'That is the LIFO gross margin. Subtract it from the FIFO margin, 33.25%.' },
+      { value: -3, say: 'With costs rising, FIFO charges the older, cheaper cases to cost of goods sold, so its margin is the higher one.' },
+      { value: 1.05, say: 'That compares FIFO with the weighted average ($67.80 a case). The question asks about LIFO.' },
+      { value: 2400, say: 'That is the gap in dollars of cost of goods sold (and gross profit). Express it as a share of the $80,000 of sales.' },
     ],
-    solution: 'After 8 May: 100 boards costing 2,000 + 3,300 = 5,300, an average of $53.0000. The 12 May sale costs 70 × 53 = 3,710, leaving 30 boards at 1,590. After 20 May: 80 boards costing 1,590 + 2,900 = 4,490, an average of $56.1250. The 27 May sale costs 45 × 56.125 = 2,525.63. Cost of goods sold = 3,710 + 2,525.63 = 6,235.63, about $6,236; the 35 boards left cost 35 × 56.125 = 1,964.38. Check: 6,235.63 + 1,964.38 = 8,200, the cost of all 150 boards available.',
+    solution: 'Goods available: 1,000 cases costing 12,000 + 19,800 + 36,000 = $67,800; 200 cases remain. FIFO cost of goods sold takes the oldest cases: 200 × 60 + 300 × 66 + 300 × 72 = $53,400, so gross profit is 80,000 − 53,400 = $26,600, a margin of 33.25%. LIFO takes the newest: 500 × 72 + 300 × 66 = $55,800, gross profit $24,200, a margin of 30.25%. FIFO’s margin is 33.25 − 30.25 = 3.00 percentage points higher, because in a year of rising costs LIFO matches the dearest costs against sales; the same $2,400 is why LIFO would lower the tax bill.',
   },
   {
-    id: 'f02-fn-5', lesson: 'inventory-and-cost-of-goods-sold', type: 'classify', kind: 'applied',
-    prompt: 'Cobblestone Furniture, a fictional showroom, uses a periodic system. Its count on 31 December 2026 included sofas costing $6,000 that it was holding on consignment for a manufacturer: they belonged to the manufacturer and were never recorded as purchases. The error was never found, and the count on 31 December 2027 was correct. Ignoring income tax, what did the error do to each figure?',
-    items: [
-      'Cost of goods sold for 2026',
-      'Net income for 2026',
-      'Inventory on the balance sheet at 31 December 2026',
-      'Retained earnings at 31 December 2026',
-      'Cost of goods sold for 2027',
-      'Net income for 2027',
-      'Retained earnings at 31 December 2027',
-      'Inventory on the balance sheet at 31 December 2027',
+    id: 'f02-fn-5', lesson: 'inventory-and-cost-of-goods-sold', type: 'fill', kind: 'applied',
+    prompt: 'Mortlake Hardware, a fictional shop, uses a periodic system and pays income tax at 25% of its income before tax. Its count on 31 December 2026 counted one aisle twice, overstating ending inventory by $4,000. Its count on 31 December 2027 missed a storeroom, understating ending inventory by $1,500. Neither error was found, and every later count was correct. Complete the effects on its financial statements.',
+    text: 'Net income for 2026 is [[0]]. Net income for 2027 is [[1]]. On the balance sheet at 31 December 2027, inventory is [[2]] and retained earnings are [[3]].',
+    blanks: [
+      { options: ['overstated by $4,000', 'understated by $3,000', 'overstated by $3,000', 'correct'], answer: 2 },
+      { options: ['understated by $1,125', 'understated by $4,125', 'understated by $1,875', 'overstated by $1,875'], answer: 1 },
+      { options: ['understated by $1,500', 'overstated by $2,500', 'understated by $5,500', 'correct'], answer: 0 },
+      { options: ['correct', 'overstated by $1,875', 'understated by $4,125', 'understated by $1,125'], answer: 3 },
     ],
-    categories: ['Overstated by $6,000', 'Understated by $6,000', 'Correct'],
-    answer: [1, 0, 0, 0, 0, 1, 2, 2],
-    feedback: {
-      0: 'Cost of goods sold = opening inventory + purchases − closing inventory. A closing figure that is too high makes 2026 cost of goods sold too low.',
-      3: 'Net income flows into retained earnings, so the overstated 2026 profit is in retained earnings at the end of 2026, matching the overstated inventory on the other side of the balance sheet.',
-      4: 'The overstated 2026 closing inventory becomes 2027’s opening inventory, which makes 2027 cost of goods sold too high.',
-      6: 'The 2026 overstatement and the 2027 understatement of net income cancel, so retained earnings are right again by the end of 2027.',
-      7: 'The 2027 count was correct, so the 2027 balance sheet shows the right inventory.',
-    },
-    solution: '2026: closing inventory overstated by $6,000, so cost of goods sold understated and net income overstated by $6,000; on the balance sheet, inventory and (through net income) retained earnings are both overstated by $6,000, so it still balances. 2027: opening inventory overstated, so cost of goods sold overstated and net income understated by $6,000. The two errors in net income offset, so retained earnings and inventory are correct at 31 December 2027. Each year’s profit is wrong; only the two-year total is right.',
+    solution: '2026: closing inventory $4,000 too high, so cost of goods sold $4,000 too low and income before tax $4,000 too high; after 25% tax, net income is overstated by 4,000 × 0.75 = $3,000. 2027: opening inventory is $4,000 too high and closing inventory $1,500 too low, and both make cost of goods sold too high: by 4,000 + 1,500 = $5,500, so net income is understated by 5,500 × 0.75 = $4,125. At 31 December 2027 only the second error remains in the balance sheet: inventory is understated by $1,500, and retained earnings, which hold both years’ net income, are understated by 4,125 − 3,000 = $1,125: the 2027 error after tax. The other $375 is tax: the tax charged on the reported figures is $375 too low, so income taxes payable is too. When the 2028 count is correct, the second error reverses as well.',
   },
   {
     id: 'f02-fn-6', lesson: 'inventory-and-cost-of-goods-sold', type: 'multi', kind: 'conceptual',
@@ -138,16 +124,15 @@ export const items = [
   // ---------------------------------------------------------------- income-statement
   {
     id: 'f02-fn-7', lesson: 'income-statement', type: 'num', kind: 'numerical',
-    prompt: 'Tamworth Valves Inc., a fictional manufacturer, reports net income of $84,600 after income tax expense of $28,200. Its multi-step income statement shows interest expense of $9,400 and interest revenue of $3,000 on a bank deposit after operating income. Its operating expenses include a $5,000 loss on selling a delivery truck. It has no other items after operating income. What is its operating income? Enter whole dollars.',
+    prompt: 'Tamworth Valves Inc., a fictional manufacturer, reports net income of $84,600 after income tax expense of $28,200. After operating income, its multi-step income statement shows interest expense of $9,400 and interest revenue of $3,000 earned on a bank deposit; it has no other items there. What is its operating income? Enter whole dollars.',
     answer: 119200, check: () => (84600 + 28200) + 9400 - 3000, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 122200, say: 'That is EBIT: net income plus interest expense and income tax. It still contains the $3,000 of interest revenue, which sits after operating income, so take it out.' },
-      { value: 124200, say: 'The loss on the truck is already inside operating income (ASC 360-10-45-5). Don’t add it back.' },
-      { value: 127200, say: 'That adds back the truck loss and keeps the interest revenue. The loss belongs inside operating income; the interest revenue doesn’t.' },
       { value: 125200, say: 'Interest revenue increased net income, so working back up to operating income it is subtracted, not added.' },
       { value: 112800, say: 'That is income before income tax. Interest expense and interest revenue also sit between it and operating income.' },
+      { value: 100400, say: 'Interest expense reduced net income, so working back up it is added back, not subtracted.' },
     ],
-    solution: 'Work up from the bottom. Income before income tax = 84,600 + 28,200 = $112,800. Undo the items after operating income: add back interest expense (+9,400) and remove interest revenue (−3,000): operating income = 112,800 + 9,400 − 3,000 = $119,200. The truck loss stays where it is, inside operating income. EBIT, net income plus interest and tax, is 84,600 + 9,400 + 28,200 = $122,200: operating income plus the other income.',
+    solution: 'Work up from the bottom. Income before income tax = 84,600 + 28,200 = $112,800. Undo the items after operating income: add back interest expense (+9,400) and take out interest revenue (−3,000): operating income = 112,800 + 9,400 − 3,000 = $119,200. EBIT, net income plus interest expense and income tax, is 84,600 + 9,400 + 28,200 = $122,200: operating income plus the other income. The two are equal only when, as at Lantern, there is no other income.',
   },
   {
     id: 'f02-fn-8', lesson: 'income-statement', type: 'classify', kind: 'conceptual',
@@ -271,7 +256,7 @@ export const items = [
       { value: 176500, say: 'Depreciation uses no cash: the cash left when the equipment was bought. Leave it out.' },
       { value: 159500, say: 'Prepaid expenses fell, so part of this year’s expense was paid for last year: subtract the $2,500 decrease.' },
       { value: 162500, say: 'Accrued liabilities rose, so part of this year’s expense is still unpaid: subtract the $4,000 increase.' },
-      { value: 161000, say: 'That is the cash expense before the balance sheet changes. Adjust for the fall in prepaid expenses and the rise in accrued liabilities.' },
+      { value: 161000, say: 'That leaves out the noncash items but not the balance sheet changes. Adjust for the fall in prepaid expenses and the rise in accrued liabilities.' },
     ],
     solution: 'Start from the expenses that are paid in cash: 186,000 − 22,000 (depreciation) − 3,000 (bad debts) = 161,000. Cash paid = expense + Δprepaid − Δaccrued liability = 161,000 + (7,000 − 9,500) − (15,000 − 11,000) = 161,000 − 2,500 − 4,000 = $154,500. Less cash went out than the expense because some of the year’s costs were prepaid last year and some are still owed.',
   },
@@ -339,7 +324,7 @@ export const items = [
       { value: -8600, say: 'Cash is what the statement explains, so its own change is never an adjustment.' },
       { value: -600, say: 'That subtracts the whole change in working capital. The operating section uses only the operating items: not cash, dividends payable or the current portion of debt.' },
     ],
-    solution: 'Operating items only. Receivables +8,500: −8,500. Supplies −3,200: +3,200. Prepaid rent +600: −600. Accounts payable +2,900: +2,900. Wages payable −700: −700. Unearned revenue +2,600: +2,600. Net total = −8,500 + 3,200 − 600 + 2,900 − 700 + 2,600 = −$1,100. Cash is the figure being explained; dividends payable and the current portion of long-term debt belong to financing.',
+    solution: 'Use the operating items only: receivables rose 8,500 (−8,500); supplies fell 3,200 (+3,200); prepaid rent rose 600 (−600); accounts payable rose 2,900 (+2,900); wages payable fell 700 (−700); unearned revenue rose 2,600 (+2,600). Net total = −8,500 + 3,200 − 600 + 2,900 − 700 + 2,600 = −$1,100. Cash is the figure being explained, and dividends payable and the current portion of long-term debt belong to financing, so their changes are left out.',
   },
   {
     id: 'f02-fn-20', lesson: 'indirect-method', type: 'mc', kind: 'conceptual',
@@ -383,7 +368,7 @@ export const items = [
     options: [
       'Net income on the income statement and net income in the statement of changes in equity',
       'Closing retained earnings in the statement of changes in equity and on the balance sheet',
-      'Closing cash on the statement of cash flows and cash and cash equivalents on the balance sheet',
+      'Closing cash on the statement of cash flows and the balance sheet cash balances it explains',
       'Dividends declared in the statement of changes in equity and dividends paid under financing activities',
       'Depreciation expense for the year and the year’s increase in accumulated depreciation on the balance sheet',
       'Revenue on the income statement and cash received from customers on the statement of cash flows',
@@ -396,7 +381,7 @@ export const items = [
       5: 'Changes in receivables and unearned revenue, and write-offs, make cash from customers differ from revenue.',
       6: 'They differ by the noncash items and working-capital changes the indirect method lists.',
     },
-    solution: 'The statements articulate: net income passes from the income statement into the statement of changes in equity; closing retained earnings (and every other component of equity) pass from that statement to the balance sheet; and the statement of cash flows ends at the cash and cash equivalents shown on the balance sheet. The other pairs differ by timing: dividends payable, disposals, receivables and unearned revenue, and all the accruals between net income and operating cash flow.',
+    solution: 'The statements articulate: net income passes from the income statement into the statement of changes in equity; closing retained earnings (and every other component of equity) pass from that statement to the balance sheet; and the statement of cash flows ends at the balance sheet’s cash and cash equivalents (with any restricted cash, under US GAAP). The other pairs differ by timing: dividends payable, disposals, receivables and unearned revenue, and all the accruals between net income and operating cash flow.',
   },
   {
     id: 'f02-fn-23', lesson: 'linking-the-statements', type: 'fill', kind: 'applied',

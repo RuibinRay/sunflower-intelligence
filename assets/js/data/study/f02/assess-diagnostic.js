@@ -143,7 +143,7 @@ export const items = [
       { value: 22200, say: 'The $1,200 of December wages reduced net income but hadn’t been paid: add it.' },
       { value: 24000, say: 'Net income isn’t cash. Adjust for the revenue not collected, the cash received in advance, depreciation and the unpaid wages.' },
     ],
-    solution: 'Start from net income, $24,000. Revenue not yet collected: −3,500. Cash received for next year’s visits: +900. Depreciation, an expense with no cash: +2,000. Wages expensed but unpaid: +1,200. Cash from operations = 24,000 − 3,500 + 900 + 2,000 + 1,200 = $24,600. In a first year each change is the year-end balance itself; this is the indirect method, built from F01’s accrual and cash bases.',
+    solution: 'Start from net income, $24,000, and adjust it: revenue not yet collected −3,500; cash received for next year’s visits +900; depreciation, an expense that used no cash, +2,000; wages expensed but unpaid +1,200. Cash from operations = 24,000 − 3,500 + 900 + 2,000 + 1,200 = $24,600. In a first year each change is the year-end balance itself; this is the indirect method, built from F01’s accrual and cash bases.',
   },
   {
     id: 'f02-dg-9', lesson: 'cash-flow-statement', type: 'equation', kind: 'numerical',
