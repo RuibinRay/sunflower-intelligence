@@ -296,7 +296,7 @@ export default {
 <li>Find the impossible quantities and the implausible price with <strong>Validate values</strong> or <strong>Treat outliers</strong>. For each one, read the rest of the row: does <code>order_total</code> show what the value should be? Correct a value only with evidence. <strong>Map values</strong> replaces one exact value with another everywhere in a column, so first check that the value you replace occurs only where it is wrong; for the price, <strong>Transform</strong> with Rescale also works. Don’t delete orders that happened.</li>
 <li>Run an outlier check on <code>quantity</code> and decide, order by order, what each flag means. One large order is a genuine office order and must stay as it is.</li>
 <li>Ratings: compare how often they are missing for subscribers and for one-off buyers (the issue list reports it). Record the gap with <strong>Flag missing values</strong> rather than inventing ratings.</li>
-<li>E-mail addresses: count how many blanks could be recovered from the same customer’s other orders (look up the <code>customer_id</code> in the table). Don’t fill them in the lab: a customer with no other order has no address to copy, and any value placed there would be invented.</li>
+<li>E-mail addresses: count how many blanks could be recovered from the same customer’s other orders (look up the <code>customer_id</code> in the table). If you recover them in the lab, use <strong>Fill missing values</strong> with the most common value <em>within groups of</em> <code>customer_id</code>: it copies each customer’s own address and leaves a customer with no other order blank, because any address placed there would be someone else’s. A fill without the grouping would give every blank the same stranger’s address.</li>
 </ul>`,
       tool: {
         kind: 'cleaning', dataset: 'lantern-orders', prepare: STANDARD_RECORDS,
@@ -307,7 +307,8 @@ export default {
           { id: 'qty', rule: 'range', column: 'quantity', min: 1, max: 200, integer: true, text: 'Every quantity is a whole number from 1 to 200' },
           { id: 'price', rule: 'range', column: 'unit_price', min: 10, max: 100, text: 'Every unit_price lies between $10 and $100 (the list prices run from $14 to $58)' },
           { id: 'flag', rule: 'range', column: 'rating_missing', min: 0, max: 1, integer: true, text: 'A missing-value indicator, rating_missing, records which orders have no rating' },
-          { id: 'stars', rule: 'range', column: 'rating', min: 1, max: 5, integer: true, text: 'rating still holds only whole stars from 1 to 5: no invented ratings' },
+          { id: 'stars', rule: 'range', column: 'rating', min: 1, max: 5, integer: true, text: 'rating holds only whole stars from 1 to 5 (no averages written into it)' },
+          { id: 'kept', rule: 'equals', column: 'rating_missing', expr: '0 * rating', tol: 0, text: 'No rating has been invented: every order flagged in rating_missing still has a blank rating' },
         ],
       },
       items: [
@@ -361,7 +362,7 @@ export default {
             { value: 33.33, say: 'That is the share for all orders (77 of 231). The question asks about one-off orders.' },
             { value: 51.97, say: 'That is the share of one-off orders that do have a rating.' },
           ],
-          solution: 'One-off orders without a rating: 127 − 66 = 61, and 61 ÷ 127 × 100 = 48.03%. For subscription orders the share is 16 ÷ 104 = 15.38%. The data rule out MCAR: whether a rating is missing depends on subscription.',
+          solution: 'One-off orders without a rating: 127 − 66 = 61, and 61 ÷ 127 × 100 = 48.03%. For subscription orders the share is 16 ÷ 104 = 15.38%. A gap that large (the lab’s chi-square test gives p < 0.001) is strong evidence against MCAR: whether a rating is missing depends on subscription.',
         },
         {
           id: 'b02-pj-m5', type: 'num', kind: 'applied',
@@ -369,9 +370,9 @@ export default {
           answer: 4.02, check: marRating, unit: 'stars', places: 2, tol: 0.006,
           wrong: [
             { value: 4.1, say: 'That is the average of the 154 ratings given, (387 + 245) ÷ 154. Subscribers rate more often and more highly, so it over-weights them.' },
-            { value: 4.06, say: 'That is the plain average of the two group averages. The groups have different numbers of orders: weight by 104 and 127.' },
+            { value: 4.05, say: 'That is the plain average of the two group averages. The groups have different numbers of orders: weight by 104 and 127.' },
           ],
-          solution: 'Group averages: 387 ÷ 88 = 4.398 for subscribers, 245 ÷ 66 = 3.712 for one-off buyers. Weighted by orders: (104 × 4.398 + 127 × 3.712) ÷ 231 = (457.36 + 471.44) ÷ 231 = 4.02. The average of the given ratings, 4.10, overstates it because the customers who rate most are the most satisfied. Under MNAR even 4.02 could be wrong, which the report must say.',
+          solution: 'Group averages: 387 ÷ 88 = 4.398 for subscribers, 245 ÷ 66 = 3.712 for one-off buyers. Weighted by orders: (104 × 4.398 + 127 × 3.712) ÷ 231 = (457.36 + 471.44) ÷ 231 = 4.02. The average of the given ratings, 4.10, overstates it because subscribers both rate more often and rate higher, so they make up 88 of the 154 ratings but only 104 of the 231 orders. Under MNAR even 4.02 could be wrong, which the report must say.',
         },
         {
           id: 'b02-pj-m6', type: 'mc', kind: 'conceptual',
