@@ -268,5 +268,84 @@ ok('usd', A.usd(12000) === '$12,000' && A.usd(37.5) === '$37.50' && A.usd(-4000)
 ok('entryLabel', A.entryLabel({ id: 'm12' }) === '12' && A.entryLabel({ id: 'a3' }) === 'A3' && A.entryLabel({ id: 'c2' }) === 'C2' && A.entryLabel({ id: 'x', label: 'Q' }) === 'Q');
 ok('entryEffects nets lines, debits first', JSON.stringify(A.entryEffects({ lines: [{ acct: 'Cash', cr: 10 }, { acct: 'Supplies', dr: 4 }, { acct: 'Supplies', dr: 6 }] }, CHART).map((e) => [e.acct, e.side, e.amount])) === JSON.stringify([['Supplies', 'dr', 10], ['Cash', 'cr', 10]]));
 
+// ---------------------------------------------------------------- F02: contra-revenue, multi-step income, the indirect method
+// A small merchandiser worked by hand: opening balances, a year of entries, then the statements.
+const MC = A.makeChart([
+  { name: 'Cash', type: 'asset', group: 'current' },
+  { name: 'Accounts Receivable', type: 'asset', group: 'current' },
+  { name: 'Allowance for Doubtful Accounts', type: 'contra-asset', group: 'current', contra: 'Accounts Receivable' },
+  { name: 'Inventory', type: 'asset', group: 'current' },
+  { name: 'Equipment', type: 'asset', group: 'noncurrent' },
+  { name: 'Accumulated Depreciation—Equipment', type: 'contra-asset', group: 'noncurrent', contra: 'Equipment' },
+  { name: 'Accounts Payable', type: 'liability', group: 'current' },
+  { name: 'Current Portion of Long-Term Debt', type: 'liability', group: 'current', cashClass: 'financing' },
+  { name: 'Notes Payable', type: 'liability', group: 'noncurrent' },
+  { name: 'Common Stock', type: 'equity' },
+  { name: 'Retained Earnings', type: 'equity' },
+  { name: 'Dividends', type: 'dividends' },
+  { name: 'Income Summary', type: 'summary' },
+  { name: 'Sales Revenue', type: 'revenue' },
+  { name: 'Sales Returns and Allowances', type: 'contra-revenue' },
+  { name: 'Interest Revenue', type: 'revenue', section: 'other' },
+  { name: 'Gain on Sale of Equipment', type: 'revenue', section: 'other', gain: true },
+  { name: 'Cost of Goods Sold', type: 'expense', section: 'cost' },
+  { name: 'Wages Expense', type: 'expense' },
+  { name: 'Bad Debt Expense', type: 'expense' },
+  { name: 'Depreciation Expense', type: 'expense', da: true, noncash: true },
+  { name: 'Interest Expense', type: 'expense', section: 'other', interest: true },
+  { name: 'Income Tax Expense', type: 'expense', section: 'tax' },
+]);
+ok('contra-revenue: normal debit, reduces equity', A.normalSide('Sales Returns and Allowances', MC) === 'dr' && A.lineEffect({ acct: 'Sales Returns and Allowances', dr: 100 }, MC).change === -100);
+const OPEN = { Cash: 5000, 'Accounts Receivable': 4000, 'Allowance for Doubtful Accounts': 200, Inventory: 6000, Equipment: 20000, 'Accumulated Depreciation—Equipment': 4000, 'Accounts Payable': 3000, 'Notes Payable': 10000, 'Common Stock': 15000, 'Retained Earnings': 2800 };
+const MY = [
+  { id: 'x1', lines: [{ acct: 'Accounts Receivable', dr: 50000 }, { acct: 'Sales Revenue', cr: 50000 }] },
+  { id: 'x2', lines: [{ acct: 'Sales Returns and Allowances', dr: 1000 }, { acct: 'Accounts Receivable', cr: 1000 }] },
+  { id: 'x3', lines: [{ acct: 'Cash', dr: 46000 }, { acct: 'Accounts Receivable', cr: 46000 }], cash: 'operating' },
+  { id: 'x4', lines: [{ acct: 'Allowance for Doubtful Accounts', dr: 300 }, { acct: 'Accounts Receivable', cr: 300 }] },
+  { id: 'x5', lines: [{ acct: 'Inventory', dr: 30000 }, { acct: 'Accounts Payable', cr: 30000 }] },
+  { id: 'x6', lines: [{ acct: 'Cost of Goods Sold', dr: 28000 }, { acct: 'Inventory', cr: 28000 }] },
+  { id: 'x7', lines: [{ acct: 'Accounts Payable', dr: 29000 }, { acct: 'Cash', cr: 29000 }], cash: 'operating' },
+  { id: 'x8', lines: [{ acct: 'Wages Expense', dr: 9000 }, { acct: 'Cash', cr: 9000 }], cash: 'operating', cashLabel: 'Cash paid to employees' },
+  { id: 'x9', lines: [{ acct: 'Bad Debt Expense', dr: 450 }, { acct: 'Allowance for Doubtful Accounts', cr: 450 }] },
+  { id: 'x10', lines: [{ acct: 'Depreciation Expense', dr: 2000 }, { acct: 'Accumulated Depreciation—Equipment', cr: 2000 }] },
+  // sell equipment costing 5,000 with 3,000 depreciated for 2,600 cash: gain 600
+  { id: 'x11', lines: [{ acct: 'Cash', dr: 2600 }, { acct: 'Accumulated Depreciation—Equipment', dr: 3000 }, { acct: 'Equipment', cr: 5000 }, { acct: 'Gain on Sale of Equipment', cr: 600 }], cash: 'investing' },
+  { id: 'x12', lines: [{ acct: 'Interest Expense', dr: 600 }, { acct: 'Cash', cr: 600 }], cash: 'operating' },
+  { id: 'x13', lines: [{ acct: 'Cash', dr: 100 }, { acct: 'Interest Revenue', cr: 100 }], cash: 'operating' },
+  { id: 'x14', lines: [{ acct: 'Notes Payable', dr: 2000 }, { acct: 'Current Portion of Long-Term Debt', cr: 2000 }] },
+  { id: 'x15', lines: [{ acct: 'Income Tax Expense', dr: 2200 }, { acct: 'Cash', cr: 2200 }], cash: 'operating' },
+  { id: 'x16', lines: [{ acct: 'Dividends', dr: 1500 }, { acct: 'Cash', cr: 1500 }], cash: 'financing' },
+];
+const ML = A.post(MY, MC, OPEN);
+const MS = A.multiStepIncome(ML, MC);
+// by hand: net sales 49,000; gross profit 21,000; operating expenses 11,450; operating income 9,550;
+// other: +100 interest revenue +600 gain −600 interest expense → before tax 9,650; tax 2,200 → net income 7,450
+eq('multi-step: net revenue', MS.revenue, 49000);
+eq('multi-step: contra revenue', MS.contraRevenue, 1000);
+eq('multi-step: gross profit', MS.grossProfit, 21000);
+eq('multi-step: operating income', MS.operatingIncome, 9550);
+eq('multi-step: income before tax', MS.incomeBeforeTax, 9650);
+eq('multi-step: net income', MS.netIncome, 7450);
+eq('multi-step agrees with the single-step statement', A.incomeStatement(ML, MC).netIncome, 7450);
+eq('EBIT = before tax + interest expense − interest revenue', MS.ebit, 9650 + 600 - 100);
+eq('EBITDA = EBIT + depreciation', MS.ebitda, 10150 + 2000);
+const MI = A.indirectOperating(ML, MC, OPEN);
+// by hand: 7,450 + 2,000 depreciation − 600 gain; net receivables 4,000 − 200 = 3,800 → 6,700 − 350 = 6,350 (−2,550);
+// inventory 6,000 → 8,000 (−2,000); payables 3,000 → 4,000 (+1,000); the current portion of debt is financing → 5,300
+// (direct: 46,000 − 29,000 − 9,000 − 600 + 100 − 2,200 = 5,300)
+eq('indirect: operating cash flow', MI.operating, 5300);
+ok('indirect: the gain is subtracted and depreciation added back', MI.adjustments.some(([n, v]) => /depreciation/i.test(n) && v === 2000) && MI.adjustments.some(([n, v]) => /gain/i.test(n) && v === -600));
+ok('indirect: receivables are taken net of the allowance', MI.workingCapital.some(([n, v]) => /receivable \(net\)/.test(n) && v === -2550));
+ok('indirect: the current portion of long-term debt is not working capital', !MI.workingCapital.some(([n]) => /current portion/i.test(n)));
+const MCF = A.cashFlows(MY, MC);
+eq('indirect = direct (operating)', MCF.operating, MI.operating);
+ok('cashLabel names a direct-method line', MCF.lines.some(([n, v]) => n === 'Cash paid to employees' && v === -9000));
+const MCL = A.closingEntries(ML, MC);
+const MAfter = A.post([...MY, ...MCL], MC, OPEN);
+eq('closing with a contra-revenue account: retained earnings', MAfter['Retained Earnings'].balance, 2800 + 7450 - 1500);
+ok('closing clears the contra-revenue account', !MAfter['Sales Returns and Allowances'].balance);
+eq('statement of changes in equity with contra revenue', A.equityStatement(ML, MC, OPEN).retainedEarnings.end, 2800 + 7450 - 1500);
+ok('balance sheet balances with contra revenue', A.balanceSheet(ML, MC).balanced);
+
 console.log(`${checks - fails} of ${checks} checks passed`);
 if (fails) { console.log(`${fails} failed`); process.exit(1); }

@@ -12,7 +12,7 @@ The standard is a university course, not a study guide. A student with no backgr
 assets/js/data/study/
   catalog.js                 schools, all 32 courses, modules and lesson order (slugs), learning paths, labs
   AUTHORING.md               this guide
-  f00/  f01/  b02/  m02/     one folder per built course
+  f00/  f01/  f02/  b02/  m02/ …  one folder per built course
     case.js / market.js      the course's fictional case: names, accounts, figures. Use them; never contradict them.
     <slug>.js                lesson content (prose, formulas, worked examples). Read at build time only.
     <slug>.ex.js             lesson exercises, answer keys and interactive widgets. Loaded by the page in the browser.
@@ -263,6 +263,15 @@ Transactions in widgets use the same shape as `case.js`: `{ id, date, text, line
   `{ type: 'ledger', transactions: [...], show: ['taccounts', 'trial'], mode: 'watch' | 'balance' }`. In `balance` mode the student calculates each account's balance before it is shown.
 - **`statements`**: from an adjusted trial balance to statements. The student places each account on the right statement and works out net income, ending retained earnings and total assets.
   `{ type: 'statements', transactions: ['m1', …, 'a7'], build: ['income', 'equity', 'balance'] }`.
+
+### F02 additions to the accounting engine (`assets/js/core/accounting.js`; chart and case: `f02/case.js`)
+
+- **Account type `contra-revenue`** (normal debit; Sales Returns and Allowances, Sales Discounts). It appears among the revenues as a negative amount, reduces net income and is closed with the revenues.
+- **Account fields** used by the F02 statements: `section: 'cost' | 'operating' | 'other' | 'tax'` on expenses (and `'other'` on non-operating revenue) places the account on the multi-step income statement; `da: true` marks depreciation and amortisation (EBITDA); `interest: true` marks interest (EBIT); `noncash: true`, `gain: true` and `loss: true` tell the indirect method what to add back or subtract; `cashClass: 'operating' | 'investing' | 'financing'` overrides the activity of an account (e.g. Current Portion of Long-Term Debt, Dividends Payable).
+- **Entry field `cashLabel`** names the line on a direct-method statement of cash flows (`'Cash paid to employees'`).
+- **`multiStepIncome(ledger, chart)`**: net revenue, cost of sales, gross profit, operating expenses, operating income, other items, income before tax, income tax, net income, EBIT and EBITDA. **`indirectOperating(ledger, chart, opening)`**: net income, noncash adjustments and working-capital changes, and cash from operations; it must equal the direct method's operating total (the F02 case checks this).
+- **`f02/case.js`** exports `CHART`, `FACTS`, `YEAR` (the year in summary entries), `ADJUSTMENTS`, `LEDGER`, `DERIVED` (every quoted figure), `STATEMENTS` (the four statements as `statement` blocks, ready for a lesson), `COSTING` (FIFO, LIFO and average for `HOUSE_BLEND_Q4`), `AGING` and `IDENTITIES`. Use them; don't retype the numbers.
+- The F01 widgets take `chart: CHART` and inline transactions, so they work with F02's accounts. The `statements` widget also takes `period: { start, end, phrase: 'For the ten months ended' }`.
 
 ### B02 data widgets (engine: `assets/js/core/cleaning.js`; datasets in `assets/data/study/`)
 

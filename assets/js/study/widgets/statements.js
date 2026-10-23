@@ -1,5 +1,6 @@
 // statements.js — F01 widget: from the adjusted trial balance to the financial statements.
-// config: { type: 'statements', transactions: ['m1', …, 'a7'] | [inline], build: ['income', 'equity', 'balance'] }
+// config: { type: 'statements', transactions: ['m1', …, 'a7'] | [inline], build: ['income', 'equity', 'balance'], chart?, opening?,
+//          period?: { start: '2026-03-01', end: '2026-12-31', phrase: 'For the ten months ended' } }
 // The student places each account on its statement, works out net income, ending retained earnings and total
 // assets (for the statements in `build`), checks, reads the feedback, then sees the statements in full.
 import { h } from '../../core/dom.js?v=10';
@@ -12,7 +13,7 @@ const PLACE_NAME = Object.fromEntries(PLACES);
 
 /** Where an account is reported. Common stock and retained earnings appear on two statements; either is right. */
 function homes(a) {
-  if (a.type === 'revenue' || a.type === 'expense') return ['income'];
+  if (a.type === 'revenue' || a.type === 'contra-revenue' || a.type === 'expense') return ['income'];
   if (a.type === 'dividends') return ['equity'];
   if (a.type === 'equity') return ['balance', 'equity'];
   return ['balance'];
@@ -20,6 +21,7 @@ function homes(a) {
 function why(a) {
   switch (a.type) {
     case 'revenue': return `${a.name} is revenue earned this period, so it is reported on the income statement.`;
+    case 'contra-revenue': return `${a.name} reduces this period’s revenue, so it is reported on the income statement, subtracted from the revenue it belongs to.`;
     case 'expense': return `${a.name} is a cost of this period, so it is reported on the income statement.`;
     case 'dividends': return `Dividends are a distribution of profit, not an expense: they don’t reduce net income, they reduce retained earnings on the statement of changes in equity.`;
     case 'equity': return `${a.name} is part of equity: its balance is on the balance sheet, and its change during the period is shown on the statement of changes in equity.`;
@@ -45,7 +47,7 @@ export async function mount(el, config = {}, ctx = {}) {
   const is = A.incomeStatement(L, ch);
   const es = A.equityStatement(L, ch, opening);
   const bs = A.balanceSheet(L, ch);
-  const period = U.monthOf(txs.find((t) => t.date)?.date);
+  const period = config.period || U.monthOf(txs.find((t) => t.date)?.date);   // F02: { start, end, phrase: 'For the ten months ended' }
   const adjusted = txs.some((t) => t.adjusting);
   const live = U.liveRegion();
   const root = h('div', { class: 'acc acc-stw' });

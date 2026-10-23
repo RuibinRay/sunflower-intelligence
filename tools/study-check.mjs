@@ -358,6 +358,8 @@ async function checkAssessments(course) {
   const fin = await loadModuleFile(course, 'assess-final');
   if (!fin) r.warn('assess-final.js missing');
   else itemsCheck(fin.items, 'assess-final', { lo: 20, hi: 25 });
+  // a case may export IDENTITIES: [[what, true|false]] that must all hold (F02: the statements balance and agree)
+  for (const [what, okk] of caseMod?.IDENTITIES || []) if (!okk) r.err(`case.js: ${what} does not hold`);
   const pj = await loadModuleFile(course, 'project');
   if (!pj) r.warn('project.js missing');
   else {
