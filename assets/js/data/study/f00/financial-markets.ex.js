@@ -7,6 +7,7 @@ const money = (v) => {
   return `${v < 0 && c !== 0 ? '−' : ''}$${s}`;
 };
 const pts = (x) => `${(Math.round(x * 100) / 100).toFixed(2)} percentage points`;
+const ptsAdj = (x) => `${(Math.round(x * 100) / 100).toFixed(2)}-percentage-point`;
 
 export const widgets = {
   'fm-intermediation': {
@@ -34,7 +35,7 @@ export const widgets = {
       } else if (spread === 0) {
         note = 'With no spread the bank earns nothing for choosing, watching and bearing the risk of the borrower.';
       } else {
-        note = `Of the ${pts(spread)} spread, ${money(losses)} is expected to go on bad loans, leaving ${money(left)} a year to pay the bank’s staff and systems and to give its own shareholders a return. The spread is the price of the intermediary’s services, not pure profit.`;
+        note = `Of the ${ptsAdj(spread)} spread, ${money(losses)} is expected to go on bad loans, leaving ${money(left)} a year to pay the bank’s staff and systems and to give its own shareholders a return. The spread is the price of the intermediary’s services, not pure profit.`;
       }
       return {
         headline: { label: 'Left for the bank’s costs and profit, per year', value: money(left) },
@@ -279,7 +280,7 @@ export const check = [
   },
   {
     id: 'f00-fm-k5', type: 'num', kind: 'numerical',
-    prompt: 'Kestrel Storage (fictional) owes a supplier €12,000. The exchange rate is $1.08 per euro. What does the invoice cost in dollars?',
+    prompt: 'Kestrel Battery Installers (fictional) owes a German supplier €12,000. The exchange rate is $1.08 per euro. What does the invoice cost in dollars?',
     answer: 12960, check: () => 12000 * 1.08, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 11111.11, say: 'You divided. The rate is dollars per euro, so dollars = euros × rate.' },

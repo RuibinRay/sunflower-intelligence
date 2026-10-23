@@ -149,13 +149,13 @@ export const guided = [
 export const independent = [
   {
     id: 'f00-ftr-i1', type: 'num', kind: 'numerical',
-    prompt: 'Lantern plans to set aside $12,000 to replace its equipment one day. If the money earns 6% a year, compounded once a year, how much will it have after two years?',
-    answer: 13483.2, check: () => 12000 * 1.06 ** 2, unit: '$', places: 2, tol: 0.01,
+    prompt: 'Lantern plans to set aside $12,000 to replace its equipment one day, in a two-year certificate of deposit paying 4% a year, compounded once a year. How much will it have after two years?',
+    answer: 12979.2, check: () => 12000 * 1.04 ** 2, unit: '$', places: 2, tol: 0.01,
     wrong: [
-      { value: 13440, say: 'That is simple interest: 12,000 × (1 + 0.06 × 2). In the second year the first year’s $720 of interest earns 6% too.' },
-      { value: 12720, say: 'That is one year’s growth. Multiply by 1.06 twice.' },
+      { value: 12960, say: 'That is simple interest: 12,000 × (1 + 0.04 × 2). In the second year the first year’s $480 of interest earns 4% too.' },
+      { value: 12480, say: 'That is one year’s growth. Multiply by 1.04 twice.' },
     ],
-    solution: 'FV = 12,000 × 1.06² = 12,000 × 1.1236 = $13,483.20. Year by year: 12,000 × 1.06 = 12,720; 12,720 × 1.06 = 13,483.20.',
+    solution: 'FV = 12,000 × 1.04² = 12,000 × 1.0816 = $12,979.20. Year by year: 12,000 × 1.04 = 12,480; 12,480 × 1.04 = 12,979.20.',
   },
   {
     id: 'f00-ftr-i2', type: 'num', kind: 'numerical',
@@ -169,9 +169,9 @@ export const independent = [
   },
   {
     id: 'f00-ftr-i3', type: 'mc', kind: 'applied',
-    prompt: 'A supplier offers Ana a choice: a $1,000 rebate now or $1,050 in one year, for certain. Ana could earn 6% a year on money she has now. Which should she choose, and why?',
+    prompt: 'A supplier offers Lantern a choice: a $1,000 rebate now or $1,050 in one year, for certain. Lantern is short of cash this year and would otherwise have to borrow at 6% a year to cover the gap, so money now is worth 6% a year to it. Which should Lantern choose, and why?',
     options: [
-      'The $1,000 now: invested at 6% it would grow to $1,060 in a year, more than $1,050.',
+      'The $1,000 now: at 6% a year it is worth $1,060 in a year’s time, more than $1,050.',
       'The $1,050 in a year, because it is $50 more.',
       'Either: they are worth the same because both are certain.',
       'The $1,050 in a year, because its present value is $1,060.',
@@ -179,10 +179,10 @@ export const independent = [
     answer: 0,
     feedback: {
       1: 'Comparing $1,050 with $1,000 directly ignores the time value of money. Put both amounts on the same date first.',
-      2: 'Being certain removes risk, not the effect of time. At 6%, money now can grow to more than $1,050.',
+      2: 'Being certain removes risk, not the effect of time. At 6%, $1,000 now is worth more than $1,050 in a year.',
       3: 'Present value moves a later amount back to today, so it is smaller: 1,050 ÷ 1.06 = $990.57, which is less than $1,000.',
     },
-    solution: 'Move both amounts to the same date. Forward: 1,000 × 1.06 = $1,060 in a year, more than $1,050. Or back: 1,050 ÷ 1.06 = $990.57 today, less than $1,000. Either way, take the $1,000 now.',
+    solution: 'Money now saves Lantern borrowing at 6%, so use 6% to move both amounts to the same date. Forward: 1,000 × 1.06 = $1,060 in a year, more than $1,050. Or back: 1,050 ÷ 1.06 = $990.57 today, less than $1,000. Either way, take the $1,000 now.',
   },
   {
     id: 'f00-ftr-i4', type: 'num', kind: 'numerical',

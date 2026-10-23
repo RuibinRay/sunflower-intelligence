@@ -217,7 +217,7 @@ export const independent = [
     id: 'f00-fae-i5', type: 'mc', kind: 'conceptual',
     prompt: 'In the United States, which statement about professional roles is accurate?',
     options: [
-      'An accountant who files reports with the SEC must be a licensed CPA, and CPAs are licensed by state boards of accountancy.',
+      'The independent auditors whose reports accompany companies’ financial statements filed with the SEC must be licensed CPAs, and CPAs are licensed by state boards of accountancy.',
       'Financial analysts must be licensed CPAs before they can value a company.',
       'Economists set the accounting rules that companies follow.',
       'A company’s CFO is responsible only for preparing its tax returns.',
@@ -228,7 +228,7 @@ export const independent = [
       2: 'Accounting rules are set by standard setters (the FASB for US GAAP, the IASB for IFRS), not by economists.',
       3: 'The CFO leads the whole finance function: investment, financing and working capital decisions, and financial reporting.',
     },
-    solution: 'The CPA licence is granted by each state’s board of accountancy, and accountants who file reports with the SEC must hold it. Financial analysts, economists and CFOs do different jobs, as described in the lesson.',
+    solution: 'The CPA licence is granted by each state’s board of accountancy, and the independent auditors whose reports accompany financial statements filed with the SEC must hold it. Financial analysts, economists and CFOs do different jobs, as described in the lesson.',
   },
   {
     id: 'f00-fae-i6', type: 'num', kind: 'applied',
