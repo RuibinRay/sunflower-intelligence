@@ -99,8 +99,8 @@ export const guided = [
     id: 'm01-cv-g2', type: 'mc', kind: 'conceptual',
     prompt: 'Two guests stay at fictional hotels on the same night. Guest A paid $320 for a luxury hotel, expected near-perfect service and found a good room but a slow, muddled check-in. Guest B paid $90 for a budget hotel, expected a basic room and found it spotless, with a friendly welcome. According to the expectation-disconfirmation model, which is most likely?',
     options: [
-      'Guest B is more satisfied, because her stay beat her expectations while A’s fell short of his.',
-      'Guest A is more satisfied, because his hotel performed better overall than hers.',
+      'Guest B is more satisfied: her stay beat her expectations, and A’s fell short of his.',
+      'Guest A is more satisfied, because his hotel performed better overall than hers did.',
       'Both are equally satisfied, because each got roughly what they paid for.',
       'Neither is satisfied until each hotel lowers its prices.',
     ],
@@ -180,8 +180,8 @@ export const independent = [
     id: 'm01-cv-i3', type: 'mc', kind: 'applied',
     prompt: 'Last year a fictional gym spent $30,000 to win 120 members, a CAC of $250. The manager is deciding whether to run a new campaign this year. Which comparison should decide it?',
     options: [
-      'The expected lifetime value of the members the new campaign would win, against what it would cost per member won',
-      'Last year’s $250 CAC against the lifetime value of the members won last year',
+      'The value of the members this campaign would win, against its cost per member won',
+      'Last year’s $250 acquisition cost against the lifetime value of the members won last year',
       'This year’s campaign cost against the revenue the gym earned last year',
       'The number of members the campaign would win against the number who left last year',
     ],
@@ -247,10 +247,10 @@ export const check = [
     id: 'm01-cv-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Which statement best describes customer value?',
     options: [
-      'The customer’s judgement of what she gets against everything she gives up, compared with the alternatives',
-      'The lowest price a customer can find for a product of acceptable quality',
-      'The margin a business earns from a customer over the whole relationship',
-      'The quality of a product as measured by independent experts and tests',
+      'Her judgement of what she gets against all she gives up, compared with the alternatives',
+      'The lowest price a customer can find for a product of acceptable quality and reliability',
+      'The total margin a business earns from one customer over the whole of the relationship',
+      'The quality of a product as measured by independent experts, tests and published reviews',
     ],
     answer: 0,
     feedback: {
@@ -275,10 +275,10 @@ export const check = [
     id: 'm01-cv-k3', type: 'mc', kind: 'applied',
     prompt: 'A fictional children’s swimming school is choosing a value proposition. Which is the strongest?',
     options: [
-      'For parents of 4-to-10-year-olds: classes of four at most, so your child swims 10 metres alone within a term, or the next term is free.',
-      'The best swimming lessons in town: friendly, experienced teachers, a warm pool and great value for every family.',
-      'Swimming lessons for children and adults at every level, seven days a week, at prices to suit every budget.',
-      'A newly renovated pool, modern changing rooms, free parking and a comfortable café where parents can wait.',
+      'For parents of 4-to-10-year-olds: classes of four, so your child swims 10 metres alone in a term, or next term is free.',
+      'The best swimming lessons in town: friendly, experienced teachers, a warm pool, flexible times and great value for every family.',
+      'Swimming lessons for children and adults at every level and every age, seven days a week, at prices to suit every budget.',
+      'A newly renovated pool, modern changing rooms, free parking and a comfortable café where parents can wait during every lesson.',
     ],
     answer: 0,
     feedback: {

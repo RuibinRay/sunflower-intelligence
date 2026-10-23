@@ -8,8 +8,8 @@ export const items = [
     id: 'm01-m1-1', lesson: 'what-is-marketing', type: 'mc', kind: 'conceptual',
     prompt: 'The AMA defines marketing as creating, communicating, delivering and exchanging offerings that have value for “customers, clients, partners, and society at large”. Which of these fictional offers most clearly fails that definition, even though it sells well?',
     options: [
-      'A cheap snack that sells well partly because its label hides how much salt it contains',
-      'A premium coffee subscription that only a few hundred enthusiasts buy',
+      'A cheap snack that sells partly because its label hides how much salt it contains',
+      'A premium coffee subscription that only a few hundred enthusiasts in the city ever buy',
       'A free museum exhibition paid for by donations rather than ticket sales',
       'A catering contract negotiated at a discount for one large business client',
     ],
@@ -54,10 +54,10 @@ export const items = [
     id: 'm01-m1-4', lesson: 'what-is-marketing', type: 'mc', kind: 'applied',
     prompt: 'A survey finds that 600 of 2,000 office workers in a business district would like barista-made coffee at their staff events. A colleague tells Ana Lim, “That’s demand from 600 people.” What is the main problem with that claim?',
     options: [
-      'It measures a want: demand needs the ability and willingness to pay, and here it is the workers’ employers who would pay.',
-      'The survey asked too few people for its results to be reliable at all.',
-      'Thirty per cent is too small a share to indicate any demand worth pursuing.',
-      'Office workers don’t really need coffee, so the survey measured the wrong thing.',
+      'It measures a want; demand needs ability and willingness to pay, and employers would pay.',
+      'The survey asked too few people for its results to be reliable enough to act on at all.',
+      'Thirty per cent of workers is too small a share to indicate any demand worth pursuing.',
+      'Office workers don’t really need coffee at events, so the survey measured the wrong thing entirely.',
     ],
     answer: 0,
     feedback: {
@@ -94,8 +94,8 @@ export const items = [
     id: 'm01-m1-7', lesson: 'customer-value', type: 'mc', kind: 'conceptual',
     prompt: 'Two fictional couriers deliver parcels in the same city. Courier A advertises “delivered by 10 a.m.” and usually delivers by 11 a.m. Courier B advertises “delivered the same day” and usually delivers by 3 p.m. On the expectation-disconfirmation model, which is more likely to leave customers dissatisfied?',
     options: [
-      'Courier A, because it usually falls short of the expectation its own promise sets.',
-      'Courier B, because its deliveries arrive four hours later than A’s.',
+      'Courier A, because it usually falls short of the expectation its promise sets.',
+      'Courier B, because its deliveries usually arrive about four hours later than Courier A’s.',
       'Neither, because both deliver on the day the parcel is sent.',
       'Both equally, because customers always want parcels sooner than they arrive.',
     ],
@@ -129,7 +129,7 @@ export const items = [
     id: 'm01-m1-9', lesson: 'market-orientation', type: 'mc', kind: 'applied',
     prompt: 'A fictional energy-drink brand finds that teenagers are among its keenest buyers and plans a promotional campaign outside schools. Applying the societal marketing concept and the AMA’s Statement of Ethics, what is the best judgement?',
     options: [
-      'Drop the school campaign: teenagers are a vulnerable group, and a high-caffeine drink can harm them, so market to adults with clear labelling.',
+      'Drop the school campaign: teenagers are a vulnerable group and the drink can harm them; market to adults.',
       'Run the campaign: the marketing concept says to satisfy what target customers want, and teenagers want the drink.',
       'Run the campaign if it is legal, since obeying the law is what marketing ethics requires.',
       'Run the campaign but cut the price for students, so that the offer is fair to them.',
@@ -156,8 +156,8 @@ export const items = [
     id: 'm01-m1-11', lesson: 'market-orientation', type: 'mc', kind: 'conceptual',
     prompt: 'In a study of 140 business units, Narver and Slater (1990) reported a substantial positive effect of market orientation on profitability. What is the most careful way to read that finding?',
     options: [
-      'Market orientation and profitability went together in that study, but one study at one time can’t by itself show which caused which.',
-      'It proves that any firm that becomes more market-oriented will become more profitable.',
+      'They went together in that study, but one study at one time can’t show which caused which.',
+      'It proves that any firm which becomes more market-oriented will, as a result, become more profitable.',
       'It shows that market orientation matters only for businesses that sell commodities.',
       'It shows that profitability has nothing to do with how well a firm understands its customers.',
     ],

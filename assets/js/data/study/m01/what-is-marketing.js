@@ -42,7 +42,7 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: 'It is November 2026. Lantern Coffee Co., which Ana Lim started on 1 March, now has three lines of business. It caters coffee for offices and events, with baristas who make every drink to order, and has 18 corporate clients. It runs barista-training workshops: 14 so far, with 12 participants on average at $125 a place. And its online shop, open since March, is on course for about 1,500 customers by December. As she plans 2027, Ana has started to ask what “marketing” should mean for a business like hers. Every name and figure in this case is invented for teaching.' },
+    { case: 'It is November 2026. Lantern Coffee Co., which Ana Lim started on 1 March, now has three lines of business. It caters coffee for offices and events, with baristas who make every drink to order, and has 18 corporate clients. It runs barista-training workshops: 14 in 2026, with 12 participants on average at $125 a place. And its online shop, open since March, is on course for about 1,500 customers by December. As she plans 2027, Ana has started to ask what “marketing” should mean for a business like hers. Every name and figure in this case is invented for teaching.' },
     { p: 'Ask people what marketing is and most say advertising, or perhaps selling. Both are part of it. But if they were the whole of it, Ana would need marketing only after she had decided what to offer, to whom and at what price, and those earlier decisions are where most of marketing’s work is done. This lesson builds a definition from the ground up, starting with the simplest thing that happens in any market: two parties exchanging something each of them values.' },
 
     { h: 'Two definitions' },

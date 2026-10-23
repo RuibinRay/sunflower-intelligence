@@ -117,8 +117,8 @@ export const guided = [
       { id: 'm01-mo-g2-s3', type: 'mc',
         prompt: 'The four shares add up to 195%. What does that tell you?',
         options: [
-          'Guests could name more than one thing, so each share is a share of guests, not a slice of one whole.',
-          'The survey contains an arithmetic error, because shares must add up to 100%.',
+          'Guests could name several things, so each share is of guests, not a slice of one whole.',
+          'The survey contains an arithmetic error, because a set of percentages must always add up to 100%.',
           'More guests answered than the 40 the hotel says it asked.',
           'Guests exaggerated how much they liked the hotel.',
         ],
@@ -136,7 +136,7 @@ export const guided = [
     prompt: 'At a fictional solar-panel installer, service engineers keep hearing customers say the monitoring app is confusing. They sort out each customer’s problem on site but never pass the complaints on, and the product team plans its next app update around new features. In Kohli and Jaworski’s terms, which activity is failing first?',
     options: [
       'Dissemination: the intelligence exists but doesn’t reach the people who could act on it',
-      'Intelligence generation: nobody in the firm is gathering information from customers',
+      'Intelligence generation: nobody in the firm is gathering any information from its customers',
       'Responsiveness: the product team heard the complaints and chose to ignore them',
       'Competitor orientation: the firm isn’t watching what rival apps offer',
     ],
@@ -198,8 +198,8 @@ export const independent = [
     id: 'm01-mo-i3', type: 'mc', kind: 'conceptual',
     prompt: 'What did Ronald Fullerton (1988) argue about the usual story of a production era, then a sales era, then a marketing era?',
     options: [
-      'That it is a myth: sophisticated marketing was practised long before the twentieth century.',
-      'That it is accurate for the United States but not for Britain or Germany.',
+      'That it is a myth: serious marketing existed long before the twentieth century.',
+      'That it is accurate for the United States but not for Britain or Germany, which he also studied.',
       'That the eras happened in the reverse order, with marketing first.',
       'That the production era is still going on in most industries.',
     ],
@@ -234,8 +234,8 @@ export const independent = [
     id: 'm01-mo-i5', type: 'mc', kind: 'applied',
     prompt: 'A fictional software company emails a satisfaction survey to its current users every quarter. 90% say they are satisfied, yet its number of customers has fallen for three quarters in a row. What is the most likely flaw in its listening?',
     options: [
-      'The survey only reaches people who stayed; those who left, or never signed up, aren’t heard.',
-      'A 90% satisfaction score is too low for a software company to be healthy.',
+      'The survey reaches only people who stayed, not those who left or never signed up.',
+      'A 90% satisfaction score is too low for a software company to be healthy in a competitive market.',
       'The survey asks too few questions to measure satisfaction accurately.',
       'Satisfaction can’t be measured with a survey at all.',
     ],
@@ -272,7 +272,7 @@ export const check = [
     id: 'm01-mo-k1', type: 'mc', kind: 'conceptual',
     prompt: 'What is the main difference between the selling concept and the marketing concept?',
     options: [
-      'The selling concept starts from what the business has made; the marketing concept starts from what target customers need.',
+      'Selling starts from what the business has made; marketing starts from what target customers need.',
       'The selling concept uses advertising; the marketing concept uses no advertising at all.',
       'The selling concept applies to consumer goods; the marketing concept applies only to services.',
       'The selling concept aims at profit; the marketing concept aims at customer satisfaction instead of profit.',
@@ -317,7 +317,7 @@ export const check = [
     id: 'm01-mo-k4', type: 'mc', kind: 'applied',
     prompt: 'Online reviews of a fictional city hotel keep mentioning street noise in rooms on the main-road side. Which response is the most market-oriented?',
     options: [
-      'Share the reviews with operations, plan window insulation, offer light sleepers the quiet side, then check the reviews again.',
+      'Share the reviews with operations, insulate the windows, give light sleepers quiet rooms, then recheck.',
       'Reply to every review with an apology and a discount code for the guest’s next stay, and change nothing else.',
       'Run an advertising campaign that presents the hotel’s main-road location as lively and central.',
       'Remove reviews from the hotel’s own website so that future guests see fewer complaints about noise.',
@@ -346,9 +346,9 @@ export const check = [
     id: 'm01-mo-k6', type: 'mc', kind: 'conceptual',
     prompt: 'Which description best matches Kohli and Jaworski’s (1990) idea of market orientation?',
     options: [
-      'Generating intelligence about current and future customer needs, sharing it across departments and responding to it',
+      'Generating intelligence on current and future needs, sharing it across departments and acting on it',
       'A marketing department that designs its advertising campaigns around the results of customer surveys',
-      'Giving customers whatever they ask for, so that satisfaction scores keep rising',
+      'Giving customers whatever they ask for, as quickly as possible, so that satisfaction scores keep rising',
       'Matching competitors’ prices and features as quickly as possible whenever they change',
     ],
     answer: 0,

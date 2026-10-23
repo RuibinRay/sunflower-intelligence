@@ -114,7 +114,7 @@ export const guided = [
         prompt: 'Lantern raises the price to $150, and she still books. What happens to the value this exchange creates?',
         options: [
           'It stays $90: she now keeps $10 and Lantern keeps $80.',
-          'It rises to $115, because Lantern now earns $25 more.',
+          'It rises to $115, because Lantern now earns $25 more from the place.',
           'It falls, because she pays $25 more than before.',
           'Nothing changes at all, because she still books.',
         ],
@@ -202,7 +202,7 @@ export const independent = [
     id: 'm01-wim-i3', type: 'mc', kind: 'conceptual',
     prompt: 'Kotler’s 1972 definition describes marketing as creating and offering values to others to achieve a “desired response”. Why was “desired response” an important choice of words?',
     options: [
-      'It lets the definition cover exchanges that aren’t purchases, such as donations, votes and volunteering.',
+      'It covers exchanges that aren’t purchases, such as donations and votes.',
       'It defines marketing as persuasion, whatever value the offer has for the customer.',
       'It limits marketing to the responses that advertising can measure, such as clicks.',
       'It replaced the AMA’s definition, which had applied only to consumer goods.',
@@ -266,7 +266,7 @@ export const check = [
     options: [
       'Understanding customers’ needs, creating offers they value and capturing value in return',
       'Advertising and promotion that persuade people to buy what a business has made',
-      'Selling whatever the business produces at the highest price customers will accept',
+      'Selling everything the business produces, at the highest price that customers will accept',
       'Researching customers’ opinions and reporting them to the managers who decide',
     ],
     answer: 0,
@@ -310,10 +310,10 @@ export const check = [
     id: 'm01-wim-k4', type: 'mc', kind: 'applied',
     prompt: 'A fictional ferry company calls itself “the operator of the best car ferries on the estuary”. A bridge across the estuary will open in three years. What does Levitt’s idea of marketing myopia suggest the company should do first?',
     options: [
-      'Redefine itself by the need it meets, getting people and goods across the estuary, and ask what those customers will want once the bridge opens.',
+      'Redefine its business as moving people and goods across the estuary, and ask what they will need.',
       'Order faster, more comfortable ferries so that it stays the best car-ferry operator on the estuary.',
-      'Cut its fares now, so that drivers stay loyal before the bridge opens.',
-      'Increase its advertising to remind drivers how good its ferries are.',
+      'Cut its fares now, so that drivers form a habit of using the ferry before the bridge opens.',
+      'Increase its advertising to remind drivers how comfortable and reliable its ferries are.',
     ],
     answer: 0,
     feedback: {

@@ -7,7 +7,8 @@
 // are catering clients from its first month (F01, transactions m6 and m8). M02 later plans Lantern Cold Brew, a canned
 // drink for shops in Harbour City; M01 comes first and does not use M02's market figures.
 
-/** Lantern's three lines of business in its first ten months (March–December 2026). */
+/** Lantern's three lines of business in its first ten months (March–December 2026). `retention` is the share of
+ *  catering clients who stay from one year to the next. */
 export const BUSINESS = {
   catering: { clients: 18, eventsPerClientYear: 6, revenuePerEvent: 820, pricePerHead: 9.0, contributionMargin: 0.45, retention: 0.61 },
   workshops: { held: 14, avgParticipants: 12, pricePerPerson: 125 },
