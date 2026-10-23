@@ -74,7 +74,7 @@ export const CHART = [
   { no: 560, name: 'Depreciation Expense', type: 'expense', da: true, noncash: true },
   { no: 565, name: 'Amortisation Expense', type: 'expense', da: true, noncash: true },
   { no: 570, name: 'Fuel Expense', type: 'expense' },
-  { no: 575, name: 'Delivery Expense', type: 'expense' },
+  { no: 575, name: 'Shipping Expense', type: 'expense' },
   { no: 576, name: 'Card and Platform Fees Expense', type: 'expense' },
   { no: 585, name: 'Bad Debt Expense', type: 'expense' },
   { no: 599, name: 'Miscellaneous Expense', type: 'expense' },
@@ -100,7 +100,7 @@ export const FACTS = {
   supplies: { bought: 11_540, paid: 11_020, onHand: 640 },
   wages: { events: 25_200, shopAndOffice: 18_400, payable: 2_100 },
   utilities: { expense: 2_860, unpaid: 290 },
-  advertising: 6_500, delivery: 12_630, fuel: 1_960, misc: 640,
+  advertising: 6_500, shipping: 12_630, fuel: 1_960, misc: 640,
   dividends: [{ date: '2026-03-30', amount: 300 }, { date: '2026-12-15', amount: 4_700 }],
   tax: { rate: 0.25, estimatedPaid: 6_000 },     // a combined federal (21%) and state rate assumed for the case
 };
@@ -179,7 +179,7 @@ export const YEAR = [
   { id: 'y23', date: '2026-12-31', text: 'Advertising.',
     lines: [{ acct: 'Advertising Expense', dr: F.advertising }, { acct: 'Cash', cr: F.advertising }], cash: 'operating', cashLabel: 'Cash paid to suppliers' },
   { id: 'y24', date: '2026-12-31', text: 'Couriers and postage for shop orders.',
-    lines: [{ acct: 'Delivery Expense', dr: F.delivery }, { acct: 'Cash', cr: F.delivery }], cash: 'operating' },
+    lines: [{ acct: 'Shipping Expense', dr: F.shipping }, { acct: 'Cash', cr: F.shipping }], cash: 'operating' },
   { id: 'y25', date: '2026-12-31', text: 'Fuel for the van.',
     lines: [{ acct: 'Fuel Expense', dr: F.fuel }, { acct: 'Cash', cr: F.fuel }], cash: 'operating' },
   { id: 'y26', date: '2026-12-31', text: 'Bank charges, licences and other small costs.',

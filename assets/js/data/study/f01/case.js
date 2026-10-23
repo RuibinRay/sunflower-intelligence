@@ -4,8 +4,9 @@
 // Every name and figure here is invented for teaching.
 //
 // The story: Ana Lim starts Lantern Coffee Co., a corporation that caters coffee for offices and events and runs
-// barista-training workshops, on 1 March 2026. It sells a service, so it holds no inventory: beans, milk and cups
-// are supplies, expensed as they are used. The books are kept on the accrual basis under US GAAP.
+// barista-training workshops, on 1 March 2026. F01 follows those services, which hold no inventory: beans, milk and
+// cups are supplies, expensed as they are used. (Lantern's online shop, which sells bags of beans, is left out of F01's
+// March; B02 cleans its orders and F02 adds its inventory to the books for the year.) The books are kept on the accrual basis under US GAAP.
 // Lessons close March so the whole cycle can be seen in one month; most businesses close once a year.
 
 /** Account types:
