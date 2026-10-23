@@ -59,7 +59,7 @@ export const CHART = [
 export const MARCH = [
   { id: 'm1', date: '2026-03-01', text: 'Ana Lim invests $20,000 cash in Lantern Coffee Co. in exchange for common stock.',
     lines: [{ acct: 'Cash', dr: 20000 }, { acct: 'Common Stock', cr: 20000 }], cash: 'financing' },
-  { id: 'm2', date: '2026-03-01', text: 'Lantern borrows $10,000 from Coastline Bank, signing a two-year note payable at 6% annual interest. Interest is paid every three months, starting on 1 June.',
+  { id: 'm2', date: '2026-03-01', text: 'Lantern borrows $10,000 from Coastline Bank, signing a two-year note payable at 6% annual interest. Interest is paid every three months, starting on 1 June, and the $10,000 is repaid in full on 1 March 2028.',
     lines: [{ acct: 'Cash', dr: 10000 }, { acct: 'Notes Payable', cr: 10000 }], cash: 'financing' },
   { id: 'm3', date: '2026-03-03', text: 'Lantern buys an espresso machine and grinder for $12,000, paying $4,000 in cash and owing the supplier the remaining $8,000, due in 30 days.',
     lines: [{ acct: 'Equipment', dr: 12000 }, { acct: 'Cash', cr: 4000 }, { acct: 'Accounts Payable', cr: 8000 }], cash: 'investing' },

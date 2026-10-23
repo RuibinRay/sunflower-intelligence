@@ -298,7 +298,7 @@ export function mountSimulator(el, opts = {}) {
     }
     if (fixedBox) {
       const w = planWords(plan);
-      fixedBox.querySelector('dl').replaceChildren(...locked.flatMap((k) => [h('dt', {}, DECISION_NAMES[k]), h('dd', {}, k === 'tier' ? `${w.tier} (quality ${TIER[plan.tier]?.quality}, ${fmt.price(TIER[plan.tier]?.cogs ?? NaN)} a can)` : k === 'promotion' ? PROMOTION.map((v) => `${lower1(v.name)} ${fmt.money(plan.promotion[v.id] || 0)}`).join('; ') : w[k])]));
+      fixedBox.querySelector('dl').replaceChildren(...locked.flatMap((k) => [h('dt', {}, DECISION_NAMES[k]), h('dd', {}, k === 'tier' ? `${w.tier} (quality ${TIER[plan.tier]?.quality}, ${fmt.price(TIER[plan.tier]?.cogs ?? NaN)} a can)` : k === 'promotion' ? PROMOTION.map((v, i) => `${i ? lower1(v.name) : v.name} ${fmt.money(plan.promotion[v.id] || 0)}`).join('; ') : w[k])]));
     }
   }
 

@@ -166,7 +166,7 @@ export function journalTable(entries, { caption, chart = CHART, refs = true, pos
     if (memo && e.text) tb.append(h('tr', { class: 'acc-j-memo' }, h('td'), h('td', { colspan: cols - 1 }, e.text)));
     table.append(tb);
   }
-  return h('div', { class: 'table-scroll' }, table);
+  return h('div', { class: 'table-scroll', role: 'region', 'aria-label': caption ? String(caption) : 'Journal entries' }, table);
 }
 
 /** An empty ledger account, so a T-account can be drawn before anything is posted to it. */

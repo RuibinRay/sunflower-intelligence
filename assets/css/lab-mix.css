@@ -14,9 +14,8 @@
 @container (min-width: 760px) {
   .mix[data-mode="full"] .mix-grid:not(.is-locked) { grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); }
 }
-@container (min-width: 640px) {
-  .mix[data-mode="compact"] .mix-grid:not(.is-locked) { grid-template-columns: minmax(250px, 300px) minmax(0, 1fr); }
-}
+/* lesson widgets stay in one column (decisions, then results): a 46rem lesson column is too narrow to split */
+.mix[data-mode="compact"] .mix-grid { gap: var(--s-5); }
 .mix-side { display: grid; gap: var(--s-4); align-content: start; min-width: 0; }
 .mix-results, .mix-body { display: grid; gap: var(--s-5); align-content: start; min-width: 0; }
 .mix-body > *, .mix-results > * { min-width: 0; }
