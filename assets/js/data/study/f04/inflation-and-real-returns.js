@@ -1,12 +1,15 @@
 // inflation-and-real-returns.js — F04 · Inflation and real returns. Content only; exercises are in inflation-and-real-returns.ex.js.
 // Builds on F00 interest-and-inflation (CPI, purchasing power, the exact real return), which it refers back to rather than
-// re-teaching. Case facts: Ana's 2.8% inflation assumption (as in F00) and Lantern in March 2027. New fictional facts used
+// re-teaching. Case facts: Ana's 2.8% inflation assumption (ANA_PLAN.inflation, as in F00) and Lantern in March 2027. New fictional facts used
 // here and only here: the law firm's three-year catering offer ($42,000 fixed or $40,000 indexed) and Lantern's 10%
-// required return. Deliberately does not use ANA_PLAN's home, saving or salary figures: the project uses those.
+// required return. Deliberately does not use ANA_PLAN's home, saving, mortgage or salary figures: the project uses those.
+import { ANA_PLAN } from './case.js';
+
+const INF = ANA_PLAN.inflation / 100;                            // 2.8% a year, Ana's working assumption
 const idx = [100, 103.2, 109.7, 116.4, 119.6, 122.9];          // fictional index, Year 0 = 100
 const af = (r, n) => (1 - (1 + r) ** -n) / r;
-const rReal = 1.10 / 1.028 - 1;                                  // Lantern: 10% nominal, 2.8% inflation
-const nomFee = (t) => 40000 * 1.028 ** t;
+const rReal = 1.10 / (1 + INF) - 1;                              // Lantern: 10% nominal, 2.8% inflation
+const nomFee = (t) => 40000 * (1 + INF) ** t;
 
 export default {
   slug: 'inflation-and-real-returns',
@@ -72,7 +75,7 @@ export default {
     { h: 'Price indexes over time' },
     { p: String.raw`Write <m>\text{CPI}_t</m> for the index level at date <m>t</m>. Inflation over any interval is the ratio of the index levels minus one, however many years the interval spans. Because the ratio over a long interval is the product of the ratios over the shorter intervals inside it, yearly rates compound: <m>(1 + i_1)(1 + i_2)\cdots(1 + i_n) = \text{CPI}_n \div \text{CPI}_0</m>. The average annual rate is the <m>n</m>th root of that product minus one, a geometric average, for the same reason that the average growth rate of an investment is.` },
     { p: String.raw`Monthly figures annualise the same way. If an index rises 0.3% in a month, the annualised rate is <m>1.003^{12} - 1 \approx 3.66\%</m>, not <m>12 \times 0.3\% = 3.6\%</m>. Over a full year, the year-on-year change in the index (this month’s level against the same month a year earlier) is usually the more reliable figure, because single months are noisy.` },
-    { p: 'A price index is an average over a basket, so it is a measure, not a law of nature. The CPI tracks what urban consumers buy; a business’s own costs, such as coffee beans or rent, may rise faster or slower. When a contract is linked to an index, the parties must name the exact series. The US Bureau of Labor Statistics, which publishes the CPI, recommends the US City Average index for escalation clauses and warns against using seasonally adjusted figures for them, because those are revised for up to five years.' },
+    { p: 'A price index is an average over a basket, so it is a measure, not a law of nature. The CPI tracks what urban consumers buy; a business’s own costs, such as coffee beans or rent, may rise faster or slower. When a contract is linked to an index, the parties must name the exact series. The US Bureau of Labor Statistics, which publishes the CPI, recommends the US City Average index for escalation clauses and calls seasonally adjusted figures inappropriate for them; seasonally adjusted data are also revised for up to five years after release.' },
 
     { h: 'The Fisher relation in full' },
     { p: String.raw`The exact relation <m>1 + r_{\text{nom}} = (1 + r_{\text{real}})(1 + i)</m> holds over any period, provided all three rates are measured over the <i>same</i> period and compound in the same way. Two consequences follow.` },
@@ -289,6 +292,7 @@ export default {
   ],
 
   checks: [
+    { what: 'Ana’s inflation assumption (%)', value: ANA_PLAN.inflation, shown: 2.8 },
     // index table
     { what: 'Year 1 inflation (%)', value: (idx[1] / idx[0] - 1) * 100, shown: 3.2 },
     { what: 'Year 2 inflation (%)', value: (idx[2] / idx[1] - 1) * 100, shown: 6.30 },

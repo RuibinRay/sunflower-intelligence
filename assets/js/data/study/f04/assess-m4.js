@@ -112,9 +112,9 @@ export const items = [
     answer: 1171.73, check: () => 2200 / 1.032 ** 20, unit: '$', places: 2, tol: 0.5,
     wrong: [
       { value: 4130.63, say: 'That is what a payment rising with inflation would reach. A fixed payment loses purchasing power: divide by 1.032²⁰.' },
-      { value: 792, say: 'That subtracts 3.2% twenty times (simple). Inflation compounds: divide by 1.032²⁰ ≈ 1.877559.' },
+      { value: 792, say: 'That subtracts 3.2% twenty times (simple). Inflation compounds: divide by 1.032²⁰ ≈ 1.877561.' },
     ],
-    solution: 'Real value = 2,200 ÷ 1.032²⁰ = 2,200 ÷ 1.877559 ≈ $1,171.73: a fixed nominal payment takes a shrinking share of purchasing power, which is part of why a long fixed-rate loan becomes easier to carry over time.',
+    solution: 'Real value = 2,200 ÷ 1.032²⁰ = 2,200 ÷ 1.877561 ≈ $1,171.73: a fixed nominal payment takes a shrinking share of purchasing power, which is part of why a long fixed-rate loan becomes easier to carry over time.',
   },
   {
     id: 'f04-m4-11', lesson: 'mortgages', type: 'classify', kind: 'conceptual',
