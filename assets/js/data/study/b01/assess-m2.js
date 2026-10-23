@@ -1,9 +1,17 @@
 // assess-m2.js — B01 module 2 test: Data and where it comes from (data-types, data-collection, data-quality).
 // No hints. Each item has a full solution, shown when the student reviews the test.
 // Every business and figure is fictional except Lantern’s October order count, which comes from case.js.
-import { DERIVED } from './case.js';
+import { DERIVED, UTC_OFFSET_HOURS } from './case.js';
 
 const OCT = 3;   // index of Oct 2026 in case.js arrays
+const BEHIND = -UTC_OFFSET_HOURS;   // hours Lantern's local time is behind UTC
+const WORDS = { 4: 'four', 5: 'five', 6: 'six' };
+const CUT = `${24 - BEHIND}:00`;      // local time from which orders take the next day's UTC date
+// m2-8: local order times (late November 2026), the UTC timestamps the platform stores, and which change date
+const LOCAL = ['2026-11-27T18:40', '2026-11-27T19:05', '2026-11-27T21:30', '2026-11-28T00:30', '2026-11-28T04:10', '2026-11-28T20:15', '2026-11-28T23:59'];
+const toUtc = (t) => new Date(Date.parse(`${t}:00Z`) + BEHIND * 3600000).toISOString().replace('.000Z', 'Z');
+const localLabel = (t) => `${Number(t.slice(8, 10))} Nov ${t.slice(11, 16)}`;
+const MOVED = LOCAL.map((t, i) => (toUtc(t).slice(0, 10) !== t.slice(0, 10) ? i : -1)).filter((i) => i >= 0);
 
 export const items = [
   {
@@ -24,7 +32,7 @@ export const items = [
     id: 'b01-m2-2', lesson: 'data-types', type: 'mc', kind: 'applied',
     prompt: 'A fictional chain of 30 cafés records each café’s sales in each of the last 52 weeks. What kind of data is this, and what can it show that one week’s figures for all 30 cafés can’t?',
     options: [
-      'Panel data: it can show how each café’s sales changed through the year, not only how the cafés compare in one week',
+      'Panel data: it shows how each café’s sales changed through the year',
       'Time-series data: it shows the chain’s total for each week but nothing about individual cafés',
       'Cross-sectional data: it compares the cafés at a single point in time',
       'Unstructured data: it must be coded before it can be analysed',
@@ -51,7 +59,7 @@ export const items = [
     id: 'b01-m2-4', lesson: 'data-collection', type: 'mc', kind: 'conceptual',
     prompt: 'Lantern wants to know whether offering free delivery on orders over $40 raises the average order value. Which approach can best show cause and effect?',
     options: [
-      'Randomly offer free delivery to half of website visitors for four weeks and compare the two groups’ average order value',
+      'Randomly offer free delivery to half of website visitors for four weeks and compare the groups',
       'Compare average order value in the month before and the month after introducing free delivery for everyone',
       'Ask customers in a survey whether free delivery would make them spend more',
       'Compare customers who choose express delivery with those who don’t',
@@ -66,14 +74,14 @@ export const items = [
   },
   {
     id: 'b01-m2-5', lesson: 'data-collection', type: 'num', kind: 'numerical',
-    prompt: 'A fictional airline e-mails a survey to 2,000 passengers. 400 reply, and 300 of them say they were satisfied. What is the highest possible percentage of all 2,000 passengers who were satisfied?',
-    answer: 95, check: () => (300 + (2000 - 400)) / 2000 * 100, unit: '%', places: 0, tol: 0.5,
+    prompt: 'A fictional airline e-mails a satisfaction survey to 2,000 passengers, and 400 reply; 300 of them say they were satisfied. How many percentage points wide is the range of possible values for the share of all 2,000 passengers who were satisfied, allowing for anything the non-respondents might have said?',
+    answer: 80, check: () => ((300 + (2000 - 400)) / 2000 - 300 / 2000) * 100, unit: 'points', places: 0, tol: 0.5,
     wrong: [
-      { value: 75, say: 'That is the respondents’ share. The highest possible figure assumes every non-respondent was satisfied.' },
-      { value: 15, say: 'That is the lowest possible share, 300 ÷ 2,000, assuming no non-respondent was satisfied.' },
-      { value: 80, say: 'That is the share who didn’t reply (1,600 ÷ 2,000). Add them to the 300 satisfied respondents.' },
+      { value: 20, say: 'That is the response rate (400 ÷ 2,000). The range runs from the lowest possible share to the highest; its width is set by the non-respondents.' },
+      { value: 75, say: 'That is the respondents’ share satisfied (300 ÷ 400), a point inside the range, not its width.' },
+      { value: 95, say: 'That is the top of the range. Subtract the bottom, 300 ÷ 2,000 = 15%.' },
     ],
-    solution: 'Non-respondents: 2,000 − 400 = 1,600. If all were satisfied: (300 + 1,600) ÷ 2,000 = 95%. If none were: 300 ÷ 2,000 = 15%. With a 20% response rate, the survey alone allows anything from 15% to 95%; the respondents’ 75% sits somewhere inside.',
+    solution: 'Lowest possible: 300 ÷ 2,000 = 15% (no non-respondent satisfied). Highest: (300 + 1,600) ÷ 2,000 = 95% (all of them satisfied). Width = 95 − 15 = 80 percentage points, which is the share who didn’t reply: 1,600 ÷ 2,000. The respondents’ 75% says nothing about where in that range the truth lies.',
   },
   {
     id: 'b01-m2-6', lesson: 'data-collection', type: 'classify', kind: 'conceptual',
@@ -114,21 +122,13 @@ export const items = [
   },
   {
     id: 'b01-m2-8', lesson: 'data-quality', type: 'rows', kind: 'applied',
-    prompt: 'Lantern’s platform stores order times in UTC, and Lantern’s local time is five hours behind UTC. A daily report groups orders by the date of the stored UTC timestamp. Select every order that the report puts on a different day from the customer’s local day.',
+    prompt: `Lantern’s platform stores order times in UTC, and Lantern’s local time is ${WORDS[BEHIND]} hours behind UTC. A daily report groups orders by the date of the stored UTC timestamp. Select every order that the report puts on a different day from the customer’s local day.`,
     data: { table: {
       head: ['order_id', 'Local time', 'Stored timestamp (UTC)'],
-      rows: [
-        ['LC-11781', '27 Nov 18:40', '2026-11-27T23:40:00Z'],
-        ['LC-11782', '27 Nov 19:05', '2026-11-28T00:05:00Z'],
-        ['LC-11783', '27 Nov 21:30', '2026-11-28T02:30:00Z'],
-        ['LC-11784', '28 Nov 00:30', '2026-11-28T05:30:00Z'],
-        ['LC-11785', '28 Nov 04:10', '2026-11-28T09:10:00Z'],
-        ['LC-11786', '28 Nov 20:15', '2026-11-29T01:15:00Z'],
-        ['LC-11787', '28 Nov 23:59', '2026-11-29T04:59:00Z'],
-      ],
+      rows: LOCAL.map((t, i) => [`LC-${11781 + i}`, localLabel(t), toUtc(t)]),
     } },
-    answer: [1, 2, 5, 6],
-    solution: 'Every order placed at 19:00 local time or later is stored with the next day’s UTC date: LC-11782 and LC-11783 (27 November, reported on the 28th) and LC-11786 and LC-11787 (28 November, reported on the 29th). Orders in the early hours of local time stay on the same date, because adding five hours doesn’t cross midnight. The timestamps are accurate; the report’s definition of a day doesn’t fit a business that works in local time.',
+    answer: MOVED,
+    solution: `Every order placed at ${CUT} local time or later is stored with the next day’s UTC date: LC-11782 and LC-11783 (27 November, reported on the 28th) and LC-11786 and LC-11787 (28 November, reported on the 29th). Orders in the early hours of local time stay on the same date, because adding ${WORDS[BEHIND]} hours doesn’t cross midnight. The timestamps are accurate; the report’s definition of a day doesn’t fit a business that works in local time.`,
   },
   {
     id: 'b01-m2-9', lesson: 'data-quality', type: 'num', kind: 'numerical',
@@ -139,37 +139,37 @@ export const items = [
       { value: 43.05, say: 'That divides the inflated total by the true number of orders. Remove the $410 first.' },
       { value: 40, say: 'That removes the $410 but still divides by 205 rows. Divide by the 200 real orders.' },
     ],
-    solution: 'True revenue = 8,610 − 410 = $8,200 from 200 orders, so the average order value is 8,200 ÷ 200 = $41.00. The export’s rows give 8,610 ÷ 205 = $42.00: the repeated orders were larger than average (410 ÷ 5 = $82 each), so they lifted the average as well as the count.',
+    solution: 'True revenue = 8,610 − 410 = $8,200 from 200 orders, so the average order value is 8,200 ÷ 200 = $41.00. The export’s rows give 8,610 ÷ 205 = $42.00: the repeated orders were larger than average (410 ÷ 5 = $82 on average), so they lifted the average as well as the count.',
   },
   {
     id: 'b01-m2-10', lesson: 'data-quality', type: 'mc', kind: 'applied',
     prompt: `For October, Lantern’s dashboard shows ${DERIVED.orders[OCT]} online orders and the order export, once duplicates are removed, has ${DERIVED.orders[OCT]} rows. The accounting system records 322 online sales for October. What should the analyst do first?`,
     options: [
-      'Find out how each system defines a sale or an order (for example, whether it counts orders paid in October but placed in September, or refunds) and explain the difference before choosing a figure',
-      'Use the largest figure, to be safe',
-      'Average the three figures',
-      `Treat the accounting figure as an error, because two sources agree on ${DERIVED.orders[OCT]}`,
+      'Find each system’s definition of a sale or order and explain the gap before choosing a figure',
+      'Use the largest of the three figures, so that no sale is left out of the review',
+      'Average the three figures, so that each system’s view counts equally in the review',
+      `Treat the accounting figure as an error and report ${DERIVED.orders[OCT]}, because the other two sources agree on it`,
     ],
     answer: 0,
     feedback: {
       1: 'Choosing the largest figure doesn’t make it right; it may count things the review shouldn’t.',
       2: 'An average of three definitions is a figure that matches none of them.',
-      3: 'The dashboard and the export come from the same platform, so their agreement says little; the accounting system may simply count something different.',
+      3: 'The dashboard and the export come from the same platform, so their agreement says little; the accounting system may count something different.',
     },
-    solution: 'Differences between systems usually come from definitions: when a sale is recorded, whether refunds or adjustments are included, which channel an order is assigned to. Find each definition, explain the gap of 3, and then use the figure whose definition fits the question; for counting orders customers placed, that is the platform’s.',
+    solution: 'Differences between systems usually come from definitions: when a sale is recorded (an order placed in September but paid in October, say), whether refunds or adjustments are included, which channel an order is assigned to. Find each definition, explain the gap of 3, and then use the figure whose definition fits the question; for counting orders customers placed, that is the platform’s.',
   },
   {
     id: 'b01-m2-11', lesson: 'data-quality', type: 'mc', kind: 'conceptual',
     prompt: 'Which statement about missing values is correct?',
     options: [
-      'They bias an average when the values that are missing differ from those that are present, for example when unhappy customers rate less often',
-      'They never bias an average; they only make it less precise',
-      'Any blank in a column is a quality defect',
-      'Filling every blank with the column’s average removes the problem',
+      'They bias an average when the missing values differ from those present, as when unhappy customers rate less',
+      'They never bias an average; they only make it less precise, because fewer values are left to average',
+      'Any blank in a column is a quality defect, whether or not the field is required',
+      'Filling every blank with the column’s average removes the problem, because the average then stays exactly the same',
     ],
     answer: 0,
     feedback: {
-      1: 'That is true only when values are missing at random. When the gaps fall more often on some kinds of value or customer, the average of what remains is biased.',
+      1: 'That is true only when values are missing completely at random. When the gaps fall more often on some kinds of value or customer, the average of what remains is biased.',
       2: 'Completeness is measured against what is required. A blank in an optional field, such as a rating, is allowed.',
       3: 'Filling blanks with the average invents values and hides the gap; if the missing values differ from the rest, the bias remains.',
     },

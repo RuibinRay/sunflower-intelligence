@@ -1,7 +1,7 @@
 // data-quality.js — B01 · Data quality: is the data fit for the question? Content only; exercises are in data-quality.ex.js.
 // Uses SHOP and DERIVED from case.js. The inspect-only look at lantern-orders is qualitative on purpose: B02 counts and fixes.
 // Every other business, person and number is fictional unless a source is cited.
-import { SHOP, DERIVED } from './case.js';
+import { SHOP, DERIVED, UTC_OFFSET_HOURS } from './case.js';
 
 const NOV = 4;                       // index of Nov 2026 in case.js arrays
 const EXPORT_ROWS = 448;             // fictional: rows in the November export Ana downloads on 1 December
@@ -26,8 +26,9 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: `On the morning of 1 December Ana opens three reports on November and finds three different numbers. The shop’s dashboard shows ${DERIVED.orders[NOV]} orders. The order export she downloaded at 07:30 has ${EXPORT_ROWS} rows, one per order, or so it claims. The payment provider’s monthly report lists ${PAYMENTS} card payments. Before she can review the month, she has to decide which number to believe, and why the others differ.` },
-    { p: 'No dataset is perfect, and none needs to be. The useful question is the one the UK government’s Data Quality Framework puts at the centre of its definition of quality: is this data good enough for what I want to use it for? The Framework calls this <g>fitness for purpose</g>. The same file can be good enough for one decision and useless for another, so quality is always judged against a use. This lesson gives you the vocabulary for describing what is wrong with data, shows how each kind of problem moves the numbers a business watches, and ends with a first look at a raw export. Repairing the problems is the subject of B02 Data Cleaning and Preparation.' },
+    { case: `On the morning of 1 December Ana opens three reports on November and finds three different numbers. The shop’s dashboard shows ${DERIVED.orders[NOV]} orders. The order export she downloaded at 10:00, after the app’s overnight sync, has ${EXPORT_ROWS} rows, one per order, or so it claims. The payment provider’s monthly report lists ${PAYMENTS} card payments. Before she can review the month, she has to decide which number to believe, and why the others differ.` },
+    { p: 'No dataset is perfect, and none needs to be. The useful question is the one the UK government’s Data Quality Framework puts at the centre of its definition of quality: is this data good enough for what I want to use it for? The Framework calls this <g>fitness for purpose</g>. The same file can be good enough for one decision and useless for another, so quality is always judged against a use.' },
+    { p: 'This lesson gives you the vocabulary for describing what is wrong with data, shows how each kind of problem moves the numbers a business watches, and ends with a first look at a raw export. Repairing the problems is the subject of B02 Data Cleaning and Preparation.' },
     { h: 'Six dimensions of data quality' },
     { p: 'A <g>data quality dimension</g> is one aspect of quality that can be assessed on its own. Practitioners commonly use six, from a 2013 paper by DAMA UK, the UK chapter of the Data Management Association; the UK government’s Framework adopts the same six. Each asks a different question of the data, and a failure in each has its own business cost.' },
     { table: {
@@ -38,7 +39,7 @@ export default {
         ['<g>Completeness</g>', 'Is every required value present?', 'Orders with no e-mail address, although e-mail is required', 'Receipts and delivery updates can’t be sent; orders can’t be linked to customers'],
         ['<g>Consistency</g>', 'Is the same thing recorded the same way everywhere?', 'One region written North, north and Nth', 'Regional totals split three ways; reports that contradict each other'],
         ['<g>Validity</g>', 'Are values in the expected format, type and range?', 'A rating of 9 on a 1–5 scale; a quantity of −1', 'Averages pulled off; calculations fail or mislead'],
-        ['<g>Timeliness</g>', 'Does the data reflect the period it describes, in time for the decision?', 'November’s report run before the night’s app orders arrived', 'Decisions made on a month that is still incomplete'],
+        ['<g>Timeliness</g>', 'Does the data reflect the period it describes, in time for the decision?', 'A report run before the previous night’s app orders arrive', 'Decisions made on a month that is still incomplete'],
         ['<g>Uniqueness</g>', 'Is each real thing recorded only once?', 'The same order exported twice', 'Orders and revenue overstated'],
       ],
     } },
@@ -57,31 +58,34 @@ export default {
     { h: 'How quality problems move a metric' },
     { p: 'A business rarely cares about a single wrong cell. It cares about the numbers built from the cells: orders, revenue, average order value, the average rating, a region’s share of sales. Each kind of problem distorts those numbers in a characteristic way, and knowing the pattern tells you which figures to distrust.' },
     { p: String.raw`<b>Duplicates inflate counts and totals.</b> A <g>duplicate record</g> describes the same order as another row, so every count and sum that includes both is too high. If November’s export holds ${EXPORT_ROWS} rows for ${DERIVED.orders[NOV]} real orders, a count of rows overstates orders by <m>(${EXPORT_ROWS} - ${DERIVED.orders[NOV]}) \div ${DERIVED.orders[NOV]} \approx 3.0\%</m>, and <g>revenue</g> by a similar amount. Averages are subtler: duplicates move an average only when the duplicated rows are unlike the rest. If a sync fault tends to repeat large orders, the average order value rises too.` },
-    { p: '<b>Missing values bias averages when what is missing differs from what is present.</b> A <g>missing value</g> leaves a gap, and the gap matters less for how big it is than for which values fall into it. If ratings were missing at random, the average of the ratings that exist would be a fair estimate of all customers’ ratings, only less precise. Lantern’s ratings are optional, and subscribers rate far more of their orders than one-off buyers, who tend to be less satisfied; the average of the ratings given then describes subscribers more than customers. The challenging example below puts a size on it, and B02’s lesson on missing values shows how to test and handle it.' },
+    { p: '<b>Missing values bias averages when what is missing differs from what is present.</b> A <g>missing value</g> leaves a gap, and the gap matters less for how big it is than for which values fall into it. If ratings were missing completely at random (whether a rating is missing has nothing to do with the customer or the order), the average of the ratings that exist would be a fair estimate of all customers’ ratings, only less precise. Lantern’s ratings are optional, and subscribers rate far more of their orders than one-off buyers, who tend to be less satisfied; the average of the ratings given then describes subscribers more than customers. The challenging example below puts a size on it, and B02’s lesson on missing values shows how to test and handle it.' },
     { p: String.raw`<b>Invalid values pull totals and averages.</b> A rating of 9 typed for a 4 raises the total of the ratings by 5, so among 50 ratings it lifts the mean by <m>5 \div 50 = 0.10</m> stars: enough to turn a fall into an apparent rise. A quantity of −1 recorded for a returned pack reduces the month’s pack count, and a placeholder price of 0 drags down the average price.` },
     { p: String.raw`<b>Inconsistent codes split groups.</b> If the North region appears as North in 120 orders, north in 15 and Nth in 8, a report grouped by region shows North with 120 orders instead of <m>120 + 15 + 8 = 143</m>, and two extra “regions” with a handful each. North looks <m>23 \div 143 \approx 16\%</m> smaller than it is, and anyone ranking regions may rank them wrongly.` },
     { p: String.raw`<b>Time zones move orders between days and months.</b> Lantern’s platform stores every order time in <g>UTC</g>; suppose, as in the worked examples, that Lantern’s local time is five hours behind it. An order placed at 21:30 local time on 30 November is stored as 02:30 UTC on 1 December. Nothing about it is inaccurate, but a report that groups orders by the UTC date files every order placed after 19:00 local time under the next day, and on the last evening of a month, under the next month. Daily patterns shift, and month totals gain the previous month’s last evening while losing their own.` },
-    { p: '<b>Late data understates the latest period.</b> If November’s figures are pulled at 07:30 on 1 December and the app sends its overnight orders at 09:00, the last night of November is missing from every number in the report. This is a timeliness failure, and it always bites the most recent period, which is usually the one a decision is about.' },
+    { p: '<b>Late data understates the latest period.</b> Had Ana pulled November’s figures at 07:30 on 1 December, before the app sent its overnight orders at 09:00, the last night of November would have been missing from every number in the report. This is a timeliness failure, and it always bites the most recent period, which is usually the one a decision is about.' },
     { h: 'Fitness for purpose' },
     { p: 'Because each problem distorts particular numbers, the same data can be fit for one purpose and not for another. Judge fitness by asking which dimensions the decision depends on and how large an error it can tolerate.' },
     { table: {
       caption: 'Is Lantern’s order export fit for the purpose? (fictional)',
       head: ['Purpose', 'Dimensions that matter most', 'Fit as it stands?'],
       rows: [
-        ['Monthly revenue for Ana’s review', 'Uniqueness; validity of amounts; orders assigned to the right month', 'Yes, once duplicates are removed and dates are taken in local time'],
+        ['Monthly revenue for Ana’s review', 'Uniqueness; validity of amounts; orders assigned to the right month', 'Not yet: it will be once duplicates are removed and dates are taken in local time'],
         ['E-mailing every November customer about a product recall', 'Completeness and accuracy of e-mail addresses', 'No: customers with missing or mistyped addresses would not be told'],
         ['Average satisfaction of all customers', 'Completeness of ratings, and whether the missing ones differ', 'Only with care: ratings are optional and given mostly by subscribers'],
         ['Planning tomorrow’s packing staff', 'Timeliness; dates in local time', 'Only if the data arrives by morning and days are counted in local time'],
       ],
     } },
     { p: 'Tolerance matters as much as the dimension. For Ana’s monthly review, revenue within 1–2% is good enough; for the tax return, the figure must be exact. For a product recall, a single missing e-mail address is a customer who isn’t warned. State the purpose and the tolerance before judging the data, otherwise every dataset either looks fine or looks hopeless.' },
-    { h: 'Measuring quality, simply' },
-    { p: 'Each dimension can be turned into a number, which makes quality something you can track. <g>Completeness</g> is the share of required values that are present; uniqueness is the number of distinct keys divided by the number of rows; validity is the share of values that pass their rules. Two cautions. Measure completeness only against values that are required: Lantern’s rating is optional, so a blank rating is not a defect, while a blank e-mail address is. And keep accuracy apart: it can only be measured by checking a sample of records against their source, for example 50 orders against the payment records. B02’s lesson on profiling and validation turns these measures into a full set of rules.' },
+    { h: 'Measuring quality' },
+    { p: 'Each dimension can be turned into a number, which makes quality something you can track. <g>Completeness</g> is the share of required values that are present; uniqueness is the number of distinct keys divided by the number of rows; validity is the share of values that pass their rules.' },
+    { p: 'Two cautions. Measure completeness only against values that are required: Lantern’s rating is optional, so a blank rating is not a defect, while a blank e-mail address is. And keep accuracy apart: it can only be measured by checking a sample of records against their source, for example 50 orders against the payment records. B02’s lesson on profiling and validation turns these measures into a full set of rules.' },
     { h: 'Who is responsible for quality' },
-    { p: 'Quality problems are created by people and systems, so responsibility has to be assigned to people. Three roles appear in most organisations, under various titles. <b>Data producers</b> are the people and systems that create the records: the checkout form, the staff who type in catering orders, the app’s sync with the platform. The <g>data owner</g> is the person accountable for a dataset: for deciding what it should contain and what its definitions are, who may use it, and how its quality problems are resolved. <b>Data users</b>, such as analysts and managers, judge whether the data is fit for their purpose, report the problems they find and state the limitations in what they publish. Larger organisations add specialists, often called data stewards, who look after definitions and quality day to day. The UK Framework speaks of data leaders, data practitioners, data owners and users; the titles vary, but someone must be accountable for each dataset.' },
-    { p: 'At Lantern, Ana owns the shop’s data, the shop platform and the app are its main producers, and Ana and any analyst she hires are its users. The roles matter because problems are cheapest to fix where they enter. A checkout form that refuses an order without an e-mail address prevents every future gap; an analyst who looks up missing addresses by hand fixes one month and must do it again the next. The UK Framework’s principles point the same way: commit to data quality, know your users and their needs, assess quality throughout the lifecycle, communicate quality clearly, and anticipate changes that will affect it.' },
+    { p: 'Quality problems are created by people and systems, so responsibility has to be assigned to people. Three roles appear in most organisations, under various titles. <b>Data producers</b> are the people and systems that create the records: the checkout form, the staff who type in catering orders, the app’s sync with the platform. The <g>data owner</g> is the person accountable for a dataset: for deciding what it should contain and what its definitions are, who may use it, and how its quality problems are resolved.' },
+    { p: '<b>Data users</b>, such as analysts and managers, judge whether the data is fit for their purpose, report the problems they find and state the limitations in what they publish. Larger organisations add specialists, often called data stewards, who look after definitions and quality day to day. The UK Framework speaks of data leaders, data practitioners, data owners and users; the titles vary, but someone must be accountable for each dataset.' },
+    { p: 'At Lantern, Ana owns the shop’s data, the shop platform and the app are its main producers, and Ana and Lantern’s analyst, Jun Park, are its users. The roles matter because problems are cheapest to fix where they enter. A checkout form that refuses an order without an e-mail address prevents every future gap; an analyst who looks up missing addresses by hand fixes one month and must do it again the next. The UK Framework’s principles point the same way: commit to data quality, know your users and their needs, assess quality throughout the lifecycle, communicate quality clearly, and anticipate changes that will affect it.' },
     { h: 'Looking before fixing' },
-    { p: 'The first step with any new dataset is to look at it without changing anything. The explorer below opens the raw export of Lantern’s orders for March to June 2026, the file that B02 cleans, in inspect-only mode: you can sort columns and read the summaries, but not alter a value. Go through it with the six dimensions in mind and write down every problem you see and the dimension it belongs to. Resist the urge to correct anything. Some odd values are genuine (a café can order a lot of coffee at once), some are errors, and deciding which needs evidence. That is the work of B02.' },
+    { p: 'The first step with any new dataset is to look at it without changing anything. The explorer below opens the raw export of Lantern’s orders for March to June 2026, the file that B02 cleans, in inspect-only mode: you can sort columns and read the summaries, but not alter a value, and it lists the issues it detects. For each issue, name its dimension, the figure it would distort and the question you would ask Ana; then say what the file alone can’t show, such as whether a value is accurate or whether the export was complete for its period.' },
+    { p: 'Resist the urge to correct anything. Some odd values are genuine (a café can order a lot of coffee at once), some are errors, and deciding which needs evidence. That is the work of B02.' },
     { callout: 'warn', title: 'Don’t fix what you haven’t understood', html: 'Deleting every row that looks odd is not a quality fix. An extreme order may be real; a blank rating may be allowed; a negative quantity may be how the shop records a return. Record what you see, ask the data owner, and only then decide.' },
   ],
 
@@ -125,9 +129,9 @@ export default {
           ['2', 'LC-11632', '10:05', 'web', '55.30'],
           ['3', 'LC-11631', '09:40', 'app', '41.50'],
           ['4', 'LC-11633', '11:20', 'web', '19.50'],
-          ['5', 'LC-11634', '12:02', 'web', '58.00'],
+          ['5', 'LC-11634', '12:02', 'app', '58.00'],
           ['6', 'LC-11635', '12:45', 'app', '33.00'],
-          ['7', 'LC-11634', '12:02', 'web', '58.00'],
+          ['7', 'LC-11634', '12:02', 'app', '58.00'],
         ],
       },
       steps: [
@@ -165,9 +169,9 @@ export default {
       },
       steps: [
         'Work out what the UTC report counted. Five hours behind UTC means local 19:00–24:00 is 00:00–05:00 UTC on the next day. So the report’s “Friday” is Thursday evening plus Friday up to 19:00 local, and its “Saturday” is Friday evening plus Saturday up to 19:00.',
-        String.raw`Check the report’s figures: Friday (UTC) <m>= 6 + 30 = 36</m>; Saturday (UTC) <m>= 18 + 22 = 40</m>. Both match, so the timestamps are complete and accurate.`,
+        String.raw`Check the report’s figures: Friday (UTC) <m>= 6 + 30 = 36</m>; Saturday (UTC) <m>= 18 + 22 = 40</m>. Both match, so the two views count the same orders; only the definition of a day differs.`,
         String.raw`Count by local day, the day the packers work: Friday <m>= 30 + 18 = 48</m> orders; Saturday <m>= 22 + 5 = 27</m>.`,
-        String.raw`Compare. In local time Friday is the busiest day by <m>48 - 27 = 21</m> orders; the UTC report reversed the ranking because Friday evening, Lantern’s busiest block of the weekend, was filed under Saturday.`,
+        String.raw`Compare. In local time Friday is the busiest day by <m>48 - 27 = 21</m> orders; the UTC report reversed the ranking because Friday evening, the weekend’s busiest hours (18 orders in five hours), was filed under Saturday.`,
         'Fix the report, not the data: group orders by local date for any decision about staff, opening hours or daily targets, and say in the report which time zone defines a day.',
       ],
       answer: 'Friday. By local day Friday had 48 orders and Saturday 27; the UTC report’s 36 and 40 put Friday evening’s 18 orders under Saturday.',
@@ -175,23 +179,24 @@ export default {
   ],
 
   demo: [
-    { widget: 'dq-inspect', intro: 'Lantern’s raw order export for March to June 2026, the file B02 cleans, in inspect-only mode. Sort columns, read the summaries and list every problem you can find under the six dimensions. Don’t try to fix anything: note the evidence and the question you would ask Ana.' },
+    { widget: 'dq-inspect', intro: 'Lantern’s raw order export for March to June 2026, the file B02 cleans, in inspect-only mode, with the issues the explorer detects. For each issue it lists, name its dimension, the figure it would distort and the question you’d ask Ana; then say what the file alone can’t show (accuracy, timeliness). The repairs are B02’s subject.' },
     { widget: 'dq-ratings', intro: 'Change who rates. Set how many orders come from subscribers, how often each group rates and how satisfied each group is, and compare the average of the ratings given with the estimate for all orders. Make both groups rate equally often and watch the gap close.' },
   ],
 
   mistakes: [
     { title: '“The file is clean, so the numbers are right.”', html: 'A file can pass every rule and still hold wrong values: valid isn’t accurate. And a perfectly accurate file can still mislead if its definitions don’t match the question, such as days counted in UTC for a staffing decision. Check fitness for the purpose, not just the absence of obvious errors.' },
     { title: '“A few duplicates don’t matter.”', html: 'Every duplicate adds a whole order to the count and its value to revenue, and a fault that repeats large orders also lifts the average. Test the key (distinct identifiers against rows) before counting anything; it takes seconds.' },
-    { title: '“Missing values only reduce the sample size.”', html: 'Only if they are missing at random. When the gaps fall more often on some kinds of customer, as optional ratings do, the values that remain describe a different group from the whole, and averages shift. Ask who is missing, not just how many.' },
+    { title: '“Missing values only reduce the sample size.”', html: 'Only if they are missing completely at random. When the gaps fall more often on some kinds of customer, as optional ratings do, the values that remain describe a different group from the whole, and averages shift. Ask who is missing, not just how many.' },
     { title: '“Every blank is a defect.”', html: 'Completeness is measured against what is required. A blank e-mail address on an order is a defect; a blank rating is allowed. Calling optional blanks defects exaggerates the problem; ignoring them when they bias an average understates it.' },
     { title: '“Data quality is the analyst’s job.”', html: 'Analysts find problems; producers create them and owners decide how they are resolved. Problems fixed where they enter, such as a required field on a form, stay fixed. Problems cleaned downstream come back every month.' },
     { title: '“If the systems disagree, one of them is wrong.”', html: 'Often each system counts something different: orders, rows or card payments. Before calling a difference an error, find each system’s definition; then agree which one the decision needs and how large a gap is acceptable.' },
   ],
 
   application: [
-    { p: `Back to Ana’s three numbers. Her analyst reconciles them before the review starts. The export’s ${EXPORT_ROWS} rows contain ${EXPORT_ROWS - DERIVED.orders[NOV]} exact duplicates, created when the app’s sync with the platform retried after a time-out; removing them leaves ${DERIVED.orders[NOV]} orders, matching the dashboard. The payment provider’s ${PAYMENTS} is not an error at all: ${DERIVED.orders[NOV] - PAYMENTS} November orders were paid with gift vouchers, which never pass through the card system. Three numbers, three definitions: rows, orders and card payments. Only one of them counts what the review needs.` },
+    { p: `Back to Ana’s three numbers. Jun Park, Lantern’s analyst, reconciles them before the review starts. The export’s ${EXPORT_ROWS} rows contain ${EXPORT_ROWS - DERIVED.orders[NOV]} exact duplicates, created when the app’s sync with the platform retried after a time-out; removing them leaves ${DERIVED.orders[NOV]} orders, matching the dashboard, which, like the export, counts November by Lantern’s local date.` },
+    { p: `The payment provider’s ${PAYMENTS} is not an error at all: ${DERIVED.orders[NOV] - PAYMENTS} November orders were paid with gift vouchers, which never pass through the card system. Three numbers, three definitions: rows, orders and card payments. Only one of them counts what the review needs.` },
     { p: 'Reconciling sources this way is routine wherever several systems record the same events, and the right test is rarely “are the numbers equal?”. Systems legitimately differ. Google’s own documentation for Google Analytics, for example, says that a discrepancy of 2–5% between the total event count in Analytics and the same data exported to Google’s BigQuery data warehouse is expected, and warns that comparing data stored in different time zones compares different periods. A sensible business decides in advance how large a gap it will accept between which sources, and investigates anything larger.' },
-    { p: 'From then on, Ana’s analyst runs the same short checklist each month before any figure reaches the review:' },
+    { p: 'From then on, Jun runs the same short checklist each month before any figure reaches the review:' },
     { ol: [
       'Reconcile order counts across the dashboard, the export and the payment report, and explain every difference by its cause.',
       'Test the key: distinct order_ids against rows.',
@@ -201,7 +206,7 @@ export default {
       'Check the ranges: quantities of at least 1, ratings from 1 to 5, prices above zero.',
       'Write a two-line quality note in the review: what was checked, what was found and what was done.',
     ] },
-    { p: 'The checklist finds problems; Ana, as the data owner, removes their causes. She asks the platform’s supplier to stop the sync from repeating orders when it retries, makes e-mail a required field at checkout and changes the dashboard to show days in local time. Each fix at the source removes a step from next month’s checklist.' },
+    { p: 'The checklist finds problems; Ana, as the data owner, removes their causes. She asks the platform’s supplier to stop the sync from repeating orders when it retries, makes e-mail a required field at checkout and checks that the dashboard and every export count days in local time. Each fix at the source removes a step from next month’s checklist.' },
     { p: 'Many hotels work the same way at the end of every day. In what they call the night audit, staff check that every occupied room has a booking and a charge, and that the day’s charges agree with the payments taken, before the date in the hotel’s system rolls over. Problems are cheapest to resolve while the guest is still in the building. The habit is the one this lesson teaches: name the purpose, check the dimensions it depends on, find the causes of differences, and fix them where they start.' },
   ],
 
@@ -232,6 +237,7 @@ export default {
   ],
 
   references: [
+    { text: 'DAMA UK Working Group on “Data Quality Dimensions” (2013). <i>The Six Primary Dimensions for Data Quality Assessment</i>. White paper, October 2013.', checked: '2026-10-22' },
     { text: 'Government Data Quality Hub (2020). <i>The Government Data Quality Framework</i>. GOV.UK, published 3 December 2020.', url: 'https://www.gov.uk/government/publications/the-government-data-quality-framework/the-government-data-quality-framework', checked: '2026-10-23' },
     { text: 'Ault, S. V., Nam Liao, S. &amp; Musolino, L. (2025). <i>Principles of Data Science</i>, section 2.4, “Data Cleaning and Preprocessing”. OpenStax.', url: 'https://openstax.org/books/principles-data-science/pages/2-4-data-cleaning-and-preprocessing', checked: '2026-10-23' },
     { text: 'Google. “[GA4] Compare Analytics reports and data exported to BigQuery”. Analytics Help.', url: 'https://support.google.com/analytics/answer/13578783?hl=en', checked: '2026-10-23' },
@@ -252,8 +258,11 @@ export default {
     { what: 'North variants', value: 15 + 8, shown: 23 },
     { what: 'North looks smaller by (%)', value: 23 / 143 * 100, shown: 16, tol: 0.5 },
     { what: 'Accuracy sample (orders checked)', value: 50, shown: 50 },
-    { what: '21:30 local is 02:30 UTC next day (hours)', value: 21.5 + 5 - 24, shown: 2.5 },
-    { what: '19:00 local is midnight UTC (hours)', value: 19 + 5, shown: 24 },
+    { what: 'Hours behind UTC, “five” (case.js)', value: -UTC_OFFSET_HOURS, shown: 5 },
+    { what: '21:30 local is 02:30 UTC next day (hours)', value: 21.5 - UTC_OFFSET_HOURS - 24, shown: 2.5 },
+    { what: '19:00 local is midnight UTC (hours)', value: 19 - UTC_OFFSET_HOURS, shown: 24 },
+    { what: 'Local hour that becomes 00:00 UTC (19:00)', value: 24 + UTC_OFFSET_HOURS, shown: 19 },
+    { what: 'Local midnight is 05:00 UTC', value: 0 - UTC_OFFSET_HOURS, shown: 5 },
     // simple example
     { what: 'Simple: rows', value: 8, shown: 8 },
     { what: 'Simple: distinct orders', value: new Set(['LC-11630', 'LC-11631', 'LC-11632', 'LC-11631', 'LC-11633', 'LC-11634', 'LC-11635', 'LC-11634']).size, shown: 6 },
@@ -290,6 +299,8 @@ export default {
     { what: 'Applied: Saturday (local)', value: 22 + 5, shown: 27 },
     { what: 'Applied: difference', value: 48 - 27, shown: 21 },
     { what: 'Applied: Friday-evening orders', value: 18, shown: 18 },
+    { what: 'Applied: Friday-evening block length (hours)', value: 24 - (24 + UTC_OFFSET_HOURS), shown: 5 },
+    { what: 'Applied: Friday evening is the busiest rate (orders per hour, 3.6)', value: Math.max(6 / 5, 30 / 19, 18 / 5, 22 / 19, 5 / 5), shown: 3.6 },
     { what: 'Applied: 27 November 2026 is a Friday (getUTCDay 5)', value: new Date(Date.UTC(2026, 10, 27)).getUTCDay(), shown: 5 },
     { what: '18 November 2026 is a Wednesday (getUTCDay 3)', value: new Date(Date.UTC(2026, 10, 18)).getUTCDay(), shown: 3 },
     { what: 'Revenue tolerance for the monthly review, upper end (%)', value: 2, shown: 2 },

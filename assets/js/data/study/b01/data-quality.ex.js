@@ -2,6 +2,14 @@
 // Answer keys live here. Every business and number is fictional; every number is recomputed by `check`.
 // The lantern-orders widget is inspect-only (ops: []): B02 teaches the repairs.
 
+import { UTC_OFFSET_HOURS } from './case.js';
+
+const BEHIND = -UTC_OFFSET_HOURS;   // hours Lantern's local time is behind UTC
+const WORDS = { 4: 'four', 5: 'five', 6: 'six' };
+/** A local date-time 'YYYY-MM-DDTHH:MM' written as the UTC timestamp the platform stores, shifted by `hours`. */
+const utcStamp = (local, hours = BEHIND) => new Date(Date.parse(`${local}:00Z`) + hours * 3600000).toISOString().replace('.000Z', 'Z');
+const ORDER_LOCAL = '2026-11-30T21:30';
+
 const DIMS = ['Accuracy', 'Completeness', 'Consistency', 'Validity', 'Timeliness', 'Uniqueness'];
 const f1 = (x) => (Math.round(x * 10) / 10).toFixed(1);
 const f2 = (x) => (Math.round(x * 100) / 100).toFixed(2);
@@ -11,8 +19,9 @@ export const widgets = {
     type: 'cleaning',
     dataset: 'lantern-orders',
     ops: [],
+    advice: false,
     watch: ['order_id', 'region', 'quantity', 'rating'],
-    task: 'Inspect only: change nothing. Work through the six dimensions and write down at least one example of each problem you can find, with its row: (1) uniqueness: does any order_id appear more than once? (2) consistency: how many ways is each region written? (3) validity: sort quantity and rating both ways and look at the ends; (4) completeness: which columns have blanks, and is a blank allowed there? (5) accuracy: which values are possible but suspicious, and what would you check them against? For each, note the question you would ask Ana before anyone changes the data.',
+    task: 'Inspect only: change nothing. For each issue the explorer lists, name its dimension, the figure it would distort and the question you’d ask Ana; then say what the file alone can’t show (accuracy, timeliness). The repairs are B02’s subject.',
   },
   'dq-ratings': {
     type: 'formula',
@@ -60,7 +69,7 @@ export const guided = [
       'One order exported twice',
       'An order for 4 packs recorded as 40 packs',
       'The same region written “North”, “north” and “Nth”',
-      'November’s figures pulled at 07:30 on 1 December, before the night’s app orders had synced',
+      'A customer’s new delivery address entered a week after they moved, so a parcel goes to the old one',
       'Orders with no e-mail address, although e-mail is required',
     ],
     categories: DIMS,
@@ -73,9 +82,9 @@ export const guided = [
       0: 'A rating of 9 is outside the allowed range: validity.',
       2: 'Forty packs is possible, so it passes the rules; it is wrong because it doesn’t match what the customer ordered: accuracy.',
       3: 'One region represented three ways: consistency.',
-      4: 'The data was pulled before it reflected the whole month: timeliness.',
+      4: 'The address was right once but was not updated in time for the order: timeliness.',
     },
-    solution: 'Rating 9: validity. Order exported twice: uniqueness. 40 packs for 4: accuracy. Three spellings of North: consistency. Report pulled too early: timeliness. Missing required e-mail: completeness.',
+    solution: 'Rating 9: validity. Order exported twice: uniqueness. 40 packs for 4: accuracy. Three spellings of North: consistency. Address updated a week late: timeliness. Missing required e-mail: completeness.',
   },
   {
     id: 'b01-dq-g2', type: 'rows', kind: 'applied',
@@ -117,18 +126,18 @@ export const guided = [
   },
   {
     id: 'b01-dq-g4', type: 'steps', kind: 'applied',
-    prompt: 'Lantern’s platform stores order times in UTC. Assume Lantern’s local time is five hours behind UTC throughout. A customer places an order at 21:30 local time on Monday 30 November 2026.',
-    solution: 'The platform stores 2026-12-01T02:30:00Z, so a report that groups by the UTC date puts the order in December. Over a whole month, the UTC report loses the last evening of its own month (12 orders here) and gains the last evening of the month before (9), a net change of −3 for November.',
+    prompt: `Lantern’s platform stores order times in UTC. Assume Lantern’s local time is ${WORDS[BEHIND]} hours behind UTC throughout. A customer places an order at 21:30 local time on Monday 30 November 2026.`,
+    solution: `The platform stores ${utcStamp(ORDER_LOCAL)}, so a report that groups by the UTC date puts the order in December. Over a whole month, the UTC report loses the last evening of its own month (12 orders here) and gains the last evening of the month before (9), a net change of −3 for November.`,
     steps: [
       { id: 'b01-dq-g4-s1', type: 'mc',
         prompt: 'What timestamp does the platform store?',
-        options: ['2026-12-01T02:30:00Z', '2026-11-30T16:30:00Z', '2026-11-30T21:30:00Z', '2026-12-01T21:30:00Z'],
+        options: [utcStamp(ORDER_LOCAL), utcStamp(ORDER_LOCAL, -BEHIND), utcStamp(ORDER_LOCAL, 0), utcStamp(ORDER_LOCAL, 24)],
         answer: 0,
-        hints: ['UTC is ahead of Lantern’s local time, so add five hours.', '21:30 plus five hours is 02:30 on the next day.'],
+        hints: [`UTC is ahead of Lantern’s local time, so add ${WORDS[BEHIND]} hours.`, `21:30 plus ${WORDS[BEHIND]} hours is ${utcStamp(ORDER_LOCAL).slice(11, 16)} on the next day.`],
         feedback: {
-          1: 'That subtracts five hours. Lantern is behind UTC, so UTC is five hours later.',
+          1: `That subtracts ${WORDS[BEHIND]} hours. Lantern is behind UTC, so UTC is ${WORDS[BEHIND]} hours later.`,
           2: 'That is the local time with a Z added; Z means UTC, so the hours must change.',
-          3: 'The date moves on, but the time must change too: 21:30 + 5 hours = 02:30.',
+          3: `The date moves on, but the time must change too: 21:30 + ${BEHIND} hours = ${utcStamp(ORDER_LOCAL).slice(11, 16)}.`,
         } },
       { id: 'b01-dq-g4-s2', type: 'mc',
         prompt: 'A monthly report groups orders by the date part of the stored timestamp. In which month does this order appear?',
@@ -155,8 +164,8 @@ export const independent = [
     prompt: 'Lantern’s order export is missing e-mail addresses for some customers, while every order has a correct date and total. For which purpose is it least fit as it stands?',
     options: [
       'E-mailing every November customer about a product recall',
-      'Calculating November’s revenue',
-      'Counting orders by day of the week',
+      'Calculating November’s revenue for Ana’s monthly shop review',
+      'Counting orders by day of the week to plan packing staff',
       'Comparing average order value between web and app',
     ],
     answer: 0,
@@ -248,15 +257,15 @@ export const independent = [
 export const check = [
   {
     id: 'b01-dq-k1', type: 'mc', kind: 'conceptual',
-    prompt: 'Ana’s November report, run at 07:30 on 1 December, misses app orders from the night of 30 November that only reached the platform at 09:00. Which quality dimension does this mainly affect?',
+    prompt: 'Suppose Ana had run her November report at 07:30 on 1 December, before app orders from the night of 30 November reached the platform at 09:00. Which dimension would that mainly affect?',
     options: ['Timeliness', 'Uniqueness', 'Validity', 'Consistency'],
     answer: 0,
     feedback: {
       1: 'Nothing is recorded twice.',
-      2: 'The values that arrived are fine; some simply hadn’t arrived yet.',
+      2: 'The values that arrived are fine; some hadn’t arrived yet.',
       3: 'Nothing is recorded in two different ways.',
     },
-    solution: 'The data didn’t yet reflect the whole period when the report was run: a timeliness failure. Waiting for the overnight sync before pulling the month prevents it.',
+    solution: 'The data wouldn’t yet have reflected the whole period when the report was run: a timeliness failure. Waiting for the overnight sync before pulling the month prevents it, which is why Ana downloads the export after the sync.',
   },
   {
     id: 'b01-dq-k2', type: 'num', kind: 'numerical',
@@ -274,7 +283,7 @@ export const check = [
     prompt: 'Which dimension does each problem in Harborview Hotel’s data (fictional) mainly affect?',
     items: [
       'Two rows for the same booking, created by a sync',
-      'A nightly rate of $9,999 used as a placeholder, far outside the hotel’s price range',
+      'A nightly rate of $9,999 for a standard room, far above the highest rate on the hotel’s price list',
       'Check-in dates written 2026-06-01 in one system and 01/06/2026 in another',
       'A guest’s country recorded as Canada when they live in Mexico',
       'Cancellations entered a week after they happen',
@@ -294,10 +303,10 @@ export const check = [
     id: 'b01-dq-k4', type: 'mc', kind: 'applied',
     prompt: 'Lantern’s ratings are optional: subscribers rate most of their orders, one-off buyers rarely do. Ana wants to know how satisfied one-off buyers are. What is the best judgement?',
     options: [
-      'As they stand, the ratings are a weak basis: few one-off buyers rate, and those who do may differ from those who don’t. Report the one-off average separately with its count, and consider asking a random sample of one-off buyers.',
-      'The overall average rating answers the question.',
-      'The ratings are unusable, because so many are missing.',
-      'Fill the missing ratings with the overall average, then calculate the one-off buyers’ average.',
+      'Treat them as weak evidence: report the one-off average with its count, and ask a random sample of one-off buyers',
+      'Use the overall average rating, since it includes the one-off buyers who did rate their orders',
+      'Discard the ratings entirely: with so many of them missing, they can tell Ana nothing about any group of customers',
+      'Fill the missing ratings with the overall average, then calculate the one-off buyers’ average from the full column',
     ],
     answer: 0,
     feedback: {
@@ -334,6 +343,6 @@ export const check = [
       ],
     } },
     answer: [1, 2, 4, 6, 7],
-    solution: 'Row 1: “north” is not one of the region names (consistency). Row 2: a quantity of 0 breaks the rule of at least 1 (validity). Row 4: a rating of 7 is outside 1–5 (validity). Row 6 repeats row 3 (uniqueness). Row 7: “Nth” is not a region name (consistency). The blank ratings in rows 1 and 3 are allowed, so they are not problems in themselves.',
+    solution: 'Row 1: “north” is North written another way, a consistency problem (it also fails the rule that region must be one of the five names). Row 2: a quantity of 0 breaks the rule of at least 1 (validity). Row 4: a rating of 7 is outside 1–5 (validity). Row 6 repeats row 3 (uniqueness). Row 7: “Nth” is North abbreviated, the same consistency problem. The blank ratings in rows 1 and 3 are allowed, so they are not problems in themselves.',
   },
 ];

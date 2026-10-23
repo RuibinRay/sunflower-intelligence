@@ -112,7 +112,7 @@ export const guided = [
     steps: [
       { id: 'b01-dt-g3-s1', type: 'mc',
         prompt: 'What does one row describe?',
-        options: ['One customer in one month', 'One order', 'One customer', 'One month'],
+        options: ['One customer in one month', 'One order placed by a customer', 'One customer, across all months', 'One month of the shop’s orders'],
         answer: 0,
         hints: ['C0305 appears twice. What differs between its two rows?', 'C0305’s November row records 2 orders, so a row can hold more than one order.'],
         feedback: {
@@ -122,7 +122,7 @@ export const guided = [
         } },
       { id: 'b01-dt-g3-s2', type: 'mc',
         prompt: 'How does this table relate to time?',
-        options: ['Panel data: the same customers in several months', 'Time-series data: one unit followed over time', 'Cross-sectional data: many units at one time'],
+        options: ['Panel: the same customers in several months', 'Time series: one unit followed through several months', 'Cross-sectional: many customers observed at a single time'],
         answer: 0,
         hints: ['Is there one unit or several? One period or several?'],
         feedback: {
@@ -176,10 +176,10 @@ export const independent = [
     id: 'b01-dt-i2', type: 'mc', kind: 'conceptual',
     prompt: 'A new dashboard for Lantern shows the tiles “Average customer_id: 1,348.6” and “Average postcode: 10,214”. What should you conclude?',
     options: [
-      'Both tiles are meaningless: customer_id and postcode are identifiers, which should only be counted or matched',
-      'Customers are getting newer, because the average customer_id is high',
-      'Most customers live near postcode 10214',
-      'The tiles are fine as long as no values are missing',
+      'Both are meaningless: identifiers should be counted or matched, not averaged',
+      'Customers are getting newer, because the average customer_id is high and keeps rising',
+      'Most customers live in or near postcode 10214, the area the average points to',
+      'The tiles are fine as long as no customer_id or postcode values are missing',
     ],
     answer: 0,
     feedback: {
@@ -241,10 +241,10 @@ export const independent = [
     id: 'b01-dt-i6', type: 'mc', kind: 'applied',
     prompt: 'Ana wants to know whether customers who first bought a gift box in November 2026 came back and ordered again in December. Which data can answer that?',
     options: [
-      'A panel built from the order export, one row per customer per month, so that each November gift-box buyer can be followed into December',
-      'The monthly summary’s gift-box orders for November and December',
-      'A cross-section of all December orders',
-      'The October survey of September’s customers',
+      'A panel from the order export: each customer’s orders, month by month',
+      'The monthly summary’s gift-box orders for November and December, compared',
+      'A cross-section of all December orders, with the products each one contained',
+      'The October survey of the customers who ordered in September',
     ],
     answer: 0,
     feedback: {
@@ -301,7 +301,7 @@ export const check = [
     options: [
       'Bills of the same regular guests in June and in July (a panel)',
       'The restaurant’s total takings for each month (a time series)',
-      'All July bills (a cross-section)',
+      'All bills from July, the month when the average rose (a cross-section)',
       'A survey asking July’s guests whether they plan to spend more',
     ],
     answer: 0,
