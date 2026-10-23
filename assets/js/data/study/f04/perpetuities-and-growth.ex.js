@@ -64,15 +64,15 @@ export const guided = [
     prompt: 'A fictional ferry company’s preferred shares have a par value of $50 and a dividend rate of 6%, paid once a year, with no maturity date.',
     solution: 'Dividend = 50 × 6% = $3.00 a year for ever. At 7.5%: 3.00 ÷ 0.075 = $40.00. At 8%: 3.00 ÷ 0.08 = $37.50, a fall of $2.50 (6.25%).',
     steps: [
-      { id: 'f04-perp-g1-s1', type: 'num', prompt: 'What is the annual dividend per share?',
+      { id: 'f04-perp-g1-s1', type: 'num', prompt: 'What is the annual dividend per share? Give dollars and cents.',
         answer: 3, check: () => 50 * 0.06, unit: '$', places: 2, tol: 0.005,
         hints: ['Dividend = par value × dividend rate.'],
         wrong: [{ value: 6, say: 'That is 6% of $100. Use the $50 par value.' }] },
-      { id: 'f04-perp-g1-s2', type: 'num', prompt: 'Investors require 7.5% a year on similar shares. What is one share worth?',
+      { id: 'f04-perp-g1-s2', type: 'num', prompt: 'Investors require 7.5% a year on similar shares. What is one share worth? Give dollars and cents.',
         answer: 40, check: () => 50 * 0.06 / 0.075, unit: '$', places: 2, tol: 0.01,
         hints: ['A fixed dividend for ever is a level perpetuity: value = D ÷ r.', '3.00 ÷ 0.075.'],
         wrong: [{ value: 50, say: 'That is the par value. The share is worth par only if the required return equals the 6% dividend rate.' }] },
-      { id: 'f04-perp-g1-s3', type: 'num', prompt: 'If the required return rises to 8%, what is the share worth?',
+      { id: 'f04-perp-g1-s3', type: 'num', prompt: 'If the required return rises to 8%, what is the share worth? Give dollars and cents.',
         answer: 37.5, check: () => 50 * 0.06 / 0.08, unit: '$', places: 2, tol: 0.01,
         hints: ['Same dividend, new rate.'],
         wrong: [{ value: 42.5, say: 'A higher required return lowers the value of a fixed payment: divide by 0.08.' }] },
@@ -99,18 +99,18 @@ export const guided = [
         answer: 4, check: () => 5 - 1, unit: 'year', places: 0, tol: 0,
         hints: ['C ÷ r values a perpetuity one period before its first payment.'],
         wrong: [{ value: 5, say: 'Year 5 is the first payment. The formula values the stream one year earlier.' }, { value: 0, say: 'That would be true only if the first payment were in year 1.' }] },
-      { id: 'f04-perp-g3-s2', type: 'num', prompt: 'What is the stream worth at that date?',
+      { id: 'f04-perp-g3-s2', type: 'num', prompt: 'What is the stream worth at that date? Give dollars and cents.',
         answer: 133333.33, check: () => 8000 / 0.06, unit: '$', places: 2, tol: 0.5,
         hints: ['C ÷ r = 8,000 ÷ 0.06.'] },
-      { id: 'f04-perp-g3-s3', type: 'num', prompt: 'What is it worth today?',
-        answer: 105612.49, check: () => 8000 / 0.06 / 1.06 ** 4, unit: '$', places: 2, tol: 0.5,
+      { id: 'f04-perp-g3-s3', type: 'num', prompt: 'What is it worth today? Give dollars and cents.',
+        answer: 105612.49, check: () => 8000 / 0.06 / 1.06 ** 4, unit: '$', places: 2, tol: 2.5,
         hints: ['Discount the year-4 value four years: ÷ 1.06⁴.', '1.06⁴ ≈ 1.262477.'],
         wrong: [{ value: 99634.42, say: 'You discounted five years. The value from the formula is already at year 4.' }] },
     ],
   },
   {
     id: 'f04-perp-g4', type: 'num', kind: 'applied',
-    prompt: 'A fictional charity has an endowment of $500,000 that it expects to earn 7% a year. It wants its annual grant to grow by 3% a year for ever, so that the grant keeps its purchasing power. How large can next year’s grant be?',
+    prompt: 'A fictional charity has an endowment of $500,000 that it expects to earn 7% a year. It wants its annual grant to grow by 3% a year for ever, so that the grant keeps its purchasing power. How large can next year’s grant be? Give dollars and cents.',
     answer: 20000, check: () => 500000 * (0.07 - 0.03), unit: '$', places: 2, tol: 0.5,
     hints: ['A growing perpetuity: PV = C₁ ÷ (r − g). Solve for C₁.', 'C₁ = PV × (r − g) = 500,000 × 0.04.'],
     wrong: [
@@ -188,7 +188,7 @@ export const independent = [
   },
   {
     id: 'f04-perp-i6', type: 'num', kind: 'numerical',
-    prompt: 'The ground rent in the previous question is $12,000 a year for ever, paid at the start of each year with the first payment today. At 6% a year, what is it worth today?',
+    prompt: 'A fictional ground rent is fixed at $12,000 a year for ever, paid at the start of each year with the first payment today. At 6% a year, what is it worth today? Give dollars and cents.',
     answer: 212000, check: () => 12000 + 12000 / 0.06, unit: '$', places: 2, tol: 0.5,
     wrong: [
       { value: 200000, say: 'That is the ordinary perpetuity, with the first payment in a year. Add today’s payment.' },
@@ -228,7 +228,7 @@ export const check = [
   },
   {
     id: 'f04-perp-k3', type: 'num', kind: 'numerical',
-    prompt: 'A growing perpetuity’s first payment is $100 and the discount rate is 8%. By what percentage does its value rise if the expected growth rate rises from 3% to 4%?',
+    prompt: 'A growing perpetuity’s first payment is $100 and the discount rate is 8%. By what percentage does its value rise if the expected growth rate rises from 3% to 4%? Give a percentage.',
     answer: 25, check: () => (100 / 0.04 / (100 / 0.05) - 1) * 100, unit: '%', places: 1, tol: 0.05,
     wrong: [
       { value: 1, say: 'The growth rate rises by one percentage point, but the value depends on 1 ÷ (r − g), which changes far more.' },
@@ -240,7 +240,7 @@ export const check = [
   {
     id: 'f04-perp-k4', type: 'num', kind: 'applied',
     prompt: 'An investor forecasts a fictional laundrette chain in detail for four years. From year 5 she expects cash flow of $200,000, growing at 2% a year for ever, and she discounts at 9%. What is the present value today of all the cash flows from year 5 on? Give dollars and cents.',
-    answer: 2024072.03, check: () => 200000 / (0.09 - 0.02) / 1.09 ** 4, unit: '$', places: 2, tol: 1,
+    answer: 2024072.03, check: () => 200000 / (0.09 - 0.02) / 1.09 ** 4, unit: '$', places: 2, tol: 35,
     wrong: [
       { value: 2857142.86, say: 'That is the terminal value at year 4. Discount it four years to today.' },
       { value: 1856946.82, say: 'You discounted five years. The terminal value sits at year 4, one year before the first cash flow it values.' },

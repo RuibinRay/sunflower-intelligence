@@ -167,14 +167,11 @@ export default {
     },
     {
       id: 'real', title: 'In today’s money',
-      html: '<p>Ana’s payment is fixed in dollars for 30 years, but if prices rise by 2.8% a year, each dollar buys less. Find the mortgage’s effective and real annual rates, and what the very last payment is worth in today’s prices.</p>',
+      html: '<p>Ana’s payment is fixed in dollars for 30 years, but if prices rise by 2.8% a year, each dollar buys less. Find the mortgage’s real annual rate, and what the very last payment is worth in today’s prices.</p>',
       items: [
-        num('f04-pj-17', 'What is the effective annual rate of the 30-year mortgage (6.0% a year, compounded monthly)? Give a percentage to two decimal places.',
-          Math.round(ear30 * 100) / 100, () => (1.005 ** 12 - 1) * 100, 0.01,
-          `EAR = 1.005¹² − 1 ≈ ${ear30.toFixed(2)}%.`, [{ value: 6, say: '6.0% is the nominal (APR-style) rate. Monthly compounding makes the effective rate higher.' }], '%', 2),
-        num('f04-pj-18', 'What is its real annual rate if inflation is 2.8% a year? Use the exact formula. Two decimal places.',
+        num('f04-pj-18', 'What is the 30-year mortgage’s real annual rate if inflation is 2.8% a year? Work from its effective annual rate (6.0% compounded monthly) and use the exact formula. Two decimal places.',
           Math.round(real30 * 100) / 100, () => (1.005 ** 12 / 1.028 - 1) * 100, 0.01,
-          `Real rate = 1.061678 ÷ 1.028 − 1 ≈ ${real30.toFixed(2)}%.`, [{ value: 3.37, say: 'That subtracts 2.8 from the effective rate. The exact real rate divides: 1.061678 ÷ 1.028 − 1.' }, { value: 3.2, say: 'That subtracts inflation from the nominal 6.0%, and uses the approximation. Use the effective rate and divide.' }], '%', 2),
+          `Effective annual rate = 1.005¹² − 1 ≈ ${ear30.toFixed(4)}%. Real rate = 1.061678 ÷ 1.028 − 1 ≈ ${real30.toFixed(2)}%.`, [{ value: 3.37, say: 'That subtracts 2.8 from the effective rate. The exact real rate divides: 1.061678 ÷ 1.028 − 1.' }, { value: 3.2, say: 'That subtracts inflation from the nominal 6.0%, and uses the approximation. Use the effective rate and divide.' }], '%', 2),
         num('f04-pj-19', 'The last payment is made 30 years from the start. What is it worth in today’s prices at 2.8% inflation a year?',
           cents(lastReal), () => 240000 * 0.005 / (1 - 1.005 ** -360) / 1.028 ** 30, 0.5,
           `${money(p30)} ÷ 1.028³⁰ ≈ ${money(lastReal)}. A fixed payment gets lighter every year if prices and pay rise.`),

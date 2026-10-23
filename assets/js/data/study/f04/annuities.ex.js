@@ -116,14 +116,14 @@ export const guided = [
         hints: ['The APR is compounded monthly, so divide by the number of months in a year.'],
         wrong: [{ value: 6.6, say: 'That is the annual rate. The payments are monthly, so the rate must be monthly too.' }] },
       { id: 'f04-ann-g1-s2', type: 'num', prompt: 'What are the 48 payments worth today if each is paid at the end of the month? Give dollars and cents.',
-        answer: 27355.63, check: () => 650 * a(48, 0.0055), unit: '$', places: 2, tol: 0.5,
+        answer: 27355.63, check: () => 650 * a(48, 0.0055), unit: '$', places: 2, tol: 4.5,
         hints: ['PV = C × (1 − (1 + r)^−n) ÷ r with C = 650, r = 0.0055, n = 48.', '1.0055^−48 ≈ 0.768529, so the annuity factor is (1 − 0.768529) ÷ 0.0055 ≈ 42.0856.'],
         wrong: [
           { value: 31200, say: 'That is the sum of the payments. Each payment must be discounted to today.' },
           { value: 9390.32, say: 'You used the annual rate (6.6%) with 48 periods. Use the monthly rate, 0.55%.' },
         ] },
-      { id: 'f04-ann-g1-s3', type: 'num', prompt: 'The lease actually asks for each payment at the start of the month. What are the payments worth today?',
-        answer: 27506.09, check: () => 650 * a(48, 0.0055) * 1.0055, unit: '$', places: 2, tol: 0.5,
+      { id: 'f04-ann-g1-s3', type: 'num', prompt: 'The lease actually asks for each payment at the start of the month. What are the payments worth today? Give dollars and cents.',
+        answer: 27506.09, check: () => 650 * a(48, 0.0055) * 1.0055, unit: '$', places: 2, tol: 4.5,
         hints: ['Payments at the start of each period form an annuity due.', 'Multiply the ordinary annuity’s value by (1 + r) = 1.0055.'],
         wrong: [{ value: 27206.00, say: 'You divided by 1.0055. Paying earlier makes the stream worth more, so multiply.' }] },
     ],
@@ -131,7 +131,7 @@ export const guided = [
   {
     id: 'f04-ann-g2', type: 'num', kind: 'numerical',
     prompt: 'A fictional bakery puts $1,200 into a savings account at the end of every quarter for five years. The account pays 4% a year compounded quarterly. How much will it hold just after the last deposit? Give dollars and cents.',
-    answer: 26422.80, check: () => 1200 * s(20, 0.01), unit: '$', places: 2, tol: 0.5,
+    answer: 26422.80, check: () => 1200 * s(20, 0.01), unit: '$', places: 2, tol: 1.5,
     hints: ['Quarterly rate = 4% ÷ 4 = 1%; number of deposits = 5 × 4 = 20.', 'FV = C × ((1 + r)^n − 1) ÷ r = 1,200 × (1.01²⁰ − 1) ÷ 0.01; 1.01²⁰ ≈ 1.220190.'],
     wrong: [
       { value: 24000, say: 'That is just the deposits. The account also pays interest on them.' },
@@ -146,12 +146,12 @@ export const guided = [
     prompt: 'A fictional student borrows $8,000 at 12% a year compounded monthly and repays $300 at the end of each month. How long will it take?',
     solution: 'r = 1% a month. Interest on $8,000 is $80, below the $300 payment, so the loan can be repaid. n = −ln(1 − 8,000 × 0.01 ÷ 300) ÷ ln 1.01 = −ln(0.733333) ÷ ln 1.01 ≈ 0.310155 ÷ 0.009950 ≈ 31.17 months: 31 full payments and a smaller 32nd payment.',
     steps: [
-      { id: 'f04-ann-g3-s1', type: 'num', prompt: 'First check the condition: what is one month’s interest on the $8,000?',
+      { id: 'f04-ann-g3-s1', type: 'num', prompt: 'First check the condition: what is one month’s interest on the $8,000? Give dollars and cents.',
         answer: 80, check: () => 8000 * 0.01, unit: '$', places: 2, tol: 0.01,
         hints: ['Monthly rate = 12% ÷ 12 = 1%.'],
         wrong: [{ value: 960, say: 'That is a year’s interest. Use the monthly rate.' }] },
       { id: 'f04-ann-g3-s2', type: 'num', prompt: 'Use the formula for the number of payments. What is n, to two decimal places?',
-        answer: 31.17, check: () => -Math.log(1 - 8000 * 0.01 / 300) / Math.log(1.01), unit: 'months', places: 2, tol: 0.05,
+        answer: 31.17, check: () => -Math.log(1 - 8000 * 0.01 / 300) / Math.log(1.01), unit: 'months', places: 2, tol: 0.2,
         hints: ['n = −ln(1 − PV × r ÷ C) ÷ ln(1 + r).', '1 − 8,000 × 0.01 ÷ 300 = 1 − 0.266667 = 0.733333; ln(0.733333) ≈ −0.310155; ln(1.01) ≈ 0.009950.'],
         wrong: [{ value: 26.67, say: 'That is 8,000 ÷ 300, which ignores interest. With interest the loan takes longer.' }] },
       { id: 'f04-ann-g3-s3', type: 'num', prompt: 'How many payments does the student make in all (counting a smaller final payment as one)?',
@@ -163,7 +163,7 @@ export const guided = [
   {
     id: 'f04-ann-g4', type: 'num', kind: 'applied',
     prompt: 'A fictional grandmother wants to give her grandson $5,000 a year for three years to help with an apprenticeship, the first payment exactly six years from today. Her savings earn 4% a year. How much must she set aside today? Give dollars and cents.',
-    answer: 11404.61, check: () => 5000 * a(3, 0.04) / 1.04 ** 5, unit: '$', places: 2, tol: 0.5,
+    answer: 11404.61, check: () => 5000 * a(3, 0.04) / 1.04 ** 5, unit: '$', places: 2, tol: 1.2,
     hints: ['The payments are at years 6, 7 and 8. The annuity formula values them at year 5, one year before the first payment.', 'Value at year 5: 5,000 × (1 − 1.04^−3) ÷ 0.04 ≈ 13,875.46. Discount five years: ÷ 1.04⁵.'],
     wrong: [
       { value: 10965.97, say: 'You discounted six years. The annuity formula already puts the value one year before the first payment, at year 5.' },
@@ -195,7 +195,7 @@ export const independent = [
   {
     id: 'f04-ann-i2', type: 'num', kind: 'numerical',
     prompt: 'A fictional franchise agreement pays the brand owner $10,000 at the end of the first year, rising by 4% a year, for eight years. What is the stream worth today at 9% a year? Give dollars and cents.',
-    answer: 62632.27, check: () => ga(10000, 0.09, 0.04, 8), unit: '$', places: 2, tol: 1,
+    answer: 62632.27, check: () => ga(10000, 0.09, 0.04, 8), unit: '$', places: 2, tol: 10,
     wrong: [
       { value: 55348.19, say: 'That treats the payments as level. They grow by 4% a year: use the growing-annuity formula.' },
       { value: 65137.56, say: 'You grew the first payment before using it. $10,000 is already the first payment (C₁).' },
@@ -205,7 +205,7 @@ export const independent = [
   {
     id: 'f04-ann-i3', type: 'num', kind: 'numerical',
     prompt: 'A fictional hotel needs $50,000 in three years to refurbish its lobby. It will deposit an equal amount at the end of each month into an account paying 4.2% a year compounded monthly. How much must each deposit be? Give dollars and cents.',
-    answer: 1305.65, check: () => 50000 * 0.0035 / (1.0035 ** 36 - 1), unit: '$', places: 2, tol: 0.05,
+    answer: 1305.65, check: () => 50000 * 0.0035 / (1.0035 ** 36 - 1), unit: '$', places: 2, tol: 0.4,
     wrong: [
       { value: 1388.89, say: 'That is 50,000 ÷ 36, which ignores the interest the deposits earn.' },
       { value: 15985.86, say: 'That is an annual deposit at 4.2%. The deposits are monthly: use 0.35% and 36 months.' },
@@ -215,7 +215,7 @@ export const independent = [
   {
     id: 'f04-ann-i4', type: 'num', kind: 'applied',
     prompt: 'A fictional lottery winner can take $480,000 now or $40,000 a year for 20 years, the first payment today. At 6% a year, what are the 20 payments worth today? Give dollars and cents.',
-    answer: 486324.66, check: () => 40000 * a(20, 0.06) * 1.06, unit: '$', places: 2, tol: 1,
+    answer: 486324.66, check: () => 40000 * a(20, 0.06) * 1.06, unit: '$', places: 2, tol: 4.5,
     wrong: [
       { value: 458796.85, say: 'That treats the first payment as a year away. It is paid today: this is an annuity due, so multiply by 1.06.' },
       { value: 800000, say: 'That is the sum of the payments, ignoring the time value of money.' },
@@ -268,7 +268,7 @@ export const check = [
   {
     id: 'f04-ann-k2', type: 'num', kind: 'numerical',
     prompt: 'What is the present value of $750 at the end of every quarter for six years, at 8% a year compounded quarterly? Give dollars and cents.',
-    answer: 14185.44, check: () => 750 * a(24, 0.02), unit: '$', places: 2, tol: 0.5,
+    answer: 14185.44, check: () => 750 * a(24, 0.02), unit: '$', places: 2, tol: 1.1,
     wrong: [
       { value: 3467.16, say: 'You used the annual rate with six periods. There are 24 quarters, at 2% each.' },
       { value: 18000, say: 'That is the sum of the payments, undiscounted.' },
@@ -279,7 +279,7 @@ export const check = [
   {
     id: 'f04-ann-k3', type: 'num', kind: 'numerical',
     prompt: 'A fictional $5,000 loan at 15% a year compounded monthly is repaid at $250 at the end of each month. How many months does it take? Give n to two decimal places.',
-    answer: 23.16, check: () => -Math.log(1 - 5000 * 0.0125 / 250) / Math.log(1.0125), unit: 'months', places: 2, tol: 0.05,
+    answer: 23.16, check: () => -Math.log(1 - 5000 * 0.0125 / 250) / Math.log(1.0125), unit: 'months', places: 2, tol: 0.1,
     wrong: [
       { value: 20, say: 'That is 5,000 ÷ 250, which ignores interest.' },
       { value: 2.16, say: 'You used the annual rate. Use 15% ÷ 12 = 1.25% a month.' },
@@ -289,7 +289,7 @@ export const check = [
   {
     id: 'f04-ann-k4', type: 'num', kind: 'applied',
     prompt: 'Suppose the supplier asked Lantern for the first of its 24 monthly payments of $1,050 on delivery, not a month later. At Coastline Bank’s 7.2% a year compounded monthly, what would the plan be worth today? Give dollars and cents.',
-    answer: 23544.86, check: () => 1050 * a(24, 0.006) * 1.006, unit: '$', places: 2, tol: 0.5,
+    answer: 23544.86, check: () => 1050 * a(24, 0.006) * 1.006, unit: '$', places: 2, tol: 9,
     wrong: [
       { value: 23404.43, say: 'That is the plan as offered, with payments at the end of each month. Payments starting on delivery form an annuity due: multiply by 1.006.' },
       { value: 25200, say: 'That is the sum of the payments, undiscounted.' },
