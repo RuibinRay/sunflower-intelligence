@@ -34,7 +34,7 @@ export const widgets = {
         ],
         note: v.n === 1 && v.m === 1
           ? 'Over a single year with annual compounding the two methods agree: interest on interest needs at least two periods. Lengthen the period to see them separate.'
-          : `Compounding adds ${money(extra)} over ${v.n} year${v.n === 1 ? '' : 's'}, ${pct((extra / (simple(v.n) - v.p)) * 100, 1)} more interest than simple interest pays. Changing the compounding frequency moves the effective rate only from ${pct(v.r, 1)} to ${pct(ear, 3)}; the rate and the number of years matter far more.`,
+          : `Compounding adds ${money(extra)} over ${v.n} year${v.n === 1 ? '' : 's'}, ${pct((extra / (simple(v.n) - v.p)) * 100, 1)} more interest than simple interest pays.${v.m > 1 ? ` Changing the compounding frequency moves the effective rate only from ${pct(v.r, 1)} to ${pct(ear, 3)}; the rate and the number of years matter far more.` : ' Try raising the compounding frequency: it changes the result far less than the rate or the number of years.'}`,
         chart: { kind: 'line', x: { label: 'Year', values: range(v.n) },
           series: [{ name: 'Compound', values: range(v.n).map((t) => r2(comp(t))) }, { name: 'Simple', values: range(v.n).map((t) => r2(simple(t))) }],
           y: { label: 'Balance ($)' } },
@@ -133,7 +133,7 @@ export const guided = [
       { value: 1, say: 'That is the approximation (4.5 − 3.5). The question asks for the exact real return.' },
       { value: 8, say: 'You added inflation. The real return removes it.' },
     ],
-    solution: '1.045 ÷ 1.035 − 1 ≈ 0.00966, or about 0.97%. The approximation gives 1.00%; with rates this small the difference is only 0.03 points, but the exact formula is the correct one.',
+    solution: '1.045 ÷ 1.035 − 1 ≈ 0.00966, or about 0.97%. The approximation gives 1.00%; with rates this small the difference is only 0.03 percentage points, but the exact formula is the correct one.',
   },
 ];
 
@@ -204,7 +204,7 @@ export const independent = [
     ],
     answer: 0,
     feedback: {
-      1: 'At 1–3% inflation and similar interest rates the error is a few hundredths of a point. It grows with the size of the rates.',
+      1: 'At 1–3% inflation and similar interest rates the error is a few hundredths of a percentage point. It grows with the size of the rates.',
       2: 'The sign of the return is not the issue; the size of the rates is.',
       3: 'The exact relation is (1 + nominal) = (1 + real)(1 + inflation). The shortcut drops real × inflation.',
     },
@@ -294,7 +294,7 @@ export const check = [
       2: 'Inflation reduces a return; it does not add to it.',
       3: 'The deposit rate is above inflation, so purchasing power grows: the real return is positive.',
     },
-    solution: 'Real return = 1.25 ÷ 1.20 − 1 ≈ 0.0417, or 4.17%. The shortcut gives 5%, almost a full point too high, because it drops the product of the two rates, which is large when the rates are large.',
+    solution: 'Real return = 1.25 ÷ 1.20 − 1 ≈ 0.0417, or 4.17%. The shortcut gives 5%, almost a full percentage point too high, because it drops the product of the two rates, which is large when the rates are large.',
   },
   {
     id: 'f00-ii-k6', type: 'mc', kind: 'conceptual',

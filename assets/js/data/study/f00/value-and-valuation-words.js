@@ -1,8 +1,9 @@
 // value-and-valuation-words.js — F00 · Value and valuation words. Content only; exercises are in value-and-valuation-words.ex.js.
-// Harbourline figures come from case.js (HARBOURLINE, HARBOURLINE_DERIVED). Fictional additions, kept consistent with
-// capital-and-liquidity.js: book equity $300m; income statement detail (operating costs excluding D&A 547, interest 11,
-// tax 12, so profit before tax 50 and a 24% tax rate); capital spending about $35m a year. Northbay Roasters and
-// Copperloaf Bakeries are fictional and appear only in this lesson.
+// Harbourline figures come from case.js (HARBOURLINE, HARBOURLINE_DETAIL, HARBOURLINE_DERIVED): book equity $300m;
+// operating costs excluding D&A 547, interest 11, tax 12, so profit before tax 50 and a 24% tax rate; capital spending
+// about $35m a year. Northbay Roasters and Copperloaf Bakeries are fictional and appear only in this lesson.
+import { HARBOURLINE as H, HARBOURLINE_DETAIL as D } from './case.js';
+
 export default {
   slug: 'value-and-valuation-words',
   title: 'Value and valuation words',
@@ -29,7 +30,7 @@ export default {
     { p: 'The <g>book value of equity</g> is the shareholders’ equity recorded in the balance sheet: total assets minus total liabilities, measured by the accounting rules. Harbourline’s is $300 million (from the balance sheet in the previous lesson: assets of $660 million minus liabilities of $360 million). Accountants also speak of the book value of a single asset, meaning its cost less the depreciation recorded so far; in this lesson “book value” means book value of equity unless stated otherwise.' },
     { p: 'The <g>market value</g> of something is what buyers and sellers are paying for it now. For a listed company the market value of its equity is called its <g>market capitalisation</g> (market cap): the share price times the number of shares outstanding. Harbourline has 18 million shares trading at $42.50, so its market capitalisation is <m>42.50 \\times 18 = 765</m> million dollars. Investor.gov defines it in the same way: the current market price of one share multiplied by the total number of shares outstanding.' },
     { p: 'Why is the market paying $765 million for equity the accounts record at $300 million? Because the two numbers look in different directions. The balance sheet mostly records what assets cost when they were bought, and leaves out valuable things the business built itself, such as its brand, its relationships with growers and the skills of its roasters. The share price reflects what investors expect the company to earn in the future, discounted for time and risk. Their ratio, the <g>market-to-book ratio</g>, is <m>765 \\div 300 = 2.55</m>: investors pay $2.55 for every dollar of recorded equity. Per share, book value is <m>300 \\div 18 \\approx 16.67</m> dollars against a price of $42.50.' },
-    { callout: 'note', title: 'Market value is a price, not a fact about the company', html: 'Market capitalisation changes every time the share price does, often many times a day, while the business itself has not changed. It tells you what the marginal buyer and seller agreed to pay for a share at that moment. It is the best single estimate of what the equity is worth that is available, but it is still an estimate made by people with expectations.' },
+    { callout: 'note', title: 'Market value is a price, not a fact about the company', html: 'Market capitalisation changes every time the share price does, often many times a day, while the business itself has not changed. It tells you what the marginal buyer and seller agreed to pay for a share at that moment. For a widely traded company it is often treated as the best available estimate of what the equity is worth, but it is still an estimate made by people with expectations.' },
 
     { h: 'Enterprise value: the price of the whole business' },
     { p: 'Market capitalisation prices only the shares. Suppose you wanted to buy all of Harbourline’s operations: its roasting plants, its brand, its customers. Buying every share would cost $765 million, but you would also take on its $210 million of debt, which the lenders will still expect to be repaid. In exchange, you would get the $45 million of cash in its bank accounts, which you could use straight away to pay part of that debt. The net cost of the business is its <g>enterprise value</g> (EV):' },
@@ -43,7 +44,7 @@ export default {
     { p: 'The figure shows the second way to read enterprise value: it is the value of the operating business, which is shared between everyone who financed it. Lenders and shareholders both have claims on it; cash is subtracted because it is not part of the operations and could be paid out tomorrow without changing what the business does. This is why enterprise value is the natural measure when comparing companies that are financed differently.' },
 
     { h: 'Measures of earnings: EBIT, D&amp;A and EBITDA' },
-    { p: 'To judge whether a price is high or low, you compare it with what the business earns. An income statement subtracts costs from revenue in stages, and finance gives names to some of the stages. <g>EBIT</g> (earnings before interest and taxes), also called operating profit, is what the business earns from its operations before paying its lenders and the government. <b>D&amp;A</b> is depreciation and amortisation: depreciation spreads the cost of physical assets such as roasting machines over the years they are used, and <g>amortisation</g> does the same for intangible assets such as purchased software licences or customer contracts. Neither is a cash payment in the year it is recorded; the cash left when the asset was bought. <g>EBITDA</g> (earnings before interest, taxes, depreciation and amortisation) adds D&amp;A back to EBIT.' },
+    { p: 'To judge whether a price is high or low, you compare it with what the business earns. An income statement subtracts costs from revenue in stages, and finance gives names to some of the stages. <g>EBIT</g> (earnings before interest and taxes) is what the business earns before paying its lenders and the government. For a company with no income or costs outside its operations, such as Harbourline, EBIT equals operating profit; otherwise the two differ. <b>D&amp;A</b> is depreciation and amortisation: depreciation spreads the cost of physical assets such as roasting machines over the years they are used, and <g>amortisation</g> does the same for intangible assets such as purchased software licences or customer contracts. Neither is a cash payment in the year it is recorded; the cash left when the asset was bought. <g>EBITDA</g> (earnings before interest, taxes, depreciation and amortisation) adds D&amp;A back to EBIT.' },
     { table: {
       caption: 'Harbourline’s income statement for its latest year, $ millions (fictional)',
       head: ['Line', '$ millions', 'What it means'],
@@ -53,13 +54,13 @@ export default {
         ['Operating costs excluding D&amp;A', '(547)', 'Green coffee, wages, energy, packaging, transport, rent'],
         ['<b>EBITDA</b>', '<b>93</b>', 'Earnings before interest, taxes, depreciation and amortisation'],
         ['Depreciation and amortisation', '(32)', 'Spreading the cost of roasters, plants and software'],
-        ['<b>EBIT (operating profit)</b>', '<b>61</b>', 'Earnings from operations, before lenders and taxes'],
+        ['<b>EBIT (here equal to operating profit)</b>', '<b>61</b>', 'Earnings before lenders and taxes'],
         ['Interest', '(11)', 'Paid to lenders on the $210 million of debt'],
         ['Profit before tax', '50', ''],
         ['Income tax', '(12)', 'A 24% rate on profit before tax'],
         ['<b>Net income</b>', '<b>38</b>', 'What is left for shareholders'],
       ],
-      note: 'Revenue, EBIT ($61m), D&amp;A ($32m) and net income ($38m) are the case figures; the other lines are fictional details consistent with them. Amounts in parentheses are subtracted.',
+      note: 'All figures come from the course case. Amounts in parentheses are subtracted.',
     } },
     { p: 'Harbourline’s EBITDA is <m>61 + 32 = 93</m> million dollars, or <m>93 \\div 640 \\approx 14.5\\%</m> of revenue (its EBITDA margin). Working upwards from the bottom gives the same answer: <m>38 + 12 + 11 + 32 = 93</m>. The US Securities and Exchange Commission’s staff take exactly that route when they say how EBIT and EBITDA should be calculated in company filings: “earnings” means net income as reported under GAAP, with interest, taxes and (for EBITDA) depreciation and amortisation added back.' },
 
@@ -69,13 +70,13 @@ export default {
       '<b><g>EV/EBITDA</g></b> divides enterprise value by EBITDA. Harbourline: <m>930 \\div 93 = 10.0</m>. The whole business is priced at ten times one year’s EBITDA.',
       '<b>The <g>P/E ratio</g></b> (price-to-earnings) divides market capitalisation by net income, or equivalently the share price by <g>earnings per share</g> (EPS). Harbourline’s EPS is <m>38 \\div 18 \\approx 2.11</m> dollars, and its P/E is <m>765 \\div 38 \\approx 20.1</m>. Shareholders are paying about twenty times one year’s earnings.',
     ] },
-    { callout: 'key', title: 'Match the top and the bottom', html: 'A multiple must compare like with like. Enterprise value belongs to lenders and shareholders together, so it is divided by earnings before interest (EBITDA, EBIT or revenue), which also belong to both. Market capitalisation belongs to shareholders only, so it is divided by net income, which is what is left for shareholders after the lenders have been paid.' },
+    { callout: 'key', title: 'Match the top and the bottom', html: 'A multiple must compare like with like. Enterprise value belongs to lenders and shareholders together, so it is divided by measures before interest (EBITDA, EBIT or revenue), which also belong to both. Market capitalisation belongs to shareholders only, so it is divided by net income, which is what is left for shareholders after the lenders have been paid.' },
   ],
 
   theory: [
     { h: 'Why enterprise value adds debt and subtracts cash: the careful version' },
-    { p: 'Enterprise value aims to measure the value of a company’s operations, independent of how they are financed. Two companies with identical roasting plants, customers and costs should have the same enterprise value even if one borrowed heavily to build its plants and the other used shareholders’ money. Their market capitalisations will differ, because in the borrowing company the lenders own a larger slice of the same pie, but adding the debt back puts them on the same footing.' },
-    { p: 'Cash is subtracted because cash is not an operating asset in this sense. A company holding $45 million of spare cash is worth $45 million more to its shareholders than an otherwise identical one without it, and that $45 million says nothing about how good its roasting business is. Strictly, analysts subtract only cash not needed to run the business day to day, and they add other claims that rank alongside debt, such as preferred stock, lease obligations and the share of subsidiaries owned by outsiders. Those refinements are left to later courses; the core idea is debt in, spare cash out.' },
+    { p: 'Enterprise value aims to measure the value of a company’s operations, independent of how they are financed. Two companies with identical roasting plants, customers and costs should have the same enterprise value (ignoring the tax saving on interest) even if one borrowed heavily to build its plants and the other used shareholders’ money. Their market capitalisations will differ, because in the borrowing company the lenders own a larger slice of the same pie, but adding the debt back puts them on the same footing.' },
+    { p: 'Cash is subtracted because cash is not an operating asset in this sense. A company holding $45 million of spare cash is worth $45 million more to its shareholders than an otherwise identical one without it, and that $45 million says nothing about how good its roasting business is. Strictly, analysts subtract only cash not needed to run the business day to day, and they add other claims on the business besides ordinary shares, such as preferred stock, lease obligations and the share of subsidiaries owned by outside shareholders (noncontrolling interests). Those refinements are left to later courses; the core idea is debt in, spare cash out.' },
     { p: 'The table compares Harbourline with Northbay Roasters, a fictional twin that has the same operations, the same cash and the same 24% tax rate, but no debt. Suppose the market values the two businesses’ operations equally.' },
     { table: {
       caption: 'Same operations, different financing (fictional, $ millions)',
@@ -95,9 +96,9 @@ export default {
     { p: 'EV/EBITDA is identical, because neither enterprise value nor EBITDA depends on how the business is financed. The P/E ratios differ, although the businesses are the same: Northbay pays no interest, so its net income is higher (<m>61 \\times (1 - 0.24) \\approx 46.4</m>), and its shares carry less risk. That is the main reason analysts prefer EV-based multiples when comparing companies with different amounts of debt, and use P/E mainly between companies financed in similar ways.' },
 
     { h: 'What EBITDA leaves out' },
-    { p: 'EBITDA is popular because it is a rough measure of the cash an operating business generates before paying for the long term, and because it is unaffected by financing, tax and depreciation choices. Those same features are its limits. Each letter in the name is something the business really does have to pay or replace.' },
+    { p: 'EBITDA is popular because it is a rough proxy for the cash the operations generate before interest, tax, replacement spending and working-capital needs, and because it is unaffected by financing, tax and depreciation choices. Those same features are its limits. Each letter in the name is something the business really does have to pay or replace.' },
     { list: [
-      '<b>Depreciation and amortisation stand for real spending.</b> D&amp;A is not a cash payment this year, but machines wear out and must be replaced. Suppose Harbourline spends about $35 million a year on new roasting equipment (its <i>capital expenditure</i>; a fictional figure). Its EBITDA of $93 million overstates what the business can pay out year after year; after that spending, <m>93 - 35 = 58</m> million dollars remain.',
+      '<b>Depreciation and amortisation stand for real spending.</b> D&amp;A is not a cash payment this year, but machines wear out and must be replaced. Harbourline spends about $35 million a year on new roasting equipment (its <i>capital expenditure</i>, from the course case). Its EBITDA of $93 million overstates what the business can pay out year after year; after that spending, <m>93 - 35 = 58</m> million dollars remain.',
       '<b>Interest and tax are paid in cash.</b> A business with high EBITDA and heavy debt can still be unable to pay its lenders. That is why lenders look at interest payments as well.',
       '<b>Working capital needs cash.</b> A growing roaster must buy more green coffee and wait longer for customers to pay. EBITDA ignores that money tied up in current assets.',
       '<b>EBITDA is not a GAAP measure.</b> Neither US GAAP nor IFRS defines it, so companies can calculate it differently. Many report an “adjusted EBITDA” that adds back costs management calls unusual. The SEC staff’s guidance says a measure calculated differently from net income plus interest, taxes, depreciation and amortisation should not be called EBITDA, and should carry a different title such as “Adjusted EBITDA”.',
@@ -125,14 +126,14 @@ export default {
       where: [
         [String.raw`\text{Market cap}`, 'Market value of the equity', '$'],
         [String.raw`\text{Debt}`, 'Interest-bearing debt: loans and bonds', '$'],
-        [String.raw`\text{Cash}`, 'Cash and short-term investments not needed to run the business', '$'],
+        [String.raw`\text{Cash}`, 'Cash and short-term investments not needed to run the business; this course subtracts all cash', '$'],
       ],
       assumptions: 'Debt at its balance sheet amount, a common simplification.',
-      note: 'Debt minus cash is net debt, so EV = market cap + net debt. Fuller versions also add preferred stock, leases and outside owners’ shares of subsidiaries.' },
+      note: 'Debt minus cash is net debt, so EV = market cap + net debt. Fuller versions also add preferred stock, leases and noncontrolling interests (outside shareholders’ shares of subsidiaries).' },
     { id: 'ebitda', name: 'EBITDA',
       tex: String.raw`\text{EBITDA} = \text{EBIT} + \text{D\&A}`,
       where: [
-        [String.raw`\text{EBIT}`, 'Earnings before interest and taxes (operating profit): net income + interest + taxes', '$'],
+        [String.raw`\text{EBIT}`, 'Earnings before interest and taxes: net income + interest + taxes (equal to operating profit when, as at Harbourline, there is no income or cost outside operations)', '$'],
         [String.raw`\text{D\&A}`, 'Depreciation and amortisation for the period', '$'],
       ],
       assumptions: 'Both from the same period’s income statement.',
@@ -201,15 +202,15 @@ export default {
   ],
 
   demo: [
-    { widget: 'ev-builder', intro: 'Start from Harbourline’s figures. Change the debt and watch market capitalisation and enterprise value come apart; change the share price and watch both multiples move together. Notice that changing the debt alone changes neither EBITDA nor the market cap, so it moves EV/EBITDA but not P/E: in reality, a firm that borrowed more would also pay more interest, lowering its net income.' },
+    { widget: 'ev-builder', intro: 'Start from Harbourline’s figures. Change the debt and watch market capitalisation and enterprise value come apart; change the share price and watch both multiples move together. The explorer treats each input separately, so raising the debt raises EV with market cap held fixed. In reality a company that borrowed more and paid it to shareholders would see its market cap fall by about as much, leaving EV roughly unchanged, and its extra interest would lower net income.' },
     { widget: 'multiple-valuation', intro: 'Choose an EV/EBITDA multiple and an EBITDA figure for Harbourline. The explorer converts the implied enterprise value back into a value per share and compares it with the $42.50 market price. Try 8× and 12× to reproduce worked example 2, then see how much a $10 million change in EBITDA is worth.' },
   ],
 
   mistakes: [
-    { title: '“Book value is what the company is worth.”', html: 'Book value is what the accounts record, mostly at historical cost, and it leaves out much of what makes a business valuable, such as its brand and customer relationships. Harbourline’s book equity is $300 million while the market values its shares at $765 million. Neither is “the” value, but book value is rarely a good estimate of what a buyer would pay.' },
+    { title: '“Book value is what the company is worth.”', html: 'Book value is what the accounts record, mostly at historical cost, and it leaves out much of what makes a business valuable, such as its brand and customer relationships. Harbourline’s book equity is $300 million while the market values its shares at $765 million. Neither is “the” value, but book value is rarely a good estimate of what a buyer would pay. Some texts call a share trading above book value ‘overvalued’; for most healthy firms market value exceeds book because the balance sheet omits internally built value.' },
     { title: '“Enterprise value subtracts debt, because debt reduces value.”', html: 'It is the other way round. Enterprise value <i>adds</i> debt to market capitalisation, because a buyer of the whole business takes on the debt as well as buying the shares. It is when you go from enterprise value back to the value of the shares that you subtract debt (and add cash).' },
     { title: '“EBITDA is the company’s cash flow.”', html: 'EBITDA ignores the cash spent replacing equipment, the cash tied up in growing inventory and receivables, interest and tax. A business can report strong EBITDA and still run short of cash. Treat EBITDA as a starting point for comparing similar businesses, not as cash in the bank.' },
-    { title: 'Mixing enterprise and equity measures in one multiple', html: 'Dividing market capitalisation by EBITDA, or enterprise value by net income, compares numbers that belong to different groups of investors. The first makes heavily indebted companies look cheap; the second makes them look expensive. Pair EV with earnings before interest, and market capitalisation with net income.' },
+    { title: 'Mixing enterprise and equity measures in one multiple', html: 'Dividing market capitalisation by EBITDA, or enterprise value by net income, compares numbers that belong to different groups of investors. The first makes heavily indebted companies look cheap; the second makes them look expensive. Pair EV with measures before interest, and market capitalisation with net income.' },
     { title: '“A P/E of 12 is cheaper than a P/E of 20.”', html: 'Only if everything else is equal, and it rarely is. A low P/E may reflect expected decline, higher risk or a one-off boost to this year’s earnings; a high one may reflect strong expected growth. P/E also depends on how much debt a company carries. Compare multiples between genuinely similar companies, and ask why they differ.' },
     { title: '“The model gave the value.”', html: 'Every valuation, by multiples or by forecasts, is the output of assumptions: which peers, which year’s earnings, which adjustments, which growth rate. Change them and the value changes, often by a lot. State the assumptions, and show what the answer would be under reasonable alternatives.' },
   ],
@@ -218,7 +219,7 @@ export default {
     { p: 'Valuation words appear wherever ownership of a business changes hands or money is lent against it. Here is how three professionals use them.' },
     { p: '<b>An equity analyst</b> at a fund deciding whether to buy Harbourline shares builds a table of listed coffee and food companies with their market capitalisations, enterprise values, EV/EBITDA and P/E. She removes companies whose businesses differ too much (a café chain earns money differently from a roaster), checks how each company defines any adjusted figure, and notes which companies carry heavy debt, since their P/E ratios are not comparable with Harbourline’s. Harbourline’s 10.0× EV/EBITDA turns out to be in the middle of its peers. Whether that is attractive depends on her view of its growth and spending, which she sets out in a short note with the assumptions stated, so her colleagues can challenge them.' },
     { p: '<b>A corporate banker</b> lending to a company looks at the same vocabulary from the lender’s side. Banks often express how much a company has borrowed as a multiple of its EBITDA, and loan agreements often limit it. On the lesson’s figures, Harbourline’s debt is <m>210 \\div 93 \\approx 2.3</m> times its EBITDA, and its net debt <m>165 \\div 93 \\approx 1.8</m> times. The banker also looks at enterprise value: debt of $210 million against a business valued at $930 million leaves a large cushion of shareholders’ value that would be lost before the lenders lost anything.' },
-    { case: 'Ana uses the words too, on a small scale. In five years, if Lantern is profitable, a larger café group might offer to buy it. The buyer would probably value Lantern at a multiple of its EBITDA, subtract Lantern’s debt, add its cash, and offer the rest to Ana for her shares. Knowing that, Ana can see now which decisions would raise that price (steady, well-documented earnings; equipment kept in good order; customer contracts that would survive a change of owner) and why her $20,000 of book equity may turn out to be worth much more, or less, than $20,000.' },
+    { case: 'Ana uses the words too, on a small scale. In five years, if Lantern is profitable, a larger coffee or catering company might offer to buy it. The buyer would probably value Lantern at a multiple of its EBITDA, subtract Lantern’s debt, add its cash, and offer the rest to Ana for her shares. Knowing that, Ana can see now which decisions would raise that price (steady, well-documented earnings; equipment kept in good order; customer contracts that would survive a change of owner) and why her $20,000 of book equity may turn out to be worth much more, or less, than $20,000.' },
     { p: 'In each case the same discipline applies: calculate the measures correctly, pair numerators with the right denominators, know what each measure leaves out, and treat every value as conditional on its assumptions.' },
   ],
 
@@ -226,9 +227,9 @@ export default {
     'Book value of equity is what the accounts record (assets minus liabilities); market value is what investors are paying now. Harbourline: $300 million book, $765 million market, a market-to-book ratio of 2.55.',
     'Market capitalisation is share price times shares outstanding: the market value of the equity.',
     'Enterprise value = market cap + debt − cash: the net cost of buying the whole operating business, shared between lenders and shareholders. Harbourline: $930 million.',
-    'EBIT is operating profit before interest and tax; EBITDA adds back depreciation and amortisation. Harbourline: $61 million and $93 million.',
+    'EBIT is earnings before interest and tax (equal to operating profit for Harbourline); EBITDA adds back depreciation and amortisation. Harbourline: $61 million and $93 million.',
     'EBITDA is not cash flow and not a GAAP measure: it ignores replacement spending, working capital, interest and tax, and adjusted versions vary.',
-    'Pair EV with earnings before interest (EV/EBITDA, 10.0× for Harbourline) and market cap with net income (P/E, about 20.1×). EV multiples compare differently financed firms more fairly.',
+    'Pair EV with measures before interest (EV/EBITDA, 10.0× for Harbourline) and market cap with net income (P/E, about 20.1×). EV multiples compare differently financed firms more fairly.',
     'Every valuation depends on assumptions: peers, earnings definitions, forecasts and discount rates. State them and show how the answer changes.',
   ],
 
@@ -240,7 +241,7 @@ export default {
     { term: 'Market-to-book ratio', def: 'Market capitalisation divided by the book value of equity (or price per share divided by book value per share). Also called price-to-book.' },
     { term: 'Enterprise value', def: 'Market capitalisation plus debt minus cash: the value of a company’s operating business, claimed jointly by its lenders and shareholders. Often shortened to EV.' },
     { term: 'Net debt', def: 'Debt minus cash. Enterprise value equals market capitalisation plus net debt.' },
-    { term: 'EBIT', def: 'Earnings before interest and taxes: profit from operations before paying lenders and tax. Also called operating profit.' },
+    { term: 'EBIT', def: 'Earnings before interest and taxes: profit before paying lenders and tax. For a company with no income or costs outside its operations, EBIT equals operating profit; otherwise the two differ.' },
     { term: 'D&A', def: 'Depreciation and amortisation: the part of the cost of long-lived physical and intangible assets charged as an expense in the period.' },
     { term: 'Amortisation', def: 'The spreading of the cost of an intangible asset, such as purchased software or a customer contract, over the years it is used. The word is also used for the gradual repayment of a loan’s principal.' },
     { term: 'EBITDA', def: 'Earnings before interest, taxes, depreciation and amortisation: EBIT plus D&amp;A. A widely used but non-GAAP measure of operating earnings.' },
@@ -258,7 +259,8 @@ export default {
   ],
 
   checks: [
-    { what: 'Book equity = total assets − total liabilities', value: 660 - 360, shown: 300 },
+    { what: 'Book equity = total assets − total liabilities', value: D.totalAssets - (H.currentLiabilities + H.debt + D.otherNoncurrentLiabilities), shown: 300 },
+    { what: 'Book equity agrees with the case', value: D.totalAssets - (H.currentLiabilities + H.debt + D.otherNoncurrentLiabilities), shown: D.bookEquity },
     { what: 'Market cap', value: 42.5 * 18, shown: 765 },
     { what: 'Market-to-book', value: (42.5 * 18) / 300, shown: 2.55 },
     { what: 'Book value per share', value: 300 / 18, shown: 16.67, tol: 0.005 },
@@ -268,12 +270,15 @@ export default {
     { what: 'EV = market cap + net debt', value: 765 + 165, shown: 930 },
     { what: 'Figure: net debt bar height (240 × 165/930)', value: 240 * 165 / 930, shown: 43, tol: 0.5 },
     { what: 'Figure: market cap bar height (240 × 765/930)', value: 240 * 765 / 930, shown: 197, tol: 0.5 },
-    { what: 'Operating costs excluding D&A = revenue − EBITDA', value: 640 - (61 + 32), shown: 547 },
+    { what: 'Operating costs excluding D&A = revenue − EBITDA', value: H.revenue - (H.ebit + H.da), shown: 547 },
+    { what: 'Operating costs agree with the case', value: H.revenue - (H.ebit + H.da), shown: D.operatingCostsExDA },
     { what: 'EBITDA', value: 61 + 32, shown: 93 },
     { what: 'EBITDA from revenue − operating costs', value: 640 - 547, shown: 93 },
-    { what: 'Profit before tax', value: 61 - 11, shown: 50 },
-    { what: 'Net income from PBT − tax', value: 50 - 12, shown: 38 },
-    { what: 'Tax rate (%)', value: 12 / 50 * 100, shown: 24 },
+    { what: 'Profit before tax', value: H.ebit - D.interest, shown: 50 },
+    { what: 'Profit before tax agrees with the case', value: H.ebit - D.interest, shown: D.profitBeforeTax },
+    { what: 'Net income from PBT − tax', value: D.profitBeforeTax - D.tax, shown: 38 },
+    { what: 'Net income agrees with the case', value: D.profitBeforeTax - D.tax, shown: H.netIncome },
+    { what: 'Tax rate (%)', value: D.tax / D.profitBeforeTax * 100, shown: 24 },
     { what: 'EBITDA built up from net income', value: 38 + 12 + 11 + 32, shown: 93 },
     { what: 'EBITDA margin (%)', value: 93 / 640 * 100, shown: 14.5, tol: 0.05 },
     { what: 'EV/EBITDA', value: 930 / 93, shown: 10.0 },
@@ -283,7 +288,7 @@ export default {
     { what: 'Northbay market cap', value: 930 - 0 + 45, shown: 975 },
     { what: 'Northbay net income', value: 61 * (1 - 0.24), shown: 46.4, tol: 0.05 },
     { what: 'Northbay P/E', value: 975 / (61 * 0.76), shown: 21.0, tol: 0.05 },
-    { what: 'EBITDA after capital spending', value: 93 - 35, shown: 58 },
+    { what: 'EBITDA after capital spending', value: (H.ebit + H.da) - D.capex, shown: 58 },
     { what: 'Example 2: EV at 8×', value: 8 * 93, shown: 744 },
     { what: 'Example 2: equity at 8×', value: 8 * 93 - 210 + 45, shown: 579 },
     { what: 'Example 2: per share at 8×', value: (8 * 93 - 210 + 45) / 18, shown: 32.17, tol: 0.005 },

@@ -101,7 +101,7 @@ export const guided = [
   },
   {
     id: 'f00-vw-g2', type: 'classify', kind: 'conceptual',
-    prompt: 'For a fair multiple, which measure of value should each earnings figure be compared with?',
+    prompt: 'For a fair multiple, which measure of value should each income-statement figure be compared with?',
     items: ['EBITDA', 'Net income', 'Revenue', 'EBIT', 'Earnings per share'],
     categories: ['Enterprise value', 'Market capitalisation or share price'],
     answer: [0, 1, 0, 0, 1],
@@ -318,7 +318,7 @@ export const check = [
     feedback: {
       1: 'Relative valuation with multiples is used every day by analysts and bankers; its weakness is its reliance on assumptions, not that nobody uses it.',
       2: 'They can: implied EV minus debt plus cash, divided by shares, gives a value per share.',
-      3: 'Market price is the best available estimate of what the shares sell for, not proof of their value; analysts disagree with it all the time. The issue is the false precision of “exactly”.',
+      3: 'Market price is what the shares trade for today, not proof of their value; analysts disagree with it all the time. The issue is the false precision of “exactly”.',
     },
     solution: 'A multiple-based value is conditional on the peers, the earnings figure and the multiple chosen. With peers at 8× to 12× EBITDA, the lesson’s range ran from about $32 to $53 a share. A single precise number hides that range; a sound report states its assumptions and shows how the value changes with them.',
   },

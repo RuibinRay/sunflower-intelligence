@@ -47,7 +47,7 @@ export default {
       align: ['l', 'r', 'r', 'r', 'r'],
       rows: [
         ['Annual', '1', '6%', '$10,600.00', '6.00%'],
-        ['Semiannual', '2', '3%', '$10,609.00', '6.09%'],
+        ['Semi-annual', '2', '3%', '$10,609.00', '6.09%'],
         ['Quarterly', '4', '1.5%', '$10,613.64', '6.14%'],
         ['Monthly', '12', '0.5%', '$10,616.78', '6.17%'],
         ['Daily', '365', 'about 0.0164%', '$10,618.31', '6.18%'],
@@ -77,8 +77,8 @@ export default {
     { p: 'If a quoted annual rate <m>r</m> is compounded <m>m</m> times a year, the rate per period is <m>r \\div m</m> and there are <m>m \\times n</m> periods in <m>n</m> years, so the future value is <m>P(1 + r/m)^{mn}</m>. Over three years at 6%, $10,000 grows to $11,910.16 with annual compounding and to about $11,966.81 with monthly compounding (<m>10{,}000 \\times 1.005^{36}</m>).' },
     { p: 'The effective annual rate converts any quoted rate into the equivalent once-a-year rate: <m>\\text{EAR} = (1 + r/m)^m - 1</m>. Two rates can be compared fairly only once both are expressed as EARs. The comparison can reverse a first impression: worked example 2 shows a lower quoted rate that costs more.' },
     { h: 'APR, EAR and APY' },
-    { p: 'The rate a lender or bank quotes is usually a <i>nominal annual rate</i>: the rate per period multiplied by the number of periods in a year, ignoring compounding. On loans and credit cards it is commonly called the <g>APR</g> (annual percentage rate). A card that charges 1.5% a month has an APR of <m>12 \\times 1.5\\% = 18\\%</m>, but because unpaid interest is added to the balance each month, its EAR is <m>1.015^{12} - 1 \\approx 19.56\\%</m>. The APR understates what a balance left unpaid for a year really costs.' },
-    { callout: 'standards', title: 'What the labels mean in US consumer finance', html: 'In US consumer lending, the APR that lenders must disclose is a broader measure of the cost of credit than the interest rate: as the Consumer Financial Protection Bureau explains for mortgages, it also reflects points, broker fees and certain other charges, so it is usually higher than the interest rate. For deposit accounts, US banks disclose an <g>annual percentage yield</g> (APY) under the Truth in Savings rules (Regulation DD): a percentage rate reflecting the total interest paid on an account, based on the interest rate and how often interest is compounded. An APY is therefore an effective annual rate. Other countries use other labels, such as AER (annual equivalent rate) for savings in the UK. Always check which rate a number is before comparing it with another.' },
+    { p: 'The rate quoted on a loan is usually a <i>nominal annual rate</i>: the rate per period multiplied by the number of periods in a year, ignoring compounding. On loans and credit cards it is commonly called the <g>APR</g> (annual percentage rate). A card that charges 1.5% a month has an APR of <m>12 \\times 1.5\\% = 18\\%</m>, but because unpaid interest is added to the balance each month, its EAR is <m>1.015^{12} - 1 \\approx 19.56\\%</m>. The APR understates what a balance left unpaid for a year really costs.' },
+    { callout: 'standards', title: 'What the labels mean in US consumer finance', html: 'For closed-end consumer loans in the US, such as mortgages and car loans, the APR lenders must disclose under Regulation Z is broader than the interest rate: as the Consumer Financial Protection Bureau explains for mortgages, it also reflects points, broker fees and certain other charges, so it is usually higher than the interest rate. A credit card’s APR, by contrast, is its periodic rate times the number of periods in a year (Regulation Z, §1026.14), as in the 18% example above. For deposit accounts, US banks disclose an <g>annual percentage yield</g> (APY) under the Truth in Savings rules (Regulation DD): a percentage rate reflecting the total interest paid on an account, based on the interest rate and how often interest is compounded. An APY is therefore an effective annual rate. Other countries use other labels, such as AER (annual equivalent rate) for savings in the UK. Always check which rate a number is before comparing it with another.' },
     { p: 'This course uses the words this way: a <i>quoted</i> or <i>nominal annual</i> rate (an APR, in its simple sense) is the periodic rate times the number of periods; the <i>effective annual rate</i> includes compounding. F04 Mathematics of Finance develops both, including loans repaid in instalments, where APRs matter most.' },
 
     { h: 'Measuring inflation' },
@@ -87,20 +87,20 @@ export default {
     { p: 'Over several years inflation compounds just as interest does. At 2.8% a year for ten years, prices rise by a factor of <m>1.028^{10} \\approx 1.318</m>, about 31.8%, so $10,000 in ten years’ time would buy only what about <m>10{,}000 \\div 1.318 \\approx 7{,}587</m> dollars buys today. If Ana had left her whole $26,000 earning 1.5% for those ten years, it would have grown to about $30,174.06 in dollars but would buy only what about $22,893.00 buys today.' },
 
     { h: 'Real returns: the exact formula and the approximation' },
-    { p: 'The exact relationship between nominal return, inflation and real return is often called the Fisher relation, after the economist Irving Fisher: <m>(1 + r_{\\text{nom}}) = (1 + r_{\\text{real}})(1 + i)</m>. Multiplying out gives <m>r_{\\text{nom}} = r_{\\text{real}} + i + r_{\\text{real}} \\times i</m>. The approximation <m>r_{\\text{real}} \\approx r_{\\text{nom}} - i</m> simply drops the last term, the product of two small numbers.' },
-    { p: 'When rates are small the dropped term is tiny and the approximation is good: at 8% nominal and 3% inflation the exact real return is <m>1.08 \\div 1.03 - 1 \\approx 4.85\\%</m>, against 5% by subtraction. When rates are large it fails badly. In an economy with 30% inflation, a deposit paying 40% has an exact real return of <m>1.40 \\div 1.30 - 1 \\approx 7.69\\%</m>, not 10%. The approximation also overstates how much a positive real return compounds over many years. Use the exact formula whenever inflation or interest rates are high, or the period is long.' },
+    { p: 'The exact relationship between nominal return, inflation and real return is often called the Fisher relation, after the economist Irving Fisher: <m>(1 + r_{\\text{nom}}) = (1 + r_{\\text{real}})(1 + i)</m>. Multiplying out gives <m>r_{\\text{nom}} = r_{\\text{real}} + i + r_{\\text{real}} \\times i</m>. The approximation <m>r_{\\text{real}} \\approx r_{\\text{nom}} - i</m> drops the last term, the product of two small numbers.' },
+    { p: 'When rates are small the dropped term is tiny and the approximation is good: at 8% nominal and 3% inflation the exact real return is <m>1.08 \\div 1.03 - 1 \\approx 4.85\\%</m>, against 5% by subtraction. When rates are large it fails badly. In an economy with 30% inflation, a deposit paying 40% has an exact real return of <m>1.40 \\div 1.30 - 1 \\approx 7.69\\%</m>, not 10%. Over long periods the annual error compounds: at 8% and 3% for 30 years the shortcut implies purchasing power multiplied by 4.32, against 4.15 exactly. Use the exact formula whenever inflation or interest rates are high, or the period is long.' },
     { table: {
       caption: 'Exact and approximate real returns',
-      head: ['Nominal return', 'Inflation', 'Exact real return', 'Approximation (nominal − inflation)', 'Error'],
+      head: ['Nominal return', 'Inflation', 'Exact real return', 'Approximation (nominal − inflation)', 'Error (percentage points)'],
       align: ['r', 'r', 'r', 'r', 'r'],
       rows: [
-        ['1.5%', '2.8%', '−1.26%', '−1.30%', '0.04 points'],
-        ['8%', '3%', '4.85%', '5.00%', '0.15 points'],
-        ['40%', '30%', '7.69%', '10.00%', '2.31 points'],
+        ['1.5%', '2.8%', '−1.26%', '−1.30%', '0.04'],
+        ['8%', '3%', '4.85%', '5.00%', '0.15'],
+        ['40%', '30%', '7.69%', '10.00%', '2.31'],
       ],
       note: 'The first row is Ana’s savings account against her 2.8% assumption. The third is a fictional high-inflation economy.',
     } },
-    { p: 'The same logic gives the <g>real interest rate</g> on a loan, which is what borrowing really costs once inflation is taken into account. Inflation helps borrowers with fixed rates: they repay in dollars that buy less than the dollars they borrowed. Worked example 3 applies this to Lantern’s loan.' },
+    { p: 'The same logic gives the <g>real interest rate</g> on a loan, which is what borrowing really costs once inflation is taken into account. Inflation that turns out higher than expected when the rate was fixed helps borrowers: they repay in dollars that buy less than they expected. Inflation lower than expected helps lenders. Worked example 3 applies this to Lantern’s loan.' },
   ],
 
   formulas: [
@@ -133,7 +133,7 @@ export default {
         [String.raw`r`, 'Quoted (nominal) annual rate, such as an APR in its simple sense', 'per year'],
         [String.raw`m`, 'Compounding periods per year', ''],
       ],
-      assumptions: 'Ignores fees; a legally disclosed consumer APR may include some.',
+      assumptions: 'Ignores fees; the APR disclosed on a US mortgage or car loan may include some.',
       note: 'Compare rates only after converting them to EARs. A US deposit APY is an EAR.' },
     { id: 'inflation-rate', name: 'Inflation rate from a price index',
       tex: String.raw`i = \frac{\text{Index}_1 - \text{Index}_0}{\text{Index}_0}`,
@@ -192,7 +192,7 @@ export default {
         'Judgement: in real terms Lantern pays about 3.1% a year, not 6%, and repays less purchasing power than it borrowed, about $537 less. If inflation turns out higher than 2.8% the loan is cheaper still in real terms; if lower, dearer.',
       ],
       answer: 'A real interest rate of about 3.11% a year (3.2% by the approximation); the $10,000 repayment is worth about $9,462.67 in March 2026 dollars.',
-      interpretation: 'Inflation transfers purchasing power from lenders to borrowers with fixed rates. That is why lenders build expected inflation into the rates they charge, and why an unexpected rise in inflation helps borrowers and hurts savers, Ana among them.' },
+      interpretation: 'Unexpected inflation transfers purchasing power from lenders to borrowers with fixed rates. That is why lenders build expected inflation into the rates they charge, and why an unexpected rise in inflation helps borrowers and hurts savers, Ana among them.' },
   ],
 
   demo: [
@@ -212,7 +212,7 @@ export default {
   application: [
     { p: 'Interest and inflation run through ordinary financial decisions, at home and at work.' },
     { p: '<b>Setting a savings target in real terms.</b> A financial planner helping a fictional teacher save for a home deposit in eight years starts by asking what the deposit is in today’s prices. She then plans in real terms: she projects the savings with a real return (the expected interest rate adjusted for expected inflation) and compares them with the deposit in today’s dollars, rather than mixing nominal savings growth with today’s house prices. If the account’s rate is below inflation, she points out that the teacher is losing ground every year and suggests looking at better-paying accounts, while keeping enough in easy-access savings for emergencies.' },
-    { p: '<b>Pricing in a business.</b> A fictional hotel signs a three-year contract to host a company’s training courses at a fixed $180 a room-night. If the hotel’s costs rise with inflation at about 3% a year, the fixed price is worth about <m>180 \\div 1.03^2 \\approx 169.67</m> dollars of today’s purchasing power in the third year. The hotel’s sales manager therefore asks for a clause that raises the rate each year in line with a named price index, a common feature of long contracts, so that inflation does not quietly cut the real price.' },
+    { p: '<b>Pricing in a business.</b> A fictional hotel signs a three-year contract to host a company’s training courses at a fixed $180 a room-night. If the hotel’s costs rise with inflation at about 3% a year, the fixed price is worth about <m>180 \\div 1.03^2 \\approx 169.67</m> dollars of today’s purchasing power at the start of the third year. The hotel’s sales manager therefore asks for a clause that raises the rate each year in line with a named price index, a common feature of long contracts, so that inflation does not quietly cut the real price.' },
     { p: '<b>Borrowing.</b> The finance manager of a fictional battery-storage installer compares a fixed-rate loan with a variable-rate one. The fixed rate locks in the nominal cost; if inflation rises unexpectedly, the real cost falls, but if inflation falls, the business is left paying a high rate in real terms. She compares the offers on an effective-annual-rate basis, including fees, and then asks what the real rate would be under several inflation assumptions. Lenders do the same arithmetic from the other side, which is why rates tend to rise when expected inflation rises.' },
     { case: 'Ana now has the tools to judge her own savings. Her 1.5% account protects her dollars but, on her assumption of 2.8% inflation, loses about 1.26% of purchasing power a year. For the $6,000 she keeps as an emergency fund, she will have to balance three things: interest (how much the money earns), inflation (whether it keeps its purchasing power) and liquidity (whether she can reach it quickly). The F00 project asks you to make that comparison for her two choices, a certificate of deposit and a high-yield savings account.' },
   ],
@@ -221,7 +221,7 @@ export default {
     'Interest is the price of using money over time. Simple interest is paid on the principal only (I = P × r × t); compound interest is paid on the principal and on earlier interest (FV = P(1 + r)^n).',
     'Compounding makes balances grow faster every year; the gap from simple interest is small at first and large over long periods.',
     'With m compounding periods a year, FV = P(1 + r/m)^(mn). More frequent compounding pays slightly more, with diminishing effect.',
-    'A quoted annual rate (an APR in its simple sense) ignores compounding; the effective annual rate includes it. Compare rates only as EARs. US deposit APYs are EARs; US consumer-loan APRs also include certain fees.',
+    'A quoted annual rate (an APR in its simple sense) ignores compounding; the effective annual rate includes it. Compare rates only as EARs. US deposit APYs are EARs; a US card’s APR is its periodic rate × periods, while APRs on US mortgages and car loans also include certain fees.',
     'Inflation is a sustained rise in the general price level, measured as the percentage change in a price index such as the CPI. It erodes purchasing power.',
     'Real return = (1 + nominal) ÷ (1 + inflation) − 1. Ana’s 1.5% against 2.8% inflation is about −1.26% a year: her balance rises while its purchasing power falls.',
     'Nominal − inflation is a good approximation only when both rates are small; at 40% and 30% it gives 10% instead of 7.69%.',
@@ -230,9 +230,9 @@ export default {
   glossary: [
     { term: 'Simple interest', def: 'Interest calculated on the original principal only, so it is the same every period: principal × rate × time.' },
     { term: 'Compound interest', def: 'Interest calculated on the principal and on interest already added to the balance, so the balance grows by the same percentage each period.' },
-    { term: 'Compounding frequency', def: 'How many times a year interest is calculated and added to the balance: annually, semiannually, quarterly, monthly or daily.' },
+    { term: 'Compounding frequency', def: 'How many times a year interest is calculated and added to the balance: annually, semi-annually, quarterly, monthly or daily.' },
     { term: 'Effective annual rate', def: 'The interest rate that, compounded once a year, gives the same result as a quoted rate with more frequent compounding: (1 + r/m)^m − 1. Often shortened to EAR.' },
-    { term: 'APR', def: 'Annual percentage rate. In its simple sense, a periodic rate multiplied by the number of periods in a year, ignoring compounding. In US consumer lending the disclosed APR is a broader measure of the cost of credit that also includes certain fees.' },
+    { term: 'APR', def: 'Annual percentage rate. In its simple sense, a periodic rate multiplied by the number of periods in a year, ignoring compounding; a US credit card’s APR is calculated this way. For closed-end US consumer loans, such as mortgages and car loans, the disclosed APR is broader and also reflects certain fees.' },
     { term: 'Annual percentage yield', def: 'The rate US banks disclose on deposit accounts under the Truth in Savings rules, reflecting the total interest paid on the account including compounding. An effective annual rate. Often shortened to APY.' },
     { term: 'Inflation', def: 'A sustained rise in the general level of prices, measured as the percentage change in a price index.' },
     { term: 'Price index', def: 'A number tracking the cost of a fixed basket of goods and services over time, set to 100 in a base period.' },
@@ -249,6 +249,7 @@ export default {
     { text: 'Greenlaw, S. A., Shapiro, D. &amp; MacDonald, D. (2022). <i>Principles of Economics</i>, 3rd edition, section 22.1, “Tracking Inflation”. OpenStax.', url: 'https://openstax.org/books/principles-economics-3e/pages/22-1-tracking-inflation', checked: '2026-10-23' },
     { text: 'Federal Deposit Insurance Corporation. <i>Consumer Compliance Examination Manual</i>, chapter VI-3, “Truth in Savings” (Regulation DD). Last updated May 2023.', url: 'https://www.fdic.gov/consumer-compliance-examination-manual/vi-3-truth-savings', checked: '2026-10-23' },
     { text: 'Consumer Financial Protection Bureau. <i>What is the difference between a mortgage interest rate and an APR?</i>', url: 'https://www.consumerfinance.gov/ask-cfpb/what-is-the-difference-between-a-mortgage-interest-rate-and-an-apr-en-135/', checked: '2026-10-23' },
+    { text: 'Consumer Financial Protection Bureau. <i>Regulation Z (Truth in Lending), 12 CFR §1026.14: Determination of annual percentage rate</i>.', url: 'https://www.consumerfinance.gov/rules-policy/regulations/1026/14/', checked: '2026-10-23' },
   ],
 
   checks: [
@@ -334,5 +335,7 @@ export default {
     { what: 'Hotel contract: third-year price in today’s dollars', value: 180 / 1.03 ** 2, shown: 169.67 },
     { what: 'Mistake: 5% compounded for 10 years, growth (%)', value: (1.05 ** 10 - 1) * 100, shown: 62.9, tol: 0.05 },
     { what: 'Mistake: simple growth 5% × 10 (%)', value: 5 * 10, shown: 50 },
+    { what: '30 years at 8% and 3%: shortcut purchasing-power multiple', value: (1 + (0.08 - 0.03)) ** 30, shown: 4.32, tol: 0.005 },
+    { what: '30 years at 8% and 3%: exact purchasing-power multiple', value: (1.08 / 1.03) ** 30, shown: 4.15, tol: 0.005 },
   ],
 };

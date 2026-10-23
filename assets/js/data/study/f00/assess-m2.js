@@ -37,7 +37,7 @@ export const items = [
       'A customer pays an invoice it owed',
       'The firm pays a supplier it owed, from cash',
       'The firm buys timber on 30-day credit',
-      'The firm borrows on a five-year loan and keeps the cash',
+      'The firm borrows on a five-year loan, repayable in one sum, and keeps the cash',
       'The firm buys a new saw for cash',
     ],
     categories: ['Rises', 'Falls', 'No change'],
@@ -52,7 +52,7 @@ export const items = [
     solution: 'Collecting a receivable: no change (one current asset becomes another). Paying a supplier: rises (equal falls on both sides of a ratio above 1). Buying timber on credit: falls (equal rises on both sides). Long-term borrowing: rises (cash up, current liabilities unchanged). Buying a saw for cash: falls (a current asset becomes a noncurrent one).',
   },
   {
-    id: 'f00-m2-4', lesson: 'capital-and-liquidity', type: 'num', kind: 'applied',
+    id: 'f00-m2-4', lesson: 'capital-and-liquidity', type: 'num', kind: 'numerical',
     prompt: 'A fictional bicycle shop is financed with $100,000 of capital: $40,000 borrowed at 5% a year and $60,000 of the owner’s equity. This year it earns operating profit (before interest) of $9,000. Ignoring tax, what return does the owner earn on her equity, in percent? Give one decimal place.',
     answer: 11.7, check: () => (9000 - 40000 * 0.05) / 60000 * 100, unit: '%', places: 1, tol: 0.05,
     wrong: [
@@ -70,7 +70,7 @@ export const items = [
       { value: 7200, say: 'You added the cash. A buyer receives the cash, so subtract it.' },
       { value: 1400, say: 'You reversed the signs: subtracted the debt and added the cash. A buyer takes on the debt (add it) and receives the cash (subtract it).' },
     ],
-    solution: 'Market cap = 12 × 300 = $3,600 million. EV = 3,600 + 2,900 − 700 = $5,800 million. Most of the airline’s enterprise value is claimed by its lenders, which is common in a business that finances aircraft with debt.',
+    solution: 'Market cap = 12 × 300 = $3,600 million. EV = 3,600 + 2,900 − 700 = $5,800 million. Lenders’ net claim (2,900 − 700 = $2,200 million) is about 38% of enterprise value, a large share, which is common when aircraft are financed with debt.',
   },
   {
     id: 'f00-m2-6', lesson: 'value-and-valuation-words', type: 'mc', kind: 'conceptual',

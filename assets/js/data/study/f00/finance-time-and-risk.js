@@ -38,7 +38,7 @@ export default {
     { p: String.raw`To reason about an uncertain outcome you need one number that summarises it. The usual choice is the <g>expected value</g>: weight each possible outcome by its probability and add the results. A coin flip that pays $200 on heads and nothing on tails has an expected value of <m>0.5 \times 200 + 0.5 \times 0 = 100</m> dollars. The expected value is not what you will get. You will get $200 or nothing; $100 is what you would average if you could play the game many times.` },
     { p: 'Now suppose you are offered the coin flip or a certain $100. Both have the same expected value, yet most people take the certain $100. Preferring a certain amount to a gamble with the same expected value is called <g>risk aversion</g>, and finance assumes that most savers and investors are risk averse. To persuade them to accept a gamble, it must offer more on average: perhaps $240 on heads instead of $200, an expected value of $120. The extra expected reward that people demand for bearing risk, here $20, is a <g>risk premium</g>. Because investors behave this way, risky investments must offer higher expected returns than safe ones to attract money. Higher <i>expected</i>, not guaranteed: risky investments sometimes lose.' },
     { case: String.raw`Ana tries this on her own decision. She estimates how much Lantern could pay her, for her work and for the $20,000 she puts in, in its first full year (her estimates, and all the figures here, are fictional). In a good year it could pay her $80,000; in a middling year $56,000; in a poor year $12,000. She judges the chances to be 30%, 50% and 20%. The expected value is <m>0.3 \times 80{,}000 + 0.5 \times 56{,}000 + 0.2 \times 12{,}000 = 54{,}400</m> dollars. The safe alternative is her $52,000 salary plus the $300 of interest that $20,000 would earn in a year at 1.5%: $52,300. On these estimates, Lantern offers $2,100 more on average, in exchange for a one-in-five chance of earning only $12,000.` },
-    { p: 'Is $2,100 a large enough premium for that risk? Finance cannot answer that for Ana: it depends on how much risk she can bear, on her hope that later years will be better than the first, and on reasons that have nothing to do with money. What finance does is make the trade-off visible, in numbers she can argue with.' },
+    { p: 'Is $2,100 a large enough premium for that risk? Finance cannot answer that for Ana: it depends on how much risk she can bear, on her hope that later years will be better than the first, and on reasons that have nothing to do with money. She uses her current savings account’s 1.5%; a better safe rate would raise what she gives up and shrink Lantern’s $2,100 advantage. What finance does is make the trade-off visible, in numbers she can argue with.' },
 
     { h: 'Four branches of finance' },
     { p: 'The same ideas apply wherever money is raised, allocated and managed, but the people deciding and the decisions they face differ. Finance is usually divided into the branches in the table. The boundaries are conventions rather than rules: OpenStax’s <i>Principles of Finance</i>, for example, names three areas (business finance, investments, and financial markets and institutions), and many economists treat public finance as part of economics.' },
@@ -52,14 +52,14 @@ export default {
         ['<g>Public finance</g>', 'Governments', 'Taxing, spending and borrowing', 'Whether a city borrows by selling bonds to build a tram line, and how it will repay the lenders'],
       ],
     } },
-    { p: 'Corporate finance is sometimes called business finance, and investment finance is often just called investments. This course touches all four; later courses go deeper into each.' },
+    { p: 'Some words in the table need defining. <i>Securities</i> are tradable claims to money: <i>shares</i> (part-ownership of a company) and <i>bonds</i> (loans that investors can buy and sell). A listed company’s shares trade on a stock exchange; a <i>portfolio</i> is the set of investments an investor holds; and a fund manager is a professional who invests money pooled from many savers, such as a pension fund’s members. Corporate finance is sometimes called business finance, and investment finance is often just called investments. This course touches all four; later courses go deeper into each.' },
   ],
 
   theory: [
     { h: 'Future value over several years' },
     { p: String.raw`Each year at an interest rate <m>r</m>, a balance is multiplied by <m>(1 + r)</m>. After <m>n</m> years it has been multiplied <m>n</m> times, so an amount <m>\mathit{PV}</m> today grows to` },
     { math: String.raw`\mathit{FV} = \mathit{PV}\,(1 + r)^n` },
-    { p: String.raw`The rate must be written as a decimal (1.5% is 0.015), and <m>r</m> and <m>n</m> must use the same period: an annual rate with a number of years. The formula assumes the rate stays the same throughout, that interest is added once a year and left in the account, and that nothing else is paid in or taken out. For Ana’s $20,000 over three years: <m>(1.015)^3 = 1.045678\ldots</m> and <m>20{,}000 \times 1.045678 = 20{,}913.57</m>, as in the figure. The factor <m>(1 + r)^n</m> is called the growth factor.` },
+    { p: String.raw`The rate must be written as a decimal (1.5% is 0.015), and <m>r</m> and <m>n</m> must use the same period: an annual rate with a number of years. The formula assumes the rate stays the same throughout, that interest is added once a year and left in the account, and that nothing else is paid in or taken out. For Ana’s $20,000 over three years: <m>(1.015)^3 = 1.0456784\ldots</m> and <m>20{,}000 \times 1.0456784 = 20{,}913.57</m>, as in the figure. The factor <m>(1 + r)^n</m> is called the growth factor.` },
     { table: {
       caption: 'What $10,000 grows to at 1.5% and at 6% a year, compounded once a year',
       head: ['Years', 'At 1.5% (Ana’s savings rate)', 'At 6% (Lantern’s loan rate)'],
@@ -92,8 +92,8 @@ export default {
 
     { h: 'Expected value and the risk premium' },
     { p: String.raw`When an uncertain outcome can take <m>k</m> values <m>x_1, x_2, \ldots, x_k</m> with probabilities <m>p_1, p_2, \ldots, p_k</m> that add up to 1, its expected value is <m>p_1 x_1 + p_2 x_2 + \cdots + p_k x_k</m>. The probabilities may come from data, such as how often similar businesses succeed, or, as with Ana’s estimates, from careful judgement. Either way the expected value is only as good as the estimates behind it.` },
-    { p: 'The same idea applies to returns. The <g>risk-free rate</g> is the return on an investment whose payoff is certain, such as a short-term deposit or loan to a government that is almost sure to repay. A risky investment’s risk premium is its expected return minus the risk-free rate. If a safe deposit pays 3% and a fund of company shares is expected to return 7% a year (both fictional figures), the fund’s risk premium is 4 percentage points. Investors accept the fund’s ups and downs only because, on average, they expect to be paid for them.' },
-    { p: String.raw`Time and risk come together in the discount rate. The rate used to discount a risky amount is the risk-free rate plus a risk premium, so riskier money is discounted more heavily. A promise of $10,000 in one year from a government that is almost sure to pay, discounted at 2%, is worth <m>10{,}000 \div 1.02 = 9{,}803.92</m> dollars today. The same promise from a new café, discounted at 12% (both rates fictional), is worth <m>10{,}000 \div 1.12 = 8{,}928.57</m>. The amounts and the dates are identical; only the risk differs.` },
+    { p: 'The same idea applies to returns. The <g>risk-free rate</g> is the return on an investment whose payoff is certain, such as an insured short-term deposit or a short-term loan to a government that is almost sure to repay. A risky investment’s risk premium is its expected return minus the risk-free rate. If a safe deposit pays 3% and a fund of company shares is expected to return 7% a year (both fictional figures), the fund’s risk premium is 4 percentage points. Investors accept the fund’s ups and downs only because, on average, they expect to be paid for them.' },
+    { p: String.raw`Time and risk come together in the discount rate. The rate used to discount a risky amount is the risk-free rate plus an allowance for its risk. When the amount is a promise that might not be kept, as here, the allowance must cover both the expected shortfall and a premium for bearing the uncertainty, as the bank example at the end of this lesson shows; when the amount is already an expected value, only the premium is needed. Either way, riskier money is discounted more heavily. A promise of $10,000 in one year from a government that is almost sure to pay, discounted at 2%, is worth <m>10{,}000 \div 1.02 = 9{,}803.92</m> dollars today. The same promise from a new café, discounted at 12% (both rates fictional), is worth <m>10{,}000 \div 1.12 = 8{,}928.57</m>. The amounts and the dates are identical; only the risk differs.` },
     { callout: 'note', title: 'Risk and uncertainty', html: 'Some economists, following Frank Knight’s <i>Risk, Uncertainty and Profit</i> (1921), keep two words apart: <i>risk</i> when the probabilities of the outcomes can be measured, as with a coin, and <i>uncertainty</i> when they cannot, as with a brand-new kind of business. Most finance writing, this course included, uses “risk” for both, but keep in mind that many probabilities in real decisions, like Ana’s 30%, 50% and 20%, are judgements rather than measurements.' },
 
     { h: 'What finance does inside a firm' },
@@ -151,8 +151,8 @@ export default {
       setup: 'Suppose Ana decided not to open Lantern and left $20,000 in her Coastline Bank savings account at 1.5% a year, paid once a year, for three years. How much would she have at the end, and how much of that would be interest?',
       steps: [
         String.raw`Identify the inputs for the future value formula: <m>\mathit{PV} = 20{,}000</m>, <m>r = 0.015</m> (1.5% as a decimal), <m>n = 3</m>.`,
-        String.raw`Find the growth factor: <m>(1.015)^3 = 1.015 \times 1.015 \times 1.015 = 1.045678\ldots</m>`,
-        String.raw`Apply <m>\mathit{FV} = \mathit{PV}(1 + r)^n</m>: <m>20{,}000 \times 1.045678 = 20{,}913.57</m> dollars, rounding to the cent only at the end.`,
+        String.raw`Find the growth factor: <m>(1.015)^3 = 1.015 \times 1.015 \times 1.015 = 1.0456784\ldots</m>`,
+        String.raw`Apply <m>\mathit{FV} = \mathit{PV}(1 + r)^n</m>: <m>20{,}000 \times 1.0456784 = 20{,}913.57</m> dollars, rounding to the cent only at the end.`,
         String.raw`Interest earned is the future value minus the amount deposited: <m>20{,}913.57 - 20{,}000 = 913.57</m>. Check by going year by year: 20,300, then 20,604.50, then 20,913.57.`,
       ],
       answer: 'About $20,913.57 after three years, of which $913.57 is interest.',
@@ -164,12 +164,12 @@ export default {
         '(a) Compare at the same date: $5,278.54 today is more than $5,000 today, so if payment is certain the later offer is worth more, by about $279 in today’s money.',
         String.raw`(b) Replace the promised amount with its expected value: <m>0.9 \times 5{,}600 + 0.1 \times 0 = 5{,}040</m> dollars, received in two years.`,
         String.raw`(b) Discount the expected amount at 3%: <m>5{,}040 \div 1.0609 = 4{,}750.68</m> dollars, less than the $5,000 on offer today.`,
-        '(b) And this still values the risky promise as if it were safe. Because Lantern is risk averse, it should discount the uncertain $5,600 at more than 3%, which makes the later offer look worse still.',
+        '(b) And this still values the risky promise as if it were safe. Because Lantern is risk averse, it should discount the expected $5,040 at more than 3%, which makes the later offer look worse still.',
       ],
       answer: '(a) Take the $5,600 in two years: it is worth $5,278.54 today. (b) Take the $5,000 now: the risky promise is worth at most $4,750.68 today.',
       interpretation: 'Time alone favoured waiting; time and risk together favour taking the cash. That is the pattern of most financial decisions: first put every amount on the same date, then ask how sure each amount is.' },
     { level: 'applied', title: 'Should Brightwell sell its receivable?', fictional: true,
-      setup: 'Brightwell Energy, a fictional battery-storage installer, has finished a project for a client who has agreed to pay $250,000 in three years. A finance company offers to buy that right to payment today for $200,000. Brightwell could borrow at 7% a year, so it uses 7% as its discount rate for a reliable client. Should it sell? How does the answer change if the client looks shaky and Brightwell uses 10% instead?',
+      setup: 'Brightwell Energy, a fictional battery-storage installer, has finished a project for a client who has agreed to pay $250,000 in three years. A finance company offers to buy that right to payment today for $200,000. For a payment from a reliable client, Brightwell judges that 7% a year is the return available elsewhere at similar risk, so it discounts at 7%. Should it sell? How does the answer change if the client looks shaky and Brightwell uses 10% instead?',
       steps: [
         String.raw`Present value at 7%: <m>(1.07)^3 = 1.225043</m>, so <m>250{,}000 \div 1.225043 = 204{,}074.47</m> dollars.`,
         'Compare at today’s date: the offer of $200,000 is about $4,074 less than the payment is worth to Brightwell, so on these numbers it should keep the receivable and wait.',
@@ -194,8 +194,8 @@ export default {
 
   application: [
     { case: 'Coastline Bank’s small-business lending officer is deciding what rate to charge Lantern on its two-year, $10,000 loan. All the figures that follow are fictional, like the bank itself.' },
-    { p: 'She starts from time. Instead of lending to Lantern, the bank could lend the same $10,000 to the government for two years by buying a government bond, which in this example pays 3.5% a year and is treated as safe. Any loan to Lantern must pay at least that much, or the bank would be better off with the bond: 3.5% is the bank’s risk-free rate for this decision.' },
-    { p: String.raw`Then she turns to risk. Lantern is a new business with no trading history, and new businesses sometimes fail. From the bank’s records of similar loans she estimates a 2% chance each year that a borrower like Lantern stops paying, and that if it does, the bank recovers about half of what it is owed for example by having the espresso equipment sold. The expected loss is therefore about <m>0.02 \times 0.5 = 0.01</m>, or 1% of the loan a year. Charging 3.5% plus 1% would only break even <i>on average</i>; it would not pay the bank for the uncertainty itself, nor for the cost of assessing and administering a small loan. She adds 1.5 percentage points for those, giving <m>3.5 + 1.0 + 1.5 = 6.0</m>, the 6% in Lantern’s loan agreement.` },
+    { p: 'She starts from time. Instead of lending to Lantern, the bank could lend the same $10,000 to the government for two years by buying a government bond, which in this example pays 4.0% a year and is treated as safe. Any loan to Lantern must pay at least that much, or the bank would be better off with the bond: 4.0% is the bank’s risk-free rate for this decision.' },
+    { p: String.raw`Then she turns to risk. Lantern is a new business with no trading history, and new businesses sometimes fail. From the bank’s records of similar loans she estimates a 2% chance each year that a borrower like Lantern stops paying, and that if it does, the bank recovers about half of what it is owed, for example by having the espresso equipment sold. The expected loss is therefore about <m>0.02 \times 0.5 = 0.01</m>, or 1% of the loan a year. Charging 4% plus 1% would only break even <i>on average</i>; it would not pay the bank for the uncertainty itself, nor for the cost of assessing and administering a small loan. She adds 1 percentage point for those, giving <m>4.0 + 1.0 + 1.0 = 6.0</m>, the 6% in Lantern’s loan agreement.` },
     { p: 'Every part of that rate is one of this lesson’s ideas: a risk-free rate for the time value of money, an expected loss computed as an expected value, and a premium for bearing risk. The officer would apply the same reasoning to a hotel, an airline or a university; only the estimates change. A riskier borrower would pay a higher rate, and a borrower whose risk the bank could not judge at all might not get a loan at any rate.' },
     { p: 'The same transaction also shows the financial system at work. Ana, as a saver, receives 1.5% on her deposit; Lantern, as a borrower, pays 6%. The gap is not pure profit for the bank: it covers the bank’s costs, the loans that go bad and the risk it bears, so that savers can earn a safe return without having to judge each borrower themselves. Ana, in effect, is both a saver and, through her company, a borrower in the same bank.' },
   ],
@@ -223,7 +223,7 @@ export default {
     { term: 'Expected value', def: 'The probability-weighted average of the possible outcomes of an uncertain event: each outcome multiplied by its probability, then added.' },
     { term: 'Risk aversion', def: 'Preferring a certain amount to a gamble with the same expected value. Most savers and investors are assumed to be risk averse.' },
     { term: 'Risk premium', def: 'The extra expected return that investors demand for bearing risk: the expected return on a risky investment minus the risk-free rate.' },
-    { term: 'Risk-free rate', def: 'The return on an investment whose payoff is certain, such as a short-term loan to a government that is almost sure to repay.' },
+    { term: 'Risk-free rate', def: 'The return on an investment whose payoff is certain, such as an insured short-term deposit or a short-term loan to a government that is almost sure to repay.' },
     { term: 'Personal finance', def: 'The branch of finance concerned with the decisions of individuals and households: budgeting, saving, borrowing, insurance and retirement.' },
     { term: 'Corporate finance', def: 'The branch of finance concerned with the decisions of businesses: which investments to make, how to pay for them and how to manage day-to-day cash. Also called business finance.' },
     { term: 'Investment finance', def: 'The branch of finance concerned with the decisions of investors: which securities to buy, how to combine them and what they are worth. Also called investments.' },
@@ -249,7 +249,7 @@ export default {
     { what: 'First year interest on $20,000', value: 20000 * 0.015, shown: 300 },
     { what: '$20,000 after two years at 1.5%', value: 20000 * 1.015 ** 2, shown: 20604.5 },
     { what: '$20,000 after three years at 1.5%', value: 20000 * 1.015 ** 3, shown: 20913.57 },
-    { what: 'Growth factor 1.015^3', value: 1.015 ** 3, shown: 1.045678, tol: 0.000001 },
+    { what: 'Growth factor 1.015^3', value: 1.015 ** 3, shown: 1.0456784, tol: 0.0000001 },
     { what: 'Interest over three years', value: 20000 * 1.015 ** 3 - 20000, shown: 913.57 },
     { what: 'Simple-interest mistake figure', value: 20000 * (1 + 0.015 * 3), shown: 20900 },
     { what: 'Rate typed as 1.5 (150%): more than $300,000 after three years', value: 20000 * (1 + 1.5) ** 3 > 300000 ? 1 : 0, shown: 1 },
@@ -299,7 +299,7 @@ export default {
     { what: 'Brightwell: PV at 10%', value: 250000 / 1.1 ** 3, shown: 187828.7 },
     { what: 'Brightwell: offer above PV at 10%', value: 200000 - 250000 / 1.1 ** 3, shown: 12171, tol: 0.5 },
     { what: 'Bank: expected loss rate 2% × 50%', value: 0.02 * 0.5, shown: 0.01 },
-    { what: 'Bank: loan rate build-up', value: 3.5 + 1.0 + 1.5, shown: 6 },
+    { what: 'Bank: loan rate build-up', value: 4.0 + 1.0 + 1.0, shown: 6 },
     { what: 'Equipment purchase planned (F01 m3)', value: 4000 + 8000, shown: 12000 },
   ],
 };
