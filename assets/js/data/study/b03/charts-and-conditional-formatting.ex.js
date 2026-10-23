@@ -5,8 +5,8 @@ import { ORDERS, ORDER_COLUMNS, EVENTS, EVENT_COLUMNS, DERIVED as D, tableCells 
 
 const R = D.byRegion.value;
 const REGIONS = ['Central', 'East', 'West', 'North', 'South'];            // sorted by spring order value
-const L8 = ['order_id', 'order_date', 'customer_id', 'product', 'quantity', 'order_total', 'channel', 'subscription'];
-const first15 = tableCells(ORDER_COLUMNS, ORDERS, { cols: L8, n: 15 });
+const L6 = ['order_id', 'customer_id', 'product', 'order_total', 'channel', 'subscription'];
+const first15 = tableCells(ORDER_COLUMNS, ORDERS, { cols: L6, n: 15 });
 const inv = EVENTS.map((r) => r[EVENT_COLUMNS.indexOf('invoice')]);
 // orders per week, Monday 2 March to Sunday 28 June 2026 (17 full weeks), as in the lesson
 const WEEK0 = Date.UTC(2026, 2, 2);
@@ -17,7 +17,7 @@ const regionSheet = {
   cells: { A1: 'Region', B1: 'Order value', C1: 'Share', ...Object.fromEntries(REGIONS.flatMap((g, i) => [[`A${i + 2}`, g], [`B${i + 2}`, R[g]]])) },
 };
 const ordersBlock = (cols, extra = {}) => ({ cells: { ...tableCells(ORDER_COLUMNS, ORDERS, { cols, n: 15 }).cells, ...extra } });
-const appSheet = ordersBlock(['order_id', 'product', 'order_total', 'channel', 'subscription'], { F1: 'Test A', G1: 'Test B' });
+const appSheet = ordersBlock(['order_id', 'order_total', 'channel', 'subscription'], { E1: 'Test A', F1: 'Test B' });
 const topSheet = ordersBlock(['order_id', 'product', 'order_total', 'channel'], { E1: 'Test A', F1: 'Test B' });
 const clientSheet = { cells: { ...tableCells(EVENT_COLUMNS, EVENTS, { cols: ['event_id', 'client', 'guests', 'invoice'], n: 15 }).cells, E1: 'Test A', F1: 'Test B' } };
 const weekSheet = { cells: { A1: 'Week', B1: 'Orders', C1: '4-week average', ...Object.fromEntries(WEEKLY.flatMap((n, i) => [[`A${i + 2}`, i + 1], [`B${i + 2}`, n]])) } };
@@ -46,13 +46,13 @@ export const widgets = {
     type: 'sheet',
     title: 'Lantern’s first 15 spring orders, with a whole-row rule for subscription orders',
     sheet: { cells: first15.cells },
-    view: 'A1:H16',
-    formats: { B: 'date', F: '$#,##0.00' },
-    widths: { D: 22 },
-    rules: [{ range: 'A2:H16', type: 'formula', formula: '=$H2="yes"', style: 'good' }],
-    cf: { range: 'F2:F16' },
+    view: 'A1:F16',
+    formats: { D: '$#,##0.00' },
+    widths: { C: 24 },
+    rules: [{ range: 'A2:F16', type: 'formula', formula: '=$F2="yes"', style: 'good' }],
+    cf: { range: 'D2:D16' },
     tools: ['cf', 'formulas', 'reset'],
-    note: 'The rule <x>=$H2="yes"</x> is written for A2 and moved to every cell of A2:H16, so each row tests its own column H. Rules you add apply in the order you add them, the newest last, so a later rule’s fill covers an earlier one (in Excel a new rule goes to the top of Manage Rules, with the same effect). Try data bars on F2:F16, Top 3 items on F2:F16, Duplicate values on C2:C16 (customer C0034 ordered twice), or a formula rule on A2:H16.',
+    note: 'The rule <x>=$F2="yes"</x> is written for A2 and moved to every cell of A2:F16, so each row tests its own column F. Rules you add apply in the order you add them, the newest last, so a later rule’s fill covers an earlier one (in Excel a new rule goes to the top of Manage Rules, with the same effect). Try data bars on D2:D16, Top 3 items on D2:D16, Duplicate values on B2:B16 (customer C0034 ordered twice), or a formula rule on A2:F16.',
   },
   'cc-invoices': {
     type: 'distribution',
@@ -113,23 +113,22 @@ export const guided = [
   },
   {
     id: 'b03-cc-g3', type: 'formula', kind: 'applied',
-    prompt: 'Ana wants a conditional format on A2:E16 that shades the whole row of every <b>app</b> order of <b>$30 or more</b>. Excel moves a rule from A2 to every other cell exactly as Fill does, so test it first: type the rule as you would write it for A2 into F2, and fill it to F2:G16. F and G stand in for two columns of the range; both should say TRUE in exactly the rows to shade.',
+    prompt: 'Ana wants a conditional format on A2:D16 that shades the whole row of every <b>app</b> order of <b>$30 or more</b>. Excel moves a rule from A2 to every other cell exactly as Fill does, so test it first: type the rule as you would write it for A2 into E2, and fill it to E2:F16. E and F stand in for two columns of the range; both should say TRUE in exactly the rows to shade.',
     sheet: appSheet,
-    cell: 'F2', fill: 'F2:G16', answer: '=AND($D2="app",$C2>=30)',
-    alt: ['=AND($C2>=30,$D2="app")', '=($D2="app")*($C2>=30)=1'],
-    view: 'A1:G16',
-    formats: { C: '$#,##0.00' },
-    widths: { B: 22 },
+    cell: 'E2', fill: 'E2:F16', answer: '=AND($C2="app",$B2>=30)',
+    alt: ['=AND($B2>=30,$C2="app")', '=($C2="app")*($B2>=30)=1'],
+    view: 'A1:F16',
+    formats: { B: '$#,##0.00' },
     wrong: [
-      { formula: '=AND(D2="app",C2>=30)', say: 'Column F is right, but in column G your references have moved to E and D, so the test fails there. Lock the columns with <code>$</code>: <x>=AND($D2="app",$C2>=30)</x>.' },
-      { formula: '=AND($D$2="app",$C$2>=30)', say: 'With the rows locked too, every row tests row 2 (an app order of $111.00), so every row would be shaded. Leave the row number free: <code>$D2</code>.' },
-      { formula: '=OR($D2="app",$C2>=30)', say: 'OR shades a row when either condition holds, including every app order under $30 and every web order over $30. The rule needs both: AND.' },
+      { formula: '=AND(C2="app",B2>=30)', say: 'Column E is right, but in column F your references have moved to D and C, so the test fails there. Lock the columns with <code>$</code>: <x>=AND($C2="app",$B2>=30)</x>.' },
+      { formula: '=AND($C$2="app",$B$2>=30)', say: 'With the rows locked too, every row tests row 2 (an app order of $111.00), so every row would be shaded. Leave the row number free: <code>$C2</code>.' },
+      { formula: '=OR($C2="app",$B2>=30)', say: 'OR shades a row when either condition holds, including every app order under $30 and every web order over $30. The rule needs both: AND.' },
     ],
     hints: [
-      'Two conditions must both hold: channel (column D) equals <x>"app"</x>, and order_total (column C) is at least 30. Combine them with AND.',
-      'Every cell of a row must look at the same columns, D and C, so put <code>$</code> before the column letters and not before the row numbers.',
+      'Two conditions must both hold: channel (column C) equals <x>"app"</x>, and order_total (column B) is at least 30. Combine them with AND.',
+      'Every cell of a row must look at the same columns, C and B, so put <code>$</code> before the column letters and not before the row numbers.',
     ],
-    solution: '<x>=AND($D2="app",$C2>=30)</x>. The <code>$</code> before D and C locks the columns, so G2 still tests D2 and C2; the free row number lets row 5 test D5 and C5. Rows 2, 3, 5 and 16 (LC-10001, LC-10002, LC-10004 and LC-10015) are TRUE in both columns. Applied to A2:E16 the rule shades those four rows end to end.',
+    solution: '<x>=AND($C2="app",$B2>=30)</x>. The <code>$</code> before C and B locks the columns, so F2 still tests C2 and B2; the free row number lets row 5 test C5 and B5. Rows 2, 3, 5 and 16 (LC-10001, LC-10002, LC-10004 and LC-10015) are TRUE in both columns. Applied to A2:D16 the rule shades those four rows end to end.',
   },
   {
     id: 'b03-cc-g4', type: 'num', kind: 'numerical',
@@ -152,10 +151,10 @@ export const independent = [
     id: 'b03-cc-i1', type: 'mc', kind: 'conceptual',
     prompt: 'Ana selects two columns, guests and invoice, for her 75 one-day catering events and chooses a line chart. What goes wrong?',
     options: [
-      'A line chart’s horizontal axis is a category axis, so the guest numbers are spaced evenly as labels rather than placed at their values; a scatter chart, with two value axes, is the right choice.',
-      'Nothing: a line chart and a scatter chart plot numeric x values in the same way.',
-      'A line chart can’t show more than 50 points, so some events are dropped.',
-      'The line chart starts its value axis at zero, which hides the relationship.',
+      'The guest numbers become evenly spaced labels on a category axis instead of values; a scatter chart is needed.',
+      'Nothing goes wrong: a line chart and a scatter chart place numeric x values in exactly the same way, so either works.',
+      'A line chart can show at most 50 points, so Excel silently drops the remaining 25 events from the chart.',
+      'The line chart forces its value axis to start at zero, which squashes the points into a flat, unreadable band.',
     ],
     answer: 0,
     feedback: {
@@ -223,7 +222,7 @@ export const independent = [
     prompt: 'Ana’s draft spring chart is a 3-D column chart of order value by month, with the value axis starting at $1,500, a legend for its single series, the title “Sales”, and the bars coloured red, amber and green by month. Select all the changes that make it more honest or easier to read.',
     options: [
       'Start the value axis at $0.',
-      'Replace the title with the finding, such as “Order value was steady apart from one $1,512 office order in May”.',
+      'Replace the title with the finding, such as “May’s order value was the highest only because of one $1,512 office order”.',
       'Delete the legend and label the bars directly.',
       'Use a flat (2-D) column chart.',
       'Keep the red, amber and green and explain them in a footnote.',
@@ -243,10 +242,10 @@ export const check = [
     id: 'b03-cc-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Which of these is the best candidate for a pie chart?',
     options: [
-      'A bakery’s sales for one week split into bread, cakes and drinks, which add up to the week’s total.',
-      'A bakery’s profit by branch for ten branches, two of them loss-making.',
-      'A bakery’s weekly sales for each of 52 weeks.',
-      'A bakery’s sales and its number of customers for each month.',
+      'One week’s sales split into bread, cakes and drinks, which together make up the week’s total.',
+      'A bakery’s profit for each of its ten branches this year, two of which made a loss.',
+      'A bakery’s weekly sales for each of the 52 weeks of the year, to show how sales rise before holidays.',
+      'A bakery’s monthly sales and its monthly number of customers, side by side for the year.',
     ],
     answer: 0,
     feedback: {
@@ -286,10 +285,10 @@ export const check = [
     id: 'b03-cc-k4', type: 'mc', kind: 'applied',
     prompt: 'Ana adds data bars to all 231 order totals. Almost every bar is a thin sliver, because one order (LC-10144, $1,512) sets the top of the scale. What is the best fix if she wants to compare ordinary orders?',
     options: [
-      'Edit the rule and set the data bars’ maximum to a number, such as 200, or to a high percentile, so the scale fits ordinary orders.',
-      'Delete LC-10144 from the sheet.',
-      'Switch to a colour scale with the same lowest and highest values.',
-      'Widen the column until the small bars are visible.',
+      'Set the data bars’ maximum to a number, such as 200, or to a percentile, so the scale fits ordinary orders.',
+      'Delete LC-10144 from the sheet, since one unusual order shouldn’t distort the picture of the others.',
+      'Switch to a two-colour scale with the default lowest and highest values, which shades cells instead of drawing bars.',
+      'Widen the order_total column until the shortest bars become long enough to compare by eye.',
     ],
     answer: 0,
     feedback: {
@@ -297,7 +296,7 @@ export const check = [
       2: 'A colour scale with the same endpoints has the same problem: almost every cell would be the colour at the bottom of the scale.',
       3: 'Wider columns help a little, but the bars stay in proportion to $1,512, so the differences among $14 to $111 orders stay tiny.',
     },
-    solution: 'Data bars and colour scales scale between a minimum and a maximum, by default the lowest and highest values. A maximum set to a number (such as 200) or a percentile keeps the comparison among ordinary orders; the office order’s bar simply fills the cell. Keep the data intact.',
+    solution: 'Data bars and colour scales scale between a minimum and a maximum, by default the lowest and highest values. A maximum set to a number (such as 200) or a percentile keeps the comparison among ordinary orders; the office order’s bar fills the cell. Keep the data intact.',
   },
   {
     id: 'b03-cc-k5', type: 'classify', kind: 'conceptual',

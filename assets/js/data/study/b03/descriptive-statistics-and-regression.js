@@ -52,11 +52,11 @@ function binFigure() {
   const labels = ['up to $20', 'over $20 to $40', 'over $40 to $60', 'over $60 to $80', 'over $80 to $100'];
   BINS.forEach((hi, i) => {
     const lo = i ? BINS[i - 1] : 0, xm = (X(lo) + X(hi)) / 2;
-    s += `<line x1="${X(lo) + 4}" x2="${X(hi) - 4}" y1="${y - 26}" y2="${y - 26}" stroke="var(--series-1)" stroke-width="2"/>`;
-    s += `<circle cx="${X(lo) + 4}" cy="${y - 26}" r="3.5" fill="var(--bg, white)" stroke="var(--series-1)" stroke-width="1.6"/><circle cx="${X(hi) - 4}" cy="${y - 26}" r="3.5" fill="var(--series-1)"/>`;
+    s += `<line x1="${X(lo) + 7.5}" x2="${X(hi) - 4}" y1="${y - 26}" y2="${y - 26}" stroke="var(--series-1)" stroke-width="2"/>`;
+    s += `<circle cx="${X(lo) + 4}" cy="${y - 26}" r="3.5" fill="none" stroke="var(--series-1)" stroke-width="1.6"/><circle cx="${X(hi) - 4}" cy="${y - 26}" r="3.5" fill="var(--series-1)"/>`;
     s += `<text x="${f1(xm)}" y="${y - 50}" text-anchor="middle" font-size="12">${FREQ[i]}</text><text x="${f1(xm)}" y="${y - 36}" text-anchor="middle" font-size="9.5" fill="var(--ink-3)">${labels[i]}</text>`;
   });
-  s += `<line x1="${X(100) + 4}" x2="${X(124)}" y1="${y - 26}" y2="${y - 26}" stroke="var(--series-2)" stroke-width="2" stroke-dasharray="4 3"/><circle cx="${X(100) + 4}" cy="${y - 26}" r="3.5" fill="var(--bg, white)" stroke="var(--series-2)" stroke-width="1.6"/>`;
+  s += `<line x1="${X(100) + 7.5}" x2="${X(124)}" y1="${y - 26}" y2="${y - 26}" stroke="var(--series-2)" stroke-width="2" stroke-dasharray="4 3"/><circle cx="${X(100) + 4}" cy="${y - 26}" r="3.5" fill="none" stroke="var(--series-2)" stroke-width="1.6"/>`;
   s += `<text x="${f1(X(112))}" y="${y - 50}" text-anchor="middle" font-size="12">${FREQ[5]}</text><text x="${f1(X(112))}" y="${y - 36}" text-anchor="middle" font-size="9.5" fill="var(--ink-3)">over $100</text>`;
   s += `<text x="${X(20)}" y="${y + 44}" text-anchor="middle" font-size="11">an order of exactly $20.00 counts in “up to $20”</text>`;
   s += `<text x="320" y="16" text-anchor="middle" font-size="12">FREQUENCY(order totals, {20; 40; 60; 80; 100}): ${FREQ.length} counts</text>`;
@@ -79,8 +79,8 @@ function lineFigure() {
   const cg = CONF[EVENT_COLUMNS.indexOf('guests')], cv = CONF[EVENT_COLUMNS.indexOf('invoice')];
   s += `<rect x="${f1(x(cg)) - 5}" y="${f1(y(cv)) - 5}" width="10" height="10" fill="none" stroke="var(--ink)" stroke-width="1.6"/>`;
   s += `<text x="${f1(x(cg)) + 6}" y="${f1(y(cv)) + 22}" text-anchor="end" font-size="11">two-day conference: ${cg} guests, $${cv.toLocaleString('en-US')}</text>`;
-  s += `<text x="${L + 6}" y="190" font-size="11">intercept $${Math.round(b0)} at 0 guests: outside the data</text>`;
-  s += `<line x1="${L + 8}" y1="194" x2="${L + 2}" y2="${f1(y(pred(0))) - 3}" stroke="var(--ink-3)" stroke-width="1"/>`;
+  s += `<text x="${L + 6}" y="166" font-size="11">intercept $${Math.round(b0)} at 0 guests: outside the data</text>`;
+  s += `<line x1="${L + 8}" y1="170" x2="${L + 2}" y2="${f1(y(pred(0))) - 3}" stroke="var(--ink-3)" stroke-width="1"/>`;
   s += `<text x="${(L + Rr) / 2}" y="${H - 8}" text-anchor="middle" font-size="11" fill="var(--ink-3)">Guests</text>`;
   s += `<text x="16" y="${(T + B) / 2}" font-size="11" fill="var(--ink-3)" transform="rotate(-90 16 ${(T + B) / 2})" text-anchor="middle">Invoice</text>`;
   return `${s}</svg>`;
@@ -88,6 +88,7 @@ function lineFigure() {
 
 const money = (v) => `$${v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const sig = (v, k = 6) => String(Number(v.toPrecision(k)));
+const tx = (v, d = 0) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }).replace(/,/g, '{,}');   // a number inside TeX
 
 export default {
   slug: 'descriptive-statistics-and-regression',
@@ -135,8 +136,8 @@ export default {
     { p: 'The figures disagree about what is typical. Half the orders are $19.50 or less, and the middle half run from $15.40 to $39.00, yet the mean is $39.38, as high as the third quartile. The mode, $14.00, is the 15 orders of one full-price House Blend 250g bag: the most common single value, but not a summary of spending. The standard deviation, $100.90, is more than twice the mean.' },
 
     { h: 'One order moves the mean' },
-    { p: 'The cause is LC-10144, the genuine office order of 120 bags for $1,512.00 that B02 kept. Without it the mean of the other 230 orders is $32.97 and their standard deviation is $26.73, while the median stays at $19.50. One order in 231 raises the mean by $6.40 and almost quadruples the standard deviation, because both use every value’s size; the median uses only the order of the values.' },
-    { p: 'This is why B01 paired the median with “typical” and the mean with totals. The mean of $39.38 is still the right number for revenue (mean × orders = $9,096.15), and the office order is real revenue. For “what does a typical customer spend?” the median and the quartiles answer better, and a report should say what the mean includes.' },
+    { p: 'The cause is LC-10144, the genuine office order of 120 bags for $1,512.00, an <g>outlier</g> that B02 kept. Without it the mean of the other 230 orders is $32.97 and their standard deviation is $26.73, while the median stays at $19.50. One order in 231 raises the mean by $6.40 and almost quadruples the standard deviation, because both use every value’s size; the median uses only the order of the values.' },
+    { p: 'This is why B01 paired the <g>median</g> with “typical” and the <g>mean</g> with totals. The mean of $39.38 is still the right number for revenue (mean × orders = $9,096.15), and the office order is real revenue. For “what does a typical customer spend?” the median and the quartiles answer better, and a report should say what the mean includes.' },
     { callout: 'key', title: 'Robust and sensitive measures', html: 'The median and the quartiles depend on the order of the values, so one extreme value barely moves them. The mean, the standard deviation, the skewness and a regression line use every value’s size, so one extreme value can move them a long way. Calculate both kinds, and report the one that suits the question.' },
 
     { h: 'Counting values into bins' },
@@ -146,7 +147,7 @@ export default {
       caption: `FREQUENCY’s six counts for the spring orders: ${FREQ.join(', ')}. Each bin is open at its lower edge and closed at its upper edge, so an order of exactly $20.00 counts in the first bin.`,
       alt: `A number line from $0 to beyond $100 with tick marks every $20. Above it, five brackets mark the bins: up to $20 with ${FREQ[0]} orders, over $20 to $40 with ${FREQ[1]}, over $40 to $60 with ${FREQ[2]}, over $60 to $80 with ${FREQ[3]}, and over $80 to $100 with ${FREQ[4]}; a dashed bracket beyond $100 holds ${FREQ[5]} orders. Each bracket has an open circle at its lower edge and a filled circle at its upper edge. A note says an order of exactly $20.00 counts in the up-to-$20 bin.`,
     } },
-    { p: `More than half the orders (${FREQ[0]} of ${n}) are $20 or less, and the counts fall away to the right, with a second bump of ${FREQ[4]} orders between $80 and $100 (mostly orders of two 1 kg bags): a right-skewed distribution, in B02’s terms. Excel 2016 and later can draw the same picture directly with Insert &gt; Insert Statistic Chart &gt; Histogram, where Format Axis lets you set the bin width (20) and an overflow bin (100).` },
+    { p: `More than half the orders (${FREQ[0]} of ${n}) are $20 or less, and the counts fall away to the right, with a second bump of ${FREQ[4]} orders between $80 and $100 (mostly orders of two 1 kg bags): a <g>right-skewed</g> distribution, in B02’s terms. Excel 2016 and later can draw a histogram directly with Insert &gt; Insert Statistic Chart &gt; Histogram; Format Axis then lets you set the bin width and add overflow and underflow bins, so the chart’s bins can match a frequency table’s.` },
 
     { h: 'A line through the catering invoices' },
     { p: 'For the second question Ana takes her 75 one-day catering events and plots invoice against guests in a scatter chart. The points rise from lower left to upper right in a narrow band. <x>=CORREL(C2:C76,B2:B76)</x>, with guests in B and invoices in C, returns the <g>correlation coefficient</g> r = ' + sig(r, 4) + ': a strong positive linear relationship.' },
@@ -189,19 +190,19 @@ export default {
       ],
     } },
     { p: String.raw`Three lines need explaining. <b>Standard Error</b> is the <g>standard error of the mean</g>, <m>s \div \sqrt{n}</m>: how much the mean would vary from one sample of 231 orders to the next. <b>Kurtosis</b> is Excel’s KURT, which is <i>excess</i> kurtosis: about 0 for normally distributed data, positive when the tails are heavier. Its value of ${kurt(TOT).toFixed(1)} says one order sits extraordinarily far out. <b>Confidence Level(95.0%)</b> is not a probability but a margin: the mean plus or minus ${conf(TOT).toFixed(2)} gives a 95% confidence interval for the mean, which B04 explains.` },
-    { p: `<b>Skewness</b> is Excel’s SKEW, the adjusted Fisher–Pearson coefficient that B02’s widgets use. Like kurtosis it uses cubes (fourth powers, for kurtosis) of each value’s distance from the mean, so it is even more sensitive to one extreme value than the standard deviation: ${skew(TOT).toFixed(2)} with the office order, ${skew(NOB).toFixed(2)} without it.` },
+    { p: `<b>Skewness</b> is Excel’s SKEW, the adjusted Fisher–Pearson coefficient that B02’s widgets use. It cubes each value’s standardised distance from the mean (kurtosis uses fourth powers), so it is even more sensitive to one extreme value than the standard deviation: ${skew(TOT).toFixed(2)} with the office order, ${skew(NOB).toFixed(2)} without it.` },
 
     { h: 'Frequency tables: FREQUENCY and COUNTIFS' },
-    { p: 'FREQUENCY(data_array, bins_array) returns one more count than there are bins; the last counts values above the highest bin. It ignores blank cells and text. In current Microsoft 365 you type it in the top cell and it spills; in earlier versions you select the whole output range first, type the formula and press Ctrl+Shift+Enter.' },
+    { p: 'FREQUENCY(data_array, bins_array) returns one more count than there are bins; the last counts values above the highest bin. It ignores blank cells and text. In current Microsoft 365 you type it in the top cell and it spills; in earlier versions you select the whole output range first, type the formula and press Ctrl+Shift+Enter (on Windows).' },
     { p: 'The same counts come from one COUNTIFS per bin, with the lower and upper edges in two columns: <x>=COUNTIFS($J$2:$J$232,">"&K2,$J$2:$J$232,"<="&L2)</x>, filled down. The criteria <x>">"</x> and <x>"<="</x> reproduce FREQUENCY’s rule (above the lower edge, up to the upper edge); writing <x>">="</x> and <x>"<"</x> instead would move every value that sits on an edge into the next bin. The Histogram chart and the ToolPak’s Histogram tool use the same rule, with an underflow bin that includes its edge.' },
 
     { h: 'Correlation' },
     { p: String.raw`CORREL(array1, array2) returns Pearson’s correlation coefficient, between −1 and +1: near +1 when the points lie close to a rising straight line, near −1 for a falling one, near 0 when there is no straight-line pattern. It skips text and blanks, returns #N/A if the two ranges hold different numbers of points, and gives the same answer whichever range comes first. PEARSON is the same calculation.` },
-    { p: 'B01’s warning applies in full: a strong correlation doesn’t show that one variable causes the other, and a third variable can drive both. Here a causal story is plausible, because Ana’s quote sheet charges per guest, but bigger events also tend to run longer and include pastries, so guests carry some of the effect of hours and pastries. Separating them takes a multiple regression, which the project reads.' },
+    { p: 'B01’s warning applies in full: two variables can be <g>correlated</g> without one causing the other, and a <g>confounding variable</g> can drive both. Here a causal story is plausible, because Ana’s quote sheet charges per guest. Hours and pastries change invoices too; in these events they are almost unrelated to the number of guests, so they show up as scatter around the line rather than in its slope. Measuring their effects takes a multiple regression, which the project reads.' },
 
     { h: 'The least-squares line' },
     { p: String.raw`Excel’s linear trendline, SLOPE, INTERCEPT and the ToolPak all fit the <g>least-squares line</g> <m>\hat{y} = b_0 + b_1 x</m>: the line that makes the sum of the squared <g>residuals</g> (actual minus predicted y) as small as possible. Its slope is <m>b_1 = \sum (x - \bar{x})(y - \bar{y}) \div \sum (x - \bar{x})^2</m> and its intercept <m>b_0 = \bar{y} - b_1 \bar{x}</m>, so the line passes through the point of means: ${mx.toFixed(2)} guests and $${my.toFixed(2)}.` },
-    { p: 'Watch the argument order. SLOPE, INTERCEPT, RSQ and LINEST take known_y’s first and known_x’s second; FORECAST.LINEAR takes the new x first: <x>=FORECAST.LINEAR(x,known_y’s,known_x’s)</x>. FORECAST.LINEAR replaced FORECAST in Excel 2016; FORECAST still works for compatibility. Swapping y and x gives the regression of guests on invoice, a different line.' },
+    { p: 'Watch the argument order. SLOPE, INTERCEPT, RSQ and LINEST take known_y’s first and known_x’s second; FORECAST.LINEAR takes the new x first: <x>=FORECAST.LINEAR(x,known_y\'s,known_x\'s)</x>. FORECAST.LINEAR replaced FORECAST in Excel 2016; FORECAST still works for compatibility. Swapping y and x gives the regression of guests on invoice, a different line.' },
     { p: 'LINEST returns the whole fit as an array. <x>=LINEST(C2:C76,B2:B76,TRUE,TRUE)</x> gives five rows and two columns: the slope and intercept; their standard errors; R² and the standard error of the estimate; the F statistic and the residual degrees of freedom; and the regression and residual sums of squares. In current Excel it spills from one cell; in older versions it must be entered as an array formula. A trendline label shows only five digits of each coefficient, so calculate predictions from SLOPE and INTERCEPT, not from numbers copied off the chart.' },
     { p: 'To add the trendline, select the scatter chart, open Chart Elements and tick Trendline, then in the Format Trendline pane choose Linear and tick Display Equation on chart and Display R-squared value on chart.' },
 
@@ -224,9 +225,9 @@ export default {
       head: ['', 'df', 'SS', 'MS', 'F', 'Significance F'],
       align: ['l', 'r', 'r', 'r', 'r', 'r'],
       rows: [
-        ['Regression', '1', sig(ssr, 7), sig(ssr, 7), sig(RS.F), '1.47E-34'],
-        ['Residual', String(RS.n - 2), sig(RS.sse, 7), sig(RS.sse / (RS.n - 2), 6), '', ''],
-        ['Total', String(RS.n - 1), sig(RS.sst, 7), '', '', ''],
+        ['Regression', '1', ssr.toFixed(2), ssr.toFixed(2), sig(RS.F), '1.47E-34'],
+        ['Residual', String(RS.n - 2), RS.sse.toFixed(2), (RS.sse / (RS.n - 2)).toFixed(2), '', ''],
+        ['Total', String(RS.n - 1), RS.sst.toFixed(2), '', '', ''],
       ],
     } },
     { table: {
@@ -239,15 +240,15 @@ export default {
       ],
     } },
     { list: [
-      String.raw`<b>R Square</b> = regression SS ÷ total SS <m>= ${sig(ssr, 7)} \div ${sig(RS.sst, 7)} \approx ${RS.r2.toFixed(3)}</m>. The total SS measures how far invoices vary around their mean; 87.4% of that variation lines up with the number of guests, and 12.6% is left in the residuals. With one X it equals <m>r^2</m>.`,
-      String.raw`<b>Standard Error</b> <m>= \sqrt{\text{residual SS} \div (n - 2)} = \sqrt{${sig(RS.sse / (RS.n - 2), 6)}} \approx ${RS.se.toFixed(2)}</m> dollars. A typical invoice was about $85 away from the line: a more useful measure of a prediction’s accuracy than R².`,
-      String.raw`<b>ANOVA</b>: each MS is SS ÷ df, and <m>F = ${sig(ssr, 7)} \div ${sig(RS.sse / (RS.n - 2), 6)} \approx ${RS.F.toFixed(1)}</m>. <b>Significance F</b> is the <g>p-value</g> of the test that every slope is 0; with one X it equals the slope’s P-value. 1.47E-34 is Excel’s notation for <m>1.47 \times 10^{-34}</m>: a slope this far from 0 would essentially never arise by chance if guests had no linear relation to invoices.`,
+      String.raw`<b>R Square</b> = regression SS ÷ total SS <m>= ${tx(ssr)} \div ${tx(RS.sst)} \approx ${RS.r2.toFixed(3)}</m>. The total SS measures how far invoices vary around their mean; 87.4% of that variation lines up with the number of guests, and 12.6% is left in the residuals. With one X it equals <m>r^2</m>.`,
+      String.raw`<b>Standard Error</b> <m>= \sqrt{\text{residual SS} \div (n - 2)} = \sqrt{${tx(RS.sse / (RS.n - 2), 2)}} \approx ${RS.se.toFixed(2)}</m> dollars. A typical invoice was about $85 away from the line: a more useful measure of a prediction’s accuracy than R².`,
+      String.raw`<b>ANOVA</b>: each MS is SS ÷ df, and <m>F = ${tx(ssr)} \div ${tx(RS.sse / (RS.n - 2), 2)} \approx ${RS.F.toFixed(1)}</m>. <b>Significance F</b> is the <g>p-value</g> of the test that every slope is 0; with one X it equals the slope’s P-value. 1.47E-34 is Excel’s notation for <m>1.47 \times 10^{-34}</m>: a slope this far from 0 would essentially never arise by chance if guests had no linear relation to invoices.`,
       String.raw`<b>Coefficients</b>: the intercept ${b0.toFixed(2)} and the slope ${b1.toFixed(4)}. <b>t Stat</b> = coefficient ÷ its standard error (<m>${b1.toFixed(4)} \div ${RS.coefs.guests.se.toFixed(4)} \approx ${RS.coefs.guests.t.toFixed(1)}</m>). <b>Lower 95%</b> and <b>Upper 95%</b> are the coefficient ± <m>t_{0.025,\,73} \times</m> standard error, with <m>t_{0.025,\,73} \approx ${t73.toFixed(3)}</m>: the slope’s <g>95% confidence interval</g> runs from $${RS.coefs.guests.low.toFixed(2)} to $${RS.coefs.guests.high.toFixed(2)} per guest.`,
     ] },
 
     { h: 'What the line says, and what it doesn’t' },
     { list: [
-      `<b>The slope</b>: across these events, one more guest went with $${b1.toFixed(2)} more on the invoice, on average (95% interval $${RS.coefs.guests.low.toFixed(2)} to $${RS.coefs.guests.high.toFixed(2)}). That is close to the $6.50 a guest on Ana’s quote sheet, but it also absorbs the hours and pastries that bigger events tend to have.`,
+      `<b>The slope</b>: across these events, one more guest went with $${b1.toFixed(2)} more on the invoice, on average (95% interval $${RS.coefs.guests.low.toFixed(2)} to $${RS.coefs.guests.high.toFixed(2)}). That is close to the $6.50 a guest on Ana’s quote sheet, though the line knows nothing about her price list: it only summarises what her invoices did.`,
       `<b>The intercept</b>, $${b0.toFixed(2)}, is the predicted invoice for 0 guests. No event had fewer than ${Math.min(...G1)} guests, so this is an <g>extrapolation</g>: it anchors the line and is not Ana’s setup charge.`,
       `<b>Predictions</b> are safest inside the data’s range, ${Math.min(...G1)} to ${Math.max(...G1)} guests: for 100 guests, <x>=FORECAST.LINEAR(100,C2:C76,B2:B76)</x> gives ${money(pred(100))}, and actual invoices at that size have scattered by roughly the standard error, $${RS.se.toFixed(0)}, either side.`,
       '<b>R² is not predictive accuracy.</b> 0.874 doesn’t mean predictions are 87.4% accurate or right 87.4% of the time; it says how much of the past variation the line accounts for. The standard error tells you the size of a typical miss, and only new events show how well the line predicts.',
@@ -338,7 +339,7 @@ export default {
         `Compare the gaps with the standard error. At 40 guests the per-head estimate is $${(pred(40) - 360).toFixed(2)} below the line, and at 200 guests $${(1800 - pred(200)).toFixed(2)} above it, both well beyond a typical miss of about $85. Near 80 guests the two rules are within $${(pred(80) - 720).toFixed(2)} of each other.`,
       ],
       answer: `The per-head rule matches the line near 98 guests. Below that it underestimates (by about $${(pred(40) - 360).toFixed(0)} at 40 guests); above it, it overestimates (by about $${(1800 - pred(200)).toFixed(0)} at 200 guests).`,
-      interpretation: 'Ana’s invoices behave like a fixed amount plus a price per guest, which is how her quote sheet is built, so a flat rate per head undercharges small events and overprices large ones. The line is a check on her quotes, not a price list: it describes past invoices, it leaves hours and pastries inside the slope, and its typical miss is about $85.' },
+      interpretation: 'Ana’s invoices behave like a fixed amount plus a price per guest, which is how her quote sheet is built, so a flat rate per head undercharges small events and overprices large ones. The line is a check on her quotes, not a price list: it describes past invoices, it ignores hours and pastries, and its typical miss is about $85.' },
   ],
 
   demo: [
@@ -394,7 +395,7 @@ export default {
 
   references: [
     { text: 'Microsoft Support. “STDEV.S function”.', url: 'https://support.microsoft.com/en-us/excel/functions/stdev-s-function', checked: '2026-10-23' },
-    { text: 'Microsoft Support. “QUARTILE.EXC function” (and “PERCENTILE.EXC function”, “KURT function”, “SKEW function”).', url: 'https://support.microsoft.com/id-id/excel/functions/quartile-exc-function', checked: '2026-10-23' },
+    { text: 'Microsoft Support. “QUARTILE.EXC function”, with the pages for PERCENTILE.EXC, QUARTILE.INC, MODE.SNGL, KURT and SKEW.', url: 'https://support.microsoft.com/en-us/excel/functions/quartile-exc-function', checked: '2026-10-23' },
     { text: 'Microsoft Support. “Load the Analysis ToolPak in Excel” and “Use the Analysis ToolPak to perform complex data analysis”.', url: 'https://support.microsoft.com/en-us/excel/use-the-analysis-toolpak-to-perform-complex-data-analysis', checked: '2026-10-23' },
     { text: 'Microsoft Support. “LINEST function” and “FORECAST and FORECAST.LINEAR functions”.', url: 'https://support.microsoft.com/en-us/excel/functions/linest-function', checked: '2026-10-23' },
     { text: 'NIST/SEMATECH. <i>e-Handbook of Statistical Methods</i>, section 1.3.5.11, “Measures of Skewness and Kurtosis”.', url: 'https://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm', checked: '2026-10-23' },
@@ -450,9 +451,11 @@ export default {
     { what: 'Adjusted R squared by formula', value: 1 - (1 - RS.r2) * (RS.n - 1) / (RS.n - 2), shown: RS.adjR2, tol: 1e-12 },
     { what: 'Standard error of the regression', value: RS.se, shown: 84.69 },
     { what: 'Standard error, about $85', value: RS.se, shown: 85, tol: 0.5 },
-    { what: 'Regression SS', value: ssr, shown: 3629738, tol: 0.5 },
-    { what: 'Residual SS', value: RS.sse, shown: 523536.6, tol: 0.05 },
-    { what: 'Total SS', value: RS.sst, shown: 4153275, tol: 0.5 },
+    { what: 'Regression SS', value: ssr, shown: 3629738.02 },
+    { what: 'Residual SS', value: RS.sse, shown: 523536.64 },
+    { what: 'Total SS', value: RS.sst, shown: 4153274.67 },
+    { what: 'Regression SS rounded in the text', value: ssr, shown: 3629738, tol: 0.5 },
+    { what: 'Total SS rounded in the text', value: RS.sst, shown: 4153275, tol: 0.5 },
     { what: 'Residual MS', value: RS.sse / (RS.n - 2), shown: 7171.73 },
     { what: 'F', value: RS.F, shown: 506.1, tol: 0.05 },
     { what: 'F = MSreg / MSres', value: ssr / (RS.sse / (RS.n - 2)), shown: RS.F, tol: 1e-6 },

@@ -24,14 +24,14 @@ const tableDemo = merge(tbl, {
   I4: 'App order value', J4: '=SUMIFS(Orders[order_total],Orders[channel],"app")',
 });
 
-const RAW16 = RAW.slice(0, 16);
-const cleanDemo = rawCells(['order_id', 'order_date', 'quantity', 'unit_price', 'discount', 'order_total', 'channel'], RAW16);
+const RAW17 = RAW.slice(0, 17);
+const cleanDemo = rawCells(['order_id', 'order_date', 'quantity', 'unit_price', 'discount', 'order_total', 'channel'], RAW17);
 Object.assign(cleanDemo, { H1: 'date', I1: 'quantity', J1: 'unit_price', K1: 'discount', L1: 'order_total', M1: 'total check', N1: 'repeated id' });
-for (let r = 2; r <= RAW16.length + 1; r++) {
+for (let r = 2; r <= RAW17.length + 1; r++) {
   Object.assign(cleanDemo, {
     [`H${r}`]: `=IF(MID(B${r},3,1)="/",DATE(RIGHT(B${r},4),MID(B${r},4,2),LEFT(B${r},2)),DATEVALUE(B${r}))`,
     [`I${r}`]: `=VALUE(C${r})`, [`J${r}`]: `=VALUE(D${r})`, [`K${r}`]: `=VALUE(E${r})`, [`L${r}`]: `=VALUE(F${r})`,
-    [`M${r}`]: `=ROUND(L${r}-(I${r}*J${r}-K${r}),2)`, [`N${r}`]: `=COUNTIF($A$2:$A$17,A${r})>1`,
+    [`M${r}`]: `=ROUND(L${r}-(I${r}*J${r}-K${r}),2)`, [`N${r}`]: `=COUNTIF($A$2:$A$18,A${r})>1`,
   });
 }
 
@@ -55,9 +55,9 @@ export const widgets = {
   },
   'tc-clean': {
     type: 'sheet',
-    title: 'The first 16 rows of the raw export (A:G, text as typed) and the cleaning formulas (H:N)',
+    title: 'The first 17 rows of the raw export (A:G, text as typed) and the cleaning formulas (H:N)',
     sheet: { cells: cleanDemo },
-    view: 'A1:N17',
+    view: 'A1:N18',
     formats: { H: 'date', J: MONEY, K: MONEY, L: MONEY, M: MONEY },
     widths: { B: 14, H: 12 },
     tools: ['formulas', 'reset'],
@@ -175,9 +175,9 @@ export const independent = [
     view: 'A1:H21', formats: { E: MONEY, F: MONEY, H: MONEY }, widths: { H: 20 }, maxHeight: '24rem',
     alt: ['=SUMIF(Orders[subscription],"yes",Orders[discount])', '=SUMIFS(E2:E21,D2:D21,"yes")', '=SUM(FILTER(Orders[discount],Orders[subscription]="yes"))'],
     wrong: [
-      { formula: '=SUM(Orders[discount])', say: 'That totals every discount, including the $5 promotion codes on one-off orders. Add the condition subscription = "yes" with SUMIFS.' },
+      { formula: '=SUM(Orders[discount])', say: 'That totals every discount, including the $5 promotion codes on one-off orders. Add the condition <x>"yes"</x> on the subscription column with SUMIFS.' },
       { formula: '=SUMIFS(Orders[order_total],Orders[subscription],"yes")', say: 'That is the subscription orders’ value. The question asks for their discounts: sum Orders[discount].' },
-      { formula: '=SUMIFS(Orders[discount],Orders[subscription],"no")', say: '"no" picks the one-off orders. Subscription orders are "yes".' },
+      { formula: '=SUMIFS(Orders[discount],Orders[subscription],"no")', say: 'The criterion <x>"no"</x> picks the one-off orders. Subscription orders are <x>"yes"</x>.' },
     ],
     solution: '<x>=SUMIFS(Orders[discount],Orders[subscription],"yes")</x> gives $15.25: the 10% discounts on the subscription orders among the first 20. All discounts together come to $30.25, the rest being $5 promotion codes.',
   },
@@ -224,9 +224,9 @@ export const independent = [
     id: 'b03-tc-i6', type: 'mc', kind: 'applied',
     prompt: 'Ana types <x>=UNIQUE(Orders[region])</x> into the first cell of a new column inside the <code>Orders</code> table, hoping for a list of regions. The cell shows #SPILL!. Why?',
     options: [
-      'Spilled array formulas aren’t supported inside an Excel table; put the formula in a cell outside the table',
-      'UNIQUE needs the regions sorted first, so it should be SORT(UNIQUE(…)) instead',
-      'Structured references can’t be used inside a dynamic array function',
+      'Spilled formulas aren’t allowed inside a table; type it in a cell beside the table',
+      'UNIQUE needs the regions sorted first, so the formula should be SORT(UNIQUE(…)) instead',
+      'Structured references can’t be used inside a dynamic array function such as UNIQUE',
       'The region column contains text, and UNIQUE works only on numbers',
     ],
     answer: 0,
@@ -240,7 +240,7 @@ export const independent = [
 ];
 
 // ---------------------------------------------------------------- knowledge check
-const kRaw = RAW.slice(9, 16);
+const kRaw = RAW.slice(10, 17);
 const k1 = { A1: 'order_id', B1: 'quantity', C1: 'unit_price', D1: 'discount', E1: 'order_total', F1: 'gap' };
 kRaw.forEach((r, i) => { const n = i + 2; Object.assign(k1, { [`A${n}`]: r[0], [`B${n}`]: Number(r[rc('quantity')]), [`C${n}`]: r[rc('unit_price')], [`D${n}`]: Number(r[rc('discount')]), [`E${n}`]: r[rc('order_total')] }); });
 const k4 = ordersCells({ cols: ['order_id', 'region', 'channel', 'order_total'], n: 20 });
@@ -268,10 +268,10 @@ export const check = [
     id: 'b03-tc-k2', type: 'mc', kind: 'conceptual',
     prompt: 'An export holds two rows for order LC-10102: the original at $14.00 and, below it, a corrected version at $12.60. Ana selects the data and runs Remove Duplicates with only the order_id column ticked. What happens?',
     options: [
-      'The second row, the correction at $12.60, is deleted, because Remove Duplicates keeps the first occurrence',
+      'The $12.60 correction is deleted: Remove Duplicates keeps the first occurrence',
       'The first row is deleted, because Remove Duplicates keeps the most recent version of each order',
-      'Nothing is deleted, because the two rows differ in order_total',
-      'Both rows are moved to a separate sheet for Ana to review',
+      'Nothing is deleted, because the two rows still differ in their order_total values',
+      'Both rows are moved to a separate sheet so that Ana can review them before deleting',
     ],
     answer: 0,
     feedback: {
@@ -307,7 +307,7 @@ export const check = [
     alt: ['=SUMIFS(Orders[order_total],Orders[region],"West",Orders[channel],"app")', '=SUM(FILTER(Orders[order_total],(Orders[channel]="app")*(Orders[region]="West")))'],
     wrong: [
       { formula: '=SUM(FILTER(Orders[order_total],(Orders[region]="West")+(Orders[channel]="app")))', say: 'Adding the conditions means OR: West orders from any channel plus app orders from any region. Multiply them for AND.' },
-      { formula: '=SUM(FILTER(Orders[order_total],Orders[region]="West"))', say: 'That is every West order. Add the second condition, channel = "app", multiplied in.' },
+      { formula: '=SUM(FILTER(Orders[order_total],Orders[region]="West"))', say: 'That is every West order. Add the second condition, <x>(Orders[channel]="app")</x>, multiplied in.' },
     ],
     solution: '<x>=SUM(FILTER(Orders[order_total],(Orders[region]="West")*(Orders[channel]="app")))</x> gives $104.65. Each condition gives a column of TRUE and FALSE; multiplying them gives 1 only where both hold. <x>=SUMIFS(Orders[order_total],Orders[region],"West",Orders[channel],"app")</x> gives the same in any version.',
   },

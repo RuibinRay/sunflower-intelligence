@@ -26,7 +26,8 @@ const blankRatings = RAW.filter((r) => r[rc('rating')] === '').length;
 const idCount = (id) => RAW.filter((r) => r[0] === id).length;
 const mismatch = RAW.filter((r) => Math.abs(num(r[rc('order_total')]) - (num(r[rc('quantity')]) * num(r[rc('unit_price')]) - num(r[rc('discount')]))) > 0.005);
 // the challenging example: six raw rows
-const PICK = [1, 2, 5, 6, 8, 15].map((i) => RAW[i]);
+const PICK = ['LC-10002', 'LC-10003', 'LC-10006', 'LC-10007', 'LC-10003', 'LC-10016'].map((id, k) => RAW.filter((r) => r[0] === id)[k === 4 ? 1 : 0]);
+const RAW16 = RAW.find((r) => r[0] === 'LC-10016');
 const gap = (r) => r2(num(r[rc('order_total')]) - (num(r[rc('quantity')]) * num(r[rc('unit_price')]) - num(r[rc('discount')])));
 const clean16 = ORDERS.find((r) => r[0] === 'LC-10016')[oc('order_total')];
 
@@ -97,7 +98,7 @@ export default {
         ['<code>Orders[#Headers]</code>, <code>Orders[#Totals]</code>, <code>Orders[#All]</code>', 'The header row; the total row; the whole table including both'],
       ],
     } },
-    { p: 'Structured references adjust themselves: when rows are added or removed, the column references cover the new extent, and when you rename a column or the table, Excel updates every formula in the workbook that uses it. Copying a formula keeps its structured references exactly as written. Filling one across, as Microsoft puts it, adjusts the column specifiers “like a series”, so <code>[@quantity]</code> filled one column to the right becomes the next column’s name.' },
+    { p: 'Structured references adjust themselves: when rows are added or removed, the column references cover the new extent, and when you rename a column or the table, Excel updates every formula in the workbook that uses it. Copying a formula keeps its structured references exactly as written. Filling a fully qualified reference across, as Microsoft puts it, adjusts the column specifiers “like a series”, so <code>Orders[quantity]</code> filled one column to the right becomes <code>Orders[unit_price]</code>, the next column’s name.' },
 
     { h: 'Calculated columns and the total row' },
     { p: 'Type a heading in the empty column to the right of a table and the table widens to include it. Type a formula in one cell of that column, press Enter, and Excel fills it down the whole column: a <g>calculated column</g>. Rows added later receive the formula too, so the column never has a gap. Ana’s first calculated column checks every order’s arithmetic, the B02 cross-field check written as a formula: <x>=[@order_total]-([@quantity]*[@unit_price]-[@discount])</x> should be 0 in every row.' },
@@ -123,7 +124,7 @@ export default {
     { p: 'An Input Message tab shows a hint when the cell is selected. The Error Alert tab chooses the response to a bad entry: Stop prevents it, Warning warns but lets the user keep it, and Information is the most lenient, letting the user accept or reject the value. Two limits matter. Microsoft notes that validation shows messages and blocks entries only when data are typed directly into a cell, so pasting or filling can bring invalid values in. And adding a rule to cells that already hold data doesn’t flag the bad ones; Data Validation › Circle Invalid Data marks them.' },
 
     { h: 'Remove Duplicates' },
-    { p: 'Data › Remove Duplicates deletes rows that repeat values in the columns you tick. Microsoft lists its rules: it keeps the first occurrence and deletes the others; it compares what appears in the cells, not the underlying value; it removes whole rows even though only the ticked columns are compared; and the deletion is permanent apart from Undo. Work on a copy, and count before you delete: <x>=COUNTIF($A$2:$A$21,A2)</x> filled down shows which ids occur more than once.' },
+    { p: 'Data › Remove Duplicates deletes rows that repeat values in the columns you tick. Microsoft lists its rules: it keeps the first occurrence and deletes the others; it compares what appears in the cells, not the underlying value; it removes whole rows even though only the ticked columns are compared; and the deletion is permanent apart from Undo. Work on a copy, and count before you delete: <x>=COUNTIF($A$2:$A$21,A2)</x> filled down counts each id’s occurrences (a <g>conditional aggregate</g>), so any count above 1 marks a repeated id.' },
     { p: 'Which columns to tick is a business decision, the one B02’s duplicates lesson calls the <g>business key</g>. Ticking every column removes only <g>exact duplicates</g>, such as order LC-10003, which appears twice in Lantern’s raw export with identical values. Ticking only order_id would also delete an updated version of an order, keeping whichever came first rather than the one that is right.' },
 
     { h: 'Cleaning Lantern’s raw export, step by step' },
@@ -144,7 +145,7 @@ export default {
     { p: 'TRIM removes every space except single spaces between words, but Microsoft is explicit that it was designed for the ordinary space character (code 32): the non-breaking space (code 160) that web pages use survives it, and needs <x>=TRIM(SUBSTITUTE(A2,CHAR(160)," "))</x>. CLEAN removes the non-printing control characters with codes 0 to 31. PROPER capitalises the first letter and every letter that follows a non-letter, and lowers the rest, so it turns “house blend 250g” into “House Blend 250G”: harmless for a lookup, which ignores case, but check its output before you publish it.' },
     { p: 'VALUE converts text that looks like a number, date or time in a format Excel recognises: <x>=VALUE("$1,000")</x> is 1000, and arithmetic such as <x>=I2*1</x> converts the same way. SUM does not: it skips text, as B02 showed. After converting, <x>=COUNT(L2:L21)</x> should equal the number of rows; any shortfall is a value that failed to convert and needs a look.' },
     { p: 'Dates need the most care. DATEVALUE converts date text to a serial number using the computer’s date settings, so the same text can give different dates on different machines. With US settings, “05/03/2026” becomes 3 May 2026, silently. B02 established that Lantern’s web shop writes the day first, so this order was placed on 5 March; <x>=DATE(RIGHT(B2,4),MID(B2,4,2),LEFT(B2,2))</x> builds the date from its parts in the order you decide, and gives the same answer everywhere. Use DATEVALUE only for unambiguous text (ISO dates, written-out months), and test a few results against the source.' },
-    { p: 'Each step goes in the log, B02-style: what the column does, the rule, and the count it affected. For example: “unit_price: VALUE of the raw text; ' + RAW.length + ' of ' + RAW.length + ' converted.” “order_date: DATEVALUE for ISO and written dates (' + (iso + written) + ' rows), DATE from parts for day-first slash dates (' + slash + ' row).” “LC-10003: exact duplicate, second copy removed; ' + RAW.length + ' rows become ' + (RAW.length - 1) + '.” “LC-10016: total disagrees with its parts by ' + money(gap(RAW[15])) + '; set to ' + money(clean16) + ', as B02 decided.”' },
+    { p: 'Each step goes in the log, B02-style: what the column does, the rule, and the count it affected. For example: “unit_price: VALUE of the raw text; ' + RAW.length + ' of ' + RAW.length + ' converted.” “order_date: DATEVALUE for ISO and written dates (' + (iso + written) + ' rows), DATE from parts for day-first slash dates (' + slash + ' row).” “LC-10003: exact duplicate, second copy removed; ' + RAW.length + ' rows become ' + (RAW.length - 1) + '.” “LC-10016: total disagrees with its parts by ' + money(gap(RAW16)) + '; set to ' + money(clean16) + ', as B02 decided.”' },
 
     { h: 'Text to Columns, Flash Fill, Find and Replace and Power Query' },
     { table: {
@@ -173,7 +174,7 @@ export default {
       ],
     } },
     { p: 'FILTER’s include argument is a column of TRUE and FALSE values as tall as the array. Multiply conditions for AND and add them for OR: <x>=FILTER(Orders,(Orders[region]="Central")*(Orders[channel]="web"))</x> keeps Central’s web orders, all columns. If nothing qualifies and if_empty is left out, FILTER returns #CALC!, because Excel has no empty array. UNIQUE’s exactly_once set to TRUE keeps only values that occur once, and wrapping UNIQUE in ROWS counts the distinct values: <x>=ROWS(UNIQUE(Orders[customer_id]))</x> gives ' + new Set(ORDERS.map((r) => r[oc('customer_id')])).size + ' customers.' },
-    { p: 'A spilled formula fails with #SPILL! when it can’t spill. Microsoft lists the causes: the spill range isn’t empty (delete or move whatever is in the way), the formula is inside a table (spilled array formulas aren’t supported in tables, so put it beside the table), the result would run off the edge of the sheet, or it would spill into merged cells. To refer to a whole spill range, put # after its first cell: if D2 holds <x>=SORT(UNIQUE(Orders[region]))</x>, then <x>=COUNTA(D2#)</x> counts what it spilled, however many rows that becomes.' },
+    { p: 'A spilled formula fails with #SPILL! when it can’t spill. Microsoft lists several causes: the spill range isn’t empty (delete or move whatever is in the way), the formula is inside a table (spilled array formulas aren’t supported in tables, so put it beside the table), the result would run off the edge of the sheet, or it would spill into merged cells. To refer to a whole spill range, put # after its first cell: if D2 holds <x>=SORT(UNIQUE(Orders[region]))</x>, then <x>=COUNTA(D2#)</x> counts what it spilled, however many rows that becomes.' },
     { callout: 'standards', title: 'Which versions have dynamic arrays', html: 'UNIQUE, SORT, SORTBY and FILTER work in Excel for Microsoft 365, Excel 2024 and Excel 2021, on Windows and on Mac. Microsoft lists the spilled range operator (#) for Excel for Microsoft 365. In Excel 2019 and earlier these functions don’t exist: use filters, sorting, and COUNTIFS or a PivotTable to count distinct values instead.' },
   ],
 
@@ -221,10 +222,10 @@ export default {
         'Numbers: <x>=VALUE(…)</x> on quantity, unit_price, discount and order_total turns “$17.00” into 17, “14.00” into 14 and “$21.35” into 21.35. <x>=COUNT(…)</x> on each new column returns 6: nothing failed to convert.',
         'Dates: the ISO dates (“2026-03-02”, “2026-03-03”, “2026-03-09”) and the written-out “March 2, 2026” go through DATEVALUE. The web order’s “05/03/2026” does not: with US settings DATEVALUE would make it 3 May. Built with <x>=DATE(RIGHT(B5,4),MID(B5,4,2),LEFT(B5,2))</x> it is 5 March 2026, the day-first reading B02 established for the web shop.',
         'Duplicates: <x>=COUNTIF($A$2:$A$7,A2)</x> is 2 for both LC-10003 rows. Every field is identical, so this is an exact duplicate: keep the first, delete the second (Remove Duplicates with every column ticked does exactly that).',
-        'Arithmetic: the check total − (quantity × price − discount) is 0 for every row except LC-10016: ' + money(num(RAW[15][rc('order_total')])) + ' − (1 × ' + money(16.5) + ' − ' + money(1.65) + ') = ' + money(gap(RAW[15])) + '. The parts agree with each other (a 10% subscription discount on one bag), so the total is the odd one out; B02 set it to ' + money(clean16) + '.',
+        'Arithmetic: the check total − (quantity × price − discount) is 0 for every row except LC-10016: ' + money(num(RAW16[rc('order_total')])) + ' − (1 × ' + money(16.5) + ' − ' + money(1.65) + ') = ' + money(gap(RAW16)) + '. The parts agree with each other (a 10% subscription discount on one bag), so the total is the odd one out; B02 set it to ' + money(clean16) + '.',
         'Log the four decisions with their counts: 6 values converted per numeric column; 1 slash date read day first; 1 exact duplicate removed (6 rows become 5); 1 total corrected.',
       ],
-      answer: 'Five clean rows: dates 2, 2, 3, 5 and 9 March 2026; all prices and totals numeric; LC-10003 once; LC-10016’s total ' + money(clean16) + ' instead of ' + money(num(RAW[15][rc('order_total')])) + '. Four log entries record what changed and why.',
+      answer: 'Five clean rows: dates 2, 2, 3, 5 and 9 March 2026; all prices and totals numeric; LC-10003 once; LC-10016’s total ' + money(clean16) + ' instead of ' + money(num(RAW16[rc('order_total')])) + '. Four log entries record what changed and why.',
       interpretation: 'Each problem needed a different tool, and two of them, the slash date and the wrong total, needed a decision that no function can make. Formulas do the routine conversions repeatably; the log records the judgements, so the same choices are made next month and anyone can check them.' },
 
     { level: 'applied', title: 'Who is overloaded in the workshop?', fictional: true,
@@ -236,7 +237,7 @@ export default {
         rows: JOBS.map((j) => [j[0], j[1], j[2], j[3], j[4].toFixed(1)]),
       },
       steps: [
-        'Protect the status column first: data validation with a List of open, waiting for parts, done. Without it, one “Open ” typed with a capital and a space would drop out of every filter on “open”.',
+        'Protect the status column first: data validation with a List of open, waiting for parts, done. Without it, a status typed as “open ” with a trailing space, or as “in progress”, would drop out of every filter on “open”.',
         'For one mechanic’s open jobs, soonest first: <x>=SORT(FILTER(Jobs,(Jobs[mechanic]="Luis")*(Jobs[status]="open")),4)</x>, placed beside the table (a spilled formula can’t go inside it). Multiplying the two conditions means both must hold. It spills Luis’s ' + openJobs('Luis') + ' open jobs: J-301, J-303, J-307 and J-309.',
         'Hours per mechanic: <x>=SUM(FILTER(Jobs[hours],(Jobs[mechanic]="Luis")*(Jobs[status]="open")))</x> gives ' + openHours('Luis').toFixed(1) + ' hours; for Dana ' + openHours('Dana').toFixed(1) + ' and for Mei ' + openHours('Mei').toFixed(1) + '. (<x>=SUMIFS(Jobs[hours],Jobs[mechanic],"Luis",Jobs[status],"open")</x> gives the same.)',
         'Compare with capacity: Luis has ' + openHours('Luis').toFixed(1) + ' hours of open work against ' + CAPACITY + ' available; moving J-309 (2.0 hours, due 10 July) to Mei leaves him ' + (openHours('Luis') - 2).toFixed(1) + ' and gives her ' + (openHours('Mei') + 2).toFixed(1) + '.',
@@ -247,7 +248,7 @@ export default {
 
   demo: [
     { widget: 'tc-table', intro: 'The first twelve spring orders as the table Orders. Type a formula with structured references in H2 (try <x>=[@quantity]*[@unit_price]-[@discount]</x>) and use Fill down; then read the formulas in J2:J4 with Show formulas.' },
-    { widget: 'tc-clean', intro: 'Ten raw rows, exactly as exported, with a cleaning formula already written in row 2 of each clean column. Select a formula and use Fill down, then look for the rows the checks flag. Change a raw value, say a price, and watch the clean columns follow.' },
+    { widget: 'tc-clean', intro: 'The first 17 rows of the raw export, exactly as typed, with the cleaning formulas filled in beside them. Use Show formulas to read them, then find the three rows the checks flag: a day-first slash date, an id that occurs twice and a total that doesn’t add up. Change a raw price and watch the clean columns follow.' },
     { widget: 'tc-arrays', intro: 'UNIQUE, SORT and FILTER on twenty orders. One formula in K2 can’t spill because a note is in its way: delete the note in K4 and watch it spill. Change the threshold in M1 to see FILTER resize.' },
   ],
 
@@ -312,8 +313,8 @@ export default {
     { what: 'Rows failing the total check', value: mismatch.length, shown: 1 },
     { what: 'ISO + written dates', value: iso + written, shown: 19 },
     { what: 'Rows after removing the duplicate', value: RAW.length - 1, shown: 19 },
-    { what: 'LC-10016 raw total', value: num(RAW[15][rc('order_total')]), shown: 21.35 },
-    { what: 'LC-10016 gap', value: gap(RAW[15]), shown: 6.5 },
+    { what: 'LC-10016 raw total', value: num(RAW16[rc('order_total')]), shown: 21.35 },
+    { what: 'LC-10016 gap', value: gap(RAW16), shown: 6.5 },
     { what: 'LC-10016 clean total', value: clean16, shown: 14.85 },
     { what: 'LC-10016 = 1 × 16.50 − 1.65', value: 1 * 16.5 - 1.65, shown: 14.85 },
     { what: 'VALUE("$1,000")', value: num('$1,000'), shown: 1000 },

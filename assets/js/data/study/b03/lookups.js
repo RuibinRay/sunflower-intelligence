@@ -83,7 +83,7 @@ export default {
         ['range_lookup', 'FALSE (or 0) for an exact match; TRUE or left out for an approximate match', 'FALSE'],
       ],
     } },
-    { p: 'So Ana’s VLOOKUP version is <x>=VLOOKUP(B2,$H$2:$L$12,5,FALSE)</x>. It returns the same costs as her XLOOKUP. Without the dollar signs, filling it down would slide the range to H3:L13, H4:L14 and so on, and the lower rows would stop finding the products near the top of the list.' },
+    { p: 'So Ana’s VLOOKUP version is <x>=VLOOKUP(B2,$H$2:$L$12,5,FALSE)</x>. It returns the same costs as her XLOOKUP. Without the dollar signs of an <g>absolute reference</g>, filling it down would slide the range to H3:L13, H4:L14 and so on, and the lower rows would stop finding the products near the top of the list.' },
     { callout: 'warn', title: 'Leave out the fourth argument and VLOOKUP approximates', html: 'If range_lookup is TRUE or missing, VLOOKUP assumes the first column is sorted from smallest to largest and returns the closest match below the lookup value. On an unsorted product list it returns some other product’s cost for some orders and #N/A for others, with no warning. Type FALSE (or 0) every time you want an exact match. Try it in the worksheet under Explore: delete <x>,FALSE</x> and watch some costs change.' },
     { p: 'VLOOKUP has two more weaknesses. First, the lookup value must be in the first column of table_array, so it can’t return anything to the left of the key: to find an order id from a customer number, the customer column must come first. Second, the column number is a constant typed into the formula. If someone inserts a column for supplier codes between <code>line</code> and <code>size_g</code>, Excel widens the range to $H$2:$M$12 but leaves the 5 alone, so the formula now returns column L, which holds the price: Gift Box Trio comes back at ' + money(price('Gift Box Trio')) + ' instead of ' + money(cost('Gift Box Trio')) + '. A column number larger than the range is wide gives #REF!.' },
     { p: 'HLOOKUP is the same function turned on its side: it searches across the top row of a range and returns a value from a row below, with the same fourth argument and the same default. You need it only for tables laid out sideways, such as a rate card with months across the top.' },
@@ -134,7 +134,7 @@ export default {
     { p: 'Keep band tables sorted. Microsoft documents that VLOOKUP’s approximate match and MATCH with match_type 1 assume the first column is sorted from smallest to largest, and that XLOOKUP’s binary search modes give invalid results on unsorted data. A sorted table is also the one a reader can check at a glance. Why not use IF? <x>=IF(B2>35,0,4.95)</x> works for two bands, but four size bands need nested IFs with the thresholds buried inside the formula, while a band table puts the rule where anyone can read and change it.' },
 
     { h: 'Why a lookup returns #N/A, or the wrong answer' },
-    { p: 'An #N/A from an exact-match lookup means “no key equal to this one”. Microsoft’s list of the usual causes covers four of the rows below: the value really isn’t there, the two sides hold different data types, there are extra spaces, and the match type is wrong. The wrong match type, the unlocked range and the duplicate key are the dangerous ones, because they can give a plausible number instead of an error.' },
+    { p: 'An #N/A from an exact-match lookup is an <g>error value</g> that means “no key equal to this one”. Microsoft’s list of the usual causes covers four of the rows below: the value really isn’t there, the two sides hold different data types, there are extra spaces, and the match type is wrong. The wrong match type, the unlocked range and the duplicate key are the dangerous ones, because they can give a plausible number instead of an error.' },
     { table: {
       caption: 'Diagnosing a lookup',
       head: ['Cause', 'What you see', 'How to test', 'Fix'],
@@ -200,7 +200,7 @@ export default {
         'Multiply by the quantity in E: ' + FIVE.map((r, i) => `${r[col('quantity')]} × ${money(cost(r[col('product')]))} = ${money(fiveCost[i])}`).join('; ') + '.',
         'Check one result by hand against the price list: House Blend 1kg costs ' + money(cost('House Blend 1kg')) + ' a bag, and LC-10005 has two, so ' + money(fiveCost[4]) + '. Then add the column: ' + money(fiveCost.reduce((s, x) => s + x, 0)) + '.',
       ],
-      answer: 'The five orders cost Lantern ' + fiveCost.map(money).join(', ') + ', ' + money(fiveCost.reduce((s, x) => s + x, 0)) + ' in all.',
+      answer: 'The five orders cost Lantern ' + fiveCost.slice(0, 4).map(money).join(', ') + ' and ' + money(fiveCost[4]) + ': ' + money(fiveCost.reduce((s, x) => s + x, 0)) + ' in all.',
       interpretation: 'One formula, filled down, costs every order and stays right when Kilnworth’s list changes. The same formula over all 231 orders is the first step of the course project, where Ana turns these costs into her margin figures.' },
 
     { level: 'challenging', title: 'Delivery charges and size bands, boundaries included', fictional: true,
@@ -227,7 +227,7 @@ export default {
       answer: 'Three of the six orders (' + SIX.filter((_, i) => charge(sixTotals[i]) > 0).map((r) => r[0]).join(', ') + ') would pay ' + money(DELIVERY_BANDS[0][1]) + ' each; the other three travel free. The test values confirm that $35.00 pays and $35.01 is free.',
       interpretation: 'An approximate match is only as good as its band table. Writing the boundary as 35.01 encodes “over $35” exactly, and the two test rows prove it; a table that is wrong by one cent would pass every real order in this sample and still be wrong. The project applies the same lookup to all 231 orders.' },
 
-    { level: 'applied', title: 'Five lookups fail at a bike shop', fictional: true,
+    { level: 'applied', title: 'Three lookups fail at a bike shop', fictional: true,
       setup: 'Spokewise Cycles, a fictional bike shop, reorders six parts. Its reorder sheet holds part numbers as numbers in A2:A7; the supplier’s new price file is pasted into H1:I7. The buyer’s formula <x>=XLOOKUP(A2,$H$2:$H$7,$I$2:$I$7)</x> finds only three prices, and a colleague suggests wrapping it in IFERROR with 0 so the total adds up. Should she?',
       table: {
         caption: 'The reorder list and the supplier’s file (fictional)',

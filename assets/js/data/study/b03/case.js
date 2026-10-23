@@ -82,9 +82,10 @@ export const SHOP_MODEL = {
 };
 
 // ---------------------------------------------------------------- spreadsheet helpers
-/** Sheet cells for a table: the header in row `at`'s row, data below; ISO dates become date serial numbers and
- *  null becomes a blank cell. `cols` picks columns by name (default all). Returns { cells, range, last, colOf }. */
-export function tableCells(columns, rows, { at = 'A1', cols = columns, n = rows.length } = {}) {
+/** Sheet cells for a table: the header in row `at`'s row, data below; ISO dates become date serial numbers (unless
+ *  `raw: true`, which keeps every value exactly as given, for raw exports) and null becomes a blank cell. `cols` picks
+ *  columns by name (default all). Returns { cells, range, last, colOf }. */
+export function tableCells(columns, rows, { at = 'A1', cols = columns, n = rows.length, raw = false } = {}) {
   const m = /^([A-Z]+)(\d+)$/.exec(at);
   const c0 = colToIndex(m[1]), r0 = Number(m[2]) - 1;
   const idx = cols.map((c) => columns.indexOf(c));
@@ -93,7 +94,7 @@ export function tableCells(columns, rows, { at = 'A1', cols = columns, n = rows.
   cols.forEach((c, j) => { cells[addr(r0, c0 + j)] = c; });
   rows.slice(0, n).forEach((row, i) => idx.forEach((k, j) => {
     let v = row[k];
-    if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v)) v = isoToSerial(v);
+    if (!raw && typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v)) v = isoToSerial(v);
     if (v != null) cells[addr(r0 + 1 + i, c0 + j)] = v;
   }));
   const colOf = Object.fromEntries(cols.map((c, j) => [c, addr(0, c0 + j).replace(/\d+$/, '')]));

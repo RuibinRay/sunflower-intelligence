@@ -178,7 +178,7 @@ export const independent = [
       A4: 'Guests ↓   price per guest →', B4: 6, C4: 6.5, D4: 7, E4: 7.5, F4: 8,
       A5: 40, A6: 60, A7: 80, A8: 100, A9: 120, A10: 140,
     } },
-    cell: 'B5', fill: 'B5:F10', view: 'A1:F10', widths: { A: 26 }, formats: { B1: M, B2: M, B4: M, C4: M, D4: M, E4: M, F4: M, B: '$#,##0.00', C: '$#,##0.00', D: '$#,##0.00', E: '$#,##0.00', F: '$#,##0.00' },
+    cell: 'B5', fill: 'B5:F10', view: 'A1:F10', widths: { A: 26 }, formats: { B1: M, B2: M, B3: 'general', B4: M, C4: M, D4: M, E4: M, F4: M, B: '$#,##0.00', C: '$#,##0.00', D: '$#,##0.00', E: '$#,##0.00', F: '$#,##0.00' },
     answer: '=$B$1+$B$2*$B$3+$A5*B$4',
     alt: ['=$A5*B$4+$B$1+$B$2*$B$3', '=$B$1+$B$3*$B$2+B$4*$A5'],
     wrong: [
@@ -269,10 +269,10 @@ export const check = [
     id: 'b03-wi-k2', type: 'mc', kind: 'conceptual',
     prompt: 'For a 20-guest meeting of two hours without pastries, Ana asks Goal Seek to set the invoice (B21) to $250 by changing the price per guest (B8). Goal Seek reports that it couldn’t find a solution. Why?',
     options: [
-      'Below $9 a guest the $300 minimum applies, so the invoice doesn’t respond to the price there and can never be as low as $250.',
+      'Below $9 a guest the $300 minimum applies, so no price makes the invoice $250.',
       'Goal Seek can only change cells that contain formulas, and B8 holds a typed value.',
-      'Goal Seek needs at least two changing cells to solve an equation.',
-      'The invoice cell is formatted as currency, which Goal Seek can’t read.',
+      'Goal Seek needs at least two changing cells to solve an equation like this one.',
+      'The invoice cell is formatted as currency, which Goal Seek is unable to read.',
     ],
     answer: 0,
     feedback: {

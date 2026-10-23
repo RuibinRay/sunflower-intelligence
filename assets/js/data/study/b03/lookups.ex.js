@@ -277,8 +277,8 @@ export const check = [
       'Its return range can be to the left of its lookup range.',
       'Its if_not_found argument replaces #N/A with a value of your choice.',
       'With search_mode −1 it returns the last match instead of the first.',
-      'It needs its lookup range sorted from smallest to largest.',
-      'It works in Excel 2016 and Excel 2019.',
+      'It needs its lookup range sorted from smallest to largest, like VLOOKUP’s approximate match.',
+      'It works in Excel 2016 and Excel 2019 as well as in Microsoft 365.',
     ],
     answer: [0, 1, 2, 3],
     feedback: {

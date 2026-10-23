@@ -101,6 +101,8 @@ function tokenize(src) {
     // structured references: Table[Col], Table[@Col], Table[[#Headers],[Col]] (kept simple), [@Col]
     let m = /^([A-Za-z_][A-Za-z0-9_.]*)?\[(@?)(?:\[?([^\]]+?)\]?)\]/.exec(s.slice(i));
     if (m && (m[1] || m[2])) { t.push({ k: 'sref', table: m[1] || null, at: !!m[2], col: m[3].trim() }); i += m[0].length; continue; }
+    m = /^(\$?[A-Za-z]{1,3}\$?\d{1,7})#/.exec(s.slice(i));                // the spilled range operator: A2#
+    if (m) { t.push({ k: 'ref', v: m[1], spill: true }); i += m[0].length; continue; }
     m = /^\$?[A-Za-z]{1,3}\$?\d{1,7}(?::\$?[A-Za-z]{1,3}\$?\d{1,7})?(?![A-Za-z0-9_(])/.exec(s.slice(i));
     if (m) { t.push({ k: 'ref', v: m[0] }); i += m[0].length; continue; }
     m = /^\$?[A-Za-z]{1,3}:\$?[A-Za-z]{1,3}(?![A-Za-z0-9_(])/.exec(s.slice(i));         // whole columns, A:A
@@ -161,7 +163,7 @@ export function parse(formula) {
     if (tk.k === 'str') return { t: 'lit', v: tk.v };
     if (tk.k === 'bool') return { t: 'lit', v: tk.v };
     if (tk.k === 'err') return { t: 'lit', v: tk.v };
-    if (tk.k === 'ref') return { t: 'ref', v: tk.v, cols: !!tk.cols };
+    if (tk.k === 'ref') return { t: 'ref', v: tk.v, cols: !!tk.cols, spill: !!tk.spill };
     if (tk.k === 'sref') return { t: 'sref', table: tk.table, at: tk.at, col: tk.col };
     if (tk.k === 'name') return { t: 'name', v: tk.v };
     if (tk.k === 'fn') {
@@ -456,6 +458,14 @@ export function evaluate(formula, sheet = new Sheet(), { at = null } = {}) {
 
 function refValue(node, ctx) {
   const { sheet } = ctx;
+  if (node.spill) {
+    // A2#: the whole range the formula in A2 spills into; #REF! if A2 doesn't hold a spilling formula
+    const k = node.v.replace(/\$/g, '').toUpperCase(), p = parseAddr(k);
+    if (!sheet.isFormula(k)) return ERR.REF;
+    sheet.formulaValue(k);
+    const sp = sheet.spills.get(k);
+    return sp ? { range: true, r0: p.r, c0: p.c, r1: p.r + sp.h - 1, c1: p.c + sp.w - 1 } : ERR.REF;
+  }
   if (node.cols) {
     const [a, b] = node.v.replace(/\$/g, '').split(':');
     const { rows } = sheet.extent();
@@ -798,6 +808,7 @@ function condPairs(args, ctx, start) {
   for (let i = start; i < args.length; i += 2) {
     const R = arrOf(args[i], ctx); if (isErr(R)) return R;
     const crit = scalar(args[i + 1], ctx);
+    if (isErr(crit)) return crit;                              // an error as the criterion is the result, as in Excel
     const test = criterion(crit);
     const vals = R.flat();
     if (size == null) size = [R.h, R.w]; else if (R.h !== size[0] || R.w !== size[1]) return ERR.VALUE;
@@ -812,9 +823,9 @@ FN.AVERAGEIFS = (args, ctx) => { const S = arrOf(args[0], ctx); if (isErr(S)) re
 FN.MAXIFS = (args, ctx) => { const S = arrOf(args[0], ctx); if (isErr(S)) return S; const c = condPairs(args, ctx, 1); if (isErr(c)) return c; const xs = S.flat().filter((x, i) => c.mask[i] && typeof x === 'number'); return xs.length ? Math.max(...xs) : 0; };
 FN.MINIFS = (args, ctx) => { const S = arrOf(args[0], ctx); if (isErr(S)) return S; const c = condPairs(args, ctx, 1); if (isErr(c)) return c; const xs = S.flat().filter((x, i) => c.mask[i] && typeof x === 'number'); return xs.length ? Math.min(...xs) : 0; };
 // SUMIF(range, criteria, [sum_range]); AVERAGEIF likewise; COUNTIF(range, criteria)
-FN.SUMIF = (args, ctx) => { if (!need(args, 2, 3)) return ERR.VALUE; const R = arrOf(args[0], ctx); if (isErr(R)) return R; const S = args[2] && args[2].t !== 'missing' ? arrOf(args[2], ctx) : R; if (isErr(S)) return S; const t = criterion(scalar(args[1], ctx)); const r = R.flat(); let s = 0; for (let i = 0; i < r.length; i++) { const v = S.flat()[i]; if (t(r[i]) && typeof v === 'number') s += v; } return s; };
-FN.COUNTIF = (args, ctx) => { if (!need(args, 2)) return ERR.VALUE; const R = arrOf(args[0], ctx); if (isErr(R)) return R; const t = criterion(scalar(args[1], ctx)); return R.flat().filter(t).length; };
-FN.AVERAGEIF = (args, ctx) => { const R = arrOf(args[0], ctx); if (isErr(R)) return R; const S = args[2] && args[2].t !== 'missing' ? arrOf(args[2], ctx) : R; const t = criterion(scalar(args[1], ctx)); const xs = R.flat().map((v, i) => (t(v) ? S.flat()[i] : null)).filter((v) => typeof v === 'number'); return xs.length ? meanOf(xs) : ERR.DIV0; };
+FN.SUMIF = (args, ctx) => { if (!need(args, 2, 3)) return ERR.VALUE; const R = arrOf(args[0], ctx); if (isErr(R)) return R; const S = args[2] && args[2].t !== 'missing' ? arrOf(args[2], ctx) : R; if (isErr(S)) return S; const crit = scalar(args[1], ctx); if (isErr(crit)) return crit; const t = criterion(crit); const r = R.flat(); let s = 0; for (let i = 0; i < r.length; i++) { const v = S.flat()[i]; if (t(r[i]) && typeof v === 'number') s += v; } return s; };
+FN.COUNTIF = (args, ctx) => { if (!need(args, 2)) return ERR.VALUE; const R = arrOf(args[0], ctx); if (isErr(R)) return R; const crit = scalar(args[1], ctx); if (isErr(crit)) return crit; const t = criterion(crit); return R.flat().filter(t).length; };
+FN.AVERAGEIF = (args, ctx) => { const R = arrOf(args[0], ctx); if (isErr(R)) return R; const S = args[2] && args[2].t !== 'missing' ? arrOf(args[2], ctx) : R; const crit = scalar(args[1], ctx); if (isErr(crit)) return crit; const t = criterion(crit); const xs = R.flat().map((v, i) => (t(v) ? S.flat()[i] : null)).filter((v) => typeof v === 'number'); return xs.length ? meanOf(xs) : ERR.DIV0; };
 FN.SUMPRODUCT = (args, ctx) => {
   const As = args.map((a) => arrOf(a, ctx));
   const e = As.find(isErr); if (e) return e;
@@ -879,8 +890,16 @@ const str1 = (f) => (args, ctx) => lift(args[0], ctx, (v) => (isErr(v) ? v : f(t
 FN.LEN = str1((s) => s.length);
 FN.UPPER = str1((s) => s.toUpperCase());
 FN.LOWER = str1((s) => s.toLowerCase());
-FN.PROPER = str1((s) => s.toLowerCase().replace(/(^|[^a-z’'])([a-z])/g, (m, a, b) => a + b.toUpperCase()).replace(/(['’])([A-Z])/g, (m, a, b) => a + b.toLowerCase()));
-FN.TRIM = str1((s) => s.replace(/ +/g, ' ').trim());
+// PROPER: a capital for the first letter and for every letter that follows a character other than a letter
+// (Microsoft's definition), so o'neil → O'Neil and 2-way → 2-Way
+FN.PROPER = str1((s) => s.toLowerCase().replace(/(^|[^\p{L}])(\p{L})/gu, (m, a, b) => a + b.toUpperCase()));
+// TRIM removes only the ordinary space (code 32): leading and trailing ones, and repeats inside the text become one.
+// Non-breaking spaces (code 160), tabs and line breaks stay, as in Excel.
+FN.TRIM = str1((s) => s.replace(/ +/g, ' ').replace(/^ /, '').replace(/ $/, ''));
+// CHAR and CODE use Windows-1252, Excel for Windows' character set (CHAR(160) is the non-breaking space)
+const CP1252 = '€\u0081‚ƒ„…†‡ˆ‰Š‹Œ\u008dŽ\u008f\u0090‘’“”•–—˜™š›œ\u009džŸ';
+FN.CHAR = (args, ctx) => { const n = Math.trunc(numArg(args[0], ctx)); if (isErr(n)) return n; if (!(n >= 1 && n <= 255)) return ERR.VALUE; return n >= 128 && n <= 159 ? CP1252[n - 128] : String.fromCharCode(n); };
+FN.CODE = (args, ctx) => { const v = scalar(args[0], ctx); if (isErr(v)) return v; const t = toStr(v); if (!t) return ERR.VALUE; const k = CP1252.indexOf(t[0]); return k >= 0 ? 128 + k : t.charCodeAt(0) <= 255 ? t.charCodeAt(0) : 63; };
 FN.CLEAN = str1((s) => s.replace(/[\x00-\x1f]/g, ''));
 FN.LEFT = (args, ctx) => { const n = numArg(args[1], ctx, 1); if (isErr(n)) return n; if (n < 0) return ERR.VALUE; return lift(args[0], ctx, (v) => (isErr(v) ? v : toStr(v).slice(0, n))); };
 FN.RIGHT = (args, ctx) => { const n = numArg(args[1], ctx, 1); if (isErr(n)) return n; if (n < 0) return ERR.VALUE; return lift(args[0], ctx, (v) => (isErr(v) ? v : (n === 0 ? '' : toStr(v).slice(-n)))); };

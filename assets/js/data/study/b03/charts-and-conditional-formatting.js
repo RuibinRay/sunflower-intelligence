@@ -1,9 +1,9 @@
 // charts-and-conditional-formatting.js — B03 · Charts and conditional formatting. Content only; exercises are in
 // charts-and-conditional-formatting.ex.js. Uses the spring orders (ORDERS, DERIVED.byRegion, byMonth, byChannel) from
 // case.js: order value by region and month, the $1,512 office order LC-10144, weekly orders. New fictional facts,
-// labelled: Ana's draft chart with an axis starting at 45, and Spokewise Cycles' parts sheet (applied example).
+// labelled: Ana's draft chart with an axis starting at 45, and Pedalworks' parts sheet (applied example).
 // Every figure printed is recomputed in `checks`.
-import { ORDERS, ORDER_COLUMNS, DERIVED as D } from './case.js';
+import { ORDERS, ORDER_COLUMNS, PRODUCTS, DERIVED as D } from './case.js';
 
 const col = (n) => ORDERS.map((r) => r[ORDER_COLUMNS.indexOf(n)]);
 const sum = (a) => a.reduce((s, x) => s + x, 0);
@@ -21,7 +21,7 @@ const lin = (c) => { const s = c / 255; return s <= 0.04045 ? s / 12.92 : ((s + 
 const lum = (g) => lin(g);                    // a grey: R = G = B
 const ratio = (a, b) => { const [hi, lo] = [Math.max(a, b), Math.min(a, b)]; return (hi + 0.05) / (lo + 0.05); };
 
-// Spokewise Cycles' parts sheet (fictional): part, on hand, reorder point, weekly use
+// Pedalworks' parts sheet (fictional): part, on hand, reorder point, weekly use
 const PARTS = [
   ['Inner tube 700c', 14, 20, 9], ['Brake pads (pair)', 0, 10, 4], ['Chain, 11-speed', 7, 6, 2], ['Tyre 700 × 28', 22, 12, 5],
   ['Brake cable set', 3, 5, 2], ['Bar tape', 9, 4, 1], ['Disc rotor 160 mm', 2, 3, 1], ['Valve cores (pack)', 0, 8, 3],
@@ -46,22 +46,22 @@ function axisFigure() {
 }
 function ruleFigure() {
   const rows = ORDERS.slice(0, 6).map((r) => [r[0], r[ORDER_COLUMNS.indexOf('subscription')]]);
-  const X0 = 40, Y0 = 30, cw = 62, rh = 30, cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+  const X0 = 40, Y0 = 30, cw = 82, rh = 30, cols = ['A', 'B', 'C', 'D', 'E', 'F'];
   let s = '<svg viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg" font-size="12" fill="currentColor">';
   cols.forEach((c, j) => { s += `<text x="${X0 + j * cw + cw / 2}" y="${Y0 - 8}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${c}</text>`; });
   for (let i = 0; i <= 6; i++) {
     const y = Y0 + i * rh, yes = i > 0 && rows[i - 1][1] === 'yes';
     s += `<text x="${X0 - 8}" y="${y + 19}" text-anchor="end" font-size="11" fill="var(--ink-3)">${i + 1}</text>`;
-    if (yes) s += `<rect x="${X0}" y="${y}" width="${cw * 8}" height="${rh}" fill="var(--series-2)" opacity="0.28"/>`;
+    if (yes) s += `<rect x="${X0}" y="${y}" width="${cw * 6}" height="${rh}" fill="var(--series-2)" opacity="0.28"/>`;
     cols.forEach((c, j) => { s += `<rect x="${X0 + j * cw}" y="${y}" width="${cw}" height="${rh}" fill="none" stroke="var(--rule-strong)" stroke-width="0.8"/>`; });
     s += `<text x="${X0 + 6}" y="${y + 19}" font-size="11">${i === 0 ? 'order_id' : rows[i - 1][0]}</text>`;
-    s += `<text x="${X0 + 7 * cw + 6}" y="${y + 19}" font-size="11">${i === 0 ? 'subscr…' : rows[i - 1][1]}</text>`;
+    s += `<text x="${X0 + 5 * cw + 6}" y="${y + 19}" font-size="11">${i === 0 ? 'subscription' : rows[i - 1][1]}</text>`;
   }
-  s += `<rect x="${X0}" y="${Y0 + rh}" width="${cw * 8}" height="${rh * 6}" fill="none" stroke="var(--ink)" stroke-width="2"/>`;
+  s += `<rect x="${X0}" y="${Y0 + rh}" width="${cw * 6}" height="${rh * 6}" fill="none" stroke="var(--ink)" stroke-width="2"/>`;
   s += `<rect x="${X0 + 3 * cw + 3}" y="${Y0 + 3 * rh + 3}" width="${cw - 6}" height="${rh - 6}" fill="none" stroke="var(--series-1)" stroke-width="2" stroke-dasharray="4 3"/><text x="${X0 + 3 * cw + cw / 2}" y="${Y0 + 3 * rh + 19}" text-anchor="middle" font-size="11">D4</text>`;
-  s += `<text x="${X0}" y="${Y0 + 7 * rh + 24}" font-size="12">Applies to A2:H7. Rule typed for A2:  =$H2=&quot;yes&quot;</text>`;
-  s += `<text x="${X0}" y="${Y0 + 7 * rh + 44}" font-size="12">In D4 Excel evaluates  =$H4=&quot;yes&quot;   (column locked by $, row moves)</text>`;
-  s += `<text x="${X0}" y="${Y0 + 7 * rh + 64}" font-size="12">Without the $, D4 would test K4, an empty cell, and never highlight.</text>`;
+  s += `<text x="${X0}" y="${Y0 + 7 * rh + 24}" font-size="12">Applies to A2:F7. Rule typed for A2:  =$F2=&quot;yes&quot;</text>`;
+  s += `<text x="${X0}" y="${Y0 + 7 * rh + 44}" font-size="12">In D4 Excel evaluates  =$F4=&quot;yes&quot;   (column locked by $, row moves)</text>`;
+  s += `<text x="${X0}" y="${Y0 + 7 * rh + 64}" font-size="12">Without the $, D4 would test I4, an empty cell, and never highlight.</text>`;
   return `${s}</svg>`;
 }
 
@@ -86,11 +86,11 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: 'Ana has her spring summaries: order value and orders by month, region and channel, built with PivotTables from the 231 cleaned orders. Before the July relaunch she wants a two-page spring review (fictional) that her accountant and her part-time packer can read in a minute. Each chart on it has to answer one question, and her order sheet has to show, without scrolling and sorting, which orders need a second look.' },
+    { case: 'Ana has her spring summaries: order value and orders by month, region and channel, built with <g>PivotTables</g> from the 231 cleaned orders. Before the July relaunch she wants a two-page spring review (fictional) that her accountant and her part-time packer can read in a minute. Each chart on it has to answer one question, and her order sheet has to show, without scrolling and sorting, which orders need a second look.' },
     { p: 'A chart is an argument made with shapes. Before you choose a type, write down the question the reader should be able to answer, then pick the chart that makes that answer easiest to see. Excel will draw almost anything you select; it can’t know what you want the reader to notice.' },
 
     { h: 'Start from the question' },
-    { p: 'Most business charts answer one of five kinds of question. The Financial Times’ <i>Visual Vocabulary</i>, presented in the EU’s data.europa.eu visualisation guide, sorts charts by the pattern they highlight in the same spirit: magnitude, change over time, part-to-whole, distribution, correlation, and also ranking and deviation from a reference.' },
+    { p: 'Business charts usually answer one of five kinds of question. The Financial Times’ <i>Visual Vocabulary</i>, presented in the EU’s data.europa.eu visualisation guide, sorts charts by the pattern they highlight in the same spirit: magnitude, change over time, part-to-whole, distribution, correlation, and also ranking and deviation from a reference.' },
     { table: {
       caption: 'Five kinds of question and the charts that answer them (Lantern’s spring data)',
       head: ['Question', 'Lantern example', 'Chart that answers it', 'Excel chart'],
@@ -109,7 +109,7 @@ export default {
     { p: 'Two of these do most of the work. The <b>title</b> should state the finding, not the topic: “Central led spring order value only because of one $1,512 office order” tells the reader what to see, while “Order value by region” leaves them to work it out. <b>Labels</b> should sit next to what they name; with one or two series, label the lines or bars directly and delete the legend, which forces the eye to travel back and forth.' },
 
     { h: 'Making a chart in Excel' },
-    { p: 'Arrange the data as a small table: labels in the first column, one column per series, a header in the first row. Select it and choose Insert &gt; Recommended Charts, which previews the charts Excel suggests for that data; the All Charts tab lists every type. Alt+F1 creates a default chart at once, which Microsoft warns might not be the best chart for the data. The chart stays linked to its cells, so it redraws when they change; a chart built on a PivotTable is a PivotChart, which the PivotTable lesson introduces.' },
+    { p: 'Arrange the data as a small table: labels in the first column, one column per series, a header in the first row. Select it and choose Insert &gt; Recommended Charts, which previews the charts Excel suggests for that data; the All Charts tab lists every type. On Windows, Alt+F1 creates a default chart at once beside the data (F11 puts it on a separate chart sheet), though Microsoft warns it might not be the best chart for the data. The chart stays linked to its cells, so it redraws when they change; a chart built on a PivotTable is a PivotChart, which the PivotTable lesson introduces.' },
     { p: 'Once the chart exists, add or remove parts with the Chart Elements button beside it (titles, axis titles, data labels, legend, trendline), change its type with Change Chart Type, and change which cells it plots with Select Data. Right-click a part and choose its Format command, such as Format Axis, to set its options, including the minimum and maximum of a value axis.' },
 
     { h: 'Honest scales' },
@@ -127,7 +127,7 @@ export default {
 
     { h: 'Conditional formatting' },
     { p: '<g>Conditional formatting</g> applies a format to a cell only while a rule about its value is true, and re-applies it whenever the values change. It turns a sheet into a chart of itself: the large orders stand out, the duplicates are marked, a colour gradient shows high and low. You’ll find it at Home &gt; Conditional Formatting.' },
-    { p: 'The built-in rules compare each cell with a number or with the rest of the range: greater than 100, the top 10 items, above average, duplicates. When the condition depends on another column, you write a <b>formula rule</b> for the first cell of the range. In this lesson’s order sheet (order_id in A, order_date B, customer_id C, product D, quantity E, order_total F, channel G, subscription H), shading every column of a subscription order’s row takes a rule on A2:H16 written as <x>=$H2="yes"</x>: the <code>$</code> keeps every cell looking at column H, and the unlocked row lets each row test its own subscription flag.' },
+    { p: 'The built-in rules compare each cell with a number or with the rest of the range: greater than 100, the top 10 items, above average, duplicates. When the condition depends on another column, you write a <b>formula rule</b> for the first cell of the range. In this lesson’s order sheet (order_id in A, customer_id B, product C, order_total D, channel E, subscription F), shading every column of a subscription order’s row takes a rule on A2:F16 written as <x>=$F2="yes"</x>: the <code>$</code> keeps every cell looking at column F, and the unlocked row lets each row test its own subscription flag.' },
   ],
 
   theory: [
@@ -150,7 +150,7 @@ export default {
     { p: '<b>Column or bar.</b> Both compare categories. Microsoft suggests a bar chart (horizontal) when the labels are long, and bars also suit a ranking of many items, because the labels read left to right. Columns suit a handful of periods.' },
     { p: '<b>Line or scatter.</b> In a line chart the horizontal axis is a category axis: it places its labels at equal spacing whatever their values. A scatter chart has two value axes and places every point at its numeric x. So if the x values are numbers that aren’t evenly spaced, such as the number of guests at each catering event, a line chart misplaces them; Microsoft’s rule of thumb is a line chart for non-numeric x values and a scatter chart for numeric ones.' },
     { p: '<b>Stacked and 100% stacked.</b> A stacked column emphasises the total and shows the parts inside it; a 100% stacked column makes every column the same height and shows shares, which suits comparing a mix across months or regions. Use either with two or three parts at most, and put the part the reader must compare on the baseline.' },
-    { p: '<b>Histogram and box and whisker.</b> These show a distribution. Excel 2016 and later have both (Insert &gt; Insert Statistic Chart). A histogram groups a numeric column into bins and draws a bar for the count in each: by default Excel sets the bin width by Scott’s normal reference rule, and you can set a bin width, a number of bins, and overflow and underflow bins instead. A <g>box and whisker chart</g> draws the quartiles as a box, the median inside it and whiskers beyond, with outlier points past the whiskers. The next lesson builds the frequency table behind a histogram.' },
+    { p: '<b>Histogram and box and whisker.</b> Both show a distribution, and Excel 2016 and later have both (Insert &gt; Insert Statistic Chart). A histogram groups a numeric column into bins and draws a bar for the count in each: by default Excel sets the bin width by Scott’s normal reference rule, and you can set a bin width, a number of bins, and overflow and underflow bins instead. A <g>box and whisker chart</g> draws the quartiles as a box, the median inside it and whiskers beyond, with outlier points past the whiskers. The next lesson builds the frequency table behind a histogram.' },
     { p: '<b>Combo charts and secondary axes.</b> A <g>combo chart</g> combines chart types, typically columns with a line, and Microsoft suggests a <g>secondary axis</g> when series vary widely or are of different kinds, such as price and volume. Use it with care: the two scales are independent, so where the line crosses the columns, and how steep it looks, depend on axis limits that someone chose. Label both axes with units, colour each axis like its series, and ask whether a ratio of the two (order value per order, say) or two charts one above the other would say it more plainly.' },
     { p: '<b>Sparklines.</b> A <g>sparkline</g> is a tiny chart inside one worksheet cell (Insert &gt; Sparklines: Line, Column or Win/Loss). Put one at the end of each row of a table, for example each product’s weekly sales, to show many trends side by side without a chart for each. Markers can pick out individual points, and an axis can be shown when values change sign.' },
 
@@ -168,13 +168,13 @@ export default {
     ] },
     { p: 'Data bars and colour scales measure each cell against the range’s lowest and highest values unless you change the minimum and maximum types (a number, a percent, a percentile or a formula). That matters when one value dwarfs the rest. Lantern’s office order of $1,512 would stretch the data bar scale so far that a $58 gift box got a sliver of a bar; setting the maximum to a number, such as 200, or to a percentile, restores the comparison among ordinary orders.' },
     { h: 'Formula rules and mixed references' },
-    { p: 'A formula rule is written for the top-left cell of the “Applies to” range, and Excel adjusts it for every other cell as if the formula had been filled across and down: relative references move, absolute ones don’t. That is why whole-row highlighting needs a <b>mixed reference</b> such as <code>$H2</code>, with the column locked and the row free. The formula must return TRUE or FALSE (or 1 or 0), and it must start with an equals sign.' },
+    { p: 'A formula rule is written for the top-left cell of the “Applies to” range, and Excel adjusts it for every other cell as if the formula had been filled across and down: relative references move, absolute ones don’t. That is why whole-row highlighting needs a <g>mixed reference</g> such as <code>$F2</code>, with the column locked and the row free. The formula must return TRUE or FALSE (or 1 or 0), and it must start with an equals sign.' },
     { figure: {
       svg: ruleFigure(),
-      caption: 'A formula rule is written for the first cell of the range and moved to every other cell. With the column locked, every cell of a row tests that row’s column H.',
-      alt: 'A grid of worksheet columns A to H and rows 1 to 7, with Lantern’s first six orders in rows 2 to 7 and the subscription flag in column H. The rule applies to A2:H7 and is typed for A2 as: dollar H 2 equals “yes”. Rows 3 and 7 hold the two subscription orders, LC-10002 and LC-10006, and both rows are shaded across all eight columns. Cell D4 is outlined. A note says that in D4 Excel evaluates the rule with dollar H 4: the column stays H because of the dollar sign and the row moves to 4. Without the dollar sign D4 would test K4, an empty cell.',
+      caption: 'A formula rule is written for the first cell of the range and moved to every other cell. With the column locked, every cell of a row tests that row’s column F.',
+      alt: 'A grid of worksheet columns A to F and rows 1 to 7, with Lantern’s first six orders in rows 2 to 7 and the subscription flag in column F. The rule applies to A2:F7 and is typed for A2 as: dollar F 2 equals “yes”. Rows 3 and 7 hold the two subscription orders, LC-10002 and LC-10006, and both rows are shaded across all six columns. Cell D4 is outlined. A note says that in D4 Excel evaluates the rule with dollar F 4: the column stays F because of the dollar sign and the row moves to 4. Without the dollar sign D4 would test I4, an empty cell.',
     } },
-    { p: 'Useful patterns, each written for row 2 of a range that starts in column A: <x>=$F2>=100</x> (orders of $100 or more); <x>=AND($G2="app",$F2>=30)</x> (app orders of at least $30); <x>=COUNTIF($C$2:$C$232,$C2)>1</x> (customers with more than one order: the whole range locked, the row free); <x>=$F2>=LARGE($F$2:$F$232,10)</x> (the ten largest orders, with ties). One trap: when you click cells while typing a rule, Excel inserts absolute references such as <code>$F$2</code>, which would make every row test row 2. Delete the <code>$</code> before the row number.' },
+    { p: 'Useful patterns, each written for row 2 of a range that starts in column A: <x>=$D2>=100</x> (orders of $100 or more); <x>=AND($E2="app",$D2>=30)</x> (app orders of at least $30); <x>=COUNTIF($B$2:$B$232,$B2)>1</x> (customers with more than one order: the whole range locked, the row free); <x>=$D2>=LARGE($D$2:$D$232,10)</x> (the ten largest orders, with ties; LARGE(range, k) returns the kth largest value). One trap: when you click cells while typing a rule, Excel inserts absolute references such as <code>$D$2</code>, which would make every row test row 2. Delete the <code>$</code> before the row number.' },
     { p: 'Test a rule before trusting it. Type the same formula in a spare cell of row 2, fill it across and down, and check that it says TRUE exactly where you expect: conditional formatting will move it in the same way. If the formula returns an error in some cells, those cells are not formatted, so a rule can fail silently.' },
 
     { h: 'Rule order and Stop If True' },
@@ -241,9 +241,9 @@ export default {
       answer: '(a) The draft shows a 4.5-to-1 difference where the true ratio is about 1.29 to 1. (b) The secondary axis makes the line’s position arbitrary; average order value per month ($33.49, $34.53, $59.79, $33.58; May $29.54 without the office order) or two aligned charts answer the accountant’s question without a second scale.',
       interpretation: 'Both repairs come from asking what the reader should compare. Monthly orders were steady, between 49 and 63; the value per order was steady too, apart from one exceptional order in May. A chart that hides either fact is less useful than the table it came from.' },
     { level: 'applied', title: 'A reorder sheet that a colour-blind manager can read', fictional: true,
-      setup: 'Spokewise Cycles (fictional), a bike repair shop, keeps its workshop parts in a sheet: part (A), on hand (B), reorder point (C) and weekly use (D) in rows 2 to 9. The manager wants the sheet itself to show, every Monday, what must be ordered: anything out of stock urgently, anything at or below its reorder point this week. One of the mechanics is colour-blind.',
+      setup: 'Pedalworks (fictional), a bike repair shop, keeps its workshop parts in a sheet: part (A), on hand (B), reorder point (C) and weekly use (D) in rows 2 to 9. The manager wants the sheet itself to show, every Monday, what must be ordered: anything out of stock urgently, anything at or below its reorder point this week. One of the mechanics is colour-blind.',
       table: {
-        caption: 'Spokewise Cycles’ parts sheet (fictional)',
+        caption: 'Pedalworks’ parts sheet (fictional)',
         head: ['', 'A: Part', 'B: On hand', 'C: Reorder point', 'D: Weekly use', 'E: Status'],
         align: ['r', 'l', 'r', 'r', 'r', 'l'],
         rows: PARTS.map((p, i) => [String(i + 2), p[0], String(p[1]), String(p[2]), String(p[3]), p[1] === 0 ? 'Out' : p[1] <= p[2] ? 'Reorder' : 'OK']),
@@ -262,7 +262,7 @@ export default {
   demo: [
     { widget: 'cc-region', intro: 'Spring order value by region, sorted, with and without the $1,512 office order. Which bar changes, and how would you title each version?' },
     { widget: 'cc-weekly', intro: 'Orders per week over 17 spring weeks. The line chart’s value axis is zoomed to the data, which is fine for a line: read the slope and the dips, not the height above zero.' },
-    { widget: 'cc-cf', intro: 'Lantern’s first 15 orders with one rule already applied: whole rows of subscription orders, <x>=$H2="yes"</x> on A2:H16. Open Conditional formatting and add your own: data bars on F2:F16, the top 3 orders, or a formula rule such as <x>=AND($G2="app",$F2>=30)</x>. Then try the same rule without the <code>$</code> signs and see which cells it misses.' },
+    { widget: 'cc-cf', intro: 'Lantern’s first 15 orders with one rule already applied: whole rows of subscription orders, <x>=$F2="yes"</x> on A2:F16. Open Conditional formatting and add your own: data bars on D2:D16, the top 3 orders, or a formula rule such as <x>=AND($E2="app",$D2>=30)</x>. Then try the same rule without the <code>$</code> signs and see which cells it misses.' },
     { widget: 'cc-invoices', intro: 'A histogram of all 76 catering invoices in 2026. Which bin holds the typical event, and what is the lone bar far to the right? The next lesson explains why that event is set aside.' },
   ],
 
@@ -271,14 +271,14 @@ export default {
     { title: '“The title is ‘Order value by region’.”', html: 'That is a label, not a message. State the finding, such as “Central led only because of one $1,512 office order”, so the reader knows what to look for and you are forced to check it is true.' },
     { title: '“Starting the axis at 45 makes the differences easier to see.”', html: 'In a bar chart it makes them wrong: 63 against 49 looked like 4.5 to 1. Start bars at zero; zoom only line charts, and label the axis.' },
     { title: '“Red for bad, green for good is clear enough.”', html: 'Many readers can’t tell some pairs of colours apart, and printouts are often black and white. WCAG 1.4.1 asks that colour is never the only cue: add a status word, an icon or a direct label.' },
-    { title: '“My rule highlights only the first column.”', html: 'A whole-row rule written as <x>=H2="yes"</x> moves to <x>=I2="yes"</x>, <x>=J2="yes"</x> … in the other columns. Lock the column with a mixed reference, <x>=$H2="yes"</x>, and write the rule for the top-left cell of the range.' },
+    { title: '“My rule highlights only the first column.”', html: 'A whole-row rule written as <x>=F2="yes"</x> moves to <x>=G2="yes"</x>, <x>=H2="yes"</x> … in the other columns. Lock the column with a mixed reference, <x>=$F2="yes"</x>, and write the rule for the top-left cell of the range.' },
     { title: '“I set two rules; the second one is ignored.”', html: 'When two true rules set conflicting formats, the one higher in Manage Rules wins, and Stop If True on a rule stops the ones below it. Check the order, and remember a rule that returns an error formats nothing.' },
   ],
 
   application: [
     { p: 'Monthly management packs often mix a few charts with a table full of conditional formats. The test to apply is the same in both: can the reader say what to do after ten seconds? A finance team’s variance table, for instance, might shade only the lines more than 10% from budget, with the variance written beside the shading, and put one chart above it whose title says which line drove the month.' },
-    { case: 'Ana’s spring review ends up with four visuals and one rule set. A sorted bar chart of order value by region, titled with the office-order caveat. A line of weekly orders, which shows spring demand steady at 9 to 16 orders a week. A single 100% bar of web against app (59.8% to 40.2%). A histogram of order values, which the next lesson builds. On the order sheet, a formula rule shades subscription rows, data bars show order totals with the maximum set to $200 so the office order doesn’t flatten the others, and a status column repeats every colour in words.' },
-    { p: 'The same habits carry into the dashboards lesson at the end of this course: a question for every visual, a title that states the finding, honest scales, and colour that is never alone. Conditional formatting also becomes a quality check. A rule such as <x>=ABS($J2-($G2*$H2-$I2))>0.005</x> on Lantern’s order sheet would shade any order whose total doesn’t equal quantity × price − discount, the check that B02’s cleaning relied on.' },
+    { case: 'Ana’s spring review ends up with four visuals and one rule set: a sorted bar chart of order value by region, titled with the office-order caveat; a line of weekly orders, steady at 9 to 16 a week; a single 100% bar of web against app (59.8% to 40.2%); and a histogram of order values, which the next lesson builds. On the order sheet, a formula rule shades subscription rows, data bars show order totals with the maximum set to $200 so the office order doesn’t flatten the others, and a status column repeats every colour in words.' },
+    { p: 'The same habits carry into the dashboards lesson at the end of this course: a question for every visual, a title that states the finding, honest scales, and colour that is never alone. Conditional formatting also becomes a quality check. On Lantern’s full order sheet (quantity in G, unit_price in H, discount in I, order_total in J), a rule such as <x>=ABS($J2-($G2*$H2-$I2))>0.005</x> would shade any order whose total doesn’t equal quantity × price − discount, the check that B02’s cleaning relied on.' },
   ],
 
   summary: [
@@ -288,7 +288,7 @@ export default {
     'Use a line chart for categories at equal intervals and a scatter chart when x is numeric; be wary of secondary axes, and consider a ratio or two aligned charts instead.',
     'Colour is never the only cue (WCAG 1.4.1); chart elements need 3:1 contrast and text 4.5:1.',
     'Conditional formatting rules: highlight cells, top/bottom, above/below average, duplicates, data bars, colour scales, icon sets and formula rules that return TRUE or FALSE.',
-    'A formula rule is written for the top-left cell of the range and moved like a filled formula; lock the column, <x>=$H2="yes"</x>, to format whole rows.',
+    'A formula rule is written for the top-left cell of the range and moved like a filled formula; lock the column, <x>=$F2="yes"</x>, to format whole rows.',
     'Rules higher in Manage Rules win conflicts; Stop If True stops the rules below; copying cells multiplies rules, and an error formats nothing.',
   ],
 
@@ -310,8 +310,7 @@ export default {
   ],
 
   references: [
-    { text: 'Microsoft Support. “Available chart types in Office”.', url: 'https://support.microsoft.com/en-us/excel/available-chart-types-in-office', checked: '2026-10-23' },
-    { text: 'Microsoft Support. “Present your data in a scatter chart or a line chart”.', url: 'https://support.microsoft.com/en-us/excel/present-your-data-in-a-scatter-chart-or-a-line-chart', checked: '2026-10-23' },
+    { text: 'Microsoft Support. “Available chart types in Office”, with “Present your data in a scatter chart or a line chart” and “Use sparklines to show data trends”.', url: 'https://support.microsoft.com/en-us/excel/available-chart-types-in-office', checked: '2026-10-23' },
     { text: 'Microsoft Support. “Use conditional formatting to highlight information in Excel”.', url: 'https://support.microsoft.com/en-us/excel/use-conditional-formatting-to-highlight-information-in-excel', checked: '2026-10-23' },
     { text: 'Microsoft Support. “Create a histogram” and “Create a box and whisker chart”.', url: 'https://support.microsoft.com/en-us/excel/create-a-histogram', checked: '2026-10-23' },
     { text: 'Cleveland, W. S. &amp; McGill, R. (1984). Graphical perception: theory, experimentation, and application to the development of graphical methods. <i>Journal of the American Statistical Association</i>, 79(387), 531–554.', url: 'https://doi.org/10.1080/01621459.1984.10478080', checked: '2026-10-23' },
@@ -375,7 +374,7 @@ export default {
     { what: 'Fewest orders in a week', value: Math.min(...WEEKLY), shown: 9 },
     { what: 'Most orders in a week', value: Math.max(...WEEKLY), shown: 16 },
     // data bars
-    { what: 'Gift box bar as % of the office order bar', value: 58 / BULK * 100, shown: 4, tol: 0.2 },
+    { what: 'Gift Box Trio shop price', value: PRODUCTS.find((p) => p[0] === 'Gift Box Trio')[3], shown: 58 },
     { what: 'Number of icons in a set: three to five', value: 3 + 5, shown: 8 },
     // contrast
     { what: 'Black on white', value: ratio(lum(255), lum(0)), shown: 21 },

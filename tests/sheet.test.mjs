@@ -114,6 +114,22 @@ eq('indexToCol', X.indexToCol(27), 'AB');
 eq('date serial', X.isoToSerial('2026-03-14'), 46095);
 ok('serialToYMD', X.serialToYMD(46095).join('-') === '2026-3-14');
 
+// the spilled range operator. Microsoft's “Spilled range operator” page: with =SEQUENCE(10) in A2, =SUM(A2#) is 55.
+// The page doesn't say what A2# gives when A2 doesn't spill; this engine returns #REF!.
+eq('Microsoft’s A2# example', evaluate('=C2', new Sheet({ cells: { A2: '=SEQUENCE(10)', C2: '=SUM(A2#)' } })), 55);
+{
+  const sh = new Sheet({ cells: { A1: 3, A2: 1, A3: 2, C1: '=SORT(A1:A3)', D1: '=SUM(C1#)', D2: '=ROWS(C1#)', D3: '=SUM(A1#)', E1: 5, E2: '=E1*2', D4: '=SUM(E2#)' } });
+  eq('A2# sums the spill', sh.get('D1'), 6);
+  eq('A2# has the spill’s rows', sh.get('D2'), 3);
+  eq('A2# on a value is #REF!', sh.get('D3'), { error: '#REF!' });
+  eq('A2# on a formula that doesn’t spill is #REF!', sh.get('D4'), { error: '#REF!' });
+  eq('A2# moves when filled', X.shiftFormula('=SUM(C1#)', 1, 1), '=SUM(D2#)');
+}
+eq('TRIM keeps a non-breaking space', E('=LEN(TRIM(" a "&CHAR(160)))'), 3);
+eq('PROPER after an apostrophe', E('=PROPER("o\'neil")'), "O'Neil");
+eq('CHAR(128) is the euro sign in Windows-1252', E('=CHAR(128)'), '€');
+eq('criteria error passes through', E('=COUNTIFS(B2:B13,"Online",D2:D13,yes)'), { error: '#NAME?' });
+
 // ---------------------------------------------------------------- 3c. a sheet: recalculation, spills, tables, names
 {
   const sh = new Sheet({ cells: { A1: 2, A2: 3, B1: '=A1*10', B2: '=B1+A2', C1: '=UNIQUE({1;1;2})', D1: '=B1:B2*2', E1: '=E2', E2: '=E1' } });

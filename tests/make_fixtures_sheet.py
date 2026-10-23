@@ -111,6 +111,8 @@ FORMULAS = [
     '=DATEVALUE("22-MAY-2011")', '=DATEVALUE("2011/02/23")', '=DATEVALUE("3/14/2026")', '=DATEVALUE("2026-02-30")', '="2026-03-14"+1',
     '=NETWORKDAYS(A2,A13)', '=NETWORKDAYS(A2,A13,A7)', '=WORKDAY(A2,10)', '=WORKDAY(A13,-3)', '=DATEDIF(A2,DATE(2027,3,1),"Y")',
     '=DATEDIF(A2,DATE(2027,3,1),"M")', '=DATEDIF(A2,A13,"D")', '=WEEKNUM(A2)', '=WEEKNUM(A2,2)', '=WEEKNUM(DATE(2026,1,4))',
+    '=LEN(TRIM("  a  b "&CHAR(160)))', '=PROPER("o\'neil 2-way STREET")', '=CODE("A")', '=CHAR(65)', '=CODE(CHAR(160))',
+    '=SUMIF(B2:B13,1/0,F2:F13)', '=COUNTIF(B2:B13,NA())', '=SUMIFS(F2:F13,B2:B13,1/0)',
     '=MROUND(17,5)', '=MROUND(F3,0.05)', '=LOG(8,2)', '=LOG(1000)', '=ISERR(NA())', '=ISERR(1/0)', '=ISLOGICAL(H3)',
 ]
 # Functions written with Excel's "_xlfn." prefix in the file format (introduced after Excel 2007)
@@ -129,8 +131,11 @@ XLFN = ['STDEV.S', 'STDEV.P', 'VAR.S', 'VAR.P', 'PERCENTILE.INC', 'QUARTILE.INC'
 #     1 January 1900 is serial 1 and serial 60 is 29 February 1900; LibreOffice counts from 30 December 1899.
 # (f) Excel's DATEVALUE help: =DATEVALUE("2011/02/23") is 40597 (LibreOffice in English (USA) doesn't read year/month/day
 #     with slashes).
+# (g) Excel's CODE help: the code "corresponds to the character set used by your computer" (Windows-1252 on Windows,
+#     where CHAR(160) is the non-breaking space and its code is 160); LibreOffice reports 239 here.
 EXCEL_DIFFERS = {
     '=DATEVALUE("2011/02/23")': 40597,                                                                     # (f)
+    '=CODE(CHAR(160))': 160,                                                                               # (g)
     '=TRUE>"z"': True, '="a"&TRUE': 'aTRUE', '=SUM(H1:H8)': 6.5, '=SUM("5",TRUE)': 6, '=SUM(H1:H8)+H2': 11.5,
     '=AVERAGE(H1:H8)': 6.5 / 3, '=COUNT(H1:H8)': 3, '=TEXTJOIN("-",FALSE,H3,H4,H8)': 'TRUE--0',      # (a)
     '=COUNTIF(H1:H8,"*")': 3,                                                                            # (b)
