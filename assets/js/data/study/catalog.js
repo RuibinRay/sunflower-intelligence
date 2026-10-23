@@ -159,10 +159,10 @@ const ALL = [
     outcomes: [
       'Distinguish descriptive, diagnostic, predictive and prescriptive analytics and say which a business question needs.',
       'Turn a vague business question into measurable objectives, hypotheses and the data needed to test them, using a structured problem-solving approach.',
-      'Classify data by type and level of measurement, and choose a sensible way to collect data for a question, recognising sampling and measurement bias.',
+      'Classify data by structure, type and level of measurement, and choose a sensible way to collect data for a question, recognising sampling, non-response, survivorship and measurement bias.',
       'Assess a dataset against the dimensions of data quality and say how each problem would distort an answer.',
-      'Define KPIs with an exact formula, a target and a direction, and calculate rates, ratios, growth and percentage-point changes correctly.',
-      'Summarise and interpret data with averages, spread and charts, avoiding common traps such as confusing correlation with causation, misleading charts and mixing groups.',
+      'Define KPIs with an exact formula, a target, a direction and an owner, and calculate rates, ratios, growth and percentage-point changes correctly.',
+      'Summarise and interpret data with averages, spread and charts, diagnose a change by comparing like with like, and avoid common traps such as confusing correlation with causation, misleading charts and mixing groups.',
     ],
     modules: [
       { n: 1, title: 'What analytics is for', lessons: ['four-kinds-of-analytics', 'business-questions', 'problem-solving-frameworks'] },

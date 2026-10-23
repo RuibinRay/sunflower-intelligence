@@ -102,7 +102,7 @@ export default {
 
     { h: 'Small samples and noise' },
     { p: 'Every rate built on few cases is noisy, because <g>sampling error</g> shrinks only as the number of cases grows. A product page with 3 orders from 40 visits converts at 7.5%; another with 2 from 40 converts at 5.0%. The 2.5-point gap is one order and means almost nothing.' },
-    { p: 'Survey researchers make the same point formally: Pew Research Center notes that estimates for subgroups have larger margins of error because they rest on fewer cases, and that a lead of one figure over another is less certain than either figure alone. Lantern’s September survey drew 79 responses; any conclusion about a subgroup, such as app buyers, rests on fewer still. B04 shows how to put a number on this uncertainty with confidence intervals; for now, report the counts and be cautious with small ones.' },
+    { p: 'Survey researchers make the same point formally: Pew Research Center notes that estimates for subgroups have larger margins of error because they rest on fewer cases, and that a lead of one figure over another is less certain than either figure alone. Lantern’s October survey drew 79 responses; any conclusion about a subgroup, such as app buyers, rests on fewer still. B04 shows how to put a number on this uncertainty with confidence intervals; for now, report the counts and be cautious with small ones.' },
 
     { h: 'Diagnosing a change in a KPI' },
     { p: 'When a KPI moves unexpectedly, the work is <g>diagnostic analytics</g>: explaining why something happened. Work through the questions in order; each one can end the investigation.' },

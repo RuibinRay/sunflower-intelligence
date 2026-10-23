@@ -238,17 +238,17 @@ export const independent = [
   },
   {
     id: 'b01-dc-i6', type: 'mc', kind: 'applied',
-    prompt: 'Lantern wants 200 customers for a taste panel and has a list of all 2,400 of its customers (fictional). Which method gives a simple random sample?',
+    prompt: 'Lantern wants 200 customers for a taste panel and has a list of all 1,500 of its customers (fictional). Which method gives a simple random sample?',
     options: [
-      'Number all 2,400 customers and let a random-number generator pick 200',
+      'Number all 1,500 customers and let a random-number generator pick 200',
       'Invite the 200 customers who placed the most recent orders, as they remember the shop best',
-      'Ask the first 200 customers who come into the café on Saturday morning to take part',
+      'Ask the first 200 people who come to Lantern’s next Saturday barista workshop to take part',
       'Post a link on social media and take the first 200 replies',
     ],
     answer: 0,
     feedback: {
       1: 'Recent customers differ from the rest (newer, perhaps more active), and they were chosen by date, not by chance.',
-      2: 'A convenience sample: Saturday café visitors are not typical of online customers.',
+      2: 'A convenience sample: workshop guests are not typical of online customers.',
       3: 'A self-selected convenience sample: followers who reply first are the most engaged customers.',
     },
     solution: 'Only the random draw from the full list gives every group of 200 customers the same chance of selection. The other three choose people by recency, by convenience or by their own decision to reply, and each tilts the sample towards a particular kind of customer.',
@@ -334,7 +334,7 @@ export const check = [
     prompt: 'Lantern is choosing customers for a follow-up survey. Classify each method.',
     items: [
       'Drawing 100 customer numbers at random from the full customer list',
-      'Asking customers at the café counter on a Monday morning',
+      'Asking guests at Saturday’s barista workshop',
       'Using the first 100 replies to a link posted on social media',
       'Taking every 20th customer on the list, starting from a randomly chosen position',
       'Picking customers at random within each region, in proportion to the region’s size',
@@ -345,6 +345,6 @@ export const check = [
       3: 'This is a systematic sample: with a random start and no pattern in the list, every customer has the same chance of selection.',
       4: 'This is a stratified random sample: random within each region.',
     },
-    solution: 'Random draws, systematic samples from a random start and stratified random samples all let chance, not convenience, decide who is chosen. The café counter and the social-media link take whoever is easiest to reach or chooses to reply.',
+    solution: 'Random draws, systematic samples from a random start and stratified random samples all let chance, not convenience, decide who is chosen. The workshop guests and the social-media link take whoever is easiest to reach or chooses to reply.',
   },
 ];

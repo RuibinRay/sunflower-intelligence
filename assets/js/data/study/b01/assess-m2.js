@@ -57,16 +57,16 @@ export const items = [
   },
   {
     id: 'b01-m2-4', lesson: 'data-collection', type: 'mc', kind: 'conceptual',
-    prompt: 'Lantern wants to know whether offering free delivery on orders over $40 raises the average order value. Which approach can best show cause and effect?',
+    prompt: 'Lantern offers free delivery on orders over $35. Ana wants to know whether raising the threshold to $40 would raise the average order value. Which approach can best show cause and effect?',
     options: [
-      'Randomly offer free delivery to half of website visitors for four weeks and compare the groups',
-      'Compare average order value in the month before and the month after introducing free delivery for everyone',
-      'Ask customers in a survey whether free delivery would make them spend more',
+      'Randomly show half of website visitors the $40 threshold for four weeks and compare the groups',
+      'Compare average order value in the month before and the month after raising the threshold for everyone',
+      'Ask customers in a survey whether a higher threshold would make them spend more',
       'Compare customers who choose express delivery with those who don’t',
     ],
     answer: 0,
     feedback: {
-      1: 'A before-and-after comparison mixes the offer with everything else that changed between the two months, such as the season or a promotion.',
+      1: 'A before-and-after comparison mixes the change with everything else that changed between the two months, such as the season or a promotion.',
       2: 'A survey measures what people say they would do, which often differs from what they do.',
       3: 'Customers choose their delivery, so the two groups differ in many ways besides delivery.',
     },

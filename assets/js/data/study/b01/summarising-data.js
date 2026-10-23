@@ -221,7 +221,7 @@ export default {
       answer: '(a) About 7.12% a month, compounded. (b) The mean of the monthly rates, 7.50%, would turn 1,200 into about 1,603, not 1,580. (c) “The cancellation rate fell by 1 percentage point, from 4.0% to 3.0%, a relative fall of 25%.”',
       interpretation: 'The corrected sentence is less flattering than the relative figure and more accurate than the original. A 25% fall in the cancellation rate is a real achievement; “fell 1%” undersold it by a factor of 25, and readers could not tell which figure was meant.' },
     { level: 'applied', title: 'What is a typical December order?', fictional: true,
-      setup: 'Ana is thinking of offering free delivery on orders above a threshold, to encourage customers to add a bag. She pulls a sample of eleven December orders (fictional): $16.50, $19.50, $22, $28, $28, $33, $39, $46, $58, $98 and $175. Summarise the sample, and say where a threshold should sit if it is to nudge a typical customer.',
+      setup: 'Ana is thinking of moving the free-delivery threshold, $35 since the July relaunch, to encourage customers to add a bag. She pulls a sample of eleven December orders (fictional): $16.50, $19.50, $22, $28, $28, $33, $39, $46, $58, $98 and $175. Summarise the sample, and say where a threshold should sit if it is to nudge a typical customer.',
       steps: [
         String.raw`Mean: the orders add to $563, so the mean is <m>563 \div 11 \approx 51.18</m> dollars.`,
         String.raw`Median: with <m>n = 11</m> the median is at position <m>(11 + 1) \div 2 = 6</m>: $33. The mode is $28, the only value that occurs twice, which says little in a sample this small.`,
