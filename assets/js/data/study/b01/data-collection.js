@@ -1,0 +1,266 @@
+// data-collection.js — B01 · Collecting data: sources, samples and bias. Content only; exercises are in data-collection.ex.js.
+// Uses SHOP and SURVEY from case.js. The survey's response rate and verdict are left to the course project.
+// Every other business, person and number is fictional unless a source is cited.
+import { SHOP, SURVEY } from './case.js';
+
+export default {
+  slug: 'data-collection',
+  title: 'Collecting data: sources, samples and bias',
+  blurb: 'How data was collected decides what it can show. Learn the main sources of business data, how a sample stands in for a population, the four biases that most often mislead (sampling, non-response, survivorship and measurement), how to word a survey question, and the basics of consent and privacy.',
+  status: 'draft',
+  objectives: [
+    'Distinguish the main sources of business data (transactional and web data, surveys, experiments, observation, third-party and public data) and choose one that fits a question.',
+    'Identify the population, sampling frame and sample of a study, and distinguish random from convenience sampling.',
+    'Identify sampling, non-response, survivorship and measurement bias in a study, and explain which way each pushes a result.',
+    'Calculate a response rate and the range within which non-response could place a survey result.',
+    'Evaluate survey questions for leading, double-barrelled and unanswerable wording, and rewrite them.',
+    'Describe in outline the consent and privacy rules that apply when a business collects personal data.',
+  ],
+  prerequisites: [
+    { lesson: 'b01/data-types', why: 'You need primary and secondary data, the unit of observation, and cross-sectional and panel data.' },
+    { text: 'Working out a percentage of a total.' },
+  ],
+  case: 'lantern',
+
+  concept: [
+    { case: `Orders fell in September although visits rose, and Ana suspects the website’s new checkout, which went live on 1 September. She has three possible sources of evidence. The shop’s own records show visits and orders by channel, month by month. Her survey, e-mailed on 1 October to the ${SURVEY.sent} customers who had ordered in September, has ${SURVEY.responses} replies to a statement that “the new checkout was easy to use”. And she could still run a test on the website itself. Each source was collected in a different way, and the way data is collected decides what it can show.` },
+    { h: 'Where business data comes from' },
+    { p: 'Most of the data a business analyses comes from six kinds of source. They differ in cost, in what they can show and in what they systematically miss, so the first decision in any analysis is which of them can answer the question.' },
+    { table: {
+      caption: 'Six sources of business data',
+      head: ['Source', 'How it arises', 'Lantern example', 'Good for', 'Watch for'],
+      rows: [
+        ['<g>Transactional data</g>', 'Recorded as a by-product of doing business', 'Orders, payments, refunds', 'What happened, completely and cheaply', 'Says nothing about why, or about people who didn’t buy'],
+        ['Web and app data', 'Logged automatically as people use a site or app', 'Sessions, page views, taps on “Pay now”', 'Behaviour before a purchase, including people who left', 'Depends on the tool’s definitions; some visits are never recorded'],
+        ['Surveys', 'Asking people', 'The October survey', 'Opinions, reasons and intentions', 'Who answers, and how the question is asked'],
+        ['Experiments', 'Changing something on purpose for a randomly chosen group', 'Showing half of website visitors the old checkout', 'Cause and effect', 'Needs planning, time and enough visitors'],
+        ['Observation', 'Watching people as they act', 'Watching five customers try to pay on their phones', 'Problems nobody thought to ask about', 'Few people; being watched can change behaviour'],
+        ['Third-party and public data', 'Bought or downloaded from other organisations', 'The payment provider’s report of failed card payments; official statistics', 'Context, benchmarks and data you can’t collect yourself', 'Someone else’s definitions, timing and quality'],
+      ],
+    } },
+    { p: 'Web data deserves a warning of its own, because its basic units are definitions rather than facts. Google Analytics, for example, defines a session as a group of user interactions with a website or app that take place within a given time frame, and by default ends a session after 30 minutes of inactivity; the site owner can change that limit. A customer who opens the shop, leaves for lunch and comes back is one visit under one setting and two under another. Every figure divided by visits depends on settings that can change without anyone noticing, so record them alongside the data.' },
+
+    { h: 'Populations and samples' },
+    { p: 'The <g>population</g> is everything a question is about. A <g>sample</g> is the part of it you actually observe or ask, used to learn about the whole. Sampling is practical because observing an entire population takes time and money; a study that does observe every member is a <g>census</g>. Between the two sits the <g>sampling frame</g>: the list or source from which the sample is actually drawn, such as a customer e-mail list. Anyone missing from the frame can’t be chosen, however carefully the sample is drawn.' },
+    { p: `Define the population from the question, not from the data you happen to have. Ana’s question is whether the new checkout put people off buying. The people it is most about are those who reached the website’s checkout in September and gave up. Her survey’s frame was the list of September’s customers: everyone on it was invited, so it was a census of buyers, but it could not include a single person who abandoned the checkout. The ${SURVEY.sent} invitations and ${SURVEY.responses} replies come from the wrong end of the funnel for her question.` },
+    { figure: {
+      svg: '<svg viewBox="0 0 680 338" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="13"><rect x="20" y="16" width="330" height="58" rx="8" style="fill:none;stroke:var(--series-1);stroke-width:2"/><text x="185" y="40" text-anchor="middle" font-weight="700" fill="currentColor">Population</text><text x="185" y="60" text-anchor="middle" fill="currentColor">everyone who tried to buy on the website</text><rect x="50" y="96" width="270" height="58" rx="8" style="fill:none;stroke:var(--series-1);stroke-width:2"/><text x="185" y="120" text-anchor="middle" font-weight="700" fill="currentColor">Sampling frame (all invited)</text><text x="185" y="140" text-anchor="middle" fill="currentColor">the 240 September customers</text><rect x="80" y="176" width="210" height="58" rx="8" style="fill:none;stroke:var(--series-1);stroke-width:2"/><text x="185" y="200" text-anchor="middle" font-weight="700" fill="currentColor">Respondents</text><text x="185" y="220" text-anchor="middle" fill="currentColor">the 79 who replied</text><rect x="105" y="256" width="160" height="58" rx="8" style="fill:none;stroke:var(--series-1);stroke-width:2"/><text x="185" y="280" text-anchor="middle" font-weight="700" fill="currentColor">Answers</text><text x="185" y="300" text-anchor="middle" fill="currentColor">to one statement</text><path d="M185 74V96M185 154V176M185 234V256" style="fill:none;stroke:var(--rule-strong);stroke-width:1.5"/><path d="M352 45H372M322 125H372M292 205H372M267 285H372" style="fill:none;stroke:var(--series-2);stroke-width:1.5;stroke-dasharray:4 3"/><text x="378" y="34" font-weight="700" fill="currentColor">Survivorship bias</text><text x="378" y="52" fill="currentColor">People who gave up at the checkout never</text><text x="378" y="68" fill="currentColor">became customers, so no list holds them.</text><text x="378" y="114" font-weight="700" fill="currentColor">Sampling bias</text><text x="378" y="132" fill="currentColor">Anyone the list or the selection leaves out</text><text x="378" y="148" fill="currentColor">can’t be heard; here, no one on it was.</text><text x="378" y="194" font-weight="700" fill="currentColor">Non-response bias</text><text x="378" y="212" fill="currentColor">Those who reply may differ from those</text><text x="378" y="228" fill="currentColor">who don’t, in exactly what is asked.</text><text x="378" y="274" font-weight="700" fill="currentColor">Measurement bias</text><text x="378" y="292" fill="currentColor">App buyers never saw the web checkout;</text><text x="378" y="308" fill="currentColor">agree/disagree wording invites agreement.</text></svg>',
+      caption: 'From the population a question is about to the numbers in a report, every step can drop or distort people. Lantern’s September survey, step by step.',
+      alt: 'Four boxes stacked from top to bottom, each narrower than the one above, joined by short lines like a funnel. The top box reads “Population: everyone who tried to buy on the website”. The second reads “Sampling frame (all invited): the 240 September customers”. The third reads “Respondents: the 79 who replied”. The bottom box reads “Answers: to one statement”. A dashed line leads from each box to a note on the right naming the bias that can enter at that step. Beside the population: “Survivorship bias. People who gave up at the checkout never became customers, so no list holds them.” Beside the frame: “Sampling bias. Anyone the list or the selection leaves out can’t be heard; here, no one on it was.” Beside the respondents: “Non-response bias. Those who reply may differ from those who don’t, in exactly what is asked.” Beside the answers: “Measurement bias. App buyers never saw the web checkout; agree/disagree wording invites agreement.”',
+    } },
+    { h: 'Random and convenience samples' },
+    { p: 'How the sample is chosen from the frame matters as much as its size. In a <g>simple random sample</g>, every group of the same size is equally likely to be chosen: number the customers on the list and let a random-number generator pick 60 of them. Nobody’s opinions, habits or convenience influence who is picked, so the sample tends to resemble the frame, and the remaining differences are down to chance. A <g>convenience sample</g> is whoever is easiest to reach: customers who follow the shop on social media, people at the café counter, the first hundred replies to a link. It is fine for trying out a questionnaire, but its results can be badly biased, because the people who are easy to reach often differ from the rest.' },
+    { p: 'Other random designs exist for particular needs. A stratified sample divides the population into groups, such as regions, and samples randomly within each; a systematic sample takes every tenth or twentieth name on a list from a random starting point; a cluster sample picks whole groups, such as stores, at random. B04 Statistics shows how each affects precision.' },
+    { callout: 'key', title: 'Who could have been in the data?', html: 'Before trusting a result, trace the path from the population to the numbers: who was in the frame, who was chosen, who answered, and exactly what they were asked. Every step can drop people or distort what they say, and none of it shows up in the arithmetic.' },
+  ],
+
+  theory: [
+    { h: 'Random error and bias' },
+    { p: 'A sample can miss the truth for two very different reasons. <g>Sampling error</g> is the chance difference between a sample’s result and the population’s that arises because only part of the population was observed. It goes both ways, and it shrinks as the sample grows. Bias is a systematic error that pushes the result in one direction, and a bigger sample doesn’t reduce it at all.' },
+    { p: String.raw`Suppose 30% of a shop’s customers are subscribers, 90% of whom are satisfied, and the other 70% are one-off buyers, 60% of whom are satisfied. The true share satisfied is <m>0.30 \times 90 + 0.70 \times 60 = 69\%</m>. A survey that reaches mostly subscribers, say a sample that is 70% subscribers, should expect <m>0.70 \times 90 + 0.30 \times 60 = 81\%</m>: 12 percentage points too high. With 100 respondents, chance alone typically keeps the result within about 8 points of 81%; with 5,000 respondents, within about 1 point. The sample becomes more precise, but around the wrong number. The explorer below lets you try it.` },
+    { h: 'Four biases to look for' },
+    { p: 'Each kind of bias enters at a different step of the path from population to numbers, as the figure above shows.' },
+    { p: '<b><g>Sampling bias</g></b> arises when some members of the population are less likely than others to be included. A survey link placed only in the app leaves out website customers; a poll on a council website misses residents without internet access; phoning during working hours misses people at work. The cure lies in the frame and the selection: a list that covers the population, and a random draw from it.' },
+    { p: String.raw`<b><g>Non-response bias</g></b> arises when the people who answer differ, in what is being measured, from those who don’t. The <g>response rate</g>, the share of those invited who answered, tells you how much room there is for it. A low rate doesn’t prove bias, but it means the result could sit almost anywhere. If 120 of 400 invited hotel guests reply and 90 of them are satisfied, then 75% of respondents are satisfied, but the share of all 400 could be as low as <m>90 \div 400 = 22.5\%</m> (if no non-respondent is satisfied) or as high as <m>(90 + 280) \div 400 = 92.5\%</m> (if all are). People with strong views, good or bad, are often the most likely to reply. Reminders, short questionnaires and a follow-up of a random sample of non-respondents reduce the problem; comparing respondents with non-respondents on what you already know about them, such as channel or order value, helps you detect it.` },
+    { p: '<b><g>Survivorship bias</g></b> arises from studying only the people or things that passed some filter, while those that dropped out are invisible. Ana’s survey could only reach customers who completed an order; the visitors most put off by a bad checkout left no address. The same trap catches a business that studies the satisfaction of its current customers (the dissatisfied have already gone), or that learns what makes products succeed by studying only products still on sale. Ask what the filter was, and who failed it.' },
+    { p: '<b><g>Measurement bias</g></b> arises from the way a value is measured or a question is asked, pushing answers systematically one way. Ana’s survey asked every respondent whether the new checkout was easy to use, including customers who had ordered only through the app, which was not changed. Some of them answered anyway, about a checkout they never saw. The statement format adds a second problem. Pew Research Center reports research showing that less educated and less informed respondents have a greater tendency to agree with agree/disagree statements, and recommends offering a choice between alternative statements instead. Outside surveys, measurement bias comes from instruments and definitions: scales that read heavy, or a website redesign that changes how visits are counted.' },
+    { h: 'Writing survey questions' },
+    { p: 'Pew Research Center’s guidance on writing survey questions reduces to a few rules. Make every question clear, specific and answerable by every respondent it is shown to; route people past questions that don’t apply to them. Ask about one thing at a time: a double-barrelled question, which asks about two things at once, can’t be answered honestly by someone who likes one and not the other. Offer answer options that are exhaustive and don’t overlap, and keep rating scales balanced. Remember that earlier questions colour later ones. And pretest: try the questionnaire on a few people and ask them what they thought each question meant.' },
+    { table: {
+      caption: 'Weak questions and better ones (the first is Lantern’s; the rest are fictional)',
+      head: ['Weak question', 'Problem', 'Better'],
+      rows: [
+        ['“The new checkout was easy to use” (agree, neutral, disagree), asked of everyone', 'Asked of app buyers who never saw it; agree/disagree invites agreement', 'First ask how the customer ordered (website, app or both). Then, for website users only: “How easy or difficult was it to pay on our website?” (very easy … very difficult)'],
+        ['“How satisfied were you with the speed and friendliness of our delivery?”', 'Double-barrelled: two things in one question', 'Two questions, one about speed and one about friendliness'],
+        ['“Don’t you agree our new blends are excellent?”', 'Leading: the wording tells people the expected answer', '“How would you rate our new blends?” on a balanced scale from very poor to very good'],
+        ['“How many cups of coffee did you drink last year?”', 'Unanswerable from memory, so people guess', '“How many cups of coffee did you drink yesterday?”'],
+      ],
+    } },
+    { h: 'Experiments and A/B tests, in outline' },
+    { p: 'Transactional data and surveys record what happened while many other things were also happening. September brought a new checkout, but also the end of the summer holidays and whatever else changed that month, so a fall in orders after 1 September can’t by itself prove what caused it. An experiment changes one thing on purpose and compares.' },
+    { p: `In an <g>A/B test</g>, each visitor is randomly assigned to version A, the existing checkout, or version B, the new one. Version A’s visitors are the <g>control group</g>. Because chance alone decides who sees which version, the two groups are alike on average in everything else (device, day of the week, what they came to buy), so a clear difference in the outcome can be put down to the version, apart from chance. Had Lantern split September’s ${SHOP.webVisits[2].toLocaleString('en-US')} web visits this way, each version would have had about ${(SHOP.webVisits[2] / 2).toLocaleString('en-US')} visits to compare.` },
+    { p: 'A test is only as good as its plan. Decide the outcome to compare and how long the test will run before starting; assign visitors at random, not by day or by device; run whole weeks, so that weekdays and weekends are both included; change nothing else for one group only; and don’t stop the test the moment the result looks good. Whether a difference is too large to be chance is a statistical question, which B04 Statistics answers.' },
+    { h: 'Observation, and data from others' },
+    { p: 'Observation finds what nobody thought to measure. Watching five customers try to pay on their phones might have revealed a payment-page fault on mobile browsers within minutes. Five people are not a representative sample, and people behave a little differently when watched, so observation suggests problems rather than measuring how common they are.' },
+    { p: 'Third-party and public data supply what a business can’t collect itself: the payment provider’s records of declined cards, official statistics on household spending, market data bought from research firms. Before using them, read their definitions, coverage and timing, and check the licence: what “a failed payment” means, which customers a statistic covers, how late it is published, and whether you may combine it with your own data.' },
+    { h: 'Consent and privacy, in outline' },
+    { p: 'Collecting data about people brings legal duties. This outline uses the UK GDPR as explained by the Information Commissioner’s Office (ICO), the UK regulator; other jurisdictions have their own rules, so a business checks the law that applies where its customers are. Under the UK GDPR, <g>personal data</g> means any information relating to an identified or identifiable natural person, who can be identified directly or indirectly, for example from a name, an identification number, location data or an online identifier. The ICO notes that pseudonymised data, in which names are replaced by codes such as customer numbers, is still personal data.' },
+    { p: 'A business must have a valid lawful basis to handle personal information. The ICO lists seven, of which <g>consent</g> is one, and states that no single basis is better or more important than the others. Where a business relies on consent, it must be freely given, specific, informed and unambiguous, shown by a clear positive action: silence, pre-ticked boxes or inactivity don’t count, and people can withdraw consent easily at any time.' },
+    { p: 'For an analyst, a few habits follow. Collect only what the question needs, and say what it will be used for. Analyse survey answers by customer number rather than by name or e-mail address, and keep the file that links them access-restricted. Never publish results for groups so small that a reader could identify the people in them. None of this is legal advice; when in doubt, ask whoever in the business is responsible for data protection.' },
+  ],
+
+  formulas: [
+    { id: 'response-rate', name: 'Response rate',
+      tex: String.raw`\text{Response rate} = \dfrac{r}{N} \times 100\%`,
+      where: [
+        [String.raw`r`, 'Completed responses', 'people'],
+        [String.raw`N`, 'People invited who could have responded', 'people'],
+      ],
+      assumptions: 'Say what N includes. Organisations differ on whether invitations that never arrived (bounced e-mails, wrong numbers) count.',
+      note: 'A low rate doesn’t prove bias; it measures how much room there is for it.' },
+    { id: 'nonresponse-bounds', name: 'Range allowed by non-response',
+      tex: String.raw`\text{Lowest} = \dfrac{y}{N} \times 100\% \qquad \text{Highest} = \dfrac{y + (N - r)}{N} \times 100\%`,
+      where: [
+        [String.raw`y`, 'Respondents giving the answer of interest (for example, “satisfied”)', 'people'],
+        [String.raw`r`, 'Respondents', 'people'],
+        [String.raw`N`, 'People invited', 'people'],
+      ],
+      assumptions: 'No assumption at all about the non-respondents: the lowest figure supposes none of them gives the answer, the highest that all do.',
+      note: 'The range narrows only as the response rate rises, or when you learn something about the non-respondents.' },
+    { id: 'two-group-estimate', name: 'Combining respondents and a follow-up of non-respondents',
+      tex: String.raw`\hat{p} = \dfrac{r \times p_r + (N - r) \times p_n}{N}`,
+      where: [
+        [String.raw`\hat{p}`, 'Estimated share of everyone invited giving the answer', '%'],
+        [String.raw`p_r`, 'Share among respondents', '%'],
+        [String.raw`p_n`, 'Share among non-respondents, from a follow-up of a random sample of them', '%'],
+        [String.raw`r`, 'Respondents', 'people'],
+        [String.raw`N`, 'People invited', 'people'],
+      ],
+      assumptions: 'The follow-up sample is random and its members answer like the other non-respondents.',
+      note: 'A weighted average: each group counts in proportion to its size. A small follow-up leaves a wide margin of chance around it.' },
+  ],
+
+  examples: [
+    { level: 'simple', title: 'Who is in the library survey?', fictional: true,
+      setup: 'Northfield University’s library wants to know how its 6,000 students rate the library’s opening hours. Staff hand a questionnaire to the first 150 students who walk into the library on a Tuesday afternoon. Identify the population, the frame and the sample, name the sampling method, and say which way the result is likely to be biased.',
+      steps: [
+        'Population: the question is about all students, so the population is all 6,000 enrolled students.',
+        String.raw`Frame and sample: there is no list; in effect the frame is the students who come into the library on Tuesday afternoon, and the sample is the first 150 of them, <m>150 \div 6{,}000 = 2.5\%</m> of the population.`,
+        'Method: a convenience sample, chosen because the students are easy to reach, not at random.',
+        'Bias: students for whom the hours are inconvenient are the least likely to be in the library at all, and Tuesday-afternoon users may differ from those who come in the evening or at weekends. Both are forms of survivorship and sampling bias, and both push the same way: the survey will probably overstate satisfaction with the hours.',
+        'Fix: draw a simple random sample of, say, 300 student numbers from the university’s register and e-mail them the questionnaire, then compare respondents with the whole student body by year and programme.',
+      ],
+      answer: 'Population: all 6,000 students. Sample: 150 Tuesday-afternoon visitors (2.5%), a convenience sample. Its result will probably overstate satisfaction, because the students most inconvenienced by the hours are the least likely to be asked.',
+      interpretation: 'Nothing is wrong with the questionnaire or the arithmetic; the problem is who could be asked. A sample of 1,500 Tuesday visitors would be more precise and just as biased.' },
+    { level: 'challenging', title: 'How satisfied are Harborview’s guests?', fictional: true,
+      setup: 'Harborview Hotel e-mails a satisfaction survey to the 400 guests who stayed in March. 120 reply, and 90 of them say they were satisfied. The manager wants to report “75% of guests satisfied”. To check, the hotel phones a random sample of 40 guests who didn’t reply, and 24 of them say they were satisfied. What can the hotel honestly report?',
+      steps: [
+        String.raw`Response rate: <m>120 \div 400 = 30\%</m>. Among respondents, <m>90 \div 120 = 75\%</m> were satisfied.`,
+        String.raw`Range allowed by non-response: if none of the <m>400 - 120 = 280</m> non-respondents was satisfied, the share is <m>90 \div 400 = 22.5\%</m>; if all were, <m>(90 + 280) \div 400 = 92.5\%</m>. The survey alone can’t narrow this.`,
+        String.raw`Learn about the non-respondents: the random follow-up found <m>24 \div 40 = 60\%</m> satisfied, well below the respondents’ 75%. Those who replied were the happier guests.`,
+        String.raw`Combine the groups in proportion to their sizes: <m>(120 \times 0.75 + 280 \times 0.60) \div 400 = (90 + 168) \div 400 = 258 \div 400 = 64.5\%</m>.`,
+        'Judge the uncertainty: the 60% rests on only 40 calls, so the true share of non-respondents could easily be several points either side of it, and the combined estimate inherits that.',
+      ],
+      answer: 'About 64.5% of March guests were satisfied, not 75%. The hotel should report the combined estimate, the response rate (30%) and the fact that it rests on a follow-up of 40 non-respondents.',
+      interpretation: 'The respondents’ 75% was arithmetically correct and still overstated satisfaction by 10.5 percentage points, because happier guests were more likely to reply. Without the follow-up, the honest statement would have been the wide range from 22.5% to 92.5%.' },
+    { level: 'applied', title: 'Should Fernwood switch to its new checkout?', fictional: true,
+      setup: 'Fernwood Apparel, a fictional online clothing brand, has redesigned its checkout. Instead of switching everyone over, it runs an A/B test for four full weeks: each visitor is randomly assigned on arrival to the existing checkout (A, the control group) or the new one (B). A had 6,000 visits and 168 orders; B had 6,000 visits and 198 orders. Mobile visits made up 61% of A’s visits and 60% of B’s. A sale ran during the third week. Should Fernwood switch, and what does the test show that a before-and-after comparison couldn’t?',
+      steps: [
+        String.raw`Compare the outcome. Conversion (orders ÷ visits) was <m>168 \div 6{,}000 = 2.8\%</m> for A and <m>198 \div 6{,}000 = 3.3\%</m> for B: 0.5 percentage points higher, or <m>3.3 \div 2.8 \approx 1.18</m>, about 18% more orders per visit. That is 30 extra orders on the same traffic.`,
+        'Check the randomisation: the groups are the same size, and their device mix is almost identical (61% and 60% mobile), as random assignment should produce.',
+        'Consider the sale. It ran for both groups at once, so it raised or lowered both; it can’t explain a difference between them. A before-and-after comparison, old checkout in one month and new in the next, would have mixed the checkout with the sale, the season and anything else that changed.',
+        'Check chance. Even identical checkouts would not produce exactly equal order counts, so before switching, Fernwood should apply the significance test it planned before the test began (B04 Statistics teaches it), and check that the new checkout didn’t raise anything it shouldn’t, such as abandoned payments or returns.',
+        'Decide: if the difference passes the planned test, switch everyone to B and keep tracking conversion afterwards, since a test lasts weeks and a checkout lasts years.',
+      ],
+      answer: 'B converted 3.3% of visits against A’s 2.8%: 0.5 percentage points (about 18%) more, with the sale and everything else balanced by random assignment. If that passes the test planned in advance, Fernwood should switch to B and keep measuring.',
+      interpretation: 'Random assignment is what turns a comparison into evidence about cause. Ana’s September data, by contrast, can show that orders fell after the new checkout went live, but not, on its own, that the checkout caused it.' },
+  ],
+
+  demo: [
+    { widget: 'dc-bias', intro: 'A population with two kinds of customer, and a sample that over-represents one of them. At 30 people, chance is wide enough to hide the bias. Raise the sample size and watch the range of likely results narrow around the wrong number; then make the sample’s mix match the population’s and watch the bias disappear.' },
+    { widget: 'dc-nonresponse', intro: 'Set how many people were invited, how many replied and what the respondents said. The range shows everything the non-respondents could have said; your guess about them shows how far the respondents’ figure could be from the truth.' },
+  ],
+
+  mistakes: [
+    { title: '“A bigger sample fixes bias.”', html: 'A bigger sample reduces sampling error, the chance part of the error. It does nothing to bias: 5,000 people reached through a biased route give a precise estimate of the wrong number. Fix the frame, the selection and the questions, not the size.' },
+    { title: '“We asked all our customers, so the result is representative.”', html: 'Asking everyone on a list is a census of the list, not of the population. Customers who left, or visitors who never bought, are not on it (survivorship), and those who don’t reply may differ from those who do (non-response). Ask who the question is about, then who could actually answer.' },
+    { title: '“A low response rate makes a survey worthless; a high one makes it right.”', html: 'The response rate measures room for bias, not bias itself. A 30% response from a random sample, checked with a follow-up of non-respondents, can beat a 70% response in which the unhappy stayed silent. Report the rate, the range it allows and what you know about non-respondents.' },
+    { title: '“Agree or disagree is a neutral way to ask.”', html: 'Agree/disagree statements invite agreement, especially from less informed respondents, and a statement asked of people it doesn’t apply to invites guesses. Ask a balanced question with a choice between alternatives, and route people past questions they can’t answer.' },
+    { title: '“Orders fell after the change, so the change caused the fall.”', html: 'Observational data shows what happened alongside everything else that changed at the same time. To attribute an effect to a change, compare randomly assigned groups in an experiment, or at least rule out the other explanations one by one.' },
+    { title: '“If we have the data, we may use it.”', html: 'Personal data needs a lawful basis, and where it relies on consent, that consent must be specific, informed and given by a clear positive action. Pseudonymised data is still personal data. Collect what the question needs, and check the rules that apply.' },
+  ],
+
+  application: [
+    { p: 'After the 5 October fix, Ana wants better evidence the next time something changes in the shop. With an analyst’s help she writes a plan that uses each source for what it does best.' },
+    { ol: [
+      '<b>Transactional and web data, every day.</b> Orders and visits by channel and by device, daily rather than monthly, so a fault shows within days. The analyst records the analytics tool’s session settings and notes any change to them, so that a change in how visits are counted is never mistaken for a change in customers.',
+      '<b>A question for the people who leave.</b> A single optional question appears to website visitors who leave the payment page without paying: “What stopped you from paying today?” It reaches the people the October survey could not, although it is self-selected: only some of them will answer, so it shows which problems exist, not how common each is.',
+      '<b>Observation.</b> Before and after every change to the checkout, five customers try to pay on their own phones while someone watches and notes where they hesitate.',
+      '<b>A better customer survey.</b> The November survey goes to a random sample of the month’s customers, opens with a question about how they ordered, shows the checkout questions only to website users, uses balanced scales instead of agree/disagree statements and is pretested on three customers. Non-respondents get one reminder, and the analyst compares respondents with non-respondents on channel and order value from the order records.',
+      '<b>An experiment for the next redesign.</b> Any future change to the checkout runs first as an A/B test, with the outcome and the length of the test written down before it starts.',
+      '<b>Privacy.</b> The privacy notice says customers may be asked for feedback; survey answers are stored against customer numbers, not e-mail addresses; and the survey asks nothing the analysis won’t use.',
+    ] },
+    { p: 'The plan costs little: most of it reuses data the shop already records, and the rest is a few questions and an hour of watching. What it buys is the ability to answer “did the change work?” with evidence that reaches the right people and could have come out the other way.' },
+    { p: 'Professional survey organisations work the same way at a larger scale. Pew Research Center describes pretesting a survey as an essential step in designing a questionnaire, using pilot tests, focus groups and cognitive interviews to learn how people interpret each question before the real fieldwork begins. A hotel group that reads only its online reviews, by contrast, is reading a self-selected sample of guests who chose to write, and a software company that surveys only its current users will never hear from the people who cancelled. In each case the first question is the same one Ana learned to ask: who could have been in this data, and who could not?' },
+  ],
+
+  summary: [
+    'Business data comes from transactions, web and app logs, surveys, experiments, observation and third parties. Each is good for some questions and blind to others.',
+    'Define the population from the question. The sampling frame is the list a sample is drawn from; anyone missing from it can’t be heard.',
+    'Random samples resemble the population apart from chance; convenience samples are often biased.',
+    'Sampling error shrinks as a sample grows; bias doesn’t. Look for sampling, non-response, survivorship and measurement bias at each step from population to numbers.',
+    'Response rate = responses ÷ invited. Non-response allows a range from y ÷ N to (y + N − r) ÷ N; a follow-up of non-respondents narrows it.',
+    'Good questions are clear, about one thing, answerable by everyone shown them and balanced rather than agree/disagree; pretest them.',
+    'Only random assignment, as in an A/B test, separates the effect of a change from everything else that changed at the same time.',
+    'Personal data needs a lawful basis; consent, where relied on, must be specific, informed and given by a clear positive action. Collect only what the question needs.',
+  ],
+
+  glossary: [
+    { term: 'Transactional data', def: 'Data recorded as a by-product of doing business, such as orders, payments, refunds and bookings.' },
+    { term: 'Population', def: 'Everything a question is about: all the people, things or events whose characteristics you want to know.' },
+    { term: 'Sample', def: 'The part of a population that is actually observed or asked, used to learn about the whole.' },
+    { term: 'Census', def: 'A study that observes every member of the population, rather than a sample.' },
+    { term: 'Sampling frame', def: 'The list or source from which a sample is actually drawn, such as a customer e-mail list. Anyone missing from the frame can’t be sampled.' },
+    { term: 'Simple random sample', def: 'A sample chosen so that every group of the same size in the frame is equally likely to be selected, for example by drawing customer numbers at random.' },
+    { term: 'Convenience sample', def: 'A sample made up of whoever is easiest to reach, such as the first replies to a link. It is not random and is often biased.' },
+    { term: 'Sampling error', def: 'The chance difference between a sample’s result and the population’s, which arises because only part of the population was observed. It shrinks as the sample grows.' },
+    { term: 'Sampling bias', def: 'Systematic error that arises when some members of the population are less likely than others to be included in the sample.' },
+    { term: 'Non-response bias', def: 'Systematic error that arises when the people who answer a survey differ, in what is being measured, from those who don’t.' },
+    { term: 'Survivorship bias', def: 'Systematic error from studying only the people or things that passed some filter, such as current customers, while those that dropped out are invisible.' },
+    { term: 'Measurement bias', def: 'Systematic error from the way a value is measured or a question is asked, which pushes results in one direction.' },
+    { term: 'Response rate', def: 'The share of the people invited to a survey who answered it: responses ÷ people invited × 100. Say whether invitations that never arrived are counted.' },
+    { term: 'A/B test', def: 'An experiment in which units such as website visitors are randomly assigned to two versions, A and B, so that a difference in outcomes can be attributed to the version rather than to who saw it.' },
+    { term: 'Control group', def: 'In an experiment, the group that receives the existing version or no change, against which the changed group is compared.' },
+    { term: 'Personal data', def: 'Under the UK GDPR, any information relating to an identified or identifiable natural person: someone who can be identified directly or indirectly, for example from a name, an identification number, location data or an online identifier.' },
+    { term: 'Consent', def: 'Under the UK GDPR, a freely given, specific, informed and unambiguous indication of a person’s wishes, by a statement or a clear positive action, agreeing to the use of their personal data. It can be withdrawn at any time.' },
+  ],
+
+  references: [
+    { text: 'Illowsky, B. &amp; Dean, S. (2023). <i>Introductory Statistics 2e</i>, sections 1.1 “Definitions of Statistics, Probability, and Key Terms” and 1.2 “Data, Sampling, and Variation in Data and Sampling”. OpenStax.', url: 'https://openstax.org/books/introductory-statistics-2e/pages/1-2-data-sampling-and-variation-in-data-and-sampling', checked: '2026-10-23' },
+    { text: 'Pew Research Center. “Writing Survey Questions”. Methods.', url: 'https://www.pewresearch.org/writing-survey-questions/', checked: '2026-10-23' },
+    { text: 'Google. “[GA4] Session”. Analytics Help.', url: 'https://support.google.com/analytics/answer/12798876?hl=en', checked: '2026-10-23' },
+    { text: 'Information Commissioner’s Office. “What is personal data?” UK GDPR guidance and resources.', url: 'https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/personal-information-what-is-it/what-is-personal-data/what-is-personal-data/', checked: '2026-10-23' },
+    { text: 'Information Commissioner’s Office. “A guide to lawful basis”. UK GDPR guidance and resources.', url: 'https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/lawful-basis/a-guide-to-lawful-basis/', checked: '2026-10-23' },
+    { text: 'Information Commissioner’s Office. “What is valid consent?” UK GDPR guidance and resources.', url: 'https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/lawful-basis/consent/what-is-valid-consent/', checked: '2026-10-23' },
+  ],
+
+  checks: (() => {
+    const se = (p, n) => 2 * Math.sqrt(p * (1 - p) / n) * 100;   // about two standard errors, in points
+    return [
+      { what: 'Survey invitations (case.js)', value: SURVEY.sent, shown: 240 },
+      { what: 'Survey replies (case.js)', value: SURVEY.responses, shown: 79 },
+      { what: 'September web visits (case.js)', value: SHOP.webVisits[2], shown: 8800 },
+      { what: 'Half of September web visits', value: SHOP.webVisits[2] / 2, shown: 4400 },
+      { what: 'GA default session timeout (minutes, Google help)', value: 30, shown: 30 },
+      // random error and bias
+      { what: 'True share satisfied (%)', value: 0.30 * 90 + 0.70 * 60, shown: 69 },
+      { what: 'Biased sample expectation (%)', value: 0.70 * 90 + 0.30 * 60, shown: 81 },
+      { what: 'Bias (points)', value: (0.70 * 90 + 0.30 * 60) - (0.30 * 90 + 0.70 * 60), shown: 12 },
+      { what: 'Chance range at n = 100 (about 8 points)', value: se(0.81, 100), shown: 8, tol: 0.5 },
+      { what: 'Chance range at n = 5,000 (about 1 point)', value: se(0.81, 5000), shown: 1, tol: 0.5 },
+      // non-response illustration and challenging example
+      { what: 'Hotel: non-respondents', value: 400 - 120, shown: 280 },
+      { what: 'Hotel: response rate (%)', value: 120 / 400 * 100, shown: 30 },
+      { what: 'Hotel: respondents satisfied (%)', value: 90 / 120 * 100, shown: 75 },
+      { what: 'Hotel: lowest possible (%)', value: 90 / 400 * 100, shown: 22.5 },
+      { what: 'Hotel: highest possible numerator', value: 90 + 280, shown: 370 },
+      { what: 'Hotel: highest possible (%)', value: (90 + 280) / 400 * 100, shown: 92.5 },
+      { what: 'Hotel: follow-up satisfied (%)', value: 24 / 40 * 100, shown: 60 },
+      { what: 'Hotel: non-respondents satisfied (count)', value: 280 * 0.60, shown: 168 },
+      { what: 'Hotel: combined numerator', value: 120 * 0.75 + 280 * 0.60, shown: 258 },
+      { what: 'Hotel: combined estimate (%)', value: (120 * 0.75 + 280 * 0.60) / 400 * 100, shown: 64.5 },
+      { what: 'Hotel: overstatement (points)', value: 75 - (120 * 0.75 + 280 * 0.60) / 400 * 100, shown: 10.5 },
+      // simple example
+      { what: 'Library: share sampled (%)', value: 150 / 6000 * 100, shown: 2.5 },
+      // applied example
+      { what: 'Fernwood: A conversion (%)', value: 168 / 6000 * 100, shown: 2.8 },
+      { what: 'Fernwood: B conversion (%)', value: 198 / 6000 * 100, shown: 3.3 },
+      { what: 'Fernwood: difference (points)', value: (198 - 168) / 6000 * 100, shown: 0.5 },
+      { what: 'Fernwood: ratio of rates', value: 198 / 168, shown: 1.18, tol: 0.005 },
+      { what: 'Fernwood: relative rise (about 18%)', value: (198 / 168 - 1) * 100, shown: 18, tol: 0.5 },
+      { what: 'Fernwood: extra orders', value: 198 - 168, shown: 30 },
+      // ICO
+      { what: 'Lawful bases listed by the ICO', value: 7, shown: 7 },
+    ];
+  })(),
+};
