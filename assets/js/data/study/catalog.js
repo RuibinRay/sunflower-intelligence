@@ -112,7 +112,7 @@ const ALL = [
   }),
 
   C({
-    id: 'f00', school: 'finance', code: 'F00', level: 'intro', status: 'reviewed',
+    id: 'f00', school: 'finance', code: 'F00', level: 'intro', status: 'complete',
     title: 'Foundations of Finance',
     blurb: 'What finance is and how it differs from accounting and economics, the principles behind every financial decision, the vocabulary professionals use, and how financial markets and their participants work.',
     topics: ['What finance is: time and risk', 'Personal, corporate and investment finance', 'Finance, accounting and economics', 'Six decision principles: time value, risk and return, cash, incremental cash flows, diversification, no arbitrage', 'Essential vocabulary: capital, liquidity, valuation, market capitalisation, enterprise value, EBITDA, working capital', 'Interest and inflation', 'Types of financial markets: equity, bond, foreign exchange, commodity, derivatives', 'Market participants: investment banks, institutional investors, hedge funds, brokers', 'How markets channel savings into investment'],
