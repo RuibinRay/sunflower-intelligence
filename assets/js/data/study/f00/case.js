@@ -44,6 +44,16 @@ export const HARBOURLINE = {
   currentAssets: 180, currentLiabilities: 120,
 };
 
+/** More of Harbourline's (fictional) statements, first used in f00/capital-and-liquidity and value-and-valuation-words.
+ *  They tie to HARBOURLINE: current assets 45 + 55 + 70 + 10 = 180; total assets 180 + 480 = 660 = liabilities
+ *  120 + 210 + 30 + equity 300; revenue 640 − operating costs 547 = EBITDA 93; EBIT 61 − interest 11 = 50 before tax;
+ *  tax 12 (24%) leaves net income 38. All $210m of debt is long-term. */
+export const HARBOURLINE_DETAIL = {
+  receivables: 55, inventory: 70, otherCurrentAssets: 10, noncurrentAssets: 480, totalAssets: 660,
+  otherNoncurrentLiabilities: 30, bookEquity: 300,
+  operatingCostsExDA: 547, interest: 11, profitBeforeTax: 50, tax: 12, capex: 35,
+};
+
 const h = HARBOURLINE;
 export const HARBOURLINE_DERIVED = {
   marketCap: h.sharePrice * h.shares,                                   // 765

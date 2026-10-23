@@ -1,0 +1,246 @@
+// governance-and-agency.js — F00 · Governance and agency. Content only; exercises are in governance-and-agency.ex.js.
+export default {
+  slug: 'governance-and-agency',
+  title: 'Governance and the agency problem',
+  blurb: 'When the people who run a business are not the people who own it or lend to it, their interests can pull apart. Learn why that happens, what it costs, and the tools (boards, incentive pay, loan covenants, disclosure) used to keep managers working for the people whose money they use.',
+  status: 'draft',
+  objectives: [
+    'Explain the separation of ownership and control and the principal-agent relationship it creates.',
+    'Identify the main conflicts between shareholders and managers and between shareholders and lenders.',
+    'Calculate how a manager’s ownership stake changes who bears the cost of a perk, and how risk-shifting moves value from lenders to shareholders.',
+    'Describe what a board of directors does and evaluate incentive pay, including its side effects.',
+    'Compare the shareholder and stakeholder views of what a company is for.',
+    'Apply loan covenants and governance tools to Lantern Coffee as it takes on outside investors and debt.',
+  ],
+  prerequisites: [
+    { lesson: 'f00/capital-and-liquidity', why: 'You need debt and equity, who supplies each, and the current ratio.' },
+    { lesson: 'f00/market-participants', why: 'Shareholders in large companies are often institutional investors; this lesson asks how they control the managers they hire.' },
+  ],
+  case: 'lantern',
+
+  concept: [
+    { case: 'Today Lantern Coffee Co. is Ana Lim’s company in every sense. She bought all its shares for $20,000, she is its only director, and she runs it day to day. When Lantern’s board declared a $300 dividend in March 2026, the board was Ana and the shareholder who received it was Ana. If she spends an afternoon perfecting a new espresso blend rather than chasing an unpaid invoice, the cost and the benefit both land on her. Only one outsider has put money into Lantern: Coastline Bank, which lent $10,000 and is owed $600 of interest a year and its $10,000 back on 1 March 2028.' },
+    { p: 'Now picture a coffee company with 18 million shares held by thousands of investors, Harbourline Roasters say, run by a chief executive who owns a tiny fraction of them. The shareholders own the company but cannot run it: there are too many of them, they lack the time and the knowledge, and most hold Harbourline as one small part of a diversified portfolio. They hand control to professional managers. This <g>separation of ownership and control</g> is what makes large companies possible, because it lets people who have money finance people who have skill. It also creates the central problem of corporate governance.' },
+
+    { h: 'Principals and agents' },
+    { p: 'Economists call the relationship an agency relationship. In Jensen and Meckling’s classic definition it is the following.' },
+    { quote: { text: 'A contract under which one or more persons (the principal(s)) engage another person (the agent) to perform some service on their behalf which involves delegating some decision making authority to the agent.', cite: 'Jensen and Meckling, “Theory of the firm”, <i>Journal of Financial Economics</i> 3 (1976), section 1.4' } },
+    { p: 'The <g>principal</g> is the person whose interests are at stake; the <g>agent</g> is the person who acts for them. Shareholders are principals and managers their agents. The relationship is everywhere: a patient and a doctor, a homeowner and a builder, an investor and a fund manager, a client and a broker. In each case the agent knows more than the principal about what they are doing and why, and the principal cannot watch every decision.' },
+    { p: 'If both sides wanted exactly the same things, that would not matter. The <g>agency problem</g> arises because they do not. A manager, like anyone, cares about her pay, her job security, her status and her free time, and some decisions that serve those ends do not serve the owners. Because the owners cannot see everything she does, and could not judge it if they did, they cannot simply write a contract that tells her to “maximise our wealth” and enforce it.' },
+    { list: [
+      '<b>Effort.</b> Hard work benefits the owners; the manager bears its cost. A manager paid the same salary whatever happens has less reason to push.',
+      '<b>Perks.</b> A corporate jet, a lavish office or a favourite supplier benefits the manager, while the owners pay most of the cost.',
+      '<b>Empire building.</b> Running a bigger company often brings more pay and prestige, so a manager may buy other firms or start projects that grow the business without making it more valuable.',
+      '<b>Risk.</b> A manager whose career and wealth are tied to one company may avoid good but risky projects that diversified shareholders would welcome; one paid in options may take on too much risk.',
+      '<b>Horizon.</b> A manager who expects to leave in three years may cut research or maintenance to lift this year’s profit, at the expense of profits later.',
+    ] },
+
+    { h: 'Agency costs' },
+    { p: 'Owners can limit the problem, but never free of charge. Jensen and Meckling defined <g>agency costs</g> as the sum of three things. <b>Monitoring costs</b> are what principals spend to watch and control agents: audits, boards of directors, reporting systems. <b>Bonding costs</b> are what agents spend to assure principals they will behave: publishing detailed reports, agreeing to contracts that penalise them for misbehaving. <b>Residual loss</b> is the value still lost because, even after monitoring and bonding, the agent’s decisions differ from the ones the principal would have made. Some loss is always worth tolerating: watching a manager so closely that she could never waste a dollar would cost more than the dollars saved.' },
+    { p: 'The size of the perk problem depends on how much of the company the manager owns. If a manager owns a fraction <m>\\alpha</m> of the shares and spends <i>P</i> dollars of company money on a perk that adds nothing to profit, the company is worth <i>P</i> less, and her shares are worth <m>\\alpha \\times P</m> less. The other owners bear the remaining <m>(1 - \\alpha) \\times P</m>. Ana, owning 100% of Lantern, bears every dollar of any perk she takes, which is why an owner-manager has little agency problem with shareholders: she is the shareholder. A chief executive who owns 0.5% of a large company bears only half a cent of each dollar.' },
+    { callout: 'key', title: 'The agency problem in one sentence', html: 'Whenever one person makes decisions with another’s money, their interests differ and the second cannot see everything the first does, so some value is lost, and the tools for limiting the loss cost money themselves.' },
+
+    { h: 'Shareholders and lenders' },
+    { p: 'Managers and shareholders are not the only parties whose interests clash. Shareholders and lenders want different things too, because their claims are shaped differently. A lender is owed a fixed amount; the most it can receive is its interest and its money back. Shareholders receive whatever is left after the lenders are paid, with no upper limit, and if the company fails they lose what they invested but no more. So once a loan is made, shareholders gain from risky bets: if the bet succeeds, they keep all the upside above the debt; if it fails, much of the loss falls on the lenders. Moving to riskier projects after borrowing in this way is called <g>risk shifting</g> (or asset substitution).' },
+    { p: 'Shareholders of a company in difficulty can also pay themselves a large dividend before the lenders are paid, or borrow more from new lenders who rank alongside the old ones. Lenders know all this, so they protect themselves in advance. They charge higher interest, or they write <g>covenants</g> into the loan contract: promises by the borrower to keep certain ratios above agreed levels, to limit dividends or further borrowing, or to provide regular financial statements. Breaking a covenant usually lets the lender demand early repayment or renegotiate. Covenants are a monitoring cost for the lender and a bonding cost for the borrower: agency costs of debt.' },
+  ],
+
+  theory: [
+    { h: 'The board of directors' },
+    { p: 'In a corporation, shareholders do not manage; they elect a <g>board of directors</g> to oversee the managers on their behalf. The board hires, evaluates and, if necessary, fires the chief executive; sets senior managers’ pay; approves strategy, major investments and dividends; and oversees the financial reporting and the audit.' },
+    { p: 'A board is itself a group of agents, so it is only as good as its independence. <i>Independent</i> directors have no job at the company and no business ties that would make them reluctant to challenge the chief executive. In practice, as OpenStax’s economics text notes, top executives often have a strong voice in choosing board candidates, and few shareholders have the knowledge or incentive to nominate alternatives. Boards therefore work alongside other governance mechanisms: an outside auditor who checks the financial statements, and large outside shareholders, such as pension and mutual funds, with the size and expertise to press for change.' },
+
+    { h: 'Incentive pay and its side effects' },
+    { p: 'The most direct way to align a manager with owners is to make her an owner, or to pay her according to what owners care about. Common forms of <g>incentive pay</g> are an annual bonus tied to targets such as profit or sales; shares that the manager receives over several years (often called restricted stock); and <g>stock options</g>, which give the right to buy shares at a fixed price, so they are valuable only if the share price rises above it. Each moves the manager’s <m>\\alpha</m> closer to the owners’ position, and each brings side effects.' },
+    { table: {
+      caption: 'Incentive pay: what it rewards and what can go wrong',
+      head: ['Form', 'What it rewards', 'Possible side effect'],
+      rows: [
+        ['Bonus on a profit or sales target', 'Hitting this year’s number', 'Pulling sales forward, delaying costs or stretching estimates to cross the line; cutting research and maintenance; easing off once the target is safe or out of reach'],
+        ['Shares received over several years', 'A higher share price over the holding period', 'Attention to the share price around vesting dates; reluctance to take risks that would hurt the manager’s concentrated holding'],
+        ['Stock options', 'A share price above the exercise price', 'Too much risk: the manager gains from a rise but loses nothing extra from a fall below the exercise price'],
+        ['Fixed salary only', 'Keeping the job', 'Too little effort and too little risk; no link to results'],
+      ],
+      align: ['l', 'l', 'l'],
+    } },
+    { p: 'Pay plans try to keep the benefits and limit the side effects: vesting spread over several years so that short-term moves matter less; targets based on several measures rather than one; requirements to hold shares after leaving; and recovery of pay awarded on misstated results. Two US rules made under the Dodd–Frank Act illustrate the last two ideas. Since 2011, companies subject to the federal proxy rules must give shareholders an advisory, non-binding vote on executive pay at least once every three years (“say on pay”). And under SEC Rule 10D-1, adopted in October 2022, listed companies must have a written policy to claw back incentive pay that executives received on the basis of financial results that later had to be restated, covering the three fiscal years before the restatement.' },
+
+    { h: 'Other governance tools' },
+    { list: [
+      '<b>Disclosure and audit.</b> Public companies must publish audited financial statements, so owners and lenders can see results and compare them over time. Accounting itself is a monitoring tool.',
+      '<b>Large shareholders.</b> An investor with a big stake has both the reason and the power to watch managers closely, and can vote against directors or the pay plan.',
+      '<b>The market for corporate control.</b> If managers waste value, the share price falls, and another firm or investor can buy the company cheaply and replace them. The threat of a takeover disciplines managers who are never actually taken over.',
+      '<b>Debt.</b> Fixed interest and repayments leave managers less spare cash to waste, and lenders add a second set of watchers. Too much debt brings its own costs, which F05 studies.',
+      '<b>The managerial job market.</b> A manager’s future pay depends on her reputation, which gives her a reason to perform beyond the current contract.',
+    ] },
+
+    { h: 'Whose interests? Shareholder and stakeholder views' },
+    { p: 'Governance assumes we know whose interests managers should serve, and there are two broad answers. The <g>shareholder view</g> holds that managers are agents of the owners, so their job is to run the company in the owners’ interests, which for most owners means making it as valuable as possible, within the law and ethical custom. Milton Friedman set out this view in a 1970 essay in the <i>New York Times Magazine</i>, “The Social Responsibility of Business Is to Increase Its Profits”. Managers, he argued, work for the shareholders and should generally make as much money as possible for them while conforming to “the basic rules of the society, both those embodied in law and those embodied in ethical custom.”' },
+    { p: 'The <g>stakeholder view</g> holds that a company should be run for the benefit of everyone with a stake in it: customers, employees, suppliers and communities as well as shareholders. In August 2019 the Business Roundtable, a US business group that has issued principles of corporate governance since 1978, published a Statement on the Purpose of a Corporation, signed by 181 chief executives, committing their companies to serve all of these groups. It replaced the group’s earlier principles, each version of which since 1997 had endorsed shareholder primacy.' },
+    { table: {
+      caption: 'Arguments on each side',
+      head: ['', 'Shareholder view', 'Stakeholder view'],
+      rows: [
+        ['Main argument', 'Shareholders bear the residual risk and own the company; one clear goal makes managers accountable and their performance measurable', 'Employees, suppliers and communities also make investments in the firm that contracts do not fully protect; firms that treat them well can create more value'],
+        ['Main criticism', 'Can encourage short-term thinking and ignore harms that the law does not price, such as pollution', 'With many goals, managers can justify almost any decision, which weakens accountability: the agency problem returns'],
+        ['Common ground', 'Long-run value usually requires keeping customers, staff and suppliers', 'Firms that cannot earn their cost of capital cannot serve anyone for long'],
+      ],
+      align: ['l', 'l', 'l'],
+    } },
+    { p: 'The positions are closer than slogans suggest. Friedman’s managers must obey the law and ethical custom, and most stakeholder advocates accept that a company must earn an adequate return to survive. The disagreement is mainly about what managers should do when a decision helps one group at another’s expense, and about who should decide: managers, or the owners and the law. This course presents both; F05 Corporate Finance uses the goal of maximising the firm’s value as its working assumption, and says so.' },
+
+    { h: 'Lantern tomorrow: outside investors and a bigger loan' },
+    { case: 'Suppose (this is a hypothetical extension of the case) that in March 2028, after repaying the first $10,000 loan, Ana opens a second Lantern kitchen. She sells 30% of Lantern’s shares to Juniper Rowe, a fictional private investor, and Coastline Bank lends Lantern $60,000 over five years. Ana now owns 70% and still runs the business.' },
+    { p: 'Lantern’s governance changes overnight. Ana is now an agent for Juniper as well as a principal. Every dollar Lantern spends on a perk for Ana costs her only 70 cents and costs Juniper 30. Juniper will want a seat on the board, regular monthly accounts and a say over Ana’s salary, large purchases and new borrowing: monitoring costs. Coastline’s new loan agreement contains covenants (fictional): Lantern must keep its current ratio (current assets ÷ current liabilities) at or above 1.2, send the bank quarterly financial statements, and ask the bank before borrowing more. Ana’s freedom shrinks, but the money she could not otherwise raise becomes available. That trade, control for capital, is the price of growth for almost every business.' },
+  ],
+
+  formulas: [
+    { id: 'agency-costs', name: 'Agency costs (Jensen and Meckling)',
+      tex: String.raw`\text{Agency costs} = M + B + L`,
+      where: [
+        [String.raw`M`, 'Monitoring costs paid by principals (audits, boards, reporting systems)', '$'],
+        [String.raw`B`, 'Bonding costs paid by agents to assure principals (detailed reports, penalty clauses)', '$'],
+        [String.raw`L`, 'Residual loss: value still lost because the agent’s decisions differ from the principal’s ideal', '$'],
+      ],
+      assumptions: 'A way of organising the costs, not something measured precisely in practice; residual loss in particular can only be estimated.' },
+    { id: 'perk-split', name: 'Who bears the cost of a perk',
+      tex: String.raw`C_{\text{manager}} = \alpha \times P, \qquad C_{\text{others}} = (1 - \alpha) \times P`,
+      where: [
+        [String.raw`\alpha`, 'The fraction of the company’s shares the manager owns', 'between 0 and 1'],
+        [String.raw`P`, 'The cost of a perk that adds nothing to the company’s value', '$'],
+        [String.raw`C_{\text{manager}}`, 'The fall in the value of the manager’s own shares', '$'],
+        [String.raw`C_{\text{others}}`, 'The cost borne by the other shareholders', '$'],
+      ],
+      assumptions: 'The perk reduces the company’s value dollar for dollar and is not offset by any gain, such as better effort.' },
+    { id: 'claims-payoff', name: 'Payoffs to shareholders and lenders when debt is due',
+      tex: String.raw`\text{Shareholders} = \max(V - D,\ 0), \qquad \text{Lenders} = \min(V,\ D)`,
+      where: [
+        [String.raw`V`, 'Value of the company’s assets when the debt falls due', '$'],
+        [String.raw`D`, 'Amount owed to lenders (principal plus interest due)', '$'],
+      ],
+      assumptions: 'One class of debt; shareholders have limited liability, so their payoff cannot fall below zero.',
+      note: 'The two payoffs always add up to V. Shareholders’ payoff has no upper limit; lenders’ is capped at D. That asymmetry is why shareholders can gain from risk at lenders’ expense.' },
+  ],
+
+  examples: [
+    { level: 'simple', title: 'Who pays for the perk?', fictional: true,
+      setup: 'Compare three managers considering a perk that adds nothing to their company’s value. (a) Ana, owning 100% of Lantern, considers a $9,000 upgrade to a company van that she would mostly use herself. (b) Ana in the 2028 scenario, owning 70%, considers the same upgrade. (c) The chief executive of a large company, owning 0.5% of its shares, considers a $2,000,000 corporate jet for personal trips. How much of each perk does the manager bear herself?',
+      steps: [
+        'Use <m>C_{\\text{manager}} = \\alpha \\times P</m>. (a) <m>1 \\times 9{,}000 = 9{,}000</m> dollars: Ana bears it all.',
+        '(b) <m>0.70 \\times 9{,}000 = 6{,}300</m> dollars falls on Ana; <m>(1 - 0.70) \\times 9{,}000 = 2{,}700</m> dollars falls on Juniper, the outside investor.',
+        '(c) <m>0.005 \\times 2{,}000{,}000 = 10{,}000</m> dollars falls on the chief executive; <m>0.995 \\times 2{,}000{,}000 = 1{,}990{,}000</m> dollars falls on the other shareholders.',
+      ],
+      answer: '(a) $9,000, all of it. (b) $6,300, with $2,700 borne by the outside investor. (c) $10,000 of the $2,000,000; other shareholders bear $1,990,000.',
+      interpretation: 'The smaller the manager’s stake, the cheaper a perk is to her and the stronger the temptation. That is why outside investors ask for monitoring (a board seat, approval of large purchases) and why boards try to raise managers’ ownership through incentive pay.' },
+
+    { level: 'challenging', title: 'Risk shifting after the loan', fictional: true,
+      setup: 'In the 2028 scenario, suppose Lantern will owe Coastline $60,000 when a key payment falls due, and it must choose between two plans for its second kitchen. The safe plan leaves Lantern worth $70,000 at that date for certain. The risky plan (a large catering contract with an untested client) leaves Lantern worth $110,000 with probability 50%, or $20,000 with probability 50%. Which plan maximises the company’s expected value, and which would shareholders prefer?',
+      steps: [
+        'Expected value of the company: safe <m>70{,}000</m>; risky <m>0.5 \\times 110{,}000 + 0.5 \\times 20{,}000 = 65{,}000</m> dollars. The safe plan is worth $5,000 more.',
+        'Shareholders’ payoff <m>\\max(V - D, 0)</m>. Safe: <m>70{,}000 - 60{,}000 = 10{,}000</m>. Risky: <m>0.5 \\times (110{,}000 - 60{,}000) + 0.5 \\times 0 = 25{,}000</m> dollars expected.',
+        'Lenders’ payoff <m>\\min(V, D)</m>. Safe: 60,000 for certain. Risky: <m>0.5 \\times 60{,}000 + 0.5 \\times 20{,}000 = 40{,}000</m> dollars expected.',
+        'Check: each plan’s two payoffs add up to its company value: <m>10{,}000 + 60{,}000 = 70{,}000</m> and <m>25{,}000 + 40{,}000 = 65{,}000</m>.',
+        'Compare: switching to the risky plan raises shareholders’ expected payoff by <m>25{,}000 - 10{,}000 = 15{,}000</m> dollars and cuts the lender’s by <m>60{,}000 - 40{,}000 = 20{,}000</m>, destroying $5,000 of value overall.',
+      ],
+      answer: 'The safe plan has the higher company value ($70,000 against $65,000 expected), but shareholders would prefer the risky plan (expected $25,000 against $10,000), because $20,000 of expected value moves from the bank to them.',
+      interpretation: 'This is risk shifting: limited liability lets shareholders keep the upside while lenders bear much of the downside. A bank that foresees it will charge more or write covenants that limit what the borrower may do with the money, which is why Coastline’s 2028 loan is not as simple as its 2026 one. Ana’s own wealth and reputation are tied up in Lantern, which in practice would make her more cautious than the arithmetic suggests.' },
+
+    { level: 'applied', title: 'Can Lantern pay a dividend without breaking its covenant?', fictional: true,
+      setup: 'In the 2028 scenario, at the end of a quarter Lantern has current assets of $24,000 (mostly cash) and current liabilities of $18,000. Its loan covenant requires a current ratio of at least 1.2. Ana and Juniper discuss paying a $5,000 cash dividend. Does the covenant allow it, and what is the largest cash dividend Lantern could pay while staying within the covenant?',
+      steps: [
+        'Current ratio now: <m>24{,}000 \\div 18{,}000 \\approx 1.33</m>, above the 1.2 minimum.',
+        'A $5,000 cash dividend reduces current assets to <m>24{,}000 - 5{,}000 = 19{,}000</m> and leaves current liabilities unchanged. New ratio: <m>19{,}000 \\div 18{,}000 \\approx 1.06</m>, below 1.2. The covenant would be broken.',
+        'Largest dividend: current assets must stay at least <m>1.2 \\times 18{,}000 = 21{,}600</m>, so the dividend can be at most <m>24{,}000 - 21{,}600 = 2{,}400</m> dollars.',
+        'Split by ownership: Ana receives <m>0.70 \\times 2{,}400 = 1{,}680</m> dollars and Juniper <m>0.30 \\times 2{,}400 = 720</m> dollars.',
+      ],
+      answer: 'No: a $5,000 dividend would cut the current ratio to about 1.06, breaking the 1.2 covenant. The most Lantern can pay is $2,400 ($1,680 to Ana, $720 to Juniper).',
+      interpretation: 'The covenant does exactly what it was written to do: it stops shareholders taking cash out of the business while the bank is still owed money. Breaking it would let Coastline demand early repayment or renegotiate on its own terms, a far bigger cost than a smaller dividend. Covenants turn the shareholder-lender conflict into a rule both sides agreed to in advance.' },
+  ],
+
+  demo: [
+    { widget: 'ga-risk-shift', intro: 'The explorer starts at the challenging example: $60,000 owed, a safe plan worth $70,000, and a risky plan worth $110,000 or $20,000 with equal chances. Lower the debt and watch shareholders’ preference for the risky plan weaken; raise the bad outcome and see when the risky plan stops hurting the lender.' },
+  ],
+
+  mistakes: [
+    { title: '“The agency problem means managers are dishonest.”', html: 'Agency problems arise from ordinary differences in interests and information, not from fraud. An honest manager may still prefer a bigger company, a quieter life or less risk than her shareholders would choose. Fraud is an extreme case; most agency costs come from perfectly legal decisions.' },
+    { title: '“Small businesses have no agency problems.”', html: 'An owner-manager like Ana has little conflict with shareholders, because she is the shareholder. But she still has a lender, and the moment she takes in an outside investor or a bigger loan, the conflicts in this lesson appear. Even today, Lantern has agency relationships with its employees.' },
+    { title: '“Shareholders and lenders want the same thing: a successful company.”', html: 'Both want the company to survive, but their payoffs are shaped differently. Lenders receive at most what they are owed; shareholders keep everything above it and lose no more than their investment. So shareholders can gain from risks that lenders would refuse, which is why loan contracts contain covenants.' },
+    { title: '“Paying managers in shares or options solves the problem.”', html: 'Incentive pay narrows the gap but creates side effects: options reward risk-taking, bonuses on one-year targets encourage short-term choices and number-stretching, and pay tied to the share price can make managers focus on the price around vesting dates. Good plans combine several measures, long vesting periods and the ability to claw back pay awarded on misstated results.' },
+    { title: '“The stakeholder view means profit does not matter, and the shareholder view means anything goes.”', html: 'Neither is true. Friedman’s shareholder view requires managers to obey the law and ethical custom; stakeholder advocates accept that a company must earn an adequate return to keep serving anyone. The real disagreement is about trade-offs between groups and about who decides them.' },
+  ],
+
+  application: [
+    { case: 'Harbourline Roasters’ board (Harbourline and the people here are fictional) meets to set its chief executive’s pay for the coming year. The current plan pays a salary plus a bonus of up to 100% of salary if net income beats the previous year’s.' },
+    { p: 'The chair of the pay committee, an independent director, starts with what went wrong last year. Net income rose just enough to pay the full bonus. But the auditors’ report to the committee shows that Harbourline cut its spending on roasting-plant maintenance and delayed a marketing campaign into the new year, and that two large customer orders were shipped on the last days of the year. Each choice was legal and properly accounted for. Together they moved profit from this year into last year and from the future into the present: the classic side effect of a one-year profit target.' },
+    { p: 'The committee redesigns the plan. Half of the bonus will depend on profit over three years rather than one, and half on measures the chief executive cannot move by timing: customer retention, plant reliability and the return Harbourline earns on the capital it uses. A larger part of pay will come in shares that vest over four years, raising the chief executive’s stake <m>\\alpha</m> and lengthening her horizon; she must keep a minimum holding of shares while she is in the job. A clawback policy, which Harbourline as a listed company must have, allows the board to recover incentive pay if results are later restated.' },
+    { p: 'The board then thinks about its lenders. Harbourline owes $210 million, and its bond agreements contain covenants that limit further borrowing. One director asks whether options would be better than shares; the committee decides against them, because options would reward the chief executive for raising risk, the cost of which would fall partly on the bondholders and, through higher interest rates on future debt, on the shareholders too.' },
+    { p: 'Finally, the committee prepares for the shareholders’ advisory vote on pay. Two large pension funds own significant stakes and have said they will vote against plans with one-year targets. The new plan is sent to them for comment before the meeting. The committee knows the vote is not binding, but a large vote against would be public, and it would raise questions about whether the directors are doing their job.' },
+    { p: 'None of these tools removes the agency problem; each trades one cost for another. Monitoring takes directors’ time, long vesting periods make pay less valuable to the chief executive and so more expensive to offer, and covenants limit what the company can do. Good governance is the combination that leaves the smallest total of monitoring costs, bonding costs and residual loss. F05 Corporate Finance takes these questions further, together with the choice between debt and equity that creates them.' },
+  ],
+
+  summary: [
+    'Separating ownership from control lets people with money finance people with skill, and makes managers agents of the shareholders who are their principals.',
+    'Agency problems arise because agents’ interests (pay, effort, perks, empire, risk, horizon) differ from principals’ and principals cannot see everything; agency costs = monitoring + bonding + residual loss.',
+    'A manager owning a fraction α of the shares bears only α × P of a perk costing P, so small stakes make perks cheap to the manager; an owner-manager like Ana today bears all of it.',
+    'Shareholders’ payoff is max(V − D, 0) and lenders’ is min(V, D), so after borrowing shareholders can gain from risk at lenders’ expense; lenders respond with higher rates and covenants.',
+    'Boards hire, pay and oversee managers on shareholders’ behalf, supported by audits, large shareholders, takeovers, debt and disclosure; independence is what makes them effective.',
+    'Incentive pay (bonuses, shares, options) aligns interests but has side effects; long vesting, several measures, say on pay and clawbacks are common remedies.',
+    'The shareholder view (Friedman, 1970) and the stakeholder view (Business Roundtable, 2019) disagree mainly about trade-offs between groups and who decides them; both require obeying the law and earning an adequate return.',
+  ],
+
+  glossary: [
+    { term: 'Separation of ownership and control', def: 'The situation in most large companies, in which the shareholders who own the company hire professional managers to run it.' },
+    { term: 'Principal', def: 'In an agency relationship, the person whose interests are at stake and who delegates decisions to an agent.' },
+    { term: 'Agent', def: 'In an agency relationship, the person who acts and makes decisions on behalf of a principal.' },
+    { term: 'Agency problem', def: 'The conflict that arises when an agent’s interests differ from the principal’s and the principal cannot fully observe or control the agent’s actions.' },
+    { term: 'Agency costs', def: 'The total cost of an agency relationship: monitoring costs paid by principals, bonding costs paid by agents, and the residual loss that remains.' },
+    { term: 'Risk shifting', def: 'Switching to riskier projects after borrowing, which can raise the expected payoff to shareholders while lowering the expected payoff to lenders. Also called asset substitution.' },
+    { term: 'Covenants', def: 'Promises written into a loan or bond agreement that restrict what the borrower may do or require it to meet conditions, such as a minimum current ratio or limits on dividends and further borrowing.' },
+    { term: 'Board of directors', def: 'The group elected by a corporation’s shareholders to oversee management: hiring and paying the chief executive, approving strategy and dividends, and overseeing financial reporting.' },
+    { term: 'Incentive pay', def: 'Pay that depends on results, such as bonuses tied to targets, shares that vest over time and stock options, intended to align managers’ interests with owners’.' },
+    { term: 'Stock options', def: 'Rights to buy a company’s shares at a fixed price (the exercise price) during a set period; valuable to the holder only if the share price rises above that price.' },
+    { term: 'Shareholder view', def: 'The view that managers, as agents of the owners, should run the company to maximise its value for shareholders, within the law and ethical custom.' },
+    { term: 'Stakeholder view', def: 'The view that a company should be run for the benefit of all who have a stake in it (customers, employees, suppliers, communities and shareholders).' },
+  ],
+
+  references: [
+    { text: 'Jensen, M. C. &amp; Meckling, W. H. (1976). Theory of the firm: managerial behavior, agency costs and ownership structure. <i>Journal of Financial Economics</i>, 3(4), 305–360.', url: 'https://papers.ssrn.com/abstract=94043', checked: '2026-10-23' },
+    { text: 'Greenlaw, S. A., Shapiro, D. &amp; MacDonald, D. (2022). <i>Principles of Economics 3e</i>, section 17.1, “How Businesses Raise Financial Capital”. OpenStax.', url: 'https://openstax.org/books/principles-economics-3e/pages/17-1-how-businesses-raise-financial-capital', checked: '2026-10-23' },
+    { text: 'US Securities and Exchange Commission (2011). <i>SEC Adopts Rules for Say-on-Pay and Golden Parachute Compensation as Required Under Dodd-Frank Act</i>. Press release 2011-25, 25 January 2011.', url: 'https://www.sec.gov/news/press/2011/2011-25.htm', checked: '2026-10-23' },
+    { text: 'US Securities and Exchange Commission (2022). <i>SEC Adopts Compensation Recovery Listing Standards and Disclosure Rules</i>. Press release 2022-192, 26 October 2022.', url: 'https://www.sec.gov/newsroom/press-releases/2022-192', checked: '2026-10-23' },
+    { text: 'Business Roundtable (2019). <i>Business Roundtable Redefines the Purpose of a Corporation to Promote ‘An Economy That Serves All Americans’</i>. 19 August 2019.', url: 'https://www.businessroundtable.org/business-roundtable-redefines-the-purpose-of-a-corporation-to-promote-an-economy-that-serves-all-americans', checked: '2026-10-23' },
+    { text: 'Henderson, D. R. (2020). <i>Friedman’s Critics Miss the Mark</i>. Hoover Institution, 24 September 2020. On Friedman, M. (1970), “The Social Responsibility of Business Is to Increase Its Profits”, <i>New York Times Magazine</i>, 13 September 1970.', url: 'https://www.hoover.org/node/80875', checked: '2026-10-23' },
+  ],
+
+  checks: [
+    { what: 'Ana’s investment in Lantern (case)', value: 26000 - 6000, shown: 20000 },
+    { what: 'Lantern’s March dividend (F01 m14)', value: 300, shown: 300 },
+    { what: 'Coastline interest per year (case)', value: 10000 * 0.06, shown: 600 },
+    { what: 'Harbourline shares (millions, case)', value: 765 / 42.5, shown: 18 },
+    { what: 'CEO owning 0.5% bears half a cent per dollar', value: 0.005 * 1, shown: 0.005 },
+    { what: 'Ana’s share after selling 30%', value: 100 - 30, shown: 70 },
+    { what: 'Juniper bears per dollar of perk (cents)', value: (1 - 0.7) * 100, shown: 30 },
+    { what: 'Perk (a): Ana bears all', value: 1 * 9000, shown: 9000 },
+    { what: 'Perk (b): Ana bears 70%', value: 0.7 * 9000, shown: 6300 },
+    { what: 'Perk (b): Juniper bears 30%', value: (1 - 0.7) * 9000, shown: 2700 },
+    { what: 'Perk (c): CEO bears', value: 0.005 * 2000000, shown: 10000 },
+    { what: 'Perk (c): others bear', value: 0.995 * 2000000, shown: 1990000 },
+    { what: 'Risky plan expected value', value: 0.5 * 110000 + 0.5 * 20000, shown: 65000 },
+    { what: 'Safe plan better by', value: 70000 - (0.5 * 110000 + 0.5 * 20000), shown: 5000 },
+    { what: 'Shareholders, safe plan', value: Math.max(70000 - 60000, 0), shown: 10000 },
+    { what: 'Shareholders, risky plan', value: 0.5 * Math.max(110000 - 60000, 0) + 0.5 * Math.max(20000 - 60000, 0), shown: 25000 },
+    { what: 'Lenders, risky plan', value: 0.5 * Math.min(110000, 60000) + 0.5 * Math.min(20000, 60000), shown: 40000 },
+    { what: 'Safe plan payoffs add up', value: 10000 + 60000, shown: 70000 },
+    { what: 'Risky plan payoffs add up', value: 25000 + 40000, shown: 65000 },
+    { what: 'Shareholders gain from switching', value: 25000 - 10000, shown: 15000 },
+    { what: 'Lender loses from switching', value: 60000 - 40000, shown: 20000 },
+    { what: 'Current ratio before dividend', value: 24000 / 18000, shown: 1.33, tol: 0.005 },
+    { what: 'Current assets after $5,000 dividend', value: 24000 - 5000, shown: 19000 },
+    { what: 'Current ratio after $5,000 dividend', value: 19000 / 18000, shown: 1.06, tol: 0.005 },
+    { what: 'Minimum current assets under covenant', value: 1.2 * 18000, shown: 21600 },
+    { what: 'Largest dividend', value: 24000 - 1.2 * 18000, shown: 2400 },
+    { what: 'Ana’s share of $2,400', value: 0.7 * 2400, shown: 1680 },
+    { what: 'Juniper’s share of $2,400', value: 0.3 * 2400, shown: 720 },
+    { what: 'Harbourline debt ($m, case)', value: 210, shown: 210 },
+  ],
+};
