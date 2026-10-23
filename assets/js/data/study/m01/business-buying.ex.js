@@ -115,7 +115,7 @@ export const guided = [
   },
   {
     id: 'm01-bb-g3', type: 'classify', kind: 'applied',
-    prompt: 'A fictional university department is replacing its laboratory freezers. Classify each person or group by the role they mainly play in this purchase.',
+    prompt: 'A fictional university department is replacing its laboratory freezers, a purchase of about $90,000. Classify each person or group by the role they mainly play in this purchase.',
     items: [
       'A researcher whose samples were ruined when an old freezer failed, and who asked for all the freezers to be replaced',
       'The 30 researchers and technicians who will store their samples in the new freezers',
@@ -141,10 +141,10 @@ export const guided = [
     id: 'm01-bb-g4', type: 'mc', kind: 'applied',
     prompt: 'A fictional manufacturer’s purchasing policy says: up to $5,000, any manager may buy with one quote; from $5,000 to $50,000, three written quotes and the head of purchasing’s approval are needed; above $50,000, a formal request for proposal and the finance director’s approval. A salesperson has persuaded the plant manager to buy a $38,000 conveyor upgrade. What should she expect next?',
     options: [
-      'Two competing quotes will be sought, and the head of purchasing must approve, so the plant manager can’t simply sign.',
+      'Three written quotes will be needed, hers and two others, and the head of purchasing must approve.',
       'The plant manager can sign the order straight away, because he is already convinced and the budget is his.',
       'A formal request for proposal will be issued, and the finance director will make the final decision on it.',
-      'Nothing more: once a supplier has been chosen by a manager, the policy no longer requires any quotes.',
+      'Nothing more: a manager has already chosen the supplier.',
     ],
     answer: 0,
     hints: [
@@ -195,10 +195,10 @@ export const independent = [
     id: 'm01-bb-i3', type: 'mc', kind: 'applied',
     prompt: 'A fictional supplier of cleaning products wants to win a hotel group whose current supplier has delivered reliably for years on a standing order. Which approach has the best chance?',
     options: [
-      'Show the hotel group a lower total cost or a problem it can solve, giving it a reason to reopen the decision.',
+      'Give the buyers a reason to reopen the decision, such as a lower total cost.',
       'Cut its price list and wait for the hotel group’s next routine order to arrive in the normal way.',
       'Send the clerk who places the standing order a generous gift so that she switches the order.',
-      'Advertise widely to hotel guests in the hope that they ask the hotels for its products.',
+      'Advertise to hotel guests so that they ask for its products.',
     ],
     answer: 0,
     feedback: {
@@ -227,9 +227,9 @@ export const independent = [
     id: 'm01-bb-i5', type: 'mc', kind: 'applied',
     prompt: 'Brackley Office (fictional) is bidding to refurnish the offices of Pemberton Legal, a fictional law firm. The office manager loved Brackley’s sample chairs, but says: “Finance will decide, and they only look at the price per desk.” What should Brackley’s salesperson do?',
     options: [
-      'Ask to put the case to finance too, in its terms: total cost over the furniture’s life, reliability and warranty.',
+      'Ask to put the case to finance as well, in terms of lifetime cost and warranty.',
       'Cut the price per desk to the cheapest rival’s level, because the decider looks only at the price.',
-      'Leave it to the office manager, who is the buyer and is sure to argue Brackley’s case well.',
+      'Leave it to the office manager, who is the buyer.',
       'Go over the office manager’s head and lobby the firm’s senior partners directly, without telling her.',
     ],
     answer: 0,
@@ -242,14 +242,14 @@ export const independent = [
   },
   {
     id: 'm01-bb-i6', type: 'short', kind: 'applied',
-    prompt: 'Tallis Software (fictional) sells timetabling software to universities. At one university: the registrar asked for a new system after a term in which hundreds of lectures clashed; the timetabling team of eight will use it every day; the IT security manager must approve any system that stores student data; the head of procurement runs all tenders over $100,000 and is the only permitted contact during one; and the university’s finance committee approves contracts over $250,000. Tallis’s system costs $60,000 a year on a five-year contract. Write a short account plan: the buying situation, the buying centre, the procurement route and what Tallis should offer each role.',
+    prompt: 'Orrery Software (fictional) sells timetabling software to universities. At one university: the registrar asked for a new system after a term in which hundreds of lectures clashed; the timetabling team of eight will use it every day; the IT security manager must approve any system that stores student data; the head of procurement runs all tenders over $100,000 and is the only permitted contact during one; and the university’s finance committee approves contracts over $250,000. Orrery’s system costs $60,000 a year on a five-year contract. Write a short account plan: the buying situation, the buying centre, the procurement route and what Orrery should offer each role.',
     rubric: [
       'Identifies the buying situation and justifies it (a new task or a modified rebuy, depending on what the university used before; either is accepted with a reason).',
       'Maps every person or group to a role by what they do, noting anyone with more than one role or a veto.',
       'Works out the contract value (5 × $60,000 = $300,000) and the procurement route it triggers: a tender, run by the head of procurement, and finance-committee approval.',
       'Proposes something specific for each role and respects the tender’s contact rule.',
     ],
-    model: 'Buying situation: if the university timetables with spreadsheets today, this is a new task; if it is replacing another system, a modified rebuy. Either way the clash-filled term has reopened the decision, and several people are involved. Buying centre: the registrar is the initiator and a strong influencer; the timetabling team are the users; the IT security manager is an influencer with a veto; the head of procurement is the buyer and, during the tender, the gatekeeper; the finance committee is the decider. Procurement route: five years at $60,000 is $300,000, over both the $100,000 tender threshold and the $250,000 committee threshold, so Tallis must win a formal tender and then committee approval, and may contact only the head of procurement while the tender is open. Offer: for the registrar, evidence of how the system prevents clashes, ideally from a similar university; for the timetabling team, a trial with their own data and training; for the IT security manager, documentation of how student data are stored and protected, ready before the tender closes; for the head of procurement, a complete, compliant bid on time; for the finance committee, the five-year total cost set against the cost of last term’s clashes. Before the tender, Tallis can help the registrar understand the options; once it opens, everything goes through procurement.',
+    model: 'Buying situation: if the university timetables with spreadsheets today, this is a new task; if it is replacing another system, a modified rebuy. Either way the clash-filled term has reopened the decision, and several people are involved. Buying centre: the registrar is the initiator and a strong influencer; the timetabling team are the users; the IT security manager is an influencer with a veto; the head of procurement is the buyer and, during the tender, the gatekeeper; the finance committee is the decider. Procurement route: five years at $60,000 is $300,000, over both the $100,000 tender threshold and the $250,000 committee threshold, so Orrery must win a formal tender and then committee approval, and may contact only the head of procurement while the tender is open. Offer: for the registrar, evidence of how the system prevents clashes, ideally from a similar university; for the timetabling team, a trial with their own data and training; for the IT security manager, documentation of how student data are stored and protected, ready before the tender closes; for the head of procurement, a complete, compliant bid on time; for the finance committee, the five-year total cost set against the cost of last term’s clashes. Before the tender, Orrery can help the registrar understand the options; once it opens, everything goes through procurement.',
   },
 ];
 
@@ -305,9 +305,9 @@ export const check = [
     id: 'm01-bb-k4', type: 'mc', kind: 'applied',
     prompt: 'A fictional packaging firm learns that its largest customer, unhappy about late deliveries, has invited two competitors to quote. What is the best response?',
     options: [
-      'Fix the delivery problem, show the evidence, and propose terms that guarantee punctual delivery.',
+      'Fix the late deliveries, show the evidence and offer guaranteed delivery terms.',
       'Cut the price, since price is the only thing a professional buyer really compares in the end.',
-      'Do nothing different: as the in-supplier it will keep the business because of the relationship.',
+      'Do nothing: the relationship will keep the business.',
       'Ask the customer to cancel the request for quotes out of respect for their long relationship.',
     ],
     answer: 0,
@@ -322,12 +322,12 @@ export const check = [
     id: 'm01-bb-k5', type: 'multi', kind: 'conceptual',
     prompt: 'Which statements about procurement rules are correct, according to the lesson? Select all that apply.',
     options: [
-      'Under the Federal Acquisition Regulation (as of 13 March 2026), a US federal micro-purchase of up to $15,000 may be made without competing quotations if the price is reasonable.',
+      'Under the current FAR, a federal micro-purchase of up to $15,000 needs no competing quotations if the price is reasonable.',
       'An approval limit can mean that the person who places orders is not allowed to approve a large one.',
       'A supplier that is not on an organisation’s approved supplier list may have to be approved before staff can buy from it.',
       'During a tender, contacting buying-centre members other than the named procurement officer can break the rules.',
-      'Procurement rules are the same in every organisation, so a seller needs to learn them only once.',
-      'The Federal Acquisition Regulation requires at least three quotes for every federal purchase, however small.',
+      'Procurement rules are the same in every organisation, so a seller needs to learn them only once in a career.',
+      'The Federal Acquisition Regulation requires at least three written quotes for every federal purchase, however small.',
     ],
     answer: [0, 1, 2, 3],
     feedback: {
@@ -347,9 +347,9 @@ export const check = [
     ],
     answer: 0,
     feedback: {
-      1: 'Titles rarely settle roles: an office manager or a receptionist can be the buyer or the gatekeeper, and in a small firm the owner may hold every role.',
+      1: 'Titles rarely settle roles: a plant engineer or an executive assistant can be the buyer or the gatekeeper, and in a small firm the owner may hold every role.',
       2: 'A buying centre can be one person or dozens; roles can be shared, combined or missing.',
-      3: 'Approval limits often push small decisions down: an office manager may decide small orders while a director decides large contracts.',
+      3: 'Approval limits often push small decisions down: a ward manager may approve small orders while a capital committee approves large ones.',
     },
     solution: 'Roles describe what people do in a particular purchase. One person can hold several, several people can share one, and the roles, including who decides, can change with the size and kind of purchase.',
   },

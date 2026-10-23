@@ -100,7 +100,7 @@ export const guided = [
         options: [
           'Hotel C: it leads on location, which carries half the weight.',
           'Hotel B: it is the cheapest, and price is what most travellers look at first.',
-          'Hotel A: it has no score below 5, so it is the safest all-round choice.',
+          'Hotel A: it has no score below 5.',
           'None of them: scores this close are too similar for the model to rank.',
         ],
         answer: 0,

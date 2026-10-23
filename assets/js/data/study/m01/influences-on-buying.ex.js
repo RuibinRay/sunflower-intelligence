@@ -114,7 +114,7 @@ export const guided = [
     id: 'm01-ib-g3', type: 'mc', kind: 'conceptual',
     prompt: 'Which statement about Maslow’s hierarchy of needs is best supported by Maslow’s own paper and the later evidence?',
     options: [
-      'The five needs are a useful checklist, but the evidence gives little support to a fixed order.',
+      'The needs are a useful checklist, but evidence for a fixed order is weak.',
       'Research has confirmed that people pursue esteem only once their safety needs are fully met.',
       'Maslow said the order was rigid, and later research confirmed that it was.',
       'The hierarchy has been disproved, so the five needs are of no use in marketing.',
@@ -162,7 +162,7 @@ export const independent = [
     prompt: 'Which situation shows loss aversion rather than risk aversion?',
     options: [
       'Shoppers resent a $5 card surcharge more than a missed $5 cash discount.',
-      'An investor prefers a certain $1,000 to a 50% chance of $2,000 and nothing otherwise.',
+      'An investor prefers a sure $1,000 to a 50% chance of $2,000.',
       'A buyer keeps choosing the same familiar brand because it has always worked well for her.',
       'A shopper judges what a sofa should cost from the first price tag she happened to see that day.',
     ],
@@ -251,9 +251,9 @@ export const check = [
     id: 'm01-ib-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Which is an accurate definition of anchoring?',
     options: [
-      'An estimate of an uncertain value is pulled towards a number seen first, even an irrelevant one.',
+      'An estimate is pulled towards a number seen first, even an irrelevant one.',
       'Buyers tend to stay with whichever option a seller has pre-selected for them at checkout.',
-      'A loss weighs more in a buyer’s mind than a gain of exactly the same size does.',
+      'A loss weighs more than a gain of the same size.',
       'Buyers prefer brands that the people they admire are seen to recommend or use.',
     ],
     answer: 0,
@@ -300,7 +300,7 @@ export const check = [
       'A side-by-side tasting of a week-old and a two-month-old roast.',
       'Free samples so that more office workers taste how good Lantern’s coffee is.',
       'Information about the farms Lantern buys from, an attribute buyers hadn’t considered.',
-      'A lower price, so that Lantern scores higher on value for money.',
+      'A lower price, to raise Lantern’s value score.',
     ],
     answer: 0,
     feedback: {
@@ -315,7 +315,7 @@ export const check = [
     id: 'm01-ib-k5', type: 'mc', kind: 'conceptual',
     prompt: 'What did Maslow himself say, in his 1943 paper, about the order of his hierarchy of needs?',
     options: [
-      'That it is less rigid than he may have implied: people are partly satisfied in all needs at once.',
+      'That it is less rigid than he may have implied: needs are often partly met at once.',
       'That it is a strict sequence, in which each need must be fully met before the next appears.',
       'That it describes purchases of luxury goods well but does not apply to everyday shopping.',
       'That surveys of well-being in 123 countries had already confirmed it as a law.',
@@ -335,9 +335,9 @@ export const check = [
       'Changing a default takes effort.',
       'People read the default as a recommendation from whoever set it.',
       'The default becomes the reference point, so leaving it feels like a loss.',
-      'The default option is always the cheapest.',
-      'People can’t see the other options.',
-      'Defaults work only when the stakes are trivial.',
+      'The default option is always the cheapest one, so people choose it to save money.',
+      'People can’t see the other options, because the default hides them from view.',
+      'Defaults work only when the stakes are trivial, such as the colour of a phone case.',
     ],
     answer: [0, 1, 2],
     feedback: {
