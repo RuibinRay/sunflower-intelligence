@@ -89,7 +89,14 @@ export default {
     ] },
     { callout: 'key', title: 'How to use it well', html: 'Use the life cycle to ask questions, not to answer them. State the stage you think a product is in as a hypothesis, list the evidence for it (growth rates, repeat purchase, the number of competitors, price trends), choose decisions that fit, and keep checking. Never cut support for a product only because a chart says it should be declining.' },
     { h: 'Reading the stage from data' },
-    { p: 'The life cycle is about the trend in sales, so the first tool is growth over a year. Two traps hide in ordinary sales data. The first is <i>seasonality</i>: Harbour City sells 25% more cans than an average quarter in the third quarter (summer) and 15% fewer in the first and fourth. A fall from the third quarter to the fourth is the season, not decline. Compare each quarter with the same quarter a year earlier, or divide each quarter’s sales by its seasonal index (1.25 for the third quarter, 0.85 for the fourth) to get seasonally adjusted sales. The second trap is one-off events: a lost listing, a competitor’s heavy promotion or a stock-out can move one brand’s sales sharply without any change in the stage of the category.' },
+    { p: 'No single number identifies a stage, so analysts combine several kinds of evidence and look for them to agree.' },
+    { list: [
+      '<b>Growth rates over several years.</b> Rising growth suggests introduction moving into growth; high but falling growth suggests late growth; growth near zero suggests maturity; sustained falls suggest decline.',
+      '<b>Who is buying.</b> If most sales come from first-time buyers, the market is still being built; if most come from repeat buyers and from customers switching between brands, it is mature.',
+      '<b>Competitors.</b> A rising number of brands suggests growth; brands leaving or merging suggests a shake-out or maturity.',
+      '<b>Prices and promotions.</b> Prices that hold while volume grows suggest growth; more frequent price promotions and falling average prices are common signs of maturity.',
+    ] },
+    { p: 'The first tool is growth over a year. Two traps hide in ordinary sales data. The first is <i>seasonality</i>: Harbour City sells 25% more cans than an average quarter in the third quarter (summer) and 15% fewer in the first and fourth. A fall from the third quarter to the fourth is the season, not decline. Compare each quarter with the same quarter a year earlier, or divide each quarter’s sales by its seasonal index (1.25 for the third quarter, 0.85 for the fourth) to get seasonally adjusted sales. The second trap is one-off events: a lost listing, a competitor’s heavy promotion or a stock-out can move one brand’s sales sharply without any change in the stage of the category.' },
   ],
 
   formulas: [
