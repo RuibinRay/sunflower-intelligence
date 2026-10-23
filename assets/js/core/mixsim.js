@@ -130,6 +130,7 @@ export const MODEL = deepFreeze({
     'Cannibalisation: extra flavours and extra channels never take sales from each other.',
     'Category growth: the category stays at 4.8 million cans whatever Lantern does; Lantern’s cans come from rivals (or, in the direct channel, from people who would not have bought).',
     'Different prices by channel: one shelf price everywhere (in practice retailers set their own shelf prices).',
+    'Shelf presence: a listed channel counts as fully stocked from day one, and trade money buys only price cuts, never better shelf position, features or retailer goodwill.',
     'Uncertainty: the model gives one number, not a range; real launches vary widely.',
     'Years after the first: awareness and habit built in year 1 would carry into year 2.',
   ],
