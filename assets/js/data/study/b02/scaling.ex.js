@@ -223,7 +223,7 @@ export const independent = [
     answer: 1.31, check: () => (75 - 12) / (60 - 12), tol: 0.005, unit: '', places: 2,
     wrong: [
       { value: 1, say: 'Min–max values are bounded only for the training data. A new order above the training maximum scales above 1; don’t clip it.' },
-      { value: 0.84, say: 'You used the new order as the maximum. The scaler keeps the training parameters: minimum $12, maximum $60.' },
+      { value: 0.84, say: 'You divided by the new order itself, (75 − 12) ÷ 75. Divide by the training range instead: the scaler keeps its training parameters, minimum $12 and maximum $60.' },
       { value: 1.56, say: 'That is 75 ÷ 48. Subtract the minimum first: (75 − 12) ÷ 48.' },
     ],
     solution: '(75 − 12) ÷ (60 − 12) = 63 ÷ 48 ≈ 1.31. The value is above 1 because the order is larger than any training order. That is correct and informative: it is 31% of the training range above the training maximum.',
@@ -269,7 +269,7 @@ export const independent = [
   },
   {
     id: 'b02-sc-i5', type: 'mc', kind: 'conceptual',
-    prompt: 'Harborview’s booking totals are strongly right-skewed: most are a few hundred dollars and a few long suite stays run to thousands. After standardisation, the totals are…',
+    prompt: 'Harborview’s booking totals are strongly right-skewed: most are a few hundred dollars and a few long or suite stays run to thousands. After standardisation, the totals are…',
     options: [
       'still right-skewed, with mean 0 and standard deviation 1.',
       'normally distributed, with mean 0 and standard deviation 1.',

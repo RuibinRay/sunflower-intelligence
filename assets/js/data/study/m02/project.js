@@ -235,9 +235,9 @@ export default {
         },
         {
           id: 'm02-pj-c4', type: 'mc', kind: 'applied',
-          prompt: 'The simulator’s estimate says that adding convenience stores to the default plan raises profit after overhead by about $49,000, yet the course’s channel lesson suggests launching selectively and adding convenience stores later. What is the most defensible conclusion for Lantern?',
+          prompt: 'The simulator’s estimate says that adding convenience stores to the default plan raises profit after overhead by about $49,000, yet the course’s channel lesson calls convenience stores the closest call and stops short of a full launch in them. What is the most defensible conclusion for Lantern?',
           options: [
-            'Treat the gain as a hypothesis worth testing: the model leaves out retailers dropping slow sellers, the work of serving another channel and how competitors would respond, so pilot convenience stores in one chain and check sales per store per week before rolling out.',
+            'Treat the gain as a hypothesis worth testing: the model assumes full distribution from day one and leaves out the extra selling and delivery work, retailers dropping slow sellers, shoppers who would have bought Lantern in another channel anyway and how competitors would respond, so pilot convenience stores in one chain and check sales per store per week before rolling out.',
             'Add convenience stores everywhere at launch: the model shows they pay.',
             'Ignore the simulator: a lesson’s advice always outweighs numbers.',
             'Drop supermarkets instead, since convenience stores add more profit.',
@@ -245,10 +245,10 @@ export default {
           answer: 0,
           feedback: {
             1: 'The gain is a simulated estimate from invented coefficients. It is worth acting on only once it has been checked against evidence from the real channel.',
-            2: 'The model and the lesson are both evidence. When they disagree, find out which assumption drives the difference and test it.',
+            2: 'The lesson’s reasoning and the model’s estimate are both worth weighing. When they disagree, find out which assumption drives the difference and test it.',
             3: 'The simulator says the opposite: removing supermarkets would remove the channel that sells most of Lantern’s cans.',
           },
-          solution: 'A model is a way to find trade-offs, not a verdict. Here it says convenience stores add cans and profit despite the 40% margin. The lesson’s caution rests on things the model doesn’t capture: a new brand with little awareness among impulse buyers, slow sellers being delisted, support spread thin and the team’s capacity. A limited pilot turns the disagreement into evidence.',
+          solution: 'A model is a way to find trade-offs, not a verdict. This one already counts the 40% margin, the $4,000 listing fee, Lantern’s low awareness against Summit’s and Daily Grind’s habitual buyers, and the sampling and trade budgets spread over more stores, and it still finds a gain. So those arguments alone don’t justify waiting. The case for caution rests on what the model leaves out: it counts Lantern as stocked in every convenience store from day one and charges nothing for the extra selling and delivery work; it can’t see a retailer delisting a slow seller; it ignores cannibalisation (some convenience buyers would otherwise have bought Lantern in a supermarket); and it holds competitors fixed. Whether those risks are worth about $49,000 of simulated profit is a judgement, and a pilot in one chain turns it into evidence.',
         },
       ],
     },
@@ -280,10 +280,10 @@ export default {
           answer: 0,
           feedback: {
             1: 'Cutting the ads costs most: awareness falls and the simulator’s profit estimate drops to about $107,492.',
-            2: 'Sampling is close to its point of diminishing returns, so this cut costs little (profit about $121,771), but cutting trade promotions costs nothing at all in the model: profit rises.',
+            2: 'At $40,000 sampling is already a little past the budget that earns the most in the simulator, so this cut costs little (profit about $121,771); but cutting trade promotions costs nothing at all in the model: profit rises.',
             3: 'Each vehicle works differently, with different returns at the margin, which is the reason to compare them.',
           },
-          solution: 'The simulator’s estimates of profit after overhead: default $122,956; ads cut to $30,000, about $107,492; sampling cut to $20,000, about $121,771; trade promotions cut to $0, about $133,234. In the model the trade budget buys about 6,000 extra cans but gives away 20% of the price on every promoted can, so it costs more than it earns. The model doesn’t count the trial or retailer goodwill a few deals can buy, so a small trade budget may still be worth keeping for the listings.',
+          solution: 'The simulator’s estimates of profit after overhead: default $122,956; ads cut to $30,000, about $107,492; sampling cut to $20,000, about $121,771; trade promotions cut to $0, about $133,234. In the model the trade budget buys about 6,000 extra cans but gives away 20% of the price on every promoted can, so it costs more than it earns. The model doesn’t count repeat purchases by shoppers who first try the can on a deal, or the retailer support (displays, keeping the listing) that a few deals can buy, so a small trade budget may still be worth keeping for the listings. If you keep one, say what the simulator says it costs.',
         },
         {
           id: 'm02-pj-m3', type: 'mc', kind: 'conceptual',
@@ -378,7 +378,7 @@ export default {
           answer: [0, 1, 2],
           feedback: {
             3: 'The simulator is a teaching model with invented coefficients; its numbers are estimates for comparison, not forecasts.',
-            4: 'Share can be bought with low prices or heavy trade promotion that lose money; the value plan above has a higher share than its profit justifies.',
+            4: 'Share can be bought with low prices or heavy trade promotion that earn little or nothing per can. Share is a means to profit, not a substitute for it: compare plans on profit and on how much risk they carry.',
           },
           solution: 'Compare plans on the measures that decide whether a plan pays (contribution, profit after overhead, break-even and margin of safety), isolate the decision that causes each difference, and remember that simulated numbers are comparisons under stated assumptions, not forecasts.',
         },
@@ -399,7 +399,7 @@ export default {
             'Compares the plan with at least two alternatives on the same measures, and labels every simulator number as a simulated estimate.',
             'Names the main risks and at least two things the model leaves out, and proposes specific tests (with the result that would change the decision) before the whole budget is committed.',
           ],
-          model: 'Recommendation. Launch Lantern Cold Brew as a premium can: the Organic single-origin liquid, one flavour (Original), at $3.79, in supermarkets, natural and specialty grocers and Lantern’s own cafés and online shop, with $120,000 of promotion: $50,000 social and search ads, $40,000 in-store sampling and displays, $20,000 PR and events and $10,000 of trade promotions.<br><br>Why it fits. The target is commuters and office workers who buy coffee out and care how it tastes. The Organic liquid scores 8.5 on the taste panel, above Summit Brew’s 8, so $3.79, Summit’s price, is credible, and natural-grocer shoppers pay for organic provenance. One flavour keeps listing fees at $11,000 a year. Ads and PR build awareness from 12%; sampling turns it into trial at the shelf; trade deals are kept to a few windows so that shoppers don’t learn a lower reference price.<br><br>The economics. Lantern keeps $1.70 a can in supermarkets (3.79 × 0.68 − 0.88), $1.47 in natural grocers (3.79 × 0.62 − 0.88) and $2.46 direct (3.79 − 0.45 − 0.88). With $197,000 of fixed costs, including the whole promotion budget and the $60,000 overhead, and cans spread in proportion to category volume, the plan breaks even at about 112,095 cans, around 3.3% of the cans sold through its three channels.<br><br>Against the alternatives. On the simulator’s estimates (a teaching model, not a forecast), this plan sells about 216,501 cans, earns about $162,161 after overhead and breaks even at about 115,951 cans: a margin of safety of about 46%. The default Single-origin plan at $3.49 earns about $122,956 (margin of safety 41%); a value plan (Classic blend at $2.79 in supermarkets and convenience stores) earns about $8,590 and contradicts the brand. In the simulator, moving from $3.49 to $3.79 loses volume in price-sensitive supermarkets but gains contribution in natural grocers.<br><br>Risks. The model leaves out competitor reactions (Summit could cut its price or promote against us), word of mouth and repeat purchase, and retailers dropping slow sellers. Awareness is simulated to reach only about 23% by year end, so many shoppers will meet an unknown brand at a premium price. The simulator also suggests convenience stores would add profit; I would hold them for a year-2 pilot rather than spread support thinly at launch.<br><br>Before committing. Run a four-week price test in a few natural grocers and supermarkets ($3.59 against $3.79) and a randomised sampling holdout. If supermarket volume at $3.79 is more than about 8% below volume at $3.59 (the most the higher price can absorb: 0.136 ÷ 1.6972), I would move to $3.59; if sampled stores don’t outsell unsampled ones, I would move sampling money into ads.',
+          model: 'Recommendation. Launch Lantern Cold Brew as a premium can: the Organic single-origin liquid, one flavour, at $3.79, in supermarkets, natural and specialty grocers and Lantern’s own cafés and online shop, with $120,000 of promotion: $50,000 social and search ads, $40,000 in-store sampling and displays, $20,000 PR and events and $10,000 of trade promotions.<br><br>Why it fits. The target is commuters and office workers who buy coffee out and care how it tastes. Its taste score of 8.5 beats Summit Brew’s 8, so Summit’s $3.79 is credible, and natural-grocer shoppers pay for organic provenance. One flavour keeps listing fees at $11,000 a year. Ads and PR build awareness from 12%; sampling turns it into trial at the shelf.<br><br>The economics. Lantern keeps $1.70 a can in supermarkets (3.79 × 0.68 − 0.88), $1.47 in natural grocers (3.79 × 0.62 − 0.88) and $2.46 direct (3.79 − 0.45 − 0.88). With $197,000 of fixed costs (the whole promotion budget and the $60,000 overhead included) and cans spread in proportion to category volume, the plan breaks even at about 112,095 cans.<br><br>Against the alternatives. On the simulator’s estimates (a teaching model, not a forecast), this plan sells about 216,501 cans and earns about $162,161 after overhead, a margin of safety of about 46%. The default Single-origin plan at $3.49 earns about $122,956 (41%); a value plan (Classic blend at $2.79 in supermarkets and convenience stores) earns about $8,590 and contradicts the brand. Changing one decision at a time, most of the gain comes from the product and price: the Organic can at $3.79 with the default promotion split earns about $153,111, the default can with my split about $131,141.<br><br>Where I depart from the simulator. It says the $10,000 of trade promotions costs about $4,700 of profit. I keep a few deal windows of no more than 20% off: they help win and keep listings, and the model counts neither that nor repeat buying by shoppers who try a can on deal. It also says convenience stores would add about $54,000, after their 40% margin, the fee and thinner sampling; but it ignores delisting of slow sellers, cannibalisation and competitor responses, so I would pilot one chain and roll out only if sales per store per week hold up.<br><br>Risks. Summit could cut its price, and awareness is simulated to reach only about 23% by year end, so many shoppers will meet an unknown brand at a premium price.<br><br>Before committing. Run a four-week price test ($3.59 against $3.79) in a few supermarkets and natural grocers, and a randomised sampling holdout. If supermarket volume at $3.79 is more than about 8% below volume at $3.59 (the most the higher price can absorb: 0.136 ÷ 1.6972), I would move to $3.59; if sampled stores don’t outsell unsampled ones, I would move sampling money into ads.',
         },
       ],
     },
@@ -471,12 +471,16 @@ export default {
       ['Organic $3.79 supermarket margin', gm('supermarket', 3.79, 'organic'), 1.70, 0.005],
       ['Organic $3.79 natural margin', gm('natural', 3.79, 'organic'), 1.47, 0.005],
       ['Organic $3.79 direct margin', gm('direct', 3.79, 'organic'), 2.46, 0.005],
-      ['Organic $3.79 hand break-even, share of the three channels’ cans (%)', 112095 / (CATEGORY.cansPerYear * 0.70) * 100, 3.3, 0.05],
       ['One flavour listing fees, default channels', CH.supermarket.listing + CH.natural.listing, 11000, 0],
       ['Single-origin supermarket margin at $2.29', gm('supermarket', 2.29, 'single'), 0.82, 0.005],
       ['Sampling $30,000: profit after overhead', r(year(promo('sampling', 30000)).profit), 123459, 0.5],
       ['Organic: volume fall $3.79 can absorb vs $3.59, supermarkets (%)', (0.20 * 0.68) / gm('supermarket', 3.79, 'organic') * 100, 8, 0.05],
       ['Lesson hand break-even, default plan', Math.ceil(FC_DEFAULT / avg3(3.49, 'single')), 117013, 0],
+      // model answer: one decision at a time, and where it departs from the simulator
+      ['Premium product and price, default promotion split: profit after overhead', r(year({ ...ORGANIC, promotion: { ...D.promotion } }).profit), 153111, 0.5],
+      ['Default product and price, premium promotion split: profit after overhead', r(year({ ...D, promotion: { ...ORGANIC.promotion } }).profit), 131141, 0.5],
+      ['Premium plan: profit given up by its $10,000 of trade promotions (thousands)', (year({ ...ORGANIC, promotion: { ...ORGANIC.promotion, trade: 0 } }).profit - og.profit) / 1000, 4.7, 0.05],
+      ['Premium plan: profit added by convenience stores (thousands)', (year({ ...ORGANIC, channels: [...ORGANIC.channels, 'convenience'] }).profit - og.profit) / 1000, 54, 0.5],
     ];
   },
 };

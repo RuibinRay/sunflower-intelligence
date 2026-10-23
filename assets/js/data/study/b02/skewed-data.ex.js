@@ -74,7 +74,7 @@ export const guided = [
       { id: 'b02-sk-g1-s2', type: 'num', prompt: 'What is m₃, the mean cubed deviation?',
         answer: 93.6, check: () => moments(WAITS).m3, tol: 0.01, unit: '', places: 2,
         hints: ['Cube each deviation, keeping the sign: −27, −8, −8, −1, 512.', 'Their sum is 468; divide by 5.'],
-        wrong: [{ value: 117, say: 'You divided by 4. Use n = 5.' }, { value: 109.6, say: 'Cubes of negative numbers are negative: (−3)³ = −27, not 27.' }] },
+        wrong: [{ value: 117, say: 'You divided by 4. Use n = 5.' }, { value: 111.2, say: 'Cubes of negative numbers are negative: (−3)³ = −27, not 27. Only the 8 contributes a positive cube.' }] },
       { id: 'b02-sk-g1-s3', type: 'num', prompt: 'What is the adjusted skewness G₁ = √(n(n − 1)) ÷ (n − 2) × m₃ ÷ m₂^1.5? (2 decimal places)',
         answer: 2.10, check: () => skew(WAITS), tol: 0.01, unit: '', places: 2,
         hints: ['g₁ = 93.6 ÷ 16.4^1.5 = 93.6 ÷ 66.41 = 1.409.', 'The factor is √(5 × 4) ÷ 3 = 4.472 ÷ 3 = 1.491.'],
@@ -96,7 +96,7 @@ export const guided = [
   },
   {
     id: 'b02-sk-g3', type: 'mc', kind: 'conceptual',
-    prompt: 'Northfield’s weekly study hours are right-skewed and some students report 0 hours. Which transformation can be applied directly?',
+    prompt: 'A university’s survey of weekly study hours is right-skewed, and some students report 0 hours. Which transformation can be applied directly?',
     options: ['log(1 + x)', 'log x', 'The reciprocal 1/x', 'Box–Cox'],
     answer: 0,
     hints: ['Which of these is defined at x = 0?'],
@@ -218,8 +218,8 @@ export const check = [
   },
   {
     id: 'b02-sk-k3', type: 'num', kind: 'numerical',
-    prompt: 'Harborview’s standard rate rises from $50 to $60. What is 100 × ln(60 ÷ 50)? (2 decimal places)',
-    answer: 18.23, check: () => 100 * Math.log(60 / 50), tol: 0.01, unit: '', places: 2,
+    prompt: 'Harborview’s standard rate rises from $150 to $180. What is 100 × ln(180 ÷ 150)? (2 decimal places)',
+    answer: 18.23, check: () => 100 * Math.log(180 / 150), tol: 0.01, unit: '', places: 2,
     wrong: [{ value: 20, say: 'That is the actual percentage change. For a 20% rise the log difference is noticeably smaller: 100 × ln 1.2.' }],
     solution: '100 × ln(1.2) = 100 × 0.1823 = 18.23, against an actual rise of 20%. For changes this large, convert log differences with (eᵈ − 1) × 100.',
   },

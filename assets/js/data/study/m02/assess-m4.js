@@ -22,7 +22,7 @@ export const items = [
     id: 'm02-m4-3', lesson: M, type: 'num', kind: 'numerical',
     prompt: 'A $9,000 campaign is shown 1,500,000 times, has a click-through rate of 0.8% and converts 2.5% of clicks into orders. What is the CPA?',
     answer: 30, check: () => 9000 / (1500000 * 0.008 * 0.025), unit: '$', places: 2, tol: 0.01,
-    wrong: [{ value: 0.75, say: 'That is the cost per click (9,000 ÷ 12,000). CPA divides by orders: 12,000 × 2.5% = 300.' }, { value: 0.24, say: 'You divided by orders counted per impression. Clicks = 1,500,000 × 0.008 = 12,000; orders = 12,000 × 0.025 = 300.' }],
+    wrong: [{ value: 0.75, say: 'That is the cost per click (9,000 ÷ 12,000). CPA divides by orders: 12,000 × 2.5% = 300.' }, { value: 0.24, say: 'You applied the 2.5% conversion rate to impressions instead of clicks. Clicks = 1,500,000 × 0.008 = 12,000; orders = 12,000 × 0.025 = 300.' }],
     solution: 'Clicks = 1,500,000 × 0.008 = 12,000. Orders = 12,000 × 0.025 = 300. CPA = 9,000 ÷ 300 = $30.',
   },
   {

@@ -38,7 +38,7 @@ export const widgets = {
     dataset: 'lantern-orders',
     ops: ['validate', 'outliers'],
     watch: ['quantity', 'order_total'],
-    task: 'First add a validation rule for quantity (a whole number of at least 1) and see which orders fail it: those are impossible values, not outliers. Then run an outlier check on quantity. For each flagged order, look at its order total and product to decide whether it is a typing error or a genuine bulk order. The genuine bulk order should still be in the data when you finish.',
+    task: 'First add a validation rule for quantity from the data dictionary (a whole number from 1 to 200) and look at the orders that fail it: they are impossible values, not outliers, so set them to missing. Then run an outlier check on quantity with each rule. The modified z-score can’t be calculated here (more than half the orders are for one bag, so the MAD is 0), and with an IQR of one bag the Tukey fences flag ordinary orders of four to six bags as well. Check the largest flagged order against its order total and discount to decide whether it is a typing error or a genuine bulk order. The genuine bulk order should still be in the data when you finish.',
   },
 };
 
@@ -189,12 +189,12 @@ export const independent = [
   },
   {
     id: 'b02-out-i6', type: 'mc', kind: 'applied',
-    prompt: 'Harborview’s penthouse was booked for a week at $2,400 a night, ten times the hotel’s usual rate. The finance team is preparing last month’s revenue report. How should the booking be treated?',
+    prompt: 'A confirmed and paid Harborview booking is a 14-night stay in a Deluxe room with a total of $3,528, about seven times the median booking total and far above the upper Tukey fence. The finance team is preparing the revenue report for the month. How should the booking be treated?',
     options: [
-      'Keep it in revenue and the average rate, and report the median rate alongside so the typical night is also visible.',
+      'Keep it in revenue and the average booking value, and report the median booking value alongside so the typical booking is also visible.',
       'Remove it, because it is above the upper Tukey fence.',
-      'Cap it at the upper fence so the average rate isn’t distorted.',
-      'Replace it with the median rate.',
+      'Cap it at the upper fence so the average booking value isn’t distorted.',
+      'Replace it with the median booking total.',
     ],
     answer: 0,
     feedback: {
@@ -202,7 +202,7 @@ export const independent = [
       2: 'Capping changes real revenue. That can make sense inside a model, not in a report of what happened.',
       3: 'Replacing a known, correct value with a typical one falsifies the record.',
     },
-    solution: 'A genuine extreme belongs in a report of what happened. Keep it, so revenue and the average daily rate are correct, and add a robust summary (the median) so readers also see what a typical night cost.',
+    solution: 'A genuine extreme belongs in a report of what happened. Keep it, so revenue and the average booking value are correct, and add a robust summary (the median) so readers also see what a typical booking is worth.',
   },
 ];
 
@@ -249,8 +249,8 @@ export const check = [
     id: 'b02-out-k4', type: 'rows', kind: 'applied',
     prompt: 'Eight Northfield students recorded their weekly study hours (fictional). Select every student flagged by the modified z-score rule, |M| > 3.5.',
     data: { table: { head: ['Student', 'Programme', 'Study hours per week'], rows: [
-      ['N-301', 'Economics', '11'], ['N-302', 'Nursing', '40'], ['N-303', 'History', '9'], ['N-304', 'Economics', '13'],
-      ['N-305', 'Computing', '2'], ['N-306', 'Nursing', '12'], ['N-307', 'History', '14'], ['N-308', 'Computing', '10'],
+      ['N-301', 'Economics', '11'], ['N-302', 'Nursing', '40'], ['N-303', 'Psychology', '9'], ['N-304', 'Economics', '13'],
+      ['N-305', 'Computer Science', '2'], ['N-306', 'Nursing', '12'], ['N-307', 'Psychology', '14'], ['N-308', 'Computer Science', '10'],
     ] } },
     answer: [1],
     solution: 'Sorted: 2, 9, 10, 11, 12, 13, 14, 40; median = (11 + 12) ÷ 2 = 11.5. Absolute distances, sorted: 0.5, 0.5, 1.5, 1.5, 2.5, 2.5, 9.5, 28.5, so MAD = (1.5 + 2.5) ÷ 2 = 2. M(40) = 0.6745 × 28.5 ÷ 2 = 9.61 (flagged); M(2) = 0.6745 × (−9.5) ÷ 2 = −3.20 (not flagged, since |−3.20| < 3.5). Only N-302 is flagged. The Tukey fences (4.5 and 18.5) would also flag the 2 hours, a reminder that different rules draw the line in different places.',

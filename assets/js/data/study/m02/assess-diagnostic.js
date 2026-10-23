@@ -10,15 +10,15 @@ export const items = [
     prompt: 'A fictional bakery positions its sourdough as an artisan loaf, baked slowly by hand, at $7.50. To grow quickly it starts selling through discount supermarkets, where the loaf is on a “half price” deal every other week. What is wrong with this mix?',
     options: [
       'Place and promotion contradict the product and price: discount outlets and constant half-price deals tell shoppers the loaf is ordinary, so the artisan positioning stops being believable.',
-      'Nothing: more outlets and more deals always mean more customer value.',
+      'Nothing: wider availability and frequent deals win trial, and trial is what a growing bakery needs most.',
       'Only the price is wrong: an artisan loaf should cost less than $7.50 to sell in supermarkets.',
-      'The product is wrong: a slowly baked loaf can’t be sold through any retailer.',
+      'Only the promotion is wrong: replace the half-price deals with advertising about the baking, and keep the discount supermarkets for reach.',
     ],
     answer: 0,
     feedback: {
-      1: 'More availability and lower prices can raise value for some shoppers, but the mix has to fit the positioning. A loaf that is half price every other week teaches shoppers that $7.50 isn’t its real price.',
+      1: 'Trial matters, but the mix has to fit the positioning. A loaf that is half price every other week in discount outlets teaches shoppers that $7.50 isn’t its real price.',
       2: 'Cutting the price would make the contradiction worse: the problem is that place and promotion send a “bargain” message about a premium product.',
-      3: 'Artisan products are sold through retailers all the time; the question is which retailers and how they are promoted there.',
+      3: 'Dropping the deals helps, but place still contradicts the positioning: a discount supermarket tells shoppers the loaf is ordinary whatever the advertising says.',
     },
     solution: 'Judge each P against the positioning and against the others. Hand-baked sourdough at $7.50 says premium; discount supermarkets and frequent half-price deals say bargain. A consistent mix would use bakeries, delicatessens or selected grocers and promote the craft (tastings, the baking story), with few or no deep deals.',
   },
@@ -42,13 +42,14 @@ export const items = [
   },
   {
     id: 'm02-dg-3', lesson: 'product-life-cycle', type: 'num', kind: 'numerical',
-    prompt: 'A hypothetical product category sold 3,600,000 units last year and 3,780,000 this year. What was its year-on-year growth rate, as a percentage?',
-    answer: 5, check: () => (3780000 - 3600000) / 3600000 * 100, unit: '%', places: 1, tol: 0.05,
+    prompt: 'A hypothetical canned-coffee brand in Harbour City sold 126,000 cans in the second quarter and 135,000 in the third. Harbour City’s seasonal indexes are 1.05 for the second quarter and 1.25 for the third. By what percentage did seasonally adjusted sales change from the second quarter to the third? Use a minus sign for a fall and give one decimal place.',
+    answer: -10, check: () => ((135000 / 1.25) / (126000 / 1.05) - 1) * 100, unit: '%', places: 1, tol: 0.05,
     wrong: [
-      { value: 4.76, say: 'You divided by this year’s sales. Growth is measured against the earlier year: 180,000 ÷ 3,600,000.' },
-      { value: 180000, say: 'That is the change in units. Divide it by last year’s sales to get a growth rate.' },
+      { value: 7.1, say: 'That is the raw change. The third quarter is always the strongest; divide each quarter’s sales by its seasonal index before comparing.' },
+      { value: 27.6, say: 'You multiplied by the indexes. Seasonally adjusted sales divide each quarter’s sales by its index.' },
+      { value: -11.1, say: 'Measure the change against the earlier quarter’s adjusted sales (120,000), not the later one.' },
     ],
-    solution: 'Growth = (3,780,000 − 3,600,000) ÷ 3,600,000 × 100 = 180,000 ÷ 3,600,000 × 100 = 5.0%. Growth this low, if it persists, is a sign of maturity.',
+    solution: 'Adjusted second quarter = 126,000 ÷ 1.05 = 120,000. Adjusted third quarter = 135,000 ÷ 1.25 = 108,000. Change = (108,000 − 120,000) ÷ 120,000 × 100 = −10.0%. The raw rise of about 7% is the summer season; underneath it, sales fell, which is worth investigating before reading the brand’s stage.',
   },
   // ---------------------------------------------------------------- module 2: price
   {
@@ -96,7 +97,7 @@ export const items = [
     wrong: [
       { value: 2.24, say: 'That is Lantern’s net price (3.29 × 0.68). Subtract the $0.74 cost of goods to get the gross margin.' },
       { value: 2.55, say: 'You subtracted the cost from the shelf price. Lantern receives only 68% of the shelf price.' },
-      { value: 0.31, say: 'You subtracted the trade’s share and the cost from the trade’s share. Lantern keeps 3.29 × 0.68 = $2.24 before the cost of goods.' },
+      { value: 0.31, say: 'You used the trade’s 32% as Lantern’s share (3.29 × 0.32 − 0.74). The trade keeps 32%; Lantern keeps the other 68%, 3.29 × 0.68 = $2.24, before the cost of goods.' },
     ],
     solution: 'Net price = 3.29 × (1 − 0.32) = $2.2372. Gross margin = 2.2372 − 0.74 = $1.4972 ≈ $1.50 a can.',
   },

@@ -9,7 +9,7 @@ export const widgets = {
     dataset: 'lantern-orders',
     ops: ['drop-missing', 'fill', 'flag-missing'],
     watch: ['rating'],
-    task: 'Find how many ratings are missing. Then try three treatments in turn and compare the row count, the mean rating and its standard deviation after each: drop the rows with no rating; fill the gaps with the mean; flag the gaps with a missing-value indicator before filling. Which treatment changes the mean, which changes only the spread, and which keeps a record of what you did?',
+    task: 'Find how many ratings are missing and how the gaps split between subscribers and one-off buyers. Then try the treatments one at a time (remove each step before the next) and compare the row count, the mean rating and its standard deviation: drop the rows with no rating; fill the gaps with the mean; fill them with the mean within groups of subscription; flag the gaps with a missing-value indicator. Which treatment changes only the row count, which changes only the spread, which moves the mean, and which keeps a record of what was missing?',
   },
   'mv-impute': {
     type: 'formula',

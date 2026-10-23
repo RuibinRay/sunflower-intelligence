@@ -1,5 +1,14 @@
 // distribution-channels.js — M02 · Distribution channels and decisions. Content only; exercises are in distribution-channels.ex.js.
-// Figures for Lantern Cold Brew come from ./market.js (fictional). Every number printed here is recomputed in `checks`.
+// Figures for Lantern Cold Brew come from ./market.js (fictional). Every number printed here is recomputed in `checks`;
+// the simulator results quoted in the applied example are recomputed with the engine (mixsim.js).
+import { simulate, DEFAULT_PLAN } from '../../../core/mixsim.js?v=6';
+
+const SIM = (() => {
+  const base = simulate(DEFAULT_PLAN), conv = simulate({ ...DEFAULT_PLAN, channels: [...DEFAULT_PLAN.channels, 'convenience'] });
+  const ch = (r, id) => r.byChannel.find((c) => c.id === id).units;
+  return { base: base.year, conv: conv.year, supB: ch(base, 'supermarket'), supC: ch(conv, 'supermarket'), natB: ch(base, 'natural'), natC: ch(conv, 'natural'), cvs: ch(conv, 'convenience') };
+})();
+
 export default {
   slug: 'distribution-channels',
   title: 'Distribution channels and decisions',
@@ -45,7 +54,7 @@ export default {
     { p: 'Selling direct to consumers, often called direct-to-consumer or DTC, gives the producer the whole price, full control over how the product is presented, and data on every customer. It also gives the producer every function to perform and only the customers who come looking. Indirect channels give reach the producer could never build alone, at the price of a share of every sale and less control over the shelf.' },
     { p: 'Most producers do both. <g>Multichannel distribution</g> means selling through more than one channel at once: Lantern’s first plan uses supermarkets, natural grocers and its own cafés and online shop. <g>Omnichannel</g> goes further: the channels are joined up from the customer’s side, so that prices, promotions, stock information and loyalty rewards are consistent wherever the customer meets the brand, and the customer can move between channels, for example ordering online and collecting a case at a café. Verhoef, Kannan and Inman (2015) describe this shift as retailers taking a broader view of channels, managing them together rather than as separate businesses. Omnichannel needs shared systems and data, so it costs money; for a canned drink the practical omnichannel questions are mostly about consistent prices and joined-up customer data.' },
     { h: 'Distribution intensity' },
-    { p: 'The second big decision is how many outlets to use within a channel. With <g>intensive distribution</g> the product is placed in as many outlets as possible; with <g>selective distribution</g> it goes to more than one but fewer than all of the outlets that would take it; with <g>exclusive distribution</g> only one or a very few outlets in each area may sell it.' },
+    { p: 'The second big decision is how many of the outlets that would stock the product to use. With <g>intensive distribution</g> the product is placed in as many outlets as possible; with <g>selective distribution</g> it goes to more than one but fewer than all of the outlets that would take it; with <g>exclusive distribution</g> only one or a very few outlets in each area may sell it.' },
     { table: {
       caption: 'Distribution intensity and the products it suits',
       head: ['Intensity', 'Suits', 'Why', 'Cost of the choice'],
@@ -172,14 +181,15 @@ export default {
         'Upside, on a clearly hypothetical volume: if Lantern won 1% of convenience-store cans, it would sell 14,400 cans and earn <m>14{,}400 \\times 1.354 = 19{,}497.60</m> of gross margin, or $15,497.60 after the fee, before any promotion aimed at the channel.',
         'Knock-on effect on promotion: today the retail channels cover <m>45\\% + 15\\% = 60\\%</m> of category volume; adding convenience makes it 90%. The same $40,000 of sampling then works out at <m>40{,}000 \\div 90 \\approx 444</m> dollars per point of category volume instead of <m>40{,}000 \\div 60 \\approx 667</m>, a third less support in each store.',
         'Fit: convenience shoppers buy chilled single cans on impulse and compare prices less, which helps a $3.49 can; but Summit Brew and Daily Grind are already there with 60% and 75% awareness, and a shopper who has never heard of Lantern is unlikely to pick it up without sampling or advertising.',
+        'Check with the Marketing Mix Simulator, everything else held at the first plan: adding convenience stores raises Lantern’s simulated cans from about 198,995 to 239,729 and its profit after overhead from about $122,956 to $172,330. Supermarkets and natural grocers sell a little less (about 92,139 to 86,867 and 87,075 to 82,667 cans) because the same sampling and trade budgets are spread thinner, but the new channel’s 50,414 cans more than make up for it.',
       ],
-      answer: 'The fee is easy to cover if the can sells, but adding the channel lowers margin per can, spreads the sampling budget thinner and puts an unknown brand next to two well-known ones. A sensible launch keeps convenience stores for a second phase, once sales per store in the first channels show that the can sells, unless extra promotion money comes with the extra channel.',
-      interpretation: 'A channel decision is never only a margin calculation. The arithmetic tells Lantern what the channel must achieve; the judgement is whether Lantern can make it happen with the awareness and budget it has. The Marketing Mix Simulator lets you test the same question with every other decision held fixed.' },
+      answer: 'On the numbers, convenience stores pay: the fee is easy to cover, and in the simulator the channel adds about $49,000 of year-1 profit despite the thinnest margin and thinner sampling. The case for waiting rests on what the model leaves out. It counts Lantern as stocked in every convenience store from day one, supplies every can demanded, charges the channel nothing beyond its trade margin and fee for the extra selling and delivery work, holds rivals’ prices and promotions fixed and stops at year 1, so it can’t price the risk that a stretched launch leaves empty or slow-selling shelves and costs Lantern its standing with retail buyers. Whether that risk is worth about $49,000 of simulated profit is a judgement the model can’t make. A middle course is a pilot: list in one convenience chain at launch and widen once sales per store per week show that the can sells.',
+      interpretation: 'A channel decision is never only a margin calculation. The arithmetic tells Lantern what the channel must achieve and the simulator what it is worth if everything goes to plan; the judgement is about the risks neither counts, and a pilot turns that judgement into evidence.' },
   ],
 
   demo: [
     { widget: 'dch-buildup', intro: 'Start at Lantern’s supermarket figures (shelf price $3.49, trade margin 32%). Change the margin to 40% and then 38% to see the convenience and natural-grocer cases; set the margin to 0 and fulfilment to $0.45 for the online shop. Watch how the listing fee’s payback in cans moves with the gross margin.' },
-    { widget: 'dch-mixsim', intro: 'Product, price and promotion are fixed at Lantern’s first plan; only the channels are open. Add and remove channels and compare units, contribution and share. Notice that adding a channel can add units and still lower contribution.' },
+    { widget: 'dch-mixsim', intro: 'Product, price and promotion are fixed at Lantern’s first plan; only the channels are open. Add and remove channels and compare units, contribution and share. Notice that adding a retail channel lowers Lantern’s sales in the retail channels it already uses, because the same sampling and trade budgets are spread over more stores, and compare that loss with what the new channel adds. With this plan every channel you add raises contribution; the applied example above asks whether that settles the decision.' },
   ],
 
   mistakes: [
@@ -203,7 +213,7 @@ export default {
         ['Cafés and online shop', '480,000', '$2.30', '$6,000', 'none on Lantern’s own shelf', 'Highest margin and full customer data; reaches only people who already know Lantern.'],
       ],
     } },
-    { p: 'Read across the rows and the logic of a selective launch appears. Supermarkets are the price of being a real brand: almost half the category is bought there, and the gross margin per can is the best of the retail channels. Natural grocers cost little to enter and their shoppers value exactly what a single-origin can offers. The direct channel earns the most per can and gives Lantern its customer data, so it pays to keep it even though it is small, as long as its prices don’t undercut the stores. Convenience stores are the obvious second step once the can has proved itself, rather than a launch channel.' },
+    { p: 'Read across the rows and the logic of a selective launch appears. Supermarkets are the price of being a real brand: almost half the category is bought there, and the gross margin per can is the best of the retail channels. Natural grocers cost little to enter and their shoppers value exactly what a single-origin can offers. The direct channel earns the most per can and gives Lantern its customer data, so it pays to keep it even though it is small, as long as its prices don’t undercut the stores. Convenience stores are the closest call: the simulator says they add profit even in year 1, and the case for holding them back, or piloting them in one chain, rests on the execution risks the model leaves out (see the applied example).' },
     { p: 'The same reasoning runs through other industries. A city hotel that sells a $200 room through an online travel agency charging a hypothetical 18% commission keeps $164; selling the room on its own website, after a hypothetical $12 of payment and marketing costs, it keeps $188. Hotels still use the agencies, because the agencies bring guests the hotel could not reach on its own, but they work hard to win repeat guests back to the direct channel. Airlines face the same choice between their own websites and travel agents, and a clothing brand faces it between wholesaling to boutiques and selling online. In each case the professional question is the same: what does each channel deliver that the others can’t, and what does it cost per unit and per year?' },
     { callout: 'note', title: 'What the professional watches after launch', html: 'Once the can is on shelf, the number that keeps it there is sales per store per week. Retail buyers review slow sellers regularly, and a listing that doesn’t earn its space can be removed. That is why channel, promotion and logistics plans are made together: a listing without in-store support and reliable deliveries is a fee paid for nothing.' },
   ],
@@ -321,6 +331,17 @@ export default {
     { what: 'Sampling dollars per point, 90%', value: 40000 / 90, shown: 444, tol: 0.5 },
     { what: 'Sampling dollars per point, 60%', value: 40000 / 60, shown: 667, tol: 0.5 },
     { what: 'Reduction in sampling per point', value: 1 - 60 / 90, shown: 1 / 3 },
+    { what: 'Simulator: default plan cans', value: Math.round(SIM.base.units), shown: 198995, tol: 0.5 },
+    { what: 'Simulator: cans with convenience', value: Math.round(SIM.conv.units), shown: 239729, tol: 0.5 },
+    { what: 'Simulator: default profit after overhead', value: Math.round(SIM.base.profit), shown: 122956, tol: 0.5 },
+    { what: 'Simulator: profit with convenience', value: Math.round(SIM.conv.profit), shown: 172330, tol: 0.5 },
+    { what: 'Simulator: extra profit from convenience (thousands)', value: (SIM.conv.profit - SIM.base.profit) / 1000, shown: 49, tol: 0.5 },
+    { what: 'Simulator: supermarket cans, default', value: Math.round(SIM.supB), shown: 92139, tol: 0.5 },
+    { what: 'Simulator: supermarket cans, with convenience', value: Math.round(SIM.supC), shown: 86867, tol: 0.5 },
+    { what: 'Simulator: natural-grocer cans, default', value: Math.round(SIM.natB), shown: 87075, tol: 0.5 },
+    { what: 'Simulator: natural-grocer cans, with convenience', value: Math.round(SIM.natC), shown: 82667, tol: 0.5 },
+    { what: 'Simulator: convenience cans', value: Math.round(SIM.cvs), shown: 50414, tol: 0.5 },
+    { what: 'Simulator: convenience adds more than the others lose', value: SIM.cvs > (SIM.supB - SIM.supC) + (SIM.natB - SIM.natC) ? 1 : 0, shown: 1 },
     // mistakes
     { what: 'Shelf price from net 2.37 at 32%', value: 2.37 / 0.68, shown: 3.49, tol: 0.005 },
     { what: 'Wrong shelf price 2.37 × 1.32', value: 2.37 * 1.32, shown: 3.13, tol: 0.005 },

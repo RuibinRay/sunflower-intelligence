@@ -1,5 +1,13 @@
 // promotion-mix.js — M02 · The promotion mix and integrated marketing communications. Content only; exercises are in promotion-mix.ex.js.
 // Lantern figures come from ./market.js (fictional). Costs in the worked budgets are hypothetical and labelled as such.
+// The simulator results quoted in the trade-promotion note are recomputed with the engine (mixsim.js) in `checks`.
+import { simulate, DEFAULT_PLAN, C } from '../../../core/mixsim.js?v=6';
+
+const SIM = (() => {
+  const base = simulate(DEFAULT_PLAN), none = simulate({ ...DEFAULT_PLAN, promotion: { ...DEFAULT_PLAN.promotion, trade: 0 } });
+  return { base: base.year, none: none.year, promoted: base.byChannel.reduce((a, c) => a + c.promotedUnits, 0) };
+})();
+
 export default {
   slug: 'promotion-mix',
   title: 'The promotion mix and integrated marketing communications',
@@ -91,6 +99,7 @@ export default {
       ],
     } },
     { p: 'The objective-and-task method is the one textbooks recommend and, by OpenStax’s account, one of the least used, because it demands the most thinking. Its real strength is that it turns the budget into a list of jobs with prices. If the total is too high, the company can see which objective it is giving up when it cuts a task, instead of trimming every line by the same percentage. In practice planners often build the budget by objective and task, then check it against what the business can afford and what rivals spend.' },
+    { callout: 'note', title: 'What the simulator says about the $20,000 of trade promotion', html: 'In the Marketing Mix Simulator, with everything else at the first plan, cutting trade promotion from $20,000 to $0 raises Lantern’s profit after overhead from about $122,956 to $133,234. The deals add about 6,233 cans, but Lantern pays 20% of the price on all of the roughly 28,653 promoted cans, most of which shoppers would have bought anyway, so the extra gross profit (about $9,721) falls well short of the $20,000. The model’s trade money buys only temporary price cuts: it gives no value to the shelf position, features and retailer goodwill that a new brand’s promotion windows are often negotiated to win, and because the model has no repeat purchase, a shopper who first tries Lantern on a deal is worth one can. Whether those are worth about $10,000 a year is a judgement the model can’t make. Treat the trade budget as part of the price of winning and keeping the listings, keep it as small as the retailers will accept, and check whether the deals bring buyers back at the full price.' },
   ],
 
   formulas: [
@@ -155,7 +164,7 @@ export default {
   ],
 
   demo: [
-    { widget: 'pm-mixsim', intro: 'Product, price and channels are fixed at Lantern’s first plan; only the promotion budget is open. Move money between ads, sampling, trade promotions and PR. Watch awareness, units and contribution, and notice that the cheapest way to add units is not always the cheapest way to add contribution.' },
+    { widget: 'pm-mixsim', intro: 'Product, price and channels are fixed at Lantern’s first plan; only the promotion budget is open. Move money between ads, sampling, trade promotions and PR. Watch awareness, units and contribution, and notice that the cheapest way to add units is not always the cheapest way to add contribution. Then set trade promotions to $0 and compare the result with the note at the end of In depth.' },
     { widget: 'pm-budget', intro: 'Compare the four budgeting methods for Lantern’s launch. Change the sales forecast, the percentage, the rival’s spending and what the owners can afford, then build the objective-and-task budget line by line.' },
   ],
 
@@ -237,6 +246,15 @@ export default {
     { what: 'Trade cut', value: 5000, shown: 5000 },
     { what: 'Cuts total', value: 15000 + 9000 + 5000 + 1000, shown: 30000 },
     { what: 'Budget after cuts', value: 35000 + (120 * 225 + 4000) + 3 * 5000 + (6000 + 3 * 1000), shown: 90000 },
+    // simulator note on trade promotion
+    { what: 'Simulator: default profit after overhead', value: Math.round(SIM.base.profit), shown: 122956, tol: 0.5 },
+    { what: 'Simulator: profit with no trade promotion', value: Math.round(SIM.none.profit), shown: 133234, tol: 0.5 },
+    { what: 'Simulator: cans added by trade promotion', value: Math.round(SIM.base.units - SIM.none.units), shown: 6233, tol: 0.5 },
+    { what: 'Simulator: promoted cans', value: Math.round(SIM.promoted), shown: 28653, tol: 0.5 },
+    { what: 'Simulator: extra gross profit from trade promotion', value: Math.round(SIM.base.grossProfit - SIM.none.grossProfit), shown: 9721, tol: 0.5 },
+    { what: 'Simulator: profit given up by trade promotion (thousands)', value: (SIM.none.profit - SIM.base.profit) / 1000, shown: 10, tol: 0.5 },
+    { what: 'Simulator: trade depth (%)', value: C.trade.depth * 100, shown: 20 },
+    { what: 'Simulator: most promoted cans would have sold anyway', value: (SIM.promoted - (SIM.base.units - SIM.none.units)) / SIM.promoted > 0.5 ? 1 : 0, shown: 1 },
     // market facts used
     { what: 'Daily Grind awareness %', value: 0.75 * 100, shown: 75 },
     { what: 'Summit awareness %', value: 0.60 * 100, shown: 60 },

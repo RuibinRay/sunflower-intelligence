@@ -275,7 +275,7 @@ export const check = [
       2: 'Convenience stores take the largest margin (40%) and their shoppers buy chilled singles on impulse, not organic provenance; a $3.99 can from an unknown brand would struggle there.',
       3: 'Supermarkets have reach, but their shoppers compare prices and $3.99 is above Summit Brew’s $3.79. Without strong promotion, an unknown premium can is easy to overlook there.',
     },
-    solution: 'A selective start fits the product, the price and the budget: natural grocers’ shoppers pay for quality and provenance, their fee is low, and the direct channel has the highest margin. Wider distribution can follow once sales per store show the can sells.',
+    solution: 'A selective start fits the product, the price and the budget: natural grocers’ shoppers pay for quality and provenance, their fee is low, and the direct channel has the highest margin. Wider distribution can follow once sales per store show the can sells. If you try this plan in the simulator, wider distribution sells more cans and earns more in year 1: the model counts volume and margin but not the brand’s image or the risk of under-supported listings, which is why the choice is a judgement rather than a calculation.',
   },
   {
     id: 'm02-dch-k5', type: 'multi', kind: 'conceptual',

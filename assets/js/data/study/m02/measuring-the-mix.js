@@ -99,7 +99,7 @@ export default {
       ],
     } },
     { h: 'The simulator and the real world' },
-    { p: 'The Marketing Mix Simulator turns a plan into simulated sales, contribution and share using a model with stated assumptions and invented coefficients. It is good for what models are good for: comparing plans on the same basis, seeing which decisions matter most, and finding trade-offs you hadn’t noticed, such as a channel that adds units but lowers contribution. It is not a forecast. Real shoppers, competitors and retailers respond in ways no teaching model captures: a rival cuts its price, a buyer refuses a listing, a heatwave doubles summer sales. A real launch would test its key assumptions before committing the whole budget, with a test market in part of the city, store-level experiments for sampling and A/B tests for messages, and would keep measuring after launch.' },
+    { p: 'The Marketing Mix Simulator turns a plan into simulated sales, contribution and share using a model with stated assumptions and invented coefficients. It is good for what models are good for: comparing plans on the same basis, seeing which decisions matter most, and finding trade-offs you hadn’t noticed, such as a trade-promotion budget that adds units but lowers contribution. It is not a forecast. Real shoppers, competitors and retailers respond in ways no teaching model captures: a rival cuts its price, a buyer refuses a listing, a heatwave doubles summer sales. A real launch would test its key assumptions before committing the whole budget, with a test market in part of the city, store-level experiments for sampling and A/B tests for messages, and would keep measuring after launch.' },
   ],
 
   formulas: [
