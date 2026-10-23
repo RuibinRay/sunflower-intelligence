@@ -274,7 +274,7 @@ export const check = [
     ],
     answer: 0,
     feedback: {
-      1: 'No extra fee is hidden in the schedule: each month’s interest is simply the balance times the monthly rate.',
+      1: 'No extra fee is hidden in the schedule: each month’s interest is the balance times the monthly rate.',
       2: 'On a fixed-rate mortgage the rate never changes. It is the balance that is large at the start.',
       3: 'It is the other way round: the payment is fixed, the interest part falls and the principal part grows.',
     },

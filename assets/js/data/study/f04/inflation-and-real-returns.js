@@ -184,6 +184,7 @@ export default {
       tex: String.raw`\text{Adjusted principal}_t = \text{Principal} \times \frac{\text{CPI}_t}{\text{CPI}_0}, \qquad \text{Interest}_t = \text{Adjusted principal}_t \times \frac{r_{\text{fixed}}}{2}`,
       where: [
         [String.raw`\text{Principal}`, 'Original principal (par value)', '$'],
+        [String.raw`\text{Adjusted principal}_t`, 'Principal after the inflation adjustment at date t', '$'],
         [String.raw`\text{CPI}_0`, 'Reference price index when the security was issued', 'index points'],
         [String.raw`\text{CPI}_t`, 'Reference price index at payment date t', 'index points'],
         [String.raw`r_{\text{fixed}}`, 'Fixed annual interest rate set at auction', 'per year'],
@@ -224,7 +225,7 @@ export default {
         ],
       },
       answer: 'The indexed offer is worth about $104,965.18 today by either route; the fixed offer about $104,447.78. On a 2.8% inflation assumption Lantern should prefer the indexed fee, by about $517.40.',
-      interpretation: 'The margin is small, so the decision rests partly on risk. The indexed fee keeps its purchasing power whatever inflation does, which matters to a café whose costs rise with prices; the fixed fee wins only if inflation turns out below about 2.5% a year. Lantern should also check which index the contract names and that it is not seasonally adjusted.' },
+      interpretation: 'The margin is small, so the decision rests partly on risk. The indexed fee keeps its purchasing power whatever inflation does, which matters to a café whose costs rise with prices; the fixed fee wins only if inflation turns out below about 2.54% a year. Lantern should also check which index the contract names and that it is not seasonally adjusted.' },
     { level: 'applied', title: 'An inflation-protected bond or an ordinary one?', fictional: true,
       setup: 'Mateo, a hospital pharmacist (fictional), is saving for a sabbatical in five years. He compares a five-year US Treasury note yielding 4.3% a year with five-year TIPS yielding a real 1.8% a year. Treat both yields as effective annual rates and ignore taxes. The yields are illustrations, not current market rates. What inflation rate makes the two equal, and what does each earn if inflation averages 3.5%, or 1.0%?',
       steps: [
@@ -284,10 +285,12 @@ export default {
   ],
 
   references: [
+    // treasurydirect.gov refuses automated fetching; the two TreasuryDirect pages below were read on 2026-10-23 at the
+    // same paths on savingsbond.gov and bondpro.gov, which serve TreasuryDirect content for the Bureau of the Fiscal Service.
     { text: 'US Bureau of Labor Statistics. <i>Consumer Price Index</i> (programme home page).', url: 'https://www.bls.gov/cpi/', checked: '2026-10-23' },
     { text: 'US Bureau of Labor Statistics. <i>How to Use the Consumer Price Index for Escalation</i>. Fact sheet, last modified 8 June 2023.', url: 'https://www.bls.gov/cpi/factsheets/escalation.htm', checked: '2026-10-23' },
-    { text: 'US Department of the Treasury, Bureau of the Fiscal Service. <i>Treasury Inflation-Protected Securities (TIPS)</i>. TreasuryDirect page, opened at its savingsbond.gov address.', url: 'https://savingsbond.gov/marketable-securities/tips/', checked: '2026-10-23' },
-    { text: 'US Department of the Treasury, Bureau of the Fiscal Service. <i>TIPS/CPI Data: reference CPI numbers and daily index ratios</i>. TreasuryDirect page, opened at its bondpro.gov address.', url: 'https://bondpro.gov/instit/annceresult/tipscpi/tipscpi.htm', checked: '2026-10-23' },
+    { text: 'US Department of the Treasury, Bureau of the Fiscal Service. <i>Treasury Inflation-Protected Securities (TIPS)</i>. TreasuryDirect.', url: 'https://www.treasurydirect.gov/marketable-securities/tips/', checked: '2026-10-23' },
+    { text: 'US Department of the Treasury, Bureau of the Fiscal Service. <i>TIPS/CPI Data: reference CPI numbers and daily index ratios</i>. TreasuryDirect.', url: 'https://www.treasurydirect.gov/instit/annceresult/tipscpi/tipscpi.htm', checked: '2026-10-23' },
     { text: 'Dahlquist, J. &amp; Knight, R. (2022). <i>Principles of Finance</i>, section 3.4, “Interest Rates”. OpenStax.', url: 'https://openstax.org/books/principles-finance/pages/3-4-interest-rates', checked: '2026-10-23' },
   ],
 
@@ -354,7 +357,7 @@ export default {
     { what: 'Mistake: undervalued by about $5,491', value: 40000 * af(rReal, 3) - 40000 * af(0.1, 3), shown: 5491, tol: 0.5 },
     { what: 'Mistake: overvalued by about $5,850', value: [1, 2, 3].reduce((a, t) => a + nomFee(t) / (1 + rReal) ** t, 0) - 40000 * af(rReal, 3), shown: 5850, tol: 0.5 },
     { what: 'Growing annuity check', value: 41120 / (0.10 - 0.028) * (1 - (1.028 / 1.10) ** 3), shown: 104965.18 },
-    { what: 'Fixed fee wins below this inflation rate (%)', value: (() => { let lo = 0, hi = 0.1; for (let k = 0; k < 100; k++) { const m = (lo + hi) / 2; const v = [1, 2, 3].reduce((a, t) => a + 40000 * (1 + m) ** t / 1.1 ** t, 0); if (v < 42000 * af(0.1, 3)) lo = m; else hi = m; } return lo * 100; })(), shown: 2.5, tol: 0.05 },
+    { what: 'Fixed fee wins below this inflation rate (%)', value: (() => { let lo = 0, hi = 0.1; for (let k = 0; k < 100; k++) { const m = (lo + hi) / 2; const v = [1, 2, 3].reduce((a, t) => a + 40000 * (1 + m) ** t / 1.1 ** t, 0); if (v < 42000 * af(0.1, 3)) lo = m; else hi = m; } return lo * 100; })(), shown: 2.54, tol: 0.005 },
     // salary real growth
     { what: 'Real raise (%)', value: (1.035 / 1.028 - 1) * 100, shown: 0.68 },
     { what: 'Salary after 4 years', value: 42000 * 1.035 ** 4, shown: 48195.97 },

@@ -27,14 +27,15 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: 'It is March 2027 and Lantern Coffee Co. is a year old. Interest now runs through its affairs in two different ways. Every quarter Lantern pays Coastline Bank $150, the interest on the $10,000 two-year note it signed on 1 March 2026 at 6% a year; the $10,000 itself is not due until 1 March 2028. And Ana is weighing up a $24,000 cold-brew system, which Lantern could pay for with a Coastline loan at 7.2% a year or with the supplier’s instalment plan. Every one of these questions comes down to what money costs, or earns, over time. This course gives you the tools to answer them exactly, starting with the two ways interest is calculated.' },
+    { case: 'It is March 2027 and Lantern Coffee Co. is a year old. Interest now runs through its affairs in two different ways. Every quarter Lantern pays Coastline Bank $150, the interest on the $10,000 two-year note it signed on 1 March 2026 at 6% a year; the $10,000 itself is not due until 1 March 2028. And Ana is weighing up a $24,000 cold-brew system, which Lantern could pay for with a Coastline loan at 7.2% a year or with the supplier’s instalment plan.' },
+    { p: 'Every one of these questions comes down to what money costs, or earns, over time. This course gives you the tools to answer them exactly, starting with the two ways interest is calculated.' },
 
     { h: 'Two ways to charge for time' },
     { p: '<g>Interest</g> is the price of using money for a period. It is quoted as a rate, usually per year, on the <g>principal</g>, the amount lent or borrowed. F00’s lesson on interest and inflation introduced the two ways of calculating it: <g>simple interest</g> is charged on the principal only, while <g>compound interest</g> is also charged on interest already added to the balance. This lesson makes both precise enough to use on real contracts, where the dates, the day counts and the rounding all matter.' },
     { p: String.raw`Simple interest for a time <m>t</m> in years at an annual rate <m>r</m> is <m>I = P \times r \times t</m>. Lantern’s note is the textbook case. The interest is paid out every quarter, so the balance never grows and every quarter’s interest is the same: <m>10{,}000 \times 0.06 \times \tfrac{1}{4} = 150</m> dollars. Over the note’s two years Lantern makes eight such payments, $1,200 in all, which is exactly <m>10{,}000 \times 0.06 \times 2</m>.` },
 
     { h: 'Interest for part of a year' },
-    { p: 'Interest builds up day by day, so a contract needs a rule for turning a number of days into a fraction of a year. That rule is called a <g>day-count convention</g>. Three are common:' },
+    { p: 'Interest builds up day by day, so between payment dates a loan carries <g>accrued interest</g>: interest earned but not yet paid. To measure it, a contract needs a rule for turning a number of days into a fraction of a year. That rule is called a <g>day-count convention</g>. Three are common:' },
     { define: [
       ['Actual/365', 'Count the actual calendar days and divide by 365.'],
       ['Actual/360', 'Count the actual calendar days and divide by 360. Because the “year” is shorter, the same quoted rate produces slightly more interest.'],
@@ -82,7 +83,7 @@ export default {
     { p: String.raw`Converting a rate from one basis to another is a matter of proportion. A rate quoted on an actual/360 basis earns as much as a rate 365/360 times as large on an actual/365 basis, so 4.5% actual/360 is equivalent to <m>4.5\% \times 365 \div 360 = 4.5625\%</m> actual/365. Compare short-term rates only after putting them on the same basis.` },
 
     { h: 'Compound growth over whole and fractional periods' },
-    { p: String.raw`The growth factor <m>(1 + r)^n</m> makes sense for any <m>n</m>, not only whole numbers: <m>1.06^{2.5} = 1.06^2 \times \sqrt{1.06} \approx 1.156817</m>, so by the formula $10,000 left for two and a half years at 6% a year would grow to about $11,568.17. Many real accounts work differently. Interest is credited only on the compounding dates, and for the part-period at the end many accounts pay simple interest on the balance. Two full years and then half a year of simple interest give <m>10{,}000 \times 1.06^2 \times (1 + 0.06 \times 0.5) = 11{,}573.08</m> dollars, $4.91 more.` },
+    { p: String.raw`The growth factor <m>(1 + r)^n</m> makes sense for any <m>n</m>, not only whole numbers: <m>1.06^{2.5} = 1.06^2 \times \sqrt{1.06} \approx 1.156817</m>, so by the formula $10,000 left for two and a half years at 6% a year would grow to about $11,568.17. Many real accounts work differently. Interest is credited only on the compounding dates; for a part-period, some accounts pay simple interest on the balance when the money is withdrawn, while others pay nothing for interest not yet credited. The account terms say which. Two full years and then half a year of simple interest give <m>10{,}000 \times 1.06^2 \times (1 + 0.06 \times 0.5) = 11{,}573.08</m> dollars, $4.91 more.` },
     { p: 'The difference comes from a fact worth remembering. Over less than one period, simple interest pays more than compound interest at the same rate; over exactly one period the two are equal; over more than one, compound interest pays more. The table shows it for $10,000 at 6% a year.' },
     { table: {
       caption: '$10,000 at 6% a year: simple and compound balances',
@@ -97,7 +98,7 @@ export default {
       ],
       note: 'Rounded to the cent. The two methods cross at exactly one period.',
     } },
-    { p: 'So for a fractional period, ask how the money actually earns interest. The formula with a fractional exponent is the right model for growth that compounds smoothly, such as an investment whose value changes every day, and for the comparisons in later lessons. The mixed method, compound to the last crediting date and simple after it, is the right model for an account that credits interest on fixed dates.' },
+    { p: 'So for a fractional period, ask how the money actually earns interest. The formula with a fractional exponent is the right model for growth that compounds smoothly, such as an investment whose value changes every day, and for the comparisons in later lessons. The mixed method, compound to the last crediting date and simple after it, is the right model for an account that pays simple interest for a part-period; for one that pays nothing until interest is credited, use the balance at the last crediting date.' },
 
     { h: 'Solving for the rate: the nth root' },
     { p: 'If you know where an amount started, where it ended and how many periods passed, rearranging the future value equation gives the constant rate that links them:' },
@@ -128,7 +129,8 @@ export default {
       ],
       note: 'Periods rounded to two decimal places.',
     } },
-    { p: 'The rule is exact at a rate of about 7.85% and drifts away on either side: it overstates the doubling time at low rates and understates it at high ones. Why 72? For small rates ln(1 + r) is close to r, so the doubling time is close to 69.3 divided by the percentage rate; because ln(1 + r) is a little smaller than r, the exact answer is a little longer, and at rates around 8% the correction brings 69.3 up to about 72. The number 72 also divides neatly by 2, 3, 4, 6, 8, 9 and 12. Some people use 70 or 69.3, which suit low rates better. Use the rule for quick judgements and logarithms when the answer matters.' },
+    { p: 'The rule is exact at a rate of about 7.85% and drifts away on either side: it overstates the doubling time at low rates and understates it at high ones. Why 72? For small rates ln(1 + r) is close to r, so the doubling time is close to 69.3 divided by the percentage rate; because ln(1 + r) is a little smaller than r, the exact answer is a little longer, and at rates around 8% the correction brings 69.3 up to about 72.' },
+    { p: 'The number 72 also divides neatly by 2, 3, 4, 6, 8, 9 and 12. Some people use 70 or 69.3, which suit low rates better. Use the rule for quick judgements and logarithms when the answer matters.' },
     { callout: 'key', title: 'Three questions before any interest calculation', html: 'Is the interest paid out or left in (simple or compound)? What is the period, and do the rate and the number of periods use it? How does the contract count time (its day count and its crediting dates)? Answer those three and the formula follows.' },
   ],
 
@@ -202,10 +204,10 @@ export default {
         String.raw`Under actual/365: <m>10{,}000 \times 0.06 \times \tfrac{46}{365} \approx 75.62</m>.`,
         'Payoff = principal + accrued interest = 10,000 + 75.00 = $10,075.00 under the note’s own convention.',
       ],
-      answer: 'About $10,075.00: the $10,000 principal plus $75.00 of interest for 45 days counted on a 30/360 basis. Counting actual days over 365 would give $75.62 of interest.',
+      answer: '$10,075.00: the $10,000 principal plus $75.00 of interest for 45 days counted on a 30/360 basis. Counting actual days over 365 would give $75.62 of interest.',
       interpretation: 'Repaying early stops the interest from that day, but interest already built up must still be paid. Whether repaying is wise is a separate question: it depends on what else Lantern could do with $10,075 and what it would cost to borrow again, which the lessons on discounting and loans take up.' },
     { level: 'challenging', title: 'How long to save for a new oven?', fictional: true,
-      setup: 'A fictional bakery has $18,000 in a deposit account paying 4.5% a year, compounded and credited once a year on the anniversary of the deposit. The owner needs $25,000 for a new oven. (a) By the formula, how long will the money take to reach $25,000? (b) If the account pays simple interest for any part of a year, when is the target actually reached? (c) What annual rate would reach the target in five years?',
+      setup: 'A fictional bakery has $18,000 in a deposit account paying 4.5% a year, compounded and credited once a year on the anniversary of the deposit. The owner needs $25,000 for a new oven. (a) By the formula, how long will the money take to reach $25,000? (b) If the owner withdraws between anniversaries, the account pays simple interest for the part-year. When can the owner first withdraw $25,000? (c) What annual rate would reach the target in five years?',
       steps: [
         String.raw`(a) Use logarithms: <m>n = \ln(25{,}000 \div 18{,}000) \div \ln 1.045 = 0.328504 \div 0.044017 \approx 7.46</m> years.`,
         String.raw`(b) Interest arrives only on the anniversaries. After seven years the balance is <m>18{,}000 \times 1.045^7 \approx 24{,}495.51</m>, which is <m>25{,}000 - 24{,}495.51 = 504.49</m> short.`,
@@ -213,7 +215,7 @@ export default {
         String.raw`(c) Use the nth root: <m>r = (25{,}000 \div 18{,}000)^{1/5} - 1 = 1.388889^{0.2} - 1 \approx 0.0679</m>, or 6.79% a year.`,
       ],
       answer: '(a) About 7.46 years. (b) Seven years and about 167 days. (c) About 6.79% a year.',
-      interpretation: 'The logarithm treats growth as smooth; the account’s crediting rule makes the target arrive about two days earlier, because within a period simple interest pays more than compound. To have the oven in five years the bakery would need about 6.8% a year, far above its account’s 4.5%: it must save more, borrow or wait.' },
+      interpretation: 'Paying simple interest for the part-year makes the money available about two days earlier than the smooth-growth answer, because within a period simple interest pays more than compound. If the owner waits for interest to be credited, the balance passes $25,000 only on the eighth anniversary, when it reaches $25,597.81. To have the oven in five years the bakery would need about 6.8% a year, far above its account’s 4.5%: it must save more, borrow or wait.' },
     { level: 'applied', title: 'Is the growth plan realistic?', fictional: true,
       setup: 'A fictional battery-storage installer had revenue of $2.4 million in 2022 and $3.9 million in 2026. Its business plan, sent to a lender with a loan application, forecasts revenue of $6.0 million in 2029. Compare the growth the plan assumes with the growth the business has achieved.',
       steps: [
@@ -242,7 +244,8 @@ export default {
 
   application: [
     { p: 'Interest arithmetic is routine in finance work, and the mistakes it catches are real.' },
-    { p: '<b>Choosing a deposit.</b> The treasurer of a fictional hotel group has $400,000 set aside for a tax payment due in 146 days, from 1 April to 25 August 2027. Bank A offers 4.50% on an actual/360 basis; Bank B offers 4.55% on an actual/365 basis. On the quoted rates Bank B looks better. Working out the interest says otherwise: Bank A pays 400,000 × 0.045 × 146 ÷ 360 = $7,300.00 and Bank B pays 400,000 × 0.0455 × 146 ÷ 365 = $7,280.00. Bank A pays $20 more, because 4.50% on actual/360 is equivalent to 4.5625% on actual/365. Before deciding she also checks what the rate leaves out: whether the money can be withdrawn early if the tax bill comes sooner, and how safe each bank is.' },
+    { p: '<b>Choosing a deposit.</b> The treasurer of a fictional hotel group has $400,000 set aside for a tax payment due in 146 days, from 1 April to 25 August 2027. Bank A offers 4.50% on an actual/360 basis; Bank B offers 4.55% on an actual/365 basis. On the quoted rates Bank B looks better. Working out the interest says otherwise: Bank A pays 400,000 × 0.045 × 146 ÷ 360 = $7,300.00 and Bank B pays 400,000 × 0.0455 × 146 ÷ 365 = $7,280.00.' },
+    { p: 'Bank A pays $20 more, because 4.50% on actual/360 is equivalent to 4.5625% on actual/365. Before deciding, the treasurer also checks what the rate leaves out: whether the money can be withdrawn early if the tax bill comes sooner, and how safe each bank is.' },
     { p: '<b>Testing a performance claim.</b> An analyst reviewing a fictional fund reads in its brochure that it “doubled investors’ money in nine years, an average return of 11.1% a year”. The rule of 72 says doubling in nine years means about 8% a year, and the exact compound rate is 2^(1/9) − 1 ≈ 8.01%. The 11.1% is total growth (100%) divided by nine: simple-interest arithmetic applied to compound growth. The analyst reports the compound rate, which is the figure comparable with other investments.' },
     { p: String.raw`<b>Accruing and settling interest.</b> Lantern’s bookkeeper accrues $50 of interest on the note at the end of each month, <m>10{,}000 \times 0.06 \times \tfrac{1}{12}</m>, as in F01, so the accounts show the interest owed between payments. A lender preparing a payoff statement does the same calculation by days, using the day count in the contract, as the first worked example did.` },
     { case: 'For Lantern the next question is bigger. Coastline will lend the $24,000 for the cold-brew system at 7.2% a year, compounded monthly, over 48 months. What does that cost in a year once the monthly compounding is counted, and how does it compare with rates quoted on other bases? That is the next lesson, on effective annual rates. The full comparison with the supplier’s instalment plan needs annuities, which come in module 3.' },
@@ -252,7 +255,7 @@ export default {
     'Simple interest is charged on the principal only: I = P × r × t. It fits arrangements where interest is paid out as it falls due, such as Lantern’s note ($150 a quarter).',
     'Interest for part of a year depends on the day-count convention (actual/365, actual/360 or 30/360). The contract decides; convert rates to the same basis before comparing.',
     'Compound interest multiplies the balance by (1 + r) each period: FV = PV(1 + r)ⁿ. The rate and the number of periods must use the same period; round only at the end.',
-    'Within one period simple interest pays more than compound; after one period compound pays more. Accounts that credit interest on fixed dates often pay simple interest for the part-period.',
+    'Within one period simple interest pays more than compound; after one period compound pays more. Accounts credit interest on fixed dates; for a part-period some pay simple interest and some pay nothing, as their terms say.',
     'The rate linking two amounts is r = (FV ÷ PV)^(1/n) − 1, the compound annual growth rate when n is in years. Total growth divided by years overstates it.',
     'The time to reach a target is n = ln(FV ÷ PV) ÷ ln(1 + r). Logarithms turn an unknown power into a multiplication.',
     'Doubling time is ln 2 ÷ ln(1 + r). The rule of 72 approximates it and is exact near 7.85%.',
@@ -283,6 +286,7 @@ export default {
     { what: 'Note principal (case)', value: P, shown: 10000 },
     { what: 'Note rate (case, %)', value: N.rate, shown: 6 },
     { what: 'Quarterly interest on the note', value: N.quarterlyInterest, shown: 150 },
+    { what: 'Note day count is 30/360 (case)', value: N.dayCount === '30/360' ? 1 : 0, shown: 1 },
     { what: 'Quarterly interest by I = Prt', value: P * R * (1 / 4), shown: 150 },
     { what: 'Eight quarterly payments', value: 8 * N.quarterlyInterest, shown: 1200 },
     { what: 'Two years of simple interest', value: P * R * 2, shown: 1200 },
@@ -388,6 +392,7 @@ export default {
     { what: 'Bakery: fraction of year', value: (25000 - 18000 * 1.045 ** 7) / (18000 * 1.045 ** 7 * 0.045), shown: 0.4577, tol: 0.00005 },
     { what: 'Bakery: days', value: 365 * (25000 - 18000 * 1.045 ** 7) / (18000 * 1.045 ** 7 * 0.045), shown: 167, tol: 0.5 },
     { what: 'Bakery: days earlier than the log answer', value: 365 * (Math.log(25000 / 18000) / Math.log(1.045) - 7) - 365 * (25000 - 18000 * 1.045 ** 7) / (18000 * 1.045 ** 7 * 0.045), shown: 2, tol: 0.5 },
+    { what: 'Bakery: balance on the eighth anniversary', value: 18000 * 1.045 ** 8, shown: 25597.81 },
     { what: 'Bakery: ratio', value: 25000 / 18000, shown: 1.388889, tol: 0.0000005 },
     { what: 'Bakery: rate for five years (decimal)', value: (25000 / 18000) ** 0.2 - 1, shown: 0.0679, tol: 0.00005 },
     { what: 'Bakery: rate for five years (%)', value: ((25000 / 18000) ** 0.2 - 1) * 100, shown: 6.79 },

@@ -102,7 +102,7 @@ export const widgets = {
 export const guided = [
   {
     id: 'f04-sci-g1', type: 'steps', kind: 'numerical',
-    prompt: 'Lantern’s $10,000 note at 6% a year pays interest on 1 September and on 1 December 2027. Work out the interest for that quarter under three day-count conventions.',
+    prompt: 'Lantern’s $10,000 note at 6% a year pays interest on 1 September and on 1 December 2027. Work out the interest for that quarter under actual/365 and actual/360, and compare with the $150 Coastline charges on a 30/360 basis.',
     solution: 'Calendar days: 29 (rest of September) + 31 + 30 + 1 = 91. Actual/365: 10,000 × 0.06 × 91 ÷ 365 ≈ $149.59. Actual/360: 10,000 × 0.06 × 91 ÷ 360 ≈ $151.67. Under 30/360 every quarter is 90 days, giving exactly $150.00, which is what Coastline charges.',
     steps: [
       { id: 'f04-sci-g1-s1', type: 'num', prompt: 'How many calendar days are there from 1 September to 1 December 2027 (counting 1 December but not 1 September)?',
@@ -110,11 +110,11 @@ export const guided = [
         hints: ['Count the days left in September after the 1st, then all of October and November, then 1 December.', 'September has 30 days, October 31, November 30: 29 + 31 + 30 + 1.'],
         wrong: [{ value: 90, say: 'That is the 30/360 count, which treats every month as 30 days. Count the calendar days.' }, { value: 92, say: 'You counted both 1 September and 1 December. Count one end, not both.' }] },
       { id: 'f04-sci-g1-s2', type: 'num', prompt: 'Interest for the quarter under actual/365, to the nearest cent.',
-        answer: 149.59, check: () => P * R * 91 / 365, unit: '$', places: 2, tol: 0.01,
+        answer: 149.59, check: () => P * R * 91 / 365, unit: '$', places: 2, tol: 0.02,
         hints: ['I = P × r × days ÷ 365.', '10,000 × 0.06 × 91 ÷ 365.'],
         wrong: [{ value: 150, say: 'That is the 30/360 answer (90 ÷ 360 of a year). Use 91 days over 365.' }, { value: 151.67, say: 'That divides by 360. Actual/365 divides by 365.' }] },
       { id: 'f04-sci-g1-s3', type: 'num', prompt: 'Interest for the quarter under actual/360, to the nearest cent.',
-        answer: 151.67, check: () => P * R * 91 / 360, unit: '$', places: 2, tol: 0.01,
+        answer: 151.67, check: () => P * R * 91 / 360, unit: '$', places: 2, tol: 0.02,
         hints: ['Same days, a 360-day year.', '10,000 × 0.06 × 91 ÷ 360.'],
         wrong: [{ value: 149.59, say: 'That divides by 365. Actual/360 divides by 360, which gives a little more interest.' }, { value: 150, say: 'That counts 90 days. Actual/360 counts the 91 calendar days.' }] },
     ],
@@ -168,7 +168,7 @@ export const independent = [
   {
     id: 'f04-sci-i1', type: 'num', kind: 'numerical',
     prompt: 'You invest $12,500 at 5.5% a year compounded annually for eight years. What is the balance at the end, to the nearest cent?',
-    answer: 19183.58, check: () => 12500 * 1.055 ** 8, unit: '$', places: 2, tol: 0.05,
+    answer: 19183.58, check: () => 12500 * 1.055 ** 8, unit: '$', places: 2, tol: 0.75,
     wrong: [
       { value: 18000, say: 'That is simple interest (12,500 + 8 × 687.50). The interest stays in and compounds.' },
       { value: 6683.58, say: 'That is the interest alone. The question asks for the balance.' },
@@ -178,7 +178,7 @@ export const independent = [
   {
     id: 'f04-sci-i2', type: 'num', kind: 'numerical',
     prompt: 'A fictional company borrows $25,000 at 8% a year, simple interest, from 15 June to 20 October 2027 (127 calendar days). How much interest does it owe on an actual/365 basis, to the nearest cent?',
-    answer: 695.89, check: () => 25000 * 0.08 * days('2027-06-15', '2027-10-20') / 365, unit: '$', places: 2, tol: 0.01,
+    answer: 695.89, check: () => 25000 * 0.08 * days('2027-06-15', '2027-10-20') / 365, unit: '$', places: 2, tol: 0.1,
     wrong: [
       { value: 694.44, say: 'That is the 30/360 answer (125 days over 360). Use the 127 calendar days over 365.' },
       { value: 705.56, say: 'That divides by 360. Actual/365 divides by 365.' },
@@ -190,27 +190,27 @@ export const independent = [
     id: 'f04-sci-i3', type: 'mc', kind: 'conceptual',
     prompt: 'You deposit $5,000 for six months in an account quoted at 8% a year. Which pays more for the six months: 8% simple interest, or 8% compounded annually with the growth formula applied to half a year?',
     options: [
-      'Simple interest: $200.00 against about $196.15, because within one period simple interest pays more',
-      'Compound interest, because compounding always pays more',
-      'They pay exactly the same, because the quoted rate is the same',
+      'Simple interest, by about $3.85',
+      'Compound interest, by about $3.85',
+      'They pay exactly the same',
       'It depends on the size of the deposit',
     ],
     answer: 0,
     feedback: {
-      1: 'Compounding pays more only after the first full period. For half a period, 1.08^0.5 ≈ 1.039230 is less than 1 + 0.08 × 0.5 = 1.04.',
+      1: 'Right gap, wrong direction. Compounding pays more only after the first full period. For half a period, 1.08^0.5 ≈ 1.039230 is less than 1 + 0.08 × 0.5 = 1.04.',
       2: 'They agree at exactly one period, not at half a period.',
-      3: 'Both results are a fixed percentage of the deposit, so the comparison is the same for any amount.',
+      3: 'Both results are a fixed percentage of the deposit, so which pays more is the same for any amount.',
     },
-    solution: 'Simple: 5,000 × 0.08 × 0.5 = $200.00. Compound formula: 5,000 × (1.08^0.5 − 1) ≈ $196.15. Within one period the compound curve lies below the simple-interest line; the two cross at exactly one period.',
+    solution: 'Simple: 5,000 × 0.08 × 0.5 = $200.00. Compound formula: 5,000 × (1.08^0.5 − 1) ≈ $196.15. Simple interest pays about $3.85 more. Within one period the compound curve lies below the simple-interest line; the two cross at exactly one period.',
   },
   {
     id: 'f04-sci-i4', type: 'num', kind: 'numerical',
-    prompt: 'A fictional painting bought for $40,000 in 2015 was sold for $65,000 in 2026. What compound annual growth rate did its owner earn, before costs? Give a percentage to two decimal places.',
+    prompt: 'A fictional painting bought for $40,000 in June 2015 was sold for $65,000 in June 2026. What compound annual growth rate did its owner earn, before costs? Give a percentage to two decimal places.',
     answer: 4.51, check: () => ((65000 / 40000) ** (1 / 11) - 1) * 100, unit: '%', places: 2, tol: 0.01,
     wrong: [
       { value: 5.68, say: 'That is the total growth (62.5%) divided by 11 years: simple arithmetic. Take the 11th root of 1.625.' },
       { value: 62.5, say: 'That is the total growth over the whole period, not the rate per year.' },
-      { value: 4.97, say: 'That uses 10 years. From 2015 to 2026 is 11 years.' },
+      { value: 4.97, say: 'That uses 10 years. From June 2015 to June 2026 is 11 years.' },
     ],
     solution: 'Ratio 65,000 ÷ 40,000 = 1.625. CAGR = 1.625^(1/11) − 1 ≈ 1.045126 − 1 ≈ 4.51% a year. Buying and selling costs, which the question leaves out, would lower it.',
   },
@@ -251,18 +251,18 @@ export const check = [
   {
     id: 'f04-sci-k1', type: 'num', kind: 'numerical',
     prompt: 'What does $4,000 grow to in 3.5 years at 5% a year, using the compound growth formula with a fractional number of periods? Give the answer to the nearest cent.',
-    answer: 4744.85, check: () => 4000 * 1.05 ** 3.5, unit: '$', places: 2, tol: 0.05,
+    answer: 4744.85, check: () => 4000 * 1.05 ** 3.5, unit: '$', places: 2, tol: 0.25,
     wrong: [
       { value: 4700, say: 'That is simple interest (4,000 × (1 + 0.05 × 3.5)). Use 4,000 × 1.05^3.5.' },
       { value: 4630.5, say: 'That is three years only. Use the exponent 3.5.' },
-      { value: 4746.26, say: 'That is three years compounded plus half a year of simple interest, the way many accounts credit interest. The question asks for the formula with n = 3.5.' },
+      { value: 4746.26, say: 'That is three years compounded plus half a year of simple interest, what an account paying simple interest for a part-year would give. The question asks for the formula with n = 3.5.' },
     ],
     solution: '1.05^3.5 ≈ 1.186213, so FV = 4,000 × 1.186213 ≈ $4,744.85. An account that compounds annually and pays simple interest for the last half-year would pay 4,000 × 1.05³ × 1.025 ≈ $4,746.26.',
   },
   {
     id: 'f04-sci-k2', type: 'num', kind: 'numerical',
     prompt: 'How many years does $3,000 take to grow to $5,000 at 4% a year compounded annually, by the formula? Give two decimal places.',
-    answer: 13.02, check: () => Math.log(5000 / 3000) / Math.log(1.04), unit: 'years', places: 2, tol: 0.02,
+    answer: 13.02, check: () => Math.log(5000 / 3000) / Math.log(1.04), unit: 'years', places: 2, tol: 0.05,
     wrong: [
       { value: 16.67, say: 'That is 66.7% growth ÷ 4% a year: simple interest. Use logarithms.' },
       { value: 18, say: 'That is the rule-of-72 doubling time at 4%. The target is 5/3 of the start, not double.' },

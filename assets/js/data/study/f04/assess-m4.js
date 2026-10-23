@@ -32,23 +32,24 @@ export const items = [
   },
   {
     id: 'f04-m4-3', lesson: 'inflation-and-real-returns', type: 'num', kind: 'applied',
-    prompt: 'The trustees of a fictional scholarship fund want it to earn a real 3.5% a year so that its awards keep their purchasing power. They expect inflation of 2.6% a year. What nominal return must the fund earn? Give a percentage to three decimal places.',
-    answer: 6.191, check: () => (1.035 * 1.026 - 1) * 100, unit: '%', places: 3, tol: 0.001,
+    prompt: 'Last year a fictional scholarship fund earned 6.9% while a price index rose from 304.0 to 313.1. What was the fund’s exact real return? Give a percentage to two decimal places.',
+    answer: 3.79, check: () => (1.069 / (313.1 / 304) - 1) * 100, unit: '%', places: 2, tol: 0.01,
     wrong: [
-      { value: 6.1, say: 'That adds the rates and drops the product 0.035 × 0.026. Multiply the growth factors.' },
-      { value: 0.877, say: 'That is 1.035 ÷ 1.026 − 1. The real rate is the target here; the nominal rate is the unknown, so multiply.' },
+      { value: 3.91, say: 'That subtracts the 2.99% inflation from 6.9%. The exact real return divides: 1.069 ÷ 1.029934 − 1.' },
+      { value: -2.2, say: 'That subtracts the 9.1 index points. Inflation is the percentage change in the index: 313.1 ÷ 304.0 − 1 ≈ 2.99%.' },
     ],
-    solution: '1 + nominal = 1.035 × 1.026 = 1.06191, so the fund needs 6.191% a year.',
+    solution: 'Inflation = 313.1 ÷ 304.0 − 1 ≈ 2.9934%. Real return = 1.069 ÷ 1.029934 − 1 ≈ 0.0379, or 3.79%. The fund’s awards could grow by about 3.8% in purchasing power, not the 6.9% the statement shows.',
   },
   {
     id: 'f04-m4-4', lesson: 'inflation-and-real-returns', type: 'num', kind: 'applied',
-    prompt: 'A fictional landlord leases a shop for four years. The rent is $30,000 a year in today’s dollars, raised each year in line with the CPI and paid at the end of each year. The landlord expects inflation of 3% a year and discounts at a nominal 9% a year. What is the present value of the rent? Give dollars and cents.',
-    answer: 104370.51, check: () => { const rr = 1.09 / 1.03 - 1; return 30000 * (1 - (1 + rr) ** -4) / rr; }, unit: '$', places: 2, tol: 5,
+    prompt: 'A fictional landlord leases a shop for four years. The rent is $30,000 for the first year, paid at the end of the year, and the lease raises it by a fixed 2% a year after that. The landlord expects inflation of 3% a year and discounts at a nominal 9% a year. What is the present value of the rent? Give dollars and cents.',
+    answer: 99933.33, check: () => 30000 / 0.07 * (1 - (1.02 / 1.09) ** 4), unit: '$', places: 2, tol: 5,
     wrong: [
-      { value: 97191.6, say: 'That discounts the real $30,000 at the nominal 9%. The rent rises with prices: inflate it, or use the real rate.' },
-      { value: 112201.81, say: 'That discounts inflated rents at the real rate, counting inflation in the cash flows but not in the rate.' },
+      { value: 107393.05, say: 'That discounts the contractual (nominal) rents at the real rate. The rents are fixed in dollars by the lease, so discount them at the nominal 9%.' },
+      { value: 97191.6, say: 'That ignores the 2% rises: it values four level rents of $30,000.' },
+      { value: 101330.59, say: 'That grows the rent at the 3% inflation rate. The lease fixes the rises at 2% a year whatever inflation does.' },
     ],
-    solution: 'Real rate = 1.09 ÷ 1.03 − 1 ≈ 5.8252%. PV = 30,000 × (1 − 1.058252⁻⁴) ÷ 0.058252 ≈ $104,370.51. The nominal route (rents of 30,000 × 1.03ᵗ discounted at 9%) gives the same.',
+    solution: 'The rents are written into the lease in dollars, so they are nominal: $30,000, $30,600, $31,212 and $31,836.24. They form a growing annuity, valued at the nominal rate: PV = 30,000 ÷ (0.09 − 0.02) × [1 − (1.02 ÷ 1.09)⁴] ≈ $99,933.33. The 3% inflation forecast is not needed for the value; it tells the landlord that the rent loses about 1% of purchasing power a year.',
   },
   {
     id: 'f04-m4-5', lesson: 'inflation-and-real-returns', type: 'mc', kind: 'conceptual',
@@ -64,13 +65,13 @@ export const items = [
   },
   {
     id: 'f04-m4-6', lesson: 'mortgages', type: 'num', kind: 'numerical',
-    prompt: 'What is the monthly principal-and-interest payment on a fictional $275,000 mortgage over 30 years at a fixed 7.25% a year? Give dollars and cents.',
-    answer: 1875.98, check: () => { const r = 0.0725 / 12; return 275000 * r / (1 - (1 + r) ** -360); }, unit: '$', places: 2, tol: 0.5,
+    prompt: 'A fictional couple can afford at most $1,900 a month for principal and interest. At a fixed 7.25% a year over 30 years, repaid monthly, what is the largest loan they can take? Give the answer to the nearest dollar.',
+    answer: 278520.38, check: () => { const r = 0.0725 / 12; return 1900 * (1 - (1 + r) ** -360) / r; }, unit: '$', places: 0, tol: 25,
     wrong: [
-      { value: 1893.37, say: 'That is the annual payment over 30 years divided by 12. With monthly payments use the monthly rate (7.25% ÷ 12) and 360 months.' },
-      { value: 763.89, say: 'That is the principal alone (275,000 ÷ 360). Interest on the balance must be added.' },
+      { value: 684000, say: 'That adds up 360 payments without discounting. Most of each payment covers interest; the loan is the present value of the payments.' },
+      { value: 275963.51, say: 'That values twelve months’ payments as one annual payment over 30 years. Interest is charged monthly: use the monthly rate and 360 months.' },
     ],
-    solution: 'r = 0.0725 ÷ 12 ≈ 0.00604167; n = 360. C = 275,000 × 0.00604167 ÷ (1 − 1.00604167⁻³⁶⁰) ≈ $1,875.98.',
+    solution: 'The loan is the present value of the payments: PV = 1,900 × (1 − 1.00604167⁻³⁶⁰) ÷ 0.00604167 ≈ 1,900 × 146.5897 ≈ $278,520.',
   },
   {
     id: 'f04-m4-7', lesson: 'mortgages', type: 'num', kind: 'numerical',
@@ -85,6 +86,7 @@ export const items = [
     answer: 250, check: () => { const r = 0.06875 / 12, C = 310000 * r / (1 - (1 + r) ** -360) + 300; return Math.ceil(-Math.log(1 - r * 310000 / C) / Math.log(1 + r)); }, unit: 'payments', places: 0, tol: 0.5,
     wrong: [
       { value: 360, say: 'That is the original term. The extra $300 goes straight to principal, so the loan ends sooner.' },
+      { value: 249, say: 'That counts only the full payments; the smaller final payment is still a payment.' },
       { value: 20.8, say: 'That is the answer in years. Give the number of monthly payments.' },
     ],
     solution: 'C = 2,036.48 + 300 = $2,336.48; r × PV = 0.00572917 × 310,000 ≈ $1,776.04. n = −ln(1 − 1,776.04 ÷ 2,336.48) ÷ ln(1.00572917) ≈ 249.9, so 250 payments, about 20 years 10 months instead of 30 years.',
@@ -93,7 +95,7 @@ export const items = [
     id: 'f04-m4-9', lesson: 'mortgages', type: 'mc', kind: 'applied',
     prompt: 'A fictional buyer borrowing $350,000 over 30 years can pay 1 point ($3,500) to cut the rate from 6.875% to 6.625%, saving about $58.16 a month. She expects to keep the loan for at least twelve years and does not expect to refinance. What should she conclude?',
     options: [
-      'Buying the point is likely worth it: the simple break-even is about 60 months, and over twelve years the saving is worth about $3,133 in today’s money at 6.875%',
+      'Buying the point is likely worth it: the simple break-even is about 60 months, and over twelve years its net present-value gain, valued at 6.875%, is about $3,133',
       'Decline the point: $3,500 is more than a year of savings',
       'Decline the point: the APR with the point is higher than 6.625%, so the point must be a bad deal',
       'It cannot be judged without knowing the property taxes',
@@ -108,13 +110,13 @@ export const items = [
   },
   {
     id: 'f04-m4-10', lesson: 'mortgages', type: 'num', kind: 'applied',
-    prompt: 'A fictional household’s fixed mortgage payment is $2,200 a month. If inflation averages 3.2% a year, what will the payment due in 20 years be worth in today’s dollars? Give dollars and cents.',
-    answer: 1171.73, check: () => 2200 / 1.032 ** 20, unit: '$', places: 2, tol: 0.5,
+    prompt: 'A fictional household’s fixed mortgage payment is $2,200 a month. At what constant inflation rate would the payment due in 20 years be worth half as much in today’s dollars as it is today? Give a percentage to two decimal places.',
+    answer: 3.53, check: () => (2 ** (1 / 20) - 1) * 100, unit: '%', places: 2, tol: 0.01,
     wrong: [
-      { value: 4130.63, say: 'That is what a payment rising with inflation would reach. A fixed payment loses purchasing power: divide by 1.032²⁰.' },
-      { value: 792, say: 'That subtracts 3.2% twenty times (simple). Inflation compounds: divide by 1.032²⁰ ≈ 1.877561.' },
+      { value: 2.5, say: 'That spreads a 50% fall evenly over 20 years (50 ÷ 20). Inflation compounds: solve (1 + i)²⁰ = 2.' },
+      { value: 5, say: 'That treats a doubling of prices as 100% spread over 20 years (100 ÷ 20). Inflation compounds: take the 20th root of 2.' },
     ],
-    solution: 'Real value = 2,200 ÷ 1.032²⁰ = 2,200 ÷ 1.877561 ≈ $1,171.73: a fixed nominal payment takes a shrinking share of purchasing power, which is part of why a long fixed-rate loan becomes easier to carry over time.',
+    solution: 'The payment is worth half as much when prices have doubled: (1 + i)²⁰ = 2, so i = 2^(1/20) − 1 ≈ 0.0353, or 3.53% a year. (The rule of 72 gives about 72 ÷ 20 = 3.6%.) The $2,200 payment would then be worth $1,100 of today’s purchasing power.',
   },
   {
     id: 'f04-m4-11', lesson: 'mortgages', type: 'classify', kind: 'conceptual',
@@ -138,13 +140,13 @@ export const items = [
   },
   {
     id: 'f04-m4-12', lesson: 'mortgages', type: 'num', kind: 'numerical',
-    prompt: 'A fictional ARM started at 4.75% and after its first reset charges 7.0%. Its caps are 2 percentage points at the first reset, 1 point at each later reset and 5 points over the life of the loan. At the next reset the index is 5.8% and the margin 2.5 points. What is the new interest rate, in percent?',
-    answer: 8, check: () => Math.min(5.8 + 2.5, 7.0 + 1, 4.75 + 5), unit: '%', places: 2, tol: 0.005,
+    prompt: 'A fictional ARM started at 5.0% and after its first reset charges 7.0%. Its caps are 2 percentage points at the first reset, 1 point at each later reset and 5 points over the life of the loan. At the next reset the index is 5.8% and the margin 2.5 points. What is the new interest rate, in percent?',
+    answer: 8, check: () => Math.min(5.8 + 2.5, 7.0 + 1, 5.0 + 5), unit: '%', places: 2, tol: 0.005,
     wrong: [
       { value: 8.3, say: 'That is the fully indexed rate before caps. After the first reset the subsequent cap limits each move to 1 point.' },
       { value: 9, say: 'That applies the 2-point initial cap. The first reset has already happened; later resets use the 1-point cap.' },
-      { value: 9.75, say: 'That is the lifetime maximum (4.75% + 5). The 1-point subsequent cap binds first.' },
+      { value: 10, say: 'That is the lifetime maximum (5.0% + 5). The 1-point subsequent cap binds first.' },
     ],
-    solution: 'Fully indexed rate = 5.8% + 2.5% = 8.3%. The subsequent cap allows at most 7.0% + 1 = 8.0%; the lifetime cap allows up to 4.75% + 5 = 9.75%. The tightest limit applies, so the new rate is 8.0%.',
+    solution: 'Fully indexed rate = 5.8% + 2.5% = 8.3%. The subsequent cap allows at most 7.0% + 1 = 8.0%; the lifetime cap allows up to 5.0% + 5 = 10.0%. The tightest limit applies, so the new rate is 8.0%.',
   },
 ];

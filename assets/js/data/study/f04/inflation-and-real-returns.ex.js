@@ -144,7 +144,7 @@ export const guided = [
       { id: 'f04-real-g3-s4', type: 'num', prompt: 'Present value by the real route (real amount, real rate).',
         answer: 8929.38, check: () => 10000 / (1.09 / 1.03) ** 2, unit: '$', places: 2, tol: 1,
         hints: ['Discount $10,000 for two years at the real rate.', '10,000 ÷ 1.058252².'],
-        wrong: [{ value: 9473.18, say: 'That discounts the nominal $10,609 at the real rate, counting inflation twice in the cash flow and not at all in the rate. Use the real $10,000.' }] },
+        wrong: [{ value: 9473.18, say: 'That discounts the nominal $10,609 at the real rate, counting inflation in the cash flow but not in the rate. Use the real $10,000.' }] },
     ],
   },
   {
