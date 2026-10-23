@@ -57,11 +57,11 @@ export default {
       items: [
         { id: 'b01-pj-1', type: 'classify', kind: 'conceptual',
           prompt: 'Which kind of analytics does each question need?',
-          items: ['How many orders did the shop take in each month of 2026?', 'Why did September’s orders fall when visits rose?', 'How many gift boxes should Lantern stock for December 2027?', 'Should Lantern roll back the new checkout or fix it?'],
+          items: ['How many orders did the shop take in each month of 2026?', 'Why did September’s orders fall when visits rose?', 'How many gift boxes will customers order in December 2027?', 'Should Lantern roll back the new checkout or fix it?'],
           categories: ['Descriptive', 'Diagnostic', 'Predictive', 'Prescriptive'],
           answer: [0, 1, 2, 3],
-          feedback: { 2: 'Stocking for next December needs a forecast of demand first: that is prediction. Choosing what to do with the forecast would be prescriptive.', 3: 'This asks which action to take, which is prescriptive; it relies on the diagnosis but goes further.' },
-          solution: 'Counting orders describes what happened; explaining the fall diagnoses why; estimating next December’s demand predicts; choosing between rolling back and fixing prescribes an action.' },
+          feedback: { 2: 'Estimating next December’s orders is a forecast: prediction. Deciding how many to stock, given that forecast and the costs of too many or too few, would be prescriptive.', 3: 'This asks which action to take, which is prescriptive; it relies on the diagnosis but goes further.' },
+          solution: 'Counting orders describes what happened; explaining the fall diagnoses why; estimating next December’s orders predicts; choosing between rolling back and fixing prescribes an action.' },
         { id: 'b01-pj-2', type: 'mc', kind: 'applied',
           prompt: 'Which is the best measurable version of “Is the shop doing well?”',
           options: [

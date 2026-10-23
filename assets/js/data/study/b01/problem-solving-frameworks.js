@@ -10,7 +10,7 @@ const box = (x, y, w, h, lines, { dash = false, series = 0, size = 13 } = {}) =>
 const wire = (d) => `<path d="${d}" style="fill:none;stroke:currentColor;stroke-width:1.3"/>`;
 
 const ISSUE_TREE = '<svg viewBox="0 0 640 344" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="13">'
-  + box(8, 142, 132, 56, ['<tspan font-weight="700">Why did September’s</tspan>', '<tspan font-weight="700">orders fall?</tspan>'], { series: 1, size: 13 })
+  + box(8, 136, 132, 68, ['<tspan font-weight="700">Why did</tspan>', '<tspan font-weight="700">September’s</tspan>', '<tspan font-weight="700">orders fall?</tspan>'], { series: 1, size: 13 })
   + box(172, 58, 140, 52, ['Fewer orders', 'really placed'], { series: 2 })
   + box(172, 232, 140, 52, ['Orders placed but', 'not counted'], { series: 2 })
   + box(344, 18, 132, 40, ['Fewer visits'], { series: 3 })
@@ -34,22 +34,22 @@ const DRIVER_TREE = '<svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/sv
   + box(292, 20, 110, 40, ['Web orders'], { series: 3 })
   + box(292, 100, 110, 40, ['App orders'], { series: 3 })
   + box(292, 196, 150, 56, ['What is bought:', 'products, pack sizes,', 'gift boxes'], { dash: true, size: 12 })
-  + box(434, 6, 98, 30, ['Web visits'], { series: 1 })
-  + box(434, 44, 98, 30, ['Web conversion'], { series: 1, size: 12 })
-  + box(434, 88, 98, 30, ['App visits'], { series: 1 })
-  + box(434, 126, 98, 30, ['App conversion'], { series: 1, size: 12 })
-  + box(546, 6, 86, 30, ['by source'], { dash: true, size: 12 })
-  + box(546, 44, 86, 30, ['by device, step'], { dash: true, size: 11 })
-  + box(546, 88, 86, 30, ['by source'], { dash: true, size: 12 })
-  + box(546, 126, 86, 30, ['by device, step'], { dash: true, size: 11 })
+  + box(430, 6, 110, 30, ['Web visits'], { series: 1 })
+  + box(430, 44, 110, 30, ['Web conversion'], { series: 1, size: 12 })
+  + box(430, 88, 110, 30, ['App visits'], { series: 1 })
+  + box(430, 126, 110, 30, ['App conversion'], { series: 1, size: 12 })
+  + box(552, 6, 82, 30, ['by source'], { dash: true, size: 12 })
+  + box(552, 44, 82, 30, ['by device'], { dash: true, size: 12 })
+  + box(552, 88, 82, 30, ['by source'], { dash: true, size: 12 })
+  + box(552, 126, 82, 30, ['by device'], { dash: true, size: 12 })
   + wire('M118 148H134V80H150') + wire('M134 148V224H150')
   + wire('M260 80H276V40H292') + wire('M276 80V120H292') + wire('M260 224H292')
-  + wire('M402 40H418V21H434') + wire('M418 40V59H434') + wire('M402 120H418V103H434') + wire('M418 120V141H434')
-  + wire('M532 21H546') + wire('M532 59H546') + wire('M532 103H546') + wire('M532 141H546')
+  + wire('M402 40H416V21H430') + wire('M416 40V59H430') + wire('M402 120H416V103H430') + wire('M416 120V141H430')
+  + wire('M540 21H552') + wire('M540 59H552') + wire('M540 103H552') + wire('M540 141H552')
   + '<text x="126" y="142" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">×</text>'
   + '<text x="268" y="74" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">+</text>'
-  + '<text x="410" y="34" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">×</text>'
-  + '<text x="410" y="114" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">×</text>'
+  + '<text x="409" y="34" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">×</text>'
+  + '<text x="409" y="114" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">×</text>'
   + '<text x="320" y="288" text-anchor="middle" font-size="12" fill="currentColor">Solid boxes are linked by arithmetic (× or +); dashed boxes are where you split further to find a cause.</text>'
   + '</svg>';
 
@@ -86,7 +86,7 @@ export default {
     { p: 'The tree does three jobs. It makes the hypotheses of the previous lesson complete: each branch is a family of explanations, and every explanation belongs somewhere. It turns a vague question into a list of specific ones (did visits fall? did the website’s conversion fall? do the shop’s order counts match the payment provider’s?), each of which names the data it needs. And it lets two people divide the work without overlap.' },
 
     { h: 'MECE: no overlaps, no gaps' },
-    { p: 'A good tree splits each node into parts that are <g>MECE</g>: mutually exclusive (no possible cause belongs to two branches) and collectively exhaustive (every possible cause belongs to some branch). Barbara Minto, a consultant at McKinsey &amp; Company from 1963 to 1973, says she was the first to abbreviate the idea as MECE and to apply it to analysing groups of ideas, while crediting the underlying logic to Aristotle.' },
+    { p: 'A good tree splits each node into parts that are <g>MECE</g>: mutually exclusive (no possible cause belongs to two branches) and collectively exhaustive (every possible cause belongs to some branch). Barbara Minto, who worked at McKinsey &amp; Company from 1963 to 1973, says she was the first to abbreviate the idea as MECE and to apply it to analysing groups of ideas, while crediting the underlying logic to Aristotle.' },
     { p: 'Both halves of the test catch real mistakes. Overlapping branches waste effort and double-count: if one branch is “fewer visits” and another is “weaker weekend trade”, a quiet weekend appears in both, and two people investigate the same thing. Gaps hide causes: a tree whose only branches are “website” and “app” has no place for a fall in the counting, so nobody looks there. Splits that are MECE by construction are the safest: before and after a date, one channel and all the others, the factors of a product, or a list closed with “everything else”.' },
     { callout: 'key', title: 'Two questions at every split', html: 'Could anything belong to two of these branches? Could anything belong to none of them? If the answer to either is yes, redraw the split before collecting any data.' },
 
@@ -104,7 +104,7 @@ export default {
     { figure: {
       svg: DRIVER_TREE,
       caption: 'A driver tree for Lantern’s online revenue. Revenue is orders × average order value; orders are web orders + app orders; each channel’s orders are its visits × its conversion rate. Dashed boxes are splits without a formula, where you look for the cause.',
-      alt: 'A tree drawn from left to right. “Revenue” splits, with a multiplication sign, into “Orders” and “Average order value”. “Orders” splits, with a plus sign, into “Web orders” and “App orders”. “Web orders” splits, with a multiplication sign, into “Web visits” and “Web conversion”; “App orders” splits the same way into “App visits” and “App conversion”. Dashed boxes to the right of each visits box read “by source”, and to the right of each conversion box “by device, step”. A dashed box beside “Average order value” reads “What is bought: products, pack sizes, gift boxes”. A note says solid boxes are linked by arithmetic and dashed boxes are where you split further to find a cause.',
+      alt: 'A tree drawn from left to right. “Revenue” splits, with a multiplication sign, into “Orders” and “Average order value”. “Orders” splits, with a plus sign, into “Web orders” and “App orders”. “Web orders” splits, with a multiplication sign, into “Web visits” and “Web conversion”; “App orders” splits the same way into “App visits” and “App conversion”. Dashed boxes to the right of each visits box read “by source”, and to the right of each conversion box “by device”. A dashed box beside “Average order value” reads “What is bought: products, pack sizes, gift boxes”. A note says solid boxes are linked by arithmetic and dashed boxes are where you split further to find a cause.',
     } },
     { p: String.raw`Because the drivers multiply, their percentage changes do not simply add. If visits rise by 10% and the conversion rate falls by 10%, revenue does not stay flat: <m>1.10 \times 0.90 = 0.99</m>, a fall of 1%. Write each driver’s change as a growth factor, one plus its growth rate, and the growth factor of revenue is the product of the three. For small changes the sum of the growth rates is a fair approximation; for large ones it can mislead badly.` },
     { p: 'To say how many dollars of a change each driver accounts for, change the drivers one at a time in a fixed order: first visits (holding the conversion rate and order value at their old levels), then the conversion rate (at the new visits), then the order value. The three contributions always add up exactly to the change in revenue. A different order gives slightly different contributions, because part of the change comes from drivers moving together, so state the order you used; when the ranking of the drivers depends on it, say so. The challenging example works through both orders.' },
@@ -123,7 +123,7 @@ export default {
     { p: 'The five whys has well-documented limits. Alan Card, reviewing its use in hospital safety investigations, argues that it forces a single causal path when most problems have several causes, that different teams asking the same whys reach different answers, and that the deepest cause it finds is not always the best place to intervene: a check close to the problem can prevent a repeat more reliably than a change far upstream. Use it for small, contained problems, and combine it with tools that show many causes at once. A driver tree is one; a fishbone diagram, which lists possible causes under headings such as people, process, equipment and materials, is another.' },
 
     { h: 'CRISP-DM' },
-    { p: 'For larger projects, especially those that build a predictive model, analysts often follow <g>CRISP-DM</g>, the Cross-Industry Standard Process for Data Mining. It was developed in the late 1990s by a consortium of companies (NCR, DaimlerChrysler, SPSS and the Dutch insurer OHRA), and the step-by-step guide to version 1.0 was published in 2000. Data mining was the name then used for finding patterns and building models from large datasets. The guide divides a project into six phases:' },
+    { p: 'For larger projects, especially those that build a predictive model, analysts often follow <g>CRISP-DM</g>, the Cross-Industry Standard Process for Data Mining. It was developed by a consortium of companies (NCR, DaimlerChrysler, SPSS and OHRA, a Dutch insurance and banking group), and the step-by-step guide to version 1.0 was published in 2000. Data mining was the name then used for finding patterns and building models from large datasets. The guide divides a project into six phases:' },
     { table: {
       caption: 'The six phases of CRISP-DM 1.0 and where this curriculum covers them',
       head: ['Phase', 'What it does', 'In this curriculum'],
@@ -232,7 +232,7 @@ export default {
     { p: '<b>Size the explanation.</b> The one-at-a-time method tells you how much of the change in orders comes from visits and how much from conversion in each channel. If one branch accounts for most of it, that is where the root-cause work goes; if the change is spread thinly across many branches, there may be no single cause, and the recommendation changes accordingly.' },
     { p: '<b>Decide when to stop.</b> The brief set the threshold in advance: a fall in website conversion of a tenth or more is worth acting on. Ana’s preferred action, asking the agency to investigate and fix the checkout, is cheap and reversible, while rolling the redesign back would lose features she wants. So if the counts reconcile and the website branch shows a fall above the threshold that the app does not share, that is enough to act on. Further splits can continue alongside the agency’s work rather than delay it, and the measure step (website conversion tracked weekly after any fix) will show whether the action worked.' },
     { p: '<b>Write the report in the same structure.</b> A report that follows the issue tree (what was checked, what each check showed, which branches remain open) lets Ana see why you reached your conclusion and how sure you are. The course project asks you to carry out this plan with the case figures, compute each branch and write the recommendation.' },
-    { p: 'These frameworks are standard far beyond retail. Management consultants build issue trees for almost every engagement; hospital safety teams use root-cause analysis after serious incidents; manufacturers use the five whys on the factory floor; data science teams organise model-building projects around CRISP-DM or methods derived from it. What they share is the discipline of this lesson: split the problem so that nothing is missed or counted twice, test hypotheses in a sensible order, find causes rather than symptoms, and stop when the decision is clear.' },
+    { p: 'These frameworks are used far beyond retail. Management consultants use issue trees to structure their work, hospital safety teams carry out root-cause analyses after serious incidents, manufacturers use the five whys on the factory floor, and data science teams organise model-building projects around CRISP-DM or methods derived from it. What they share is the discipline of this lesson: split the problem so that nothing is missed or counted twice, test hypotheses in a sensible order, find causes rather than symptoms, and stop when the decision is clear.' },
   ],
 
   summary: [

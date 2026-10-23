@@ -5,16 +5,16 @@ const STAIRS = '<svg viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg" fo
   + '<line x1="50" y1="280" x2="50" y2="28" style="stroke:currentColor;stroke-width:1.5" marker-end="url(#fka-ar)"/><line x1="50" y1="280" x2="624" y2="280" style="stroke:currentColor;stroke-width:1.5" marker-end="url(#fka-ar)"/>'
   + '<text transform="translate(32 160) rotate(-90)" text-anchor="middle" fill="currentColor">Value to the decision</text>'
   + '<text x="337" y="306" text-anchor="middle" fill="currentColor">Difficulty: data, assumptions and skill needed</text>'
-  + '<rect x="62" y="220" width="132" height="60" rx="4" style="fill:none;stroke:var(--series-1);stroke-width:2"/>'
-  + '<rect x="200" y="175" width="132" height="105" rx="4" style="fill:none;stroke:var(--series-2);stroke-width:2"/>'
-  + '<rect x="338" y="130" width="132" height="150" rx="4" style="fill:none;stroke:var(--series-3);stroke-width:2"/>'
-  + '<rect x="476" y="85" width="132" height="195" rx="4" style="fill:none;stroke:var(--series-1);stroke-width:2;stroke-dasharray:6 3"/>'
-  + '<text x="128" y="243" text-anchor="middle" font-weight="700" fill="currentColor">Descriptive</text><text x="128" y="263" text-anchor="middle" font-size="13" fill="currentColor">What happened?</text>'
-  + '<text x="266" y="198" text-anchor="middle" font-weight="700" fill="currentColor">Diagnostic</text><text x="266" y="218" text-anchor="middle" font-size="13" fill="currentColor">Why did it happen?</text>'
-  + '<text x="404" y="153" text-anchor="middle" font-weight="700" fill="currentColor">Predictive</text><text x="404" y="173" text-anchor="middle" font-size="13" fill="currentColor">What will happen?</text>'
-  + '<text x="542" y="108" text-anchor="middle" font-weight="700" fill="currentColor">Prescriptive</text><text x="542" y="128" text-anchor="middle" font-size="13" fill="currentColor">What should we do?</text>'
-  + '<text x="128" y="211" text-anchor="middle" font-size="13" font-style="italic" fill="currentColor">hindsight</text><text x="266" y="166" text-anchor="middle" font-size="13" font-style="italic" fill="currentColor">insight</text><text x="404" y="121" text-anchor="middle" font-size="13" font-style="italic" fill="currentColor">foresight</text><text x="542" y="76" text-anchor="middle" font-size="13" font-style="italic" fill="currentColor">a recommendation</text>'
-  + '<text x="128" y="64" text-anchor="middle" font-size="13" fill="currentColor">Looks back at data</text><text x="128" y="81" text-anchor="middle" font-size="13" fill="currentColor">that already exist</text>'
+  + '<rect x="58" y="220" width="136" height="60" rx="4" style="fill:none;stroke:var(--series-1);stroke-width:2"/>'
+  + '<rect x="197" y="175" width="136" height="105" rx="4" style="fill:none;stroke:var(--series-2);stroke-width:2"/>'
+  + '<rect x="336" y="130" width="136" height="150" rx="4" style="fill:none;stroke:var(--series-3);stroke-width:2"/>'
+  + '<rect x="475" y="85" width="136" height="195" rx="4" style="fill:none;stroke:var(--series-1);stroke-width:2;stroke-dasharray:6 3"/>'
+  + '<text x="126" y="243" text-anchor="middle" font-weight="700" fill="currentColor">Descriptive</text><text x="126" y="263" text-anchor="middle" font-size="12" fill="currentColor">What happened?</text>'
+  + '<text x="265" y="198" text-anchor="middle" font-weight="700" fill="currentColor">Diagnostic</text><text x="265" y="218" text-anchor="middle" font-size="12" fill="currentColor">Why did it happen?</text>'
+  + '<text x="404" y="153" text-anchor="middle" font-weight="700" fill="currentColor">Predictive</text><text x="404" y="173" text-anchor="middle" font-size="12" fill="currentColor">What will happen?</text>'
+  + '<text x="543" y="108" text-anchor="middle" font-weight="700" fill="currentColor">Prescriptive</text><text x="543" y="128" text-anchor="middle" font-size="12" fill="currentColor">What should we do?</text>'
+  + '<text x="126" y="211" text-anchor="middle" font-size="13" font-style="italic" fill="currentColor">hindsight</text><text x="265" y="166" text-anchor="middle" font-size="13" font-style="italic" fill="currentColor">insight</text><text x="404" y="121" text-anchor="middle" font-size="13" font-style="italic" fill="currentColor">foresight</text><text x="543" y="76" text-anchor="middle" font-size="13" font-style="italic" fill="currentColor">a recommendation</text>'
+  + '<text x="196" y="64" text-anchor="middle" font-size="13" fill="currentColor">Looks back at data</text><text x="196" y="81" text-anchor="middle" font-size="13" fill="currentColor">that already exist</text>'
   + '<text x="404" y="64" text-anchor="middle" font-size="13" fill="currentColor">Looks forward:</text><text x="404" y="81" text-anchor="middle" font-size="13" fill="currentColor">rests on assumptions</text>'
   + '</svg>';
 
@@ -80,8 +80,8 @@ export default {
 
   theory: [
     { h: 'Descriptive analytics: getting the facts right' },
-    { p: 'Most analytics work in most organisations is descriptive, and for good reason: every other kind depends on it. Descriptive work turns raw records into summaries: totals (orders in August), averages (the average amount spent per order), rates (the share of visits that end in an order) and comparisons (this month against last month, or against a target). Module 3 of this course defines these measures exactly and teaches you to read them.' },
-    { p: 'Descriptive analytics sounds easy and is easy to get wrong. A count of “orders” depends on what counts as an order: are cancelled orders in or out? A monthly comparison depends on whether the months are comparable: September has 30 days and August 31. A total depends on the data being complete and free of duplicates. The next lesson deals with definitions and module 2 with data quality. For now, note that the commonest failure in analytics is not an exotic model but a wrong number in a simple table.' },
+    { p: 'A large share of analytics work is descriptive, and for good reason: every other kind depends on it. Descriptive work turns raw records into summaries: totals (orders in August), averages (the average amount spent per order), rates (the share of visits that end in an order) and comparisons (this month against last month, or against a target). Module 3 of this course defines these measures exactly and teaches you to read them.' },
+    { p: 'Descriptive analytics sounds easy and is easy to get wrong. A count of “orders” depends on what counts as an order: are cancelled orders in or out? A monthly comparison depends on whether the months are comparable: September has 30 days and August 31. A total depends on the data being complete and free of duplicates. The next lesson deals with definitions and module 2 with data quality. For now, note that a common failure in analytics is not an exotic model but a wrong number in a simple table.' },
 
     { h: 'Diagnostic analytics: from pattern to explanation' },
     { p: 'Diagnostic work starts where description finds something surprising. Its main tools are simple. <b>Drilling down</b> splits a total into its parts: orders by channel, by device, by product, by day. <b>Comparison</b> sets the group that changed beside one that did not, such as the website, whose checkout was redesigned, beside the app, whose checkout was not. <b>Timing</b> asks whether a change began when a suspected cause began. The third lesson of this module, on problem-solving frameworks, gives this search a structure, so that you look everywhere the cause could be, and look once.' },
