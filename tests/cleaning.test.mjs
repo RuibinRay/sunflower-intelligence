@@ -283,6 +283,25 @@ function step(t, s) {
   ok(step(dv, { op: 'rename', from: 'a', to: 'b' }).change.error, 'rename clash refused');
   r = step(dv, { op: 'drop-column', column: 'b' });
   eq([r.table.columns.length, r.table.rows[0]], [3, ['6', '2026-03-02', '2026-03-05']], 'drop-column');
+  // fitting on rows marked in a split column, target encoding, cross-column validation
+  const sp = T(['split', 'x', 'g', 'y'], [['train', '10', 'a', '1'], ['train', '20', 'a', '0'], ['train', '30', 'b', '1'], ['test', '400', 'b', '0'], ['test', '50', 'c', '1']]);
+  r = step(sp, { op: 'scale', column: 'x', method: 'minmax', fit: 'train', split: 'split' });
+  eq([r.change.params.min, r.change.params.max, r.change.params.trainRows], [10, 30, 3], 'min-max fitted on split = train rows');
+  eq(col(r.table, 'x'), [0, 0.5, 1, 19.5, 2], 'test rows scaled with training parameters');
+  ok(/split = train/.test(r.change.note), 'split fit explained');
+  r = step(sp, { op: 'scale', column: 'x', method: 'minmax', fit: 'all', split: 'split' });
+  eq(r.change.params.max, 400, 'fit on all rows includes the test row (leakage)');
+  ok(step(sp, { op: 'scale', column: 'x', fit: 'train', split: 'nope' }).change.error, 'unknown split column refused');
+  r = step(sp, { op: 'encode', column: 'g', method: 'target', target: 'y', fit: 'train', split: 'split' });
+  eq(col(r.table, 'g_target'), [0.5, 0.5, 1, 1, 2 / 3], 'target means from training rows; unseen level gets the training mean');
+  r = step(sp, { op: 'encode', column: 'g', method: 'target', target: 'y', fit: 'all' });
+  eq(col(r.table, 'g_target'), [0.5, 0.5, 0.5, 0.5, 1], 'target means from all rows');
+  ok(/leakage/.test(r.change.note), 'target encoding on all rows names the leakage');
+  const hv = T(['ci', 'co', 'n'], [['2026-03-01', '2026-03-04', '3'], ['2026-03-05', '2026-02-07', '3'], ['2026-03-01', '2026-03-03', '3']]);
+  r = step(hv, { op: 'validate', column: 'co', rule: { other: 'ci', op: '>' }, action: 'flag' });
+  eq(col(r.table, 'co_invalid'), [0, 1, 0], 'validate: check_out after check_in');
+  r = step(hv, { op: 'validate', column: 'n', rule: { expr: 'days_between(ci, co)' }, action: 'flag' });
+  eq(col(r.table, 'n_invalid'), [0, 1, 1], 'validate: nights equals the days between the dates');
   // refusals
   ok(/Unknown operation/.test(C.apply(dv, { op: 'shuffle' }).change.error), 'unknown op refused');
   ok(/no column called/.test(C.apply(dv, { op: 'trim', column: 'zz' }).change.error), 'missing column refused');

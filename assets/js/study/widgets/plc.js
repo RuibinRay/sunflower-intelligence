@@ -72,7 +72,6 @@ export const STAGES = {
 };
 const CORE = ['introduction', 'growth', 'maturity', 'decline'];
 const TYPICAL = [0.17, 0.42, 0.70]; // introduction|growth, growth|maturity, maturity|decline
-let GAP = 0.04; // the closest two boundaries may come; widened on narrow charts so the handles never overlap
 
 const pct = (v) => `${Math.round(v * 100)}%`;
 let seq = 0;
@@ -87,6 +86,7 @@ export async function mount(el, config = {}, ctx = {}) {
   let b = [...TYPICAL];                                    // movable boundaries
   const bounds = () => (dev ? [t0, 0, ...b, 1] : [0, ...b, 1]); // edges of every stage
   let sel = stages.includes(config.select) ? config.select : 'introduction';
+  let GAP = 0.04; // the closest two boundaries may come; widened on narrow charts so the handles never overlap
   let touched = false;
 
   el.replaceChildren();

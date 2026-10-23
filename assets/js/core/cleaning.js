@@ -1006,6 +1006,18 @@ export function trainRows(n, share = 0.7, seed = 7) {
   for (let i = n - 1; i > 0; i--) { const k = Math.floor(r() * (i + 1)); [idx[i], idx[k]] = [idx[k], idx[i]]; }
   return new Set(idx.slice(0, Math.round(n * share)));
 }
+/** Rows a step learns from: all, a seeded 70% subset, or the rows marked “train” in a split column. */
+function fitRows(table, step) {
+  if (step.fit !== 'train') return null;
+  if (step.split) {
+    const k = needColumn(table, step.split);
+    const set = new Set(table.rows.map((r, i) => (cellText(r[k]).trim().toLowerCase() === 'train' ? i : -1)).filter((i) => i >= 0));
+    if (!set.size) throw new StepError(`No row has “train” in ${step.split}, so there is nothing to learn from.`);
+    return set;
+  }
+  return trainRows(table.rows.length, step.trainShare ?? 0.7, step.seed ?? 7);
+}
+const fitText = (step, set, n) => (step.split ? `the ${set.size} training rows (${step.split} = train)` : `a ${Math.round((step.trainShare ?? 0.7) * 100)}% training subset (${set.size} of ${n} rows, seed ${step.seed ?? 7})`);
 const rowLabel = (table, i) => `row ${table.ids?.[i] ?? i + 1}`;
 const median = (a) => S.quantileSorted(S.sorted(a), 0.5);
 function modeOf(values) {
@@ -1163,7 +1175,7 @@ const OPS_IMPL = {
     if (!missingRows.length) { ch.note = `${step.column} has no missing values, so nothing was filled.`; return { table, change: ch }; }
     const numeric = ['mean', 'median', 'group-median'].includes(method);
     const vals = numeric ? numericValues(table, j) : table.rows.map((r) => (isMissing(r[j]) ? null : r[j]));
-    const train = step.fit === 'train' ? trainRows(table.rows.length, step.trainShare ?? 0.7, step.seed ?? 7) : null;
+    const train = fitRows(table, step);
     const source = (rows) => rows.filter((i) => vals[i] != null && (!train || train.has(i))).map((i) => vals[i]);
     const stat = (rows) => {
       const a = source(rows);
@@ -1201,8 +1213,8 @@ const OPS_IMPL = {
     const what = method === 'constant' ? `the value ${cellText(used.all)}` : by
       ? `the ${method === 'group-median' ? 'median' : method} of each ${by} group (${Object.entries(used).slice(0, 6).map(([g, v]) => `${g}: ${typeof v === 'number' ? fmtNum(v) : `“${short(v)}”`}`).join(', ')}${Object.keys(used).length > 6 ? ', …' : ''})`
       : `the ${method} (${typeof used.all === 'number' ? fmtNum(used.all) : `“${short(used.all)}”`})`;
-    const fitText = train ? ` The ${method === 'constant' ? 'value' : 'statistic'} was calculated from a ${Math.round((step.trainShare ?? 0.7) * 100)}% training subset only (seed ${step.seed ?? 7}).` : method === 'constant' ? '' : ' The statistic was calculated from every row’s observed values.';
-    ch.note = `Filled ${plural(ch.cellsChanged, 'missing value')} in ${step.column} with ${what}.${fitText}${fallback ? ` ${plural(fallback, 'row')} in groups with no observed value got the overall figure.` : ''}`;
+    const fitNote = train ? ` The ${method === 'constant' ? 'value' : 'statistic'} was calculated from ${fitText(step, train, table.rows.length)} only.` : method === 'constant' ? '' : ' The statistic was calculated from every row’s observed values.';
+    ch.note = `Filled ${plural(ch.cellsChanged, 'missing value')} in ${step.column} with ${what}.${fitNote}${fallback ? ` ${plural(fallback, 'row')} in groups with no observed value got the overall figure.` : ''}`;
     return { table: out, change: ch };
   },
   'drop-missing'(table, step) {
@@ -1235,7 +1247,14 @@ const OPS_IMPL = {
     const inList = Array.isArray(rule.in) && rule.in.length ? new Set(rule.in.map(String)) : null;
     let re = null;
     if (rule.pattern) { try { re = new RegExp(rule.pattern); } catch { throw new StepError('The pattern isn’t a valid regular expression.'); } }
-    if (!hasMin && !hasMax && !inList && !re && !rule.integer) throw new StepError('Set at least one rule: a minimum, a maximum, whole numbers, a list of allowed values or a pattern.');
+    const kOther = rule.other ? needColumn(table, rule.other) : -1;
+    let expr = null;
+    if (rule.expr) { try { expr = compileExpr(rule.expr, table.columns.map((c) => c.name)); } catch (e) { throw new StepError(e.message); } }
+    if (!hasMin && !hasMax && !inList && !re && !rule.integer && kOther < 0 && !expr) throw new StepError('Set at least one rule: a minimum, a maximum, whole numbers, a list of allowed values, a pattern, a comparison with another column or a formula it must equal.');
+    const cmpOp = rule.op || '>';
+    const cmpTest = { '>': (a, b) => a > b, '>=': (a, b) => a >= b, '<': (a, b) => a < b, '<=': (a, b) => a <= b, '!=': (a, b) => a !== b }[cmpOp] || ((a, b) => a > b);
+    const idxOf = Object.fromEntries(table.columns.map((c, k) => [c.name, k]));
+    const asVal = (c, dates2) => (dates2 ? (isoDate(c) ? dateMs(String(c).trim()) : NaN) : typeof c === 'number' ? c : plainNumber(c));
     const dates = isDateBound(rule.min) || isDateBound(rule.max);
     const lo = hasMin ? (dates ? dateMs(rule.min) : +rule.min) : -Infinity, hi = hasMax ? (dates ? dateMs(rule.max) : +rule.max) : Infinity;
     const bad = [];
@@ -1249,10 +1268,22 @@ const OPS_IMPL = {
         if (rule.integer && !Number.isInteger(v)) { bad.push([i, 'not a whole number']); return; }
       }
       if (inList && !inList.has(cellText(c))) { bad.push([i, 'not an allowed value']); return; }
-      if (re && !re.test(cellText(c))) bad.push([i, 'does not match the pattern']);
+      if (re && !re.test(cellText(c))) { bad.push([i, 'does not match the pattern']); return; }
+      if (kOther >= 0 && !isMissing(r[kOther])) {
+        const dd = isoDate(c) || isoDate(r[kOther]);
+        const a = asVal(c, dd), b2 = asVal(r[kOther], dd);
+        if (!Number.isFinite(a) || !Number.isFinite(b2)) { bad.push([i, dd ? 'not an ISO date in both columns' : 'not a number in both columns']); return; }
+        if (!cmpTest(a, b2)) { bad.push([i, `not ${cmpOp} ${rule.other}`]); return; }
+      }
+      if (expr && !expr.columns.some((n) => isMissing(r[idxOf[n]]))) {
+        const lhs = typeof c === 'number' ? c : plainNumber(c);
+        const rhs = expr.eval((n, kind) => (kind === 'date' ? (isoDate(r[idxOf[n]]) ? dateMs(String(r[idxOf[n]]).trim()) : NaN) : asVal(r[idxOf[n]], false)));
+        if (!Number.isFinite(lhs) || !Number.isFinite(rhs)) { bad.push([i, 'the formula can’t be calculated (convert the columns first)']); return; }
+        if (Math.abs(lhs - rhs) > (+rule.tol || 0) + 1e-9) bad.push([i, `does not equal ${prettyExpr(rule.expr)} (${fmtNum(rhs)})`]);
+      }
     });
     const action = step.action || 'flag';
-    const desc = [hasMin && hasMax ? `${rule.min} to ${rule.max}` : hasMin ? `at least ${rule.min}` : hasMax ? `at most ${rule.max}` : '', rule.integer ? 'whole numbers' : '', inList ? `one of ${[...inList].slice(0, 6).join(', ')}${inList.size > 6 ? ', …' : ''}` : '', re ? `matching ${rule.pattern}` : ''].filter(Boolean).join('; ');
+    const desc = [hasMin && hasMax ? `${rule.min} to ${rule.max}` : hasMin ? `at least ${rule.min}` : hasMax ? `at most ${rule.max}` : '', rule.integer ? 'whole numbers' : '', inList ? `one of ${[...inList].slice(0, 6).join(', ')}${inList.size > 6 ? ', …' : ''}` : '', re ? `matching ${rule.pattern}` : '', kOther >= 0 ? `${cmpOp} ${rule.other}` : '', expr ? `equal to ${prettyExpr(rule.expr)}${+rule.tol ? ` within ${rule.tol}` : ''}` : ''].filter(Boolean).join('; ');
     let out = table;
     const badSet = new Set(bad.map((b) => b[0]));
     if (action === 'set-missing') out = mapColumn(table, j, (c, i) => (badSet.has(i) ? null : undefined), ch);
@@ -1353,7 +1384,7 @@ const OPS_IMPL = {
     const j = needColumn(table, step.column);
     const vals = numericValues(table, j);
     const method = step.method || 'zscore';
-    const train = step.fit === 'train' ? trainRows(table.rows.length, step.trainShare ?? 0.7, step.seed ?? 7) : null;
+    const train = fitRows(table, step);
     const fitVals = vals.filter((v, i) => v != null && (!train || train.has(i)));
     if (fitVals.length < 2) throw new StepError('Scaling needs at least two values to learn from.');
     let f, params;
@@ -1384,7 +1415,7 @@ const OPS_IMPL = {
     ch.params = { method, fit: train ? 'train' : 'all', ...params, trainRows: train ? train.size : vals.length };
     const pText = method === 'zscore' ? `mean ${fmtNum(params.mean)} and sample SD ${fmtNum(params.sd)}` : method === 'minmax' ? `minimum ${fmtNum(params.min)} and maximum ${fmtNum(params.max)}` : `median ${fmtNum(params.median)} and IQR ${fmtNum(params.iqr)}`;
     const name = { zscore: 'Standardised (z-score: (x − mean) ÷ SD)', minmax: 'Min-max scaled ((x − min) ÷ (max − min))', robust: 'Robust-scaled ((x − median) ÷ IQR)' }[method];
-    ch.note = `${name} ${step.column}${ch.columnsAdded.length ? ` into ${step.as}` : ''} using ${pText}, ${train ? `learned from a ${Math.round((step.trainShare ?? 0.7) * 100)}% training subset (${train.size} of ${table.rows.length} rows, seed ${step.seed ?? 7}) and applied to every row. Rows outside the training subset never influenced the parameters${method === 'minmax' ? ', so their scaled values can fall below 0 or above 1' : ''}.` : `learned from all ${table.rows.length} rows. If you later split the data into training and test sets, the test rows have already influenced these parameters (leakage).`}`;
+    ch.note = `${name} ${step.column}${ch.columnsAdded.length ? ` into ${step.as}` : ''} using ${pText}, ${train ? `learned from ${fitText(step, train, table.rows.length)} and applied to every row. Rows outside the training ${step.split ? 'rows' : 'subset'} never influenced the parameters${method === 'minmax' ? ', so their scaled values can fall below 0 or above 1' : ''}.` : `learned from all ${table.rows.length} rows. If you later split the data into training and test sets, the test rows have already influenced these parameters (leakage).`}`;
     return { table: out, change: ch };
   },
   encode(table, step) {
@@ -1408,6 +1439,30 @@ const OPS_IMPL = {
       ch.columnsAdded = newNames; ch.columnsRemoved = [step.column];
       ch.params = { levels, reference: step.dropFirst ? levels[0] : null };
       ch.note = `Replaced ${step.column} with ${plural(newNames.length, '0/1 column')} (${newNames.join(', ')}), one per value in alphabetical order${step.dropFirst ? `; dropped the first, ${levels[0]}, which becomes the reference category (a row with 0 in every column is ${levels[0]})` : ''}.${nMiss ? ` ${plural(nMiss, 'row')} with a missing ${step.column} ${nMiss === 1 ? 'has' : 'have'} 0 in every new column${step.dropFirst ? ', the same as the reference category' : ''}.` : ''}`;
+      return { table: out, change: ch };
+    }
+    if (method === 'target') {
+      const k = needColumn(table, step.target);
+      if (k === j) throw new StepError('The target must be a different column.');
+      const y = numericValues(table, k);
+      const train = fitRows(table, step);
+      const sums = new Map();
+      let tot = 0, cnt = 0;
+      table.rows.forEach((r, i) => {
+        if (train && !train.has(i)) return;
+        if (y[i] == null || isMissing(r[j])) return;
+        const lv = cellText(r[j]); const e = sums.get(lv) || { s: 0, n: 0 }; e.s += y[i]; e.n++; sums.set(lv, e); tot += y[i]; cnt++;
+      });
+      if (!cnt) throw new StepError('No rows to learn the target means from.');
+      const overall = tot / cnt;
+      let unseen = 0;
+      const vals = table.rows.map((r) => { if (isMissing(r[j])) return null; const e = sums.get(cellText(r[j])); if (!e) { unseen++; return overall; } return e.s / e.n; });
+      const name = step.as && step.as !== step.column ? step.as : uniqueName(table, `${step.column}_target`);
+      if (colIndex(table, name) >= 0) throw new StepError(`A column called ${name} already exists.`);
+      const out = insertColumn(table, j + 1, name, vals, 'number');
+      ch.columnsAdded = [name];
+      ch.params = { target: step.target, means: Object.fromEntries([...sums].map(([lv, e]) => [lv, e.s / e.n])), overall, fit: train ? 'train' : 'all' };
+      ch.note = `Added ${name}: each ${step.column} value replaced by the mean of ${step.target} for that value (${[...sums].sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([lv, e]) => `${lv} ${fmtNum(e.s / e.n)} from ${e.n} row${e.n === 1 ? '' : 's'}`).join(', ')}), learned from ${train ? fitText(step, train, table.rows.length) : `all ${table.rows.length} rows, so every row’s own outcome helped set its code (target leakage)`}.${unseen ? ` ${plural(unseen, 'row')} with a value not seen in those rows got the overall mean (${fmtNum(overall)}).` : ''} Means from few rows are noisy.`;
       return { table: out, change: ch };
     }
     if (method !== 'ordinal') throw new StepError(`Unknown encoding “${method}”.`);
@@ -1551,7 +1606,7 @@ export function describeStep(st) {
     case 'flag-missing': return `Add ${st.column}_missing (1 = missing)`;
     case 'validate': {
       const r = st.rule || {};
-      const parts = [r.min != null && r.min !== '' && r.max != null && r.max !== '' ? `${r.min} to ${r.max}` : r.min != null && r.min !== '' ? `at least ${r.min}` : r.max != null && r.max !== '' ? `at most ${r.max}` : '', r.integer ? 'whole numbers' : '', r.in?.length ? `one of ${r.in.length} values` : '', r.pattern ? 'matches a pattern' : ''].filter(Boolean).join(', ');
+      const parts = [r.min != null && r.min !== '' && r.max != null && r.max !== '' ? `${r.min} to ${r.max}` : r.min != null && r.min !== '' ? `at least ${r.min}` : r.max != null && r.max !== '' ? `at most ${r.max}` : '', r.integer ? 'whole numbers' : '', r.in?.length ? `one of ${r.in.length} values` : '', r.pattern ? 'matches a pattern' : '', r.other ? `${r.op || '>'} ${r.other}` : '', r.expr ? `= ${prettyExpr(r.expr)}` : ''].filter(Boolean).join(', ');
       return `Check ${st.column} (${parts}); ${{ 'set-missing': 'set failures to missing', drop: 'delete failing rows', flag: 'flag failures' }[st.action || 'flag']}`;
     }
     case 'outliers': {
@@ -1559,8 +1614,8 @@ export function describeStep(st) {
       return `${{ flag: 'Flag', cap: 'Cap', drop: 'Delete rows with' }[st.action || 'flag']} ${st.column} outliers (${rule})`;
     }
     case 'transform': return st.fn === 'rescale' ? `Rescale ${st.column} (× ${st.factor}${st.above != null && st.above !== '' ? ` above ${st.above}` : ''})` : `Apply ${{ log: 'ln(x)', log1p: 'ln(1 + x)', sqrt: '√x' }[st.fn || 'log']} to ${st.column}${st.as && st.as !== st.column ? ` as ${st.as}` : ''}`;
-    case 'scale': return `${{ zscore: 'Standardise (z-score)', minmax: 'Min-max scale', robust: 'Robust-scale' }[st.method || 'zscore']} ${st.column}${st.as && st.as !== st.column ? ` as ${st.as}` : ''}, fitted on ${st.fit === 'train' ? `a ${Math.round((st.trainShare ?? 0.7) * 100)}% training subset` : 'all rows'}`;
-    case 'encode': return st.method === 'ordinal' ? `Ordinal-encode ${st.column}` : `One-hot encode ${st.column}${st.dropFirst ? ' (drop the first level)' : ''}`;
+    case 'scale': return `${{ zscore: 'Standardise (z-score)', minmax: 'Min-max scale', robust: 'Robust-scale' }[st.method || 'zscore']} ${st.column}${st.as && st.as !== st.column ? ` as ${st.as}` : ''}, fitted on ${st.fit === 'train' ? (st.split ? `the training rows (${st.split} = train)` : `a ${Math.round((st.trainShare ?? 0.7) * 100)}% training subset`) : 'all rows'}`;
+    case 'encode': return st.method === 'ordinal' ? `Ordinal-encode ${st.column}` : st.method === 'target' ? `Target-encode ${st.column} with the mean of ${st.target}, fitted on ${st.fit === 'train' ? (st.split ? 'the training rows' : 'a training subset') : 'all rows'}` : `One-hot encode ${st.column}${st.dropFirst ? ' (drop the first level)' : ''}`;
     case 'derive': {
       const f = (st.from || []);
       const sym = { multiply: '×', divide: '÷', add: '+', subtract: '−' }[st.fn];
@@ -1585,7 +1640,7 @@ function assumptionOf(st) {
     case 'validate': return st.action === 'set-missing' ? `Values of ${st.column} outside the rule are errors that can’t be corrected from this file.` : null;
     case 'outliers': return st.action === 'flag' ? null : `Values of ${st.column} beyond the fences are errors or too influential to keep as they are; genuine extremes treated this way lose information.`;
     case 'scale': return st.fit === 'train' ? null : `Scaling parameters for ${st.column} were learned from all rows; for modelling, learn them from the training rows only.`;
-    case 'encode': return st.method === 'ordinal' ? `${st.column} has a meaningful order with roughly equal steps between levels.` : null;
+    case 'encode': return st.method === 'ordinal' ? `${st.column} has a meaningful order with roughly equal steps between levels.` : st.method === 'target' && st.fit !== 'train' ? `Target means for ${st.column} were learned from all rows, including the rows they are later used to predict (leakage).` : null;
     default: return null;
   }
 }

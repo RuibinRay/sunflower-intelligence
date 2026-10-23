@@ -68,7 +68,7 @@ export const widgets = {
       if (v.cm + v.dp <= 0) return { error: `A ${Math.abs(v.dp)}% cut removes the whole ${v.cm}% contribution margin: every unit would sell at or below its variable cost, so no volume can restore contribution.` };
       const need = -v.dp / (v.cm + v.dp) * 100;
       const xs = [-25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25].filter((x) => v.cm + x >= 10);
-      const verb = v.dp < 0 ? `rise by at least ${need.toFixed(1)}%` : v.dp > 0 ? `can fall by up to ${Math.abs(need).toFixed(1)}%` : 'is unchanged';
+      const verb = v.dp < 0 ? `must rise by at least ${need.toFixed(1)}%` : v.dp > 0 ? `can fall by up to ${Math.abs(need).toFixed(1)}%` : 'does not need to change';
       return {
         headline: { label: 'Volume change that keeps contribution unchanged', value: pct(need) },
         rows: [
@@ -76,7 +76,7 @@ export const widgets = {
           ['Contribution per unit after (share of today’s price)', `${v.cm + v.dp}%`],
           ['Volume index needed (today = 100)', (100 * v.cm / (v.cm + v.dp)).toFixed(1)],
         ],
-        note: `With a ${v.cm}% contribution margin ratio and a ${v.dp > 0 ? '+' : ''}${v.dp}% price change, volume ${verb} for contribution to stay where it is. The chart shows the requirement across price changes: cuts get expensive fast, especially when the margin is thin.`,
+        note: `With a ${v.cm}% contribution margin ratio and a ${v.dp > 0 ? '+' : v.dp < 0 ? '−' : ''}${Math.abs(v.dp)}% price change, volume ${verb} for contribution to stay where it is. The chart shows the requirement across price changes: cuts get expensive fast, especially when the margin is thin.`,
         chart: {
           kind: 'line',
           x: { label: 'Price change (%)', values: xs },

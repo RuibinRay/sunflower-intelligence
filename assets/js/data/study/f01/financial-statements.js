@@ -99,7 +99,7 @@ export default {
     } },
     { h: 'The statement of cash flows' },
     { p: 'The statement of cash flows sorts every cash receipt and payment into three groups. <g>Operating activities</g> are the cash effects of running the business: cash from customers and cash paid to suppliers, employees, landlords and insurers (and, under US GAAP, interest paid). <g>Investing activities</g> are buying and selling long-term assets such as equipment. <g>Financing activities</g> are raising and returning money from owners and lenders: issuing stock, borrowing, repaying loan principal and paying dividends.' },
-    { p: 'Lantern uses the direct method, which lists operating cash receipts and payments by type. The indirect method, which reaches the same operating total by starting from net income and adjusting it, is covered in F02. US GAAP (ASC 230) encourages the direct method but then also requires a separate reconciliation of net income to operating cash flow; IAS 7 also allows both methods. Lantern’s eleven cash transactions classify like this:' },
+    { p: 'Lantern uses the direct method, which lists operating cash receipts and payments by type. The indirect method, which reaches the same operating total by starting from net income and adjusting it, is covered in F02. US GAAP (ASC 230) encourages the direct method but then also requires a separate reconciliation of net income to operating cash flow; IAS 7 also allows both methods. Lantern’s twelve cash transactions (all but m5, m8 and m15) classify like this:' },
     { list: [
       '<b>Operating:</b> deposit from Harbor Tech ($2,400, m6), workshop fees ($1,500, m9) and Meridian’s payment ($3,000, m12), together $6,900 received from customers; insurance ($1,800, m4), advertising ($350, m7), supplier ($1,000, m10), wages ($1,600, m11) and rent ($1,200, m13).',
       '<b>Investing:</b> the $4,000 paid for the espresso equipment (m3).',
@@ -268,7 +268,7 @@ export default {
     { what: 'Financing cash flow', value: 20000 + 10000 - 300, shown: 29700 },
     { what: 'Net change in cash', value: 950 - 4000 + 29700, shown: 26650 },
     { what: 'Equipment on credit', value: 12000 - 4000, shown: 8000 },
-    { what: 'Cash transactions in March', value: 15 - 4, shown: 11 },
+    { what: 'Cash transactions in March (all but m5, m8, m15)', value: 15 - 3, shown: 12 },
     // Juniper
     { what: 'Juniper debits', value: 8200 + 1300 + 900 + 6000 + 600 + 4200 + 900 + 100 + 250 + 300 + 200, shown: 22950 },
     { what: 'Juniper credits', value: 1500 + 700 + 400 + 1100 + 5000 + 4450 + 9800, shown: 22950 },
