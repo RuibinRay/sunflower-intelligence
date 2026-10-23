@@ -152,9 +152,24 @@ const ALL = [
 
   // ================================================================ Business Analytics & Data Science
   C({
-    id: 'b01', school: 'analytics', code: 'B01', level: 'intro',
+    id: 'b01', school: 'analytics', code: 'B01', level: 'intro', status: 'in-progress',
     title: 'Introduction to Business Analytics',
     blurb: 'The four kinds of analytics, turning business questions into measurable ones, and reading data sensibly.',
+    case: 'lantern',
+    outcomes: [
+      'Distinguish descriptive, diagnostic, predictive and prescriptive analytics and say which a business question needs.',
+      'Turn a vague business question into measurable objectives, hypotheses and the data needed to test them, using a structured problem-solving approach.',
+      'Classify data by type and level of measurement, and choose a sensible way to collect data for a question, recognising sampling and measurement bias.',
+      'Assess a dataset against the dimensions of data quality and say how each problem would distort an answer.',
+      'Define KPIs with an exact formula, a target and a direction, and calculate rates, ratios, growth and percentage-point changes correctly.',
+      'Summarise and interpret data with averages, spread and charts, avoiding common traps such as confusing correlation with causation, misleading charts and mixing groups.',
+    ],
+    modules: [
+      { n: 1, title: 'What analytics is for', lessons: ['four-kinds-of-analytics', 'business-questions', 'problem-solving-frameworks'] },
+      { n: 2, title: 'Data and where it comes from', lessons: ['data-types', 'data-collection', 'data-quality'] },
+      { n: 3, title: 'Measuring and reading results', lessons: ['kpis', 'summarising-data', 'interpreting-results'] },
+    ],
+    project: { title: 'Lantern’s online-shop review', blurb: 'Review six months of Lantern’s online shop: frame Ana’s questions, choose and calculate KPIs, find out why September’s orders fell, judge the evidence and recommend what to do and measure next.' },
     topics: ['Descriptive, diagnostic, predictive and prescriptive analytics', 'Data types', 'Business questions and measurable objectives', 'Data collection', 'Data quality', 'KPIs', 'Basic data interpretation', 'Problem-solving frameworks'],
   }),
   C({
