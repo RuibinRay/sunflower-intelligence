@@ -2,12 +2,12 @@
 // createLab(opts) holds the state (raw table, recipe, snapshots) and renders panels into any elements you give it;
 // mountLab(el, opts) stacks the panels in one element. Every number shown comes from assets/js/core/cleaning.js.
 // Anything from a dataset or an upload goes into the page through textContent (h() never uses innerHTML).
-import { h, s, download, store } from '../../core/dom.js?v=6';
-import * as F from '../../core/format.js?v=6';
-import * as C from '../../core/cleaning.js?v=6';
+import { h, s, download, store } from '../../core/dom.js?v=7';
+import * as F from '../../core/format.js?v=7';
+import * as C from '../../core/cleaning.js?v=7';
 
 export const STORE_KEY = 'si:lab-cleaning';
-export const datasetUrl = (name) => new URL(`../../../data/study/${name}.csv?v=6`, import.meta.url).href;
+export const datasetUrl = (name) => new URL(`../../../data/study/${name}.csv?v=7`, import.meta.url).href;
 const cache = new Map();
 /** Fetch and parse one of the course datasets (cached per page). */
 export function loadDataset(name) {
@@ -22,7 +22,7 @@ export function loadDataset(name) {
 /** Lesson pages may not link lab-cleaning.css; add it once if it is missing. */
 export function ensureStyles() {
   if (typeof document === 'undefined' || [...document.styleSheets].some((x) => /lab-cleaning\.css/.test(x.href || '')) || document.querySelector('link[href*="lab-cleaning.css"]')) return;
-  document.head.append(h('link', { rel: 'stylesheet', href: new URL('../../../css/lab-cleaning.css?v=6', import.meta.url).href }));
+  document.head.append(h('link', { rel: 'stylesheet', href: new URL('../../../css/lab-cleaning.css?v=7', import.meta.url).href }));
 }
 
 // ---------------------------------------------------------------- small helpers

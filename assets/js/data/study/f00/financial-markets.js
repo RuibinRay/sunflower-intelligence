@@ -3,7 +3,7 @@ export default {
   slug: 'financial-markets',
   title: 'Financial markets',
   blurb: 'Financial markets move savings to the people and firms who can put them to work, set prices for risk and time, and let investors sell when they need cash. Learn the main ways to sort them: direct or through an intermediary, new issues or resale, short or long term, what is traded, and where.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain the four jobs financial markets do: channelling savings to investment, discovering prices, providing liquidity and sharing risk.',
     'Distinguish direct finance from indirect finance, and calculate an intermediary’s interest-rate spread.',

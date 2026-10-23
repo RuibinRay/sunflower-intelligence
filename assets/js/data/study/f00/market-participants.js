@@ -3,7 +3,7 @@ export default {
   slug: 'market-participants',
   title: 'Market participants',
   blurb: 'Banks, investment banks, pension funds, insurers, mutual funds, hedge funds, brokers and dealers each do a different job in moving money and risk, and central banks and regulators set the rules they work under. Learn who does what, how each is paid, and what the protections such as deposit insurance do and do not cover.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Identify households, firms and governments as savers and borrowers, and describe the job of each kind of financial institution.',
     'Distinguish commercial banks from investment banks, and brokers from dealers and market makers.',

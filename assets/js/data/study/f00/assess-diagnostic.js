@@ -8,7 +8,7 @@ export const items = [
   {
     id: 'f00-dg-1', lesson: 'finance-time-and-risk', type: 'num', kind: 'numerical',
     prompt: 'A fictional university will need $15,000 in four years to replace laboratory equipment. How much must it deposit today, in an account paying 3% a year compounded once a year, to have exactly that amount then? Give the answer to the nearest cent.',
-    answer: 13327.31, check: () => 15000 / 1.03 ** 4, unit: '$', places: 2, tol: 0.01,
+    answer: 13327.31, check: () => 15000 / 1.03 ** 4, unit: '$', places: 2, tol: 0.2,
     wrong: [
       { value: 16882.63, say: 'That is what $15,000 deposited today would grow to. The university needs $15,000 later, so bring it back to today: divide by 1.03⁴.' },
       { value: 13392.86, say: 'You divided by 1 + 4 × 0.03 = 1.12, which is simple interest. Interest is compounded, so divide by 1.03⁴ = 1.125509.' },
@@ -48,13 +48,13 @@ export const items = [
   },
   {
     id: 'f00-dg-4', lesson: 'decision-principles', type: 'num', kind: 'applied',
-    prompt: 'A fictional independent cinema is deciding whether to open a café in its foyer, in space it now rents to a florist for $9,000 a year. The café would bring in $60,000 a year of cash from sales and pay $38,000 a year in cash for staff and supplies. Some customers would buy café snacks instead of popcorn, cutting the cash the cinema makes on popcorn by $4,000 a year. A $3,000 design study has already been paid for, and the cinema’s accounts would charge the café $6,000 a year of the manager’s salary, which will not change. What is the café’s incremental cash flow per year?',
+    prompt: 'A fictional independent cinema is deciding whether to open a café in its foyer, in space it now rents to a florist for $9,000 a year. The café would bring in $60,000 a year of cash from sales and pay $38,000 a year in cash for staff and supplies. Some customers would buy café snacks instead of popcorn, cutting the cash the cinema makes on popcorn by $4,000 a year. A $2,000 design study has already been paid for, and the cinema’s accounts would charge the café $6,000 a year of the manager’s salary, which will not change. What is the café’s incremental cash flow per year?',
     answer: 9000, check: () => 60000 - 38000 - 4000 - 9000, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 18000, say: 'You left out the florist’s rent. Using the space for the café means giving up $9,000 a year: an opportunity cost, which counts.' },
       { value: 13000, say: 'You left out the popcorn margin the café takes away. A side effect on another part of the business belongs to the decision.' },
       { value: 3000, say: 'You subtracted the manager’s salary allocation. The salary is paid either way, so it is not incremental.' },
-      { value: 6000, say: 'You subtracted the design study. It is already paid whatever the cinema decides (a sunk cost), and it is not a yearly cost in any case.' },
+      { value: 7000, say: 'You subtracted the design study. It is already paid whatever the cinema decides (a sunk cost), and it is not a yearly cost in any case. (If you didn’t, check that you counted the lost popcorn margin and left out the manager’s salary.)' },
     ],
     solution: 'Count only what changes: sales +60,000, cash costs −38,000, lost popcorn margin −4,000 (a side effect) and rent forgone −9,000 (an opportunity cost): 60,000 − 38,000 − 4,000 − 9,000 = $9,000 a year. Leave out the design study (sunk) and the allocated salary (unchanged).',
   },
@@ -79,7 +79,7 @@ export const items = [
   },
   {
     id: 'f00-dg-6', lesson: 'value-and-valuation-words', type: 'num', kind: 'numerical',
-    prompt: 'A fictional hotel group has 40 million shares trading at $15.00, debt of $350 million, cash of $50 million and EBITDA of $80 million. What is its EV/EBITDA multiple? Give two decimal places.',
+    prompt: 'A fictional regional supermarket chain has 40 million shares trading at $15.00, debt of $350 million, cash of $50 million and EBITDA of $80 million. What is its EV/EBITDA multiple? Give two decimal places.',
     answer: 11.25, check: () => (40 * 15 + 350 - 50) / 80, unit: '×', places: 2, tol: 0.005,
     wrong: [
       { value: 7.5, say: 'You divided market capitalisation ($600 million) by EBITDA. EBITDA belongs to lenders and shareholders, so divide enterprise value by it.' },
@@ -104,15 +104,15 @@ export const items = [
     id: 'f00-dg-8', lesson: 'value-and-valuation-words', type: 'mc', kind: 'conceptual',
     prompt: 'A fictional chain of gyms reports EBITDA of $12 million, and its chief executive tells investors that the business “generates $12 million of cash a year”. Which reply is most accurate?',
     options: [
-      'EBITDA is measured before interest and tax, ignores the spending needed to replace worn-out equipment and ignores cash tied up in working capital, so the cash the business can pay out is likely to be less',
-      'That is right: EBITDA is the cash left after all of a business’s costs',
-      'EBITDA overstates cash only because it leaves out staff wages',
-      'EBITDA understates cash, because depreciation has already been subtracted from it',
+      'EBITDA ignores interest, tax, equipment replacement and working capital, so the cash it can pay out is likely lower',
+      'That is right: EBITDA is the cash a chain like this has left once all of its operating costs have been paid in full',
+      'EBITDA overstates cash only because it is measured before staff wages and the rent on the gyms',
+      'EBITDA understates cash, because depreciation on the gym equipment has already been subtracted',
     ],
     answer: 0,
     feedback: {
       1: 'EBITDA stops before interest, taxes and depreciation: all three stand for cash the business must pay or spend to keep going.',
-      2: 'Wages are operating costs, subtracted before EBITDA is reached.',
+      2: 'Wages and rent are operating costs, subtracted before EBITDA is reached.',
       3: 'It is the other way round: EBITDA adds depreciation and amortisation back, so they have not been subtracted.',
     },
     solution: 'EBITDA = EBIT + D&A. It leaves out interest and tax, which are paid in cash; by adding back depreciation it ignores the equipment (here, gym machines and fit-outs) that must be replaced; and it ignores cash tied up in working capital. It is also not a GAAP measure. It is a starting point for comparing similar businesses, not a measure of cash available.',
@@ -136,6 +136,7 @@ export const items = [
       1: 'The teacher holds the city’s own bonds, a claim on the borrower itself: direct finance.',
       2: 'The worker owns shares in the fund, which in turn owns the companies’ shares. The fund is an intermediary.',
       3: 'Investment banks run the sale, but the family ends up holding the company’s own shares: direct finance.',
+      4: 'Ana’s deposit is a claim on Coastline, not on Lantern: the bank is the intermediary.',
     },
     solution: 'Direct finance: the saver holds the borrower’s own security (the city’s bonds, the company’s new shares). Indirect finance: the saver holds a claim on an intermediary that holds the claim on the borrower (the credit union, the mutual fund, Coastline Bank).',
   },
@@ -181,8 +182,9 @@ export const items = [
   },
 ];
 
-// Start at module N if the student scores at least 80% on the items for the modules before N.
+// Start at module N if the student scores at least 75% on the items for the modules before N
+// (four items per module, so one slip is allowed per module).
 export const route = [
-  { module: 2, ifAtLeast: 0.8 },
-  { module: 3, ifAtLeast: 0.8 },
+  { module: 2, ifAtLeast: 0.75 },
+  { module: 3, ifAtLeast: 0.75 },
 ];

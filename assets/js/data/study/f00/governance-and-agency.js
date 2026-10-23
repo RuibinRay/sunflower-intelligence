@@ -3,7 +3,7 @@ export default {
   slug: 'governance-and-agency',
   title: 'Governance and the agency problem',
   blurb: 'When the people who run a business are not the people who own it or lend to it, their interests can pull apart. Learn why that happens, what it costs, and the tools (boards, incentive pay, loan covenants, disclosure) used to keep managers working for the people whose money they use.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain the separation of ownership and control and the principal-agent relationship it creates.',
     'Identify the main conflicts between shareholders and managers and between shareholders and lenders.',

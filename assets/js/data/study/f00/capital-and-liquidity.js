@@ -7,7 +7,7 @@ export default {
   slug: 'capital-and-liquidity',
   title: 'Capital and liquidity',
   blurb: 'Where a business’s money comes from (debt and equity), and whether it can pay its bills when they fall due. Learn the words professionals use for both, calculate working capital and the current ratio, and see why a business can be worth a lot and still run out of cash.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Define capital and distinguish debt from equity by the claim each gives, the risk each carries and what each costs a business in principle.',
     'Explain why debt magnifies the returns to shareholders in both good years and bad.',

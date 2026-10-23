@@ -3,7 +3,7 @@ export default {
   slug: 'finance-time-and-risk',
   title: 'What finance is: money, time and risk',
   blurb: 'Finance studies how people, businesses and governments raise, allocate and manage money over time, under uncertainty. Learn why a dollar today is worth more than a dollar later, how to move an amount forward or back in time, how to put a number on an uncertain outcome, and where finance does its work.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Define finance and explain why time and risk sit at the centre of almost every financial decision.',
     'Calculate the future value of an amount today and the present value of an amount received later, over whole years.',

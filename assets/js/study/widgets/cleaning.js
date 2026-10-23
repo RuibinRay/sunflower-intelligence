@@ -5,7 +5,7 @@
 //           fit: ['train', 'all'] (the fitting choices offered, first = default), target: outcome column for target encoding,
 //           prepare: [steps applied before the student starts], export: true to show the export panel }
 // ctx: { id, report(event, detail) } — events: 'step' { op, steps }, 'goals' { met, total }, 'complete' { goals }.
-import { mountLab } from '../labs/cleaning-ui.js?v=6';
+import { mountLab } from '../labs/cleaning-ui.js?v=7';
 
 export async function mount(el, config = {}, ctx = {}) {
   el.classList.add('cl-widget');

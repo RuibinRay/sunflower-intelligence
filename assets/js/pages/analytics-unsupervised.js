@@ -1,17 +1,17 @@
 // analytics-unsupervised.js — unsupervised learning: k-means, Ward hierarchical clustering and principal components,
 // all on one shared choice of columns.
-import { initSite, syncRanges } from '../core/site.js?v=6';
-import { $, $$, h, download, toCSV, onResize } from '../core/dom.js?v=6';
-import * as F from '../core/format.js?v=6';
-import * as S from '../core/stats.js?v=6';
-import { isNumeric } from '../core/csv.js?v=6';
-import { scatter, tableTwin, barChart } from '../core/charts.js?v=6';
-import { fillSelect, chips, checkedIn, splitRows, whenNear, afterPaint } from '../core/ui.js?v=6';
-import { dataSource } from '../core/datasource.js?v=6';
-import { subscriberChurn, sunflowerTrials } from '../core/rng.js?v=6';
-import { kmeans, silhouette, standardise } from '../core/classify.js?v=6';
-import { ward, cutTree, leafOrder, betweenShare, adjustedRand, pca, sampleIndices } from '../core/ml.js?v=6';
-import { dendrogram, screeChart, biplot } from '../core/ml-charts.js?v=6';
+import { initSite, syncRanges } from '../core/site.js?v=7';
+import { $, $$, h, download, toCSV, onResize } from '../core/dom.js?v=7';
+import * as F from '../core/format.js?v=7';
+import * as S from '../core/stats.js?v=7';
+import { isNumeric } from '../core/csv.js?v=7';
+import { scatter, tableTwin, barChart } from '../core/charts.js?v=7';
+import { fillSelect, chips, checkedIn, splitRows, whenNear, afterPaint } from '../core/ui.js?v=7';
+import { dataSource } from '../core/datasource.js?v=7';
+import { subscriberChurn, sunflowerTrials } from '../core/rng.js?v=7';
+import { kmeans, silhouette, standardise } from '../core/classify.js?v=7';
+import { ward, cutTree, leafOrder, betweenShare, adjustedRand, pca, sampleIndices } from '../core/ml.js?v=7';
+import { dendrogram, screeChart, biplot } from '../core/ml-charts.js?v=7';
 
 initSite();
 

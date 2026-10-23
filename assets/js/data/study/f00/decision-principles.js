@@ -3,7 +3,7 @@ export default {
   slug: 'decision-principles',
   title: 'Six principles behind financial decisions',
   blurb: 'Almost every financial decision, from a household budget to a company’s biggest investment, rests on six principles: time value, risk and return, cash over profit, incremental cash flows, diversification and no arbitrage. Learn what each says, why it holds, and how to apply it to Ana’s first decisions about Lantern.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'State the six principles of financial decision-making and explain the reasoning behind each.',
     'Apply the time value of money and the trade-off between risk and return to compare choices.',

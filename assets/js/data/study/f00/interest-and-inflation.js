@@ -5,7 +5,7 @@ export default {
   slug: 'interest-and-inflation',
   title: 'Interest and inflation',
   blurb: 'Interest is what money earns over time; inflation is what time takes away. Learn simple and compound interest, why compounding frequency matters, how an APR differs from an effective annual rate, and how to turn a nominal return into a real one, so you can tell whether savings are really growing.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate simple and compound interest, and explain why compounding makes balances grow faster over time.',
     'Calculate future values with more than one compounding period a year, and convert a quoted annual rate into an effective annual rate.',

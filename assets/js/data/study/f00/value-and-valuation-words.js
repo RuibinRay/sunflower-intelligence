@@ -8,7 +8,7 @@ export default {
   slug: 'value-and-valuation-words',
   title: 'Value and valuation words',
   blurb: 'Book value, market value, market capitalisation, enterprise value, EBITDA and the multiples built from them: the words analysts use to say what a company is worth. Learn to calculate each one for Harbourline Roasters, to say what it leaves out, and to see why every valuation rests on assumptions.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish book value from market value, and explain why the two usually differ.',
     'Calculate market capitalisation and enterprise value, and explain why enterprise value adds debt and subtracts cash.',

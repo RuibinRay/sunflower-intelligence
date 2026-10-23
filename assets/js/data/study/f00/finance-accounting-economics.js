@@ -5,7 +5,7 @@ export default {
   slug: 'finance-accounting-economics',
   title: 'Finance, accounting and economics',
   blurb: 'Accounting records what has happened, economics explains how people and whole economies behave, and finance decides what to do next with money. Learn what each field asks of the same decision, how finance turns accounting records into forecasts, and what people in each field do.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish finance, accounting and economics by the question each asks, the period it looks at and what it produces.',
     'Distinguish financial accounting from managerial accounting by their users, rules and purpose.',

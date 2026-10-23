@@ -106,6 +106,8 @@ function checkExercise(x, where, r, { course, chart, needHints = false, inSteps 
       if (!jc) r.err(`${w}: journal items need a chart of accounts${x.chart ? ` (“${x.chart}” not found)` : ''}`);
       else lines.forEach((l) => { if (!jc[l.acct]) r.err(`${w}: account "${l.acct}" not in chart`); });
       if (x.accounts) { x.accounts.forEach((a) => { if (jc && !jc[a]) r.err(`${w}: accounts list has "${a}", not in chart`); }); lines.forEach((l) => { if (!x.accounts.includes(l.acct)) r.err(`${w}: key account "${l.acct}" missing from accounts list`); }); }
+      // the default drop-down leaves out summary accounts (Income Summary), so an item whose key uses one must list its accounts
+      else if (jc) lines.forEach((l) => { if (jc[l.acct]?.type === 'summary') r.err(`${w}: key uses "${l.acct}", which the default account list leaves out: give the item an accounts list`); });
       break;
     }
     case 'equation': {

@@ -24,6 +24,8 @@ const netIncome = revenue - expenses;
 const assets = of(adjusted, 'asset') - of(adjusted, 'contra-asset');
 const liabilities = of(adjusted, 'liability');
 const STATEMENTS = ['Income statement', 'Statement of changes in equity', 'Balance sheet'];
+/** Closing needs Income Summary, which journal drop-downs leave out unless an item lists its accounts. */
+const CLOSE_ACCOUNTS = CHART.map((a) => a.name);
 
 export default {
   title: 'One month at Brightwater Bike Repair',
@@ -110,16 +112,16 @@ export default {
       id: 'close', title: 'Close the books',
       html: '<p>Close July’s temporary accounts using Income Summary, in four entries: revenue, expenses, net income, then dividends. Then take a post-closing trial balance.</p>',
       items: [
-        { id: 'f01-pj-c1', type: 'journal', kind: 'applied', chart: 'f01/brightwater', date: '2026-07-31', prompt: 'Close the revenue account.',
+        { id: 'f01-pj-c1', type: 'journal', kind: 'applied', chart: 'f01/brightwater', accounts: CLOSE_ACCOUNTS, date: '2026-07-31', prompt: 'Close the revenue account.',
           lines: [{ acct: 'Repair Revenue', dr: revenue }, { acct: 'Income Summary', cr: revenue }],
           solution: 'Debit Repair Revenue $6,220 to bring it to zero, and credit Income Summary $6,220.' },
-        { id: 'f01-pj-c2', type: 'journal', kind: 'applied', chart: 'f01/brightwater', date: '2026-07-31', prompt: 'Close the expense accounts in one compound entry.',
+        { id: 'f01-pj-c2', type: 'journal', kind: 'applied', chart: 'f01/brightwater', accounts: CLOSE_ACCOUNTS, date: '2026-07-31', prompt: 'Close the expense accounts in one compound entry.',
           lines: [{ acct: 'Income Summary', dr: expenses }, ...['Wages Expense', 'Rent Expense', 'Supplies Expense', 'Utilities Expense', 'Insurance Expense', 'Depreciation Expense', 'Interest Expense'].map((a) => ({ acct: a, cr: adjusted[a] }))],
           solution: 'Debit Income Summary $4,290 and credit each expense for its balance: Wages 1,920, Rent 1,200, Supplies 820, Utilities 185, Insurance 60, Depreciation 80, Interest 25.' },
-        { id: 'f01-pj-c3', type: 'journal', kind: 'applied', chart: 'f01/brightwater', date: '2026-07-31', prompt: 'Close Income Summary to Retained Earnings.',
+        { id: 'f01-pj-c3', type: 'journal', kind: 'applied', chart: 'f01/brightwater', accounts: CLOSE_ACCOUNTS, date: '2026-07-31', prompt: 'Close Income Summary to Retained Earnings.',
           lines: [{ acct: 'Income Summary', dr: netIncome }, { acct: 'Retained Earnings', cr: netIncome }],
           solution: 'Income Summary has a credit balance of 6,220 − 4,290 = $1,930, the net income. Debit it $1,930 and credit Retained Earnings.' },
-        { id: 'f01-pj-c4', type: 'journal', kind: 'applied', chart: 'f01/brightwater', date: '2026-07-31', prompt: 'Close Dividends.',
+        { id: 'f01-pj-c4', type: 'journal', kind: 'applied', chart: 'f01/brightwater', accounts: CLOSE_ACCOUNTS, date: '2026-07-31', prompt: 'Close Dividends.',
           lines: [{ acct: 'Retained Earnings', dr: adjusted.Dividends }, { acct: 'Dividends', cr: adjusted.Dividends }],
           solution: 'Dividends go straight to Retained Earnings, not through Income Summary, because they are not an expense: debit Retained Earnings $400, credit Dividends $400.' },
         { id: 'f01-pj-c5', type: 'num', kind: 'numerical', prompt: 'What does each column of the post-closing trial balance total?',
