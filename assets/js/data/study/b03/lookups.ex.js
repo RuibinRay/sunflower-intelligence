@@ -35,7 +35,7 @@ const g2Totals = [14, 37, 34, 35.1, 111, 31, 35, 35.01];
 const g2 = { A1: 'order_total', B1: 'delivery', D1: 'from', E1: 'charge', D2: DELIVERY_BANDS[0][0], E2: DELIVERY_BANDS[0][1], D3: DELIVERY_BANDS[1][0], E3: DELIVERY_BANDS[1][1] };
 g2Totals.forEach((v, i) => { g2[`A${i + 2}`] = v; });
 
-const g4 = merge(eventsCells({ cols: ['event_id', 'invoice', 'client', 'event_type'], n: 15 }), { F1: 'client', F2: 'Harbor Tech', G1: 'invoice of first event' });
+const g4 = merge(eventsCells({ cols: ['event_id', 'invoice', 'client', 'event_type'], n: 15 }), { F1: 'client', F2: 'Harbor Tech', F3: 'Alder & Finch Architects', G1: 'invoice of first event' });
 
 export const guided = [
   {
@@ -102,22 +102,23 @@ export const guided = [
   },
   {
     id: 'b03-lk-g4', type: 'formula', kind: 'applied',
-    prompt: 'A2:D16 lists Lantern’s first 15 catering events, with the invoice in column B and the client in column C. In G2, return the invoice of the first event for the client named in F2. (VLOOKUP can’t do this one: why not?)',
-    sheet: { cells: g4 }, cell: 'G2', answer: '=INDEX(B2:B16,MATCH(F2,C2:C16,0))',
-    view: 'A1:G16', formats: { B: MONEY, G: MONEY }, widths: { C: 26, F: 14, G: 22 },
-    alt: ['=XLOOKUP(F2,C2:C16,B2:B16)', '=INDEX(B2:B16,XMATCH(F2,C2:C16))', '=INDEX($B$2:$B$16,MATCH($F$2,$C$2:$C$16,0))'],
+    prompt: 'A2:D16 lists Lantern’s first 15 catering events, with the invoice in column B and the client in column C. In G2, return the invoice of the first event for the client named in F2, and fill it down to G3 for the client in F3. (VLOOKUP can’t do this one: why not?)',
+    sheet: { cells: g4 }, cell: 'G2', fill: 'G2:G3', answer: '=INDEX($B$2:$B$16,MATCH(F2,$C$2:$C$16,0))',
+    view: 'A1:G16', formats: { B: MONEY, G: MONEY }, widths: { C: 26, F: 26, G: 22 },
+    alt: ['=XLOOKUP(F2,$C$2:$C$16,$B$2:$B$16)', '=INDEX($B$2:$B$16,XMATCH(F2,$C$2:$C$16))', '=INDEX(B2:B16,MATCH(F2,C2:C16,0))'],
     wrong: [
-      { formula: '=VLOOKUP(F2,B2:C16,2,FALSE)', say: 'VLOOKUP searches the first column of its range, here the invoices, for “Harbor Tech”: there is none, so #N/A. The client column is to the right of the invoices, so use INDEX and MATCH or XLOOKUP.' },
-      { formula: '=INDEX(B2:B16,MATCH(F2,C2:C16))', say: 'MATCH without 0 makes an approximate match on an unsorted list. Add 0 as the third argument.' },
-      { formula: '=INDEX(B2:B16,MATCH(F2,C2:C16,0),2)', say: 'B2:B16 has only one column, so a column number of 2 gives #REF!. Leave the column number out.' },
+      { formula: '=VLOOKUP(F2,$B$2:$C$16,2,FALSE)', say: 'VLOOKUP searches the first column of its range, here the invoices, for a client’s name: there is none, so #N/A. The client column is to the right of the invoices, so use INDEX and MATCH or XLOOKUP.' },
+      { formula: '=INDEX($B$2:$B$16,MATCH(F2,$C$2:$C$16))', say: 'MATCH without 0 makes an approximate match on an unsorted list. Add 0 as the third argument.' },
+      { formula: '=INDEX($B$2:$B$16,MATCH(F2,$C$2:$C$16,0),2)', say: 'B2:B16 has only one column, so a column number of 2 gives #REF!. Leave the column number out.' },
+      { formula: '=INDEX($B$2:$B$16,MATCH($F$2,$C$2:$C$16,0))', say: 'With $F$2 the filled formula in G3 still looks up Harbor Tech. Leave F2 relative so that it becomes F3.' },
     ],
-    hints: ['MATCH finds which position Harbor Tech first takes in C2:C16; INDEX returns the invoice in that position of B2:B16.', '<x>=INDEX(B2:B16,MATCH(F2,C2:C16,0))</x>, or <x>=XLOOKUP(F2,C2:C16,B2:B16)</x>.'],
-    solution: '<x>=INDEX(B2:B16,MATCH(F2,C2:C16,0))</x> returns $800.00, the invoice of EV-002 on 26 March. MATCH(…,0) finds the first exact match, position 2; INDEX returns the 2nd invoice. VLOOKUP can’t do it because it only returns columns to the right of the key, and the invoices are to the left of the clients. <x>=XLOOKUP(F2,C2:C16,B2:B16)</x> works too.',
+    hints: ['MATCH finds the position a client first takes in C2:C16; INDEX returns the invoice in that position of B2:B16. Lock both ranges with $ so that they stay put when the formula is filled.', '<x>=INDEX($B$2:$B$16,MATCH(F2,$C$2:$C$16,0))</x>, or <x>=XLOOKUP(F2,$C$2:$C$16,$B$2:$B$16)</x>.'],
+    solution: '<x>=INDEX($B$2:$B$16,MATCH(F2,$C$2:$C$16,0))</x>, filled to G3. For Harbor Tech, MATCH(…,0) finds the first exact match in position 2 and INDEX returns the 2nd invoice, $800.00 (EV-002 on 26 March); for Alder & Finch Architects it finds position 4, $460.00 (EV-004). VLOOKUP can’t do it because it only returns columns to the right of the key, and the invoices are to the left of the clients. <x>=XLOOKUP(F2,$C$2:$C$16,$B$2:$B$16)</x> works too.',
   },
 ];
 
 // ---------------------------------------------------------------- on your own
-const i1 = { A1: 'month', B1: 'app', C1: 'web', E1: 'month', F1: 'channel', G1: 'order value', E2: 'Apr', F2: 'app' };
+const i1 = { A1: 'month', B1: 'app', C1: 'web', E1: 'month', F1: 'channel', G1: 'order value', E2: 'Apr', F2: 'app', E3: 'Jun', F3: 'web' };
 ['Mar', 'Apr', 'May', 'Jun'].forEach((m, i) => { i1[`A${i + 2}`] = m; i1[`B${i + 2}`] = value(m, 'app'); i1[`C${i + 2}`] = value(m, 'web'); });
 
 const i2Ids = ['LC-10001', 'LC-10002', 'LC-10004', 'LC-10005', 'LC-10006', 'LC-10019', 'LC-10021', 'LC-10144'];
@@ -137,15 +138,16 @@ const courier = (kg, over = false) => { let k = 0; COURIER.forEach((b, i) => { i
 export const independent = [
   {
     id: 'b03-lk-i1', type: 'formula', kind: 'applied',
-    prompt: 'A1:C5 shows Lantern’s spring order value by month and channel. E2 holds a month and F2 a channel. In G2, write a two-way lookup that returns the order value for that month and channel, whatever E2 and F2 hold.',
-    sheet: { cells: i1 }, cell: 'G2', answer: '=INDEX($B$2:$C$5,MATCH(E2,$A$2:$A$5,0),MATCH(F2,$B$1:$C$1,0))',
+    prompt: 'A1:C5 shows Lantern’s spring order value by month and channel. E2:F3 holds two questions, each a month and a channel. In G2, write a two-way lookup that returns the order value for the month in E2 and the channel in F2, whatever they hold, and fill it down to G3.',
+    sheet: { cells: i1 }, cell: 'G2', fill: 'G2:G3', answer: '=INDEX($B$2:$C$5,MATCH(E2,$A$2:$A$5,0),MATCH(F2,$B$1:$C$1,0))',
     view: 'A1:G5', formats: { B: MONEY, C: MONEY, G: MONEY }, widths: { G: 13 },
-    alt: ['=INDEX(B2:C5,MATCH(E2,A2:A5,0),MATCH(F2,B1:C1,0))', '=INDEX(B2:C5,XMATCH(E2,A2:A5),XMATCH(F2,B1:C1))', '=XLOOKUP(E2,A2:A5,XLOOKUP(F2,B1:C1,B2:C5))'],
+    alt: ['=INDEX($B$2:$C$5,XMATCH(E2,$A$2:$A$5),XMATCH(F2,$B$1:$C$1))', '=XLOOKUP(E2,$A$2:$A$5,XLOOKUP(F2,$B$1:$C$1,$B$2:$C$5))'],
     wrong: [
-      { formula: '=INDEX(B2:C5,MATCH(F2,B1:C1,0),MATCH(E2,A2:A5,0))', say: 'The row and column numbers are swapped: INDEX takes the row first. The month’s MATCH gives the row, the channel’s MATCH the column.' },
-      { formula: '=INDEX(B2:C5,MATCH(E2,A1:A5,0),MATCH(F2,B1:C1,0))', say: 'MATCH over A1:A5 counts the header as position 1, so every row is one too low. Search A2:A5, the same rows as B2:C5.' },
+      { formula: '=INDEX($B$2:$C$5,MATCH(F2,$B$1:$C$1,0),MATCH(E2,$A$2:$A$5,0))', say: 'The row and column numbers are swapped: INDEX takes the row first. The month’s MATCH gives the row, the channel’s MATCH the column.' },
+      { formula: '=INDEX($B$2:$C$5,MATCH(E2,$A$1:$A$5,0),MATCH(F2,$B$1:$C$1,0))', say: 'MATCH over A1:A5 counts the header as position 1, so every row is one too low. Search A2:A5, the same rows as B2:C5.' },
+      { formula: '=INDEX(B2:C5,MATCH(E2,A2:A5,0),MATCH(F2,B1:C1,0))', say: 'G2 is right, but filled to G3 the ranges slide down a row and the channel headings are no longer in B1:C1. Lock the ranges with $.' },
     ],
-    solution: '<x>=INDEX($B$2:$C$5,MATCH(E2,$A$2:$A$5,0),MATCH(F2,$B$1:$C$1,0))</x>. The first MATCH finds April in position 2 of A2:A5, the second finds app in position 1 of B1:C1, and INDEX returns row 2, column 1 of B2:C5: $1,012.65. With Microsoft 365, <x>=INDEX(B2:C5,XMATCH(E2,A2:A5),XMATCH(F2,B1:C1))</x> is the same idea.',
+    solution: '<x>=INDEX($B$2:$C$5,MATCH(E2,$A$2:$A$5,0),MATCH(F2,$B$1:$C$1,0))</x>, filled to G3. For April and app, the first MATCH finds April in position 2 of A2:A5, the second finds app in position 1 of B1:C1, and INDEX returns row 2, column 1 of B2:C5: $1,012.65. For June and web it returns row 4, column 2: $1,052.90. With Microsoft 365, <x>=INDEX($B$2:$C$5,XMATCH(E2,$A$2:$A$5),XMATCH(F2,$B$1:$C$1))</x> is the same idea.',
   },
   {
     id: 'b03-lk-i2', type: 'formula', kind: 'applied',
@@ -200,7 +202,7 @@ export const independent = [
     answer: 41.3, check: () => PARCELS.reduce((s, kg) => s + courier(kg), 0), unit: '$', places: 2, tol: 0.005,
     wrong: [
       { value: 36, say: 'You put the 2.0 kg and 5.0 kg parcels in the band below. In an approximate match a value equal to a lower bound belongs to that band: 2.0 kg pays $6.80 and 5.0 kg $9.50.' },
-      { value: 47.9, say: 'You moved every parcel up a band (the next larger item). An approximate match takes the band whose lower bound is the largest one not above the weight.' },
+      { value: PARCELS.reduce((s, kg) => { const k = COURIER.findIndex((b) => b[1] === courier(kg)); return s + COURIER[Math.min(k + 1, COURIER.length - 1)][1]; }, 0), say: 'You moved every parcel up a band, to the next larger item (the 12.3 kg parcel has no band above, so it stays at $14.00). An approximate match takes the band whose lower bound is the largest one not above the weight.' },
     ],
     solution: 'Each parcel takes the band with the largest lower bound not above its weight: 1.8 kg $4.20; 2.0 kg $6.80; 4.99 kg $6.80; 5.0 kg $9.50; 12.3 kg $14.00. Total: 4.20 + 6.80 + 6.80 + 9.50 + 14.00 = $41.30.',
   },
@@ -224,7 +226,7 @@ export const independent = [
 ];
 
 // ---------------------------------------------------------------- knowledge check
-const k2 = merge(eventsCells({ cols: ['event_id', 'event_date', 'client', 'invoice'], n: 20 }), { F1: 'client', F2: 'Harbor Tech', G1: 'latest invoice' });
+const k2 = merge(eventsCells({ cols: ['event_id', 'event_date', 'client', 'invoice'], n: 20 }), { F1: 'client', F2: 'Harbor Tech', F3: 'Weatherglass Records', G1: 'latest invoice' });
 const k3Totals = [12.6, 35, 46, 30.6, 35.1, 22];
 const k5 = merge(ordersCells({ cols: ['order_id', 'product'], n: 6 }), productCells({ at: 'E1' }), { C1: 'price' });
 
@@ -248,16 +250,16 @@ export const check = [
   },
   {
     id: 'b03-lk-k2', type: 'formula', kind: 'applied',
-    prompt: 'A2:D21 lists Lantern’s first 20 catering events in date order. In G2, return the invoice of the most recent event in the list for the client named in F2.',
-    sheet: { cells: k2 }, cell: 'G2', answer: '=XLOOKUP(F2,$C$2:$C$21,$D$2:$D$21,,0,-1)',
-    view: 'A1:G21', formats: { B: 'date', D: MONEY, G: MONEY }, widths: { B: 12, C: 26, F: 14, G: 14 },
-    alt: ['=XLOOKUP(F2,C2:C21,D2:D21,"",0,-1)', '=XLOOKUP(F2,C2:C21,D2:D21,,,-1)'],
+    prompt: 'A2:D21 lists Lantern’s first 20 catering events in date order. In G2, return the invoice of the most recent event in the list for the client named in F2, and fill it down to G3 for the client in F3.',
+    sheet: { cells: k2 }, cell: 'G2', fill: 'G2:G3', answer: '=XLOOKUP(F2,$C$2:$C$21,$D$2:$D$21,,0,-1)',
+    view: 'A1:G21', formats: { B: 'date', D: MONEY, G: MONEY }, widths: { B: 12, C: 26, F: 22, G: 14 },
+    alt: ['=XLOOKUP(F2,$C$2:$C$21,$D$2:$D$21,"",0,-1)', '=XLOOKUP(F2,$C$2:$C$21,$D$2:$D$21,,,-1)'],
     wrong: [
       { formula: '=XLOOKUP(F2,$C$2:$C$21,$D$2:$D$21)', say: 'That is the client’s first event in the list. Search from the last item with search_mode −1 (the sixth argument).' },
       { formula: '=INDEX($D$2:$D$21,MATCH(F2,$C$2:$C$21,0))', say: 'MATCH with 0 finds the first match, the client’s earliest event. XLOOKUP’s search_mode −1 finds the last.' },
-      { formula: '=MAXIFS($D$2:$D$21,$C$2:$C$21,F2)', say: 'That is the client’s largest invoice, not the most recent one.' },
+      { formula: '=MAXIFS($D$2:$D$21,$C$2:$C$21,F2)', say: 'That is the client’s largest invoice, not the most recent one. (For Weatherglass Records the two happen to coincide; for Harbor Tech they don’t.)' },
     ],
-    solution: '<x>=XLOOKUP(F2,$C$2:$C$21,$D$2:$D$21,,0,-1)</x>: exact match (0), searching from the last row up (−1). Harbor Tech’s last event in these 20 rows is EV-014 on 22 May, invoiced $390.00; searching from the top would return its first event, EV-002, at $800.00.',
+    solution: '<x>=XLOOKUP(F2,$C$2:$C$21,$D$2:$D$21,,0,-1)</x>, filled to G3: exact match (0), searching from the last row up (−1). Harbor Tech’s last event in these 20 rows is EV-014 on 22 May, invoiced $390.00 (searching from the top would return its first event, EV-002, at $800.00); Weatherglass Records’ last is EV-020 on 18 June, $1,050.00.',
   },
   {
     id: 'b03-lk-k3', type: 'num', kind: 'numerical',
@@ -305,9 +307,9 @@ export const check = [
     prompt: 'Complete Ana’s VLOOKUP so that it returns the exact <code>unit_cost</code> for the product in B2 from the price list in H2:L12 (product in H, unit_cost in L), and still works when filled down.',
     text: '=VLOOKUP(B2, [[0]], [[1]], [[2]])',
     blanks: [
-      { options: ['$H$2:$L$12', 'H2:L12', '$L$2:$L$12', '$H$2:$H$12'], answer: 0 },
-      { options: ['5', '4', '12', '1'], answer: 0 },
-      { options: ['FALSE', 'TRUE', '1', '−1'], answer: 0 },
+      { options: ['H2:L12', '$L$2:$L$12', '$H$2:$L$12', '$H$2:$H$12'], answer: 2 },
+      { options: ['4', '5', '12', '1'], answer: 1 },
+      { options: ['TRUE', '1', '−1', 'FALSE'], answer: 3 },
     ],
     fixed: true,
     solution: '<x>=VLOOKUP(B2,$H$2:$L$12,5,FALSE)</x>: the whole table locked with $, column 5 (H is 1, so L is 5) and FALSE for an exact match. TRUE or 1 would make it approximate.',
