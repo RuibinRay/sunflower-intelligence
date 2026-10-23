@@ -4,6 +4,7 @@
 import { initSite } from '../core/site.js?v=6';
 import { $, h, store } from '../core/dom.js?v=6';
 import * as U from '../study/labs/accounting-ui.js?v=6';
+import { scrollersFocusable } from '../study/common.js?v=6';
 
 initSite();
 const { A, CHART, MARCH, MARCH_ADJUSTMENTS } = U;
@@ -154,3 +155,5 @@ function renderStatements() {
 
 renderRecorder();
 renderStatements();
+
+scrollersFocusable();   // tables and charts that scroll sideways get a tab stop (WCAG 2.1.1)

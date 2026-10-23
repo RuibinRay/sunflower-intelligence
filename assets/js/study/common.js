@@ -130,6 +130,11 @@ export function scrollersFocusable(scope = document) {
     else if (!over && el.dataset.madeFocusable) { el.removeAttribute('tabindex'); el.removeAttribute('role'); el.removeAttribute('aria-label'); delete el.dataset.madeFocusable; }
   });
   run();
-  let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(run, 200); });
+  // re-check when the layout can change: resizes, late-loading fonts (KaTeX), and content the page builds later (labs)
+  let t; const later = () => { clearTimeout(t); t = setTimeout(run, 200); };
+  addEventListener('resize', later);
+  addEventListener('load', later);
+  document.fonts?.ready.then(later);
+  if ('MutationObserver' in window) new MutationObserver(later).observe(scope === document ? document.body : scope, { childList: true, subtree: true });
   return run;
 }

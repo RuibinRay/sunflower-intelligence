@@ -139,6 +139,7 @@ export default {
     { id: 'euclidean-distance', name: 'Euclidean distance between two observations',
       tex: String.raw`d(\mathbf{p}, \mathbf{q}) = \sqrt{\sum_{j=1}^{k} (p_j - q_j)^2}`,
       where: [
+        [String.raw`d(\mathbf{p}, \mathbf{q})`, 'Straight-line distance between observations p and q', ''],
         [String.raw`p_j,\ q_j`, 'The two observations’ values on variable j', 'units of variable j'],
         [String.raw`k`, 'The number of variables', ''],
       ],
@@ -173,7 +174,13 @@ export default {
       note: 'Extreme values barely change the median and IQR, and they stay visible as large scaled values.' },
     { id: 'inverse-scaling', name: 'Converting scaled values back',
       tex: String.raw`x = x_{\min} + x'(x_{\max} - x_{\min}), \qquad x = \bar{x} + z\,s, \qquad x = \tilde{x} + r\,(Q_3 - Q_1)`,
-      where: [[String.raw`x',\ z,\ r`, 'A min–max, standardised or robust-scaled value, with the parameters it was fitted with', '']],
+      where: [
+        [String.raw`x`, 'The value in the original units', 'original units'],
+        [String.raw`x',\ z,\ r`, 'A min–max, standardised or robust-scaled value, with the parameters it was fitted with', ''],
+        [String.raw`x_{\min},\ x_{\max}`, 'Training minimum and maximum (min–max)', 'original units'],
+        [String.raw`\bar{x},\ s`, 'Training mean and standard deviation (standardisation)', 'original units'],
+        [String.raw`\tilde{x},\ Q_1,\ Q_3`, 'Training median and first and third quartiles (robust scaling)', 'original units'],
+      ],
       note: 'Use the same stored parameters that produced the scaled value.' },
     { id: 'coef-per-unit', name: 'Coefficient per original unit from a standardised coefficient',
       tex: String.raw`b_j = \dfrac{b_j^{(z)}}{s_j}`,

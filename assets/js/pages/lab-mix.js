@@ -6,6 +6,7 @@ import { $, h, debounce, copyText } from '../core/dom.js?v=6';
 import * as F from '../core/format.js?v=6';
 import * as X from '../core/mixsim.js?v=6';
 import { mountSimulator, mountCompare, fmt, SHORT } from '../study/labs/mix-ui.js?v=6';
+import { scrollersFocusable } from '../study/common.js?v=6';
 
 initSite();
 
@@ -125,3 +126,5 @@ updateSave();
   const d = X.simulate(X.defaultPlan()), best = X.bestPrice(X.defaultPlan()), sup = X.elasticity(X.defaultPlan(), 'supermarket');
   $('#mix-calibration').textContent = `With the default plan the model gives Lantern ${fmt.pct(d.year.share)} of category cans in year 1, an own-price elasticity of ${fmt.elast(sup.analytic)} in supermarkets, and a profit-maximising shelf price of ${fmt.price(best.price)} with everything else unchanged. Those are properties of the invented coefficients, chosen to behave like a plausible market; they are not measurements of any real one.`;
 }
+
+scrollersFocusable();   // tables and charts that scroll sideways get a tab stop (WCAG 2.1.1)

@@ -139,6 +139,7 @@ export default {
       where: [
         [String.raw`n_c`, 'Training rows in category c', 'rows'],
         [String.raw`n`, 'All training rows', 'rows'],
+        [String.raw`f_c`, 'Frequency encoding of category c: its share of the training rows', ''],
       ],
       note: 'Computed on the training set and reused unchanged for test and new data.' },
     { id: 'target-encoding', name: 'Target encoding (category mean)',
@@ -152,6 +153,9 @@ export default {
     { id: 'smoothed-target-encoding', name: 'Smoothed target encoding',
       tex: String.raw`S_c = \lambda_c\,\bar{y}_c + (1 - \lambda_c)\,\bar{y}, \qquad \lambda_c = \dfrac{n_c}{n_c + m}`,
       where: [
+        [String.raw`S_c`, 'Smoothed target encoding of category c', 'units of y'],
+        [String.raw`\bar{y}_c`, 'Mean of the target in category c', 'units of y'],
+        [String.raw`n_c`, 'Training rows in category c', 'rows'],
         [String.raw`\bar{y}`, 'Overall mean of the target in the training data', 'units of y'],
         [String.raw`\lambda_c`, 'Weight on the category’s own mean, between 0 and 1', ''],
         [String.raw`m`, 'Smoothing strength: the larger it is, the more small categories are pulled towards the overall mean', 'rows'],

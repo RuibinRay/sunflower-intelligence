@@ -157,6 +157,7 @@ export default {
     { id: 'slide', name: 'Difference left by a slide',
       tex: String.raw`d = (10^{n} - 1)\, y`,
       where: [
+        [String.raw`d`, 'Difference the slide leaves', '$'],
         [String.raw`y`, 'The smaller of the correct and the recorded amounts', '$'],
         [String.raw`n`, 'Number of places the decimal point moved', ''],
       ],

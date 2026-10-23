@@ -121,6 +121,7 @@ export default {
     { id: 'objective-task-budget', name: 'Objective-and-task budget',
       tex: String.raw`B = \sum_{k} q_k \times c_k`,
       where: [
+        [String.raw`B`, 'Promotion budget for the period', '$'],
         [String.raw`q_k`, 'Quantity of task k needed to reach the objectives (demo days, thousands of impressions, events…)', 'units'],
         [String.raw`c_k`, 'Cost per unit of task k', '$ per unit'],
       ],

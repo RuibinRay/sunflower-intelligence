@@ -216,6 +216,7 @@ export default {
     { id: 'full-join-row-count', name: 'Rows produced by a full outer join',
       tex: String.raw`N_{\text{full}} = N_{\text{inner}} + U_L + U_R`,
       where: [
+        [String.raw`N_{\text{full}},\ N_{\text{inner}}`, 'Rows in the full outer join and in the inner join', 'rows'],
         [String.raw`U_L`, 'Left rows whose key has no match in the right table', 'rows'],
         [String.raw`U_R`, 'Right rows whose key has no match in the left table', 'rows'],
       ],

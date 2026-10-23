@@ -125,6 +125,8 @@ export default {
     { id: 'net-price-direct', name: 'Net price through a direct channel',
       tex: String.raw`N = P - f`,
       where: [
+        [String.raw`N`, 'Net price: what the producer receives per unit', '$'],
+        [String.raw`P`, 'Price paid by the final customer', '$'],
         [String.raw`f`, 'Fulfilment cost per unit: storing, picking, packing and delivering', '$'],
       ],
       note: 'The direct channel may also carry a fixed yearly cost (Lantern: $6,000 to run its online shop).' },
@@ -149,6 +151,7 @@ export default {
       where: [
         [String.raw`Q`, 'Units that must be sold in a year to cover the fee (round up)', 'units'],
         [String.raw`F`, 'Fixed yearly cost of the channel: listing fees × SKUs, or the running cost of a direct channel', '$'],
+        [String.raw`g`, 'Gross margin per unit in the channel', '$'],
       ],
       note: 'This is a break-even for the channel’s own fixed cost only; promotion and overhead still have to be covered. It is the product-decisions lesson’s payback in units, applied to a listing fee.' },
   ],

@@ -7,6 +7,7 @@ import * as F from '../core/format.js?v=6';
 import { afterPaint } from '../core/ui.js?v=6';
 import * as C from '../core/cleaning.js?v=6';
 import { createLab, STORE_KEY } from '../study/labs/cleaning-ui.js?v=6';
+import { scrollersFocusable } from '../study/common.js?v=6';
 
 initSite();
 
@@ -63,3 +64,5 @@ afterPaint().then(() => {
   const saved = lab.savedCurrent();
   choose(saved && C.DATASETS[saved] ? saved : 'lantern-orders');
 });
+
+scrollersFocusable();   // tables and charts that scroll sideways get a tab stop (WCAG 2.1.1)

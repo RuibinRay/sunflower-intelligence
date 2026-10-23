@@ -234,7 +234,7 @@ export async function checkLesson(course, slug, { courseTerms } = {}) {
     else {
       // single-letter symbols used in the formula should each be defined in `where` (words in \text{} don't count)
       // skips words in \text{}, commands, subscripts and summation indices (_i, _{i=1}, ^{n}), and e as the constant (e^)
-      const letters = (t) => new Set((String(t).replace(/\\(?:text|mathrm|operatorname)\{[^}]*\}/g, ' ').replace(/[_^]\{[^}]*\}|[_^][A-Za-z0-9]/g, ' ').replace(/\be(?=\s*\^)/g, ' ').replace(/\\[a-zA-Z]+/g, ' ').match(/(?<![A-Za-z])[A-Za-z](?![A-Za-z])/g) || []));
+      const letters = (t) => new Set((String(t).replace(/\\(?:text|mathrm|operatorname)\{[^}]*\}/g, ' ').replace(/\be(?=\s*\^)/g, ' ').replace(/[_^]\{[^}]*\}|[_^][A-Za-z0-9]/g, ' ').replace(/\\[a-zA-Z]+/g, ' ').match(/(?<![A-Za-z])[A-Za-z](?![A-Za-z])/g) || []));
       const defined = new Set(f.where.flatMap((row) => [...letters(row[0])]));
       const undefinedSyms = [...letters(f.tex)].filter((x) => !defined.has(x));
       if (undefinedSyms.length) r.warn(`${w}: symbol${undefinedSyms.length > 1 ? 's' : ''} ${undefinedSyms.join(', ')} used but not defined in where`);

@@ -102,6 +102,7 @@ export default {
     { id: 'skewness-g1', name: 'Sample skewness (adjusted Fisher–Pearson coefficient)',
       tex: String.raw`G_1 = \dfrac{\sqrt{n(n-1)}}{n-2}\cdot\dfrac{m_3}{m_2^{3/2}}`,
       where: [
+        [String.raw`G_1`, 'Sample skewness: positive for a long right tail, negative for a long left tail', ''],
         [String.raw`n`, 'Number of values (at least 3)', ''],
         [String.raw`m_2`, 'Mean squared deviation from the mean, dividing by n', 'squared units'],
         [String.raw`m_3`, 'Mean cubed deviation from the mean, dividing by n', 'cubed units'],
@@ -127,11 +128,13 @@ export default {
       where: [
         [String.raw`x_i`, 'Positive values', 'units of the variable'],
         [String.raw`\text{GM}`, 'Geometric mean: the back-transformed mean of the logs', 'units of the variable'],
+        [String.raw`n`, 'Number of values', ''],
       ],
       note: 'Never larger than the arithmetic mean; equal only when all values are equal.' },
     { id: 'log-difference', name: 'Log difference and percentage change',
       tex: String.raw`d = \ln\dfrac{x_{\text{new}}}{x_{\text{old}}}, \qquad \text{percentage change} = (e^{d} - 1) \times 100\%`,
       where: [
+        [String.raw`x_{\text{new}},\ x_{\text{old}}`, 'The new and old values', 'units of the variable'],
         [String.raw`d`, 'Difference between the logs of the new and old values', 'log units'],
       ],
       note: 'For small changes, 100 × d is close to the percentage change; for large ones use the exact formula.' },

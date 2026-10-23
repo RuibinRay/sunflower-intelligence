@@ -160,6 +160,7 @@ export default {
         [String.raw`d_{i,j}`, 'Distance between the first i characters of string a and the first j characters of string b', 'edits'],
         [String.raw`c_{ij}`, 'Substitution cost: 0 if the i-th character of a equals the j-th character of b, otherwise 1', 'edits'],
         [String.raw`d_{i,0},\ d_{0,j}`, 'Turning i (or j) characters into an empty string takes one edit per character', 'edits'],
+        [String.raw`i,\ j`, 'Number of characters taken from the start of a and of b', 'characters'],
       ],
       assumptions: 'Each insertion, deletion and substitution costs one edit.',
       note: 'The distance between the whole strings is the bottom-right cell.' },
