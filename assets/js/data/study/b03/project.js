@@ -268,7 +268,7 @@ export default {
           prompt: 'Which limit binds in the best order (is used up exactly)?',
           options: ['Kilnworth’s 55 kg of roasted coffee', 'Ana’s $1,800 stock budget', 'The 360 minutes of packing time', 'None of them: the forecasts limit every coffee'], answer: 0,
           feedback: { 1: `The order costs ${money(budgetUsed)}, leaving ${money(SP.limits.budget - budgetUsed)} unspent: the budget has slack.`, 2: `Packing uses ${best.x.reduce((s, x, i) => s + x * SP.items[i].minutes, 0)} of 360 minutes; 2.5 minutes are left, too few for another 1 kg bag but not used up.`, 3: 'Colombia (30 of 60) and Espresso (15 of 25) are below their forecasts, so something else stops them.' },
-          solution: `B10 = 0.25 × (80 + 30 + 50) + 15 = 55 kg, exactly the allocation. A binding constraint is the one to relax first: in this plan another kilogram is worth more than another dollar of budget, which has ${money(SP.limits.budget - budgetUsed)} of slack.` },
+          solution: `B10 = 0.25 × (80 + 30 + 50) + 15 = 55 kg, exactly the allocation. Relaxing a binding limit is the obvious place to start (the next task prices five more kilograms), and the budget, with ${money(SP.limits.budget - budgetUsed)} of slack, isn’t worth more money. But with whole bags a limit that has slack can still hold the plan back: packing has only ${SP.limits.minutes - best.x.reduce((s, x, i) => s + x * SP.items[i].minutes, 0)} minutes left, and with 40 more minutes of packing and no more coffee Solver would swap 1 kg Espresso bags for 250 g bags and earn ${money(brute({ minutes: SP.limits.minutes + 40 }).v - best.v)} more. Test each change by solving again rather than reading its value off the slack.` },
         num('b03-pj-25', 'If Kilnworth could roast 60 kg instead of 55, what would the best total contribution be? Give it to the cent.', best60.v, () => brute({ kg: 60 }).v,
           `Change D10 to 60 and solve again: ${best60.x.map((x, i) => `${x} × ${SP.items[i].product}`).join(', ')}, ${money(best60.v)}, ${money(best60.v - best.v)} more. Worth asking Kilnworth for, if the extra 5 kg costs less than that.`,
           [{ value: best.v, say: 'That is the 55 kg answer. Change the limit in D10 to 60 before you solve.' }], { tol: 0.01 }),
@@ -319,7 +319,8 @@ export default {
       ['AOV for $3,000', aovFor3000, 45.79, 0.005],
       ['Solver = brute force: contribution', stock.objective, best.v, 1e-6], ...SP.items.map((it, i) => [`Solver = brute force: ${it.product}`, stock.values[`B${4 + i}`], best.x[i], 1e-9]),
       ['stock contribution', best.v, 1684.5], ['60 kg (Solver)', stock60.objective, best60.v, 1e-6], ['60 kg', best60.v, 1780.8], ['minimum House Blend costs', bestNoMin.v - best.v, 107],
-      ['budget slack', SP.limits.budget - budgetUsed, 144.5], ['case stock = brute', D.stock.contribution, best.v, 1e-9],
+      ['budget slack', SP.limits.budget - budgetUsed, 144.5], ['40 more packing minutes', brute({ minutes: SP.limits.minutes + 40 }).v - best.v, 92],
+      ['40 more packing minutes swaps Espresso for 250 g bags', brute({ minutes: SP.limits.minutes + 40 }).x[3] < best.x[3] ? 1 : 0, 1], ['case stock = brute', D.stock.contribution, best.v, 1e-9],
       ['bulk order share of Central %', (bulk.order_total / sumBy(central, (o) => o.order_total)) * 100, 71.12, 0.005],
     ];
   },

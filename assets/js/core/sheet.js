@@ -913,6 +913,11 @@ FN.TRUNC = (args, ctx) => FN.ROUNDDOWN([args[0], args[1] || { t: 'lit', v: 0 }],
 FN.CEILING = (args, ctx) => { const n = numArg(args[0], ctx), s = numArg(args[1], ctx, 1); if (isErr(n)) return n; if (isErr(s)) return s; if (s === 0) return 0; return Math.ceil(p15(n / s)) * s; };
 FN.FLOOR = (args, ctx) => { const n = numArg(args[0], ctx), s = numArg(args[1], ctx, 1); if (isErr(n)) return n; if (isErr(s)) return s; if (s === 0) return ERR.DIV0; return Math.floor(p15(n / s)) * s; };
 FN.PI = () => Math.PI;
+// CEILING.MATH(number, [significance], [mode]) and FLOOR.MATH: to a multiple of significance (default 1); for a
+// negative number mode 0 (default) rounds towards zero for CEILING.MATH and away from zero for FLOOR.MATH, and a
+// non-zero mode reverses that
+FN['CEILING.MATH'] = (args, ctx) => { const n = numArg(args[0], ctx), sg = Math.abs(numArg(args[1], ctx, 1)), md = numArg(args[2], ctx, 0); if (isErr(n)) return n; if (isErr(sg)) return sg; if (sg === 0) return 0; const q = p15(n / sg); return (n < 0 && md ? Math.floor(q) : Math.ceil(q)) * sg || 0; };
+FN['FLOOR.MATH'] = (args, ctx) => { const n = numArg(args[0], ctx), sg = Math.abs(numArg(args[1], ctx, 1)), md = numArg(args[2], ctx, 0); if (isErr(n)) return n; if (isErr(sg)) return sg; if (sg === 0) return 0; const q = p15(n / sg); return (n < 0 && md ? Math.ceil(q) : Math.floor(q)) * sg || 0; };
 FN.MROUND = (args, ctx) => { const n = numArg(args[0], ctx), m = numArg(args[1], ctx); if (isErr(n)) return n; if (isErr(m)) return m; if (m === 0) return 0; if (Math.sign(n) * Math.sign(m) < 0) return ERR.NUM; return round(n / m, 0) * m; };
 FN.LOG = (args, ctx) => { const n = numArg(args[0], ctx), b = numArg(args[1], ctx, 10); if (isErr(n)) return n; if (isErr(b)) return b; return n <= 0 || b <= 0 || b === 1 ? ERR.NUM : Math.log(n) / Math.log(b); };
 
@@ -1296,7 +1301,10 @@ export function goalSeek(sheet, { target, goal, changing, guess = null, maxIter 
   }
   return Math.abs(f1) < 1e-6 * Math.max(1, Math.abs(goal)) ? { ok: true, value: x1, iterations: maxIter } : { ok: false, value: x1 };
 }
-/** A one- or two-variable data table: the value of `target` for each input value (as Excel's Data Table). */
+/** A one- or two-variable data table: the value of `target` for each input value (as Excel's Data Table). Naming
+ *  note: `rowInput`/`rowValues` are the values down the side (one per row of the result), which Excel calls the
+ *  *column* input cell; `colInput`/`colValues` are the values across the top, Excel's *row* input cell. The widget
+ *  shows Excel's names. */
 export function dataTable(sheet, { target, rowInput = null, rowValues = [], colInput = null, colValues = [] }) {
   const s = sheet.clone();
   if (!colInput) return rowValues.map((x) => { s.set(rowInput, x); return s.get(target); });
