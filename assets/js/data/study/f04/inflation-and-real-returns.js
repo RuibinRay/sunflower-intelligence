@@ -225,9 +225,9 @@ export default {
         ],
       },
       answer: 'The indexed offer is worth about $104,965.18 today by either route; the fixed offer about $104,447.78. On a 2.8% inflation assumption Lantern should prefer the indexed fee, by about $517.40.',
-      interpretation: 'The margin is small, so the decision rests partly on risk. The indexed fee keeps its purchasing power whatever inflation does, which matters to a café whose costs rise with prices; the fixed fee wins only if inflation turns out below about 2.54% a year. Lantern should also check which index the contract names and that it is not seasonally adjusted.' },
+      interpretation: 'The margin is small, so the decision rests partly on risk. The indexed fee keeps its purchasing power whatever inflation does, which matters to a coffee caterer whose costs rise with prices; the fixed fee wins only if inflation turns out below about 2.54% a year. Lantern should also check which index the contract names and that it is not seasonally adjusted.' },
     { level: 'applied', title: 'An inflation-protected bond or an ordinary one?', fictional: true,
-      setup: 'Mateo, a hospital pharmacist (fictional), is saving for a sabbatical in five years. He compares a five-year US Treasury note yielding 4.3% a year with five-year TIPS yielding a real 1.8% a year. Treat both yields as effective annual rates and ignore taxes. The yields are illustrations, not current market rates. What inflation rate makes the two equal, and what does each earn if inflation averages 3.5%, or 1.0%?',
+      setup: 'Tobias, a hospital pharmacist (fictional), is saving for a sabbatical in five years. He compares a five-year US Treasury note yielding 4.3% a year with five-year TIPS yielding a real 1.8% a year. Treat both yields as effective annual rates and ignore taxes. The yields are illustrations, not current market rates. What inflation rate makes the two equal, and what does each earn if inflation averages 3.5%, or 1.0%?',
       steps: [
         String.raw`Break-even inflation from the Fisher relation: <m>1.043 \div 1.018 - 1 \approx 2.456\%</m> a year (the subtraction shortcut says 2.5%).`,
         String.raw`If inflation averages 3.5%: the TIPS earns <m>1.018 \times 1.035 - 1 \approx 5.363\%</m> nominal, more than the note’s 4.3%. The note’s real return is only <m>1.043 \div 1.035 - 1 \approx 0.773\%</m>, against the TIPS’s fixed 1.8%.`,
@@ -235,7 +235,7 @@ export default {
         'Judgement: the ordinary note wins if inflation stays below about 2.46% a year; the TIPS wins above it, and its real return is fixed at 1.8% either way.',
       ],
       answer: 'Break-even inflation is about 2.46% a year. At 3.5% inflation the TIPS earns about 5.36% nominal against 4.3%; at 1.0% it earns about 2.82% against 4.3%.',
-      interpretation: 'The choice is not about which bond has the higher number on it; it is about who carries inflation risk. Mateo’s sabbatical will be paid for in future prices, so locking in a real return removes a risk he cannot otherwise control. If he expects inflation well below 2.46%, or needs a predictable dollar sum, the ordinary note suits him better.' },
+      interpretation: 'The choice is not about which bond has the higher number on it; it is about who carries inflation risk. Tobias’s sabbatical will be paid for in future prices, so locking in a real return removes a risk he cannot otherwise control. If he expects inflation well below 2.46%, or needs a predictable dollar sum, the ordinary note suits him better.' },
   ],
 
   demo: [

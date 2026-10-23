@@ -63,7 +63,7 @@ export default {
       ],
       note: 'Payments are calculated without rounding and shown to the cent; totals use the unrounded payment. A lender rounds the payment to the cent and adjusts the final payment.',
     } },
-    { p: 'The 15-year loan costs $590.55 a month more but saves about $221,365.90 of interest, and after five years Jonah would owe about $51,209 less. The 30-year loan’s advantage is flexibility: a lower required payment leaves room in the budget, and, as the theory section shows, he can still choose to pay it off faster.' },
+    { p: 'The 15-year loan costs $590.55 a month more but saves about $221,365.90 of interest, and after five years Jonah would owe about $51,209 less. Total interest overstates the saving, though: much of that gap is the result of repaying the loan in half the time, and each loan’s payments are worth exactly $288,000 at its own rate. The real gain is the lower rate, which is worth far less than the interest gap suggests. The 30-year loan’s advantage is flexibility: a lower required payment leaves room in the budget, and, as the theory section shows, he can still choose to pay it off faster.' },
 
     { h: 'Buying a lower rate: discount points' },
     { p: String.raw`<g>Discount points</g> are an upfront fee paid at closing in exchange for a lower interest rate. The Consumer Financial Protection Bureau (CFPB) explains that one point costs 1% of the loan amount and that how much a point lowers the rate varies by lender, loan type and market conditions. Jonah’s 1.5 points would cost <m>0.015 \times 288{,}000 = 4{,}320</m> dollars and cut his rate from 6.5% to 6.125%, which lowers the payment to about $1,749.92, a saving of about $70.44 a month.` },

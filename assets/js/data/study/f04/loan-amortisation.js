@@ -149,7 +149,7 @@ export default {
       where: [
         [String.raw`C`, 'Level payment per period', '$'],
         [String.raw`\text{PV}`, 'Amount borrowed', '$'],
-        [String.raw`r`, 'Interest rate per period, as a decimal (APR ÷ 12 for monthly payments)', 'per period'],
+        [String.raw`r`, 'Interest rate per period, as a decimal (the nominal annual rate ÷ 12 for monthly payments)', 'per period'],
         [String.raw`n`, 'Number of payments', 'periods'],
       ],
       assumptions: 'Fixed rate; equal payments at the end of each period; the last payment repays the loan in full.',
