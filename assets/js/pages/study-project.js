@@ -11,7 +11,7 @@ import { initSite } from '../core/site.js?v=8';
 import { $, h, debounce } from '../core/dom.js?v=8';
 import * as P from '../study/progress.js?v=8';
 import { practiceCard, loadCharts } from '../study/exercises.js?v=8';
-import { initOutline, paintOutline, storageWarning } from '../study/common.js?v=8';
+import { initOutline, paintOutline, storageWarning, scrollersFocusable } from '../study/common.js?v=8';
 
 initSite();
 initOutline();
@@ -115,3 +115,6 @@ async function mountTool(el, tool, cb) {
     el.replaceChildren(h('p', { class: 'note' }, 'The lab didn’t load. Reload the page to try again.'));
   }
 }
+
+// tables wider than the screen scroll sideways; make them keyboard-reachable (re-checked as the page builds)
+scrollersFocusable();

@@ -4,7 +4,7 @@ import { initSite } from '../core/site.js?v=8';
 import { $, h } from '../core/dom.js?v=8';
 import * as P from '../study/progress.js?v=8';
 import { renderQuiz } from '../study/exercises.js?v=8';
-import { initOutline, paintOutline, pct, storageWarning } from '../study/common.js?v=8';
+import { initOutline, paintOutline, pct, storageWarning, scrollersFocusable } from '../study/common.js?v=8';
 import { MAP } from '../data/study/map.js?v=8';
 
 initSite();
@@ -83,3 +83,6 @@ if (!mod?.items?.length) {
     },
   });
 }
+
+// tables wider than the screen scroll sideways; make them keyboard-reachable (re-checked as the page builds)
+scrollersFocusable();
