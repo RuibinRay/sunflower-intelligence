@@ -2,12 +2,12 @@
 // createLab(opts) holds the state (raw table, recipe, snapshots) and renders panels into any elements you give it;
 // mountLab(el, opts) stacks the panels in one element. Every number shown comes from assets/js/core/cleaning.js.
 // Anything from a dataset or an upload goes into the page through textContent (h() never uses innerHTML).
-import { h, s, download, store } from '../../core/dom.js?v=8';
-import * as F from '../../core/format.js?v=8';
-import * as C from '../../core/cleaning.js?v=8';
+import { h, s, download, store } from '../../core/dom.js?v=9';
+import * as F from '../../core/format.js?v=9';
+import * as C from '../../core/cleaning.js?v=9';
 
 export const STORE_KEY = 'si:lab-cleaning';
-export const datasetUrl = (name) => new URL(`../../../data/study/${name}.csv?v=8`, import.meta.url).href;
+export const datasetUrl = (name) => new URL(`../../../data/study/${name}.csv?v=9`, import.meta.url).href;
 const cache = new Map();
 /** Fetch and parse one of the course datasets (cached per page). */
 export function loadDataset(name) {
@@ -22,7 +22,7 @@ export function loadDataset(name) {
 /** Lesson pages may not link lab-cleaning.css; add it once if it is missing. */
 export function ensureStyles() {
   if (typeof document === 'undefined' || [...document.styleSheets].some((x) => /lab-cleaning\.css/.test(x.href || '')) || document.querySelector('link[href*="lab-cleaning.css"]')) return;
-  document.head.append(h('link', { rel: 'stylesheet', href: new URL('../../../css/lab-cleaning.css?v=8', import.meta.url).href }));
+  document.head.append(h('link', { rel: 'stylesheet', href: new URL('../../../css/lab-cleaning.css?v=9', import.meta.url).href }));
 }
 
 // ---------------------------------------------------------------- small helpers
@@ -269,8 +269,10 @@ export function createLab(opts = {}) {
         h('span', { class: 'cl-sev' }, { error: 'Problem', warning: 'Check', info: 'Note' }[x.severity] + ': '),
         h('strong', {}, x.title), x.column ? h('span', { class: 'cl-col' }, ` · ${x.column}`) : '', h('span', { class: 'cl-count' }, ` · ${plural(x.count, x.kind === 'skewed' ? 'value' : x.kind.includes('duplicate') ? 'row' : 'value')}`));
       const li = h('li', { class: `cl-issue is-${x.severity}` }, head, h('p', { class: 'cl-issue-msg' }, x.message));
-      if (x.detail) li.append(h('p', { class: 'cl-issue-detail' }, x.detail));
-      li.append(h('details', { class: 'cl-why' }, h('summary', {}, 'Why it matters'), h('p', {}, x.why)));
+      if (opts.advice !== false) {   // a lesson that only diagnoses can hide the hints at fixes
+        if (x.detail) li.append(h('p', { class: 'cl-issue-detail' }, x.detail));
+        li.append(h('details', { class: 'cl-why' }, h('summary', {}, 'Why it matters'), h('p', {}, x.why)));
+      }
       if (canSuggest(x)) {
         const b = h('button', { class: 'btn btn-secondary cl-btn-sm', type: 'button' }, `Set up: ${C.describeStep(x.suggestion)}`);
         b.addEventListener('click', () => { lab.setBuilder(x.suggestion, x); slots.builder.querySelector('select, input, button')?.focus(); slots.builder.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('motion-paused') ? 'auto' : 'smooth' }); });

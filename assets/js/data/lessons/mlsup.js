@@ -1,6 +1,6 @@
 // Lesson: supervised learning — fair comparison by cross-validation, trees, forests, k-NN and permutation importance.
 // `checks` recompute every number printed in the worked example; tests/lessons.test.mjs compares them.
-import * as F from '../../core/format.js?v=8';
+import * as F from '../../core/format.js?v=9';
 
 /** Gini impurity of a node with `pos` of `n` rows in the positive class. */
 const gini = (pos, n) => { const p = pos / n; return 1 - p * p - (1 - p) * (1 - p); };

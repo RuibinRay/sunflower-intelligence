@@ -1,7 +1,7 @@
 // charts.js — small SVG chart kit. Thin marks, hairline grid, hover + keyboard tooltips, table twins.
 // Colours come from CSS classes (see tools.css) so light and night rooms share one code path.
-import { s, h } from './dom.js?v=8';
-import * as F from './format.js?v=8';
+import { s, h } from './dom.js?v=9';
+import * as F from './format.js?v=9';
 
 export function niceTicks(min, max, count = 5) {
   if (!Number.isFinite(min) || !Number.isFinite(max)) return { ticks: [], min: 0, max: 1, step: 1 };

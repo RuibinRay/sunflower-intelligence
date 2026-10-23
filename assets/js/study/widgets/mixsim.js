@@ -6,8 +6,8 @@
 // show: the results to show (units, share, revenue, margin, contribution, satisfaction, awareness, elasticity);
 //       all of them when omitted. The profit-and-cans-against-price chart appears whenever price is open.
 // Extra, optional: plan (a starting plan for the open decisions), full: true (the lab's full results view).
-import { mountSimulator, ensureStyles, RESULT_KEYS } from '../labs/mix-ui.js?v=8';
-import { debounce } from '../../core/dom.js?v=8';
+import { mountSimulator, ensureStyles, RESULT_KEYS } from '../labs/mix-ui.js?v=9';
+import { debounce } from '../../core/dom.js?v=9';
 
 export async function mount(el, config = {}, ctx = {}) {
   ensureStyles();
