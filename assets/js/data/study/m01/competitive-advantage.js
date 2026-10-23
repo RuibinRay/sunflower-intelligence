@@ -52,7 +52,7 @@ export default {
   slug: 'competitive-advantage',
   title: 'Competitive advantage',
   blurb: 'Customers choose between alternatives, so a business needs a reason to be chosen that rivals can’t easily copy. Learn where competitive advantage comes from (lower cost, differentiation and focus), how to compare competing on price with competing on value, and how to judge whether an advantage will last.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain competitive advantage as creating more value than rivals, using willingness to pay, price and cost.',
     'Distinguish Porter’s generic strategies (cost leadership, differentiation, cost focus and differentiation focus) and classify businesses by the strategy they follow.',

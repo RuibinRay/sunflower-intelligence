@@ -77,7 +77,7 @@ export const items = [
     id: 'm01-m3-6', lesson: 'marketing-objectives', type: 'mc', kind: 'applied',
     prompt: 'A fictional design agency’s growth goal needs 60 new clients next year (top-down). Last year it received 400 leads and won 10% of them, and nothing in next year’s plan changes either figure (bottom-up). What should the marketing plan do?',
     options: [
-      'Name the actions that will close the gap of 20 clients, or revise the goal before the year starts',
+      'Name what will close the gap of 20 clients, or revise the goal before the year starts',
       'Keep the target at 60 and trust the sales team to find the extra clients during the year',
       'Average the two figures and aim for 50 new clients, which splits the difference fairly',
       'Set the target at 40, the bottom-up figure, and report the goal as met if 40 are won',
@@ -145,7 +145,7 @@ export const items = [
       'Cutting its cost of serving a customer by $5, a saving the rival can’t make',
       'Adding a feature customers value at $10 that costs $4, which the rival can’t copy',
       'Cutting its price by $5 to match the rival, so that customers pay the same at both',
-      'Adding a feature customers value at $10 that costs $4, which the rival adds a month later',
+      'Adding a feature customers value at $10 that costs $4, which the rival copies and adds a month later',
       'Raising its price by $5 with no change to the offer or to its cost of providing it',
       'Dropping a service that costs $8 and that customers value at $3, which the rival still provides',
     ],

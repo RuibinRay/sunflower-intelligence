@@ -3,8 +3,9 @@
 // price, lifetime value against the cost of the extra customers, the five orientations in one decision, three choice
 // rules on one set of scores, habitual buying and learning, a PESTEL law → the default effect it removes, attitude change
 // through the weighted-attribute model, a value proposition → the buying-centre roles that must believe it → the funnel
-// objective that measures it, PESTEL changes → buying situations, a plan from situation analysis to measures, a growth
-// objective → its acquisition budget → lifetime value, and lifetime value → acquisition spending → a generic strategy.
+// objective that measures it, PESTEL changes → buying situations, a plan from situation analysis to measures, the timing
+// behind a customer target, a growth objective → the new clients it needs → the lifetime value their acquisition creates,
+// and lifetime value → acquisition spending → a generic strategy.
 // New questions, not copies of lesson exercises, module-test, diagnostic or project items (none uses Lantern’s
 // catering figures, Harbor Tech’s buying centre, Lantern’s SWOT or its strategy). No hints; solutions show in review.
 // 70% passes. Every business, person and figure is fictional. Lifetime value uses the course’s timing: margins at the
@@ -25,7 +26,7 @@ export const items = [
     solution: 'Value created = willingness to pay − cost = $2,400 − $1,200 = $1,200. A quarter of it is $300, which the couple keeps when $2,400 − P = $300, so P = $2,100. Elodie then keeps $2,100 − $1,200 = $900, three-quarters. Any price between $1,200 and $2,400 leaves both sides better off; the price only decides how the $1,200 is shared.',
   },
   {
-    id: 'm01-fn-2', lesson: 'what-is-marketing', type: 'mc', kind: 'conceptual',
+    id: 'm01-fn-2', lesson: 'market-orientation', type: 'mc', kind: 'conceptual',
     prompt: 'Theodore Levitt’s “marketing myopia” (1960) and Smith, Drumwright and Gentile’s “new marketing myopia” (2010) name two different mistakes. Which pair describes them correctly?',
     options: [
       'Levitt: defining a business by its product, not by the need it serves. New: a single-minded focus on customers that excludes other stakeholders',
@@ -62,14 +63,14 @@ export const items = [
   // ---------------------------------------------------------------- customer-value
   {
     id: 'm01-fn-4', lesson: 'customer-value', type: 'num', kind: 'numerical',
-    prompt: 'Bexley Pest Control (fictional) earns a margin of $300 a year from a typical household contract and discounts future money at 10% a year. A reminder service is expected to raise the share of households that renew each year from 70% to 75%. By how much does the lifetime value of a contract rise? Use CLV = m ÷ (1 + d − r) and give dollars and cents.',
-    answer: 107.14, check: () => 300 / (1 + 0.10 - 0.75) - 300 / (1 + 0.10 - 0.70), unit: '$', places: 2, tol: 0.01,
+    prompt: 'Bexley Pest Control (fictional) earns a margin of $300 a year from a typical household contract; 70% of households renew each year, and it discounts future money at 10% a year. The owner’s spreadsheet counts each year’s margin at the start of the year, so the first arrives the day a contract is signed; this course counts it at the end of the year. Everything else is the same. How much higher is the spreadsheet’s lifetime value than the course’s? Give dollars.',
+    answer: 75, check: () => 300 * 1.10 / 0.40 - 300 / 0.40, unit: '$', places: 0, tol: 0.5,
     wrong: [
-      { value: 200, say: 'That leaves out discounting: 300 ÷ 0.25 − 300 ÷ 0.30 = $1,200 − $1,000. Later margins are worth less today, so use 1 + d − r.' },
-      { value: 857.14, say: 'That is the lifetime value at 75% retention. Subtract today’s, 300 ÷ 0.40 = $750.' },
-      { value: 37.5, say: 'That raises today’s $750 by 5%. Five points of retention change the denominator from 0.40 to 0.35, which lifts CLV by far more than 5%.' },
+      { value: 825, say: 'That is the spreadsheet’s lifetime value. Subtract the course’s $750.' },
+      { value: 27.27, say: 'That moves only the first margin. Every later margin also arrives a year earlier, so the whole stream is worth 1.10 times as much.' },
+      { value: 300, say: 'Counting at the start of the year doesn’t add a margin; it receives each one a year sooner.' },
     ],
-    solution: 'Today: 300 ÷ (1 + 0.10 − 0.70) = 300 ÷ 0.40 = $750. With the service: 300 ÷ (1 + 0.10 − 0.75) = 300 ÷ 0.35 ≈ $857.14. The rise is about $107.14, 14% of today’s value, from five points of retention. Whether the service pays depends on its cost, which recurs every year and so lowers the margin; the market-orientation lesson shows how to find the retention at which a response like this breaks even.',
+    solution: 'The course’s convention: CLV = m ÷ (1 + d − r) = 300 ÷ (1 + 0.10 − 0.70) = 300 ÷ 0.40 = $750. Receiving every margin a year earlier multiplies the whole stream by 1 + d, so the spreadsheet shows 750 × 1.10 = $825. The gap, $75, comes from timing alone. Compare lifetime values only when they use the same convention, and say which one you use.',
   },
   {
     id: 'm01-fn-5', lesson: 'customer-value', type: 'mc', kind: 'applied',
@@ -106,7 +107,7 @@ export const items = [
     id: 'm01-fn-7', lesson: 'market-orientation', type: 'classify', kind: 'conceptual',
     prompt: 'Oakleigh Freight (fictional), a haulage firm, describes six of its practices. Which part of Narver and Slater’s account of market orientation does each mainly show?',
     items: [
-      'Account managers ride along on deliveries twice a year to see what goes wrong at clients’ loading bays',
+      'Account managers spend a day at each major client’s warehouse twice a year, to see what goes wrong at its loading bays',
       'For every tender it loses, the firm records which rival won it and at what price',
       'Sales, the depot and finance meet each month to plan how to serve the largest accounts',
       'It turned down a three-year contract that would have raised this year’s revenue but lost money over its life',
@@ -121,7 +122,7 @@ export const items = [
       4: 'What one function hears (the drivers) reaches the one that can act on it (route planning): the whole business working to serve customers.',
       5: 'Asking what a current or potential rival can and is likely to do is competitor orientation.',
     },
-    solution: 'Narver and Slater (1990) described three behavioural components, customer orientation, competitor orientation and inter-functional coordination, guided by two decision criteria, a long-term focus and profitability. The ride-alongs are customer orientation; the lost-tender records and the question about the electric trucks are competitor orientation; the monthly meeting and the drivers’ notes reaching the planners are inter-functional coordination; turning down the loss-making contract applies the decision criteria.',
+    solution: 'Narver and Slater (1990) described three behavioural components, customer orientation, competitor orientation and inter-functional coordination, guided by two decision criteria, a long-term focus and profitability. The warehouse visits are customer orientation; the lost-tender records and the question about the electric trucks are competitor orientation; the monthly meeting and the drivers’ notes reaching the planners are inter-functional coordination; turning down the loss-making contract applies the decision criteria.',
   },
   {
     id: 'm01-fn-8', lesson: 'market-orientation', type: 'mc', kind: 'applied',
@@ -144,15 +145,15 @@ export const items = [
   // ---------------------------------------------------------------- consumer-decisions
   {
     id: 'm01-fn-9', lesson: 'consumer-decisions', type: 'fill', kind: 'numerical',
-    prompt: 'Odile is choosing between three fictional e-readers. She weights screen quality 0.5, battery life 0.3 and price 0.2, and scores each out of 10, higher always better: the Papyra ($240) 9, 5 and 4; the Scrivo ($180) 7, 8 and 6; the Inkpad ($120) 6, 7 and 9. Complete the sentences.',
+    prompt: 'Odile is choosing between three fictional e-readers. She weights screen quality 0.5, battery life 0.3 and price 0.2, and scores each out of 10, higher always better: the Papyra ($240) 9, 5 and 4; the Scrivo ($180) 7, 8 and 6; the Leafline ($120) 6, 7 and 9. Complete the sentences.',
     text: 'Under the weighted-attribute model Odile chooses [[0]]. If she uses a lexicographic rule instead, she chooses [[1]]. If she refuses to pay more than $150, whatever the scores, she chooses [[2]]. The weighted-attribute model is compensatory; the other two rules are [[3]].',
     blanks: [
-      { options: ['the Papyra', 'the Scrivo', 'the Inkpad'], answer: 1 },
-      { options: ['the Papyra', 'the Scrivo', 'the Inkpad'], answer: 0 },
-      { options: ['the Papyra', 'the Scrivo', 'the Inkpad'], answer: 2 },
+      { options: ['the Papyra', 'the Scrivo', 'the Leafline'], answer: 1 },
+      { options: ['the Papyra', 'the Scrivo', 'the Leafline'], answer: 0 },
+      { options: ['the Papyra', 'the Scrivo', 'the Leafline'], answer: 2 },
       { options: ['non-compensatory', 'compensatory', 'weighted'], answer: 0 },
     ],
-    solution: 'Weighted scores: Papyra 0.5 × 9 + 0.3 × 5 + 0.2 × 4 = 4.5 + 1.5 + 0.8 = 6.8; Scrivo 3.5 + 2.4 + 1.2 = 7.1; Inkpad 3.0 + 2.1 + 1.8 = 6.9. The Scrivo leads. A lexicographic rule picks the best option on the most important attribute, screen quality, and looks further only to break a tie: the Papyra, with 9. A $150 cut-off is a conjunctive rule that removes the Papyra and the Scrivo before anything is weighed, leaving the Inkpad. Under both non-compensatory rules a weakness can’t be made up by strengths elsewhere, so the same scores lead to three different choices.',
+    solution: 'Weighted scores: Papyra 0.5 × 9 + 0.3 × 5 + 0.2 × 4 = 4.5 + 1.5 + 0.8 = 6.8; Scrivo 3.5 + 2.4 + 1.2 = 7.1; Leafline 3.0 + 2.1 + 1.8 = 6.9. The Scrivo leads. A lexicographic rule picks the best option on the most important attribute, screen quality, and looks further only to break a tie: the Papyra, with 9. A $150 cut-off is a conjunctive rule that removes the Papyra and the Scrivo before anything is weighed, leaving the Leafline. Under both non-compensatory rules a weakness can’t be made up by strengths elsewhere, so the same scores lead to three different choices.',
   },
   {
     id: 'm01-fn-10', lesson: 'consumer-decisions', type: 'mc', kind: 'applied',
@@ -160,7 +161,7 @@ export const items = [
     options: [
       'Break the habit with free samples and a trial price, then make the pack easy to spot on the next visit',
       'Publish detailed comparison tables of protein, sugar and price, for shoppers to study before they buy',
-      'Send reassuring e-mails after each purchase, to ease buyers’ doubts about the choice they have just made',
+      'Send reassuring emails after each purchase, to ease buyers’ doubts about the choice they have just made',
       'Launch a new flavour every month, because shoppers like these switch brands for the sake of a change',
     ],
     answer: 0,
@@ -222,13 +223,13 @@ export const items = [
     text: 'The training manager, who asked for a better course after the inspection, is the [[0]]. “90 minutes on a phone” matters most to the [[1]], who will fit the course between shifts. The compliance officer, who must be satisfied that the records really are ready for inspectors, acts as [[2]]. An annual contract would be worth [[3]], so the price must convince the [[4]], who decides. To check whether the proposition persuades care homes that are already weighing it up, Fennimore should set an objective for [[5]].',
     blanks: [
       { options: ['initiator', 'decider', 'gatekeeper'], answer: 0 },
-      { options: ['users', 'deciders', 'gatekeepers'], answer: 0 },
-      { options: ['an influencer', 'the initiator', 'a gatekeeper'], answer: 0 },
-      { options: ['$4,800', '$57,600', '$576,000'], answer: 1 },
-      { options: ['finance director', 'training manager', 'compliance officer'], answer: 0 },
-      { options: ['conversion: the share of proposals that become signed contracts', 'awareness: the share of care-home managers who know its name', 'retention: the share of clients still subscribing after a year'], answer: 0 },
+      { options: ['deciders', 'users', 'gatekeepers'], answer: 1 },
+      { options: ['a gatekeeper', 'the initiator', 'an influencer'], answer: 2 },
+      { options: ['$4,800', '$96', '$57,600'], answer: 2 },
+      { options: ['training manager', 'finance director', 'compliance officer'], answer: 1 },
+      { options: ['awareness: the share of care-home managers who know its name', 'conversion: the share of proposals that become signed contracts', 'retention: the share of clients still subscribing after a year'], answer: 1 },
     ],
-    solution: 'The training manager started the purchase: the initiator. The care workers will use the course, so the speed and the phone matter most to them. The compliance officer shapes the choice without making it, and can stop a course that fails the inspectors’ standards: an influencer, with something close to a veto. 600 workers × $8 × 12 months = $57,600 a year, above the $20,000 limit, so the finance director is the decider and needs the economic case. A value proposition has to be believed by every role it speaks to. Whether it persuades homes that are already considering the course shows at the conversion stage of the funnel: the share of proposals or trials that become contracts, tracked against a target with a date.',
+    solution: 'The training manager started the purchase: the initiator. The care workers will use the course, so the speed and the phone matter most to them. The compliance officer shapes the choice without making it, and can stop a course that fails the inspectors’ standards: an influencer, with something close to a veto. 600 workers × $8 × 12 months = $57,600 a year ($4,800 is one month; $96 is one worker for a year), above the $20,000 limit, so the finance director is the decider and needs the economic case. A value proposition has to be believed by every role it speaks to. Whether it persuades homes that are already considering the course shows at the conversion stage of the funnel: the share of proposals or trials that become contracts, tracked against a target with a date.',
   },
   {
     id: 'm01-fn-15', lesson: 'business-buying', type: 'num', kind: 'numerical',
@@ -247,7 +248,7 @@ export const items = [
     prompt: 'A change in an organisation’s environment often leads to a purchase. Which buying situation does each change lead to?',
     items: [
       'A new food-safety rule requires allergen labels on every dish, so a school district re-tenders its catering contract with a new specification',
-      'A city will ban diesel vans from its centre from 2028, so a courier buys electric vans for the first time',
+      'A city will ban diesel vans from its centre from 2028, so a courier that has only ever run diesel vans buys charging points for its depot for the first time',
       'Interest rates rise, but a hospital keeps reordering printer paper from its usual supplier on the same terms',
       'A sharp rise in the price of steel leads a builder to ask its usual supplier and two others to quote again for steel beams',
       'A government grant for rooftop solar panels leads a warehouse firm to buy solar panels for the first time',
@@ -259,7 +260,7 @@ export const items = [
       2: 'Not every PESTEL change reaches every purchase. The paper is reordered unchanged: a straight rebuy.',
       3: 'The beams have been bought before, but the price shock has reopened the choice of supplier: a modified rebuy.',
     },
-    solution: 'Legal (the allergen rule, the diesel ban), economic (interest rates, steel prices) and political (the grant) changes can reopen routine purchases or create new ones. The catering contract and the steel beams are modified rebuys; the electric vans and the solar panels are new tasks; the paper is still a straight rebuy. A supplier that watches its customers’ macroenvironment can see a modified rebuy or a new task coming, and be there in time to help shape the specification.',
+    solution: 'Legal (the allergen rule, the diesel ban), economic (interest rates, steel prices) and political (the grant) changes can reopen routine purchases or create new ones. The catering contract and the steel beams are modified rebuys; the charging points and the solar panels are new tasks; the paper is still a straight rebuy. A supplier that watches its customers’ macroenvironment can see a modified rebuy or a new task coming, and be there in time to help shape the specification.',
   },
 
   // ---------------------------------------------------------------- situation-analysis
@@ -293,7 +294,7 @@ export const items = [
       ],
     } },
     answer: [0, 1, 4, 5, 7],
-    solution: 'Priority = impact × likelihood: tourist tax 4 × 3 = 12; interest rates 5 × 4 = 20; off-peak holidays 3 × 3 = 9; phone check-in 2 × 5 = 10; storms 4 × 4 = 16; fire-safety law 3 × 5 = 15; holiday calendar 5 × 2 = 10; fuel prices 3 × 4 = 12. Five factors reach 12, two of them exactly. The factor with the highest impact (the holiday calendar) ranks low because it is unlikely, and a near-certain one (phone check-in) because it matters little. The scores are judgements, recorded so that they can be challenged; whether each factor is an opportunity or a threat for Dunescape is decided in the SWOT.',
+    solution: 'Priority = impact × likelihood: tourist tax 4 × 3 = 12; interest rates 5 × 4 = 20; off-peak holidays 3 × 3 = 9; phone check-in 2 × 5 = 10; storms 4 × 4 = 16; fire-safety law 3 × 5 = 15; holiday calendar 5 × 2 = 10; fuel prices 3 × 4 = 12. Five factors reach 12, two of them exactly. The factor with the highest impact (the holiday calendar) ranks low because it is unlikely, and a near-certain one (phone check-in) because it matters little. The scores are judgements, recorded so that they can be challenged. Because the product is only a rough ranking, the lesson advises reviewing high-impact factors separately: the holiday calendar misses the cut-off but would hurt most if it happened, so it deserves a separate look. Whether each factor is an opportunity or a threat for Dunescape is decided in the SWOT.',
   },
   {
     id: 'm01-fn-19', lesson: 'situation-analysis', type: 'classify', kind: 'conceptual',
@@ -316,25 +317,27 @@ export const items = [
 
   // ---------------------------------------------------------------- marketing-objectives
   {
-    id: 'm01-fn-20', lesson: 'marketing-objectives', type: 'num', kind: 'numerical',
-    prompt: 'Quarry Hill Accountants (fictional) needs $54,000 of extra revenue this year from new clients, each worth $4,500 a year. New clients sign up evenly through the year, so on average each pays for about half of it. How many new clients must the firm win this year to bring in the $54,000?',
-    answer: 24, check: () => 54000 / (4500 / 2), unit: 'clients', places: 0, tol: 0.5,
-    wrong: [
-      { value: 12, say: 'That assumes every new client signs on 1 January and pays for the whole year. Signing evenly, each brings in about $2,250 this year.' },
-      { value: 6, say: 'You doubled the revenue per client instead of halving it. A client who signs mid-year pays for about half the year: $2,250.' },
+    id: 'm01-fn-20', lesson: 'marketing-objectives', type: 'fill', kind: 'numerical',
+    prompt: 'Quarry Hill Accountants (fictional) wants $54,000 a year more revenue from new clients. Each pays $4,500 a year, billed monthly from the month it signs, and new clients sign evenly through the year. Complete the plan.',
+    text: 'To receive the extra $54,000 within this year, the firm must win about [[0]] new clients. To be billing at a rate $54,000 a year higher by 31 December, it must win [[1]]. Its objective should [[2]].',
+    blanks: [
+      { options: ['12', '24', '6'], answer: 1 },
+      { options: ['24', '6', '12'], answer: 2 },
+      { options: ['say which of the two it means', 'use the larger number, to be safe', 'use the average of the two numbers'], answer: 0 },
     ],
-    solution: 'Each new client brings in about $4,500 ÷ 2 = $2,250 this year, so the firm needs $54,000 ÷ $2,250 = 24 new clients; if they all signed on 1 January, 12 would do. Either set the target as the number of clients (or the revenue rate) at the year end, or allow for timing as here. Mixing the two understates the work by half.',
+    solution: 'Clients who sign evenly through the year pay, on average, for about half of it, so each brings in about $4,500 × 0.5 = $2,250 this year: $54,000 ÷ $2,250 = 24 clients to receive the money within the year. To be billing $54,000 a year more by 31 December, each new client counts at its full $4,500 a year: $54,000 ÷ $4,500 = 12. Both are right answers to different questions, so the objective must say which it means; mixing them halves or doubles the work. A larger or averaged number is not a definition.',
   },
   {
     id: 'm01-fn-21', lesson: 'marketing-objectives', type: 'num', kind: 'applied',
-    prompt: 'Rennick & Shaw (fictional), a payroll bureau, has 300 clients on 1 January and keeps 80% of its clients each year. It wants 10% more clients on 31 December, at the same fees. A client brings a margin of $1,200 a year, the bureau discounts future money at 10% a year, and winning a client costs about $400 in sales time and free trials. How much acquisition spending does the objective imply for the year? Give dollars.',
-    answer: 36000, check: () => 300 * (1 + 0.10 - 0.80) * 400, unit: '$', places: 0, tol: 0.5,
+    prompt: 'Rennick & Shaw (fictional), a payroll bureau, starts the year with 300 clients and expects a fifth of them to leave during it. It wants to end the year with 330 clients, at the same fees. A client brings a margin of $1,200 a year, the bureau discounts future money at 10% a year, and winning a client costs about $400 in sales time and free trials. Counting each new client’s lifetime value (the course’s formula) when it is won, how much value does the year’s acquisition create after its cost? Give dollars.',
+    answer: 324000, check: () => 300 * (1.10 - 0.80) * (1200 / (1 + 0.10 - 0.80) - 400), unit: '$', places: 0, tol: 0.5,
     wrong: [
-      { value: 12000, say: 'That pays only for the growth of 30 clients, as if every client stayed. The bureau loses 60 clients, who must be replaced first.' },
-      { value: 24000, say: 'That replaces the 60 clients lost but adds no growth. Add the 30 extra clients.' },
-      { value: 132000, say: 'That pays to win all 330 clients needed at the year end. The 240 clients it keeps don’t have to be won again.' },
+      { value: 360000, say: 'That leaves out the $36,000 it costs to win the 90 clients ($400 each).' },
+      { value: 108000, say: 'That counts only the 30 clients of growth. The 60 clients who replace those lost must be won too, and each is worth the same.' },
+      { value: 504000, say: 'That leaves out discounting: 1,200 ÷ (1 − 0.80) = $6,000. Use 1 + d − r = 0.30, which gives $4,000.' },
+      { value: 3600, say: 'That is the value created by one new client. The bureau must win 90.' },
     ],
-    solution: 'New clients: 300 × (1 + 0.10 − 0.80) = 300 × 0.30 = 90, of whom 60 replace clients lost. Budget: 90 × $400 = $36,000. Is it worth it? A client’s lifetime value is 1,200 ÷ (1 + 0.10 − 0.80) = $4,000, ten times the $400 it costs to win one, so on these assumptions the spending creates value. But two-thirds of it only replaces lost clients: each point of retention saves 3 clients and $1,200 of acquisition spending.',
+    solution: 'Clients kept: 300 × 0.80 = 240, so new clients: 330 − 240 = 90, of whom 60 replace those lost. Each new client’s lifetime value: 1,200 ÷ (1 + 0.10 − 0.80) = 1,200 ÷ 0.30 = $4,000, or $3,600 after the $400 it costs to win. Value created: 90 × $3,600 = $324,000, after acquisition spending of 90 × $400 = $36,000. The spending pays, but two-thirds of it only replaces lost clients: each point of retention saves 3 clients and $1,200 of acquisition spending.',
   },
   {
     id: 'm01-fn-22', lesson: 'marketing-objectives', type: 'multi', kind: 'conceptual',
@@ -343,7 +346,7 @@ export const items = [
       'Planning staff and stock around the forecast, and treating the target as the stretch above it',
       'Adding the funnel’s stage-to-stage conversion rates to find the share of leads that become customers',
       'Pairing each acquisition target with a guardrail, such as the share of new customers still buying after a year',
-      'Setting fifteen or more objectives, so that every part of the business has a target of its own',
+      'Setting fifteen or more objectives, so that every part of the business, down to each small team, has a target of its own',
       'Building the target top-down from the goal and bottom-up from past results, and explaining any gap',
       'Comparing a twelve-month target with last year’s ten-month total to show the growth needed',
     ],
@@ -359,7 +362,7 @@ export const items = [
   // ---------------------------------------------------------------- competitive-advantage
   {
     id: 'm01-fn-23', lesson: 'competitive-advantage', type: 'num', kind: 'numerical',
-    prompt: 'A rival bakery sells a celebration cake for $50, and a typical customer would pay up to $58 for it. Delphine’s Patisserie (fictional) wants to charge a 30% premium over the rival’s price. How much more must the typical customer value Delphine’s cake than the rival’s for that price still to win her? Give dollars.',
+    prompt: 'A rival bakery sells a celebration cake for $50, and a typical customer would pay up to $58 for it. Delphine’s Patisserie (fictional) wants to charge a 30% premium over the rival’s price. How much more must the typical customer value Delphine’s cake than the rival’s for that price still to leave her at least as well off as the rival’s cake does? Give dollars.',
     answer: 15, check: () => (50 * 1.30 + (58 - 50)) - 58, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 30, say: 'That is the premium as a percentage. In dollars, 30% of the rival’s $50 is $15.' },

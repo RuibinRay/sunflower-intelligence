@@ -29,7 +29,7 @@ export default {
   slug: 'market-orientation',
   title: 'Market orientation: putting customers at the centre',
   blurb: 'Businesses differ in what they start from: what they can make, how good the product is, how hard they sell, or what customers need. Learn the five classic orientations and their limits, what a market orientation requires in practice (intelligence about customers and competitors, shared across the business and acted on), how to read what customers tell you, and why ethics and society belong in the picture.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish the production, product, selling, marketing and societal marketing concepts by what each starts from and what it risks.',
     'Explain market orientation as behaviour, using Kohli and Jaworski’s three activities and Narver and Slater’s three components.',

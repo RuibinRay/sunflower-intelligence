@@ -105,7 +105,7 @@ export const guided = [
     id: 'm01-obj-g3', type: 'mc', kind: 'conceptual',
     prompt: 'A fictional veterinary practice wants more clients. Which is the best SMART marketing objective?',
     options: [
-      'Register 12 new pet owners a month by June 2027, up from 8, with at least 75% of them returning within a year',
+      'Register 12 new pet owners a month by June 2027, up from 8, with 75% or more returning within a year',
       'Become the best-known veterinary practice in the county by advertising on local radio throughout 2027',
       'Register 50 new pet owners a month, up from 8, by the end of next month, using a new website and leaflets',
       'Increase the practice’s social-media followers by 25% by June 2027 to help the practice grow',

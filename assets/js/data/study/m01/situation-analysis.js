@@ -49,7 +49,7 @@ export default {
   slug: 'situation-analysis',
   title: 'Situation analysis',
   blurb: 'Before deciding where to go, a business needs an honest picture of where it stands. Learn to scan the marketing environment with PESTEL, profile competitors and compare them with numbers, and build a SWOT analysis that rests on evidence and leads to decisions, knowing what each tool can and can’t tell you.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish the microenvironment from the macroenvironment, and classify environmental factors with PESTEL.',
     'Analyse competitors, including indirect competitors and substitutes, and compare them with market share and a weighted competitive-strength scorecard.',

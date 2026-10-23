@@ -35,7 +35,7 @@ export default {
   slug: 'marketing-objectives',
   title: 'Marketing objectives',
   blurb: 'A business goal says where the business wants to be; a marketing objective says which customers must do what, by when, to get it there. Learn to turn a goal into SMART objectives across the funnel, and to work out how many new customers a growth target really needs once you allow for the customers you lose.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish business goals, marketing objectives, strategies and tactics, and explain how each one serves the one above it.',
     'Write SMART marketing objectives and test objectives against the five criteria.',
@@ -53,7 +53,7 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: `Ana Lim’s goal for 2027 is simple to say: catering revenue ${GOALS.cateringGrowth * 100}% higher than at its current pace of ${c.clients} clients booking about ${c.eventsPerClientYear} events a year at about $${c.revenuePerEvent} an event. It is also impossible to act on as it stands. It doesn’t say whether the extra revenue should come from new clients, from more events with existing clients or from higher prices, and it ignores the fact that not every client stays: on past form, about ${c.retention * 100}% of Lantern’s catering clients carry on from one year to the next. Turning the goal into something the business can act on, and check, is the job of marketing objectives. This lesson teaches the method on other businesses; the course project applies it to Lantern’s catering.` },
+    { case: `Ana Lim’s goal for 2027 is simple to say: catering revenue ${GOALS.cateringGrowth * 100}% higher than at its current pace of ${c.clients} clients booking about ${c.eventsPerClientYear} events a year at about $${c.revenuePerEvent} an event. It is also impossible to act on as it stands. It doesn’t say whether the extra revenue should come from new clients, from more events with existing clients or from higher prices, and it ignores the fact that not every client stays: on Ana’s estimate, about ${c.retention * 100}% of Lantern’s catering clients carry on from one year to the next. Turning the goal into something the business can act on, and check, is the job of marketing objectives. This lesson teaches the method on other businesses; the course project applies it to Lantern’s catering.` },
 
     { h: 'Goals, objectives, strategies and tactics' },
     { p: 'Four words are used loosely in business, and it helps to fix their meaning before setting any targets. This course uses them as follows.' },

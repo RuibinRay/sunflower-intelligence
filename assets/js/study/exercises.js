@@ -6,9 +6,9 @@
 //   renderQuiz      a form: answer everything, submit once, then marks, feedback, solutions and a score
 //                   (knowledge checks, module tests, the diagnostic and the final).
 // Prompts, options, feedback and solutions are authored HTML from the course files (trusted, never user input).
-import { h, s } from '../core/dom.js?v=9';
-import { verdict } from '../core/ui.js?v=9';
-import { mulberry32 } from '../core/rng.js?v=9';
+import { h, s } from '../core/dom.js?v=10';
+import { verdict } from '../core/ui.js?v=10';
+import { mulberry32 } from '../core/rng.js?v=10';
 
 const LETTERS = 'ABCDEFGHIJ';
 const KIND = { conceptual: 'Concept', numerical: 'Calculation', applied: 'Application' };
@@ -478,7 +478,7 @@ export async function loadCharts(items) {
   items.forEach(walk);
   const out = {};
   for (const ch of need) {
-    try { out[ch] = (await import(`../data/study/${ch.includes('/') ? ch : `${ch}/case`}.js?v=9`)).CHART; } catch { out[ch] = []; }   // 'f01' → f01/case.js; 'f01/brightwater' → that file
+    try { out[ch] = (await import(`../data/study/${ch.includes('/') ? ch : `${ch}/case`}.js?v=10`)).CHART; } catch { out[ch] = []; }   // 'f01' → f01/case.js; 'f01/brightwater' → that file
   }
   return out;
 }

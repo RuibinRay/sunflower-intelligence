@@ -139,7 +139,7 @@ export const guided = [
     id: 'm01-cd-g4', type: 'mc', kind: 'applied',
     prompt: 'A fictional furniture shop sells a sofa for $1,900. Delivery takes four weeks, and some customers cancel before it arrives. Which action is most likely to reduce post-purchase dissonance?',
     options: [
-      'An e-mail after payment with the delivery date, care tips and other owners’ reviews.',
+      'An email after payment with the delivery date, care tips and other owners’ reviews.',
       'A discount code for the customer’s next furniture purchase, sent the day after payment.',
       'More advertising for the sofa, aimed at people who haven’t bought one yet.',
       'A rule that paid orders can’t be cancelled, so customers can’t change their minds.',
@@ -164,11 +164,11 @@ export const independent = [
     id: 'm01-cd-i1', type: 'classify', kind: 'applied',
     prompt: 'Lantern plans several marketing actions for its online shop and workshops. Classify each by the stage of the buying decision process it mainly targets.',
     items: [
-      'A reorder reminder e-mailed to a customer who bought a bag of beans a few weeks ago',
+      'A reorder reminder emailed to a customer who bought a bag of beans a few weeks ago',
       'Paying to appear in search results for “latte art class”',
       'A table on the workshop page comparing what each Lantern workshop covers',
       'Removing one step from the online checkout',
-      'A practice guide e-mailed to participants a week after their workshop',
+      'A practice guide emailed to participants a week after their workshop',
     ],
     categories: STAGES,
     answer: [0, 1, 2, 3, 4],
@@ -245,7 +245,7 @@ export const independent = [
       'Includes at least one action aimed at post-purchase doubt or at the recipient’s experience.',
       'Keeps the actions honest: no promises the box can’t keep.',
     ],
-    model: 'A gift raises involvement because a poor choice reflects on the giver, the buyer is often guessing at someone else’s taste, and a late delivery spoils the occasion. Need recognition: a reminder in late November to customers who bought gifts last year, and a “gifts for coffee lovers” page that people searching for presents can find. Information search: clear descriptions of the three coffees in the box, photographs of the packaging and reviews from people who gave it. Evaluation: a short guide comparing the gift box with a single bag or a subscription, so the buyer can choose by how well they know the recipient’s taste. Purchase decision: the latest order date for delivery before Christmas shown on the product page, and gift wrapping and a message offered in the basket rather than discovered at the end. Post-purchase: a dispatch e-mail with tracking, a card in the box with brewing tips for the recipient, and an easy exchange if the recipient doesn’t drink, say, decaf. Reassurance matters twice here: for the giver waiting for delivery, and for the recipient, whose experience decides whether the giver buys again.',
+    model: 'A gift raises involvement because a poor choice reflects on the giver, the buyer is often guessing at someone else’s taste, and a late delivery spoils the occasion. Need recognition: a reminder in late November to customers who bought gifts last year, and a “gifts for coffee lovers” page that people searching for presents can find. Information search: clear descriptions of the three coffees in the box, photographs of the packaging and reviews from people who gave it. Evaluation: a short guide comparing the gift box with a single bag or a subscription, so the buyer can choose by how well they know the recipient’s taste. Purchase decision: the latest order date for delivery before Christmas shown on the product page, and gift wrapping and a message offered in the basket rather than discovered at the end. Post-purchase: a dispatch email with tracking, a card in the box with brewing tips for the recipient, and an easy exchange if the recipient doesn’t drink, say, decaf. Reassurance matters twice here: for the giver waiting for delivery, and for the recipient, whose experience decides whether the giver buys again.',
   },
 ];
 
@@ -301,7 +301,7 @@ export const check = [
       'At the purchase decision: the delivery date stops them, so show it on the product page.',
       'At need recognition: they don’t really want a gift box, so Lantern should advertise it more.',
       'At evaluation of alternatives: the box scores too low, so Lantern should cut its price.',
-      'At post-purchase: buyers are suffering dissonance, so Lantern should send a reassuring e-mail.',
+      'At post-purchase: buyers are suffering dissonance, so Lantern should send a reassuring email.',
     ],
     answer: 0,
     feedback: {

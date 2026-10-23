@@ -26,7 +26,7 @@ export default {
   slug: 'customer-value',
   title: 'Customer value, satisfaction and lifetime value',
   blurb: 'Customers choose the offer they judge best value, stay if it meets the expectations they formed, and are worth what they bring in over the years they stay. Learn customer-perceived value, satisfaction and loyalty, how to calculate a simple customer lifetime value with its assumptions stated, how to compare it with the cost of winning a customer, and how to write a value proposition.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain customer-perceived value as benefits weighed against money and non-money costs, and why the customer’s judgement is the one that counts.',
     'Explain satisfaction as perceived performance measured against expectations, and how it relates to loyalty and retention.',

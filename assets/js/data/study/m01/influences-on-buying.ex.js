@@ -137,7 +137,7 @@ export const guided = [
     items: [
       'A car dealer opens the conversation with the most expensive version before showing the model the buyer asked about.',
       'An airline’s booking page has a $9 priority-boarding add-on already selected.',
-      'A loyalty scheme’s e-mail says: “Don’t lose the 2,000 points you’ve earned: renew by Friday.”',
+      'A loyalty scheme’s email says: “Don’t lose the 2,000 points you’ve earned: renew by Friday.”',
       'A wine list puts a $120 bottle at the top, so the $45 bottles look reasonable.',
       'A software firm enrols trial users in its annual plan unless they choose monthly billing.',
       'A shop describes a card fee as a “cash discount” rather than a “card surcharge”.',
@@ -149,10 +149,10 @@ export const guided = [
       'A surcharge is a loss from the price buyers expect; a discount not received is a gain forgone. Which feels worse?',
     ],
     feedback: {
-      2: 'The e-mail frames not renewing as losing something already earned, which feels worse than failing to earn points: loss aversion.',
+      2: 'The email frames not renewing as losing something already earned, which feels worse than failing to earn points: loss aversion.',
       5: 'Calling the same fee a cash discount avoids presenting card users with a loss (a surcharge), which buyers resent more than a missed discount: loss aversion through framing.',
     },
-    solution: 'The expensive car first and the $120 wine are anchors. The pre-selected priority boarding and the automatic annual plan are defaults. The “don’t lose your points” e-mail and the cash-discount framing rely on loss aversion. Whether each is acceptable depends on the four questions: is it true, in the customer’s interest, easy to reverse, and would the customer accept it if they saw how it worked?',
+    solution: 'The expensive car first and the $120 wine are anchors. The pre-selected priority boarding and the automatic annual plan are defaults. The “don’t lose your points” email and the cash-discount framing rely on loss aversion. Whether each is acceptable depends on the four questions: is it true, in the customer’s interest, easy to reverse, and would the customer accept it if they saw how it worked?',
   },
 ];
 

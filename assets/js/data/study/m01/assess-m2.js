@@ -38,7 +38,7 @@ export const items = [
       'Consideration sets can grow during active evaluation, so its bikes must be easy to find while people research.',
       'The funnel: buyers narrow steadily from many brands to one, so it should advertise only to people who are new to cycling.',
       'Habitual buying: customers repurchase their usual brand, so it should put its effort into reminders for past buyers.',
-      'Post-purchase dissonance: buyers regretted their first choice, so it should send reassuring e-mails after each sale.',
+      'Post-purchase dissonance: buyers regretted their first choice, so it should send reassuring emails after each sale.',
     ],
     answer: 0,
     feedback: {

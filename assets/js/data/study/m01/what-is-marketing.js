@@ -26,7 +26,7 @@ export default {
   slug: 'what-is-marketing',
   title: 'What marketing is',
   blurb: 'Marketing is not advertising with a bigger budget. Learn how marketers define it, why a voluntary exchange creates value for both sides, how needs, wants and demand differ, why defining a business by its product is dangerous, and what marketing looks like in consumer, business, service and non-profit settings.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain what marketing is, using the American Marketing Association’s definition and a scholarly alternative, and why it is more than advertising and selling.',
     'Distinguish needs, wants and demand, and identify the market offering that answers them.',

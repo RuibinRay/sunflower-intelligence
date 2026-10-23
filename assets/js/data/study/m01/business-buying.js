@@ -43,7 +43,7 @@ export default {
   slug: 'business-buying',
   title: 'How organisations buy',
   blurb: 'Organisations buy differently from households: their demand is derived from their own customers’, they are fewer and larger, purchasing is a profession, and several people share each decision. Learn the three buying situations, the six roles in a buying centre, the stages of the business buying process and the procurement rules that decide how a seller must sell.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Compare business and consumer markets, and calculate how a change in end demand is amplified in orders for equipment.',
     'Classify purchases as straight rebuys, modified rebuys or new tasks, and explain what each means for the current supplier and a challenger.',

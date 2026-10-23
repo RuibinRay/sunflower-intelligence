@@ -30,7 +30,7 @@ export default {
   slug: 'influences-on-buying',
   title: 'What influences buying',
   blurb: 'Why do two people with the same need buy different things? Learn the cultural, social, personal and psychological influences on a purchase; what motivation, perception, learning and attitudes mean; why word of mouth carries so much weight; and how anchoring, defaults and loss aversion shape choices, with the evidence and the ethics of using them.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Classify influences on a purchase as cultural, social, personal or psychological.',
     'Explain motivation, perception, learning and attitudes, and evaluate Maslow’s hierarchy of needs against the evidence.',
