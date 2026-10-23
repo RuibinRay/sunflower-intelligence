@@ -129,7 +129,7 @@ export default {
     },
     {
       id: 'objectives', title: 'Set the 2027 objective',
-      html: '<p>Ana’s business goal is 25% more catering revenue in 2027 than the current pace of 18 clients × 6 events × $820. Not every client stays: 61% do. Work out what the goal means for winning new clients.</p>',
+      html: '<p>Ana’s business goal is 25% more catering revenue in 2027 than the current pace of 18 clients × 6 events × $820. Not every client stays: 61% do. Work out what the goal means for winning new clients. Assume, as a first estimate does, that clients join or leave at the start of the year, so each counts for a full year of events.</p>',
       items: [
         num('m01-pj-10', 'What catering revenue does the goal mean for 2027?',
           D.cateringTarget, () => 18 * 6 * 820 * 1.25, 1, `18 × 6 × $820 = $88,560; × 1.25 = ${money(D.cateringTarget)}.`, null, '$', 0),
