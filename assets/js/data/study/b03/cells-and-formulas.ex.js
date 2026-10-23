@@ -199,10 +199,10 @@ export const independent = [
     id: 'b03-cf-i5', type: 'mc', kind: 'conceptual',
     prompt: 'Line totals are in F2:F9. In F10, directly below them, Ana types <x>=SUM(F:F)</x>. What happens?',
     options: [
-      'Excel warns of a circular reference, because F10 is inside F:F, and the cell may show 0 or its last value.',
-      'F10 shows the total of F2:F9, because SUM skips the cell it is in.',
+      'Excel warns of a circular reference: F10 is inside F:F.',
+      'F10 shows the total of F2:F9, because SUM skips the cell that it sits in.',
       'F10 shows #REF!, because a whole-column reference isn’t allowed in a formula.',
-      'F10 shows twice the total, because the total is added to itself.',
+      'F10 shows twice the total, because the total gets added to itself.',
     ],
     answer: 0,
     feedback: {
