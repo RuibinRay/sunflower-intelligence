@@ -123,7 +123,7 @@ export const independent = [
   },
   {
     id: 'b02-txt-i3', type: 'mc', kind: 'applied',
-    prompt: 'Two customer records both show the city “Lisboa” and the name “José Alves”, yet an exact comparison says the names differ, and their lengths are 10 and 11 characters. What is the most likely cause, and the fix?',
+    prompt: 'Two customer records both show the city “Lisboa” and the name “José Alves”, yet an exact comparison says the names differ, and their lengths are 10 and 11 characters. Trimming both values changes nothing. What is the most likely cause, and the fix?',
     options: [
       'One “é” is a single code point and the other is “e” plus a combining accent; normalise both to NFC before comparing.',
       'One name has a trailing space; trim both values.',
@@ -132,7 +132,7 @@ export const independent = [
     ],
     answer: 0,
     feedback: {
-      1: 'A trailing space would also add one character, but the names look identical and trimming is not the likeliest fix for an accented name. Check the code points: if the extra character is U+0301, it is a combining accent.',
+      1: 'A trailing space would add one character, but trimming changed nothing, so the extra character is elsewhere. In an accented name, the likeliest candidate is a combining accent, U+0301.',
       2: 'Both names display with the same capitals, and changing case doesn’t change length.',
       3: 'Nothing is misspelt; the strings display identically. Fuzzy matching would hide the cause instead of fixing it.',
     },
