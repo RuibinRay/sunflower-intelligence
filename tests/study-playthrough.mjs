@@ -28,7 +28,8 @@ const ANSWER = (box, item) => {
       item.blanks.forEach((b, i) => setVal(els[i], b.options ? String(b.answer) : b.accept[0]));
       break;
     }
-    case 'classify': [...body.querySelectorAll('select')].forEach((s, i) => setVal(s, String(item.answer[i]))); break;
+    // rows are shown shuffled: each select's id ends in -c<data index>
+    case 'classify': [...body.querySelectorAll('select')].forEach((s) => setVal(s, String(item.answer[+s.id.match(/-c(\d+)$/)[1]]))); break;
     case 'order': {
       for (let k = 0; k < item.items.length; k++) {
         for (let guard = 0; guard < 50; guard++) {

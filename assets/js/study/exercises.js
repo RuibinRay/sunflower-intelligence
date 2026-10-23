@@ -175,6 +175,14 @@ T.num = (item, c) => {
 T.fill = (item, c) => {
   const parts = String(item.text).split(/\[\[(\d+)\]\]/);
   const blanks = [];
+  // A word bank (every blank offers the same non-numeric list) is shown in one seeded order, so the answers don't run
+  // down the list in the order the blanks appear. Other lists keep the authored order (higher / lower, $10 / $20 …).
+  // An option's value stays its index in the data, so grading is unchanged. `fixed: true` keeps the authored order.
+  const isNum = (o) => { const v = parseNum(String(o).replace(/<[^>]*>/g, '')); return v != null && !Number.isNaN(v); };
+  const lists = item.blanks.filter((b) => b.options).map((b) => JSON.stringify(b.options));
+  const bank = !item.fixed && lists.length >= 2 && lists.length === item.blanks.length && lists.every((l) => l === lists[0])
+    && !item.blanks[0].options.every(isNum);
+  const optOrder = bank ? shuffle(item.blanks[0].options.map((_, k) => k), c.seed) : null;
   const wrap = h('p', { class: 'fill-text' });
   parts.forEach((p, i) => {
     if (i % 2 === 0) { if (p) { const t = h('span'); t.innerHTML = p; wrap.append(t); } return; }
@@ -182,7 +190,7 @@ T.fill = (item, c) => {
     const id = `${c.uid}-b${n}`;
     let el;
     if (b.options) {
-      el = h('select', { class: 'select', id, 'aria-label': `Blank ${n + 1}` }, h('option', { value: '' }, 'Choose…'), b.options.map((o, k) => h('option', { value: k }, o)));
+      el = h('select', { class: 'select', id, 'aria-label': `Blank ${n + 1}` }, h('option', { value: '' }, 'Choose…'), (optOrder || b.options.map((_, k) => k)).map((k) => h('option', { value: k }, b.options[k])));
     } else {
       el = h('input', { class: 'input', id, type: 'text', autocomplete: 'off', spellcheck: 'false', 'aria-label': `Blank ${n + 1}`, size: Math.max(10, ...b.accept.map((x) => x.length)) });
     }
@@ -214,6 +222,8 @@ T.fill = (item, c) => {
 };
 
 T.classify = (item, c) => {
+  // `rows` stays in data order (read and grade use it); the rows are shown in a seeded order so the answers don't
+  // follow the order the author wrote them in. `fixed: true` keeps the authored order.
   const rows = item.items.map((txt, i) => {
     const id = `${c.uid}-c${i}`;
     const sel = h('select', { class: 'select', id }, h('option', { value: '' }, 'Choose…'), item.categories.map((cat, k) => h('option', { value: k }, cat)));
@@ -221,8 +231,9 @@ T.classify = (item, c) => {
     const lab = h('label', { for: id }); lab.innerHTML = txt;
     return { i, sel, note, row: h('div', { class: 'classify-row' }, lab, sel, note) };
   });
+  const shown = item.fixed ? item.items.map((_, i) => i) : shuffle(item.items.map((_, i) => i), c.seed);
   return {
-    body: h('div', { class: 'classify-list', role: 'group', 'aria-label': 'Classify each item' }, rows.map((r) => r.row)),
+    body: h('div', { class: 'classify-list', role: 'group', 'aria-label': 'Classify each item' }, shown.map((i) => rows[i].row)),
     read: () => rows.map((r) => (r.sel.value === '' ? -1 : +r.sel.value)),
     isEmpty: (r) => r.some((v) => v < 0),
     grade(r) {
@@ -237,7 +248,7 @@ T.classify = (item, c) => {
     reveal: () => rows.forEach((row, i) => { if (row.sel.classList.contains('is-wrong')) { row.note.hidden = false; row.note.innerHTML = `${item.feedback?.[i] ? `${item.feedback[i]} ` : ''}<strong>Answer: ${item.categories[item.answer[i]]}.</strong>`; } }),
     clear: () => rows.forEach((row) => { row.sel.classList.remove('is-right', 'is-wrong'); row.note.hidden = true; }),
     lock: (b) => rows.forEach((row) => { row.sel.disabled = b; }),
-    answerNode: () => h('ul', {}, item.items.map((txt, i) => { const li = h('li'); li.innerHTML = `${txt}: <strong>${item.categories[item.answer[i]]}</strong>`; return li; })),
+    answerNode: () => h('ul', {}, shown.map((i) => { const li = h('li'); li.innerHTML = `${item.items[i]}: <strong>${item.categories[item.answer[i]]}</strong>`; return li; })),
   };
 };
 
