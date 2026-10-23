@@ -12,7 +12,7 @@ export const widgets = {
   'cfs-direct': {
     type: 'formula',
     title: 'From accrual figures to cash: customers and inventory',
-    intro: 'The starting values are Lantern’s first year: its net revenue, the receivables, write-off and unearned revenue at 31 December, and the beans it bought from Tidewater Roasting.',
+    intro: 'The starting values are Lantern’s first year: its net revenue, the receivables, write-off and unearned revenue at 31 December, and the beans it bought from Kilnworth Roasting.',
     inputs: [
       { id: 'rev', label: 'Net revenue', min: 0, max: 400000, step: 10, value: D.revenue, fmt: 'money' },
       { id: 'dar', label: 'Increase in receivables before the allowance (negative for a decrease)', min: -30000, max: 30000, step: 10, value: bal('Accounts Receivable'), fmt: 'money' },

@@ -138,7 +138,7 @@ export const guided = [
   },
   {
     id: 'f02-inv-g3', type: 'steps', kind: 'applied',
-    prompt: `Lantern ended 2026 with ${C.endUnits} bags of House Blend at $${HB.purchases[2].cost.toFixed(2)} a bag (perpetual FIFO). Suppose that on 6 January 2027 Tidewater delivers 500 more bags at $8.80, on 30-day terms, and that Lantern ships 500 bags of House Blend later in January.`,
+    prompt: `Lantern ended 2026 with ${C.endUnits} bags of House Blend at $${HB.purchases[2].cost.toFixed(2)} a bag (perpetual FIFO). Suppose that on 6 January 2027 Kilnworth delivers 500 more bags at $8.80, on 30-day terms, and that Lantern ships 500 bags of House Blend later in January.`,
     solution: 'Purchase: debit Inventory 4,400 (500 × 8.80); credit Accounts Payable 4,400. FIFO cost of the 500 bags shipped: the 400 oldest at $9.00 and 100 at $8.80 = 3,600 + 880 = 4,480. Debit Cost of Goods Sold 4,480; credit Inventory 4,480.',
     steps: [
       { id: 'f02-inv-g3-s1', type: 'journal', chart: 'f02', date: '2027-01-06',

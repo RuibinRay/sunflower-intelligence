@@ -73,7 +73,7 @@ export const items = [
   },
   {
     id: 'f02-m1-7', lesson: 'inventory-and-cost-of-goods-sold', type: 'journal', kind: 'applied', chart: 'f02', date: '2027-02-10',
-    prompt: 'Suppose that on 2 February 2027 Tidewater Roasting delivers $5,000 of bags to Lantern on terms of 1/10, n/30, and Lantern records the purchase at the invoice amount. Lantern pays on 10 February. Record the payment (perpetual system).',
+    prompt: 'Suppose that on 2 February 2027 Kilnworth Roasting delivers $5,000 of bags to Lantern on terms of 1/10, n/30, and Lantern records the purchase at the invoice amount. Lantern pays on 10 February. Record the payment (perpetual system).',
     accounts: ['Cash', 'Accounts Payable', 'Inventory', 'Cost of Goods Sold', 'Sales Discounts', 'Interest Expense', 'Miscellaneous Expense'],
     lines: [{ acct: 'Accounts Payable', dr: 5000 }, { acct: 'Inventory', cr: 50 }, { acct: 'Cash', cr: 4950 }],
     solution: '10 February is within 10 days of 2 February, so Lantern takes 1% off: 0.01 × 5,000 = 50. Debit Accounts Payable 5,000 (the whole invoice is settled); credit Cash 4,950 and Inventory 50, because a discount on purchases reduces the cost of the goods. Sales Discounts is the seller’s account, not the buyer’s.',

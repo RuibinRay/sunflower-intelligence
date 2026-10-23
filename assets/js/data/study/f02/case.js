@@ -12,9 +12,12 @@
 //   five years, $6,000 residual, $400 a month) is what happened.
 // - b02 and b01: the online shop has sold bags of beans since March. Its order values were $9,096.15 for March–June
 //   (B02's cleaned export) and $101,928.40 for July–December (B01: orders × average order value); together $111,025 to
-//   the nearest dollar. B01 measured order values; the books also record refunds and prepaid subscriptions. Shop
-//   revenue is recognised when an order ships (control passes then; the accountant judges the days to delivery
-//   immaterial), so shipped orders are the year's revenue and paid-for subscriptions not yet shipped are unearned.
+//   the nearest dollar. B01 measured order values; the books also record refunds and prepaid subscriptions. Lantern
+//   refunds bags damaged in transit, so it keeps the risk of loss and control strictly passes on delivery; its
+//   accountant recognises shop revenue when an order ships because orders in transit at a year end are immaterial.
+//   So shipped orders are the year's revenue, and paid-for subscriptions not yet shipped are unearned.
+//   House Blend is the shop's cheapest line and earns the lowest margin (about 38% in the fourth quarter at $14 a bag);
+//   single origins, gift boxes and subscriptions earn more, which is how the shop as a whole reaches 52%.
 // - m01/case.js: 14 workshops averaging 12 participants at $125 ($21,000); catering at an average of $820 an event.
 // - f04/case.js: Ana is paid a salary from 2027, not in 2026.
 //
@@ -167,9 +170,9 @@ export const YEAR = [
     lines: [{ acct: 'Sales Returns and Allowances', dr: shop.refunds }, { acct: 'Cash', cr: shop.refunds }], cash: 'operating', cashLabel: 'Cash received from customers' },
   { id: 'y14', date: '2026-12-31', text: 'Card-processing and shop-platform fees.',
     lines: [{ acct: 'Card and Platform Fees Expense', dr: shop.cardFees }, { acct: 'Cash', cr: shop.cardFees }], cash: 'operating' },
-  { id: 'y15', date: '2026-12-31', text: 'Bags of roasted beans bought for the shop from Tidewater Roasting on 30-day terms.',
+  { id: 'y15', date: '2026-12-31', text: 'Bags of roasted beans bought for the shop from Kilnworth Roasting on 30-day terms.',
     lines: [{ acct: 'Inventory', dr: inv.purchases }, { acct: 'Accounts Payable', cr: inv.purchases }] },
-  { id: 'y16', date: '2026-12-31', text: 'Payments to Tidewater Roasting.',
+  { id: 'y16', date: '2026-12-31', text: 'Payments to Kilnworth Roasting.',
     lines: [{ acct: 'Accounts Payable', dr: inv.paid }, { acct: 'Cash', cr: inv.paid }], cash: 'operating' },
   { id: 'y17', date: '2026-12-31', text: 'Cost of the bags shipped, from the perpetual inventory records (first in, first out).',
     lines: [{ acct: 'Cost of Goods Sold', dr: inv.cogsPerpetual }, { acct: 'Inventory', cr: inv.cogsPerpetual }] },

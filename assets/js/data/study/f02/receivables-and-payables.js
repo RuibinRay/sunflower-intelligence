@@ -21,7 +21,7 @@ const COR = [['Not yet due', 168000, 0.01], ['1–30 days past due', 42000, 0.04
 const corAR = COR.reduce((s, b) => s + b[1], 0);
 const corReq = COR.reduce((s, b) => s + b[1] * b[2], 0);
 const corUnadj = 9000 - 11600 + 1100;           // credit balance (negative = debit)
-// Lantern applied example: a 2/10, n/30 offer from Tidewater (hypothetical)
+// Lantern applied example: a 2/10, n/30 offer from Kilnworth (hypothetical)
 const monthlyPurchases = F.inventory.purchases / F.period.months;   // 5,860
 const discountRate = 0.02 / 0.98 * 365 / 20;
 const discountEAR = (1 / 0.98) ** (365 / 20) - 1;
@@ -57,7 +57,7 @@ export default {
     } },
     { p: 'Lantern’s year-end shows the method at work. The $820 owed by Quayline is gone: there is no point listing it as an asset. Of the $7,380 still owed, Lantern’s accountant expects $584 not to be collected, so the balance sheet shows receivables of $7,380 less an allowance of $584, net $6,796. The year’s bad debt expense covers both losses, the $820 already known and the $584 expected, which is why the adjusting entry is for $1,404. The rest of this lesson explains each step, then turns to the other side of the balance sheet: what Lantern owes.' },
     { callout: 'key', title: 'Two events, two entries', html: 'The <b>estimate</b> at the period end is the expense: debit Bad Debt Expense, credit Allowance for Doubtful Accounts. The <b>write-off</b> of a named customer is not an expense: debit Allowance for Doubtful Accounts, credit Accounts Receivable. Keeping them apart puts the loss in the period of the sale, whenever the customer is finally given up on.' },
-    { p: 'Payables are the mirror image. Lantern buys beans from Tidewater Roasting on 30-day terms, owes its staff for the last days of December, owes interest on two notes, holds customers’ money for services it has not yet delivered, and owes income tax for the year. Each is a <g>current liability</g>, and each is measured differently. Together they tell a lender, and Ana, how much cash Lantern must find in the next few months.' },
+    { p: 'Payables are the mirror image. Lantern buys beans from Kilnworth Roasting on 30-day terms, owes its staff for the last days of December, owes interest on two notes, holds customers’ money for services it has not yet delivered, and owes income tax for the year. Each is a <g>current liability</g>, and each is measured differently. Together they tell a lender, and Ana, how much cash Lantern must find in the next few months.' },
   ],
 
   theory: [
@@ -101,7 +101,7 @@ export default {
       { date: '2027-05-01', lines: [{ acct: 'Cash', dr: 6240 }, { acct: 'Notes Receivable', cr: 6000 }, { acct: 'Interest Receivable', cr: 80 }, { acct: 'Interest Revenue', cr: 160 }], memo: 'Principal plus six months’ interest of 240; the 80 accrued in 2026 is collected, and 160 is 2027’s revenue.' },
     ] } },
     { h: 'Accounts payable and accrued liabilities' },
-    { p: 'On the other side of the balance sheet, <g>accounts payable</g> (trade payables under IFRS) are amounts owed to suppliers for goods and services bought on credit. They are recorded when the goods or services are received, at the amount on the invoice, and removed when the supplier is paid. Lantern’s payables come from three sources: the beans bought from Tidewater Roasting, supplies for events and workshops, and December’s utilities bill.' },
+    { p: 'On the other side of the balance sheet, <g>accounts payable</g> (trade payables under IFRS) are amounts owed to suppliers for goods and services bought on credit. They are recorded when the goods or services are received, at the amount on the invoice, and removed when the supplier is paid. Lantern’s payables come from three sources: the beans bought from Kilnworth Roasting, supplies for events and workshops, and December’s utilities bill.' },
     { p: 'An <g>accrued liability</g> is the balance sheet side of an <g>accrued expense</g>: a cost incurred but not yet paid, for which no supplier’s invoice may yet exist. Wages earned in the last days of a period, interest building up on a loan, and utilities used but not yet billed are the usual examples. They are recorded by adjusting entries, as in F01. Some companies show them as a single line, “accrued liabilities”; Lantern shows Wages Payable and Interest Payable separately.' },
     { p: 'Two other current liabilities complete the list. <g>Unearned revenue</g> is cash received for goods or services not yet delivered, called a <g>contract liability</g> in ASC 606 and IFRS 15; the revenue recognition lesson explains how it arises. It will be settled by delivering the service, not by paying cash. <g>Income taxes payable</g> is the tax owed for the period less the estimated payments already made. Lantern’s tax for the year is $9,129, 25% of its income before tax of $36,516; it paid $6,000 during the year, so $3,129 is still owed at 31 December.' },
     { table: {
@@ -109,7 +109,7 @@ export default {
       head: ['Liability', 'Amount ($)', 'Made up of', 'Settled by'],
       align: ['l', 'r', 'l', 'l'],
       rows: [
-        ['Accounts payable', fmt(bal('Accounts Payable')), 'Tidewater 8,400 (58,600 bought − 50,200 paid); supply vendors 520 (11,540 − 11,020); December utilities 290', 'Paying cash, in January'],
+        ['Accounts payable', fmt(bal('Accounts Payable')), 'Kilnworth 8,400 (58,600 bought − 50,200 paid); supply vendors 520 (11,540 − 11,020); December utilities 290', 'Paying cash, in January'],
         ['Wages payable', fmt(bal('Wages Payable')), 'Wages earned in late December (y20)', 'Paying cash on 5 January'],
         ['Interest payable', fmt(bal('Interest Payable')), 'Coastline note, December, 50; van note, June–December, 700 (e5)', 'Paying cash: 1 March and 1 June 2027'],
         ['Unearned revenue', fmt(bal('Unearned Revenue')), 'Catering deposits 1,640; January workshop 1,500; subscriptions 2,960', 'Delivering the events, workshop and coffee'],
@@ -214,8 +214,8 @@ export default {
       ],
       answer: 'Bad debt expense $11,880; allowance $10,380; net receivables $229,620. The 1.5% policy would have charged $11,400 and left the allowance $480 too small.',
       interpretation: 'The debit balance is a warning sign: last year’s $9,000 allowance was too small for the losses that followed. Corrib should revisit its loss rates, because an allowance that keeps running out means profits were overstated in the years the sales were made.' },
-    { level: 'applied', title: 'Should Lantern take Tidewater’s discount?', fictional: true,
-      setup: 'Suppose that from January 2027 Tidewater Roasting offers Lantern terms of 2/10, n/30 instead of plain 30-day terms. Lantern’s bean purchases averaged $5,860 a month in 2026 ($58,600 over ten months), and it holds $42,940 in cash. Should Ana pay on day 10?',
+    { level: 'applied', title: 'Should Lantern take Kilnworth’s discount?', fictional: true,
+      setup: 'Suppose that from January 2027 Kilnworth Roasting offers Lantern terms of 2/10, n/30 instead of plain 30-day terms. Lantern’s bean purchases averaged $5,860 a month in 2026 ($58,600 over ten months), and it holds $42,940 in cash. Should Ana pay on day 10?',
       steps: [
         String.raw`The discount on a typical month: <m>0.02 \times 5{,}860 = 117.20</m>. Paying on day 10 costs <m>5{,}860 - 117.20 = 5{,}742.80</m>; waiting costs 5,860 on day 30.`,
         String.raw`Waiting is like borrowing 5,742.80 for 20 days at a cost of 117.20: <m>117.20 \div 5{,}742.80 \approx 2.04\%</m> for 20 days, which is <m>\tfrac{2}{98}</m>.`,
@@ -313,7 +313,7 @@ export default {
     { what: 'Shortfall vs aging (about $206)', value: agingRequired - (0.02 * cat.invoiced - cat.writtenOff), shown: 206, tol: 0.5 },
     // payables and current liabilities (case.js)
     { what: 'Accounts payable', value: bal('Accounts Payable'), shown: 9210 },
-    { what: 'AP Tidewater', value: F.inventory.purchases - F.inventory.paid, shown: 8400 },
+    { what: 'AP Kilnworth', value: F.inventory.purchases - F.inventory.paid, shown: 8400 },
     { what: 'AP supplies', value: F.supplies.bought - F.supplies.paid, shown: 520 },
     { what: 'AP utilities', value: F.utilities.unpaid, shown: 290 },
     { what: 'AP composition', value: 8400 + 520 + 290, shown: 9210 },
