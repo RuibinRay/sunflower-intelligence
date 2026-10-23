@@ -1,5 +1,14 @@
 // pricing-approaches.js — M02 · Pricing approaches. Content only; exercises are in pricing-approaches.ex.js.
-// Lantern figures come from ./market.js (fictional). Every printed number is recomputed in `checks`.
+// Lantern figures come from ./market.js (fictional). Every printed number is recomputed in `checks`; the simulator
+// figures quoted in the challenging example are recomputed with the engine (mixsim.js).
+import { simulate, DEFAULT_PLAN } from '../../../core/mixsim.js?v=6';
+
+const sim = simulate(DEFAULT_PLAN);
+const simCh = Object.fromEntries(sim.byChannel.map((c) => [c.id, c]));
+const simGP = sim.year.grossProfit / sim.year.units;        // average gross margin per can in the simulator
+const simTrade = sim.year.tradeCost / sim.year.units;       // trade-promotion cost per can, averaged over all cans
+const simFixed = sim.year.fixedCosts + sim.year.marketing + sim.year.overhead;
+
 export default {
   slug: 'pricing-approaches',
   title: 'Pricing approaches',
@@ -75,7 +84,7 @@ export default {
       note: 'A markup of 100% doubles the cost and gives a 50% margin. No markup, however large, gives a margin of 100%.',
     } },
     { callout: 'warn', title: 'The classic error', html: String.raw`A manager who wants a 40% margin and adds 40% to the cost does not get one. On a $10.00 cost, a 40% markup gives a price of $14.00 and a margin of <m>4 \div 14 \approx 28.6\%</m>. The price that gives a 40% margin is <m>10 \div (1 - 0.40) \approx 16.67</m>. Whenever a target is stated as a margin, divide the cost by one minus the margin; never multiply the cost by one plus the margin.` },
-    { p: String.raw`Usage varies between industries, so always ask “a percentage of what?”. Some business-mathematics texts call the margin the <i>markup on selling price</i>, and some retailers say “markup” when they mean a percentage of the retail price. Two kinds of margin appear in this course. <b>Gross margin</b> subtracts only the cost of goods; contribution margin subtracts every variable cost. For Lantern’s supermarket cans they are the same, $1.63, because the cost of goods is the only variable cost. A can sold through Lantern’s online shop also carries $0.45 of packing and delivery, which is variable too: at $3.49 its gross margin is <m>3.49 - 0.74 = 2.75</m>, but its contribution is <m>3.49 - 0.45 - 0.74 = 2.30</m>.` },
+    { p: String.raw`Usage varies between industries, so always ask “a percentage of what?”. Some business-mathematics texts call the margin the <i>markup on selling price</i>, and some retailers say “markup” when they mean a percentage of the retail price. Two kinds of margin appear in this course. <b>Gross margin</b> subtracts only the cost of goods; contribution margin subtracts every variable cost. For Lantern’s supermarket cans they are the same, $1.63, because the cost of goods is the only variable cost. A can sold through Lantern’s online shop also carries $0.45 of packing and delivery, which is variable too, so its contribution is <m>3.49 - 0.45 - 0.74 = 2.30</m>. Whether that $0.45 also counts in gross margin is a convention. This course deducts it from the price, as it deducts the trade’s share, so the direct net price is <m>3.49 - 0.45 = 3.04</m> and gross margin and contribution are both $2.30 (the simulator does the same). A business that recorded fulfilment as a selling expense below gross profit would report a gross margin of <m>3.49 - 0.74 = 2.75</m> on the same can, with the same $2.30 contribution.` },
 
     { h: 'Break-even analysis' },
     { p: String.raw`Pricing decisions are judged by profit, and profit appears only once the fixed costs are covered. Profit for a period is the contribution from every unit sold minus the fixed costs, <m>\pi = (P - VC) \times Q - FC</m>. Setting profit to zero and solving for the volume <m>Q</m> gives the <g>break-even point</g>, the volume at which total contribution exactly covers the fixed costs:` },
@@ -209,17 +218,18 @@ export default {
       interpretation: 'The $0.30 difference in cost between the cheapest and the dearest liquid moves the margin by about 13 percentage points, yet every option leaves well over half of the net price to cover fixed costs. See how different the two percentages look for the same can: a markup of 221% sounds greedy and a margin of 68.8% less so, yet both describe the same $1.63. With $197,000 of fixed launch costs to cover, a high contribution per can is not yet profit, as the next example shows.' },
 
     { level: 'challenging', title: 'Can Lantern’s launch plan break even?', fictional: true,
-      setup: 'Lantern’s default plan sells single-origin cans in one flavour at $3.49 through supermarkets, natural and specialty grocers, and its own cafés and online shop, with a $120,000 promotion budget. Using the course market file, find the plan’s fixed costs, its contribution per can in each channel, its break-even volume and the volume needed for a $50,000 profit. Assume Lantern’s cans sell across the three channels in proportion to each channel’s share of category volume (45%, 15% and 10%).',
+      setup: 'Lantern’s default plan sells single-origin cans in one flavour at $3.49 through supermarkets, natural and specialty grocers, and its own cafés and online shop, with a $120,000 promotion budget. Using the course market file, find the plan’s fixed costs, its contribution per can in each channel, its break-even volume and the volume needed for a $50,000 profit. To keep the hand calculation simple, make two assumptions: Lantern’s cans sell across the three channels in proportion to each channel’s share of category volume (45%, 15% and 10%), and the whole promotion budget is a fixed cost. The last step compares the answer with the simulator, which makes neither assumption.',
       steps: [
-        String.raw`Fixed costs for the year: supermarket listing <m>9{,}000 \times 1 = 9{,}000</m> (one flavour); natural grocers’ listing <m>2{,}000 \times 1 = 2{,}000</m>; the direct channel’s fixed cost, 6,000; range cost for one flavour, 0; promotion <m>50{,}000 + 40{,}000 + 20{,}000 + 10{,}000 = 120{,}000</m>; launch overhead, 60,000. In total <m>FC = 197{,}000</m>. The whole promotion budget is treated as fixed here, including the $20,000 for trade promotions. Strictly, trade deals behave more like a discount on each promoted can, and the simulator models them that way, so its break-even figure will differ a little.`,
+        String.raw`Fixed costs for the year: supermarket listing <m>9{,}000 \times 1 = 9{,}000</m> (one flavour); natural grocers’ listing <m>2{,}000 \times 1 = 2{,}000</m>; the direct channel’s fixed cost, 6,000; range cost for one flavour, 0; promotion <m>50{,}000 + 40{,}000 + 20{,}000 + 10{,}000 = 120{,}000</m>; launch overhead, 60,000. In total <m>FC = 197{,}000</m>. The whole promotion budget is treated as fixed here, including the $20,000 for trade promotions, although trade deals really behave more like a discount on each promoted can.`,
         String.raw`Contribution per can in each channel: supermarkets keep 32%, so <m>3.49 \times 0.68 - 0.74 = 1.6332</m>; natural grocers keep 38%, so <m>3.49 \times 0.62 - 0.74 = 1.4238</m>; direct sales carry no trade margin but $0.45 of packing and delivery, so <m>3.49 - 0.45 - 0.74 = 2.30</m>.`,
         String.raw`Average contribution per can, weighting each channel by its share (the three shares add up to <m>0.45 + 0.15 + 0.10 = 0.70</m>): <m>(0.45 \times 1.6332 + 0.15 \times 1.4238 + 0.10 \times 2.30) \div 0.70 = 1.17851 \div 0.70 \approx 1.6836</m>.`,
         String.raw`Break-even volume: <m>197{,}000 \div 1.6836 \approx 117{,}012.2</m>. Round up: Lantern needs 117,013 cans, because 117,012 would leave a small loss.`,
         String.raw`Target profit of $50,000: <m>(197{,}000 + 50{,}000) \div 1.6836 \approx 146{,}710.7</m>, so 146,711 cans.`,
         String.raw`Context: Harbour City buys 4.8 million cans a year, 70% of them, or 3,360,000 cans, through Lantern’s three channels. Break-even needs <m>117{,}013 \div 3{,}360{,}000 \approx 3.5\%</m> of those cans, and the $50,000 profit <m>146{,}711 \div 3{,}360{,}000 \approx 4.4\%</m>.`,
+        String.raw`Compare with the simulator. The Marketing Mix Simulator’s default plan breaks even at about 117,425 cans, at $1.51 contribution per can: close to 117,013 but not the same, because it drops both assumptions. First, its shoppers don’t buy in the proportions 45 : 15 : 10. It predicts about 92,139 cans in supermarkets, 87,075 in natural grocers and 19,781 direct, because quality-minded natural-grocer shoppers take to a single-origin can far more readily (Lantern wins about 12.1% of that channel’s cans against 4.3% of supermarkets’). With so many cans at the lower natural-grocer margin, its average gross margin is about $1.61 a can, not $1.68. Second, it charges the $20,000 of trade promotions to the promoted cans, about $0.10 a can averaged over all cans, so its fixed costs are $177,000. The two differences pull in opposite directions and nearly cancel: <m>177{,}000 \div (1.60785 - 0.10050) = 177{,}000 \div 1.50735 \approx 117{,}425</m>.`,
       ],
-      answer: 'Fixed costs are $197,000 and the average contribution is about $1.68 a can, so the plan breaks even at 117,013 cans a year and needs 146,711 cans for a $50,000 profit: about 3.5% and 4.4% of the cans sold through Lantern’s channels.',
-      interpretation: 'The calculation turns a price into a sales target that someone can judge. A new brand that only 12% of category buyers have heard of needs roughly one can in every 29 sold in its channels just to break even. The average contribution also depends on the channel mix: if more cans sell through Lantern’s own shop ($2.30 a can), break-even falls; if more sell through natural grocers ($1.42), it rises. Break-even volume is a target to test against evidence of demand, not a forecast.' },
+      answer: 'On the example’s two assumptions, fixed costs are $197,000 and the average contribution is about $1.68 a can, so the plan breaks even at 117,013 cans a year and needs 146,711 cans for a $50,000 profit: about 3.5% and 4.4% of the cans sold through Lantern’s channels. The simulator, which models the channel mix and the trade deals, puts break-even at about 117,425 cans.',
+      interpretation: 'The calculation turns a price into a sales target that someone can judge. A new brand that only 12% of category buyers have heard of needs roughly one can in every 29 sold in its channels just to break even. The average contribution also depends on the channel mix: if more cans sell through Lantern’s own shop ($2.30 a can), break-even falls; if more sell through natural grocers ($1.42), it rises, which is what happens in the simulator. That two different routes land within about 400 cans of each other is partly luck, so state your assumptions whenever you quote a break-even figure. Break-even volume is a target to test against evidence of demand, not a forecast.' },
 
     { level: 'applied', title: 'A value-based price for a battery system', fictional: true,
       setup: 'Voltwise Storage, a fictional battery-storage installer, is quoting for a cold-storage warehouse that wants a battery system to cut its peak electricity charges. The warehouse’s best alternative is a rival’s system quoted at $180,000. Voltwise’s system installs in two fewer days, and each day of installation forces the warehouse to rent refrigerated trailers at $6,000 a day. Voltwise includes a ten-year warranty; extending the rival’s seven-year warranty to ten years would cost the warehouse $15,000. Against that, Voltwise is a new name to the warehouse, whose engineers would need $4,000 of extra training on its control software. Voltwise’s variable cost for the job (equipment, labour, commissioning) is $140,000, and its usual practice is to quote cost plus 25%. What price range makes sense, and what would cost-plus leave on the table?',
@@ -237,7 +247,7 @@ export default {
   demo: [
     { widget: 'pa-breakeven', intro: 'Start from Lantern’s supermarket figures: a $3.49 shelf price, a 32% trade margin, $0.74 a can and the default plan’s $197,000 of fixed costs, as if every can were sold in supermarkets. Raise the price and watch the break-even volume fall; then raise the trade margin and see how much of each shelf dollar Lantern loses to it.' },
     { widget: 'pa-markup', intro: 'Enter a unit cost and the margin you want. The calculator gives the price, the markup that matches the margin, and what happens if the margin is mistakenly added to the cost as a markup.' },
-    { widget: 'pa-mix', intro: 'The Marketing Mix Simulator with every decision fixed at the default plan except the price. Move the price between $1.99 and $4.99 and watch units, revenue, gross margin and contribution. The simulator’s contribution is what remains after cost of goods, trade promotions, the promotion budget and listing fees, before the $60,000 launch overhead. Its demand comes from a model of shoppers choosing between brands, so it answers a question break-even analysis can’t: how many cans the model predicts at each price.' },
+    { widget: 'pa-mix', intro: 'The Marketing Mix Simulator with every decision fixed at the default plan except the price. Move the price between $1.99 and $4.99 and watch units, revenue, gross margin and contribution. The simulator’s revenue is what Lantern receives after trade margins and direct fulfilment; its contribution is what remains after cost of goods, the discounts Lantern funds on promoted cans, the other $100,000 of promotion, listing fees and the online shop’s $6,000 fixed cost, before the $60,000 launch overhead. Its break-even cans cover the overhead too; at $3.49 it shows about 117,425 rather than the challenging example’s 117,013, and the last step of that example explains the difference. Its demand comes from a model of shoppers choosing between brands, so it answers a question break-even analysis can’t: how many cans the model predicts at each price.' },
   ],
 
   mistakes: [
@@ -255,7 +265,7 @@ export default {
     { h: 'A hotel’s two floors' },
     { p: 'Hotel revenue managers work with the difference between the short-run and the long-run floor every day. At 6 p.m., a room unsold for tonight is worth nothing tomorrow, so any rate above the variable cost of an occupied room (cleaning, laundry, energy, amenities, booking fees) adds contribution towards fixed costs the hotel pays regardless. Over a season, though, rates must cover all the costs, and if guests learn that late rooms are cheap they stop booking early at full rates. Revenue managers therefore offer late discounts in ways that are hard for regular guests to plan around, and protect the published rate.' },
     { h: 'Value-based pricing in business markets' },
-    { p: 'In business-to-business markets, value-based pricing is often done with a calculation the customer can see. A supplier documents the customer’s alternative, estimates what its offer saves or earns compared with it, and prices to share the difference, as Voltwise does in the applied example. Writing for the ICAEW, the professional body for chartered accountants in England and Wales, two pricing consultants describe a chemicals supplier that estimated its product’s differentiation value at 8% above the best alternative and, after simulating competitors’ reactions, chose a price 5% above the alternative: inside the value ceiling, with a reason left for the customer to buy.' },
+    { p: 'In business-to-business markets, value-based pricing is often done with a calculation the customer can see. A supplier documents the customer’s alternative, estimates what its offer saves or earns compared with it, and prices to share the difference, as Voltwise does in the applied example. Writing for the ICAEW, the professional body for chartered accountants in England and Wales, two pricing specialists describe a chemicals supplier that estimated its product’s differentiation value at 8% above the best alternative and, after competitive simulations and estimates of customers’ reactions, chose a price 5% above the alternative: inside the value ceiling, with a reason left for the customer to buy.' },
     { p: 'The lesson for any industry is the order of the questions. Costs answer “what is the lowest price we could accept?”, not “what should we charge?”. The price itself comes from customers’ alternatives and from competitors, and costs then tell you whether the volume that price can earn will pay.' },
   ],
 
@@ -266,7 +276,7 @@ export default {
     'Break-even volume = fixed costs ÷ contribution per unit; add a target profit to the fixed costs for the target-profit volume. Use the price the seller actually receives.',
     'Cost-plus and target-return prices ignore demand, so the return they promise depends on a volume forecast that the price itself affects.',
     'Economic value = price of the next-best alternative + value of the differences. Value-based prices share that value with the customer and can sit far above cost.',
-    'At $3.49, Lantern receives $2.37 a supermarket can, earns about $1.68 a can across its channels, and needs about 117,000 cans, 3.5% of its channels’ volume, to cover $197,000 of fixed costs.',
+    'At $3.49, Lantern receives $2.37 a supermarket can. If its cans sold in proportion to channel volume, it would earn about $1.68 a can across its channels and need about 117,000 cans, 3.5% of its channels’ volume, to cover $197,000 of fixed costs; the simulator, with its own channel mix and trade deals charged per can, also gives about 117,000.',
   ],
 
   glossary: [
@@ -321,7 +331,9 @@ export default {
     { what: 'Classic error: margin earned (%)', value: 4 / 14 * 100, shown: 28.6, tol: 0.05 },
     { what: 'Classic error: price for 40% margin', value: 10 / (1 - 0.4), shown: 16.67, tol: 0.005 },
     { what: 'Mistake: markup needed for 40% margin (%)', value: 0.4 / 0.6 * 100, shown: 66.7, tol: 0.05 },
-    { what: 'Online can gross margin at $3.49', value: 3.49 - 0.74, shown: 2.75 },
+    { what: 'Online can gross margin at $3.49 if fulfilment is an expense', value: 3.49 - 0.74, shown: 2.75 },
+    { what: 'Direct net price at $3.49', value: 3.49 - 0.45, shown: 3.04 },
+    { what: 'Simulator direct gross margin per can equals contribution', value: simCh.direct.grossMarginPerCan, shown: 2.30 },
     { what: 'Online can contribution at $3.49', value: 3.49 - 0.45 - 0.74, shown: 2.30 },
     // break-even theory
     { what: 'Sandwich bar break-even (units)', value: 15000 / (9 - 4), shown: 3000 },
@@ -375,6 +387,25 @@ export default {
     { what: 'Break-even share of channel cans (%)', value: 117013 / 3360000 * 100, shown: 3.5, tol: 0.05 },
     { what: 'Target-profit share of channel cans (%)', value: 146711 / 3360000 * 100, shown: 4.4, tol: 0.05 },
     { what: 'One can in every N sold', value: 3360000 / 117013, shown: 29, tol: 0.5 },
+    // challenging example: comparison with the simulator (mixsim.js, default plan)
+    { what: 'Simulator break-even cans', value: sim.year.breakEvenUnits, shown: 117425, tol: 0.5 },
+    { what: 'Simulator contribution per can', value: sim.year.contributionPerCan, shown: 1.51, tol: 0.005 },
+    { what: 'Simulator supermarket cans', value: simCh.supermarket.units, shown: 92139, tol: 0.5 },
+    { what: 'Simulator natural-grocer cans', value: simCh.natural.units, shown: 87075, tol: 0.5 },
+    { what: 'Simulator direct cans', value: simCh.direct.units, shown: 19781, tol: 0.5 },
+    { what: 'Simulator share of natural-grocer cans (%)', value: simCh.natural.share * 100, shown: 12.1, tol: 0.05 },
+    { what: 'Simulator share of supermarket cans (%)', value: simCh.supermarket.share * 100, shown: 4.3, tol: 0.05 },
+    { what: 'Simulator average gross margin per can', value: simGP, shown: 1.6079, tol: 0.00005 },
+    { what: 'Simulator average gross margin rounded', value: simGP, shown: 1.61, tol: 0.005 },
+    { what: 'Simulator trade cost per can', value: simTrade, shown: 0.1005, tol: 0.00005 },
+    { what: 'Simulator trade cost per can rounded', value: simTrade, shown: 0.10, tol: 0.005 },
+    { what: 'Simulator trade budget', value: sim.year.tradeCost, shown: 20000, tol: 0.5 },
+    { what: 'Simulator fixed costs including overhead', value: simFixed, shown: 177000 },
+    { what: 'Simulator gross margin per can, 5 dp', value: simGP, shown: 1.60785, tol: 0.000005 },
+    { what: 'Simulator trade cost per can, 5 dp', value: simTrade, shown: 0.10050, tol: 0.000005 },
+    { what: 'Simulator contribution per can, 5 dp', value: simGP - simTrade, shown: 1.50735, tol: 0.000005 },
+    { what: 'Simulator break-even by the shown arithmetic', value: 177000 / 1.50735, shown: 117425, tol: 0.5 },
+    { what: 'Gap between the two break-evens', value: sim.year.breakEvenUnits - 117013, shown: 400, tol: 25 },
     // applied example
     { what: 'Downtime saving', value: 2 * 6000, shown: 12000 },
     { what: 'Differentiation value', value: 2 * 6000 + 15000 - 4000, shown: 23000 },

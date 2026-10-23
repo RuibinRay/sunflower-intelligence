@@ -71,7 +71,7 @@ export const items = [
   },
   {
     id: 'm02-m2-8', lesson: 'price-response', type: 'mc', kind: 'conceptual',
-    prompt: 'A firm faces inelastic demand for its product and raises the price by 5%. What happens to revenue, and what does that tell you about profit?',
+    prompt: 'A firm faces inelastic demand for its product and raises the price by 5%. Its variable cost per unit and its fixed costs don’t change. What happens to revenue, and what does that tell you about profit?',
     options: [
       'Revenue rises, and because fewer units are sold, variable costs fall too, so contribution rises as well.',
       'Revenue falls, because fewer units are sold.',
@@ -81,7 +81,7 @@ export const items = [
     answer: 0,
     feedback: {
       1: 'With inelastic demand, quantity falls by a smaller percentage than the price rises, so revenue rises.',
-      2: 'Profit could fall only if costs rose. With a higher price, fewer units and the same variable cost per unit, contribution rises: each remaining unit earns more and total variable costs fall.',
+      2: 'Profit could fall only if costs rose, and the question holds them constant. With a higher price, fewer units and the same variable cost per unit, contribution rises: each remaining unit earns more and total variable costs fall.',
       3: 'Revenue is unchanged only at unit elasticity.',
     },
     solution: 'Inelastic demand: quantity falls by less than 5%, so revenue rises. Total variable costs fall with the lower volume, so contribution (revenue minus variable costs) rises too, provided fixed costs and the variable cost per unit are unchanged.',

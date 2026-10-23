@@ -81,7 +81,7 @@ export const widgets = {
             { name: 'Markup on cost needed (%)', values: xs.map((x) => Math.round(x / (100 - x) * 1000) / 10) },
             { name: 'Margin (%)', values: xs },
           ],
-          y: { label: 'Percent' },
+          y: { label: 'Per cent' },
         },
       };
     },

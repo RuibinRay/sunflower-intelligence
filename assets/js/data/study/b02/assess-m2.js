@@ -91,13 +91,13 @@ export const items = [
   },
   {
     id: 'b02-m2-7', lesson: 'types-and-formats', type: 'rows', kind: 'applied',
-    prompt: 'Lantern’s staff spreadsheet is documented as writing dates day/month/year with four-digit years, and you convert it with that explicit format. Select the values that will fail to convert to a valid date and need to be flagged. Rows are numbered from 0.',
+    prompt: 'Lantern’s web shop is documented as writing slash dates day/month/year with four-digit years, and you convert its dates with that explicit format. Select the values that will fail to convert to a valid date and need to be flagged. Rows are numbered from 0.',
     data: { table: {
       head: ['Raw order_date'],
       rows: [['12/03/2026'], ['31/04/2026'], ['15/06/2026'], ['29/02/2026'], ['3/14/26'], ['01/01/2026']],
     } },
     answer: [1, 3, 4],
-    solution: '31/04/2026 is invalid because April has 30 days; 29/02/2026 is invalid because 2026 is not a leap year; 3/14/26 doesn’t fit the format (a two-digit year, and month 14 if read day first), which suggests it came from another source. All three should fail and be flagged, not guessed. 12/03/2026 (12 March), 15/06/2026 (15 June) and 01/01/2026 convert normally.',
+    solution: '31/04/2026 is invalid because April has 30 days; 29/02/2026 is invalid because 2026 is not a leap year; 3/14/26 doesn’t fit the format (a two-digit year, and month 14 if read day first), which is the app’s month-first M/D/YY style: it came from another source. All three should fail and be flagged, not guessed. 12/03/2026 (12 March), 15/06/2026 (15 June) and 01/01/2026 convert normally.',
   },
   {
     id: 'b02-m2-8', lesson: 'types-and-formats', type: 'mc', kind: 'applied',

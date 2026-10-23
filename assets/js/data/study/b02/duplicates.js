@@ -242,7 +242,7 @@ export default {
       steps: [
         'Profile the key. There are <m>7</m> rows but only <m>4</m> distinct booking ids, so <m>3</m> rows are surplus. The two HB-26303 rows are identical: an exact copy. HB-26301 and HB-26302 each have two versions that disagree.',
         'Choose the survivorship rule from the mechanism. The channel manager sends a new message whenever a booking changes, so a later message supersedes an earlier one: keep the row with the latest <code>received_at</code> for each <code>booking_id</code>. HB-26301 was shortened from 3 nights to 2; HB-26302 was cancelled.',
-        'Survivors: HB-26301 (2 nights, $360), HB-26302 (cancelled), HB-26303 (1 night, $190), HB-26304 (4 nights, $720). Cancelled bookings contribute no revenue and no room-nights.',
+        'Survivors: HB-26301 (2 nights, $360), HB-26302 (cancelled), HB-26303 (1 night, $190), HB-26304 (4 nights, $720). Cancelled bookings contribute no revenue and no room-nights. (This feed sets a cancelled booking’s total to $0. The course’s <code>harborview-bookings</code> dataset does not: its <code>total</code> is the booked room charge, cancellations included, so there you exclude cancelled bookings by <code>status</code> rather than relying on a zero total.)',
         'Totals with the right rule: revenue <m>360 + 0 + 190 + 720 = 1{,}270</m>; room-nights <m>2 + 1 + 4 = 7</m>.',
         'Compare the alternatives. Summing every row gives <m>540 + 380 + 360 + 190 + 0 + 720 + 190 = 2{,}380</m> and <m>15</m> room-nights. Keeping the <i>first</i> version of each booking gives <m>540 + 380 + 190 + 720 = 1{,}830</m> and <m>3 + 2 + 1 + 4 = 10</m> room-nights.',
       ],

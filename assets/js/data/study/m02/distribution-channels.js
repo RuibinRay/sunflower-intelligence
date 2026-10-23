@@ -132,8 +132,10 @@ export default {
       tex: String.raw`g = N - c`,
       where: [
         [String.raw`g`, 'Gross margin per unit, before fixed fees, promotion and overhead', '$'],
+        [String.raw`N`, 'Net price per unit: what the producer receives after the trade’s margin (and, selling direct, after fulfilment)', '$'],
         [String.raw`c`, 'Cost of goods per unit', '$'],
-      ] },
+      ],
+      note: 'The same calculation as the marketing-mix lesson’s gross margin per unit sold through a retailer, written in two steps: first the net price, then the margin.' },
     { id: 'compound-trade-margin', name: 'Combined margin of a multi-level channel',
       tex: String.raw`m = 1 - (1 - m_r)(1 - m_d)`,
       where: [
@@ -148,7 +150,7 @@ export default {
         [String.raw`Q`, 'Units that must be sold in a year to cover the fee (round up)', 'units'],
         [String.raw`F`, 'Fixed yearly cost of the channel: listing fees × SKUs, or the running cost of a direct channel', '$'],
       ],
-      note: 'This is a break-even for the channel’s own fixed cost only; promotion and overhead still have to be covered.' },
+      note: 'This is a break-even for the channel’s own fixed cost only; promotion and overhead still have to be covered. It is the product-decisions lesson’s payback in units, applied to a listing fee.' },
   ],
 
   examples: [

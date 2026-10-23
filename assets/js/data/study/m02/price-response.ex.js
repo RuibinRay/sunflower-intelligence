@@ -98,7 +98,7 @@ export const guided = [
   {
     id: 'm02-pr-g1', type: 'steps', kind: 'numerical',
     prompt: 'A fictional university raises the fee for its evening data-analysis course from $400 to $460, and enrolment falls from 250 to 220. Nothing else about the course changed.',
-    solution: 'Midpoint quantity change = (220 − 250) ÷ 235 ≈ −12.77%. Midpoint price change = 60 ÷ 430 ≈ 13.95%. E ≈ −12.77 ÷ 13.95 ≈ −0.92 (−0.915 before rounding): inelastic. Revenue rises from 400 × 250 = $100,000 to 460 × 220 = $101,200.',
+    solution: 'Midpoint quantity change = (220 − 250) ÷ 235 ≈ −12.77%. Midpoint price change = 60 ÷ 430 ≈ 13.95%. E = −0.12766 ÷ 0.13953 ≈ −0.91 (rounding the percentages first, −12.77 ÷ 13.95, gives −0.92): inelastic. Revenue rises from 400 × 250 = $100,000 to 460 × 220 = $101,200.',
     steps: [
       { id: 'm02-pr-g1-s1', type: 'num', prompt: 'What is the percentage change in enrolment, measured against the midpoint? (Use a minus sign for a fall.)',
         answer: -12.77, check: () => (220 - 250) / ((220 + 250) / 2) * 100, unit: '%', places: 2, tol: 0.05,
@@ -109,9 +109,9 @@ export const guided = [
         hints: ['Average fee = (400 + 460) ÷ 2.', '60 ÷ 430.'],
         wrong: [{ value: 15, say: 'That divides by the starting fee. Use the average fee, $430.' }] },
       { id: 'm02-pr-g1-s3', type: 'num', prompt: 'What is the midpoint price elasticity of demand? Give two decimal places.',
-        answer: -0.92, check: () => ((220 - 250) / 235) / (60 / 430), unit: '', places: 2, tol: 0.01,
-        hints: ['Elasticity = % change in quantity ÷ % change in price.', '−12.77 ÷ 13.95.'],
-        wrong: [{ value: -1.09, say: 'You divided the price change by the quantity change. Quantity goes on top.' }, { value: 0.92, say: 'Enrolment fell as the fee rose, so the elasticity is negative.' }] },
+        answer: -0.91, check: () => ((220 - 250) / 235) / (60 / 430), unit: '', places: 2, tol: 0.01,
+        hints: ['Elasticity = % change in quantity ÷ % change in price.', '−12.766 ÷ 13.953: keep the unrounded percentages and round only at the end.'],
+        wrong: [{ value: -1.09, say: 'You divided the price change by the quantity change. Quantity goes on top.' }, { value: 0.91, say: 'Enrolment fell as the fee rose, so the elasticity is negative.' }] },
       { id: 'm02-pr-g1-s4', type: 'mc', prompt: 'What happened to fee revenue, and why?',
         options: [
           'It rose, because demand is inelastic over this range: enrolment fell by a smaller percentage than the fee rose.',
@@ -121,7 +121,7 @@ export const guided = [
         ],
         answer: 0,
         hints: ['Compare the size of the elasticity with 1.', 'Revenue before: 400 × 250; after: 460 × 220.'],
-        feedback: { 1: 'Fewer students does not mean less revenue: each pays $60 more. Revenue = 460 × 220 = $101,200, more than $100,000.', 2: 'The magnitude, 0.92, is below 1, so demand is inelastic, not elastic.', 3: 'Close to −1 means revenue changes little, but it does change: it rises by $1,200.' } },
+        feedback: { 1: 'Fewer students does not mean less revenue: each pays $60 more. Revenue = 460 × 220 = $101,200, more than $100,000.', 2: 'The magnitude, about 0.91, is below 1, so demand is inelastic, not elastic.', 3: 'Close to −1 means revenue changes little, but it does change: it rises by $1,200.' } },
     ],
   },
   {

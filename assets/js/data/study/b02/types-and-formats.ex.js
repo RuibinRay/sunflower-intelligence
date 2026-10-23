@@ -14,7 +14,7 @@ export const widgets = {
     dataset: 'lantern-orders',
     ops: ['to-number', 'to-date'],
     watch: ['unit_price'],
-    task: 'Before converting anything, list the different ways <code>unit_price</code> is written. Convert it to a number and compare the summary statistics before and after: did any value fail to convert, and is any converted price implausible for a bag of coffee? Then convert <code>order_date</code> and read what the lab reports about the values it could not read. Which of them could be read two ways, and what evidence would settle them?',
+    task: 'Before converting anything, list the different ways <code>unit_price</code> is written. Convert it to a number and compare the summary statistics before and after: did any value fail to convert, and is any converted price implausible for a bag of coffee? Then convert <code>order_date</code> and read what the lab reports about the values it could not read. Which of them could be read two ways, and what evidence would settle them? Compare the slash dates with the <code>channel</code> column: which channel writes four-digit years, which writes two-digit years, and which way round does each channel put the day and month in the dates that can only be read one way?',
   },
   'tf-serial': {
     type: 'formula',
@@ -105,7 +105,7 @@ export const guided = [
   },
   {
     id: 'b02-tf-g4', type: 'fill', kind: 'applied',
-    prompt: 'Lantern’s staff spreadsheet writes dates day first with a four-digit year, as in 04/03/2026 for 4 March 2026. Choose the explicit format for each tool.',
+    prompt: 'Lantern’s web shop writes slash dates day first with a four-digit year, as in 04/03/2026 for 4 March 2026. Choose the explicit format for each tool.',
     text: 'pandas: pd.to_datetime(s, format=[[0]], errors=&#39;coerce&#39;)<br>PostgreSQL: to_date(order_date, [[1]])',
     blanks: [
       { options: ['%d/%m/%Y', '%m/%d/%Y', '%d/%m/%y', '%Y-%m-%d'], answer: 0 },

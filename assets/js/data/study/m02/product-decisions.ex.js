@@ -183,7 +183,7 @@ export const independent = [
     items: [
       'A taste panel scores the Single-origin liquid 7.5 out of 10',
       'Every batch is tested so that strength and caffeine stay within the specification',
-      'An oat-milk version is added to the range',
+      'A resealable lid is added to the can',
       'The can has a matte finish and a hand-drawn lantern that stands out in the chiller',
     ],
     categories: ['Performance quality', 'Conformance quality', 'Feature', 'Style and design'],
@@ -192,7 +192,7 @@ export const independent = [
       0: 'The taste score measures how well the product does its job: performance quality.',
       1: 'Testing that every batch meets the specification is about consistency: conformance quality.',
     },
-    solution: 'The taste score is performance quality (how well it works). Batch testing is conformance quality (how consistently it meets the specification). The oat-milk version is a feature. The matte, hand-drawn can is style and design.',
+    solution: 'The taste score is performance quality (how well it works). Batch testing is conformance quality (how consistently it meets the specification). The resealable lid is a feature. The matte, hand-drawn can is style and design.',
   },
   {
     id: 'm02-pd-i4', type: 'num', kind: 'numerical',
@@ -200,7 +200,7 @@ export const independent = [
     answer: 11238, check: () => ((3 - 1) * 2000 + 12000) / 1.4238, tol: 35, unit: 'cans', places: 0,
     wrong: [
       { value: 2809, say: 'That covers only the extra listing fees. Add the $12,000 of production runs, labels and plates.' },
-      { value: 12643, say: 'You used the listing fees for all three flavours. Only the two extra flavours add cost compared with one.' },
+      { value: 12642, say: 'You used the listing fees for all three flavours. Only the two extra flavours add cost compared with one.' },
     ],
     solution: 'Extra listing fees: (3 − 1) × $2,000 = $4,000. Extra fixed cost: $4,000 + $12,000 = $16,000. Extra cans: $16,000 ÷ $1.4238 ≈ 11,238 cans a year, and they must be cans that would not otherwise have been sold as Original.',
   },
