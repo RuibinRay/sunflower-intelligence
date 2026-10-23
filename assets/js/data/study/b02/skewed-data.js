@@ -1,0 +1,290 @@
+// skewed-data.js — B02 · Skewed data and transformations. Content only; exercises are in skewed-data.ex.js.
+
+// Standard normal CDF (Abramowitz and Stegun 7.1.26, error below 1.5e-7), used only by `checks`.
+const Phi = (x) => { const t = 1 / (1 + 0.3275911 * Math.abs(x / Math.SQRT2)); const e = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-(x * x) / 2); return 0.5 * (1 + (x >= 0 ? e : -e)); };
+// Adjusted Fisher–Pearson skewness (as Excel SKEW and pandas skew), used only by `checks`.
+const skew = (a) => { const n = a.length, m = a.reduce((s, v) => s + v, 0) / n; let m2 = 0, m3 = 0; for (const v of a) { m2 += (v - m) ** 2; m3 += (v - m) ** 3; } m2 /= n; m3 /= n; return Math.sqrt(n * (n - 1)) / (n - 2) * m3 / m2 ** 1.5; };
+const gmean = (a) => Math.exp(a.reduce((s, v) => s + Math.log(v), 0) / a.length);
+const HOTEL = [180, 220, 260, 300, 360, 450, 600, 1500];
+
+export default {
+  slug: 'skewed-data',
+  title: 'Skewed data and transformations',
+  blurb: 'Order values, hotel bills and study hours pile up at the low end and stretch out in a long tail. Learn to measure that skew, to see when it distorts summaries, outlier rules and models, and to transform a variable, read the results back in real units, and know when to leave it alone.',
+  status: 'draft',
+  objectives: [
+    'Calculate the sample skewness of a small dataset with the adjusted Fisher–Pearson coefficient and interpret its sign.',
+    'Explain how skewness distorts means, outlier rules and models.',
+    'Transform a skewed variable with a log, log(1 + x), square root or Box–Cox transformation, choosing one that suits its values.',
+    'Interpret results after a log transformation, including log differences as approximate percentage changes and back-transformed means as geometric means.',
+    'Decide when a variable should not be transformed.',
+  ],
+  prerequisites: [
+    { lesson: 'b02/outliers', why: 'You need the median, quartiles and outlier rules; this lesson shows why those rules over-flag long tails and how transformations help.' },
+    { text: 'Using the natural logarithm (ln) and the exponential (eˣ) on a calculator or in a spreadsheet.' },
+  ],
+  case: 'lantern',
+
+  concept: [
+    { case: 'Lantern’s marketing lead wants to offer free delivery on orders “above the average order value”. In a sample of six recent orders, worth $20, $22, $25, $28, $35 and $80, the average is $35. But four of the six orders are below $30, and the median order is $26.50. The single $80 office order has pulled the average up to a level that only two of the six customers reached. A threshold set at the mean would look generous on paper and feel out of reach to most customers.' },
+    { p: 'Lantern’s order values are <b>skewed</b>: most orders cluster at the low end and a few stretch out far to the right. <g>Skewness</g> describes this lack of symmetry. A symmetric distribution, like the weights of bags from a well-calibrated filling machine, looks the same on both sides of its centre. A skewed one has a long tail on one side.' },
+    { list: [
+      '<b><g>Right-skewed</g></b> (positively skewed): a long tail of large values. Order values, incomes, house prices, hotel bills, insurance claims, time until a machine fails and weekly study hours are usually right-skewed, because they can’t go below zero but can grow very large.',
+      '<b><g>Left-skewed</g></b> (negatively skewed): a long tail of small values. Scores on an easy test, where most people score near the maximum, and the share of a month that subscribers stay active, where most stay all month, are usually left-skewed.',
+    ] },
+    { p: 'The mean is pulled towards the long tail, because every value counts in proportion to its size; the median only cares about order. So in right-skewed data the mean usually sits above the median, and in left-skewed data below it. “Usually” matters: OpenStax’s Introductory Statistics points out that the pattern has exceptions, especially in discrete data, so check the histogram rather than relying on the rule.' },
+    { figure: {
+      svg: '<svg viewBox="0 0 640 215" xmlns="http://www.w3.org/2000/svg" font-size="13" fill="currentColor"><text x="165" y="18" text-anchor="middle">Order totals ($)</text><text x="475" y="18" text-anchor="middle">After a log transformation</text><line x1="25" y1="170" x2="305" y2="170" stroke="var(--rule-strong)" stroke-width="1.5"/><line x1="340" y1="170" x2="610" y2="170" stroke="var(--rule-strong)" stroke-width="1.5"/><g fill="var(--series-1)"><rect x="31" y="110" width="16" height="60"/><rect x="49" y="50" width="16" height="120"/><rect x="67" y="66" width="16" height="104"/><rect x="85" y="94" width="16" height="76"/><rect x="103" y="118" width="16" height="52"/><rect x="121" y="136" width="16" height="34"/><rect x="139" y="148" width="16" height="22"/><rect x="157" y="156" width="16" height="14"/><rect x="175" y="160" width="16" height="10"/><rect x="193" y="164" width="16" height="6"/><rect x="211" y="166" width="16" height="4"/><rect x="229" y="168" width="16" height="2"/><rect x="247" y="168" width="16" height="2"/><rect x="283" y="168" width="16" height="2"/></g><g fill="var(--series-2)"><rect x="377" y="162" width="16" height="8"/><rect x="395" y="150" width="16" height="20"/><rect x="413" y="126" width="16" height="44"/><rect x="431" y="94" width="16" height="76"/><rect x="449" y="70" width="16" height="100"/><rect x="467" y="66" width="16" height="104"/><rect x="485" y="82" width="16" height="88"/><rect x="503" y="110" width="16" height="60"/><rect x="521" y="138" width="16" height="32"/><rect x="539" y="156" width="16" height="14"/><rect x="557" y="164" width="16" height="6"/></g><line x1="75" y1="44" x2="75" y2="170" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="102" y1="44" x2="102" y2="170" stroke="var(--ink)" stroke-width="1.5"/><text x="72" y="38" text-anchor="end">median</text><text x="105" y="38">mean</text><text x="165" y="192" text-anchor="middle" fill="var(--ink-3)">long tail to the right</text><text x="475" y="192" text-anchor="middle" fill="var(--ink-3)">roughly symmetric</text></svg>',
+      caption: 'Schematic histograms. Left: order totals pile up at low values with a long right tail, and the mean sits to the right of the median. Right: the same kind of data after a log transformation, which pulls in the tail and leaves a roughly symmetric shape.',
+      alt: 'Two schematic histograms side by side. The left one, titled order totals in dollars, has its tallest bars near the left edge and bars that shrink steadily towards the right, ending in a few very short bars far out: a long right tail. A dashed vertical line marks the median near the peak and a solid line marks the mean a little further right. The right histogram, titled after a log transformation, has bars that rise to a peak in the middle and fall away evenly on both sides, a roughly symmetric shape.',
+    } },
+    { h: 'Why skewness matters' },
+    { list: [
+      '<b>Summaries mislead.</b> The mean of a right-skewed variable describes almost nobody, as Lantern’s $35 shows. The median and quartiles describe the typical customer far better.',
+      '<b>Outlier rules flag too much.</b> The fences and z-scores of the previous lesson assume roughly symmetric data. On a long right tail they flag many perfectly genuine large values, so an analyst who deletes “outliers” from skewed data deletes real customers.',
+      '<b>Some models struggle.</b> Methods that minimise squared errors, such as linear regression, let a few huge values dominate the fit, and the usual confidence intervals and tests assume errors that are roughly normal with constant spread. A skewed outcome often produces skewed errors whose spread grows with the size of the prediction.',
+      '<b>The process may be multiplicative.</b> Prices, revenues and populations tend to change by percentages rather than fixed amounts. On their original scale such variables look skewed; on a log scale the percentage changes become equal steps.',
+    ] },
+    { p: 'A <b>transformation</b> applies the same function to every value, re-expressing the variable on a new scale. The useful ones for right skew, such as the logarithm and the square root, keep the order of the values but compress large values more than small ones, pulling the long tail in towards the rest. The skill is choosing one that suits the data, and then reading the results back in units that people care about.' },
+  ],
+
+  theory: [
+    { h: 'Measuring skewness' },
+    { p: 'Skewness is measured from the cubed deviations from the mean. Cubing keeps the sign of each deviation and exaggerates large ones, so a long tail on the right produces a large positive total and a long tail on the left a large negative one. This course, like Excel’s SKEW function and pandas’ <code>skew()</code>, uses the <b>adjusted Fisher–Pearson coefficient</b> described in the NIST/SEMATECH e-Handbook:' },
+    { math: String.raw`G_1 = \dfrac{\sqrt{n(n-1)}}{n-2}\cdot g_1, \qquad g_1 = \dfrac{m_3}{m_2^{3/2}}, \qquad m_k = \dfrac{1}{n}\sum_{i=1}^{n}(x_i - \bar{x})^k` },
+    { p: String.raw`Here <m>m_2</m> and <m>m_3</m> are the average squared and cubed deviations (dividing by <m>n</m>), and <m>g_1</m> is the plain Fisher–Pearson coefficient. The factor <m>\sqrt{n(n-1)}/(n-2)</m> corrects for small samples and approaches 1 as <m>n</m> grows. Symmetric data give values near 0; positive values mean right skew and negative values left skew. There is no universal cut-off for “highly” skewed: compare the value before and after a transformation, and always look at the histogram.` },
+    { p: String.raw`Because it cubes deviations, skewness is itself very sensitive to extreme values. In Lantern’s six orders (worked example below), the $80 order’s cube, <m>45^3 = 91{,}125</m>, is larger than the total of all six cubes, 84,210: one order <i>is</i> the skewness. Fix errors and impossible values before measuring it.` },
+    { h: 'The logarithm' },
+    { p: String.raw`The <g>log transformation</g> replaces each value <m>x</m> with <m>\ln x</m>. It turns multiplication into addition: values that differ by the same <i>ratio</i> end up the same <i>distance</i> apart. $10, $20, $40, $80 and $160 each double the one before, so their natural logs (2.303, 2.996, 3.689, 4.382, 5.075) are equally spaced, 0.693 apart (that is, <m>\ln 2</m>). A right-skewed variable whose values vary by percentages becomes roughly symmetric. The base doesn’t matter for the shape: <m>\log_{10} x</m> and <m>\log_2 x</m> are just <m>\ln x</m> multiplied by a constant.` },
+    { p: 'The log has one strict requirement: every value must be positive. The log of zero is undefined (it heads to minus infinity) and so is the log of a negative number. Order totals and hotel bills are positive; study hours, units returned or days absent often include zeros; profit can be negative. Those need other tools.' },
+    { h: 'Log(1 + x), the square root and the reciprocal' },
+    { p: String.raw`The <g>log1p transformation</g>, <m>\ln(1 + x)</m>, adds 1 before taking the log, so a zero becomes 0 instead of being undefined. For large <m>x</m> it behaves like <m>\ln x</m>; for small <m>x</m> it is close to <m>x</m> itself. Programming libraries provide it as a function, <code>log1p</code>, which is also more accurate than computing <code>log(1 + x)</code> directly when <m>x</m> is tiny. For Northfield students reporting 0, 1, 2, 4, 9 and 30 study hours a week, the skewness falls from 2.06 to 0.54 after log(1 + x).` },
+    { p: String.raw`The “1” is not neutral, though: it is one unit of whatever the column measures. Record the same students’ study time in minutes (0, 60, 120, 240, 540, 1,800) and log(1 + x) maps the zero to 0 and everyone else to between 4.1 and 7.5, making the student who studies nothing a new extreme value: the skewness becomes −1.34. Log(1 + x) works best for counts and for units in which 1 is small compared with typical non-zero values.` },
+    { p: String.raw`The <g>square-root transformation</g>, <m>\sqrt{x}</m>, is milder than the log and handles zeros naturally; it is a common choice for counts such as orders per day or rooms cleaned per shift. For the study hours above it reduces the skewness from 2.06 to 1.10, less than log(1 + x) does. The <b>reciprocal</b>, <m>1/x</m>, is stronger than the log; it reverses the order of the values (the largest becomes the smallest), so analysts use <m>-1/x</m> to keep the order, and it is undefined at zero. It suits rates such as “hours per order”, whose reciprocal “orders per hour” may be the more natural measure anyway.` },
+    { h: 'Box–Cox: choosing the strength from the data' },
+    { p: 'Log, square root and reciprocal are members of one family of power transformations. Box and Cox (1964) wrote the family so that it changes smoothly with a single parameter <m>\\lambda</m> (lambda):' },
+    { math: String.raw`x^{(\lambda)} = \begin{cases} \dfrac{x^{\lambda} - 1}{\lambda}, & \lambda \neq 0 \\[6pt] \ln x, & \lambda = 0 \end{cases}` },
+    { p: String.raw`With <m>\lambda = 1</m> the shape is unchanged (the values are only shifted by 1); <m>\lambda = 0.5</m> behaves like a square root; <m>\lambda = 0</m> is the log; <m>\lambda = -1</m> gives <m>1 - 1/x</m>, a reciprocal that keeps the order. The <g>Box–Cox transformation</g> estimates <m>\lambda</m> from the data, choosing the value that makes the transformed data look most nearly normal: scikit-learn’s PowerTransformer uses maximum likelihood, and the NIST/SEMATECH e-Handbook’s Box–Cox normality plot picks the <m>\lambda</m> that maximises the correlation of a normal probability plot. Like the log, Box–Cox requires strictly positive values. For data with zeros or negatives, the Yeo–Johnson transformation (Yeo and Johnson, 2000), also in PowerTransformer, extends the same idea.` },
+    { callout: 'warn', title: 'A fitted transformation can leak', html: 'An estimated λ is learned from data, just like an imputation mean. When a model will be tested on held-out rows, estimate λ on the training rows only and apply that same λ to the test rows. Note also that PowerTransformer standardises its output by default, which is a separate step covered in the scaling lesson.' },
+    { table: {
+      caption: 'Transformations for right-skewed data, from mildest to strongest',
+      head: ['Transformation', 'Formula', 'Allowed values', 'Typical use'],
+      align: ['l', 'l', 'l', 'l'],
+      rows: [
+        ['Square root', '<m>\\sqrt{x}</m>', 'x ≥ 0', 'Counts with zeros; mild skew'],
+        ['Log(1 + x)', '<m>\\ln(1 + x)</m>', 'x > −1', 'Counts or amounts with zeros'],
+        ['Log', '<m>\\ln x</m>', 'x > 0', 'Money, sizes, anything that changes by percentages'],
+        ['Reciprocal', '<m>-1/x</m>', 'x ≠ 0 (usually x > 0)', 'Severe skew; rates such as time per unit'],
+        ['Box–Cox', '<m>(x^\\lambda - 1)/\\lambda</m>', 'x > 0', 'Let the data choose the strength'],
+        ['Yeo–Johnson', 'Box–Cox-like, defined for all x', 'Any x', 'Data with zeros and negatives, such as profit'],
+      ],
+      note: 'For left-skewed data, one option is to reflect the values first (subtract each from a number just above the maximum), transform, and remember that the order is reversed.',
+    } },
+    { h: 'Reading results after a log transformation' },
+    { p: String.raw`Two facts let you translate log-scale results back into business language. First, a <b>difference in logs is close to a percentage change</b> when the change is small: <m>\ln(42/40) = 0.0488</m>, close to the true 5% increase. The approximation fails for large changes: <m>\ln(60/40) = 0.405</m>, against a true increase of 50%. The exact conversion is <m>e^{d} - 1</m>. Log differences also add up neatly: a rise from $40 to $44 is <m>+0.0953</m> and the fall back to $40 is <m>-0.0953</m>, whereas the percentages, +10% and −9.1%, don’t cancel.` },
+    { p: String.raw`Second, <b>the back-transformed mean is a geometric mean</b>. If you average the logs and convert the average back with <m>e^{x}</m>, you get the <g>geometric mean</g>, <m>\left(x_1 x_2 \cdots x_n\right)^{1/n}</m>, not the ordinary (arithmetic) mean. For $10, $20, $40, $80 and $160 the mean of the logs is 3.689 and <m>e^{3.689} = 40</m>, while the arithmetic mean is $62. The geometric mean is never larger than the arithmetic mean, and the gap grows with the skew. So a model fitted to log(order value) and converted back predicts something closer to a typical order than to an average one; anyone who needs totals, such as revenue, must account for that.` },
+    { h: 'When not to transform' },
+    { list: [
+      '<b>When the audience needs real units.</b> “The mean log order value is 3.49” means nothing to a manager. Report medians, quartiles and percentages in dollars; transform inside the analysis, not in the slide.',
+      '<b>When the original units are the point.</b> Totals add up only in the original units: revenue is the number of orders times the <i>arithmetic</i> mean order value. Forecasting revenue from a geometric mean understates it.',
+      '<b>For tree-based models.</b> A decision tree splits on thresholds such as “total above $400”. A log transformation keeps the order of the values, so the same split exists as “log total above ln 400” and puts the same rows on each side: nothing changes except readability.',
+      '<b>When the skew is mild or the model’s errors are already well behaved.</b> In regression, what matters is the shape of the residuals, not of every input. Check them before transforming.',
+      '<b>To hide errors.</b> A log makes a 999-bag typo look less extreme without making it any less wrong. Fix errors and impossible values first; transform genuine skew only.',
+    ] },
+    { h: 'In a spreadsheet or pandas' },
+    { list: [
+      '<b>Spreadsheet</b>: <code>LN(x)</code>, <code>LN(1 + x)</code> and <code>SQRT(x)</code> in a new column; <code>SKEW(range)</code> for the adjusted Fisher–Pearson coefficient; <code>EXP(AVERAGE(log column))</code> or <code>GEOMEAN(range)</code> for the geometric mean.',
+      `<b>pandas</b>: <code>np.log(s)</code>, <code>np.log1p(s)</code> and <code>np.sqrt(s)</code> transform a column; <code>s.skew()</code> measures skewness; <code>PowerTransformer(method='box-cox')</code> from scikit-learn estimates λ (use <code>'yeo-johnson'</code> when there are zeros or negatives).`,
+    ] },
+  ],
+
+  formulas: [
+    { id: 'skewness-g1', name: 'Sample skewness (adjusted Fisher–Pearson coefficient)',
+      tex: String.raw`G_1 = \dfrac{\sqrt{n(n-1)}}{n-2}\cdot\dfrac{m_3}{m_2^{3/2}}`,
+      where: [
+        [String.raw`n`, 'Number of values (at least 3)', ''],
+        [String.raw`m_2`, 'Mean squared deviation from the mean, dividing by n', 'squared units'],
+        [String.raw`m_3`, 'Mean cubed deviation from the mean, dividing by n', 'cubed units'],
+      ],
+      assumptions: 'The same definition as Excel’s SKEW and pandas’ skew(). Near 0 for symmetric data.',
+      note: 'Positive: long right tail. Negative: long left tail. Very sensitive to a single extreme value.' },
+    { id: 'log-transforms', name: 'Log and log(1 + x) transformations',
+      tex: String.raw`y = \ln x \quad (x > 0), \qquad y = \ln(1 + x) \quad (x > -1)`,
+      where: [
+        [String.raw`x`, 'The original value', 'units of the variable'],
+        [String.raw`y`, 'The transformed value', 'log units'],
+      ],
+      note: 'Equal ratios in x become equal differences in y; the base of the log changes only the scale.' },
+    { id: 'box-cox', name: 'Box–Cox transformation',
+      tex: String.raw`x^{(\lambda)} = \dfrac{x^{\lambda} - 1}{\lambda}\ (\lambda \neq 0), \qquad x^{(0)} = \ln x`,
+      where: [
+        [String.raw`x`, 'The original value, strictly positive', 'units of the variable'],
+        [String.raw`\lambda`, 'The power, estimated from the (training) data', ''],
+      ],
+      assumptions: 'All values positive; for zeros or negatives use Yeo–Johnson.' },
+    { id: 'geometric-mean', name: 'Geometric mean',
+      tex: String.raw`\text{GM} = \left(\prod_{i=1}^{n} x_i\right)^{1/n} = \exp\!\left(\dfrac{1}{n}\sum_{i=1}^{n}\ln x_i\right)`,
+      where: [
+        [String.raw`x_i`, 'Positive values', 'units of the variable'],
+        [String.raw`\text{GM}`, 'Geometric mean: the back-transformed mean of the logs', 'units of the variable'],
+      ],
+      note: 'Never larger than the arithmetic mean; equal only when all values are equal.' },
+    { id: 'log-difference', name: 'Log difference and percentage change',
+      tex: String.raw`d = \ln\dfrac{x_{\text{new}}}{x_{\text{old}}}, \qquad \text{percentage change} = (e^{d} - 1) \times 100\%`,
+      where: [
+        [String.raw`d`, 'Difference between the logs of the new and old values', 'log units'],
+      ],
+      note: 'For small changes, 100 × d is close to the percentage change; for large ones use the exact formula.' },
+  ],
+
+  examples: [
+    { level: 'simple', title: 'The skewness of six Lantern orders', fictional: true,
+      setup: 'Six Lantern online orders were worth $20, $22, $25, $28, $35 and $80. Calculate the adjusted Fisher–Pearson skewness and compare the mean with the median.',
+      steps: [
+        String.raw`Mean <m>= 210 \div 6 = 35</m>; median <m>= (25 + 28) \div 2 = 26.5</m>. Deviations from the mean: −15, −13, −10, −7, 0, 45.`,
+        String.raw`Squared deviations: 225, 169, 100, 49, 0, 2,025, total 2,568, so <m>m_2 = 2{,}568 \div 6 = 428</m>.`,
+        String.raw`Cubed deviations: −3,375, −2,197, −1,000, −343, 0, 91,125, total 84,210, so <m>m_3 = 84{,}210 \div 6 = 14{,}035</m>.`,
+        String.raw`<m>g_1 = 14{,}035 \div 428^{1.5} = 14{,}035 \div 8{,}854.5 = 1.585</m>.`,
+        String.raw`Adjust for the sample size: <m>G_1 = \dfrac{\sqrt{6 \times 5}}{4} \times 1.585 = 1.369 \times 1.585 = 2.17</m>.`,
+      ],
+      answer: 'Skewness G₁ = 2.17: strongly right-skewed. The mean ($35) is well above the median ($26.50).',
+      interpretation: 'Almost all the skewness comes from the one $80 order. Before transforming, check that it is genuine; if it is, the free-delivery threshold should be set from the distribution of household orders (the median and upper quartile), not from a mean that one office order inflates.' },
+    { level: 'challenging', title: 'Logs, symmetry and the geometric mean', fictional: true,
+      setup: 'A battery-storage installer’s five most recent projects cost $10k, $20k, $40k, $80k and $160k. Show that a log transformation makes them perfectly symmetric, and compare the back-transformed mean of the logs with the ordinary mean.',
+      steps: [
+        String.raw`On the original scale: arithmetic mean <m>= 310 \div 5 = 62</m> ($62k), median $40k, skewness <m>G_1 = 1.33</m>. Right-skewed.`,
+        String.raw`Take natural logs: 2.303, 2.996, 3.689, 4.382, 5.075. Each is 0.693 (<m>= \ln 2</m>) above the previous one because each cost is double the previous one, so the logs are evenly spaced and their skewness is 0.`,
+        String.raw`Mean of the logs: <m>(2.303 + 2.996 + 3.689 + 4.382 + 5.075) \div 5 = 3.689</m>. Back-transform: <m>e^{3.689} = 40</m>.`,
+        String.raw`Check directly: <m>(10 \times 20 \times 40 \times 80 \times 160)^{1/5} = 102{,}400{,}000^{1/5} = 40</m>. The back-transformed mean is the geometric mean, $40k.`,
+      ],
+      answer: 'After the log the costs are symmetric (skewness 0). The back-transformed mean is the geometric mean, $40k, well below the arithmetic mean of $62k.',
+      interpretation: 'If the installer modelled log(project cost) and reported the back-transformed average as “the average project”, it would quote $40k, a typical project, and anyone budgeting for five projects from it would plan $200k instead of the $310k actually spent. Report which mean you mean.' },
+    { level: 'applied', title: 'Forecasting Harborview’s booking revenue', fictional: true,
+      setup: 'A sample of eight Harborview bookings had totals of $180, $220, $260, $300, $360, $450, $600 and $1,500. The revenue manager expects 400 bookings next month and asks for a revenue forecast. A colleague suggests using the back-transformed mean of log(total), “because the data are skewed”. Compare the options.',
+      steps: [
+        String.raw`Arithmetic mean <m>= 3{,}870 \div 8 = 483.75</m>; median <m>= (300 + 360) \div 2 = 330</m>; geometric mean (back-transformed mean of the logs) <m>= 381.67</m>. Skewness is 2.32 on the original scale and 1.24 after the log: reduced, not removed.`,
+        String.raw`Revenue is a total, and a total is count × arithmetic mean: <m>400 \times 483.75 = 193{,}500</m>.`,
+        String.raw`Using the geometric mean: <m>400 \times 381.67 = 152{,}670</m>, which is $40,830 too low. Using the median: <m>400 \times 330 = 132{,}000</m>, lower still.`,
+        'Where the log does help: a model predicting one booking’s total from its length of stay and room type is better fitted to log(total), because the errors are more symmetric there. Its predictions, converted back with eˣ, estimate a typical booking and must be adjusted upwards before being summed into revenue.',
+      ],
+      answer: 'Forecast revenue with the arithmetic mean: about $193,500. The geometric mean would understate it by about $40,800 and the median by $61,500.',
+      interpretation: 'Skewness changes which summary describes a typical booking, not how totals add up. Use the median to tell marketing what a typical guest spends, the arithmetic mean for anything that will be summed, and the log scale inside models.' },
+  ],
+
+  demo: [
+    { widget: 'sk-hotel', intro: 'Harborview’s booking totals. Switch between no transformation, the log, log(1 + x) and the square root. Watch the skewness and the number of values the 1.5 × IQR rule flags: on the original scale the long tail produces many flags, and the stronger transformations bring most of those genuine bookings back inside the fences.' },
+    { widget: 'sk-hours', intro: 'Northfield’s weekly study hours. Study time can be zero, so this explorer offers log(1 + x) and the square root rather than the plain log. Compare how much each reduces the skewness.' },
+    { widget: 'sk-logdiff', intro: 'Pick an old and a new price. For small changes the log difference × 100 tracks the percentage change closely; push the new price far from the old one and watch the two separate.' },
+  ],
+
+  mistakes: [
+    { title: '“Skewed data are wrong and need fixing.”', html: 'Skewness is usually a true feature of the business: most customers buy a little and a few buy a lot. Transform when a method needs roughly symmetric data, but keep the original column, and never treat long-tail values as errors just because they are far from the mean.' },
+    { title: '“Just take the log.”', html: 'The log is undefined at zero and for negative values, so a column with zero study hours or negative profit will produce errors or minus infinity. Use log(1 + x) or the square root for zeros (minding the units), and Yeo–Johnson for negatives.' },
+    { title: '“The back-transformed mean is the average.”', html: 'Converting the mean of the logs back with eˣ gives the geometric mean, which is always at or below the arithmetic mean. For Harborview’s bookings it is $381.67 against $483.75; using it for a revenue forecast understates revenue by about a fifth.' },
+    { title: '“A log difference of 0.4 means a 40% increase.”', html: 'Only small log differences approximate percentage changes. A log difference of 0.405 is a 50% increase (e^0.405 − 1 = 0.5). Convert with eᵈ − 1 whenever the change is more than a few per cent.' },
+    { title: '“Transform everything before any model.”', html: 'Tree-based models are unaffected by order-preserving transformations, reports need real units, and totals only add up on the original scale. Transform for a reason (symmetric errors, multiplicative effects, a method that needs it) and say why.' },
+  ],
+
+  application: [
+    { p: 'Lantern’s free-delivery decision now starts from the distribution, not the mean. The analyst plots household order values, sees the long right tail, and reports the median ($26.50 in the sample) and the upper quartile. Marketing sets the threshold a little above the median so that a customer can reach it by adding one bag, and tracks how the share of orders above it changes. The office orders are flagged and excluded from this decision, because they have their own delivery terms.' },
+    { p: 'When Lantern later models what drives order value (subscription, region, promotion), the analyst fits the model to log(order value). Coefficients then read as approximate percentage effects (“a promotion is associated with orders about 8% larger”), which is how the business thinks about prices anyway, and the errors are closer to symmetric. For the finance team’s revenue forecast, though, the analyst switches back to the original scale and the arithmetic mean, because revenue is a sum.' },
+    { p: 'At Harborview, the revenue manager uses the median booking total to describe a typical stay, the arithmetic mean for revenue planning, and log(total) inside the demand model. At Northfield, study hours include zeros, so the analyst uses log(1 + hours) in a model of grades, checks that hours are recorded in hours rather than minutes, and reports raw medians by programme to the academic board. A clothing brand analysing days between a customer’s first and second purchase, a variable with a long right tail and no zeros, would use the log for modelling and percentiles for reporting.' },
+    { callout: 'key', title: 'Choosing what to do with a skewed variable', html: '1. Check the histogram and the skewness, and fix errors and impossible values first. 2. Ask who the result is for: a report needs medians and percentiles in real units; a sum needs the arithmetic mean. 3. For a model, transform if it needs roughly symmetric errors or the effects are multiplicative: log for positive values, log(1 + x) or square root for zeros, Yeo–Johnson for negatives, Box–Cox to let the data choose. 4. Fit any estimated parameter on training data only. 5. Translate the results back: log differences into percentages, back-transformed means as geometric means.' },
+  ],
+
+  summary: [
+    'Skewness measures asymmetry: right-skewed data have a long tail of large values (mean usually above the median), left-skewed data a long tail of small values.',
+    'This course uses the adjusted Fisher–Pearson coefficient G₁ = √(n(n − 1)) ÷ (n − 2) × m₃ ÷ m₂^1.5, as in Excel’s SKEW and pandas’ skew(); it is very sensitive to single extreme values.',
+    'Skewness makes means unrepresentative, makes outlier rules flag genuine values, and can give models skewed errors.',
+    'The log needs positive values; log(1 + x) and the square root handle zeros (the 1 depends on the units); Box–Cox chooses the power from positive data; Yeo–Johnson handles negatives.',
+    'After a log, small differences are approximately percentage changes (exactly eᵈ − 1) and back-transformed means are geometric means, below the arithmetic mean.',
+    'Don’t transform for reports, totals or tree-based models, or to disguise errors; estimate any fitted transformation on training data only.',
+  ],
+
+  glossary: [
+    { term: 'Skewness', def: 'A measure of the asymmetry of a distribution: positive for a long right tail, negative for a long left tail, near 0 for symmetric data.' },
+    { term: 'Right-skewed', def: 'Having a long tail of large values; the mean is usually above the median. Also called positively skewed.' },
+    { term: 'Left-skewed', def: 'Having a long tail of small values; the mean is usually below the median. Also called negatively skewed.' },
+    { term: 'Log transformation', def: 'Replacing each value x with ln x (or a log to another base); it needs positive values and turns equal ratios into equal differences.' },
+    { term: 'Log1p transformation', def: 'Replacing each value x with ln(1 + x), so that zeros become 0; its effect depends on the units of x.' },
+    { term: 'Square-root transformation', def: 'Replacing each value x with √x; a milder correction for right skew that handles zeros.' },
+    { term: 'Box–Cox transformation', def: 'The power transformation (x^λ − 1) ÷ λ, or ln x when λ = 0, with λ estimated from strictly positive data to make them as close to normal as possible.' },
+    { term: 'Geometric mean', def: 'The nth root of the product of n positive values, equal to the back-transformed mean of their logs; never larger than the arithmetic mean.' },
+  ],
+
+  references: [
+    { text: 'NIST/SEMATECH e-Handbook of Statistical Methods, section 1.3.5.11, “Measures of Skewness and Kurtosis”.', url: 'https://itl.nist.gov/div898/handbook/eda/section3/eda35b.htm', checked: '2026-10-22' },
+    { text: 'NIST/SEMATECH e-Handbook of Statistical Methods, section 1.3.3.6, “Box-Cox Normality Plot”.', url: 'https://itl.nist.gov/div898/handbook/eda/section3/boxcoxno.htm', checked: '2026-10-22' },
+    { text: 'Box, G. E. P. &amp; Cox, D. R. (1964). An analysis of transformations. <i>Journal of the Royal Statistical Society, Series B</i>, 26(2), 211–252. doi:10.1111/j.2517-6161.1964.tb00553.x.', checked: '2026-10-22' },
+    { text: 'Illowsky, B., Dean, S. et al. (2023). <i>Introductory Statistics 2e</i>, section 2.6, “Skewness and the Mean, Median, and Mode”. OpenStax.', url: 'https://openstax.org/books/introductory-statistics/pages/2-6-skewness-and-the-mean-median-and-mode', checked: '2026-10-22' },
+    { text: 'scikit-learn developers. API reference: <code>sklearn.preprocessing.PowerTransformer</code> (Box–Cox and Yeo–Johnson; cites Yeo, I.-K. &amp; Johnson, R. A. (2000), <i>Biometrika</i>, 87(4), 954–959).', url: 'https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.PowerTransformer.html', checked: '2026-10-22' },
+    { text: 'NumPy documentation: <code>numpy.log1p</code>.', url: 'https://numpy.org/doc/2.0/reference/generated/numpy.log1p.html', checked: '2026-10-22' },
+  ],
+
+  checks: [
+    // concept: six Lantern orders
+    { what: 'Mean of six orders', value: (20 + 22 + 25 + 28 + 35 + 80) / 6, shown: 35 },
+    { what: 'Median of six orders', value: (25 + 28) / 2, shown: 26.5 },
+    { what: 'Orders below $30', value: [20, 22, 25, 28, 35, 80].filter((v) => v < 30).length, shown: 4 },
+    { what: 'Orders at or above the mean', value: [20, 22, 25, 28, 35, 80].filter((v) => v >= 35).length, shown: 2 },
+    // theory
+    { what: 'Cube of 45', value: 45 ** 3, shown: 91125 },
+    { what: 'Sum of cubes', value: (-15) ** 3 + (-13) ** 3 + (-10) ** 3 + (-7) ** 3 + 0 + 45 ** 3, shown: 84210 },
+    { what: 'ln 10', value: Math.log(10), shown: 2.303, tol: 0.0005 },
+    { what: 'ln 20', value: Math.log(20), shown: 2.996, tol: 0.0005 },
+    { what: 'ln 40', value: Math.log(40), shown: 3.689, tol: 0.0005 },
+    { what: 'ln 80', value: Math.log(80), shown: 4.382, tol: 0.0005 },
+    { what: 'ln 160', value: Math.log(160), shown: 5.075, tol: 0.0005 },
+    { what: 'ln 2', value: Math.log(2), shown: 0.693, tol: 0.0005 },
+    { what: 'Study hours skewness (raw)', value: skew([0, 1, 2, 4, 9, 30]), shown: 2.06, tol: 0.005 },
+    { what: 'Study hours skewness (log1p)', value: skew([0, 1, 2, 4, 9, 30].map(Math.log1p)), shown: 0.54, tol: 0.005 },
+    { what: 'Study hours skewness (sqrt)', value: skew([0, 1, 2, 4, 9, 30].map(Math.sqrt)), shown: 1.10, tol: 0.005 },
+    { what: 'Minutes: log1p of 60', value: Math.log1p(60), shown: 4.1, tol: 0.05 },
+    { what: 'Minutes: log1p of 1800', value: Math.log1p(1800), shown: 7.5, tol: 0.05 },
+    { what: 'Minutes: skewness after log1p', value: skew([0, 60, 120, 240, 540, 1800].map(Math.log1p)), shown: -1.34, tol: 0.005 },
+    { what: 'ln(42/40)', value: Math.log(42 / 40), shown: 0.0488, tol: 0.00005 },
+    { what: 'True % change 40 to 42', value: (42 / 40 - 1) * 100, shown: 5 },
+    { what: 'ln(60/40)', value: Math.log(60 / 40), shown: 0.405, tol: 0.0005 },
+    { what: 'True % change 40 to 60', value: (60 / 40 - 1) * 100, shown: 50 },
+    { what: 'ln(44/40)', value: Math.log(44 / 40), shown: 0.0953, tol: 0.00005 },
+    { what: 'Fall 44 to 40 (%)', value: (40 / 44 - 1) * 100, shown: -9.1, tol: 0.05 },
+    { what: 'Doubling series mean of logs', value: (Math.log(10) + Math.log(20) + Math.log(40) + Math.log(80) + Math.log(160)) / 5, shown: 3.689, tol: 0.0005 },
+    { what: 'Doubling series GM', value: gmean([10, 20, 40, 80, 160]), shown: 40, tol: 1e-9 },
+    { what: 'Doubling series AM', value: (10 + 20 + 40 + 80 + 160) / 5, shown: 62 },
+    // simple example
+    { what: 'Sum of six orders', value: 20 + 22 + 25 + 28 + 35 + 80, shown: 210 },
+    { what: 'Sum of squares', value: 225 + 169 + 100 + 49 + 0 + 2025, shown: 2568 },
+    { what: 'm2', value: 2568 / 6, shown: 428 },
+    { what: 'm3', value: 84210 / 6, shown: 14035 },
+    { what: '428^1.5', value: 428 ** 1.5, shown: 8854.5, tol: 0.05 },
+    { what: 'g1', value: 14035 / 428 ** 1.5, shown: 1.585, tol: 0.0005 },
+    { what: 'Small-sample factor', value: Math.sqrt(30) / 4, shown: 1.369, tol: 0.0005 },
+    { what: 'G1', value: Math.sqrt(30) / 4 * 14035 / 428 ** 1.5, shown: 2.17, tol: 0.005 },
+    { what: 'G1 via helper', value: skew([20, 22, 25, 28, 35, 80]), shown: 2.17, tol: 0.005 },
+    // challenging example
+    { what: 'Doubling series sum', value: 10 + 20 + 40 + 80 + 160, shown: 310 },
+    { what: 'Doubling series skewness', value: skew([10, 20, 40, 80, 160]), shown: 1.33, tol: 0.005 },
+    { what: 'Doubling series log skewness', value: skew([10, 20, 40, 80, 160].map(Math.log)), shown: 0, tol: 1e-9 },
+    { what: 'Product of the five costs', value: 10 * 20 * 40 * 80 * 160, shown: 102400000 },
+    { what: 'e^3.689 ≈ 40', value: Math.exp(3.6888794541), shown: 40, tol: 1e-6 },
+    { what: 'Five GM-based projects', value: 5 * 40, shown: 200 },
+    // applied example
+    { what: 'Hotel sum', value: HOTEL.reduce((s, v) => s + v, 0), shown: 3870 },
+    { what: 'Hotel AM', value: 3870 / 8, shown: 483.75 },
+    { what: 'Hotel median', value: (300 + 360) / 2, shown: 330 },
+    { what: 'Hotel GM', value: gmean(HOTEL), shown: 381.67, tol: 0.005 },
+    { what: 'Hotel skewness', value: skew(HOTEL), shown: 2.32, tol: 0.005 },
+    { what: 'Hotel log skewness', value: skew(HOTEL.map(Math.log)), shown: 1.24, tol: 0.005 },
+    { what: 'Revenue with AM', value: 400 * 483.75, shown: 193500 },
+    { what: 'Revenue with GM', value: 400 * gmean(HOTEL), shown: 152670, tol: 0.5 },
+    { what: 'GM shortfall', value: 400 * (483.75 - gmean(HOTEL)), shown: 40830, tol: 0.5 },
+    { what: 'GM shortfall (about $40,800)', value: 400 * (483.75 - gmean(HOTEL)), shown: 40800, tol: 50 },
+    { what: 'Revenue with median', value: 400 * 330, shown: 132000 },
+    { what: 'Median shortfall', value: 193500 - 132000, shown: 61500 },
+    { what: 'GM understates by about a fifth', value: 1 - gmean(HOTEL) / 483.75, shown: 0.21, tol: 0.005 },
+    // mistakes
+    { what: 'e^0.405 − 1', value: Math.exp(Math.log(1.5)) - 1, shown: 0.5, tol: 1e-9 },
+    // normal vs log-normal fences (theory, outlier rules on long tails)
+    { what: 'Normal upper-tail share beyond the upper fence (%)', value: 100 * (1 - Phi(0.6744898 * 4)), shown: 0.35, tol: 0.005 },
+  ],
+};

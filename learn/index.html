@@ -4,22 +4,23 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Learn · Sunflower Intelligence</title>
-  <meta name="description" content="Learn the finance, analytics and marketing ideas behind the tools: an adaptive placement check, practice that tracks mastery, and spaced review, all in your browser.">
+  <meta name="description" content="Free university-level courses in financial accounting, data cleaning and the marketing mix, with labs, practice that tracks mastery, and spaced review. Progress stays in your browser.">
   <meta name="theme-color" content="#192B49">
   <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/">
   <meta property="og:title" content="Learn · Sunflower Intelligence">
-  <meta property="og:description" content="An adaptive check of where you stand, then practice that tracks what you’ve mastered and when to review it.">
+  <meta property="og:description" content="Free university-level courses in financial accounting, data cleaning and the marketing mix, with labs, practice that tracks mastery, and spaced review. Progress stays in your browser.">
   <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
   <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}try{if(localStorage.getItem('si:outline')==='closed')document.documentElement.classList.add('outline-closed')}catch(e){}</script>
   <link rel="preload" href="../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../assets/css/base.css?v=6">
   <link rel="stylesheet" href="../assets/css/rooms.css?v=6">
+  <link rel="stylesheet" href="../assets/css/study.css?v=6">
 </head>
-<body class="room room--learn">
-  <a class="skip-link" href="#ledger">Skip to the lessons</a>
+<body class="room room--learn room--sub room--study page--home" data-root="../">
+  <a class="skip-link" href="#ledger">Skip to the courses</a>
   <!-- chrome:header -->
   <header class="site-header">
     <a class="wordmark" href="../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
@@ -45,6 +46,7 @@
   </header>
   <!-- /chrome:header -->
 
+  <script>(function(){var k=location.hash.slice(1),m={placement:'practise/',practice:'practise/',garden:'practise/',engine:'practise/',lessons:'lessons/'};if(m[k])location.replace(m[k]+(k==='lessons'?'':'#'+k));})();</script>
   <main>
     <header class="canvas" aria-labelledby="room-title">
       <div class="canvas-flower"><img src="../assets/img/flower-learn.webp" width="720" height="720" alt="The open bloom to the right of the vase in the painting, petals spread wide."></div>
@@ -55,152 +57,127 @@
       <!-- chrome:subnav -->
       <nav class="subnav" aria-label="Learn pages">
         <ul role="list">
-          <li><a href="./" aria-current="page">Check and practise</a></li>
-          <li><a href="./lessons/">Lessons</a></li>
+          <li><a href="./" aria-current="page">Study home</a></li>
+          <li><a href="./finance/">Finance & Accounting</a></li>
+          <li><a href="./analytics/">Business Analytics</a></li>
+          <li><a href="./marketing/">Marketing & Strategy</a></li>
+          <li><a href="./labs/">Labs</a></li>
+          <li><a href="./glossary/">Glossary</a></li>
+          <li><a href="./formulas/">Formulas</a></li>
+          <li><a href="./review/">Review</a></li>
+          <li><a href="./notebook/">Notebook</a></li>
+          <li><a href="./lessons/">Plates</a></li>
+          <li><a href="./practise/">Skills check</a></li>
+          <li><a href="./curriculum/">Curriculum</a></li>
         </ul>
       </nav>
       <!-- /chrome:subnav -->
-      <nav aria-label="In this room"><ul class="toc" role="list"><li><a href="#lessons">Lessons</a></li><li><a href="#placement">Where you stand</a></li><li><a href="#practice">Practise</a></li><li><a href="#garden">Your progress</a></li><li><a href="#engine">How it works</a></li></ul></nav>
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#continue">Start here</a></li><li><a href="#schools">Schools</a></li><li><a href="#paths">Learning paths</a></li><li><a href="#labs">Labs</a></li><li><a href="#how">How it works</a></li></ul></nav>
     </header>
 
     <div class="ledger" id="ledger">
       <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../">The painting</a></li><li aria-current="page">Learn</li></ol></nav>
-      <div class="ledger-intro">
-        <p class="lead">Nineteen skills behind every tool on this site, each with a short lesson and a bank of questions, eighty in all. A short adaptive check finds your level, practice goes to what you haven’t mastered, and skills come back for review just as you’re likely to forget them. Your progress stays in this browser.</p>
+      <div class="ledger-intro home-intro">
+        <p class="lead">Free courses in finance and accounting, business analytics and marketing, written to a university standard. Each lesson teaches from first principles, works examples step by step and gives you practice with feedback; each course has labs, tests and a project. Three foundation courses are open and being finished; a course is marked complete only after independent review and testing. The other 30 are planned, and marked as such.</p>
+        <form class="study-search" role="search" id="study-search" action="#" onsubmit="return false">
+          <label class="field-label" for="search-input">Search lessons, terms and formulas</label>
+          <div class="search-row"><input class="input" id="search-input" type="search" autocomplete="off" placeholder="e.g. accrual, outliers, break-even" aria-describedby="search-hint" aria-controls="search-results"><span class="search-count" id="search-count" aria-live="polite"></span></div>
+          <p class="field-hint" id="search-hint">17 lessons, 165 glossary terms and 68 formulas, plus every course in the catalogue.</p>
+          <ul class="search-results" id="search-results" role="list" hidden></ul>
+        </form>
       </div>
 
-      <!-- ============================================================ LESSONS -->
-      <section class="tool" id="lessons" aria-labelledby="ls-title">
-        <div class="tool-head">
-          <h2 id="ls-title">Lessons</h2>
-          <p>One short lesson per skill: the idea, the formula, a worked example, a calculator to try, and three questions that count toward your mastery here.</p>
+      <section class="home-section" id="continue" aria-labelledby="continue-h">
+        <h2 id="continue-h">Start here</h2>
+        <div class="continue-box" id="continue-box">
+          <p>New to all of this? Each of these courses is open and starts from scratch, so pick the subject you most want to learn. The <a href="#paths">Beginner path</a> shows what to take after it.</p>
+          <ul class="start-list" role="list"><li><a class="btn btn-secondary" href="finance/f01/"><span>F01 Introduction to Financial Accounting</span></a></li><li><a class="btn btn-secondary" href="analytics/b02/"><span>B02 Data Cleaning and Preparation</span></a></li><li><a class="btn btn-secondary" href="marketing/m02/"><span>M02 The 4Ps Marketing Mix</span></a></li></ul>
         </div>
-        <div class="lesson-next">
-          <p class="q-kicker" id="ls-kicker">Start here</p>
-          <h3 class="lesson-next-title"><a id="ls-link" href="lessons/tvm/">Plate 1: Time value and discounted cash flow</a></h3>
-          <p id="ls-why">The first plate. Or take the check below, and this will point you to your weakest skill.</p>
-          <p><a class="btn btn-secondary" href="lessons/">See all nineteen lessons</a></p>
-        </div>
+        <div class="progress-board" id="progress-board" aria-live="polite"></div>
       </section>
 
-      <!-- ============================================================ PLACEMENT -->
-      <section class="tool" id="placement" aria-labelledby="pl-title">
-        <div class="tool-head">
-          <h2 id="pl-title">Where you stand</h2>
-          <p>Six to twelve questions, each chosen to tell the most about your level given your answers so far. Right answers bring harder questions; wrong ones, easier.</p>
-        </div>
-        <div class="bench learn-bench">
-          <div class="quiz" id="pl-quiz" aria-live="polite"></div>
-          <div class="bench-results">
-            <div>
-              <div class="figure-hero"><span class="hero-value" id="pl-theta">—</span><span class="hero-label">ability estimate (0 = average question difficulty)</span></div>
-              <p class="hero-label" id="pl-line">Answer a question to start the estimate.</p>
-            </div>
-            <figure>
-              <figcaption class="figure-title">The estimate after each answer, ± one standard error</figcaption>
-              <div class="chart" id="pl-chart"></div>
-            </figure>
+      <section class="home-section" id="schools" aria-labelledby="schools-h">
+        <h2 id="schools-h">Three schools</h2>
+        <ul class="school-cards" role="list"><li class="school-card school-card--finance">
+            <a class="sc-link" href="finance/"><img src="../assets/img/flower-finance-160.webp" alt="" width="80" height="80" loading="lazy" decoding="async"><span class="sc-name">Finance & Accounting</span></a>
+            <p class="sc-blurb">Record transactions, prepare and read financial statements, value money over time, and make investment and financing decisions.</p>
+            <p class="sc-count">1 of 9 courses open</p>
+            <ul class="sc-ready" role="list"><li><a href="finance/f01/"><b>F01</b> Introduction to Financial Accounting</a></li></ul>
+          </li><li class="school-card school-card--analytics">
+            <a class="sc-link" href="analytics/"><img src="../assets/img/flower-analytics-160.webp" alt="" width="80" height="80" loading="lazy" decoding="async"><span class="sc-name">Business Analytics & Data Science</span></a>
+            <p class="sc-blurb">Prepare data you can trust, describe it, test ideas with statistics, and build models that predict and explain.</p>
+            <p class="sc-count">1 of 12 courses open</p>
+            <ul class="sc-ready" role="list"><li><a href="analytics/b02/"><b>B02</b> Data Cleaning and Preparation</a></li></ul>
+          </li><li class="school-card school-card--marketing">
+            <a class="sc-link" href="marketing/"><img src="../assets/img/flower-marketing-160.webp" alt="" width="80" height="80" loading="lazy" decoding="async"><span class="sc-name">Marketing & Business Strategy</span></a>
+            <p class="sc-blurb">Understand customers, design the marketing mix, measure what marketing returns, and choose where to compete.</p>
+            <p class="sc-count">1 of 12 courses open</p>
+            <ul class="sc-ready" role="list"><li><a href="marketing/m02/"><b>M02</b> The 4Ps Marketing Mix</a></li></ul>
+          </li></ul>
+      </section>
+
+      <section class="home-section" id="paths" aria-labelledby="paths-h">
+        <h2 id="paths-h">Learning paths</h2>
+        <p class="section-lead">Three suggested routes through the catalogue. Not sure which fits? The <a href="practise/#placement">skills check</a> estimates your level in a few minutes and this section will recommend a path from it.</p>
+        <div class="path-tabs segmented" role="tablist" aria-label="Learning paths"><button type="button" role="tab" class="path-tab" id="path-tab-beginner" aria-controls="path-beginner" aria-selected="true" tabindex="0">Beginner</button><button type="button" role="tab" class="path-tab" id="path-tab-intermediate" aria-controls="path-intermediate" aria-selected="false" tabindex="-1">Intermediate</button><button type="button" role="tab" class="path-tab" id="path-tab-advanced" aria-controls="path-advanced" aria-selected="false" tabindex="-1">Advanced</button></div>
+        <p class="path-rec" id="path-rec" aria-live="polite"></p>
+          <div class="path-panel" id="path-beginner" data-path="beginner" role="tabpanel" aria-labelledby="path-tab-beginner">
+            <p class="path-blurb">New to business subjects. Learn what finance, analytics and marketing are, then how a business records its money, cleans its data and sells its products, then the first tools of analysis. Start with step 2, <a href="finance/f01/">F01 Introduction to Financial Accounting</a>: it is open, and it teaches what it needs from the planned steps before it.</p>
+            <ol class="path-list" role="list"><li class="is-planned" data-course="f00"><span class="pl-n" aria-hidden="true">1</span><span><b>F00</b> Foundations of Finance</span> <span class="status-chip is-planned">Planned</span></li><li class="is-ready is-start" data-course="f01"><span class="pl-n" aria-hidden="true">2</span><a href="finance/f01/"><b>F01</b> Introduction to Financial Accounting</a> <span class="start-tag">Start here</span> <span class="pl-status"></span></li><li class="is-planned" data-course="b01"><span class="pl-n" aria-hidden="true">3</span><span><b>B01</b> Introduction to Business Analytics</span> <span class="status-chip is-planned">Planned</span></li><li class="is-ready" data-course="b02"><span class="pl-n" aria-hidden="true">4</span><a href="analytics/b02/"><b>B02</b> Data Cleaning and Preparation</a> <span class="pl-status"></span></li><li class="is-planned" data-course="m01"><span class="pl-n" aria-hidden="true">5</span><span><b>M01</b> Marketing Fundamentals</span> <span class="status-chip is-planned">Planned</span></li><li class="is-ready" data-course="m02"><span class="pl-n" aria-hidden="true">6</span><a href="marketing/m02/"><b>M02</b> The 4Ps Marketing Mix</a> <span class="pl-status"></span></li><li class="is-planned" data-course="f02"><span class="pl-n" aria-hidden="true">7</span><span><b>F02</b> Financial Statement Preparation</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="f04"><span class="pl-n" aria-hidden="true">8</span><span><b>F04</b> Mathematics of Finance</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="b03"><span class="pl-n" aria-hidden="true">9</span><span><b>B03</b> Excel for Business Analytics</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="b04"><span class="pl-n" aria-hidden="true">10</span><span><b>B04</b> Descriptive and Inferential Statistics</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="m04"><span class="pl-n" aria-hidden="true">11</span><span><b>M04</b> Market Research</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="m05"><span class="pl-n" aria-hidden="true">12</span><span><b>M05</b> Market Segmentation and Positioning</span> <span class="status-chip is-planned">Planned</span></li></ol>
           </div>
-        </div>
-      </section>
-
-      <!-- ============================================================ PRACTICE -->
-      <section class="tool" id="practice" aria-labelledby="pr-title">
-        <div class="tool-head">
-          <h2 id="pr-title">Practise</h2>
-          <p>One question at a time. Skills due for review come first; otherwise the skill you have mastered least. Every explanation links to the tool that covers it.</p>
-        </div>
-        <div class="bench learn-bench">
-          <div class="quiz" id="pr-quiz" aria-live="polite"></div>
-          <div class="bench-results">
-            <div id="pr-why"></div>
-            <dl class="stats-row">
-              <div class="stat"><dt>Skills mastered</dt><dd class="num" id="pr-mastered">—</dd></div>
-              <div class="stat"><dt>Due for review</dt><dd class="num" id="pr-due">—</dd></div>
-              <div class="stat"><dt>Answered</dt><dd class="num" id="pr-answered">—</dd></div>
-              <div class="stat"><dt>Right</dt><dd class="num" id="pr-right">—</dd></div>
-            </dl>
+          <div class="path-panel" id="path-intermediate" data-path="intermediate" role="tabpanel" aria-labelledby="path-tab-intermediate" hidden>
+            <p class="path-blurb">You know the basics of accounting, spreadsheets and marketing. Build analysis and decision skills. Start with step 4, <a href="analytics/b02/">B02 Data Cleaning and Preparation</a>: it is open, and it teaches what it needs from the planned steps before it.</p>
+            <ol class="path-list" role="list"><li class="is-planned" data-course="f02"><span class="pl-n" aria-hidden="true">1</span><span><b>F02</b> Financial Statement Preparation</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="f04"><span class="pl-n" aria-hidden="true">2</span><span><b>F04</b> Mathematics of Finance</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="f03"><span class="pl-n" aria-hidden="true">3</span><span><b>F03</b> Financial Statement Analysis</span> <span class="status-chip is-planned">Planned</span></li><li class="is-ready is-start" data-course="b02"><span class="pl-n" aria-hidden="true">4</span><a href="analytics/b02/"><b>B02</b> Data Cleaning and Preparation</a> <span class="start-tag">Start here</span> <span class="pl-status"></span></li><li class="is-planned" data-course="b04"><span class="pl-n" aria-hidden="true">5</span><span><b>B04</b> Descriptive and Inferential Statistics</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="b05"><span class="pl-n" aria-hidden="true">6</span><span><b>B05</b> Correlation Analysis</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="b06"><span class="pl-n" aria-hidden="true">7</span><span><b>B06</b> Regression Analysis</span> <span class="status-chip is-planned">Planned</span></li><li class="is-ready" data-course="m02"><span class="pl-n" aria-hidden="true">8</span><a href="marketing/m02/"><b>M02</b> The 4Ps Marketing Mix</a> <span class="pl-status"></span></li><li class="is-planned" data-course="m04"><span class="pl-n" aria-hidden="true">9</span><span><b>M04</b> Market Research</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="m05"><span class="pl-n" aria-hidden="true">10</span><span><b>M05</b> Market Segmentation and Positioning</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="m06"><span class="pl-n" aria-hidden="true">11</span><span><b>M06</b> Customer Analytics and RFM</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="f05"><span class="pl-n" aria-hidden="true">12</span><span><b>F05</b> Corporate Finance</span> <span class="status-chip is-planned">Planned</span></li></ol>
           </div>
-        </div>
-      </section>
-
-      <!-- ============================================================ GARDEN -->
-      <section class="tool" id="garden" aria-labelledby="gd-title">
-        <div class="tool-head">
-          <h2 id="gd-title">Your progress</h2>
-          <p>One petal per skill. A petal grows with the chance you have mastered the skill and turns gold at 95%. A dot on a petal means it is due for review.</p>
-        </div>
-        <div class="bench garden-bench">
-          <figure class="garden-figure">
-            <div id="gd-flower"></div>
-          </figure>
-          <div class="bench-results">
-            <div class="table-scroll" id="gd-table"></div>
-            <div class="input-actions">
-              <button class="btn btn-secondary" type="button" id="gd-export">Download my progress (CSV)</button>
-              <button class="btn btn-secondary" type="button" id="gd-reset">Start again</button>
-            </div>
-            <p class="field-hint" id="gd-reset-note" aria-live="polite"></p>
+          <div class="path-panel" id="path-advanced" data-path="advanced" role="tabpanel" aria-labelledby="path-tab-advanced" hidden>
+            <p class="path-blurb">Comfortable with statistics and corporate finance. Go on to investments, modelling, machine learning and strategy. Start with step 4, <a href="analytics/b02/">B02 Data Cleaning and Preparation</a>: it is open, and it teaches what it needs from the planned steps before it.</p>
+            <ol class="path-list" role="list"><li class="is-planned" data-course="f06"><span class="pl-n" aria-hidden="true">1</span><span><b>F06</b> Investment Analysis</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="f07"><span class="pl-n" aria-hidden="true">2</span><span><b>F07</b> Financial Modelling</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="f08"><span class="pl-n" aria-hidden="true">3</span><span><b>F08</b> Advanced Financial Decision-Making</span> <span class="status-chip is-planned">Planned</span></li><li class="is-ready is-start" data-course="b02"><span class="pl-n" aria-hidden="true">4</span><a href="analytics/b02/"><b>B02</b> Data Cleaning and Preparation</a> <span class="start-tag">Start here</span> <span class="pl-status"></span></li><li class="is-planned" data-course="b08"><span class="pl-n" aria-hidden="true">5</span><span><b>B08</b> Machine Learning for Business</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="b09"><span class="pl-n" aria-hidden="true">6</span><span><b>B09</b> Forecasting and Time Series</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="b11"><span class="pl-n" aria-hidden="true">7</span><span><b>B11</b> Optimisation and Decision Analytics</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="b12"><span class="pl-n" aria-hidden="true">8</span><span><b>B12</b> Experimental Design and Applied Analytics</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="m07"><span class="pl-n" aria-hidden="true">9</span><span><b>M07</b> Digital Marketing</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="m08"><span class="pl-n" aria-hidden="true">10</span><span><b>M08</b> Marketing Analytics</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="m11"><span class="pl-n" aria-hidden="true">11</span><span><b>M11</b> Competitive and Strategic Analysis</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="m12"><span class="pl-n" aria-hidden="true">12</span><span><b>M12</b> Integrated Marketing Strategy</span> <span class="status-chip is-planned">Planned</span></li></ol>
           </div>
-        </div>
       </section>
 
-      <!-- ============================================================ ENGINE -->
-      <section class="tool" id="engine" aria-labelledby="en-title">
-        <div class="tool-head">
-          <h2 id="en-title">How it works</h2>
-          <p>Three models from the research on learning, each small enough to run in your browser. Try them below.</p>
+      <section class="home-section" id="labs" aria-labelledby="labs-h">
+        <h2 id="labs-h">Labs</h2>
+        <p class="section-lead">Workbenches where you do the work rather than read about it. Each belongs to a course but can be used on its own.</p>
+        <ul class="lab-cards" role="list"><li class="lab-card"><a href="labs/accounting/"><span class="lab-name">Accounting Lab</span><span class="lab-blurb">Analyse transactions, post journal entries to T-accounts, and watch the trial balance and statements update.</span><span class="lab-course">F01 Introduction to Financial Accounting</span></a></li><li class="lab-card"><a href="labs/cleaning/"><span class="lab-name">Data Cleaning Lab</span><span class="lab-blurb">Inspect a messy dataset, choose cleaning steps, and see what each one does to the data and the conclusions.</span><span class="lab-course">B02 Data Cleaning and Preparation</span></a></li><li class="lab-card"><a href="labs/mix/"><span class="lab-name">Marketing Mix Simulator</span><span class="lab-blurb">Choose a product, price, channels and promotion for a fictional launch and see simulated demand, margin and share.</span><span class="lab-course">M02 The 4Ps Marketing Mix</span></a></li></ul>
+      </section>
+
+      <section class="home-section" id="featured" aria-labelledby="featured-h">
+        <h2 id="featured-h">A lesson from each course</h2>
+        <ul class="feat-cards" role="list"><li class="feat-card"><a href="finance/f01/debits-and-credits/"><span class="feat-code">F01 · lesson 3</span><span class="feat-title">Debits, credits and normal balances</span><span class="feat-blurb">Debit means the left side of an account and credit means the right, nothing more. Work out from the accounting equation which side increases each kind of account, read normal balances, and calculate the balance of any T-account.</span><span class="feat-meta">85 min</span></a></li><li class="feat-card"><a href="analytics/b02/missing-values/"><span class="feat-code">B02 · lesson 3</span><span class="feat-title">Missing values</span><span class="feat-blurb">A blank cell is a question: why is the value missing? Learn to find every form missing data takes, judge whether the gaps are random, and choose between deleting and imputing without quietly biasing the answer.</span><span class="feat-meta">75 min</span></a></li><li class="feat-card"><a href="marketing/m02/pricing-approaches/"><span class="feat-code">M02 · lesson 2</span><span class="feat-title">Pricing approaches</span><span class="feat-blurb">Price is the only part of the mix that brings money in. Learn to separate fixed from variable costs, work with contribution, markups and margins, find the break-even volume, and set a price between the floor your costs set and the ceiling your customers’ alternatives set.</span><span class="feat-meta">90 min</span></a></li></ul>
+      </section>
+
+      <section class="home-section" id="toolkit" aria-labelledby="toolkit-h">
+        <h2 id="toolkit-h">Your toolkit</h2>
+        <ul class="toolkit" role="list">
+          <li><a href="glossary/"><b>Glossary</b><span>165 terms, searchable, each linked to the lesson that teaches it.</span></a></li>
+          <li><a href="formulas/"><b>Formulas</b><span>68 formulas with every symbol and unit defined.</span></a></li>
+          <li><a href="review/"><b>Review</b><span class="tk-review">Flashcards and the questions you missed, brought back when they’re due.</span></a></li>
+          <li><a href="notebook/"><b>Notebook</b><span>Your notes and bookmarks, and moving your progress to another browser.</span></a></li>
+          <li><a href="lessons/"><b>Plates</b><span>Nineteen short lessons on the ideas behind the site’s tools.</span></a></li>
+          <li><a href="practise/"><b>Skills check</b><span>An adaptive placement check and practice across those nineteen skills.</span></a></li>
+          <li><a href="curriculum/"><b>Curriculum</b><span>All 33 courses, their prerequisites and what is built.</span></a></li>
+        </ul>
+      </section>
+
+      <section class="home-section" id="how" aria-labelledby="how-h">
+        <h2 id="how-h">How the courses work</h2>
+        <div class="method-grid">
+          <div><h3>Complete is not the same as mastered</h3><p>A lesson is complete when you have worked its guided problems and scored 80% on its knowledge check, not when you open it. Mastery is estimated separately from your first answers, using Bayesian knowledge tracing, and decays unless you review.</p></div>
+          <div><h3>Worked examples, then practice</h3><p>Beginners learn faster from studied examples than from solving problems cold (Sweller and Cooper, 1985), and answering questions strengthens memory more than rereading (Roediger and Karpicke, 2006). Every lesson does both, with hints first and feedback that explains the mistake.</p></div>
+          <div><h3>Spaced review</h3><p>Each lesson comes back for review when you are predicted to be about to forget it, using half-life regression (Settles and Meeder, 2016). Questions you got wrong come back too, and the glossary doubles as flashcards.</p></div>
+          <div><h3>Checked, and honest about it</h3><p>Every number printed in a lesson is recomputed by a test; journal entries must balance and statements must add up. Each lesson was reviewed for accuracy by a second reader. Sources are listed in every lesson, and anything not yet verified says so.</p></div>
+          <div><h3>Your progress stays with you</h3><p>Progress, notes and bookmarks are kept in this browser only: no account, nothing sent anywhere. Clearing your browser’s site data deletes them, so the Notebook lets you download a copy and load it elsewhere.</p></div>
+          <div><h3>What it can’t do</h3><p>There is no teacher marking your work: written answers are marked by you against a model answer and a rubric. Answer keys are in the page’s code, as on any static site. The labs’ data and the companies in them are fictional.</p></div>
         </div>
-        <div class="engine-grid">
-          <article class="engine-card" aria-labelledby="en-irt">
-            <h3 id="en-irt">Finding your level: item response theory</h3>
-            <p>Each question has a difficulty <i>b</i>, a sharpness <i>a</i> and a guessing floor <i>c</i>. The chance that someone of ability <i>θ</i> answers correctly is</p>
-            <p class="formula">P(θ) = c + (1 − c) / (1 + e<sup>−a(θ − b)</sup>)</p>
-            <p>After each answer the check updates its estimate of θ (the average over a bell-shaped prior, weighted by how well each θ explains your answers) and asks next the question carrying the most information at that estimate: I(θ) = P′(θ)² / P(θ)(1 − P(θ)).</p>
-            <div class="engine-controls">
-              <div class="slider-field"><div class="slider-top"><label for="en-a">Sharpness a</label><output for="en-a" id="en-a-out"></output></div><input type="range" id="en-a" min="0.3" max="2.5" step="0.1" value="1.2"></div>
-              <div class="slider-field"><div class="slider-top"><label for="en-b">Difficulty b</label><output for="en-b" id="en-b-out"></output></div><input type="range" id="en-b" min="-2.5" max="2.5" step="0.1" value="0"></div>
-              <div class="slider-field"><div class="slider-top"><label for="en-c">Guessing floor c</label><output for="en-c" id="en-c-out"></output></div><input type="range" id="en-c" min="0" max="0.4" step="0.05" value="0.2"></div>
-            </div>
-            <div class="chart" id="en-irt-chart"></div>
-          </article>
-          <article class="engine-card" aria-labelledby="en-bkt">
-            <h3 id="en-bkt">Tracking mastery: Bayesian knowledge tracing</h3>
-            <p>Each skill is either mastered or not, and only your answers hint at which. After an answer the chance of mastery is updated with Bayes’ rule, allowing for slips (a master answering wrong, 8%) and guesses (a beginner answering right, 20%), then for the chance you learned something on the way (15%).</p>
-            <p class="formula">after a right answer: P(L | ✓) = P(L)(1 − s) / [P(L)(1 − s) + (1 − P(L)) g]</p>
-            <p>Your starting mastery is individualised: the placement estimate shifts every skill’s prior, σ(logit prior + θ).</p>
-            <div class="engine-controls">
-              <div class="input-actions">
-                <button class="btn btn-secondary" type="button" id="en-right">Answer right</button>
-                <button class="btn btn-secondary" type="button" id="en-wrong">Answer wrong</button>
-                <button class="btn btn-secondary" type="button" id="en-clear">Clear</button>
-              </div>
-            </div>
-            <div class="chart" id="en-bkt-chart"></div>
-          </article>
-          <article class="engine-card" aria-labelledby="en-hlr">
-            <h3 id="en-hlr">Remembering it: half-life regression</h3>
-            <p>Memory fades on a curve. The chance you still recall a skill after Δ days is 2<sup>−Δ/h</sup>, where the half-life <i>h</i> grows with right answers and shrinks with wrong ones:</p>
-            <p class="formula">h = 2<sup>√right − √wrong − 0.5 × difficulty</sup> days</p>
-            <p>A skill comes back for review when the predicted chance of recall falls to 50%, which is exactly one half-life after you last practised it.</p>
-            <div class="engine-controls">
-              <div class="slider-field"><div class="slider-top"><label for="en-nc">Right answers so far</label><output for="en-nc" id="en-nc-out"></output></div><input type="range" id="en-nc" min="0" max="25" step="1" value="4"></div>
-              <div class="slider-field"><div class="slider-top"><label for="en-nw">Wrong answers so far</label><output for="en-nw" id="en-nw-out"></output></div><input type="range" id="en-nw" min="0" max="10" step="1" value="1"></div>
-            </div>
-            <div class="chart" id="en-hlr-chart"></div>
-          </article>
-        </div>
-        <div class="verdict is-warn engine-honest"><p><strong>What these numbers are, and aren’t. </strong>The question parameters and model settings here are reasoned starting values, not calibrated from learners: calibrating item response theory needs hundreds of people answering the same questions, and the half-life weights in Settles and Meeder’s model were learned from millions of reviews. Treat your estimate as a guide to what to practise, not a grade.</p></div>
       </section>
 
       <section class="sources" aria-labelledby="sources-title">
         <h2 id="sources-title">Sources</h2>
         <ol>
           <li>Van Gogh to Anthon van Rappard, Nuenen, on or about 18 August 1885, <a href="https://vangoghletters.org/vg/letters/let528/letter.html">letter 528</a>.</li>
-          <li>Birnbaum, A. (1968). Some latent trait models and their use in inferring an examinee’s ability. In F. M. Lord &amp; M. R. Novick, <i>Statistical Theories of Mental Test Scores</i>. Addison-Wesley. (Three-parameter logistic model.)</li>
-          <li>Bock, R. D. &amp; Mislevy, R. J. (1982). Adaptive EAP estimation of ability in a microcomputer environment. <i>Applied Psychological Measurement</i>, 6(4), 431–444.</li>
+          <li>Sweller, J. &amp; Cooper, G. A. (1985). The use of worked examples as a substitute for problem solving in learning algebra. <i>Cognition and Instruction</i>, 2(1), 59–89.</li>
+          <li>Roediger, H. L. &amp; Karpicke, J. D. (2006). Test-enhanced learning: taking memory tests improves long-term retention. <i>Psychological Science</i>, 17(3), 249–255.</li>
           <li>Corbett, A. T. &amp; Anderson, J. R. (1995). Knowledge tracing: modeling the acquisition of procedural knowledge. <i>User Modeling and User-Adapted Interaction</i>, 4, 253–278.</li>
-          <li>Yudelson, M. V., Koedinger, K. R. &amp; Gordon, G. J. (2013). <a href="https://www.cs.cmu.edu/~ggordon/yudelson-koedinger-gordon-individualized-bayesian-knowledge-tracing.pdf">Individualized Bayesian knowledge tracing models</a>. <i>Artificial Intelligence in Education</i>.</li>
           <li>Settles, B. &amp; Meeder, B. (2016). <a href="https://research.duolingo.com/papers/settles.acl16.pdf">A trainable spaced repetition model for language learning</a>. <i>Proceedings of ACL</i>.</li>
         </ol>
       </section>
@@ -224,6 +201,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../assets/js/pages/learn.js?v=6"></script>
+  <script type="module" src="../assets/js/pages/study-home.js?v=6"></script>
 </body>
 </html>

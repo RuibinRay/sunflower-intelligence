@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Marketing Mix Simulator · Learn · Sunflower Intelligence</title>
+  <meta name="description" content="Plan a fictional product launch: product, price, place and promotion, with simulated demand, margins and market share and every assumption shown.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/labs/mix/">
+  <meta property="og:title" content="Marketing Mix Simulator · Sunflower Intelligence">
+  <meta property="og:description" content="Plan a fictional product launch: product, price, place and promotion, with simulated demand, margins and market share and every assumption shown.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/study.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/lab-mix.css?v=6">
+</head>
+<body class="room room--learn room--sub room--lab">
+  <a class="skip-link" href="#ledger">Skip to the lab</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../../finance/">Finance</a></li>
+        <li><a href="../../../analytics/">Business analytics</a></li>
+        <li><a href="../../../marketing/">Marketing</a></li>
+        <li><a href="../../../models/">How I build the models</a></li>
+        <li><a href="../../../contact/">Contact</a></li>
+        <li><a href="../../../learn/" aria-current="page">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../../"><img src="../../../assets/img/flower-learn-160.webp" alt="" width="56" height="56"><span>Learn</span></a>
+      <p class="plate-no">Lab · M02 The 4Ps Marketing Mix</p>
+      <h1 id="room-title" class="display is-long">Marketing Mix Simulator</h1>
+      <p class="chapter-note">Choose a product, price, channels and promotion for a fictional cold brew launch and see simulated demand, margin, share and satisfaction.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Learn pages">
+        <ul role="list">
+          <li><a href="../../">Study home</a></li>
+          <li><a href="../../finance/">Finance & Accounting</a></li>
+          <li><a href="../../analytics/">Business Analytics</a></li>
+          <li><a href="../../marketing/">Marketing & Strategy</a></li>
+          <li><a href="../../labs/" aria-current="true">Labs</a></li>
+          <li><a href="../../glossary/">Glossary</a></li>
+          <li><a href="../../formulas/">Formulas</a></li>
+          <li><a href="../../review/">Review</a></li>
+          <li><a href="../../notebook/">Notebook</a></li>
+          <li><a href="../../lessons/">Plates</a></li>
+          <li><a href="../../practise/">Skills check</a></li>
+          <li><a href="../../curriculum/">Curriculum</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#launch">The launch</a></li><li><a href="#plan">Your plan</a></li><li><a href="#compare">Compare plans</a></li><li><a href="#assumptions">What the model assumes</a></li></ul></nav>
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../../">The painting</a></li><li><a href="../../">Learn</a></li><li><a href="../">Labs</a></li><li aria-current="page">Marketing Mix Simulator</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">Choose a product, price, channels and promotion for a fictional cold brew launch and see simulated demand, margin, share and satisfaction.</p>
+      </div>
+
+      <section class="tool" id="launch" aria-labelledby="launch-title">
+        <div class="tool-head">
+          <h2 id="launch-title">The launch</h2>
+          <p>A fictional brief. Every business, brand, place and number on this page is invented for teaching.</p>
+        </div>
+        <div class="mix-brief">
+          <div class="prose">
+            <p><strong>Lantern Coffee Co.</strong> (fictional), the catering and café business from course F01, is launching <strong>Lantern Cold Brew</strong>: a ready-to-drink cold brew in 250&nbsp;ml cans, sold in <strong>Harbour City</strong>, a fictional metropolitan area. About 4.8 million cans of ready-to-drink coffee are sold there each year, a quarter more than average in summer (Q3) and fewer in winter.</p>
+            <p>Three established brands already share the shelves. Lantern starts with 12% awareness: the people who know the name from its catering and cafés. You have one year to show the launch can work, and a launch overhead of $60,000 a year (the team and brand work) to cover.</p>
+          </div>
+          <div id="mix-rivals"></div>
+          <h3 class="mix-h3">What a plan contains</h3>
+          <ul class="mix-plan-parts" role="list">
+            <li><strong>Product.</strong> The liquid (classic blend, single-origin or organic single-origin: better taste costs more per can) and the range (one flavour, or three, which means three sets of listing fees and extra production runs).</li>
+            <li><strong>Price.</strong> One shelf price per can, from $1.99 to $4.99. Retailers and distributors keep their trade margin; Lantern’s own cafés and online shop keep the whole price but pay to pack and deliver.</li>
+            <li><strong>Place.</strong> Any mix of supermarkets, convenience stores, natural and specialty grocers, and Lantern’s cafés and online shop. Each retail channel charges a listing fee per flavour, and each has different rivals and shoppers.</li>
+            <li><strong>Promotion.</strong> Yearly budgets for social and search ads, in-store sampling and displays, trade promotions (temporary price cuts that Lantern pays for) and PR and events.</li>
+          </ul>
+          <p class="note">The simulator turns a plan into a simulated first year: cans by quarter and channel, share, awareness, the money from shelf price to profit, and a satisfaction index. Change one decision at a time and watch what moves, save the plans you want to keep, and compare them before you recommend one.</p>
+        </div>
+      </section>
+
+      <section class="tool" id="plan" aria-labelledby="plan-title">
+        <div class="tool-head">
+          <h2 id="plan-title" tabindex="-1">Your plan</h2>
+          <p>The simulator opens on the default plan, a sensible first attempt. Every change recalculates the year at once; the figures marked “vs the default plan” show what your change did.</p>
+        </div>
+        <div class="mix-toolbar" role="group" aria-label="Save, reset and copy">
+          <div class="field mix-name"><label for="mix-save-name">Name this plan (optional)</label><input class="input" id="mix-save-name" type="text" maxlength="40" autocomplete="off" placeholder="e.g. Premium, natural grocers"></div>
+          <button class="btn btn-primary" type="button" id="mix-save">Save this plan</button>
+          <button class="btn btn-secondary" type="button" id="mix-reset">Reset to the default plan</button>
+          <button class="btn btn-secondary" type="button" id="mix-copy">Copy plan summary</button>
+          <p class="field-hint" id="mix-save-hint"></p>
+          <p class="mix-status" id="mix-status" role="status" aria-live="polite"></p>
+        </div>
+        <div id="mix-sim" class="mix-lab"></div>
+        <details class="table-twin mix-summary">
+          <summary>Show the summary text</summary>
+          <label class="visually-hidden" for="mix-summary-text">Plan summary to paste into a written recommendation</label>
+          <textarea class="textarea" id="mix-summary-text" readonly rows="16"></textarea>
+        </details>
+      </section>
+
+      <section class="tool" id="compare" aria-labelledby="compare-title">
+        <div class="tool-head">
+          <h2 id="compare-title">Compare plans</h2>
+          <p>Save up to three plans in “Your plan” and they appear here side by side. The first saved plan is the reference: decisions that differ from it are marked ◆, results show the change from it, and ★ marks the best result where more (or, for break-even, fewer) is better. Plans are kept in this browser only.</p>
+        </div>
+        <div id="mix-compare"></div>
+      </section>
+
+      <section class="tool" id="assumptions" aria-labelledby="assumptions-title">
+        <div class="tool-head">
+          <h2 id="assumptions-title">What the model assumes</h2>
+          <p>Everything the simulator does, in the order it does it. <strong>Simulated predictions, not verified outcomes: use them to reason about trade-offs, not as forecasts.</strong></p>
+        </div>
+        <div class="mix-assume">
+          <h3 class="mix-h3">The equations</h3>
+          <p class="note">Subscripts: <var>j</var> is a brand, <var>c</var> a channel, <var>q</var> a quarter (1 to 4); <var>P</var> is Lantern’s shelf price. Budgets are split evenly across the four quarters.</p>
+          <ol class="mix-eqs">
+            <li><h4>Category cans in each channel</h4>
+              <p class="mix-eq">N<sub>c,q</sub> = 4,800,000 ÷ 4 × seasonality<sub>q</sub> × volume<sub>c</sub></p>
+              <p>The category doesn’t grow or shrink with Lantern’s plan: Lantern’s cans come from rivals (or, in the direct channel, from people who would not have bought a can there).</p></li>
+            <li><h4>How appealing each brand is</h4>
+              <p class="mix-eq">U<sub>j,c</sub> = β<sub>q,c</sub> × quality<sub>j</sub> − β<sub>p,c</sub> × price<sub>j</sub> + β<sub>v</sub> × ln(SKUs<sub>j</sub>) + γ<sub>organic</sub> + h<sub>c</sub></p>
+              <p>γ<sub>organic</sub> applies only to the organic tier in natural grocers; h<sub>c</sub> (habit) applies only to the three established competitors, whose ranges count as one SKU. Each channel has its own price and quality weights.</p></li>
+            <li><h4>Attraction</h4>
+              <p class="mix-eq">A<sub>j,c,q</sub> = availability<sub>j,c</sub> × awareness<sub>j,q</sub> × lift<sub>q</sub> × e<sup>U<sub>j,c</sub></sup></p>
+              <p>Availability is 1 if the brand is stocked in the channel and 0 if not. Lift is the sampling multiplier: Lantern’s, in retail channels only. Competitors’ awareness stays fixed.</p></li>
+            <li><h4>Share of each channel</h4>
+              <p class="mix-eq">s<sub>j,c,q</sub> = A<sub>j,c,q</sub> ÷ Σ<sub>k</sub> A<sub>k,c,q</sub> &nbsp;(every brand stocked in <var>c</var>)</p>
+              <p class="mix-eq">s<sub>direct,q</sub> = A<sub>Lantern,q</sub> ÷ (A<sub>Lantern,q</sub> + e<sup>U<sub>0</sub></sup>)</p>
+              <p>This is an attraction model with a multinomial logit form. Lantern’s cafés and online shop have no rival brands; the alternative is not buying there, with appeal U<sub>0</sub>.</p></li>
+            <li><h4>Awareness, with carryover</h4>
+              <p class="mix-eq">G<sub>d,q</sub> = λ<sub>d</sub> × G<sub>d,q−1</sub> + digital<sub>q</sub> &nbsp;&nbsp; G<sub>r,q</sub> = λ<sub>r</sub> × G<sub>r,q−1</sub> + w × PR<sub>q</sub></p>
+              <p class="mix-eq">awareness<sub>q</sub> = 12% + (a<sub>max</sub> − 12%) × (1 − e<sup>−(G<sub>d,q</sub> + G<sub>r,q</sub>) ÷ K</sup>)</p>
+              <p>Ads and PR build stocks that fade each quarter (adstock). The more awareness there is, the less each extra dollar adds. With no ads and no PR, awareness stays at 12%.</p></li>
+            <li><h4>Sampling and displays</h4>
+              <p class="mix-eq">S<sub>q</sub> = λ<sub>s</sub> × S<sub>q−1</sub> + sampling<sub>q</sub> ÷ coverage &nbsp;&nbsp; lift<sub>q</sub> = 1 + M × (1 − e<sup>−S<sub>q</sub> ÷ K<sub>s</sub></sup>)</p>
+              <p>Coverage is the share of category cans in the retail channels chosen, so the same budget spread over more stores does less in each.</p></li>
+            <li><h4>Trade promotions</h4>
+              <p class="mix-eq">promoted price paid = P × (1 − d) &nbsp;&nbsp; price shoppers react to = P × (1 − d × (1 − ρ × φ<sub>q</sub>))</p>
+              <p class="mix-eq">Σ<sub>c</sub> φ<sub>q</sub> × N<sub>c,q</sub> × s<sub>c,q</sub><sup>promoted</sup> × P × d = trade budget<sub>q</sub>, &nbsp;φ<sub>q</sub> ≤ φ<sub>max</sub></p>
+              <p>φ<sub>q</sub> is the share of weeks on promotion. Lantern pays the discount on every promoted can; the more often deals run, the less special each looks (ρ).</p></li>
+            <li><h4>Cans</h4>
+              <p class="mix-eq">retail: N<sub>c,q</sub> × [(1 − φ<sub>q</sub>) × s<sub>c,q</sub><sup>regular</sup> + φ<sub>q</sub> × s<sub>c,q</sub><sup>promoted</sup>] &nbsp;&nbsp; direct: N<sub>direct,q</sub> × s<sub>direct,q</sub></p></li>
+            <li><h4>Money</h4>
+              <p class="mix-eq">net price = P × (1 − trade margin<sub>c</sub>) in retail; P − fulfilment in the direct channel</p>
+              <p class="mix-eq">gross profit = Σ cans × (net price − cost of goods)</p>
+              <p class="mix-eq">contribution = gross profit − trade discounts − marketing (ads + sampling + PR) − fixed costs (listing fees × SKUs + range cost + direct-channel cost)</p>
+              <p class="mix-eq">profit after overhead = contribution − $60,000</p>
+              <p class="mix-eq">contribution per can = (gross profit − trade discounts) ÷ cans &nbsp;&nbsp; break-even cans = (fixed costs + marketing + overhead) ÷ contribution per can</p></li>
+            <li><h4>Satisfaction index (simulated)</h4>
+              <p class="mix-eq">r = (quality ÷ average price paid) ÷ (Σ<sub>k</sub> awareness<sub>k</sub> × quality<sub>k</sub> ÷ price<sub>k</sub> ÷ Σ<sub>k</sub> awareness<sub>k</sub>) &nbsp;&nbsp; index = 100 × r<sup>k</sup> ÷ (1 + r<sup>k</sup>)</p>
+              <p>Value for money only: Lantern’s quality per dollar against the competitors a shopper could buy in that channel (all three for the direct channel), weighted by how well known they are. 50 means the same value as the alternatives. The index doesn’t feed back into sales.</p></li>
+            <li><h4>Price elasticity</h4>
+              <p class="mix-eq">ε<sub>c</sub> = −β<sub>p,c</sub> × price × (1 − s<sub>c</sub>)</p>
+              <p>The percentage change in Lantern’s cans for a 1% higher shelf price, averaged over regular and promoted weeks (weighted by cans) with promotion activity held fixed. The tests check it against a numerical estimate.</p></li>
+          </ol>
+          <p class="note" id="mix-calibration"></p>
+          <h3 class="mix-h3">Coefficients</h3>
+          <div id="mix-coef" class="mix-tables"></div>
+          <h3 class="mix-h3">Market figures</h3>
+          <div id="mix-market" class="mix-tables"></div>
+          <h3 class="mix-h3">What the model leaves out</h3>
+          <ul class="caveats" id="mix-leaves"></ul>
+        </div>
+      </section>
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources</h2>
+        <ol>
+          <li>The market, Lantern Coffee Co., Harbour City and every competitor are fictional; the coefficients are invented for teaching.</li>
+          <li>McFadden, D. (1974). Conditional logit analysis of qualitative choice behavior. In P. Zarembka (Ed.), <i>Frontiers in Econometrics</i> (pp. 105–142). Academic Press. The multinomial logit form of the choice model. <a href="https://eml.berkeley.edu/~mcfadden/dlmcv10.html">Listed in McFadden’s CV</a>.</li>
+          <li>Cooper, L. G., &amp; Nakanishi, M. (1988). <i>Market-Share Analysis: Evaluating Competitive Marketing Effectiveness</i>. Kluwer Academic Publishers. Attraction models: a brand’s share is its attraction divided by all brands’ attraction. <a href="https://www.anderson.ucla.edu/faculty/lee.cooper/MCI_Book/Book1.htm">Web edition</a>.</li>
+          <li>Broadbent, S. (1979). One way TV advertisements work. <i>Journal of the Market Research Society</i>. The adstock idea: advertising effects that carry over and decay. See also <a href="https://en.wikipedia.org/wiki/Advertising_adstock">Advertising adstock</a>.</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../../finance/" data-portal="#E8B923"><img src="../../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../../analytics/" data-portal="#192B49"><img src="../../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../../marketing/" data-portal="#56632C"><img src="../../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../../models/" data-portal="#252A31"><img src="../../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../../contact/" data-portal="#F6E7C1"><img src="../../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../../assets/js/pages/lab-mix.js?v=6"></script>
+</body>
+</html>

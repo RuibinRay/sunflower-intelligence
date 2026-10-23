@@ -24,7 +24,7 @@ const ROOMS = [
   { id: 'learn', name: 'Learn', chapter: 'Learning by doing', color: '#C96F36' },
 ];
 const SUB = JSON.parse(readFileSync(join(ROOT, 'assets/js/data/subpages.json'), 'utf8'));
-const OVERVIEW = { learn: 'Check and practise' };   // the first item of a room's page menu, if not "Overview"
+const OVERVIEW = { learn: 'Study home' };   // the first item of a room's page menu, if not "Overview"
 
 const glyph = `<svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs>${Array.from({ length: 13 }, (_, i) => `<use href="#wm-p"${i ? ` transform="rotate(${(i * 360 / 13).toFixed(1)})"` : ''}/>`).join('')}<circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg>`;
 const arrow = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -88,9 +88,22 @@ ROOMS.forEach((r) => {
   pages.push({ file: `${r.id}/index.html`, current: r.id, root: '../', room: SUB[r.id] ? r.id : null, here: '', up: './' });
   (SUB[r.id] || []).forEach((p) => pages.push({ file: `${r.id}/${p.slug}/index.html`, current: r.id, root: '../../', room: r.id, here: p.slug, up: '../' }));
 });
-// lesson pages, one level below Learn › Lessons
-const lessonDir = join(ROOT, 'learn/lessons');
-if (existsSync(lessonDir)) readdirSync(lessonDir, { withFileTypes: true }).filter((d) => d.isDirectory()).forEach((d) => pages.push({ file: `learn/lessons/${d.name}/index.html`, current: 'learn', root: '../../../', room: 'learn', here: 'lessons', up: '../../', deep: true }));
+// everything deeper inside Learn (plates, schools, courses, lessons, labs, toolkit pages): the page menu marks the
+// section the page belongs to, e.g. learn/finance/f01/journal-entries/ belongs to "finance".
+(function walk(rel, depth) {
+  const dir = join(ROOT, rel);
+  if (!existsSync(dir)) return;
+  for (const d of readdirSync(dir, { withFileTypes: true })) {
+    if (!d.isDirectory()) continue;
+    const sub = `${rel}/${d.name}`;
+    const parts = sub.split('/');               // ['learn', 'finance', 'f01', ...]
+    if (depth >= 2 && existsSync(join(ROOT, sub, 'index.html'))) {
+      pages.push({ file: `${sub}/index.html`, current: 'learn', root: '../'.repeat(depth + 1), room: 'learn', here: parts[1], up: '../'.repeat(depth), deep: true });
+    }
+    walk(sub, depth + 1);
+  }
+})('learn', 1);
+pages.forEach((p) => { if (/^learn\/[^/]+\/index\.html$/.test(p.file)) p.deep = false; });
 pages.push({ file: '404.html', current: '', root: SITE_PATH });
 
 const block = (html, name, body) => html.replace(new RegExp(`<!-- chrome:${name} -->[\\s\\S]*?<!-- /chrome:${name} -->`), `<!-- chrome:${name} -->${body}<!-- /chrome:${name} -->`);

@@ -1,0 +1,9 @@
+{
+  "name": "sunflower-intelligence-tools",
+  "private": true,
+  "description": "Build-time tools only (not served): KaTeX renders lesson maths into static HTML when tools/study.mjs runs.",
+  "type": "module",
+  "devDependencies": {
+    "katex": "0.16.22"
+  }
+}

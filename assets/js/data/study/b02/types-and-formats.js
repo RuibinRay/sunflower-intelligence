@@ -1,0 +1,295 @@
+// types-and-formats.js — B02 · Incorrect data types and inconsistent dates. Content only; exercises are in
+// types-and-formats.ex.js. Every business, person and number below is fictional unless a source is cited.
+
+const DAY = 86400000;
+/** Serial number of a date in the 1900 date system (valid from 1 March 1900). Used only by `checks`. */
+const serial1900 = (y, m, d) => (Date.UTC(y, m - 1, d) - Date.UTC(1899, 11, 30)) / DAY;
+
+export default {
+  slug: 'types-and-formats',
+  title: 'Incorrect data types and inconsistent dates',
+  blurb: 'A price stored as text won’t add up, and a date stored as text won’t sort. Learn to give every column the right data type, convert numbers written in different local formats, keep identifiers as text, and turn a column of mixed dates into unambiguous ISO 8601 dates without guessing.',
+  status: 'draft',
+  objectives: [
+    'Identify the data type each column should have, and explain how a wrong type breaks sorting, sums and joins.',
+    'Convert numbers stored as text, including currency symbols, thousands separators, decimal commas and negatives in parentheses.',
+    'Recognise identifiers that look numeric but must stay text, such as codes with leading zeros.',
+    'Convert dates in mixed formats to ISO 8601, resolving ambiguous dates with evidence rather than guesswork.',
+    'Calculate the date behind a spreadsheet serial number, and the serial number of a date, in the 1900 date system.',
+    'Explain how to store and report times so that time zones and daylight saving don’t corrupt them.',
+  ],
+  prerequisites: [
+    { lesson: 'b02/profiling-and-validation', why: 'You need format checks, range checks and cross-field checks, and the habit of profiling a column before converting it.' },
+    { lesson: 'b02/duplicates', why: 'Duplicate detection depends on values being stored consistently; this lesson makes them so.' },
+    { text: 'Reading dates written in different ways, and adding or subtracting days.' },
+  ],
+  case: 'lantern',
+
+  concept: [
+    { case: 'Lantern’s bookkeeper totals the <code>unit_price</code> column of the March order export and gets a number far too small, with no error message. She sorts by <code>order_date</code> and finds orders from June sitting between two orders from March. The export, <code>lantern-orders</code>, has collected values from the web shop, the app and spreadsheets that staff keyed by hand, and each wrote prices and dates its own way: prices with and without a dollar sign, one with a decimal comma; dates such as 2026-03-04, 04/03/2026, 3/14/26, March 5, 2026 and 46085. Nothing is missing. The values are just not stored as what they mean.' },
+    { p: 'Every column in a dataset has a <g>data type</g>: the kind of value it holds, which determines what software can do with it. Numbers can be added, averaged and compared by size. Dates can be put in time order, subtracted to give a number of days, and grouped by week or month. Text can be compared, searched and sorted alphabetically. A boolean holds one of two values, true or false.' },
+    { table: {
+      caption: 'The four basic data types',
+      head: ['Type', 'Holds', 'Examples', 'What you can do with it'],
+      rows: [
+        ['Number', 'Amounts and counts', '3, 14.5, −45', 'Add, average, compare by size'],
+        ['Text (string)', 'Names, codes, free text', 'House Blend 250g, HC4 7QT, 004517', 'Compare, search, sort alphabetically'],
+        ['Date and time', 'Points in time', '2026-03-14, 2026-03-14T18:30:00Z', 'Sort by time, subtract to get durations, group by month'],
+        ['Boolean', 'Yes/no facts', 'true, false', 'Count, filter, combine with and/or'],
+      ],
+    } },
+    { p: 'Most data arrives as text, because a CSV file is text. A program reading it has to decide what each column is, and when the values are messy it often gives up and leaves the whole column as text. The column still looks fine on screen. It fails only when you use it.' },
+    { table: {
+      caption: 'How a wrong type fails, usually without an error message',
+      head: ['Operation', 'Values stored as text', 'Values stored with the right type'],
+      rows: [
+        ['Sort 3, 20, 100 from smallest', '100, 20, 3: text is compared character by character, and “1” comes before “2” and “3”', '3, 20, 100'],
+        ['Sort 02/03/2026 and 01/04/2026 (day/month/year)', '01/04/2026 first, so 1 April sorts before 2 March', '2 March first'],
+        ['Add up $14.00, 22 and $30.60 with a spreadsheet SUM', '22: SUM ignores text values and adds only the real number', '66.60'],
+        ['Join site number 004517 in one table to 4517 in another', 'No match', 'Match, once both are text with their leading zeros'],
+      ],
+    } },
+    { p: 'Microsoft’s own documentation spells out the spreadsheet case: SUM ignores text values and adds only the numeric ones, while a formula such as <code>=A1+B1</code> returns a <code>#VALUE!</code> error when a cell contains text. The silent version is the dangerous one.' },
+    { h: 'Conversion, deliberate and automatic' },
+    { p: '<g>Type conversion</g> turns a value of one type into another: the text “14.50” into the number 14.5, or the text “04/03/2026” into the date 4 March 2026. It can be deliberate, when you state how each value should be read, or automatic, when software guesses. Spreadsheets guess as soon as you type or open a file. Microsoft lists the conversions Excel makes by default: it removes leading zeros from numerical text (00123 becomes 123), keeps only 15 digits of precision for long numbers, turns digits around the letter E into scientific notation (123E5) and turns some letter-and-number strings such as JAN1 into dates. Recent versions (Excel for Microsoft 365 and Excel 2024) let you switch these conversions off.' },
+    { p: 'Automatic conversion has damaged real research. Ziemann, Eren and El-Osta (2016) scanned supplementary spreadsheets published in leading genomics journals and found that roughly one paper in five with Excel gene lists contained gene names that had been converted to dates or floating-point numbers. The software did exactly what it was designed to do; nobody had told it what the column meant.' },
+    { callout: 'key', title: 'Convert deliberately, then count the failures', html: 'For every column, decide the type it should have, state the format the source used, convert with that format, and count the values that failed to convert. A conversion that fails loudly is a gift: it shows you exactly which values need a decision.' },
+  ],
+
+  theory: [
+    { h: 'Numbers stored as text' },
+    { p: 'Numbers end up as text because of what is written around or inside them. Each pattern needs its own rule.' },
+    { table: {
+      caption: 'Common ways a number is written as text',
+      head: ['Raw value', 'What is in the way', 'Number'],
+      align: ['l', 'l', 'r'],
+      rows: [
+        ['$1,250.00', 'A currency symbol, and a comma separating thousands', '1250'],
+        ['1.250,00', 'A dot separating thousands, and a comma as the decimal mark', '1250'],
+        ['1 250,00', 'A space (often a non-breaking one) separating thousands, and a decimal comma', '1250'],
+        ['19,50', 'A decimal comma', '19.5'],
+        ['(14.00)', 'An accounting-style negative in parentheses', '−14'],
+        ['−14.00', 'A Unicode minus sign (U+2212), which looks like a hyphen but isn’t one', '−14'],
+        ['12%', 'A percentage sign', '0.12, or 12 if the column holds percentage points'],
+      ],
+    } },
+    { p: 'The decimal mark and the thousands separator depend on the writer’s <g>locale</g>: the conventions for a language and region, covering decimal and grouping marks, date order, currency and more. Software stores these conventions as locale data. Formatted for the United States or the United Kingdom, one thousand two hundred and fifty is 1,250.00; for Germany, 1.250,00; for France, 1 250,00, where the gap is a narrow non-breaking space. The same characters mean different numbers in different locales: “1,250” is one thousand two hundred and fifty to an American reader and one and a quarter to a German one. Nothing in the value tells you which; only its source does.' },
+    { p: 'So convert numbers source by source. Find out which locale each source used, then for each value: remove the currency symbol (recording the currency in its own column if there is more than one), remove the grouping separator, replace the decimal mark with a point, turn parentheses and Unicode minus signs into an ordinary minus, and parse. Parsers are strict about that last detail. Python’s <code>float()</code>, for example, rejects “−45” written with the Unicode minus. Decide once whether a percentage column holds fractions (0.12) or percentage points (12) and say so in the data dictionary.' },
+    { p: 'Then validate. Count the values that failed to convert and look at every one of them. Range-check the ones that succeeded: a coffee price of $1,800.00 converts perfectly and is almost certainly a typing error for $18.00. Conversion makes values comparable; it doesn’t make them right.' },
+    { h: 'Identifiers that look like numbers' },
+    { p: 'Postcodes, account numbers, phone numbers, product codes and student numbers are made of digits, but they are labels, not amounts. Nobody adds two postcodes or averages two phone numbers. Store them as text. Stored as numbers they lose information: a code such as 004517 loses its <g>leading zeros</g> and becomes 4517, and a 16-digit card or account number loses its last digit, because Excel keeps at most 15 significant digits and turns the rest into zeros. A useful test is to ask whether arithmetic on the column would ever make sense; if not, it is text, however numeric it looks.' },
+    { p: 'Lost leading zeros can be restored only when you know the code’s exact width. If the <g>data dictionary</g> says every site number has six digits, padding 4517 with zeros to 004517 is safe. If codes come in several lengths, padding invents codes; go back to the source and import the column as text. Digits lost beyond the 15th cannot be recovered at all.' },
+    { h: 'Dates in different orders' },
+    { p: 'People write the parts of a date in different orders: day/month/year in most of the world, month/day/year as the usual order in the United States, and year-month-day in ISO 8601 and in several East Asian conventions. A value such as 25/03/2026 can be read only one way, because there is no month 25. A value such as 04/03/2026 can be read as 4 March or as 3 April. An <g>ambiguous date</g> is one whose day and month could be swapped to give a different valid date.' },
+    { p: 'Ambiguity is common. A date is ambiguous when its day number is 12 or less and differs from its month number. In a year of 365 days, 144 dates have a day number of 12 or less; 12 of them (1 January, 2 February and so on to 12 December) read the same either way, which leaves <m>144 - 12 = 132</m> genuinely ambiguous dates, about <m>132 \\div 365 \\approx 36\\%</m> of the year. More than a third of slash-dates can’t be read without outside information.' },
+    { p: 'Resolve them with evidence, in this order:' },
+    { ol: [
+      '<b>The source’s convention.</b> Documentation, export settings or the system’s locale often state the format outright.',
+      '<b>Other values from the same source.</b> If a source writes 14/03/2026 anywhere, it puts the day first. This works only if the source is one system or one person using one convention throughout; check that no value from the source contradicts it.',
+      '<b>Business rules.</b> An order can’t be placed after it was dispatched, a check-in can’t follow its check-out, and every date should fall within the export period. These <g>cross-field checks</g> and range checks often rule out one reading.',
+      '<b>Ask, or flag.</b> If both readings survive, ask the person or team who produced the value. If nobody can say, flag the value as unresolved and record the decision. Never guess silently.',
+    ] },
+    { callout: 'warn', title: 'Settings that prefer a reading are not rules', html: 'Many tools have an option that sounds like a fix. pandas’s documentation warns that <code>dayfirst=True</code> “is not strict”: it prefers day-first but will still read a value such as 03/15/2026 month-first rather than fail. A mixed column can therefore come out partly day-first and partly month-first with no error. Pass an explicit format for each source instead, so that a value that doesn’t fit fails loudly.' },
+    { p: 'Two-digit years need a century rule too. Python’s <code>%y</code>, for example, reads 00–68 as 2000–2068 and 69–99 as 1969–1999. Written-out dates bring their own problems: month names depend on language (“4 mars 2026” is French), and some, such as “Mar 4”, have no year at all.' },
+    { h: 'ISO 8601' },
+    { p: 'The international standard for writing dates and times is <g>ISO 8601</g>. Its basic date format is YYYY-MM-DD, as in 2026-03-04, with the units running from largest to smallest: year, month, day, then hour, minute, second. That order makes the format unambiguous and means that dates written this way sort correctly even as text. The current edition is published in two parts, ISO 8601-1:2019 (basic rules) and ISO 8601-2:2019 (extensions). A date and time is written with a T between them, and a time can carry its relation to <g>UTC</g>: 2026-03-14T23:30:00Z means 23:30 in UTC (the Z stands for an offset of zero), and 2026-03-14T18:30:00−05:00 is the same instant written as a local time five hours behind UTC. RFC 3339, the profile of ISO 8601 used in internet protocols, defines the offset as local time minus UTC.' },
+    { h: 'Spreadsheet serial dates' },
+    { p: 'Spreadsheets store a date as a <g>serial date</g>: a count of days from a starting point, displayed through a date format. Change the cell’s format to General and 4 March 2026 appears as 46085. That is why serial numbers turn up in exports: somewhere, a date cell lost its format or was saved as a number.' },
+    { p: 'Excel has two systems. In the <i>1900 date system</i>, the default in Excel for Windows and in current Excel for Mac, 1 January 1900 is serial number 1. When Lotus 1-2-3 was first released it treated 1900 as a leap year, which it was not, and Excel kept the same assumption so that its serial numbers matched Lotus’s. Excel therefore counts a 29 February 1900 that never happened (serial 60). Microsoft judged that correcting it would shift almost every existing date by a day and break compatibility, and the only visible symptom it lists is that the WEEKDAY function is wrong for dates before 1 March 1900. For any date from 1 March 1900 onwards, the serial number is simply the number of days since 30 December 1899:' },
+    { math: String.raw`S_{1900} = \text{date} - \text{30 December 1899} \quad (\text{in days})` },
+    { p: 'The <i>1904 date system</i>, the default in earlier versions of Excel for Mac, counts from 1 January 1904 as day 0. The two systems differ by 1,462 days, four years and one leap day: Microsoft’s own example gives 5 July 2011 as 40729 in the 1900 system and 39267 in the 1904 system. If a workbook used the 1904 system and its serial numbers are read as 1900-system numbers, every date comes out four years and a day early.' },
+    { p: 'You can recognise serial numbers by their size: in the 1900 system, 1 January 2025 is 45658 and 31 December 2026 is 46387, so five-digit integers between those values in a date column are almost certainly dates in 2025 or 2026. Convert them with the origin stated, for example <code>pd.to_datetime(s, unit=&#39;D&#39;, origin=&#39;1899-12-30&#39;)</code> in pandas, and check a few results against the source.' },
+    { h: 'Times and time zones' },
+    { p: 'A timestamp without a time zone is ambiguous in a different way. Lantern’s shop records order times in UTC. Suppose Lantern’s local time is five hours behind UTC. An order placed at 23:30 local time on 14 March is stamped 2026-03-15T04:30:00Z, so a report that groups orders by the UTC date moves it into 15 March. Neither date is wrong; they answer different questions. Store timestamps in UTC, or as local time with its offset, and choose the time zone of every daily, weekly or monthly report deliberately, usually the business’s own local day.' },
+    { p: 'Never store local clock times without an offset. Where clocks change for daylight saving, an hour of local time is skipped each spring and an hour is repeated each autumn, so a local time in the repeated hour could be either of two instants, and durations that span a change come out an hour wrong. An offset, or a stored time in UTC, removes both problems.' },
+    { h: 'Booleans written many ways' },
+    { p: 'A yes/no column, such as Lantern’s <code>subscription</code>, can arrive as Y/N, yes/no, TRUE/FALSE, 1/0, “subscribed” or a tick. Convert it with an explicit list of accepted spellings for true and for false, and flag anything else. Treat a blank as missing, not as false: a blank means nobody recorded the answer, which is a different fact from “no”, and a later lesson in this course deals with missing values properly.' },
+    { h: 'Convert with an explicit format, then validate' },
+    { ol: [
+      'Profile the raw column: list the distinct patterns (for example, the share of values that look like 99/99/9999, 9/9/99 or five-digit integers) and which source each comes from.',
+      'Decide the target type and, for each source, the exact format it used.',
+      'Convert each pattern with its explicit format, keeping the raw column untouched beside the converted one.',
+      'Count the values that failed and look at each one; fix the rule or flag the value.',
+      'Validate the result with range checks and cross-field checks, and record any value you resolved by judgement.',
+    ] },
+    { p: 'The tools differ only in syntax. In a spreadsheet, import identifier columns as Text (Microsoft recommends doing this on import, for example with Power Query) and rebuild dates from their parts with DATE, so that the order of day and month is your decision. In SQL, PostgreSQL’s <code>to_date(order_date, &#39;DD/MM/YYYY&#39;)</code> and <code>to_number</code> take an explicit format. In pandas, <code>pd.to_datetime(s, format=&#39;%d/%m/%Y&#39;, errors=&#39;coerce&#39;)</code> and <code>pd.to_numeric(s, errors=&#39;coerce&#39;)</code> turn values that don’t fit into missing values you can count, rather than stopping at the first one.' },
+  ],
+
+  formulas: [
+    { id: 'serial-1900', name: 'Spreadsheet serial number (1900 date system)',
+      tex: String.raw`S_{1900} = \text{date} - \text{30 December 1899}`,
+      where: [
+        [String.raw`S_{1900}`, 'The serial number Excel’s 1900 date system stores for the date', 'days'],
+        [String.raw`\text{date}`, 'The calendar date, on or after 1 March 1900', 'date'],
+      ],
+      assumptions: 'Valid from 1 March 1900. Excel counts a non-existent 29 February 1900 (serial 60), so earlier dates are one day out.',
+      note: 'Equivalently, 1 January 1900 is serial 1 and every date from 1 March 1900 carries one extra day.' },
+    { id: 'serial-1904', name: 'Converting between the 1904 and 1900 date systems',
+      tex: String.raw`S_{1900} = S_{1904} + 1{,}462`,
+      where: [
+        [String.raw`S_{1904}`, 'Serial number in the 1904 date system, which counts 1 January 1904 as day 0', 'days'],
+        [String.raw`1{,}462`, 'Days between the two starting points: four years and one leap day', 'days'],
+      ] },
+  ],
+
+  examples: [
+    { level: 'simple', title: 'Turning a column of amounts into numbers', fictional: true,
+      setup: 'A revenue sheet combines Lantern’s shop export with orders that staff typed in by hand. Its <code>order_total</code> column holds the six values below. What does a spreadsheet SUM return before conversion, what is the correct total, and how should each value be converted? The staff member who typed the fifth value used a spreadsheet set to a German locale.',
+      table: {
+        caption: 'Six order totals as they arrive (fictional)',
+        head: ['Row', 'Raw value', 'Stored as'],
+        rows: [
+          ['1', '14.00', 'Number'],
+          ['2', '$30.60', 'Text'],
+          ['3', '$1,260.00', 'Text'],
+          ['4', '37', 'Number'],
+          ['5', '19,50', 'Text'],
+          ['6', '(14.00)', 'Text'],
+        ],
+      },
+      steps: [
+        'Before conversion, SUM adds only the cells stored as numbers, rows 1 and 4: <m>14 + 37 = 51</m>. It gives no warning that four values were skipped.',
+        'Diagnose each text value. Row 2 has a currency symbol. Row 3 has a currency symbol and a comma as a thousands separator (a bulk order of 100 bags of House Blend 250g at $14.00 with a 10% discount: <m>100 \\times 14 \\times 0.90 = 1{,}260</m>, so the value is plausible). Row 5 comes from a German-locale sheet, so its comma is a decimal mark. Row 6 is an accounting-style negative: a refund.',
+        'Convert source by source: remove “$” and the grouping comma (rows 2 and 3), replace the decimal comma with a point (row 5), and turn parentheses into a minus sign (row 6). The values become 14, 30.60, 1,260, 37, 19.50 and −14.',
+        'Total: <m>14 + 30.60 + 1{,}260 + 37 + 19.50 - 14 = 1{,}347.10</m>. Validate: no value failed to convert, and the largest is explained by a bulk order.',
+      ],
+      answer: 'Before conversion SUM returns $51.00; the correct total is $1,347.10.',
+      interpretation: 'The unconverted total was wrong by $1,296.10 and looked perfectly reasonable. Reading “19,50” as a US-formatted number would have produced 1,950, a hundred times too large; the locale of the source, not the value, settles which is right.' },
+    { level: 'challenging', title: 'Resolving a column of mixed dates', fictional: true,
+      setup: 'Nine order dates from Lantern’s records, with the source of each and the date the order was dispatched. Convert them to ISO 8601 and decide which, if any, can’t be resolved.',
+      table: {
+        caption: 'Nine raw order dates (fictional)',
+        head: ['Row', 'Raw order_date', 'Source', 'Dispatched'],
+        rows: [
+          ['1', '2026-03-14', 'Web shop', '2026-03-16'],
+          ['2', '14/03/2026', 'Staff spreadsheet', '2026-03-16'],
+          ['3', '04/03/2026', 'Staff spreadsheet', '2026-03-05'],
+          ['4', '3/15/26', 'App export', '2026-03-17'],
+          ['5', '3/4/26', 'App export', '2026-03-05'],
+          ['6', '46085', 'Old workbook', '2026-03-06'],
+          ['7', 'March 5, 2026', 'Gift-order form', '2026-03-06'],
+          ['8', '05/03/2026', 'Typed by various staff', '2026-03-06'],
+          ['9', '04/05/2026', 'Typed by various staff', '2026-05-06'],
+        ],
+      },
+      steps: [
+        'Convert the formats that can only be read one way. Row 1 is already ISO 8601. Row 7 is written out: 2026-03-05. Row 6 is a serial number: <m>46{,}085</m> days after 30 December 1899 is 4 March 2026 (1 March 2026 is 46082, plus 3 days).',
+        'Learn each source’s convention from a value that can be read only one way. Row 2, 14/03/2026, has a first part above 12, so the staff spreadsheet writes day/month/year. Row 4, 3/15/26, has a middle part above 12, so the app writes month/day with a two-digit year. Check that no other value from either source contradicts this.',
+        'Apply the conventions: row 2 is 2026-03-14, row 3 (04/03/2026) is 2026-03-04, row 4 is 2026-03-15 and row 5 (3/4/26) is 2026-03-04. The pattern of four-digit and two-digit years is a property of these two sources, not a general rule.',
+        'Rows 8 and 9 were typed by different people, so no single convention can be assumed; use a cross-field check instead. Row 8: 3 May would be after the 6 March dispatch, which is impossible, so the date is 2026-03-05. Row 9: both 4 May and 5 April fall before the 6 May dispatch, so neither reading can be ruled out.',
+        'Write the results in ISO 8601 beside the raw values, and flag row 9 for the staff to check against the order email or the payment record.',
+      ],
+      answer: 'Rows 1–9 become 2026-03-14, 2026-03-14, 2026-03-04, 2026-03-15, 2026-03-04, 2026-03-04, 2026-03-05, 2026-03-05 and “unresolved” (4 May or 5 April 2026, flagged).',
+      interpretation: 'Eight of the nine dates were settled by evidence: a format that can be read only one way, a source’s convention, a serial-number rule or a cross-field check. The ninth stays flagged rather than guessed. If it were silently read as 5 April, any analysis of how long orders take to dispatch would gain a month-long delay that may never have happened.' },
+    { level: 'applied', title: 'Five warranty claims with no installation?', fictional: true,
+      setup: 'Kestrel Battery Installers, a fictional company that fits home battery-storage systems, keeps a register of installation sites. Every site has a six-digit site number, such as 004517, and the data dictionary says site numbers always have exactly six digits. The warranty team sends a file of eight claims that someone opened and saved in a spreadsheet, which stored the site numbers as numbers. When the claims are joined to the register, five find no installation. Should the warranty manager reject them?',
+      table: {
+        caption: 'Site numbers in the claims file and in the register (fictional)',
+        head: ['Claim', 'Site number in claims file', 'Register entry'],
+        rows: [
+          ['W-301', '4517', '004517'],
+          ['W-302', '12930', '012930'],
+          ['W-303', '100284', '100284'],
+          ['W-304', '831', '000831'],
+          ['W-305', '245610', '245610'],
+          ['W-306', '31207', '031207'],
+          ['W-307', '118375', '118375'],
+          ['W-308', '90442', '090442'],
+        ],
+      },
+      steps: [
+        'Diagnose before deciding. The three claims that match (W-303, W-305, W-307) are exactly the ones whose site numbers already have six digits. The other five have fewer digits, and each is a register entry with its leading zeros removed: the column was converted from text to numbers.',
+        'Check that a repair is safe. The data dictionary says every site number has exactly six digits, so restoring the zeros cannot create a code that was never issued. Pad each value on the left with zeros to six characters, for example with <code>=TEXT(A2, &quot;000000&quot;)</code> in a spreadsheet or <code>.astype(str).str.zfill(6)</code> in pandas.',
+        'Validate the repair. After padding, every claim’s site number exists in the register: the join now matches 8 of 8 claims, against 3 of 8 (37.5%) before. This is a referential-integrity check: every key in the claims file should point to a real site.',
+        'Prevent a repeat: ask the warranty team to export the file with the site number as text, and import it as text, so the spreadsheet never converts it.',
+      ],
+      answer: 'None of the claims should be rejected. All eight sites are registered; the join matched only 3 of 8 (37.5%) because five site numbers had lost their leading zeros. After restoring them, 8 of 8 match.',
+      interpretation: 'A data type error came within one step of becoming a business decision: rejecting five legitimate warranty claims. The repair was safe only because the code’s width is fixed and documented. Without that, the right move would have been to go back to the source file rather than pad and hope.' },
+  ],
+
+  demo: [
+    { widget: 'tf-lab', intro: 'Lantern’s order export. Look at the raw <code>unit_price</code> values before converting them, then convert and compare the summary statistics. Then do the same for <code>order_date</code>.' },
+    { widget: 'tf-serial', intro: 'Move the serial number and watch the date it stands for in each date system. Find 46085, then try the smallest value (61) and note why the calculation only works from 1 March 1900.' },
+  ],
+
+  mistakes: [
+    { title: '“If it looks like a number, store it as a number.”', html: 'Identifiers such as postcodes, account numbers and site numbers are labels. Stored as numbers they lose leading zeros, long ones lose digits beyond the 15th, and joins fail. Ask whether arithmetic on the column would ever make sense; if not, keep it as text.' },
+    { title: '“The software will work out the date format.”', html: 'Automatic parsing guesses value by value. Settings such as pandas’s <code>dayfirst=True</code> express a preference, not a rule, so a mixed column can be read partly day-first and partly month-first without an error. State the format for each source and let mismatches fail.' },
+    { title: '“A comma always separates thousands.”', html: 'In many locales the comma is the decimal mark: 19,50 is nineteen dollars fifty, and 1.250,00 is one thousand two hundred and fifty. The value alone can’t tell you which convention it follows; find out the locale of each source before converting.' },
+    { title: '“Serial number 1 is 1 January 1900, so add the serial number to that date.”', html: 'That lands two days late for any modern date: adding 46082 days to 1 January 1900 gives 3 March 2026, while serial 46082 is 1 March 2026. One day comes from day 1 being 1 January rather than day 0, and the other from Excel’s non-existent 29 February 1900. Count from 30 December 1899 instead.' },
+    { title: '“Local time is fine; the business is only in one place.”', html: 'Customers and systems aren’t. Servers often record UTC, and daylight saving repeats an hour of local time every autumn. Store UTC or local time with its offset, and choose the reporting day deliberately.' },
+    { title: '“A blank in a yes/no column means no.”', html: 'A blank means the answer wasn’t recorded. Converting it to false invents information and biases any rate calculated from the column. Map the accepted spellings of yes and no explicitly and treat everything else, blanks included, as missing or flagged.' },
+  ],
+
+  application: [
+    { p: '<b>Daily sales at Lantern.</b> Ana asks whether Sunday is the shop’s strongest day. Her shop platform stores order times in UTC, so evening orders in Lantern’s own time zone fall into the next UTC day, and a chart by UTC date would shift a slice of every Sunday into Monday. The analyst converts every timestamp to Lantern’s local time before grouping by day of the week, notes in the report that “day” means Lantern’s local day, and checks the result against the till’s own daily totals.' },
+    { p: '<b>Buying from abroad.</b> Lantern buys green coffee from a supplier whose invoices are written in a European format, with dots between thousands and commas before the cents. When the bookkeeper pastes a statement into a US-formatted spreadsheet, some amounts become text and others are read as the wrong number. She now imports the supplier’s files with the locale stated, checks that the converted total equals the total printed on the statement, and only then records the invoices.' },
+    { p: '<b>Hotel stays.</b> Harborview Hotel receives bookings from its own website, from travel agencies and by phone, and the dates arrive in different formats. Nights are calculated as check-out minus check-in, which only works once both columns are true dates. The hotel’s analysts convert each channel’s dates with that channel’s format, recompute the nights, and use a cross-field check (nights must equal the difference between the dates) to catch the bookings where something is still wrong.' },
+    { p: '<b>Warranty claims.</b> At Kestrel Battery Installers the type of one column decided whether five customers were paid. The data team added two rules to its process: identifier columns are imported as text, and every join reports how many rows found no match. A match rate that suddenly drops, as it did from 100% to 37.5% in the applied example, is treated as a data problem to investigate before it is treated as a business finding.' },
+  ],
+
+  summary: [
+    'A data type (number, text, date and time, boolean) determines what software can do with a column; a wrong type breaks sorting, sums and joins, usually without an error.',
+    'Convert numbers stored as text source by source: know the locale, remove currency symbols and grouping separators, handle decimal commas, parentheses and Unicode minus signs, then count the failures and range-check the results.',
+    'Identifiers made of digits are text. Leading zeros can be restored only when the code’s width is fixed and documented.',
+    'About a third of slash-dates are ambiguous. Resolve them from the source’s convention, unambiguous values from the same source and cross-field checks; flag what remains rather than guessing.',
+    'Write dates in ISO 8601 (YYYY-MM-DD); store times in UTC or with their offset, and choose the reporting time zone deliberately.',
+    'Excel’s 1900 date system stores days since 30 December 1899 for dates from 1 March 1900, because it counts a fictitious 29 February 1900; the 1904 system is 1,462 days behind.',
+    'Convert with an explicit format, keep the raw column, and validate the result.',
+  ],
+
+  glossary: [
+    { term: 'Data type', def: 'The kind of value a column holds (such as number, text, date and time, or boolean), which determines the operations that make sense on it.' },
+    { term: 'Type conversion', def: 'Turning a value of one data type into another, for example the text “14.50” into the number 14.5. Deliberate when the format is stated, automatic when software guesses.' },
+    { term: 'Locale', def: 'The conventions of a language and region for writing numbers, dates, times and currency, such as the decimal mark, the thousands separator and the order of day and month.' },
+    { term: 'Leading zero', def: 'A zero at the start of a code, such as the first two digits of 004517. It carries no numerical value but is part of the identifier, and is lost if the code is stored as a number.' },
+    { term: 'Ambiguous date', def: 'A date written so that its day and month could be swapped to give a different valid date, such as 04/03/2026 (4 March or 3 April).' },
+    { term: 'ISO 8601', def: 'The international standard for representing dates and times, with units from largest to smallest; its basic date format is YYYY-MM-DD.' },
+    { term: 'Serial date', def: 'A date stored as a count of days from a fixed starting point, as spreadsheets do. In Excel’s 1900 date system, 1 January 1900 is serial number 1.' },
+    { term: 'UTC', def: 'Coordinated Universal Time, the reference time scale against which time zones are defined by their offsets, such as −05:00.' },
+  ],
+
+  references: [
+    { text: 'International Organization for Standardization. <i>ISO 8601: Date and time format</i>. Describes ISO 8601-1:2019 and ISO 8601-2:2019.', url: 'https://www.iso.org/iso-8601-date-and-time-format.html', checked: '2026-10-22' },
+    { text: 'Klyne, G. &amp; Newman, C. (2002). <i>RFC 3339: Date and Time on the Internet: Timestamps</i>. Internet Engineering Task Force.', url: 'https://www.rfc-editor.org/rfc/rfc3339', checked: '2026-10-22' },
+    { text: 'Microsoft Support. <i>Date systems in Excel</i>.', url: 'https://support.microsoft.com/en-us/office/date-systems-in-excel-e7fe7167-48a9-4b96-bb53-5612a800b487', checked: '2026-10-22' },
+    { text: 'Microsoft Learn. <i>Excel incorrectly assumes that the year 1900 is a leap year</i>.', url: 'https://learn.microsoft.com/en-us/office/troubleshoot/excel/wrongly-assumes-1900-is-leap-year', checked: '2026-10-22' },
+    { text: 'Microsoft Support. <i>Set automatic data conversions</i> (Excel).', url: 'https://support.microsoft.com/en-us/Excel/set-automatic-data-conversions', checked: '2026-10-22' },
+    { text: 'Ziemann, M., Eren, Y. &amp; El-Osta, A. (2016). Gene name errors are widespread in the scientific literature. <i>Genome Biology</i>, 17, article 177.', url: 'https://dro.deakin.edu.au/articles/journal_contribution/Gene_name_errors_are_widespread_in_the_scientific_literature/20801929', checked: '2026-10-22' },
+  ],
+
+  checks: [
+    // Concept tables
+    { what: 'SUM of $14.00, 22, $30.60 when only 22 is a number', value: 22, shown: 22 },
+    { what: 'Correct total of 14, 22, 30.60', value: 14 + 22 + 30.60, shown: 66.6 },
+    // Ambiguous dates
+    { what: 'Dates in a year with day number ≤ 12', value: 12 * 12, shown: 144 },
+    { what: 'Genuinely ambiguous dates', value: (() => { let n = 0; for (let m = 1; m <= 12; m++) { const dim = new Date(Date.UTC(2026, m, 0)).getUTCDate(); for (let d = 1; d <= Math.min(12, dim); d++) if (d !== m) n++; } return n; })(), shown: 132 },
+    { what: 'Share of the year that is ambiguous (%)', value: 132 / 365 * 100, shown: 36, tol: 0.5 },
+    // ISO / time zones
+    { what: '18:30 at −05:00 is 23:30 UTC (hours)', value: 18.5 + 5, shown: 23.5 },
+    { what: '23:30 local (UTC−05:00) on 14 March is 04:30 UTC next day (hours past midnight)', value: 23.5 + 5 - 24, shown: 4.5 },
+    // Serial dates
+    { what: 'Serial of 4 March 2026', value: serial1900(2026, 3, 4), shown: 46085 },
+    { what: 'Serial of 1 March 2026', value: serial1900(2026, 3, 1), shown: 46082 },
+    { what: 'Serial of 1 March 1900', value: serial1900(1900, 3, 1), shown: 61 },
+    { what: 'Microsoft example: 5 July 2011 in the 1900 system', value: serial1900(2011, 7, 5), shown: 40729 },
+    { what: 'Microsoft example: 5 July 2011 in the 1904 system', value: (Date.UTC(2011, 6, 5) - Date.UTC(1904, 0, 1)) / DAY, shown: 39267 },
+    { what: 'Gap between the date systems', value: (Date.UTC(1904, 0, 1) - Date.UTC(1899, 11, 30)) / DAY, shown: 1462 },
+    { what: 'Serial of 1 January 2025', value: serial1900(2025, 1, 1), shown: 45658 },
+    { what: 'Serial of 31 December 2026', value: serial1900(2026, 12, 31), shown: 46387 },
+    { what: 'Adding 46082 days to 1 January 1900 lands on 3 March 2026 (day of month)', value: new Date(Date.UTC(1900, 0, 1) + 46082 * DAY).getUTCDate(), shown: 3 },
+    { what: 'Serial 46085 is 4 March 2026 (day of month)', value: new Date(Date.UTC(1899, 11, 30) + 46085 * DAY).getUTCDate(), shown: 4 },
+    // Simple example
+    { what: 'Simple: SUM before conversion', value: 14 + 37, shown: 51 },
+    { what: 'Simple: bulk order total', value: 100 * 14 * 0.90, shown: 1260 },
+    { what: 'Simple: correct total', value: 14 + 30.60 + 1260 + 37 + 19.50 - 14, shown: 1347.10 },
+    { what: 'Simple: error in the unconverted total', value: (14 + 30.60 + 1260 + 37 + 19.50 - 14) - 51, shown: 1296.10 },
+    { what: 'Simple: 19,50 read as US-formatted', value: 1950, shown: 1950 },
+    // Applied example
+    { what: 'Applied: matched before repair', value: ['4517', '12930', '100284', '831', '245610', '31207', '118375', '90442'].filter((s) => s.length === 6).length, shown: 3 },
+    { what: 'Applied: unmatched before repair', value: ['4517', '12930', '100284', '831', '245610', '31207', '118375', '90442'].filter((s) => s.length < 6).length, shown: 5 },
+    { what: 'Applied: match rate before (%)', value: 3 / 8 * 100, shown: 37.5 },
+    { what: 'Applied: matched after padding', value: ['4517', '12930', '100284', '831', '245610', '31207', '118375', '90442'].map((s) => s.padStart(6, '0')).filter((s) => ['004517', '012930', '100284', '000831', '245610', '031207', '118375', '090442'].includes(s)).length, shown: 8 },
+  ],
+};

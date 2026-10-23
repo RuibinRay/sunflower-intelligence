@@ -6,6 +6,8 @@ import { lineChart, tableTwin } from '../core/charts.js?v=6';
 import * as L from '../core/learn.js?v=6';
 import { SKILLS, ITEMS } from '../data/learn-items.js?v=6';
 import { LESSON_META } from '../data/lessons/meta.js?v=6';
+// The skills check lives at learn/practise/, two levels below the site root.
+const ROOT = '../../';
 import { DAY, ITEM, SKILL, loadState, saveState, clearState, updateTheta as thetaOf, questionCard as card, meter, button, listWords, durationWords, lessonHref, toolHref, nextLesson } from './learn-common.js?v=6';
 
 initSite();
@@ -16,7 +18,7 @@ let state = loadState();
 const save = () => saveState(state);
 const updateTheta = () => thetaOf(state);
 /** After an answer: the lesson (if there is one) and the tool that uses the idea. */
-const linksFor = (sk) => [...(LESSON[sk.id] ? [{ href: lessonHref(sk.id, '../'), text: `Read the lesson: ${LESSON[sk.id].title}` }] : []), { href: toolHref(sk, '../'), text: `Use it: ${sk.name} in ${sk.room}` }];
+const linksFor = (sk) => [...(LESSON[sk.id] ? [{ href: lessonHref(sk.id, ROOT), text: `Read the lesson: ${LESSON[sk.id].title}` }] : []), { href: toolHref(sk, ROOT), text: `Use it: ${sk.name} in ${sk.room}` }];
 const questionCard = (box, item, opts) => card(box, item, state, { links: linksFor(SKILL[item.skill]), ...opts });
 
 // ---------------------------------------------------------------- placement check
@@ -199,8 +201,8 @@ function renderGarden() {
     h('caption', { class: 'visually-hidden' }, 'Mastery and review schedule by skill'),
     h('thead', {}, h('tr', {}, ['Skill', 'Lesson', 'Mastery', 'Recall now', 'Next review'].map((c, i) => h('th', { scope: 'col', class: i > 1 ? 'is-num' : '' }, c)))),
     h('tbody', {}, rows.map((r) => h('tr', { class: r.st.L >= L.BKT.mastered ? 'is-strong' : '' },
-      h('th', { scope: 'row' }, h('a', { href: toolHref(r.sk, '../') }, r.sk.name)),
-      h('td', {}, LESSON[r.sk.id] ? h('a', { href: lessonHref(r.sk.id, '../') }, state.read[r.sk.id] ? 'Read ✓' : `Read (${LESSON[r.sk.id].minutes} min)`) : '—'),
+      h('th', { scope: 'row' }, h('a', { href: toolHref(r.sk, ROOT) }, r.sk.name)),
+      h('td', {}, LESSON[r.sk.id] ? h('a', { href: lessonHref(r.sk.id, ROOT) }, state.read[r.sk.id] ? 'Read ✓' : `Read (${LESSON[r.sk.id].minutes} min)`) : '—'),
       h('td', { class: 'is-num' }, F.pct(r.st.L, 0)),
       h('td', { class: 'is-num' }, Number.isFinite(r.rec) ? F.pct(r.rec, 0) : 'not yet practised'),
       h('td', { class: 'is-num' }, !r.st.last ? '—' : r.due ? 'due now' : `in ${durationWords(r.nextIn)}`))))));
@@ -262,7 +264,7 @@ function renderLessonNext() {
   const started = state.placed || Object.keys(state.read).length > 0;
   $('#ls-kicker').textContent = started ? 'Next lesson for you' : 'Start here';
   $('#ls-link').textContent = `Plate ${nx.plate}: ${nx.title}`;
-  $('#ls-link').href = lessonHref(nx.id, '../');
+  $('#ls-link').href = lessonHref(nx.id, ROOT);
   $('#ls-why').textContent = !started ? 'The first plate. Or take the check below, and this will point you to your weakest skill.'
     : `Your least-mastered skill among the lessons you haven’t read: ${F.pct(state.skills[nx.id].L, 0)} mastered. About ${nx.minutes} minutes.`;
 }

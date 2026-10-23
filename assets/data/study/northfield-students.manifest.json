@@ -1,0 +1,387 @@
+{
+  "dataset": "northfield-students",
+  "title": "Northfield University student records, 2025–26",
+  "seed": 20240901,
+  "unit": "one row per student",
+  "key": "student_id",
+  "fictional": true,
+  "generator": "tools/study-datasets.mjs (fixed seed; rerun to regenerate identical files)",
+  "rowNumbers": "1-based data rows of the raw CSV; the header line is not counted.",
+  "rows": 150,
+  "truthRows": 150,
+  "truthFile": "tests/fixtures-study/northfield-students.truth.csv",
+  "alignment": "Delete the extraRow of every exact-duplicate, duplicate-key and near-duplicate entry from the raw file and the remaining rows line up one-to-one with the truth file. Cells then differ only where a defect is listed (numbers compared as numbers, so \"$18.00\" and \"18.00\" count as equal).",
+  "columns": [
+    "student_id",
+    "programme",
+    "year",
+    "gpa",
+    "credits",
+    "attendance_pct",
+    "study_hours",
+    "scholarship",
+    "entry_score",
+    "residence"
+  ],
+  "counts": {
+    "inconsistent-category": 17,
+    "outlier-error": 1,
+    "scale-mix": 8,
+    "out-of-range": 3
+  },
+  "rowsWithDefects": 28,
+  "defects": [
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        4
+      ],
+      "column": "programme",
+      "original": "Psychology",
+      "corrupted": "Pyschology",
+      "variant": "typo",
+      "id": 1
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        12
+      ],
+      "column": "programme",
+      "original": "Business Administration",
+      "corrupted": "Bus. Admin.",
+      "variant": "abbreviation",
+      "id": 2
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        19
+      ],
+      "column": "programme",
+      "original": "Economics",
+      "corrupted": "Econ.",
+      "variant": "abbreviation",
+      "id": 3
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        23
+      ],
+      "column": "programme",
+      "original": "Computer Science",
+      "corrupted": "Comp. Sci.",
+      "variant": "abbreviation",
+      "id": 4
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        27
+      ],
+      "column": "programme",
+      "original": "Nursing",
+      "corrupted": "NURSING",
+      "variant": "case",
+      "id": 5
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        28
+      ],
+      "column": "programme",
+      "original": "Economics",
+      "corrupted": "Econ.",
+      "variant": "abbreviation",
+      "id": 6
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        38
+      ],
+      "column": "programme",
+      "original": "Computer Science",
+      "corrupted": "Computer science",
+      "variant": "case",
+      "id": 7
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        43
+      ],
+      "column": "programme",
+      "original": "Business Administration",
+      "corrupted": "Bus. Admin.",
+      "variant": "abbreviation",
+      "id": 8
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        53
+      ],
+      "column": "programme",
+      "original": "Business Administration",
+      "corrupted": "Business Admin",
+      "variant": "abbreviation",
+      "id": 9
+    },
+    {
+      "kind": "outlier-error",
+      "rows": [
+        66
+      ],
+      "column": "entry_score",
+      "original": "75.6",
+      "corrupted": "756",
+      "note": "Data-entry error: the decimal point was lost. Scores run from 0 to 100.",
+      "id": 10
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        67
+      ],
+      "column": "programme",
+      "original": "Computer Science",
+      "corrupted": "CS",
+      "variant": "acronym",
+      "id": 11
+    },
+    {
+      "kind": "scale-mix",
+      "rows": [
+        78
+      ],
+      "column": "gpa",
+      "original": "3.76",
+      "corrupted": "94",
+      "note": "Transfer record on a 0–100 scale. Northfield converts with GPA = value ÷ 25.",
+      "id": 12
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        83
+      ],
+      "column": "programme",
+      "original": "Economics",
+      "corrupted": "Economics ",
+      "variant": "whitespace",
+      "id": 13
+    },
+    {
+      "kind": "scale-mix",
+      "rows": [
+        88
+      ],
+      "column": "gpa",
+      "original": "2.36",
+      "corrupted": "59",
+      "note": "Transfer record on a 0–100 scale. Northfield converts with GPA = value ÷ 25.",
+      "id": 14
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        91
+      ],
+      "column": "programme",
+      "original": "Nursing",
+      "corrupted": "Nursing ",
+      "variant": "whitespace",
+      "id": 15
+    },
+    {
+      "kind": "out-of-range",
+      "rows": [
+        94
+      ],
+      "column": "attendance_pct",
+      "original": "93",
+      "corrupted": "104",
+      "note": "Above 100%: make-up sessions were counted as extra attended sessions.",
+      "id": 16
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        94
+      ],
+      "column": "programme",
+      "original": "Business Administration",
+      "corrupted": "business administration",
+      "variant": "case",
+      "id": 17
+    },
+    {
+      "kind": "out-of-range",
+      "rows": [
+        102
+      ],
+      "column": "attendance_pct",
+      "original": "91",
+      "corrupted": "104",
+      "note": "Above 100%: make-up sessions were counted as extra attended sessions.",
+      "id": 18
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        103
+      ],
+      "column": "programme",
+      "original": "Mechanical Engineering",
+      "corrupted": "Mechanical engineering",
+      "variant": "case",
+      "id": 19
+    },
+    {
+      "kind": "scale-mix",
+      "rows": [
+        108
+      ],
+      "column": "gpa",
+      "original": "3.45",
+      "corrupted": "86.3",
+      "note": "Transfer record on a 0–100 scale. Northfield converts with GPA = value ÷ 25.",
+      "id": 20
+    },
+    {
+      "kind": "out-of-range",
+      "rows": [
+        111
+      ],
+      "column": "attendance_pct",
+      "original": "92",
+      "corrupted": "105",
+      "note": "Above 100%: make-up sessions were counted as extra attended sessions.",
+      "id": 21
+    },
+    {
+      "kind": "scale-mix",
+      "rows": [
+        112
+      ],
+      "column": "gpa",
+      "original": "3.52",
+      "corrupted": "88",
+      "note": "Transfer record on a 0–100 scale. Northfield converts with GPA = value ÷ 25.",
+      "id": 22
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        116
+      ],
+      "column": "programme",
+      "original": "Mechanical Engineering",
+      "corrupted": "Mech. Eng.",
+      "variant": "abbreviation",
+      "id": 23
+    },
+    {
+      "kind": "scale-mix",
+      "rows": [
+        117
+      ],
+      "column": "gpa",
+      "original": "2.56",
+      "corrupted": "64",
+      "note": "Transfer record on a 0–100 scale. Northfield converts with GPA = value ÷ 25.",
+      "id": 24
+    },
+    {
+      "kind": "scale-mix",
+      "rows": [
+        120
+      ],
+      "column": "gpa",
+      "original": "3.23",
+      "corrupted": "80.8",
+      "note": "Transfer record on a 0–100 scale. Northfield converts with GPA = value ÷ 25.",
+      "id": 25
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        132
+      ],
+      "column": "programme",
+      "original": "Computer Science",
+      "corrupted": "Comp. Sci.",
+      "variant": "abbreviation",
+      "id": 26
+    },
+    {
+      "kind": "scale-mix",
+      "rows": [
+        134
+      ],
+      "column": "gpa",
+      "original": "2.43",
+      "corrupted": "60.8",
+      "note": "Transfer record on a 0–100 scale. Northfield converts with GPA = value ÷ 25.",
+      "id": 27
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        138
+      ],
+      "column": "programme",
+      "original": "Psychology",
+      "corrupted": "Psych",
+      "variant": "abbreviation",
+      "id": 28
+    },
+    {
+      "kind": "scale-mix",
+      "rows": [
+        145
+      ],
+      "column": "gpa",
+      "original": "3.62",
+      "corrupted": "90.5",
+      "note": "Transfer record on a 0–100 scale. Northfield converts with GPA = value ÷ 25.",
+      "id": 29
+    }
+  ],
+  "notable": [
+    {
+      "kind": "genuine-outlier",
+      "column": "entry_score",
+      "value": "98.6",
+      "note": "An exceptional applicant: extreme but genuine.",
+      "rows": [
+        42
+      ]
+    },
+    {
+      "kind": "genuine-outlier",
+      "column": "entry_score",
+      "value": "97.9",
+      "note": "An exceptional applicant: extreme but genuine.",
+      "rows": [
+        70
+      ]
+    },
+    {
+      "kind": "genuine-outlier",
+      "column": "entry_score",
+      "value": "38.5",
+      "note": "Admitted through a foundation year: low but genuine.",
+      "rows": [
+        34
+      ]
+    }
+  ],
+  "notes": [
+    "study_hours (self-reported hours of study per week, from a survey) is blank where the student did not answer; the truth file is blank there too. Response falls with year of study (about 5% missing in year 1, 40% in year 4) and later years study more, so the missingness depends on year (missing at random given year).",
+    "study_hours is right-skewed: most students report 5–20 hours, a few report 30 or more."
+  ]
+}
