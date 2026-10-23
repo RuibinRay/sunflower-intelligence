@@ -28,7 +28,7 @@ export const widgets = {
       const relText = rel < 0.1 ? rel.toFixed(3) : rel.toFixed(2);
       let note;
       if (rel >= 1) {
-        note = `A relative spread of ${relText}% is wide: an investor who buys and soon sells loses more than 1% to the dealer before the price moves at all. Spreads this wide are typical of rarely traded securities, where the dealer may hold its inventory for days.`;
+        note = `A relative spread of ${relText}% is wide: an investor who buys and soon sells loses 1% or more to the dealer before the price moves at all. Spreads this wide are typical of rarely traded securities, where the dealer may hold its inventory for days.`;
       } else if (rel >= 0.2) {
         note = `At ${relText}% the spread is moderate. Each investor round trip of ${v.shares.toLocaleString('en-US')} shares costs ${money(perTrip)}; the dealer earns that in return for standing ready to trade and carrying the risk that prices move against its inventory.`;
       } else {
@@ -53,7 +53,7 @@ export const guided = [
     id: 'f00-mp-g1', type: 'classify', kind: 'conceptual',
     prompt: 'Match each description to the participant it describes.',
     items: [
-      'Takes deposits, makes loans and runs payments for households and firms',
+      'Takes deposits, makes loans and provides payment services for households and firms',
       'Manages and sells a company’s new share issue and advises on acquisitions',
       'Invests contributions now to pay retirement income decades later',
       'Sells its shares to investors and buys them back at the NAV calculated once a day',
@@ -174,16 +174,16 @@ export const independent = [
       'Insures bank deposits and handles failed banks',
       'Requires companies selling securities to the public to disclose the truth about their business',
       'Acts as the frontline regulator of broker-dealers, under SEC oversight',
-      'Regulates futures and other derivatives markets',
+      'Regulates futures markets and most swaps',
     ],
     categories: ['FINRA', 'CFTC', 'Federal Reserve', 'SEC', 'FDIC'],
     answer: [2, 4, 3, 0, 1],
     feedback: {
       1: 'Deposit insurance is the FDIC’s job, not the Federal Reserve’s.',
       3: 'FINRA is a self-regulatory organisation that supervises broker-dealers day to day; the SEC oversees FINRA.',
-      4: 'Derivatives markets, including futures, are the CFTC’s responsibility.',
+      4: 'Futures and most swaps are the CFTC’s responsibility (options on shares and security-based swaps fall under the SEC).',
     },
-    solution: 'Monetary policy: Federal Reserve (FOMC). Deposit insurance and failed banks: FDIC. Disclosure by issuers: SEC. Broker-dealers day to day: FINRA, overseen by the SEC. Futures and derivatives: CFTC.',
+    solution: 'Monetary policy: Federal Reserve (FOMC). Deposit insurance and failed banks: FDIC. Disclosure by issuers: SEC. Broker-dealers day to day: FINRA, overseen by the SEC. Futures and most swaps: CFTC.',
   },
   {
     id: 'f00-mp-i5', type: 'num', kind: 'numerical',
@@ -242,7 +242,7 @@ export const check = [
     id: 'f00-mp-k3', type: 'mc', kind: 'applied',
     prompt: 'Ana considers buying shares of an ETF through a brokerage firm that is a SIPC member. Which statement about her protection is correct?',
     options: [
-      'If the brokerage firm fails and her ETF shares are missing, SIPC protection applies up to its limits; if the ETF simply falls in value, no protection applies',
+      'If the brokerage firm fails and her ETF shares are missing, SIPC protection applies up to its limits; if the ETF only falls in value, no protection applies',
       'FDIC insurance covers the ETF up to $250,000, as it covers her savings account',
       'SIPC reimburses her if the ETF falls in value',
       'Because ETFs are registered with the SEC, the SEC guarantees she will not lose money',
@@ -287,16 +287,16 @@ export const check = [
     prompt: 'Which of these is a job of the FDIC rather than of the Federal Reserve?',
     options: [
       'Insuring deposits up to $250,000 per depositor, per insured bank, per ownership category',
-      'Setting monetary policy in pursuit of maximum employment and stable prices',
-      'Lending to sound banks through the discount window',
+      'Setting monetary policy in pursuit of maximum employment, stable prices and moderate long-term interest rates',
+      'Lending to depository institutions in sound condition through the discount window',
       'Helping operate and oversee the nation’s payments systems',
     ],
     answer: 0,
     feedback: {
       1: 'Monetary policy is set by the Federal Reserve’s Open Market Committee.',
-      2: 'The discount window is the Federal Reserve’s lending facility for banks.',
+      2: 'The discount window is the Federal Reserve’s lending facility for depository institutions.',
       3: 'The payments system role belongs to the Federal Reserve.',
     },
-    solution: 'The FDIC insures deposits and handles failed banks. The Federal Reserve conducts monetary policy, lends to banks through the discount window, supervises banks, supports financial stability and helps run the payments system.',
+    solution: 'The FDIC insures deposits and handles failed banks. The Federal Reserve conducts monetary policy, lends to depository institutions through the discount window, supervises banks, supports financial stability and helps run the payments system.',
   },
 ];

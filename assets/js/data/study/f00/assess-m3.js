@@ -22,17 +22,17 @@ export const items = [
   },
   {
     id: 'f00-m3-2', lesson: 'financial-markets', type: 'num', kind: 'numerical',
-    prompt: 'A fictional US café chain buys a Japanese coffee roaster priced at ¥1,500,000. The exchange rate is $0.0068 per yen. What does the roaster cost in dollars?',
-    answer: 10200, check: () => 1500000 * 0.0068, unit: '$', places: 0, tol: 0.5,
+    prompt: 'A fictional US coffee caterer buys a roasting machine from Japan priced at ¥1,470,000. Its bank quotes the exchange rate as ¥147 per US dollar. What does the machine cost in dollars?',
+    answer: 10000, check: () => 1470000 / 147, unit: '$', places: 0, tol: 0.5,
     wrong: [
-      { value: 220588235.29, say: 'You divided by the rate. It is quoted in dollars per yen, so multiply the yen amount by it.' },
-      { value: 1500000, say: 'That is the price in yen. Convert it at $0.0068 per yen.' },
+      { value: 216090000, say: 'You multiplied. This rate is quoted as yen per dollar, the other way round from dollars per yen, so divide the yen amount by it.' },
+      { value: 1470000, say: 'That is the price in yen. Convert it at ¥147 per dollar.' },
     ],
-    solution: 'A<sub>$</sub> = A<sub>F</sub> × S = 1,500,000 × 0.0068 = $10,200.',
+    solution: 'The rate is yen per dollar, so dollars = yen ÷ rate = 1,470,000 ÷ 147 = $10,000. (Equivalently, the rate is 1 ÷ 147 ≈ $0.0068 per yen, and 1,470,000 × 1 ÷ 147 = $10,000.)',
   },
   {
     id: 'f00-m3-3', lesson: 'financial-markets', type: 'classify', kind: 'applied',
-    prompt: 'Match each financing need to the market that suits it, following the rule of matching the life of the money to the life of the use.',
+    prompt: 'Match each need to the market that suits it, following the rule of matching the life of the money to the life of the use.',
     items: [
       'A hospital needs money for a new wing it will use for 30 years',
       'A large retailer needs cash for six weeks to stock up before the holidays',
@@ -51,13 +51,14 @@ export const items = [
   },
   {
     id: 'f00-m3-4', lesson: 'market-participants', type: 'num', kind: 'numerical',
-    prompt: 'At one FDIC-insured bank, a fictional company organised as a corporation has $380,000 in its business account, and its owner has $90,000 in a savings account in her own name. She has no other accounts there. How much of the $470,000 in total is uninsured?',
-    answer: 130000, check: () => (380000 - Math.min(380000, 250000)) + (90000 - Math.min(90000, 250000)), unit: '$', places: 0, tol: 0.5,
+    prompt: 'A fictional business owner has $310,000 in a savings account in her own name at Bank A and $120,000 in her own name at Bank B. Her company, a corporation, has $200,000 in its business account at Bank A. Both banks are FDIC-insured, and there are no other accounts. How much of the $630,000 in total is uninsured?',
+    answer: 60000, check: () => (310000 - Math.min(310000, 250000)) + (120000 - Math.min(120000, 250000)) + (200000 - Math.min(200000, 250000)), unit: '$', places: 0, tol: 0.5,
     wrong: [
-      { value: 220000, say: 'You applied one $250,000 limit to the total. A corporation’s deposits are insured separately from its owner’s personal deposits.' },
-      { value: 0, say: 'The company’s $380,000 is above its own $250,000 limit.' },
+      { value: 180000, say: 'You added her two personal balances (430,000) and applied one limit. The limit applies separately at each insured bank.' },
+      { value: 260000, say: 'You combined her personal savings with the company’s account at Bank A. A corporation’s deposits are insured separately from its owner’s.' },
+      { value: 0, say: 'Her $310,000 at Bank A is in one ownership category at one bank, and it is above the $250,000 limit.' },
     ],
-    solution: 'The company and the owner are in different ownership categories, insured separately. Company: 380,000 − 250,000 = $130,000 uninsured. Owner: $90,000, all insured. Total uninsured: $130,000.',
+    solution: 'Apply the limit per depositor, per bank, per ownership category. Her single account at Bank A: 310,000 − 250,000 = $60,000 uninsured. Her single account at Bank B: $120,000, all insured. The company’s account at Bank A: $200,000, all insured, separately from her own. Total uninsured: $60,000.',
   },
   {
     id: 'f00-m3-5', lesson: 'market-participants', type: 'mc', kind: 'conceptual',
@@ -77,14 +78,14 @@ export const items = [
     solution: 'Finding the other side of a client’s trade without owning the securities, for a fee, is broking: the firm is your agent. Broker-dealers are regulated by the SEC and supervised day to day by FINRA, a self-regulatory organisation that the SEC oversees.',
   },
   {
-    id: 'f00-m3-6', lesson: 'market-participants', type: 'num', kind: 'applied',
-    prompt: 'A fictional medical-devices company sells 12 million new shares in its IPO at $25 each, with an underwriting spread of 5.5%. What are its net proceeds before its other costs, in millions of dollars?',
-    answer: 283.5, check: () => 12 * 25 * (1 - 0.055), unit: '$ million', places: 1, tol: 0.05,
+    id: 'f00-m3-6', lesson: 'market-participants', type: 'num', kind: 'numerical',
+    prompt: 'A fictional medical-devices company needs $94 million of net proceeds from its IPO, before its other costs. The shares will be offered at $20 each, and the underwriting spread is 6% of the offer price. How many shares must it sell?',
+    answer: 5000000, check: () => 94000000 / (20 * (1 - 0.06)), unit: 'shares', places: 0, tol: 500,
     wrong: [
-      { value: 300, say: 'That is the gross proceeds. The underwriters keep 5.5% of it.' },
-      { value: 16.5, say: 'That is the underwriters’ spread. The company receives the rest.' },
+      { value: 4700000, say: 'That ignores the spread: at $20 a share, 4.7 million shares raise $94 million gross, but the underwriters keep 6%. Each share brings the company only 20 × 0.94 = $18.80.' },
+      { value: 4982000, say: 'You grossed the share count up by 6% (4.7 million × 1.06). The spread is a fraction of each share’s price, not of the number of shares: divide the $94 million by the $18.80 the company keeps per share.' },
     ],
-    solution: 'Net proceeds = N × P × (1 − g) = 12 × 25 × 0.945 = $283.5 million. The underwriters keep 300 × 0.055 = $16.5 million.',
+    solution: 'Net proceeds = N × P × (1 − g), so N = 94,000,000 ÷ (20 × 0.94) = 94,000,000 ÷ 18.80 = 5,000,000 shares. Check: 5,000,000 × 20 = $100 million gross, of which the underwriters keep $6 million.',
   },
   {
     id: 'f00-m3-7', lesson: 'market-participants', type: 'mc', kind: 'applied',
@@ -105,13 +106,13 @@ export const items = [
   },
   {
     id: 'f00-m3-8', lesson: 'governance-and-agency', type: 'num', kind: 'numerical',
-    prompt: 'A fictional company owes its bank $40,000 at year end. A risky plan will leave it worth $90,000 with probability 40% or $10,000 with probability 60%. What is the shareholders’ expected payoff under the risky plan?',
-    answer: 20000, check: () => 0.4 * Math.max(90000 - 40000, 0) + 0.6 * Math.max(10000 - 40000, 0), unit: '$', places: 0, tol: 0.5,
+    prompt: 'A fictional company owes its bank $40,000 in total at year end. Under a safe plan it will be worth $50,000 then. Under a risky plan it will be worth $90,000 with probability 40% or $10,000 with probability 60%. By how much does switching to the risky plan reduce the bank’s expected payoff?',
+    answer: 18000, check: () => Math.min(50000, 40000) - (0.4 * Math.min(90000, 40000) + 0.6 * Math.min(10000, 40000)), unit: '$', places: 0, tol: 0.5,
     wrong: [
-      { value: 2000, say: 'You let the shareholders’ payoff go negative in the bad outcome. With limited liability it is max(V − D, 0) = 0 there.' },
-      { value: 42000, say: 'That is the company’s expected value, 0.4 × 90,000 + 0.6 × 10,000. Shareholders get only what is left after the $40,000 debt.' },
+      { value: 22000, say: 'That is the bank’s expected payoff under the risky plan. The question asks how much lower it is than under the safe plan, where the bank is paid $40,000 in full.' },
+      { value: 8000, say: 'That is the fall in the whole company’s expected value (50,000 − 42,000). The bank loses more than that, because shareholders gain.' },
     ],
-    solution: 'Good outcome: max(90,000 − 40,000, 0) = 50,000. Bad outcome: max(10,000 − 40,000, 0) = 0. Expected: 0.4 × 50,000 + 0.6 × 0 = $20,000. The bank expects 0.4 × 40,000 + 0.6 × 10,000 = $22,000, and the two add up to the company’s expected value of $42,000.',
+    solution: 'Safe plan: the bank receives min(50,000, 40,000) = $40,000. Risky plan: 0.4 × min(90,000, 40,000) + 0.6 × min(10,000, 40,000) = 16,000 + 6,000 = $22,000. The bank’s expected payoff falls by 40,000 − 22,000 = $18,000, while shareholders’ expected payoff rises from $10,000 to 0.4 × 50,000 = $20,000 and the company’s expected value falls from $50,000 to $42,000: risk shifting.',
   },
   {
     id: 'f00-m3-9', lesson: 'governance-and-agency', type: 'mc', kind: 'conceptual',

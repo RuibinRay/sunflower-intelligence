@@ -125,7 +125,7 @@ export function storageWarning(container) {
 /** Maths and tables that scroll sideways must be reachable by keyboard: give the overflowing ones a tab stop and a name. */
 export function scrollersFocusable(scope = document) {
   const run = () => scope.querySelectorAll('.math-block, .table-scroll, .pm-scroll').forEach((el) => {
-    const over = el.scrollWidth > el.clientWidth + 1;
+    const over = el.scrollWidth > el.clientWidth;   // even 1px: axe (and keyboard users) treat any scrollable box as needing focus
     if (over && !el.hasAttribute('tabindex')) { el.tabIndex = 0; el.setAttribute('role', 'region'); if (!el.hasAttribute('aria-label')) el.setAttribute('aria-label', el.classList.contains('math-block') ? 'Equation, scrolls sideways' : 'Table, scrolls sideways'); el.dataset.madeFocusable = '1'; }
     else if (!over && el.dataset.madeFocusable) { el.removeAttribute('tabindex'); el.removeAttribute('role'); el.removeAttribute('aria-label'); delete el.dataset.madeFocusable; }
   });

@@ -34,7 +34,7 @@ export const widgets = {
       } else if (gainE > 0 && gainV >= 0) {
         note = `The risky plan is worth at least as much overall (${money(gainV)} more in expected value), so choosing it need not be risk shifting; but notice how the gain is split: shareholders ${money(gainE)}, lender ${money(gainD)}.`;
       } else if (gainE <= 0 && gainV > 0) {
-        note = `The risky plan adds ${money(gainV)} of expected value, yet shareholders would not gain from it. With little debt, shareholders bear most of the risk themselves and judge plans much as the whole company would.`;
+        note = `The risky plan adds ${money(gainV)} of expected value, yet shareholders would not gain from it: the debt is so large that they expect nothing under either plan, so all of the gain goes to the lender.`;
       } else {
         note = 'Shareholders do not gain from the risky plan here. Try a larger debt, a worse bad outcome or a better good outcome to see when their interests split from the lender’s.';
       }
@@ -219,15 +219,15 @@ export const independent = [
   },
   {
     id: 'f00-ga-i6', type: 'short', kind: 'applied',
-    prompt: 'In the 2028 scenario, Juniper Rowe is about to buy 30% of Lantern and Coastline is about to lend $60,000. Write a short note (100–150 words) to Ana recommending three governance arrangements, and explain for each which conflict it addresses.',
+    prompt: 'In the 2028 scenario, Hollis Avery is about to buy new shares that will give her 30% of Lantern, and Coastline is about to lend $60,000. Write a short note (100–150 words) to Ana recommending three governance arrangements, and explain for each which conflict it addresses.',
     rubric: [
-      'Names at least one arrangement that addresses the conflict between Ana as manager and Juniper as outside shareholder (for example a board seat, approval of large purchases or of Ana’s pay, monthly accounts).',
+      'Names at least one arrangement that addresses the conflict between Ana as manager and Hollis as outside shareholder (for example a board seat, approval of large purchases or of Ana’s pay, monthly accounts).',
       'Names at least one arrangement that addresses the conflict between shareholders and the bank (for example a covenant on the current ratio, limits on dividends or new borrowing, quarterly statements).',
       'Explains why each is needed: Ana now bears only 70% of any perk; shareholders could gain from risk or dividends at the bank’s expense.',
       'Recognises a cost: the arrangements take time and reduce Ana’s freedom, which is the price of the new capital.',
     ],
-    model: 'Ana, three suggestions. First, give Juniper a board seat and agree that purchases over $3,000 and any change to your salary need board approval: you now bear only 70 cents of each dollar Lantern spends, so Juniper needs a way to see and check those decisions. Second, send both Juniper and Coastline monthly accounts; the bank’s covenant requires quarterly statements anyway, and regular reporting builds trust cheaply. Third, agree a dividend policy that keeps the current ratio comfortably above the bank’s 1.2 covenant, because paying cash out to shareholders while the loan is outstanding is exactly what the bank fears. These steps cost you time and some freedom, but they are the price of $60,000 of debt and an investor you could not otherwise have.',
-    solution: 'A good answer addresses both conflicts (Ana versus Juniper, shareholders versus the bank), ties each arrangement to the problem it solves, and admits the cost in time and freedom.',
+    model: 'Ana, three suggestions. First, give Hollis a board seat and agree that purchases over $3,000 and any change to your salary need board approval: you now bear only 70 cents of each dollar Lantern spends, so Hollis needs a way to see and check those decisions. Second, send both Hollis and Coastline monthly accounts; the bank’s covenant requires quarterly statements anyway, and regular reporting builds trust cheaply. Third, agree a dividend policy that keeps the current ratio comfortably above the bank’s 1.2 covenant, because paying cash out to shareholders while the loan is outstanding is exactly what the bank fears. These steps cost you time and some freedom, but they are the price of $60,000 of debt and an investor you could not otherwise have.',
+    solution: 'A good answer addresses both conflicts (Ana versus Hollis, shareholders versus the bank), ties each arrangement to the problem it solves, and admits the cost in time and freedom.',
   },
 ];
 
@@ -265,27 +265,27 @@ export const check = [
     prompt: 'Coastline Bank is about to lend $60,000 to Lantern, which now has an outside shareholder. Which covenant most directly protects the bank against shareholders taking cash out of the business while the loan is outstanding?',
     options: [
       'A limit on dividends, or a minimum current ratio that a large cash dividend would break',
-      'A requirement that Ana keep making excellent coffee',
-      'A requirement that Lantern hold its annual meeting in March',
-      'A cap on the price of Lantern’s workshops',
+      'A requirement to send the bank annual financial statements',
+      'A requirement that Ana remain chief executive while the loan is outstanding',
+      'A requirement to keep the equipment insured',
     ],
     answer: 0,
     feedback: {
-      1: 'Quality matters to the bank, but it cannot be measured and enforced as a covenant, and it does not stop cash leaving the business.',
-      2: 'The date of the meeting does nothing to protect the bank’s claim.',
-      3: 'Capping prices would weaken Lantern’s ability to repay, not protect the bank.',
+      1: 'Annual statements tell the bank what has happened, after the event; they inform it but do not stop a payout.',
+      2: 'This protects the bank against Ana leaving the business, not against cash leaving it.',
+      3: 'Insurance protects the value of the equipment the bank may rely on as collateral; it does nothing to stop dividends.',
     },
-    solution: 'Paying out cash to shareholders before the lender is repaid moves value from lender to shareholders. A dividend limit, or a minimum current ratio that a large cash dividend would breach, stops it, and breaking the covenant lets the bank demand repayment or renegotiate.',
+    solution: 'Paying out cash to shareholders before the lender is repaid moves value from lender to shareholders. A dividend limit, or a minimum current ratio that a large cash dividend would breach, limits it, and breaking the covenant lets the bank demand repayment or renegotiate.',
   },
   {
     id: 'f00-ga-k4', type: 'num', kind: 'numerical',
-    prompt: 'In the 2028 scenario Ana owns 70% of Lantern. She has Lantern pay $4,000 for a coffee-tasting trip that is really a holiday and adds nothing to the business. How much of the cost falls on Juniper, the outside shareholder?',
+    prompt: 'In the 2028 scenario Ana owns 70% of Lantern. She has Lantern pay $4,000 for a coffee-tasting trip that is really a holiday and adds nothing to the business. How much of the cost falls on Hollis, the outside shareholder?',
     answer: 1200, check: () => (1 - 0.7) * 4000, unit: '$', places: 0, tol: 0.5,
     wrong: [
-      { value: 2800, say: 'That is Ana’s part, 70% of $4,000. Juniper owns the other 30%.' },
-      { value: 4000, say: 'Ana bears 70% of the cost herself through her shares; Juniper bears the rest.' },
+      { value: 2800, say: 'That is Ana’s part, 70% of $4,000. Hollis owns the other 30%.' },
+      { value: 4000, say: 'Ana bears 70% of the cost herself through her shares; Hollis bears the rest.' },
     ],
-    solution: 'Others bear (1 − α) × P = 0.30 × 4,000 = $1,200; Ana bears 0.70 × 4,000 = $2,800. Before Juniper invested, Ana would have borne all $4,000.',
+    solution: 'Others bear (1 − α) × P = 0.30 × 4,000 = $1,200; Ana bears 0.70 × 4,000 = $2,800. Before Hollis invested, Ana would have borne all $4,000.',
   },
   {
     id: 'f00-ga-k5', type: 'mc', kind: 'conceptual',
