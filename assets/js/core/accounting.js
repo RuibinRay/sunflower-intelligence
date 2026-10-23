@@ -8,6 +8,7 @@
 // An entry (a transaction, an adjustment or a closing entry) is { id, date, text, lines, cash? }, where each line is
 // { acct, dr } or { acct, cr }. `cash` optionally classifies the cash movement for the statement of cash flows:
 // 'operating' | 'investing' | 'financing', or { operating, investing, financing } in signed dollars for a split.
+// `cashLabel` optionally names the line on a direct-method statement of cash flows (e.g. 'Cash paid to employees').
 import { mulberry32 } from './rng.js?v=10';
 
 // ---------------------------------------------------------------- account types
@@ -25,6 +26,7 @@ export const TYPE_INFO = {
   equity:         { normal: 'cr', element: 'equity',      sign: 1,  statement: 'balance', temporary: false, noun: 'an equity account' },
   dividends:      { normal: 'dr', element: 'equity',      sign: -1, statement: 'equity',  temporary: true,  noun: 'the dividends account' },
   revenue:        { normal: 'cr', element: 'equity',      sign: 1,  statement: 'income',  temporary: true,  noun: 'a revenue account' },
+  'contra-revenue': { normal: 'dr', element: 'equity',     sign: -1, statement: 'income',  temporary: true,  noun: 'a contra-revenue account' },
   expense:        { normal: 'dr', element: 'equity',      sign: -1, statement: 'income',  temporary: true,  noun: 'an expense' },
   summary:        { normal: 'cr', element: 'equity',      sign: 1,  statement: 'none',    temporary: true,  noun: 'a temporary closing account' },
 };
@@ -37,6 +39,7 @@ const IS = {
   equity: 'is part of equity',
   dividends: 'has a normal debit balance (dividends reduce equity)',
   revenue: 'is revenue, which increases equity',
+  'contra-revenue': 'is a contra-revenue account, with a normal debit balance (it reduces revenue)',
   expense: 'is an expense, which reduces equity',
   summary: 'is a temporary closing account',
 };
@@ -49,6 +52,7 @@ const WHY = {
   equity: { increase: 'the owners’ claim grows', decrease: 'the owners’ claim shrinks' },
   dividends: { increase: 'profit is being distributed to the shareholders', decrease: 'distributions to shareholders are reduced' },
   revenue: { increase: 'the business has earned revenue by delivering a service', decrease: 'revenue is reduced' },
+  'contra-revenue': { increase: 'revenue is reduced by returns, allowances or discounts', decrease: 'a reduction of revenue is reversed' },
   expense: { increase: 'a cost of running the business has been used up', decrease: 'an expense is reduced' },
   summary: { increase: 'net income is being moved toward retained earnings', decrease: 'the temporary account is being cleared' },
 };
@@ -275,7 +279,7 @@ function cashSplit(entry, ch) {
 export function statementsAffected(entry, chart) {
   const ch = asChart(chart);
   const accts = (entry?.lines || []).map((l) => ch.byName[l.acct]).filter(Boolean);
-  const income = accts.some((a) => a.type === 'revenue' || a.type === 'expense');
+  const income = accts.some((a) => a.type === 'revenue' || a.type === 'contra-revenue' || a.type === 'expense');
   const equity = accts.some((a) => a.element === 'equity' && a.type !== 'summary');
   const cashLines = accts.some(isCash);
   const split = cashLines ? cashSplit(entry, ch) : null;
@@ -492,7 +496,8 @@ export function equationTotals(ledger, chart) {
 
 // ---------------------------------------------------------------- the financial statements
 
-/** Income statement from an adjusted ledger (before closing). Amounts are positive for normal balances. */
+/** Income statement from an adjusted ledger (before closing). Amounts are positive for normal balances; a contra-revenue
+ *  account (sales returns, discounts) appears among the revenues as a negative amount, so totalRevenue is net revenue. */
 export function incomeStatement(ledger, chart) {
   const ch = asChart(chart);
   const revenues = [], expenses = [];
@@ -501,6 +506,7 @@ export function incomeStatement(ledger, chart) {
     const b = bal(ledger, a.name);
     if (!b) continue;
     if (a.type === 'revenue') { revenues.push([a.name, D(b)]); rv += b; }
+    if (a.type === 'contra-revenue') { revenues.push([a.name, D(-b)]); rv -= b; }
     if (a.type === 'expense') { expenses.push([a.name, D(b)]); ex += b; }
   }
   return { revenues, expenses, totalRevenue: D(rv), totalExpenses: D(ex), netIncome: D(rv - ex) };
@@ -514,6 +520,7 @@ function equityParts(ledger, ch) {
     if (a.type === 'equity' && !isRetainedEarnings(a)) { contributed += b; if (b) contributedRows.push([a.name, D(b)]); }
     if (isRetainedEarnings(a)) re += b;
     if (a.type === 'revenue') ni += b;
+    if (a.type === 'contra-revenue') ni -= b;
     if (a.type === 'expense') ni -= b;
     if (a.type === 'dividends') div += b;
     if (a.type === 'summary') summary += b;
@@ -590,7 +597,7 @@ function flowLabel(cls, a, inflow) {
     if (inflow) {
       if (/interest/i.test(n)) return 'Interest received';
       if (/dividend/i.test(n)) return 'Dividends received';
-      if (!a || a.type === 'revenue' || /receivable|unearned|deferred/i.test(n)) return 'Cash received from customers';
+      if (!a || a.type === 'revenue' || a.type === 'contra-revenue' || /receivable|unearned|deferred/i.test(n)) return 'Cash received from customers';
       return 'Other operating receipts';
     }
     if (/wage|salar|payroll/i.test(n)) return 'Cash paid to employees';
@@ -599,7 +606,7 @@ function flowLabel(cls, a, inflow) {
     if (/insurance/i.test(n)) return 'Cash paid for insurance';
     if (/rent/i.test(n)) return 'Cash paid for rent';
     if (/advertis/i.test(n)) return 'Cash paid for advertising';
-    if (/unearned|deferred|receivable/i.test(n)) return 'Refunds paid to customers';
+    if (a?.type === 'contra-revenue' || /unearned|deferred|receivable/i.test(n)) return 'Refunds paid to customers';
     return 'Cash paid to suppliers';
   }
   if (cls === 'investing') {
@@ -637,7 +644,7 @@ export function cashFlows(entries, chart) {
       const c = sp.parts[cls];
       if (!c) continue;
       totals[cls] += c;
-      const label = flowLabel(cls, sp.by[cls][0], c > 0);
+      const label = (typeof e.cashLabel === 'string' && e.cashLabel) || flowLabel(cls, sp.by[cls][0], c > 0);
       const k = `${cls}|${label}`;
       if (!groups.has(k)) groups.set(k, { cls, label, cents: 0, order: order++, inflow: c > 0 });
       groups.get(k).cents += c;
@@ -668,6 +675,98 @@ export function cashFlows(entries, chart) {
     .map((g) => [g.label, D(g.cents), g.cls]);
   const net = totals.operating + totals.investing + totals.financing;
   return { operating: D(totals.operating), investing: D(totals.investing), financing: D(totals.financing), net: D(net), lines, noncash };
+}
+
+// ---------------------------------------------------------------- F02: the multi-step income statement and the indirect method
+
+/**
+ * A multi-step income statement from an adjusted ledger (before closing). Accounts say where they go:
+ * - revenue: `section: 'other'` for non-operating income (interest revenue, gains); otherwise it is operating revenue.
+ * - contra-revenue: subtracted from operating revenue (sales returns and allowances, sales discounts).
+ * - expense: `section: 'cost'` (cost of sales), 'operating' (the default), 'other' (interest expense, losses) or 'tax'.
+ *   `da: true` marks depreciation and amortisation (for EBITDA); `interest: true` marks interest (for EBIT).
+ * EBIT = income before tax + interest expense − interest revenue; EBITDA = EBIT + depreciation and amortisation.
+ * Amounts are in dollars; lists are [name, amount] in chart order.
+ */
+export function multiStepIncome(ledger, chart) {
+  const ch = asChart(chart);
+  const L = { revenue: [], contra: [], cost: [], operating: [], otherIncome: [], otherExpense: [], tax: [] };
+  const T = { grossRevenue: 0, contra: 0, cost: 0, operating: 0, otherIncome: 0, otherExpense: 0, tax: 0, da: 0, interestExp: 0, interestRev: 0 };
+  for (const a of ch.list) {
+    const b = bal(ledger, a.name);
+    if (!b) continue;
+    if (a.type === 'revenue') {
+      if (a.section === 'other') { L.otherIncome.push([a.name, D(b)]); T.otherIncome += b; if (a.interest || /interest/i.test(a.name)) T.interestRev += b; }
+      else { L.revenue.push([a.name, D(b)]); T.grossRevenue += b; }
+    } else if (a.type === 'contra-revenue') { L.contra.push([a.name, D(b)]); T.contra += b; }
+    else if (a.type === 'expense') {
+      const sec = ['cost', 'other', 'tax'].includes(a.section) ? a.section : 'operating';
+      const key = sec === 'other' ? 'otherExpense' : sec;
+      L[key].push([a.name, D(b)]); T[key] += b;
+      if (a.da) T.da += b;
+      if (sec !== 'tax' && (a.interest || (sec === 'other' && /interest/i.test(a.name)))) T.interestExp += b;
+    }
+  }
+  const revenue = T.grossRevenue - T.contra;
+  const grossProfit = revenue - T.cost;
+  const operatingIncome = grossProfit - T.operating;
+  const incomeBeforeTax = operatingIncome + T.otherIncome - T.otherExpense;
+  const netIncome = incomeBeforeTax - T.tax;
+  const ebit = incomeBeforeTax + T.interestExp - T.interestRev;
+  return {
+    lists: Object.fromEntries(Object.entries(L)),
+    grossRevenue: D(T.grossRevenue), contraRevenue: D(T.contra), revenue: D(revenue),
+    costOfSales: D(T.cost), grossProfit: D(grossProfit),
+    operatingExpenses: D(T.operating), operatingIncome: D(operatingIncome),
+    otherIncome: D(T.otherIncome), otherExpenses: D(T.otherExpense),
+    incomeBeforeTax: D(incomeBeforeTax), incomeTax: D(T.tax), netIncome: D(netIncome),
+    interestExpense: D(T.interestExp), interestRevenue: D(T.interestRev),
+    depreciationAmortisation: D(T.da), ebit: D(ebit), ebitda: D(ebit + T.da),
+  };
+}
+
+/**
+ * Cash from operating activities by the indirect method: net income, adjusted for noncash items and for the change
+ * in each operating current asset and liability between `opening` (balances at the start, normal side positive)
+ * and the adjusted ledger at the end (before closing).
+ * - Expenses with `noncash: true` (depreciation, amortisation, impairment) are added back; revenue accounts with
+ *   `gain: true` are subtracted and expense accounts with `loss: true` added back (their cash is investing).
+ * - Working capital: every current asset (other than cash) and current liability whose activity is operating
+ *   (see counterClass; give an account `cashClass` to override). A current contra-asset (an allowance) is netted with
+ *   its asset, so receivables are taken net.
+ * Returns { netIncome, adjustments: [[label, amount]], workingCapital: [[label, amount]], operating }.
+ */
+export function indirectOperating(ledger, chart, opening = {}) {
+  const ch = asChart(chart);
+  const ni = C(incomeStatement(ledger, ch).netIncome);
+  const adjustments = [], workingCapital = [];
+  let total = ni;
+  for (const a of ch.list) {
+    const b = bal(ledger, a.name);
+    if (!b) continue;
+    if (a.type === 'expense' && (a.noncash || a.loss)) { adjustments.push([a.loss ? `Loss on ${lower(a.name.replace(/^loss on /i, ''))}` : a.name, D(b)]); total += b; }
+    if (a.type === 'revenue' && a.gain) { adjustments.push([a.name, D(-b)]); total -= b; }
+  }
+  const open = (name) => C(opening?.[name] || 0);
+  const handled = new Set();
+  for (const a of ch.list) {
+    if (handled.has(a.name) || isCash(a)) continue;
+    if (!['asset', 'contra-asset', 'liability'].includes(a.type) || a.group !== 'current' || counterClass(a) !== 'operating') continue;
+    if (a.type === 'contra-asset' && a.contra && ch.byName[a.contra]) continue;   // netted with its asset below
+    let change = (bal(ledger, a.name) - open(a.name));                           // on the account's normal side
+    let name = a.name;
+    if (a.type === 'asset') {
+      const contras = ch.list.filter((c) => c.type === 'contra-asset' && c.contra === a.name);
+      for (const c of contras) { change -= bal(ledger, c.name) - open(c.name); handled.add(c.name); }
+      if (contras.length && contras.some((c) => bal(ledger, c.name) || open(c.name))) name = `${a.name} (net)`;
+    }
+    handled.add(a.name);
+    if (!change) continue;
+    const effect = a.type === 'liability' ? change : -change;                    // more assets use cash; more liabilities supply it
+    workingCapital.push([`${change > 0 ? 'Increase' : 'Decrease'} in ${lower(name)}`, D(effect)]);
+    total += effect;
+  }
+  return { netIncome: D(ni), adjustments, workingCapital, operating: D(total) };
 }
 
 // ---------------------------------------------------------------- closing the books
@@ -702,13 +801,13 @@ export function closingEntries(ledger, chart, { method = 'summary', date = null 
     entries.push({ id: `c${entries.length + 1}`, date, text, lines: plug.dr != null ? [plug, ...dr, ...cr] : [...dr, ...cr, plug] });
     return net;
   };
-  const revs = ch.list.filter((a) => a.type === 'revenue');
+  const revs = ch.list.filter((a) => a.type === 'revenue' || a.type === 'contra-revenue');
   const exps = ch.list.filter((a) => a.type === 'expense');
   const divs = ch.list.filter((a) => a.type === 'dividends');
   close(revs, `Close the revenue accounts to ${target.name}.`, target);
   close(exps, `Close the expense accounts to ${target.name}.`, target);
   if (method === 'summary') {
-    const ni = bal(ledger, is.name) + revs.reduce((s, a) => s + bal(ledger, a.name), 0) - exps.reduce((s, a) => s + bal(ledger, a.name), 0);
+    const ni = bal(ledger, is.name) + revs.reduce((s, a) => s + (a.type === 'contra-revenue' ? -1 : 1) * bal(ledger, a.name), 0) - exps.reduce((s, a) => s + bal(ledger, a.name), 0);
     if (ni > 0) entries.push({ id: `c${entries.length + 1}`, date, text: `Close ${is.name} (net income) to ${re.name}.`, lines: [{ acct: is.name, dr: D(ni) }, { acct: re.name, cr: D(ni) }] });
     if (ni < 0) entries.push({ id: `c${entries.length + 1}`, date, text: `Close ${is.name} (net loss) to ${re.name}.`, lines: [{ acct: re.name, dr: D(-ni) }, { acct: is.name, cr: D(-ni) }] });
   }

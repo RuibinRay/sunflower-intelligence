@@ -65,6 +65,8 @@ const ymd = (iso) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ''); re
 export function dateShort(iso) { const d = ymd(iso); return d ? `${d[2]} ${MONTHS[d[1] - 1].slice(0, 3)}` : ''; }
 export function dateLong(iso) { const d = ymd(iso); return d ? `${d[2]} ${MONTHS[d[1] - 1]} ${d[0]}` : ''; }
 /** The first and last day of the month of a date, as ISO strings. */
+/** “For the month ended 31 March 2026”, or the period's own phrase (e.g. “For the ten months ended”). */
+const endedPhrase = (period) => `${period.phrase || 'For the month ended'} ${dateLong(period.end)}`;
 export function monthOf(iso) {
   const d = ymd(iso) || [2026, 3, 1];
   const last = new Date(Date.UTC(d[0], d[1], 0)).getUTCDate();
@@ -109,7 +111,7 @@ export { errorBox };
 
 // ---------------------------------------------------------------- the chart as a picker
 
-const GROUPS = [['asset', 'Assets'], ['contra-asset', 'Contra-asset accounts'], ['liability', 'Liabilities'], ['equity', 'Equity'], ['dividends', 'Dividends'], ['revenue', 'Revenue'], ['expense', 'Expenses'], ['summary', 'Closing']];
+const GROUPS = [['asset', 'Assets'], ['contra-asset', 'Contra-asset accounts'], ['liability', 'Liabilities'], ['equity', 'Equity'], ['dividends', 'Dividends'], ['revenue', 'Revenue'], ['contra-revenue', 'Contra-revenue accounts'], ['expense', 'Expenses'], ['summary', 'Closing']];
 /** A select of the chart's accounts, grouped by type. */
 export function accountSelect(chart, { id, exclude = ['summary'], value = '', placeholder = 'Choose an account' } = {}) {
   const ch = A.makeChart(chart);
@@ -287,20 +289,20 @@ export function incomeStatementEl(is, { business = 'Lantern Coffee Co.', period 
     { kind: 'head', label: 'Expenses' }, ...itemRows(is.expenses), { kind: 'total', label: 'Total expenses', b: is.totalExpenses, ruleB: true },
     { kind: 'grand', label: is.netIncome >= 0 ? 'Net income' : 'Net loss', b: is.netIncome, dollar: true, double: true }];
   if (!is.revenues.length) rows.splice(1, 0, { label: 'No revenue recorded', a: 0, indent: true });
-  return statementEl({ business, title: 'Income statement', period: `For the month ended ${dateLong(period.end)}`, rows });
+  return statementEl({ business, title: 'Income statement', period: endedPhrase(period), rows });
 }
 
 export function equityStatementEl(es, { business = 'Lantern Coffee Co.', period }) {
   const label = (l) => (l === 'Beginning balance' ? `Balance, ${dateLong(period.start)}` : l === 'Ending balance' ? `Balance, ${dateLong(period.end)}` : l);
   const n = es.rows.length;
   const table = h('table', { class: 'acc-st-table acc-st-equity' },
-    h('caption', { class: 'visually-hidden' }, `Statement of changes in equity, ${business}, month ended ${dateLong(period.end)}`),
+    h('caption', { class: 'visually-hidden' }, `Statement of changes in equity, ${business}, ${endedPhrase(period).replace(/^For the /, '')}`),
     h('thead', {}, h('tr', {}, h('td'), h('th', { scope: 'col', class: 'is-num' }, 'Common stock'), h('th', { scope: 'col', class: 'is-num' }, 'Retained earnings'), h('th', { scope: 'col', class: 'is-num' }, 'Total equity'))),
     h('tbody', {}, es.rows.map((r, k) => h('tr', { class: k === n - 1 ? 'acc-st-grand' : k === 0 ? 'acc-st-first' : null },
       h('th', { scope: 'row' }, label(r[0])),
       ...[1, 2, 3].map((c) => h('td', { class: `is-num${k === n - 2 ? ' has-rule' : ''}${k === n - 1 ? ' has-double' : ''}` }, r[c] == null ? '' : paren(r[c], k === 0 || k === n - 1)))))));
   return h('figure', { class: 'acc-statement' },
-    h('figcaption', {}, h('span', { class: 'acc-st-business' }, business), h('span', { class: 'acc-st-title' }, 'Statement of changes in equity'), h('span', { class: 'acc-st-period' }, `For the month ended ${dateLong(period.end)}`)),
+    h('figcaption', {}, h('span', { class: 'acc-st-business' }, business), h('span', { class: 'acc-st-title' }, 'Statement of changes in equity'), h('span', { class: 'acc-st-period' }, endedPhrase(period))),
     h('div', { class: 'table-scroll' }, table));
 }
 
@@ -339,7 +341,7 @@ export function cashFlowEl(cf, { business = 'Lantern Coffee Co.', period, beginn
   rows.push({ label: `Cash at ${dateLong(period.start)}`, b: beginningCash, ruleB: true });
   rows.push({ kind: 'grand', label: `Cash at ${dateLong(period.end)}`, b: beginningCash + cf.net, dollar: true, double: true });
   const note = cf.noncash.length ? `Noncash investing and financing activities: ${cf.noncash.join(' ')}` : null;
-  return statementEl({ business, title: 'Statement of cash flows (direct method)', period: `For the month ended ${dateLong(period.end)}`, rows, note });
+  return statementEl({ business, title: 'Statement of cash flows (direct method)', period: endedPhrase(period), rows, note });
 }
 
 /**
@@ -436,11 +438,11 @@ function statementReason(kind, entry, ch, st) {
   const effects = A.entryEffects(entry, ch);
   const names = (pred) => listWords(effects.filter(pred).map((e) => e.acct));
   if (kind === 'income') return st.income
-    ? `The income statement changes: ${names((e) => e.type === 'revenue' || e.type === 'expense')} ${effects.filter((e) => e.type === 'revenue' || e.type === 'expense').length > 1 ? 'are' : 'is'} reported on it.`
+    ? `The income statement changes: ${names((e) => e.type === 'revenue' || e.type === 'contra-revenue' || e.type === 'expense')} ${effects.filter((e) => e.type === 'revenue' || e.type === 'contra-revenue' || e.type === 'expense').length > 1 ? 'are' : 'is'} reported on it.`
     : 'The income statement doesn’t change: no revenue or expense is involved.';
   if (kind === 'equity') {
     if (!st.equity) return 'The statement of changes in equity doesn’t change: no revenue, expense, dividend or stock is involved.';
-    if (effects.some((e) => e.type === 'revenue' || e.type === 'expense')) return 'The statement of changes in equity changes: net income changes, and net income is added to retained earnings.';
+    if (effects.some((e) => e.type === 'revenue' || e.type === 'contra-revenue' || e.type === 'expense')) return 'The statement of changes in equity changes: net income changes, and net income is added to retained earnings.';
     if (effects.some((e) => e.type === 'dividends')) return 'The statement of changes in equity changes: dividends reduce retained earnings.';
     return `The statement of changes in equity changes: ${names((e) => e.element === 'equity')} ${effects.filter((e) => e.element === 'equity').length > 1 ? 'are' : 'is'} part of equity.`;
   }

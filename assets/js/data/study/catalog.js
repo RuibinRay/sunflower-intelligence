@@ -63,9 +63,25 @@ const ALL = [
     project: { title: 'One month at Brightwater Bike Repair', blurb: 'Run a full accounting cycle for a fictional repair shop: journalise a month of transactions, adjust, prepare the statements and close the books.' },
   }),
   C({
-    id: 'f02', school: 'finance', code: 'F02', level: 'intro', requires: ['f01'],
+    id: 'f02', school: 'finance', code: 'F02', level: 'intro', status: 'in-progress', requires: ['f01'],
     title: 'Financial Statement Preparation',
     blurb: 'Build all four financial statements and see how every transaction flows through them.',
+    case: 'lantern',
+    outcomes: [
+      'Apply the five-step revenue recognition model to decide when, and how much, revenue to record, including deferred revenue and refunds.',
+      'Account for inventory under perpetual and periodic systems, and calculate cost of goods sold and ending inventory by FIFO, LIFO and weighted average.',
+      'Prepare a multi-step income statement and calculate gross profit, operating income, EBIT and EBITDA.',
+      'Account for receivables, payables and long-lived assets (bad debts, depreciation, disposals, amortisation), and prepare a classified balance sheet and a statement of changes in equity.',
+      'Prepare a statement of cash flows by the direct and the indirect method, and trace how a transaction moves through all four statements.',
+      'Explain the main differences between US GAAP and IFRS for the statements in this course.',
+    ],
+    modules: [
+      { n: 1, title: 'Revenue, inventory and the income statement', lessons: ['revenue-recognition', 'inventory-and-cost-of-goods-sold', 'income-statement'] },
+      { n: 2, title: 'The balance sheet', lessons: ['receivables-and-payables', 'long-lived-assets', 'balance-sheet-and-equity'] },
+      { n: 3, title: 'The statement of cash flows', lessons: ['cash-flow-statement', 'indirect-method'] },
+      { n: 4, title: 'Putting the statements together', lessons: ['linking-the-statements', 'gaap-and-ifrs'] },
+    ],
+    project: { title: 'Brightwater Bike Repair’s first full year', blurb: 'Prepare all four financial statements for Brightwater’s 2027, the year it starts selling parts and bikes: cost its inventory, estimate bad debts, record a disposal, and show how the statements connect.' },
     topics: ['Income statements: gross profit, EBITDA, EBIT and net income', 'Balance sheets', 'Cash flow statements (direct and indirect methods)', 'Statements of changes in equity', 'Revenue recognition basics', 'Cost of goods sold', 'Operating expenses', 'Depreciation and amortisation', 'Inventory accounting', 'Accounts receivable and payable', 'Working capital', 'Retained earnings', 'How the three statements connect', 'US GAAP versus IFRS'],
   }),
   C({

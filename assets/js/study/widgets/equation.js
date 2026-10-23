@@ -35,7 +35,7 @@ export async function mount(el, config = {}, ctx = {}) {
     liabilities: ch.list.filter((a) => a.element === 'liabilities' && used.has(a.name)).map((a) => ({ label: a.name, accts: [a.name], value: (L) => bal(L, a.name) })),
     equity: [
       ...ch.list.filter((a) => a.type === 'equity' && used.has(a.name)).map((a) => ({ label: a.name, accts: [a.name], value: (L) => bal(L, a.name) })),
-      ...[['Revenue', 'revenue', 1], ['Expenses', 'expense', -1], ['Dividends', 'dividends', -1]]
+      ...[['Revenue', 'revenue', 1], ['Returns and discounts', 'contra-revenue', -1], ['Expenses', 'expense', -1], ['Dividends', 'dividends', -1]]
         .map(([label, type, sign]) => ({ label, accts: names((a) => a.type === type), value: (L) => sign * sum(L, names((a) => a.type === type)) }))
         .filter((r) => r.accts.length),
     ],
