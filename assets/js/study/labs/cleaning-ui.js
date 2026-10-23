@@ -156,6 +156,7 @@ export function createLab(opts = {}) {
     st.cat = (meta?.category && names.includes(meta.category)) ? meta.category : (prof0.find((p) => p.type === 'category' || p.type === 'boolean')?.name || '');
     for (const step of recipe) { const r = C.apply(cur(), step); if (!r.change.error) { st.recipe.push(step); st.changes.push(r.change); st.snaps.push(r.table); } }
     refresh(false);
+    if (persist) persist();
   };
   lab.loadName = async function loadName(name) {
     const t = await loadDataset(name);
