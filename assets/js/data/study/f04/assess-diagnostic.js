@@ -33,14 +33,21 @@ export const items = [
     solution: 'An APY is an effective annual rate: 10,000 × 5.00% = $500.00 in a year. A loan APR is a nominal rate: the monthly rate is 5% ÷ 12 ≈ 0.4167%, and (1 + 0.05 ÷ 12)¹² − 1 ≈ 5.1162%, so an unpaid $10,000 grows by about $511.62. The same headline number describes two different kinds of rate.',
   },
   {
-    id: 'f04-dg-3', lesson: 'effective-annual-rates', type: 'num', kind: 'applied',
-    prompt: 'A fictional US bank offers a three-year certificate of deposit with a term of 1,095 days. On a $15,000 deposit it pays $2,400 of interest at maturity. What annual percentage yield must it disclose under Regulation DD? Give a percentage to two decimal places.',
-    answer: 5.07, check: () => 100 * ((1 + 2400 / 15000) ** (365 / 1095) - 1), unit: '%', places: 2, tol: 0.01,
-    wrong: [
-      { value: 5.33, say: 'That divides the 16% return over the term by three. The APY formula compounds instead: it raises 1.16 to the power 365 ÷ 1,095, which is a cube root.' },
-      { value: 16, say: 'That is the return over the whole three-year term. The APY states it as a yearly rate.' },
+    id: 'f04-dg-3', lesson: 'effective-annual-rates', type: 'mc', kind: 'applied',
+    prompt: 'A fictional credit union pays 4.85% a year compounded daily (365 days) on a two-year deposit; a fictional bank pays 4.95% a year compounded semi-annually. Which gives the larger balance on $20,000 after two years, and by about how much?',
+    options: [
+      'The bank’s, by about $17.66: its effective rate is about 5.01%, against about 4.97%',
+      'The credit union’s, by about $8.06, because its effective rate of about 4.97% beats the bank’s 4.95%',
+      'The bank’s, by $40.00, because it pays 0.10 percentage point more a year on $20,000',
+      'Neither: both effective rates round to 5.0%, so the balances are the same to the dollar',
     ],
-    solution: 'Return over the term = 2,400 ÷ 15,000 = 16%. APY = 100 × [(1.16)^(365 ÷ 1,095) − 1] = 100 × (1.16^(1/3) − 1) ≈ 100 × (1.050718 − 1) ≈ 5.07%. Dividing by three (5.33%) treats the growth as simple interest and overstates the yearly rate.',
+    answer: 0,
+    feedback: {
+      1: 'That compares the credit union’s effective rate with the bank’s quoted rate. Semi-annual compounding lifts the bank’s 4.95% to an effective 1.02475² − 1 ≈ 5.01%, above the credit union’s 4.97%.',
+      2: 'The bank does pay more, but not 0.10 point more: compare effective rates (about 5.01% against 4.97%, a gap of about 0.04 point) and compound each over the two years.',
+      3: 'Rounding hides a gap of about 0.04 percentage point a year, which on $20,000 over two years is worth about $17.66.',
+    },
+    solution: 'Credit union: 20,000 × (1 + 0.0485 ÷ 365)⁷³⁰ ≈ 20,000 × 1.1018533 ≈ $22,037.07, an effective rate of about 4.9692% a year. Bank: 20,000 × (1 + 0.0495 ÷ 2)⁴ = 20,000 × 1.02475⁴ ≈ 20,000 × 1.1027364 ≈ $22,054.73, an effective rate of about 5.0113%. The bank’s balance is about $17.66 larger: daily compounding cannot make up for a quoted rate 0.10 point lower.',
   },
 
   // ================================================================ Module 2: Present and future value
@@ -105,7 +112,7 @@ export const items = [
       { value: 42857.14, say: 'That is the cost of the prize for ever. The question asks how much more that is than the cost for 30 years.' },
       { value: 37227.12, say: 'That is the cost of 30 years of prizes. Subtract it from the cost for ever.' },
     ],
-    solution: 'For ever: 3,000 ÷ 0.07 ≈ $42,857.14. For 30 years: 3,000 × (1 − 1.07⁻³⁰) ÷ 0.07 = 3,000 × 12.409041 ≈ $37,227.12. Difference ≈ $5,630.02. Check: the extra prizes form a perpetuity worth $42,857.14 at year 30, or 42,857.14 ÷ 1.07³⁰ ≈ $5,630.02 today. Every prize after year 30, together, adds only about 13% to the cost.',
+    solution: 'For ever: 3,000 ÷ 0.07 ≈ $42,857.14. For 30 years: 3,000 × (1 − 1.07⁻³⁰) ÷ 0.07 = 3,000 × 12.409041 ≈ $37,227.12. Difference ≈ $5,630.02. Check: the extra prizes form a perpetuity worth $42,857.14 at year 30, or 42,857.14 ÷ 1.07³⁰ ≈ $5,630.02 today. The prizes after year 30, together, make up only about 13% of the cost for ever.',
   },
   {
     id: 'f04-dg-9', lesson: 'loan-amortisation', type: 'mc', kind: 'conceptual',
@@ -161,14 +168,14 @@ export const items = [
   },
   {
     id: 'f04-dg-12', lesson: 'mortgages', type: 'num', kind: 'applied',
-    prompt: 'Ellery (fictional) can afford a principal-and-interest payment of at most $2,000 a month. A lender offers a 30-year fixed-rate mortgage at 6.75% a year, repaid monthly. What is the largest loan she can take? Keep at least six decimal places in every factor and round only the final answer. Give the answer to the nearest dollar.',
-    answer: 308357, check: () => 2000 * (1 - (1 + 0.0675 / 12) ** -360) / (0.0675 / 12), unit: '$', places: 0, tol: 20,
+    prompt: 'Ellery (fictional) has been approved for a $300,000 30-year fixed-rate mortgage, repaid monthly. Before she locks the rate, the quote rises from 6.25% to 6.75% a year. By how much does her monthly principal-and-interest payment rise? Keep at least six decimal places in every factor. Give dollars and cents.',
+    answer: 98.64, check: () => { const p = (y) => 300000 * (y / 12) / (1 - (1 + y / 12) ** -360); return p(0.0675) - p(0.0625); }, unit: '$', places: 2, tol: 0.2,
     wrong: [
-      { value: 720000, say: 'That is 360 × $2,000, which ignores interest. The largest loan is the present value of the payments at the loan rate.' },
-      { value: 305451.72, say: 'That values 30 annual payments of $24,000 at 6.75%. The payments are monthly: use 6.75% ÷ 12 = 0.5625% for 360 months.' },
-      { value: 55068.60, say: 'That uses the monthly rate for only 30 periods. Thirty years of monthly payments is 360 periods.' },
+      { value: 125, say: 'That is half a percentage point of $300,000 for one month (300,000 × 0.005 ÷ 12), as if the whole payment were interest. The payment also repays the loan, so recalculate it at each rate with the payment formula and subtract.' },
+      { value: 99.23, say: 'That finds annual payments over 30 years and divides their difference by 12. The mortgage is repaid monthly: use the monthly rates for 360 months.' },
+      { value: 1945.79, say: 'That is the new payment. The question asks how much it rises: subtract the payment at 6.25%.' },
     ],
-    solution: 'The loan is the present value of 360 monthly payments of $2,000 at r = 6.75% ÷ 12 = 0.5625%: PV = 2,000 × (1 − 1.005625⁻³⁶⁰) ÷ 0.005625 = 2,000 × 154.178682 ≈ $308,357. Property taxes, insurance and any escrow come on top of this payment, so her full monthly housing cost would be higher.',
+    solution: 'Monthly rates: 6.25% ÷ 12 ≈ 0.520833% and 6.75% ÷ 12 = 0.5625%, 360 payments each. At 6.25%: 300,000 × 0.00520833 ÷ (1 − 1.00520833⁻³⁶⁰) ≈ $1,847.15. At 6.75%: 300,000 × 0.005625 ÷ (1 − 1.005625⁻³⁶⁰) ≈ $1,945.79. The payment rises by about $98.64 a month, about $35,511 over the 30 years. Taxes, insurance and any escrow come on top of either payment.',
   },
 ];
 

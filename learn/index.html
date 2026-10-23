@@ -15,9 +15,9 @@
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}try{if(localStorage.getItem('si:outline')==='closed')document.documentElement.classList.add('outline-closed')}catch(e){}</script>
   <link rel="preload" href="../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/css/base.css?v=7">
-  <link rel="stylesheet" href="../assets/css/rooms.css?v=7">
-  <link rel="stylesheet" href="../assets/css/study.css?v=7">
+  <link rel="stylesheet" href="../assets/css/base.css?v=8">
+  <link rel="stylesheet" href="../assets/css/rooms.css?v=8">
+  <link rel="stylesheet" href="../assets/css/study.css?v=8">
 </head>
 <body class="room room--learn room--sub room--study page--home" data-root="../">
   <a class="skip-link" href="#ledger">Skip to the courses</a>
@@ -78,7 +78,7 @@
     <div class="ledger" id="ledger">
       <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../">The painting</a></li><li aria-current="page">Learn</li></ol></nav>
       <div class="ledger-intro home-intro">
-        <p class="lead">Free courses in finance and accounting, business analytics and marketing, written to a university standard. Each lesson teaches from first principles, works examples step by step and gives you practice with feedback; each course has labs, tests and a project. Four courses are complete. One course is being written. The other 28 are planned, and marked as such.</p>
+        <p class="lead">Free courses in finance and accounting, business analytics and marketing, written to a university standard. Each lesson teaches from first principles, works examples step by step and gives you practice with feedback; each course has labs, tests and a project. Four courses are complete. One course is written and independently reviewed, with final testing under way. The other 28 are planned, and marked as such.</p>
         <form class="study-search" role="search" id="study-search" action="#" onsubmit="return false">
           <label class="field-label" for="search-input">Search lessons, terms and formulas</label>
           <div class="search-row"><input class="input" id="search-input" type="search" autocomplete="off" placeholder="e.g. accrual, outliers, break-even" aria-describedby="search-hint" aria-controls="search-results"><span class="search-count" id="search-count" aria-live="polite"></span></div>
@@ -201,6 +201,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../assets/js/pages/study-home.js?v=7"></script>
+  <script type="module" src="../assets/js/pages/study-home.js?v=8"></script>
 </body>
 </html>

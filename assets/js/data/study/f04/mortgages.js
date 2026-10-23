@@ -22,7 +22,7 @@ export default {
   slug: 'mortgages',
   title: 'Mortgages',
   blurb: 'A home loan is an annuity with a house attached. Calculate a fixed-rate mortgage payment, compare 30- and 15-year terms, find the balance after any number of years, decide whether discount points and extra payments pay off, see what inflation does to a fixed payment, and read how an adjustable-rate mortgage resets.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate the monthly principal-and-interest payment, the total interest and the balance after k years on a fixed-rate mortgage.',
     'Compare a 30-year and a 15-year mortgage on payment, total interest and how fast the balance falls.',

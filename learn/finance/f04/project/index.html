@@ -15,9 +15,9 @@
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}try{if(localStorage.getItem('si:outline')==='closed')document.documentElement.classList.add('outline-closed')}catch(e){}</script>
   <link rel="preload" href="../../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../../../../assets/css/base.css?v=7">
-  <link rel="stylesheet" href="../../../../assets/css/rooms.css?v=7">
-  <link rel="stylesheet" href="../../../../assets/css/study.css?v=7">
+  <link rel="stylesheet" href="../../../../assets/css/base.css?v=8">
+  <link rel="stylesheet" href="../../../../assets/css/rooms.css?v=8">
+  <link rel="stylesheet" href="../../../../assets/css/study.css?v=8">
 </head>
 <body class="room room--learn room--sub room--study school--finance page--project" data-root="../../../../" data-course="f04" data-slug="project">
   <a class="skip-link" href="#ledger">Skip to the project</a>
@@ -72,7 +72,7 @@
         <h1 class="lesson-title">Ana’s home plan</h1>
         <div class="lead project-brief"><div class="case-block"><p class="case-tag">Fictional case</p><p>It is April 2027. Lantern Coffee has finished its first year, and Ana Lim now pays herself $48,000 a year from it. Her emergency fund stays where it is. She wants to buy a $300,000 flat in five years, putting down 20%, and has asked you two questions: how much she must save each month to get there, and which mortgage to take when she does. Ana, the flat, the accounts and every rate are fictional.</p></div>
 <div class="table-scroll"><table class="data-table study-table"><caption>What Ana knows in April 2027 (all fictional)</caption><thead><tr><th scope="col">Item</th><th scope="col">Figure</th></tr></thead><tbody><tr><th scope="row">Flat she hopes to buy in April 2032</th><td>$300,000</td></tr><tr><th scope="row">Deposit she wants to put down</th><td>20% of the price</td></tr><tr><th scope="row">Savings account for the deposit</th><td>3.6% a year, compounded monthly (variable)</td></tr><tr><th scope="row">30-year fixed-rate mortgage</th><td>6.0% a year, monthly payments</td></tr><tr><th scope="row">15-year fixed-rate mortgage</th><td>5.4% a year, monthly payments</td></tr><tr><th scope="row">Discount point on the 30-year loan</th><td>pay 1% of the loan up front to cut the rate by 0.25 percentage points</td></tr><tr><th scope="row">Her pay from Lantern</th><td>$48,000 a year</td></tr><tr><th scope="row">Inflation she assumes</th><td>2.8% a year</td></tr></tbody></table></div>
-<p>You will plan the saving, compare the two mortgages, decide whether the discount point is worth paying, see where the loan stands after five years and put the payments into today’s money. Then you will write Ana a short recommendation. Assume each rate stays fixed at the figure shown, payments and deposits are made at the end of each month unless a question says otherwise, and taxes, insurance and fees beyond the point are left out.</p>
+<p>You will plan the saving, compare the two mortgages, decide whether the discount point is worth paying, see where the loan stands after five years and put the payments into the prices of April 2032, when the loan starts. Then you will write Ana a short recommendation. Assume each rate stays fixed at the figure shown, payments and deposits are made at the end of each month unless a question says otherwise, and taxes, insurance and fees beyond the point are left out. Keep at least six decimal places in every factor and round only the final answer.</p>
 <aside class="callout callout--warn" aria-label="Caution"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.8 18 16.6H2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 8v4.2M10 14.4v.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><div><p class="callout-title"><span class="visually-hidden">Caution: </span>Principal and interest only</p><p>A real mortgage payment usually also covers property taxes and insurance, often through an escrow account, and the loan comes with closing costs. This project looks only at principal and interest, so its payments understate what Ana would actually pay each month.</p></div></aside></div>
         <h2 class="h-small">What you will produce</h2><ul class="objectives"><li>The monthly saving that builds the $60,000 deposit in five years, and how much of the deposit is interest.</li><li>The monthly payment and total interest of each mortgage, and the payment as a share of Ana’s monthly pay.</li><li>A decision on the discount point, with its simple break-even and its value if Ana sells after five years.</li><li>The balance owed after five years, and the mortgage’s real cost and real burden under 2.8% inflation.</li><li>A recommendation to Ana of about 200–300 words.</li></ul>
         <p class="assess-record" id="assess-record" aria-live="polite"></p>
@@ -104,6 +104,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../../../../assets/js/pages/study-project.js?v=7"></script>
+  <script type="module" src="../../../../assets/js/pages/study-project.js?v=8"></script>
 </body>
 </html>

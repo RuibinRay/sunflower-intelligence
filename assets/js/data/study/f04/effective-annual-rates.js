@@ -12,7 +12,7 @@ export default {
   slug: 'effective-annual-rates',
   title: 'Effective annual rates',
   blurb: 'A rate of 7.2% a year can cost 7.2%, 7.40% or 7.47% a year depending on how often interest is compounded. Learn to tell nominal, periodic and effective rates apart, to convert any rate to any compounding frequency (continuous compounding included), to read a US annual percentage yield, and to compare offers quoted in different ways.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish a nominal annual rate (APR), a periodic rate and an effective annual rate (EAR), and convert each into the others.',
     'Calculate the effective annual rate for any compounding frequency, including continuous compounding.',

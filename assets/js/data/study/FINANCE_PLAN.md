@@ -43,7 +43,7 @@ All recomputed by script on 2026-10-22.
 | IRR worked trial at 22% | total PV 99,433.88 | **99,422.42; NPV −577.58** | Arithmetic slip in one year's discounting |
 | DCF example | EV = $460.06M + $1,434.85M = $1,894.91M | **$1,894.92M** (the two parts, unrounded, add to 1,894.92) | Rounding of the parts before adding |
 
-## Structure of F00 (built and reviewed, 2026-10-23) and F04 (planned)
+## Structure of F00 and F04 (both built and reviewed, 2026-10-23)
 
 **F00 Foundations of Finance** (introductory; no prerequisites; recommended before F01 and F04). Built as planned below, with the lab replaced by a formula explorer in each lesson; its case is `f00/case.js`.
 
@@ -56,7 +56,7 @@ All recomputed by script on 2026-10-22.
 4. *Lab:* a time-and-risk explorer (formula widgets).
 5. *Project:* compare two savings and investment choices, and explain them in plain language.
 
-**F04 Mathematics of Finance** (introductory; F00 recommended)
+**F04 Mathematics of Finance** (introductory; F00 recommended). Built as planned below; its case is `f04/case.js` (Lantern and Ana in 2027) and its project is Ana’s home plan.
 
 1. *Interest:* simple-and-compound-interest; effective-annual-rates.
 2. *Present and future value:* present-and-future-value; discounting-cash-flows.
@@ -64,4 +64,4 @@ All recomputed by script on 2026-10-22.
 4. *Real versus nominal:* inflation-and-real-returns; mortgages.
 5. *Project:* a loan and savings plan.
 
-F04 lessons are written in this order next.
+Next in the finance school: F02 Financial Statement Preparation (after F01), then F03 and F05.

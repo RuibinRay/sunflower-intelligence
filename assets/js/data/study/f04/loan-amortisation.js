@@ -34,7 +34,7 @@ export default {
   slug: 'loan-amortisation',
   title: 'Loan amortisation',
   blurb: 'An instalment loan is an annuity seen from the borrower’s side. Learn to calculate the payment, build a schedule that splits each payment into interest and principal, find the balance owed at any date, and use those tools to compare loans and instalment plans, to judge prepaying or refinancing, and to see what fees do to the APR.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate the level payment on an amortising loan and the total interest it costs.',
     'Construct an amortisation schedule showing the interest, principal and balance for each payment.',

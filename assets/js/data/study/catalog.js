@@ -76,7 +76,7 @@ const ALL = [
     related: [{ plate: 'credit' }, { tool: 'finance/risk/#altman', label: 'Altman Z-scores' }],
   }),
   C({
-    id: 'f04', school: 'finance', code: 'F04', level: 'intro', status: 'in-progress', recommends: ['f00'],
+    id: 'f04', school: 'finance', code: 'F04', level: 'intro', status: 'reviewed', recommends: ['f00'],
     title: 'Mathematics of Finance',
     blurb: 'Interest, present and future value, annuities, loans and inflation, with every formula worked step by step.',
     topics: ['Simple and compound interest', 'Present value and future value', 'Discounting', 'Annuities', 'Perpetuities', 'Loan amortisation', 'Effective annual rates', 'Nominal versus real returns', 'Inflation adjustments', 'Mortgage calculations'],

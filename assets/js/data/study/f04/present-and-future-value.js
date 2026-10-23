@@ -12,7 +12,7 @@ export default {
   slug: 'present-and-future-value',
   title: 'Present and future value',
   blurb: 'An amount of money has a different value at every date. Learn to draw a timeline, discount single amounts with discount factors, move any amount to any date, cope with rates that change, and solve for the missing amount, rate or time, so that amounts at different dates can be compared fairly.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Construct a cash-flow timeline for a single-amount problem and match the rate per period to the spacing of the periods.',
     'Calculate the present value of a future amount with a discount factor, for any compounding frequency and for amounts due between compounding dates.',

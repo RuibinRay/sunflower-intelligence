@@ -12,7 +12,7 @@ export default {
   slug: 'simple-and-compound-interest',
   title: 'Simple and compound interest',
   blurb: 'Interest is charged in one of two ways: on the principal only, or on the principal and the interest already earned. Learn to calculate both for any length of time, to count days the way loan contracts do, and to work backwards from two amounts to the rate or the time that links them.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate simple interest, and the interest accrued for part of a year under the actual/365, actual/360 and 30/360 day-count conventions.',
     'Calculate the future value of an amount under compound interest, including over a fractional number of periods.',

@@ -14,7 +14,7 @@ export default {
   slug: 'annuities',
   title: 'Annuities',
   blurb: 'Loan instalments, rent, leases, pensions and savings plans are all streams of equal payments. Learn to value such a stream in one step, whether the payments come at the end or the start of each period, start now or later, stay level or grow, and to solve for the payment, the number of payments or the rate.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate the present and future value of an ordinary annuity and of an annuity due, and explain why they differ by a factor of (1 + r).',
     'Calculate the value of a deferred annuity and of a growing annuity by moving the stream to a common date.',

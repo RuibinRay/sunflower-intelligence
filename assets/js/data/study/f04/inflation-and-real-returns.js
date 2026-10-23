@@ -15,7 +15,7 @@ export default {
   slug: 'inflation-and-real-returns',
   title: 'Inflation and real returns',
   blurb: 'A dollar next year is not the same unit as a dollar today. Measure inflation over several years, convert amounts into today’s dollars, use the exact Fisher relation, and discount nominal cash flows at nominal rates and real cash flows at real rates, so that every comparison across time is made in one kind of dollar.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate yearly, cumulative and average annual inflation from a price index over several years.',
     'Convert a nominal amount at any date into real dollars of a chosen base date, and back again.',

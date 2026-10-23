@@ -16,7 +16,7 @@ export default {
   slug: 'discounting-cash-flows',
   title: 'Discounting cash flows',
   blurb: 'Most real streams of money are uneven: a loan pays interest and then its principal, a project costs money now and returns different amounts later. Learn to value any stream by discounting each cash flow, to judge a decision by its net present value, and to find the rate of return that makes that value zero.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Construct a timeline for an uneven stream of cash flows and calculate its present value, or its value at any other date, by discounting each flow.',
     'Calculate the net present value of a decision and use it to accept or reject the decision, explaining what a positive NPV means.',

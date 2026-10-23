@@ -1,10 +1,10 @@
 // lab-accounting.js — the Accounting Lab page: the transaction-analysis drill, record and post, then the statements
 // and closing, all on Lantern Coffee Co. (fictional). The choices made and the entries recorded are kept in this
 // browser under 'si:lab-accounting' so a refresh doesn't lose a half-recorded month.
-import { initSite } from '../core/site.js?v=7';
-import { $, h, store } from '../core/dom.js?v=7';
-import * as U from '../study/labs/accounting-ui.js?v=7';
-import { scrollersFocusable } from '../study/common.js?v=7';
+import { initSite } from '../core/site.js?v=8';
+import { $, h, store } from '../core/dom.js?v=8';
+import * as U from '../study/labs/accounting-ui.js?v=8';
+import { scrollersFocusable } from '../study/common.js?v=8';
 
 initSite();
 const { A, CHART, MARCH, MARCH_ADJUSTMENTS } = U;

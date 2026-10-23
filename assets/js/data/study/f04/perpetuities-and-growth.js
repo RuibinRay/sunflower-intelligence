@@ -16,7 +16,7 @@ export default {
   slug: 'perpetuities-and-growth',
   title: 'Perpetuities and growth',
   blurb: 'A payment that never stops still has a finite value today. Learn to value level and growing perpetuities, including ones that start now or later, price a preferred share, size an endowment, and see why anything valued as growing forever depends so heavily on the gap between the discount rate and the growth rate.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate the present value of a level perpetuity, a perpetuity due and a deferred perpetuity.',
     'Calculate the present value of a growing perpetuity, and explain why it needs r > g and next period’s payment.',

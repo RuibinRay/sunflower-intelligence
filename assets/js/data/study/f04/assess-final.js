@@ -10,14 +10,16 @@ export const items = [
   // ---------------------------------------------------------------- simple-and-compound-interest
   {
     id: 'f04-fn-1', lesson: 'simple-and-compound-interest', type: 'num', kind: 'numerical',
-    prompt: 'On 1 January 2027 a fictional choir deposits $15,000 in an account paying 4.8% a year. Interest is compounded and credited once a year, on 1 January; for part of a year the account pays simple interest on the balance at the last crediting date. How much will the account pay out if the choir closes it on 1 June 2030, three years and five months later? Treat the five months as 5/12 of a year, keep at least six decimal places in every factor and give the answer to the nearest cent.',
-    answer: 17610.65, check: () => 15000 * 1.048 ** 3 * (1 + 0.048 * 5 / 12), unit: '$', places: 2, tol: 0.5,
+    prompt: 'On 1 January 2027 a fictional choir deposits $15,000 in an account paying 4.8% a year. Interest is compounded and credited once a year, on 1 January; for part of a year the account pays simple interest, on an actual/365 basis, on the balance at the last crediting date. How much will the account pay out if the choir closes it on 1 June 2030? Keep at least six decimal places in every factor and give the answer to the nearest cent.',
+    answer: 17608.19, check: () => 15000 * 1.048 ** 3 * (1 + 0.048 * 151 / 365), unit: '$', places: 2, tol: 0.5,
     wrong: [
-      { value: 17605.93, say: 'That uses the growth formula with a fractional exponent, 1.048^(41/12). This account credits interest only on 1 January and pays simple interest for the last five months, which within a period pays slightly more.' },
-      { value: 17460, say: 'That is simple interest for the whole time. Interest credited each 1 January earns interest after that: compound for the three full years.' },
-      { value: 17265.34, say: 'That stops at 1 January 2030. The five months after the last crediting date earn simple interest too.' },
+      { value: 17610.65, say: 'That counts the five months as 5/12 of a year. The account counts the actual days, 151 from 1 January to 1 June 2030, over 365.' },
+      { value: 17612.95, say: 'That divides the 151 days by 360. The account uses an actual/365 basis.' },
+      { value: 17603.48, say: 'That uses the growth formula with a fractional exponent, 1.048^(3 + 151/365). This account credits interest only on 1 January and pays simple interest for the part-year, which within a period pays slightly more.' },
+      { value: 17265.34, say: 'That stops at 1 January 2030. The 151 days after the last crediting date earn simple interest too.' },
+      { value: 17459.84, say: 'That is simple interest for the whole time. Interest credited each 1 January earns interest after that: compound for the three full years.' },
     ],
-    solution: 'Three full years compound: 15,000 × 1.048³ = 15,000 × 1.151023 ≈ $17,265.34 on 1 January 2030. The last five months earn simple interest on that balance: 17,265.34 × 0.048 × 5/12 ≈ $345.31. Total ≈ $17,610.65. The formula 15,000 × 1.048^(41/12) gives $17,605.93, $4.72 less, because within one period simple interest pays more than compound interest.',
+    solution: 'Three full years compound: 15,000 × 1.048³ = 15,000 × 1.151023 ≈ $17,265.34 on 1 January 2030. From 1 January to 1 June 2030 there are 31 + 28 + 31 + 30 + 31 = 151 days (2030 is not a leap year). Simple interest on an actual/365 basis: 17,265.34 × 0.048 × 151 ÷ 365 ≈ $342.85. Total ≈ $17,608.19. Counting five months as 5/12 of a year would give $17,610.65, and the growth formula with a fractional exponent $17,603.48: the contract’s day count and crediting rule decide the cents.',
   },
   {
     id: 'f04-fn-2', lesson: 'simple-and-compound-interest', type: 'mc', kind: 'conceptual',
@@ -66,9 +68,9 @@ export const items = [
     prompt: 'Which of these pairs are equivalent rates, giving the same growth over a year? Select all that apply.',
     options: [
       '6% compounded semi-annually and 6.09% compounded annually',
-      '6% compounded monthly and 6% compounded quarterly',
+      '6% a year compounded monthly and 6% a year compounded quarterly',
       '5% compounded continuously and about 5.127% compounded annually',
-      '10% compounded annually and 0.8333% a month',
+      '10% compounded annually and 0.8333% a month, which is the 10% divided by 12',
       '4% a half-year and 8.16% compounded annually',
     ],
     answer: [0, 2, 4],
@@ -157,7 +159,7 @@ export const items = [
   {
     id: 'f04-fn-11', lesson: 'annuities', type: 'num', kind: 'numerical',
     prompt: 'Quillon Press (fictional) will pay an author royalties of $8,000 at the end of the first year, rising by 5% a year, for twelve years in all. At a discount rate of 5% a year, what are the royalties worth today? Give dollars and cents.',
-    answer: 91428.57, check: () => { let pv = 0; for (let t = 1; t <= 12; t++) pv += 8000 * 1.05 ** (t - 1) / 1.05 ** t; return pv; }, unit: '$', places: 2, tol: 0.5,
+    answer: 91428.57, check: () => { let pv = 0; for (let t = 1; t <= 12; t++) pv += 8000 * 1.05 ** (t - 1) / 1.05 ** t; return pv; }, unit: '$', places: 2, tol: 2,
     wrong: [
       { value: 70906.01, say: 'That treats the royalties as level at $8,000. They rise by 5% a year.' },
       { value: 96000, say: 'That is 12 × $8,000. Each payment, discounted, is worth $8,000 ÷ 1.05 today, not $8,000.' },
@@ -188,7 +190,7 @@ export const items = [
     answer: 0,
     feedback: {
       1: 'The formula holds for any number of payments, even for ever (the perpetuity). The shortfall is exact, not an estimate.',
-      2: 'Every payment counts in full, discounted to today. The later ones are simply discounted for longer.',
+      2: 'Every payment counts in full, discounted to today. The later ones are discounted for longer.',
       3: 'The rate is the same 8% for both. The difference comes from timing alone.',
     },
     solution: 'The 20-year annuity is the 10-year annuity plus a second 10-year annuity that starts ten years later. The second block is worth $6,710.08 at year 10, or 6,710.08 × 1.08⁻¹⁰ = 6,710.08 × 0.463193 ≈ $3,108.07 today. Total ≈ 6,710.08 + 3,108.07 = $9,818.15. The later the payments, the less each adds.',
@@ -198,7 +200,7 @@ export const items = [
   {
     id: 'f04-fn-14', lesson: 'perpetuities-and-growth', type: 'num', kind: 'applied',
     prompt: 'The Tallis Foundation (fictional) wants to endow a nursing prize worth $5,000 in today’s dollars every year for ever. The first prize is awarded a year from now, and each prize is raised in line with inflation, which the foundation expects to average 2.5% a year. Its endowment earns a nominal 6.5% a year. How large must the gift be? Give dollars and cents.',
-    answer: 128125, check: () => 5000 / (1.065 / 1.025 - 1), unit: '$', places: 2, tol: 0.5,
+    answer: 128125, check: () => 5000 / (1.065 / 1.025 - 1), unit: '$', places: 2, tol: 100,
     wrong: [
       { value: 125000, say: 'That divides $5,000 by r − g, but $5,000 is the prize in today’s dollars: the first prize, a year from now, is 5,000 × 1.025 = $5,125. (The same wrong answer comes from the shortcut real rate 6.5% − 2.5% = 4%; the exact real rate is 1.065 ÷ 1.025 − 1 ≈ 3.90%.)' },
       { value: 76923.08, say: 'That funds a level $5,000 a year. To keep its purchasing power the prize must grow with inflation.' },
@@ -208,27 +210,27 @@ export const items = [
   },
   {
     id: 'f04-fn-15', lesson: 'perpetuities-and-growth', type: 'num', kind: 'numerical',
-    prompt: 'A fictional regional airport operator’s preferred shares pay a fixed dividend of $1.40 every quarter, for ever, the next one in three months. Investors require an effective return of 9% a year. What is one share worth? Give dollars and cents.',
-    answer: 64.28, check: () => 1.40 / (1.09 ** 0.25 - 1), unit: '$', places: 2, tol: 0.07,
+    prompt: 'A fictional land trust owns the land under a marina and receives a fixed ground rent of $1,400 every quarter, for ever, the next payment in three months. It values the rent at an effective 9% a year. What is the rent worth today? Give dollars and cents.',
+    answer: 64284.52, check: () => 1400 / (1.09 ** 0.25 - 1), unit: '$', places: 2, tol: 70,
     wrong: [
-      { value: 62.22, say: 'That uses 9% ÷ 4 = 2.25% a quarter (or $5.60 ÷ 9%, which gives the same). An effective 9% a year is a quarterly rate of 1.09^(1/4) − 1 ≈ 2.1778%, a little lower, because quarterly returns compound.' },
-      { value: 65.68, say: 'That adds a dividend paid today. The next dividend is in three months, so this is an ordinary perpetuity: D ÷ r.' },
-      { value: 15.56, say: 'You divided the quarterly dividend by the annual rate. Use a quarterly rate with a quarterly dividend.' },
+      { value: 62222.22, say: 'That uses 9% ÷ 4 = 2.25% a quarter (or $5,600 a year ÷ 9%, which gives the same). An effective 9% a year is a quarterly rate of 1.09^(1/4) − 1 ≈ 2.1778%, a little lower, because quarterly returns compound.' },
+      { value: 65684.52, say: 'That adds a payment received today. The next payment is in three months, so this is an ordinary perpetuity: C ÷ r.' },
+      { value: 15555.56, say: 'You divided the quarterly rent by the annual rate. Use a quarterly rate with a quarterly payment.' },
     ],
-    solution: 'Quarterly rate equivalent to an effective 9% a year: 1.09^(1/4) − 1 ≈ 0.0217782. Value = 1.40 ÷ 0.0217782 ≈ $64.28. Dividing the annual dividend by 9% gives $62.22, which ignores that quarterly dividends arrive sooner than a single payment at the end of each year.',
+    solution: 'Quarterly rate equivalent to an effective 9% a year: 1.09^(1/4) − 1 ≈ 0.0217782. Value = 1,400 ÷ 0.0217782 ≈ $64,284.52. Dividing the annual rent by 9% gives $62,222.22, which ignores that quarterly payments arrive sooner than a single payment at the end of each year.',
   },
 
   // ---------------------------------------------------------------- loan-amortisation
   {
     id: 'f04-fn-16', lesson: 'loan-amortisation', type: 'num', kind: 'applied',
-    prompt: 'Brackenridge Veterinary Clinic (fictional) borrowed $150,000 three years ago at 9% a year compounded monthly, to be repaid in 96 equal monthly payments, and has just made its 36th payment. A lender offers to refinance the outstanding balance at 7.2% a year compounded monthly over the remaining 60 months, for an arrangement fee of $2,500 paid now. Discounting the monthly savings at the new loan’s rate, what is the net present value of refinancing? Keep at least six decimal places in every factor and round only the final answer. Give dollars and cents.',
-    answer: 2090.11, check: () => { const p = (pv, r, n) => pv * r / (1 - (1 + r) ** -n); const c0 = p(150000, 0.0075, 96); const b = c0 * (1 - 1.0075 ** -60) / 0.0075; const c1 = p(b, 0.006, 60); return (c0 - c1) * (1 - 1.006 ** -60) / 0.006 - 2500; }, unit: '$', places: 2, tol: 12,
+    prompt: 'Brackenridge Veterinary Clinic (fictional) borrowed $150,000 three years ago at 9.6% a year compounded monthly, to be repaid in 96 equal monthly payments, and has just made its 36th payment. A lender offers to refinance the outstanding balance at 7.5% a year compounded monthly over the remaining 60 months, for an arrangement fee of $2,500 paid now. Discounting the monthly savings at the new loan’s rate, what is the net present value of refinancing? Keep at least six decimal places in every factor and round only the final answer. Give dollars and cents.',
+    answer: 2889.26, check: () => { const p = (pv, r, n) => pv * r / (1 - (1 + r) ** -n); const c0 = p(150000, 0.008, 96); const b = c0 * (1 - 1.008 ** -60) / 0.008; const c1 = p(b, 0.00625, 60); return (c0 - c1) * (1 - 1.00625 ** -60) / 0.00625 - 2500; }, unit: '$', places: 2, tol: 12,
     wrong: [
-      { value: 2979.40, say: 'That adds up the 60 monthly savings without discounting them, then takes off the fee. Savings that come later are worth less today.' },
-      { value: 4590.11, say: 'That is the present value of the savings before the $2,500 fee.' },
-      { value: 1899.35, say: 'That discounts the savings at the old rate, 0.75% a month. The savings are as certain as the new loan’s payments, so discount them at the new rate, 0.6% a month.' },
+      { value: 3979.38, say: 'That adds up the 60 monthly savings without discounting them, then takes off the fee. Savings that come later are worth less today.' },
+      { value: 5389.26, say: 'That is the present value of the savings before the $2,500 fee.' },
+      { value: 2629.96, say: 'That discounts the savings at the old rate, 0.8% a month. The savings are as certain as the new loan’s payments, so discount them at the new rate, 0.625% a month.' },
     ],
-    solution: 'Old payment: 150,000 × 0.0075 ÷ (1 − 1.0075⁻⁹⁶) ≈ $2,197.530491. Outstanding balance after 36 payments (prospective, 60 left): 2,197.530491 × (1 − 1.0075⁻⁶⁰) ÷ 0.0075 ≈ $105,862.46. New payment: 105,862.46 × 0.006 ÷ (1 − 1.006⁻⁶⁰) ≈ $2,106.21, a saving of about $91.3234 a month. Present value of the savings at 0.6% a month: 91.3234 × 50.262130 ≈ $4,590.11. Net of the fee ≈ $2,090.11: refinance. The fee is recovered in about 27 months, well inside the 60 remaining.',
+    solution: 'Old payment: 150,000 × 0.008 ÷ (1 − 1.008⁻⁹⁶) ≈ $2,244.500373. Outstanding balance after 36 payments (prospective, 60 left): 2,244.500373 × (1 − 1.008⁻⁶⁰) ÷ 0.008 ≈ $106,623.23. New payment: 106,623.23 × 0.00625 ÷ (1 − 1.00625⁻⁶⁰) ≈ $2,136.51, a saving of about $107.989642 a month. Present value of the savings at 0.625% a month: 107.989642 × 49.905308 ≈ $5,389.26. Net of the fee ≈ $2,889.26: refinance. The fee is recovered in about 23 months, well inside the 60 remaining.',
   },
   {
     id: 'f04-fn-17', lesson: 'loan-amortisation', type: 'num', kind: 'numerical',
@@ -243,7 +245,7 @@ export const items = [
   },
   {
     id: 'f04-fn-18', lesson: 'loan-amortisation', type: 'mc', kind: 'conceptual',
-    prompt: 'Two fictional loans of $10,000 are both quoted at 6% a year compounded monthly, and each deducts a $200 arrangement fee from the money the borrower receives. Loan A is repaid over 12 months, loan B over 60 months. Which statement about their APRs, including the fee, is correct?',
+    prompt: 'Two fictional loans of $10,000 are both quoted at 6% a year compounded monthly, and each deducts a $200 arrangement fee from the money the borrower receives. Loan A is repaid over 12 months, loan B over 48 months. Which statement about their APRs, including the fee, is correct?',
     options: [
       'Loan A’s APR is higher: the same fee is spread over fewer payments',
       'Both APRs are 6%, because a fee does not change the interest rate on the loan',
@@ -254,9 +256,9 @@ export const items = [
     feedback: {
       1: 'The interest rate stays 6%, but the APR measures the cost of credit including the fee: the borrower receives $9,800 and repays as if she had received $10,000.',
       2: 'Total interest grows with the term at any rate, so it is not a measure of cost. The fee is what lifts the APR, and on loan A it buys a much shorter loan.',
-      3: 'The fee is the same in dollars, but as a yearly rate it is spread over one year on loan A and over five on loan B.',
+      3: 'The fee is the same in dollars, but as a yearly rate it is spread over one year on loan A and over four on loan B.',
     },
-    solution: 'On each loan the borrower receives $9,800 but makes the payments set for $10,000: $860.66 a month on A and $193.33 on B. The rate at which A’s 12 payments are worth $9,800 is about 0.8167% a month, an APR of about 9.80%; for B it is about 0.5703% a month, an APR of about 6.84%. A fee is a fixed cost of borrowing, so the shorter the loan, the larger it is as a yearly rate.',
+    solution: 'On each loan the borrower receives $9,800 but makes the payments set for $10,000: $860.66 a month on A and $234.85 on B. The rate at which A’s 12 payments are worth $9,800 is about 0.8167% a month, an APR of about 9.80%; for B it is about 0.5866% a month, an APR of about 7.04%. A fee is a fixed cost of borrowing, so the shorter the loan, the larger it is as a yearly rate.',
   },
 
   // ---------------------------------------------------------------- inflation-and-real-returns
@@ -276,11 +278,11 @@ export const items = [
     id: 'f04-fn-20', lesson: 'inflation-and-real-returns', type: 'multi', kind: 'conceptual',
     prompt: 'Which statements about the exact Fisher relation, 1 + r_nom = (1 + r_real)(1 + i), are correct? Select all that apply.',
     options: [
-      'It holds over any period, provided all three rates are effective rates for that same period',
-      'With a nominal rate of 6% and inflation of 4%, the exact real rate is a little below 2%',
-      'A savings rate quoted as an APR compounded monthly can be used in it as it stands',
-      'Over ten years, the real growth factor is the ten-year nominal growth factor divided by the ten-year inflation factor',
-      'The subtraction shortcut, r_real ≈ r_nom − i, is exact whenever inflation is below 3%',
+      'It holds over any period if all three are effective rates for that period',
+      'At 6% nominal and 4% inflation, the exact real rate is a little below 2%',
+      'A savings rate quoted as an APR compounded monthly can go into it as it stands, with no conversion',
+      'Over ten years, the real growth factor is the nominal factor divided by the inflation factor',
+      'The subtraction shortcut, r_real ≈ r_nom − i, is exact whenever inflation is below about 3% a year',
     ],
     answer: [0, 1, 3],
     feedback: {
