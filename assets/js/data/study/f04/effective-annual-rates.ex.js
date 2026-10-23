@@ -141,14 +141,14 @@ export const guided = [
   {
     id: 'f04-ear-g4', type: 'steps', kind: 'applied',
     prompt: 'A fictional US bank offers a 182-day certificate of deposit. On a $10,000 deposit it pays $200 of interest at maturity. What APY must it disclose under Regulation DD?',
-    solution: 'Return over the term = 200 ÷ 10,000 = 2%. APY = 100 × [(1.02)^(365/182) − 1] ≈ 4.05%. Simply doubling 2% (4.00%) or scaling it by 365 ÷ 182 (4.01%) leaves out the compounding the formula requires.',
+    solution: 'Return over the term = 200 ÷ 10,000 = 2%. APY = 100 × [(1.02)^(365/182) − 1] ≈ 4.05%. Doubling 2% (4.00%) or scaling it by 365 ÷ 182 (4.01%) leaves out the compounding the formula requires.',
     steps: [
-      { id: 'f04-ear-g4-s1', type: 'num', prompt: 'What is the return over the 182-day term, in percent?',
+      { id: 'f04-ear-g4-s1', type: 'num', prompt: 'What is the return over the 182-day term, as a percentage?',
         answer: 2, check: () => 200 / 10000 * 100, unit: '%', places: 2, tol: 0.005,
         hints: ['Interest ÷ principal.'] },
-      { id: 'f04-ear-g4-s2', type: 'num', prompt: 'What is the APY, in percent, to two decimal places?',
+      { id: 'f04-ear-g4-s2', type: 'num', prompt: 'What is the APY, as a percentage to two decimal places?',
         answer: 4.05, check: () => 100 * ((1 + 200 / 10000) ** (365 / 182) - 1), unit: '%', places: 2, tol: 0.01,
-        hints: ['APY = 100 × [(1 + Interest ÷ Principal)^(365 ÷ Days in term) − 1].', '1.02 raised to the power 365 ÷ 182 ≈ 2.005495.'],
+        hints: ['APY = 100 × [(1 + Interest ÷ Principal)^(365 ÷ Days in term) − 1].', '365 ÷ 182 ≈ 2.005495, so 1.02^2.005495 ≈ 1.040513.'],
         wrong: [
           { value: 4.01, say: 'That scales 2% by 365 ÷ 182 without compounding. The APY formula raises 1.02 to the power 365 ÷ 182.' },
           { value: 4, say: 'Doubling the six-month return ignores both compounding and the fact that 182 days is slightly less than half a year.' },
@@ -170,7 +170,7 @@ export const independent = [
   },
   {
     id: 'f04-ear-i2', type: 'num', kind: 'numerical',
-    prompt: 'A loan is quoted at 10% a year compounded quarterly. What nominal annual rate compounded monthly is equivalent? Give a percentage to two decimal places.',
+    prompt: 'A loan is quoted at 10% a year compounded quarterly. What nominal annual rate compounded monthly is equivalent? Keep the monthly rate to at least six significant figures, and give a percentage to two decimal places.',
     answer: 9.92, check: () => 12 * ((1 + 0.1 / 4) ** (4 / 12) - 1) * 100, unit: '%', places: 2, tol: 0.01,
     wrong: [
       { value: 10, say: 'The same nominal rate compounded more often costs more. The equivalent monthly rate must be lower.' },
@@ -182,7 +182,7 @@ export const independent = [
     id: 'f04-ear-i3', type: 'mc', kind: 'applied',
     prompt: 'A saver compares three fictional accounts: 4.40% a year compounded daily, 4.45% compounded monthly, and 4.50% compounded annually. Ignoring everything but the rate, which pays the most over a year?',
     options: [
-      '4.45% compounded monthly (EAR about 4.54%)',
+      '4.45% compounded monthly',
       '4.50% compounded annually, because its quoted rate is highest',
       '4.40% compounded daily, because daily compounding is the most frequent',
       'All three pay the same',
@@ -221,7 +221,7 @@ export const independent = [
   {
     id: 'f04-ear-i5', type: 'num', kind: 'numerical',
     prompt: 'You deposit $15,000 for three years at 4.8% a year compounded monthly. What is the balance at the end, to the nearest cent?',
-    answer: 17318.29, check: () => 15000 * (1 + 0.048 / 12) ** 36, unit: '$', places: 2, tol: 0.05,
+    answer: 17318.29, check: () => 15000 * (1 + 0.048 / 12) ** 36, unit: '$', places: 2, tol: 1.5,
     wrong: [
       { value: 17265.34, say: 'That is annual compounding. Use the monthly rate (0.4%) for 36 months.' },
       { value: 17160, say: 'That is simple interest. Interest is added to the balance every month.' },
@@ -262,14 +262,15 @@ export const check = [
   },
   {
     id: 'f04-ear-k2', type: 'num', kind: 'numerical',
-    prompt: 'What is the effective annual rate of 7.2% a year compounded quarterly? Give a percentage to two decimal places.',
-    answer: 7.40, check: () => ear(0.072, 4) * 100, unit: '%', places: 2, tol: 0.01,
+    prompt: 'What is the effective annual rate of 7.2% a year compounded semi-annually? Give a percentage to two decimal places.',
+    answer: 7.33, check: () => ear(0.072, 2) * 100, unit: '%', places: 2, tol: 0.01,
     wrong: [
-      { value: 7.2, say: 'That is the nominal rate. Compound the quarterly rate four times.' },
-      { value: 1.8, say: 'That is the quarterly rate. Compound it over four quarters.' },
-      { value: 7.44, say: 'That is monthly compounding. Quarterly: 1.018⁴ − 1.' },
+      { value: 7.2, say: 'That is the nominal rate. Compound the half-year rate twice.' },
+      { value: 3.6, say: 'That is the half-year rate. Compound it over two halves.' },
+      { value: 7.4, say: 'That is quarterly compounding. Semi-annual: 1.036² − 1.' },
+      { value: 7.44, say: 'That is monthly compounding. Semi-annual: 1.036² − 1.' },
     ],
-    solution: 'Quarterly rate = 7.2% ÷ 4 = 1.8%. EAR = 1.018⁴ − 1 ≈ 7.40%.',
+    solution: 'Half-year rate = 7.2% ÷ 2 = 3.6%. EAR = 1.036² − 1 = 0.07329…, or 7.33%.',
   },
   {
     id: 'f04-ear-k3', type: 'num', kind: 'numerical',
@@ -312,7 +313,7 @@ export const check = [
   {
     id: 'f04-ear-k6', type: 'num', kind: 'numerical',
     prompt: 'You invest $5,000 for four years at 6% a year compounded continuously. What is the balance at the end, to the nearest cent?',
-    answer: 6356.25, check: () => 5000 * Math.exp(0.06 * 4), unit: '$', places: 2, tol: 0.05,
+    answer: 6356.25, check: () => 5000 * Math.exp(0.06 * 4), unit: '$', places: 2, tol: 0.3,
     wrong: [
       { value: 6352.45, say: 'That is monthly compounding. Continuous: 5,000 × e^(0.06 × 4).' },
       { value: 6312.38, say: 'That is annual compounding. Continuous: 5,000 × e^0.24.' },
