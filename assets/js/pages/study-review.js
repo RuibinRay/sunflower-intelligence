@@ -1,12 +1,12 @@
 // study-review.js — spaced review. Due lessons (predicted recall ≤ 50%) are reviewed with a few of their own
 // questions; missed questions come back until answered right; flashcards cover the terms and formulas of the
 // lessons you've opened. Review answers update mastery and reset the forgetting curve.
-import { initSite } from '../core/site.js?v=9';
-import { $, h } from '../core/dom.js?v=9';
-import * as P from '../study/progress.js?v=9';
-import { practiceCard, loadCharts } from '../study/exercises.js?v=9';
-import { describe, pct, scrollersFocusable } from '../study/common.js?v=9';
-import { MAP, FLASH } from '../data/study/map.js?v=9';
+import { initSite } from '../core/site.js?v=10';
+import { $, h } from '../core/dom.js?v=10';
+import * as P from '../study/progress.js?v=10';
+import { practiceCard, loadCharts } from '../study/exercises.js?v=10';
+import { describe, pct, scrollersFocusable } from '../study/common.js?v=10';
+import { MAP, FLASH } from '../data/study/map.js?v=10';
 
 initSite();
 scrollersFocusable();
@@ -20,7 +20,7 @@ async function lessonItems(key) {
   if (cache.has(key)) return cache.get(key);
   const [course, slug] = key.split('/');
   let items = [];
-  try { const X = await import(`../data/study/${course}/${slug}.ex.js?v=9`); items = [...(X.independent || []), ...(X.check || [])]; } catch { /* lesson file missing */ }
+  try { const X = await import(`../data/study/${course}/${slug}.ex.js?v=10`); items = [...(X.independent || []), ...(X.check || [])]; } catch { /* lesson file missing */ }
   cache.set(key, items);
   return items;
 }
@@ -31,7 +31,7 @@ async function findItem(id, lessonKey) {
   const c = MAP[course];
   if (!c) return null;
   for (const f of [...c.modules.map((m) => `assess-m${m.n}`), 'assess-final']) {
-    try { const m = await import(`../data/study/${course}/${f}.js?v=9`); const it = (m.items || []).find((x) => x.id === id); if (it) return it; } catch { /* no such file */ }
+    try { const m = await import(`../data/study/${course}/${f}.js?v=10`); const it = (m.items || []).find((x) => x.id === id); if (it) return it; } catch { /* no such file */ }
   }
   return null;
 }

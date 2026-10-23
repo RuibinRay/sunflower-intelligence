@@ -1,5 +1,5 @@
 // fin.js — cost of capital, bonds and options. Pure functions; the finance room draws them.
-import { normCdf } from './stats.js?v=9';
+import { normCdf } from './stats.js?v=10';
 
 const normPdf = (x) => Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI);
 

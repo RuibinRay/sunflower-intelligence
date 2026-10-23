@@ -13,6 +13,9 @@
 /** The shop's order system stamps times in UTC; Lantern's local time is five hours behind (the same assumption as B02). */
 export const UTC_OFFSET_HOURS = -5;
 
+/** Delivery since the 1 July 2026 relaunch: free on orders over $35, otherwise a flat charge (fictional). */
+export const DELIVERY = { freeOver: 35, charge: 4.95 };
+
 export const MONTHS = ['Jul 2026', 'Aug 2026', 'Sep 2026', 'Oct 2026', 'Nov 2026', 'Dec 2026'];
 
 /** Sessions (visits) and orders by channel, and average order value (AOV, $) per month. */
