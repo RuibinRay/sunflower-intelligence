@@ -39,6 +39,25 @@ export const items = [
     },
     solution: 'Expected values: large batch 0.5 × 12,000 + 0.5 × (−6,000) = $3,000; small batch 0.5 × 5,000 + 0.5 × 800 = $2,900. The large batch is $100 better on average, but half the time it loses $6,000, more than the firm’s $4,000 reserve. Expected value ignores risk: a business that could not survive the worst case should give up a little expected profit for a better one. The small batch’s worst case is still a profit of $800.',
   },
+  {
+    id: 'b01-fn-25', lesson: 'four-kinds-of-analytics', type: 'classify', kind: 'conceptual',
+    prompt: 'Corbel Bike Tours (fictional) is planning next summer. Which kind of analytics does each piece of work need?',
+    items: [
+      'Counting the tours it ran in each week of last summer',
+      'Finding out why bookings from hotels fell in August while bookings from its website held up',
+      'Estimating how many riders will book in each week of next summer',
+      'Choosing how many bikes to rent in for each week, given that estimate, the rental cost and the profit lost when a rider is turned away',
+      'Scoring last summer’s riders by how likely each is to book again',
+    ],
+    categories: ['Descriptive', 'Diagnostic', 'Predictive', 'Prescriptive'],
+    answer: [0, 1, 2, 3, 2],
+    feedback: {
+      2: 'Estimating demand is prediction: it says what will probably happen, not what to do.',
+      3: 'Deciding how many bikes to hold, given a forecast and the costs of too many or too few, is prescriptive.',
+      4: 'A probability for each rider is a prediction; deciding whom to send an offer would be prescriptive.',
+    },
+    solution: 'Counting what happened describes; explaining a fall diagnoses; estimating next summer’s riders, or each rider’s chance of returning, predicts; choosing how many bikes to rent, using the forecast and the costs, prescribes. The same quantity is predictive when you estimate it and prescriptive when you decide how much to provide for it.',
+  },
 
   // ---------------------------------------------------------------- business-questions
   {
@@ -89,7 +108,7 @@ export const items = [
   {
     id: 'b01-fn-6', lesson: 'problem-solving-frameworks', type: 'num', kind: 'numerical',
     prompt: 'From May to June the revenue of Corrie Gifts (fictional), an online gift shop, fell by 12%. Its visits rose by 5% and its average order value fell by 2%. Its conversion rate was 3.00% in May. By how many percentage points did the conversion rate change from May to June? Give two decimal places, with a minus sign for a fall.',
-    answer: -0.43, check: () => 3 * (0.88 / (1.05 * 0.98)) - 3, unit: 'percentage points', places: 2, tol: 0.005,
+    answer: -0.43, check: () => 3 * (0.88 / (1.05 * 0.98)) - 3, unit: 'percentage points', places: 2, tol: 0.01,
     wrong: [
       { value: -14.48, say: 'That is the relative change in the conversion rate, as a percentage. The question asks for the change in percentage points: apply it to the 3.00% first.' },
       { value: -0.45, say: 'That adds the growth rates (−12 − 5 + 2 = −15%). The drivers multiply, so divide the growth factors: 0.88 ÷ (1.05 × 0.98).' },
@@ -230,22 +249,25 @@ export const items = [
   },
   {
     id: 'b01-fn-15', lesson: 'data-quality', type: 'classify', kind: 'conceptual',
-    prompt: 'Larchmont Hospital (fictional) keeps a dataset of outpatient appointments. What is each person’s or system’s role in that data?',
+    prompt: 'Larchmont Hospital (fictional) keeps a dataset of outpatient appointments. Which quality dimension does each problem mainly affect?',
     items: [
-      'The online booking form, which creates a record for each appointment',
-      'Reception staff who type in appointments booked by phone',
-      'The head of outpatients, accountable for what the dataset contains and who may use it',
-      'The analyst who builds the monthly report on waiting times',
-      'The finance director, who reads that report to set next year’s clinic budgets',
+      'One appointment recorded twice, because the booking form was submitted twice',
+      'A patient’s age recorded as 212',
+      'The same clinic written “Ear, Nose and Throat” in one system and “ENT” in another',
+      'A follow-up date, required for every surgical patient, left blank',
+      'Last week’s cancellations not yet loaded when Monday morning’s report is run',
+      'A phone number that passes every format rule but belongs to someone else',
     ],
-    categories: ['Data producer', 'Data owner', 'Data user'],
-    answer: [0, 0, 1, 2, 2],
+    categories: ['Accuracy', 'Completeness', 'Consistency', 'Validity', 'Timeliness', 'Uniqueness'],
+    answer: [5, 3, 2, 1, 4, 0],
     feedback: {
-      1: 'People who type in records create the data, just as the form does: they are producers.',
-      2: 'The person accountable for a dataset’s contents, definitions, access and quality problems is its owner.',
-      4: 'Reading the data to make a decision makes the finance director a user, who should judge whether it is fit for that purpose.',
+      0: 'One real appointment appears as two records: uniqueness. Counts of appointments are inflated.',
+      1: 'An age of 212 is outside any possible range, so a rule can catch it: validity.',
+      2: 'The same thing recorded differently in two places: consistency. Reports by clinic would split it in two.',
+      4: 'The data are right but late: the report describes a week that is not yet complete. That is timeliness.',
+      5: 'Valid is not the same as right. The number passes every rule, so only a check against the source, here the patient, would find it: accuracy.',
     },
-    solution: 'Producers create the records: the booking form and the reception staff. The owner is accountable for the dataset: what it must contain, its definitions, who may use it and how problems are resolved. Users, the analyst and the finance director, judge whether it is fit for their purpose and report the problems they find. A field that is often left blank is cheapest to fix where it is produced, for example by making the form require it.',
+    solution: 'Uniqueness: each real appointment recorded once. Validity: values in the expected format, type and range. Consistency: the same thing recorded the same way everywhere. Completeness: every required value present. Timeliness: the data reflect the period in time for the decision. Accuracy: the value matches reality, which rules can’t check; only a comparison with the source can.',
   },
 
   // ---------------------------------------------------------------- kpis
@@ -372,6 +394,7 @@ export const items = [
     wrong: [
       { value: -0.09, say: 'That is the whole change in overall conversion, 4.31% − 4.40%. Part of it came from the channel rates, which rose.' },
       { value: 0.12, say: 'That is the part due to the channel rates (4.52% − 4.40%). The mix accounts for the rest of the change.' },
+      { value: -0.2, say: 'That holds March’s channel rates and moves to April’s mix (4.20% − 4.40%), a valid split too, but the question fixes March’s mix and takes the remainder: 4.31% − 4.52%.' },
       { value: 4.52, say: 'That is April’s rate at March’s mix. Compare it with April’s actual overall rate to isolate the mix.' },
       { value: 4.31, say: 'That is April’s actual overall rate. The question asks how much of the change came from the mix.' },
     ],
