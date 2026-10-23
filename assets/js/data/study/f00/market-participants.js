@@ -223,7 +223,7 @@ export default {
     { term: 'Ask', def: 'The price at which a dealer will sell a security; also called the offer.' },
     { term: 'Bid-ask spread', def: 'The ask minus the bid: the cost of buying and immediately selling, and the dealer’s gross reward for providing liquidity.' },
     { term: 'Federal Reserve', def: 'The central bank of the United States, created in 1913, which conducts monetary policy, supervises banks and supports financial stability and the payments system.' },
-    { term: 'SEC', def: 'The Securities and Exchange Commission: the US federal agency, founded in 1934, that protects investors, keeps securities markets fair, orderly and efficient, and facilitates capital formation.' },
+    { term: 'SEC', def: 'The Securities and Exchange Commission: the US federal agency, founded in 1934, that protects investors, keeps securities markets fair, orderly and efficient, and facilitates capital formation, and has legal authority over the financial reporting of public companies.' },
     { term: 'FDIC', def: 'The Federal Deposit Insurance Corporation: the independent US agency, established in 1933, that insures bank deposits and deals with failed banks.' },
     { term: 'Ownership category', def: 'For FDIC insurance, the capacity in which deposits are held (single, joint, certain retirement, trust, business, and others); each category at each bank is insured separately.' },
   ],

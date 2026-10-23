@@ -404,6 +404,25 @@ export function checkCatalog() {
   return r;
 }
 
+/** The site keeps one glossary: the first course in study order to define a term owns it, and every later course's
+ *  <g> links to that term show the first definition. So a term defined in two courses must be defined identically
+ *  (or renamed: "CPA" meant cost per acquisition in M02 until F00 defined it as certified public accountant). */
+export async function checkGlossary() {
+  const r = new Report('glossary (all courses)');
+  const first = new Map();
+  for (const c of catalog.COURSES.filter((x) => BUILT.some((b) => b.id === x.id))) {
+    for (const { slug } of lessonsOf(c.id)) {
+      const L = existsSync(join(DATA, c.id, `${slug}.js`)) ? await loadLesson(c.id, slug) : null;
+      for (const g of L?.glossary || []) {
+        const k = glossKey(g.term), f = first.get(k);
+        if (!f) first.set(k, { where: `${c.id}/${slug}`, course: c.id, def: g.def });
+        else if (f.course !== c.id && f.def !== g.def) r.warn(`"${g.term}" is defined in ${f.where} and differently in ${c.id}/${slug}; the site glossary (and ${c.id}'s links) show the first. Make them identical, or rename one if the meanings differ.`);
+      }
+    }
+  }
+  return r;
+}
+
 function print(reports) {
   let errs = 0, warns = 0;
   for (const r of reports) {
@@ -428,7 +447,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     for (const l of lessonsOf(course)) { if (l.slug === slug) break; const E = await loadLesson(course, l.slug); (E?.glossary || []).forEach((g) => terms.add(glossKey(g.term))); }
     reports = [await checkLesson(course, slug, { courseTerms: terms })];
   } else {
-    if (!arg) reports.push(checkCatalog());
+    if (!arg) reports.push(checkCatalog(), await checkGlossary());
     for (const c of arg ? [arg] : BUILT.map((x) => x.id)) reports.push(...await checkCourse(c));
   }
   process.exit(print(reports) ? 1 : 0);

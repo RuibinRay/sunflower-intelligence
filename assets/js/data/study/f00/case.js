@@ -14,7 +14,7 @@ export const ANA = {
   savingsRate: 1.5,               // % a year, paid once a year
   investInLantern: 20_000,        // on 1 March 2026 (f01 m1)
   emergencyFund: 6_000,           // what she keeps outside the business: savings − investInLantern
-  bankInsured: true,              // Coastline Bank (fictional) is an FDIC-insured bank in the story; so is Harbor Online
+  bankInsured: true,              // Coastline Bank (fictional) is an FDIC-insured bank in the story; so is Sandpiper Online
   loan: { lender: 'Coastline Bank', amount: 10_000, rate: 6, years: 2, interestEvery: '3 months', start: '1 March 2026', repaid: '1 March 2028' },
 };
 
@@ -27,7 +27,7 @@ export const SAVINGS_CHOICES = {
     insured: true,
   },
   savings: {
-    name: 'Harbor Online high-yield savings account',
+    name: 'Sandpiper Online high-yield savings account',
     rate: 3.2, compounding: 'monthly', years: 2,
     access: 'withdraw any amount at any time; the rate is variable and the bank can change it',
     insured: true,
