@@ -1657,9 +1657,10 @@ const fmtStat = (v) => (Number.isFinite(v) ? fmtNum(v) : '—');
 export function qualityReport(raw, cleaned, recipe = [], opts = {}) {
   const { name = 'dataset', notes = [], rules = [], watch } = opts;
   const date = opts.date || new Date().toISOString().slice(0, 10);
-  const replay = run(raw, recipe);
-  const clean = cleaned || replay.table;
-  const changes = replay.changes;
+  const inputs = [];
+  let tcur = raw;
+  const changes = recipe.map((st) => { inputs.push(tcur); const r = apply(tcur, st); tcur = r.table; return r.change; });
+  const clean = cleaned || tcur;
   const before = detectIssues(raw, { rules }), after = detectIssues(clean, { rules });
   const missingCells = (t) => t.rows.reduce((a, r) => a + r.filter(isMissing).length, 0);
   const removed = changes.reduce((a, c) => a + (c.error ? 0 : c.rowsBefore - c.rowsAfter), 0);
@@ -1712,7 +1713,13 @@ export function qualityReport(raw, cleaned, recipe = [], opts = {}) {
   after.forEach((x) => caveats.push(`${x.title}: ${x.message}`));
   changes.forEach((c, i) => {
     if (c.error) caveats.push(`Step ${i + 1} was not applied: ${c.error}`);
-    if (c.unresolved?.length) caveats.push(`Step ${i + 1} left ${plural(c.unresolved.length, 'value')} unchanged: ${c.unresolved.slice(0, 4).map((u) => `“${short(u.value)}” (${u.reason})`).join('; ')}${c.unresolved.length > 4 ? '; …' : ''}.`);
+    // only values that are still as they were at the end (a later step may have fixed them)
+    const still = (c.unresolved || []).filter((u) => {
+      const id = inputs[i].ids?.[u.row];
+      const k = clean.ids ? clean.ids.indexOf(id) : -1, j = colIndex(clean, u.column);
+      return k >= 0 && j >= 0 && sameCell(clean.rows[k][j], u.value);
+    });
+    if (still.length) caveats.push(`Step ${i + 1} left ${plural(still.length, 'value')} unchanged that ${still.length === 1 ? 'is' : 'are'} still in the data: ${still.slice(0, 4).map((u) => `“${short(u.value)}” (${u.reason})`).join('; ')}${still.length > 4 ? '; …' : ''}.`);
   });
   if (!caveats.length) caveats.push('No issues remain that the lab can detect. That does not prove the data are right: values can be wrong without breaking any rule.');
   caveats.forEach((x) => L.push(`- ${mdCell(x)}`));

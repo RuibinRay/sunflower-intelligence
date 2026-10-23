@@ -131,7 +131,7 @@ export function createLab(opts = {}) {
   const H = opts.headingLevel || 3;
   const st = {
     name: '', title: '', raw: null, recipe: [], snaps: [], changes: [], issues: [], prof: [], rules: [], persist: false,
-    watch: [], cat: '', compareTo: 'step', onlyIssues: false, page: 0, builder: null, preview: null, confirmReset: false, status: '', goals: [],
+    watch: [], cat: '', compareTo: 'step', onlyIssues: false, page: 0, sort: null, builder: null, preview: null, confirmReset: false, status: '', goals: [],
   };
   const slots = {};
   const lab = { st, ops, slots };
@@ -306,10 +306,27 @@ export function createLab(opts = {}) {
   }
   function rowsForTable() {
     const t = cur();
-    if (!st.onlyIssues) return t.rows.map((_, i) => i);
-    const { cells, rowsF } = flagMap();
-    const set = new Set([...rowsF.keys(), ...[...cells.keys()].map((k) => +k.split('|')[0])]);
-    return t.rows.map((_, i) => i).filter((i) => set.has(i));
+    let list = t.rows.map((_, i) => i);
+    if (st.onlyIssues) {
+      const { cells, rowsF } = flagMap();
+      const set = new Set([...rowsF.keys(), ...[...cells.keys()].map((k) => +k.split('|')[0])]);
+      list = list.filter((i) => set.has(i));
+    }
+    const j = st.sort ? t.columns.findIndex((c) => c.name === st.sort.col) : -1;
+    if (j >= 0) {
+      const numeric = st.prof[j]?.type === 'number';
+      const key = (v) => (numeric ? (typeof v === 'number' ? v : C.readNumber(v)?.value) : C.cellText(v));
+      const dir = st.sort.dir === 'desc' ? -1 : 1;
+      list.sort((a, b) => {
+        const va = t.rows[a][j], vb = t.rows[b][j];
+        const ma = C.isMissing(va), mb = C.isMissing(vb);
+        if (ma || mb) return ma === mb ? a - b : ma ? 1 : -1;      // missing values always last
+        const ka = key(va), kb = key(vb);
+        if (numeric) { const fa = Number.isFinite(ka), fb = Number.isFinite(kb); if (!fa || !fb) return fa === fb ? a - b : fa ? -1 : 1; return dir * (ka - kb) || a - b; }
+        return dir * ka.localeCompare(kb, 'en', { numeric: true }) || a - b;
+      });
+    }
+    return list;
   }
   RENDER.table = (el) => {
     const t = cur();
@@ -323,9 +340,20 @@ export function createLab(opts = {}) {
     only.addEventListener('change', () => { st.onlyIssues = only.checked; st.page = 0; RENDER.table(el); el.querySelector(`#${id}-only`)?.focus(); });
     const pager = (d, label) => { const b = h('button', { class: 'btn btn-secondary cl-btn-sm', type: 'button', disabled: d < 0 ? st.page === 0 : st.page >= pages - 1 }, label); b.addEventListener('click', () => { st.page += d; RENDER.table(el); el.querySelector('.cl-pager .btn:not([disabled])')?.focus(); }); return b; };
     const prof = st.prof;
+    const sortBtn = (name) => {
+      const on = st.sort?.col === name;
+      const b = h('button', { type: 'button', class: 'cl-sort', 'aria-label': `${name}: sort ${on && st.sort.dir === 'asc' ? 'descending' : 'ascending'}` }, h('span', { class: 'cl-colname' }, name), h('span', { class: 'cl-sort-mark', 'aria-hidden': 'true' }, on ? (st.sort.dir === 'asc' ? '▲' : '▼') : '↕'));
+      b.addEventListener('click', () => {
+        st.sort = on && st.sort.dir === 'asc' ? { col: name, dir: 'desc' } : on && st.sort.dir === 'desc' ? null : { col: name, dir: 'asc' };
+        st.page = 0; RENDER.table(el);
+        [...el.querySelectorAll('.cl-sort')].find((x) => x.querySelector('.cl-colname').textContent === name)?.focus();
+        lab.say(st.sort ? `Rows shown sorted by ${name}, ${st.sort.dir === 'asc' ? 'ascending' : 'descending'} (missing values last). The data are not changed.` : 'Rows shown in their original order.');
+      });
+      return b;
+    };
     const table = h('table', { class: 'data-table cl-data' },
       h('caption', { class: 'visually-hidden' }, `${st.title}: rows ${show.length ? `${st.page * 50 + 1} to ${st.page * 50 + show.length}` : 'none'}${st.onlyIssues ? ' with issues' : ''}. Cells with an issue are outlined and marked with a warning sign.`),
-      h('thead', {}, h('tr', {}, h('th', { scope: 'col', class: 'is-num cl-rowh' }, 'Row'), t.columns.map((c, j) => h('th', { scope: 'col', class: `${prof[j]?.type === 'number' ? 'is-num' : ''}${colsF.has(j) ? ' is-flag is-colflag' : ''}`, tabindex: colsF.has(j) ? '-1' : null }, h('span', { class: 'cl-colname' }, c.name), h('span', { class: 'cl-coltype' }, TYPE_LABEL[prof[j]?.type] || '', colsF.has(j) ? icon('flag', 'cl-flag-icon') : ''), colsF.has(j) ? h('span', { class: 'cl-flag-text' }, colsF.get(j).join('; ')) : '')))),
+      h('thead', {}, h('tr', {}, h('th', { scope: 'col', class: 'is-num cl-rowh' }, 'Row'), t.columns.map((c, j) => h('th', { scope: 'col', class: `${prof[j]?.type === 'number' ? 'is-num' : ''}${colsF.has(j) ? ' is-flag is-colflag' : ''}`, tabindex: colsF.has(j) ? '-1' : null, 'aria-sort': st.sort?.col === c.name ? (st.sort.dir === 'desc' ? 'descending' : 'ascending') : null }, sortBtn(c.name), h('span', { class: 'cl-coltype' }, TYPE_LABEL[prof[j]?.type] || '', colsF.has(j) ? icon('flag', 'cl-flag-icon') : ''), colsF.has(j) ? h('span', { class: 'cl-flag-text' }, colsF.get(j).join('; ')) : '')))),
       h('tbody', {}, show.map((i) => {
         const r = t.rows[i];
         const rf = rowsF.get(i);
@@ -357,7 +385,7 @@ export function createLab(opts = {}) {
         h('p', { class: 'cl-note', role: 'status' }, list.length ? `Rows ${F.int(st.page * 50 + 1)}–${F.int(st.page * 50 + show.length)} of ${F.int(list.length)}${st.onlyIssues ? ` with issues (${F.int(t.rows.length)} in all)` : ''}` : 'No rows to show.'),
         pages > 1 ? h('div', { class: 'cl-pager' }, pager(-1, 'Previous 50'), pager(1, 'Next 50')) : ''),
       h('div', { class: 'table-scroll cl-scroll cl-data-wrap', role: 'region', 'aria-label': `${st.title} data`, tabindex: first ? null : '0' }, table),
-      h('p', { class: 'cl-note cl-legend' }, icon('flag', 'cl-flag-icon'), ' marks a cell, row or column with an issue: focus it (Tab into the table, then use the arrow keys) or point at it to read which. ', h('span', { class: 'cl-ws' }, '·'), ' is a stray space. Numbers stored as numbers are right-aligned; text is left-aligned.'));
+      h('p', { class: 'cl-note cl-legend' }, 'Select a column name to sort the rows shown (the data are not changed). ', icon('flag', 'cl-flag-icon'), ' marks a cell, row or column with an issue: focus it (Tab into the table, then use the arrow keys) or point at it to read which. ', h('span', { class: 'cl-ws' }, '·'), ' is a stray space. Numbers stored as numbers are right-aligned; text is left-aligned.'));
   };
 
   // ---- the operation builder
@@ -379,7 +407,7 @@ export function createLab(opts = {}) {
       case 'fill': return fromIssue || { op, column: firstOf(st.prof.filter((p) => p.missing).map((p) => p.name)), method: 'median' };
       case 'drop-missing': return { op, columns: [firstOf(st.prof.filter((p) => p.missing).map((p) => p.name))] };
       case 'flag-missing': return { op, column: firstOf(st.prof.filter((p) => p.missing).map((p) => p.name)) };
-      case 'validate': return fromIssue || { op, column: firstOf(nums), rule: { min: 0 }, action: 'flag' };
+      case 'validate': return fromIssue ? { ...fromIssue, action: 'flag' } : { op, column: firstOf(nums), rule: { min: 0 }, action: 'flag' };
       case 'outliers': return fromIssue || { op, column: firstOf(nums), method: 'iqr', k: 1.5, action: 'flag' };
       case 'transform': return fromIssue || { op, column: firstOf(nums), fn: 'log', as: `log_${firstOf(nums)}` };
       case 'scale': return { op, column: firstOf(nums.filter((n) => n !== opts.split)), method: 'zscore', fit: (Array.isArray(opts.fit) && opts.fit[0]) || 'train', ...(opts.split ? { split: opts.split } : { seed: 7 }) };

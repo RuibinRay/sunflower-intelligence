@@ -491,6 +491,7 @@ for (const name of NAMES) {
   ok(rep.includes('| Rows | 240 | 231 |'), 'report rows before and after');
   ok(rep.includes('Slash dates in order_date were written day first'), 'report states the date assumption');
   ok(rep.includes('Checked against the shop system.'), 'report includes the notes');
+  ok(!/Step 7 left/.test(rep), 'caveats skip values a later step fixed (month-first dates)');
   const json = rep.split('```json\n')[1].split('\n```')[0];
   eq(JSON.parse(json).length, recipe.length, 'report recipe is valid JSON');
   ok(!/!/.test(rep.replace(/```json[\s\S]*```/, '').replace(/!=/g, '')), 'report has no exclamation marks');

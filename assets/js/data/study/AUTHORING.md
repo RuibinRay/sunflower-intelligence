@@ -274,6 +274,13 @@ Datasets (all fictional, generated with known defects; see `assets/data/study/RE
 
 - **`cleaning`**: a mini Data Cleaning Lab on a dataset (or an inline table), limited to the operations the lesson teaches. The student inspects the issues, applies steps, sees the table and the summary statistics change, and reads what each step did.
   `{ type: 'cleaning', dataset: 'lantern-orders' | { columns: ['…'], rows: [['…']] }, ops: ['dedupe', 'dedupe-key', 'trim', 'case', 'map', 'to-number', 'to-date', 'fill', 'drop-missing', 'flag-missing', 'validate', 'outliers', 'transform', 'scale', 'encode', 'derive', 'rename', 'drop-column'], watch: ['quantity', 'region'], task: 'html: what to achieve' }`
+- **`cleaning` options beyond the basics** (supported by `assets/js/study/widgets/cleaning.js`):
+  - `ops: []`, or leaving `ops` out, gives an inspect-only view: the profile and the issue list, with no steps.
+  - `split: 'column'` names a column whose values are `train` or `test`. With `fit: ['train', 'all']` the student chooses whether scaling and encoding parameters are fitted on the training rows only or on all rows, which shows leakage.
+  - `target: 'column'` names the outcome column for `encode` with `method: 'target'`.
+  - `goals: [{ rule, column, … }]` sets what to achieve. Goals use the same shape as validation rules, and the widget reports progress as goals are met. The rule types are `unique`, `no-missing`, `type`, `in-set`, `range` (`min`, `max`, `integer`), `pattern`, `rows-between`, `equals` and `compare` (one column against another, e.g. check-out after check-in).
+  - `transform` also has `fn: 'rescale'` (multiply values above a threshold, e.g. GPAs on a 0–100 scale).
+  - The data table's column headers sort the view (not the data).
 - **`distribution`**: a histogram explorer for one numeric column: choose a transformation (none, log, log(1 + x), square root) and an outlier rule (1.5 × IQR, |z| > 3, modified z > 3.5) and see the shape, skewness and flagged values change.
   `{ type: 'distribution', dataset: 'harborview-bookings', column: 'total', transforms: ['none', 'log', 'log1p', 'sqrt'], rules: ['iqr', 'z', 'mad'] }` or `{ values: [12, 15, …], label: 'Order value ($)' }`.
 

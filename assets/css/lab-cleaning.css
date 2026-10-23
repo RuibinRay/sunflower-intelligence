@@ -238,3 +238,10 @@ html.motion-paused .cl-card { transition: none; }
 
 /* long button labels wrap on narrow phones instead of pushing the page sideways */
 .cl-bench .btn, .cl-lab .btn, .cl-dist .btn { white-space: normal; max-width: 100%; text-align: center; }
+
+/* sortable column headers (view only) */
+.cl-sort { display: inline-flex; align-items: baseline; gap: 4px; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; text-align: inherit; }
+.cl-sort:hover .cl-colname { text-decoration: underline; text-underline-offset: 3px; }
+.cl-sort:focus-visible { outline: 3px solid var(--midnight); outline-offset: 2px; border-radius: 3px; }
+.cl-sort-mark { font-size: .7rem; color: var(--ink-3); }
+.cl-data th[aria-sort] .cl-sort-mark { color: var(--ink); }
