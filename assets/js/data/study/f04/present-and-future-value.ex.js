@@ -10,6 +10,7 @@ const pct = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toFixed(d)}%`;
 const r2 = (v) => Math.round(v * 100) / 100;
 const range = (n) => Array.from({ length: n + 1 }, (_, k) => k);
 const num = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+const yrs = (t) => `${Number.isInteger(t) ? t : num(t)} year${t === 1 ? '' : 's'}`;
 
 export const widgets = {
   'pv-explorer': {
@@ -36,12 +37,12 @@ export const widgets = {
       const rUp2 = (v.apr + 2) / 100 / v.m;
       const note = v.apr === 0
         ? 'At a 0% rate waiting costs nothing, so the amount is worth the same today as when it arrives. Any positive rate makes it worth less today.'
-        : `${money(v.fv)} due in ${num(v.t)} years is worth ${money(pv)} today: invested now at ${pct(v.apr, 1)} compounded ${v.m} time${v.m === 1 ? '' : 's'} a year, that sum would grow to exactly ${money(v.fv)}. A rate one point higher would cut the present value by ${pct(drop)}${v.t >= 10 ? ', a large fall, because the amount is so far away' : ''}.`;
+        : `${money(v.fv)} due in ${yrs(v.t)} is worth ${money(pv)} today: invested now at ${pct(v.apr, 1)} compounded ${v.m} time${v.m === 1 ? '' : 's'} a year, that sum would grow to exactly ${money(v.fv)}. A rate one point higher would cut the present value by ${pct(drop)}${v.t >= 10 ? ', a large fall, because the amount is so far away' : ''}.`;
       return {
         headline: { label: 'Present value today', value: money(pv) },
         rows: [
           ['Rate per period, r = APR ÷ m', pct(r * 100, 4)],
-          ['Number of periods, n = m × t', num(n, 2)],
+          ['Number of periods, n = m × t', Number.isInteger(n) ? String(n) : num(n, 2)],
           ['Discount factor, 1 ÷ (1 + r)ⁿ', df.toFixed(6)],
           ['Effective annual rate', pct(ear, 4)],
           ['Present value if the APR were 1 point higher', `${money(pvUp)} (${pct(drop)} less)`],
@@ -65,9 +66,9 @@ export const widgets = {
     title: 'Solve for the rate or the time',
     intro: 'An amount today, a target amount and two ways to reach it: the rate needed in the time you have, or the time needed at the rate you can earn. Rates here are effective annual rates.',
     inputs: [
-      { id: 'pv', label: 'Amount today', min: 100, max: 100000, step: 100, value: 8500, fmt: 'money' },
+      { id: 'pv', label: 'Amount today', min: 100, max: 100000, step: 100, value: 8000, fmt: 'money' },
       { id: 'fv', label: 'Target amount', min: 100, max: 200000, step: 100, value: 10000, fmt: 'money' },
-      { id: 't', label: 'Time available', min: 0.5, max: 40, step: 0.5, value: 2.5, fmt: 'num', unit: 'years' },
+      { id: 't', label: 'Time available', min: 0.5, max: 40, step: 0.5, value: 3, fmt: 'num', unit: 'years' },
       { id: 'rate', label: 'Rate you can earn (effective, a year)', min: 0.1, max: 20, step: 0.1, value: 4, fmt: 'pct' },
     ],
     compute: (v) => {
@@ -81,10 +82,10 @@ export const widgets = {
       const N = Math.max(1, Math.ceil(v.t));
       const xs = range(N);
       const note = need <= v.rate
-        ? `At ${pct(v.rate, 1)} you reach ${money(v.fv)} in ${num(years)} years, inside the ${num(v.t, 1)} available: you need only ${pct(need)} a year. Check: ${money(v.pv)} × (1 + ${num(need / 100, 6)})^${num(v.t, 1)} = ${money(v.fv)}.`
-        : `You would need ${pct(need)} a year to reach ${money(v.fv)} in ${num(v.t, 1)} years. At ${pct(v.rate, 1)} it takes ${num(years)} years, or you would need ${money(today)} today instead of ${money(v.pv)}.`;
+        ? `At ${pct(v.rate, 1)} you reach ${money(v.fv)} in ${num(years)} years, inside the ${yrs(v.t)} available: you need only ${pct(need)} a year. Check: ${money(v.pv)} × (1 + ${num(need / 100, 6)})^${v.t} = ${money(v.fv)}.`
+        : `You would need ${pct(need)} a year to reach ${money(v.fv)} in ${yrs(v.t)}. At ${pct(v.rate, 1)} it takes ${num(years)} years, or you would need ${money(today)} today instead of ${money(v.pv)}.`;
       return {
-        headline: { label: `Rate needed to reach the target in ${num(v.t, 1)} years`, value: pct(need, 4) },
+        headline: { label: `Rate needed to reach the target in ${yrs(v.t)}`, value: pct(need, 4) },
         rows: [
           ['Growth needed, FV ÷ PV', g.toFixed(6)],
           [`Years needed at ${pct(v.rate, 1)}: ln(FV ÷ PV) ÷ ln(1 + r)`, num(years)],
@@ -118,29 +119,29 @@ export const widgets = {
 export const guided = [
   {
     id: 'f04-pfv-g1', type: 'steps', kind: 'numerical',
-    prompt: 'A fictional landlord will receive a $15,000 lease-termination payment in three years. Money is worth 9% a year to her, compounded annually. What is the payment worth today?',
-    solution: 'Discount factor = 1 ÷ 1.09³ = 1 ÷ 1.295029 = 0.772183. PV = 15,000 × 0.772183 = $11,582.75 (from the unrounded factor). At 10%, 15,000 ÷ 1.331 = $11,269.72: a higher rate gives a lower present value.',
+    prompt: 'A fictional landlord will receive an $18,000 lease-termination payment in four years. Money is worth 7% a year to her, compounded annually. What is the payment worth today?',
+    solution: 'Discount factor = 1 ÷ 1.07⁴ = 1 ÷ 1.310796 = 0.762895. PV = 18,000 × 0.762895 = $13,732.11 (from the unrounded factor). At 8%, 18,000 ÷ 1.08⁴ = $13,230.54: a higher rate gives a lower present value.',
     steps: [
-      { id: 'f04-pfv-g1-s1', type: 'num', prompt: 'What is the three-year discount factor at 9%? Give it to six decimal places.',
-        answer: 0.772183, check: () => 1 / 1.09 ** 3, unit: '', places: 6, tol: 0.0001,
-        hints: ['A discount factor is 1 ÷ (1 + r)ⁿ.', '1.09³ = 1.295029; divide 1 by it.'],
+      { id: 'f04-pfv-g1-s1', type: 'num', prompt: 'What is the four-year discount factor at 7%? Give it to six decimal places.',
+        answer: 0.762895, check: () => 1 / 1.07 ** 4, unit: '', places: 6, tol: 0.0001,
+        hints: ['A discount factor is 1 ÷ (1 + r)ⁿ.', '1.07⁴ = 1.310796; divide 1 by it.'],
         wrong: [
-          { value: 0.73, say: 'That is 1 − 3 × 0.09: subtracting simple interest. Discounting divides by 1.09 three times.' },
-          { value: 0.787402, say: 'That is 1 ÷ 1.27, simple interest for three years. Compound: 1 ÷ 1.09³.' },
-          { value: 1.295029, say: 'That is the growth factor 1.09³. The discount factor is its reciprocal.' },
+          { value: 0.72, say: 'That is 1 − 4 × 0.07: subtracting simple interest. Discounting divides by 1.07 four times.' },
+          { value: 0.78125, say: 'That is 1 ÷ 1.28, simple interest for four years. Compound: 1 ÷ 1.07⁴.' },
+          { value: 1.310796, say: 'That is the growth factor 1.07⁴. The discount factor is its reciprocal.' },
         ] },
       { id: 'f04-pfv-g1-s2', type: 'num', prompt: 'What is the payment worth today, to the nearest cent?',
-        answer: 11582.75, check: () => 15000 / 1.09 ** 3, unit: '$', places: 2, tol: 0.76,
-        hints: ['PV = FV × discount factor.', '15,000 × 0.772183; keep all the decimal places until the end.'],
+        answer: 13732.11, check: () => 18000 / 1.07 ** 4, unit: '$', places: 2, tol: 0.9,
+        hints: ['PV = FV × discount factor.', '18,000 × 0.762895; keep all the decimal places until the end.'],
         wrong: [
-          { value: 10950, say: 'You took 27% off. Discounting divides by 1.09 for each year.' },
-          { value: 11811.02, say: 'That divides by 1.27 (simple interest). Divide by 1.09³ instead.' },
-          { value: 19425.44, say: 'That is the future value of $15,000 in three years. The question asks what a later amount is worth today.' },
+          { value: 12960, say: 'You took 28% off. Discounting divides by 1.07 for each year.' },
+          { value: 14062.5, say: 'That divides by 1.28 (simple interest). Divide by 1.07⁴ instead.' },
+          { value: 23594.33, say: 'That is the future value of $18,000 in four years. The question asks what a later amount is worth today.' },
         ] },
-      { id: 'f04-pfv-g1-s3', type: 'num', prompt: 'If money were worth 10% a year to her instead, what would the payment be worth today?',
-        answer: 11269.72, check: () => 15000 / 1.1 ** 3, unit: '$', places: 2, tol: 0.76,
-        hints: ['Same method with r = 0.10.', '1.1³ = 1.331.'],
-        wrong: [{ value: 11582.75, say: 'That is the value at 9%. Recalculate with 1.10.' }] },
+      { id: 'f04-pfv-g1-s3', type: 'num', prompt: 'If money were worth 8% a year to her instead, what would the payment be worth today, to the nearest cent?',
+        answer: 13230.54, check: () => 18000 / 1.08 ** 4, unit: '$', places: 2, tol: 0.9,
+        hints: ['Same method with r = 0.08.', '1.08⁴ = 1.360489.'],
+        wrong: [{ value: 13732.11, say: 'That is the value at 7%. Recalculate with 1.08.' }] },
     ],
   },
   {
@@ -175,9 +176,9 @@ export const guided = [
     prompt: 'A fictional fund returns 12% in year 1, −8% in year 2 and 10% in year 3. Work with the growth factors.',
     solution: 'Growth factor = 1.12 × 0.92 × 1.10 = 1.13344, so $8,000 becomes $9,067.52. Equivalent constant rate = 1.13344^(1/3) − 1 = 4.26% a year, below the arithmetic average of 4.67%. To have $10,000 after three years you would need 10,000 ÷ 1.13344 = $8,822.70 at the start.',
     steps: [
-      { id: 'f04-pfv-g3-s1', type: 'num', prompt: 'What does $8,000 invested at the start grow to after three years?',
-        answer: 9067.52, check: () => 8000 * 1.12 * 0.92 * 1.1, unit: '$', places: 2, tol: 0.01,
-        hints: ['Multiply by the growth factor of each year: 1.12, then 0.92 (a 8% fall), then 1.10.', '1.12 × 0.92 × 1.10 = 1.13344.'],
+      { id: 'f04-pfv-g3-s1', type: 'num', prompt: 'What does $8,000 invested at the start grow to after three years, to the nearest cent?',
+        answer: 9067.52, check: () => 8000 * 1.12 * 0.92 * 1.1, unit: '$', places: 2, tol: 0.4,
+        hints: ['Multiply by the growth factor of each year: 1.12, then 0.92 (an 8% fall), then 1.10.', '1.12 × 0.92 × 1.10 = 1.13344.'],
         wrong: [
           { value: 9120, say: 'That adds the rates (12 − 8 + 10 = 14%) as simple interest. Each year’s return applies to the balance at the start of that year: multiply the factors.' },
           { value: 9173.08, say: 'That compounds the arithmetic average, 4.67%, for three years. The average of the rates is not the rate the money actually earned.' },
@@ -186,7 +187,7 @@ export const guided = [
         answer: 4.26, check: () => ((1.12 * 0.92 * 1.1) ** (1 / 3) - 1) * 100, unit: '%', places: 2, tol: 0.01,
         hints: ['Take the cube root of the three-year growth factor and subtract 1.', '1.13344^(1/3) − 1.'],
         wrong: [{ value: 4.67, say: 'That is the arithmetic average of 12, −8 and 10. Growth factors multiply, so the equivalent rate is a geometric mean, which is lower.' }, { value: 13.34, say: 'That is the total growth over three years. Convert it to a rate per year with the cube root.' }] },
-      { id: 'f04-pfv-g3-s3', type: 'num', prompt: 'How much would you have needed at the start to end with $10,000?',
+      { id: 'f04-pfv-g3-s3', type: 'num', prompt: 'How much would you have needed at the start to end with $10,000, to the nearest cent?',
         answer: 8822.70, check: () => 10000 / (1.12 * 0.92 * 1.1), unit: '$', places: 2, tol: 0.45,
         hints: ['A present value divides by the same product of growth factors.', '10,000 ÷ 1.13344.'],
         wrong: [{ value: 11334.4, say: 'That multiplies by the growth factor. To go back in time, divide.' }] },
@@ -202,7 +203,7 @@ export const guided = [
       { value: 0.54, say: 'That is the rate per month (n = 30). The question asks for an annual rate: use n = 2.5 years, or compound the monthly rate for 12 months.' },
       { value: 17.65, say: 'That is the total gain over 30 months. Convert it to a rate per year.' },
     ],
-    solution: 'Growth needed = 10,000 ÷ 8,500 = 1.176471. With n = 2.5 years, r = 1.176471^(1/2.5) − 1 = 1.176471^0.4 − 1 ≈ 0.0672, or 6.72% a year. Check: 8,500 × 1.0672^2.5 ≈ $10,000. In a spreadsheet, =RATE(2.5, 0, −8500, 10000) gives the same.',
+    solution: 'Growth needed = 10,000 ÷ 8,500 = 1.176471. With n = 2.5 years, r = 1.176471^(1/2.5) − 1 = 1.176471^0.4 − 1 ≈ 0.0672, or 6.72% a year. Check: 8,500 × 1.0672^2.5 ≈ $10,000. In a spreadsheet, =RATE(2.5, 0, -8500, 10000) gives the same.',
   },
 ];
 
@@ -247,7 +248,7 @@ export const independent = [
   },
   {
     id: 'f04-pfv-i4', type: 'num', kind: 'numerical',
-    prompt: 'A fictional town puts $2.5 million into a fund earning 5% a year, compounded annually, to pay for a $4 million bridge repair. How many years until the fund reaches $4 million? Give two decimal places.',
+    prompt: 'A fictional town puts $2.5 million into a fund earning 5% a year, compounded annually, to pay for a $4 million bridge repair. How many years until the fund reaches $4 million? Allow a fractional number of periods, as n = ln(FV ÷ PV) ÷ ln(1 + r) does. Give two decimal places.',
     answer: 9.63, check: () => Math.log(4 / 2.5) / Math.log(1.05), unit: 'years', places: 2, tol: 0.01,
     wrong: [
       { value: 12, say: 'That assumes simple interest of $125,000 a year. The fund compounds: n = ln(1.6) ÷ ln(1.05).' },
@@ -267,20 +268,20 @@ export const independent = [
   },
   {
     id: 'f04-pfv-i6', type: 'mc', kind: 'applied',
-    prompt: 'A pension fund has promised three fictional payments of $1,000: one due in 1 year, one in 10 years and one in 30 years. Interest rates rise from 5% to 6%. Which payment’s present value falls by the largest percentage?',
+    prompt: 'A pension fund has promised three fictional payments of $1,000: one due in 2 years, one in 15 years and one in 40 years. Interest rates rise from 5% to 6%. Which payment’s present value falls by the largest percentage?',
     options: [
-      'The payment due in 30 years',
-      'The payment due in 1 year',
-      'The payment due in 10 years',
+      'The payment due in 40 years',
+      'The payment due in 2 years',
+      'The payment due in 15 years',
       'All three fall by the same percentage, because the rate rose by the same amount',
     ],
     answer: 0,
     feedback: {
-      1: 'Its value falls by under 1%: one period of discounting changes little.',
-      2: 'It falls by about 9%, but the 30-year payment falls by about 25%.',
+      1: 'Its value falls by under 2%: two periods of discounting change little.',
+      2: 'It falls by about 13%, but the 40-year payment falls by about 32%.',
       3: 'The percentage fall is (1.05 ÷ 1.06)ⁿ − 1, which grows with n.',
     },
-    solution: 'Each present value is multiplied by (1.05 ÷ 1.06)ⁿ: −0.94% for 1 year, −9.04% for 10 years and −24.75% for 30 years. Distant payments are the most sensitive to rates.',
+    solution: 'Each present value is multiplied by (1.05 ÷ 1.06)ⁿ: −1.88% for 2 years, −13.25% for 15 years and −31.56% for 40 years. Distant payments are the most sensitive to rates.',
   },
 ];
 
@@ -325,7 +326,7 @@ export const check = [
   {
     id: 'f04-pfv-k4', type: 'num', kind: 'numerical',
     prompt: 'A payment of $50,000 is due in three years. One-year rates are expected to be 3% in year 1, 5% in year 2 and 8% in year 3. What is the payment worth today? Give dollars and cents.',
-    answer: 42807.49, check: () => 50000 / (1.03 * 1.05 * 1.08), unit: '$', places: 2, tol: 0.5,
+    answer: 42807.49, check: () => 50000 / (1.03 * 1.05 * 1.08), unit: '$', places: 2, tol: 3,
     wrong: [
       { value: 39691.61, say: 'That discounts at 8% for all three years. Each year has its own rate: divide by 1.03 × 1.05 × 1.08.' },
       { value: 45757.08, say: 'That discounts at 3% for all three years. Use each year’s rate.' },

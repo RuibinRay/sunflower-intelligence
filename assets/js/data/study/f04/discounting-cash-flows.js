@@ -68,7 +68,7 @@ export default {
 
     { h: 'The rate that makes NPV zero' },
     { p: 'NPV depends on the discount rate. The higher the rate, the less the later inflows are worth and the lower the NPV, so somewhere it crosses zero. The rate at which it does is the decision’s <g>internal rate of return</g> (IRR): the rate of return the investment itself earns, period by period. For the brewer it is about 15.3% a year. Because 15.3% is above the 12% Ana requires, the IRR gives the same verdict as the NPV.' },
-    { p: 'There is no general formula for the IRR, because the rate sits inside several powers at once. The classic method is trial and error: try a rate and compute the NPV; if it is positive, try a higher rate, if negative a lower one, and close in on zero. Spreadsheets and financial calculators do the same thing, only faster. This lesson introduces the idea; F05 Corporate Finance uses NPV and IRR to make investment decisions in depth.' },
+    { p: 'There is no general formula for the IRR, because the rate sits inside several powers at once. The classic method is trial and error. For a conventional project, a cost followed by inflows, try a rate and compute the NPV; if it is positive, try a higher rate, if negative a lower one, and close in on zero. Spreadsheets and financial calculators do the same thing, only faster. This lesson introduces the idea; F05 Corporate Finance uses NPV and IRR to make investment decisions in depth.' },
   ],
 
   theory: [
@@ -90,19 +90,19 @@ export default {
       '<b>The cash flows.</b> Only <g>incremental cash flows</g> count: cash that changes because of the decision. Money already spent and unrecoverable is a <g>sunk cost</g> and is left out. NPV uses cash, not accounting profit: depreciation, for example, is not a cash flow.',
       '<b>The horizon.</b> Every cash flow the decision causes belongs in the stream, including those at the end, such as the brewer’s resale value or the cost of removing equipment.',
     ] },
-    { p: 'NPVs add up. The NPV of two independent projects together is the sum of their NPVs, and the NPV of a project financed at a fair market rate is not changed by the financing. When options exclude each other, such as two different brewers for the same counter, choose the one with the highest NPV. Plotting NPV against the discount rate gives an <g>NPV profile</g>. For a conventional project, one cost followed by inflows, the profile slopes down and crosses zero once, at the IRR.' },
+    { p: 'NPVs add up. The NPV of two independent projects together is the sum of their NPVs, and the NPV of a project financed at a fair market rate is not changed by the financing. A financing offer that comes only with the purchase and costs less than the market rate, such as a supplier’s cheap instalment plan, has a value of its own that adds to the project’s NPV; it never changes the rate used to discount the project’s cash flows. When options exclude each other, such as two different brewers for the same counter, choose the one with the highest NPV, provided it is positive. Plotting NPV against the discount rate gives an <g>NPV profile</g>. For a conventional project, one cost followed by inflows, the profile slopes down and crosses zero once, at the IRR.' },
     { p: String.raw`Estimates are uncertain, so an NPV should be recalculated under other assumptions. If every year’s cash from the brewer were 10% lower than Ana expects, its NPV at 12% would fall from +$1,847.77 to −$578.13. Without the $2,500 resale value it would be only +$258.98. A positive NPV that disappears under a small change in the estimates is a close call, not a clear win.` },
 
     { h: 'Internal rate of return: definition and trial' },
     { p: String.raw`The IRR is the rate that solves <m>0 = \sum_{t=0}^{n} C_t \div (1 + \text{IRR})^t</m>. Take a two-year investment of $1,000 that returns $600 at the end of each year. At 10% its NPV is <m>-1{,}000 + 600 \div 1.1 + 600 \div 1.21 = 41.32</m>; at 15% it is <m>-24.57</m>. The IRR lies between them. A straight line between the two points crosses zero at` },
     { math: String.raw`\text{IRR} \approx 10\% + (15\% - 10\%) \times \frac{41.32}{41.32 - (-24.57)} = 13.14\%` },
     { p: String.raw`With only two periods the equation is a quadratic and can be solved exactly: the IRR is 13.07%. Linear interpolation overshoots slightly, because the NPV profile curves (it is convex), so the straight line lies above it. Checking the NPV at 13.14% gives −$0.96, slightly negative, and a second interpolation closes the gap. With more periods there is no neat formula, and calculators and spreadsheets repeat this kind of step until the NPV is close enough to zero.` },
-    { p: 'For a conventional project, an IRR above the required return and a positive NPV are the same statement, so the two rules agree. The IRR has limits. When cash flows change sign more than once, for example a project with a large clean-up cost at the end, the equation can have two IRRs or none. When choosing between options of different sizes or timing, the one with the higher IRR can have the lower NPV: a 50% return on $1,000 adds less value than a 20% return on $100,000. In those cases trust the NPV. F05 Corporate Finance treats these issues fully.' },
-    { p: 'For a loan or a bond, the IRR has another name: its yield. A buyer who paid $9,809.61 for Lantern’s note on 1 March 2027 and received the four payments would earn exactly 2% a quarter, 8% a year compounded quarterly, because that is the rate used to price it. A buyer who paid $10,000 would earn the note’s own 6%.' },
+    { p: 'For a conventional project, an IRR above the required return and a positive NPV are the same statement, so the two rules agree. The IRR has limits. When cash flows change sign more than once, for example a project with a large clean-up cost at the end, the equation can have more than one IRR, or none. When choosing between options of different sizes or timing, the one with the higher IRR can have the lower NPV: over one year, when money costs 10%, a 50% return on $1,000 adds less value than a 20% return on $100,000. In those cases trust the NPV. F05 Corporate Finance treats these issues fully.' },
+    { p: 'For a loan or a bond bought at a given price and held to maturity, the IRR has another name: its yield to maturity. A buyer who paid $9,809.61 for Lantern’s note on 1 March 2027 and received the four payments would earn exactly 2% a quarter, 8% a year compounded quarterly, because that is the rate used to price it. A buyer who paid $10,000 would earn the note’s own 6%.' },
 
     { h: 'Spreadsheets: NPV, IRR and the first cash flow' },
     { p: 'Spreadsheet functions save time but carry a trap. Excel’s <code>NPV(rate, value1, value2, …)</code> treats the first value as arriving one period from now, at the end of period 1. A cash flow at time 0 must be left out of the range and added separately: <code>=C0 + NPV(r, C1:Cn)</code>. Microsoft’s own documentation says the first value must be added to the NPV result rather than included in the values. Put the time-0 cost inside the range and every cash flow is discounted one period too many, so the result is the true NPV divided by 1 + r: for the brewer, $1,649.80 instead of $1,847.77.' },
-    { p: '<code>IRR(values)</code>, by contrast, expects the whole stream including the time-0 flow, and returns the rate per period. For cash flows at irregular dates, <code>XNPV</code> and <code>XIRR</code> take a list of dates as well as amounts. Whatever the tool, lay out the timeline first, so you know which cash flow sits at which date before you type a formula.' },
+    { p: '<code>IRR(values)</code>, by contrast, expects the whole stream including the time-0 flow, and returns the rate per period. IRR() needs at least one negative and one positive value, and it searches from a starting guess (10% unless you give one), so when the cash flows change sign more than once it reports only one of the possible rates. For cash flows at irregular dates, <code>XNPV</code> and <code>XIRR</code> take a list of dates as well as amounts. Whatever the tool, lay out the timeline first, so you know which cash flow sits at which date before you type a formula.' },
   ],
 
   formulas: [
@@ -124,6 +124,7 @@ export default {
         [String.raw`C_t`, 'Cash flow at period t', '$'],
         [String.raw`r`, 'Rate per period, as a decimal', 'per period'],
         [String.raw`T`, 'The comparison date', 'periods'],
+        [String.raw`t`, 'Period in which the cash flow arrives', 'periods'],
         [String.raw`\text{PV}`, 'Value of the stream at time 0', '$'],
       ],
       note: 'Flows before T are compounded forward; flows after T are discounted back.' },
@@ -134,10 +135,11 @@ export default {
         [String.raw`C_0`, 'Cash flow today, usually a cost (negative)', '$'],
         [String.raw`C_t`, 'Incremental cash flow at the end of period t', '$'],
         [String.raw`r`, 'Discount rate per period: the return available elsewhere at similar risk', 'per period'],
+        [String.raw`t`, 'Period in which the cash flow arrives', 'periods'],
         [String.raw`n`, 'Last period with a cash flow', 'periods'],
       ],
       assumptions: 'Only incremental cash flows; sunk costs left out; the rate reflects the risk of the cash flows.',
-      note: 'Accept if NPV > 0; among options that exclude each other, choose the highest NPV.' },
+      note: 'Accept if NPV > 0; among options that exclude each other, choose the highest NPV, provided it is positive.' },
     { id: 'dcf-irregular', name: 'Present value with irregular dates',
       tex: String.raw`\text{PV} = \sum_{i} \frac{C_i}{(1 + \text{EAR})^{t_i}}`,
       where: [
@@ -146,16 +148,17 @@ export default {
         [String.raw`t_i`, 'Time from today until the i-th cash flow', 'years'],
         [String.raw`\text{EAR}`, 'Effective annual discount rate, as a decimal', 'per year'],
       ],
-      note: 'Spreadsheet XNPV works this way, counting days on a 365-day year.' },
+      note: 'Spreadsheet XNPV works this way, counting days on a 365-day year and discounting to the first date in the list.' },
     { id: 'dcf-irr', name: 'Internal rate of return',
       tex: String.raw`0 = \sum_{t=0}^{n} \frac{C_t}{(1 + \text{IRR})^{t}}`,
       where: [
         [String.raw`\text{IRR}`, 'Internal rate of return: the rate per period at which the NPV is zero', 'per period'],
         [String.raw`C_t`, 'Cash flow at period t, including the time-0 cost', '$'],
+        [String.raw`t`, 'Period in which the cash flow arrives', 'periods'],
         [String.raw`n`, 'Last period with a cash flow', 'periods'],
       ],
       assumptions: 'Found by trial, interpolation or a spreadsheet; a unique IRR is guaranteed only when the cash flows change sign once.',
-      note: 'For a loan or bond bought at a given price, the IRR is its yield.' },
+      note: 'For a loan or bond bought at a given price and held to maturity, the IRR is its yield to maturity.' },
     { id: 'dcf-interp', name: 'Linear interpolation between two trial rates',
       tex: String.raw`\text{IRR} \approx r_L + (r_H - r_L)\,\frac{\text{NPV}_L}{\text{NPV}_L - \text{NPV}_H}`,
       where: [
@@ -188,7 +191,7 @@ export default {
         'Find the break-even rate by trial on the difference, B − A. At 14% it is +$1,036.43; at 16%, +$138.93; at 17%, −$281.70. Interpolating between 16% and 17%: 16% + 1% × 138.93 ÷ (138.93 + 281.70) = 16.33%.',
       ],
       answer: 'Plan B is worth $170,661.16 today against $167,582.24 for plan A, $3,078.92 more. B stays ahead for any discount rate up to about 16.3% a year.',
-      interpretation: 'B pays more in total but later. Its advantage shrinks as the discount rate rises, and above about 16.3% plan A’s earlier lump sum would be worth more. Brightwell’s answer therefore depends on how much the money is worth to it, and on whether it trusts the district to pay in two years; a doubtful payer would call for a higher rate.' },
+      interpretation: 'B pays more in total but later. Its advantage shrinks as the discount rate rises, and for rates between about 16.3% and any realistic rate plan A’s earlier lump sum would be worth more (the difference changes sign twice, so a second break-even exists, at about 201% a year: an example of the multiple-IRR problem). Brightwell’s answer therefore depends on how much the money is worth to it, and on whether it trusts the district to pay in two years; a doubtful payer would call for a higher rate.' },
     { level: 'applied', title: 'Is the cold-brew system worth buying?', fictional: true,
       setup: 'Lantern can buy a cold-brew brewing system for $24,000 in March 2027. Ana’s estimates of the extra cash it brings in, after its running costs, are $6,000, $8,500, $9,000 and $9,000 in years 1 to 4, plus about $2,500 from selling it at the end of year 4. She requires 12% a year for a risky project like this. Find the NPV and the IRR, and test how sensitive the decision is.',
       table: {
@@ -211,7 +214,7 @@ export default {
         'Test the estimates. If every year’s cash were 10% lower ($5,400, $7,650, $8,100 and $8,100, with the resale unchanged), the NPV at 12% would be −$578.13.',
       ],
       answer: 'NPV at 12% = +$1,847.77 and IRR ≈ 15.26%: on Ana’s estimates the brewer is worth buying. But a 10% shortfall in the yearly cash turns the NPV negative (−$578.13).',
-      interpretation: 'The brewer clears Ana’s 12% hurdle, but not by much: its value rests on her sales estimates. Before signing, she might test them, for example by asking regular office clients whether they would order cold brew. The NPV answers whether to buy; whether to pay with the bank loan or the supplier’s plan is a separate financing decision, valued in the annuities lesson.' },
+      interpretation: 'The brewer clears Ana’s 12% hurdle, but not by much: its value rests on her sales estimates. Before signing, she might test them, for example by asking regular office clients whether they would order cold brew. The NPV answers whether to buy; whether to pay with the bank loan or the supplier’s plan is a separate financing decision, valued in module 3.' },
   ],
 
   demo: [
@@ -222,7 +225,7 @@ export default {
   mistakes: [
     { title: 'Adding cash flows from different dates', html: 'The note’s payments add up to $10,600, but that number mixes dollars from four dates and is not its value. Discount each flow to one date first; only then add.' },
     { title: 'Discounting the time-0 cash flow', html: 'A cost paid today is already at time 0: it is not divided by (1 + r). The same slip happens in spreadsheets when the time-0 cost is put inside Excel’s NPV range, which discounts every flow one period too many and divides the true NPV by 1 + r.' },
-    { title: 'A rate that does not match the spacing', html: 'Quarterly cash flows need a quarterly rate. Discounting the note’s quarterly payments at 8% per quarter, or at 8% with t counted in quarters, gives a value far too low. Convert the rate to the period of the cash flows first.' },
+    { title: 'A rate that does not match the spacing', html: 'Quarterly cash flows need a quarterly rate. Discounting the note’s quarterly payments at 8% per quarter gives $7,847.12, far too low. Convert the rate to the period of the cash flows first.' },
     { title: 'Using the loan rate as the discount rate for a risky project', html: 'Discounted at 7.2% a year, roughly the rate on Lantern’s bank loan, the brewer’s NPV would be about $5,007, far more than at the 12% its risk calls for. The rate should reflect the risk of the project’s cash flows, not the cost of the loan that pays for it.' },
     { title: 'Choosing by IRR between options that exclude each other', html: 'A small project with a high IRR can add less value than a large one with a lower IRR. When only one option can be chosen, pick the higher NPV. And when cash flows change sign more than once, the IRR may not be unique: use the NPV.' },
     { title: 'Treating an NPV estimate as a fact', html: 'An NPV is only as good as its cash-flow estimates and rate. The brewer’s +$1,847.77 becomes −$578.13 if each year’s cash is 10% lower. Always recompute the NPV under less favourable assumptions before deciding.' },
@@ -241,15 +244,15 @@ export default {
     'A stream can be valued at any date; values at different dates differ by the factor (1 + r)ᵀ, which gives a check.',
     'The rate per period must match the spacing of the cash flows; for irregular dates, use t in years and the effective annual rate.',
     'Lantern’s Coastline note, four payments of $150 and the $10,000 principal, is worth $9,809.61 in March 2027 at 8% compounded quarterly: less than its face value because its 6% rate is below the market’s. Fixed payments lose value when rates rise.',
-    'NPV = Σ C_t ÷ (1 + r)ᵗ from t = 0, with costs negative and only incremental cash flows. Accept a positive NPV; between exclusive options, choose the highest NPV.',
+    'NPV = Σ C_t ÷ (1 + r)ᵗ from t = 0, with costs negative and only incremental cash flows. Accept a positive NPV; between exclusive options, choose the highest NPV, provided it is positive.',
     'The IRR is the rate at which the NPV is zero, found by trial and interpolation or a spreadsheet. For a conventional project it agrees with the NPV rule; with several sign changes or exclusive options, rely on NPV.',
     'In Excel, NPV() treats its first value as one period away: add the time-0 cash flow outside the function. IRR() takes the whole stream.',
   ],
 
   glossary: [
-    { term: 'Cash-flow stream', def: 'A series of cash flows due at different dates. An even stream (equal amounts at equal intervals) is an annuity; an uneven one is valued by discounting each cash flow separately.' },
-    { term: 'Net present value', def: 'The sum of the present values of all the cash flows a decision causes, with money received positive and money paid negative, discounted at the return available elsewhere at similar risk. A positive NPV means the decision adds value. Often shortened to NPV.' },
-    { term: 'Internal rate of return', def: 'The discount rate at which the net present value of a set of cash flows is zero: the rate of return the investment itself earns. For a loan or bond bought at a given price, its yield. Often shortened to IRR.' },
+    { term: 'Cash-flow stream', def: 'A series of cash flows due at different dates. An even stream (equal amounts at equal intervals for a fixed number of periods) is an annuity; an uneven one is valued by discounting each cash flow separately.' },
+    { term: 'Net present value', def: 'The sum of the present values of all the cash flows a decision causes, including any paid or received today, with money received positive and money paid negative, each discounted at the return available elsewhere at similar risk. A positive NPV is the value the decision adds, in today’s money. Often shortened to NPV.' },
+    { term: 'Internal rate of return', def: 'The discount rate at which the net present value of a set of cash flows is zero: the rate of return, per period, that an investment earns on its own cash flows (for a borrower, what the borrowing costs). For a loan or bond bought at a given price and held to maturity, it is the yield to maturity. Cash flows that change sign more than once can have several IRRs, or none. Often shortened to IRR.' },
     { term: 'NPV profile', def: 'A graph of a decision’s net present value against the discount rate. For a conventional project it slopes down and crosses zero at the internal rate of return.' },
     { term: 'Face value', def: 'The amount a note or bond promises to repay at maturity, on which its interest is calculated; also called par value or principal.' },
   ],
@@ -344,6 +347,11 @@ export default {
     { what: 'Brightwell: diff at 17%', value: 50000 + 60000 / 1.17 + 80000 / 1.17 ** 2 - 180000 / 1.17 ** 0.75, shown: -281.70 },
     { what: 'Brightwell: interpolated (%)', value: 16 + 138.93 / (138.93 + 281.70), shown: 16.33 },
     { what: 'Brightwell: about 16.3%', value: 16 + 138.93 / (138.93 + 281.70), shown: 16.3, tol: 0.05 },
+    { what: 'Brightwell: second break-even (%)', value: (() => { const d = (r) => 50000 + 60000 / (1 + r) + 80000 / (1 + r) ** 2 - 180000 / (1 + r) ** 0.75; let lo = 1, hi = 5; for (let i = 0; i < 200; i++) { const m = (lo + hi) / 2; if (d(m) < 0) lo = m; else hi = m; } return lo * 100; })(), shown: 201, tol: 0.5 },
+    { what: 'Mistake: note at 8% per quarter', value: pvAt(0.08, noteFlows), shown: 7847.12 },
+    { what: 'Scale: NPV of $1,000 at 50% when money costs 10%', value: 1500 / 1.1 - 1000, shown: 363.64 },
+    { what: 'Scale: NPV of $100,000 at 20% when money costs 10%', value: 120000 / 1.1 - 100000, shown: 9090.91 },
+    { what: 'IRR() default guess (%)', value: 10, shown: 10 },
     { what: 'Airline/library: $1.2 million', value: 1.2e6, shown: 1200000 },
   ],
 };

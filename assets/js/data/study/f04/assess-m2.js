@@ -2,6 +2,9 @@
 // No hints. Each item has a full solution, shown when the student reviews the test. New questions, not copies of the
 // lesson exercises. All businesses and people are fictional; item 11 uses COASTLINE_NOTE from case.js (a $10,000 note
 // at 6% paid quarterly, valued at the 8% market rate) at a later date than the lessons do.
+import { COASTLINE_NOTE as N } from './case.js';
+
+const q = N.marketRateMarch2027 / 100 / 4;   // 2% a quarter
 
 export const items = [
   {
@@ -33,8 +36,8 @@ export const items = [
   },
   {
     id: 'f04-m2-3', lesson: 'present-and-future-value', type: 'num', kind: 'applied',
-    prompt: 'A fictional graduate has $12,000 in an account paying 4.2% a year compounded monthly, and needs $15,000 for a course. If she adds nothing, how many years until the balance reaches $15,000? Give two decimal places.',
-    answer: 5.32, check: () => Math.log(15000 / 12000) / Math.log(1 + 0.042 / 12) / 12, unit: 'years', places: 2, tol: 0.01,
+    prompt: 'A fictional graduate has $12,000 in an account paying 4.2% a year compounded monthly, and needs $15,000 for a course. If she adds nothing, how many years until the balance reaches $15,000? Allow a fractional number of periods, as n = ln(FV ÷ PV) ÷ ln(1 + r) does. Give two decimal places.',
+    answer: 5.32, check: () => Math.log(15000 / 12000) / Math.log(1 + 0.042 / 12) / 12, unit: 'years', places: 2, tol: 0.02,
     wrong: [
       { value: 5.95, say: 'That uses simple interest ($504 a year). Interest is compounded monthly: n = ln(1.25) ÷ ln(1.0035) months.' },
       { value: 5.42, say: 'That compounds annually at 4.2%. The account compounds monthly at 0.35% a month.' },
@@ -45,11 +48,12 @@ export const items = [
   {
     id: 'f04-m2-4', lesson: 'present-and-future-value', type: 'num', kind: 'numerical',
     prompt: 'A debt of $10,000 due in two years is to be replaced by two equal payments, one at the end of year 1 and one at the end of year 3, at 7% a year compounded annually. How large is each payment? Give dollars and cents.',
-    answer: 4988.58, check: () => (10000 / 1.07 ** 2) / (1 / 1.07 + 1 / 1.07 ** 3), unit: '$', places: 2, tol: 0.3,
+    answer: 4988.58, check: () => (10000 / 1.07 ** 2) / (1 / 1.07 + 1 / 1.07 ** 3), unit: '$', places: 2, tol: 1,
     wrong: [
-      { value: 5000, say: 'Halving the debt ignores timing. One payment is a year early and the other a year late, and the late one carries more interest than the early one saves.' },
+      { value: 5000, say: 'Halving the debt ignores timing. Moved to year 2, a payment a year early is worth X × 1.07 and one a year late only X ÷ 1.07. Since 1.07 + 1 ÷ 1.07 = 2.004579 is more than 2, two payments of $5,000 would be worth $10,022.90 at year 2, slightly too much.' },
+      { value: 5711.42, say: 'You set the payments equal to $10,000 at time 0 without discounting the debt: 10,000 ÷ 1.07² = 8,734.39.' },
     ],
-    solution: 'Equation of value at time 0: X ÷ 1.07 + X ÷ 1.07³ = 10,000 ÷ 1.07². The left side is X × (0.934579 + 0.816298) = 1.750877X; the right side is $8,734.39. X = 8,734.39 ÷ 1.750877 ≈ $4,988.58. Each payment is slightly less than $5,000 because the early payment is worth more than the late one costs.',
+    solution: 'Equation of value at time 0: X ÷ 1.07 + X ÷ 1.07³ = 10,000 ÷ 1.07². The left side is X × (0.934579 + 0.816298) = 1.750877X; the right side is $8,734.39. X = 8,734.39 ÷ 1.750877 ≈ $4,988.58. Each payment is slightly less than $5,000 because, at year 2, the early payment gains a full year’s interest (× 1.07) while the late one loses a little less (÷ 1.07).',
   },
   {
     id: 'f04-m2-5', lesson: 'present-and-future-value', type: 'mc', kind: 'applied',
@@ -75,18 +79,19 @@ export const items = [
     wrong: [
       { value: 5730.21, say: 'That discounts at an effective 6% a year. A rate of 6% compounded quarterly is 1.5% a quarter, an effective 6.14% a year.' },
       { value: 6000, say: 'That adds the payments without discounting.' },
+      { value: 5795.50, say: 'You discounted by position (1, 2, 3 quarters). The payments fall at quarters 1, 3 and 4.' },
     ],
     solution: 'r = 1.5% a quarter. 1,000 ÷ 1.015 = $985.22; 2,000 ÷ 1.015³ = $1,912.63; 3,000 ÷ 1.015⁴ = $2,826.55. Total ≈ $5,724.41. The empty quarter 2 still counts as a period.',
   },
   {
     id: 'f04-m2-7', lesson: 'discounting-cash-flows', type: 'num', kind: 'applied',
-    prompt: 'A fictional bakery can buy a new oven for $18,000. It expects extra net cash of $5,000, $6,000, $7,000 and $4,000 at the end of years 1 to 4, and it requires 11% a year. What is the NPV of buying the oven? Give dollars and cents, with a minus sign if it is negative.',
-    answer: -872.50, check: () => -18000 + 5000 / 1.11 + 6000 / 1.11 ** 2 + 7000 / 1.11 ** 3 + 4000 / 1.11 ** 4, unit: '$', places: 2, tol: 1,
+    prompt: 'A fictional bakery is offered a new oven. It expects the oven to bring in extra net cash of $5,000, $6,000, $7,000 and $4,000 at the end of years 1 to 4, and it requires 11% a year. What is the most it should pay for the oven today? Give dollars and cents.',
+    answer: 17127.50, check: () => 5000 / 1.11 + 6000 / 1.11 ** 2 + 7000 / 1.11 ** 3 + 4000 / 1.11 ** 4, unit: '$', places: 2, tol: 1.2,
     wrong: [
-      { value: 4000, say: 'That ignores discounting (22,000 − 18,000).' },
-      { value: 17127.5, say: 'That is the present value of the inflows. Subtract the $18,000 cost paid today.' },
+      { value: 22000, say: 'That adds the cash flows without discounting. Paying that much would leave the bakery earning nothing on its money.' },
+      { value: 19011.53, say: 'That discounts each cash flow one period too few. The first $5,000 arrives at the end of year 1: divide it by 1.11.' },
     ],
-    solution: 'PV of inflows = 5,000 ÷ 1.11 + 6,000 ÷ 1.11² + 7,000 ÷ 1.11³ + 4,000 ÷ 1.11⁴ = 4,504.50 + 4,869.73 + 5,118.34 + 2,634.92 = $17,127.50. NPV = 17,127.50 − 18,000 ≈ −$872.50. On these estimates the bakery should not buy the oven: it returns less than 11% (its IRR is about 8.7%).',
+    solution: 'The most it should pay is the present value of the inflows, the price at which the NPV is zero: 5,000 ÷ 1.11 + 6,000 ÷ 1.11² + 7,000 ÷ 1.11³ + 4,000 ÷ 1.11⁴ = 4,504.50 + 4,869.73 + 5,118.34 + 2,634.92 ≈ $17,127.50 (from unrounded values). At a price of $18,000, for example, the NPV would be −$872.50 and the oven would earn only about 8.7% a year.',
   },
   {
     id: 'f04-m2-8', lesson: 'discounting-cash-flows', type: 'mc', kind: 'conceptual',
@@ -128,14 +133,14 @@ export const items = [
     answer: [0, 1, 2],
     feedback: {
       3: 'A small project with a high IRR can have a lower NPV than a large one with a lower IRR. Choose the higher NPV.',
-      4: 'Beyond two periods there is no general formula; the IRR is found by trial, interpolation or a spreadsheet.',
+      4: 'Beyond two periods there is no simple formula; the IRR is found by trial, interpolation or a spreadsheet.',
     },
-    solution: 'True: the definition (NPV = 0); the agreement of IRR and NPV for conventional projects; and the possibility of several IRRs when cash flows change sign more than once. False: the IRR does not rank exclusive projects reliably, and it has no general closed-form formula.',
+    solution: 'True: the definition (NPV = 0); the agreement of IRR and NPV for conventional projects; and the possibility of several IRRs when cash flows change sign more than once. False: the IRR does not rank exclusive projects reliably, and it has no simple closed-form formula.',
   },
   {
     id: 'f04-m2-11', lesson: 'discounting-cash-flows', type: 'num', kind: 'applied',
     prompt: 'Value Lantern’s Coastline note on 1 September 2027, just after that day’s $150 interest payment, assuming similar loans still cost 8% a year compounded quarterly. Two payments remain: $150 on 1 December 2027 and $150 plus the $10,000 principal on 1 March 2028. Give dollars and cents.',
-    answer: 9902.92, check: () => 150 / 1.02 + 10150 / 1.02 ** 2, unit: '$', places: 2, tol: 0.3,
+    answer: 9902.92, check: () => N.quarterlyInterest / (1 + q) + (N.quarterlyInterest + N.principal) / (1 + q) ** 2, unit: '$', places: 2, tol: 0.6,
     wrong: [
       { value: 9809.61, say: 'That is the note’s value in March 2027, with four payments left. In September only two remain.' },
       { value: 10000, say: 'That is the face value. At 8% the note’s 6% payments are worth less than face value.' },

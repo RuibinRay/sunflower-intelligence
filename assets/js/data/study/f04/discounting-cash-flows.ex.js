@@ -2,6 +2,9 @@
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // The note widget starts from COASTLINE_NOTE in case.js ($10,000 at 6%, paid quarterly; 8% market rate in March 2027);
 // the NPV widget starts from Ana's fictional cold-brew estimates in discounting-cash-flows.js.
+import { COASTLINE_NOTE as N } from './case.js';
+
+const qInt = N.quarterlyInterest;   // $150
 
 const money = (v) => {
   const c = Math.round(Math.abs(v) * 100) / 100;
@@ -18,12 +21,12 @@ export const widgets = {
     title: 'What is a fixed-rate note worth?',
     intro: 'A $10,000 note that pays interest every quarter and repays the principal with the last payment, valued by discounting each remaining payment at the market rate.',
     inputs: [
-      { id: 'apr', label: 'Market rate (a year, compounded quarterly)', min: 0.5, max: 15, step: 0.25, value: 8, fmt: 'pct' },
-      { id: 'coupon', label: 'The note’s own interest rate (a year, paid quarterly)', min: 0, max: 12, step: 0.25, value: 6, fmt: 'pct' },
+      { id: 'apr', label: 'Market rate (a year, compounded quarterly)', min: 0.5, max: 15, step: 0.25, value: N.marketRateMarch2027, fmt: 'pct' },
+      { id: 'coupon', label: 'The note’s own interest rate (a year, paid quarterly)', min: 0, max: 12, step: 0.25, value: N.rate, fmt: 'pct' },
       { id: 'n', label: 'Quarterly payments remaining', min: 1, max: 8, step: 1, value: 4, fmt: 'int' },
     ],
     compute: (v) => {
-      const face = 10000;
+      const face = N.principal;
       const r = v.apr / 400;
       const c = face * v.coupon / 400;
       const qs = Array.from({ length: v.n }, (_, i) => i + 1);
@@ -114,19 +117,19 @@ export const guided = [
     prompt: 'A fictional language school expects a corporate client to pay $4,000 at the end of year 1, $6,500 at the end of year 2 and $3,000 at the end of year 4 (nothing in year 3). At 8% a year, what is the stream worth today?',
     solution: '4,000 ÷ 1.08 = $3,703.70; 6,500 ÷ 1.08² = $5,572.70; 3,000 ÷ 1.08⁴ = $2,205.09. Total ≈ $11,481.50. The client promises $13,500, but it is worth less today because it arrives over four years.',
     steps: [
-      { id: 'f04-dcf-g1-s1', type: 'num', prompt: 'Present value of the $4,000 at the end of year 1.',
+      { id: 'f04-dcf-g1-s1', type: 'num', prompt: 'Present value of the $4,000 at the end of year 1, to the nearest cent.',
         answer: 3703.70, check: () => 4000 / 1.08, unit: '$', places: 2, tol: 0.25,
         hints: ['One period at 8%: divide by 1.08.'],
         wrong: [{ value: 4320, say: 'You compounded forward. To bring the amount back to today, divide by 1.08.' }] },
-      { id: 'f04-dcf-g1-s2', type: 'num', prompt: 'Present value of the $6,500 at the end of year 2.',
+      { id: 'f04-dcf-g1-s2', type: 'num', prompt: 'Present value of the $6,500 at the end of year 2, to the nearest cent.',
         answer: 5572.70, check: () => 6500 / 1.08 ** 2, unit: '$', places: 2, tol: 0.35,
         hints: ['Two periods: divide by 1.08².', '1.08² = 1.1664.'],
         wrong: [{ value: 6018.52, say: 'That discounts for one year only. The $6,500 arrives at the end of year 2.' }] },
-      { id: 'f04-dcf-g1-s3', type: 'num', prompt: 'Present value of the $3,000 at the end of year 4.',
+      { id: 'f04-dcf-g1-s3', type: 'num', prompt: 'Present value of the $3,000 at the end of year 4, to the nearest cent.',
         answer: 2205.09, check: () => 3000 / 1.08 ** 4, unit: '$', places: 2, tol: 0.16,
         hints: ['Count the periods from the timeline, not the position in the list: it is year 4, not the third payment.', '1.08⁴ = 1.360489.'],
         wrong: [{ value: 2381.5, say: 'That discounts for three years because it is the third payment. It arrives at the end of year 4: divide by 1.08⁴.' }] },
-      { id: 'f04-dcf-g1-s4', type: 'num', prompt: 'What is the whole stream worth today?',
+      { id: 'f04-dcf-g1-s4', type: 'num', prompt: 'What is the whole stream worth today, to the nearest cent?',
         answer: 11481.50, check: () => 4000 / 1.08 + 6500 / 1.08 ** 2 + 3000 / 1.08 ** 4, unit: '$', places: 2, tol: 0.6,
         hints: ['All three values are now at time 0, so they can be added.'],
         wrong: [{ value: 13500, say: 'That adds the cash flows as they stand, mixing dollars from different dates. Add the present values instead.' }] },
@@ -137,11 +140,11 @@ export const guided = [
     prompt: 'A fictional hotel can buy a $30,000 laundry system that would save $9,000 a year at the end of years 1, 2 and 3, and $11,000 at the end of year 4 (including $2,000 from selling it). The hotel requires 10% a year on projects like this.',
     solution: 'PV of savings = 9,000 ÷ 1.1 + 9,000 ÷ 1.21 + 9,000 ÷ 1.331 + 11,000 ÷ 1.4641 = 8,181.82 + 7,438.02 + 6,761.83 + 7,513.15 = $29,894.82. NPV = 29,894.82 − 30,000 = −$105.18. Reject on these numbers: the IRR is about 9.84%, just below the 10% required. The decision is close, so small changes in the estimates could reverse it.',
     steps: [
-      { id: 'f04-dcf-g2-s1', type: 'num', prompt: 'What is the present value of the four years of savings?',
+      { id: 'f04-dcf-g2-s1', type: 'num', prompt: 'What is the present value of the four years of savings, to the nearest cent?',
         answer: 29894.82, check: () => 9000 / 1.1 + 9000 / 1.21 + 9000 / 1.331 + 11000 / 1.1 ** 4, unit: '$', places: 2, tol: 2,
         hints: ['Discount each year’s saving by 1.1ᵗ and add.', '8,181.82 + 7,438.02 + 6,761.83 + …; the year-4 amount is $11,000.'],
         wrong: [{ value: 38000, say: 'That adds the savings without discounting. Discount each year’s saving first.' }, { value: 28528.79, say: 'That leaves out the $2,000 resale in year 4. The year-4 cash flow is $11,000.' }] },
-      { id: 'f04-dcf-g2-s2', type: 'num', prompt: 'What is the NPV of buying the system? Use a minus sign if it is negative.',
+      { id: 'f04-dcf-g2-s2', type: 'num', prompt: 'What is the NPV of buying the system, to the nearest cent? Use a minus sign if it is negative.',
         answer: -105.18, check: () => -30000 + 9000 / 1.1 + 9000 / 1.21 + 9000 / 1.331 + 11000 / 1.1 ** 4, unit: '$', places: 2, tol: 2,
         hints: ['NPV = − cost today + PV of the savings.', 'The $30,000 is paid now, so it is not discounted.'],
         wrong: [{ value: 105.18, say: 'Check the sign: the savings are worth less than the cost.' }, { value: 8000, say: 'That ignores discounting (38,000 − 30,000).' }] },
@@ -159,13 +162,13 @@ export const guided = [
   {
     id: 'f04-dcf-g3', type: 'steps', kind: 'numerical',
     prompt: 'A fictional project costs $5,000 today and returns $1,500, $2,000 and $2,500 at the end of years 1, 2 and 3. Estimate its IRR by trial.',
-    solution: 'NPV at 8% = −5,000 + 1,388.89 + 1,714.68 + 1,984.58 = +$88.15. NPV at 12% = −5,000 + 1,339.29 + 1,594.39 + 1,779.45 = −$286.88. Interpolating: 8% + 4% × 88.15 ÷ (88.15 + 286.88) = 8.94%. The exact IRR, from a spreadsheet, is 8.90%: interpolation overshoots slightly.',
+    solution: 'NPV at 8% = −5,000 + 1,388.89 + 1,714.68 + 1,984.58 ≈ +$88.15. NPV at 12% = −5,000 + 1,339.29 + 1,594.39 + 1,779.45 ≈ −$286.88 (from unrounded values). Interpolating: 8% + 4% × 88.15 ÷ (88.15 + 286.88) = 8.94%. The exact IRR, from a spreadsheet, is 8.90%: interpolation overshoots slightly.',
     steps: [
-      { id: 'f04-dcf-g3-s1', type: 'num', prompt: 'NPV at 8%.',
+      { id: 'f04-dcf-g3-s1', type: 'num', prompt: 'NPV at 8%, to the nearest cent.',
         answer: 88.15, check: () => -5000 + 1500 / 1.08 + 2000 / 1.08 ** 2 + 2500 / 1.08 ** 3, unit: '$', places: 2, tol: 0.5,
         hints: ['Discount each inflow at 8% and subtract the $5,000.'],
         wrong: [{ value: 1000, say: 'That ignores discounting (6,000 − 5,000).' }] },
-      { id: 'f04-dcf-g3-s2', type: 'num', prompt: 'NPV at 12%. Use a minus sign if it is negative.',
+      { id: 'f04-dcf-g3-s2', type: 'num', prompt: 'NPV at 12%, to the nearest cent. Use a minus sign if it is negative.',
         answer: -286.88, check: () => -5000 + 1500 / 1.12 + 2000 / 1.12 ** 2 + 2500 / 1.12 ** 3, unit: '$', places: 2, tol: 0.5,
         hints: ['Same method with 1.12.', 'A higher rate gives a lower NPV.'],
         wrong: [{ value: 286.88, say: 'Check the sign: at 12% the inflows are worth less than $5,000.' }] },
@@ -202,7 +205,7 @@ export const independent = [
   {
     id: 'f04-dcf-i2', type: 'num', kind: 'applied',
     prompt: 'Suppose that in March 2027 similar loans cost 5% a year compounded quarterly instead of 8%. What would Lantern’s Coastline note (four quarterly payments of $150, the last one with the $10,000 principal) be worth? Give dollars and cents.',
-    answer: 10096.95, check: () => 150 / 1.0125 + 150 / 1.0125 ** 2 + 150 / 1.0125 ** 3 + 10150 / 1.0125 ** 4, unit: '$', places: 2, tol: 0.5,
+    answer: 10096.95, check: () => qInt / 1.0125 + qInt / 1.0125 ** 2 + qInt / 1.0125 ** 3 + (qInt + N.principal) / 1.0125 ** 4, unit: '$', places: 2, tol: 0.5,
     wrong: [
       { value: 9809.61, say: 'That is the value at 8%. Use 5% ÷ 4 = 1.25% a quarter.' },
       { value: 10000, say: 'That is the value at the note’s own 6%. At 5% the note pays more than the market asks, so it is worth more than face value.' },
@@ -278,7 +281,7 @@ export const independent = [
 export const check = [
   {
     id: 'f04-dcf-k1', type: 'mc', kind: 'conceptual',
-    prompt: 'A project has an NPV of +$4,000 at a 10% discount rate. What does that mean?',
+    prompt: 'A conventional project (a cost now, then inflows) has an NPV of +$4,000 at a 10% discount rate. What does that mean?',
     options: [
       'It earns more than 10% a year: it is worth $4,000 more, in today’s money, than it costs',
       'It will make a profit of $4,000 over its life',
@@ -307,7 +310,7 @@ export const check = [
   {
     id: 'f04-dcf-k3', type: 'num', kind: 'applied',
     prompt: 'A fictional food-truck business can buy a second truck for $45,000. It expects net cash inflows of $15,000, $18,000 and $20,000 at the end of years 1 to 3, and nothing after that. It requires 14% a year. What is the NPV? Give dollars and cents, with a minus sign if it is negative.',
-    answer: -4492.26, check: () => -45000 + 15000 / 1.14 + 18000 / 1.14 ** 2 + 20000 / 1.14 ** 3, unit: '$', places: 2, tol: 1,
+    answer: -4492.26, check: () => -45000 + 15000 / 1.14 + 18000 / 1.14 ** 2 + 20000 / 1.14 ** 3, unit: '$', places: 2, tol: 2.7,
     wrong: [
       { value: 8000, say: 'That ignores discounting (53,000 − 45,000). Discount each inflow at 14%.' },
       { value: 40507.74, say: 'That is the present value of the inflows. Subtract the $45,000 cost.' },
