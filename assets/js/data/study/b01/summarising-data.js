@@ -41,7 +41,8 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: 'In January 2027 Ana’s assistant drafts a note on December: “Visits up 19.1% on November. Gift-box orders up 162.5%, and gift boxes were 39.6% of December’s orders. Average rating up 0.1.” Every figure is a summary: a change, a percentage, an average. Each is calculated correctly, yet a reader could still misunderstand most of them. This lesson is about producing summaries that cannot be misread.' },
+    { case: 'In January 2027 Ana’s assistant drafts a note on December: “Visits up 19.1% on November. Gift-box orders up 162.5%, and gift boxes were 39.6% of December’s orders. Average rating up 0.1.”' },
+    { p: 'Every figure is a summary: a change, a percentage, an average. Each is calculated correctly, yet a reader could still misunderstand most of them. This lesson is about producing summaries that cannot be misread.' },
 
     { h: 'Counts, proportions and percentages' },
     { p: String.raw`A count says how many. A <g>proportion</g> divides a part by the whole it belongs to, giving a number between 0 and 1; a percentage is the proportion multiplied by 100. In December Lantern took 583 orders, of which 231 were gift boxes, so gift boxes were a proportion <m>231 \div 583 \approx 0.396</m>, or 39.6%, of orders.` },

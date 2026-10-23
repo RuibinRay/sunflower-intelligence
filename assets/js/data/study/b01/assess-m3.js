@@ -4,14 +4,16 @@
 export const items = [
   {
     id: 'b01-m3-1', lesson: 'kpis', type: 'num', kind: 'numerical',
-    prompt: 'A fictional coffee-subscription company had 52,000 website sessions and 1,404 paid orders in a month. What was its conversion rate? Give a percentage to two decimal places.',
-    answer: 2.7, check: () => 1404 / 52000 * 100, unit: '%', places: 2, tol: 0.005,
+    prompt: 'A fictional online garden-supplies shop’s KPI dictionary defines conversion as paid orders ÷ sessions × 100. In March it had 52,000 sessions from 31,000 distinct visitors; 1,450 orders were placed, of which 46 were cancelled the same day. What was its conversion rate, as the dictionary defines it? Give a percentage to two decimal places.',
+    answer: 2.7, check: () => (1450 - 46) / 52000 * 100, unit: '%', places: 2, tol: 0.005,
     wrong: [
-      { value: 0.027, say: 'That is the proportion. Multiply by 100 for a percentage.' },
-      { value: 37.04, say: 'You divided sessions by orders. Conversion puts orders on top: 1,404 ÷ 52,000.' },
+      { value: 2.79, say: 'That uses all orders placed (1,450). The dictionary counts paid orders: 1,450 − 46 = 1,404.' },
+      { value: 4.53, say: 'That divides paid orders by visitors. The dictionary divides by sessions, 52,000.' },
+      { value: 4.68, say: 'That divides orders placed by visitors. Use paid orders (1,404) and sessions (52,000).' },
     ],
-    solution: 'Conversion = orders ÷ sessions × 100 = 1,404 ÷ 52,000 × 100 = 2.70%.',
+    solution: 'Paid orders = 1,450 − 46 = 1,404. Conversion = 1,404 ÷ 52,000 × 100 = 2.70%. The other combinations (orders placed, or visitors as the denominator) give 2.79%, 4.53% or 4.68%: all correct arithmetic, but not this KPI.',
   },
+
   {
     id: 'b01-m3-2', lesson: 'kpis', type: 'rows', kind: 'applied',
     prompt: 'A fictional online bookshop drafts its KPI dictionary. Select every entry that is not yet a usable KPI.',
@@ -33,10 +35,10 @@ export const items = [
     id: 'b01-m3-3', lesson: 'kpis', type: 'mc', kind: 'conceptual',
     prompt: 'A fictional bank rewards branch staff for the number of new current accounts they open each month. A year later the count is well above target, but the bank’s deposits have not grown. What is the most likely explanation, and the best fix?',
     options: [
-      'Staff opened accounts that customers didn’t need or use; pair the count with a measure such as accounts still active after 90 days.',
-      'The target was too low; raise it so that staff work harder.',
-      'Deposits are a lagging indicator, so they will catch up next year without any change.',
-      'Account openings are a lagging indicator, so they can’t be used as a target.',
+      'Staff opened accounts nobody used; pair the count with accounts still active after 90 days.',
+      'The target was set too low; raise it each quarter so that staff have to work harder for it.',
+      'Deposits are a lagging indicator, so they will catch up next year without any change at all.',
+      'Account openings are a lagging indicator, so they should never have been used as a target.',
     ],
     answer: 0,
     feedback: {
@@ -68,14 +70,15 @@ export const items = [
   },
   {
     id: 'b01-m3-6', lesson: 'summarising-data', type: 'num', kind: 'numerical',
-    prompt: 'A fictional roastery’s orders grew from 400 a month to 625 a month over two years. What was the compound annual growth rate? Give a whole percentage.',
-    answer: 25, check: () => ((625 / 400) ** (1 / 2) - 1) * 100, unit: '%', places: 0, tol: 0.05,
+    prompt: 'A fictional app’s users rose 20% one month and fell 20% the next. What was the compound monthly growth rate over the two months? Give a percentage to one decimal place, with a minus sign for a fall.',
+    answer: -2, check: () => (Math.sqrt(1.2 * 0.8) - 1) * 100, unit: '%', places: 1, tol: 0.05,
     wrong: [
-      { value: 28.13, say: 'That halves the total growth of 56.25%. Growth compounds: take the square root of 625 ÷ 400.' },
-      { value: 56.25, say: 'That is the total growth over two years, not the yearly rate.' },
+      { value: 0, say: 'That is the mean of the two monthly rates. A 20% fall from a larger base outweighs a 20% rise: compound them.' },
+      { value: -4, say: 'That is the total change over the two months (1.2 × 0.8 = 0.96). The question asks for the monthly rate.' },
     ],
-    solution: 'g = (625 ÷ 400)^(1/2) − 1 = 1.5625^0.5 − 1 = 1.25 − 1 = 25% a year. Check: 400 × 1.25 × 1.25 = 625.',
+    solution: 'Growth factor over two months = 1.2 × 0.8 = 0.96, a total fall of 4%. Compound monthly rate = 0.96^(1/2) − 1 ≈ −2.0% a month.',
   },
+
   {
     id: 'b01-m3-7', lesson: 'summarising-data', type: 'mc', kind: 'conceptual',
     prompt: 'A fictional courier delivers most parcels in two or three days, but a few lost parcels take more than a month. Which statement is correct?',
@@ -83,7 +86,7 @@ export const items = [
       'The lost parcels pull the mean above the median, so the median better describes a typical delivery.',
       'The lost parcels pull the median above the mean, so the mean better describes a typical delivery.',
       'The mean and median will be about equal, because most parcels take two or three days.',
-      'The range is the best summary of a typical delivery time.',
+      'The range, from two days to over a month, is the best summary of a typical delivery time.',
     ],
     answer: 0,
     feedback: {
@@ -102,11 +105,16 @@ export const items = [
   },
   {
     id: 'b01-m3-9', lesson: 'interpreting-results', type: 'num', kind: 'numerical',
-    prompt: 'A fictional slide shows two bars, for 120 and 150, on an axis that starts at 100. How many times taller does the 150 bar look than the 120 bar?',
-    answer: 2.5, check: () => (150 - 100) / (120 - 100), unit: 'times', places: 1, tol: 0.05,
-    wrong: [{ value: 1.25, say: 'That is the true ratio of the values. The bars are drawn from 100, so their lengths are 50 and 20.' }],
-    solution: 'Drawn lengths: 150 − 100 = 50 and 120 − 100 = 20, so the bar looks 2.5 times as tall, although 150 is only 1.25 times 120.',
+    prompt: 'A fictional slide shows monthly sign-ups of 480 and then 400 as bars on a vertical axis that starts at 360. By what factor does the chart exaggerate the percentage fall? Give one decimal place.',
+    answer: 4, check: () => (((480 - 360) - (400 - 360)) / (480 - 360)) / ((480 - 400) / 480), unit: 'times', places: 1, tol: 0.05,
+    wrong: [
+      { value: 66.67, say: 'That is the apparent fall, in percent. Divide it by the actual fall.' },
+      { value: 16.67, say: 'That is the actual fall, in percent. The exaggeration is the apparent fall divided by it.' },
+      { value: 3, say: 'That is the ratio of the drawn bar lengths (120 ÷ 40). The question compares the apparent and actual percentage falls.' },
+    ],
+    solution: 'Drawn lengths: 480 − 360 = 120 and 400 − 360 = 40, so the fall looks like (120 − 40) ÷ 120 ≈ 66.7%. The actual fall is (480 − 400) ÷ 480 ≈ 16.7%. Exaggeration = 66.7 ÷ 16.7 = 4.0 times.',
   },
+
   {
     id: 'b01-m3-10', lesson: 'interpreting-results', type: 'mc', kind: 'conceptual',
     prompt: 'In the second quarter a fictional insurer’s online quote-to-purchase rate rose both for customers under 40 and for customers over 40, but its overall rate fell. What is the most likely explanation?',
@@ -126,14 +134,15 @@ export const items = [
   },
   {
     id: 'b01-m3-11', lesson: 'interpreting-results', type: 'num', kind: 'applied',
-    prompt: 'A fictional fashion chain tried a new shop layout in some stores. In those stores the share of visitors who bought rose from 22% to 26%; in comparable stores without the layout it rose from 21% to 23% over the same period. Using difference in differences, estimate the layout’s effect in percentage points.',
-    answer: 2, check: () => (26 - 22) - (23 - 21), unit: 'percentage points', places: 0, tol: 0.05,
+    prompt: 'A fictional fashion chain tried a new shop layout in some stores. In those stores the share of visitors who bought rose from 22% to 26%; in comparable stores without the layout it rose from 21% to 23% over the same period. Using the comparison stores, what share would the layout stores probably have reached without the layout? Give a whole percentage.',
+    answer: 24, check: () => 22 + (23 - 21), unit: '%', places: 0, tol: 0.05,
     wrong: [
-      { value: 4, say: 'That is the whole rise in the layout stores. The comparison stores rose 2 points without the layout; subtract that.' },
-      { value: 18.18, say: 'That is the relative rise in the layout stores. Work in percentage points and subtract the comparison stores’ change.' },
+      { value: 26, say: 'That is what the layout stores actually reached, with the layout.' },
+      { value: 23, say: 'That is the comparison stores’ own rate. Apply their change (+2 points) to the layout stores’ starting rate, 22%.' },
     ],
-    solution: 'Layout stores: 26 − 22 = 4 points. Comparison stores: 23 − 21 = 2 points, which estimates what would have happened anyway. Effect ≈ 4 − 2 = 2 percentage points, assuming the two groups would otherwise have moved in parallel.',
+    solution: 'The comparison stores rose 23 − 21 = 2 percentage points without the layout. Applied to the layout stores’ 22%, that gives about 24% without the layout. They reached 26%, so the difference-in-differences estimate of the layout’s effect is 26 − 24 = 2 points, assuming the two groups would otherwise have moved in parallel.',
   },
+
   {
     id: 'b01-m3-12', lesson: 'interpreting-results', type: 'classify', kind: 'conceptual',
     prompt: 'Classify each chart design as acceptable as described or likely to mislead.',

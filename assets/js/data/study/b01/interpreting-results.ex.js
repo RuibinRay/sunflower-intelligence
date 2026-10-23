@@ -65,7 +65,9 @@ export const widgets = {
         ? `Simpson’s paradox: both channels converted better in period B, yet the overall rate fell ${Math.abs(total).toFixed(2)} points, because the mix moved towards the ${b > a ? 'website' : 'app'}, the lower-converting channel. The rates alone added ${signed(rateEff)} points; the mix took away ${Math.abs(mixEff).toFixed(2)}.`
         : bothDown && total > 0.005
           ? `The reverse paradox: both channels converted worse in period B, yet the overall rate rose ${total.toFixed(2)} points, because the mix moved towards the ${b > a ? 'website' : 'app'}, the higher-converting channel.`
-          : `The overall rate changed by ${signed(total)} points: ${signed(rateEff)} from the channel rates and ${signed(mixEff)} from the mix. Set the two periods’ shares equal and the mix effect disappears.`;
+          : Math.abs(b - a) < 1e-9
+            ? `The two periods have the same mix, so the whole change of ${signed(total)} points comes from the channel rates.`
+            : `The overall rate changed by ${signed(total)} points: ${signed(rateEff)} from the channel rates and ${signed(mixEff)} from the mix. Set the two periods’ shares equal and the mix effect disappears.`;
       return {
         headline: { label: 'Change in overall conversion', value: `${signed(total)} points` },
         rows: [
@@ -217,7 +219,7 @@ export const independent = [
     ],
     answer: 0,
     feedback: {
-      1: 'Improvement after picking the worst is expected even without help: regression to the mean.',
+      1: 'All ten improving is what regression to the mean predicts for shops picked as the worst, so it is not unlikely at all without help.',
       2: 'Regression to the mean explains some improvement, not necessarily all of it. Without a comparison you can’t say the team did nothing.',
       3: 'A comparison with similar shops that got no team can still estimate the effect.',
     },
