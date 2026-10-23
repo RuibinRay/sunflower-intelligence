@@ -181,6 +181,8 @@ function step(t, s) {
   r = step(mt, { op: 'fill', column: 'email', method: 'mode', by: 'cust' });
   eq(col(r.table, 'email'), ['a@x.org', 'a@x.org', '', 'b@x.org'], 'text group fill: a group with no value stays missing (no one else’s email)');
   ok(/left missing/.test(r.change.note), 'rows left missing are noted');
+  const mb = (rows) => C.evalRule(T(['rating'], rows), { rule: 'missing-between', column: 'rating', min: 2, max: 2 }).met;
+  ok(mb([['5'], [''], ['']]) && !mb([['5'], ['4'], ['']]), 'missing-between: met only with the required number of missing values');
   r = step(ft, { op: 'fill', column: 'v', method: 'constant', value: '0' });
   eq(col(r.table, 'v'), ['1', 0, '4', '6', 0, 0], 'fill constant (a number in a numeric column)');
   ok(step(T(['v'], [[''], ['NA']]), { op: 'fill', column: 'v', method: 'mean' }).change.error, 'fill on an all-missing column refused');

@@ -19,7 +19,7 @@ export const widgets = {
     dataset: 'lantern-orders',
     ops: ['dedupe', 'dedupe-key'],
     watch: ['order_total'],
-    task: 'Find out how many order ids appear more than once before you change anything. Remove the exact duplicates and note how the total of <code>order_total</code> changes. Then deduplicate on <code>order_id</code>. Before you accept that step, read the rows it would remove: if any of them disagree with the row that stays, which version should survive, and what in the rows tells you?',
+    task: 'Find out how many order ids appear more than once before you change anything. Remove the exact duplicates and note how the row count and the count and mean of <code>order_total</code> change; multiply count by mean to get the total before and after. Then deduplicate on <code>order_id</code>. Before you accept that step, read the rows it would remove: if any of them disagree with the row that stays, which version should survive, and what in the rows tells you?',
   },
   'dup-impact': {
     type: 'formula',
@@ -225,13 +225,13 @@ export const independent = [
   },
   {
     id: 'b02-dup-i4', type: 'num', kind: 'numerical',
-    prompt: 'A booking site lists the hotel as “Harborveiw” instead of “Harbourview”. What is the edit distance between “Harbourview” and “Harborveiw”?',
-    answer: 3, check: () => lev('Harbourview', 'Harborveiw'), unit: 'edits', places: 0, tol: 0,
+    prompt: 'A booking site lists the hotel as “Harbourveiw” instead of “Harborview”. What is the edit distance between “Harborview” and “Harbourveiw”?',
+    answer: 3, check: () => lev('Harborview', 'Harbourveiw'), unit: 'edits', places: 0, tol: 0,
     wrong: [
-      { value: 2, say: 'You probably counted the swapped “ie” as one edit. In Levenshtein distance a swap of neighbouring letters costs two, plus one for the missing “u”.' },
-      { value: 1, say: 'Deleting the “u” is one edit, but “view” and “veiw” still differ: the swapped letters cost two more.' },
+      { value: 2, say: 'You probably counted the swapped “ie” as one edit. In Levenshtein distance a swap of neighbouring letters costs two, plus one for the extra “u”.' },
+      { value: 1, say: 'Inserting the “u” is one edit, but “view” and “veiw” still differ: the swapped letters cost two more.' },
     ],
-    solution: 'Delete the “u” (Harbourview → Harborview): one edit. Then “view” → “veiw” swaps two neighbouring letters, which takes two substitutions. Total: 3 edits.',
+    solution: 'Insert a “u” (Harborview → Harbourview): one edit. Then “view” → “veiw” swaps two neighbouring letters, which takes two substitutions. Total: 3 edits.',
   },
   {
     id: 'b02-dup-i5', type: 'classify', kind: 'conceptual',

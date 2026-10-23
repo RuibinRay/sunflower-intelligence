@@ -13,11 +13,11 @@ export const widgets = {
         ['5001', '2026-05-02', 'North', '2', '$14.00', '5'],
         ['5002', '2026-05-02', 'north', '1', '$26.00', ''],
         ['5003', '2026-05-03', 'South', '1', '$48.00', '4'],
-        ['5004', '2026-05-03', 'Coast', '3', '$14.00', '4'],
+        ['5004', '2026-05-03', 'East', '3', '$14.00', '4'],
         ['5005', '2026-05-04', 'South', '-1', '$16.00', '3'],
         ['5006', '2026-05-04', 'Nth', '1', '26,00', ''],
-        ['5007', '2026-05-05', 'Coast', '40', '$14.00', '5'],
-        ['5007', '2026-05-05', 'Coast', '4', '$14.00', '5'],
+        ['5007', '2026-05-05', 'East', '40', '$14.00', '5'],
+        ['5007', '2026-05-05', 'East', '4', '$14.00', '5'],
         ['5008', '2026-05-06', 'SOUTH', '2', '$15.00', '9'],
         ['5009', '2025-05-06', 'North', '1', '$48.00', ''],
       ],
@@ -31,7 +31,7 @@ export const widgets = {
     dataset: 'harborview-bookings',
     ops: ['validate'],
     watch: ['nights', 'rate'],
-    task: 'Apply these rules: check_out is after check_in; nights equals the number of days from check_in to check_out; rate is above 0; rate is no higher than a sensible maximum for the hotel. For each rule, note how many rows fail and whether you would treat it as hard (an error) or soft (a value to check). Open a few failing rows and decide which value is most likely wrong. Don’t correct anything yet.',
+    task: 'Apply these rules: check_out is after check_in; nights equals the number of days from check_in to check_out; rate is above 0 (the lab’s Minimum includes the value you enter, and rates are whole dollars, so use a minimum of 1); rate is no higher than a sensible maximum for the hotel. For each rule, note how many rows fail and whether you would treat it as hard (an error) or soft (a value to check). Open a few failing rows and decide which value is most likely wrong. Don’t correct anything yet.',
   },
 };
 
@@ -115,7 +115,7 @@ export const guided = [
     items: [
       'Some orders have no email, which is required for the receipt.',
       'An order’s unit_price is “14,00” where the dictionary requires 14.00.',
-      'Region is “Coast” in one order and “coast” in another.',
+      'Region is “East” in one order and “east” in another.',
       'Order 5120 appears twice, identically.',
       'A customer’s quantity was typed as 3 instead of 2.',
       'The export was taken at 9 a.m., so it lacks the rest of that day’s orders.',
@@ -129,7 +129,7 @@ export const guided = [
       4: '3 is a perfectly valid quantity. Only the real order shows it is wrong: accuracy.',
       5: 'Nothing recorded is wrong; the data is out of date for the question being asked: timeliness.',
     },
-    solution: 'Missing required email: completeness. “14,00”: validity. Coast and coast: consistency. Order twice: uniqueness. 3 typed for 2: accuracy. Export taken too early: timeliness.',
+    solution: 'Missing required email: completeness. “14,00”: validity. East and east: consistency. Order twice: uniqueness. 3 typed for 2: accuracy. Export taken too early: timeliness.',
   },
 ];
 
@@ -162,7 +162,7 @@ export const independent = [
       'booking_id appears only once',
       'every order’s product exists in the product catalogue table',
       'check_out is later than check_in',
-      'room_type is Standard, Deluxe or Suite',
+      'room_type is Standard, Deluxe, Family or Suite',
       'rate is not blank',
     ],
     categories: ['Range', 'Format', 'Set membership', 'Uniqueness', 'Completeness', 'Cross-field', 'Referential integrity'],
@@ -202,11 +202,11 @@ export const independent = [
   },
   {
     id: 'b02-pv-i5', type: 'mc', kind: 'applied',
-    prompt: 'Harborview’s most expensive room has a list price of $600 a night (fictional). Which pair of rules treats the rate column sensibly?',
+    prompt: 'Harborview’s most expensive room has a list price of $500 a night (fictional). Which pair of rules treats the rate column sensibly?',
     options: [
-      'Hard: rate is above 0, unless the booking is marked complimentary. Soft: a rate above $600 is flagged for review.',
-      'Hard: rate is between $1 and $600, and any booking outside that range is deleted.',
-      'Soft: rate is above 0. Hard: a rate above $600 is an error.',
+      'Hard: rate is above 0, unless the booking is marked complimentary. Soft: a rate above $500 is flagged for review.',
+      'Hard: rate is between $1 and $500, and any booking outside that range is deleted.',
+      'Soft: rate is above 0. Hard: a rate above $500 is an error.',
       'No rules: rates are set by the market, so any value is possible.',
     ],
     answer: 0,

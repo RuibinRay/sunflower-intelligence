@@ -144,10 +144,10 @@ export const items = [
     prompt: 'Region values from Lantern’s raw export (fictional; ␣ marks a space). After trimming spaces and converting to Title Case, which values still don’t match one of North, South, East, West or Central exactly? Rows are numbered from 0.',
     data: { table: {
       head: ['region (raw)'],
-      rows: [['north␣'], ['N.'], ['SOUTH'], ['Wset'], ['␣East'], ['central'], ['Soth'], ['E.']],
+      rows: [['north␣'], ['N.'], ['SOUTH'], ['Wset'], ['West␣'], ['central'], ['Soth'], ['E.']],
     } },
     answer: [1, 3, 6, 7],
-    solution: 'Trimming and Title Case turn “north␣”, “SOUTH”, “␣East” and “central” into North, South, East and Central. The abbreviations “N.” and “E.” and the typing errors “Wset” and “Soth” are untouched by mechanical cleaning: they need a reviewed mapping table (N. → North, E. → East, Wset → West, Soth → South).',
+    solution: 'Trimming and Title Case turn “north␣”, “SOUTH”, “West␣” and “central” into North, South, West and Central. The abbreviations “N.” and “E.” and the typing errors “Wset” and “Soth” are untouched by mechanical cleaning: they need a reviewed mapping table (N. → North, E. → East, Wset → West, Soth → South).',
   },
   {
     id: 'b02-fn-10', lesson: 'text-and-categories', type: 'order', kind: 'conceptual',
@@ -167,8 +167,8 @@ export const items = [
     id: 'b02-fn-11', lesson: 'missing-values', type: 'mc', kind: 'applied',
     prompt: 'In a fictional extract of Northfield University’s records, weekly study_hours is blank for 30% of first-years but 8% of fourth-years, and among students who answered, fourth-years report more hours. Within each year, nothing recorded predicts who left it blank. How should the blanks be filled for an estimate of average study hours across all students?',
     options: [
-      'Fill each blank with the median of the student’s own year of study, and keep a missing-value indicator',
-      'Fill every blank with the overall median of the observed hours',
+      'Fill each blank with the mean of the student’s own year of study, and keep a missing-value indicator',
+      'Fill every blank with the overall mean of the observed hours',
       'Delete the students with blanks and average the rest',
       'Fill every blank with 0, because the student didn’t report any hours',
     ],
@@ -178,7 +178,7 @@ export const items = [
       2: 'Listwise deletion keeps a sample with too many fourth-years, so the average leans towards their higher hours.',
       3: 'A blank means “not answered”, not “no study”. Zeros would invent data and drag the average down.',
     },
-    solution: 'Missingness depends on a recorded variable, year of study, and not on the hours within a year: missing at random given year (MAR). Filling within year groups uses each group’s own typical value, so the mix of years is respected; the indicator keeps the fact that the value was imputed.',
+    solution: 'Missingness depends on a recorded variable, year of study, and not on the hours within a year: missing at random given year (MAR). Filling each blank with its year’s mean gives the same overall average as weighting each year’s observed mean by its number of students, so the mix of years is respected. (A median fill would pull the estimate towards the medians, which sit below the means for right-skewed hours.) The indicator keeps the fact that the value was imputed.',
   },
   {
     id: 'b02-fn-12', lesson: 'missing-values', type: 'num', kind: 'numerical',
@@ -193,7 +193,7 @@ export const items = [
   // ---------------------------------------------------------------- outliers
   {
     id: 'b02-fn-13', lesson: 'outliers', type: 'rows', kind: 'applied',
-    prompt: 'Ten order totals from Lantern’s cleaned export (fictional). Using quartiles by linear interpolation, select every order outside the Tukey fences (Q1 − 1.5 × IQR, Q3 + 1.5 × IQR). Rows are numbered from 0.',
+    prompt: 'Ten fictional Lantern order totals, including its genuine 120-bag office order. Using quartiles by linear interpolation, select every order outside the Tukey fences (Q1 − 1.5 × IQR, Q3 + 1.5 × IQR). Rows are numbered from 0.',
     data: { table: {
       head: ['order', 'order_total ($)'],
       rows: [['A', '21.00'], ['B', '17.00'], ['C', '58.00'], ['D', '14.00'], ['E', '28.00'], ['F', '1512.00'], ['G', '19.50'], ['H', '15.50'], ['I', '24.00'], ['J', '18.00']],

@@ -128,7 +128,7 @@ export const guided = [
       { id: 'b02-enc-g2-s3', type: 'num', prompt: 'The overall training cancellation rate is 3 ÷ 8. With smoothing strength m = 4, what is T3’s smoothed encoding? (Two decimal places.)',
         answer: 0.5, check: () => (1 * 1 + 4 * (3 / 8)) / (1 + 4), tol: 0.005, unit: '', places: 2,
         hints: ['S = (n × category mean + m × overall mean) ÷ (n + m).', '(1 × 1 + 4 × 0.375) ÷ 5.'],
-        wrong: [{ value: 0.69, say: 'You weighted the category by m and the overall rate by n. The category’s weight is n ÷ (n + m) = 1 ÷ 5.' }] },
+        wrong: [{ value: 0.875, say: 'You weighted the category by m and the overall rate by n. The category’s weight is n ÷ (n + m) = 1 ÷ 5.' }, { value: 0.69, say: 'That is the simple average of 1 and 0.375. Weight the category’s own rate by n ÷ (n + m) = 1 ÷ 5 and the overall rate by 4 ÷ 5.' }] },
       { id: 'b02-enc-g2-s4', type: 'num', prompt: 'A booking arrives from agent T9, who never appeared in training. What value should it be encoded with? (Three decimal places.)',
         answer: 0.375, check: () => 3 / 8, tol: 0.0005, unit: '', places: 3,
         hints: ['There is no category average for T9.'],

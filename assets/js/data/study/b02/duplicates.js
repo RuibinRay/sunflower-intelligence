@@ -198,7 +198,7 @@ export default {
         'Averages. Reported average order value: <m>203.50 \\div 8 = 25.4375 \\approx 25.44</m>. True average: <m>132.50 \\div 6 \\approx 22.08</m>.',
       ],
       answer: 'Rows 4 and 7 are exact duplicates. True revenue is $132.50; the copies overstated it by $71.00 (54% of the true figure) and pushed the average order value from $22.08 to $25.44.',
-      interpretation: 'The total was overstated by exactly the value of the copies. The average rose too, because both copies were larger than the typical order; had the copies been typical orders, the average would have survived and only the total and the count been wrong. In a full month’s export a few copies among thousands of rows are a much smaller percentage, but the dollar error is still exactly the value of the copies.' },
+      interpretation: 'The total was overstated by exactly the value of the copies. The average rose too, because the two copies averaged <m>(22 + 49) \\div 2 = 35.50</m> dollars, well above the true average of $22.08; had the copies been typical orders, the average would have survived and only the total and the count been wrong. In a full month’s export a few copies among thousands of rows are a much smaller percentage, but the dollar error is still exactly the value of the copies.' },
     { level: 'challenging', title: 'Is “Jhon Reyes” the same customer as “John Reyes”?', fictional: true,
       setup: 'Lantern’s customer list contains “John Reyes” (john.reyes@example.com, postcode HC3 9PL, phone ending 4417) and “Jhon Reyes” (jreyes@example.net, postcode HC3 9PL, phone ending 4417). It also contains “Jon Lee” and “Jan Lee” at different postcodes. Compute the edit distance between “Jhon” and “John”, turn it into a similarity, compare it with “Jon” and “Jan”, and decide which pairs should be merged.',
       table: {
@@ -230,19 +230,19 @@ export default {
         head: ['booking_id', 'received_at', 'check_in', 'nights', 'status', 'total'],
         align: ['l', 'l', 'l', 'r', 'l', 'r'],
         rows: [
-          ['HB-26101', '2026-10-01 09:12', '2026-11-12', '3', 'Confirmed', '$540'],
-          ['HB-26102', '2026-10-01 10:40', '2026-11-12', '2', 'Confirmed', '$380'],
-          ['HB-26101', '2026-10-03 16:05', '2026-11-12', '2', 'Confirmed', '$360'],
-          ['HB-26103', '2026-10-04 11:30', '2026-11-13', '1', 'Confirmed', '$190'],
-          ['HB-26102', '2026-10-05 08:15', '2026-11-12', '2', 'Cancelled', '$0'],
-          ['HB-26104', '2026-10-05 14:50', '2026-11-12', '4', 'Confirmed', '$720'],
-          ['HB-26103', '2026-10-04 11:30', '2026-11-13', '1', 'Confirmed', '$190'],
+          ['HB-26301', '2026-10-01 09:12', '2026-11-12', '3', 'Confirmed', '$540'],
+          ['HB-26302', '2026-10-01 10:40', '2026-11-12', '2', 'Confirmed', '$380'],
+          ['HB-26301', '2026-10-03 16:05', '2026-11-12', '2', 'Confirmed', '$360'],
+          ['HB-26303', '2026-10-04 11:30', '2026-11-13', '1', 'Confirmed', '$190'],
+          ['HB-26302', '2026-10-05 08:15', '2026-11-12', '2', 'Cancelled', '$0'],
+          ['HB-26304', '2026-10-05 14:50', '2026-11-12', '4', 'Confirmed', '$720'],
+          ['HB-26303', '2026-10-04 11:30', '2026-11-13', '1', 'Confirmed', '$190'],
         ],
       },
       steps: [
-        'Profile the key. There are <m>7</m> rows but only <m>4</m> distinct booking ids, so <m>3</m> rows are surplus. The two HB-26103 rows are identical: an exact copy. HB-26101 and HB-26102 each have two versions that disagree.',
-        'Choose the survivorship rule from the mechanism. The channel manager sends a new message whenever a booking changes, so a later message supersedes an earlier one: keep the row with the latest <code>received_at</code> for each <code>booking_id</code>. HB-26101 was shortened from 3 nights to 2; HB-26102 was cancelled.',
-        'Survivors: HB-26101 (2 nights, $360), HB-26102 (cancelled), HB-26103 (1 night, $190), HB-26104 (4 nights, $720). Cancelled bookings contribute no revenue and no room-nights.',
+        'Profile the key. There are <m>7</m> rows but only <m>4</m> distinct booking ids, so <m>3</m> rows are surplus. The two HB-26303 rows are identical: an exact copy. HB-26301 and HB-26302 each have two versions that disagree.',
+        'Choose the survivorship rule from the mechanism. The channel manager sends a new message whenever a booking changes, so a later message supersedes an earlier one: keep the row with the latest <code>received_at</code> for each <code>booking_id</code>. HB-26301 was shortened from 3 nights to 2; HB-26302 was cancelled.',
+        'Survivors: HB-26301 (2 nights, $360), HB-26302 (cancelled), HB-26303 (1 night, $190), HB-26304 (4 nights, $720). Cancelled bookings contribute no revenue and no room-nights.',
         'Totals with the right rule: revenue <m>360 + 0 + 190 + 720 = 1{,}270</m>; room-nights <m>2 + 1 + 4 = 7</m>.',
         'Compare the alternatives. Summing every row gives <m>540 + 380 + 360 + 190 + 0 + 720 + 190 = 2{,}380</m> and <m>15</m> room-nights. Keeping the <i>first</i> version of each booking gives <m>540 + 380 + 190 + 720 = 1{,}830</m> and <m>3 + 2 + 1 + 4 = 10</m> room-nights.',
       ],
@@ -251,7 +251,7 @@ export default {
   ],
 
   demo: [
-    { widget: 'dup-lab', intro: 'Lantern’s full order export. Profile <code>order_id</code> first, then remove exact duplicates and watch the total of <code>order_total</code> fall. Before you deduplicate on the key, read the rows that step would remove: are they copies, or versions of an order with different values?' },
+    { widget: 'dup-lab', intro: 'Lantern’s full order export. Profile <code>order_id</code> first, then remove exact duplicates and watch the row count and the summary statistics of <code>order_total</code> change (the total is the count × the mean). Before you deduplicate on the key, read the rows that step would remove: are they copies, or versions of an order with different values?' },
     { widget: 'dup-impact', intro: 'How far do duplicates move the average? Set the value of the duplicated orders equal to the true average, then raise it, and watch which numbers are biased in each case.' },
   ],
 
@@ -314,6 +314,7 @@ export default {
     { what: 'Simple: reported average', value: 203.5 / 8, shown: 25.4375 },
     { what: 'Simple: reported average rounded', value: 203.5 / 8, shown: 25.44, tol: 0.005 },
     { what: 'Simple: true average', value: 132.5 / 6, shown: 22.08, tol: 0.005 },
+    { what: 'Simple: average of the two copies', value: (22 + 49) / 2, shown: 35.5 },
     // Challenging example: edit distances (independent recomputation)
     { what: 'Jhon vs John edit distance', value: lev('Jhon', 'John'), shown: 2 },
     { what: 'Jhon/John table: row h, column o (above+1, left+1, diagonal+1)', value: Math.min(1 + 1, 1 + 1, 0 + 1), shown: 1 },

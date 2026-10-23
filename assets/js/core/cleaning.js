@@ -457,6 +457,7 @@ export function ruleText(r) {
   switch (r.rule) {
     case 'unique': return `${r.column} has no repeated values`;
     case 'no-missing': return `${r.column} has no missing values`;
+    case 'missing-between': return `${r.column} has between ${r.min ?? 0} and ${r.max ?? 'any number of'} missing values`;
     case 'type': return `${r.column} is stored as ${r.type === 'number' ? 'numbers' : r.type === 'date' ? 'ISO dates (YYYY-MM-DD)' : r.type}`;
     case 'in-set': return `${r.column} is one of ${r.values.join(', ')}`;
     case 'range': {
@@ -494,6 +495,11 @@ export function evalRule(table, r, { loose = false } = {}) {
     case 'no-missing': {
       cells.forEach((c, i) => { if (isMissing(c)) bad.push(i); });
       return res(bad, bad.length ? `${plural(bad.length, 'value')} missing` : 'No missing values');
+    }
+    case 'missing-between': {   // e.g. "values that are genuinely unknown stay missing": guards against invented data
+      const n = cells.filter((c) => isMissing(c)).length;
+      const ok = (r.min == null || n >= r.min) && (r.max == null || n <= r.max);
+      return res([], `${plural(n, 'value')} missing${ok ? '' : ` (needs ${r.min ?? 0}–${r.max ?? '∞'})`}`, { fail: !ok });
     }
     case 'type': {
       const ok = r.type === 'number' ? (c) => Number.isFinite(plainNumber(c)) : r.type === 'date' ? isoDate : r.type === 'boolean' ? (c) => BOOL.has(cellText(c).trim().toLowerCase()) : () => true;

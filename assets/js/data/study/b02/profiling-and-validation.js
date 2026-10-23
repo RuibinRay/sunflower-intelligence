@@ -19,7 +19,7 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: 'Ana sends you the quarter’s order export with a request: the roaster who plans Lantern’s production wants the average number of packs per order. The quick route is to open the file and average the quantity column. The professional route starts with a question: what is actually in this file? To see the method on something small, take the ten-row extract below, invented for this lesson in the style of the export.' },
+    { case: 'Ana sends you the order export for March to June with a request: the roaster who plans Lantern’s production wants the average number of packs per order. The quick route is to open the file and average the quantity column. The professional route starts with a question: what is actually in this file? To see the method on something small, take the ten-row extract below, invented for this lesson in the style of the export.' },
     { table: {
       caption: 'A ten-row extract in the style of Lantern’s order export (fictional)',
       head: ['order_id', 'order_date', 'region', 'quantity', 'unit_price', 'rating'],
@@ -28,15 +28,15 @@ export default {
         ['5001', '2026-05-02', 'North', '2', '$14.00', '5'],
         ['5002', '2026-05-02', 'north', '1', '$26.00', '<i>blank</i>'],
         ['5003', '2026-05-03', 'South', '1', '$48.00', '4'],
-        ['5004', '2026-05-03', 'Coast', '3', '$14.00', '4'],
+        ['5004', '2026-05-03', 'East', '3', '$14.00', '4'],
         ['5005', '2026-05-04', 'South', '−1', '$16.00', '3'],
         ['5006', '2026-05-04', 'Nth', '1', '26,00', '<i>blank</i>'],
-        ['5007', '2026-05-05', 'Coast', '40', '$14.00', '5'],
-        ['5007', '2026-05-05', 'Coast', '4', '$14.00', '5'],
+        ['5007', '2026-05-05', 'East', '40', '$14.00', '5'],
+        ['5007', '2026-05-05', 'East', '4', '$14.00', '5'],
         ['5008', '2026-05-06', 'SOUTH', '2', '$15.00', '9'],
         ['5009', '2025-05-06', 'North', '1', '$48.00', '<i>blank</i>'],
       ],
-      note: 'Lantern’s regions are North, South and Coast; ratings run from 1 to 5 and are optional.',
+      note: 'Lantern’s delivery regions are North, South, East, West and Central; ratings run from 1 to 5 and are optional.',
     } },
     { h: 'What profiling is' },
     { p: '<g>Data profiling</g> is the systematic description of what a dataset actually contains: for each column, the type of its values, how many are missing, how many are distinct, what range they cover and how they are distributed; and across columns, whether values that should agree do. Abedjan, Golab and Naumann (2015) describe profiling as determining the metadata of a dataset, and divide it into three kinds of task: profiling single columns, profiling combinations of columns, and discovering dependencies such as keys. The aim is not the statistics themselves. It is to find out what the data is before you decide what to do with it.' },
@@ -58,7 +58,7 @@ export default {
       rows: [
         ['order_id', 'Number', '0', '9', '5001 to 5009', '10 rows but 9 IDs: 5007 appears twice, with different quantities'],
         ['order_date', 'Date', '0', '6', '6 May 2025 to 6 May 2026', 'One date a year before the rest'],
-        ['region', 'Text', '0', '6', 'North 2, north 1, Nth 1, South 2, SOUTH 1, Coast 3', 'Six spellings of three regions'],
+        ['region', 'Text', '0', '6', 'North 2, north 1, Nth 1, South 2, SOUTH 1, East 3', 'Six spellings of three regions'],
         ['quantity', 'Number', '0', '6', '−1 to 40; median 1.5; mean 5.4', 'A negative quantity; a mean pulled up by one large value'],
         ['unit_price', 'Text', '0', '6', '$14.00 to $48.00, and 26,00', 'Prices stored as text, one with a decimal comma'],
         ['rating', 'Number', '3', '4', '3 to 9', 'Blanks (allowed) and a 9 on a 1–5 scale'],
@@ -88,7 +88,7 @@ export default {
       rows: [
         ['Type', 'each value can be read as the declared type', 'unit_price is a number', 'check_in is a date'],
         ['Range', 'a value lies between limits', 'quantity is at least 1; rating is from 1 to 5', 'rate is above 0; nights is at least 1'],
-        ['Set membership', 'a value comes from an allowed list', 'region is North, South or Coast', 'status is one of the hotel’s status codes'],
+        ['Set membership', 'a value comes from an allowed list', 'region is North, South, East, West or Central', 'status is one of the hotel’s status codes'],
         ['Format', 'text matches a pattern', 'email has one @, text before it and a dot after it', 'booked_on is written YYYY-MM-DD'],
         ['Uniqueness', 'no two rows share a key', 'order_id is unique', 'booking_id is unique'],
         ['Completeness', 'a required value is present', 'email and customer_id are not blank', 'check_in, check_out and rate are not blank'],
@@ -117,7 +117,7 @@ export default {
       rows: [
         ['R1 order_id is unique', 'Uniqueness', 'Hard', 'both 5007 rows', '2 of 10 (20%)'],
         ['R2 order_date is in May 2026', 'Range', 'Hard', '5009', '1 of 10 (10%)'],
-        ['R3 region is North, South or Coast', 'Set membership', 'Hard', '5002, 5006, 5008', '3 of 10 (30%)'],
+        ['R3 region is North, South, East, West or Central', 'Set membership', 'Hard', '5002, 5006, 5008', '3 of 10 (30%)'],
         ['R4 quantity is a whole number of at least 1', 'Range', 'Hard', '5005', '1 of 10 (10%)'],
         ['R5 quantity is at most 20', 'Range', 'Soft', '5007 (first row)', '1 of 10 (10%)'],
         ['R6 unit_price, without its $ sign, is a number above 0', 'Type', 'Hard', '5006', '1 of 10 (10%)'],
@@ -192,7 +192,7 @@ export default {
       answer: 'Completeness is 75%; 50% of the addresses present fail the format rule; only 3 of the 8 orders (37.5%) have a usable address.',
       interpretation: 'The two measures point to different fixes. Blanks call for making email compulsory at checkout; malformed addresses call for a format check on the checkout form. Neither fix can prove that the remaining addresses belong to the right customers.' },
     { level: 'challenging', title: 'Validating Harborview bookings', fictional: true,
-      setup: 'Harborview applies five rules to the extract below. R1: check_out is after check_in (hard). R2: nights equals the number of days from check_in to check_out (hard). R3: rate is above 0 (hard). R4: rate is at most $600, the list price of the most expensive room (soft). R5: booking_id is unique (hard). Which rows fail which rules, what share of rows fail at least one hard rule, and what is the likely story behind each failure?',
+      setup: 'Harborview applies five rules to the extract below. R1: check_out is after check_in (hard). R2: nights equals the number of days from check_in to check_out (hard). R3: rate is above 0 (hard). R4: rate is at most $500, the list price of the most expensive room (soft). R5: booking_id is unique (hard). Which rows fail which rules, what share of rows fail at least one hard rule, and what is the likely story behind each failure?',
       table: {
         caption: 'Harborview booking extract (fictional)',
         head: ['booking_id', 'check_in', 'check_out', 'nights', 'rate ($)'],
@@ -293,7 +293,7 @@ export default {
     const inc = (p) => { const h = (n - 1) * p, lo = Math.floor(h), hi = Math.ceil(h); return s[lo] + (h - lo) * (s[hi] - s[lo]); };
     const exc = (p) => { const r = p * (n + 1), lo = Math.floor(r), hi = Math.ceil(r); return s[lo - 1] + (r - lo) * (s[hi - 1] - s[lo - 1]); };
     const sd = Math.sqrt(q.reduce((a, v) => a + (v - mean) ** 2, 0) / (n - 1));
-    const regions = ['North', 'north', 'South', 'Coast', 'South', 'Nth', 'Coast', 'Coast', 'SOUTH', 'North'];
+    const regions = ['North', 'north', 'South', 'East', 'South', 'Nth', 'East', 'East', 'SOUTH', 'North'];
     const days = (a, b) => (Date.parse(b) - Date.parse(a)) / 86400000;
     const hv = [['2026-08-03', '2026-08-05'], ['2026-08-03', '2026-08-06'], ['2026-08-04', '2026-08-02'], ['2026-08-04', '2026-08-07'], ['2026-08-05', '2026-08-06'], ['2026-08-05', '2026-08-08'], ['2026-08-03', '2026-08-06'], ['2026-08-30', '2026-09-02']].map(([a, b]) => days(a, b));
     const kept = [2, 1, 1, 3, 1, 4, 2];
@@ -303,7 +303,7 @@ export default {
       { what: 'Extract: distinct order dates', value: new Set(['2026-05-02', '2026-05-02', '2026-05-03', '2026-05-03', '2026-05-04', '2026-05-04', '2026-05-05', '2026-05-05', '2026-05-06', '2025-05-06']).size, shown: 6 },
       { what: 'Extract: distinct region spellings', value: new Set(regions).size, shown: 6 },
       { what: 'Extract: North rows', value: regions.filter((r) => r === 'North').length, shown: 2 },
-      { what: 'Extract: Coast rows', value: regions.filter((r) => r === 'Coast').length, shown: 3 },
+      { what: 'Extract: East rows', value: regions.filter((r) => r === 'East').length, shown: 3 },
       { what: 'Extract: South rows', value: regions.filter((r) => r === 'South').length, shown: 2 },
       { what: 'Extract: distinct quantities', value: new Set(q).size, shown: 6 },
       { what: 'Extract: distinct unit_price strings', value: new Set(['$14.00', '$26.00', '$48.00', '$14.00', '$16.00', '26,00', '$14.00', '$14.00', '$15.00', '$48.00']).size, shown: 6 },

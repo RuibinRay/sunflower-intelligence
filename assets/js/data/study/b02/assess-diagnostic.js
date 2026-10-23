@@ -9,7 +9,7 @@ export const items = [
   // ---------------------------------------------------------------- module 1: understanding your data
   {
     id: 'b02-dg-1', lesson: 'datasets-and-variables', type: 'mc', kind: 'conceptual',
-    prompt: 'Skylark Air, a fictional airline, exports its boarding file: one row per passenger per flight leg, 1,500 rows, no blank cells. booking_ref has 1,482 distinct values, passenger_id has 1,320, and the pair booking_ref + leg has 1,500. Which should be the primary key?',
+    prompt: 'Skylark Air, a fictional airline, exports its boarding file: one row per flight leg of each booking, where every booking is for a single passenger; 1,500 rows, no blank cells. booking_ref has 1,482 distinct values, passenger_id has 1,320, and the pair booking_ref + leg has 1,500. Which should be the primary key?',
     options: [
       'booking_ref + leg, a composite key',
       'booking_ref on its own',
@@ -22,7 +22,7 @@ export const items = [
       2: 'Passengers fly more than once, so passenger_id repeats (1,320 distinct values in 1,500 rows).',
       3: 'A row number identifies a position in the file, not a passenger on a leg, so it can never reveal a duplicate.',
     },
-    solution: 'A primary key must be unique and never blank. Compare each candidate’s distinct count with the row count: only booking_ref + leg has 1,500 distinct values in 1,500 rows, which matches the unit of observation (a passenger on one leg of one booking).',
+    solution: 'A primary key must be unique and never blank. Compare each candidate’s distinct count with the row count: only booking_ref + leg has 1,500 distinct values in 1,500 rows, which matches the unit of observation (one leg of one booking). It works because each booking has one passenger; if bookings could hold several passengers, the key would need passenger_id as well.',
   },
   {
     id: 'b02-dg-2', lesson: 'datasets-and-variables', type: 'classify', kind: 'conceptual',

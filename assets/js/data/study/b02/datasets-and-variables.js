@@ -19,7 +19,7 @@ export default {
 
   concept: [
     { p: 'This course treats data cleaning as a chain of decisions you can explain and repeat, not a bag of tricks: you will look before you change anything, and you will write down why. It starts where every analysis should, by describing exactly what a table contains.' },
-    { case: 'Lantern Coffee Co., Ana Lim’s coffee business, now sells beans and subscriptions through an online shop. At the end of the shop’s first quarter Ana asks a question that sounds simple: what is the average order worth? Three people give her three different answers from the same export, and all three did their arithmetic correctly. They disagreed about something more basic: what one row of the file represents.' },
+    { case: 'Lantern Coffee Co., Ana Lim’s coffee business, now sells beans and subscriptions through an online shop. After the shop’s first four months Ana asks a question that sounds simple: what is the average order worth? Three people give her three different answers from the same export, and all three did their arithmetic correctly. They disagreed about something more basic: what one row of the file represents.' },
     { h: 'Rows, columns and cells' },
     { p: 'A <g>dataset</g> is a collection of values organised so that each value describes one characteristic of one thing. In a table, the things are the rows and the characteristics are the columns. Each row is an <g>observation</g>, also called a record: everything recorded about one instance of what is being studied, such as one order, one booking or one student. Each column is a <g>variable</g>, also called a field or an attribute: one characteristic recorded for every observation, such as the order date or the quantity. A cell holds a single value: one variable for one observation.' },
     { p: 'Different disciplines use different words for the same parts, and you will meet all of them in documentation and software:' },
@@ -141,7 +141,7 @@ export default {
       align: ['l', 'l', 'r'],
       rows: [['House Blend', 'Jan', '120'], ['House Blend', 'Feb', '135'], ['House Blend', 'Mar', '150'], ['Ethiopia', 'Jan', '80'], ['Ethiopia', 'Feb', '76'], ['Ethiopia', 'Mar', '95']],
     } },
-    { p: 'Both tables hold the same six numbers. A table is in <g>wide format</g> when the values of a variable, here the month, are spread across several columns, and in <g>long format</g> when that variable has a column of its own and each combination of values has its own row. The terms are relative, which is why Wickham avoids them: a layout is only wider or longer than another layout of the same data.' },
+    { p: 'Both tables hold the same six numbers. A table is in <g>wide format</g> when the values of a variable, here the month, are spread across several columns, and in <g>long format</g> when that variable has a column of its own and each combination of values has its own row. Wickham (2014) avoids the terms as imprecise: they are relative, so a layout is only wider or longer than another layout of the same data.' },
     { p: 'Here the long layout is the tidy one, because month is a variable and so belongs in a column. Adding April adds two rows rather than a new column, and a chart or a model can use month directly. Wide layouts suit people reading a report, and some calculations that compare columns side by side. Converting between the two, called reshaping, is part of lesson 11.' },
   ],
 
