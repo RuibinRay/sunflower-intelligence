@@ -18,7 +18,7 @@ export const items = [
   },
   {
     id: 'm02-fn-2', lesson: 'marketing-mix', type: 'mc', kind: 'applied',
-    prompt: 'A colleague proposes launching Lantern’s Classic blend (taste score 6, the same as Arcadia’s) at $3.79, Summit Brew’s price, in natural and specialty grocers and Lantern’s own cafés and online shop, with in-store sampling to show off the taste. Which change would do most to make this mix consistent?',
+    prompt: 'A colleague proposes launching Lantern’s Classic blend (taste score 6, the same as Arcadia’s) at $3.79, Summit Brew’s price, in natural and specialty grocers and Lantern’s own cafés and online shop, with in-store sampling to show off the taste. Where is the misfit in this mix, and how should it be fixed?',
     options: [
       'Make the product and the price agree: use a better liquid to justify a price near Summit’s, or price the Classic blend near Arcadia’s $2.89.',
       'Add convenience stores, so that more shoppers can find the can.',
@@ -54,14 +54,14 @@ export const items = [
   // ---------------------------------------------------------------- product decisions
   {
     id: 'm02-fn-4', lesson: 'product-decisions', type: 'num', kind: 'numerical',
-    prompt: 'Suppose Lantern sold in supermarkets (listing fee $9,000 per flavour per year), convenience stores ($4,000) and natural and specialty grocers ($2,000). Three flavours instead of one would also add $12,000 a year of production runs, labels and printing plates. If each extra can sold because of the wider range earned Lantern $1.50 of gross margin on average (a hypothetical figure), how many extra cans a year would the range have to sell to pay for its extra fixed costs?',
-    answer: 28000, check: () => ((3 - 1) * (9000 + 4000 + 2000) + 12000) / 1.5, unit: 'cans', places: 0, tol: 0.5,
+    prompt: 'Lantern sells its Single-origin can ($0.74 a can) at $3.49 in natural and specialty grocers, which keep 38% of the shelf price. It is considering the Organic single-origin liquid ($0.88 a can) at the same shelf price, because natural-grocer shoppers pay for provenance. By what percentage would its natural-grocer volume have to rise for the Organic can to earn the same total gross margin there? Give two decimal places.',
+    answer: 10.91, check: () => { const old = 3.49 * (1 - 0.38) - 0.74; const neu = 3.49 * (1 - 0.38) - 0.88; return (old / neu - 1) * 100; }, unit: '%', places: 2, tol: 0.05,
     wrong: [
-      { value: 20000, say: 'You counted the extra listing fees ($30,000) but not the $12,000 of production cost the range adds.' },
-      { value: 38000, say: 'You charged all three flavours’ listing fees. One flavour is listed anyway; the range adds only two more in each channel.' },
-      { value: 8000, say: 'That covers only the $12,000 range cost. Each extra flavour also pays a listing fee in every retail channel.' },
+      { value: 9.83, say: 'You divided the $0.14 extra cost by the old gross margin. The cans that must make up the difference each earn the new, lower margin of $1.2838.' },
+      { value: 18.92, say: 'That is how much more the Organic liquid costs (0.14 ÷ 0.74). Volume has to make up the fall in gross margin per can, not the rise in cost.' },
+      { value: 4.01, say: 'You compared the extra cost with the shelf price. Lantern’s gross margin per can is the base: 3.49 × 0.62 − cost.' },
     ],
-    solution: 'Extra fixed cost = (3 − 1) flavours × (9,000 + 4,000 + 2,000) + 12,000 = 30,000 + 12,000 = $42,000 a year. Extra cans needed = 42,000 ÷ 1.50 = 28,000 a year, before any cannibalisation of the Original flavour.',
+    solution: 'Gross margin per can: Single-origin 3.49 × 0.62 − 0.74 = $1.4238; Organic 3.49 × 0.62 − 0.88 = $1.2838. To earn the same total, volume must rise by 1.4238 ÷ 1.2838 − 1 = 0.14 ÷ 1.2838 ≈ 10.91%. A better liquid pays at the same price only if it sells about 11% more cans, or if it supports a higher price.',
   },
   {
     id: 'm02-fn-5', lesson: 'product-decisions', type: 'classify', kind: 'conceptual',

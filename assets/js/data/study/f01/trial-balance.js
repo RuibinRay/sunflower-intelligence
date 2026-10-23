@@ -93,7 +93,7 @@ export default {
       ],
     } },
     { h: 'Using the difference to find the error' },
-    { p: 'When the totals disagree, work through the checks in a fixed order, cheapest first. The sequence below follows the one in Edwards and Hermanson’s textbook (see the references), with one extra check, step 2, added:' },
+    { p: 'When the totals disagree, work through the checks in a fixed order, cheapest first. The sequence below follows the one in Edwards and Hermanson’s textbook (see the references), with one check, step 2, moved forward from its later list of causes:' },
     { ol: [
       'Re-add both columns. Addition slips are common and quick to rule out.',
       'Look for an amount equal to the difference: a balance missing from the list, or a journal line with a blank posting reference.',

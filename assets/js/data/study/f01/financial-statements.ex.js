@@ -240,7 +240,7 @@ export const check = [
     answer: 7300, check: () => 9500 - (3200 - 15000 + 14000), unit: '$', places: 0,
     wrong: [
       { value: 11700, say: 'Cash rose by 2,200 during the year, so the start was lower than the end: subtract the change.' },
-      { value: 41700, say: 'Investing used cash: treat the $15,000 as negative. The net change is 3,200 − 15,000 + 14,000 = 2,200.' },
+      { value: -22700, say: 'Investing used cash: treat the $15,000 as negative. The net change is 3,200 − 15,000 + 14,000 = 2,200.' },
     ],
     solution: 'Net change = 3,200 − 15,000 + 14,000 = +2,200. Beginning cash = ending cash − change = 9,500 − 2,200 = $7,300.',
   },

@@ -95,7 +95,7 @@ export const independent = [
     answer: [3, 1, 2, 5, 4, 0],
     feedback: {
       2: 'Cash goes down and the van goes up by the same amount: one asset becomes another.',
-      3: 'Nothing is paid yet, so assets don’t change. Lantern owes more (a liability) and has used the electricity (an expense, which lowers equity).',
+      3: 'Nothing is paid yet, so assets don’t change. The business owes more (a liability) and has used the electricity (an expense, which lowers equity).',
       4: 'A dividend sends cash to the owners and lowers equity. It is not an expense, but it still reduces equity.',
     },
     solution: 'Paying a supplier: assets down, liabilities down. Issuing stock: assets up, equity up. Van for cash: one asset up, another down. Electricity bill: liabilities up, equity down (an expense). Dividend: assets down, equity down. Bank loan: assets up, liabilities up.',
@@ -195,7 +195,7 @@ export const check = [
     id: 'f01-eq-k5', type: 'num', kind: 'applied',
     prompt: 'A café has liabilities of $90,000 and equity of $50,000. Its bank allows total liabilities of at most 2 times equity. How much more can the café borrow, assuming the loan doesn’t change equity?',
     answer: 10000, check: () => 2 * 50000 - 90000, unit: '$', places: 0, tol: 0.5,
-    wrong: [{ value: 100000, say: 'That is the bank’s limit on total liabilities. The café already owes $90,000 of it.' }, { value: 40000, say: 'Assets don’t enter the bank’s condition here: compare liabilities with twice equity.' }],
+    wrong: [{ value: 100000, say: 'That is the bank’s limit on total liabilities. The café already owes $90,000 of it.' }, { value: 40000, say: 'Whether you got this from assets or from 90,000 − 50,000, the method is off: assets don’t enter the bank’s condition here. Compare liabilities with twice equity.' }],
     solution: 'The limit is 2 × 50,000 = $100,000 of liabilities. The café owes $90,000, so it can borrow at most 100,000 − 90,000 = $10,000. Borrowing raises assets and liabilities equally and leaves equity unchanged.',
   },
   {

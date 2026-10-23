@@ -31,7 +31,7 @@ export const CASES = {
     name: 'Lantern Coffee Co.',
     line: 'A fictional coffee business founded by Ana Lim. It starts as a catering and barista-training service, opens an online shop for beans, then launches a canned cold brew.',
   },
-  brightwater: { name: 'Brightwater Bike Repair', line: 'A fictional one-person bicycle repair shop used for the F01 project.' },
+  brightwater: { name: 'Brightwater Bike Repair', line: 'A fictional small bicycle repair shop used for the F01 project.' },
   harborview: { name: 'Harborview Hotel', line: 'A fictional 80-room hotel whose booking records need cleaning.' },
   northfield: { name: 'Northfield University', line: 'A fictional university analysing student records.' },
 };
@@ -49,7 +49,7 @@ const ALL = [
       'Analyse a business transaction into its effect on assets, liabilities and equity.',
       'Record transactions as balanced journal entries using the debit and credit rules.',
       'Post entries to the general ledger and prepare a trial balance, and know which errors a trial balance cannot catch.',
-      'Explain the difference between accrual and cash accounting and record the four kinds of adjusting entry.',
+      'Explain the difference between accrual and cash accounting and record the adjusting entries for deferrals, accruals and depreciation.',
       'Prepare an income statement, statement of changes in equity and balance sheet from an adjusted trial balance.',
       'Close the books and complete the accounting cycle for a small business.',
     ],

@@ -8,7 +8,7 @@
 // is met (if it has one) and every question has been answered. The project is finished when every stage is done
 // and the student has marked it against the rubric. Projects never change mastery.
 import { initSite } from '../core/site.js?v=6';
-import { $, h } from '../core/dom.js?v=6';
+import { $, h, debounce } from '../core/dom.js?v=6';
 import * as P from '../study/progress.js?v=6';
 import { practiceCard, loadCharts } from '../study/exercises.js?v=6';
 import { initOutline, paintOutline, storageWarning } from '../study/common.js?v=6';
@@ -82,11 +82,13 @@ if (!PJ) {
   paintNav();
 }
 
+/** Keep the simulator's results for the write-up: a plain copy (numbers, strings, nested objects), rounded, size-capped. */
 function summarise(results) {
   if (!results || typeof results !== 'object') return null;
-  const out = {};
-  for (const [k, v] of Object.entries(results)) if (typeof v === 'number' || typeof v === 'string') out[k] = v;
-  return out;
+  try {
+    const text = JSON.stringify(results, (k, v) => (typeof v === 'number' ? Math.round(v * 1e4) / 1e4 : typeof v === 'function' ? undefined : v));
+    return text.length <= 40000 ? JSON.parse(text) : { note: 'Results too large to keep; the plan is saved.' };
+  } catch { return null; }
 }
 
 async function mountTool(el, tool, cb) {
@@ -104,7 +106,8 @@ async function mountTool(el, tool, cb) {
       const { mountSimulator } = await import('../study/labs/mix-ui.js?v=6');
       el.replaceChildren();
       const { kind, ...opts } = tool;
-      mountSimulator(el, { ...opts, onChange: (plan, results) => cb.plan(plan, results) });
+      const keep = debounce((plan, results) => cb.plan(plan, results), 600);   // saving on every slider step would be wasteful
+      mountSimulator(el, { ...opts, onChange: (plan, results) => keep(plan, results) });
     } else throw new Error(`unknown tool ${tool.kind}`);
   } catch (e) {
     console.error(e);

@@ -26,7 +26,7 @@ export const widgets = {
       } else if (corrected <= 0) {
         note = `The error is at least as large as the reported profit, so correcting it turns a reported profit into ${corrected === 0 ? 'a break-even result' : 'a loss'}. That is material whatever the percentage: it changes the basic story the statements tell.`;
       } else if (pct >= 5) {
-        note = `At ${pctText(pct)} of reported profit the error is above a 5% rule of thumb, so start from the presumption that it is material and correct it. Size is only the first question; an error’s nature can make even a small one material.`;
+        note = `At ${pctText(pct)} of reported profit the error is above a 5% rule of thumb, so treat it as likely to be material and correct it. Size is only the first question; an error’s nature can make even a small one material.`;
       } else {
         note = `At ${pctText(pct)} of reported profit the error is below a 5% rule of thumb. That suggests, as a starting point only, that it may be immaterial. Now ask about its nature: does it mask a trend, decide whether a loan agreement is met, or conceal something unlawful? If so, it is material anyway.`;
       }
@@ -294,7 +294,7 @@ export const check = [
       { value: 8.11, say: 'You divided by the corrected net income ($1,480). Measure the error against the net income as reported.' },
       { value: 0.075, say: 'That is the decimal ratio. Enter it as a percentage: 0.075 is 7.5%.' },
     ],
-    solution: '120 ÷ 1,600 = 0.075, or 7.5%. That is above a 5% rule of thumb, so Lantern should start from the presumption that the error is material and correct it; net income becomes 1,600 − 120 = $1,480.',
+    solution: '120 ÷ 1,600 = 0.075, or 7.5%. That is above a 5% rule of thumb, so Lantern should treat the error as likely to be material and correct it; net income becomes 1,600 − 120 = $1,480.',
   },
   {
     id: 'f01-wia-k3', type: 'classify', kind: 'applied',

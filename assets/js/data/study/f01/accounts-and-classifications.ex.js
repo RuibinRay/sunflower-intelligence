@@ -294,7 +294,7 @@ export const check = [
     feedback: {
       1: 'Sales tax collected from customers is owed to the government: a liability.',
       4: 'A loan is a liability whatever its length; within the 200s it would go among the noncurrent liabilities, near Notes Payable (250).',
-      5: 'Additional paid-in capital is money shareholders paid for their shares beyond its par value: equity, alongside Common Stock.',
+      5: 'Additional paid-in capital is money shareholders paid for their shares beyond the shares’ par value: equity, alongside Common Stock.',
     },
     solution: 'Prepaid Software Licences: 100s (asset). Sales Tax Payable: 200s (liability). Workshop Materials Expense: 500s. Consulting Revenue: 400s. Van Loan Payable: 200s (liability, noncurrent except for any part due within a year). Additional Paid-in Capital: 300s (equity).',
   },

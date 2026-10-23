@@ -110,7 +110,7 @@ export default {
       ],
     } },
     { h: 'Lantern’s March, journalised' },
-    { p: 'Here are five more of Lantern’s March transactions in general journal form. Read each one against its source document and the five steps before reading the comments below.' },
+    { p: 'Here are five of Lantern’s March transactions in general journal form, starting with the 1 March share issue you have just seen. Read each one against its source document and the five steps before reading the comments below.' },
     { journal: {
       caption: 'Selected general journal entries, March 2026 (fictional)',
       entries: [
@@ -127,7 +127,7 @@ export default {
       '<b>20 March</b>: the baristas’ work for 1–15 March has been used up, so its cost is an expense, paid in cash.',
       '<b>30 March</b>: a dividend reduces equity, so it is a debit, but to Dividends, not to an expense account. It distributes profit; it is not a cost of earning it.',
     ] },
-    { p: 'The other nine March transactions are yours to journalise, in the exercises and in the drill below.' },
+    { p: 'The remaining eight March transactions are yours to journalise, in the exercises and in the drill below.' },
   ],
 
   theory: [
@@ -281,5 +281,8 @@ export default {
     { what: 'Profit understated if the policy were expensed in March', value: 1800 - 1800 / 12, shown: 1650 },
     { what: 'Months of cover left after March', value: 12 - 1, shown: 11 },
     { what: 'Unrecorded promise: hotel contract', value: 5000, shown: 5000 },
-    { what: 'Deposit wrongly credited to revenue overstates profit by', value: 2400, shown: 2400 },  ],
+    { what: 'Deposit wrongly credited to revenue overstates profit by', value: 2400, shown: 2400 },
+    { what: 'Selected entries shown in general journal form (m1, m6, m8, m11, m14)', value: ['m1', 'm6', 'm8', 'm11', 'm14'].length, shown: 5 },
+    { what: 'March transactions not yet shown (15 less m1, m2, m3, m6, m8, m11, m14)', value: 15 - new Set(['m1', 'm2', 'm3', 'm6', 'm8', 'm11', 'm14']).size, shown: 8 },
+  ],
 };

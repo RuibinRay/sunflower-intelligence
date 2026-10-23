@@ -20,7 +20,7 @@ export const items = [
   {
     id: 'f01-fn-2', lesson: 'what-is-accounting', type: 'fill', kind: 'conceptual',
     prompt: 'Complete the description of who sets the rules and what makes information useful.',
-    text: 'In the United States the standards known as US GAAP are written by the [[0]]; most other countries use IFRS, written by the [[1]]. Reports prepared for a business’s own managers belong to [[2]] accounting and follow no such external standards. Information is useful only if it has both fundamental qualitative characteristics: [[3]] and faithful representation.',
+    text: 'In the United States the standards known as US GAAP are written by the [[0]]; many other jurisdictions use IFRS, written by the [[1]]. Reports prepared for a business’s own managers belong to [[2]] accounting and follow no such external standards. Information is useful only if it has both fundamental qualitative characteristics: [[3]] and faithful representation.',
     blanks: [
       { options: ['SEC', 'FASB', 'IRS', 'IASB'], answer: 1 },
       { options: ['FASB', 'AICPA', 'IASB', 'SEC'], answer: 2 },

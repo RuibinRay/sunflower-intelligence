@@ -71,7 +71,7 @@ export const guided = [
       { id: 'f01-dc-g2-s2', type: 'num', prompt: 'What is the total of the credits to Cash?',
         answer: 6150, check: () => 4000 + 1800 + 350, unit: '$', places: 0, tol: 0.5,
         hints: ['Credits to an asset are decreases: money going out.', 'Three amounts went out: the equipment, the insurance and the advertising.'],
-        wrong: [{ value: 16150, say: 'You included the whole $12,000 cost of the equipment. Only the $4,000 paid in cash left the Cash account; the other $8,000 is owed to the supplier.' }] },
+        wrong: [{ value: 14150, say: 'You included the whole $12,000 cost of the equipment. Only the $4,000 paid in cash left the Cash account; the other $8,000 is owed to the supplier.' }] },
       { id: 'f01-dc-g2-s3', type: 'num', prompt: 'What is the balance of Cash on 15 March?',
         answer: 27750, check: () => (20000 + 10000 + 2400 + 1500) - (4000 + 1800 + 350), unit: '$', places: 0, tol: 0.5,
         hints: ['Subtract the smaller total from the larger.', '33,900 − 6,150.'],
@@ -275,7 +275,7 @@ export const check = [
     ],
     answer: 0,
     feedback: {
-      1: 'The $45 went to the café, not to the bank. The bank simply owes you less.',
+      1: 'The $45 went to the café, not to the bank. The bank now owes you less.',
       2: 'Your deposit is the bank’s liability, not its asset: it is money the bank owes you. Liabilities decrease with debits.',
       3: 'The café payment is your spending, not the bank’s. In your own books it is an expense and a credit to Cash.',
     },

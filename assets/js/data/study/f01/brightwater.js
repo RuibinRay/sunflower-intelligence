@@ -17,7 +17,7 @@ export const CHART = [
   { no: 210, name: 'Wages Payable', type: 'liability', group: 'current' },
   { no: 215, name: 'Interest Payable', type: 'liability', group: 'current' },
   { no: 220, name: 'Unearned Revenue', type: 'liability', group: 'current' },
-  { no: 250, name: 'Notes Payable', type: 'liability', group: 'noncurrent' },
+  { no: 250, name: 'Notes Payable', type: 'liability', group: 'current' },   // the one-year note falls due on 1 July 2027: current at 31 July 2026
   { no: 301, name: 'Common Stock', type: 'equity' },
   { no: 320, name: 'Retained Earnings', type: 'equity' },
   { no: 330, name: 'Dividends', type: 'dividends' },
@@ -44,12 +44,12 @@ export const JULY = [
   { id: 'b8', date: '2026-07-12', text: 'A cycling club pays $1,800 in advance for tune-ups of its 30 bikes ($60 each), to be done in July and August.', lines: [{ acct: 'Cash', dr: 1800 }, { acct: 'Unearned Revenue', cr: 1800 }], cash: 'operating' },
   { id: 'b9', date: '2026-07-15', text: 'Invoices Swift Courier Co. $1,350 for repairs to its delivery bikes, due in 30 days.', lines: [{ acct: 'Accounts Receivable', dr: 1350 }, { acct: 'Repair Revenue', cr: 1350 }] },
   { id: 'b10', date: '2026-07-15', text: 'Pays the part-time mechanic $960 in wages for 1–15 July.', lines: [{ acct: 'Wages Expense', dr: 960 }, { acct: 'Cash', cr: 960 }], cash: 'operating' },
-  { id: 'b11', date: '2026-07-18', text: 'Pays $1,500 of the $3,000 owed for the equipment.', lines: [{ acct: 'Accounts Payable', dr: 1500 }, { acct: 'Cash', cr: 1500 }], cash: 'operating' },
+  { id: 'b11', date: '2026-07-18', text: 'Pays $1,500 of the $3,000 owed for the equipment.', lines: [{ acct: 'Accounts Payable', dr: 1500 }, { acct: 'Cash', cr: 1500 }], cash: 'investing' },   // paid soon after purchase: investing (ASC 230-10-45-13)
   { id: 'b12', date: '2026-07-24', text: 'Receives $800 from Swift Courier Co. toward its invoice.', lines: [{ acct: 'Cash', dr: 800 }, { acct: 'Accounts Receivable', cr: 800 }], cash: 'operating' },
   { id: 'b13', date: '2026-07-28', text: 'Pays the July electricity and water bill, $185.', lines: [{ acct: 'Utilities Expense', dr: 185 }, { acct: 'Cash', cr: 185 }], cash: 'operating' },
   { id: 'b14', date: '2026-07-29', text: 'Repairs bikes for regular customers on account, $640.', lines: [{ acct: 'Accounts Receivable', dr: 640 }, { acct: 'Repair Revenue', cr: 640 }] },
   { id: 'b15', date: '2026-07-31', text: 'Repairs bikes for walk-in customers, who pay $1,060 in cash.', lines: [{ acct: 'Cash', dr: 1060 }, { acct: 'Repair Revenue', cr: 1060 }], cash: 'operating' },
-  { id: 'b16', date: '2026-07-31', text: 'Pays a $400 cash dividend to Mateo, the only shareholder.', lines: [{ acct: 'Dividends', dr: 400 }, { acct: 'Cash', cr: 400 }], cash: 'financing' },
+  { id: 'b16', date: '2026-07-31', text: 'Brightwater declares and pays a $400 cash dividend to Mateo, its only shareholder.', lines: [{ acct: 'Dividends', dr: 400 }, { acct: 'Cash', cr: 400 }], cash: 'financing' },
 ];
 
 /** What Mateo knows on 31 July, from which the adjustments are made. */
@@ -65,13 +65,13 @@ export const JULY_FACTS = [
 ];
 
 export const JULY_ADJUSTMENTS = [
-  { id: 'ba1', date: '2026-07-31', text: 'Rent used in July: $3,600 ÷ 3 months.', lines: [{ acct: 'Rent Expense', dr: 1200 }, { acct: 'Prepaid Rent', cr: 1200 }] },
-  { id: 'ba2', date: '2026-07-31', text: 'Insurance expired in July: $720 ÷ 12 months.', lines: [{ acct: 'Insurance Expense', dr: 60 }, { acct: 'Prepaid Insurance', cr: 60 }] },
-  { id: 'ba3', date: '2026-07-31', text: 'Supplies used: $1,250 bought − $430 on hand.', lines: [{ acct: 'Supplies Expense', dr: 820 }, { acct: 'Supplies', cr: 820 }] },
-  { id: 'ba4', date: '2026-07-31', text: 'Depreciation for July: $4,800 ÷ 60 months.', lines: [{ acct: 'Depreciation Expense', dr: 80 }, { acct: 'Accumulated Depreciation—Equipment', cr: 80 }] },
-  { id: 'ba5', date: '2026-07-31', text: 'Tune-ups earned: 12 bikes × $60.', lines: [{ acct: 'Unearned Revenue', dr: 720 }, { acct: 'Repair Revenue', cr: 720 }] },
+  { id: 'ba1', date: '2026-07-31', text: 'Rent used in July.', lines: [{ acct: 'Rent Expense', dr: 1200 }, { acct: 'Prepaid Rent', cr: 1200 }] },
+  { id: 'ba2', date: '2026-07-31', text: 'Insurance expired in July.', lines: [{ acct: 'Insurance Expense', dr: 60 }, { acct: 'Prepaid Insurance', cr: 60 }] },
+  { id: 'ba3', date: '2026-07-31', text: 'Parts and supplies used in July.', lines: [{ acct: 'Supplies Expense', dr: 820 }, { acct: 'Supplies', cr: 820 }] },
+  { id: 'ba4', date: '2026-07-31', text: 'Depreciation of the equipment for July.', lines: [{ acct: 'Depreciation Expense', dr: 80 }, { acct: 'Accumulated Depreciation—Equipment', cr: 80 }] },
+  { id: 'ba5', date: '2026-07-31', text: 'Tune-ups done for the cycling club.', lines: [{ acct: 'Unearned Revenue', dr: 720 }, { acct: 'Repair Revenue', cr: 720 }] },
   { id: 'ba6', date: '2026-07-31', text: 'Wages earned but not yet paid, 16–31 July.', lines: [{ acct: 'Wages Expense', dr: 960 }, { acct: 'Wages Payable', cr: 960 }] },
-  { id: 'ba7', date: '2026-07-31', text: 'Interest for July: $5,000 × 6% ÷ 12.', lines: [{ acct: 'Interest Expense', dr: 25 }, { acct: 'Interest Payable', cr: 25 }] },
+  { id: 'ba7', date: '2026-07-31', text: 'Interest built up on the note in July.', lines: [{ acct: 'Interest Expense', dr: 25 }, { acct: 'Interest Payable', cr: 25 }] },
   { id: 'ba8', date: '2026-07-31', text: 'Repairs done but not yet invoiced.', lines: [{ acct: 'Accounts Receivable', dr: 310 }, { acct: 'Repair Revenue', cr: 310 }] },
 ];
 
