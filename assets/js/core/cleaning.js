@@ -8,8 +8,8 @@
 // Statistics: SD is the sample SD (n − 1); quartiles use linear interpolation between order statistics (R type 7,
 // the same as Excel's QUARTILE.INC and NumPy's default); skewness is the adjusted Fisher–Pearson coefficient G1
 // (as Excel's SKEW and pandas).
-import * as S from './stats.js?v=8';
-import { mulberry32 } from './rng.js?v=8';
+import * as S from './stats.js?v=9';
+import { mulberry32 } from './rng.js?v=9';
 
 // ================================================================ constants
 export const OPS = ['dedupe', 'dedupe-key', 'trim', 'case', 'map', 'to-number', 'to-date', 'fill', 'drop-missing', 'flag-missing', 'validate', 'outliers', 'transform', 'scale', 'encode', 'derive', 'rename', 'drop-column'];

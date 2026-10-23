@@ -2,11 +2,11 @@
 // the headline result, the working, a plain-language note and an optional chart update as they change.
 //   { type: 'formula', title, intro, inputs: [{ id, label, min, max, step, value, fmt: 'money'|'pct'|'int'|'num', unit, digits }],
 //     compute: (v) => ({ headline: { label, value }, rows: [[label, value]], note, chart?, error? }) }
-import { h } from '../../core/dom.js?v=8';
-import * as F from '../../core/format.js?v=8';
-import { fillRange } from '../../core/site.js?v=8';
-import { onResize } from '../../core/dom.js?v=8';
-import { drawChart } from './chart.js?v=8';
+import { h } from '../../core/dom.js?v=9';
+import * as F from '../../core/format.js?v=9';
+import { fillRange } from '../../core/site.js?v=9';
+import { onResize } from '../../core/dom.js?v=9';
+import { drawChart } from './chart.js?v=9';
 
 function digitsOf(inp) { return inp.digits ?? (inp.step < 1 ? Math.min(3, Math.ceil(-Math.log10(inp.step) - 1e-9)) : 0); }
 function show(inp, v) {

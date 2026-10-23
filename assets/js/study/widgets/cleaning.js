@@ -6,7 +6,7 @@
 //           prepare: [steps applied before the student starts], export: true to show the export panel,
 //           advice: false to hide each issue's detail line and “Why it matters” panel (they hint at fixes) }
 // ctx: { id, report(event, detail) } — events: 'step' { op, steps }, 'goals' { met, total }, 'complete' { goals }.
-import { mountLab } from '../labs/cleaning-ui.js?v=8';
+import { mountLab } from '../labs/cleaning-ui.js?v=9';
 
 export async function mount(el, config = {}, ctx = {}) {
   el.classList.add('cl-widget');

@@ -8,7 +8,7 @@ export default {
   slug: 'data-types',
   title: 'Types of data',
   blurb: 'Before you can analyse data you have to say what kind it is: a table or free text, what one row describes, which columns are categories and which are amounts, how the data runs through time and who collected it. Each answer limits what you can sensibly calculate.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish structured, semi-structured and unstructured data, and explain what has to happen before unstructured data can be counted.',
     'Identify the observations, variables and unit of observation of a dataset.',

@@ -31,7 +31,7 @@ export default {
   slug: 'four-kinds-of-analytics',
   title: 'The four kinds of analytics',
   blurb: 'Analytics turns data into better decisions. Learn the four questions it answers (what happened, why, what will happen and what should we do), what each needs and produces, where machine learning fits, and the five-step process that runs from a business question to a measured result.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Define business analytics and explain how data, people and decisions work together in it.',
     'Distinguish descriptive, diagnostic, predictive and prescriptive analytics by the question each answers, the methods it uses and what it produces.',

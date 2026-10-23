@@ -22,7 +22,7 @@ export default {
   slug: 'interpreting-results',
   title: 'Interpreting results: charts, comparisons and causes',
   blurb: 'Numbers don’t interpret themselves. Learn to read a chart critically, to compare like with like, to tell correlation from causation, to spot Simpson’s paradox and regression to the mean, to diagnose why a KPI moved, and to write a finding that says how sure you are.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Read a chart critically, checking its axes, where its vertical axis starts, its scale and its encoding, and calculate how much a truncated axis exaggerates a change.',
     'Compare like with like, adjusting for period length, base effects and seasonality.',

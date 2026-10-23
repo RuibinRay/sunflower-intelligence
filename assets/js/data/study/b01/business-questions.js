@@ -18,7 +18,7 @@ export default {
   slug: 'business-questions',
   title: 'Business questions and measurable objectives',
   blurb: 'Most analyses that fail, fail at the first step: the question. Learn to turn a vague worry into a decision-focused question, a SMART objective and testable hypotheses, and to pin down exactly what counts, for whom, over what period and compared with what, before you open any data.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish a vague question from a decision-focused business question, and rewrite one as the other.',
     'Write a SMART objective, and test an objective against the five criteria.',

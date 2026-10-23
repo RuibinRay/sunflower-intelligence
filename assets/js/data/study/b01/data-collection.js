@@ -7,7 +7,7 @@ export default {
   slug: 'data-collection',
   title: 'Collecting data: sources, samples and bias',
   blurb: 'How data was collected decides what it can show. Learn the main sources of business data, how a sample stands in for a population, the four biases that most often mislead (sampling, non-response, survivorship and measurement), how to word a survey question, and the basics of consent and privacy.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish the main sources of business data (transactional and web data, surveys, experiments, observation, third-party and public data) and choose one that fits a question.',
     'Identify the population, sampling frame and sample of a study, and distinguish random from convenience sampling.',

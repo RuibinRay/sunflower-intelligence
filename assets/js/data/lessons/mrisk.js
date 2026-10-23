@@ -1,8 +1,8 @@
 // Lesson: market risk — Value at Risk, Expected Shortfall and backtesting.
 // `checks` recompute every number printed in the worked example; tests/lessons.test.mjs compares them.
-import * as F from '../../core/format.js?v=8';
-import { normQuantile } from '../../core/stats.js?v=8';
-import { kupiec, trafficLight } from '../../core/risk.js?v=8';
+import * as F from '../../core/format.js?v=9';
+import { normQuantile } from '../../core/stats.js?v=9';
+import { kupiec, trafficLight } from '../../core/risk.js?v=9';
 
 const phi = (z) => Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI);
 /** Normal VaR and ES as fractions of value, with a zero average return, over h days. */

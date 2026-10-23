@@ -11,7 +11,7 @@ export default {
   slug: 'data-quality',
   title: 'Data quality: is the data fit for the question?',
   blurb: 'Data can be wrong in different ways, and each way distorts a different number. Learn the six dimensions of data quality, how duplicates, gaps, invalid values, inconsistent codes and time zones move a metric, how to judge whether data is good enough for a purpose, and who is responsible for its quality. B02 then teaches the repairs.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Define the six dimensions of data quality (accuracy, completeness, consistency, validity, timeliness and uniqueness) and give a business consequence of a failure in each.',
     'Explain how duplicates, missing values, invalid values, inconsistent codes and time zones distort a metric, and calculate the size of the distortion in simple cases.',

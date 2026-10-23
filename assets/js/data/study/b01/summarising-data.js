@@ -24,7 +24,7 @@ export default {
   slug: 'summarising-data',
   title: 'Summarising data: changes, averages and spread',
   blurb: 'Most business numbers are summaries: a share, a change, an average, a growth rate. Learn to calculate each one correctly, to say percentage points when you mean them, to choose between the mean and the median, to describe spread, to weight an average properly and to round without misleading.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate proportions, percentages, absolute changes and percentage changes, and name the base of each.',
     'Distinguish a percentage-point change from a percentage change and calculate both.',

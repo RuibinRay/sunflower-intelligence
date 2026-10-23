@@ -15,10 +15,10 @@
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}try{if(localStorage.getItem('si:outline')==='closed')document.documentElement.classList.add('outline-closed')}catch(e){}</script>
   <link rel="preload" href="../../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../../../../assets/css/base.css?v=8">
-  <link rel="stylesheet" href="../../../../assets/css/rooms.css?v=8">
-  <link rel="stylesheet" href="../../../../assets/css/study.css?v=8">
-  <link rel="stylesheet" href="../../../../assets/vendor/katex/katex.min.css?v=8">
+  <link rel="stylesheet" href="../../../../assets/css/base.css?v=9">
+  <link rel="stylesheet" href="../../../../assets/css/rooms.css?v=9">
+  <link rel="stylesheet" href="../../../../assets/css/study.css?v=9">
+  <link rel="stylesheet" href="../../../../assets/vendor/katex/katex.min.css?v=9">
 </head>
 <body class="room room--learn room--sub room--study school--analytics page--lesson" data-root="../../../../" data-course="b01" data-lesson="interpreting-results" data-module="3">
   <a class="skip-link" href="#ledger">Skip to the lesson</a>
@@ -143,7 +143,7 @@
 <p>Lantern’s September was its worst month for orders, and October was better. Some of that recovery may be regression to the mean, some may be the 5 October fix. A comparison group, the app, helps to tell them apart.</p>
 <h3>Small samples and noise</h3>
 <p>Every rate built on few cases is noisy, because <a class="g-term" href="../../../../learn/glossary/#g-sampling-error">sampling error</a> shrinks only as the number of cases grows. A product page with 3 orders from 40 visits converts at 7.5%; another with 2 from 40 converts at 5.0%. The 2.5-point gap is one order and means almost nothing.</p>
-<p>Survey researchers make the same point formally: Pew Research Center notes that estimates for subgroups have larger margins of error because they rest on fewer cases, and that a lead of one figure over another is less certain than either figure alone. Lantern’s September survey drew 79 responses; any conclusion about a subgroup, such as app buyers, rests on fewer still. B04 shows how to put a number on this uncertainty with confidence intervals; for now, report the counts and be cautious with small ones.</p>
+<p>Survey researchers make the same point formally: Pew Research Center notes that estimates for subgroups have larger margins of error because they rest on fewer cases, and that a lead of one figure over another is less certain than either figure alone. Lantern’s October survey drew 79 responses; any conclusion about a subgroup, such as app buyers, rests on fewer still. B04 shows how to put a number on this uncertainty with confidence intervals; for now, report the counts and be cautious with small ones.</p>
 <h3>Diagnosing a change in a KPI</h3>
 <p>When a KPI moves unexpectedly, the work is <a class="g-term" href="../../../../learn/glossary/#g-diagnostic-analytic">diagnostic analytics</a>: explaining why something happened. Work through the questions in order; each one can end the investigation.</p>
 <ol class="prose-list"><li><b>Is it real?</b> Check the data before the business: a tracking change, a definition change, missing days or duplicate records can all produce a “fall”. The data-quality lesson lists what to check.</li><li><b>Is it unusual?</b> Compare it with normal month-to-month variation and, where possible, with the same period last year.</li><li><b>Which driver moved?</b> Use the driver tree: revenue = visits × conversion × AOV. A fall in orders with rising visits points at conversion.</li><li><b>Where is it?</b> Segment: by channel, device, product, new against returning customers. A change concentrated in one segment points at a cause that affects only that segment.</li><li><b>When did it start?</b> Daily data around the suspected date. A step on the day of a launch is far more telling than a gradual drift.</li><li><b>Why?</b> Form hypotheses and test them with comparison groups, reversals and mechanisms, as above.</li><li><b>How sure are you?</b> Weigh the evidence, name the alternatives you couldn’t rule out, and say what would settle the question.</li></ol>
@@ -337,6 +337,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../../../../assets/js/pages/study-lesson.js?v=8"></script>
+  <script type="module" src="../../../../assets/js/pages/study-lesson.js?v=9"></script>
 </body>
 </html>

@@ -1,12 +1,12 @@
 // learn-lesson.js — one lesson page: makes the calculator live, asks the skill's questions (which update the same
 // mastery as Practise), and remembers that the lesson was read.
-import { initSite, syncRanges } from '../core/site.js?v=8';
-import { $, $$, h } from '../core/dom.js?v=8';
-import * as F from '../core/format.js?v=8';
-import * as L from '../core/learn.js?v=8';
-import { ITEMS } from '../data/learn-items.js?v=8';
-import { SKILL, loadState, saveState, updateTheta, questionCard, meter, durationWords, toolHref } from './learn-common.js?v=8';
-import { whenNear } from '../core/ui.js?v=8';
+import { initSite, syncRanges } from '../core/site.js?v=9';
+import { $, $$, h } from '../core/dom.js?v=9';
+import * as F from '../core/format.js?v=9';
+import * as L from '../core/learn.js?v=9';
+import { ITEMS } from '../data/learn-items.js?v=9';
+import { SKILL, loadState, saveState, updateTheta, questionCard, meter, durationWords, toolHref } from './learn-common.js?v=9';
+import { whenNear } from '../core/ui.js?v=9';
 
 initSite();
 const article = $('.lesson');
@@ -31,7 +31,7 @@ function fmtInput(inp, v) {
   return `${F.num(v, d)}${inp.unit ? ` ${inp.unit}` : ''}`;
 }
 async function liveCalc() {
-  const lesson = (await import(`../data/lessons/${id}.js?v=8`)).default;
+  const lesson = (await import(`../data/lessons/${id}.js?v=9`)).default;
   const { inputs, compute } = lesson.calc;
   const run = () => {
     const v = Object.fromEntries(inputs.map((i) => { const val = +$(`#c-${i.id}`).value; $(`#c-${i.id}-out`).textContent = fmtInput(i, val); return [i.id, val]; }));

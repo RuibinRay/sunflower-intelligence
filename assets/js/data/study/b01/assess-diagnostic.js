@@ -9,7 +9,7 @@ export const items = [
   // ================================================================ Module 1: What analytics is for
   {
     id: 'b01-dg-1', lesson: 'four-kinds-of-analytics', type: 'mc', kind: 'conceptual',
-    prompt: 'Sorrel Kitchen (fictional), a meal-kit company, forecasts how many boxes it will pack each week. Over the last six weeks the forecasts and the boxes actually packed were: 1,200 and 1,130; 1,150 and 1,090; 1,300 and 1,215; 1,250 and 1,190; 1,180 and 1,120; 1,220 and 1,160. Using this course’s definition of forecast error, what should the company conclude?',
+    prompt: 'Sorrel Kitchen (fictional), a meal-kit company, forecasts how many boxes it will pack each week. Over the last six weeks the forecasts and the boxes actually packed were: 1,200 and 1,130; 1,150 and 1,090; 1,300 and 1,215; 1,250 and 1,190; 1,180 and 1,120; 1,220 and 1,160. Taking forecast error as actual minus forecast, what should the company conclude?',
     options: [
       'Every error is negative: each forecast was too high, so the method is biased and needs correcting',
       'Every error is negative: the forecasts were too low each week, so all future forecasts should be raised',
@@ -109,21 +109,21 @@ export const items = [
     solution: 'Eastvale’s true count is 186 + 27 + 12 = 225 orders. The report misses 39 of them, so it understates Eastvale by 39 ÷ 225 × 100 ≈ 17.3%. This is a consistency failure: one region written three ways splits one group into three, so Eastvale looks smaller than it is and two regions that don’t exist appear in the report. Anyone ranking the regions may rank them wrongly.',
   },
   {
-    id: 'b01-dg-8', lesson: 'data-collection', type: 'mc', kind: 'applied',
-    prompt: 'Ottery Prints (fictional), an online poster shop, wants to know whether a new product page sells better than the old one. For four weeks it shows the new page on weekdays and the old page at weekends, and then compares the two pages’ conversion rates. What is the main flaw in this design?',
-    options: [
-      'The page shown depends on the day, so any difference between weekday and weekend shoppers is mixed into the result',
-      'Four weeks is far too short for a test of a product page; it needs a full year of data so that every season is included',
-      'The new page is shown on five days a week and the old one on two, so the new page will get the higher conversion rate',
-      'Conversion is the wrong outcome to compare; the test should compare the total number of orders taken on each page',
-    ],
-    answer: 0,
-    feedback: {
-      1: 'Four whole weeks include every day of the week four times, which is a sensible length. The problem is how visitors are assigned to the pages, not how long the test runs.',
-      2: 'More days give the new page more visits and more orders, but not a higher rate: conversion divides orders by visits. The flaw is that the two pages saw different kinds of day.',
-      3: 'Total orders would be worse, because the new page is shown on five days and the old on two. Conversion (orders ÷ visits) is the right outcome; the flaw lies in who sees which page.',
-    },
-    solution: 'In an A/B test chance alone must decide which version each visitor sees, so that the two groups are alike in everything but the page. Here the day decides: weekday and weekend shoppers may convert differently whatever the page, so a difference between the pages can’t be separated from a difference between the days. Assign each visitor at random to the old or the new page, every day, for whole weeks, and decide the outcome and the length of the test before it starts.',
+    id: 'b01-dg-8', lesson: 'data-collection', type: 'rows', kind: 'applied',
+    prompt: 'Ottery Prints (fictional), an online poster shop, wants to test a new product page against the old one for four whole weeks, comparing the two pages’ conversion rates. Its team proposes six ways of deciding who sees the new page; everyone else sees the old one. Select every proposal that makes the comparison a fair A/B test.',
+    data: { table: {
+      head: ['Proposal', 'Who sees the new page'],
+      rows: [
+        ['A', 'Visitors on weekdays'],
+        ['B', 'Each visitor whose random draw by the shop’s software on arrival comes up heads'],
+        ['C', 'Visitors on phones'],
+        ['D', 'The first 5,000 visitors of each week'],
+        ['E', 'Visitors who arrive through the link in the shop’s newsletter'],
+        ['F', 'One visitor in four, chosen by a random draw by the software as each visitor arrives'],
+      ],
+    } },
+    answer: [1, 5],
+    solution: 'In an A/B test chance alone must decide which page each visitor sees, so that the two groups are alike, on average, in everything but the page. B and F do that; F’s split is uneven, which is fine as long as chance decides. The others tie the page to something that can affect buying by itself: the day (A), the device (C), arriving early in the week (D) or being a newsletter reader, probably a keener customer (E). In each of those, a difference between the pages can’t be separated from a difference between the groups.',
   },
 
   // ================================================================ Module 3: Measuring and reading results
@@ -185,9 +185,11 @@ export const items = [
   },
 ];
 
-// Start at module N if the student scores at least 75% on the items for all the modules before N. With four items per
-// module that means three of the four module-1 items for module 2, and six of the eight module 1–2 items for module 3.
+// Start at module N if the student scores at least the threshold on the items for all the modules before N. With four
+// items per module, module 2 needs three of the four module-1 items, and module 3 seven of the eight module 1–2 items:
+// the module-3 rule pools modules 1 and 2, so at 75% a student with 2 of 4 on module 1 and 4 of 4 on module 2 would
+// skip module 1 without passing the module-2 rule; 87.5% closes that gap.
 export const route = [
   { module: 2, ifAtLeast: 0.75 },
-  { module: 3, ifAtLeast: 0.75 },
+  { module: 3, ifAtLeast: 0.875 },
 ];

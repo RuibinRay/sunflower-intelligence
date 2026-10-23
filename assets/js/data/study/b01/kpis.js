@@ -14,7 +14,7 @@ export default {
   slug: 'kpis',
   title: 'KPIs: measuring what matters',
   blurb: 'A key performance indicator is a metric with a job: an exact formula, a target, a direction and an owner. Learn to define an online shop’s KPIs precisely, to tell counts from rates and leading from lagging indicators, and to build a balanced set of measures that is hard to game.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish a metric from a key performance indicator (KPI), and a count from a rate, and explain what each tells a manager.',
     'Calculate conversion rate, average order value, revenue, returning-customer share and rating response rate from raw counts, naming the numerator and denominator of each.',

@@ -60,7 +60,7 @@ export default {
   slug: 'problem-solving-frameworks',
   title: 'Problem-solving frameworks',
   blurb: 'Structure turns a big, messy problem into small questions that data can answer. Learn issue trees and the MECE test, driver trees that break revenue into visits, conversion and order value, root-cause tools such as the five whys and their limits, the CRISP-DM process, and how to tell when you have enough evidence to stop.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Construct an issue tree for a business problem and test whether each level is mutually exclusive and collectively exhaustive (MECE).',
     'Build a driver tree for revenue (visits × conversion rate × average order value) and calculate how much of a change each driver accounts for.',

@@ -1,5 +1,5 @@
 // Lesson: price elasticity and the profit-maximising price.
-import * as F from '../../core/format.js?v=8';
+import * as F from '../../core/format.js?v=9';
 
 const elasticity = (q1, q2, p1, p2) => Math.log(q2 / q1) / Math.log(p2 / p1);
 const bestPrice = (cost, b) => (cost * b) / (1 + b);

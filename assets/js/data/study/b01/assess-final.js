@@ -1,5 +1,5 @@
-// assess-final.js — B01 cumulative final: 24 items, every lesson at least twice, eight each conceptual, numerical and
-// applied. Many items combine lessons: scenarios inside a forecast error, an order definition with duplicate rows, a
+// assess-final.js — B01 cumulative final: 25 items, every lesson at least twice; nine conceptual, eight numerical and
+// eight applied. Many items combine lessons: scenarios inside a forecast error, an order definition with duplicate rows, a
 // hypothesis with its comparison group, a driver tree with percentage points, a drill-down by segment, order lines inside
 // an average order value, identifiers inside a failed join, a tracking fault inside a conversion rate, a question → the
 // right KPI → the bias in the data behind it, a relative target, a chart → a confounder → a randomised test, and a mix
