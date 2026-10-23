@@ -9,7 +9,7 @@ const money = (x) => `${x < -1e-9 ? '−' : ''}$${n(Math.round(x * 100) / 100)}`
 const signed = (x) => (x > 1e-9 ? `+${money(x)}` : money(x));
 const r2 = (x) => Math.round(x * 100) / 100 + 0;
 const e7 = ADJUSTMENTS.find((e) => e.id === 'e7').lines[0].dr;          // 400
-const ip = F.coastline.interestPaid;                                     // 450
+const ip = D.interestPaid;                                               // 450
 
 export const widgets = {
   'gi-dev': {

@@ -210,7 +210,7 @@ export default {
   demo: [
     { widget: 'lnk-annual', intro: 'Build Lantern’s annual report from the year’s summary entries and adjustments (y1–y30, e1–e9). Place each account on its statement, then work out net income, ending retained earnings and total assets; the tool checks each link and shows all four statements, including the statement of cash flows.' },
     { widget: 'lnk-walk', intro: 'Push a change in depreciation through the three main statements. Change the amount, the tax rate and the share of the year’s tax paid before the year end, and watch which figures move and how the balance sheet stays in balance.' },
-    { widget: 'lnk-trace', intro: 'Analyse seven of Lantern’s entries, from the van to the December dividend. For each, choose the accounts, the sides and the amounts, then tick every statement it changes and, if cash moves, the activity. The feedback shows where each entry lands.' },
+    { widget: 'lnk-trace', intro: 'Analyse seven of Lantern’s entries, from the van in June to the year-end income tax. For each, choose the accounts, the sides and the amounts, then tick every statement it changes and, if cash moves, the activity. Watch for the entries that change the statement of cash flows without touching the income statement, and the reverse.' },
   ],
 
   mistakes: [
@@ -275,13 +275,13 @@ export default {
     { what: 'Financing', value: D.cff, shown: 25000 },
     { what: 'Cash link', value: 0 + D.cfo + D.cfi + D.cff, shown: 42940 },
     { what: 'Income tax expense', value: D.incomeTax, shown: 9129 },
-    { what: 'Estimated tax paid', value: F.tax.estimatedPaid, shown: 6000 },
+    { what: 'Income taxes paid', value: D.incomeTaxesPaid, shown: 6000 },
     { what: 'Income taxes payable', value: D.taxPayable, shown: 3129 },
-    { what: 'Tax roll-forward', value: D.incomeTax - F.tax.estimatedPaid, shown: 3129 },
+    { what: 'Tax roll-forward', value: D.incomeTax - D.incomeTaxesPaid, shown: 3129 },
     { what: 'Interest expense', value: D.interestExpense, shown: 1200 },
-    { what: 'Interest paid', value: F.coastline.interestPaid, shown: 450 },
+    { what: 'Interest paid', value: D.interestPaid, shown: 450 },
     { what: 'Interest payable', value: bal('Interest Payable'), shown: 750 },
-    { what: 'Interest roll-forward', value: D.interestExpense - F.coastline.interestPaid, shown: 750 },
+    { what: 'Interest roll-forward', value: D.interestExpense - D.interestPaid, shown: 750 },
     { what: 'Depreciation', value: D.depreciation, shown: 4800 },
     { what: 'Accumulated depreciation, equipment', value: bal('Accumulated Depreciation—Equipment'), shown: 2000 },
     { what: 'Accumulated depreciation, van', value: bal('Accumulated Depreciation—Van'), shown: 2800 },

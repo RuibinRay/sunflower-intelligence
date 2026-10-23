@@ -14,7 +14,7 @@ const reversal = Math.min(hbNrvLater, hbCost) - hbNrv;                          
 const machine = 8400, grinder = 3600;
 const compMonthly = machine / 60 + grinder / 36;                                    // 240
 // IFRS 18 version of Lantern’s cash flows
-const cfoIfrs = D.cfo + F.coastline.interestPaid, cffIfrs = D.cff - F.coastline.interestPaid;
+const cfoIfrs = D.cfo + D.interestPaid, cffIfrs = D.cff - D.interestPaid;
 const wcExFin = -D.receivablesNet - D.inventoryEnd - bal('Supplies') - bal('Prepaid Insurance') + bal('Accounts Payable') + bal('Wages Payable') + bal('Unearned Revenue');   // 3,874
 const employees = F.wages.events + F.wages.shopAndOffice;                           // 43,600
 // Voltmere Energy (challenging example)
@@ -103,7 +103,7 @@ export default {
     { p: 'Expensing everything is simple and needs no judgement. Capitalising matches the cost with the revenue the product later earns, but it depends on management’s assessment of the criteria, and costs incurred before the criteria were met can’t be capitalised later. The asset is amortised once it is available for use, so over the project’s whole life the total expense is the same under both frameworks; IFRS moves part of it into later years.' },
 
     { h: 'Interest and dividends in the statement of cash flows' },
-    { p: 'Under US GAAP (ASC 230) interest paid, interest received and dividends received are operating cash flows, and dividends paid are financing. IAS 7 has let each company choose: interest and dividends paid as operating or financing, interest and dividends received as operating or investing, applied consistently. The IFRS 18 amendments to IAS 7 remove those choices for most companies, from the same effective date as IFRS 18 itself.' },
+    { p: 'The statement of cash flows lesson set out the rules; here they are side by side. Under US GAAP (ASC 230) interest paid, interest received and dividends received are operating cash flows, and dividends paid are financing. IAS 7 has let each company choose: interest and dividends paid as operating or financing, interest and dividends received as operating or investing, applied consistently. The IFRS 18 amendments to IAS 7 remove those choices for most companies, from the same effective date as IFRS 18 itself.' },
     { table: {
       caption: 'Classification of interest and dividend cash flows',
       head: ['Cash flow', 'US GAAP (ASC 230)', 'IAS 7 before IFRS 18', 'IAS 7 as amended by IFRS 18*'],
@@ -344,7 +344,7 @@ export default {
     { what: 'Single unit ten months', value: bal('Accumulated Depreciation—Equipment'), shown: 2000 },
     { what: 'Equipment cost', value: F.equipment.cost, shown: 12000 },
     // cash flows
-    { what: 'Interest paid', value: F.coastline.interestPaid, shown: 450 },
+    { what: 'Interest paid', value: D.interestPaid, shown: 450 },
     { what: 'CFO US GAAP', value: D.cfo, shown: 39940 },
     { what: 'CFO IFRS 18', value: cfoIfrs, shown: 40390 },
     { what: 'CFF US GAAP', value: D.cff, shown: 25000 },
@@ -368,8 +368,8 @@ export default {
     { what: 'Shop and office wages', value: bal('Wages Expense'), shown: 18400 },
     { what: 'Depreciation', value: D.depreciation, shown: 4800 },
     { what: 'Working capital excl. interest and tax', value: wcExFin, shown: 3874 },
-    { what: 'Tax paid', value: F.tax.estimatedPaid, shown: 6000 },
-    { what: 'Indirect from operating profit', value: D.operatingIncome + D.depreciation + wcExFin - F.tax.estimatedPaid, shown: 40390 },
+    { what: 'Tax paid', value: D.incomeTaxesPaid, shown: 6000 },
+    { what: 'Indirect from operating profit', value: D.operatingIncome + D.depreciation + wcExFin - D.incomeTaxesPaid, shown: 40390 },
     // Voltmere
     { what: 'Voltmere development total', value: V.devBefore + V.devAfter, shown: 420000 },
     { what: 'Voltmere US expense', value: vUs, shown: 600000 },

@@ -65,17 +65,13 @@ export const widgets = {
       };
     },
   },
-  'lnk-bridge': {
-    type: 'chart',
-    kind: 'bar',
-    title: 'From net income to cash from operations: Lantern, ten months to 31 December 2026',
-    x: { label: 'Line of the indirect method', values: ['Net income', 'Depreciation', 'Receivables (net)', 'Inventory', 'Supplies and prepaid insurance', 'Payables, wages and interest', 'Unearned revenue', 'Income taxes payable', 'Cash from operations'] },
-    series: [{ name: 'Dollars', values: [
-      D.netIncome, D.depreciation, -D.receivablesNet, -D.inventoryEnd, -(bal('Supplies') + bal('Prepaid Insurance')),
-      bal('Accounts Payable') + bal('Wages Payable') + bal('Interest Payable'), bal('Unearned Revenue'), bal('Income Taxes Payable'), D.cfo,
-    ] }],
-    y: { label: 'Dollars' },
-    note: `Net income of ${money(D.netIncome)} plus depreciation of ${money(D.depreciation)}, less ${money(opAssets)} tied up in operating assets, plus ${money(opLiabs)} of operating liabilities, gives cash from operations of ${money(D.cfo)}. Opening balances were all zero, so each working-capital bar is the closing balance. Fictional figures from the Lantern case.`,
+  // One entry at a time through all four statements: the drill asks for the accounts, sides and amounts, then which
+  // statements change and, when cash moves, the activity (accounting engine: statementsAffected).
+  'lnk-trace': {
+    type: 'journal',
+    chart: CHART,
+    transactions: ['y4', 'e5', 'y12', 'y13', 'y20', 'y30', 'e9'].map(tx),
+    ask: ['accounts', 'side', 'amount', 'statements'],
   },
 };
 

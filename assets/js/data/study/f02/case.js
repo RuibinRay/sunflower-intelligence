@@ -275,6 +275,9 @@ export const DERIVED = {
   cashEnd: bal('Cash'),                                                            // 42,940
   cfo: CF.operating, cfi: CF.investing, cff: CF.financing, netCash: CF.net,       // 39,940; −22,000; 25,000; 42,940
   cfoIndirect: IND.operating,                                                      // 39,940
+  // the operating working capital the indirect method adjusts for (opening balances are zero, so changes = ending balances)
+  operatingCurrentAssets: -IND.workingCapital.filter(([, v]) => v < 0).reduce((s, [, v]) => s + v, 0),     // 13,536
+  operatingCurrentLiabilities: IND.workingCapital.filter(([, v]) => v > 0).reduce((s, [, v]) => s + v, 0),  // 21,289
   // the direct method's operating lines (ASC 230's categories)
   cashFromCustomers: CF.lines.find((l) => l[0] === 'Cash received from customers')[1],   // 191,220 (net of $1,025 refunds)
   cashToSuppliers: -CF.lines.find((l) => l[0] === 'Cash paid to suppliers')[1],        // 103,330
