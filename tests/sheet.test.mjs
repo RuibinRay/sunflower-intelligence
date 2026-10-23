@@ -125,6 +125,18 @@ eq('Microsoft’s A2# example', evaluate('=C2', new Sheet({ cells: { A2: '=SEQUE
   eq('A2# on a formula that doesn’t spill is #REF!', sh.get('D4'), { error: '#REF!' });
   eq('A2# moves when filled', X.shiftFormula('=SUM(C1#)', 1, 1), '=SUM(D2#)');
 }
+// Microsoft's COUNTIFS help, example 2: dates written as text in the criteria
+{
+  const cells = { A2: 1, A3: 2, A4: 3, A5: 4, A6: 5, A7: 6 };
+  [2, 3, 4, 5, 6, 7].forEach((r, i) => { cells[`B${r}`] = X.isoToSerial(`2011-05-0${i + 1}`); });
+  eq('COUNTIFS with a date in the criteria', evaluate('=COUNTIFS(A2:A7,"<5",B2:B7,"<5/3/2011")', new Sheet({ cells })), 2);
+  eq('COUNTIF with a written-out date', evaluate('=COUNTIF(B2:B7,">=May 4, 2011")', new Sheet({ cells })), 3);
+}
+eq('ROW of a range spills', E('=ROW(C2:C5)'), [[2], [3], [4], [5]]);
+eq('COLUMN of a range spills', E('=COLUMN(C2:E2)'), [[3, 4, 5]]);
+eq('last match with MAX(IF(…ROW…))', E('=INDEX(F:F,MAX(IF(C2:C13="House Blend",ROW(C2:C13))))'), 142.5);
+eq('CHOOSE with an array index', E('=CHOOSE({1,2},10,20)'), [[10, 20]]);
+eq('left lookup with CHOOSE', E('=VLOOKUP(28,CHOOSE({1,2},F2:F13,A2:A13),2,FALSE)'), base.A2);
 eq('near-zero sum is 0 (Microsoft KB 78113)', E('=1.333+1.225-1.333-1.225'), 0);
 eq('empty criterion cell counts as 0', evaluate('=COUNTIF(A1:A4,B1)', new Sheet({ cells: { A1: 0, A2: 3, A4: 0 } })), 2);
 eq('SUMIF sum_range resized from its top-left cell', E('=SUMIF(B2:B13,"Online",F2:F3)'), E('=SUMIF(B2:B13,"Online",F2:F13)'));

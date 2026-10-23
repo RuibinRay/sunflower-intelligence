@@ -875,3 +875,7 @@ input[type="file"]:focus-visible + .file-btn, .file-btn:focus-within { outline: 
 .ex-card > *, .ex-step > * { min-width: 0; }
 .study-lesson code, .ex-card code { overflow-wrap: anywhere; font-size: .92em; padding: 1px 5px; border-radius: 4px; background: #F3E9D2; }
 .course-cta .btn, .continue-card .btn, .ex-score .btn { white-space: normal; text-align: center; max-width: 100%; }
+
+/* long unbroken strings (formulas such as ROUND(AVERAGE(M2:M232),2)) may break anywhere inside grid items, so a
+   definition list or a mistakes list never widens the page on a phone */
+.glossary-mini dt, .glossary-mini dd, .mistake, .define dt, .define dd { overflow-wrap: anywhere; }

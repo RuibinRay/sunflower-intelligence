@@ -342,7 +342,8 @@ export function criterion(crit) {
   const m = /^(<>|<=|>=|=|<|>)?([\s\S]*)$/.exec(s);
   const op = m[1] || '=';
   const rhs = m[2];
-  const num = rhs.trim() !== '' && TEXT_NUM.test(rhs) ? toNum(rhs) : (isoToSerial(rhs.trim()) ?? null);
+  // a number, or text Excel reads as a date ("<5/3/2011" in Microsoft's COUNTIFS example; "2026-03-14"; "May 1, 2026")
+  const num = rhs.trim() !== '' && TEXT_NUM.test(rhs) ? toNum(rhs) : (dateText(rhs.trim()) ?? null);
   const isBoolText = /^(TRUE|FALSE)$/i.test(rhs);
   return (v) => {
     if (isErr(v)) return false;
@@ -870,7 +871,14 @@ FN.SUMPRODUCT = (args, ctx) => {
 };
 
 // logic
-FN.IF = (args, ctx) => { if (!need(args, 1, 3)) return ERR.VALUE; const c = ev(args[0], ctx); if (isArr(c)) return mapArr(c, (x) => { const b = toBool(x); return isErr(b) ? b : b ? (args[1] ? scalar(args[1], ctx) : true) : (args[2] ? scalar(args[2], ctx) : false); }); const b = toBool(c); if (isErr(b)) return b; if (b) return args[1] && args[1].t !== 'missing' ? ev(args[1], ctx) : (args[1] ? 0 : true); return args[2] ? (args[2].t === 'missing' ? 0 : ev(args[2], ctx)) : false; };
+FN.IF = (args, ctx) => { if (!need(args, 1, 3)) return ERR.VALUE; const c = ev(args[0], ctx);
+  if (isArr(c)) {
+    // an array condition picks element by element from the two results, each broadcast like arithmetic
+    const T = args[1] && args[1].t !== 'missing' ? ev(args[1], ctx) : (args[1] ? 0 : true), F = args[2] ? (args[2].t === 'missing' ? 0 : ev(args[2], ctx)) : false;
+    const at = (A, i, j) => (!isArr(A) ? A : A.h === 1 && A.w === 1 ? A.at(0, 0) : A.h === 1 ? (j < A.w ? A.at(0, j) : ERR.NA) : A.w === 1 ? (i < A.h ? A.at(i, 0) : ERR.NA) : (i < A.h && j < A.w ? A.at(i, j) : ERR.NA));
+    const h = Math.max(c.h, isArr(T) ? T.h : 1, isArr(F) ? F.h : 1), w = Math.max(c.w, isArr(T) ? T.w : 1, isArr(F) ? F.w : 1);
+    return new Arr(Array.from({ length: h }, (_, i) => Array.from({ length: w }, (__, j) => { const b = toBool(at(c, i, j)); return isErr(b) ? b : b ? at(T, i, j) : at(F, i, j); })));
+  } const b = toBool(c); if (isErr(b)) return b; if (b) return args[1] && args[1].t !== 'missing' ? ev(args[1], ctx) : (args[1] ? 0 : true); return args[2] ? (args[2].t === 'missing' ? 0 : ev(args[2], ctx)) : false; };
 FN.IFS = (args, ctx) => { for (let i = 0; i + 1 < args.length; i += 2) { const b = toBool(scalar(args[i], ctx)); if (isErr(b)) return b; if (b) return ev(args[i + 1], ctx); } return ERR.NA; };
 FN.SWITCH = (args, ctx) => { const v = scalar(args[0], ctx); if (isErr(v)) return v; let i = 1; for (; i + 1 < args.length; i += 2) { const m = scalar(args[i], ctx); if (compare(v, m) === 0 && typeof v === typeof m) return ev(args[i + 1], ctx); } return i < args.length ? ev(args[i], ctx) : ERR.NA; };
 FN.AND = (args, ctx) => { let seen = false; for (const a of args) for (const v of valuesOf(a, ctx)) { if (isErr(v)) return v; if (v == null || (typeof v === 'string' && a.t !== 'lit')) continue; const b = toBool(v); if (isErr(b)) return b; seen = true; if (!b) return false; } return seen ? true : ERR.VALUE; };
@@ -1052,9 +1060,23 @@ function callRef(node, ctx) {
   if (rr < 1 || c < 1 || rr > h || c > w) return null;
   return { range: false, r: base.r0 + rr - 1, c: base.c0 + c - 1 };
 }
-FN.CHOOSE = (args, ctx) => { const k = numArg(args[0], ctx); if (isErr(k)) return k; const i = Math.trunc(k); return i >= 1 && i < args.length ? ev(args[i], ctx) : ERR.VALUE; };
-FN.ROW = (args, ctx) => { if (!args.length) return ctx.at ? ctx.at.r + 1 : ERR.VALUE; const r = evRef(args[0], ctx); return isRef(r) ? (r.range ? r.r0 : r.r) + 1 : ERR.VALUE; };
-FN.COLUMN = (args, ctx) => { if (!args.length) return ctx.at ? ctx.at.c + 1 : ERR.VALUE; const r = evRef(args[0], ctx); return isRef(r) ? (r.range ? r.c0 : r.c) + 1 : ERR.VALUE; };
+// CHOOSE with an array of index numbers returns an array, each element picked from the matching value (broadcast
+// like arithmetic): CHOOSE({1,2},B2:B10,A2:A10) puts two columns side by side, the left-lookup idiom with VLOOKUP
+FN.CHOOSE = (args, ctx) => {
+  const kv = ev(args[0], ctx);
+  if (!isArr(kv)) { const k = toNum(kv); if (isErr(k)) return k; const i = Math.trunc(k); return i >= 1 && i < args.length ? ev(args[i], ctx) : ERR.VALUE; }
+  const picks = args.slice(1).map((a) => { const v = ev(a, ctx); return isArr(v) ? v : new Arr([[v]]); });
+  const all = [kv, ...picks];
+  const h = Math.max(...all.map((A) => A.h)), w = Math.max(...all.map((A) => A.w));
+  const at = (A, i, j) => (A.h === 1 && A.w === 1 ? A.at(0, 0) : A.h === 1 ? (j < A.w ? A.at(0, j) : ERR.NA) : A.w === 1 ? (i < A.h ? A.at(i, 0) : ERR.NA) : (i < A.h && j < A.w ? A.at(i, j) : ERR.NA));
+  return new Arr(Array.from({ length: h }, (_, i) => Array.from({ length: w }, (__, j) => {
+    const k = toNum(at(kv, i, j)); if (isErr(k)) return k;
+    const n = Math.trunc(k); return n >= 1 && n <= picks.length ? at(picks[n - 1], i, j) ?? 0 : ERR.VALUE;
+  })));
+};
+// ROW and COLUMN of a range return every row (or column) number, as an array that spills in dynamic-array Excel
+FN.ROW = (args, ctx) => { if (!args.length) return ctx.at ? ctx.at.r + 1 : ERR.VALUE; const r = evRef(args[0], ctx); if (!isRef(r)) return ERR.VALUE; if (!r.range || r.r0 === r.r1) return (r.range ? r.r0 : r.r) + 1; return arr1(Array.from({ length: r.r1 - r.r0 + 1 }, (_, i) => r.r0 + i + 1)); };
+FN.COLUMN = (args, ctx) => { if (!args.length) return ctx.at ? ctx.at.c + 1 : ERR.VALUE; const r = evRef(args[0], ctx); if (!isRef(r)) return ERR.VALUE; if (!r.range || r.c0 === r.c1) return (r.range ? r.c0 : r.c) + 1; return arr1(Array.from({ length: r.c1 - r.c0 + 1 }, (_, j) => r.c0 + j + 1), false); };
 FN.ROWS = (args, ctx) => { const A = arrOf(args[0], ctx); return isErr(A) ? A : A.h; };
 FN.COLUMNS = (args, ctx) => { const A = arrOf(args[0], ctx); return isErr(A) ? A : A.w; };
 
