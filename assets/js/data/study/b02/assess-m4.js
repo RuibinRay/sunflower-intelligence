@@ -139,14 +139,14 @@ export const items = [
     items: [
       'Exported from the booking system on 2 June 2026 by the revenue team; file checksum recorded.',
       'Rates of 0 and 9999 replaced by total ÷ nights, because the totals agree with the price list.',
-      'Stays booked through travel agents are rarely cancelled in this file, so the cancellation rate mainly reflects online bookings.',
+      'Cancelled and no-show bookings were excluded from the average daily rate, so it describes stays that happened, not every booking taken.',
       'Guests’ countries were recorded only for some channels, and the rest can’t be recovered.',
       'Step 6: mapped country codes to names with mapping table version 3; row count unchanged.',
     ],
     categories: ['Source', 'Issues and decisions', 'Effect on the analysis', 'Limitations', 'Cleaning log'],
     answer: [0, 1, 2, 3, 4],
     feedback: {
-      2: 'It tells the reader what the reported figure does and doesn’t represent, given the data kept: an effect on the analysis.',
+      2: 'It follows from a decision (excluding cancellations and no-shows) and tells the reader what the figure does and doesn’t represent: an effect on the analysis.',
       3: 'An unrecoverable gap in the data is a limitation, not the consequence of a decision.',
     },
     solution: 'Where and when the file came from is the source; a problem with its decision and evidence is an issues-and-decisions entry; what a result represents, given the data used, is an effect on the analysis; an unsolvable gap is a limitation; a numbered, rerunnable step with its row count belongs in the cleaning log.',
@@ -166,10 +166,10 @@ export const items = [
     id: 'b02-m4-12', lesson: 'data-quality-report', type: 'mc', kind: 'applied',
     prompt: 'Ratings in Lantern’s cleaned orders are missing far more often for one-off buyers than for subscribers, and subscribers rate higher. Which summary line should the report use?',
     options: [
-      '“Average rating 4.5 out of 5, from the orders that were rated. Subscribers rate more often and more highly than one-off buyers, so this figure mainly reflects subscribers.”',
-      '“Customers rate Lantern 4.5 out of 5.”',
-      '“Average rating 4.5 out of 5, after missing ratings were filled with the average.”',
-      '“Average rating 4.5 out of 5 (outliers removed).”',
+      '“Average rating 4.1 out of 5, from the orders that were rated. Subscribers rate more often and more highly than one-off buyers, so this figure mainly reflects subscribers.”',
+      '“Customers rate Lantern 4.1 out of 5.”',
+      '“Average rating 4.1 out of 5, after missing ratings were filled with the average.”',
+      '“Average rating 4.1 out of 5 (outliers removed).”',
     ],
     answer: 0,
     feedback: {
