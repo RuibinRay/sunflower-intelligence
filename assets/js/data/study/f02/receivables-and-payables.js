@@ -30,7 +30,7 @@ export default {
   slug: 'receivables-and-payables',
   title: 'Receivables and payables',
   blurb: 'Selling on credit creates receivables, and some of them will never be paid. Learn the allowance method that US GAAP and IFRS require, estimate bad debts by aging and by a percentage of sales, account for notes receivable, and build up a business’s current liabilities, using Lantern’s first year-end.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain why US GAAP and IFRS require the allowance method for receivables, what the CECL model (ASC 326) asks for, and why the direct write-off method is acceptable only for immaterial amounts.',
     'Calculate the allowance for doubtful accounts by aging receivables and by a percentage of credit sales, and the bad debt expense when the allowance has a credit or a debit balance before adjustment.',

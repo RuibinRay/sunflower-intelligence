@@ -1,5 +1,5 @@
 // portal.js — the petal portal between the painting and a room, plus its continuation on arrival.
-import { h, s, reducedMotion } from './dom.js?v=10';
+import { h, s, reducedMotion } from './dom.js?v=11';
 
 const KEY = 'si:portal';
 let leaving = false;

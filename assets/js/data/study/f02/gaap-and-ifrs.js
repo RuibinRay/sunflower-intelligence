@@ -31,7 +31,7 @@ export default {
   slug: 'gaap-and-ifrs',
   title: 'US GAAP and IFRS',
   blurb: 'Compare the two frameworks where they differ for the statements in this course (inventory, property, development costs, leases, cash-flow classification and, from 2027, the structure of the income statement), measure what each difference does to the figures, and see why Lantern reports under US GAAP.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Describe who sets US GAAP and IFRS, the SEC’s role, and how far the two frameworks converged.',
     'Classify each difference between the frameworks by what it changes: profit, assets and equity only, or presentation only.',

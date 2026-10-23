@@ -110,7 +110,7 @@ export default {
   slug: 'indirect-method',
   title: 'The indirect method',
   blurb: 'Start from net income and reach cash from operating activities: add back noncash expenses, take out gains and losses, adjust for every change in operating working capital, then prepare a full statement from two balance sheets and reconcile it with the direct method.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain why each adjustment in the indirect method is added or subtracted, using the accounting equation.',
     'Calculate net cash from operating activities by the indirect method, including noncash expenses, gains and losses, and changes in operating current assets and liabilities.',

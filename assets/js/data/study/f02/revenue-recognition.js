@@ -20,7 +20,7 @@ export default {
   slug: 'revenue-recognition',
   title: 'Revenue recognition',
   blurb: 'Decide when revenue is earned and how much to record by working through the five steps of ASC 606 and IFRS 15: deposits and prepaid subscriptions, bundles, refunds, discounts and the question of gross or net. Then reconcile Lantern’s online-shop order values with the revenue in its books.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Apply the five steps of ASC 606 and IFRS 15 to a contract, using the control criteria to decide whether revenue is recognised over time or at a point in time.',
     'Calculate the share of a transaction price allocated to each performance obligation, in proportion to stand-alone selling prices.',

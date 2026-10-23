@@ -100,7 +100,7 @@ export default {
   slug: 'cash-flow-statement',
   title: 'The statement of cash flows',
   blurb: 'Prepare a full year’s statement of cash flows: decide what counts as cash, classify every receipt and payment under US GAAP and IFRS, work out the direct-method lines from the accrual records, and disclose what changed without any cash moving.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain what the statement of cash flows reports, and decide which items are cash and cash equivalents.',
     'Classify receipts and payments as operating, investing or financing under US GAAP (ASC 230), and state how IAS 7 differs before and after the IFRS 18 amendments.',

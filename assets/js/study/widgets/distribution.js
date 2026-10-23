@@ -2,12 +2,12 @@
 // transformation and outlier rule, showing the shape, skewness, mean against median, the thresholds and the values flagged.
 // config: { dataset, column } or { values: [...], label }, transforms: ['none', 'log', 'log1p', 'sqrt'],
 //         rules: ['iqr', 'z', 'mad'], prepare: [cleaning steps applied to the dataset first] (optional)
-import { h, s, onResize } from '../../core/dom.js?v=10';
-import * as F from '../../core/format.js?v=10';
-import * as S from '../../core/stats.js?v=10';
-import * as C from '../../core/cleaning.js?v=10';
-import { tableTwin } from '../../core/charts.js?v=10';
-import { loadDataset, ensureStyles } from '../labs/cleaning-ui.js?v=10';
+import { h, s, onResize } from '../../core/dom.js?v=11';
+import * as F from '../../core/format.js?v=11';
+import * as S from '../../core/stats.js?v=11';
+import * as C from '../../core/cleaning.js?v=11';
+import { tableTwin } from '../../core/charts.js?v=11';
+import { loadDataset, ensureStyles } from '../labs/cleaning-ui.js?v=11';
 
 const TF = {
   none: { label: 'None', name: 'no transformation', f: (x) => x, inv: (y) => y, ok: () => true },

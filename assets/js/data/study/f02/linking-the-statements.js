@@ -29,7 +29,7 @@ export default {
   slug: 'linking-the-statements',
   title: 'Linking the statements',
   blurb: 'Put Lantern’s whole annual report together, check that its four statements articulate and find the error when they don’t, follow single transactions through all of them, see where the gap between profit and cash sits, and push one change through the three main statements the way analysts test a model.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Trace a transaction through the income statement, the statement of changes in equity, the balance sheet and the statement of cash flows.',
     'Use a preparer’s checklist of links to test whether a set of statements articulates, and locate the error when a link fails.',

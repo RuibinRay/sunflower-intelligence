@@ -1,155 +1,143 @@
-// assess-diagnostic.js — F02 course diagnostic: three items per module, each testing what the module builds on: F01’s
-// accruals, deferrals, depreciation, statements and articulation, applied to F02’s starting points. Module 1: a deferral
-// earned over time (revenue recognition), the cost of goods used from a count (cost of goods sold), which statement an
-// account belongs to. Module 2: an unrecorded accrual (receivables), straight-line depreciation over a part year (book
-// value), equity from a trial balance (retained earnings and the balance sheet). Module 3: what changes cash but not
-// profit, cash from operations in a first year, paying an accrued liability. Module 4: net income from the equation,
-// an omitted adjustment through the statements, who sets the standards.
-// New questions, not copies of lesson exercises, module-test, final or project items; every business other than
-// Lantern is fictional and appears nowhere else in the site. No hints; solutions show in review.
+// assess-diagnostic.js — F02 course diagnostic: three items per module, each written so that it needs that module’s
+// method, not just F01: a student who has finished F01 but not F02 should miss most of them, and one who already knows a
+// module should get its items right. Module 1: allocating a bundle by stand-alone selling prices, FIFO ending inventory,
+// what reaches gross profit on a multi-step statement. Module 2: what a debit balance in the allowance means, a
+// double-declining-balance book value at disposal, par (stated value) and additional paid-in capital. Module 3: the ASC
+// 230 classification of investing flows, an indirect-method figure worked backwards with a gain, the noncash disclosure.
+// Module 4: net income from the equation, an omitted adjustment through the statements, who sets the standards.
+// New questions, not copies of lesson exercises, module-test, final or project items; every business is fictional and
+// appears nowhere else in the site. No hints; solutions show in review.
 
 export const items = [
   // ================================================================ Module 1: revenue, inventory and the income statement
   {
-    id: 'f02-dg-1', lesson: 'revenue-recognition', type: 'journal', kind: 'applied', chart: 'f02', date: '2026-12-31',
-    prompt: 'On 1 November 2026 Allegro Piano School, a fictional business, receives $7,200 from a family for six months of weekly lessons, November 2026 to April 2027, and records it as Unearned Revenue. The lessons go ahead as planned, and the school records its lesson fees as Training Revenue. Record the adjusting entry at its year end, 31 December 2026.',
-    accounts: ['Cash', 'Unearned Revenue', 'Training Revenue', 'Accounts Receivable', 'Prepaid Insurance', 'Wages Payable', 'Sales Discounts'],
-    lines: [{ acct: 'Unearned Revenue', dr: 2400 }, { acct: 'Training Revenue', cr: 2400 }],
-    solution: 'A deferral: the cash arrived before the service, so it was recorded as a liability. Each month of lessons earns 7,200 ÷ 6 = $1,200, and two months (November and December) have been taught: 2 × 1,200 = $2,400. Debit Unearned Revenue 2,400 and credit Training Revenue 2,400, leaving $4,800 owed in lessons for January to April. No cash moves at the adjustment. This is the F01 adjustment that F02’s revenue recognition lesson generalises: revenue follows the delivery of the service, here over time.',
+    id: 'f02-dg-1', lesson: 'revenue-recognition', type: 'journal', kind: 'applied', chart: 'f02', date: '2027-03-31',
+    prompt: 'Fallowfield Yarns, a fictional online shop, sells a learn-to-knit box for $243, paid by card when ordered: a set of needles and tools, shipped at once, and six monthly parcels of yarn, the first shipped the following month. Sold separately, the tools cost $90 and each parcel $30. In March 2027 it sells 50 boxes and ships all their tools; the first parcels go out in April. Record one summary entry for March’s sales on 31 March (the revenue side only).',
+    accounts: ['Cash', 'Accounts Receivable', 'Online Sales Revenue', 'Unearned Revenue', 'Sales Discounts', 'Sales Returns and Allowances', 'Inventory', 'Cost of Goods Sold'],
+    lines: [{ acct: 'Cash', dr: 12150 }, { acct: 'Online Sales Revenue', cr: 4050 }, { acct: 'Unearned Revenue', cr: 8100 }],
+    solution: 'Two performance obligations: the tools and the yarn parcels. Their stand-alone selling prices total 90 + 6 × 30 = $270, so each receives 243 ÷ 270 = 90% of its own price: tools $81 and parcels $162 a box. For 50 boxes: cash 50 × 243 = $12,150; revenue for the tools shipped in March 50 × 81 = $4,050; and 50 × 162 = $8,100 of unearned revenue (a contract liability) for parcels still to be sent, recognised as each month’s parcel ships. Debit Cash 12,150; credit Online Sales Revenue 4,050 and Unearned Revenue 8,100. Taking the tools at their own $90 price would put the whole bundle discount on the parcels.',
   },
   {
     id: 'f02-dg-2', lesson: 'inventory-and-cost-of-goods-sold', type: 'num', kind: 'numerical',
-    prompt: 'Petalcraft Florist, a fictional shop, has flowers costing $1,300 in its cold room on 1 December. During December it buys flowers costing $8,600. A count on 31 December finds flowers costing $900 still unsold. What was the cost of the flowers sold or thrown away in December? Enter whole dollars.',
-    answer: 9000, check: () => 1300 + 8600 - 900, unit: '$', places: 0, tol: 0.5,
+    prompt: 'Olivewood Deli Supplies, a fictional wholesaler, uses a periodic system and the FIFO cost formula. It starts the year with 120 cases of olive oil costing $25 each, buys 200 cases at $27 in March and 180 cases at $30 in August, and sells 380 cases during the year. What is the cost of the cases left at the year end? Enter whole dollars.',
+    answer: 3600, check: () => { const left = 120 + 200 + 180 - 380; return left * 30; }, unit: '$', places: 0, tol: 0.5,
     wrong: [
-      { value: 9900, say: 'The $900 of flowers still in the cold room haven’t been used: subtract them.' },
-      { value: 8600, say: 'Purchases aren’t the cost of what was used. Add the flowers on hand at the start and subtract those left at the end.' },
-      { value: 7700, say: 'The $1,300 of flowers on hand on 1 December were available to sell too: add them.' },
-      { value: 10800, say: 'The closing count is subtracted, not added: those flowers are still an asset.' },
+      { value: 3000, say: 'That is LIFO, which leaves the oldest costs in inventory. FIFO sells the oldest cases first, so the cases left are the latest ones, bought at $30.' },
+      { value: 3312, say: 'That is the weighted average ($27.60 a case). FIFO assigns the cases left the most recent costs.' },
+      { value: 10200, say: 'That is FIFO cost of goods sold for the 380 cases sold. The question asks for the 120 cases left.' },
+      { value: 3240, say: 'The 120 cases left all come from the last delivery of 180 at $30, not from the March layer.' },
     ],
-    solution: 'The same reasoning as F01’s supplies adjustment: what was available (opening 1,300 + bought 8,600 = 9,900) less what is left (900) was used up: 9,900 − 900 = $9,000. For a business that sells goods this is cost of goods sold = beginning inventory + purchases − ending inventory, the starting point of F02’s inventory lesson.',
+    solution: 'Cases available: 120 + 200 + 180 = 500; sold 380, so 120 are left. FIFO assumes the oldest cases were sold first, so the 120 left come from the August layer: 120 × $30 = $3,600. Cost of goods sold is the rest of the $13,800 available: 13,800 − 3,600 = $10,200. LIFO would leave the opening 120 cases at $25 ($3,000) and the weighted average 120 × $27.60 ($3,312).',
   },
   {
-    id: 'f02-dg-3', lesson: 'income-statement', type: 'classify', kind: 'conceptual',
-    prompt: 'Lantern’s accountant prepares the income statement, the statement of changes in equity and the balance sheet from the adjusted trial balance at 31 December 2026. On which statement is each account’s balance reported?',
-    items: [
-      'Unearned Revenue',
-      'Dividends',
-      'Cost of Goods Sold',
-      'Inventory',
-      'Accumulated Depreciation—Van',
-      'Interest Expense',
-      'Income Taxes Payable',
-      'Sales Returns and Allowances',
+    id: 'f02-dg-3', lesson: 'income-statement', type: 'multi', kind: 'conceptual',
+    prompt: 'Kingsdown Interiors, a fictional retailer, prepares a multi-step income statement under US GAAP. Which of these reduce its gross profit? Select all that apply.',
+    options: [
+      'Refunds to customers for goods they returned',
+      'Freight-in on goods bought and since sold',
+      'Discounts customers take for paying early',
+      'A loss on selling an old delivery van for less than its book value',
+      'Interest on the bank loan that financed its stock of furniture',
+      'Wages of the staff who run its website and answer customers',
+      'Dividends paid to its shareholders out of the year’s profit',
     ],
-    categories: ['Income statement', 'Statement of changes in equity', 'Balance sheet'],
-    answer: [2, 1, 0, 2, 2, 0, 2, 0],
+    answer: [0, 1, 2],
     feedback: {
-      0: 'Despite its name, Unearned Revenue is an obligation to deliver: a liability on the balance sheet.',
-      1: 'Dividends are distributions to the owners, not an expense. They reduce retained earnings in the statement of changes in equity.',
-      4: 'Accumulated depreciation is a contra-asset, deducted from the van on the balance sheet. Depreciation Expense is the income statement account.',
-      7: 'Sales Returns and Allowances reduces revenue: it is deducted from sales at the top of the income statement.',
+      3: 'A loss on disposing of equipment is included in operating income under US GAAP (ASC 360-10-45-5), but it is not part of net revenue or cost of sales, so it sits below gross profit.',
+      4: 'Interest is a cost of borrowing, shown after operating income.',
+      5: 'Running the website is an operating expense, deducted after gross profit.',
+      6: 'Dividends are distributions to owners, not expenses: they appear in the statement of changes in equity.',
     },
-    solution: 'Income statement: Cost of Goods Sold, Interest Expense and Sales Returns and Allowances (a deduction from revenue). Statement of changes in equity: Dividends. Balance sheet: Unearned Revenue and Income Taxes Payable (liabilities), Inventory (an asset) and Accumulated Depreciation—Van (deducted from the van).',
+    solution: 'Gross profit is net revenue minus cost of sales. Returns and sales discounts are contra-revenue items that reduce net revenue, and freight-in is part of the goods’ cost, which reaches cost of goods sold when they are sold. The van loss and the website wages are deducted after gross profit, within operating income; interest comes after operating income; dividends are not on the income statement at all.',
   },
 
   // ================================================================ Module 2: the balance sheet
   {
     id: 'f02-dg-4', lesson: 'receivables-and-payables', type: 'mc', kind: 'conceptual',
-    prompt: 'By 31 December, Elderfield Architects, a fictional practice, has completed a design stage worth $8,000 under a signed contract with a client. It will invoice the client on 10 January. The accountant forgets to record the year-end adjusting entry. Which is true of its 31 December statements?',
+    prompt: 'Tilbury Timber, a fictional wholesaler, uses the allowance method. Before its year-end adjustment, its allowance for doubtful accounts has a debit balance of $1,900. What does this tell you?',
     options: [
-      'Revenue and assets are both understated by $8,000',
-      'Revenue is understated and liabilities are overstated by $8,000',
-      'Nothing is misstated, because revenue is recorded when the invoice is sent',
-      'Assets are understated by $8,000, but revenue is right until the client pays',
+      'This year’s write-offs were larger than the allowance it started with',
+      'Some customers have paid more than they owed, so it owes them refunds',
+      'Last year’s bad debt expense was too high, so this year’s will be lower',
+      'It must have switched to the direct write-off method during the year',
     ],
     answer: 0,
     feedback: {
-      1: 'No liability is involved: the client hasn’t paid anything in advance. The missing entry is a receivable, an asset.',
-      2: 'Revenue belongs to the period in which the work is done, not the one in which it is invoiced.',
-      3: 'Revenue is earned by doing the work, not by being paid. Both sides of the missing entry are understated.',
+      1: 'Overpayments would show as credit balances in customers’ accounts receivable, not in the allowance.',
+      2: 'The reverse: the earlier estimates were too small for the losses that followed, and this year’s expense must also make good the $1,900.',
+      3: 'Writing balances off against the allowance is the allowance method itself; the direct write-off method has no allowance.',
     },
-    solution: 'This is accrued revenue. The missing entry is a debit to Accounts Receivable and a credit to revenue for $8,000, so revenue, net income and retained earnings are understated by $8,000, and so are total assets. Liabilities are unaffected. Receivables like this one are where F02’s receivables lesson starts.',
+    solution: 'The allowance is credited by each period-end estimate and debited when specific balances are written off. A debit balance before the adjustment means the write-offs since the last estimate were larger than the allowance it set up. The adjustment must first clear the $1,900 and then build the balance the aging or other estimate requires, so this year’s bad debt expense is the required balance plus $1,900, and the business should revisit its loss rates.',
   },
   {
     id: 'f02-dg-5', lesson: 'long-lived-assets', type: 'num', kind: 'numerical',
-    prompt: 'Nutfield Bakery, a fictional business, buys an oven on 1 April 2026 for $27,000. It expects to use it for six years and then sell it for $3,000. It uses the straight-line method, charging a full month in the month of purchase, and its year ends on 31 December. What is the oven’s book value at 31 December 2027? Enter whole dollars.',
-    answer: 20000, check: () => 27000 - (27000 - 3000) / 6 / 12 * (9 + 12), unit: '$', places: 0, tol: 0.5,
+    prompt: 'Corbridge Bakery, a fictional business, bought a delivery van on 1 January 2025 for $40,000, expecting to use it for five years and sell it for $4,000. It uses the double-declining-balance method, with a full year in the year of purchase. On 31 December 2026, after recording 2026’s depreciation, it sells the van for $16,000 in cash. What is the gain or loss on the sale? Enter a loss as a negative number, in whole dollars.',
+    answer: 1600, check: () => { const rate = 2 / 5; const bv = 40000 * (1 - rate) * (1 - rate); return 16000 - bv; }, unit: '$', places: 0, tol: 0.5,
     wrong: [
-      { value: 19000, say: 'That charges two full years. The oven was bought on 1 April, so 2026 bears only nine months: 21 months in all.' },
-      { value: 17000, say: 'The residual value is already used in the depreciation. Book value is cost less accumulated depreciation; don’t subtract the residual again.' },
-      { value: 19125, say: 'Depreciate the cost less the residual value: (27,000 − 3,000) ÷ 6 = $4,000 a year, not $4,500.' },
-      { value: 23000, say: 'That is the book value after one full year. By 31 December 2027 the oven has been used for 21 months.' },
+      { value: -9600, say: 'That uses the straight-line method, $7,200 a year. Double-declining balance charges 40% of the book value each year, so far more in the early years.' },
+      { value: -960, say: 'Double-declining balance applies the rate to the book value, not to cost less residual value; the residual only stops depreciation going too far later on.' },
+      { value: -8000, say: 'That takes only one year’s depreciation. The van has been depreciated for 2025 and 2026.' },
+      { value: 16000, say: 'That is the cash received. The gain is the proceeds less the van’s book value.' },
     ],
-    solution: 'Annual depreciation = (27,000 − 3,000) ÷ 6 = $4,000, or $333.33 a month. April 2026 to December 2027 is 9 + 12 = 21 months, so accumulated depreciation is 4,000 × 21 ÷ 12 = $7,000. Book value = 27,000 − 7,000 = $20,000.',
+    solution: 'The rate is 2 × (1 ÷ 5) = 40% of the book value each year, ignoring the residual value until the end. 2025: 40% × 40,000 = 16,000, leaving 24,000. 2026: 40% × 24,000 = 9,600, leaving a book value of $14,400, still above the $4,000 residual. Gain = proceeds − book value = 16,000 − 14,400 = $1,600, included in operating income.',
   },
   {
-    id: 'f02-dg-6', lesson: 'balance-sheet-and-equity', type: 'num', kind: 'applied',
-    prompt: 'Bellbrook Plumbing Inc., a fictional company, has this adjusted trial balance at 31 December 2026, before the closing entries. What total equity will its balance sheet show? Enter whole dollars.',
-    data: { table: { head: ['Account', 'Debit ($)', 'Credit ($)'], rows: [
-      ['Cash', '33,100', ''],
-      ['Accounts Receivable', '9,600', ''],
-      ['Van', '40,000', ''],
-      ['Accumulated Depreciation—Van', '', '8,000'],
-      ['Accounts Payable', '', '9,400'],
-      ['Unearned Revenue', '', '2,100'],
-      ['Common Stock', '', '30,000'],
-      ['Retained Earnings (1 January 2026)', '', '18,500'],
-      ['Dividends', '6,000', ''],
-      ['Plumbing Revenue', '', '142,000'],
-      ['Expenses (all accounts)', '121,300', ''],
-    ] } },
-    answer: 63200, check: () => 30000 + 18500 + (142000 - 121300) - 6000, unit: '$', places: 0, tol: 0.5,
-    wrong: [
-      { value: 48500, say: 'The Retained Earnings balance in a trial balance before closing is the opening balance. Add the year’s net income and deduct the dividends.' },
-      { value: 69200, say: 'Dividends reduce retained earnings: deduct the $6,000.' },
-      { value: 33200, say: 'Total equity includes the $30,000 of common stock as well as retained earnings.' },
-      { value: 74700, say: 'That is total assets. Equity is what is left after the $11,500 of liabilities.' },
+    id: 'f02-dg-6', lesson: 'balance-sheet-and-equity', type: 'mc', kind: 'conceptual',
+    prompt: 'Quarrington Labs Inc., a fictional company, issues 8,000 shares of no-par common stock for $96,000 in cash. Its board has given the shares a stated value of $1 each. How is the $96,000 shown in equity?',
+    options: [
+      'Common Stock $8,000 and Additional Paid-in Capital $88,000',
+      'Common Stock $96,000, because the shares have no par value',
+      'Additional Paid-in Capital $96,000, because there is no par value',
+      'Common Stock $88,000 and Additional Paid-in Capital $8,000',
     ],
-    solution: 'Net income = 142,000 − 121,300 = $20,700. Closing retained earnings = 18,500 + 20,700 − 6,000 = $33,200 (the statement of changes in equity). Total equity = common stock 30,000 + retained earnings 33,200 = $63,200. Check: assets 33,100 + 9,600 + (40,000 − 8,000) = 74,700 = liabilities 9,400 + 2,100 + equity 63,200.',
+    answer: 0,
+    feedback: {
+      1: 'No-par shares are credited in full to Common Stock only when they have no stated value. A stated value is treated like par.',
+      2: 'Common Stock always receives at least the stated (or par) value of the shares issued.',
+      3: 'The split is the right way round only if Common Stock gets the stated value, 8,000 × $1, and the excess goes to additional paid-in capital.',
+    },
+    solution: 'A stated value assigned by the board is treated like par: Common Stock is credited with 8,000 × $1 = $8,000 and the rest, 96,000 − 8,000 = $88,000, goes to additional paid-in capital. The entry is debit Cash 96,000; credit Common Stock 8,000 and Additional Paid-in Capital 88,000. Without a stated value the whole $96,000 would go to Common Stock, as Ana’s investment did at Lantern; total equity rises by $96,000 either way.',
   },
 
   // ================================================================ Module 3: the statement of cash flows
   {
-    id: 'f02-dg-7', lesson: 'cash-flow-statement', type: 'multi', kind: 'conceptual',
-    prompt: 'Which of these change a business’s cash but not its net income? Select all that apply.',
-    options: [
-      'Collecting $2,000 from a customer for work invoiced last month',
-      'Paying a $1,500 dividend declared and paid on the same day',
-      'Buying a delivery van for $24,000 in cash',
-      'Borrowing $10,000 from a bank on a three-year loan',
-      'Recording $900 of depreciation on the shop’s equipment',
-      'Accruing $600 of wages earned but not yet paid',
-      'Selling services for $400 in cash on the day they are provided',
-      'Using $300 of supplies that were bought and paid for last month',
-    ],
-    answer: [0, 1, 2, 3],
-    feedback: {
-      4: 'Depreciation reduces net income but moves no cash: the cash left when the equipment was bought.',
-      5: 'Accrued wages reduce net income now; the cash goes out later, when they are paid.',
-      6: 'Revenue earned and collected on the same day changes cash and net income by the same $400.',
-      7: 'Supplies used are an expense this month, but the cash was paid last month.',
-    },
-    solution: 'Cash only: collecting a receivable (the revenue was recorded last month), paying a dividend (a distribution, not an expense), buying a van (an asset, depreciated later) and borrowing (a liability). Net income only: depreciation, accrued wages and supplies used. Both: the cash sale. Because so many transactions affect one and not the other, profit and cash flow differ, which is why F02 needs a separate statement of cash flows.',
-  },
-  {
-    id: 'f02-dg-8', lesson: 'indirect-method', type: 'num', kind: 'applied',
-    prompt: 'Saxby Pool Cleaning Inc., a fictional company, finishes its first year with net income of $24,000. At the year end customers owe it $3,500 for cleaning already done, and other customers have paid $900 in advance for January visits, correctly recorded as unearned revenue. Its expenses include $2,000 of depreciation on its van and $1,200 of wages earned in late December and paid in January. It started the year with no balances and has no other noncash items or year-end balances from its operations. How much cash did its operations generate in the year? Enter whole dollars.',
-    answer: 24600, check: () => 24000 - 3500 + 900 + 2000 + 1200, unit: '$', places: 0, tol: 0.5,
+    id: 'f02-dg-7', lesson: 'cash-flow-statement', type: 'num', kind: 'applied',
+    prompt: 'Marchbank Engineering Inc., a fictional company reporting under US GAAP, has these 2027 cash transactions: it buys two delivery vans for $64,000; sells an old forklift for $9,000; lends a supplier $12,000 on a one-year note and collects $4,000 of it by December; buys a six-month certificate of deposit for $20,000 and a 60-day Treasury bill for $15,000; receives $1,200 of interest and $800 of dividends; and pays $3,500 of interest on its bank loan. What is its net cash from investing activities? Enter a net outflow as a negative number, in whole dollars.',
+    answer: -83000, check: () => -64000 + 9000 - 12000 + 4000 - 20000, unit: '$', places: 0, tol: 0.5,
     wrong: [
-      { value: 31600, say: 'The $3,500 owed by customers is in revenue but hasn’t been collected: subtract it.' },
-      { value: 20600, say: 'Depreciation reduced net income without using cash this year: add it back, don’t subtract it.' },
-      { value: 22800, say: 'The $900 paid in advance arrived as cash but isn’t in revenue yet: add it.' },
-      { value: 22200, say: 'The $1,200 of December wages reduced net income but hadn’t been paid: add it.' },
-      { value: 24000, say: 'Net income isn’t cash. Adjust for the revenue not collected, the cash received in advance, depreciation and the unpaid wages.' },
+      { value: -98000, say: 'A 60-day Treasury bill is a cash equivalent: buying it moves money within cash and cash equivalents, so it isn’t a cash flow at all.' },
+      { value: -81000, say: 'Under US GAAP interest and dividends received are operating inflows, not investing.' },
+      { value: -63000, say: 'A six-month certificate of deposit is not a cash equivalent: its maturity when bought is over three months, so buying it is an investing outflow.' },
+      { value: -86500, say: 'Interest paid is an operating outflow under US GAAP; the loan it relates to is a financing item.' },
+      { value: -75000, say: 'Making a loan to another business, and collecting it, are investing cash flows.' },
     ],
-    solution: 'Start from net income, $24,000, and adjust it: revenue not yet collected −3,500; cash received for next year’s visits +900; depreciation, an expense that used no cash, +2,000; wages expensed but unpaid +1,200. Cash from operations = 24,000 − 3,500 + 900 + 2,000 + 1,200 = $24,600. In a first year each change is the year-end balance itself; this is the indirect method, built from F01’s accrual and cash bases.',
+    solution: 'Investing: vans −64,000; forklift +9,000; loan to the supplier −12,000 and its collection +4,000; certificate of deposit −20,000. Net = −64,000 + 9,000 − 12,000 + 4,000 − 20,000 = −$83,000. The 60-day Treasury bill is a cash equivalent, so buying it is not a cash flow; interest and dividends received, and interest paid, are operating cash flows under ASC 230.',
   },
   {
-    id: 'f02-dg-9', lesson: 'cash-flow-statement', type: 'equation', kind: 'numerical',
-    prompt: 'On 5 January Eastbrook Garage, a fictional business, pays its mechanics $4,000 in wages: $2,500 for days worked in late December, which was accrued at its 31 December year end, and $1,500 for 1–5 January. Enter the change in each side of the accounting equation for the payment (use a minus sign for a decrease and 0 for no change).',
-    answer: { assets: -4000, liabilities: -2500, equity: -1500 },
-    solution: 'Cash, an asset, falls by $4,000. The $2,500 for December settles Wages Payable, so liabilities fall by $2,500 with no new expense: December’s expense was recorded by the accrual. The $1,500 for January is this year’s wages expense, which reduces equity. Check: −4,000 = −2,500 + (−1,500). A statement of cash flows shows the whole $4,000 as cash paid to employees, though only $1,500 is January’s expense.',
+    id: 'f02-dg-8', lesson: 'indirect-method', type: 'num', kind: 'numerical',
+    prompt: 'Halsey Toys, a fictional retailer, reports net income of $48,000, after depreciation of $12,000 and a $2,500 gain on selling equipment. During the year its accounts receivable rose by $4,000 and its accounts payable fell by $1,500; the only other change in its operating assets and liabilities was in inventory. By the indirect method its net cash from operating activities is $46,500. By how much did its inventory change? Enter an increase as a positive number and a decrease as a negative number, in whole dollars.',
+    answer: 5500, check: () => (48000 + 12000 - 2500 - 4000 - 1500) - 46500, unit: '$', places: 0, tol: 0.5,
+    wrong: [
+      { value: -5500, say: 'Before the inventory line the reconciliation reaches $52,000, more than the $46,500 reported, so the inventory line is a subtraction: inventory rose.' },
+      { value: 10500, say: 'The gain is subtracted from net income, not added: the sale’s cash is reported in investing activities.' },
+      { value: 8500, say: 'A fall in accounts payable is subtracted: the business paid suppliers more than it bought from them.' },
+      { value: 13500, say: 'A rise in receivables is subtracted: revenue was recorded faster than cash came in.' },
+      { value: -18500, say: 'Depreciation is added back, not subtracted: it reduced net income without using cash.' },
+    ],
+    solution: 'Work the reconciliation down to the missing line: 48,000 + 12,000 (depreciation) − 2,500 (gain) − 4,000 (receivables up) − 1,500 (payables down) = 52,000. Reported operating cash is 46,500, so the inventory line must be 46,500 − 52,000 = −5,500. A subtraction means inventory rose: Halsey spent $5,500 more on stock than it charged to cost of goods sold.',
+  },
+  {
+    id: 'f02-dg-9', lesson: 'cash-flow-statement', type: 'num', kind: 'applied',
+    prompt: 'Penwith Storage Inc., a fictional company reporting under US GAAP, has these 2027 events: it buys a warehouse for $300,000, paying $60,000 in cash and giving the seller a $240,000 note; it settles a $25,000 loan from its founder by issuing her shares; it records $18,000 of depreciation; it buys a 45-day Treasury bill for $10,000; and it pays a $12,000 cash dividend. What total does it disclose beneath its statement of cash flows as noncash investing and financing activities? Enter whole dollars.',
+    answer: 265000, check: () => (300000 - 60000) + 25000, unit: '$', places: 0, tol: 0.5,
+    wrong: [
+      { value: 325000, say: 'The $60,000 paid in cash is an investing outflow in the statement itself. Only the part financed by the seller’s note is noncash.' },
+      { value: 283000, say: 'Depreciation is a noncash expense, but not an investing or financing activity: it belongs in the indirect reconciliation, not this disclosure.' },
+      { value: 240000, say: 'Issuing shares to settle a loan is also financing without cash, so it is disclosed too.' },
+      { value: 275000, say: 'Buying a 45-day Treasury bill moves money within cash and cash equivalents; it is neither a cash flow nor a noncash activity to disclose.' },
+      { value: 277000, say: 'The cash dividend is a financing outflow reported in the statement itself.' },
+    ],
+    solution: 'Noncash investing and financing activities are investing or financing transactions with no cash: the part of the warehouse paid for with the seller’s note ($240,000) and the loan settled with shares ($25,000), $265,000 in all. The $60,000 cash part of the warehouse is an investing outflow and the dividend a financing outflow in the statement; depreciation appears only in the indirect reconciliation; the Treasury bill is a cash equivalent.',
   },
 
   // ================================================================ Module 4: putting the statements together
@@ -204,7 +192,6 @@ export const items = [
 // of a classify item). The later rules pool earlier modules, so they are raised to keep the same bar for each module:
 // with 2.4 of 3 needed per module, module 3 needs (2.4 + 3) ÷ 6 = 90% of the module 1–2 items and module 4 needs
 // (2.4 + 3 + 3) ÷ 9 ≈ 93.3% of the module 1–3 items. A lower pooled bar would let a strong module hide a weak one.
-// The items mostly test F01 knowledge, so the bar is set high: skipping a module should need a near-clean sweep.
 export const route = [
   { module: 2, ifAtLeast: 0.8 },
   { module: 3, ifAtLeast: 0.9 },

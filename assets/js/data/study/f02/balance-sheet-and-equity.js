@@ -28,7 +28,7 @@ export default {
   slug: 'balance-sheet-and-equity',
   title: 'The balance sheet and equity',
   blurb: 'Put Lantern’s year-end balances into a classified balance sheet: decide what is current, split a loan into its current and noncurrent parts, and calculate working capital and the current ratio. Then look inside equity, at par value, additional paid-in capital, dividends and the statement of changes in equity.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Classify assets and liabilities as current or noncurrent under US GAAP and IFRS, including the current portion of long-term debt.',
     'Prepare a classified balance sheet in report form, with contra accounts shown on its face.',

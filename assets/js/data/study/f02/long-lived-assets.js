@@ -28,7 +28,7 @@ export default {
   slug: 'long-lived-assets',
   title: 'Long-lived assets',
   blurb: 'Equipment, vehicles, buildings and patents help a business earn revenue for years, so their cost is spread over those years. Learn what goes into an asset’s cost, how to depreciate it by three methods, what to do when estimates change or the asset is sold, how intangible assets and goodwill are treated, and where US GAAP and IFRS part company.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Determine the cost of a long-lived asset by deciding which expenditures to capitalise and which to expense.',
     'Calculate depreciation by the straight-line, double-declining-balance and units-of-production methods, including part years under a stated convention.',

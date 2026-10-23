@@ -23,7 +23,7 @@ export default {
   slug: 'inventory-and-cost-of-goods-sold',
   title: 'Inventory and cost of goods sold',
   blurb: 'Follow the cost of the bags Lantern sells from the roaster’s invoice to the income statement: what goes into inventory, perpetual and periodic records, the FIFO, LIFO and weighted average formulas, the lower of cost and net realisable value, and what each choice does to gross profit, tax and the balance sheet.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain how the cost of goods moves from inventory, an asset, to cost of goods sold, an expense, under perpetual and periodic systems.',
     'Calculate cost of goods sold and ending inventory by FIFO, LIFO and weighted average, and with beginning inventory + purchases − ending inventory.',

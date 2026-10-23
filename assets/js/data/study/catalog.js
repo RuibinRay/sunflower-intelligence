@@ -63,7 +63,7 @@ const ALL = [
     project: { title: 'One month at Brightwater Bike Repair', blurb: 'Run a full accounting cycle for a fictional repair shop: journalise a month of transactions, adjust, prepare the statements and close the books.' },
   }),
   C({
-    id: 'f02', school: 'finance', code: 'F02', level: 'intro', status: 'in-progress', requires: ['f01'],
+    id: 'f02', school: 'finance', code: 'F02', level: 'intro', status: 'reviewed', requires: ['f01'],
     title: 'Financial Statement Preparation',
     blurb: 'Build all four financial statements and see how every transaction flows through them.',
     case: 'lantern',

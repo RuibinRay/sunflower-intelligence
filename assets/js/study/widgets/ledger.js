@@ -3,9 +3,9 @@
 // The journal sits beside the T-accounts. "Post next entry" posts one entry, fills in its posting references and
 // marks where each line lands; the trial balance updates. In balance mode the balances stay hidden until the
 // student has worked each one out (after every entry is posted).
-import { h } from '../../core/dom.js?v=10';
-import { verdict } from '../../core/ui.js?v=10';
-import * as U from '../labs/accounting-ui.js?v=10';
+import { h } from '../../core/dom.js?v=11';
+import { verdict } from '../../core/ui.js?v=11';
+import * as U from '../labs/accounting-ui.js?v=11';
 
 const { A } = U;
 

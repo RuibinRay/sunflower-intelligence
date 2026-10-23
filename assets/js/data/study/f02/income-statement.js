@@ -59,7 +59,7 @@ export default {
   slug: 'income-statement',
   title: 'The multi-step income statement',
   blurb: 'Rebuild Lantern’s first-year income statement in stages: net revenue, cost of sales and gross profit, operating expenses and operating income, interest, income tax and net income. Then calculate EBIT and EBITDA, see the rules for presenting non-GAAP measures, and meet earnings per share.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Prepare a multi-step income statement from an adjusted trial balance, and explain how it differs from a single-step statement.',
     'Calculate gross profit, gross margin, operating income, income before income tax, income tax expense and net income.',

@@ -1,8 +1,8 @@
 // risk.js — market risk: Value at Risk and Expected Shortfall three ways, rolling backtests (Kupiec, Christoffersen,
 // Basel traffic light) and stress scenarios. Losses are positive numbers throughout.
 // Checked against NumPy/SciPy (tests/make_fixtures.py).
-import { mean, sd, kurtosis, sorted, quantileSorted, normQuantile, chi2PUpper, lnGamma } from './stats.js?v=10';
-import { mulberry32, normalGen } from './rng.js?v=10';
+import { mean, sd, kurtosis, sorted, quantileSorted, normQuantile, chi2PUpper, lnGamma } from './stats.js?v=11';
+import { mulberry32, normalGen } from './rng.js?v=11';
 
 const SQ2PI = Math.sqrt(2 * Math.PI);
 const phi = (z) => Math.exp(-0.5 * z * z) / SQ2PI;
