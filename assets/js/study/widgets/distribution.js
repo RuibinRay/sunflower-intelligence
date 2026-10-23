@@ -7,7 +7,7 @@ import * as F from '../../core/format.js?v=6';
 import * as S from '../../core/stats.js?v=6';
 import * as C from '../../core/cleaning.js?v=6';
 import { tableTwin } from '../../core/charts.js?v=6';
-import { loadDataset } from '../labs/cleaning-ui.js?v=6';
+import { loadDataset, ensureStyles } from '../labs/cleaning-ui.js?v=6';
 
 const TF = {
   none: { label: 'None', name: 'no transformation', f: (x) => x, inv: (y) => y, ok: () => true },
@@ -42,6 +42,7 @@ function thresholds(vals, rule) {
 
 export async function mount(el, config = {}, ctx = {}) {
   const id = `dist${++n}`;
+  ensureStyles();
   el.classList.add('cl-dist');
   el.replaceChildren(h('p', { class: 'cl-loading' }, 'Loading the data…'));
   let items, label;
@@ -150,7 +151,7 @@ export async function mount(el, config = {}, ctx = {}) {
     bins.forEach((b, i) => {
       const flag = [...o.flagged].some((v) => v >= b.x0 && (v < b.x1 || (i === bins.length - 1 && v <= b.x1)));
       if (!b.count) return;
-      g.append(s('rect', { x: x(b.x0) + 1, y: y(b.count), width: Math.max(1, x(b.x1) - x(b.x0) - 2), height: m.t + ih - y(b.count), class: flag ? 'cl-bar-flag' : 'cl-bar', fill: flag ? `url(#${pid})` : null }));
+      g.append(s('rect', { x: x(b.x0) + 1, y: y(b.count), width: Math.max(1, x(b.x1) - x(b.x0) - 2), height: m.t + ih - y(b.count), class: flag ? 'cl-hbar-flag' : 'cl-hbar', fill: flag ? `url(#${pid})` : null }));
     });
     g.append(s('line', { x1: m.l, x2: W - m.r, y1: m.t + ih, y2: m.t + ih, class: 'cl-axis' }));
     const ticks = [lo, (lo + hi) / 2, hi];

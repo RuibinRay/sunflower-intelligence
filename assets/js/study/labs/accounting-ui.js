@@ -503,7 +503,7 @@ export function mountDrill(el, { transactions, chart = CHART, ask, onDone, onPro
     const key = A.entryEffects(t, ch);
     const keyBy = new Map(key.map((e) => [e.acct, e]));
     const order = (a, b) => ch.byName[a.acct].order - ch.byName[b.acct].order;
-    const rows = has('accounts') ? [] : key.slice().sort(order).map((e) => ({ acct: e.acct, id: uid('row') }));
+    const rows = has('accounts') || !rowParts.length ? [] : key.slice().sort(order).map((e) => ({ acct: e.acct, id: uid('row') }));
     const textId = uid('tx');
     let qn = 0;
     const qTitle = (text) => `${++qn}. ${text}`;

@@ -756,7 +756,7 @@ export function detectIssues(table, { rules = [] } = {}) {
         const parts = [];
         if (fmt.length) parts.push(`${plural(fmt.length, 'value')} carry $ signs, thousands separators or other symbols, so most software reads them as text`);
         if (bad.length) parts.push(`${plural(bad.length, 'value')} can’t be read as a number with a decimal ${p.decimal === '.' ? 'point' : 'comma'}: ${quoteList(bad.map((i) => cells[i]))}${commaish.length ? ` (${commaish.length === bad.length ? '' : 'some '}may use a decimal ${p.decimal === '.' ? 'comma' : 'point'})` : ''}`);
-        add('invalid-type', col, [...fmt, ...bad].sort((a, b) => a - b), `${col}: ${parts.join('; ')}.`, { op: 'to-number', column: col, decimal: p.decimal });
+        add('invalid-type', col, [...fmt, ...bad].sort((a, b) => a - b), `${col}: ${parts.join('; ')}.`, { op: 'to-number', column: col, decimal: p.decimal }, { unreadable: bad });
       }
     }
     // dates

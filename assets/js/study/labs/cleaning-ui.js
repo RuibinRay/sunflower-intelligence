@@ -19,6 +19,12 @@ export function loadDataset(name) {
   return cache.get(name);
 }
 
+/** Lesson pages may not link lab-cleaning.css; add it once if it is missing. */
+export function ensureStyles() {
+  if (typeof document === 'undefined' || [...document.styleSheets].some((x) => /lab-cleaning\.css/.test(x.href || '')) || document.querySelector('link[href*="lab-cleaning.css"]')) return;
+  document.head.append(h('link', { rel: 'stylesheet', href: new URL('../../../css/lab-cleaning.css?v=6', import.meta.url).href }));
+}
+
 // ---------------------------------------------------------------- small helpers
 let uid = 0;
 const nextId = () => `cl${++uid}`;
@@ -135,7 +141,7 @@ export function createLab(opts = {}) {
 
   // ---- persistence
   const saved = () => store.get(opts.storageKey, null) || { version: 1, recipes: {} };
-  function persist() {
+  function saveState() {
     if (!opts.storageKey) return;
     const data = saved();
     if (st.persist) { data.recipes[st.name] = st.recipe; data.current = st.name; }
@@ -156,7 +162,7 @@ export function createLab(opts = {}) {
     st.cat = (meta?.category && names.includes(meta.category)) ? meta.category : (prof0.find((p) => p.type === 'category' || p.type === 'boolean')?.name || '');
     for (const step of recipe) { const r = C.apply(cur(), step); if (!r.change.error) { st.recipe.push(step); st.changes.push(r.change); st.snaps.push(r.table); } }
     refresh(false);
-    if (persist) persist();
+    if (persist) saveState();
   };
   lab.loadName = async function loadName(name) {
     const t = await loadDataset(name);
@@ -201,7 +207,7 @@ export function createLab(opts = {}) {
       if (met === st.goals.length && changed) report('complete', { goals: st.goals.length });
     }
     if (st.page * 50 >= rowsForTable().length) st.page = 0;
-    if (changed) persist();
+    if (changed) saveState();
     render();
   }
   lab.refresh = () => refresh(false);
@@ -280,16 +286,23 @@ export function createLab(opts = {}) {
   // ---- the data table with problem cells marked
   function flagMap() {
     const t = cur(), names = t.columns.map((c) => c.name);
-    const cells = new Map(), rowsF = new Map();
+    const cells = new Map(), rowsF = new Map(), colsF = new Map();
     const put = (m, k, label) => { if (!m.has(k)) m.set(k, []); if (!m.get(k).includes(label)) m.get(k).push(label); };
     for (const x of st.issues) {
-      if (x.kind === 'skewed' || x.kind === 'constant') continue;
       const label = x.title;
+      if (x.kind === 'skewed' || x.kind === 'constant') { const j = names.indexOf(x.column); if (j >= 0) put(colsF, j, label); continue; }
+      const present = t.rows.length - (st.prof[names.indexOf(x.column)]?.missing ?? 0);
+      if (x.kind === 'invalid-type' && x.unreadable && x.rows.length > 0.5 * present) {
+        // a whole column stored as text: mark the column once, and only the cells that can't be read
+        put(colsF, names.indexOf(x.column), `${label} (most values)`);
+        x.unreadable.forEach((i) => put(cells, `${i}|${names.indexOf(x.column)}`, 'Can’t be read as a number'));
+        continue;
+      }
       if (x.kind === 'exact-duplicate' || x.kind === 'near-duplicate') x.rows.forEach((i) => put(rowsF, i, label));
       const cols = x.kind === 'rule' && x.rule ? [x.rule.column] : x.column ? [x.column] : [];
       cols.forEach((c) => { const j = names.indexOf(c); if (j >= 0) x.rows.forEach((i) => put(cells, `${i}|${j}`, label)); });
     }
-    return { cells, rowsF };
+    return { cells, rowsF, colsF };
   }
   function rowsForTable() {
     const t = cur();
@@ -300,7 +313,7 @@ export function createLab(opts = {}) {
   }
   RENDER.table = (el) => {
     const t = cur();
-    const { cells, rowsF } = flagMap();
+    const { cells, rowsF, colsF } = flagMap();
     const list = rowsForTable();
     const pages = Math.max(1, Math.ceil(list.length / 50));
     const show = list.slice(st.page * 50, st.page * 50 + 50);
@@ -312,7 +325,7 @@ export function createLab(opts = {}) {
     const prof = st.prof;
     const table = h('table', { class: 'data-table cl-data' },
       h('caption', { class: 'visually-hidden' }, `${st.title}: rows ${show.length ? `${st.page * 50 + 1} to ${st.page * 50 + show.length}` : 'none'}${st.onlyIssues ? ' with issues' : ''}. Cells with an issue are outlined and marked with a warning sign.`),
-      h('thead', {}, h('tr', {}, h('th', { scope: 'col', class: 'is-num cl-rowh' }, 'Row'), t.columns.map((c, j) => h('th', { scope: 'col', class: prof[j]?.type === 'number' ? 'is-num' : '' }, h('span', { class: 'cl-colname' }, c.name), h('span', { class: 'cl-coltype' }, TYPE_LABEL[prof[j]?.type] || ''))))),
+      h('thead', {}, h('tr', {}, h('th', { scope: 'col', class: 'is-num cl-rowh' }, 'Row'), t.columns.map((c, j) => h('th', { scope: 'col', class: `${prof[j]?.type === 'number' ? 'is-num' : ''}${colsF.has(j) ? ' is-flag is-colflag' : ''}`, tabindex: colsF.has(j) ? '-1' : null }, h('span', { class: 'cl-colname' }, c.name), h('span', { class: 'cl-coltype' }, TYPE_LABEL[prof[j]?.type] || '', colsF.has(j) ? icon('flag', 'cl-flag-icon') : ''), colsF.has(j) ? h('span', { class: 'cl-flag-text' }, colsF.get(j).join('; ')) : '')))),
       h('tbody', {}, show.map((i) => {
         const r = t.rows[i];
         const rf = rowsF.get(i);
@@ -344,7 +357,7 @@ export function createLab(opts = {}) {
         h('p', { class: 'cl-note', role: 'status' }, list.length ? `Rows ${F.int(st.page * 50 + 1)}–${F.int(st.page * 50 + show.length)} of ${F.int(list.length)}${st.onlyIssues ? ` with issues (${F.int(t.rows.length)} in all)` : ''}` : 'No rows to show.'),
         pages > 1 ? h('div', { class: 'cl-pager' }, pager(-1, 'Previous 50'), pager(1, 'Next 50')) : ''),
       h('div', { class: 'table-scroll cl-scroll cl-data-wrap', role: 'region', 'aria-label': `${st.title} data`, tabindex: first ? null : '0' }, table),
-      h('p', { class: 'cl-note cl-legend' }, icon('flag', 'cl-flag-icon'), ' marks a cell or row with an issue (focus it, or move with the arrow keys, to read which). · shows a stray space. Numbers stored as numbers are right-aligned; text is left-aligned.'));
+      h('p', { class: 'cl-note cl-legend' }, icon('flag', 'cl-flag-icon'), ' marks a cell, row or column with an issue: focus it (Tab into the table, then use the arrow keys) or point at it to read which. ', h('span', { class: 'cl-ws' }, '·'), ' is a stray space. Numbers stored as numbers are right-aligned; text is left-aligned.'));
   };
 
   // ---- the operation builder
@@ -647,19 +660,17 @@ export function createLab(opts = {}) {
     const label = (x) => (x === 'raw' ? 'Raw' : 'Before');
     if (nums.length) {
       const stats = [['Values', 'count', (v) => F.int(v)], ['Missing', 'missing', (v) => F.int(v)], ['Mean', 'mean', num], ['Median', 'median', num], ['SD', 'sd', num], ['Min', 'min', num], ['Max', 'max', num]];
+      const word = label(st.compareTo === 'raw' || !hasStep ? 'raw' : 'step').toLowerCase();
       el.append(h('div', { class: 'table-scroll cl-scroll' }, h('table', { class: 'data-table cl-stats' },
-        h('caption', { class: 'cl-cap' }, 'Watched numbers'),
-        h('thead', {}, h('tr', {}, h('th', { scope: 'col' }, 'Column'), h('th', { scope: 'col' }, 'Statistic'), h('th', { scope: 'col', class: 'is-num' }, label(st.compareTo === 'raw' || !hasStep ? 'raw' : 'step')), h('th', { scope: 'col', class: 'is-num' }, 'After'), h('th', { scope: 'col', class: 'is-num' }, 'Change'))),
-        h('tbody', {}, nums.flatMap((x) => stats.map(([lab2, k, f], si) => {
+        h('caption', { class: 'cl-cap' }, `Watched numbers: ${word} → after. One figure means no change.`),
+        h('thead', {}, h('tr', {}, h('th', { scope: 'col' }, 'Column'), stats.map(([l]) => h('th', { scope: 'col', class: 'is-num' }, l)))),
+        h('tbody', {}, nums.map((x) => h('tr', {}, h('th', { scope: 'row' }, x.column), stats.map(([, k, f]) => {
           const bv = x.before?.[k], av = x.after?.[k];
-          const d = Number.isFinite(bv) && Number.isFinite(av) ? av - bv : NaN;
-          const changed = Number.isFinite(d) && Math.abs(d) > 1e-9 * Math.max(1, Math.abs(bv));
-          return h('tr', { class: `${si === 0 ? 'cl-first' : ''}${changed ? ' is-changed' : ''}` },
-            si === 0 ? h('th', { scope: 'rowgroup', rowspan: stats.length }, x.column) : '',
-            h('th', { scope: 'row', class: 'cl-stat' }, lab2),
-            h('td', { class: 'is-num' }, x.before ? f(bv) : 'not there'), h('td', { class: 'is-num' }, x.after ? f(av) : 'removed'),
-            h('td', { class: 'is-num' }, changed ? `${d > 0 ? '+' : '−'}${f(Math.abs(d))}` : 'no change'));
-        }))))));
+          if (!x.before) return h('td', { class: 'is-num' }, `new: ${f(av)}`);
+          if (!x.after) return h('td', { class: 'is-num' }, `${f(bv)} → removed`);
+          const same = f(bv) === f(av);
+          return h('td', { class: `is-num${same ? '' : ' is-changed'}` }, same ? f(av) : [h('span', { class: 'cl-before' }, f(bv)), h('span', { class: 'cl-arrow2', 'aria-hidden': 'true' }, ' → '), h('span', { class: 'visually-hidden' }, ' changed to '), h('strong', {}, f(av))]);
+        })))))));
     }
     cmp.filter((x) => x.kind === 'category').forEach((x) => el.append(shareTable(x, `Watched categories: ${x.column}`)));
     // shares of a chosen category
@@ -716,7 +727,7 @@ export function createLab(opts = {}) {
       file.value = '';
     });
     el.replaceChildren(
-      h('div', { class: 'input-actions' },
+      h('div', { class: 'input-actions cl-export-actions' },
         btn('Download cleaned CSV', () => { download(`${base}-clean.csv`, C.toCSV(t)); lab.say(`Downloaded ${base}-clean.csv (${plural(t.rows.length, 'row')}).`); }),
         btn('Download recipe (JSON)', () => { download(`${base}-recipe.json`, `${JSON.stringify(st.recipe, null, 2)}\n`, 'application/json'); lab.say(`Downloaded ${base}-recipe.json (${plural(st.recipe.length, 'step')}).`); }),
         btn('Download data quality report (Markdown)', () => { download(`${base}-quality-report.md`, reportText(), 'text/markdown;charset=utf-8'); lab.say(`Downloaded ${base}-quality-report.md.`); }),
@@ -734,6 +745,7 @@ export function createLab(opts = {}) {
  * opts as createLab, plus export (show the export panel; default true when ops are given).
  */
 export async function mountLab(el, opts = {}) {
+  ensureStyles();
   const lab = createLab(opts);
   const H = opts.headingLevel || 3;
   const inspectOnly = !lab.ops.length;
