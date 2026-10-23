@@ -65,7 +65,7 @@ export const items = [
     answer: 28.75, check: () => { const a = [12, 14, 15, 15, 16, 18, 19, 21, 24, 60]; return q(a, 0.75) + 1.5 * (q(a, 0.75) - q(a, 0.25)); }, tol: 0.01, unit: '$', places: 2,
     wrong: [
       { value: 26, say: 'You added 1 × IQR to Q3. The fence is Q3 + 1.5 × IQR.' },
-      { value: 29.25, say: 'You may have used Q3 = 21 (the median of the upper half). With linear interpolation Q3 is at position 7.75: 19 + 0.75 × 2 = 20.5.' },
+      { value: 30, say: 'You used the medians of the lower and upper halves (Q1 = 15, Q3 = 21), another common method. With linear interpolation Q3 is at position 7.75: 19 + 0.75 × 2 = 20.5.' },
     ],
     solution: 'Positions are 1 + 9p. Q1 at position 3.25: 15 + 0.25 × 0 = 15. Q3 at position 7.75: 19 + 0.75 × (21 − 19) = 20.5. IQR = 5.5; upper fence = 20.5 + 1.5 × 5.5 = $28.75. The $60 order is flagged for review.',
   },
@@ -107,7 +107,7 @@ export const items = [
     id: 'b02-m3-9', lesson: 'outliers', type: 'mc', kind: 'applied',
     prompt: 'Harborview’s export contains several standard-room bookings with a nightly rate of $9,999, which the booking system uses as a placeholder. What should the analyst do with them?',
     options: [
-      'Catch them with a range check and set the rates to missing (or correct them from the invoices), before running any outlier rule.',
+      'Catch them with a range check and correct them from other evidence (total ÷ nights, or the invoices), or set them to missing if no evidence exists, before running any outlier rule.',
       'Winsorise them at the upper Tukey fence.',
       'Keep them and report the median rate instead of the mean.',
       'Delete the whole bookings, since they are outliers.',
@@ -118,7 +118,7 @@ export const items = [
       2: 'Robust summaries suit genuine extremes; a placeholder isn’t a rate at all, and it would still corrupt totals.',
       3: 'The stays happened; only the rate is unknown. Losing the whole row loses real nights, guests and dates.',
     },
-    solution: '$9,999 is an impossible value for a standard room: a validation failure, not an outlier. A range check finds it; the rate becomes missing (or is corrected from the invoice), and outlier rules run afterwards on genuine rates.',
+    solution: '$9,999 is an impossible value for a standard room: a validation failure, not an outlier. A range check finds it; the rate is recovered from other evidence where it exists (in Harborview’s export, total ÷ nights) or otherwise becomes missing, and outlier rules run afterwards on genuine rates.',
   },
   {
     id: 'b02-m3-10', lesson: 'skewed-data', type: 'num', kind: 'numerical',
@@ -146,7 +146,7 @@ export const items = [
   },
   {
     id: 'b02-m3-12', lesson: 'skewed-data', type: 'mc', kind: 'applied',
-    prompt: 'Northfield’s board asks how many hours a typical first-year studies each week. The hours are strongly right-skewed and some students report 0. What should the analyst report?',
+    prompt: 'Northfield’s board asks how many hours a typical first-year studies each week. The hours are strongly right-skewed, and the survey allows answers of 0. What should the analyst report?',
     options: [
       'The median (with the quartiles), in hours.',
       'The back-transformed mean of log(hours).',
@@ -155,7 +155,7 @@ export const items = [
     ],
     answer: 0,
     feedback: {
-      1: 'The log of 0 is undefined, so this can’t even be computed for students who report 0 hours.',
+      1: 'The log of 0 is undefined, so this fails as soon as any student reports 0 hours, and log-scale results still have to be explained to the board.',
       2: 'That number is on a log scale; “2.1 log-hours” means nothing to the board.',
       3: 'In a right-skewed variable, a few heavy studiers pull the mean above what a typical student does.',
     },

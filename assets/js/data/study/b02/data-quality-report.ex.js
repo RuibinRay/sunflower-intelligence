@@ -71,7 +71,7 @@ export const guided = [
     items: [
       'Downloaded from the shop platform on 3 July 2026 by J. Park; 14 columns.',
       '<code>discount</code>: discount on the whole order, in US dollars, 0 or more.',
-      'Repeated order ids with changed values: kept the copy the shop system confirms, because the other copy’s quantity was edited after the sale.',
+      'Repeated order ids with changed values: kept the copy the shop system confirms for each id, because the other copies were edited or incomplete re-exports.',
       'Ratings were analysed only where present; because one-off buyers rate less often, the average rating mainly reflects subscribers.',
       'Some missing e-mail addresses can’t be recovered from the file, so repeat purchases can’t be traced for those customers.',
       'Step 4: trimmed spaces and standardised case in <code>region</code>; row count unchanged.',
