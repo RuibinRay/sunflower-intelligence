@@ -464,6 +464,7 @@ async function checkAssessments(course) {
     if (P?.verify) { try { for (const [what, value, shown, tol = 0.005] of P.verify()) if (Math.abs(value - shown) > tol) r.err(`project: ${what}: computed ${value}, shown ${shown}`); } catch (e) { r.err(`project.verify threw: ${e.message}`); } }
     if (!P?.title || !P?.brief || !Array.isArray(P?.stages) || !P.stages.length) r.err('project: needs title, brief and stages');
     (P?.stages || []).forEach((s, i) => (s.items || []).forEach((x, j) => checkExercise(x, `project.stages[${i}].items[${j}]`, r, { course, chart, caseMod })));
+    (P?.stages || []).forEach((s, i) => { if (s.tool?.kind === 'widget') checkWidget(`project.stages[${i}].tool`, s.tool.widget, r, { chart, caseMod }); else if (s.tool && !['recorder', 'cleaning', 'mix'].includes(s.tool.kind)) r.err(`project.stages[${i}]: unknown tool kind ${s.tool.kind}`); });
     if (!Array.isArray(P?.rubric) || P.rubric.length < 3) r.warn('project: give a rubric of at least 3 criteria');
   }
   return r;

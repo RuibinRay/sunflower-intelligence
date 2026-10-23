@@ -4,6 +4,8 @@
 //   { kind: 'recorder', scenario }                              Accounting Lab recorder: done when every entry is posted
 //   { kind: 'cleaning', dataset, ops, watch, task, goals }      Data Cleaning Lab: done when every goal is met
 //   { kind: 'mix', lock, show, plan }                           Marketing Mix Simulator: the plan is kept for the write-up
+//   { kind: 'widget', widget: { type: 'sheet' | 'pivot' | … } }  a lesson widget (B03's worksheet, PivotTable,
+//                                                               regression output); it doesn't hold the stage up
 // A stage's `items` are questions (any exercise type; `short` for writing). A stage is done when its tool's goal
 // is met (if it has one) and every question has been answered. The project is finished when every stage is done
 // and the student has marked it against the rubric. Projects never change mastery.
@@ -109,6 +111,10 @@ async function mountTool(el, tool, cb) {
       const { kind, ...opts } = tool;
       const keep = debounce((plan, results) => cb.plan(plan, results), 600);   // saving on every slider step would be wasteful
       mountSimulator(el, { ...opts, onChange: (plan, results) => keep(plan, results) });
+    } else if (tool.kind === 'widget' && /^[a-z][a-z-]*$/.test(tool.widget?.type || '')) {
+      const mod = await import(`../study/widgets/${tool.widget.type}.js?v=11`);
+      el.replaceChildren();
+      await mod.mount(el, tool.widget, { id: cb.key.replace(/[^a-z0-9-]/gi, '-'), report: () => {} });
     } else throw new Error(`unknown tool ${tool.kind}`);
   } catch (e) {
     console.error(e);

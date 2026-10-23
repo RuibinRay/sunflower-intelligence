@@ -106,6 +106,12 @@ FORMULAS = [
     '=CHOOSE(2,"a","b","c")', '=ROW(C5)', '=COLUMN(C5)', '=ROWS(A2:F13)', '=COLUMNS(A2:F13)',
     '=SUM(INDEX(F2:F13,1):INDEX(F2:F13,3))', '=INDEX(F2:F13,MATCH(MAX(F2:F13),F2:F13,0))',
     '=VLOOKUP(INDEX(C2:C13,5),C2:D13,2,FALSE)',
+    # text that reads as a number or a date (US settings), and more date functions
+    '=VALUE("$58.00")', '="$1,234.50"*1', '=VALUE("(5.00)")', '=VALUE("12%")', '=VALUE("1,23")', '=DATEVALUE("March 2, 2026")',
+    '=DATEVALUE("22-MAY-2011")', '=DATEVALUE("2011/02/23")', '=DATEVALUE("3/14/2026")', '=DATEVALUE("2026-02-30")', '="2026-03-14"+1',
+    '=NETWORKDAYS(A2,A13)', '=NETWORKDAYS(A2,A13,A7)', '=WORKDAY(A2,10)', '=WORKDAY(A13,-3)', '=DATEDIF(A2,DATE(2027,3,1),"Y")',
+    '=DATEDIF(A2,DATE(2027,3,1),"M")', '=DATEDIF(A2,A13,"D")', '=WEEKNUM(A2)', '=WEEKNUM(A2,2)', '=WEEKNUM(DATE(2026,1,4))',
+    '=MROUND(17,5)', '=MROUND(F3,0.05)', '=LOG(8,2)', '=LOG(1000)', '=ISERR(NA())', '=ISERR(1/0)', '=ISLOGICAL(H3)',
 ]
 # Functions written with Excel's "_xlfn." prefix in the file format (introduced after Excel 2007)
 XLFN = ['STDEV.S', 'STDEV.P', 'VAR.S', 'VAR.P', 'PERCENTILE.INC', 'QUARTILE.INC', 'RANK.EQ', 'MODE.SNGL', 'FORECAST.LINEAR',
@@ -121,7 +127,10 @@ XLFN = ['STDEV.S', 'STDEV.P', 'VAR.S', 'VAR.P', 'PERCENTILE.INC', 'QUARTILE.INC'
 #     #REF! error value."
 # (e) Excel treats 1900 as a leap year (Microsoft: "Excel incorrectly assumes that the year 1900 is a leap year"), so
 #     1 January 1900 is serial 1 and serial 60 is 29 February 1900; LibreOffice counts from 30 December 1899.
+# (f) Excel's DATEVALUE help: =DATEVALUE("2011/02/23") is 40597 (LibreOffice in English (USA) doesn't read year/month/day
+#     with slashes).
 EXCEL_DIFFERS = {
+    '=DATEVALUE("2011/02/23")': 40597,                                                                     # (f)
     '=TRUE>"z"': True, '="a"&TRUE': 'aTRUE', '=SUM(H1:H8)': 6.5, '=SUM("5",TRUE)': 6, '=SUM(H1:H8)+H2': 11.5,
     '=AVERAGE(H1:H8)': 6.5 / 3, '=COUNT(H1:H8)': 3, '=TEXTJOIN("-",FALSE,H3,H4,H8)': 'TRUE--0',      # (a)
     '=COUNTIF(H1:H8,"*")': 3,                                                                            # (b)

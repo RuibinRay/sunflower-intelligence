@@ -243,6 +243,34 @@ export function shiftFormula(formula, dr, dc) {
 
 // ---------------------------------------------------------------- coercion and comparison
 const TEXT_NUM = /^\s*[-+]?(\d+\.?\d*|\.\d+)(e[+-]?\d+)?\s*%?\s*$/i;
+// text Excel (US settings) reads as a number: currency signs, thousands separators, accounting brackets
+const TEXT_MONEY = /^\s*(\()?\s*([-+])?\s*\$?\s*(\d{1,3}(?:,\d{3})+|\d+)?(\.\d+)?\s*(\))?\s*(%)?\s*$/;
+function moneyText(t) {
+  const m = TEXT_MONEY.exec(t);
+  if (!m || (!m[3] && !m[4]) || Boolean(m[1]) !== Boolean(m[5]) || (!/\$|,/.test(t) && !m[1])) return null;
+  const n = Number(`${m[3] || '0'}`.replace(/,/g, '') + (m[4] || ''));
+  const v = (m[1] || m[2] === '-' ? -n : n) / (m[6] ? 100 : 1);
+  return v;
+}
+const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+const monthOf = (w) => { const k = MONTHS.findIndex((x) => x.startsWith(w.toLowerCase().slice(0, 3)) && w.length >= 3 && x.startsWith(w.toLowerCase())); return k; };
+/** Text Excel (with US regional settings) recognises as a date: 2026-03-14, March 14, 2026, Mar 14 2026,
+ *  14 March 2026, 14-Mar-2026, 3/14/2026 (month first). Returns a serial number or null. */
+export function dateText(str) {
+  const t = String(str).trim();
+  let m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(t);
+  const ok = (y, mo, d) => mo >= 1 && mo <= 12 && d >= 1 && d <= new Date(Date.UTC(y, mo, 0)).getUTCDate();
+  if (m) return ok(+m[1], +m[2], +m[3]) ? dateSerial(+m[1], +m[2], +m[3]) : null;
+  m = /^([A-Za-z]{3,9})\.?\s+(\d{1,2}),?\s+(\d{4})$/.exec(t);
+  if (m) { const k = monthOf(m[1]); return k >= 0 && ok(+m[3], k + 1, +m[2]) ? dateSerial(+m[3], k + 1, +m[2]) : null; }
+  m = /^(\d{1,2})[\s-]+([A-Za-z]{3,9})\.?[\s-]+(\d{4})$/.exec(t);
+  if (m) { const k = monthOf(m[2]); return k >= 0 && ok(+m[3], k + 1, +m[1]) ? dateSerial(+m[3], k + 1, +m[1]) : null; }
+  m = /^(\d{4})\/(\d{1,2})\/(\d{1,2})$/.exec(t);
+  if (m) return ok(+m[1], +m[2], +m[3]) ? dateSerial(+m[1], +m[2], +m[3]) : null;
+  m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(t);
+  if (m) return ok(+m[3], +m[1], +m[2]) ? dateSerial(+m[3], +m[1], +m[2]) : null;
+  return null;
+}
 /** A value as a number for arithmetic: empty → 0, TRUE → 1, numeric text → its number, other text → #VALUE!. */
 function toNum(v) {
   if (isErr(v)) return v;
@@ -252,7 +280,8 @@ function toNum(v) {
   if (typeof v === 'string') {
     const t = v.trim();
     if (TEXT_NUM.test(t)) { const pct = t.endsWith('%'); const n = Number(t.replace('%', '')); return pct ? n / 100 : n; }
-    const iso = isoToSerial(t); if (iso != null) return iso;
+    const money = moneyText(t); if (money != null) return money;
+    const d = dateText(t); if (d != null) return d;
     return ERR.VALUE;
   }
   return ERR.VALUE;
@@ -815,6 +844,8 @@ FN.ISNUMBER = (args, ctx) => lift(args[0], ctx, (v) => typeof v === 'number');
 FN.ISTEXT = (args, ctx) => lift(args[0], ctx, (v) => typeof v === 'string');
 FN.ISERROR = (args, ctx) => lift(args[0], ctx, (v) => isErr(v));
 FN.ISNA = (args, ctx) => lift(args[0], ctx, (v) => isErr(v) && v.code === '#N/A');
+FN.ISERR = (args, ctx) => lift(args[0], ctx, (v) => isErr(v) && v.code !== '#N/A');
+FN.ISLOGICAL = (args, ctx) => lift(args[0], ctx, (v) => typeof v === 'boolean');
 FN.NA = () => ERR.NA;
 
 // maths
@@ -834,6 +865,8 @@ FN.TRUNC = (args, ctx) => FN.ROUNDDOWN([args[0], args[1] || { t: 'lit', v: 0 }],
 FN.CEILING = (args, ctx) => { const n = numArg(args[0], ctx), s = numArg(args[1], ctx, 1); if (isErr(n)) return n; if (isErr(s)) return s; if (s === 0) return 0; return Math.ceil(p15(n / s)) * s; };
 FN.FLOOR = (args, ctx) => { const n = numArg(args[0], ctx), s = numArg(args[1], ctx, 1); if (isErr(n)) return n; if (isErr(s)) return s; if (s === 0) return ERR.DIV0; return Math.floor(p15(n / s)) * s; };
 FN.PI = () => Math.PI;
+FN.MROUND = (args, ctx) => { const n = numArg(args[0], ctx), m = numArg(args[1], ctx); if (isErr(n)) return n; if (isErr(m)) return m; if (m === 0) return 0; if (Math.sign(n) * Math.sign(m) < 0) return ERR.NUM; return round(n / m, 0) * m; };
+FN.LOG = (args, ctx) => { const n = numArg(args[0], ctx), b = numArg(args[1], ctx, 10); if (isErr(n)) return n; if (isErr(b)) return b; return n <= 0 || b <= 0 || b === 1 ? ERR.NUM : Math.log(n) / Math.log(b); };
 
 // finance (the F04 formulas, Excel's sign convention: money paid out is negative)
 FN.PMT = (args, ctx) => { const r = numArg(args[0], ctx), n = numArg(args[1], ctx), pv = numArg(args[2], ctx), fv = numArg(args[3], ctx, 0), t = numArg(args[4], ctx, 0); for (const x of [r, n, pv, fv, t]) if (isErr(x)) return x; if (r === 0) return -(pv + fv) / n; const f = (1 + r) ** n; return -(r * (pv * f + fv)) / ((1 + r * (t ? 1 : 0)) * (f - 1)); };
@@ -875,7 +908,18 @@ FN.EDATE = (args, ctx) => { const s = numArg(args[0], ctx), k = numArg(args[1], 
 // WEEKDAY(serial, [type]): type 1 (default) Sunday = 1 … Saturday = 7; type 2 Monday = 1 … Sunday = 7
 FN.WEEKDAY = (args, ctx) => { const s = numArg(args[0], ctx), t = numArg(args[1], ctx, 1); if (isErr(s)) return s; const [y, m, d] = serialToYMD(s); const w = new Date(Date.UTC(y, m - 1, d)).getUTCDay(); return t === 2 ? (w === 0 ? 7 : w) : t === 3 ? (w + 6) % 7 : w + 1; };
 FN.DAYS = (args, ctx) => { const e = numArg(args[0], ctx), s = numArg(args[1], ctx); if (isErr(e)) return e; if (isErr(s)) return s; return Math.floor(e) - Math.floor(s); };
-FN.DATEVALUE = (args, ctx) => { const v = scalar(args[0], ctx); const s = isoToSerial(String(v).trim()); if (s != null) return s; const m = /^(\d{1,2}) ([A-Za-z]{3,9}) (\d{4})$/.exec(String(v).trim()); if (m) { const mi = MON.findIndex((x) => x.toLowerCase().startsWith(m[2].toLowerCase().slice(0, 3))); if (mi >= 0) return dateSerial(+m[3], mi + 1, +m[1]); } return ERR.VALUE; };
+FN.DATEVALUE = (args, ctx) => lift(args[0], ctx, (v) => { if (isErr(v)) return v; if (typeof v !== 'string') return ERR.VALUE; const d = dateText(v); return d == null ? ERR.VALUE : d; });
+FN.TODAY = () => { const n = new Date(); return dateSerial(n.getFullYear(), n.getMonth() + 1, n.getDate()); };
+FN.NOW = () => { const n = new Date(); return dateSerial(n.getFullYear(), n.getMonth() + 1, n.getDate()) + (n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds()) / 86400; };
+const isWorkday = (s, hol) => { const [y, m, d] = serialToYMD(s); const w = new Date(Date.UTC(y, m - 1, d)).getUTCDay(); return w !== 0 && w !== 6 && !hol.has(Math.floor(s)); };
+// NETWORKDAYS(start, end, [holidays]): working days (Monday–Friday) from start to end, both counted
+FN.NETWORKDAYS = (args, ctx) => { const a = numArg(args[0], ctx), b = numArg(args[1], ctx); if (isErr(a)) return a; if (isErr(b)) return b; const hol = new Set(args[2] ? numbersOf([args[2]], ctx) : []); const lo = Math.floor(Math.min(a, b)), hi = Math.floor(Math.max(a, b)); let n = 0; for (let x = lo; x <= hi; x++) if (isWorkday(x, hol)) n++; return a <= b ? n : -n; };
+// WORKDAY(start, days, [holidays]): the date `days` working days after (or before) start
+FN.WORKDAY = (args, ctx) => { let x = Math.floor(numArg(args[0], ctx)); const k = numArg(args[1], ctx); if (isErr(x) || isErr(k)) return ERR.VALUE; const hol = new Set(args[2] ? numbersOf([args[2]], ctx) : []); let left = Math.abs(Math.trunc(k)); const step = k < 0 ? -1 : 1; while (left > 0) { x += step; if (isWorkday(x, hol)) left--; } return x; };
+// DATEDIF(start, end, unit): whole years "Y", months "M" or days "D" between two dates (#NUM! if start > end)
+FN.DATEDIF = (args, ctx) => { const a = numArg(args[0], ctx), b = numArg(args[1], ctx); const u = String(scalar(args[2], ctx)).toUpperCase(); if (isErr(a)) return a; if (isErr(b)) return b; if (a > b) return ERR.NUM; const [y1, m1, d1] = serialToYMD(a), [y2, m2, d2] = serialToYMD(b); const months = (y2 - y1) * 12 + (m2 - m1) - (d2 < d1 ? 1 : 0); if (u === 'D') return Math.floor(b) - Math.floor(a); if (u === 'M') return months; if (u === 'Y') return Math.floor(months / 12); return ERR.NUM; };
+// WEEKNUM(serial, [type]): week of the year; type 1 (default) weeks start on Sunday, type 2 on Monday
+FN.WEEKNUM = (args, ctx) => { const s = numArg(args[0], ctx), t = numArg(args[1], ctx, 1); if (isErr(s)) return s; const [y] = serialToYMD(s); const jan1 = dateSerial(y, 1, 1); const [yy, mm, dd] = serialToYMD(jan1); const w = new Date(Date.UTC(yy, mm - 1, dd)).getUTCDay(); const off = t === 2 ? (w + 6) % 7 : w; return Math.floor((Math.floor(s) - jan1 + off) / 7) + 1; };
 
 // lookup and reference
 FN.VLOOKUP = (args, ctx) => {

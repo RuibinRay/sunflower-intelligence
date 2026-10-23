@@ -213,9 +213,26 @@ const ALL = [
     related: [{ tool: 'analytics/explore/#data', label: 'Data-quality audit' }],
   }),
   C({
-    id: 'b03', school: 'analytics', code: 'B03', level: 'intro', recommends: ['b01'],
+    id: 'b03', school: 'analytics', code: 'B03', level: 'intro', status: 'in-progress', recommends: ['b01', 'b02'],
     title: 'Excel for Business Analytics',
     blurb: 'Formulas, lookups, pivot tables, charts, what-if analysis and dashboards in a spreadsheet.',
+    case: 'lantern',
+    outcomes: [
+      'Build formulas with the right relative, absolute and mixed references, and lay out a workbook so its inputs, calculations and results are separate and can be checked.',
+      'Use logical, text, date and conditional functions (IF, IFS, AND, OR, IFERROR, SUMIFS, COUNTIFS, AVERAGEIFS) to answer business questions from transaction data.',
+      'Retrieve values with XLOOKUP, INDEX and MATCH, and VLOOKUP, choosing exact or approximate matching correctly, and organise data in Excel tables with structured references.',
+      'Clean imported data with text, date and value functions in a documented, repeatable workflow.',
+      'Summarise data with pivot tables, choose and build the chart that answers the question, and use conditional formatting to show what matters.',
+      'Calculate descriptive statistics in Excel and read regression output (coefficients, R², standard error, p-values, confidence intervals) without claiming more than it shows.',
+      'Model decisions with Goal Seek, data tables, scenarios and Solver, and design a dashboard that answers its audience’s questions.',
+    ],
+    modules: [
+      { n: 1, title: 'Formulas that work', lessons: ['cells-and-formulas', 'functions-and-logic', 'conditional-sums-and-counts'] },
+      { n: 2, title: 'Finding and summarising data', lessons: ['lookups', 'tables-and-cleaning', 'pivot-tables'] },
+      { n: 3, title: 'Showing and describing data', lessons: ['charts-and-conditional-formatting', 'descriptive-statistics-and-regression'] },
+      { n: 4, title: 'Deciding with a spreadsheet', lessons: ['what-if-analysis', 'dashboards'] },
+    ],
+    project: { title: 'Lantern’s summer workbook', blurb: 'Analyse Lantern’s spring shop orders and its 2026 catering events in a spreadsheet: build the formulas and summaries Ana needs, read a regression of catering invoices, plan July’s stock order with Solver, and recommend what her shop dashboard should show.' },
     topics: ['Formulas and functions', 'IF, SUMIF, COUNTIF, XLOOKUP', 'Tables', 'Pivot tables', 'Charts', 'Conditional formatting', 'Descriptive statistics', 'Data cleaning workflows', 'What-if analysis', 'Goal Seek and Solver', 'Regression output', 'Dashboards'],
   }),
   C({
