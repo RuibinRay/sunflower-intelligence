@@ -368,8 +368,8 @@ export function createLab(opts = {}) {
       case 'validate': return fromIssue || { op, column: firstOf(nums), rule: { min: 0 }, action: 'flag' };
       case 'outliers': return fromIssue || { op, column: firstOf(nums), method: 'iqr', k: 1.5, action: 'flag' };
       case 'transform': return fromIssue || { op, column: firstOf(nums), fn: 'log', as: `log_${firstOf(nums)}` };
-      case 'scale': return { op, column: firstOf(nums), method: 'zscore', fit: 'train', seed: 7 };
-      case 'encode': return { op, column: firstOf(colsOfType('category', 'boolean')), method: 'onehot', dropFirst: false };
+      case 'scale': return { op, column: firstOf(nums.filter((n) => n !== opts.split)), method: 'zscore', fit: (Array.isArray(opts.fit) && opts.fit[0]) || 'train', ...(opts.split ? { split: opts.split } : { seed: 7 }) };
+      case 'encode': return { op, column: firstOf(colsOfType('category', 'boolean').filter((n) => n !== opts.split)), method: 'onehot', dropFirst: false };
       case 'derive': return { op, as: 'new_column', fn: 'divide', from: [nums[0] || names[0], nums[1] || names[1] || names[0]] };
       case 'rename': return { op, from: names[0], to: '' };
       case 'drop-column': return { op, column: names[names.length - 1] };
@@ -399,6 +399,12 @@ export function createLab(opts = {}) {
       return box;
     };
     const rerender = () => { RENDER.builder(el); };
+    const fitChoices = () => {
+      const all = [['train', opts.split ? `Training rows only (${opts.split} = train)` : '70% training subset'], ['all', 'All rows']];
+      const allow = Array.isArray(opts.fit) && opts.fit.length ? opts.fit : ['train', 'all'];
+      return allow.map((v) => all.find((a) => a[0] === v)).filter(Boolean);
+    };
+    const fitGroup = (label, hint) => group(label, segmented(`${id}-fit`, fitChoices(), b.fit || fitChoices()[0][0], (v) => { b.fit = v; if (opts.split) b.split = opts.split; rerender(); }), hint);
     const afterColumnChange = (key) => {
       if (b.op === 'map' && key === 'column') b.mapping = {};
       if (b.op === 'transform' && key === 'column' && b.fn !== 'rescale') b.as = `${b.fn === 'sqrt' ? 'sqrt' : b.fn}_${b.column}`;
@@ -470,7 +476,7 @@ export function createLab(opts = {}) {
         fields.push(field('Fill with', select(b.method || 'median', [['mean', 'Mean'], ['median', 'Median'], ['mode', 'Most common value (mode)'], ['constant', 'A constant'], ['group-median', 'Median of each group']], (v) => { b.method = v; rerender(); })));
         if (b.method === 'constant') fields.push(field('Value', text(b.value, (v) => { b.value = v; })));
         if (b.method !== 'constant') fields.push(field(b.method === 'group-median' ? 'Groups defined by' : 'Within groups of (optional)', colSelect('by', names.filter((n) => n !== b.column), b.method !== 'group-median')));
-        if (b.method !== 'constant') fields.push(group('Learn the value from', segmented(`${id}-fit`, [['all', 'All rows'], ['train', '70% training subset']], b.fit || 'all', (v) => { b.fit = v; }), 'For modelling, learn it from the training rows only, so test rows don’t leak into it.'));
+        if (b.method !== 'constant') fields.push(fitGroup('Learn the value from', 'For modelling, learn it from the training rows only, so test rows don’t leak into it.'));
         break;
       case 'drop-missing': fields.push(group('Delete rows missing a value in', chipsOf('columns', names))); break;
       case 'flag-missing': fields.push(field('Column', colSelect('column'))); break;
@@ -482,6 +488,10 @@ export function createLab(opts = {}) {
         const ta = h('textarea', { class: 'textarea cl-textarea', rows: 3 }); ta.value = (r.in || []).join('\n'); ta.addEventListener('input', () => { const v = ta.value.split('\n').map((x) => x.trim()).filter(Boolean); r.in = v.length ? v : undefined; });
         fields.push(field('Allowed values (one per line, optional)', ta));
         fields.push(field('Pattern (regular expression, optional)', text(r.pattern, (v) => { r.pattern = v || undefined; }, { spellcheck: 'false' }), 'For an e-mail address: ^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$ . Dates as YYYY-MM-DD work as a minimum and maximum.'));
+        fields.push(h('div', { class: 'field-row' },
+          field('Compare with column (optional)', select(r.other || '', [['', 'None'], ...names.filter((n) => n !== b.column).map((n) => [n, n])], (v) => { r.other = v || undefined; if (v && !r.op) r.op = '>'; rerender(); })),
+          field('Must be', select(r.op || '>', [['>', 'after / greater than'], ['>=', 'on or after / at least'], ['<', 'before / less than'], ['<=', 'on or before / at most'], ['!=', 'different from']], (v) => { r.op = v; }))));
+        fields.push(field('Must equal this formula (optional)', text(r.expr, (v) => { r.expr = v.trim() || undefined; }, { spellcheck: 'false', placeholder: 'e.g. quantity * unit_price - discount' }), 'Use column names with + − * / and brackets; days_between(start, end) counts days between two date columns.'));
         fields.push(group('Values that break the rule', segmented(`${id}-act`, [['flag', 'Flag them'], ['set-missing', 'Set to missing'], ['drop', 'Delete the row']], b.action || 'flag', (v) => { b.action = v; })));
         break;
       }
@@ -500,15 +510,21 @@ export function createLab(opts = {}) {
       case 'scale':
         fields.push(field('Column', colSelect('column', nums.length ? nums : names)));
         fields.push(group('Method', segmented(`${id}-sm`, [['zscore', 'z-score'], ['minmax', 'Min-max'], ['robust', 'Robust']], b.method || 'zscore', (v) => { b.method = v; })));
-        fields.push(group('Learn the parameters from', segmented(`${id}-sf`, [['train', '70% training subset'], ['all', 'All rows']], b.fit || 'all', (v) => { b.fit = v; rerender(); }), 'Learning from all rows leaks test-set information into the parameters.'));
-        if (b.fit === 'train') fields.push(field('Random seed for the split', number(b.seed ?? 7, (v) => { b.seed = v; }, { step: 1, min: 1 })));
+        fields.push(fitGroup('Learn the parameters from', 'Learning from all rows leaks test-set information into the parameters.'));
+        if (b.fit === 'train' && !opts.split) fields.push(field('Random seed for the split', number(b.seed ?? 7, (v) => { b.seed = v; }, { step: 1, min: 1 })));
         fields.push(field('New column name (leave empty to replace the values)', text(b.as, (v) => { b.as = v.trim() || undefined; }, { spellcheck: 'false' })));
         break;
       case 'encode': {
         fields.push(field('Column', colSelect('column')));
-        fields.push(group('Method', segmented(`${id}-em`, [['onehot', 'One-hot (0/1 columns)'], ['ordinal', 'Ordinal codes']], b.method || 'onehot', (v) => { b.method = v; rerender(); })));
-        if ((b.method || 'onehot') === 'onehot') fields.push(check(b.dropFirst, 'Drop the first level (it becomes the reference category)', (v) => { b.dropFirst = v; }));
-        else {
+        const targets = nums.filter((n) => n !== b.column);
+        const methods = [['onehot', 'One-hot (0/1 columns)'], ['ordinal', 'Ordinal or label codes'], ...(targets.length ? [['target', 'Target mean']] : [])];
+        fields.push(group('Method', segmented(`${id}-em`, methods, b.method || 'onehot', (v) => { b.method = v; if (v === 'target') { b.target = b.target || (targets.includes(opts.target) ? opts.target : targets[0]); b.fit = b.fit || fitChoices()[0][0]; if (opts.split) b.split = opts.split; } rerender(); })));
+        if ((b.method || 'onehot') === 'onehot') fields.push(check(b.dropFirst, 'Drop the first level (dummy coding: it becomes the reference category)', (v) => { b.dropFirst = v; }));
+        else if (b.method === 'target') {
+          fields.push(field('Target (the outcome to average)', colSelect('target', targets)));
+          fields.push(fitGroup('Learn the means from', 'Means learned from all rows use each row’s own outcome: target leakage.'));
+          fields.push(h('p', { class: 'field-hint' }, `Adds ${b.column}_target next to ${b.column}; values not seen in the fitting rows get the overall mean.`));
+        } else {
           const j = names.indexOf(b.column);
           const levels = j >= 0 ? [...new Set(cur().rows.filter((r) => !C.isMissing(r[j])).map((r) => C.cellText(r[j])))].sort((a, c) => a.localeCompare(c, 'en', { numeric: true })) : [];
           if (!b.order) b.order = levels;

@@ -269,7 +269,7 @@ export async function mount(el, config = {}, ctx = {}) {
     const st = STAGES[sel];
     card.replaceChildren(
       h('p', { class: 'plc-kicker' }, `Stage ${stages.indexOf(sel) + 1} of ${stages.length}`),
-      h('h4', { class: 'plc-title' }, st.name),
+      h('p', { class: 'plc-title' }, st.name),
       h('p', {}, st.summary),
       h('p', { class: 'plc-objective' }, h('strong', {}, 'Typical objective: '), st.objective),
       h('dl', { class: 'plc-4p' }, [['Product', st.product], ['Price', st.price], ['Place', st.place], ['Promotion', st.promotion]].map(([k, v]) => h('div', {}, h('dt', {}, k), h('dd', {}, v)))),
