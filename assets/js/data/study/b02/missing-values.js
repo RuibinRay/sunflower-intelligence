@@ -146,7 +146,7 @@ export default {
         String.raw`Check with the formula: <m>2.35 \times \sqrt{4 \div 7} = 2.35 \times 0.756 = 1.77</m>. The spread fell by about 24%.`,
       ],
       answer: 'The mean stays at 4 days; the standard deviation falls from 2.35 to 1.77 days.',
-      interpretation: 'Delivery times now look more predictable than they are. If the retailer promised “delivered within mean + 2 SD”, the imputed data would suggest 7.5 days instead of 8.7, and the promise would be broken more often than planned. The courier failure itself is plausibly MCAR, so deleting the three rows would have kept an unbiased mean and an honest spread, just from fewer orders.' },
+      interpretation: 'Delivery times now look more predictable than they are. If the retailer promised “delivered within mean + 2 SD”, the imputed data would suggest 7.5 days instead of 8.7, and the promise would be broken more often than planned. The courier failure is plausibly MCAR only if that courier’s deliveries are typical of all deliveries (no faster or slower, no different routes); if they are, deleting the three rows would have kept an unbiased mean and an honest spread, just from fewer orders.' },
     { level: 'challenging', title: 'Lantern’s rating: deletion, group-wise imputation and a what-if', fictional: true,
       setup: 'Twelve Lantern orders from one week, with ratings (1–5 stars):<br>Subscription orders: 5, 4, 5, 4, blank, 5.<br>One-off orders: 3, blank, blank, 4, blank, blank.<br>Estimate the average rating of all twelve orders (a) by ignoring the blanks, (b) assuming the ratings are MAR given customer type, and (c) assuming that within each group the customers who didn’t rate would have given half a star less than those who did.',
       steps: [
@@ -170,7 +170,7 @@ export default {
   ],
 
   demo: [
-    { widget: 'mv-lab', intro: 'Lantern’s order export has missing ratings and emails. Inspect the rating column, then compare the treatments: drop the incomplete rows, fill the gaps with the overall mean, fill them with each subscription group’s mean, and flag them. Watch the row count, the mean rating and its spread after each step: dropping changes only the row count, the overall mean changes only the spread, the group means move the mean (one-off buyers rate less often and lower), and the flag leaves a record of what was missing.' },
+    { widget: 'mv-lab', intro: 'Lantern’s order export has missing ratings and emails. It covers four months, not Ana’s one fictional month, so don’t expect it to match the 200 orders and 90 blanks above: 80 of its 240 ratings are blank. Inspect the rating column, then compare the treatments: drop the incomplete rows, fill the gaps with the overall mean, fill them with each subscription group’s mean, and flag them. Watch the row count, the mean rating and its spread after each step: dropping changes only the row count, the overall mean changes only the spread, the group means move the mean (one-off buyers rate less often and lower), and the flag leaves a record of what was missing.' },
     { widget: 'mv-impute', intro: 'Change how many values are missing and what they would have been. The mean after imputation never moves and the spread always shrinks; the bias depends on the true mean of the missing values, which in real data you never get to see.' },
   ],
 
@@ -283,6 +283,7 @@ export default {
     { what: 'Pooled median (leaky)', value: (3 + 4) / 2, shown: 3.5 },
     // application: month what-if
     { what: 'Month what-if (non-raters half a star lower)', value: (90 * 4.6 + 30 * 4.1 + 20 * 3.4 + 60 * 2.9) / 200, shown: 3.9, tol: 0.01 },
+    { what: 'Real export: blank ratings (240 rows, 160 rated)', value: 240 - 160, shown: 80 },
     { what: 'Home page rounding of 4.38', value: (90 * 4.6 + 20 * 3.4) / 110, shown: 4.4, tol: 0.05 },
   ],
 };
