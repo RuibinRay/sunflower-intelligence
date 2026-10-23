@@ -14,7 +14,7 @@ export const items = [
   // ---------------------------------------------------------------- what-is-marketing
   {
     id: 'm01-fn-1', lesson: 'what-is-marketing', type: 'num', kind: 'numerical',
-    prompt: 'Elodie Marchetti (fictional) photographs weddings. A couple would pay up to $2,400 for her coverage, given their alternatives, and delivering it costs her $1,200 in an assistant, travel and editing. At what price would the couple keep exactly a quarter of the value the exchange creates? Give dollars.',
+    prompt: 'Elodie Marchetti (fictional) photographs weddings. The most a couple would pay for her coverage, rather than go without it, is $2,400, and delivering it costs her $1,200 in an assistant, travel and editing. At what price would the couple keep exactly a quarter of the value the exchange creates? Give dollars.',
     answer: 2100, check: () => 2400 - 0.25 * (2400 - 1200), unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 1500, say: 'At $1,500 Elodie keeps the quarter ($1,500 − $1,200 = $300) and the couple three-quarters. The couple keeps willingness to pay minus price.' },
@@ -28,18 +28,18 @@ export const items = [
     id: 'm01-fn-2', lesson: 'what-is-marketing', type: 'mc', kind: 'conceptual',
     prompt: 'Theodore Levitt’s “marketing myopia” (1960) and Smith, Drumwright and Gentile’s “new marketing myopia” (2010) name two different mistakes. Which pair describes them correctly?',
     options: [
-      'Levitt: defining a business by its product, not by the need it serves. New: a focus on customers so narrow that other stakeholders are ignored',
+      'Levitt: defining a business by its product, not by the need it serves. New: a single-minded focus on customers that excludes other stakeholders',
       'Levitt: ignoring society’s long-term interests in the pursuit of sales. New: defining a business by the product it makes rather than by the need it serves',
       'Levitt: spending too little on advertising compared with rivals. New: spending too much on digital advertising and too little on understanding customers',
       'Levitt: trying to serve every customer in a market at once. New: serving so few customers that a business can never grow beyond a small niche',
     ],
     answer: 0,
     feedback: {
-      1: 'The two are the other way round. Levitt’s railroads defined themselves by their product; the 2010 paper warned against attending to customers so closely that employees, communities and the environment are forgotten.',
+      1: 'This mixes them up. Defining a business by its product is Levitt’s idea, from 1960; the 2010 paper warned against attending to customers so single-mindedly that employees, neighbours and the environment are forgotten.',
       2: 'Neither idea is about advertising budgets. Levitt was writing about how a business defines what it does; the 2010 paper about whose interests it weighs.',
       3: 'Neither idea is about how many customers to serve. Myopia is about what a business thinks it is for, and whom it takes into account.',
     },
-    solution: 'Levitt’s marketing myopia is defining a business by what it makes instead of the customer need it serves, which hides substitutes: the railroads saw themselves in the railroad business, not transportation. Smith, Drumwright and Gentile called an excessive focus on customers, at the expense of other stakeholders such as employees, suppliers, communities and the environment, “the new marketing myopia”. The first is cured by a need-based definition of the business; the second by the societal marketing concept.',
+    solution: 'Levitt’s marketing myopia is defining a business by what it makes instead of the customer need it serves, which hides substitutes: the railroads saw themselves in the railroad business, not transportation. Smith, Drumwright and Gentile named a single-minded focus on customers, to the exclusion of other stakeholders such as employees, suppliers, neighbours and the environment, as one source of what they called “the new marketing myopia”. The first is cured by a need-based definition of the business; the second by the societal marketing concept.',
   },
   {
     id: 'm01-fn-3', lesson: 'what-is-marketing', type: 'mc', kind: 'applied',
@@ -145,7 +145,7 @@ export const items = [
   {
     id: 'm01-fn-9', lesson: 'consumer-decisions', type: 'fill', kind: 'numerical',
     prompt: 'Odile is choosing between three fictional e-readers. She weights screen quality 0.5, battery life 0.3 and price 0.2, and scores each out of 10, higher always better: the Papyra ($240) 9, 5 and 4; the Scrivo ($180) 7, 8 and 6; the Inkpad ($120) 6, 7 and 9. Complete the sentences.',
-    text: 'Under the weighted-attribute model Odile chooses [[0]]. If she uses a lexicographic rule instead, she chooses [[1]]. If she simply refuses to pay more than $150, she chooses [[2]]. The weighted-attribute model is compensatory; the other two rules are [[3]].',
+    text: 'Under the weighted-attribute model Odile chooses [[0]]. If she uses a lexicographic rule instead, she chooses [[1]]. If she refuses to pay more than $150, whatever the scores, she chooses [[2]]. The weighted-attribute model is compensatory; the other two rules are [[3]].',
     blanks: [
       { options: ['the Papyra', 'the Scrivo', 'the Inkpad'], answer: 1 },
       { options: ['the Papyra', 'the Scrivo', 'the Inkpad'], answer: 0 },
@@ -341,16 +341,16 @@ export const items = [
     prompt: 'Which of these practices make a set of marketing objectives more reliable? Select all that apply.',
     options: [
       'Planning staff and stock around the forecast, and treating the target as the stretch above it',
-      'Pairing each acquisition target with a guardrail, such as the share of new customers still buying after a year',
-      'Building the target top-down from the goal and bottom-up from past results, and explaining any gap',
       'Adding the funnel’s stage-to-stage conversion rates to find the share of leads that become customers',
+      'Pairing each acquisition target with a guardrail, such as the share of new customers still buying after a year',
       'Setting fifteen or more objectives, so that every part of the business has a target of its own',
+      'Building the target top-down from the goal and bottom-up from past results, and explaining any gap',
       'Comparing a twelve-month target with last year’s ten-month total to show the growth needed',
     ],
-    answer: [0, 1, 2],
+    answer: [0, 2, 4],
     feedback: {
-      3: 'Conversion rates multiply. If 30% of leads reach a proposal and 25% of proposals are won, 7.5% of leads become customers, not 55%.',
-      4: 'Long lists of objectives conflict and are quietly ignored. Three to five, consistent with each other and each with an owner, steer a business better.',
+      1: 'Conversion rates multiply. If 30% of leads reach a proposal and 25% of proposals are won, 7.5% of leads become customers, not 55%.',
+      3: 'Long lists of objectives conflict and are quietly ignored. Three to five, consistent with each other and each with an owner, steer a business better.',
       5: 'Compare equal periods: annualise last year’s total or compare the same months. Otherwise the target looks far harder than it is.',
     },
     solution: 'A target is not a forecast, so resources follow the forecast and the target is the stretch. Guardrails stop a target being met in ways that damage the business, as Goodhart’s law predicts. Setting the level top-down and bottom-up shows whether the plan names what will close any gap. Rates along a funnel multiply; long lists of objectives are ignored; and periods must be equal before they are compared.',

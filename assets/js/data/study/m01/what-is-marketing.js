@@ -56,7 +56,7 @@ export default {
     { h: 'Exchange: why both sides can gain' },
     { p: 'In marketing, <b>exchange</b> is the act of obtaining something of value from someone by offering something in return. It is the idea underneath both definitions. At least four conditions must hold for an exchange to happen (textbooks word and number the list differently): there are at least two parties; each has something the other values; each can communicate with the other and deliver what it offers; and each is free to accept or reject the offer.' },
     { p: 'The last condition is the important one. Because either side can say no, an exchange that happens freely leaves each side expecting to be better off than before. That is how marketing creates value rather than merely moving it from one pocket to another.' },
-    { p: 'A simple measure makes the point. Call the most a customer would pay for an offer, given the alternatives open to her, her <g>willingness to pay</g>. The gap between her willingness to pay and the seller’s cost is the value the exchange creates, and the price decides how that value is shared.' },
+    { p: 'A simple measure makes the point. Call the most a customer would pay for an offer, rather than go without it, her <g>willingness to pay</g>. The gap between her willingness to pay and the seller’s cost is the value the exchange creates, and the price decides how that value is shared. When other offers could meet the same need, she also compares what each would leave her; the next lesson shows how.' },
     { case: 'A café owner books a place on a Lantern workshop to train a new member of staff. She judges the morning worth up to $180 to her: that is her willingness to pay. Lantern charges $125. Delivering one more place costs Lantern about $70 in the trainer’s time, beans, milk and the room. (The $180 and the $70 are assumptions for this lesson.)' },
     { p: 'The exchange creates $180 − $70 = $110 of value. The café owner keeps $180 − $125 = $55 of it, and Lantern keeps $125 − $70 = $55.' },
     { callout: 'key', title: 'The price divides value; it doesn’t create it', html: 'Raising the price moves value from the customer to the seller, and cutting it moves value back. Only a better offer (more benefit to the customer) or a cheaper way to deliver it (lower cost) makes the total bigger. The customer buys only if the price is no more than her willingness to pay, and the seller can go on selling only if the price covers its cost.' },
@@ -135,11 +135,11 @@ export default {
       tex: String.raw`V = W - C \qquad \text{Gain to buyer} = W - P \qquad \text{Gain to seller} = P - C`,
       where: [
         [String.raw`V`, 'Value created by the exchange: the total gain to both sides', '$'],
-        [String.raw`W`, 'Willingness to pay: the most the buyer would pay for the offer, given the alternatives', '$'],
+        [String.raw`W`, 'Willingness to pay: the most the buyer would pay for the offer rather than go without it', '$'],
         [String.raw`P`, 'Price paid', '$'],
         [String.raw`C`, 'Seller’s cost of providing this one sale (only the costs the sale causes)', '$'],
       ],
-      assumptions: 'The buyer buys only if P ≤ W, and the seller can keep selling only if P ≥ C. W is the buyer’s own judgement and is rarely known exactly; it depends on the alternatives she has.',
+      assumptions: 'The buyer buys only if P ≤ W and no alternative would leave her more (its own W − P); the seller can keep selling only if P ≥ C. W is the buyer’s own judgement and is rarely known exactly.',
       note: 'The two gains add up to V, whatever the price: the price only shares V out. Economists call the buyer’s gain consumer surplus and the seller’s gain producer surplus. M02’s lesson on pricing approaches uses the same idea to set prices from customers’ value.' },
   ],
 
@@ -157,7 +157,7 @@ export default {
       interpretation: 'Only (c) and (e) bring in revenue, yet (a) and (b) tell Lantern why they did, and (d) shows that demand depends on the price. A business that listened only to its bookings would never learn about (a) and (b); one that counted every enthusiastic student as demand would overestimate its market.' },
 
     { level: 'challenging', title: 'Who buys a workshop place, and who gains?', fictional: true,
-      setup: 'Fifteen people enquire about Lantern’s next workshop. Suppose Lantern knew the most each would pay for a place (in practice it can’t; these figures are assumed): $200, $190, $180, $175, $160, $150, $150, $140, $135, $130, $130, $125, $110, $95 and $80. One more place costs Lantern $70 to deliver, and the room holds 15. Compare prices of $100, $125 and $150: how many places sell, what does Lantern gain, what do participants gain, and how much value does the workshop create in total?',
+      setup: 'Fifteen people enquire about Lantern’s next workshop. Suppose Lantern knew the most each would pay for a place rather than go without one (in practice it can’t; these figures are assumed): $200, $190, $180, $175, $160, $150, $150, $140, $135, $130, $130, $125, $110, $95 and $80. One more place costs Lantern $70 to deliver, and the room holds 15. Compare prices of $100, $125 and $150: how many places sell, what does Lantern gain, what do participants gain, and how much value does the workshop create in total?',
       table: {
         caption: 'One workshop at three prices (assumed willingness to pay; cost $70 a place)',
         head: ['Price', 'Places sold', 'Lantern’s gain', 'Participants’ gain', 'Total value created'],
@@ -225,7 +225,7 @@ export default {
   glossary: [
     { term: 'Marketing', def: 'The activity of creating, communicating, delivering and exchanging offerings that have value for customers, clients, partners and society (a paraphrase of the American Marketing Association’s definition).' },
     { term: 'Exchange (marketing)', def: 'Obtaining something of value from someone by offering something in return. It needs at least two parties, each with something the other values, each able to communicate and deliver, and each free to accept or reject the offer.' },
-    { term: 'Willingness to pay', def: 'The most a customer would pay for an offer, given the alternatives open to them. It is the customer’s own judgement and is rarely known exactly.' },
+    { term: 'Willingness to pay', def: 'The most a customer would pay for an offer rather than go without it; faced with alternatives, the customer compares what each leaves them.' },
     { term: 'Need', def: 'A state of felt lack that a person or organisation is motivated to fix, such as staying alert or feeling valued at work.' },
     { term: 'Want', def: 'The particular form a need takes, shaped by culture, experience and the options a person knows about.' },
     { term: 'Demand', def: 'A want backed by the ability and the willingness to pay for it. Demand is always demand at a particular price.' },

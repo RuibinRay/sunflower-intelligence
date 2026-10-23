@@ -86,7 +86,7 @@ export const guided = [
   },
   {
     id: 'm01-wim-g2', type: 'steps', kind: 'numerical',
-    prompt: 'A home-brewing enthusiast is thinking about a Lantern workshop. The most she would pay for a place, given her alternatives (an online video course, or a friend’s advice), is $160. Lantern charges $125, and one more place costs Lantern $70 to deliver (the lesson’s assumption).',
+    prompt: 'A home-brewing enthusiast is thinking about a Lantern workshop. The most she would pay for a place rather than go without one is $160. Lantern charges $125, and one more place costs Lantern $70 to deliver (the lesson’s assumption).',
     solution: 'Her gain: $160 − $125 = $35. Lantern’s gain: $125 − $70 = $55. Value created: $160 − $70 = $90, which equals $35 + $55. At $150, if she still books, the total is still $90: she keeps $10 and Lantern $80. The price shares out the value; it doesn’t change how much the exchange creates.',
     steps: [
       { id: 'm01-wim-g2-s1', type: 'num',
@@ -189,7 +189,7 @@ export const independent = [
   },
   {
     id: 'm01-wim-i2', type: 'num', kind: 'numerical',
-    prompt: 'A fictional battery-storage installer quotes $40,000 to install a system at a warehouse. Given its alternatives, the warehouse would pay up to $52,000 for it. Supplying and fitting the system costs the installer $31,000. If the warehouse accepts, how much value does the exchange create in total?',
+    prompt: 'A fictional battery-storage installer quotes $40,000 to install a system at a warehouse. Rather than go without it, the warehouse would pay up to $52,000 for the system. Supplying and fitting the system costs the installer $31,000. If the warehouse accepts, how much value does the exchange create in total?',
     answer: 21000, check: () => 52000 - 31000, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 12000, say: 'That is the warehouse’s gain ($52,000 − $40,000). Add the installer’s gain as well.' },
@@ -279,7 +279,7 @@ export const check = [
   },
   {
     id: 'm01-wim-k2', type: 'num', kind: 'numerical',
-    prompt: 'A customer would pay up to $70 for Lantern’s Gift Box Trio, given the alternatives. Lantern sells it for $58, and each box costs Lantern about $34 to make, pack and deliver (an assumption for this question). How much does Lantern gain from the sale?',
+    prompt: 'A customer would pay up to $70 for Lantern’s Gift Box Trio rather than go without it. Lantern sells it for $58, and each box costs Lantern about $34 to make, pack and deliver (an assumption for this question). How much does Lantern gain from the sale?',
     answer: 24, check: () => 58 - 34, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 12, say: 'That is the customer’s gain ($70 − $58). Lantern’s gain is the price minus its cost.' },

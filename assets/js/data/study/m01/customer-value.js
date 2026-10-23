@@ -53,7 +53,7 @@ export default {
       '<b>Non-money costs</b> are time (the hours an office manager spends organising), effort (setting up and clearing away) and risk: the chance that the coffee runs out, the staff arrive late or the product disappoints.',
     ] },
     { p: 'Most of the reasons Lantern’s clients gave are benefits or reductions in risk, not price. Reliability on the day, named by 7 of the 12, is a reduction in risk: an office manager who books catering for 90 colleagues is the one embarrassed if it goes wrong. A client who weighs that risk heavily can rationally choose the dearer caterer; one organising a simple internal meeting can rationally choose the cheaper one.' },
-    { p: 'When the benefits and the non-money costs can be put in money, value can be calculated. The first lesson introduced <g>willingness to pay</g>, the most a customer would pay given the alternatives. Subtract the price and the money value of the time, effort and risk, and what is left is the net value of the offer to that customer. She chooses the offer with the highest net value, which need not be the one with the lowest price.' },
+    { p: 'When the benefits and the non-money costs can be put in money, value can be calculated. The first lesson introduced <g>willingness to pay</g>, the most a customer would pay for an offer rather than go without it. Subtract the price and the money value of the time, effort and risk, and what is left is the net value of the offer to that customer. She chooses the offer with the highest net value, which need not be the one with the lowest price.' },
 
     { h: 'Satisfaction: performance against expectations' },
     { p: '<g>Customer satisfaction</g> is the customer’s judgement, after buying, of how well the offer performed compared with what they expected. Richard Oliver (1980) modelled satisfaction as depending on expectations and on <g>expectation disconfirmation</g>: the gap between the performance the customer perceives and the performance she expected. Performance above expectations (positive disconfirmation) leads to satisfaction; performance that matches them (confirmation) leads to satisfaction; performance below them (negative disconfirmation) leads to dissatisfaction.' },
@@ -135,7 +135,7 @@ export default {
     { id: 'm01-net-value', name: 'Net value of an offer to a customer (when benefits and costs can be put in money)',
       tex: String.raw`\text{Net value} = W - (P + N)`,
       where: [
-        [String.raw`W`, 'Willingness to pay: the money value of the benefits to this customer, given the alternatives', '$'],
+        [String.raw`W`, 'Willingness to pay: the most this customer would pay for the offer rather than go without it (the money value of its benefits to her)', '$'],
         [String.raw`P`, 'Price, including any money extras such as delivery', '$'],
         [String.raw`N`, 'Non-money costs put in money: time at the customer’s own value of time, effort, and the expected cost of risk (probability × cost if it goes wrong)', '$'],
       ],
