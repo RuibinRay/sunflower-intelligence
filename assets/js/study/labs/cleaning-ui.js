@@ -269,8 +269,10 @@ export function createLab(opts = {}) {
         h('span', { class: 'cl-sev' }, { error: 'Problem', warning: 'Check', info: 'Note' }[x.severity] + ': '),
         h('strong', {}, x.title), x.column ? h('span', { class: 'cl-col' }, ` · ${x.column}`) : '', h('span', { class: 'cl-count' }, ` · ${plural(x.count, x.kind === 'skewed' ? 'value' : x.kind.includes('duplicate') ? 'row' : 'value')}`));
       const li = h('li', { class: `cl-issue is-${x.severity}` }, head, h('p', { class: 'cl-issue-msg' }, x.message));
-      if (x.detail) li.append(h('p', { class: 'cl-issue-detail' }, x.detail));
-      li.append(h('details', { class: 'cl-why' }, h('summary', {}, 'Why it matters'), h('p', {}, x.why)));
+      if (opts.advice !== false) {   // a lesson that only diagnoses can hide the hints at fixes
+        if (x.detail) li.append(h('p', { class: 'cl-issue-detail' }, x.detail));
+        li.append(h('details', { class: 'cl-why' }, h('summary', {}, 'Why it matters'), h('p', {}, x.why)));
+      }
       if (canSuggest(x)) {
         const b = h('button', { class: 'btn btn-secondary cl-btn-sm', type: 'button' }, `Set up: ${C.describeStep(x.suggestion)}`);
         b.addEventListener('click', () => { lab.setBuilder(x.suggestion, x); slots.builder.querySelector('select, input, button')?.focus(); slots.builder.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('motion-paused') ? 'auto' : 'smooth' }); });

@@ -2,7 +2,7 @@
 // interpreting-results.ex.js. Uses SHOP and DERIVED from case.js: monthly orders and visits, gift-box orders, and the
 // dates of the checkout redesign (1 September) and the payment-page fix (5 October). The September diagnosis itself
 // (web against app conversion, August against September) is left to the project: the worked diagnosis uses a fictional
-// shop, Pinecrest Outdoor, with the same structure and different numbers. Every other business and figure is fictional.
+// shop, Alderbank Outdoor, with the same structure and different numbers. Every other business and figure is fictional.
 import { SHOP as S, DERIVED as D, SURVEY } from './case.js';
 
 const AUG = 1, SEP = 2;
@@ -15,7 +15,7 @@ const rate = (o, v) => o / v * 100;
 const shareA = NA.wv / (NA.wv + NA.av), shareB = NB.wv / (NB.wv + NB.av);
 const overA = rate(NA.wo + NA.ao, NA.wv + NA.av), overB = rate(NB.wo + NB.ao, NB.wv + NB.av);
 const bAtA = shareA * rate(NB.wo, NB.wv) + (1 - shareA) * rate(NB.ao, NB.av);
-// Pinecrest Outdoor (fictional): desktop and mobile, April, May, June
+// Alderbank Outdoor (fictional): desktop and mobile, April, May, June
 const PA = { dv: 20000, do: 600, mv: 30000, mo: 600 }, PM = { dv: 21000, do: 441, mv: 31000, mo: 620 }, PJ = { dv: 20500, do: 595, mv: 30500, mo: 610 };
 
 export default {
@@ -39,7 +39,9 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: 'September 2026 worried everyone at Lantern. Orders fell from 316 in August to 251, although visits rose from 10,200 to 11,400. Three explanations reach Ana within a day. The web developer’s colleague says the new website checkout, launched on 1 September, caused the fall. A friend who runs a café says September is always quiet after the summer. And a slide arrives with a bar chart on which September’s bar is barely a seventh the height of August’s. Each is a claim about what the numbers mean. This lesson is about testing such claims before acting on them.' },
+    { case: 'September 2026 worried everyone at Lantern. Orders fell from 316 in August to 251, although visits rose from 10,200 to 11,400. Three explanations reach Ana within a day.' },
+    { case: 'A colleague says the new website checkout, launched on 1 September, caused the fall. A friend who runs a café says September is always quiet after the summer. And a slide arrives with a bar chart on which September’s bar is barely a seventh the height of August’s.' },
+    { p: 'Each is a claim about what the numbers mean. This lesson is about testing such claims before acting on them.' },
 
     { h: 'Reading a chart' },
     { p: 'A chart is an argument made with shapes, so read it as you would read an argument. Before looking at the shapes, check:' },
@@ -52,7 +54,7 @@ export default {
       '<b>Selection:</b> which periods, groups or comparisons the author chose to show, and which they left out.',
     ] },
     { figure: {
-      svg: '<svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" font-size="13" fill="currentColor"><text x="130" y="22" text-anchor="middle" font-weight="600">Axis starts at 240</text><line x1="40" y1="40" x2="40" y2="200" stroke="var(--rule-strong)" stroke-width="1.2"/><line x1="40" y1="200" x2="290" y2="200" stroke="var(--rule-strong)" stroke-width="1.2"/><text x="34" y="204" text-anchor="end" font-size="11" fill="var(--ink-3)">240</text><line x1="40" y1="200.0" x2="290" y2="200.0" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><text x="34" y="150.7" text-anchor="end" font-size="11" fill="var(--ink-3)">270</text><line x1="40" y1="146.7" x2="290" y2="146.7" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><text x="34" y="97.3" text-anchor="end" font-size="11" fill="var(--ink-3)">300</text><line x1="40" y1="93.3" x2="290" y2="93.3" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><text x="34" y="44" text-anchor="end" font-size="11" fill="var(--ink-3)">330</text><line x1="40" y1="40.0" x2="290" y2="40.0" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><rect x="56" y="104.0" width="40" height="96.0" fill="var(--series-1)"/><text x="76" y="218" text-anchor="middle" font-size="12">Jul</text><text x="76" y="99" text-anchor="middle" font-size="11">294</text><rect x="114" y="64.9" width="40" height="135.1" fill="var(--series-1)"/><text x="134" y="218" text-anchor="middle" font-size="12">Aug</text><text x="134" y="59.900000000000006" text-anchor="middle" font-size="11">316</text><rect x="172" y="180.4" width="40" height="19.6" fill="var(--series-2)"/><text x="192" y="218" text-anchor="middle" font-size="12">Sep</text><text x="192" y="175.4" text-anchor="middle" font-size="11">251</text><rect x="230" y="59.6" width="40" height="140.4" fill="var(--series-1)"/><text x="250" y="218" text-anchor="middle" font-size="12">Oct</text><text x="250" y="54.6" text-anchor="middle" font-size="11">319</text><text x="460" y="22" text-anchor="middle" font-weight="600">Axis starts at 0</text><line x1="370" y1="40" x2="370" y2="200" stroke="var(--rule-strong)" stroke-width="1.2"/><line x1="370" y1="200" x2="620" y2="200" stroke="var(--rule-strong)" stroke-width="1.2"/><text x="364" y="204" text-anchor="end" font-size="11" fill="var(--ink-3)">0</text><line x1="370" y1="200.0" x2="620" y2="200.0" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><text x="364" y="158.3" text-anchor="end" font-size="11" fill="var(--ink-3)">100</text><line x1="370" y1="154.3" x2="620" y2="154.3" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><text x="364" y="112.6" text-anchor="end" font-size="11" fill="var(--ink-3)">200</text><line x1="370" y1="108.6" x2="620" y2="108.6" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><text x="364" y="66.9" text-anchor="end" font-size="11" fill="var(--ink-3)">300</text><line x1="370" y1="62.9" x2="620" y2="62.9" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><rect x="386" y="65.6" width="40" height="134.4" fill="var(--series-1)"/><text x="406" y="218" text-anchor="middle" font-size="12">Jul</text><text x="406" y="60.599999999999994" text-anchor="middle" font-size="11">294</text><rect x="444" y="55.5" width="40" height="144.5" fill="var(--series-1)"/><text x="464" y="218" text-anchor="middle" font-size="12">Aug</text><text x="464" y="50.5" text-anchor="middle" font-size="11">316</text><rect x="502" y="85.3" width="40" height="114.7" fill="var(--series-2)"/><text x="522" y="218" text-anchor="middle" font-size="12">Sep</text><text x="522" y="80.3" text-anchor="middle" font-size="11">251</text><rect x="560" y="54.2" width="40" height="145.8" fill="var(--series-1)"/><text x="580" y="218" text-anchor="middle" font-size="12">Oct</text><text x="580" y="49.2" text-anchor="middle" font-size="11">319</text><text x="320" y="236" text-anchor="middle" font-size="11" fill="var(--ink-3)">Lantern’s monthly orders, July–October 2026 (fictional)</text></svg>',
+      svg: '<svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" font-size="13" fill="currentColor"><text x="130" y="22" text-anchor="middle" font-weight="600">Axis starts at 240</text><line x1="40" y1="40" x2="40" y2="200" stroke="var(--rule-strong)" stroke-width="1.2"/><line x1="40" y1="200" x2="290" y2="200" stroke="var(--rule-strong)" stroke-width="1.2"/><text x="34" y="204" text-anchor="end" font-size="11" fill="var(--ink-3)">240</text><line x1="40" y1="200" x2="290" y2="200" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><text x="34" y="151" text-anchor="end" font-size="11" fill="var(--ink-3)">270</text><line x1="40" y1="147" x2="290" y2="147" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><text x="34" y="97" text-anchor="end" font-size="11" fill="var(--ink-3)">300</text><line x1="40" y1="93" x2="290" y2="93" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><text x="34" y="44" text-anchor="end" font-size="11" fill="var(--ink-3)">330</text><line x1="40" y1="40" x2="290" y2="40" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><rect x="56" y="104" width="40" height="96" fill="var(--series-1)"/><text x="76" y="218" text-anchor="middle" font-size="12">Jul</text><text x="76" y="99" text-anchor="middle" font-size="11">294</text><rect x="114" y="65" width="40" height="135" fill="var(--series-1)"/><text x="134" y="218" text-anchor="middle" font-size="12">Aug</text><text x="134" y="60" text-anchor="middle" font-size="11">316</text><rect x="172" y="180" width="40" height="20" fill="var(--series-2)"/><text x="192" y="218" text-anchor="middle" font-size="12">Sep</text><text x="192" y="175" text-anchor="middle" font-size="11">251</text><rect x="230" y="60" width="40" height="140" fill="var(--series-1)"/><text x="250" y="218" text-anchor="middle" font-size="12">Oct</text><text x="250" y="55" text-anchor="middle" font-size="11">319</text><text x="460" y="22" text-anchor="middle" font-weight="600">Axis starts at 0</text><line x1="370" y1="40" x2="370" y2="200" stroke="var(--rule-strong)" stroke-width="1.2"/><line x1="370" y1="200" x2="620" y2="200" stroke="var(--rule-strong)" stroke-width="1.2"/><text x="364" y="204" text-anchor="end" font-size="11" fill="var(--ink-3)">0</text><line x1="370" y1="200" x2="620" y2="200" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><text x="364" y="158" text-anchor="end" font-size="11" fill="var(--ink-3)">100</text><line x1="370" y1="154" x2="620" y2="154" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><text x="364" y="113" text-anchor="end" font-size="11" fill="var(--ink-3)">200</text><line x1="370" y1="109" x2="620" y2="109" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><text x="364" y="67" text-anchor="end" font-size="11" fill="var(--ink-3)">300</text><line x1="370" y1="63" x2="620" y2="63" stroke="var(--rule-strong)" stroke-width="0.5" stroke-dasharray="2 3"/><rect x="386" y="66" width="40" height="134" fill="var(--series-1)"/><text x="406" y="218" text-anchor="middle" font-size="12">Jul</text><text x="406" y="61" text-anchor="middle" font-size="11">294</text><rect x="444" y="56" width="40" height="144" fill="var(--series-1)"/><text x="464" y="218" text-anchor="middle" font-size="12">Aug</text><text x="464" y="51" text-anchor="middle" font-size="11">316</text><rect x="502" y="85" width="40" height="115" fill="var(--series-2)"/><text x="522" y="218" text-anchor="middle" font-size="12">Sep</text><text x="522" y="80" text-anchor="middle" font-size="11">251</text><rect x="560" y="54" width="40" height="146" fill="var(--series-1)"/><text x="580" y="218" text-anchor="middle" font-size="12">Oct</text><text x="580" y="49" text-anchor="middle" font-size="11">319</text><text x="320" y="236" text-anchor="middle" font-size="11" fill="var(--ink-3)">Lantern’s monthly orders, July–October 2026 (fictional)</text></svg>',
       caption: 'The same four months of Lantern’s orders drawn twice. On the left the axis starts at 240, so September’s bar looks a seventh the height of August’s; on the right it starts at zero and shows September at about four-fifths of August.',
       alt: 'Two bar charts side by side of Lantern’s monthly orders for July, August, September and October 2026: 294, 316, 251 and 319. The left chart’s vertical axis runs from 240 to 330, so the September bar is a short stub and the other bars are many times taller. The right chart’s axis runs from 0 to 350, so all four bars are of similar height and September is visibly but modestly lower.',
     } },
@@ -61,7 +63,7 @@ export default {
 
     { h: 'Compare like with like' },
     { p: String.raw`Any statement of change compares a result with a <g>baseline</g>, and the comparison must be fair. The definitions must match, as the KPIs lesson stressed. So must the periods: August has 31 days and September 30. Per day, orders fell from <m>316 \div 31 \approx 10.2</m> to <m>251 \div 30 \approx 8.4</m>, a fall of about 17.9%. The shorter month explains only about 8 of the 65 missing orders; the fall is real.` },
-    { p: 'Seasons matter too. Many businesses have a regular yearly pattern, or <g>seasonality</g>: Lantern sells gift boxes in November and December, cafés sell more cold drinks in summer. Comparing a month with the month before mixes the change you care about with the seasonal pattern. The usual remedy is to compare a month with the same month a year earlier. Lantern’s online shop opened in March 2026, so it has no previous September: the café owner’s claim can’t be checked with Lantern’s own data, and needs other evidence, such as the catering business’s history or industry figures.' },
+    { p: 'Seasons matter too. Many businesses have a regular yearly pattern, or <g>seasonality</g>: Lantern sells gift boxes in November and December, cafés sell more cold drinks in summer. Comparing a month with the month before mixes the change you care about with the seasonal pattern. The usual remedy is to compare a month with the same month a year earlier. Lantern began trading on 1 March 2026, so it has no earlier September: the café owner’s claim can’t be checked with Lantern’s own data, and needs other evidence, such as industry figures or the experience of similar shops.' },
     { p: 'Lantern’s gift-box orders show the other trap, the <g>base effect</g> from the summarising-data lesson: they rose from 9 in October to 88 in November, an increase of almost 880%, because the starting point was tiny and the season had arrived. The Explore section charts them month by month.' },
 
     { h: 'Correlation is not causation' },
@@ -69,9 +71,10 @@ export default {
     { list: [
       '<b>A third factor drives both.</b> A <g>confounding variable</g> affects both quantities and makes them move together. From October to December Lantern’s visits and its average rating both rose. Christmas is a likely confounder: it brings more visitors and more gift-box buyers, whose orders may be rated more warmly.',
       '<b>The causation runs the other way.</b> Shops that advertise more may sell more, or shops that sell more may have more to spend on advertising.',
-      '<b>Chance.</b> With six monthly values, almost any two series will appear related. Short series and many comparisons produce coincidences.',
+      '<b>Chance.</b> With only six monthly values, two unrelated series can easily appear related, especially if both happen to trend upwards. Short series and many comparisons produce coincidences.',
     ] },
-    { p: 'The checkout claim is a before-and-after comparison: something changed on 1 September, and orders fell in September. Timing is evidence, but weak on its own, because other things also changed in September. Stronger evidence comes from three places. A <g>comparison group</g> that did not get the change: Lantern’s app buyers never saw the new website checkout, so if app buyers carried on as before while website buyers stopped converting, the checkout is implicated. A reversal: a fix for a payment-page bug on mobile browsers was released on 5 October, so if website conversion recovered after that date, the case strengthens. And a mechanism: error logs showing failed payments. The project asks you to look at the numbers; this lesson gives you the method.' },
+    { p: 'The checkout claim is a before-and-after comparison: something changed on 1 September, and orders fell in September. Timing is evidence, but weak on its own, because other things also changed in September. Stronger evidence comes from three places.' },
+    { p: 'The first is a <g>comparison group</g> that did not get the change: Lantern’s app buyers never saw the new website checkout, so if app buyers carried on as before while website buyers stopped converting, the checkout is implicated. The second is a reversal: a fix for a payment-page bug on mobile browsers was released on 5 October, so if website conversion recovered after that date, the case strengthens. The third is a mechanism, such as error logs showing failed payments. The project asks you to look at the numbers; this lesson gives you the method.' },
   ],
 
   theory: [
@@ -88,7 +91,7 @@ export default {
     { p: String.raw`The comparison-group idea has a name and a simple formula. The <g>difference-in-differences</g> estimate of an effect is the change in the affected group minus the change in the unaffected group over the same period: <m>(T_{\text{after}} - T_{\text{before}}) - (C_{\text{after}} - C_{\text{before}})</m>. Subtracting the comparison group’s change removes whatever affected both groups, such as the season. It assumes that, without the change, the two groups would have moved in parallel; that assumption can be checked, roughly, by looking at how they moved in earlier months.` },
 
     { h: 'Simpson’s paradox' },
-    { p: 'Overall figures mix groups, and the mix itself can move the total. <g>Simpson’s paradox</g> is the name for a relationship that holds within every group but disappears or reverses when the groups are combined. The classic case, analysed by Bickel, Hammel and O’Connell in 1975, concerns graduate admissions at the University of California, Berkeley: men were admitted at a higher rate than women overall, yet no department showed a bias against women. Women had applied more often to the departments that admitted a smaller share of all applicants.' },
+    { p: 'Overall figures mix groups, and the mix itself can move the total. <g>Simpson’s paradox</g> is the name for a relationship that holds within every group but disappears or reverses when the groups are combined. The classic case, analysed by Bickel, Hammel and O’Connell in 1975, concerns graduate admissions at the University of California, Berkeley: men were admitted at a higher rate than women overall, yet when the 85 departments were examined one by one, only a few showed a significant difference, and about as many favoured women as favoured men. Women had applied more often to the departments that admitted a smaller share of all applicants.' },
     { p: 'In business the commonest version involves channels. The challenging example below follows a fictional shop whose website and app conversion rates both rose while its overall conversion fell, because a campaign shifted visits towards the website, the channel with the lower rate. The overall rate is a weighted average of the channel rates, weighted by each channel’s share of visits, so it can change because the rates changed, because the shares changed, or both. Separating the two is called a mix analysis: recompute the new period’s overall rate using the old period’s shares, and compare.' },
     { p: 'Lantern’s app converts better than its website, so Lantern’s overall conversion depends on its mix of web and app visits as well as on each channel’s rate. Before blaming or crediting anything for a change in the overall rate, check each channel’s rate and each channel’s share. The project asks whether September’s mix changed enough to matter.' },
 
@@ -98,7 +101,8 @@ export default {
     { p: 'Lantern’s September was its worst month for orders, and October was better. Some of that recovery may be regression to the mean, some may be the 5 October fix. A comparison group, the app, helps to tell them apart.' },
 
     { h: 'Small samples and noise' },
-    { p: 'Every rate built on few cases is noisy, because <g>sampling error</g> shrinks only as the number of cases grows. A product page with 3 orders from 40 visits converts at 7.5%; another with 2 from 40 converts at 5.0%. The 2.5-point gap is one order and means almost nothing. Survey researchers make the same point formally: Pew Research Center notes that estimates for subgroups have larger margins of error because they rest on fewer cases, and that a lead of one figure over another is less certain than either figure alone. Lantern’s September survey drew 79 responses; any conclusion about a subgroup, such as app buyers, rests on fewer still. B04 shows how to put a number on this uncertainty with confidence intervals; for now, report the counts and be cautious with small ones.' },
+    { p: 'Every rate built on few cases is noisy, because <g>sampling error</g> shrinks only as the number of cases grows. A product page with 3 orders from 40 visits converts at 7.5%; another with 2 from 40 converts at 5.0%. The 2.5-point gap is one order and means almost nothing.' },
+    { p: 'Survey researchers make the same point formally: Pew Research Center notes that estimates for subgroups have larger margins of error because they rest on fewer cases, and that a lead of one figure over another is less certain than either figure alone. Lantern’s September survey drew 79 responses; any conclusion about a subgroup, such as app buyers, rests on fewer still. B04 shows how to put a number on this uncertainty with confidence intervals; for now, report the counts and be cautious with small ones.' },
 
     { h: 'Diagnosing a change in a KPI' },
     { p: 'When a KPI moves unexpectedly, the work is <g>diagnostic analytics</g>: explaining why something happened. Work through the questions in order; each one can end the investigation.' },
@@ -176,13 +180,13 @@ export default {
       setup: 'Northwind Outfitters, a fictional online outdoor-gear shop, ran a social-media campaign that sent visitors to its website. Before the campaign (period A) the website had 6,000 visits and 150 orders and the app 4,000 visits and 160 orders. During it (period B) the website had 10,000 visits and 260 orders and the app 3,000 visits and 126 orders. The marketing director says the campaign hurt conversion. Did it?',
       table: {
         caption: 'Northwind Outfitters by channel (fictional)',
-        head: ['Channel', 'Visits A', 'Orders A', 'Rate A', 'Visits B', 'Orders B', 'Rate B'],
-        align: ['l', 'r', 'r', 'r', 'r', 'r', 'r'],
+        head: ['Channel', 'Visits A', 'Orders A', 'Visits B', 'Orders B'],
+        align: ['l', 'r', 'r', 'r', 'r'],
         rows: [
-          ['Website', '6,000', '150', '2.50%', '10,000', '260', '2.60%'],
-          ['App', '4,000', '160', '4.00%', '3,000', '126', '4.20%'],
+          ['Website', '6,000', '150', '10,000', '260'],
+          ['App', '4,000', '160', '3,000', '126'],
         ],
-        foot: [['Total', '10,000', '310', '3.10%', '13,000', '386', '2.97%']],
+        foot: [['Total', '10,000', '310', '13,000', '386']],
       },
       steps: [
         String.raw`Channel rates: the website rose from <m>150 \div 6{,}000 = 2.50\%</m> to <m>260 \div 10{,}000 = 2.60\%</m>; the app from <m>160 \div 4{,}000 = 4.00\%</m> to <m>126 \div 3{,}000 = 4.20\%</m>. Both improved.`,
@@ -193,10 +197,10 @@ export default {
       ],
       answer: 'No. Both channels converted better during the campaign (website 2.50% → 2.60%, app 4.00% → 4.20%). Overall conversion fell from 3.10% to 2.97% only because the campaign shifted the mix towards the lower-converting website: a rate effect of +0.14 points and a mix effect of −0.27 points. Orders rose by 76.',
       interpretation: 'An overall rate can fall while every part of the business improves. Before acting on a change in a total, split it by the groups that make it up and separate the change in rates from the change in mix.' },
-    { level: 'applied', title: 'Diagnosing a dip at Pinecrest Outdoor', fictional: true,
-      setup: 'Pinecrest Outdoor, a fictional online shop, redesigned its product pages for desktop computers on 1 May; mobile pages were unchanged. Orders fell in May. On 3 June the desktop redesign was rolled back. Its AOV was $80 in every month. Diagnose the dip and write the finding.',
+    { level: 'applied', title: 'Diagnosing a dip at Alderbank Outdoor', fictional: true,
+      setup: 'Alderbank Outdoor, a fictional online shop, redesigned its product pages for desktop computers on 1 May; mobile pages were unchanged. Orders fell in May. On 3 June the desktop redesign was rolled back. Its AOV was $80 in every month. Diagnose the dip and write the finding.',
       table: {
-        caption: 'Pinecrest Outdoor by device (fictional)',
+        caption: 'Alderbank Outdoor by device (fictional)',
         head: ['Month', 'Desktop visits', 'Desktop orders', 'Mobile visits', 'Mobile orders'],
         align: ['l', 'r', 'r', 'r', 'r'],
         rows: [
@@ -226,7 +230,7 @@ export default {
 
   mistakes: [
     { title: '“The chart shows orders collapsed.”', html: 'Check where the axis starts. On an axis from 240, a 20.6% fall looks like 85.5%. Bars must start at zero; lines may not, but the axis must be labelled.' },
-    { title: '“It happened right after the launch, so the launch caused it.”', html: 'Timing alone can’t separate a cause from a coincidence. Look for a comparison group that didn’t get the change, a reversal and a mechanism, as in the Pinecrest example.' },
+    { title: '“It happened right after the launch, so the launch caused it.”', html: 'Timing alone can’t separate a cause from a coincidence. Look for a comparison group that didn’t get the change, a reversal and a mechanism, as in the Alderbank example.' },
     { title: '“Every channel improved, so the total must have.”', html: 'Not if the mix shifted towards a weaker channel: Northwind’s two channels both improved while its overall conversion fell. Split totals by group and separate rate from mix.' },
     { title: '“Our worst performers improved after the programme, so it works.”', html: 'Units picked because they were extreme tend to move back towards the average anyway: regression to the mean. Compare with similar units that didn’t get the programme.' },
     { title: '“These two rose together, so one drives the other.”', html: 'A confounder may drive both, the causation may run the other way, or it may be chance in a short series. Correlation is a reason to investigate, not a conclusion.' },
@@ -266,6 +270,7 @@ export default {
   references: [
     { text: 'Illowsky, B. &amp; Dean, S. (2023). <i>Introductory Statistics 2e</i>, section 12.3, “The Regression Equation” (correlation and causation). OpenStax.', url: 'https://openstax.org/books/introductory-statistics-2e/pages/12-3-the-regression-equation', checked: '2026-10-23' },
     { text: 'Weinberger, N. Simpson’s paradox. <i>The Stanford Encyclopedia of Philosophy</i>, first published 24 March 2021, substantive revision 6 June 2026.', url: 'https://plato.stanford.edu/entries/paradox-simpson/', checked: '2026-10-23' },
+    { text: 'Bickel, P. J., Hammel, E. A. &amp; O’Connell, J. W. (1975). Sex bias in graduate admissions: data from Berkeley. <i>Science</i>, 187(4175), 398–404.', url: 'https://doi.org/10.1126/science.187.4175.398', checked: '2026-10-23' },
     { text: 'Barnett, A. G., van der Pols, J. C. &amp; Dobson, A. J. (2005). Regression to the mean: what it is and how to deal with it. <i>International Journal of Epidemiology</i>, 34(1), 215–220.', url: 'https://academic.oup.com/ije/article/34/1/215/638499', checked: '2026-10-23' },
     { text: 'U.S. Census Bureau. “Quarterly Services: Seasonal Adjustment FAQs”.', url: 'https://www.census.gov/services/qss/seasonally_adjusted_faqs.html', checked: '2026-10-23' },
     { text: 'Mercer, A. (2016). 5 key things to know about the margin of error in election polls. Pew Research Center, 8 September 2016.', url: 'https://www.pewresearch.org/short-reads/2016/09/08/understanding-the-margin-of-error-in-election-polls/', checked: '2026-10-23' },
@@ -283,6 +288,7 @@ export default {
     { what: 'Gift boxes November (case)', value: S.giftBoxOrders[4], shown: 88 },
     { what: 'Visits rise Oct to Dec (case)', value: D.visits[5] - D.visits[3], shown: 5200 },
     { what: 'Rating rise Oct to Dec (case)', value: S.avgRating[5] - S.avgRating[3], shown: 0.2 },
+    { what: 'Lantern began trading (day of March 2026)', value: 1, shown: 1 },
     { what: 'Survey responses (case)', value: SURVEY.responses, shown: 79 },
     { what: 'Monthly values in the case', value: S.webVisits.length, shown: 6 },
     // concept
@@ -301,6 +307,7 @@ export default {
     { what: 'Gift boxes Oct to Nov, almost 880%', value: (S.giftBoxOrders[4] / S.giftBoxOrders[3] - 1) * 100, shown: 878, tol: 0.5 },
     // theory
     { what: 'Bickel, Hammel and O’Connell year', value: 1975, shown: 1975 },
+    { what: 'Berkeley departments analysed', value: 101 - 16, shown: 85 },
     { what: 'Cafés: low four improved (stars)', value: 3.9 - 3.6, shown: 0.3 },
     { what: 'Cafés: top four fell (stars)', value: 4.7 - 4.5, shown: 0.2 },
     { what: 'Small pages: 3 of 40 (%)', value: 3 / 40 * 100, shown: 7.5 },
@@ -329,24 +336,24 @@ export default {
     { what: 'Northwind rate effect (points)', value: bAtA - overA, shown: 0.14 },
     { what: 'Northwind mix effect (points)', value: overB - bAtA, shown: -0.27 },
     { what: 'Northwind extra orders', value: (NB.wo + NB.ao) - (NA.wo + NA.ao), shown: 76 },
-    // examples: applied (Pinecrest)
-    { what: 'Pinecrest visits April', value: PA.dv + PA.mv, shown: 50000 },
-    { what: 'Pinecrest visits May', value: PM.dv + PM.mv, shown: 52000 },
-    { what: 'Pinecrest visits change (%)', value: ((PM.dv + PM.mv) / (PA.dv + PA.mv) - 1) * 100, shown: 4.0 },
-    { what: 'Pinecrest orders April', value: PA.do + PA.mo, shown: 1200 },
-    { what: 'Pinecrest orders May', value: PM.do + PM.mo, shown: 1061 },
-    { what: 'Pinecrest orders change (%)', value: ((PM.do + PM.mo) / (PA.do + PA.mo) - 1) * 100, shown: -11.6, tol: 0.05 },
-    { what: 'Pinecrest conversion April (%)', value: rate(PA.do + PA.mo, PA.dv + PA.mv), shown: 2.40 },
-    { what: 'Pinecrest conversion May (%)', value: rate(PM.do + PM.mo, PM.dv + PM.mv), shown: 2.04 },
-    { what: 'Pinecrest desktop April (%)', value: rate(PA.do, PA.dv), shown: 3.00 },
-    { what: 'Pinecrest desktop May (%)', value: rate(PM.do, PM.dv), shown: 2.10 },
-    { what: 'Pinecrest mobile April (%)', value: rate(PA.mo, PA.mv), shown: 2.00 },
-    { what: 'Pinecrest mobile May (%)', value: rate(PM.mo, PM.mv), shown: 2.00 },
-    { what: 'Pinecrest DiD (points)', value: (rate(PM.do, PM.dv) - rate(PA.do, PA.dv)) - (rate(PM.mo, PM.mv) - rate(PA.mo, PA.mv)), shown: -0.90 },
-    { what: 'Pinecrest desktop June (%)', value: rate(PJ.do, PJ.dv), shown: 2.90 },
-    { what: 'Pinecrest expected desktop orders May', value: PM.dv * rate(PA.do, PA.dv) / 100, shown: 630 },
-    { what: 'Pinecrest lost orders', value: PM.dv * rate(PA.do, PA.dv) / 100 - PM.do, shown: 189 },
-    { what: 'Pinecrest lost revenue', value: (PM.dv * rate(PA.do, PA.dv) / 100 - PM.do) * 80, shown: 15120 },
+    // examples: applied (Alderbank)
+    { what: 'Alderbank visits April', value: PA.dv + PA.mv, shown: 50000 },
+    { what: 'Alderbank visits May', value: PM.dv + PM.mv, shown: 52000 },
+    { what: 'Alderbank visits change (%)', value: ((PM.dv + PM.mv) / (PA.dv + PA.mv) - 1) * 100, shown: 4.0 },
+    { what: 'Alderbank orders April', value: PA.do + PA.mo, shown: 1200 },
+    { what: 'Alderbank orders May', value: PM.do + PM.mo, shown: 1061 },
+    { what: 'Alderbank orders change (%)', value: ((PM.do + PM.mo) / (PA.do + PA.mo) - 1) * 100, shown: -11.6, tol: 0.05 },
+    { what: 'Alderbank conversion April (%)', value: rate(PA.do + PA.mo, PA.dv + PA.mv), shown: 2.40 },
+    { what: 'Alderbank conversion May (%)', value: rate(PM.do + PM.mo, PM.dv + PM.mv), shown: 2.04 },
+    { what: 'Alderbank desktop April (%)', value: rate(PA.do, PA.dv), shown: 3.00 },
+    { what: 'Alderbank desktop May (%)', value: rate(PM.do, PM.dv), shown: 2.10 },
+    { what: 'Alderbank mobile April (%)', value: rate(PA.mo, PA.mv), shown: 2.00 },
+    { what: 'Alderbank mobile May (%)', value: rate(PM.mo, PM.mv), shown: 2.00 },
+    { what: 'Alderbank DiD (points)', value: (rate(PM.do, PM.dv) - rate(PA.do, PA.dv)) - (rate(PM.mo, PM.mv) - rate(PA.mo, PA.mv)), shown: -0.90 },
+    { what: 'Alderbank desktop June (%)', value: rate(PJ.do, PJ.dv), shown: 2.90 },
+    { what: 'Alderbank expected desktop orders May', value: PM.dv * rate(PA.do, PA.dv) / 100, shown: 630 },
+    { what: 'Alderbank lost orders', value: PM.dv * rate(PA.do, PA.dv) / 100 - PM.do, shown: 189 },
+    { what: 'Alderbank lost revenue', value: (PM.dv * rate(PA.do, PA.dv) / 100 - PM.do) * 80, shown: 15120 },
     { what: 'Travel site fall (%)', value: 8, shown: 8 },
   ],
 };

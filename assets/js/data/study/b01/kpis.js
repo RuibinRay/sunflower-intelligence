@@ -55,28 +55,30 @@ export default {
     { callout: 'key', title: 'Every rate has a numerator and a denominator', html: 'A rate can rise because its numerator rose or because its denominator fell. Report the counts beside every rate, so that a reader can see which happened.' },
 
     { h: 'Targets and direction' },
-    { p: String.raw`A target turns a number into a judgement. Lantern’s July average order value (AOV) was $41.20 against a target of $45, a gap of <m>41.20 - 45 = -3.80</m> dollars, or 91.6% of the target. Revenue, $12,112.80 against $15,000, reached 80.8% of its target. Conversion, exactly 3.00%, met its target of 3.0%. For a KPI that is itself a percentage, state the gap in percentage points: a conversion rate of 2.7% against a target of 3.0% is 0.3 of a point short. The next lesson shows why “0.3%” would be the wrong way to say it.` },
+    { p: String.raw`A target turns a number into a judgement. Lantern’s July average order value (AOV) was $41.20 against a target of $45, a gap of <m>41.20 - 45 = -3.80</m> dollars, or 91.6% of the target. Revenue, $12,112.80 against $15,000, reached 80.8% of its target. Conversion, exactly 3.00%, met its target of 3.0%.` },
+    { p: String.raw`For a KPI that is itself a percentage, state the gap in percentage points: a conversion rate of 2.7% against a target of 3.0% is 0.3 of a point short. The next lesson shows why “0.3%” would be the wrong way to say it.` },
     { p: 'Direction is usually obvious, since more revenue is better, but not always. For a refund rate or a delivery time, lower is better. For stock on hand, both too little and too much are bad, so the target is a band. Say the direction explicitly in the KPI dictionary, because dashboards often colour a change “good” or “bad” automatically, and a rule written for revenue will praise a rising refund rate.' },
-    { p: String.raw`Targets should also be consistent with one another. Ana’s targets for the drivers of revenue don’t guarantee her revenue target. At a conversion rate of 3.0% and an AOV of $45, each visit is worth <m>0.03 \times 45 = 1.35</m> dollars on average, so $15,000 needs <m>15{,}000 \div 1.35 \approx 11{,}111</m> visits. In a month of 10,000 visits, meeting both rate targets still leaves revenue at $13,500. The first widget below lets you test other combinations.` },
+    { p: String.raw`Targets should also be consistent with one another. Ana’s targets for the drivers of revenue don’t guarantee her revenue target. At a conversion rate of 3.0% and an AOV of $45, each visit is worth <m>0.03 \times 45 = 1.35</m> dollars on average, so $15,000 needs <m>15{,}000 \div 1.35 \approx 11{,}111</m> visits. In a month of 10,000 visits, meeting both the conversion and AOV targets still leaves revenue at $13,500. The first widget below lets you test other combinations.` },
   ],
 
   theory: [
-    { h: 'Five KPIs for an online shop' },
-    { p: 'Lantern’s case data hold the raw counts for five common online-shop KPIs. The table defines them, and the formula cards later in the lesson give them in symbols. Lantern’s shop platform reports average order value directly, so revenue is calculated as orders × AOV; in most systems AOV is itself calculated as revenue ÷ orders, and the two routes agree.' },
+    { h: 'Five measures for an online shop' },
+    { p: 'Lantern’s case data hold the raw counts for four online-shop KPIs and one supporting metric. The table defines them, and the formula cards later in the lesson give them in symbols. Lantern’s shop platform reports average order value directly, so revenue is calculated as orders × AOV; in most systems AOV is itself calculated as revenue ÷ orders, and the two routes agree.' },
     { table: {
-      caption: 'Five online-shop KPIs, with Lantern’s July figures (fictional)',
-      head: ['KPI', 'Formula', 'Direction', 'Target', 'July'],
+      caption: 'Five online-shop measures, with Lantern’s July figures (fictional)',
+      head: ['Measure', 'Formula', 'Direction', 'Target', 'July'],
       align: ['l', 'l', 'l', 'r', 'r'],
       rows: [
         ['Conversion rate', 'Orders ÷ visits × 100', 'Higher', '3.0%', '3.00%'],
         ['Average order value', 'Revenue ÷ orders', 'Higher', '$45', '$41.20'],
         ['Revenue', 'Orders × AOV', 'Higher', '$15,000', '$12,112.80'],
         ['Returning-customer share', '(Orders − first orders) ÷ orders × 100', 'Higher', '35%', '38.1%'],
-        ['Rating response rate', 'Orders rated ÷ orders × 100', 'Higher', 'None set', '40.1%'],
+        ['Rating response rate', 'Orders rated ÷ orders × 100', 'Higher', 'None set (supporting metric)', '40.1%'],
       ],
       note: 'July 2026: 9,800 visits, 294 orders, AOV $41.20, 182 first orders (orders that were a customer’s first ever), 118 orders rated.',
     } },
-    { p: 'The arithmetic is simple; the judgement lies in the definitions. Conversion divides by visits, which Lantern’s analytics tool counts as sessions. Google Analytics, for example, defines a session as a period during which a user interacts with a website or app, ending by default after 30 minutes of inactivity, so one person who browses in the morning and again in the evening makes two sessions. Dividing by sessions gives orders per visit; dividing by distinct visitors gives a higher figure, because each person can visit several times. Neither is wrong. Switching between them from one month to the next is.' },
+    { p: 'The arithmetic is simple; the judgement lies in the definitions. Conversion divides by visits, which Lantern’s analytics tool counts as sessions. Google Analytics, for example, defines a session as a period during which a user interacts with a website or app, ending by default after 30 minutes of inactivity, so one person who browses in the morning and again in the evening makes two sessions.' },
+    { p: 'Dividing by sessions gives orders per visit; dividing by distinct visitors gives a higher figure, because each person can visit several times. Neither is wrong. Switching between them from one month to the next is.' },
     { p: String.raw`Returning-customer share needs an operational definition too. Lantern’s shop records how many of a month’s orders were a customer’s first ever order: 182 in July. Every other order counts as returning, so July’s share is <m>(294 - 182) \div 294 \approx 38.1\%</m>. This is a share of <i>orders</i>, not of <i>customers</i>: a loyal customer who ordered three times counts three times. A share of customers would need a different count, the number of distinct customers who ordered, and would usually be lower.` },
     { p: 'Names differ between tools, so check the definitions before comparing figures from two systems. Google Analytics now calls an action that matters to the business, such as a purchase, a “key event”, and keeps the word “conversion” for actions used to measure advertising campaigns. An advertising platform’s conversion rate may divide by ad clicks rather than visits; the M02 course uses that version.' },
 
@@ -93,14 +95,14 @@ export default {
     { h: 'Leading and lagging indicators' },
     { p: 'A <g>lagging indicator</g> measures an outcome after it has happened: revenue for the month, the returning share over a quarter, profit for the year. It is what the business ultimately cares about, but by the time it moves, the causes are in the past. A <g>leading indicator</g> moves earlier and, if the link holds, signals where a lagging indicator is heading: visits, checkouts started, newsletter sign-ups, the ratings that first-time buyers give.' },
     { figure: {
-      svg: '<svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg" font-size="13" fill="currentColor"><defs><marker id="kpi-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/></marker></defs><rect x="10" y="30" width="110" height="44" rx="6" fill="none" stroke="var(--series-1)" stroke-width="2"/><text x="65" y="57" text-anchor="middle">Visits</text><rect x="170" y="30" width="130" height="44" rx="6" fill="none" stroke="var(--series-1)" stroke-width="2"/><text x="235" y="50" text-anchor="middle">Checkouts</text><text x="235" y="66" text-anchor="middle">started</text><rect x="350" y="30" width="110" height="44" rx="6" fill="none" stroke="var(--ink)" stroke-width="2"/><text x="405" y="57" text-anchor="middle">Orders</text><rect x="510" y="30" width="120" height="44" rx="6" fill="none" stroke="var(--series-2)" stroke-width="2"/><text x="570" y="57" text-anchor="middle">Revenue</text><rect x="350" y="112" width="110" height="44" rx="6" fill="none" stroke="var(--ink)" stroke-width="2"/><text x="405" y="139" text-anchor="middle">Ratings</text><rect x="510" y="112" width="120" height="44" rx="6" fill="none" stroke="var(--series-2)" stroke-width="2"/><text x="570" y="132" text-anchor="middle">Repeat orders</text><text x="570" y="148" text-anchor="middle" font-size="11" fill="var(--ink-3)">returning share</text><line x1="120" y1="52" x2="168" y2="52" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#kpi-arrow)"/><line x1="300" y1="52" x2="348" y2="52" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#kpi-arrow)"/><line x1="460" y1="52" x2="508" y2="52" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#kpi-arrow)"/><line x1="405" y1="74" x2="405" y2="110" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#kpi-arrow)"/><line x1="460" y1="134" x2="508" y2="134" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#kpi-arrow)"/><text x="324" y="22" text-anchor="middle" font-size="11" fill="var(--ink-3)">conversion</text><text x="485" y="22" text-anchor="middle" font-size="11" fill="var(--ink-3)">× AOV</text><line x1="20" y1="196" x2="620" y2="196" stroke="var(--rule-strong)" stroke-width="1.5" marker-end="url(#kpi-arrow)"/><text x="20" y="214" fill="var(--ink-3)">earlier: leading</text><text x="620" y="214" text-anchor="end" fill="var(--ink-3)">later: lagging</text></svg>',
-      caption: 'A chain of indicators for an online shop. Each box leads the boxes to its right and lags the boxes to its left.',
-      alt: 'A flow diagram. Along the top, arrows run from Visits to Checkouts started to Orders to Revenue; the arrow into Orders is labelled conversion and the arrow into Revenue is labelled times AOV. From Orders an arrow runs down to Ratings, and from Ratings an arrow runs right to Repeat orders, labelled returning share. An axis along the bottom runs from earlier, leading, on the left to later, lagging, on the right.',
+      svg: '<svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg" font-size="13" fill="currentColor"><defs><marker id="kpi-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/></marker></defs><rect x="10" y="30" width="110" height="44" rx="6" fill="none" stroke="var(--series-1)" stroke-width="2"/><text x="65" y="57" text-anchor="middle">Visits</text><rect x="170" y="30" width="130" height="44" rx="6" fill="none" stroke="var(--series-1)" stroke-width="2"/><text x="235" y="50" text-anchor="middle">Checkouts</text><text x="235" y="66" text-anchor="middle">started</text><rect x="350" y="30" width="110" height="44" rx="6" fill="none" stroke="var(--ink)" stroke-width="2"/><text x="405" y="57" text-anchor="middle">Orders</text><rect x="510" y="30" width="120" height="44" rx="6" fill="none" stroke="var(--series-2)" stroke-width="2"/><text x="570" y="57" text-anchor="middle">Revenue</text><rect x="350" y="112" width="110" height="44" rx="6" fill="none" stroke="var(--ink)" stroke-width="2"/><text x="405" y="139" text-anchor="middle">Ratings</text><rect x="510" y="112" width="120" height="44" rx="6" fill="none" stroke="var(--series-2)" stroke-width="2"/><text x="570" y="132" text-anchor="middle">Repeat orders</text><text x="570" y="148" text-anchor="middle" font-size="11" fill="var(--ink-3)">returning share</text><line x1="120" y1="52" x2="168" y2="52" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#kpi-arrow)"/><line x1="300" y1="52" x2="348" y2="52" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#kpi-arrow)"/><line x1="460" y1="52" x2="508" y2="52" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#kpi-arrow)"/><line x1="405" y1="74" x2="405" y2="110" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#kpi-arrow)"/><line x1="460" y1="134" x2="508" y2="134" stroke="var(--ink-3)" stroke-width="1.5" marker-end="url(#kpi-arrow)"/><text x="324" y="22" text-anchor="middle" font-size="11" fill="var(--ink-3)">checkout conversion</text><text x="485" y="22" text-anchor="middle" font-size="11" fill="var(--ink-3)">× AOV</text><line x1="20" y1="196" x2="620" y2="196" stroke="var(--rule-strong)" stroke-width="1.5" marker-end="url(#kpi-arrow)"/><text x="20" y="214" fill="var(--ink-3)">earlier: leading</text><text x="620" y="214" text-anchor="end" fill="var(--ink-3)">later: lagging</text></svg>',
+      caption: 'A chain of indicators for an online shop. Each box leads the boxes its arrows point to and lags the boxes that point to it.',
+      alt: 'A flow diagram. Along the top, arrows run from Visits to Checkouts started to Orders to Revenue; the arrow from Checkouts started into Orders is labelled checkout conversion and the arrow into Revenue is labelled times AOV. From Orders an arrow runs down to Ratings, and from Ratings an arrow runs right to Repeat orders, labelled returning share. An axis along the bottom runs from earlier, leading, on the left to later, lagging, on the right.',
     } },
     { p: 'Leading and lagging are positions in a chain, not fixed labels. Conversion leads revenue but lags the checkout experience that produces it; a first order leads the returning share months later. A leading indicator earns its place only if it actually predicts the outcome. That is a claim to test with data, which B05 and B06 teach you to do, not something to assume because the story sounds right.' },
 
     { h: 'Goodhart’s law' },
-    { p: 'Writing about monetary policy in 1975, the economist Charles Goodhart observed that “any observed statistical regularity will tend to collapse once pressure is placed upon it for control purposes”. The idea, now called <g>Goodhart’s law</g>, is usually paraphrased as: when a measure becomes a target, it ceases to be a good measure. People respond to what is rewarded, and a single number can usually be moved in ways that don’t serve the objective behind it.' },
+    { p: 'Writing about monetary policy in 1975, the economist Charles Goodhart observed that “any observed statistical regularity will tend to collapse once pressure is placed upon it for control purposes”. The idea, now called <g>Goodhart’s law</g>, is usually quoted in the anthropologist Marilyn Strathern’s 1997 wording: “When a measure becomes a target, it ceases to be a good measure.” People respond to what is rewarded, and a single number can usually be moved in ways that don’t serve the objective behind it.' },
     { p: 'Every one of Ana’s KPIs can be gamed. Conversion rises if Lantern stops paying for traffic that rarely buys, even as orders fall. AOV rises if free delivery starts only at $60, even if small orders disappear. The rating response rate rises if customers are offered a discount for rating, which also changes who rates and how. None of these is fraud; each is a rational response to a narrow target. The defences are structural:' },
     { list: [
       '<b>Pair measures that pull in opposite directions:</b> conversion with orders, AOV with orders, speed with quality. Gaming one shows up in the other.',
@@ -173,7 +175,7 @@ export default {
 
   examples: [
     { level: 'simple', title: 'Lantern’s July scorecard', fictional: true,
-      setup: 'In July 2026 Lantern’s shop had 9,800 visits and 294 orders, an AOV of $41.20, 182 first orders and 118 rated orders. Ana’s targets are a conversion rate of 3.0%, an AOV of $45, revenue of $15,000 and a returning share of 35%. Calculate the five KPIs and judge each against its target.',
+      setup: 'In July 2026 Lantern’s shop had 9,800 visits and 294 orders, an AOV of $41.20, 182 first orders and 118 rated orders. Ana’s targets are a conversion rate of 3.0%, an AOV of $45, revenue of $15,000 and a returning share of 35%. Calculate the four KPIs and the rating response rate, and judge each KPI against its target.',
       steps: [
         String.raw`Conversion rate: <m>294 \div 9{,}800 \times 100 = 3.00\%</m>. The target is 3.0%, so the gap is 0 percentage points: on target.`,
         String.raw`AOV: $41.20, as reported. Gap <m>41.20 - 45 = -3.80</m> dollars; share of target <m>41.20 \div 45 \times 100 \approx 91.6\%</m>.`,
@@ -184,7 +186,7 @@ export default {
       answer: 'Conversion 3.00% (on target); AOV $41.20 (91.6% of target); revenue $12,112.80 (80.8% of target); returning share 38.1% (3.1 points above target); rating response rate 40.1% (no target).',
       interpretation: String.raw`July met its conversion and returning-customer targets but missed revenue by almost a fifth. The driver tree says why: each visit was worth <m>0.03 \times 41.20 \approx 1.24</m> dollars, so $15,000 would have needed about 12,136 visits at July’s conversion and AOV. Revenue was short because of order value and traffic, not because visitors failed to buy. The project asks you to build this scorecard for all six months.` },
     { level: 'challenging', title: 'One shop, four conversion rates', fictional: true,
-      setup: 'Marlow & Finch, a fictional online stationery shop, recorded in March: 48,000 sessions from 30,000 distinct visitors; 3,600 sessions that started the checkout; 1,500 orders placed, of which 60 were cancelled the same day. Calculate conversion four ways: orders placed per session, paid orders per session, paid orders per visitor, and paid orders per checkout started. In April a paid campaign added 12,000 sessions and paid orders rose to 1,560 from 60,000 sessions in all. Which definition should the shop’s dashboard use, and what happened in April?',
+      setup: 'Westerly Paper Co., a fictional online stationery shop, recorded in March: 48,000 sessions from 30,000 distinct visitors; 3,600 sessions that started the checkout; 1,500 orders placed, of which 60 were cancelled the same day. Calculate conversion four ways: orders placed per session, paid orders per session, paid orders per visitor, and paid orders per checkout started. In April a paid campaign added 12,000 sessions and paid orders rose to 1,560 from 60,000 sessions in all. Which definition should the shop’s dashboard use, and what happened in April?',
       steps: [
         String.raw`Orders placed per session: <m>1{,}500 \div 48{,}000 \times 100 = 3.125\%</m>. Paid orders are <m>1{,}500 - 60 = 1{,}440</m>, so paid orders per session are <m>1{,}440 \div 48{,}000 \times 100 = 3.00\%</m>.`,
         String.raw`Paid orders per visitor: <m>1{,}440 \div 30{,}000 \times 100 = 4.80\%</m>. Higher, because each visitor averaged <m>48{,}000 \div 30{,}000 = 1.6</m> sessions.`,
@@ -244,7 +246,7 @@ export default {
   summary: [
     'A metric is any quantity calculated by an exact rule; a KPI is a metric tied to an objective, with a target, a direction and an owner.',
     'Write each KPI down in a KPI dictionary: name, formula (numerator and denominator), unit, period, source, target, direction and owner.',
-    'Core online-shop KPIs: conversion = orders ÷ visits × 100; AOV = revenue ÷ orders; revenue = visits × conversion × AOV; returning share = (orders − first orders) ÷ orders × 100; rating response rate = rated orders ÷ orders × 100.',
+    'Core online-shop measures: conversion = orders ÷ visits × 100; AOV = revenue ÷ orders; revenue = visits × conversion × AOV; returning share = (orders − first orders) ÷ orders × 100; rating response rate = rated orders ÷ orders × 100.',
     'Counts measure scale and rates measure efficiency. A rate moves when either part moves, so report the counts beside it and keep the numerator and denominator from the same population and period.',
     'Judge a KPI against its target as a gap and as a share of target; for percentage KPIs the gap is in percentage points.',
     'Leading indicators move before the lagging outcomes they predict, but the link must be checked with data.',
@@ -254,7 +256,7 @@ export default {
   glossary: [
     { term: 'Metric', def: 'A quantity calculated from data by an exact rule, such as the number of orders in a month or the average rating.' },
     { term: 'Key performance indicator', def: 'A metric chosen to track progress towards a business objective, with an exact formula, a target, a direction (higher or lower is better) and an owner. Abbreviated KPI.' },
-    { term: 'Conversion rate', def: 'The share of clicks (or visits) that end in the action a campaign seeks, such as an order or sign-up.' },
+    { term: 'Conversion rate', def: 'The percentage of visits, or of ad clicks, that end in a chosen action such as an order or a sign-up. Which denominator is used varies between tools and reports, so always state it.' },
     { term: 'Average order value', def: 'Revenue divided by the number of orders in a period: the mean value of an order. Abbreviated AOV.' },
     { term: 'Lagging indicator', def: 'A measure of an outcome after it has happened, such as revenue for a month or profit for a year.' },
     { term: 'Leading indicator', def: 'A measure that moves before an outcome and, if the link holds, signals where that outcome is heading, such as visits or checkouts started before orders and revenue.' },
@@ -269,6 +271,7 @@ export default {
     { text: 'Google. “Conversions vs. key events in Google Analytics”. Analytics Help.', url: 'https://support.google.com/analytics/answer/13965727', checked: '2026-10-23' },
     { text: 'Kaplan, R. S. &amp; Norton, D. P. (1992). The Balanced Scorecard: Measures that Drive Performance. <i>Harvard Business Review</i>, January–February 1992.', url: 'https://hbr.org/1992/01/the-balanced-scorecard-measures-that-drive-performance-2', checked: '2026-10-23' },
     { text: 'Manheim, D. &amp; Garrabrant, S. (2018). Categorizing Variants of Goodhart’s Law. arXiv:1803.04585. (Quotes Goodhart, C. A. E. (1975), <i>Problems of Monetary Management: The U.K. Experience</i>, Papers in Monetary Economics, Reserve Bank of Australia.)', url: 'https://arxiv.org/abs/1803.04585', checked: '2026-10-23' },
+    { text: 'Strathern, M. (1997). “Improving ratings”: audit in the British University system. <i>European Review</i>, 5(3), 305–321.', checked: '2026-10-23' },
   ],
 
   checks: [
@@ -317,17 +320,17 @@ export default {
     { what: 'Simple: about two in five rated', value: S.ratingsGiven[J] / julOrders, shown: 0.4, tol: 0.005 },
     { what: 'Simple: missed revenue by almost a fifth', value: 1 - julRevenue / T.monthlyRevenue, shown: 0.19, tol: 0.005 },
     // examples: challenging
-    { what: 'Marlow: orders placed per session (%)', value: 1500 / 48000 * 100, shown: 3.125 },
-    { what: 'Marlow: paid orders', value: 1500 - 60, shown: 1440 },
-    { what: 'Marlow: paid per session (%)', value: 1440 / 48000 * 100, shown: 3.00 },
-    { what: 'Marlow: paid per visitor (%)', value: 1440 / 30000 * 100, shown: 4.80 },
-    { what: 'Marlow: sessions per visitor', value: 48000 / 30000, shown: 1.6 },
-    { what: 'Marlow: checkout conversion (%)', value: 1440 / 3600 * 100, shown: 40.0 },
-    { what: 'Marlow: April sessions', value: 48000 + 12000, shown: 60000 },
-    { what: 'Marlow: April conversion (%)', value: 1560 / 60000 * 100, shown: 2.60 },
-    { what: 'Marlow: fall in points', value: 1440 / 48000 * 100 - 1560 / 60000 * 100, shown: 0.4 },
-    { what: 'Marlow: extra orders', value: 1560 - 1440, shown: 120 },
-    { what: 'Marlow: campaign conversion (%)', value: 120 / 12000 * 100, shown: 1.0 },
+    { what: 'Westerly: orders placed per session (%)', value: 1500 / 48000 * 100, shown: 3.125 },
+    { what: 'Westerly: paid orders', value: 1500 - 60, shown: 1440 },
+    { what: 'Westerly: paid per session (%)', value: 1440 / 48000 * 100, shown: 3.00 },
+    { what: 'Westerly: paid per visitor (%)', value: 1440 / 30000 * 100, shown: 4.80 },
+    { what: 'Westerly: sessions per visitor', value: 48000 / 30000, shown: 1.6 },
+    { what: 'Westerly: checkout conversion (%)', value: 1440 / 3600 * 100, shown: 40.0 },
+    { what: 'Westerly: April sessions', value: 48000 + 12000, shown: 60000 },
+    { what: 'Westerly: April conversion (%)', value: 1560 / 60000 * 100, shown: 2.60 },
+    { what: 'Westerly: fall in points', value: 1440 / 48000 * 100 - 1560 / 60000 * 100, shown: 0.4 },
+    { what: 'Westerly: extra orders', value: 1560 - 1440, shown: 120 },
+    { what: 'Westerly: campaign conversion (%)', value: 120 / 12000 * 100, shown: 1.0 },
     // examples: applied
     { what: 'Bonus: campaign orders', value: 3000 * 0.015, shown: 45 },
     { what: 'Bonus: other orders', value: 8000 * 0.036, shown: 288 },

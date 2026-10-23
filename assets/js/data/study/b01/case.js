@@ -6,6 +6,9 @@
 // and its app, alongside its catering and workshops (F01). From July 2026 she reviews the shop each month. On
 // 1 September a redesigned website checkout went live; on 5 October a fix for a payment-page bug on mobile browsers
 // was released. November and December bring gift-box orders.
+//
+// Scale: the March–June export B02 cleans has 240 orders, about 60 a month. On 1 July Lantern relaunched the shop with
+// free delivery over $35 and a subscription offer, and monthly orders rose to about five times that pace (294 in July).
 
 /** The shop's order system stamps times in UTC; Lantern's local time is five hours behind (the same assumption as B02). */
 export const UTC_OFFSET_HOURS = -5;

@@ -38,7 +38,7 @@ export const widgets = {
         ],
         note: gap >= 0
           ? `Revenue reaches the target with ${money(gap)} to spare. Each visit is worth ${money(perVisit, 2)} on average.`
-          : `Revenue is ${money(-gap)} short of the target. Any one of these would close the gap on its own: ${int(needVisits)} visits, a conversion rate of ${pct(needConv, 2)}${needConv > 6 ? ' (far above what most shops achieve)' : ''}, or an AOV of ${money(needAov, 2)}. Meeting rate targets does not guarantee a revenue target: traffic matters too.`,
+          : `Revenue is ${money(-gap)} short of the target. Any one of these would close the gap on its own: ${int(needVisits)} visits, a conversion rate of ${pct(needConv, 2)}${needConv > 6 ? ' (far above what most shops achieve)' : ''}, or an AOV of ${money(needAov, 2)}.${v.conv >= T.conversion && v.aov >= T.aov ? ' Meeting the conversion and AOV targets does not guarantee the revenue target: traffic matters too.' : ''}`,
         chart: { kind: 'bar', x: { label: 'Measure', values: ['Revenue', 'Target'] }, series: [{ name: 'Dollars', values: [Math.round(rev), v.target] }], y: { label: 'Dollars', format: 'money' } },
       };
     },
@@ -87,7 +87,7 @@ export const guided = [
     hints: ['Conversion rate = orders ÷ visits × 100. Which count is the numerator?', '444 ÷ 18,500 = 0.024. Now express it as a percentage.'],
     wrong: [
       { value: 0.024, say: 'That is the proportion. Multiply by 100 to express it as a percentage.' },
-      { value: 41.67, say: 'You divided visits by orders: that is the number of sessions per order. Put orders on top.' },
+      { value: 41.67, tol: 0.05, say: 'You divided visits by orders: that is the number of sessions per order. Put orders on top.' },
     ],
     solution: 'Conversion = 444 ÷ 18,500 × 100 = 2.40%: about 2.4 paid orders for every 100 sessions.',
   },
@@ -108,8 +108,8 @@ export const guided = [
   },
   {
     id: 'b01-kpi-g3', type: 'steps', kind: 'applied',
-    prompt: 'Fernhill Tea, a fictional online tea shop, recorded in March: 12,000 visits, 336 orders, revenue of $13,104 and 210 orders that were a customer’s first. Its targets are a conversion rate of 3.0% and an AOV of $40. Build its scorecard.',
-    solution: 'Conversion = 336 ÷ 12,000 × 100 = 2.80%, 0.2 percentage points below the 3.0% target. AOV = 13,104 ÷ 336 = $39.00, 97.5% of the $40 target. Returning share = (336 − 210) ÷ 336 × 100 = 37.5%. The shop is slightly below target on both rate KPIs.',
+    prompt: 'Brightleaf Tea, a fictional online tea shop, recorded in March: 12,000 visits, 336 orders, revenue of $13,104 and 210 orders that were a customer’s first. Its targets are a conversion rate of 3.0% and an AOV of $40. Build its scorecard.',
+    solution: 'Conversion = 336 ÷ 12,000 × 100 = 2.80%, 0.2 percentage points below the 3.0% target. AOV = 13,104 ÷ 336 = $39.00, 97.5% of the $40 target. Returning share = (336 − 210) ÷ 336 × 100 = 37.5%. The shop is slightly below target on conversion and AOV.',
     steps: [
       { id: 'b01-kpi-g3-s1', type: 'num', prompt: 'What was the conversion rate? Give a percentage to two decimal places.',
         answer: 2.8, check: () => 336 / 12000 * 100, unit: '%', places: 2, tol: 0.005,
@@ -118,7 +118,7 @@ export const guided = [
       { id: 'b01-kpi-g3-s2', type: 'num', prompt: 'By how many percentage points is conversion below its 3.0% target? Enter a positive number.',
         answer: 0.2, check: () => 3.0 - 336 / 12000 * 100, unit: 'percentage points', places: 1, tol: 0.005,
         hints: ['For a KPI that is a percentage, subtract the two percentages.'],
-        wrong: [{ value: 6.67, say: 'That is the relative shortfall (0.2 ÷ 3.0 × 100). The question asks for percentage points: 3.0 − 2.8.' }] },
+        wrong: [{ value: 6.67, tol: 0.05, say: 'That is the relative shortfall (0.2 ÷ 3.0 × 100). The question asks for percentage points: 3.0 − 2.8.' }] },
       { id: 'b01-kpi-g3-s3', type: 'num', prompt: 'What was the average order value, in dollars?',
         answer: 39, check: () => 13104 / 336, unit: '$', places: 2, tol: 0.005,
         hints: ['AOV = revenue ÷ orders.'],
@@ -183,9 +183,9 @@ export const independent = [
     id: 'b01-kpi-i4', type: 'mc', kind: 'applied',
     prompt: 'A fictional coffee wholesaler pays its warehouse pickers a bonus for orders picked per hour. Which measure would make the best guardrail?',
     options: [
-      'Picking errors: wrong or missing items per 1,000 orders shipped',
+      'Picking errors per 1,000 orders shipped',
       'Total hours worked by pickers each week',
-      'Orders picked per day',
+      'Orders picked per day, warehouse-wide',
       'Number of pickers on each shift',
     ],
     answer: 0,
@@ -226,16 +226,16 @@ export const check = [
     id: 'b01-kpi-k1', type: 'mc', kind: 'conceptual',
     prompt: 'What turns a metric into a key performance indicator?',
     options: [
-      'It tracks an objective the business cares about and has an exact formula, a target, a direction and an owner.',
-      'It is expressed as a percentage rather than a count.',
-      'It is shown on the company dashboard, in colour.',
-      'It can be recalculated every day.',
+      'It tracks a business objective and has a target, a direction and an owner.',
+      'It is expressed as a percentage, so that months and channels of different sizes can be compared.',
+      'It is shown on the company dashboard, where every manager sees it highlighted in colour.',
+      'It is calculated automatically every day by the shop platform, without any manual work.',
     ],
     answer: 0,
     feedback: {
       1: 'Revenue is a count of dollars and is often a KPI; many percentages are not KPIs.',
       2: 'A dashboard displays KPIs; appearing on one doesn’t make a number a KPI, and colour alone shouldn’t carry meaning.',
-      3: 'How often a metric can be calculated says nothing about whether it tracks an objective.',
+      3: 'How often, or how easily, a metric can be calculated says nothing about whether it tracks an objective.',
     },
     solution: 'A KPI is a metric with a job: it tracks progress towards an objective, and it comes with a target, a direction and someone accountable, as well as an exact formula.',
   },
@@ -253,10 +253,10 @@ export const check = [
     id: 'b01-kpi-k3', type: 'mc', kind: 'applied',
     prompt: 'A fictional online shop’s conversion rate rose from 2.8% in March to 3.4% in April, while its orders fell from 560 to 510. What is the best explanation?',
     options: [
-      'Visits fell faster than orders (from about 20,000 to 15,000), so the rate rose because its denominator shrank.',
-      'The shop became better at turning visits into orders, so it is doing better overall.',
-      'The figures must be wrong, because conversion cannot rise when orders fall.',
-      'Visits rose, which pushed the conversion rate up.',
+      'Visits fell faster than orders did, so the rate rose because its denominator shrank.',
+      'Each visit became more valuable, so the shop is doing better overall than in March.',
+      'The figures must be wrong, because a conversion rate cannot rise while orders fall.',
+      'Visits rose sharply, and the extra traffic pushed the conversion rate up with them.',
     ],
     answer: 0,
     feedback: {
@@ -297,15 +297,15 @@ export const check = [
   {
     id: 'b01-kpi-k6', type: 'classify', kind: 'applied',
     prompt: 'Ana wants Lantern’s KPIs to cover all four perspectives of Kaplan and Norton’s balanced scorecard. Classify each measure by the perspective it mainly represents.',
-    items: ['Monthly revenue', 'Returning-customer share', 'Conversion rate of visits to orders', 'New coffees developed and launched this year', 'Average rating of orders', 'Share of orders shipped within 24 hours'],
+    items: ['Monthly revenue', 'Returning-customer share', 'Conversion rate of visits to orders', 'New coffees developed and launched this year', 'Average rating of orders', 'Share of roasted batches that pass the taste test first time'],
     categories: ['Financial', 'Customer', 'Internal process', 'Innovation and learning'],
     answer: [0, 1, 2, 3, 1, 2],
     feedback: {
       2: 'Conversion measures how well the shop’s process turns a visit into a sale.',
       3: 'Developing new products is the business’s capacity to improve and create value: innovation and learning.',
       4: 'Ratings are the customer’s view of the business.',
-      5: 'Shipping speed measures an internal process the business must excel at.',
+      5: 'Getting roasting right first time is an internal process the business must excel at.',
     },
-    solution: 'Financial: revenue. Customer: returning share and average rating. Internal process: conversion and shipping within 24 hours. Innovation and learning: new coffees launched. Lantern’s original four targets had nothing in the last perspective.',
+    solution: 'Financial: revenue. Customer: returning share and average rating. Internal process: conversion and batches passing the taste test first time. Innovation and learning: new coffees launched. Lantern’s original four targets had nothing in the last perspective.',
   },
 ];

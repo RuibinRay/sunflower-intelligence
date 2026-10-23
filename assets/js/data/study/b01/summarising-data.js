@@ -52,7 +52,7 @@ export default {
     { p: String.raw`Because the base is the starting value, percentage changes are not symmetric. If visits fell back from 16,200 to 13,600, the fall would be the same 2,600 visits but only <m>2{,}600 \div 16{,}200 \times 100 \approx 16.0\%</m>, because the base is now larger. A rise of 50% followed by a fall of 50% leaves you at <m>1.5 \times 0.5 = 0.75</m> of where you started, not back at the beginning.` },
 
     { h: 'Percentage points' },
-    { p: String.raw`When the quantity itself is a percentage, there are two ways to describe a change, and they give different numbers. In the KPIs lesson Marlow & Finch’s conversion rate fell from 3.00% to 2.60%. The difference between two percentages is measured in <g>percentage points</g>: a fall of <m>3.00 - 2.60 = 0.40</m> percentage points. The relative change is <m>(2.60 - 3.00) \div 3.00 \times 100 \approx -13.3\%</m>: the rate is 13.3% lower than it was.` },
+    { p: String.raw`When the quantity itself is a percentage, there are two ways to describe a change, and they give different numbers. In the KPIs lesson Westerly Paper Co.’s conversion rate fell from 3.00% to 2.60%. The difference between two percentages is measured in <g>percentage points</g>: a fall of <m>3.00 - 2.60 = 0.40</m> percentage points. The relative change is <m>(2.60 - 3.00) \div 3.00 \times 100 \approx -13.3\%</m>: the rate is 13.3% lower than it was.` },
     { p: 'Both are correct, and both are useful. What is not acceptable is “conversion fell 0.4%”, which most readers take as a relative fall of 0.4%, a change more than thirty times smaller than the real one. Write “percentage points” (or “points”, once the context is clear) for differences between percentages, and “%” only for relative changes.' },
     { callout: 'key', title: 'Points for differences, percent for ratios', html: 'From 3.00% to 2.60% is −0.4 percentage points and −13.3%. When a KPI is a percentage, report the change in points, and add the relative change if it helps.' },
 
@@ -70,14 +70,14 @@ export default {
     { p: 'Which average is allowed depends on the <g>level of measurement</g>, from the data-types lesson. The mode works for any variable, even a nominal one such as a product name. The median needs an order, so it works for ordinal data such as star ratings. The mean assumes that the steps between values are equal, which a 1–5 rating does not guarantee; averaging ratings is a common and useful convenience, but report the distribution or the median beside it.' },
 
     { h: 'Spread' },
-    { p: 'Two sets of numbers can share an average and still look nothing alike. Here are nine days of orders at two branches of a fictional bakery chain:' },
+    { p: 'Two sets of numbers can share an average and still look nothing alike. Here are nine days of orders at two branches of a fictional bakery chain, sorted from smallest to largest. Branch A: 7, 9, 10, 10, 11, 12, 12, 13, 15. Branch B: 3, 5, 8, 10, 11, 12, 14, 17, 19.' },
     { table: {
-      caption: 'Orders a day at two bakery branches over nine days (fictional), sorted',
-      head: ['Branch', 'Daily orders', 'Mean', 'Median', 'Range', 'IQR', 'Standard deviation'],
-      align: ['l', 'l', 'r', 'r', 'r', 'r', 'r'],
+      caption: 'Summaries of nine days of orders at two bakery branches (fictional)',
+      head: ['Branch', 'Mean', 'Median', 'Range', 'IQR', 'Standard deviation'],
+      align: ['l', 'r', 'r', 'r', 'r', 'r'],
       rows: [
-        ['A', '7, 9, 10, 10, 11, 12, 12, 13, 15', '11', '11', '8', '2', '2.35'],
-        ['B', '3, 5, 8, 10, 11, 12, 14, 17, 19', '11', '11', '16', '6', '5.24'],
+        ['A', '11', '11', '8', '2', '2.35'],
+        ['B', '11', '11', '16', '6', '5.24'],
       ],
     } },
     { figure: {
@@ -85,7 +85,8 @@ export default {
       caption: 'The two branches’ nine days as dot plots. Both centre on 11 orders a day; branch B’s days are spread much more widely, as its range and interquartile range show.',
       alt: 'Two dot plots on a shared horizontal axis of orders a day from 0 to 20. Branch A’s nine dots cluster between 7 and 15, with two dots stacked at 10 and two at 12; a bracket under them marks the interquartile range from 10 to 12, labelled IQR 2, and a label gives the range as 8. Branch B’s nine dots spread from 3 to 19; its bracket runs from 8 to 14, labelled IQR 6, and its range is 16. A dashed vertical line at 11 marks the mean and median of both branches.',
     } },
-    { p: 'Both branches average 11 orders a day, but branch B’s days swing from 3 to 19, and planning its baking is much harder. Three measures of <i>spread</i> capture the difference. The <g>range</g> is the largest value minus the smallest. The <g>interquartile range</g> (IQR) is the width of the middle half of the data. The <g>standard deviation</g> is, roughly, the typical distance of a value from the mean. All three are about twice as large or more for branch B. The next section shows how each is calculated.' },
+    { p: 'Both branches average 11 orders a day, but branch B’s days swing from 3 to 19, and planning its baking is much harder. Three measures of <i>spread</i> capture the difference.' },
+    { p: 'The <g>range</g> is the largest value minus the smallest. The <g>interquartile range</g> (IQR) is the width of the middle half of the data. The <g>standard deviation</g> is, roughly, the typical distance of a value from the mean. All three are about twice as large or more for branch B. The next section shows how each is calculated.' },
   ],
 
   theory: [
@@ -102,7 +103,7 @@ export default {
       align: ['l', 'r', 'r'],
       rows: [['July', '9,800', '—'], ['August', '10,200', '+4.1%'], ['September', '11,400', '+11.8%'], ['October', '11,000', '−3.5%'], ['November', '13,600', '+23.6%'], ['December', '16,200', '+19.1%']],
     } },
-    { p: String.raw`Over the five monthly steps visits grew by <m>16{,}200 \div 9{,}800 - 1 \approx 65.3\%</m> in total. What was the average monthly growth? The tempting answer is the mean of the five monthly rates, about 11.0%. It is wrong: 9,800 visits growing at 11.0% a month for five months would reach about 16,527, not 16,200. Growth compounds, so the right average is the <g>compound growth rate</g>, the constant rate that turns the starting value into the final value over the same number of periods:` },
+    { p: String.raw`Over the five monthly steps visits grew by <m>16{,}200 \div 9{,}800 - 1 \approx 65.3\%</m> in total. What was the average monthly growth? The tempting answer is the mean of the five monthly rates, about 11.0%. It is wrong: 9,800 visits growing at that average rate, 11.02% a month, for five months would reach about 16,500, not 16,200. Growth compounds, so the right average is the <g>compound growth rate</g>, the constant rate that turns the starting value into the final value over the same number of periods:` },
     { math: String.raw`g = \left(\frac{\text{End}}{\text{Start}}\right)^{1/n} - 1 = \left(\frac{16{,}200}{9{,}800}\right)^{1/5} - 1 \approx 10.6\%\ \text{a month}` },
     { p: 'Check it, keeping more decimals than the rounded 10.6%: 9,800 × 1.10575⁵ ≈ 16,200. Over years, the same calculation gives the <g>compound annual growth rate</g> that F04 uses for money. Two cautions apply. A growth rate needs the number of steps, not the number of months: July to December is five steps. And an average growth rate describes the past; Lantern’s last two months were boosted by Christmas gift buying, and projecting 10.6% a month into 2027 would be a mistake that the next lesson explains.' },
 
@@ -113,8 +114,10 @@ export default {
 
     { h: 'Measuring spread' },
     { p: String.raw`The <b>range</b> is the simplest measure: branch A’s is <m>15 - 7 = 8</m>. It depends on just two values, the most extreme, so one unusual day changes it completely.` },
-    { p: String.raw`<b>Quartiles</b> split sorted data into four parts. The first quartile, Q1, has a quarter of the values below it and the third, Q3, three-quarters; the median is the second. There are several ways to calculate quartiles, and B02 explains the choice; this course uses the same method as B02 (and Excel’s QUARTILE.INC): the value at position <m>1 + (n - 1)p</m> in the sorted list, where <m>p</m> is 0.25 for Q1 and 0.75 for Q3, interpolating between neighbours when the position isn’t a whole number. For branch A, <m>n = 9</m>, so Q1 is the 3rd value, 10, and Q3 the 7th, 12. The IQR is <m>12 - 10 = 2</m>: the middle half of branch A’s days lie within 2 orders of each other. For branch B the same positions give 8 and 14, an IQR of 6.` },
-    { p: String.raw`The <b>standard deviation</b> uses every value. Take each value’s distance from the mean, square it, add the squares, divide by <m>n - 1</m> and take the square root. For branch A the distances from 11 are −4, −2, −1, −1, 0, 1, 1, 2 and 4; their squares add to 44; <m>44 \div 8 = 5.5</m>; and <m>\sqrt{5.5} \approx 2.35</m> orders. For branch B the squares add to 220, and <m>\sqrt{220 \div 8} \approx 5.24</m>. Squaring makes every distance positive and gives large distances extra weight. Dividing by <m>n - 1</m> rather than <m>n</m> is the convention for a sample, which B04 explains. For roughly symmetric, bell-shaped data, about 95% of values lie within two standard deviations of the mean (the empirical rule, also in B04).` },
+    { p: String.raw`<b>Quartiles</b> split sorted data into four parts. The first quartile, Q1, has a quarter of the values below it and the third, Q3, three-quarters; the median is the second. There are several ways to calculate quartiles, and B02 explains the choice. This course uses quartiles by linear interpolation, as B02 does (and as Excel’s QUARTILE.INC does): the value at position <m>1 + (n - 1)p</m> in the sorted list, where <m>p</m> is 0.25 for Q1 and 0.75 for Q3, interpolating between neighbours when the position isn’t a whole number.` },
+    { p: String.raw`For branch A, <m>n = 9</m>, so Q1 is the 3rd value, 10, and Q3 the 7th, 12. The IQR is <m>12 - 10 = 2</m>: the middle half of branch A’s days lie within 2 orders of each other. For branch B the same positions give 8 and 14, an IQR of 6.` },
+    { p: String.raw`The <b>standard deviation</b> uses every value. Take each value’s distance from the mean, square it, add the squares, divide by <m>n - 1</m> and take the square root. For branch A the distances from 11 are −4, −2, −1, −1, 0, 1, 1, 2 and 4; their squares add to 44; <m>44 \div 8 = 5.5</m>; and <m>\sqrt{5.5} \approx 2.35</m> orders. For branch B the squares add to 220, and <m>\sqrt{220 \div 8} \approx 5.24</m>.` },
+    { p: String.raw`Squaring makes every distance positive and gives large distances extra weight. Dividing by <m>n - 1</m> rather than <m>n</m> is the convention for a sample, which B04 explains. For roughly symmetric, bell-shaped data, about 95% of values lie within two standard deviations of the mean (the empirical rule, also in B04).` },
     { p: 'Which measure to use follows the same logic as the averages. The standard deviation goes with the mean and suits roughly symmetric data. The IQR goes with the median and resists extreme values, which is why B02 builds its outlier fences on it. The range is quick, but describes only the two extremes.' },
 
     { h: 'Weighted averages' },
@@ -174,7 +177,7 @@ export default {
         [String.raw`n`, 'Number of values', ''],
         [String.raw`\text{IQR}`, 'Interquartile range', 'units of x'],
       ],
-      assumptions: 'Values sorted from smallest to largest; interpolate between neighbours when the position is not a whole number (Excel’s QUARTILE.INC).',
+      assumptions: 'Quartiles by linear interpolation: values sorted from smallest to largest, interpolating between neighbours when the position is not a whole number (as Excel’s QUARTILE.INC does).',
       note: 'Other quartile methods exist and give slightly different values; state the one you use.' },
     { id: 'sum-sd', name: 'Sample standard deviation',
       tex: String.raw`s = \sqrt{\dfrac{\sum_{i=1}^{n} (x_i - \bar{x})^2}{n - 1}}`,
@@ -223,7 +226,7 @@ export default {
         String.raw`Median: with <m>n = 11</m> the median is at position <m>(11 + 1) \div 2 = 6</m>: $33. The mode is $28, the only value that occurs twice, which says little in a sample this small.`,
         String.raw`Quartiles: Q1 at position <m>1 + 10 \times 0.25 = 3.5</m>, halfway between $22 and $28: $25. Q3 at position 8.5, halfway between $46 and $58: $52. IQR <m>= 52 - 25 = 27</m> dollars.`,
         'Compare. The mean sits above eight of the eleven orders, pulled up by two large ones (a gift-box order and a bulk order). The median and the quartiles describe the typical customer better: half the orders are $33 or less, and the middle half run from $25 to $52.',
-        'Decide. A threshold near the mean, say $50, would be out of reach for most customers and would mostly reward people who already spend that much. A threshold a little above the median, around $40, sits within one more bag of a typical $28–$33 order.',
+        'Decide. A threshold near the mean, say $50, would be out of reach for most customers and would mostly reward people who already spend that much. A threshold a little above the median, around $40, sits within one more bag of a typical $28–$33 order (Lantern’s bags start at $14).',
       ],
       answer: 'Mean $51.18, median $33, Q1 $25, Q3 $52, IQR $27. The median and IQR describe the typical order; a threshold of about $40, just above the median, is the one a typical customer can reach with one more bag.',
       interpretation: 'The mean is the right number for forecasting December’s revenue, because mean × orders = revenue, but the wrong number for describing what a typical customer spends. Eleven orders are a small sample, so Ana should check the median on the whole month before setting the threshold.' },
@@ -305,8 +308,8 @@ export default {
     { what: 'Visits absolute change', value: V[Dm] - V[N], shown: 2600 },
     { what: 'Fall back from 16,200 (%)', value: -pc(V[Dm], V[N]), shown: 16.0, tol: 0.05 },
     { what: '+50% then −50%', value: 1.5 * 0.5, shown: 0.75 },
-    { what: 'Marlow points', value: 3.00 - 2.60, shown: 0.40 },
-    { what: 'Marlow relative (%)', value: (2.60 - 3.00) / 3.00 * 100, shown: -13.3, tol: 0.05 },
+    { what: 'Westerly points', value: 3.00 - 2.60, shown: 0.40 },
+    { what: 'Westerly relative (%)', value: (2.60 - 3.00) / 3.00 * 100, shown: -13.3, tol: 0.05 },
     { what: '0.4% versus 13.3%: about thirty times', value: 13.333 / 0.4, shown: 33, tol: 0.5 },
     { what: 'Ratings total', value: sum(JULY_STARS), shown: 118 },
     { what: 'Stars × ratings: 5', value: 5 * 72, shown: 360 },
@@ -352,7 +355,9 @@ export default {
     { what: 'Nov to Dec (%)', value: vg[4] * 100, shown: 19.1, tol: 0.05 },
     { what: 'Total growth Jul to Dec (%)', value: pc(V[0], V[5]), shown: 65.3, tol: 0.05 },
     { what: 'Mean of monthly rates (%)', value: mean(vg) * 100, shown: 11.0, tol: 0.05 },
-    { what: 'Visits at mean rate', value: V[0] * (1 + mean(vg)) ** 5, shown: 16527, tol: 0.5 },
+    { what: 'Mean of monthly rates, 2 dp (%)', value: mean(vg) * 100, shown: 11.02, tol: 0.005 },
+    { what: 'Visits at mean rate, about 16,500', value: V[0] * (1 + mean(vg)) ** 5, shown: 16500, tol: 50 },
+    { what: 'Lantern’s cheapest bag (README list prices)', value: 14, shown: 14 },
     { what: 'Compound monthly growth (%)', value: ((V[5] / V[0]) ** (1 / 5) - 1) * 100, shown: 10.6, tol: 0.05 },
     { what: 'Compound rate, 5 dp', value: (V[5] / V[0]) ** (1 / 5), shown: 1.10575, tol: 0.000005 },
     { what: 'Compound rate reproduces December', value: V[0] * 1.10575 ** 5, shown: 16200, tol: 0.5 },

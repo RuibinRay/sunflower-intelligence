@@ -156,7 +156,7 @@ export const independent = [
     answer: 2.58, check: () => Math.sqrt(((4 - 5) ** 2 + (8 - 5) ** 2 + (6 - 5) ** 2 + (2 - 5) ** 2) / 3), unit: '', places: 2, tol: 0.005,
     wrong: [
       { value: 2.24, say: 'You divided by n = 4. A sample standard deviation divides the sum of squares by n − 1 = 3.' },
-      { value: 6.67, say: 'That is the variance (20 ÷ 3). Take its square root.' },
+      { value: 6.67, tol: 0.05, say: 'That is the variance (20 ÷ 3). Take its square root.' },
     ],
     solution: 'Mean = 20 ÷ 4 = 5. Distances: −1, 3, 1, −3; squares 1, 9, 1, 9, summing to 20. Divide by n − 1 = 3: 6.667. Square root: s ≈ 2.58.',
   },
@@ -220,16 +220,16 @@ export const check = [
     id: 'b01-sum-k1', type: 'mc', kind: 'conceptual',
     prompt: 'A conversion rate rose from 2.0% to 2.5%. Which statement is correct?',
     options: [
-      'It rose by 0.5 percentage points, a relative increase of 25%.',
-      'It rose by 0.5%.',
-      'It rose by 25 percentage points.',
-      'It rose by 2.5%.',
+      'It rose by 0.5 percentage points, or 25% in relative terms.',
+      'It rose by 0.5%, which is the same as 0.5 percentage points.',
+      'It rose by 25 percentage points, or 0.5% in relative terms.',
+      'It rose by 2.5 percentage points, to a rate of 2.5%.',
     ],
     answer: 0,
     feedback: {
-      1: 'A relative rise of 0.5% would take 2.0% to 2.01%. The difference between two percentages is in percentage points.',
-      2: '25% is the relative change. In points the change is 2.5 − 2.0 = 0.5.',
-      3: '2.5% is the new rate, not the change.',
+      1: 'A relative rise of 0.5% would take 2.0% to 2.01%. Percent and percentage points are not interchangeable.',
+      2: 'The two figures are swapped: 0.5 is the change in points and 25% the relative change.',
+      3: '2.5% is the new rate, not the change. In points the change is 2.5 − 2.0 = 0.5.',
     },
     solution: 'In points: 2.5 − 2.0 = 0.5. Relative: 0.5 ÷ 2.0 × 100 = 25%.',
   },
@@ -276,7 +276,7 @@ export const check = [
   },
   {
     id: 'b01-sum-k6', type: 'num', kind: 'numerical',
-    prompt: 'Nine fictional delivery times, in days, sorted: 3, 4, 6, 7, 9, 10, 12, 15, 30. Using the position 1 + (n − 1)p for the quartiles, what is the interquartile range, in days?',
+    prompt: 'Nine fictional delivery times, in days, sorted: 3, 4, 6, 7, 9, 10, 12, 15, 30. Using quartiles by linear interpolation (position 1 + (n − 1)p), what is the interquartile range, in days?',
     answer: 6, check: () => { const s = [3, 4, 6, 7, 9, 10, 12, 15, 30]; return s[1 + 8 * 0.75 - 1] - s[1 + 8 * 0.25 - 1]; }, unit: 'days', places: 0, tol: 0.05,
     wrong: [
       { value: 27, say: 'That is the range (30 − 3). The IQR is Q3 − Q1.' },
