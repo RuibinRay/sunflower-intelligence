@@ -34,7 +34,7 @@ const CHOICES = {
 export default {
   title: 'Two choices for Ana’s savings',
   brief: [
-    { case: 'It is February 2026. On 1 March Ana Lim will put $20,000 of her $26,000 savings into Lantern Coffee Co. and give up her $52,000 salary to run it. She wants to keep the other $6,000 as an emergency fund for the next two years, in case the café is slow to pay her or something goes wrong at home. Today it sits in a Coastline Bank savings account paying 1.5% a year. She has narrowed the choice to two accounts and asked you which to use, and why, in words she can follow. The banks, rates and Ana are fictional.' },
+    { case: 'It is February 2026. On 1 March Ana Lim will put $20,000 of her $26,000 savings into Lantern Coffee Co. and give up her $52,000 salary to run it. She wants to keep the other $6,000 as an emergency fund for the next two years, in case the business is slow to pay her or something goes wrong at home. Today it sits in a Coastline Bank savings account paying 1.5% a year. She has narrowed the choice to two accounts and asked you which to use, and why, in words she can follow. The banks, rates and Ana are fictional.' },
     CHOICES,
     { p: 'Ana assumes inflation of 2.8% a year for the next two years. That is her working assumption, not a forecast. You will compare the choices on the four ideas this course is built on: time value (how much each grows), inflation (what the growth is worth in purchasing power), liquidity (what happens if she needs the money early) and risk (what could change). Then you will write her a short recommendation.' },
     { callout: 'note', title: 'Deposit insurance', html: 'In the United States, FDIC deposit insurance covers $250,000 per depositor, per FDIC-insured bank, for each account ownership category, and it covers savings accounts and certificates of deposit (FDIC, “Understanding Deposit Insurance”). Ana’s $6,000 is well inside the limit at either bank, so the risk of losing the money if a bank fails is not what separates the two choices.' },
@@ -122,7 +122,7 @@ export default {
     },
     {
       id: 'early', title: 'If she needs the money early',
-      html: '<p>An emergency fund is judged by what it delivers in an emergency. Suppose the café has a slow first year and Ana needs all $6,000 after exactly 12 months. The certificate has credited one year’s interest by then; taking the money out costs six months’ interest on the $6,000 (4.0% ÷ 2 × 6,000).</p>',
+      html: '<p>An emergency fund is judged by what it delivers in an emergency. Suppose Lantern has a slow first year and Ana needs all $6,000 after exactly 12 months. The certificate has credited one year’s interest by then; taking the money out costs six months’ interest on the $6,000 (4.0% ÷ 2 × 6,000).</p>',
       items: [
         { id: 'f00-pj-12', type: 'num', kind: 'numerical', unit: '$', places: 2,
           prompt: 'How much does Ana get from the certificate if she withdraws everything after 12 months?',
