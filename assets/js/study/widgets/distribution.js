@@ -129,7 +129,7 @@ export async function mount(el, config = {}, ctx = {}) {
     const bins = hist.bins;
     const W = Math.max(280, Math.floor(box.clientWidth || el.clientWidth || 600)), H = 230;
     const m = { t: 34, r: 14, b: 44, l: 44 };
-    const iw = W - m.l - m.r, ih = H - m.t - m.b;
+    const markList = [[o.mean, 'mean', 'cl-m-mean'], [o.median, 'median', 'cl-m-median'], [o.lo, 'lower threshold', 'cl-m-fence'], [o.hi, 'upper threshold', 'cl-m-fence']].filter(([v]) => Number.isFinite(v));
     let lo = bins[0].x0, hi = bins[bins.length - 1].x1;
     const span = hi - lo;
     const offChart = [];
@@ -137,11 +137,27 @@ export async function mount(el, config = {}, ctx = {}) {
       if (!Number.isFinite(f)) continue;
       if (f < lo && f > lo - 0.35 * span) lo = f; else if (f > hi && f < hi + 0.35 * span) hi = f; else if (f < lo || f > hi) offChart.push(f);
     }
-    const x = (v) => m.l + ((v - lo) / (hi - lo || 1)) * iw;
+    // labels go in as many rows as they need so they never overlap
+    const iw = W - m.l - m.r;
+    const px0 = (v) => m.l + ((v - lo) / (hi - lo || 1)) * iw;
+    const marks = markList.filter(([v]) => v >= lo && v <= hi).sort((a, b) => a[0] - b[0]);
+    const ends = [];
+    const placed = marks.map(([v, name, cls]) => {
+      const wLab = name.length * 6.2 + 10, cx = px0(v);
+      const left = Math.min(W - m.r - wLab, Math.max(m.l - 6, cx - wLab / 2));
+      let row = ends.findIndex((e) => left > e);
+      if (row < 0) { row = ends.length; ends.push(0); }
+      ends[row] = left + wLab;
+      return { v, name, cls, row, left, wLab };
+    });
+    m.t = 14 + Math.max(1, ends.length) * 13;
+    const ih = H + (ends.length - 1) * 13 - m.t - m.b;
+    const x = px0;
     const maxC = Math.max(...bins.map((b) => b.count));
     const y = (c) => m.t + ih - (c / maxC) * ih;
     const pid = `${id}-hatch`;
-    const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, width: W, height: H, class: 'chart-svg cl-hist-svg', role: 'img', 'aria-label': `Histogram of ${o.label}. ${bins.length} bins from ${fmt(bins[0].x0)} to ${fmt(bins[bins.length - 1].x1)}; tallest bin ${maxC} values. Thresholds at ${fmt(o.lo)} and ${fmt(o.hi)}. The table below lists every bin.` });
+    const HH = H + (ends.length - 1) * 13;
+    const svg = s('svg', { viewBox: `0 0 ${W} ${HH}`, width: W, height: HH, class: 'chart-svg cl-hist-svg', role: 'img', 'aria-label': `Histogram of ${o.label}. ${bins.length} bins from ${fmt(bins[0].x0)} to ${fmt(bins[bins.length - 1].x1)}; tallest bin ${maxC} values. Thresholds at ${fmt(o.lo)} and ${fmt(o.hi)}. The table below lists every bin.` });
     svg.append(s('defs', {}, s('pattern', { id: pid, width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, s('rect', { width: 6, height: 6, class: 'cl-hatch-bg' }), s('line', { x1: 0, y1: 0, x2: 0, y2: 6, class: 'cl-hatch-line' }))));
     const g = s('g');
     [0, 0.5, 1].forEach((f) => { const c = Math.round(maxC * f); g.append(s('line', { x1: m.l, x2: W - m.r, y1: y(c), y2: y(c), class: 'cl-grid' }), s('text', { x: m.l - 6, y: y(c) + 4, 'text-anchor': 'end', class: 'cl-tick' }, String(c))); });
@@ -155,16 +171,13 @@ export async function mount(el, config = {}, ctx = {}) {
     });
     g.append(s('line', { x1: m.l, x2: W - m.r, y1: m.t + ih, y2: m.t + ih, class: 'cl-axis' }));
     const ticks = [lo, (lo + hi) / 2, hi];
-    ticks.forEach((t, k) => g.append(s('text', { x: x(t), y: H - m.b + 16, 'text-anchor': k === 0 ? 'start' : k === 2 ? 'end' : 'middle', class: 'cl-tick' }, fmt(t))));
-    g.append(s('text', { x: W - m.r, y: H - 8, 'text-anchor': 'end', class: 'cl-axis-label' }, o.label));
+    ticks.forEach((t, k) => g.append(s('text', { x: x(t), y: HH - m.b + 16, 'text-anchor': k === 0 ? 'start' : k === 2 ? 'end' : 'middle', class: 'cl-tick' }, fmt(t))));
+    g.append(s('text', { x: W - m.r, y: HH - 8, 'text-anchor': 'end', class: 'cl-axis-label' }, o.label));
     // markers with staggered labels
-    const marks = [[o.mean, 'mean', 'cl-m-mean'], [o.median, 'median', 'cl-m-median'], [o.lo, 'lower threshold', 'cl-m-fence'], [o.hi, 'upper threshold', 'cl-m-fence']].filter(([v]) => Number.isFinite(v) && v >= lo && v <= hi).sort((a, b) => a[0] - b[0]);
-    let lastX = -1e9, row = 0;
-    marks.forEach(([v, name, cls]) => {
-      const px = x(v);
-      row = px - lastX < 70 ? (row + 1) % 2 : 0; lastX = px;
-      g.append(s('line', { x1: px, x2: px, y1: m.t - 4 + row * 12, y2: m.t + ih, class: cls }));
-      g.append(s('text', { x: Math.min(W - m.r, Math.max(m.l, px)), y: m.t - 8 + row * 12, 'text-anchor': px > W - 60 ? 'end' : px < m.l + 40 ? 'start' : 'middle', class: 'cl-mark-label' }, name));
+    placed.forEach(({ v, name, cls, row, left }) => {
+      const px = x(v), ty = 12 + row * 13;
+      g.append(s('line', { x1: px, x2: px, y1: ty + 3, y2: m.t + ih, class: cls }));
+      g.append(s('text', { x: left + 5, y: ty, 'text-anchor': 'start', class: 'cl-mark-label' }, name));
     });
     svg.append(g);
     box.replaceChildren(svg, h('ul', { class: 'legend cl-dist-legend', role: 'list' },

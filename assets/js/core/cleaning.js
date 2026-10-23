@@ -1137,7 +1137,7 @@ const OPS_IMPL = {
     if (cur) bits.push(`removed currency signs from ${cur}`);
     if (grp) bits.push(`thousands separators from ${grp}`);
     if (pct) bits.push(`% signs from ${pct} (the numbers stay percentages, so 45% becomes 45)`);
-    ch.note = `Read ${plural(conv, 'value')} in ${step.column} as numbers with a decimal ${decimal === '.' ? 'point' : 'comma'}${bits.length ? `; ${bits.join(', ')}` : ''}.${blanks ? ` ${plural(blanks, 'placeholder')} such as “NA” became missing.` : ''}${ch.unresolved.length ? ` ${plural(ch.unresolved.length, 'value')} could not be read and ${ch.unresolved.length === 1 ? 'was' : 'were'} left as text: ${ch.unresolved.slice(0, 4).map((u) => `“${short(u.value)}” (${rowLabel(table, u.row)}, ${u.reason})`).join('; ')}.` : ''}`;
+    ch.note = `Read ${plural(conv, 'value')} in ${step.column} as ${conv === 1 ? 'a number' : 'numbers'} with a decimal ${decimal === '.' ? 'point' : 'comma'}${bits.length ? `; ${bits.join(', ')}` : ''}.${blanks ? ` ${plural(blanks, 'placeholder')} such as “NA” became missing.` : ''}${ch.unresolved.length ? ` ${plural(ch.unresolved.length, 'value')} could not be read and ${ch.unresolved.length === 1 ? 'was' : 'were'} left as text: ${ch.unresolved.slice(0, 4).map((u) => `“${short(u.value)}” (${rowLabel(table, u.row)}, ${u.reason})`).join('; ')}.` : ''}`;
     return { table: out, change: ch };
   },
   'to-date'(table, step) {
@@ -1335,7 +1335,9 @@ const OPS_IMPL = {
     // cap counts only real value changes (plain text that became a number isn't a change)
     if (action === 'cap') { ch.cellsChanged = outIdx.length; ch.samples = outIdx.slice(0, 8).map((i) => [i, step.column, table.rows[i][j], vals[i] < lo ? lo : hi]); }
     ch.params.outliers = outIdx.map((i) => ({ row: i, value: vals[i] }));
-    ch.note = `${desc[0].toUpperCase()}${desc.slice(1)}. ${plural(outIdx.length, 'value')} outside${outIdx.length ? ` (${outIdx.slice(0, 5).map((i) => fmtNum(vals[i])).join(', ')}${outIdx.length > 5 ? ', …' : ''})` : ''}: ${action === 'drop' ? `deleted ${plural(outIdx.length, 'row')}` : action === 'cap' ? 'capped at the nearest fence' : `flagged in ${ch.columnsAdded[0]}`}.`;
+    const centre = S.quantileSorted(s, 0.5);
+    const shown = [...new Set(outIdx.map((i) => vals[i]))].sort((a, b) => Math.abs(b - centre) - Math.abs(a - centre));
+    ch.note = `${desc[0].toUpperCase()}${desc.slice(1)}. ${plural(outIdx.length, 'value')} outside${outIdx.length ? ` (${shown.length < outIdx.length ? 'distinct values, most extreme first: ' : ''}${shown.slice(0, 6).map(fmtNum).join(', ')}${shown.length > 6 ? ', …' : ''})` : ''}: ${action === 'drop' ? `deleted ${plural(outIdx.length, 'row')}` : action === 'cap' ? 'capped at the nearest fence' : `flagged in ${ch.columnsAdded[0]}`}.`;
     return { table: out, change: ch };
   },
   transform(table, step) {

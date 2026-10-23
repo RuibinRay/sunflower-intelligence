@@ -661,8 +661,8 @@ export function createLab(opts = {}) {
     if (nums.length) {
       const stats = [['Values', 'count', (v) => F.int(v)], ['Missing', 'missing', (v) => F.int(v)], ['Mean', 'mean', num], ['Median', 'median', num], ['SD', 'sd', num], ['Min', 'min', num], ['Max', 'max', num]];
       const word = label(st.compareTo === 'raw' || !hasStep ? 'raw' : 'step').toLowerCase();
-      el.append(h('div', { class: 'table-scroll cl-scroll' }, h('table', { class: 'data-table cl-stats' },
-        h('caption', { class: 'cl-cap' }, `Watched numbers: ${word} → after. One figure means no change.`),
+      el.append(h('p', { class: 'cl-cap', 'aria-hidden': 'true' }, `Watched numbers: ${word} → after. One figure means no change.`), h('div', { class: 'table-scroll cl-scroll' }, h('table', { class: 'data-table cl-stats' },
+        h('caption', { class: 'visually-hidden' }, `Watched numbers: ${word} → after. One figure means no change.`),
         h('thead', {}, h('tr', {}, h('th', { scope: 'col' }, 'Column'), stats.map(([l]) => h('th', { scope: 'col', class: 'is-num' }, l)))),
         h('tbody', {}, nums.map((x) => h('tr', {}, h('th', { scope: 'row' }, x.column), stats.map(([, k, f]) => {
           const bv = x.before?.[k], av = x.after?.[k];
@@ -692,8 +692,8 @@ export function createLab(opts = {}) {
     (x.after?.levels || []).forEach(([v, n, sh]) => { const e = lv.get(v) || { v, b: 0, bn: 0 }; e.a = sh; e.an = n; lv.set(v, e); });
     const list = [...lv.values()].sort((p, q) => (q.an || q.bn) - (p.an || p.bn)).slice(0, 12);
     const bar = (v) => h('span', { class: 'cl-bar', 'aria-hidden': 'true' }, h('i', { style: { width: `${Math.round((v || 0) * 100)}%` } }));
-    return h('div', { class: 'table-scroll cl-scroll' }, h('table', { class: 'data-table cl-shares' },
-      h('caption', { class: 'cl-cap' }, caption),
+    return h('div', { class: 'cl-sharebox' }, h('p', { class: 'cl-cap', 'aria-hidden': 'true' }, caption), h('div', { class: 'table-scroll cl-scroll' }, h('table', { class: 'data-table cl-shares' },
+      h('caption', { class: 'visually-hidden' }, caption),
       h('thead', {}, h('tr', {}, h('th', { scope: 'col' }, 'Value'), h('th', { scope: 'col', class: 'is-num' }, st.compareTo === 'raw' || !st.recipe.length ? 'Raw' : 'Before'), h('th', { scope: 'col', class: 'is-num' }, 'After'), h('th', { scope: 'col', class: 'is-num' }, 'Change'))),
       h('tbody', {}, list.map((e) => h('tr', {},
         h('th', { scope: 'row' }, cellNodes(e.v)),
@@ -701,7 +701,7 @@ export function createLab(opts = {}) {
         h('td', { class: 'is-num' }, h('span', { class: 'cl-sharecell' }, bar(e.a), `${pct(e.a)} (${F.int(e.an)})`)),
         h('td', { class: 'is-num' }, Math.abs(e.a - e.b) < 1e-12 ? 'no change' : `${e.a > e.b ? '+' : '−'}${(Math.abs(e.a - e.b) * 100).toFixed(1)} pts`)))),
       h('tfoot', {}, h('tr', {}, h('th', { scope: 'row' }, 'Missing'), h('td', { class: 'is-num' }, F.int(x.before?.missing ?? 0)), h('td', { class: 'is-num' }, F.int(x.after?.missing ?? 0)), h('td', {}, ''))),
-    ), h('p', { class: 'cl-note' }, 'Shares are of the rows that have a value.'));
+    )), h('p', { class: 'cl-note' }, 'Shares are of the rows that have a value.'));
   }
 
   // ---- export

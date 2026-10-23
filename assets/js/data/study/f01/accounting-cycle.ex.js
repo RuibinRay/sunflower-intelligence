@@ -67,7 +67,7 @@ export const guided = [
   },
   {
     id: 'f01-cyc-g2', type: 'steps', kind: 'applied',
-    prompt: 'On 31 March Lantern accrued $1,400 of wages (adjustment a5: debit Wages Expense, credit Wages Payable), and closing then brought Wages Expense to zero. The baristas are paid the $1,400 on 5 April. Lantern uses reversing entries.',
+    prompt: 'On 31 March Lantern accrued $1,400 of wages (adjustment a5: debit Wages Expense, credit Wages Payable), and closing then brought Wages Expense to zero. The baristas are paid the $1,400 on 5 April. Suppose Lantern decides to use reversing entries (in the other lessons it doesn’t).',
     solution: 'On 1 April reverse a5: debit Wages Payable 1,400, credit Wages Expense 1,400. On 5 April record the payroll as usual: debit Wages Expense 1,400, credit Cash 1,400. Wages Expense is then −1,400 + 1,400 = 0, correctly, because these wages were March’s expense. Without the reversal, the 5 April entry would debit Wages Payable instead, with the same result.',
     steps: [
       { id: 'f01-cyc-g2-s1', type: 'journal', chart: 'f01', date: '2026-04-01',
