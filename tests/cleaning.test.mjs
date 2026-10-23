@@ -177,6 +177,10 @@ function step(t, s) {
   eq(col(r.table, 's'), ['x', 'y', 'y', 'x', 'x', 'z'], 'fill mode (tie x/y → x)');
   r = step(ft, { op: 'fill', column: 's', method: 'mode', by: 'g' });
   eq(col(r.table, 's')[3], 'x', 'fill mode within group b (x and y tie → x)');
+  const mt = T(['cust', 'email'], [['c1', 'a@x.org'], ['c1', ''], ['c2', ''], ['c3', 'b@x.org']]);
+  r = step(mt, { op: 'fill', column: 'email', method: 'mode', by: 'cust' });
+  eq(col(r.table, 'email'), ['a@x.org', 'a@x.org', '', 'b@x.org'], 'text group fill: a group with no value stays missing (no one else’s email)');
+  ok(/left missing/.test(r.change.note), 'rows left missing are noted');
   r = step(ft, { op: 'fill', column: 'v', method: 'constant', value: '0' });
   eq(col(r.table, 'v'), ['1', 0, '4', '6', 0, 0], 'fill constant (a number in a numeric column)');
   ok(step(T(['v'], [[''], ['NA']]), { op: 'fill', column: 'v', method: 'mean' }).change.error, 'fill on an all-missing column refused');

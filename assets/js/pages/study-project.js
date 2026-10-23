@@ -45,7 +45,7 @@ if (!PJ) {
     const sec = h('section', { class: 'project-stage', id: `stage-${st.id}`, 'aria-labelledby': `stage-${st.id}-h` },
       h('h2', { id: `stage-${st.id}-h` }, h('span', {}, `Stage ${i + 1} of ${PJ.stages.length}`), st.title), state);
     const intro = h('div', { class: 'stage-html' }); intro.innerHTML = st.html || ''; sec.append(intro);
-    const need = { tool: !!(st.tool && st.tool.kind !== 'mix'), items: new Set((st.items || []).map((x) => x.id)) };
+    const need = { tool: !!st.tool && (st.tool.kind === 'recorder' || (st.tool.kind === 'cleaning' && !!st.tool.goals?.length)), items: new Set((st.items || []).map((x) => x.id)) };   // a lab with no goal to meet doesn't hold the stage up
     const have = { tool: !!rec().stages[st.id]?.tool, items: new Set(rec().stages[st.id]?.items || []) };
     const update = () => {
       const done = (!need.tool || have.tool) && [...need.items].every((id) => have.items.has(id));
@@ -101,7 +101,7 @@ async function mountTool(el, tool, cb) {
       const { mountLab } = await import('../study/labs/cleaning-ui.js?v=6');
       el.replaceChildren();
       const { kind, ...opts } = tool;
-      mountLab(el, { ...opts, onProgress: (met, total) => { if (total && met >= total) cb.done(); } });
+      mountLab(el, { ...opts, storageKey: cb.key, onProgress: (met, total) => { if (total && met >= total) cb.done(); } });
     } else if (tool.kind === 'mix') {
       const { mountSimulator } = await import('../study/labs/mix-ui.js?v=6');
       el.replaceChildren();

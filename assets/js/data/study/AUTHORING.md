@@ -324,7 +324,7 @@ export default {
 };
 ```
 
-  A stage's `tool` mounts the course's lab inside the stage: `{ kind: 'recorder', scenario }` (Accounting Lab recorder, done when every entry is posted), `{ kind: 'cleaning', dataset, ops, watch, task, goals }` (Data Cleaning Lab, done when every goal is met) or `{ kind: 'mix', lock, show, plan }` (Marketing Mix Simulator; the plan is kept for the write-up). A stage is done when its tool's goal is met and every item has been answered. Projects never change mastery; the student finishes by checking their work against the `rubric`.
+  A stage's `tool` mounts the course's lab inside the stage: `{ kind: 'recorder', scenario }` (Accounting Lab recorder, done when every entry is posted), `{ kind: 'cleaning', dataset, ops, watch, task, goals }` (Data Cleaning Lab, done when every goal is met) or `{ kind: 'mix', lock, show, plan }` (Marketing Mix Simulator; the plan is kept for the write-up). A cleaning `tool` may also carry `goals` (the same rule shape as the widget's, see §4) and `prepare` (a recipe of steps applied before the student starts, so a later stage can begin from an earlier stage's standard result). A stage is done when its tool's goals are met (a lab with no goals doesn't hold the stage up) and every item has been answered. Lab work in a stage is saved in the browser unless the stage uses `prepare`. Projects never change mastery; the student finishes by checking their work against the `rubric`.
 
 ---
 

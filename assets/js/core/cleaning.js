@@ -1187,7 +1187,7 @@ const OPS_IMPL = {
     const all = table.rows.map((_, i) => i);
     let fillFor;
     const used = {};
-    let fallback = 0;
+    let fallback = 0, leftMissing = 0;
     if (method === 'constant') {
       if (step.value == null || step.value === '') throw new StepError('Enter the value to fill with.');
       const isNum = profileColumn(table, j).type === 'number';
@@ -1198,9 +1198,12 @@ const OPS_IMPL = {
       table.rows.forEach((r, i) => { const g = cellText(r[k]).trim(); if (!groups.has(g)) groups.set(g, []); groups.get(g).push(i); });
       const overall = stat(all);
       if (overall == null) throw new StepError(`${step.column} has no observed values to calculate a ${method === 'mode' ? 'mode' : method.replace('group-', '')} from.`);
+      const numericCol = profileColumn(table, j).type === 'number';
       const per = new Map();
       for (const [g, rows] of groups) { const s = stat(rows); per.set(g, s); if (s != null) used[g || '(blank)'] = s; }
-      fillFor = (i) => { const s = per.get(cellText(table.rows[i][k]).trim()); if (s == null) { fallback++; return overall; } return s; };
+      // a text value (an email, a name) belongs to its own group: a group with nothing observed stays missing rather
+      // than borrowing another record's value; a numeric statistic can fall back to the overall figure
+      fillFor = (i) => { const s = per.get(cellText(table.rows[i][k]).trim()); if (s == null) { if (method === 'mode' && !numericCol) { leftMissing++; return undefined; } fallback++; return overall; } return s; };
     } else {
       const s = stat(all);
       if (s == null) throw new StepError(`${step.column} has no observed values to calculate a ${method} from.`);
@@ -1214,7 +1217,7 @@ const OPS_IMPL = {
       ? `the ${method === 'group-median' ? 'median' : method} of each ${by} group (${Object.entries(used).slice(0, 6).map(([g, v]) => `${g}: ${typeof v === 'number' ? fmtNum(v) : `“${short(v)}”`}`).join(', ')}${Object.keys(used).length > 6 ? ', …' : ''})`
       : `the ${method} (${typeof used.all === 'number' ? fmtNum(used.all) : `“${short(used.all)}”`})`;
     const fitNote = train ? ` The ${method === 'constant' ? 'value' : 'statistic'} was calculated from ${fitText(step, train, table.rows.length)} only.` : method === 'constant' ? '' : ' The statistic was calculated from every row’s observed values.';
-    ch.note = `Filled ${plural(ch.cellsChanged, 'missing value')} in ${step.column} with ${what}.${fitNote}${fallback ? ` ${plural(fallback, 'row')} in groups with no observed value got the overall figure.` : ''}`;
+    ch.note = `Filled ${plural(ch.cellsChanged, 'missing value')} in ${step.column} with ${what}.${fitNote}${fallback ? ` ${plural(fallback, 'row')} in groups with no observed value got the overall figure.` : ''}${leftMissing ? ` ${plural(leftMissing, 'row')} in groups with no observed value ${leftMissing === 1 ? 'was' : 'were'} left missing: another group’s value would be someone else’s data.` : ''}`;
     return { table: out, change: ch };
   },
   'drop-missing'(table, step) {

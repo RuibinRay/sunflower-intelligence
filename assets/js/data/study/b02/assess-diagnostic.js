@@ -59,7 +59,7 @@ export const items = [
   // ---------------------------------------------------------------- module 2: fixing records and formats
   {
     id: 'b02-dg-4', lesson: 'duplicates', type: 'mc', kind: 'conceptual',
-    prompt: 'Two rows in an order export share the order_id LC-20417 and agree in every column, except that one has a blank e-mail address and the other has the address. Which copy should survive?',
+    prompt: 'Two rows in a fictional coffee shop’s order export share the order_id LC-20417 and agree in every column, except that one has a blank e-mail address and the other has the address. Which copy should survive?',
     options: [
       'The copy with the e-mail address (most complete), because the blank adds nothing the other copy lacks',
       'The first copy in the file, whatever it contains',

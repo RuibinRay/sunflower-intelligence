@@ -36,7 +36,7 @@ export const items = [
   },
   {
     id: 'b02-fn-2', lesson: 'datasets-and-variables', type: 'num', kind: 'applied',
-    prompt: 'After cleaning, Lantern’s export holds 231 orders from 112 customers, with order totals adding to $9,096.15 for 1 March – 30 June 2026. Ana Lim asks how much a customer spends with Lantern on average over the period. What is the answer? (2 decimal places)',
+    prompt: 'After cleaning, Lantern’s export (fictional) holds 231 orders from 112 customers, with order totals adding to $9,096.15 for 1 March – 30 June 2026. Ana Lim asks how much a customer spends with Lantern on average over the period. What is the answer? (2 decimal places)',
     answer: 81.22, check: () => REVENUE_CLEAN / CUSTOMERS, unit: '$', places: 2, tol: 0.01,
     wrong: [
       { value: 39.38, say: 'That is the average per order (9,096.15 ÷ 231). Ana’s unit is the customer: divide by the number of distinct customers.' },
@@ -64,7 +64,7 @@ export const items = [
   },
   {
     id: 'b02-fn-4', lesson: 'profiling-and-validation', type: 'multi', kind: 'conceptual',
-    prompt: 'Which of these problems in Lantern’s raw export can a validation rule detect using only the file itself? Select all that apply.',
+    prompt: 'Which of these problems in Lantern’s raw export (fictional) can a validation rule detect using only the file itself? Select all that apply.',
     options: [
       'A quantity of −2',
       'The region “Wset”',
@@ -104,7 +104,7 @@ export const items = [
   },
   {
     id: 'b02-fn-6', lesson: 'duplicates', type: 'num', kind: 'numerical',
-    prompt: 'Lantern’s raw export has 240 rows whose stored order totals add to $9,399.45. Nine of them are surplus copies: six exact copies with totals of $14.00, $14.00, $25.20, $39.00, $66.00 and $14.00, and three repeated order ids whose removed copies have totals of $42.00, $58.50 and $17.55. By what percentage do the surplus rows overstate the total of the 231 genuine orders? (2 decimal places)',
+    prompt: 'Lantern’s raw export (fictional) has 240 rows whose stored order totals add to $9,399.45. Nine of them are surplus copies: six exact copies with totals of $14.00, $14.00, $25.20, $39.00, $66.00 and $14.00, and three repeated order ids whose removed copies have totals of $42.00, $58.50 and $17.55. By what percentage do the surplus rows overstate the total of the 231 genuine orders? (2 decimal places)',
     answer: 3.19,
     check: () => { const surplus = sum(SURPLUS_TOTALS); return surplus / (RAW_TOTALS_SUM - surplus) * 100; },
     unit: '%', places: 2, tol: 0.01,
@@ -130,7 +130,7 @@ export const items = [
   },
   {
     id: 'b02-fn-8', lesson: 'types-and-formats', type: 'num', kind: 'numerical',
-    prompt: 'One of Lantern’s 231 unit prices was typed with a decimal comma as 16,50. If a tool that strips every comma had read it as 1650, by how much would that one value raise the mean unit price of the 231 orders? (2 decimal places)',
+    prompt: 'One of the 231 unit prices in Lantern’s export (fictional) was typed with a decimal comma as 16,50. If a tool that strips every comma had read it as 1650, by how much would that one value raise the mean unit price of the 231 orders? (2 decimal places)',
     answer: 7.07, check: () => (1650 - 16.5) / KEPT_ROWS, unit: '$', places: 2, tol: 0.01,
     wrong: [
       { value: 7.14, say: 'That is 1,650 ÷ 231. The misread value replaces $16.50 rather than adding to it, so the mean rises by (1,650 − 16.50) ÷ 231.' },
@@ -141,7 +141,7 @@ export const items = [
   // ---------------------------------------------------------------- text-and-categories
   {
     id: 'b02-fn-9', lesson: 'text-and-categories', type: 'rows', kind: 'conceptual',
-    prompt: 'Region values from Lantern’s raw export (␣ marks a space). After trimming spaces and converting to Title Case, which values still don’t match one of North, South, East, West or Central exactly? Rows are numbered from 0.',
+    prompt: 'Region values from Lantern’s raw export (fictional; ␣ marks a space). After trimming spaces and converting to Title Case, which values still don’t match one of North, South, East, West or Central exactly? Rows are numbered from 0.',
     data: { table: {
       head: ['region (raw)'],
       rows: [['north␣'], ['N.'], ['SOUTH'], ['Wset'], ['␣East'], ['central'], ['Soth'], ['E.']],
@@ -151,7 +151,7 @@ export const items = [
   },
   {
     id: 'b02-fn-10', lesson: 'text-and-categories', type: 'order', kind: 'conceptual',
-    prompt: 'Put these steps for cleaning Lantern’s product column in the order they should run.',
+    prompt: 'Put these steps for cleaning the product column of Lantern’s export (fictional) in the order they should run.',
     items: [
       'Keep the raw product column unchanged and work on a copy',
       'Normalise the Unicode form (NFC)',
@@ -259,7 +259,7 @@ export const items = [
   },
   {
     id: 'b02-fn-18', lesson: 'scaling', type: 'rows', kind: 'applied',
-    prompt: 'Lantern’s min–max scaler for order value was fitted on training orders, where the minimum was $12 and the maximum $60. It is applied to these test orders. Select every test order whose scaled value falls outside 0 to 1. Rows are numbered from 0.',
+    prompt: 'Lantern’s (fictional) min–max scaler for order value was fitted on training orders, where the minimum was $12 and the maximum $60. It is applied to these test orders. Select every test order whose scaled value falls outside 0 to 1. Rows are numbered from 0.',
     data: { table: {
       head: ['test order', 'order value ($)'],
       rows: [['T1', '8'], ['T2', '12'], ['T3', '30'], ['T4', '60'], ['T5', '75'], ['T6', '45']],
@@ -280,7 +280,7 @@ export const items = [
   },
   {
     id: 'b02-fn-20', lesson: 'encoding-categories', type: 'classify', kind: 'conceptual',
-    prompt: 'Lantern plans a linear regression with an intercept. Choose the treatment for each candidate input.',
+    prompt: 'Lantern (fictional) plans a linear regression with an intercept. Choose the treatment for each candidate input.',
     items: ['region (North, South, East, West, Central)', 'subscription (yes, no)', 'customer_id', 'grind (whole bean, coarse, medium, fine), used as a coarse-to-fine scale', 'channel (web, app)', 'product (11 products)'],
     categories: ['Dummy columns, one fewer than the categories', 'A single 0/1 column', 'Ordinal codes in a stated order', 'Leave it out of the model'],
     answer: [0, 1, 3, 2, 1, 0],
@@ -324,7 +324,7 @@ export const items = [
   // ---------------------------------------------------------------- data-quality-report
   {
     id: 'b02-fn-23', lesson: 'data-quality-report', type: 'num', kind: 'numerical',
-    prompt: 'Lantern’s raw export has 240 rows, 8 of them without an e-mail address. After the 9 surplus rows are removed, 231 rows remain and 7 have no address. By how many percentage points did the share of rows without an address change? Enter a fall as a negative number. (2 decimal places)',
+    prompt: 'Lantern’s raw export (fictional) has 240 rows, 8 of them without an e-mail address. After the 9 surplus rows are removed, 231 rows remain and 7 have no address. By how many percentage points did the share of rows without an address change? Enter a fall as a negative number. (2 decimal places)',
     answer: -0.3, check: () => (MISSING_EMAIL_KEPT / KEPT_ROWS - MISSING_EMAIL_RAW / RAW_ROWS) * 100, unit: 'percentage points', places: 2, tol: 0.01,
     wrong: [
       { value: -9.09, say: 'That is the relative change, (3.03 − 3.33) ÷ 3.33. The question asks for the difference in percentage points.' },
@@ -335,7 +335,7 @@ export const items = [
   },
   {
     id: 'b02-fn-24', lesson: 'data-quality-report', type: 'mc', kind: 'conceptual',
-    prompt: 'In Lantern’s cleaned orders, Central’s average order value is $85.04 against $29 to $37 elsewhere. One of Central’s 25 orders is a genuine 120-bag office order of $1,512.00. What should the data quality report say?',
+    prompt: 'In Lantern’s cleaned orders (fictional), Central’s average order value is $85.04 against $29 to $37 elsewhere. One of Central’s 25 orders is a genuine 120-bag office order of $1,512.00. What should the data quality report say?',
     options: [
       'Central’s average is $85.04 including one genuine 120-bag office order ($1,512.00) and $25.58 without it; the order is kept because it is real revenue, and comparisons of typical orders should use medians',
       'Central’s average is $25.58, after removing an outlier',
