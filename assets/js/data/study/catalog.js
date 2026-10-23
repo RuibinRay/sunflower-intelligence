@@ -112,10 +112,25 @@ const ALL = [
   }),
 
   C({
-    id: 'f00', school: 'finance', code: 'F00', level: 'intro',
+    id: 'f00', school: 'finance', code: 'F00', level: 'intro', status: 'in-progress',
     title: 'Foundations of Finance',
     blurb: 'What finance is and how it differs from accounting and economics, the principles behind every financial decision, the vocabulary professionals use, and how financial markets and their participants work.',
     topics: ['What finance is: time and risk', 'Personal, corporate and investment finance', 'Finance, accounting and economics', 'Six decision principles: time value, risk and return, cash, incremental cash flows, diversification, no arbitrage', 'Essential vocabulary: capital, liquidity, valuation, market capitalisation, enterprise value, EBITDA, working capital', 'Interest and inflation', 'Types of financial markets: equity, bond, foreign exchange, commodity, derivatives', 'Market participants: investment banks, institutional investors, hedge funds, brokers', 'How markets channel savings into investment'],
+    case: 'lantern',
+    outcomes: [
+      'Explain what finance studies, why time and risk sit at its centre, and how it differs from accounting and economics.',
+      'Apply the core decision principles (time value, risk and return, cash over profit, incremental cash flows, diversification, no arbitrage) to everyday choices.',
+      'Use the essential vocabulary of finance correctly: capital, liquidity, solvency, market capitalisation, enterprise value, EBITDA and working capital.',
+      'Calculate simple and compound interest, future and present values over whole years, and real returns after inflation.',
+      'Describe the main financial markets and what each participant does in them.',
+      'Explain the agency problem and the tools used to align managers with owners.',
+    ],
+    modules: [
+      { n: 1, title: 'What finance is', lessons: ['finance-time-and-risk', 'finance-accounting-economics', 'decision-principles'] },
+      { n: 2, title: 'The language of finance', lessons: ['capital-and-liquidity', 'value-and-valuation-words', 'interest-and-inflation'] },
+      { n: 3, title: 'Markets and the people in them', lessons: ['financial-markets', 'market-participants', 'governance-and-agency'] },
+    ],
+    project: { title: 'Two choices for Ana’s savings', blurb: 'Compare two ways for a small-business owner to use her savings, using time value, risk, liquidity and inflation, and explain the choice in plain language.' },
     related: [{ plate: 'tvm' }],
   }),
 

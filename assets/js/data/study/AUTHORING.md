@@ -12,7 +12,7 @@ The standard is a university course, not a study guide. A student with no backgr
 assets/js/data/study/
   catalog.js                 schools, all 32 courses, modules and lesson order (slugs), learning paths, labs
   AUTHORING.md               this guide
-  f01/  b02/  m02/           one folder per built course
+  f00/  f01/  b02/  m02/     one folder per built course
     case.js / market.js      the course's fictional case: names, accounts, figures. Use them; never contradict them.
     <slug>.js                lesson content (prose, formulas, worked examples). Read at build time only.
     <slug>.ex.js             lesson exercises, answer keys and interactive widgets. Loaded by the page in the browser.
@@ -345,7 +345,7 @@ export default {
 Treat every lesson as a textbook chapter that will be checked.
 
 1. **Recompute everything.** Every number goes in `checks`; every `num` exercise has a `check`; every entry balances. Work examples twice, by two routes where possible.
-2. **Use the case files.** F01 uses `f01/case.js` (accounts, March transactions, adjustments, totals). M02 uses `m02/market.js`. Don't introduce facts that contradict them; if you need a new fact, put it in your lesson and keep it consistent.
+2. **Use the case files.** F00 uses `f00/case.js` (Ana Lim before Lantern opens: her savings, salary and loan, the two savings choices, and the fictional listed company Harbourline Roasters). F01 uses `f01/case.js` (accounts, March transactions, adjustments, totals). M02 uses `m02/market.js`. Don't introduce facts that contradict them; if you need a new fact, put it in your lesson and keep it consistent.
 3. **Standards and rules.** Distinguish US GAAP from IFRS where they differ, name the standard (for example ASC 606 or IFRS 15) only after confirming it, and give effective dates where they matter. Say when something is a convention that varies (chart-of-accounts numbering, the 1.5 × IQR fence, “markup” versus “margin”) rather than a rule.
 4. **Several valid views.** Where a framework has more than one accepted interpretation, present them.
 5. **Misconceptions the brief requires.** Where your topic touches them, state clearly: a debit is not an expense; cash flow and profit differ; correlation is not causation; R² is not predictive accuracy; preprocessing must avoid leakage; ROI and ROAS are different; RFM thresholds depend on context; valuations depend on assumptions.
