@@ -15,14 +15,13 @@ const LAYERS = '<svg viewBox="0 0 640 330" xmlns="http://www.w3.org/2000/svg" fo
   + '<rect x="44" y="48" width="552" height="238" rx="12" style="fill:none;stroke:var(--series-1);stroke-width:2"/>'
   + '<rect x="80" y="88" width="480" height="162" rx="10" style="fill:none;stroke:var(--series-2);stroke-width:2"/>'
   + '<rect x="116" y="128" width="408" height="86" rx="8" style="fill:none;stroke:var(--series-3);stroke-width:2"/>'
-  + '<text x="320" y="32" text-anchor="middle" fill="currentColor"><tspan font-weight="700">Cultural:</tspan> culture, subculture, social class</text>'
-  + '<text x="320" y="72" text-anchor="middle" fill="currentColor"><tspan font-weight="700">Social:</tspan> reference groups, opinion leaders, family, roles and status</text>'
-  + '<text x="320" y="112" text-anchor="middle" fill="currentColor"><tspan font-weight="700">Personal:</tspan> life stage, occupation, income, lifestyle, personality</text>'
-  + '<text x="320" y="152" text-anchor="middle" fill="currentColor"><tspan font-weight="700">Psychological:</tspan> motivation, perception, learning, attitudes</text>'
+  + [['Cultural', 'culture, subculture, social class', 22, 618, 32], ['Social', 'reference groups, family, roles, status', 58, 582, 72],
+    ['Personal', 'life stage, occupation, income, lifestyle', 94, 546, 112], ['Psychological', 'motivation, perception, learning, attitudes', 130, 510, 152]]
+    .map(([name, what, x1, x2, y]) => `<text x="${x1}" y="${y}" font-weight="700" fill="currentColor">${name}</text><text x="${x2}" y="${y}" text-anchor="end" font-size="12" fill="currentColor">${what}</text>`).join('')
   + '<rect x="250" y="166" width="140" height="36" rx="18" style="fill:none;stroke:currentColor;stroke-width:1.5"/>'
   + '<text x="320" y="189" text-anchor="middle" font-weight="700" fill="currentColor">The buyer</text>'
   + '<text x="320" y="272" text-anchor="middle" font-size="12" fill="currentColor">broad, shared, slow to change (outside) → individual, quicker to change (inside)</text>'
-  + '<text x="320" y="308" text-anchor="middle" font-size="12" fill="currentColor">Situational factors act at the moment of purchase: time, mood, setting, company, the purpose of the trip</text>'
+  + '<text x="320" y="308" text-anchor="middle" font-size="12" fill="currentColor">Situational factors act at the moment of purchase: time, mood, setting, company</text>'
   + '</svg>';
 
 export default {
@@ -49,7 +48,7 @@ export default {
     { figure: {
       svg: LAYERS,
       caption: 'Four layers of influence on a buyer, as most introductory textbooks group them. The layers are a way of sorting influences, not a causal model: in any one purchase they act together.',
-      alt: 'Four nested rounded rectangles with the buyer at the centre. The outer layer is labelled Cultural: culture, subculture, social class. Inside it is Social: reference groups, opinion leaders, family, roles and status. Inside that is Personal: life stage, occupation, income, lifestyle, personality. The innermost is Psychological: motivation, perception, learning, attitudes, around a small box labelled The buyer. A note says influences run from broad, shared and slow to change on the outside to individual and quicker to change on the inside. A second note says situational factors act at the moment of purchase: time, mood, setting, company and the purpose of the trip.',
+      alt: 'Four nested rounded rectangles with the buyer at the centre. The outer layer is labelled Cultural: culture, subculture, social class. Inside it is Social: reference groups, family, roles, status. Inside that is Personal: life stage, occupation, income, lifestyle. The innermost is Psychological: motivation, perception, learning, attitudes, around a small box labelled The buyer. A note says influences run from broad, shared and slow to change on the outside to individual and quicker to change on the inside. A second note says situational factors act at the moment of purchase: time, mood, setting and company.',
     } },
 
     { h: 'Cultural influences' },

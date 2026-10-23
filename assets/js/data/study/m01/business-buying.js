@@ -28,14 +28,15 @@ function fleet(K0, d, growth) {
 const SWIFT = fleet(100, 0.1, [0.1, 0, -0.1]);
 const PUMPS = { units: 120, price: 3200, service: 18000, years: 5, limit: 250000 };
 
-const CENTRE = '<svg viewBox="0 0 640 344" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="13">'
+const CENTRE = '<svg viewBox="0 0 640 356" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="13">'
   + '<circle cx="320" cy="160" r="62" style="fill:none;stroke:currentColor;stroke-width:2"/>'
   + '<text x="320" y="156" text-anchor="middle" font-weight="700" fill="currentColor">The purchase</text><text x="320" y="174" text-anchor="middle" fill="currentColor">decision</text>'
-  + [['Initiator', 'first suggests the purchase', 8, 18, 1], ['Users', 'will use the product', 8, 134, 2], ['Influencers', 'shape the specification or choice', 8, 250, 3],
-    ['Gatekeepers', 'control information and access', 452, 18, 1], ['Buyers', 'deal with suppliers and terms', 452, 134, 2], ['Deciders', 'have the power to choose', 452, 250, 3]]
-    .map(([role, what, x, y, s]) => `<rect x="${x}" y="${y}" width="180" height="56" rx="8" style="fill:none;stroke:var(--series-${s});stroke-width:2"/><text x="${x + 90}" y="${y + 23}" text-anchor="middle" font-weight="700" fill="currentColor">${role}</text><text x="${x + 90}" y="${y + 42}" text-anchor="middle" font-size="12" fill="currentColor">${what}</text>`).join('')
-  + '<g style="stroke:var(--rule-strong);stroke-width:1.5"><line x1="188" y1="46" x2="272" y2="120"/><line x1="188" y1="162" x2="258" y2="161"/><line x1="188" y1="278" x2="272" y2="200"/><line x1="452" y1="46" x2="368" y2="120"/><line x1="452" y1="162" x2="382" y2="161"/><line x1="452" y1="278" x2="368" y2="200"/></g>'
-  + '<text x="320" y="332" text-anchor="middle" font-size="12" fill="currentColor">One person can hold several roles, and several people can share one role. The roles change from purchase to purchase.</text>'
+  + [['Initiator', 'suggests the purchase', 6, 18, 1], ['Users', 'will use the product', 6, 134, 2], ['Influencers', 'shape the specification', 6, 250, 3],
+    ['Gatekeepers', 'control access to others', 438, 18, 1], ['Buyers', 'deal with suppliers', 438, 134, 2], ['Deciders', 'choose or approve', 438, 250, 3]]
+    .map(([role, what, x, y, s]) => `<rect x="${x}" y="${y}" width="196" height="56" rx="8" style="fill:none;stroke:var(--series-${s});stroke-width:2"/><text x="${x + 98}" y="${y + 23}" text-anchor="middle" font-weight="700" fill="currentColor">${role}</text><text x="${x + 98}" y="${y + 42}" text-anchor="middle" font-size="12" fill="currentColor">${what}</text>`).join('')
+  + '<g style="stroke:var(--rule-strong);stroke-width:1.5"><line x1="202" y1="46" x2="274" y2="118"/><line x1="202" y1="162" x2="258" y2="161"/><line x1="202" y1="278" x2="274" y2="202"/><line x1="438" y1="46" x2="366" y2="118"/><line x1="438" y1="162" x2="382" y2="161"/><line x1="438" y1="278" x2="366" y2="202"/></g>'
+  + '<text x="320" y="330" text-anchor="middle" font-size="12" fill="currentColor">One person can hold several roles, and several people can share one.</text>'
+  + '<text x="320" y="347" text-anchor="middle" font-size="12" fill="currentColor">The roles change from purchase to purchase.</text>'
   + '</svg>';
 
 export default {
@@ -53,13 +54,13 @@ export default {
   prerequisites: [
     { lesson: 'm01/what-is-marketing', why: 'The lesson builds on the distinction between business-to-consumer and business-to-business marketing.' },
     { lesson: 'm01/consumer-decisions', why: 'The business buying process is compared with the five-stage consumer process, and supplier choice uses the weighted-attribute model.' },
-    { lesson: 'f01/accounting-cycle', why: 'Procurement controls use segregation of duties, introduced there.' },
+    { text: 'Percentages: finding 10% of a number and increasing a number by 15%, for the calculations of derived demand.' },
   ],
   case: 'lantern',
 
   concept: [
     { case: `Harbor Tech, a ${H.employees}-person software firm, has been a Lantern catering client since its first month: in March 2026 it paid a $2,400 deposit for three catered events at $800 each. Lantern’s catering now has ${C.clients} corporate clients, each booking about ${C.eventsPerClientYear} events a year at about $${C.revenuePerEvent} an event. When Ana asks how Harbor Tech decides to book, five answers come back. ${hana.name}, the ${hana.role}, ${hana.part}. ${tom.name}, the ${tom.role}, ${tom.part}. ${lena.name}, the ${lena.role}, ${lena.part}. The staff, about ${H.employees} people, drink the coffee and fill in the event feedback form. And ${marco.name}, the ${marco.role}, decides which sales calls and samples reach Hana. Harbor Tech and its people are fictional.` },
-    { p: 'No one of those five people is “the customer”. Each takes part in the decision in a different way, and a caterer who talks only to the person who places the order may never reach the people who started the idea, who drink the coffee or who sign the larger cheques. This is what makes organisational buying different, and this lesson gives you the tools to analyse it.' },
+    { p: 'None of those five people is “the customer”. Each takes part in the decision in a different way, and a caterer who talks only to the person who places the order may never reach the people who started the idea, who drink the coffee or who sign the larger cheques. This is what makes organisational buying different, and this lesson gives you the tools to analyse it.' },
     { p: 'Organisations that buy include businesses buying inputs and services to produce what they sell, resellers such as wholesalers and retailers buying goods to sell on, governments, and institutions such as hospitals, universities and charities. Selling to them is <g>business-to-business</g> marketing, and their purchases together make up the <g>business market</g>.' },
 
     { h: 'How business markets differ' },
@@ -93,7 +94,7 @@ export default {
     { figure: {
       svg: CENTRE,
       caption: 'The six roles in a buying centre. The roles describe what people do in one purchase, not their job titles.',
-      alt: 'A circle labelled “The purchase decision” is joined by lines to six boxes, three on each side. On the left: Initiator, who first suggests the purchase; Users, who will use the product; Influencers, who shape the specification or choice. On the right: Gatekeepers, who control information and access; Buyers, who deal with suppliers and terms; Deciders, who have the power to choose. A note says one person can hold several roles, several people can share one role, and the roles change from purchase to purchase.',
+      alt: 'A circle labelled “The purchase decision” is joined by lines to six boxes, three on each side. On the left: Initiator, who suggests the purchase; Users, who will use the product; Influencers, who shape the specification. On the right: Gatekeepers, who control access to the others; Buyers, who deal with suppliers; Deciders, who choose or approve. A note says one person can hold several roles, several people can share one role, and the roles change from purchase to purchase.',
     } },
     { define: [
       ['<g>Initiator</g>', 'The person who first suggests the purchase, often because they notice a problem.'],

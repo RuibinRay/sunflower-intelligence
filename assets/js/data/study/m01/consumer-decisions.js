@@ -15,14 +15,14 @@ const COMMUTE = [0.5, 0.2, 0.3];
 const OCCASIONAL = [0.2, 0.3, 0.5];
 const BIKE = { strider: [9, 9, 3], arrowline: [5, 6, 9], volta: [7, 7, 6] };
 
-const PROCESS = '<svg viewBox="0 0 640 224" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="13"><defs><marker id="cd-ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>'
+const PROCESS = '<svg viewBox="0 0 722 224" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="13"><defs><marker id="cd-ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>'
   + [['1. Need', 'recognition'], ['2. Information', 'search'], ['3. Evaluation of', 'alternatives'], ['4. Purchase', 'decision'], ['5. Post-purchase', 'behaviour']]
-    .map(([a, b], i) => { const x = 6 + i * 129; return `<rect x="${x}" y="80" width="112" height="60" rx="6" style="fill:none;stroke:var(--series-${(i % 3) + 1});stroke-width:2"/><text x="${x + 56}" y="105" text-anchor="middle" font-weight="700" fill="currentColor">${a}</text><text x="${x + 56}" y="123" text-anchor="middle" fill="currentColor">${b}</text>`; }).join('')
-  + [0, 1, 2, 3].map((i) => { const x = 118 + i * 129; return `<line x1="${x + 2}" y1="110" x2="${x + 15}" y2="110" style="stroke:currentColor;stroke-width:1.5" marker-end="url(#cd-ar)"/>`; }).join('')
-  + '<path d="M62 80L62 44L449 44L449 76" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-dasharray:6 4" marker-end="url(#cd-ar)"/>'
-  + '<text x="255" y="34" text-anchor="middle" font-size="12" fill="currentColor">routine, low-involvement purchases often skip the middle stages</text>'
-  + '<path d="M578 140L578 184L62 184L62 144" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-dasharray:6 4" marker-end="url(#cd-ar)"/>'
-  + '<text x="320" y="206" text-anchor="middle" font-size="12" fill="currentColor">experience feeds the next purchase: satisfaction, reviews, loyalty</text>'
+    .map(([a, b], i) => { const x = 6 + i * 145; return `<rect x="${x}" y="80" width="130" height="60" rx="6" style="fill:none;stroke:var(--series-${(i % 3) + 1});stroke-width:2"/><text x="${x + 65}" y="105" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">${a}</text><text x="${x + 65}" y="123" text-anchor="middle" font-size="12" fill="currentColor">${b}</text>`; }).join('')
+  + [0, 1, 2, 3].map((i) => { const x = 136 + i * 145; return `<line x1="${x + 1}" y1="110" x2="${x + 13}" y2="110" style="stroke:currentColor;stroke-width:1.5" marker-end="url(#cd-ar)"/>`; }).join('')
+  + '<path d="M71 80L71 44L506 44L506 76" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-dasharray:6 4" marker-end="url(#cd-ar)"/>'
+  + '<text x="288" y="34" text-anchor="middle" font-size="12" fill="currentColor">routine, low-involvement purchases often skip the middle stages</text>'
+  + '<path d="M651 140L651 184L71 184L71 144" style="fill:none;stroke:currentColor;stroke-width:1.5;stroke-dasharray:6 4" marker-end="url(#cd-ar)"/>'
+  + '<text x="361" y="206" text-anchor="middle" font-size="12" fill="currentColor">experience feeds the next purchase: satisfaction, reviews, loyalty</text>'
   + '</svg>';
 
 /** One check per printed term w_i × s_i, against the literal values the text prints. */
