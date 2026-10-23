@@ -3,7 +3,7 @@
 // IFRS 18, a change in payables worked backwards, comparative balances with a disposal, a debt roll-forward).
 // No hints; solutions show in review.
 
-const SALE_ACCOUNTS = ['Cash', 'Equipment', 'Accumulated Depreciation—Equipment', 'Gain on Sale of Equipment', 'Loss on Sale of Equipment', 'Depreciation Expense', 'Accounts Receivable', 'Notes Receivable'];
+const SALE_ACCOUNTS = ['Cash', 'Equipment', 'Accumulated Depreciation—Equipment', 'Depreciation Expense', 'Loss on Sale of Equipment', 'Gain on Sale of Equipment', 'Notes Payable', 'Miscellaneous Expense'];
 
 export const items = [
   // ---------------------------------------------------------------- cash-flow-statement
@@ -91,11 +91,11 @@ export const items = [
 
   // ---------------------------------------------------------------- indirect-method
   {
-    id: 'f02-m3-6', lesson: 'indirect-method', type: 'journal', kind: 'applied', chart: 'f02', date: '2027-07-01',
-    prompt: 'On 1 July 2027 a fictional laundry company sells a dryer that cost $9,500, with accumulated depreciation of $7,200 (up to date), for $3,100 in cash. Record the sale.',
+    id: 'f02-m3-6', lesson: 'indirect-method', type: 'journal', kind: 'applied', chart: 'f02', date: '2027-12-31',
+    prompt: 'A fictional laundry company’s equipment at cost went from $52,000 to $47,000 in 2027, after it bought $6,000 of new equipment for cash; accumulated depreciation went from $20,000 to $21,500 after depreciation expense of $4,700. It sold one machine for $7,000 cash. Record the sale.',
     accounts: SALE_ACCOUNTS,
-    lines: [{ acct: 'Cash', dr: 3100 }, { acct: 'Accumulated Depreciation—Equipment', dr: 7200 }, { acct: 'Equipment', cr: 9500 }, { acct: 'Gain on Sale of Equipment', cr: 800 }],
-    solution: 'Book value = 9,500 − 7,200 = 2,300; proceeds 3,100, so a gain of 800. Debit Cash 3,100 and Accumulated Depreciation—Equipment 7,200; credit Equipment 9,500 and Gain on Sale of Equipment 800. In the statement of cash flows the $3,100 is an investing inflow and the indirect method subtracts the $800 gain from net income.',
+    lines: [{ acct: 'Cash', dr: 7000 }, { acct: 'Accumulated Depreciation—Equipment', dr: 3200 }, { acct: 'Loss on Sale of Equipment', dr: 800 }, { acct: 'Equipment', cr: 11000 }],
+    solution: 'Roll each account forward. Cost of the machine sold = 52,000 + 6,000 − 47,000 = 11,000; accumulated depreciation removed = 20,000 + 4,700 − 21,500 = 3,200; book value 11,000 − 3,200 = 7,800, so selling for 7,000 is a loss of 800. Debit Cash 7,000, Accumulated Depreciation—Equipment 3,200 and Loss on Sale of Equipment 800; credit Equipment 11,000. In the statement of cash flows the $7,000 is an investing inflow (with the $6,000 purchase an investing outflow), and the indirect method adds the $800 loss back to net income.',
   },
   {
     id: 'f02-m3-7', lesson: 'indirect-method', type: 'num', kind: 'numerical',

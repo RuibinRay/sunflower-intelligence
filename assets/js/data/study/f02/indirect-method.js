@@ -15,17 +15,31 @@ const LT = {
   arNet: bal('Accounts Receivable') - bal('Allowance for Doubtful Accounts'),     // 6,796
   arGross: bal('Accounts Receivable'), allowance: bal('Allowance for Doubtful Accounts'),
   writeOff: F.catering.writtenOff,
-  customers: (R.cashFlows.lines.find((l) => l[0] === 'Cash received from customers') || [])[1],
-  suppliers: -(R.cashFlows.lines.find((l) => l[0] === 'Cash paid to suppliers') || [])[1],
-  employees: -(R.cashFlows.lines.find((l) => l[0] === 'Cash paid to employees') || [])[1],
-  interestPaid: -(R.cashFlows.lines.find((l) => l[0] === 'Interest paid') || [])[1],
-  taxPaid: -(R.cashFlows.lines.find((l) => l[0] === 'Income taxes paid') || [])[1],
+  customers: D.cashFromCustomers, suppliers: D.cashToSuppliers, employees: D.cashToEmployees,
+  interestPaid: D.interestPaid, taxPaid: D.incomeTaxesPaid,
   wages: F.wages.events + F.wages.shopAndOffice,
 };
 LT.supplierExpenses = D.costOfSales - F.wages.events + D.operatingExpenses - F.wages.shopAndOffice - D.depreciation - D.badDebt;   // 105,800
 LT.adjCustomers = LT.customers - D.revenue;                                         // −2,100
 LT.adjSuppliers = LT.supplierExpenses - LT.suppliers;                               // 2,470
 LT.totalAdj = D.cfoIndirect - D.netIncome;                                          // 12,553
+const cell = (v) => (v < 0 ? `(${Math.abs(v).toLocaleString('en-US')})` : v.toLocaleString('en-US'));
+const reconciliation = {   // each income statement line: accrual amount, adjustment, cash (expenses and payments negative)
+  caption: 'Lantern: net income to operating cash flow, line by line',
+  head: ['Income statement line', 'Accrual amount ($)', 'Adjustments ($)', 'Cash ($)'],
+  align: ['l', 'r', 'r', 'r'],
+  rows: [
+    ['Net revenue', D.revenue, LT.customers],
+    ['Supplier-type expenses', -LT.supplierExpenses, -LT.suppliers],
+    ['Wages', -LT.wages, -LT.employees],
+    ['Interest', -D.interestExpense, -LT.interestPaid],
+    ['Income tax', -D.incomeTax, -LT.taxPaid],
+    ['Depreciation', -D.depreciation, 0],
+    ['Bad debt expense', -D.badDebt, 0],
+  ].map(([name, accrual, cash]) => [name, cell(accrual), cell(cash - accrual), cell(cash)]),
+  foot: [['Net income; total adjustments; net cash from operating activities', cell(D.netIncome), cell(LT.totalAdj), cell(D.cfoIndirect)]],
+  note: 'The first column adds up to net income and the last to the direct method’s operating total. Fictional figures.',
+};
 
 // The bridge from net income to operating cash, one bar per line of Lantern’s reconciliation.
 const bridgeSVG = (() => {
@@ -158,25 +172,10 @@ export default {
     { p: 'Lantern’s reconciliation is below. Lantern began trading on 1 March 2026, so every opening balance is zero and each change equals the balance at 31 December. That is a feature of a first year only: in every later year you subtract the opening balance from the closing one.' },
     { statement: S.cashIndirect },
     { p: 'Three lines need comment. Receivables are taken net of the allowance (<m>7{,}380 - 584 = 6{,}796</m>), so bad debt expense of $1,404 is already inside that line and is not added back separately. The increase in inventory of $5,800 is measured after the $400 write-down to net realisable value (adjustment e7), so the write-down, though a noncash expense, needs no separate add-back either. Accounts payable rose $9,210: $8,400 for beans, $520 for supplies and the $290 December utility bill.' },
-    { p: 'Two current liabilities are missing on purpose. The $5,000 current portion of the van note arose by reclassifying long-term debt (adjustment e8): no cash moved, and repaying it will be a financing outflow. Lantern has no dividends payable, but a dividend declared and not yet paid would be a financing item too. Putting either in the reconciliation would mix financing into operating cash flow.' },
+    { p: 'Two kinds of current liability are left out on purpose. The $5,000 current portion of the van note arose by reclassifying long-term debt (adjustment e8): no cash moved, and repaying it will be a financing outflow. Lantern has no dividends payable, but a dividend declared and not yet paid would be a financing item too. Putting either in the reconciliation would mix financing into operating cash flow.' },
     { h: 'Reconciling the two methods' },
     { p: 'The direct and indirect methods are two arrangements of the same arithmetic. Adjust each income statement line to cash and you have the direct method; add up the same adjustments by balance sheet account instead and you have the indirect method. The table shows Lantern’s year both ways.' },
-    { table: {
-      caption: 'Lantern: net income to operating cash flow, line by line',
-      head: ['Income statement line', 'Accrual amount ($)', 'Adjustments ($)', 'Cash ($)'],
-      align: ['l', 'r', 'r', 'r'],
-      rows: [
-        ['Net revenue', '193,320', '(2,100)', '191,220'],
-        ['Supplier-type expenses', '(105,800)', '2,470', '(103,330)'],
-        ['Wages', '(43,600)', '2,100', '(41,500)'],
-        ['Interest', '(1,200)', '750', '(450)'],
-        ['Income tax', '(9,129)', '3,129', '(6,000)'],
-        ['Depreciation', '(4,800)', '4,800', '0'],
-        ['Bad debt expense', '(1,404)', '1,404', '0'],
-      ],
-      foot: [['Net income; total adjustments; net cash from operating activities', '27,387', '12,553', '39,940']],
-      note: 'The first column adds up to net income and the last to the direct method’s operating total. Fictional figures.',
-    } },
+    { table: reconciliation },
     { p: 'Read down the middle column and you have the indirect method’s adjustments, grouped by income statement line. Regroup them by balance sheet account and you get the lines of Lantern’s reconciliation. The revenue adjustment (−7,380 for receivables, −820 for the write-off, +6,100 for unearned revenue) and the bad debt add-back become the net receivables line, <m>-7{,}380 - 820 + 1{,}404 = -6{,}796</m>, and the unearned revenue line, +6,100. The supplier adjustment becomes the inventory, supplies, prepaid insurance and payables lines: <m>-5{,}800 - 640 - 300 + 9{,}210 = 2{,}470</m>. Both routes total $39,940.' },
     { callout: 'standards', title: 'Presenting the reconciliation', html: 'US GAAP requires the reconciliation of net income to net cash from operating activities whichever method is used (ASC 230-10-45-29). With the direct method it goes in a separate schedule (45-30); with the indirect method it may be shown within the statement or in a separate schedule, with the reconciling items clearly identified (45-31 and 45-32). A company that uses the indirect method must also disclose the interest and income taxes it paid (ASC 230-10-50-2). Under IAS 7 the indirect method starts from profit or loss today; the IFRS 18 amendments, effective for annual periods beginning on or after 1 January 2027, make the starting point operating profit or loss instead.' },
     { h: 'A later year: opening balances, a disposal and the current portion of debt' },
@@ -285,7 +284,7 @@ export default {
           { head: 'Financing activities', rows: [['Repayment of long-term debt', -10000], ['Dividends paid', -11000]], total: ['Net cash used in financing activities', -21000] },
           { rows: [['Net decrease in cash', -1450], ['Cash, 1 January 2027', 18400]], total: ['Cash, 31 December 2027', 16950] },
         ],
-        note: 'Noncash investing and financing: equipment of $20,000 acquired by signing a note payable to the manufacturer. Supplemental: interest paid $5,200; income taxes paid $6,850. Fictional figures.',
+        note: 'Noncash investing and financing: a press costing $50,000 was acquired for $30,000 in cash (shown in investing) and a $20,000 note payable to the manufacturer. Supplemental: interest paid $5,200; income taxes paid $6,850. Fictional figures.',
       },
       answer: 'Operating $38,050; investing ($18,500); financing ($21,000); net decrease $1,450; cash falls from $18,400 to $16,950. The $20,000 note is disclosed, and interest paid ($5,200) and taxes paid ($6,850) are given as supplemental information.',
       interpretation: 'A profitable year ended with less cash because Blackthorn invested $30,000 in a new press, repaid $10,000 of debt and paid $11,000 of dividends, together more than operations and the old press’s sale produced. The current portion rose from $10,000 to $12,000 without any cash moving: next year’s instalments now include the new note.' },
@@ -401,6 +400,9 @@ export default {
     { what: 'Regroup: supplier lines', value: -bal('Inventory') - bal('Supplies') - bal('Prepaid Insurance') + bal('Accounts Payable'), shown: 2470 },
     { what: 'Unearned revenue', value: bal('Unearned Revenue'), shown: 6100 },
     { what: 'Write-off', value: LT.writeOff, shown: 820 },
+    { what: 'Allowance increase', value: D.badDebt - F.catering.writtenOff, shown: 584 },
+    { what: 'Allowance increase = closing allowance (opening zero)', value: LT.allowance - 0, shown: 584 },
+    { what: 'Blackthorn press cost = cash + note', value: BT.bought.cash + BT.bought.note, shown: 50000 },
     // Harrowgate
     { what: 'Harrowgate after depreciation', value: HB.ni + HB.dep, shown: 51000 },
     { what: 'Harrowgate CFO', value: HB.cfo, shown: 50500 },
