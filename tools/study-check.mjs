@@ -314,7 +314,7 @@ export async function checkLesson(course, slug, { courseTerms } = {}) {
   // glossary links
   for (const t of ctx.terms) {
     const k = glossKey(t.term);
-    if (!gl.has(k) && !(courseTerms && courseTerms.has(k))) r.warn(`${t.where}: <g>${t.term}</g> has no glossary entry in this or an earlier lesson`);
+    if (!gl.has(k) && !(courseTerms && courseTerms.has(k))) r.warn(`${t.where}: <g>${t.term}</g> has no glossary entry in this or an earlier lesson (or an earlier course)`);
   }
   if (courseTerms) for (const k of gl) courseTerms.add(k);
   ctx.errors.forEach((e) => r.err(e));
@@ -372,10 +372,22 @@ async function checkAssessments(course) {
 }
 
 // ---------------------------------------------------------------- run
+/** Glossary keys defined by built courses that come before `course` in the study order: the site glossary is shared,
+ *  so a later course may link (<g>) to a term an earlier course defines. */
+async function earlierTerms(course) {
+  const terms = new Set();
+  for (const id of catalog.ORDER) {
+    if (id === course) break;
+    if (!BUILT.some((b) => b.id === id)) continue;
+    for (const { slug } of lessonsOf(id)) if (existsSync(join(DATA, id, `${slug}.js`))) ((await loadLesson(id, slug))?.glossary || []).forEach((g) => terms.add(glossKey(g.term)));
+  }
+  return terms;
+}
+
 export async function checkCourse(course, { strict = false } = {}) {
   exIds.clear();
   const reports = [];
-  const terms = new Set();
+  const terms = await earlierTerms(course);
   for (const { slug } of lessonsOf(course)) {
     if (!existsSync(join(DATA, course, `${slug}.js`))) { const r = new Report(`${course}/${slug}`); (strict ? r.err.bind(r) : r.warn.bind(r))('not written yet'); reports.push(r); continue; }
     reports.push(await checkLesson(course, slug, { courseTerms: terms }));
@@ -445,7 +457,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const [course, slug] = arg.split('/');
     exIds.clear();
     // seed glossary terms from earlier lessons so <g> links to them don't warn
-    const terms = new Set();
+    const terms = await earlierTerms(course);
     for (const l of lessonsOf(course)) { if (l.slug === slug) break; const E = await loadLesson(course, l.slug); (E?.glossary || []).forEach((g) => terms.add(glossKey(g.term))); }
     reports = [await checkLesson(course, slug, { courseTerms: terms })];
   } else {
