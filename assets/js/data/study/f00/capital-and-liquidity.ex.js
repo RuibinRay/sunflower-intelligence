@@ -87,7 +87,7 @@ export const guided = [
     items: [
       'A family farm owns land worth $4 million and owes $500,000, but its harvest money arrives in October and a $60,000 equipment payment is due in June. It has $5,000 in the bank.',
       'A software firm holds $50 million in cash and owes $10 million, all due within the year.',
-      'A travel agency holds $3 million of customers’ advance payments in its bank account, but after a collapse in bookings its total debts of $9 million exceed everything it owns, which is worth $4 million.',
+      'A travel agency holds $3 million of customers’ advance payments in its bank account, but after a collapse in bookings its total debts of $9 million exceed everything it owns, which is worth $4 million. Its bills due in the next three months total $1 million.',
       'A café owes $200,000 to a bank, due next month, and has $5,000 in cash; its equipment would sell for $40,000.',
     ],
     categories: ['Liquid and solvent', 'Solvent but illiquid', 'Liquid but insolvent', 'Illiquid and insolvent'],
@@ -154,7 +154,7 @@ export const independent = [
       2: 'Working capital is unchanged, but the ratio changes because both totals shrink by the same amount from different starting sizes.',
       3: 'With current assets twice current liabilities, taking the same sum from both raises the ratio. Try it: 200 ÷ 100 = 2.0; 150 ÷ 50 = 3.0.',
     },
-    solution: 'Current assets and current liabilities both fall by the payment, so their difference is unchanged. When the ratio is above 1, removing the same amount from both raises it (for example, 200 ÷ 100 = 2.0 becomes 150 ÷ 50 = 3.0). The firm has not become more liquid in any useful sense: it simply has less cash and fewer bills.',
+    solution: 'Current assets and current liabilities both fall by the payment, so their difference is unchanged. When the ratio is above 1, removing the same amount from both raises it (for example, 200 ÷ 100 = 2.0 becomes 150 ÷ 50 = 3.0). The firm has not become more liquid in any useful sense: it has less cash and fewer bills.',
   },
   {
     id: 'f00-cl-i4', type: 'multi', kind: 'conceptual',
@@ -190,13 +190,13 @@ export const independent = [
       'Lower: 4.5% instead of 5%, because the business earned less on its capital than the 6% it paid the bank',
       'Higher: 7.5% instead of 5%, because debt always raises the owner’s return',
       'The same: 5% either way, because capital structure does not affect returns',
-      'Lower: 3% instead of 5%, because the interest is subtracted twice',
+      'Lower: 3% instead of 5%, because Ana’s $900 is spread over all $30,000 of capital',
     ],
     answer: 0,
     feedback: {
       1: '7.5% is $1,500 ÷ $20,000, which forgets the $600 of interest. Debt raises the owner’s return only when the business earns more on its capital than the interest rate.',
-      2: 'With debt, the owner receives what is left after a fixed payment, so her return differs from the return on all capital unless the business earns exactly the interest rate.',
-      3: 'Interest is subtracted once: (1,500 − 600) ÷ 20,000 = 4.5%.',
+      2: 'With debt, the owner receives what is left after the interest set by the loan contract, so her return differs from the return on all capital unless the business earns exactly the interest rate.',
+      3: 'That divides Ana’s $900 by all $30,000. The bank is paid separately through its interest; Ana’s return is $900 on her own $20,000: 4.5%.',
     },
     solution: 'Return on all capital = 1,500 ÷ 30,000 = 5%. With the loan, Ana receives 1,500 − 600 = $900, which is 900 ÷ 20,000 = 4.5% of her $20,000. Because the business earned 5%, less than the 6% the bank charges, leverage lowered her return. Had Lantern earned more than 6% on its capital, it would have raised it.',
   },
@@ -218,7 +218,7 @@ export const check = [
       2: 'Equity is never repaid on a set date; debt is.',
       3: 'Issuing shares does have costs, but they are not the main reason. The main reason is the risk shareholders bear.',
     },
-    solution: 'Lenders have a fixed claim that comes first; shareholders have a residual claim that comes last and is not promised. Bearing more risk, shareholders require a higher expected return, so equity is the more expensive source of capital even though no payment is guaranteed.',
+    solution: 'Lenders have a claim set by contract that comes first; shareholders have a residual claim that comes last and is not promised. Bearing more risk, shareholders require a higher expected return, so equity is the more expensive source of capital even though no payment is guaranteed.',
   },
   {
     id: 'f00-cl-k2', type: 'num', kind: 'numerical',
@@ -253,7 +253,7 @@ export const check = [
     answer: 3.25, check: () => (30000 - 4000) / 8000, unit: '', places: 2, tol: 0.005,
     wrong: [
       { value: 1.44, say: 'The bank note is due in 2028, more than a year away, so it is not a current liability. Only the $8,000 owed to the supplier is.' },
-      { value: 4.75, say: 'The equipment is a long-term asset, not a current asset; and cash fell by the $4,000 paid.' },
+      { value: 4.75, say: 'You counted the $12,000 of equipment as a current asset. Lantern will use it for years, so it is noncurrent: current assets are only the $26,000 of cash.' },
       { value: 3.75, say: 'Cash fell by the $4,000 paid to the supplier: use 26,000, not 30,000.' },
     ],
     solution: 'Current assets: cash 30,000 − 4,000 = $26,000 (the equipment is noncurrent). Current liabilities: the $8,000 due to the supplier (the bank note is due in 2028, so it is noncurrent). Current ratio = 26,000 ÷ 8,000 = 3.25.',
