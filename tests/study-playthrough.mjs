@@ -1,7 +1,8 @@
 // study-playthrough.mjs — answers every exercise in every built lesson and assessment through the real pages, using
 // the answer keys, and checks the page marks each one right (practice) or scores 100% (knowledge checks and tests).
 // Needs the site served locally: node tests/study-playthrough.mjs http://127.0.0.1:8766/sunflower-intelligence/
-// Optional filter: a course id or course/slug as the second argument.
+// Optional filter: a course id or course/slug as the second argument. Projects are played too (items only; labs are
+// tested by their own suites).
 import { chromium } from '/opt/npm-tools/node_modules/playwright/index.mjs';
 import { pathToFileURL } from 'node:url';
 import { join } from 'node:path';
@@ -150,6 +151,25 @@ for (const [cid, c] of Object.entries(MAP)) {
     await quiz(where, '#assess-root', M.items);
     if (errors.length) fail(where, errors.join(' | '));
     process.stdout.write('+');
+  }
+  // the project: every item answered from its key is marked right (or done, for writing); stages without a lab end done
+  if (c.project && !ONLY.includes('/')) {
+    const where = `${cid}/project`;
+    errors.length = 0;
+    await page.goto(`${BASE}${c.project.href}`, { waitUntil: 'networkidle' });
+    await page.evaluate(() => localStorage.clear());
+    await page.reload({ waitUntil: 'networkidle' });
+    const P = (await import(pathToFileURL(join(ROOT, `assets/js/data/study/${cid}/project.js`)).href)).default;
+    await page.locator('.project-stage').first().waitFor({ timeout: 15000 });
+    for (const st of P.stages) {
+      await practiceSet(where, `#stage-${CSS_ESC(st.id)}`, st.items || []);
+      if (!st.tool) {
+        const state = (await page.locator(`#stage-${CSS_ESC(st.id)} .stage-state`).innerText()).trim();
+        if (state !== 'Stage done') fail(where, `stage ${st.id} ends “${state}”`);
+      }
+    }
+    if (errors.length) fail(where, errors.join(' | '));
+    process.stdout.write('*');
   }
 }
 await b.close();

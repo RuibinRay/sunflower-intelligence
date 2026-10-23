@@ -2,9 +2,9 @@
 // config: { type: 'statements', transactions: ['m1', …, 'a7'] | [inline], build: ['income', 'equity', 'balance'] }
 // The student places each account on its statement, works out net income, ending retained earnings and total
 // assets (for the statements in `build`), checks, reads the feedback, then sees the statements in full.
-import { h } from '../../core/dom.js?v=6';
-import { verdict } from '../../core/ui.js?v=6';
-import * as U from '../labs/accounting-ui.js?v=6';
+import { h } from '../../core/dom.js?v=7';
+import { verdict } from '../../core/ui.js?v=7';
+import * as U from '../labs/accounting-ui.js?v=7';
 
 const { A } = U;
 const PLACES = [['income', 'Income statement'], ['equity', 'Statement of changes in equity'], ['balance', 'Balance sheet']];

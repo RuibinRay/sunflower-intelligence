@@ -238,7 +238,7 @@ export default {
     { term: 'Prepaid expense', def: 'A cost paid in advance for benefits to be received in later periods, such as insurance or rent. It is an asset until it is used up.' },
     { term: 'Accrued revenue', def: 'Revenue earned in the period but not yet received or recorded, for example work done but not yet invoiced. It is recorded with a receivable.' },
     { term: 'Accrued expense', def: 'An expense incurred in the period but not yet paid or recorded, such as wages or interest owed. It is recorded with a payable.' },
-    { term: 'Depreciation', def: 'The systematic allocation of the cost of a long-lived asset, less its residual value, over its useful life. It is not a measure of market value.' },
+    { term: 'Depreciation', def: 'The systematic allocation of the cost of a long-lived asset, less its residual value, over its useful life. It is an expense in the accounts but uses no cash in the period it is recorded, and it is not a measure of market value.' },
     { term: 'Accumulated depreciation', def: 'All the depreciation recorded on an asset since it was acquired, held in a contra-asset account with a credit balance.' },
     { term: 'Book value', def: 'An asset’s cost minus its accumulated depreciation; called the carrying amount under IFRS.' },
     { term: 'Straight-line method', def: 'A depreciation method that charges the same amount in every full period: (cost − residual value) ÷ useful life.' },

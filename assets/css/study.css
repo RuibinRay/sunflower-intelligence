@@ -17,7 +17,7 @@
 /* ================================================================ the course outline (canvas column) */
 .canvas--course { justify-content: flex-start; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: color-mix(in srgb, currentColor 35%, transparent) transparent; padding-top: var(--s-5); padding-bottom: var(--s-6); }
 .canvas--course > * + * { margin-top: 0; }
-.canvas-top { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
+.canvas-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-3); }   /* wraps the toggle under a long school name rather than overlapping it */
 .canvas-top .canvas-room { font-size: 1.05rem; }
 .canvas-top .canvas-room img { width: 44px; height: 44px; }
 .outline-toggle {

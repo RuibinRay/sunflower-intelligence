@@ -8,7 +8,7 @@
 // An entry (a transaction, an adjustment or a closing entry) is { id, date, text, lines, cash? }, where each line is
 // { acct, dr } or { acct, cr }. `cash` optionally classifies the cash movement for the statement of cash flows:
 // 'operating' | 'investing' | 'financing', or { operating, investing, financing } in signed dollars for a split.
-import { mulberry32 } from './rng.js?v=6';
+import { mulberry32 } from './rng.js?v=7';
 
 // ---------------------------------------------------------------- account types
 

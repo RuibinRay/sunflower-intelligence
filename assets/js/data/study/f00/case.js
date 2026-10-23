@@ -14,6 +14,7 @@ export const ANA = {
   savingsRate: 1.5,               // % a year, paid once a year
   investInLantern: 20_000,        // on 1 March 2026 (f01 m1)
   emergencyFund: 6_000,           // what she keeps outside the business: savings − investInLantern
+  bankInsured: true,              // Coastline Bank (fictional) is an FDIC-insured bank in the story; so is Sandpiper Online
   loan: { lender: 'Coastline Bank', amount: 10_000, rate: 6, years: 2, interestEvery: '3 months', start: '1 March 2026', repaid: '1 March 2028' },
 };
 
@@ -26,7 +27,7 @@ export const SAVINGS_CHOICES = {
     insured: true,
   },
   savings: {
-    name: 'Harbor Online high-yield savings account',
+    name: 'Sandpiper Online high-yield savings account',
     rate: 3.2, compounding: 'monthly', years: 2,
     access: 'withdraw any amount at any time; the rate is variable and the bank can change it',
     insured: true,
@@ -42,6 +43,16 @@ export const HARBOURLINE = {
   debt: 210, cash: 45,
   revenue: 640, ebit: 61, da: 32, netIncome: 38,
   currentAssets: 180, currentLiabilities: 120,
+};
+
+/** More of Harbourline's (fictional) statements, first used in f00/capital-and-liquidity and value-and-valuation-words.
+ *  They tie to HARBOURLINE: current assets 45 + 55 + 70 + 10 = 180; total assets 180 + 480 = 660 = liabilities
+ *  120 + 210 + 30 + equity 300; revenue 640 − operating costs 547 = EBITDA 93; EBIT 61 − interest 11 = 50 before tax;
+ *  tax 12 (24%) leaves net income 38. All $210m of debt is long-term. */
+export const HARBOURLINE_DETAIL = {
+  receivables: 55, inventory: 70, otherCurrentAssets: 10, noncurrentAssets: 480, totalAssets: 660,
+  otherNoncurrentLiabilities: 30, bookEquity: 300,
+  operatingCostsExDA: 547, interest: 11, profitBeforeTax: 50, tax: 12, capex: 35,
 };
 
 const h = HARBOURLINE;

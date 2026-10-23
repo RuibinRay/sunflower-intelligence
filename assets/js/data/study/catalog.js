@@ -112,18 +112,18 @@ const ALL = [
   }),
 
   C({
-    id: 'f00', school: 'finance', code: 'F00', level: 'intro', status: 'in-progress',
+    id: 'f00', school: 'finance', code: 'F00', level: 'intro', status: 'reviewed',
     title: 'Foundations of Finance',
     blurb: 'What finance is and how it differs from accounting and economics, the principles behind every financial decision, the vocabulary professionals use, and how financial markets and their participants work.',
     topics: ['What finance is: time and risk', 'Personal, corporate and investment finance', 'Finance, accounting and economics', 'Six decision principles: time value, risk and return, cash, incremental cash flows, diversification, no arbitrage', 'Essential vocabulary: capital, liquidity, valuation, market capitalisation, enterprise value, EBITDA, working capital', 'Interest and inflation', 'Types of financial markets: equity, bond, foreign exchange, commodity, derivatives', 'Market participants: investment banks, institutional investors, hedge funds, brokers', 'How markets channel savings into investment'],
     case: 'lantern',
     outcomes: [
-      'Explain what finance studies, why time and risk sit at its centre, and how it differs from accounting and economics.',
+      'Explain what finance studies, why time and risk sit at its centre, and how it differs from accounting and economics, and calculate accounting profit, operating cash flow and economic profit.',
       'Apply the core decision principles (time value, risk and return, cash over profit, incremental cash flows, diversification, no arbitrage) to everyday choices.',
-      'Use the essential vocabulary of finance correctly: capital, liquidity, solvency, market capitalisation, enterprise value, EBITDA and working capital.',
-      'Calculate simple and compound interest, future and present values over whole years, and real returns after inflation.',
+      'Use the essential vocabulary of finance correctly (capital, liquidity, solvency, market capitalisation, enterprise value, EBITDA and working capital), and calculate and interpret the ratios built from it: current and quick ratios, debt-to-equity, EV/EBITDA and P/E.',
+      'Calculate simple and compound interest, future and present values, effective annual rates for any compounding frequency, inflation from a price index, and exact real returns.',
       'Describe the main financial markets and what each participant does in them.',
-      'Explain the agency problem and the tools used to align managers with owners.',
+      'Explain agency problems between owners, managers and lenders, calculate agency costs and risk shifting in simple cases, and evaluate the tools used to limit them.',
     ],
     modules: [
       { n: 1, title: 'What finance is', lessons: ['finance-time-and-risk', 'finance-accounting-economics', 'decision-principles'] },

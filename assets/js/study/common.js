@@ -1,8 +1,8 @@
 // common.js — pieces every course page shares: the collapsible course outline with progress marks, the course
 // meter, the notes drawer and the bookmark button.
-import { $, $$, h, debounce } from '../core/dom.js?v=6';
-import * as P from './progress.js?v=6';
-import { MAP } from '../data/study/map.js?v=6';
+import { $, $$, h, debounce } from '../core/dom.js?v=7';
+import * as P from './progress.js?v=7';
+import { MAP } from '../data/study/map.js?v=7';
 
 const WIDE = matchMedia('(min-width: 961px)');
 const html = document.documentElement;
@@ -125,7 +125,7 @@ export function storageWarning(container) {
 /** Maths and tables that scroll sideways must be reachable by keyboard: give the overflowing ones a tab stop and a name. */
 export function scrollersFocusable(scope = document) {
   const run = () => scope.querySelectorAll('.math-block, .table-scroll, .pm-scroll').forEach((el) => {
-    const over = el.scrollWidth > el.clientWidth + 1;
+    const over = el.scrollWidth > el.clientWidth;   // even 1px: axe (and keyboard users) treat any scrollable box as needing focus
     if (over && !el.hasAttribute('tabindex')) { el.tabIndex = 0; el.setAttribute('role', 'region'); if (!el.hasAttribute('aria-label')) el.setAttribute('aria-label', el.classList.contains('math-block') ? 'Equation, scrolls sideways' : 'Table, scrolls sideways'); el.dataset.madeFocusable = '1'; }
     else if (!over && el.dataset.madeFocusable) { el.removeAttribute('tabindex'); el.removeAttribute('role'); el.removeAttribute('aria-label'); delete el.dataset.madeFocusable; }
   });
