@@ -212,7 +212,7 @@ export default {
     { term: 'CPM', def: 'Cost per thousand impressions: spend ÷ impressions × 1,000.' },
     { term: 'CTR', def: 'Click-through rate: clicks ÷ impressions.' },
     { term: 'CPC', def: 'Cost per click: spend ÷ clicks.' },
-    { term: 'Conversion rate', def: 'The share of clicks (or visits) that end in the action a campaign seeks, such as an order or sign-up.' },
+    { term: 'Conversion rate', def: 'The percentage of visits, or of ad clicks, that end in a chosen action such as an order or a sign-up. Which denominator is used varies between tools and reports, so always state it.' },
     { term: 'CPA', def: 'Cost per acquisition (or per action): spend ÷ conversions.' },
     { term: 'ROAS', def: 'Return on ad spend: revenue attributed to a campaign ÷ the campaign’s ad spend. It ignores costs and whether the revenue was caused by the ads.' },
     { term: 'Marketing ROI', def: 'Return on marketing investment: (incremental contribution − marketing cost) ÷ marketing cost. Variants use gross profit or lifetime value.' },

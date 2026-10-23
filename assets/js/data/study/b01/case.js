@@ -20,7 +20,7 @@ export const SHOP = {
   appOrders: [89, 92, 93, 97, 113, 137],
   aov: [41.2, 40.8, 41.5, 42.1, 47.9, 55.3],
   newCustomers: [182, 190, 141, 188, 291, 414],        // first-time buyers among the month's orders
-  avgRating: [4.4, 4.4, 4.1, 4.3, 4.4, 4.5],           // mean of the ratings given that month (1–5 stars)
+  avgRating: [4.4, 4.4, 4.1, 4.3, 4.4, 4.5],           // mean rating of that month’s orders (1–5 stars)
   ratingsGiven: [118, 126, 97, 124, 161, 199],         // how many orders were rated
   giftBoxOrders: [6, 7, 5, 9, 88, 231],
 };
