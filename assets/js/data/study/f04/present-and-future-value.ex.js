@@ -314,14 +314,13 @@ export const check = [
   },
   {
     id: 'f04-pfv-k3', type: 'num', kind: 'applied',
-    prompt: 'A fictional catering firm’s supplier offers terms of “1.5/10, net 40”: 1.5% off if the invoice is paid within 10 days, otherwise the full amount in 40 days. What effective annual rate does the firm give up by paying on day 40 instead of day 10? Use a 365-day year and give a percentage to two decimal places.',
-    answer: 20.19, check: () => ((1 / 0.985) ** (365 / 30) - 1) * 100, unit: '%', places: 2, tol: 0.02,
+    prompt: 'A fictional design studio is owed $12,000 by a client, due in nine months. The client offers to pay $11,500 today instead. Accepting is like borrowing $11,500 now and repaying $12,000 in nine months. What effective annual rate does that amount to? Give a percentage to two decimal places.',
+    answer: 5.84, check: () => ((12000 / 11500) ** (1 / 0.75) - 1) * 100, unit: '%', places: 2, tol: 0.02,
     wrong: [
-      { value: 1.52, say: 'That is the rate for the 30 days. Convert it to a year: 365 ÷ 30 periods.' },
-      { value: 18.53, say: 'That multiplies the 30-day rate by 365 ÷ 30 (simple interest). Compound it: (1.015228)^(365/30) − 1.' },
-      { value: 19.89, say: 'That uses a 360-day year. The question asks for 365 days.' },
+      { value: 4.35, say: 'That is the rate for the nine months (500 ÷ 11,500). Convert it to a year: raise 1.043478 to the power 1 ÷ 0.75.' },
+      { value: 5.8, say: 'That scales the nine-month rate up in proportion (simple interest). Compound it: 1.043478^(4/3) − 1.' },
     ],
-    solution: 'Pay 98.5% on day 10 or 100% on day 40: a 30-day rate of 100 ÷ 98.5 − 1 = 1.5228%. EAR = 1.015228^(365/30) − 1 ≈ 20.19%. Unless the firm’s cash earns, or its borrowing costs, more than that, it should pay early.',
+    solution: 'Nine months is 0.75 of a year. r = (12,000 ÷ 11,500)^(1/0.75) − 1 = 1.043478^1.3333 − 1 ≈ 5.84% a year. If the studio would otherwise borrow at more than that, say 7%, taking $11,500 now is the cheaper source of cash. Equivalently, at 7% the $12,000 is worth only 12,000 ÷ 1.07^0.75 ≈ $11,406.26 today, less than the $11,500 offered.',
   },
   {
     id: 'f04-pfv-k4', type: 'num', kind: 'numerical',
