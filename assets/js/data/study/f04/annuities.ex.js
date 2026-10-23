@@ -23,7 +23,7 @@ export const widgets = {
     intro: 'Equal payments at equal intervals, valued at one rate. The starting values are the supplier’s plan valued at Coastline Bank’s 7.2%.',
     inputs: [
       { id: 'c', label: 'Payment per period', min: 50, max: 5000, step: 10, value: 1050, fmt: 'money' },
-      { id: 'apr', label: 'Annual interest rate (APR)', min: 0, max: 20, step: 0.1, value: 7.2, fmt: 'pct' },
+      { id: 'apr', label: 'APR (compounded once per payment period)', min: 0, max: 20, step: 0.1, value: 7.2, fmt: 'pct' },
       { id: 'n', label: 'Number of payments', min: 1, max: 360, step: 1, value: 24, fmt: 'int', unit: 'payments' },
       { id: 'm', label: 'Payments a year (1 = annual, 4 = quarterly, 12 = monthly)', min: 1, max: 12, step: 1, value: 12, fmt: 'int' },
       { id: 'due', label: 'Timing (0 = end of each period, ordinary; 1 = start, annuity due)', min: 0, max: 1, step: 1, value: 0, fmt: 'int' },
@@ -231,19 +231,18 @@ export const independent = [
       { value: 12.8, say: 'That is the effective annual rate. The question asks for the APR: the monthly rate × 12.' },
       { value: 1, say: 'That is roughly the monthly rate. Multiply by 12 for the APR.' },
     ],
-    solution: 'Find r with 160 × (1 − (1 + r)^−12) ÷ r = 1,800, i.e. an annuity factor of 11.25. Trials: at 1% a month the factor is 11.2551 (value $1,800.82, just too high); at 1.01% it is 11.2480 ($1,799.68, just too low). The rate is about 1.007% a month, an APR of about 12.1% (=RATE(12, -160, 1800) × 12). The effective rate is about 12.8%.',
+    solution: 'Find r with 160 × (1 − (1 + r)^−12) ÷ r = 1,800, i.e. an annuity factor of 11.25. Trials: at 1% a month the factor is 11.2551 (value $1,800.81, just too high); at 1.01% it is 11.2480 ($1,799.68, just too low). The rate is about 1.007% a month, an APR of about 12.1% (=RATE(12, -160, 1800) × 12). The effective rate is about 12.8%.',
   },
   {
     id: 'f04-ann-i6', type: 'order', kind: 'conceptual',
     prompt: 'Put the steps for valuing a deferred annuity in order.',
     items: [
       'Draw the timeline and mark the date of the first payment',
-      'Convert the rate to the rate per payment period',
-      'Apply the annuity formula, which gives the value one period before the first payment',
+      'Apply the annuity formula at the rate per payment period, which gives the value one period before the first payment',
       'Discount that single amount back to today',
       'Check by subtracting the annuity of the missing early payments from a longer annuity',
     ],
-    solution: 'Timeline first (it shows the deferral and the number of payments), then the periodic rate, then the annuity formula, then discount from one period before the first payment to today, then check with the difference of two annuities.',
+    solution: 'Timeline first (it shows the deferral and the number of payments), then the annuity formula at the periodic rate, then discount from one period before the first payment to today, then check with the difference of two annuities.',
   },
 ];
 
@@ -282,7 +281,7 @@ export const check = [
     answer: 23.16, check: () => -Math.log(1 - 5000 * 0.0125 / 250) / Math.log(1.0125), unit: 'months', places: 2, tol: 0.1,
     wrong: [
       { value: 20, say: 'That is 5,000 ÷ 250, which ignores interest.' },
-      { value: 2.16, say: 'You used the annual rate. Use 15% ÷ 12 = 1.25% a month.' },
+      { value: 17.96, say: 'You used the savings-target formula, ln(1 + PV × r ÷ C). For a loan it is −ln(1 − PV × r ÷ C).' },
     ],
     solution: 'r = 1.25%. n = −ln(1 − 5,000 × 0.0125 ÷ 250) ÷ ln(1.0125) = −ln(0.75) ÷ ln(1.0125) ≈ 0.287682 ÷ 0.012423 ≈ 23.16: 23 full payments and a small 24th.',
   },

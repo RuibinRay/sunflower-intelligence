@@ -1,6 +1,7 @@
 // assess-m3.js — F04 module 3 test: Streams of cash (annuities, perpetuities-and-growth, loan-amortisation).
-// No hints. Each item has a full solution, shown when the student reviews the test. All new questions: none repeats a
-// lesson exercise. Every business and person named here is fictional; the Lantern figures are not reused.
+// No hints. Each item has a full solution, shown when the student reviews the test. The questions are new: each puts a
+// lesson’s method to work in a different situation from the lesson exercises. Every business and person named here is
+// fictional; the Lantern figures are not reused.
 
 const a = (n, r) => (1 - (1 + r) ** -n) / r;
 const s = (n, r) => ((1 + r) ** n - 1) / r;
@@ -11,7 +12,7 @@ const rate = (pv, c, n) => { let lo = 1e-9, hi = 1; for (let i = 0; i < 300; i++
 export const items = [
   {
     id: 'f04-m3-1', lesson: 'annuities', type: 'num', kind: 'numerical',
-    prompt: 'A student deposits $150 at the start of every month for four years in a savings account paying 4.8% a year compounded monthly. How much will the account hold at the end of the four years? Give dollars and cents.',
+    prompt: 'A fictional student deposits $150 at the start of every month for four years in a savings account paying 4.8% a year compounded monthly. How much will the account hold at the end of the four years? Give dollars and cents.',
     answer: 7951.93, check: () => 150 * s(48, 0.004) * 1.004, unit: '$', places: 2, tol: 0.5,
     wrong: [
       { value: 7920.25, say: 'That treats the deposits as made at the end of each month. Deposits at the start earn one more month’s interest: multiply by 1.004.' },
@@ -39,8 +40,8 @@ export const items = [
   },
   {
     id: 'f04-m3-3', lesson: 'annuities', type: 'num', kind: 'applied',
-    prompt: 'A clinic must choose a five-year equipment-service contract, paid at the end of each year. Contract A costs $12,000 a year. Contract B costs $11,000 in the first year, rising by 4% a year. At 6% a year, how much less, in present value, does the cheaper contract cost? Give dollars and cents.',
-    answer: 582.97, check: () => 12000 * a(5, 0.06) - ga(11000, 0.06, 0.04, 5), unit: '$', places: 2, tol: 35,
+    prompt: 'A fictional clinic must choose a five-year equipment-service contract, paid at the end of each year. Contract A costs $12,000 a year. Contract B costs $11,000 in the first year, rising by 4% a year. At 6% a year, how much less, in present value, does the cheaper contract cost? Keep at least six decimal places in every factor and round only the final answer. Give dollars and cents.',
+    answer: 582.97, check: () => 12000 * a(5, 0.06) - ga(11000, 0.06, 0.04, 5), unit: '$', places: 2, tol: 2,
     wrong: [
       { value: 420.45, say: 'That compares the payments without discounting (60,000 − 59,579.55). Later payments, where B is dearer, are worth less today, so B’s advantage is larger in present value.' },
       { value: 1000, say: 'That compares only the first year. B rises by 4% a year: value both streams in full.' },
@@ -49,18 +50,19 @@ export const items = [
   },
   {
     id: 'f04-m3-4', lesson: 'annuities', type: 'num', kind: 'applied',
-    prompt: 'An appliance store sells a range cooker for $2,400 cash, or for 18 monthly payments of $145, the first a month after purchase. What APR (monthly rate × 12) does the payment plan charge? Give a percentage to one decimal place.',
-    answer: 10.8, check: () => rate(2400, 145, 18) * 1200, unit: '%', places: 1, tol: 0.1,
+    prompt: 'A fictional appliance store sells a range cooker for $2,400 cash, or for 18 monthly payments of $145, the first on the day of purchase. What APR (monthly rate × 12) does the payment plan charge? Give a percentage to one decimal place.',
+    answer: 12.1, check: () => { let lo = 1e-9, hi = 1; for (let i = 0; i < 300; i++) { const m = (lo + hi) / 2; if (145 * a(18, m) * (1 + m) > 2400) lo = m; else hi = m; } return lo * 1200; }, unit: '%', places: 1, tol: 0.1,
     wrong: [
-      { value: 8.75, say: 'That is the extra $210 as a share of $2,400. The balance is repaid gradually, so find the rate at which 18 payments of $145 are worth $2,400.' },
-      { value: 11.3, say: 'That is the effective annual rate. The APR is the monthly rate × 12.' },
-      { value: 0.9, say: 'That is roughly the monthly rate. Multiply by 12.' },
+      { value: 10.8, say: 'You treated the first payment as a month away. It is paid on the day of purchase, so the payments form an annuity due: the buyer really borrows only $2,255 for the first month.' },
+      { value: 8.75, say: 'That is the extra $210 as a share of $2,400. The balance is repaid gradually, so find the rate at which the 18 payments are worth $2,400.' },
+      { value: 12.8, say: 'That is the effective annual rate. The APR is the monthly rate × 12.' },
+      { value: 1, say: 'That is roughly the monthly rate. Multiply by 12.' },
     ],
-    solution: 'Find r with 145 × (1 − (1 + r)^−18) ÷ r = 2,400, i.e. =RATE(18, -145, 2400). r ≈ 0.898% a month, so the APR ≈ 10.8% (EAR ≈ 11.3%). The plan costs $2,610 in all, but what matters is the rate on the money borrowed.',
+    solution: 'The payments start today, so they form an annuity due: find r with 145 × (1 − (1 + r)^−18) ÷ r × (1 + r) = 2,400, i.e. =RATE(18, -145, 2400, 0, 1). r ≈ 1.008% a month, so the APR ≈ 12.1% (EAR ≈ 12.79%). Treating the payments as starting a month later would give about 10.8%: paying on the day of purchase raises the true rate.',
   },
   {
     id: 'f04-m3-5', lesson: 'perpetuities-and-growth', type: 'num', kind: 'numerical',
-    prompt: 'A city leases land to a stadium for ever. The rent is $250,000 a year, paid at the start of each year with the first payment today, and rises by 2% a year. At 7% a year, what is the lease worth to the city today? Give dollars.',
+    prompt: 'A fictional city leases land to a stadium for ever. The rent is $250,000 a year, paid at the start of each year with the first payment today, and rises by 2% a year. At 7% a year, what is the lease worth to the city today? Give dollars.',
     answer: 5350000, check: () => 250000 + 250000 * 1.02 / (0.07 - 0.02), unit: '$', places: 0, tol: 1,
     wrong: [
       { value: 5000000, say: 'That is 250,000 ÷ (0.07 − 0.02): a growing perpetuity whose first payment is a year away. Here the first payment is today, and next year’s is $255,000.' },
@@ -88,7 +90,7 @@ export const items = [
   },
   {
     id: 'f04-m3-7', lesson: 'perpetuities-and-growth', type: 'num', kind: 'applied',
-    prompt: 'A donor wants to endow a professorship that pays $150,000 a year, the first payment a year from now, rising by 3% a year for ever. The university expects the fund to earn 7.5% a year. How large must the gift be? Give dollars and cents.',
+    prompt: 'A fictional donor wants to endow a professorship that pays $150,000 a year, the first payment a year from now, rising by 3% a year for ever. The university expects the fund to earn 7.5% a year. How large must the gift be? Give dollars and cents.',
     answer: 3333333.33, check: () => 150000 / (0.075 - 0.03), unit: '$', places: 2, tol: 1,
     wrong: [
       { value: 2000000, say: 'That is a level perpetuity (150,000 ÷ 0.075). The payment grows by 3% a year, so divide by r − g.' },
@@ -98,19 +100,18 @@ export const items = [
   },
   {
     id: 'f04-m3-8', lesson: 'loan-amortisation', type: 'num', kind: 'numerical',
-    prompt: 'A café owner borrows $18,000 at 8.4% a year compounded monthly, repaid in 48 equal monthly payments. How much does she owe after 18 payments? Give dollars and cents.',
-    answer: 11944.92, check: () => pmt(18000, 0.007, 48) * a(30, 0.007), unit: '$', places: 2, tol: 2.5,
+    prompt: 'A fictional café owner borrows $18,000 at 8.4% a year compounded monthly, repaid in 48 equal monthly payments. After making 18 payments, she decides to pay the loan off in full with her 19th payment. How much must that payment be? Give dollars and cents.',
+    answer: 12028.53, check: () => pmt(18000, 0.007, 48) * a(30, 0.007) * 1.007, unit: '$', places: 2, tol: 2.6,
     wrong: [
-      { value: 11250, say: 'That assumes the principal is repaid evenly (30/48 of $18,000). Early payments are mostly interest, so more is still owed.' },
-      { value: 10029.24, say: 'You subtracted 18 payments from $18,000, as if they were all principal.' },
-      { value: 7464.56, say: 'You valued the 18 payments already made. The balance is the value of the 30 still to come.' },
+      { value: 11944.92, say: 'That is the balance just after the 18th payment. A month passes before the 19th, so add the month’s interest on it.' },
+      { value: 12387.74, say: 'That adds a whole scheduled payment to the balance. Only the month’s interest is due on top of the balance, not a full payment.' },
     ],
-    solution: 'r = 0.7%; C = 18,000 × 0.007 ÷ (1 − 1.007^−48) ≈ $442.82. Prospective balance: 30 payments remain, 442.82 × (1 − 1.007^−30) ÷ 0.007 ≈ $11,944.92. (Retrospective: 18,000 × 1.007¹⁸ − 442.82 × (1.007¹⁸ − 1) ÷ 0.007 gives the same.)',
+    solution: 'r = 0.7%; C = 18,000 × 0.007 ÷ (1 − 1.007^−48) ≈ $442.82. Balance after 18 payments (prospective, 30 remain): 442.82 × (1 − 1.007^−30) ÷ 0.007 ≈ $11,944.92. A month later she owes that plus a month’s interest: 11,944.92 × 1.007 ≈ $12,028.53. Check: that is the 19th scheduled payment ($442.82) plus the balance just after it.',
   },
   {
     id: 'f04-m3-9', lesson: 'loan-amortisation', type: 'num', kind: 'numerical',
-    prompt: 'A $36,000 loan at 6% a year compounded monthly is repaid over 36 months. How much interest is paid in the first 12 payments? Give dollars and cents.',
-    answer: 1852.90, check: () => { const c = pmt(36000, 0.005, 36); return 12 * c - (36000 - c * a(24, 0.005)); }, unit: '$', places: 2, tol: 18,
+    prompt: 'A fictional $36,000 loan at 6% a year compounded monthly is repaid over 36 months. How much interest is paid in the first 12 payments? Keep at least six decimal places in every factor and round only the final answer. Give dollars and cents.',
+    answer: 1852.90, check: () => { const c = pmt(36000, 0.005, 36); return 12 * c - (36000 - c * a(24, 0.005)); }, unit: '$', places: 2, tol: 5,
     wrong: [
       { value: 2160, say: 'That is 6% of the full $36,000. The balance falls every month, so the interest is less.' },
     ],
@@ -118,7 +119,7 @@ export const items = [
   },
   {
     id: 'f04-m3-10', lesson: 'loan-amortisation', type: 'mc', kind: 'applied',
-    prompt: 'A dealership sells a $36,000 SUV with either 0% finance over 60 months ($600 a month, the first a month after purchase) or $3,000 off for cash. The buyer can borrow from her credit union at 6.6% a year compounded monthly. Which should she choose?',
+    prompt: 'A fictional dealership sells a $36,000 SUV with either 0% finance over 60 months ($600 a month, the first a month after purchase) or $3,000 off for cash. The buyer can borrow from her credit union at 6.6% a year compounded monthly. Which should she choose?',
     options: [
       'The 0% finance: its payments are worth about $30,592 at 6.6%, about $2,408 less than the $33,000 cash price',
       'Pay cash: $33,000 is less than the $36,000 the payments add up to',

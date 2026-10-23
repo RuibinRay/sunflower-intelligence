@@ -26,7 +26,7 @@ const C100 = C + 100;
 const n100 = -Math.log(1 - 24000 * rB / C100) / Math.log(1 + rB);
 const b39 = 24000 * (1 + rB) ** 39 - C100 * s(39, rB);
 const paid100 = 39 * C100 + b39 * (1 + rB);
-// Juniper Lodge refinancing
+// Willowmere Lodge refinancing
 const rJ0 = 0.084 / 12, rJ1 = 0.066 / 12;
 const CJ0 = pmt(300000, rJ0, 120), BJ48 = CJ0 * a(72, rJ0), CJ1 = pmt(BJ48, rJ1, 72);
 
@@ -53,7 +53,7 @@ export default {
     { case: 'March 2027. Coastline Bank offers to lend Lantern the $24,000 for the cold-brew system at 7.2% a year compounded monthly, repaid in 48 equal monthly payments, the first one month after the loan is made. Lantern already owes Coastline $10,000 on a different kind of loan: the note it signed on 1 March 2026, on which it pays only the interest, $150 a quarter, and repays the whole $10,000 on 1 March 2028. Before deciding between the bank and the supplier’s instalment plan, Ana wants to know four things: the monthly payment, what the loan costs in interest, how quickly the debt falls, and how the two offers really compare.' },
 
     { h: 'Two ways to repay a loan' },
-    { p: 'Every loan payment does one or both of two jobs: it pays the interest that has built up since the last payment, and it repays some of the <g>principal</g>, the amount still owed. Loans differ in how they divide the work.' },
+    { p: 'Every loan payment does one or both of two jobs: it pays the interest that has built up since the last payment, and it repays some of the <g>principal</g>, the amount borrowed; the principal not yet repaid is the <g>outstanding balance</g>. Loans differ in how they divide the work.' },
     { define: [
       ['<g>Interest-only loan</g>', 'Each payment covers only the interest, so the balance stays the same until the end, when the whole principal is repaid in one large final payment, a <g>balloon payment</g>. Lantern’s Coastline note works this way: <m>10{,}000 \\times 0.06 \\div 4 = 150</m> dollars every quarter, then $10,000 on 1 March 2028.'],
       ['<g>Amortising loan</g>', 'Each payment covers the interest <i>and</i> repays part of the principal, so the balance falls to zero by the last payment. Car loans, most equipment loans and standard mortgages work this way. Repaying a debt gradually in this way is called <g>amortisation</g>.'],
@@ -115,7 +115,7 @@ export default {
       '<b>Retrospective</b> (looking back): the balance is what was borrowed, grown at the loan rate, minus the payments made, each grown at the loan rate to the same date: <m>B_k = \\text{PV}(1 + r)^k - C\\,[(1 + r)^k - 1] \\div r</m>. For the brewer loan: <m>24{,}000 \\times 1.154387 - 576.939452 \\times 25.731215 \\approx 27{,}705.295 - 14{,}845.353 \\approx 12{,}859.94</m>.',
     ] },
     { p: 'They agree because the loan was fair at the start: the payments were worth exactly the amount borrowed. Moving that equality forward <m>k</m> periods splits it into the payments already made and the payments still due, and the balance is the gap between them. The prospective method is quicker when you know the payment and the remaining term; the retrospective method works even when payments have been irregular, as long as you grow each one to the same date. The lender’s rounded schedule shows $12,859.95, a cent more, for the reason given above.' },
-    { p: 'The balance also gives the interest paid over any stretch of time: the payments made, minus the fall in the balance. In the second year Lantern would pay <m>12 \\times 576.939452 - (18{,}629.81 - 12{,}859.94) \\approx 6{,}923.27 - 5{,}769.87 = 1{,}153.41</m> dollars of interest. Businesses need that figure for their accounts, where interest is an expense and repaid principal is not.' },
+    { p: 'The balance also gives the interest paid over any stretch of time: the payments made, minus the fall in the balance. In the second year Lantern would pay <m>12 \\times 576.939452 - (18{,}629.807 - 12{,}859.942) \\approx 6{,}923.273 - 5{,}769.865 \\approx 1{,}153.41</m> dollars of interest. Businesses need that figure for their accounts, where interest is an expense and repaid principal is not.' },
 
     { h: 'Interest-only versus amortising: why total interest misleads' },
     { p: 'On Lantern’s Coastline note the interest is 1.5% a quarter on $10,000 for eight quarters: <m>8 \\times 150 = 1{,}200</m> dollars in total. Suppose the same $10,000 at the same 6% had been amortised over the same eight quarters. The quarterly payment would be <m>10{,}000 \\times 0.015 \\div (1 - 1.015^{-8}) \\approx 1{,}335.84</m> dollars, and the total interest only about $686.72.' },
@@ -127,12 +127,12 @@ export default {
     { p: 'Prepaying is like investing at the loan’s rate with no risk: worth doing if the money has no better use that earns more, but not if it leaves the business short of cash. Read the loan agreement first. Some loans charge a <g>prepayment penalty</g>; the Consumer Financial Protection Bureau, for example, describes mortgages whose terms charge a fee if the borrower pays off all or a large part of the loan early, typically within the first few years.' },
 
     { h: 'Refinancing' },
-    { p: '<g>Refinancing</g> replaces an existing loan with a new one, usually to get a lower rate, and uses the new loan to pay off the old balance. It is worth doing when the present value of the lower payments exceeds the costs of switching, such as an arrangement fee. Discount the monthly savings at the new loan’s rate: they are as certain as the payments themselves. The quick check is the <i>break-even time</i>, the fee divided by the monthly saving, which ignores interest but shows how long the borrower must keep the new loan for the switch to pay.' },
+    { p: '<g>Refinancing</g> replaces an existing loan with a new one, usually to get a lower rate, and uses the new loan to pay off the old balance. It is worth doing when the present value of the payment savings exceeds the costs of switching, such as an arrangement fee. Discount the monthly savings at the new loan’s rate: they are as certain as the payments themselves. The quick check is the <i>break-even time</i>, the fee divided by the monthly saving, which ignores interest but shows how long the borrower must keep the new loan for the switch to pay.' },
     { p: 'Short, small balances rarely repay the costs. If, after 24 payments, another lender offered to refinance Lantern’s $12,859.94 balance at 6.0% for the remaining 24 months for a $150 fee, the new payment would be about $569.96, saving only about $6.98 a month. The savings are worth about $157.47 at 0.5% a month, barely more than the fee, and the break-even time is more than 21 months. Worked example 3 shows a refinancing that does pay.' },
 
     { h: 'Fees and the APR of a closed-end loan' },
     { p: 'An up-front fee raises the cost of a loan even though the rate and the payments stay the same. If Coastline charged a 1.5% arrangement fee, $360, deducted from the loan, Lantern would receive $23,640 but still make 48 payments of $576.94. The rate that makes those payments worth $23,640 is about 0.6653% a month: 12 times that is about 7.98%, against the 7.2% quoted. This is the same search for an implied rate as in the annuities lesson.' },
-    { callout: 'standards', title: 'The APR on US consumer loans (Regulation Z)', html: 'For closed-end consumer credit, such as car loans and mortgages, the US Truth in Lending rules (Regulation Z) require lenders to disclose an APR described as “a measure of the cost of credit, expressed as a yearly rate” that relates the amount and timing of what the consumer receives to the amount and timing of the payments (§1026.22). Under the actuarial method set out in Appendix J (the rule also allows the United States Rule method), the APR is the rate per payment period multiplied by the number of periods in a year: a nominal annual rate, like the 7.98% above. It reflects the <g>finance charge</g>, which includes interest and charges such as points and loan fees (§1026.4), so it is usually higher than the interest rate, and a disclosed APR within one-eighth of a percentage point of the exact figure is treated as accurate for regular loans. Regulation Z does not cover credit extended primarily for business purposes or to anyone other than a natural person (§1026.3), so Lantern’s loans fall outside it. The calculation is still the right way for any borrower to compare offers with different fees.' },
+    { callout: 'standards', title: 'The APR on US consumer loans (Regulation Z)', html: 'For closed-end consumer credit, such as car loans and mortgages, the US Truth in Lending rules (Regulation Z) require lenders to disclose an APR described as “a measure of the cost of credit, expressed as a yearly rate” that relates the amount and timing of what the consumer receives to the amount and timing of the payments (§1026.22). Under the actuarial method set out in Appendix J (the rule also allows the United States Rule method), the APR is the rate per payment period multiplied by the number of periods in a year: a nominal annual rate, like the 7.98% above. It reflects the <g>finance charge</g>, which includes interest and charges such as points and loan fees (§1026.4), so it is usually higher than the interest rate, and a disclosed APR within one-eighth of a percentage point of the exact figure is treated as accurate for regular transactions (§1026.22(a)(2)), and within one-quarter of a point for irregular ones, such as loans with multiple advances or irregular payment periods or amounts. Regulation Z does not cover credit extended primarily for business purposes or to anyone other than a natural person (§1026.3), so Lantern’s loans fall outside it. The calculation is still the right way for any borrower to compare offers with different fees.' },
 
     { h: 'Assumptions and limits' },
     { list: [
@@ -245,17 +245,17 @@ export default {
         'Prospective: 24 payments remain. <m>B_{24} = 576.939452 \\times (1 - 1.006^{-24}) \\div 0.006 = 576.939452 \\times 22.289933 \\approx 12{,}859.94</m>.',
         'Retrospective: <m>B_{24} = 24{,}000 \\times 1.006^{24} - 576.939452 \\times (1.006^{24} - 1) \\div 0.006 \\approx 27{,}705.295 - 14{,}845.353 = 12{,}859.94</m>. The methods agree.',
         'Balance after 12 payments, the same way: <m>B_{12} = 576.939452 \\times (1 - 1.006^{-36}) \\div 0.006 \\approx 18{,}629.81</m>.',
-        'Interest in payments 13 to 24: payments made minus the fall in the balance, <m>12 \\times 576.939452 - (18{,}629.81 - 12{,}859.94) \\approx 6{,}923.27 - 5{,}769.87 = 1{,}153.41</m>.',
+        'Interest in payments 13 to 24: payments made minus the fall in the balance, <m>12 \\times 576.939452 - (18{,}629.807 - 12{,}859.942) \\approx 6{,}923.273 - 5{,}769.865 \\approx 1{,}153.41</m>.',
       ],
       answer: 'After 24 payments Lantern owes about $12,859.94 (the lender’s cent-rounded schedule shows $12,859.95). In the second year it pays about $1,153.41 of interest and repays about $5,769.87 of principal.',
       interpretation: 'Halfway through the term, 53.6% of the loan is still owed, because the early payments are weighted towards interest. The year-2 interest of $1,153.41 is the figure Lantern’s income statement would show as interest expense on this loan for that year.' },
     { level: 'challenging', title: 'Should the hotel refinance?', fictional: true,
-      setup: 'Four years ago Juniper Lodge, a small hotel, borrowed $300,000 for ten years at 8.4% a year compounded monthly to renovate its rooms. It has made 48 monthly payments. A lender now offers to refinance the balance at 6.6% a year compounded monthly for the remaining six years, for an arrangement fee of $3,000. Should the hotel switch?',
+      setup: 'Four years ago Willowmere Lodge, a small hotel, borrowed $300,000 for ten years at 8.4% a year compounded monthly to renovate its rooms. It has made 48 monthly payments. A lender now offers to refinance the balance at 6.6% a year compounded monthly for the remaining six years, for an arrangement fee of $3,000. Should the hotel switch?',
       steps: [
         'Current payment: <m>r_0 = 0.084 \\div 12 = 0.007</m>, <m>n = 120</m>: <m>C_0 = 300{,}000 \\times 0.007 \\div (1 - 1.007^{-120}) \\approx 3{,}703.55</m>.',
-        'Balance after 48 payments (prospective, 72 remaining): <m>3{,}703.55 \\times (1 - 1.007^{-72}) \\div 0.007 \\approx 3{,}703.55 \\times 56.404141 \\approx 208{,}895.28</m> (with the unrounded payment).',
-        'New payment: <m>r_1 = 0.066 \\div 12 = 0.0055</m>, <m>n = 72</m>: <m>C_1 = 208{,}895.28 \\times 0.0055 \\div (1 - 1.0055^{-72}) \\approx 3{,}521.47</m>. Monthly saving: <m>3{,}703.55 - 3{,}521.47 \\approx 182.08</m>.',
-        'Present value of the savings at the new rate: <m>182.08 \\times (1 - 1.0055^{-72}) \\div 0.0055 = 182.08 \\times 59.320487 \\approx 10{,}800.82</m>. Net of the fee: <m>10{,}800.82 - 3{,}000 = 7{,}800.82</m>.',
+        'Balance after 48 payments (prospective, 72 remaining): <m>3{,}703.5450 \\times (1 - 1.007^{-72}) \\div 0.007 \\approx 3{,}703.5450 \\times 56.404141 \\approx 208{,}895.28</m>, keeping the payment unrounded.',
+        'New payment: <m>r_1 = 0.066 \\div 12 = 0.0055</m>, <m>n = 72</m>: <m>C_1 = 208{,}895.28 \\times 0.0055 \\div (1 - 1.0055^{-72}) \\approx 3{,}521.47</m>. Monthly saving: <m>3{,}703.5450 - 3{,}521.4693 \\approx 182.0757</m>, about $182.08.',
+        'Present value of the savings at the new rate: <m>182.0757 \\times (1 - 1.0055^{-72}) \\div 0.0055 = 182.0757 \\times 59.320487 \\approx 10{,}800.82</m>. Net of the fee: <m>10{,}800.82 - 3{,}000 = 7{,}800.82</m>.',
         'Break-even time: <m>3{,}000 \\div 182.08 \\approx 16.5</m> months, well inside the remaining 72.',
       ],
       answer: 'Yes. Refinancing cuts the payment by about $182.08 a month, worth about $10,800.82 today, so after the $3,000 fee the hotel gains about $7,800.82 in present value, and recovers the fee in about 16.5 months.',
@@ -365,6 +365,10 @@ export default {
     { what: 'B12', value: C * a(36, rB), shown: 18629.81 },
     { what: '12 payments', value: 12 * C, shown: 6923.27 },
     { what: 'Fall in balance, year 2', value: bal(12) - bal(24), shown: 5769.87 },
+    { what: 'Fall in balance, year 2 (3 dp)', value: bal(12) - bal(24), shown: 5769.865, tol: 0.0005 },
+    { what: 'B12 (3 dp)', value: bal(12), shown: 18629.807, tol: 0.0005 },
+    { what: 'B24 (3 dp)', value: bal(24), shown: 12859.942, tol: 0.0005 },
+    { what: '12 payments (3 dp)', value: 12 * C, shown: 6923.273, tol: 0.0005 },
     { what: 'Interest year 2 (formula)', value: 12 * C - (bal(12) - bal(24)), shown: 1153.41 },
     { what: 'Share still owed at 24 (%)', value: bal(24) / 24000 * 100, shown: 53.6, tol: 0.05 },
     { what: 'Note: total interest', value: 8 * COASTLINE_NOTE.quarterlyInterest, shown: 1200 },
@@ -400,16 +404,19 @@ export default {
     { what: 'Bakery: total payments', value: 3 * 3019.21 + 3019.19, shown: 12076.82 },
     { what: 'Bakery: total interest', value: 800 + 622.46 + 430.72 + 223.64, shown: 2076.82 },
     { what: 'Bakery: principal growth', value: 2219.21 * 1.08, shown: 2396.75 },
-    { what: 'Juniper: payment', value: CJ0, shown: 3703.55 },
-    { what: 'Juniper: a(72, 0.7%)', value: a(72, rJ0), shown: 56.404141, tol: 0.0000005 },
-    { what: 'Juniper: balance after 48', value: BJ48, shown: 208895.28 },
-    { what: 'Juniper: balance after 48 (retrospective)', value: 300000 * (1 + rJ0) ** 48 - CJ0 * s(48, rJ0), shown: 208895.28 },
-    { what: 'Juniper: new payment', value: CJ1, shown: 3521.47 },
-    { what: 'Juniper: saving', value: CJ0 - CJ1, shown: 182.08 },
-    { what: 'Juniper: a(72, 0.55%)', value: a(72, rJ1), shown: 59.320487, tol: 0.0000005 },
-    { what: 'Juniper: PV of savings', value: (CJ0 - CJ1) * a(72, rJ1), shown: 10800.82 },
-    { what: 'Juniper: net', value: (CJ0 - CJ1) * a(72, rJ1) - 3000, shown: 7800.82 },
-    { what: 'Juniper: break-even', value: 3000 / (CJ0 - CJ1), shown: 16.5, tol: 0.05 },
+    { what: 'Willowmere: payment', value: CJ0, shown: 3703.55 },
+    { what: 'Willowmere: a(72, 0.7%)', value: a(72, rJ0), shown: 56.404141, tol: 0.0000005 },
+    { what: 'Willowmere: balance after 48', value: BJ48, shown: 208895.28 },
+    { what: 'Willowmere: balance after 48 (retrospective)', value: 300000 * (1 + rJ0) ** 48 - CJ0 * s(48, rJ0), shown: 208895.28 },
+    { what: 'Willowmere: new payment', value: CJ1, shown: 3521.47 },
+    { what: 'Willowmere: saving', value: CJ0 - CJ1, shown: 182.08 },
+    { what: 'Willowmere: saving (4 dp)', value: CJ0 - CJ1, shown: 182.0757, tol: 0.00005 },
+    { what: 'Willowmere: payment (4 dp)', value: CJ0, shown: 3703.5450, tol: 0.00005 },
+    { what: 'Willowmere: new payment (4 dp)', value: CJ1, shown: 3521.4693, tol: 0.00005 },
+    { what: 'Willowmere: a(72, 0.55%)', value: a(72, rJ1), shown: 59.320487, tol: 0.0000005 },
+    { what: 'Willowmere: PV of savings', value: (CJ0 - CJ1) * a(72, rJ1), shown: 10800.82 },
+    { what: 'Willowmere: net', value: (CJ0 - CJ1) * a(72, rJ1) - 3000, shown: 7800.82 },
+    { what: 'Willowmere: break-even', value: 3000 / (CJ0 - CJ1), shown: 16.5, tol: 0.05 },
     { what: 'Vendor PV at 7.2% (case)', value: DERIVED.vendorPVat72, shown: 23404.43 },
     { what: 'Vendor saving', value: BREWER.price - DERIVED.vendorPVat72, shown: 595.57 },
     { what: 'Bank paid at $1,050: balance after 24', value: 24000 * 1.006 ** 24 - 1050 * s(24, rB), shown: 687.52 },

@@ -163,7 +163,7 @@ export const independent = [
     wrong: [
       { value: 7222.22, say: 'You divided by r alone. With growth, divide by r − g = 6%.' },
       { value: 11158.33, say: 'You grew the $650 million first. It is already next year’s figure (C₁).' },
-      { value: 9285.71, say: 'That uses a 10% rate. At 9% the denominator is 0.09 − 0.03 = 0.06.' },
+      { value: 5416.67, say: 'You added g to r. The denominator is r − g = 0.09 − 0.03 = 0.06.' },
     ],
     solution: 'Value = 650 ÷ (0.09 − 0.03) = 650 ÷ 0.06 ≈ $10,833.33 million. At 10% the value would be 650 ÷ 0.07 ≈ $9,285.71 million: one percentage point on the rate moves the value by about $1,548 million, which is why such a model should be shown with a range.',
   },
@@ -239,14 +239,14 @@ export const check = [
   },
   {
     id: 'f04-perp-k4', type: 'num', kind: 'applied',
-    prompt: 'An investor forecasts a fictional laundrette chain in detail for four years. From year 5 she expects cash flow of $200,000, growing at 2% a year for ever, and she discounts at 9%. What is the present value today of all the cash flows from year 5 on? Give dollars and cents.',
-    answer: 2024072.03, check: () => 200000 / (0.09 - 0.02) / 1.09 ** 4, unit: '$', places: 2, tol: 35,
+    prompt: 'An investor forecasts a fictional laundrette chain in detail for four years. From year 5 she expects cash flow of $200,000, growing at 2% a year for ever, and she discounts at 9%. What is the present value today of all the cash flows from year 5 on? Give your answer to the nearest dollar.',
+    answer: 2024072, check: () => 200000 / (0.09 - 0.02) / 1.09 ** 4, unit: '$', places: 0, tol: 150,
     wrong: [
       { value: 2857142.86, say: 'That is the terminal value at year 4. Discount it four years to today.' },
       { value: 1856946.82, say: 'You discounted five years. The terminal value sits at year 4, one year before the first cash flow it values.' },
       { value: 2064553.47, say: 'You grew the $200,000 first. It is already the year-5 cash flow (CF at N + 1).' },
     ],
-    solution: 'TV₄ = CF₅ ÷ (r − g) = 200,000 ÷ 0.07 ≈ $2,857,142.86. PV = 2,857,142.86 ÷ 1.09⁴ = 2,857,142.86 ÷ 1.411582 ≈ $2,024,072.03.',
+    solution: 'TV₄ = CF₅ ÷ (r − g) = 200,000 ÷ 0.07 ≈ $2,857,142.86. PV = 2,857,142.86 ÷ 1.09⁴ = 2,857,142.86 ÷ 1.411582 ≈ $2,024,072 to the nearest dollar.',
   },
   {
     id: 'f04-perp-k5', type: 'mc', kind: 'applied',
@@ -259,7 +259,7 @@ export const check = [
     ],
     answer: 0,
     feedback: {
-      1: 'g < r makes the formula usable, not the assumption sensible. A 0.5-point gap means a 0.5-point change in either rate doubles the value or makes it infinite.',
+      1: 'g < r makes the formula usable, not the assumption sensible. A 0.5-point gap means that narrowing it by 0.25 points doubles the value, and narrowing it by 0.5 points makes it infinite.',
       2: 'Cash flows are discounted at the required return; the growth rate only enters through r − g.',
       3: 'A higher growth rate raises the value: it is an aggressive assumption, not a conservative one.',
     },

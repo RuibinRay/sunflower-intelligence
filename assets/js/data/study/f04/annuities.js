@@ -23,6 +23,7 @@ export default {
     'Evaluate an instalment plan sold as “0% interest” by finding its present value and its implied interest rate.',
   ],
   prerequisites: [
+    { lesson: 'f04/simple-and-compound-interest', why: 'Solving for the number of payments uses natural logarithms, introduced there.' },
     { lesson: 'f04/present-and-future-value', why: 'Every annuity formula is a shortcut for discounting or compounding single sums, and you need to move an amount from one date to another.' },
     { lesson: 'f04/discounting-cash-flows', why: 'An annuity is a cash-flow stream whose payments happen to be equal: discounting each payment and adding is the definition behind every formula here.' },
     { lesson: 'f04/effective-annual-rates', why: 'Payments are often monthly while rates are quoted a year at a time; you need the rate per period that matches the payment period.' },
@@ -57,9 +58,9 @@ export default {
         ['5', '$2,000', '0.747258', '$1,494.52'],
       ],
       foot: [['Total', '$10,000', '4.212364', '$8,424.73']],
-      note: 'Discount factors are 1 ÷ 1.06 raised to the power of the year, to six decimal places; present values are rounded to the cent.',
+      note: 'Discount factors are 1 ÷ 1.06 raised to the power of the year, to six decimal places; present values are rounded to the cent, and the totals are computed unrounded.',
     } },
-    { p: 'The five payments add up to $10,000, but they are worth $8,424.73 today: the later the payment, the less it is worth now. Look at the total of the discount factors, 4.212364. Because every payment is the same, the present value is simply the payment times that total. The total is called the <g>annuity factor</g>, and there is a formula for it, so you never need the table:' },
+    { p: 'The five payments add up to $10,000, but they are worth $8,424.73 today: the later the payment, the less it is worth now. Look at the total of the discount factors, 4.212364. Because every payment is the same, the present value is the payment times that total. The total is called the <g>annuity factor</g>, and there is a formula for it, so you never need the table:' },
     { math: String.raw`\text{PV} = C \times \frac{1 - (1 + r)^{-n}}{r} = 2{,}000 \times \frac{1 - 1.06^{-5}}{0.06} = 2{,}000 \times 4.212364 = 8{,}424.73` },
     { p: 'Here <m>1.06^{-5} = 1 \\div 1.06^5 \\approx 0.747258</m>, the discount factor for the last payment. The formula gives the same answer as the table in one line, whether there are five payments or 360.' },
     { figure: {
@@ -87,7 +88,7 @@ export default {
     { h: 'Why the formula works' },
     { p: 'The present value of an ordinary annuity is a sum of <m>n</m> discounted payments, each one <m>(1 + r)</m> times smaller than the one before: a geometric series. Multiply the sum by <m>(1 + r)</m> and every term moves one period closer; subtract the original and all but two terms cancel:' },
     { math: String.raw`\text{PV} = \frac{C}{1 + r} + \frac{C}{(1 + r)^2} + \cdots + \frac{C}{(1 + r)^n} \quad\Longrightarrow\quad (1 + r)\,\text{PV} - \text{PV} = C - \frac{C}{(1 + r)^{n}}` },
-    { p: 'The left side is <m>r \\times \\text{PV}</m>, so <m>\\text{PV} = C\\,[1 - (1 + r)^{-n}] \\div r</m>. A second way to see it uses the next lesson, perpetuities-and-growth: a payment of <m>C</m> every period forever is worth <m>C \\div r</m>. An annuity is a perpetuity that stops after <m>n</m> payments, so it is worth a perpetuity starting now minus a perpetuity whose payments start after period <m>n</m>, which is worth <m>(C \\div r)</m> discounted by <m>(1 + r)^n</m>. For the five payments of $2,000: <m>33{,}333.33 - 24{,}908.61 = 8{,}424.73</m> dollars.' },
+    { p: 'The left side is <m>r \\times \\text{PV}</m>, so <m>\\text{PV} = C\\,[1 - (1 + r)^{-n}] \\div r</m>. A second way to see it uses the next lesson, perpetuities-and-growth: a payment of <m>C</m> every period forever is worth <m>C \\div r</m>. An annuity is a perpetuity that stops after <m>n</m> payments, so it is worth a perpetuity starting now minus a perpetuity whose payments start after period <m>n</m>, which is worth <m>(C \\div r)</m> discounted by <m>(1 + r)^n</m>. For the five payments of $2,000: <m>33{,}333.33 - 24{,}908.61 \\approx 8{,}424.73</m> dollars (subtracting the unrounded values).' },
     { p: 'The future-value formula is the present value moved forward: multiply by <m>(1 + r)^n</m> and you get <m>C\\,[(1 + r)^n - 1] \\div r</m>. If the rate is zero both formulas break down (they divide by zero), but then there is nothing to discount: the value is just <m>n \\times C</m>.' },
 
     { h: 'Ordinary annuity or annuity due?' },
@@ -165,7 +166,7 @@ export default {
     { id: 'annuity-due', name: 'Annuity due (payments at the start of each period)',
       tex: String.raw`\text{PV}_{\text{due}} = \text{PV}_{\text{ord}} \times (1 + r), \qquad \text{FV}_{\text{due}} = \text{FV}_{\text{ord}} \times (1 + r)`,
       where: [
-        [String.raw`\text{PV}_{\text{due}}, \text{FV}_{\text{due}}`, 'Present and future value when each payment is made at the start of its period', '$'],
+        [String.raw`\text{PV}_{\text{due}}, \text{FV}_{\text{due}}`, 'Values when each payment is made at the start of its period: the present value today (time 0, the date of the first payment) and the future value at the end of period n, one period after the last payment', '$'],
         [String.raw`\text{PV}_{\text{ord}}, \text{FV}_{\text{ord}}`, 'The same values for an ordinary annuity with the same payment, rate and number of payments', '$'],
         [String.raw`r`, 'Interest rate per period, as a decimal', 'per period'],
       ],

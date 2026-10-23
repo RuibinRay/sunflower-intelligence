@@ -244,7 +244,7 @@ export const independent = [
 export const check = [
   {
     id: 'f04-amort-k1', type: 'mc', kind: 'conceptual',
-    prompt: 'Loan A and loan B charge the same rate, 7% a year compounded monthly, on the same amount. Loan A has a five-year term and loan B a three-year term, and loan A’s total interest is much larger. What can you conclude?',
+    prompt: 'Loan A and loan B charge the same rate, 7% a year compounded monthly, on the same amount. Loan A has a five-year term and loan B a three-year term, and loan A’s total interest is much larger. Neither loan charges any fees. What can you conclude?',
     options: [
       'Nothing about cost: loan A’s extra interest pays for keeping the money longer, at the same price',
       'Loan A is more expensive and should be avoided',
@@ -282,14 +282,14 @@ export const check = [
   },
   {
     id: 'f04-amort-k4', type: 'num', kind: 'applied',
-    prompt: 'Suppose Lantern borrowed the $24,000 from Coastline Bank (0.6% a month) but paid $1,050 a month, the same as the supplier’s plan. How much would it still owe after 24 payments? Give dollars and cents.',
-    answer: 687.52, check: () => 24000 * 1.006 ** 24 - 1050 * s(24, 0.006), unit: '$', places: 2, tol: 2.5,
+    prompt: 'Suppose Lantern borrowed the $24,000 for the brewer from Coastline Bank at 7.2% a year compounded monthly (0.6% a month), but paid $1,050 a month, the same as the supplier’s plan. How many payments would it take to clear the loan? Give n to two decimal places.',
+    answer: 24.66, check: () => -Math.log(1 - 24000 * 0.006 / 1050) / Math.log(1.006), unit: 'payments', places: 2, tol: 0.1,
     wrong: [
-      { value: 0, say: 'With the supplier’s plan the debt would be cleared, but the bank charges 7.2%, more than the plan’s implied 4.73%, so something is still owed.' },
-      { value: 595.57, say: 'That is the plan’s saving in today’s money. After 24 months it has grown at 0.6% a month.' },
-      { value: 12859.94, say: 'That is the balance after 24 scheduled payments of $576.94. Here Lantern pays $1,050 a month.' },
+      { value: 22.86, say: 'That is 24,000 ÷ 1,050, which ignores interest.' },
+      { value: 21.48, say: 'You used the savings-target formula, ln(1 + PV × r ÷ C). For a loan it is −ln(1 − PV × r ÷ C).' },
+      { value: 24, say: 'That is the plan’s term. The bank charges 7.2%, more than the plan’s implied 4.73%, so the same payments take longer to clear the same $24,000.' },
     ],
-    solution: 'Retrospective: 24,000 × 1.006²⁴ − 1,050 × (1.006²⁴ − 1) ÷ 0.006 ≈ 27,705.30 − 27,017.78 = $687.52. That is exactly the plan’s $595.57 advantage grown for 24 months at 0.6% (595.57 × 1.006²⁴), which is why the plan is cheaper.',
+    solution: 'n = −ln(1 − 24,000 × 0.006 ÷ 1,050) ÷ ln(1.006) = −ln(0.862857) ÷ ln(1.006) ≈ 0.147506 ÷ 0.005982 ≈ 24.66: 24 payments of $1,050 and a 25th of about $691.64. The supplier’s plan clears the same $24,000 price with 24 payments because its implied rate is lower than the bank’s.',
   },
   {
     id: 'f04-amort-k5', type: 'mc', kind: 'applied',
@@ -297,13 +297,13 @@ export const check = [
     options: [
       'Keep the current loan: the savings are worth only about $105 today, less than the $300 fee',
       'Refinance: any lower rate is worth having',
-      'Refinance, because 18 × $6.17 is more than $100',
+      'Refinance, because the fee is recovered in under two years',
       'Keep the loan, because refinancing always restarts the term',
     ],
     answer: 0,
     feedback: {
       1: 'A lower rate pays only if the savings outweigh the cost of switching.',
-      2: 'The savings must be compared with the $300 fee, and about $111 undiscounted (or $105 in present value) is less than $300.',
+      2: 'At about $6.17 a month, recovering the $300 fee takes about 49 months, far more than the 18 months left on the loan.',
       3: 'The new loan here has the same 18-month term; the problem is the fee, not the term.',
     },
     solution: 'Monthly saving ≈ $6.17 for 18 months: about $104.69 at the new rate’s 0.625% a month. The $300 fee would take about 49 months to recover, far longer than the 18 months left. Refinancing a small, short balance rarely pays.',
