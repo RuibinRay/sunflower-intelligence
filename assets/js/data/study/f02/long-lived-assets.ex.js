@@ -149,7 +149,7 @@ export const guided = [
     solution: 'Rate = 2 ÷ 4 = 50%. 2026: 18,000 × 0.5 = 9,000 (book value 9,000). 2027: 9,000 × 0.5 = 4,500 (4,500). 2028: 4,500 × 0.5 = 2,250 (2,250). 2029: 50% would be 1,125, but book value can’t fall below 1,500, so only 750 is charged. Total 16,500 = 18,000 − 1,500.',
     steps: [
       { id: 'f02-lla-g2-s1', type: 'num',
-        prompt: 'What is the double-declining-balance rate? Enter a percentage. Give a whole-number percentage.',
+        prompt: 'What is the double-declining-balance rate? Enter a whole-number percentage.',
         answer: 50, check: () => 2 / 4 * 100, unit: '%', places: 0, tol: 0.5,
         hints: ['The straight-line rate is 1 ÷ 4 = 25% a year.', 'Double it.'],
         wrong: [{ value: 25, say: 'That is the straight-line rate. Double-declining balance uses twice it.' }] },
@@ -222,7 +222,7 @@ export const guided = [
         hints: ['Spread the remaining book value, less the new residual value, over the remaining life.'],
         wrong: [
           { value: 16500, say: 'Subtract the new residual value before dividing: (66,000 − 6,000) ÷ 4.' },
-          { value: 21000, say: 'That restarts from cost over seven years and adds a catch-up. A change in estimate uses the current book value and the remaining life only.' },
+          { value: 21000, say: 'That spreads the cost, not the book value. The $24,000 already charged comes off first: (66,000 − 6,000) ÷ 4.' },
         ] },
       { id: 'f02-lla-g4-s3', type: 'mc',
         prompt: 'What happens to the depreciation recorded for 2023–2025?',
@@ -256,14 +256,14 @@ export const independent = [
   },
   {
     id: 'f02-lla-i2', type: 'journal', kind: 'applied', chart: 'f02', date: '2026-12-31',
-    prompt: 'On 1 January 2026 a fictional clothing brand pays $56,000 for a patent on a waterproof fabric. The patent has 14 years of legal life left, but the brand expects the fabric to be overtaken by newer ones in eight years. Record the amortisation for 2026.',
+    prompt: 'On 1 January 2026 a fictional outdoor-gear maker pays $56,000 for a patent on a waterproof fabric. The patent has 14 years of legal life left, but the maker expects the fabric to be overtaken by newer ones in eight years. Record the amortisation for 2026.',
     accounts: ['Amortisation Expense', 'Accumulated Amortisation—Patents', 'Patents', 'Depreciation Expense', 'Accumulated Depreciation—Equipment', 'Cash'],
     lines: [{ acct: 'Amortisation Expense', dr: 7000 }, { acct: 'Accumulated Amortisation—Patents', cr: 7000 }],
     solution: 'Amortise over the shorter of the legal life (14 years) and the useful life (8 years): 56,000 ÷ 8 = $7,000. Debit Amortisation Expense 7,000; credit Accumulated Amortisation—Patents 7,000.',
   },
   {
     id: 'f02-lla-i3', type: 'num', kind: 'numerical',
-    prompt: 'A fictional hotel buys kitchen equipment for $40,000 on 1 September 2026, with an eight-year life. It uses double-declining balance with a full month in the month of purchase; its year ends on 31 December. What is depreciation for 2027? Give dollars and cents.',
+    prompt: 'A fictional care home buys kitchen equipment for $40,000 on 1 September 2026, with an eight-year life. It uses double-declining balance with a full month in the month of purchase; its year ends on 31 December. What is depreciation for 2027? Give dollars and cents.',
     answer: 9166.67, check: () => (40000 - 40000 * 0.25 * 4 / 12) * 0.25, unit: '$', places: 2, tol: 0.01,
     wrong: [
       { value: 10000, say: 'That applies 25% to the cost. In 2027 the base is the book value after 2026’s four months, 36,666.67.' },
@@ -287,7 +287,7 @@ export const independent = [
       2: 'Any acquirer recognises goodwill bought in an acquisition; what differs is the later accounting.',
       3: 'That is the default for public companies (and the IFRS rule), but a private company may elect the alternative.',
     },
-    solution: 'Under the accounting alternative introduced by ASU 2014-02, a private company (or not-for-profit) may amortise goodwill on a straight-line basis over ten years, or less if another life is more appropriate, and test it for impairment only when a triggering event occurs. Public companies don’t amortise goodwill; they test it at least annually.',
+    solution: 'Under the accounting alternative introduced by ASU 2014-02 (and extended to not-for-profits by ASU 2019-06), a private company or not-for-profit may amortise goodwill on a straight-line basis over ten years, or less if another life is more appropriate, and test it for impairment only when a triggering event occurs. Public companies don’t amortise goodwill; they test it at least annually.',
   },
   {
     id: 'f02-lla-i5', type: 'classify', kind: 'conceptual',
@@ -304,7 +304,7 @@ export const independent = [
     answer: [1, 1, 0, 3, 0, 3],
     feedback: {
       0: 'The revaluation model is an IAS 16 option; US GAAP permits only the cost model.',
-      1: 'IAS 36 reverses impairment losses on assets other than goodwill; US GAAP never reverses them.',
+      1: 'IAS 36 reverses impairment losses on assets other than goodwill; US GAAP never reverses them on assets held and used.',
       3: 'US GAAP doesn’t allow revaluation at all, and under IFRS a revaluation increase goes to other comprehensive income, not net income (unless it reverses an earlier decrease).',
       4: 'IAS 16 requires component depreciation; US GAAP permits it without requiring it.',
       5: 'Public companies test goodwill for impairment instead; only US private companies and not-for-profits may elect to amortise it.',
@@ -323,7 +323,7 @@ export const independent = [
 export const check = [
   {
     id: 'f02-lla-k1', type: 'num', kind: 'numerical',
-    prompt: 'A fictional hotel buys laundry machines on 1 May 2026 for $64,800. They should last six years and be worth $4,800 at the end. The hotel uses the straight-line method with a full month in the month of purchase; its year ends on 31 December. What is depreciation for 2026? Give dollars and cents.',
+    prompt: 'A fictional commercial laundry buys washing machines on 1 May 2026 for $64,800. They should last six years and be worth $4,800 at the end. The laundry uses the straight-line method with a full month in the month of purchase; its year ends on 31 December. What is depreciation for 2026? Give dollars and cents.',
     answer: 6666.67, check: () => (64800 - 4800) / 6 * 8 / 12, unit: '$', places: 2, tol: 0.01,
     wrong: [
       { value: 10000, say: 'That is a full year. May to December is eight months.' },
@@ -351,26 +351,26 @@ export const check = [
   },
   {
     id: 'f02-lla-k3', type: 'journal', kind: 'applied', chart: 'f02', date: '2026-10-31',
-    prompt: 'A fictional battery-storage installer sells a service van that cost $42,000. Accumulated depreciation, brought up to the date of sale, is $25,200. The buyer pays $15,000 in cash. Record the sale.',
+    prompt: 'A fictional plumbing contractor sells a service van that cost $42,000. Accumulated depreciation, brought up to the date of sale, is $25,200. The buyer pays $15,000 in cash. Record the sale.',
     accounts: ['Cash', 'Van', 'Accumulated Depreciation—Van', 'Loss on Sale of Equipment', 'Gain on Sale of Equipment', 'Depreciation Expense'],
     lines: [{ acct: 'Cash', dr: 15000 }, { acct: 'Accumulated Depreciation—Van', dr: 25200 }, { acct: 'Loss on Sale of Equipment', dr: 1800 }, { acct: 'Van', cr: 42000 }],
     solution: 'Book value = 42,000 − 25,200 = 16,800; proceeds 15,000; loss 1,800. Debit Cash 15,000, Accumulated Depreciation—Van 25,200 and Loss on Sale of Equipment 1,800; credit Van 42,000.',
   },
   {
     id: 'f02-lla-k4', type: 'multi', kind: 'conceptual',
-    prompt: 'A fictional bakery buys a plot of land, demolishes an old shed on it and builds a new shop. Which costs are capitalised as part of an asset (land, land improvements or building) rather than expensed? Select all that apply.',
+    prompt: 'A fictional opticians’ practice buys a plot of land, demolishes an old shed on it and builds a new practice. Which costs are capitalised as part of an asset (land, land improvements or building) rather than expensed? Select all that apply.',
     options: [
       'Legal fees for buying the land',
       'Demolishing the old shed, less the value of materials recovered',
-      'The architect’s fees for the new shop',
+      'The architect’s fees for the new practice',
       'A fence and lighting around the customer car park',
-      'Training staff to use the new ovens',
-      'Insurance on the shop for its first year of trading',
+      'Training staff to use the new eye-testing equipment',
+      'Insurance on the building for its first year of trading',
     ],
     answer: [0, 1, 2, 3],
     feedback: {
       4: 'Training improves the staff, not an asset: it is an expense.',
-      5: 'Insurance once the shop is trading is a cost of operating it (a prepaid expense, then an expense), not of building it.',
+      5: 'Insurance once the practice is open is a cost of operating it (a prepaid expense, then an expense), not of building it.',
     },
     solution: 'Legal fees and demolition are part of the land’s cost; the architect’s fees are part of the building; the fence and lighting are land improvements, capitalised and depreciated. Training and first-year insurance are expenses of running the business.',
   },
@@ -395,6 +395,6 @@ export const check = [
       { options: ['separately', 'together with the rest', 'only if the auditor asks'], answer: 0 },
       { options: ['may not', 'must', 'may'], answer: 0 },
     ],
-    solution: 'Public companies don’t amortise goodwill; they test it at least annually. IAS 16 allows the revaluation model (fair value) for a whole class and requires component depreciation. US GAAP never reverses impairment losses; IAS 36 reverses them except for goodwill.',
+    solution: 'Public companies don’t amortise goodwill; they test it at least annually. IAS 16 allows the revaluation model (fair value) for a whole class and requires component depreciation. US GAAP never reverses impairment losses on assets held and used; IAS 36 reverses them except for goodwill.',
   },
 ];

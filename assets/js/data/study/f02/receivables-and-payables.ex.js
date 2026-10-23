@@ -228,12 +228,12 @@ export const independent = [
   },
   {
     id: 'f02-rp-i3', type: 'num', kind: 'numerical',
-    prompt: 'A fictional software reseller started the year with accounts receivable of $31,500. During the year it made credit sales of $412,000 and wrote off $3,800 of customer balances. Receivables at the year end are $36,700. How much did it collect from customers on account during the year? Round to the nearest dollar.',
+    prompt: 'A fictional office-supplies wholesaler started the year with accounts receivable of $31,500. During the year it made credit sales of $412,000 and wrote off $3,800 of customer balances. Receivables at the year end are $36,700. How much did it collect from customers on account during the year? Round to the nearest dollar.',
     answer: 403000, check: () => 31500 + 412000 - 3800 - 36700, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 406800, say: 'Write-offs also reduce receivables. Collections = beginning + credit sales − write-offs − ending.' },
       { value: 399200, say: 'You subtracted the write-offs twice. Collections = 31,500 + 412,000 − 3,800 − 36,700.' },
-      { value: 375300, say: 'Ending receivables are what is left after collections; subtract them from what was available, don’t add.' },
+      { value: 371500, say: 'You left out the opening balance. The $31,500 owed on 1 January could also be collected: collections = 31,500 + 412,000 − 3,800 − 36,700.' },
     ],
     solution: 'Roll-forward: ending = beginning + credit sales − collections − write-offs, so collections = 31,500 + 412,000 − 3,800 − 36,700 = $403,000.',
   },
@@ -298,11 +298,11 @@ export const check = [
     solution: 'Required allowance = 1,800 + 1,440 + 2,000 + 2,800 = 8,040. Expense = 8,040 + 1,260 (debit balance) = $9,300.',
   },
   {
-    id: 'f02-rp-k2', type: 'journal', kind: 'applied', chart: 'f02', date: '2027-04-05',
-    prompt: 'Lantern wrote off Quayline Events’ $820 invoice in November 2026. Suppose that on 5 April 2027 Quayline’s liquidator pays Lantern $300 of it. Record the first of the two entries that day: the one that reinstates the receivable.',
-    accounts: ['Accounts Receivable', 'Allowance for Doubtful Accounts', 'Bad Debt Expense', 'Cash', 'Catering Revenue', 'Retained Earnings'],
-    lines: [{ acct: 'Accounts Receivable', dr: 300 }, { acct: 'Allowance for Doubtful Accounts', cr: 300 }],
-    solution: 'Reverse the write-off for the amount recovered: debit Accounts Receivable 300, credit Allowance for Doubtful Accounts 300. The second entry records the cash: debit Cash 300, credit Accounts Receivable 300. No revenue is recorded; the catering revenue was recognised in September 2026.',
+    id: 'f02-rp-k2', type: 'journal', kind: 'applied', chart: 'f02', date: '2027-03-09',
+    prompt: 'A fictional print supplier, which uses the allowance method, wrote off a hotel’s $1,250 balance in 2026. On 9 March 2027 the hotel pays $500 of it. Record the first of the two entries that day: the one that reinstates the receivable.',
+    accounts: ['Accounts Receivable', 'Allowance for Doubtful Accounts', 'Bad Debt Expense', 'Cash', 'Sales Returns and Allowances', 'Retained Earnings'],
+    lines: [{ acct: 'Accounts Receivable', dr: 500 }, { acct: 'Allowance for Doubtful Accounts', cr: 500 }],
+    solution: 'Reverse the write-off for the amount recovered, not the whole $1,250: debit Accounts Receivable 500, credit Allowance for Doubtful Accounts 500. The second entry records the cash: debit Cash 500, credit Accounts Receivable 500. No revenue or reduction of bad debt expense is recorded; the sale was recognised in an earlier period.',
   },
   {
     id: 'f02-rp-k3', type: 'mc', kind: 'conceptual',

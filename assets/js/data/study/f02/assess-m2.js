@@ -43,7 +43,7 @@ export const items = [
     prompt: 'A fictional catering-equipment supplier’s allowance for doubtful accounts had a credit balance of $5,200 on 1 January. Bad debt expense for the year was $7,900, there were no recoveries, and the balance on 31 December, after the adjustment, is $6,100. How much was written off during the year? Round to the nearest dollar.',
     answer: 7000, check: () => 5200 + 7900 - 6100, unit: '$', places: 0, tol: 0.5,
     wrong: [
-      { value: 8800, say: 'Work through the allowance account: opening credit + expense (credits) − write-offs (debits) = closing credit. 5,200 + 7,900 − 6,100.' },
+      { value: 8800, say: 'You swapped the opening and closing balances. Opening credit + expense − write-offs = closing credit: 5,200 + 7,900 − 6,100.' },
       { value: 1800, say: 'That is the expense less the closing balance; the opening balance was also available to absorb write-offs.' },
     ],
     solution: 'Allowance: 5,200 + 7,900 − write-offs = 6,100, so write-offs = $7,000.',
@@ -52,7 +52,7 @@ export const items = [
   // ---------------------------------------------------------------- long-lived-assets
   {
     id: 'f02-m2-5', lesson: 'long-lived-assets', type: 'num', kind: 'numerical',
-    prompt: 'A fictional printing company depreciates a press costing $50,000, with a ten-year life and a $5,000 residual value, by the 150% declining-balance method, starting with a full year. What is depreciation in the second year? Give dollars and cents if needed.',
+    prompt: 'A fictional packaging manufacturer depreciates a carton-forming machine costing $50,000, with a ten-year life and a $5,000 residual value, by the 150% declining-balance method, starting with a full year. What is depreciation in the second year? Give dollars and cents if needed.',
     answer: 6375, check: () => (50000 - 50000 * 0.15) * 0.15, unit: '$', places: 2, tol: 0.5,
     wrong: [
       { value: 8000, say: 'That is double-declining balance (20%). The 150% method uses 1.5 × 10% = 15%.' },
@@ -119,14 +119,14 @@ export const items = [
   },
   {
     id: 'f02-m2-10', lesson: 'balance-sheet-and-equity', type: 'journal', kind: 'applied', chart: 'f02', date: '2026-04-15',
-    prompt: 'A fictional landscaping corporation issues 4,000 shares of $1 par common stock to the owner of a delivery van in exchange for the van, whose fair value is $36,000. The shares have no reliable market price. Record the issue.',
+    prompt: 'A fictional tree-surgery corporation issues 4,000 shares of $1 par common stock to the owner of a delivery van in exchange for the van, whose fair value is $36,000. The shares have no reliable market price. Record the issue.',
     accounts: ['Van', 'Cash', 'Common Stock', 'Additional Paid-in Capital', 'Retained Earnings', 'Notes Payable'],
     lines: [{ acct: 'Van', dr: 36000 }, { acct: 'Common Stock', cr: 4000 }, { acct: 'Additional Paid-in Capital', cr: 32000 }],
     solution: 'Record the van at the more reliable value, its fair value of $36,000. Common Stock = 4,000 × $1 = 4,000; APIC = 36,000 − 4,000 = 32,000. Debit Van 36,000; credit Common Stock 4,000 and Additional Paid-in Capital 32,000.',
   },
   {
     id: 'f02-m2-11', lesson: 'balance-sheet-and-equity', type: 'num', kind: 'applied',
-    prompt: 'A lender reviewing a fictional furniture retailer sees retained earnings of $140,000 at the start of 2026 and $171,500 at the end. Net income for 2026 was $52,000, and nothing else affected retained earnings except dividends. What dividends were declared in 2026? Round to the nearest dollar.',
+    prompt: 'A lender reviewing a fictional musical-instrument retailer sees retained earnings of $140,000 at the start of 2026 and $171,500 at the end. Net income for 2026 was $52,000, and nothing else affected retained earnings except dividends. What dividends were declared in 2026? Round to the nearest dollar.',
     answer: 20500, check: () => 140000 + 52000 - 171500, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 31500, say: 'That is the increase in retained earnings, which is net income minus dividends.' },

@@ -80,7 +80,7 @@ export const guided = [
   },
   {
     id: 'f02-bse-g2', type: 'steps', kind: 'numerical',
-    prompt: 'A fictional dental practice has a $60,000 bank loan, repayable in five instalments of $12,000 each 30 June from 2027. At 31 December 2026 its current assets are $41,400 and its other current liabilities (payables, wages, interest and tax) are $16,500.',
+    prompt: 'A fictional physiotherapy clinic has a $60,000 bank loan, repayable in five instalments of $12,000 each 30 June from 2027. At 31 December 2026 its current assets are $41,400 and its other current liabilities (payables, wages, interest and tax) are $16,500.',
     solution: 'The instalment due on 30 June 2027 is current: $12,000; the other $48,000 is noncurrent. Current liabilities = 16,500 + 12,000 = $28,500. Current ratio = 41,400 ÷ 28,500 ≈ 1.45; working capital = 41,400 − 28,500 = $12,900.',
     steps: [
       { id: 'f02-bse-g2-s1', type: 'num',
@@ -138,7 +138,7 @@ export const guided = [
   },
   {
     id: 'f02-bse-g4', type: 'steps', kind: 'applied',
-    prompt: 'A fictional hotel company has 80,000 shares issued, of which 4,000 are held as treasury stock. On 1 December its board declares a dividend of $0.25 a share to shareholders of record on 15 December, payable on 10 January.',
+    prompt: 'A fictional cinema chain has 80,000 shares issued, of which 4,000 are held as treasury stock. On 1 December its board declares a dividend of $0.25 a share to shareholders of record on 15 December, payable on 10 January.',
     solution: 'Outstanding shares = 80,000 − 4,000 = 76,000; dividend = 76,000 × 0.25 = $19,000. 1 December: debit Dividends 19,000, credit Dividends Payable 19,000. 15 December: no entry. 10 January: debit Dividends Payable 19,000, credit Cash 19,000.',
     steps: [
       { id: 'f02-bse-g4-s1', type: 'num',
@@ -178,7 +178,7 @@ export const guided = [
 export const independent = [
   {
     id: 'f02-bse-i1', type: 'journal', kind: 'applied', chart: 'f02', date: '2026-05-01',
-    prompt: 'A fictional bakery corporation issues 5,000 shares of no-par common stock, with no stated value, to a new investor for $30,000 in cash. Record the issue.',
+    prompt: 'A fictional cheese-making corporation issues 5,000 shares of no-par common stock, with no stated value, to a new investor for $30,000 in cash. Record the issue.',
     accounts: ['Cash', 'Common Stock', 'Additional Paid-in Capital', 'Retained Earnings', 'Notes Payable', 'Dividends'],
     lines: [{ acct: 'Cash', dr: 30000 }, { acct: 'Common Stock', cr: 30000 }],
     solution: 'With no par and no stated value, the whole amount received goes to Common Stock: debit Cash 30,000, credit Common Stock 30,000. Additional Paid-in Capital is not used.',
@@ -251,7 +251,7 @@ export const independent = [
 export const check = [
   {
     id: 'f02-bse-k1', type: 'num', kind: 'numerical',
-    prompt: 'A fictional airline-catering company’s balances at 31 December include: Cash $12,000; Accounts Receivable $31,000; Allowance for Doubtful Accounts $1,400; Inventory $9,800; Prepaid Expenses $2,600; Accounts Payable $18,700; Accrued Liabilities $6,300; Income Taxes Payable $2,000; and a loan of $50,000 of which $10,000 is due within the next year. What is working capital? Round to the nearest dollar.',
+    prompt: 'A fictional event-staffing agency’s balances at 31 December include: Cash $12,000; Accounts Receivable $31,000; Allowance for Doubtful Accounts $1,400; Inventory $9,800; Prepaid Expenses $2,600; Accounts Payable $18,700; Accrued Liabilities $6,300; Income Taxes Payable $2,000; and a loan of $50,000 of which $10,000 is due within the next year. What is working capital? Round to the nearest dollar.',
     answer: 17000, check: () => (12000 + 31000 - 1400 + 9800 + 2600) - (18700 + 6300 + 2000 + 10000), unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 19800, say: 'The allowance is deducted from receivables, not added.' },
@@ -262,7 +262,7 @@ export const check = [
   },
   {
     id: 'f02-bse-k2', type: 'journal', kind: 'applied', chart: 'f02', date: '2026-11-20',
-    prompt: 'On 20 November a fictional clothing brand’s board declares a dividend of $0.15 a share on its 120,000 outstanding shares, payable on 18 December. Record the declaration, using a Dividends account.',
+    prompt: 'On 20 November a fictional toy maker’s board declares a dividend of $0.15 a share on its 120,000 outstanding shares, payable on 18 December. Record the declaration, using a Dividends account.',
     accounts: ['Dividends', 'Dividends Payable', 'Cash', 'Retained Earnings', 'Common Stock', 'Additional Paid-in Capital'],
     lines: [{ acct: 'Dividends', dr: 18000 }, { acct: 'Dividends Payable', cr: 18000 }],
     solution: '0.15 × 120,000 = $18,000. Debit Dividends 18,000; credit Dividends Payable 18,000. Cash moves on 18 December.',
@@ -307,7 +307,7 @@ export const check = [
   },
   {
     id: 'f02-bse-k5', type: 'num', kind: 'applied',
-    prompt: 'A fictional software reseller has current assets of $180,000 and current liabilities of $90,000. Its loan agreement requires a current ratio of at least 1.6. What is the largest cash dividend it can pay immediately without breaking the requirement? Round to the nearest dollar.',
+    prompt: 'A fictional pet-supplies distributor has current assets of $180,000 and current liabilities of $90,000. Its loan agreement requires a current ratio of at least 1.6. What is the largest cash dividend it can pay immediately without breaking the requirement? Round to the nearest dollar.',
     answer: 36000, check: () => 180000 - 1.6 * 90000, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 90000, say: 'That is working capital. Paying it all would leave a ratio of 1.0.' },

@@ -11,7 +11,7 @@ const decDividend = FACTS.dividends[1].amount;                    // 4,700
 const clNoE8 = D.currentLiabilities - FACTS.vanNote.instalment;   // 21,289
 // Hypothetical extra dividend of $15,000 and a 1.5 minimum current ratio
 const extra = 15000, minRatio = 1.5;
-// Ember & Oak Furniture (challenging example)
+// Hazelmere Furniture (challenging example)
 const EO = { shares0: 40000, cs0: 400, apic0: 239600, re0: 85000, newShares: 10000, price: 15, par: 0.01, ni: 64000, dps: 0.40 };
 const eoCash = EO.newShares * EO.price;
 const eoCS = EO.newShares * EO.par;
@@ -37,6 +37,7 @@ export default {
     'Prepare a statement of changes in equity and reconcile it with the balance sheet.',
   ],
   prerequisites: [
+    { lesson: 'f01/accounts-and-classifications', why: 'It introduced current and noncurrent items and the operating cycle.' },
     { lesson: 'f01/financial-statements', why: 'It introduced the classified balance sheet, the statement of changes in equity and how the statements articulate.' },
     { lesson: 'f00/capital-and-liquidity', why: 'Working capital and the current ratio are defined there.' },
     { lesson: 'f02/receivables-and-payables', why: 'Lantern’s current liabilities and its net receivables were built up there.' },
@@ -58,8 +59,7 @@ export default {
 
   theory: [
     { h: 'Current or noncurrent: the rules' },
-    { p: 'US GAAP defines current assets as cash and other assets reasonably expected to be realised in cash, sold or consumed during the normal operating cycle of the business, and current liabilities as obligations whose settlement is expected to use current assets or create other current liabilities (ASC Master Glossary). The horizon is one year, or the operating cycle when that is longer than twelve months; when there is no clearly defined cycle, the one-year rule applies (ASC 210-10-45-3). A distillery whose spirits age for several years therefore still shows its maturing stock as a current asset, and most businesses, Lantern included, use one year.' },
-    { p: 'IFRS states the same tests as a list. An asset is current if it is expected to be realised, sold or consumed in the normal operating cycle, held mainly for trading, expected to be realised within twelve months after the reporting period, or is cash (IAS 1, paragraph 66). A liability is current if it is expected to be settled in the normal operating cycle, held mainly for trading or due within twelve months, or if the entity has no right at the end of the reporting period to defer settlement for at least twelve months (IAS 1, paragraph 69). Trade payables and accrued operating costs are current even if some are due after more than twelve months, because they belong to the operating cycle (IAS 1, paragraph 70). IFRS 18, which replaces IAS 1 for annual periods beginning on or after 1 January 2027, carries these requirements forward unchanged (IFRS 18, paragraph 101 for liabilities).' },
+    { p: 'F01 introduced the test: an item is current if it will be realised, sold, used up or settled within one year or the operating cycle, whichever is longer. Three details matter when a balance sheet is prepared. Under US GAAP the operating cycle replaces the year only when it is longer than twelve months, and when there is no clearly defined cycle the one-year rule applies (ASC 210-10-45-3); Lantern, like most businesses, uses one year. Under IFRS, trade payables and accrued operating costs are current even if some are due after more than twelve months, because they belong to the operating cycle (IAS 1, paragraph 70). And a liability is current whenever the entity has no right, at the end of the reporting period, to defer its settlement for at least twelve months (IAS 1, paragraph 69(d), as amended from 2024; IFRS 18, which replaces IAS 1 for annual periods beginning on or after 1 January 2027, carries these requirements forward unchanged).' },
     { p: 'Some businesses, such as banks, have no clearly identifiable operating cycle, and IAS 1 lets them present assets and liabilities in order of liquidity without a current and noncurrent split when that is more relevant (paragraph 60). IAS 1 also doesn’t prescribe the order or format of the statement (paragraph 57), so some IFRS reporters list noncurrent assets first and show equity before liabilities. The facts are the same; only the layout differs.' },
     { h: 'Lantern’s classified balance sheet' },
     { statement: STATEMENTS.balance },
@@ -82,6 +82,7 @@ export default {
       { date: '2026-03-01', lines: [{ acct: 'Cash', dr: 20000 }, { acct: 'Common Stock', cr: 20000 }], memo: 'y1: no-par shares, so the whole amount is Common Stock.' },
       { date: '2026-03-01', lines: [{ acct: 'Cash', dr: 20000 }, { acct: 'Common Stock', cr: 2000 }, { acct: 'Additional Paid-in Capital', cr: 18000 }], memo: 'Alternative: 2,000 shares of $1 par issued at $10 each; par to Common Stock, the excess to APIC.' },
     ] } },
+    { p: 'Shares are sometimes issued for something other than cash, such as equipment or professional services. The issue is then recorded at the fair value of the shares or of what is received, whichever can be measured more reliably, and split between par and APIC in the usual way.' },
     { p: 'The balance sheet or its notes give, for each class of stock, the par or stated value and the numbers of shares authorised, issued and outstanding. Shares are issued when first sold. Some may later be bought back and held as <g>treasury stock</g>, shown as a deduction from equity; issued shares not held in treasury are the <g>outstanding shares</g>, the ones that vote and receive dividends. Some companies also issue preferred stock, which ranks ahead of common stock for dividends; F04 meets it as a source of fixed payments. Companies reporting under IFRS, and UK companies, usually call common stock share capital and APIC share premium.' },
     { h: 'Retained earnings and dividends' },
     { p: 'A cash dividend involves three dates. On the <g>declaration date</g> the board votes the dividend, and it becomes a legal liability: debit Dividends (or Retained Earnings directly; Lantern uses a Dividends account, which is closed to Retained Earnings), credit <g>dividends payable</g>. The <g>date of record</g> fixes who will be paid, the shareholders on the register that day; no entry is made. On the <g>payment date</g> the company pays: debit Dividends Payable, credit Cash. Retained earnings fall when the dividend is declared, not when it is paid.' },
@@ -105,7 +106,7 @@ export default {
       ],
       foot: [['Balance at 31 December 2026', '20,000', '22,387', '42,387']],
     } },
-    { callout: 'note', title: 'Other components of equity', html: 'Larger companies’ statements have more columns. Additional paid-in capital and treasury stock each have their own. So does accumulated other comprehensive income, which collects gains and losses that bypass net income, such as an IFRS revaluation surplus on property (the long-lived assets lesson) or currency differences on foreign operations. The words vary too: statement of stockholders’ equity in much US practice, statement of changes in equity under IFRS.' },
+    { callout: 'note', title: 'Other components of equity', html: 'Larger companies’ statements have more columns. Additional paid-in capital and treasury stock each have their own. Under US GAAP so does accumulated other comprehensive income, which collects gains and losses that bypass net income, such as currency differences on foreign operations. IFRS reporters show similar amounts as reserves within equity, such as the revaluation surplus on property met in the long-lived assets lesson. The words vary too: statement of stockholders’ equity in much US practice, statement of changes in equity under IFRS.' },
   ],
 
   formulas: [
@@ -165,7 +166,7 @@ export default {
       answer: 'Current assets $19,200; current liabilities $15,050 (including the $6,000 current portion of the loan); working capital $4,150; current ratio about 1.28; retained earnings $9,150.',
       interpretation: 'Without the split the florist would have shown current liabilities of $9,050 and a ratio of about 2.12, hiding the fact that a July loan payment will take most of its cash.' },
     { level: 'challenging', title: 'A furniture maker’s year in equity', fictional: true,
-      setup: 'Ember &amp; Oak Furniture Inc., a fictional company, has 1,000,000 shares of $0.01 par value common stock authorised. On 1 January 2026 it has 40,000 shares issued and outstanding, with Common Stock $400, Additional Paid-in Capital $239,600 and Retained Earnings $85,000. On 1 June it issues 10,000 more shares at $15 each for cash. Net income for 2026 is $64,000, and on 10 December the board declares a dividend of $0.40 a share to shareholders of record on 31 December, payable on 15 January 2027. Record the share issue and the dividend, and prepare the statement of changes in equity.',
+      setup: 'Hazelmere Furniture Inc., a fictional company, has 1,000,000 shares of $0.01 par value common stock authorised. On 1 January 2026 it has 40,000 shares issued and outstanding, with Common Stock $400, Additional Paid-in Capital $239,600 and Retained Earnings $85,000. On 1 June it issues 10,000 more shares at $15 each for cash. Net income for 2026 is $64,000, and on 10 December the board declares a dividend of $0.40 a share to shareholders of record on 31 December, payable on 15 January 2027. Record the share issue and the dividend, and prepare the statement of changes in equity.',
       journal: { entries: [
         { date: '2026-06-01', lines: [{ acct: 'Cash', dr: 150000 }, { acct: 'Common Stock', cr: 100 }, { acct: 'Additional Paid-in Capital', cr: 149900 }], memo: '10,000 shares at $15: par 10,000 × $0.01 to Common Stock, the rest to APIC.' },
         { date: '2026-12-10', lines: [{ acct: 'Dividends', dr: 20000 }, { acct: 'Dividends Payable', cr: 20000 }], memo: 'Declaration: $0.40 × 50,000 shares outstanding.' },
@@ -186,7 +187,7 @@ export default {
         String.raw`Closing equity: <m>500 + 389{,}500 + 129{,}000 = 519{,}000</m>, which agrees with <m>325{,}000 + 150{,}000 + 64{,}000 - 20{,}000</m>. The $20,000 of dividends payable appears among current liabilities on the balance sheet.`,
       ],
       answer: 'Debit Cash 150,000; credit Common Stock 100 and APIC 149,900. Debit Dividends 20,000; credit Dividends Payable 20,000 (paid in January). Equity at 31 December 2026: Common Stock $500, APIC $389,500, Retained Earnings $129,000, total $519,000.',
-      interpretation: 'Almost all of the $390,000 Ember &amp; Oak’s shareholders have paid in sits in APIC, because the par value is a cent. A reader judging how much capital the owners put in should add Common Stock and APIC together; the split between them is a legal formality.' },
+      interpretation: 'Almost all of the $390,000 Hazelmere’s shareholders have paid in sits in APIC, because the par value is a cent. A reader judging how much capital the owners put in should add Common Stock and APIC together; the split between them is a legal formality.' },
     { level: 'applied', title: 'How much more can Lantern pay Ana?', fictional: true,
       setup: 'Suppose the van’s finance agreement requires Lantern to keep a current ratio of at least 1.5 at each year end, and that on 31 December 2026 Ana is considering an extra dividend of $15,000 on top of the $5,000 already paid. Using the balance sheet (current assets $56,476, current liabilities $26,289, retained earnings $22,387), test the dividend paid on 31 December and the same dividend declared on 31 December but paid in January, and find the largest dividend each way.',
       steps: [
@@ -207,7 +208,7 @@ export default {
   mistakes: [
     { title: '“A long-term loan is a noncurrent liability.”', html: 'Only the part not due within the next year is noncurrent. Instalments due in the next twelve months are current, and a loan repayable in one sum becomes wholly current a year before it falls due: Coastline’s note will be current at 31 December 2027.' },
     { title: '“Reclassifying the current portion means paying it.”', html: 'Entry e8 moves $5,000 from Notes Payable to Current Portion of Long-Term Debt. No cash moves, and total liabilities don’t change; the payment is recorded on 1 June 2027.' },
-    { title: '“Par value is what a share is worth.”', html: 'Par is a legal minimum issue price, usually a cent or less. Ember &amp; Oak’s shares sold at $15 with a par of $0.01; the other $14.99 is additional paid-in capital. Market value, book value and par are three different numbers.' },
+    { title: '“Par value is what a share is worth.”', html: 'In states such as Delaware, par is a legal minimum issue price, usually a cent or less. Hazelmere’s shares sold at $15 with a par of $0.01; the other $14.99 is additional paid-in capital. Market value, book value and par are three different numbers.' },
     { title: '“Dividends reduce retained earnings when they are paid.”', html: 'Retained earnings fall on the declaration date, when the dividend becomes a liability. The payment settles Dividends Payable and doesn’t touch equity. No entry is made on the date of record.' },
     { title: '“Accumulated depreciation and the allowance are liabilities because they have credit balances.”', html: 'Both are contra-assets. They are deducted from the assets they belong to, on the face of the balance sheet or in a note. Listing them as liabilities would overstate both total assets and total liabilities.' },
   ],
@@ -236,7 +237,7 @@ export default {
     { term: 'Authorised shares', def: 'The maximum number of shares of a class that a corporation’s charter allows it to issue.' },
     { term: 'Outstanding shares', def: 'Shares that have been issued and are held by shareholders, that is, issued shares less any held as treasury stock. They carry votes and receive dividends.' },
     { term: 'Treasury stock', def: 'A corporation’s own shares that it has issued and later bought back and holds. Shown as a deduction from equity; treasury shares have no votes and receive no dividends.' },
-    { term: 'Par value', def: 'A nominal amount per share set in a corporation’s charter, often a cent or less, with legal rather than economic meaning. Shares with a par value can’t be issued for less than par.' },
+    { term: 'Par value', def: 'A nominal amount per share set in a corporation’s charter, often a cent or less, with legal rather than economic meaning. In states such as Delaware, shares with a par value can’t be issued for less than par.' },
     { term: 'No-par stock', def: 'Shares issued without a par value. Unless the board assigns a stated value, the whole amount received is credited to Common Stock.' },
     { term: 'Additional paid-in capital', def: 'The amount shareholders paid for shares above their par or stated value. Called share premium under IFRS and in the UK.' },
     { term: 'Declaration date', def: 'The date a corporation’s board declares a dividend, when it becomes a liability and retained earnings are reduced.' },
@@ -250,7 +251,8 @@ export default {
     { text: 'Franklin, M., Graybeal, P. &amp; Cooper, D. (2019). <i>Principles of Accounting, Volume 1: Financial Accounting</i>, sections 14.2, “Analyze and Record Transactions for the Issuance and Repurchase of Stock”, and 14.3, “Record Transactions and the Effects on Financial Statements for Cash Dividends, Property Dividends, Stock Dividends, and Stock Splits”. OpenStax.', url: 'https://openstax.org/books/principles-financial-accounting/pages/14-2-analyze-and-record-transactions-for-the-issuance-and-repurchase-of-stock', checked: '2026-10-23' },
     { text: 'Deloitte. <i>Roadmap: Issuer’s Accounting for Debt</i>, section 13.3, “General” (balance sheet classification; reproduces ASC 210-10-45). DART.', url: 'https://dart.deloitte.com/USDART/home/codification/liabilities/asc470-10/roadmap-debt/chapter-13-balance-sheet-classification/13-3-general', checked: '2026-10-23' },
     { text: 'European Union. Commission Regulation (EU) 2023/1803 of 13 August 2023 adopting international accounting standards, Annex: <i>IAS 1 Presentation of Financial Statements</i>, paragraphs 57–76. Official Journal L 237.', url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32023R1803', checked: '2026-10-23' },
-    { text: 'BDO (2026). <i>IFRS in Practice: Classification of loans as current or non-current</i> (the IAS 1 requirements as carried into IFRS 18, with a concordance of paragraphs).', url: 'https://www.bdo.global/getmedia/b8866082-2b56-4ed8-9df2-600f56d20d1a/IFRS-IP_Classification-of-loans-as-current-or-non-current_June-2026.pdf?ext=.pdf', checked: '2026-10-23' },
+    { text: 'European Union. Commission Regulation (EU) 2023/2822 of 19 December 2023 amending Regulation (EU) 2023/1803 as regards IAS 1 (classification of liabilities as current or non-current), paragraphs 69(d) and 139U. Official Journal L.', url: 'https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32023R2822', checked: '2026-10-23' },
+    { text: 'BDO (June 2026). <i>IFRS 18: Classification of Loans as Current or Non-current</i>. IFRS Accounting Standards in Practice (the IAS 1 requirements as carried into IFRS 18, with a concordance of paragraphs).', url: 'https://www.bdo.global/getmedia/b8866082-2b56-4ed8-9df2-600f56d20d1a/IFRS-IP_Classification-of-loans-as-current-or-non-current_June-2026.pdf?ext=.pdf', checked: '2026-10-23' },
     { text: 'IFRS Foundation. <i>IFRS 18 Presentation and Disclosure in Financial Statements</i>, standard summary (effective for annual reporting periods beginning on or after 1 January 2027; replaces IAS 1).', url: 'https://www.ifrs.org/issued-standards/list-of-standards/ifrs-18-presentation-and-disclosure-in-financial-statements/', checked: '2026-10-23' },
     { text: 'State of Delaware. <i>Delaware Code</i>, Title 8 (General Corporation Law), chapter 1, subchapter V, sections 153–154 (consideration for stock; capital and surplus).', url: 'https://delcode.delaware.gov/title8/c001/sc05/index.html', checked: '2026-10-23' },
   ],
@@ -344,20 +346,20 @@ export default {
     { what: 'Thistle retained earnings', value: tlTA - tlTL - TL.cs, shown: 9150 },
     { what: 'Thistle CL without split', value: tlCL - TL.instalment, shown: 9050 },
     { what: 'Thistle ratio without split', value: tlCA / (tlCL - TL.instalment), shown: 2.12, tol: 0.005 },
-    // Ember & Oak
-    { what: 'E&O cash from issue', value: eoCash, shown: 150000 },
-    { what: 'E&O common stock on issue', value: eoCS, shown: 100 },
-    { what: 'E&O APIC on issue', value: eoCash - eoCS, shown: 149900 },
-    { what: 'E&O shares outstanding', value: EO.shares0 + EO.newShares, shown: 50000 },
-    { what: 'E&O dividend', value: eoDiv, shown: 20000 },
-    { what: 'E&O opening equity', value: EO.cs0 + EO.apic0 + EO.re0, shown: 325000 },
-    { what: 'E&O opening par check', value: EO.shares0 * EO.par, shown: 400 },
-    { what: 'E&O closing common stock', value: EO.cs0 + eoCS, shown: 500 },
-    { what: 'E&O closing APIC', value: EO.apic0 + eoCash - eoCS, shown: 389500 },
-    { what: 'E&O closing RE', value: eoRE, shown: 129000 },
-    { what: 'E&O closing total', value: EO.cs0 + eoCS + EO.apic0 + eoCash - eoCS + eoRE, shown: 519000 },
-    { what: 'E&O closing total (other route)', value: 325000 + 150000 + 64000 - 20000, shown: 519000 },
-    { what: 'E&O paid-in capital (about $390,000)', value: 500 + 389500, shown: 390000 },
-    { what: 'E&O excess over par per share', value: 15 - 0.01, shown: 14.99 },
+    // Hazelmere Furniture
+    { what: 'Hazelmere cash from issue', value: eoCash, shown: 150000 },
+    { what: 'Hazelmere common stock on issue', value: eoCS, shown: 100 },
+    { what: 'Hazelmere APIC on issue', value: eoCash - eoCS, shown: 149900 },
+    { what: 'Hazelmere shares outstanding', value: EO.shares0 + EO.newShares, shown: 50000 },
+    { what: 'Hazelmere dividend', value: eoDiv, shown: 20000 },
+    { what: 'Hazelmere opening equity', value: EO.cs0 + EO.apic0 + EO.re0, shown: 325000 },
+    { what: 'Hazelmere opening par check', value: EO.shares0 * EO.par, shown: 400 },
+    { what: 'Hazelmere closing common stock', value: EO.cs0 + eoCS, shown: 500 },
+    { what: 'Hazelmere closing APIC', value: EO.apic0 + eoCash - eoCS, shown: 389500 },
+    { what: 'Hazelmere closing RE', value: eoRE, shown: 129000 },
+    { what: 'Hazelmere closing total', value: EO.cs0 + eoCS + EO.apic0 + eoCash - eoCS + eoRE, shown: 519000 },
+    { what: 'Hazelmere closing total (other route)', value: 325000 + 150000 + 64000 - 20000, shown: 519000 },
+    { what: 'Hazelmere paid-in capital (about $390,000)', value: 500 + 389500, shown: 390000 },
+    { what: 'Hazelmere excess over par per share', value: 15 - 0.01, shown: 14.99 },
   ],
 };
