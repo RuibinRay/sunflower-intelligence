@@ -60,8 +60,8 @@ const BT = {
   sold: { cost: 24000, accDep: 15000, proceeds: 11500 }, bought: { cost: 50000, cash: 30000, note: 20000 }, repaid: 10000, declared: 12000,
 };
 const ch = (a) => a[1] - a[0];
-BT.opIncome = BT.sales - BT.cogs - BT.wagesExp - BT.depreciation - BT.rent - BT.other;   // 33,500
-BT.pretax = BT.opIncome + BT.gain - BT.interest;                                        // 31,000
+BT.opIncome = BT.sales - BT.cogs - BT.wagesExp - BT.depreciation - BT.rent - BT.other + BT.gain;   // 36,000: the gain is operating (ASC 360-10-45-5)
+BT.pretax = BT.opIncome - BT.interest;                                                  // 31,000
 BT.tax = BT.pretax * BT.taxRate;                                                        // 7,750
 BT.ni = BT.pretax - BT.tax;                                                             // 23,250
 BT.re[1] = BT.re[0] + BT.ni - BT.declared;                                              // 42,050
@@ -268,7 +268,7 @@ export default {
         ],
       },
       steps: [
-        'Net income: operating income <m>412{,}000 - 236{,}000 - 88{,}000 - 22{,}000 - 18{,}000 - 14{,}500 = 33{,}500</m>; income before tax <m>33{,}500 + 2{,}500 - 5{,}000 = 31{,}000</m>; tax <m>31{,}000 \\times 0.25 = 7{,}750</m>; net income 23,250.',
+        'Net income: operating income, which includes the gain on the press, is <m>412{,}000 - 236{,}000 - 88{,}000 - 22{,}000 - 18{,}000 - 14{,}500 + 2{,}500 = 36{,}000</m>; income before tax <m>36{,}000 - 5{,}000 = 31{,}000</m>; tax <m>31{,}000 \\times 0.25 = 7{,}750</m>; net income 23,250.',
         'Noncash items and the gain: add depreciation 22,000; subtract the gain 2,500, because its cash is in the $11,500 of proceeds. Check the gain: <m>11{,}500 - (24{,}000 - 15{,}000) = 2{,}500</m>.',
         'Working capital, each as closing minus opening: receivables +4,800 (subtract), inventory −1,800 (add), prepaid insurance +300 (subtract), payables −2,600 (subtract), wages payable +500 (add), interest payable −200 (subtract), income taxes payable +900 (add): net <m>-4{,}700</m>. Dividends payable and the current portion of debt are financing items and are left out.',
         'Operating: <m>23{,}250 + 22{,}000 - 2{,}500 - 4{,}700 = 38{,}050</m>.',
@@ -311,7 +311,7 @@ export default {
     { title: '“Receivables went up, so add the increase.”', html: 'An increase in a current asset is subtracted: revenue was recorded but the cash hasn’t arrived. When a sign is in doubt, use the identity <m>\\Delta\\text{Cash} = \\Delta\\text{Liabilities} + \\Delta\\text{Equity} - \\Delta\\text{Noncash assets}</m>: assets other than cash enter with a minus sign, liabilities with a plus.' },
     { title: '“The current portion of long-term debt is a current liability, so it belongs in the working-capital adjustments.”', html: 'It is debt, and borrowing and repaying are financing; moving an instalment from noncurrent to current involves no cash at all. Dividends payable and short-term bank loans are financing items too. Lantern’s $5,000 current portion is left out of its reconciliation.' },
     { title: '“Keep the gain in net income and show the proceeds in investing as well.”', html: 'That counts the gain twice. Subtract the gain (or add back a loss) in the operating section and show the full proceeds in investing. Blackthorn subtracts its $2,500 gain and reports $11,500 of proceeds.' },
-    { title: '“Add back bad debt expense and the inventory write-down too.”', html: 'Only if the receivables and inventory changes are measured before them. When receivables are taken net of the allowance and inventory after the write-down, as in Lantern’s reconciliation, both are already inside those changes, and adding them back again counts them twice.' },
+    { title: '“Add back bad debt expense and the inventory write-down too.”', html: 'Not when, as in Lantern’s reconciliation, receivables are taken net of the allowance and inventory after the write-down: both charges are already inside those changes, and adding them back counts them twice. If you start from gross receivables instead, the matching adjustment is the increase in the allowance (bad debt expense less write-offs, <m>1{,}404 - 820 = 584</m>), not the whole expense; if inventory is measured before a write-down, add the write-down back.' },
     { title: '“The changes are the closing balances.”', html: 'Only when every opening balance is zero, as in Lantern’s first year. Blackthorn’s receivables rose from $19,800 to $24,600, so the adjustment is −$4,800, not −$24,600.' },
   ],
 
@@ -407,7 +407,7 @@ export default {
     { what: 'Harrowgate CFO above NI', value: HB.cfo - HB.ni, shown: 8500 },
     { what: 'Harrowgate working capital net', value: -HB.ar - HB.inv - HB.prepaid + HB.ap + HB.wages, shown: -500 },
     // Blackthorn
-    { what: 'Blackthorn operating income', value: BT.opIncome, shown: 33500 },
+    { what: 'Blackthorn operating income (gain included)', value: BT.opIncome, shown: 36000 },
     { what: 'Blackthorn income before tax', value: BT.pretax, shown: 31000 },
     { what: 'Blackthorn tax', value: BT.tax, shown: 7750 },
     { what: 'Blackthorn net income', value: BT.ni, shown: 23250 },
