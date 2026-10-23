@@ -21,6 +21,7 @@ export default {
   ],
   prerequisites: [
     { text: 'No marketing background is needed. You should be comfortable with percentages, for example finding 32% of $3.49.' },
+    { lesson: 'm01/customer-value', why: 'Helpful, not required: M01 explains customer value, which every decision in the mix has to create, and what a customer is worth over time.' },
   ],
   case: 'lantern',
 

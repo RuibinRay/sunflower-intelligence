@@ -2,7 +2,8 @@
 // method, not just its vocabulary: telling a change that creates value from one that only moves it, a lifetime value
 // built from margin, market orientation as judgement rather than obedience, net value with time and risk; the weight at
 // which a ranking flips, the psychological processes behind a purchase, tender rules, the acceleration effect; market
-// share by value, new customers through a funnel, cost leadership versus a low price, a rival’s price cut.
+// a SWOT that keeps conditions apart from actions and beliefs, new customers through a funnel, cost leadership versus a
+// low price, a rival’s price cut.
 // New questions, not copies of lesson exercises, module-test or project items (none uses Lantern’s catering figures).
 // No hints; solutions show in review. Every business, person and figure here is fictional. Lifetime value uses the
 // course’s timing: margins at the end of each year, the customer certain to be there for year 1, constant retention.
@@ -137,19 +138,29 @@ export const items = [
 
   // ================================================================ Module 3: Foundations of strategy
   {
-    id: 'm01-dg-9', lesson: 'situation-analysis', type: 'num', kind: 'numerical',
-    prompt: 'Last year 400,000 tubs of premium ice cream were sold in a fictional regional market, for $3.2 million in all. Gullwing Creamery (fictional) sold 30,000 tubs there at $12 each. What was its market share by value? Give a percentage to two decimal places.',
-    answer: 11.25, check: () => (30000 * 12) / 3200000 * 100, unit: '%', places: 2, tol: 0.005,
-    wrong: [
-      { value: 7.5, say: 'That is its share by units (30,000 of 400,000). Share by value compares money: its $360,000 of sales with the market’s $3.2 million.' },
-      { value: 0.11, say: 'That is the share as a decimal. Multiply by 100 to give a percentage.' },
-      { value: 8.89, say: 'You divided the market by the firm’s sales. Share is the firm’s sales divided by the market’s.' },
+    id: 'm01-dg-9', lesson: 'situation-analysis', type: 'classify', kind: 'applied',
+    prompt: 'Copperbeech Cycle Hire (fictional) rents bikes to visitors in a historic city. Its owner has written six notes for a SWOT. Where does each belong?',
+    items: [
+      'Every bike is serviced after each hire, and for three years it has had the fewest breakdown complaints on the city’s review site',
+      'Its booking website doesn’t work on phones, although most of its visitors browse on one',
+      'The council is opening a 40-mile riverside cycle path next spring',
+      'A national e-bike scheme is installing docking stations across the city centre',
+      'Run guided tours along the new riverside path',
+      'The owner believes tourists prefer its bikes to the national scheme’s e-bikes',
     ],
-    solution: 'Gullwing’s sales by value: 30,000 × $12 = $360,000. Share by value = 360,000 ÷ 3,200,000 × 100 = 11.25%. By units it is 30,000 ÷ 400,000 = 7.5%. The share by value is larger because Gullwing’s $12 is above the market’s average price of $3,200,000 ÷ 400,000 = $8 a tub. State which measure, which market and which period whenever you quote a share.',
+    categories: ['Strength', 'Weakness', 'Opportunity', 'Threat', 'Not a SWOT item yet'],
+    answer: [0, 1, 2, 3, 4, 4],
+    feedback: {
+      2: 'The path is outside the firm’s control and could bring customers if it acts: an opportunity, a condition rather than an action.',
+      3: 'A rival’s expansion is external and could take customers: a threat.',
+      4: 'Guided tours are something the firm might do, a strategy. It may come out of the SWOT later; it isn’t part of it.',
+      5: 'A belief nobody has checked is a hypothesis, not yet a strength. Ask tourists, or compare bookings where the e-bikes have arrived, before listing it.',
+    },
+    solution: 'Strength: the servicing record, backed by three years of review-site evidence. Weakness: the booking website, an internal problem the firm can fix. Opportunity: the new path, a condition outside the firm. Threat: the national scheme’s docking stations. Not SWOT items yet: the tours are an action (an option to evaluate against the SWOT), and the owner’s belief is an untested hypothesis that needs evidence before it can count as a strength.',
   },
   {
-    id: 'm01-dg-10', lesson: 'marketing-objectives', type: 'num', kind: 'applied',
-    prompt: 'Tallow Lane Coworking (fictional) has 240 members on 1 January and in past years has kept 65% of them through the year. It wants 10% more members on 31 December than on 1 January, at the same fee, and 30% of the people who take a tour of the space become members. How many tours must it give during the year? Assume new members join early enough to count and stay until the year end.',
+    id: 'm01-dg-10', lesson: 'marketing-objectives', type: 'num', kind: 'numerical',
+    prompt: 'Tallow Lane Coworking (fictional) starts the year with 240 members and usually loses 35% of them over a year. The owner wants to finish the year with a tenth more members than it started with, without changing the fee. Three in ten people who tour the space sign up. How many tours must it give during the year? Assume new members join early enough to count and stay until the year end.',
     answer: 360, check: () => 240 * (1 + 0.10 - 0.65) / 0.30, unit: 'tours', places: 0, tol: 0.5,
     wrong: [
       { value: 108, say: 'That is the number of new members needed. Only 30% of tours produce a member, so more tours than members are needed.' },
@@ -179,7 +190,7 @@ export const items = [
   },
   {
     id: 'm01-dg-12', lesson: 'competitive-advantage', type: 'mc', kind: 'applied',
-    prompt: 'Tamarisk Walks (fictional), a dog-walking firm, charges $30 a walk. A rival charges $22, and a typical owner would pay up to $12 more for Tamarisk’s walks than for the rival’s, because Tamarisk sends photos and uses the same walker every time. The rival cuts its price to $17. Assuming owners choose the walk that leaves them the most value, what should Tamarisk do to keep the typical owner?',
+    prompt: 'Tamarisk Walks (fictional), a dog-walking firm, charges $30 a walk. A rival charges $22, and a typical owner would pay up to $12 more for Tamarisk’s walks than for the rival’s, because Tamarisk sends photos and uses the same walker every time. The rival cuts its price to $17. Assuming an owner stays with Tamarisk as long as it leaves her at least as much value as the rival, what should Tamarisk do to keep the typical owner?',
     options: [
       'Cut its price by $1, to $29: the rival’s new $17 plus the $12 extra that owners value its walks at',
       'Cut its price to $25, so that it keeps exactly the same $8 price gap it had over the rival before the cut',

@@ -7,10 +7,11 @@
 // are catering clients from its first month (F01, transactions m6 and m8). M02 later plans Lantern Cold Brew, a canned
 // drink for shops in Harbour City; M01 comes first and does not use M02's market figures.
 
-/** Lantern's three lines of business in its first ten months (March–December 2026). `retention` is the share of
- *  catering clients who stay from one year to the next. */
+/** Lantern's three lines of business in its first ten months (March–December 2026). `retention` is Ana's estimate of the
+ *  share of catering clients who stay from one year to the next (Lantern is too young to have measured it). */
 export const BUSINESS = {
-  catering: { clients: 18, eventsPerClientYear: 6, revenuePerEvent: 820, pricePerHead: 9.0, contributionMargin: 0.45, retention: 0.61 },
+  catering: { clients: 18, eventsPerClientYear: 6, revenuePerEvent: 820, pricePerHead: 9.0, contributionMargin: 0.45, retention: 0.61,
+              salespeople: 1 },                               // Ana is the only person who sells to corporate clients
   workshops: { held: 14, avgParticipants: 12, pricePerPerson: 125 },
   online: { customers: 1_500 },                                   // about 1,500 customers by December (B01)
 };
@@ -41,6 +42,7 @@ export const HARBOR_TECH = {
 export const OUTLOOK_2027 = {
   newOfficeDesks: 1_200,                                      // two new office buildings open in Lantern's district
   brewlineSecondVan: true,                                    // Brewline adds a second van to serve the district
+  staffExperienceClients: 'several',                          // clients besides Harbor Tech acting on staff engagement surveys
 };
 
 /** Ana's goal for 2027. */

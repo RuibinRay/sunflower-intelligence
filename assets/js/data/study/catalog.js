@@ -265,16 +265,16 @@ const ALL = [
 
   // ================================================================ Marketing & Business Strategy
   C({
-    id: 'm01', school: 'marketing', code: 'M01', level: 'intro', status: 'in-progress',
+    id: 'm01', school: 'marketing', code: 'M01', level: 'intro', status: 'in-progress', recommends: ['f00', 'b01'],
     title: 'Marketing Fundamentals',
-    blurb: 'What marketing is, how customers decide, and how companies create value for them.',
+    blurb: 'What marketing is, how customers and organisations buy, and how a business sets objectives and chooses how to compete.',
     case: 'lantern',
     outcomes: [
       'Explain what marketing is and how it creates value through exchange, distinguishing needs, wants and demand.',
       'Analyse customer value and satisfaction, and calculate a simple customer lifetime value to judge what a customer is worth.',
       'Compare the main business orientations and explain what a market orientation requires in practice.',
-      'Describe how consumers and organisations decide what to buy, including the stages, the influences and the roles in a buying centre.',
-      'Analyse a business’s situation (SWOT, PESTEL, competitors) and set marketing objectives that are specific and measurable.',
+      'Describe how consumers and organisations decide what to buy (the stages, the influences and the roles in a buying centre), and use a weighted-attribute model to predict a choice.',
+      'Analyse a business’s situation (PESTEL, competitors, SWOT) and turn a business goal into SMART marketing objectives, including the number of new customers it needs.',
       'Identify sources of competitive advantage and choose a competitive strategy that fits a business’s strengths and market.',
     ],
     modules: [
@@ -283,7 +283,7 @@ const ALL = [
       { n: 3, title: 'Foundations of strategy', lessons: ['situation-analysis', 'marketing-objectives', 'competitive-advantage'] },
     ],
     project: { title: 'Lantern’s marketing foundations for 2027', blurb: 'Help Ana plan Lantern’s catering marketing: map how a corporate client buys, value a client, analyse Lantern’s situation, set objectives for 2027 and choose how to compete with a cheaper rival.' },
-    topics: ['What marketing is', 'Customer needs and value', 'Market orientation', 'The marketing process', 'Customer behaviour', 'B2B versus B2C', 'Marketing objectives', 'Competitive advantage'],
+    topics: ['What marketing is', 'Customer needs and value', 'Customer lifetime value', 'Market orientation', 'The marketing process', 'Customer behaviour', 'B2B versus B2C', 'Situation analysis: PESTEL and SWOT', 'Marketing objectives', 'Competitive advantage'],
   }),
   C({
     id: 'm02', school: 'marketing', code: 'M02', level: 'intro', status: 'complete', recommends: ['m01'],
