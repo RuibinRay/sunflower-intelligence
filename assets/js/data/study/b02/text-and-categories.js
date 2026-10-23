@@ -185,7 +185,7 @@ export default {
         'Shares and budget: United Kingdom <m>82 \\div 200 = 41\\%</m>, $4,100; United States <m>67 \\div 200 = 33.5\\%</m>, $3,350; Germany <m>51 \\div 200 = 25.5\\%</m>, $2,550.',
       ],
       answer: 'Split the budget $4,100 United Kingdom, $3,350 United States and $2,550 Germany. The raw pivot table would have given Germany $3,263.16 and the United States only $3,157.89, reversing their order.',
-      interpretation: 'The United States bookings were spread across three spellings, so no single row of the pivot table showed how large that market was. Consolidating before counting moved about $700 from Germany to the United States and $500 more to the United Kingdom. The chart below shows how far each country’s largest single spelling understates its bookings.' },
+      interpretation: 'The United States bookings were spread across three spellings, so no single row of the pivot table showed how large that market was. Consolidating before counting took about $700 away from Germany and gave about $500 more to the United Kingdom and about $200 more to the United States. The chart below shows how far each country’s largest single spelling understates its bookings.' },
   ],
 
   demo: [
@@ -285,5 +285,6 @@ export default {
     { what: 'Applied: Germany budget', value: 10000 * 51 / 200, shown: 2550 },
     { what: 'Applied: moved from Germany (about $700)', value: 3263.16 - 2550, shown: 700, tol: 15 },
     { what: 'Applied: extra to the UK (about $500)', value: 4100 - 3578.95, shown: 500, tol: 25 },
+    { what: 'Applied: extra to the US (about $200)', value: 3350 - 3157.89, shown: 200, tol: 10 },
   ],
 };

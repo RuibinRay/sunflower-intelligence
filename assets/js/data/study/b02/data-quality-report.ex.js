@@ -233,7 +233,7 @@ export const check = [
       '<code>rate</code>: nightly room rate in US dollars, $100 to $500.',
       'Version 1.2: April bookings added; country mapping table updated.',
       'Ambiguous slash dates were read day first, the convention followed by the unambiguous dates in the same format.',
-      'Ten bookings with check-out before check-in: check-out reset to check-in + nights, because total ÷ rate agrees with the stored nights.',
+      'Bookings with check-out before check-in (listed below): check-out reset to check-in + nights, because total ÷ rate agrees with the stored nights.',
     ],
     categories: ['Data dictionary', 'Version and history', 'Assumptions', 'Issues and decisions', 'Limitations'],
     answer: [0, 1, 2, 3],
