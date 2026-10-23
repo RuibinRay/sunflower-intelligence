@@ -9,22 +9,25 @@ const box = (x, y, w, h, lines, { dash = false, series = 0, size = 13 } = {}) =>
 };
 const wire = (d) => `<path d="${d}" style="fill:none;stroke:currentColor;stroke-width:1.3"/>`;
 
-const ISSUE_TREE = '<svg viewBox="0 0 640 344" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="13">'
-  + box(8, 136, 132, 68, ['<tspan font-weight="700">Why did</tspan>', '<tspan font-weight="700">September’s</tspan>', '<tspan font-weight="700">orders fall?</tspan>'], { series: 1, size: 13 })
-  + box(172, 58, 140, 52, ['Fewer orders', 'really placed'], { series: 2 })
-  + box(172, 232, 140, 52, ['Orders placed but', 'not counted'], { series: 2 })
-  + box(344, 18, 132, 40, ['Fewer visits'], { series: 3 })
-  + box(344, 96, 132, 40, ['Lower conversion'], { series: 3 })
-  + box(344, 204, 132, 46, ['Visits counted', 'differently'], { series: 3 })
-  + box(344, 268, 132, 46, ['Orders missing', 'from the report'], { series: 3 })
-  + box(508, 22, 124, 32, ['by source'], { dash: true })
-  + box(508, 80, 124, 32, ['Website'], { dash: true })
-  + box(508, 122, 124, 32, ['App'], { dash: true })
-  + wire('M140 170H156V84H172') + wire('M156 170V258H172')
-  + wire('M312 84H328V38H344') + wire('M328 84V116H344')
-  + wire('M312 258H328V227H344') + wire('M328 258V291H344')
-  + wire('M476 38H508') + wire('M476 116H492V96H508') + wire('M492 116V138H508')
-  + '<text x="320" y="336" text-anchor="middle" font-size="12" fill="currentColor">Each split leaves no gaps and no overlaps (MECE). Dashed boxes are where the next level begins.</text>'
+const ISSUE_TREE = '<svg viewBox="0 0 640 384" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="13">'
+  + box(4, 158, 118, 68, ['<tspan font-weight="700">Why did</tspan>', '<tspan font-weight="700">September’s</tspan>', '<tspan font-weight="700">orders fall?</tspan>'], { series: 1, size: 13 })
+  + box(138, 69, 122, 52, ['Fewer orders', 'really placed'], { series: 2 })
+  + box(138, 264, 122, 52, ['The counting', 'changed'], { series: 2 })
+  + box(276, 22, 120, 36, ['Fewer visits'], { series: 3 })
+  + box(276, 132, 120, 36, ['Lower conversion'], { series: 3, size: 12 })
+  + box(276, 240, 120, 44, ['Orders missing', 'from the report'], { series: 3 })
+  + box(276, 296, 120, 44, ['Visits counted', 'differently'], { series: 3 })
+  + box(412, 25, 224, 30, ['by source'], { dash: true })
+  + box(412, 91, 224, 30, ['Website rate'], { dash: true })
+  + box(412, 131, 224, 30, ['App rate'], { dash: true })
+  + box(412, 172, 224, 44, ['Mix: more visits on the', 'lower-converting channel'], { dash: true, size: 12 })
+  + '<text x="414" y="314" font-size="12" font-style="italic" fill="currentColor">changes measured conversion,</text><text x="414" y="331" font-size="12" font-style="italic" fill="currentColor">not the number of orders</text>'
+  + wire('M122 192H130V95H138') + wire('M130 192V290H138')
+  + wire('M260 95H268V40H276') + wire('M268 95V150H276')
+  + wire('M260 290H268V262H276') + wire('M268 290V318H276')
+  + wire('M396 40H412') + wire('M396 150H404V106H412') + wire('M404 150V146H412') + wire('M404 150V194H412')
+  + '<path d="M396 318H408" style="fill:none;stroke:currentColor;stroke-width:1.3;stroke-dasharray:3 3"/>'
+  + '<text x="320" y="372" text-anchor="middle" font-size="12" fill="currentColor">Each split leaves no gaps and no overlaps (MECE). Dashed boxes are where the next level begins.</text>'
   + '</svg>';
 
 const DRIVER_TREE = '<svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="13">'
@@ -73,15 +76,15 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: `Ana has agreed the question brief for September: did the share of website visits ending in a paid order fall after 1 September, compared with the weeks before and with the app, by a tenth or more? Now you face the next problem: where to look. Orders fell from ${SHOP.webOrders[1] + SHOP.appOrders[1]} in August to ${SHOP.webOrders[2] + SHOP.appOrders[2]} in September, and the cause could lie almost anywhere: in the number of visitors, in the website or the app, in particular devices or pages, or in the way the shop counts. You could start pulling data at random. A framework lets you search the whole space once, in a sensible order, and know when you have finished.` },
+    { case: `Ana has agreed the question brief for September: did the website’s paid orders per visit fall after 1 September, compared with the weeks before and with the app, by a relative tenth or more (3.0% to 2.7% would qualify: 0.3 of a percentage point)? Now you face the next problem: where to look. Orders fell from ${SHOP.webOrders[1] + SHOP.appOrders[1]} in August to ${SHOP.webOrders[2] + SHOP.appOrders[2]} in September, and the cause could lie almost anywhere: in the number of visitors, in the website or the app, in particular devices or pages, or in the way the shop counts. You could start pulling data at random. A framework lets you search the whole space once, in a sensible order, and know when you have finished.` },
     { p: 'A problem-solving framework is not a formula that produces the answer. It is a way of organising the search so that you neither miss a possible cause nor examine the same one twice, and so that the people you report to can follow your reasoning. This lesson covers the frameworks analysts use most: issue trees and the MECE test, driver trees, root-cause analysis, the CRISP-DM process, and a rule for stopping.' },
 
     { h: 'Issue trees' },
     { p: 'An <g>issue tree</g> breaks a problem into smaller questions, level by level, until each question is small enough to answer with a specific piece of evidence. The problem sits at the root, on the left; each branch splits its parent into parts; the leaves, on the right, are the questions you actually take to the data. The figure shows a first issue tree for Ana’s question.' },
     { figure: {
       svg: ISSUE_TREE,
-      caption: 'An issue tree for Lantern’s September question. The first split separates a real fall in orders from a fall in the counting; the next splits break each of those into its parts.',
-      alt: 'A tree drawn from left to right. The root box reads “Why did September’s orders fall?”. It splits into two boxes: “Fewer orders really placed” and “Orders placed but not counted”. “Fewer orders really placed” splits into “Fewer visits”, which leads to a dashed box “by source”, and “Lower conversion”, which splits into two dashed boxes, “Website” and “App”. “Orders placed but not counted” splits into “Visits counted differently” and “Orders missing from the report”. A note at the bottom says each split leaves no gaps and no overlaps (MECE) and that dashed boxes are where the next level begins.',
+      caption: 'An issue tree for Lantern’s September question. The first split separates a real fall in orders from a change in the counting; the next splits break each into its parts. A fall in the shop’s conversion can come from the website’s rate, the app’s rate, or a shift of visits towards the channel that converts less.',
+      alt: 'A tree drawn from left to right. The root box reads “Why did September’s orders fall?”. It splits into two boxes: “Fewer orders really placed” and “The counting changed”. “Fewer orders really placed” splits into “Fewer visits”, which leads to a dashed box “by source”, and “Lower conversion”, which splits into three dashed boxes: “Website rate”, “App rate” and “Mix: more visits on the lower-converting channel”. “The counting changed” splits into “Orders missing from the report” and “Visits counted differently”, with a note that visits counted differently change measured conversion, not the number of orders. A note at the bottom says each split leaves no gaps and no overlaps (MECE) and that dashed boxes are where the next level begins.',
     } },
     { p: 'The tree does three jobs. It makes the hypotheses of the previous lesson complete: each branch is a family of explanations, and every explanation belongs somewhere. It turns a vague question into a list of specific ones (did visits fall? did the website’s conversion fall? do the shop’s order counts match the payment provider’s?), each of which names the data it needs. And it lets two people divide the work without overlap.' },
 
@@ -92,7 +95,7 @@ export default {
 
     { h: 'Hypothesis-driven or exploratory?' },
     { p: 'There are two broad ways to use data on a problem. In <g>hypothesis-driven analysis</g> you start from stated hypotheses, such as the branches of an issue tree, and fetch the evidence that would confirm or contradict each, most promising and cheapest first. It is fast and focused, and it is the right approach when there is a decision to make and a deadline, as with Ana’s brief. Its risk is tunnel vision: you find what you looked for and miss what you did not imagine.' },
-    { p: 'In <g>exploratory data analysis</g> you look at the data first, with summaries and charts, to see what patterns it holds before committing to a model or hypothesis. The NIST/SEMATECH <i>e-Handbook of Statistical Methods</i> contrasts the two orders of work: the classical sequence runs problem, data, model, analysis, conclusions, while exploratory analysis runs problem, data, analysis, model, conclusions, letting the data suggest which model fits. Exploration is the right approach for a new dataset, or when nobody yet knows what to ask. Its risk is the fishing trip of the previous lesson: search enough and something will look interesting by chance.' },
+    { p: 'In <g>exploratory data analysis</g> you look at the data first, with summaries and charts, to see what patterns they hold before committing to a model or hypothesis. The NIST/SEMATECH <i>e-Handbook of Statistical Methods</i> contrasts the two orders of work: the classical sequence runs problem, data, model, analysis, conclusions, while exploratory analysis runs problem, data, analysis, model, conclusions, letting the data suggest which model fits. Exploration is the right approach for a new dataset, or when nobody yet knows what to ask. Its risk is the fishing trip of the previous lesson: search enough and something will look interesting by chance.' },
     { p: 'In practice good analysts alternate. A quick exploratory look at a new dataset checks that it is what you think it is and suggests hypotheses; hypothesis-driven work tests them; anything surprising found along the way becomes a new hypothesis, to be tested on fresh data rather than believed on sight.' },
   ],
 
@@ -106,11 +109,13 @@ export default {
       caption: 'A driver tree for Lantern’s online revenue. Revenue is orders × average order value; orders are web orders + app orders; each channel’s orders are its visits × its conversion rate. Dashed boxes are splits without a formula, where you look for the cause.',
       alt: 'A tree drawn from left to right. “Revenue” splits, with a multiplication sign, into “Orders” and “Average order value”. “Orders” splits, with a plus sign, into “Web orders” and “App orders”. “Web orders” splits, with a multiplication sign, into “Web visits” and “Web conversion”; “App orders” splits the same way into “App visits” and “App conversion”. Dashed boxes to the right of each visits box read “by source”, and to the right of each conversion box “by device”. A dashed box beside “Average order value” reads “What is bought: products, pack sizes, gift boxes”. A note says solid boxes are linked by arithmetic and dashed boxes are where you split further to find a cause.',
     } },
-    { p: String.raw`Because the drivers multiply, their percentage changes do not simply add. If visits rise by 10% and the conversion rate falls by 10%, revenue does not stay flat: <m>1.10 \times 0.90 = 0.99</m>, a fall of 1%. Write each driver’s change as a growth factor, one plus its growth rate, and the growth factor of revenue is the product of the three. For small changes the sum of the growth rates is a fair approximation; for large ones it can mislead badly.` },
-    { p: 'To say how many dollars of a change each driver accounts for, change the drivers one at a time in a fixed order: first visits (holding the conversion rate and order value at their old levels), then the conversion rate (at the new visits), then the order value. The three contributions always add up exactly to the change in revenue. A different order gives slightly different contributions, because part of the change comes from drivers moving together, so state the order you used; when the ranking of the drivers depends on it, say so. The challenging example works through both orders.' },
+    { p: String.raw`Because the drivers multiply, their percentage changes do not add. If visits rise by 10% and the conversion rate falls by 10%, revenue does not stay flat: <m>1.10 \times 0.90 = 0.99</m>, a fall of 1%. Write each driver’s change as a growth factor, one plus its growth rate, and the growth factor of revenue is the product of the three. For small changes the sum of the growth rates is a fair approximation; for large ones it can mislead badly.` },
+    { p: 'To say how many dollars of a change each driver accounts for, change the drivers one at a time in a fixed order: first visits (holding the conversion rate and order value at their old levels), then the conversion rate (at the new visits), then the order value. Each step keeps the drivers already changed at their new values, so the three contributions always add up exactly to the change in revenue.' },
+    { p: String.raw`A different order gives different contributions, sometimes very different, because part of the change comes from drivers moving together and is credited to whichever is changed later. For visits and conversion at Larkfield Home, in the challenging example below, this joint part is <m>(V_1 - V_0)(c_1 - c_0)A_0 = 6{,}000 \times (-0.004) \times 60 = -1{,}440</m> dollars, which is why visits contribute $7,200 when changed first and $5,760 when changed second. No order is the true one: state the one you used, check whether the ranking of the drivers depends on it, and if it does, report the range (some analysts average over all the orders).` },
 
     { h: 'Root-cause analysis' },
-    { p: 'A driver tree tells you where a change happened; it does not tell you why. <g>Root-cause analysis</g> is the structured search for why: for the underlying causes of a problem rather than its symptoms, so that fixing them stops it recurring. A <g>root cause</g> is a cause which, if removed, would prevent the problem from happening again. “Web conversion fell” is a symptom. “A step in the checkout fails on some browsers” is closer to a cause. “Nobody tested the new checkout on those browsers before launch” is closer still, and it suggests a fix to the process, not just to the page.' },
+    { p: 'A driver tree tells you where a change happened; it does not tell you why. <g>Root-cause analysis</g> is the structured search for why: for the underlying causes of a problem rather than its symptoms, so that fixing them stops it recurring. A <g>root cause</g> is a cause which, if removed, would prevent the problem from happening again.' },
+    { p: '“Web conversion fell” is a symptom. “A step in the checkout fails on some browsers” is closer to a cause. “Nobody tested the new checkout on those browsers before launch” is closer still, and it suggests a fix to the process, not just to the page.' },
     { p: 'The best-known technique is the <g>five whys</g>: state the problem, ask why it happened, then ask why of the answer, and keep going until you reach a cause that can be acted on. It is usually traced to the Toyota Production System, where Taiichi Ohno described asking “why?” five times as central to the approach. Here is an example from Lantern’s packing room (fictional):' },
     { ol: [
       'Why were 14 orders shipped a day late last Tuesday? Because the label printer ran out of labels at midday.',
@@ -131,7 +136,7 @@ export default {
         ['Business understanding', 'Sets the business objectives, assesses the situation, turns the objectives into analysis goals with success criteria, and produces a project plan', 'The question brief (lesson 2 of this module)'],
         ['Data understanding', 'Collects the initial data, describes and explores it, and verifies its quality', 'Module 2; B02 profiling'],
         ['Data preparation', 'Selects, cleans, constructs, integrates and formats the data', 'B02 Data Cleaning and Preparation'],
-        ['Modelling', 'Selects techniques, designs how they will be tested, builds and assesses models', 'Module 3; later courses B04–B09'],
+        ['Modelling', 'Selects techniques, designs how they will be tested, builds and assesses models', 'B04–B09'],
         ['Evaluation', 'Evaluates the results against the business objectives, reviews the process and decides on next steps', 'The decision step'],
         ['Deployment', 'Plans deployment, monitoring and maintenance, produces a final report and reviews the project', 'The decision and measure steps'],
       ],
@@ -162,7 +167,7 @@ export default {
       ],
       assumptions: 'Revenue is exactly visits × conversion rate × average order value, which is an identity when the three are calculated from the same visits, orders and revenue.',
       note: 'For small changes the growth rates roughly add: g_R ≈ g_V + g_c + g_A. For large ones they do not: +10% visits and −10% conversion give −1% revenue, not 0%.' },
-    { id: 'psf-one-at-a-time', name: 'One-at-a-time contributions to a change in revenue',
+    { id: 'psf-sequential', name: 'Step-by-step (sequential) contributions to a change in revenue',
       tex: String.raw`\Delta_V = (V_1 - V_0)\,c_0 A_0 \qquad \Delta_c = V_1 (c_1 - c_0) A_0 \qquad \Delta_A = V_1 c_1 (A_1 - A_0)`,
       where: [
         [String.raw`V_0,\ V_1`, 'Visits in the earlier and the later period', 'visits'],
@@ -170,8 +175,8 @@ export default {
         [String.raw`A_0,\ A_1`, 'Average order value in the earlier and the later period', '$ per order'],
         [String.raw`\Delta_V,\ \Delta_c,\ \Delta_A`, 'Change in revenue attributed to visits, conversion and order value, changed in that order', '$'],
       ],
-      assumptions: 'The drivers are changed one at a time in a stated order: visits, then conversion, then order value. The three contributions add up exactly to the change in revenue, V₁c₁A₁ − V₀c₀A₀.',
-      note: 'Another order gives somewhat different contributions, because part of the change comes from drivers moving together. Report the order used, and check whether the ranking of the drivers depends on it.' },
+      assumptions: 'The drivers are changed one at a time in a stated order: visits, then conversion, then order value. Each step keeps the drivers already changed at their new values, which is why the three contributions add up exactly to the change in revenue, V₁c₁A₁ − V₀c₀A₀. Changing each driver alone from the old values gives contributions that do not add up.',
+      note: 'Another order gives different contributions, sometimes very different, because the part of the change that comes from drivers moving together is credited to whichever is changed later. Report the order used, check whether the ranking depends on it, and if it does, give the range.' },
   ],
 
   examples: [
@@ -197,18 +202,18 @@ export default {
         String.raw`Split the conversion branch by device. Orders are <m>35{,}000 \times 0.014 + 15{,}000 \times 0.034 = 490 + 510 = 1{,}000</m> in April and <m>40{,}000 \times 0.009 + 16{,}000 \times 0.0335 = 360 + 536 = 896</m> in May, matching <m>50{,}000 \times 0.020</m> and <m>56{,}000 \times 0.016</m>. Computer conversion barely moved (3.4% to 3.35%); phone conversion fell from 1.4% to 0.9%.`,
       ],
       answer: 'Revenue fell by $4,448 (about 7.4%). More visits added $7,200 and a higher order value $1,792, but the fall in conversion from 2.0% to 1.6% cost $13,440 (or $12,000 if conversion is changed first). The fall in conversion is almost entirely on phones, which is where to look next.',
-      interpretation: 'The headline, a 7% fall in revenue, hid a much bigger problem: a third of phone visitors who would have bought in April did not buy in May, masked by growth in visits. Two levels of the driver tree took the team from “revenue is down” to “something is wrong for phone visitors”, a question narrow enough to investigate page by page.' },
+      interpretation: 'The headline, a 7% fall in revenue, hid a much bigger problem: phone conversion fell by over a third (about 36%), masked by growth in visits. Two levels of the driver tree took the team from “revenue is down” to “something is wrong for phone visitors”, a question narrow enough to investigate page by page.' },
 
     { level: 'applied', title: 'Why did installations fall?', fictional: true,
-      setup: 'Kestrel Home Energy, a fictional installer of home solar panels and batteries, completed 60 installations in May and 45 in June. Each installation earns a contribution of about $1,500 towards fixed costs. The operations director must decide by the end of the week what to do. The data: signed contracts waiting to be installed rose from 40 at the start of June to 58 at the end; in May five crews each completed 12 installations; in June only four crews worked, because one crew’s van was off the road all month, and they completed 45 installations between them.',
+      setup: 'Linnet Solar, a fictional installer of home solar panels and batteries, completed 60 installations in May and 45 in June. Each installation earns a contribution of about $1,500 towards fixed costs. The operations director must decide by the end of the week what to do. The data: signed contracts waiting to be installed rose from 40 at the start of June to 58 at the end; in May five crews each completed 12 installations; in June only four crews worked, because one crew’s van was off the road all month, and they completed 45 installations between them.',
       steps: [
         'Build a MECE first split. Installations completed can fall only because there was less work to do (demand) or less capacity to do it (supply). The backlog of signed contracts rose from 40 to 58, so there was no shortage of work: the demand branch is ruled out and the supply branch is where to look.',
-        String.raw`Build the driver tree for supply: installations = crews × installations per crew. May: <m>5 \times 12 = 60</m>. June: <m>4</m> crews completing <m>45 \div 4 = 11.25</m> each. Changing crews first: <m>(4 - 5) \times 12 = -12</m> installations; then productivity: <m>4 \times (11.25 - 12) = -3</m>. Check: <m>-12 - 3 = -15 = 45 - 60</m>.`,
+        String.raw`Build the driver tree for supply: installations = crews × installations per crew. May: <m>5 \times 12 = 60</m>. June: <m>4</m> crews completing <m>45 \div 4 = 11.25</m> each. Changing crews first: <m>(4 - 5) \times 12 = -12</m> installations; then productivity: <m>4 \times (11.25 - 12) = -3</m>. Check: <m>-12 - 3 = -15 = 45 - 60</m>. Changing productivity first gives <m>5 \times (11.25 - 12) = -3.75</m> and then <m>(4 - 5) \times 11.25 = -11.25</m>; either way the missing crew accounts for three-quarters or more of the fall.`,
         'Ask the five whys of the larger branch. Why only four crews? A van was off the road. Why? It failed its annual safety inspection. Why? Its brakes were overdue for servicing. Why? Service dates were tracked in a spreadsheet kept by a fleet coordinator who left in April. Why did nobody take it over? The handover checklist for departing staff does not mention fleet records. The fix that lasts is to give the maintenance schedule an owner and add it to the handover checklist; the fix for this month is to get a working van.',
-        String.raw`Note what the five whys missed. It followed one chain, the missing crew, and says nothing about the smaller productivity branch (3 installations). The driver tree keeps that branch visible as an open question.`,
-        String.raw`Decide whether to stop. The crew branch explains <m>12</m> of the <m>15</m> lost installations, <m>12 \div 15 = 80\%</m>. A hire van costs $2,400 a month and can be returned at any time, while each month without the fifth crew delays about <m>12 \times 1{,}500 = 18{,}000</m> dollars of contribution and risks customers cancelling. No plausible result of further analysis would make hiring a van the wrong choice, so stop analysing the crew branch and act.`,
+        String.raw`Note what the five whys missed. It followed one chain, the missing crew, and says nothing about the smaller productivity branch (3 to 4 installations). The driver tree keeps that branch visible as an open question.`,
+        String.raw`Decide whether to stop. The crew branch explains 11 to 12 of the 15 lost installations (75–80%), depending on the order. A hire van costs $2,400 a month and can be returned at any time, while each month without the fifth crew delays about <m>12 \times 1{,}500 = 18{,}000</m> dollars of contribution and risks customers cancelling. No plausible result of further analysis would make hiring a van the wrong choice, so stop analysing the crew branch and act.`,
       ],
-      answer: 'The fall was a capacity problem, not a demand problem: one of five crews was idle, accounting for 12 of the 15 lost installations, with lower productivity per crew accounting for the other 3. Hire a van now ($2,400 a month, reversible), fix the maintenance process so it cannot recur, and track productivity per crew next month before spending more time on the remaining 3.',
+      answer: 'The fall was a capacity problem, not a demand problem: one of five crews was idle, accounting for about 11–12 of the 15 lost installations, with lower productivity per crew accounting for the other 3–4. Hire a van now ($2,400 a month, reversible), fix the maintenance process so it cannot recur, and track productivity per crew next month before spending more time on the remaining 3 or 4.',
       interpretation: 'Each framework did a different job. The MECE split ruled out demand in one step; the driver tree sized the two branches; the five whys found a process fault behind the larger one; and the stopping rule turned analysis into action once more evidence could no longer change the decision. The smaller branch is not forgotten: it is recorded and measured.' },
   ],
 
@@ -227,10 +232,10 @@ export default {
 
   application: [
     { case: 'With the question brief agreed on 2 October, you plan the September analysis for Ana using the frameworks in this lesson. Ana must decide by 9 October, so the plan has to be quick and in the right order.' },
-    { p: '<b>Start with the branch that could undermine everything else.</b> The issue tree’s lower branch, orders placed but not counted, comes first, not because it is the most likely explanation but because it is cheap to check and, if true, makes every other number wrong. You compare the shop’s September paid orders with the payment provider’s statement, and the website’s recorded visits by source with August’s. In CRISP-DM’s terms this is data understanding: verifying data quality before relying on it.' },
+    { p: '<b>Start with the branch that could undermine everything else.</b> The issue tree’s lower branch, the counting changed, comes first, not because it is the most likely explanation but because it is cheap to check and, if true, makes other numbers wrong. Missing orders would make part of the fall unreal; visits counted differently would leave orders untouched but make the website’s measured conversion fall. You compare the shop’s September paid orders with the payment provider’s statement, and the website’s recorded visits by source with August’s; in CRISP-DM’s terms this is data understanding, verifying data quality before relying on it.' },
     { p: '<b>Then work down the driver tree, hypothesis by hypothesis.</b> Orders are visits times conversion, channel by channel. The brief’s comparison is already built into the tree: the website’s branch, where the checkout changed, sits beside the app’s, where it did not. For each branch you know in advance what each hypothesis predicts, so each comparison either rules a family of explanations in or rules it out. Only if the website branch shows the fall do you split it further, by device and by checkout step, which is where the agency’s own error logs become useful.' },
     { p: '<b>Size the explanation.</b> The one-at-a-time method tells you how much of the change in orders comes from visits and how much from conversion in each channel. If one branch accounts for most of it, that is where the root-cause work goes; if the change is spread thinly across many branches, there may be no single cause, and the recommendation changes accordingly.' },
-    { p: '<b>Decide when to stop.</b> The brief set the threshold in advance: a fall in website conversion of a tenth or more is worth acting on. Ana’s preferred action, asking the agency to investigate and fix the checkout, is cheap and reversible, while rolling the redesign back would lose features she wants. So if the counts reconcile and the website branch shows a fall above the threshold that the app does not share, that is enough to act on. Further splits can continue alongside the agency’s work rather than delay it, and the measure step (website conversion tracked weekly after any fix) will show whether the action worked.' },
+    { p: '<b>Decide when to stop.</b> The brief set the threshold in advance: a relative fall of a tenth or more (3.0% to 2.7% would qualify: 0.3 of a percentage point) in website conversion is worth acting on. Ana’s preferred action, asking the agency to investigate and fix the checkout, is cheap and reversible, while rolling the redesign back would lose features she wants. So if the counts reconcile and the website branch shows a fall above the threshold that the app does not share, that is enough to act on. Further splits can continue alongside the agency’s work rather than delay it, and the measure step (website conversion tracked weekly after any fix) will show whether the action worked.' },
     { p: '<b>Write the report in the same structure.</b> A report that follows the issue tree (what was checked, what each check showed, which branches remain open) lets Ana see why you reached your conclusion and how sure you are. The course project asks you to carry out this plan with the case figures, compute each branch and write the recommendation.' },
     { p: 'These frameworks are used far beyond retail. Management consultants use issue trees to structure their work, hospital safety teams carry out root-cause analyses after serious incidents, manufacturers use the five whys on the factory floor, and data science teams organise model-building projects around CRISP-DM or methods derived from it. What they share is the discipline of this lesson: split the problem so that nothing is missed or counted twice, test hypotheses in a sensible order, find causes rather than symptoms, and stop when the decision is clear.' },
   ],
@@ -249,7 +254,7 @@ export default {
     { term: 'Issue tree', def: 'A diagram that breaks a problem or question into smaller questions, level by level, until each can be answered with specific evidence.' },
     { term: 'MECE', def: 'Mutually exclusive, collectively exhaustive: a test for the branches of a split or a set of categories, which should not overlap and should together cover every possibility.' },
     { term: 'Hypothesis-driven analysis', def: 'Analysis that starts from stated hypotheses and gathers the evidence that would confirm or contradict each, usually the most promising and cheapest first.' },
-    { term: 'Exploratory data analysis', def: 'Analysis that examines data with summaries and charts to see what patterns it contains before committing to a model or hypothesis.' },
+    { term: 'Exploratory data analysis', def: 'Analysis that examines data with summaries and charts to see what patterns they contain before committing to a model or hypothesis.' },
     { term: 'Driver tree', def: 'An issue tree whose branches are linked by arithmetic, such as revenue = visits × conversion rate × average order value, so that a change at the top can be traced to the drivers below it.' },
     { term: 'Root-cause analysis', def: 'A structured search for the underlying causes of a problem, rather than its symptoms, so that fixing them prevents it from recurring.' },
     { term: 'Root cause', def: 'A cause which, if removed, would prevent a problem from recurring. Many problems have several.' },
@@ -261,7 +266,7 @@ export default {
     { text: 'Chapman, P., Clinton, J., Kerber, R., Khabaza, T., Reinartz, T., Shearer, C. &amp; Wirth, R. (2000). <i>CRISP-DM 1.0: Step-by-step data mining guide</i>. SPSS.', url: 'https://s2.smu.edu/tfomby/eco5385_eco6380/data/SPSS/CRISPWP-0800%20Data%20Mining%20Standards.pdf', checked: '2026-10-23' },
     { text: 'Card, A. J. (2017). The problem with ‘5 whys’. <i>BMJ Quality &amp; Safety</i>, 26(8), 671–677. doi:10.1136/bmjqs-2016-005849.', url: 'https://qualitysafety.bmj.com/content/26/8/671', checked: '2026-10-23' },
     { text: 'NIST/SEMATECH. <i>e-Handbook of Statistical Methods</i>, section 1.1.2, “How Does Exploratory Data Analysis differ from Classical Data Analysis?”', url: 'https://www.itl.nist.gov/div898/handbook/eda/section1/eda12.htm', checked: '2026-10-23' },
-    { text: 'McKinsey &amp; Company. “Barbara Minto: ‘MECE: I invented it, so I get to say how to pronounce it’”. McKinsey Alumni News.', url: 'https://www.mckinsey.com/alumni/news-and-insights/global-news/alumni-news/barbara-minto-mece-i-invented-it-so-i-get-to-say-how-to-pronounce-it', checked: '2026-10-23' },
+    { text: 'McKinsey &amp; Company. “Barbara Minto: ‘MECE: I invented it, so I get to say how to pronounce it’”. McKinsey Alumni News.', url: 'https://www.mckinsey.com/alumni/news-and-events/global-news/alumni-news/barbara-minto-mece-i-invented-it-so-i-get-to-say-how-to-pronounce-it', checked: '2026-10-23' },
   ],
 
   checks: [
@@ -310,14 +315,22 @@ export default {
     { what: 'Larkfield: May orders', value: 40000 * 0.009 + 16000 * 0.0335, shown: 896 },
     { what: 'Larkfield: May orders from total', value: 56000 * 0.016, shown: 896 },
     { what: 'Larkfield: May device visits add up', value: 40000 + 16000, shown: 56000 },
-    { what: 'Larkfield: a third of phone buyers lost', value: (1.4 - 0.9) / 1.4, shown: 0.36, tol: 0.01 },
-    { what: 'Kestrel: May installations', value: 5 * 12, shown: 60 },
-    { what: 'Kestrel: June per crew', value: 45 / 4, shown: 11.25 },
-    { what: 'Kestrel: crew effect', value: (4 - 5) * 12, shown: -12 },
-    { what: 'Kestrel: productivity effect', value: 4 * (45 / 4 - 12), shown: -3 },
-    { what: 'Kestrel: total change', value: (4 - 5) * 12 + 4 * (45 / 4 - 12), shown: -15 },
-    { what: 'Kestrel: actual change', value: 45 - 60, shown: -15 },
-    { what: 'Kestrel: share explained by crews', value: 12 / 15 * 100, shown: 80 },
-    { what: 'Kestrel: contribution delayed per month', value: 12 * 1500, shown: 18000 },
+    { what: 'Larkfield: phone conversion fell about 36%', value: (1.4 - 0.9) / 1.4 * 100, shown: 36, tol: 0.5 },
+    { what: 'Larkfield: joint visits-conversion term', value: (56000 - 50000) * (0.016 - 0.02) * 60, shown: -1440 },
+    { what: 'Larkfield: visits second', value: (56000 - 50000) * 0.016 * 60, shown: 5760 },
+    { what: 'Larkfield: visits first minus second equals minus joint term', value: 7200 - 5760, shown: 1440 },
+    { what: 'Larkfield: conversion change 0.016 − 0.02', value: 0.016 - 0.02, shown: -0.004 },
+    { what: 'Linnet: May installations', value: 5 * 12, shown: 60 },
+    { what: 'Linnet: June per crew', value: 45 / 4, shown: 11.25 },
+    { what: 'Linnet: crew effect', value: (4 - 5) * 12, shown: -12 },
+    { what: 'Linnet: productivity effect', value: 4 * (45 / 4 - 12), shown: -3 },
+    { what: 'Linnet: total change', value: (4 - 5) * 12 + 4 * (45 / 4 - 12), shown: -15 },
+    { what: 'Linnet: actual change', value: 45 - 60, shown: -15 },
+    { what: 'Linnet: share explained by crews, crews first', value: 12 / 15 * 100, shown: 80 },
+    { what: 'Linnet: productivity first', value: 5 * (11.25 - 12), shown: -3.75 },
+    { what: 'Linnet: crews second', value: (4 - 5) * 11.25, shown: -11.25 },
+    { what: 'Linnet: productivity-first total', value: 5 * (11.25 - 12) + (4 - 5) * 11.25, shown: -15 },
+    { what: 'Linnet: share explained by crews, productivity first', value: 11.25 / 15 * 100, shown: 75 },
+    { what: 'Linnet: contribution delayed per month', value: 12 * 1500, shown: 18000 },
   ],
 };
