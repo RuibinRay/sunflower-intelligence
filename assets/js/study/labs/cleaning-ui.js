@@ -413,14 +413,21 @@ export function createLab(opts = {}) {
       return box;
     };
     const rerender = () => { RENDER.builder(el); };
-    const fitChoices = () => {
+    const fitChoices = (prefer = 'train') => {
       const all = [['train', opts.split ? `Training rows only (${opts.split} = train)` : '70% training subset'], ['all', 'All rows']];
-      const allow = Array.isArray(opts.fit) && opts.fit.length ? opts.fit : ['train', 'all'];
+      const allow = Array.isArray(opts.fit) && opts.fit.length ? opts.fit : prefer === 'all' ? ['all', 'train'] : ['train', 'all'];
       return allow.map((v) => all.find((a) => a[0] === v)).filter(Boolean);
     };
-    const fitGroup = (label, hint) => group(label, segmented(`${id}-fit`, fitChoices(), b.fit || fitChoices()[0][0], (v) => { b.fit = v; if (opts.split) b.split = opts.split; rerender(); }), hint);
+    const fitGroup = (label, hint, prefer) => {
+      const choices = fitChoices(prefer);
+      if (!choices.some((c) => c[0] === b.fit)) b.fit = choices[0][0];
+      if (opts.split) b.split = opts.split;
+      return group(label, segmented(`${id}-fit`, choices, b.fit, (v) => { b.fit = v; rerender(); }), hint);
+    };
     const afterColumnChange = (key) => {
       if (b.op === 'map' && key === 'column') b.mapping = {};
+      if (b.op === 'validate' && key === 'column') b.rule = {};
+      if (b.op === 'encode' && key === 'column') delete b.order;
       if (b.op === 'transform' && key === 'column' && b.fn !== 'rescale') b.as = `${b.fn === 'sqrt' ? 'sqrt' : b.fn}_${b.column}`;
       rerender();
     };
@@ -490,7 +497,7 @@ export function createLab(opts = {}) {
         fields.push(field('Fill with', select(b.method || 'median', [['mean', 'Mean'], ['median', 'Median'], ['mode', 'Most common value (mode)'], ['constant', 'A constant'], ['group-median', 'Median of each group']], (v) => { b.method = v; rerender(); })));
         if (b.method === 'constant') fields.push(field('Value', text(b.value, (v) => { b.value = v; })));
         if (b.method !== 'constant') fields.push(field(b.method === 'group-median' ? 'Groups defined by' : 'Within groups of (optional)', colSelect('by', names.filter((n) => n !== b.column), b.method !== 'group-median')));
-        if (b.method !== 'constant') fields.push(fitGroup('Learn the value from', 'For modelling, learn it from the training rows only, so test rows don’t leak into it.'));
+        if (b.method !== 'constant') fields.push(fitGroup('Learn the value from', 'For modelling, learn it from the training rows only, so test rows don’t leak into it.', 'all'));
         break;
       case 'drop-missing': fields.push(group('Delete rows missing a value in', chipsOf('columns', names))); break;
       case 'flag-missing': fields.push(field('Column', colSelect('column'))); break;
@@ -522,11 +529,14 @@ export function createLab(opts = {}) {
         fields.push(field('New column name (leave empty to replace the values)', text(b.as, (v) => { b.as = v.trim() || undefined; }, { spellcheck: 'false' })));
         break;
       case 'scale':
+        { const fitG = fitGroup('Learn the parameters from', 'Learning from all rows leaks test-set information into the parameters.');
+        if (b.asAuto !== false) b.as = `${b.column}_${b.method || 'zscore'}${b.fit === 'all' ? '_all' : ''}`;
         fields.push(field('Column', colSelect('column', nums.length ? nums : names)));
-        fields.push(group('Method', segmented(`${id}-sm`, [['zscore', 'z-score'], ['minmax', 'Min-max'], ['robust', 'Robust']], b.method || 'zscore', (v) => { b.method = v; })));
-        fields.push(fitGroup('Learn the parameters from', 'Learning from all rows leaks test-set information into the parameters.'));
+        fields.push(group('Method', segmented(`${id}-sm`, [['zscore', 'z-score'], ['minmax', 'Min-max'], ['robust', 'Robust']], b.method || 'zscore', (v) => { b.method = v; if (b.asAuto !== false) { b.as = `${b.column}_${v}${b.fit === 'all' ? '_all' : ''}`; const inp = el.querySelector(`#${id}-as`); if (inp) inp.value = b.as; } })));
+        fields.push(fitG);
         if (b.fit === 'train' && !opts.split) fields.push(field('Random seed for the split', number(b.seed ?? 7, (v) => { b.seed = v; }, { step: 1, min: 1 })));
-        fields.push(field('New column name (leave empty to replace the values)', text(b.as, (v) => { b.as = v.trim() || undefined; }, { spellcheck: 'false' })));
+        fields.push(field('New column name (leave empty to replace the values)', text(b.as, (v) => { b.as = v.trim() || undefined; b.asAuto = false; }, { spellcheck: 'false', id: `${id}-as` }), 'A new column keeps the original, so you can compare methods and fits side by side.'));
+        }
         break;
       case 'encode': {
         fields.push(field('Column', colSelect('column')));
@@ -568,7 +578,7 @@ export function createLab(opts = {}) {
     why.value = b.why || '';
     why.addEventListener('input', () => { b.why = why.value; });
     const out = h('div', { class: 'cl-preview', 'aria-live': 'polite' });
-    const stepNow = () => { const { fromIssue, ...stp } = b; if (!stp.why) delete stp.why; return JSON.parse(JSON.stringify(stp)); };
+    const stepNow = () => { const { fromIssue, asAuto, ...stp } = b; if (!stp.why) delete stp.why; return JSON.parse(JSON.stringify(stp)); };
     const previewBtn = h('button', { class: 'btn btn-secondary', type: 'button' }, 'Preview');
     const applyBtn = h('button', { class: 'btn btn-primary', type: 'button' }, 'Apply');
     previewBtn.addEventListener('click', () => { const r = C.apply(cur(), stepNow()); st.preview = { step: stepNow(), change: r.change }; showPreview(out, r.change, cur(), true); });
