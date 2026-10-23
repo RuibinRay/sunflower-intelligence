@@ -90,7 +90,8 @@ export const FACTS = {
   period: { start: '2026-03-01', end: '2026-12-31', months: 10 },
   stock: 20_000,
   coastline: { principal: 10_000, rate: 0.06, interestPaid: 450, interestAccrued: 50 },       // paid 1 Jun, 1 Sep, 1 Dec; December accrued
-  equipment: { cost: 12_000, life: 5, residual: 0, monthly: 200, months: 10 },
+  equipment: { cost: 12_000, life: 5, residual: 0, monthly: 200, months: 10,
+               paid: [{ date: '2026-03-03', amount: 4_000 }, { date: '2026-04-02', amount: 8_000 }] },   // 30-day trade terms
   van: { cost: 30_000, residual: 6_000, life: 5, monthly: 400, months: 7, bought: '2026-06-01', cashDown: 10_000 },
   vanNote: { principal: 20_000, rate: 0.06, instalment: 5_000, first: '2027-06-01', last: '2030-06-01', months: 7 },   // interest paid with each instalment
   insurance: { premium: 1_800, monthly: 150, expired: 10 },

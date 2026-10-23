@@ -124,7 +124,7 @@ export const guided = [
         },
         hints: ['Ask: was this needed to get the machine to the surgery and working?'] },
       { id: 'f02-lla-g1-s2', type: 'num',
-        prompt: 'What is the machine’s cost?',
+        prompt: 'What is the machine’s cost? Round to the nearest dollar.',
         answer: 44694, check: () => 42000 * 0.95 + 42000 * 0.95 * 0.06 + 600 + 1800, unit: '$', places: 0, tol: 0.5,
         hints: ['Apply the discount first, then the tax on the discounted price.', '39,900 + 2,394 + 600 + 1,800.'],
         wrong: [
@@ -133,7 +133,7 @@ export const guided = [
           { value: 42300, say: 'Add the sales tax: it can’t be recovered, so it is part of the cost.' },
         ] },
       { id: 'f02-lla-g1-s3', type: 'num',
-        prompt: 'What is depreciation for 2026?',
+        prompt: 'What is depreciation for 2026? Round to the nearest dollar.',
         answer: 5000, check: () => (42000 * 0.95 * 1.06 + 600 + 1800 - 2694) / 7 * 10 / 12, unit: '$', places: 0, tol: 0.5,
         hints: ['Depreciable amount = cost − residual value.', '(44,694 − 2,694) ÷ 7 × 10/12.'],
         wrong: [
@@ -149,12 +149,12 @@ export const guided = [
     solution: 'Rate = 2 ÷ 4 = 50%. 2026: 18,000 × 0.5 = 9,000 (book value 9,000). 2027: 9,000 × 0.5 = 4,500 (4,500). 2028: 4,500 × 0.5 = 2,250 (2,250). 2029: 50% would be 1,125, but book value can’t fall below 1,500, so only 750 is charged. Total 16,500 = 18,000 − 1,500.',
     steps: [
       { id: 'f02-lla-g2-s1', type: 'num',
-        prompt: 'What is the double-declining-balance rate? Enter a percentage.',
+        prompt: 'What is the double-declining-balance rate? Enter a percentage. Give a whole-number percentage.',
         answer: 50, check: () => 2 / 4 * 100, unit: '%', places: 0, tol: 0.5,
         hints: ['The straight-line rate is 1 ÷ 4 = 25% a year.', 'Double it.'],
         wrong: [{ value: 25, say: 'That is the straight-line rate. Double-declining balance uses twice it.' }] },
       { id: 'f02-lla-g2-s2', type: 'num',
-        prompt: 'What is depreciation for 2026?',
+        prompt: 'What is depreciation for 2026? Round to the nearest dollar.',
         answer: 9000, check: () => 18000 * 0.5, unit: '$', places: 0, tol: 0.5,
         hints: ['Apply the rate to book value at the start of the year, which is the cost.', 'Residual value is not subtracted from the base.'],
         wrong: [
@@ -162,12 +162,12 @@ export const guided = [
           { value: 4125, say: 'That is straight line: (18,000 − 1,500) ÷ 4. Declining balance applies 50% to the book value.' },
         ] },
       { id: 'f02-lla-g2-s3', type: 'num',
-        prompt: 'What is depreciation for 2027?',
+        prompt: 'What is depreciation for 2027? Round to the nearest dollar.',
         answer: 4500, check: () => (18000 - 9000) * 0.5, unit: '$', places: 0, tol: 0.5,
         hints: ['Book value at 1 January 2027 = 18,000 − 9,000.'],
         wrong: [{ value: 9000, say: 'The rate applies to the falling book value, 9,000 at the start of 2027, not to the cost.' }] },
       { id: 'f02-lla-g2-s4', type: 'num',
-        prompt: 'What is depreciation for 2029, the last year?',
+        prompt: 'What is depreciation for 2029, the last year? Round to the nearest dollar.',
         answer: 750, check: () => 18000 * 0.5 ** 3 - 1500, unit: '$', places: 0, tol: 0.5,
         hints: ['Book value at 1 January 2029 is 2,250.', 'Book value may not fall below the $1,500 residual value.'],
         wrong: [{ value: 1125, say: '50% of 2,250 would take book value to 1,125, below the $1,500 residual value. Charge only enough to reach it.' }] },
@@ -179,12 +179,12 @@ export const guided = [
     solution: 'Depreciation = (26,000 − 2,000) ÷ 5 = 4,800 a year, 400 a month. For January–March 2027, record 3 × 400 = 1,200. Accumulated depreciation July 2023–March 2027 = 45 months × 400 = 18,000; book value 8,000; gain 11,500 − 8,000 = $3,500. Entry: debit Cash 11,500 and Accumulated Depreciation—Equipment 18,000; credit Equipment 26,000 and Gain on Sale of Equipment 3,500.',
     steps: [
       { id: 'f02-lla-g3-s1', type: 'num',
-        prompt: 'How much depreciation must be recorded for 2027 before the sale?',
+        prompt: 'How much depreciation must be recorded for 2027 before the sale? Round to the nearest dollar.',
         answer: 1200, check: () => (26000 - 2000) / 5 / 12 * 3, unit: '$', places: 0, tol: 0.5,
         hints: ['Per month: (26,000 − 2,000) ÷ 5 ÷ 12.', 'January to March is three months.'],
         wrong: [{ value: 4800, say: 'That is a full year. The mower is sold at the end of March.' }] },
       { id: 'f02-lla-g3-s2', type: 'num',
-        prompt: 'What is the mower’s book value on 31 March 2027?',
+        prompt: 'What is the mower’s book value on 31 March 2027? Round to the nearest dollar.',
         answer: 8000, check: () => 26000 - 400 * (6 + 12 + 12 + 12 + 3), unit: '$', places: 0, tol: 0.5,
         hints: ['Count the months from July 2023 to March 2027: 6 + 12 + 12 + 12 + 3.', 'Book value = cost − 45 × 400.'],
         wrong: [
@@ -192,7 +192,7 @@ export const guided = [
           { value: 6000, say: 'That counts 50 months. July–December 2023 is six months, then three full years, then three months of 2027.' },
         ] },
       { id: 'f02-lla-g3-s3', type: 'num',
-        prompt: 'What is the gain or loss on the sale? Enter a loss as a negative number.',
+        prompt: 'What is the gain or loss on the sale? Enter a loss as a negative number. Round to the nearest dollar.',
         answer: 3500, check: () => 11500 - (26000 - 400 * 45), unit: '$', places: 0, tol: 0.5,
         hints: ['Gain (loss) = proceeds − book value.'],
         wrong: [
@@ -212,12 +212,12 @@ export const guided = [
     solution: 'Old depreciation = (90,000 − 10,000) ÷ 10 = 8,000 a year. Book value at 1 January 2026 = 90,000 − 3 × 8,000 = 66,000. New depreciation = (66,000 − 6,000) ÷ 4 = $15,000 a year from 2026. The 2023–2025 figures are not restated.',
     steps: [
       { id: 'f02-lla-g4-s1', type: 'num',
-        prompt: 'What is the book value on 1 January 2026?',
+        prompt: 'What is the book value on 1 January 2026? Round to the nearest dollar.',
         answer: 66000, check: () => 90000 - 3 * (90000 - 10000) / 10, unit: '$', places: 0, tol: 0.5,
         hints: ['Three years of the original depreciation have been charged.'],
         wrong: [{ value: 63000, say: 'That uses 9,000 a year, ignoring the residual value. The original charge was (90,000 − 10,000) ÷ 10.' }] },
       { id: 'f02-lla-g4-s2', type: 'num',
-        prompt: 'What is depreciation for 2026?',
+        prompt: 'What is depreciation for 2026? Round to the nearest dollar.',
         answer: 15000, check: () => (66000 - 6000) / 4, unit: '$', places: 0, tol: 0.5,
         hints: ['Spread the remaining book value, less the new residual value, over the remaining life.'],
         wrong: [
@@ -246,8 +246,8 @@ export const guided = [
 export const independent = [
   {
     id: 'f02-lla-i1', type: 'num', kind: 'numerical',
-    prompt: 'A fictional airline buys an engine for $2,400,000. It expects 20,000 flight hours from it, after which it can be sold for $200,000. In 2026 the engine flies 2,600 hours. What is depreciation for 2026 under the units-of-production method?',
-    answer: 286000, check: () => (2400000 - 200000) / 20000 * 2600, unit: '$', places: 0,
+    prompt: 'A fictional airline buys an engine for $2,400,000. It expects 20,000 flight hours from it, after which it can be sold for $200,000. In 2026 the engine flies 2,600 hours. What is depreciation for 2026 under the units-of-production method? Round to the nearest dollar.',
+    answer: 286000, check: () => (2400000 - 200000) / 20000 * 2600, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 312000, say: 'Subtract the residual value first: (2,400,000 − 200,000) ÷ 20,000 = 110 an hour.' },
       { value: 110, say: 'That is the rate per flight hour. Multiply by the 2,600 hours flown.' },
@@ -337,8 +337,8 @@ export const check = [
     prompt: 'A machine bought two years ago was expected to last eight years. On 1 January the company decides it will last only three more years. What should it do?',
     options: [
       'Spread the current book value, less residual value, over the three years left',
-      'Restate the past two years’ depreciation using a five-year life',
-      'Record the extra depreciation for past years as a loss now, then continue',
+      'Restate the past two years’ depreciation using the new five-year total life',
+      'Record the extra depreciation for past years as a loss this year, then continue as before',
       'Keep the original schedule until the machine is sold',
     ],
     answer: 0,
@@ -376,8 +376,8 @@ export const check = [
   },
   {
     id: 'f02-lla-k5', type: 'num', kind: 'applied',
-    prompt: 'Lantern’s espresso equipment cost $12,000 on 3 March 2026, with a five-year life and no residual value, and Lantern charges a full month in the month of purchase. Suppose its accountant had chosen the double-declining-balance method instead of the straight line. What would depreciation for 2026 have been?',
-    answer: 4000, check: () => FACTS.equipment.cost * (2 / FACTS.equipment.life) * FACTS.equipment.months / 12, unit: '$', places: 0,
+    prompt: 'Lantern’s espresso equipment cost $12,000 on 3 March 2026, with a five-year life and no residual value, and Lantern charges a full month in the month of purchase. Suppose its accountant had chosen the double-declining-balance method instead of the straight line. What would depreciation for 2026 have been? Round to the nearest dollar.',
+    answer: 4000, check: () => FACTS.equipment.cost * (2 / FACTS.equipment.life) * FACTS.equipment.months / 12, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 2000, say: 'That is the straight-line charge Lantern actually recorded (200 × 10).' },
       { value: 4800, say: 'That is a full year at 40%. The equipment was used for ten months of 2026.' },

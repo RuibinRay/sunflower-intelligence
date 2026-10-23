@@ -618,6 +618,13 @@ function flowLabel(cls, a, inflow) {
   return inflow ? `Proceeds from ${lower(n || 'borrowing')}` : `Repayment of ${lower(n || 'borrowing')}`;
 }
 
+/** The noncash part of a purchase when some cash was paid: "on credit", "through a note payable". */
+function partBy(a) {
+  if (/accounts payable/i.test(a.name)) return 'on credit';
+  if (/notes? payable/i.test(a.name)) return 'through a note payable';
+  if (a.type === 'equity') return `in ${lower(a.name)}`;
+  return `through ${lower(a.name)}`;
+}
 /** How a noncurrent asset was paid for when no cash moved: "on credit", "by signing a note payable". */
 function acquiredBy(a) {
   if (/accounts payable/i.test(a.name)) return 'bought on credit';
@@ -660,7 +667,11 @@ export function cashFlows(entries, chart) {
       const nc = Math.min(assetCents - Math.max(paid, 0), finCents);
       if (nc > 0) {
         const how = finCredits.sort((x, y) => C(sideOf(y).amount) - C(sideOf(x).amount))[0];
-        noncash.push(`${ncDebits.map((l) => l.acct).join(' and ')} of ${usd(D(nc))} ${acquiredBy(ch.byName[how.acct])}.`);
+        const what = ncDebits.map((l) => l.acct).join(' and ');
+        // ASC 230-10-50-3: relate the cash and noncash parts of a part-cash purchase
+        noncash.push(paid > 0
+          ? `${what} costing ${usd(D(assetCents))} acquired for ${usd(D(paid))} in cash (shown in investing activities) and ${usd(D(nc))} ${partBy(ch.byName[how.acct])}.`
+          : `${what} of ${usd(D(nc))} ${acquiredBy(ch.byName[how.acct])}.`);
       }
     } else if (!sp.net) {
       // debt settled by issuing stock

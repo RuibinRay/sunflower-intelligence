@@ -38,6 +38,7 @@ export const widgets = {
       let note;
       if (expense < 0) note = `The allowance already holds ${money(v.unadj)}, more than the ${money(req)} the aging requires, so the adjustment reduces it by ${money(-expense)} and the year’s bad debt expense is negative. That usually means earlier estimates were too cautious; the rates deserve a second look.`;
       else if (v.unadj < 0) note = `The allowance starts with a debit balance of ${money(-v.unadj)}: write-offs have already used more than it held. The entry must fill that hole and then build the ${money(req)} required, so the expense is ${money(req)} + ${money(-v.unadj)} = ${money(expense)}.`;
+      else if (v.unadj === 0) note = `The allowance is empty before the adjustment, so the whole ${money(req)} the aging requires is this year’s expense.`;
       else note = `The allowance starts with a credit balance of ${money(v.unadj)}, so only the difference, ${money(req)} − ${money(v.unadj)} = ${money(expense)}, is new expense.`;
       return {
         headline: { label: 'Bad debt expense for the year', value: money(expense) },
@@ -191,12 +192,12 @@ export const guided = [
         },
         hints: ['An invoice received makes a payable; a cost incurred with no invoice yet is accrued.', 'Cash received for a service not yet given is unearned revenue.'] },
       { id: 'f02-rp-g4-s2', type: 'num',
-        prompt: 'What is income taxes payable at 31 December?',
+        prompt: 'What is income taxes payable at 31 December? Round to the nearest dollar.',
         answer: 8000, check: () => 46000 - 38000, unit: '$', places: 0, tol: 0.5,
         hints: ['Only the part not yet paid is a liability.'],
         wrong: [{ value: 46000, say: 'That is the tax for the year. $38,000 of it was paid in instalments; only the rest is still owed.' }] },
       { id: 'f02-rp-g4-s3', type: 'num',
-        prompt: 'What are the hotel’s total current liabilities from these items?',
+        prompt: 'What are the hotel’s total current liabilities from these items? Round to the nearest dollar.',
         answer: 42700, check: () => 4200 + 9600 + 15500 + 2300 + 3100 + (46000 - 38000), unit: '$', places: 0, tol: 0.5,
         hints: ['Add all five items and the tax still owed.'],
         wrong: [
@@ -218,7 +219,7 @@ export const independent = [
   {
     id: 'f02-rp-i2', type: 'num', kind: 'numerical',
     prompt: 'A fictional office-cleaning company estimates bad debts at 1.25% of credit sales. Credit sales for the year were $840,000, and the allowance had a credit balance of $2,300 before adjustment. What is the balance of the allowance after the adjustment? Round to the nearest dollar.',
-    answer: 12800, check: () => 0.0125 * 840000 + 2300, unit: '$', places: 0,
+    answer: 12800, check: () => 0.0125 * 840000 + 2300, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 10500, say: 'That is the expense. Under the income statement approach the allowance ends at the old balance plus the expense.' },
       { value: 8200, say: 'You subtracted the credit balance. Under the income statement approach the expense is added to whatever is already in the allowance.' },
@@ -227,8 +228,8 @@ export const independent = [
   },
   {
     id: 'f02-rp-i3', type: 'num', kind: 'numerical',
-    prompt: 'A fictional software reseller started the year with accounts receivable of $31,500. During the year it made credit sales of $412,000 and wrote off $3,800 of customer balances. Receivables at the year end are $36,700. How much did it collect from customers on account during the year?',
-    answer: 403000, check: () => 31500 + 412000 - 3800 - 36700, unit: '$', places: 0,
+    prompt: 'A fictional software reseller started the year with accounts receivable of $31,500. During the year it made credit sales of $412,000 and wrote off $3,800 of customer balances. Receivables at the year end are $36,700. How much did it collect from customers on account during the year? Round to the nearest dollar.',
+    answer: 403000, check: () => 31500 + 412000 - 3800 - 36700, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 406800, say: 'Write-offs also reduce receivables. Collections = beginning + credit sales − write-offs − ending.' },
       { value: 399200, say: 'You subtracted the write-offs twice. Collections = 31,500 + 412,000 − 3,800 − 36,700.' },
@@ -240,10 +241,10 @@ export const independent = [
     id: 'f02-rp-i4', type: 'mc', kind: 'conceptual',
     prompt: 'Why does US GAAP not accept the direct write-off method for a business with material credit losses?',
     options: [
-      'It recognises each loss when a customer gives up rather than in the period of the sale, and shows receivables at more than the business expects to collect.',
+      'It puts each loss in the period the customer fails, not the period of the sale, and overstates receivables meanwhile.',
       'The IRS does not allow a deduction for a bad debt until an allowance has been set up.',
-      'It records bad debt expense twice: once when the loss is estimated and again when the account is written off.',
-      'It needs an aging schedule, which the Codification reserves for public companies.',
+      'It records bad debt expense twice: once when the loss is estimated at the year end and again when the account is written off.',
+      'It needs an aging schedule, which the Codification reserves for public companies that file with the SEC.',
     ],
     answer: 0,
     feedback: {
@@ -251,7 +252,7 @@ export const independent = [
       2: 'The direct method records the expense once, at the write-off. Double counting would come from debiting Bad Debt Expense at a write-off under the allowance method.',
       3: 'The direct method uses no estimate at all. Aging schedules are one accepted way of measuring the allowance, for any company.',
     },
-    solution: 'The direct method waits for a specific customer to fail, often in a later period than the sale, and until then reports receivables at the full amount owed. ASC 326 requires receivables to be presented at the net amount expected to be collected, which needs an allowance. Only immaterial losses may be handled more simply.',
+    solution: 'The direct method waits for a specific customer to fail, often in a later period than the sale, and until then reports receivables at the full amount owed. ASC 326 requires receivables to be presented at the net amount expected to be collected, which needs an allowance. Only immaterial losses may be expensed as they occur.',
   },
   {
     id: 'f02-rp-i5', type: 'num', kind: 'applied',
@@ -289,7 +290,7 @@ export const check = [
   {
     id: 'f02-rp-k1', type: 'num', kind: 'numerical',
     prompt: 'A fictional software reseller’s receivables at 31 December are: 0–30 days $120,000 (expected loss rate 1.5%); 31–60 days $24,000 (6%); 61–90 days $8,000 (25%); over 90 days $4,000 (70%). Before adjustment the allowance has a debit balance of $1,260. What is the bad debt expense for the year? Round to the nearest dollar.',
-    answer: 9300, check: () => (120000 * 0.015 + 24000 * 0.06 + 8000 * 0.25 + 4000 * 0.7) + 1260, unit: '$', places: 0,
+    answer: 9300, check: () => (120000 * 0.015 + 24000 * 0.06 + 8000 * 0.25 + 4000 * 0.7) + 1260, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 8040, say: 'That is the allowance required. The account starts with a debit balance, which the adjustment must also cover.' },
       { value: 6780, say: 'A debit balance is added, not subtracted: losses have already outrun the allowance.' },
@@ -342,7 +343,7 @@ export const check = [
   {
     id: 'f02-rp-k5', type: 'num', kind: 'applied',
     prompt: 'Lantern’s allowance had a debit balance of $820 before its year-end adjustment, and its catering credit sales for 2026 were $59,920. Suppose its accountant had estimated bad debts at 2.5% of credit sales instead of using the aging. What would the allowance’s balance have been after the adjustment? Round to the nearest dollar.',
-    answer: 678, check: () => 0.025 * 59920 - 820, unit: '$', places: 0,
+    answer: 678, check: () => 0.025 * 59920 - 820, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 1498, say: 'That is the expense. The allowance ends at the unadjusted balance plus the expense, and the unadjusted balance is a debit of 820.' },
       { value: 2318, say: 'A debit balance reduces what is left in the allowance after the expense is added.' },
