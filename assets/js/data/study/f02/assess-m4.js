@@ -1,19 +1,21 @@
 // assess-m4.js — F02 module 4 test: Putting the statements together (linking-the-statements, gaap-and-ifrs).
-// New questions, not copies of lesson exercises: every business here is fictional and appears nowhere else in the course.
-// No hints; solutions show in review. Standards facts agree with gaap-and-ifrs.js (checked 2026-10-23).
+// New questions on this module’s own skills (roll-forwards, locating a failed link, the tax echo of a change, restating
+// between frameworks, IAS 7 as amended by IFRS 18), not copies of lesson or Module 1–3 exercises. Every business here
+// is fictional and appears nowhere else in the course. No hints; solutions show in review. Standards facts agree with
+// gaap-and-ifrs.js (checked 2026-10-23).
 
 export const items = [
   // ---------------------------------------------------------------- linking-the-statements
   {
     id: 'f02-m4-1', lesson: 'linking-the-statements', type: 'num', kind: 'numerical',
-    prompt: 'Galloway Outfitters Inc., a fictional retailer, had retained earnings of $120,000 at the start of the year and $151,000 at the end; its net income for the year was $47,000. Dividends payable rose from $4,000 to $6,500 during the year. How much cash did Galloway pay in dividends during the year?',
-    answer: 13500, check: () => (120000 + 47000 - 151000) - (6500 - 4000), unit: '$', places: 0,
+    prompt: 'Pinfold Joinery Inc., a fictional company, owed income tax of $4,200 at the start of the year (last year’s balance, settled in April). Its income tax expense for the year was $18,600, and income taxes payable at the end of the year were $5,100. How much income tax did it pay in cash during the year?',
+    answer: 17700, check: () => 4200 + 18600 - 5100, unit: '$', places: 0,
     wrong: [
-      { value: 16000, say: 'That is the dividends declared. $2,500 of them were added to dividends payable rather than paid.' },
-      { value: 18500, say: 'An increase in dividends payable means less was paid than declared: subtract the $2,500, don’t add it.' },
-      { value: 31000, say: 'That is the change in retained earnings. Use the retained earnings link to find dividends declared first.' },
+      { value: 13500, say: 'Start from the opening balance: the $4,200 owed at the start of the year was paid this year too.' },
+      { value: 18600, say: 'That is the expense. Roll the payable forward: opening + expense − paid = closing.' },
+      { value: 19500, say: 'Income taxes payable rose by $900, so less was paid than was charged: subtract the increase, don’t add it.' },
     ],
-    solution: 'Dividends declared = opening RE + net income − closing RE = 120,000 + 47,000 − 151,000 = 16,000. Dividends payable rose by 6,500 − 4,000 = 2,500, so cash paid = 16,000 − 2,500 = $13,500, the financing outflow.',
+    solution: 'Roll forward Income Taxes Payable: opening 4,200 + expense 18,600 − paid = closing 5,100, so paid = 4,200 + 18,600 − 5,100 = $17,700. The preparer ties this to the income taxes paid shown with the statement of cash flows; a difference means the tax entry or a payment is misposted.',
   },
   {
     id: 'f02-m4-2', lesson: 'linking-the-statements', type: 'classify', kind: 'conceptual',
@@ -39,38 +41,43 @@ export const items = [
   },
   {
     id: 'f02-m4-3', lesson: 'linking-the-statements', type: 'num', kind: 'numerical',
-    prompt: 'Kiln Ceramics Inc., a fictional US maker of tableware, writes its inventory down by $10,000 at its year end. Its income tax is 21% of income before tax, and the year’s tax is settled in cash within the year. By how much does the write-down change the year’s cash from operating activities?',
-    answer: 2100, check: () => -(1 - 0.21) * 10000 + 10000, unit: '$', places: 0,
+    prompt: 'Ashwick Ceramics Inc., a fictional US maker of tableware, writes its inventory down by $10,000 at its year end. Its income tax is 21% of income before tax, and its estimated tax payments for the year were fixed in advance, so any change in the year’s tax is still owed at the year end. By how much does the write-down change its total liabilities? Enter a decrease as a negative number.',
+    answer: -2100, check: () => -0.21 * 10000, unit: '$', places: 0,
     wrong: [
-      { value: -7900, say: 'That is the change in net income. The write-down lowered inventory without using cash, so the indirect method recovers the $10,000 through the change in inventory.' },
-      { value: 10000, say: 'A write-down brings in no cash. Only the tax it saves, 21% of $10,000, is cash.' },
-      { value: 0, say: 'Here the tax is settled within the year, so the lower tax is a real cash saving this year.' },
+      { value: 0, say: 'The write-down lowers the year’s tax by 21% × 10,000. Because that tax is still owed, it is income taxes payable that falls.' },
+      { value: -10000, say: 'That is the fall in inventory, an asset. The liability that changes is income taxes payable.' },
+      { value: -7900, say: 'That is the change in net income, and so in equity. Liabilities change by the tax effect alone.' },
+      { value: 2100, say: 'Lower tax means less owed: liabilities fall.' },
     ],
-    solution: 'Net income −10,000 × (1 − 0.21) = −7,900; inventory is 10,000 lower than it would have been, so the change in inventory adds back 10,000; operating cash flow −7,900 + 10,000 = +$2,100, the tax saved.',
+    solution: 'Income before tax −10,000; income tax −2,100; net income −7,900. Inventory (assets) −10,000 = income taxes payable (liabilities) −2,100 + retained earnings (equity) −7,900. Cash is unchanged this year: the tax saving reaches cash when the tax is settled.',
   },
   {
-    id: 'f02-m4-4', lesson: 'linking-the-statements', type: 'journal', kind: 'applied', chart: 'f02', date: '2026-09-01',
-    prompt: 'On 1 September Kiln Ceramics buys a new kiln for $40,000, paying $15,000 in cash and signing a two-year note payable to the supplier for the rest. Record the purchase. (The solution explains how it appears in the statement of cash flows.)',
-    accounts: ['Equipment', 'Cash', 'Notes Payable', 'Accounts Payable', 'Current Portion of Long-Term Debt', 'Depreciation Expense', 'Interest Expense', 'Accumulated Depreciation—Equipment'],
-    lines: [{ acct: 'Equipment', dr: 40000 }, { acct: 'Cash', cr: 15000 }, { acct: 'Notes Payable', cr: 25000 }],
-    solution: 'Debit Equipment 40,000; credit Cash 15,000 and Notes Payable 25,000. In the statement of cash flows only the $15,000 paid is an investing outflow. The $25,000 financed by the note moved no cash, so it is disclosed as a noncash investing and financing activity; the repayments will be financing outflows when they are made.',
+    id: 'f02-m4-4', lesson: 'linking-the-statements', type: 'journal', kind: 'applied', chart: 'f02', date: '2026-12-31',
+    prompt: 'Quenby Florals Inc., a fictional florist, owed $600 of interest at the start of the year and paid it on 5 January; the bookkeeper debited that payment to Interest Expense. The lender’s statement shows interest of $2,400 for the year, of which $1,800 was paid during the year and $600 is owed at 31 December, and the year-end accrual was recorded correctly. The ledger shows Interest Expense of $3,000 and Interest Payable of $1,200. Record the correcting entry on 31 December.',
+    accounts: ['Interest Payable', 'Interest Expense', 'Cash', 'Notes Payable', 'Accounts Payable', 'Interest Revenue', 'Retained Earnings', 'Prepaid Insurance'],
+    lines: [{ acct: 'Interest Payable', dr: 600 }, { acct: 'Interest Expense', cr: 600 }],
+    solution: 'The interest roll-forward finds it: opening 600 + expense 2,400 − paid (600 + 1,800) = closing 600, but the ledger shows a payable of 1,200 and an expense of 3,000. The January payment settled last year’s liability, so it should have reduced Interest Payable, not added to this year’s expense. Debit Interest Payable 600; credit Interest Expense 600. Net income rises by $600 before tax; cash and the statement of cash flows are unaffected, because the payment itself was recorded correctly.',
   },
   {
     id: 'f02-m4-5', lesson: 'linking-the-statements', type: 'mc', kind: 'applied',
-    prompt: 'Rowanfield Foods Inc., a fictional wholesaler, reports net income of $2.4 million and cash from operating activities of $0.9 million. Depreciation was $0.2 million, receivables rose by $1.1 million and inventory rose by $0.6 million; no other operating balances changed. Which reading do the linked statements best support?',
+    prompt: 'Holmwood Kennels Inc., a fictional company, prepares its statement of cash flows by the indirect method. The draft ends at $31,200, but the balance sheet, taken from the ledger, shows cash of $36,000. The investing and financing sections have been checked and are right. Which line of the draft operating section below is most likely wrong?',
+    data: { table: {
+      head: ['Line in the draft', '$'],
+      rows: [['Net income', '61,400'], ['Depreciation', '5,600'], ['Increase in accounts receivable', '(1,800)'], ['Decrease in inventory', '3,100'], ['Increase in accounts payable', '(2,400)'], ['Net cash from operating activities', '65,900']],
+    } },
     options: [
-      'Growth in receivables and inventory absorbed the cash its profit produced; check whether customers are paying more slowly.',
-      'Net income must be overstated by $1.5 million, because a profitable company’s operating cash flow should equal its profit.',
-      'Depreciation of $0.2 million should have been deducted again in the statement of cash flows, so operating cash flow is overstated.',
-      'The gap shows that Rowanfield paid its suppliers far too quickly this year and should slow down its payments to them.',
+      'Increase in accounts payable, shown as (2,400)',
+      'Increase in accounts receivable, shown as (1,800)',
+      'Decrease in inventory, shown as 3,100',
+      'Depreciation, shown as 5,600',
     ],
     answer: 0,
     feedback: {
-      1: 'Net income and operating cash flow measure different things; a gap is not evidence of an error.',
-      2: 'Depreciation is added back because it used no cash. Deducting it again would understate operating cash flow.',
-      3: 'Payables didn’t change, so supplier payments don’t explain the gap; receivables and inventory do.',
+      1: 'An increase in receivables is rightly subtracted, and a sign error there would make a gap of 3,600, not 4,800.',
+      2: 'A decrease in inventory is rightly added; a sign error there would make a gap of 6,200.',
+      3: 'Depreciation is rightly added back; leaving it out or reversing it would make a gap of 5,600 or 11,200.',
     },
-    solution: '2.4 + 0.2 − 1.1 − 0.6 = 0.9: the whole gap is cash tied up in receivables and inventory. Profit is being earned, but it is sitting with customers and on shelves. The next questions are whether customers are paying more slowly and whether inventory is building up unsold, which F03’s ratios measure.',
+    solution: 'The draft is 36,000 − 31,200 = 4,800 short, exactly twice 2,400: a sign error on the accounts payable line. An increase in accounts payable means cash not yet paid out, so it is added. Corrected operating cash flow: 61,400 + 5,600 − 1,800 + 3,100 + 2,400 = 70,700, and the statement then ends at $36,000.',
   },
 
   // ---------------------------------------------------------------- gaap-and-ifrs
@@ -94,29 +101,30 @@ export const items = [
   },
   {
     id: 'f02-m4-7', lesson: 'gaap-and-ifrs', type: 'num', kind: 'numerical',
-    prompt: 'Nettlefold Books Ltd, a fictional bookseller reporting under IFRS, wrote a stock of textbooks down last year from their cost of $48,000 to their net realisable value of $31,000. This year a new course adopts the textbook, and the books, still unsold, now have a net realisable value of $52,000. At what amount does Nettlefold carry them at the end of this year?',
-    answer: 48000, check: () => Math.min(52000, 48000), unit: '$', places: 0,
+    prompt: 'Nettlefold Books Ltd, a fictional bookseller, wrote a stock of textbooks down last year from their cost of $48,000 to their net realisable value of $31,000. This year it sells half of them for $24,000, net of selling costs; the other half, still unsold at the year end, now have a net realisable value of $26,000. By how much is this year’s profit before tax higher under IFRS than it would be under US GAAP?',
+    answer: 8500, check: () => Math.min(26000, 48000 / 2) - 31000 / 2, unit: '$', places: 0,
     wrong: [
-      { value: 52000, say: 'Inventory is carried at the lower of cost and net realisable value, so it can’t rise above its $48,000 cost.' },
-      { value: 31000, say: 'That is the US GAAP answer. Under IAS 2 the write-down is reversed when net realisable value recovers.' },
-      { value: 17000, say: 'That is the amount reversed. The question asks for the carrying amount after the reversal.' },
+      { value: 17000, say: 'Only the write-down on the half still held can be reversed; the half sold has gone, at the same profit under both frameworks.' },
+      { value: 10500, say: 'The reversal is capped at cost, $24,000 for the half still held, not at the new net realisable value of $26,000.' },
+      { value: 0, say: 'The profit on the half sold is the same under both, but IAS 2 also reverses the write-down on the half still held; US GAAP doesn’t.' },
     ],
-    solution: 'IAS 2 measures the books at min(cost 48,000, NRV 52,000) = $48,000, reversing the whole $17,000 write-down (48,000 − 31,000) and no more. Under US GAAP they would stay at $31,000.',
+    solution: 'Half sold: carrying amount 31,000 ÷ 2 = 15,500 under both frameworks, so the profit on sale, 24,000 − 15,500 = 8,500, is the same. Half held: cost 24,000, carrying 15,500, NRV 26,000. IFRS measures it at min(24,000, 26,000) = 24,000 and reverses 24,000 − 15,500 = $8,500; US GAAP keeps 15,500. IFRS profit before tax is $8,500 higher.',
   },
   {
     id: 'f02-m4-8', lesson: 'gaap-and-ifrs', type: 'num', kind: 'applied',
-    prompt: 'Seacombe Foods Inc., a fictional food producer with no specified main business activity, reports under US GAAP. Its cash from operating activities of $820,000 includes interest paid of $64,000, interest received of $9,000 and dividends received of $5,000; dividends paid of $120,000 are in financing. If it applied IAS 7 as amended by IFRS 18, what would its cash from operating activities be?',
-    answer: 870000, check: () => 820000 + 64000 - 9000 - 5000, unit: '$', places: 0,
+    prompt: 'Seacombe Foods Inc., a fictional food producer with no specified main business activity, reports under US GAAP. Its investing section shows purchases of equipment of $350,000 and $40,000 of proceeds from selling a delivery truck. Its operating section includes interest paid of $64,000, interest received of $9,000 and dividends received of $5,000; dividends paid of $120,000 are in financing. Under IAS 7 as amended by IFRS 18, what would its net cash from investing activities be? Enter an outflow as a negative number.',
+    answer: -296000, check: () => -350000 + 40000 + 9000 + 5000, unit: '$', places: 0,
     wrong: [
-      { value: 940000, say: 'Dividends paid are already a financing outflow under US GAAP, so they don’t move.' },
-      { value: 884000, say: 'Interest and dividends received also leave operating: they move to investing.' },
-      { value: 898000, say: 'Interest and dividends received were inflows in operating; moving them out lowers operating cash flow.' },
+      { value: -310000, say: 'That is the US GAAP figure. Interest and dividends received move into investing.' },
+      { value: -324000, say: 'Interest and dividends received are inflows: moving them into investing makes it less negative.' },
+      { value: -360000, say: 'Interest paid moves to financing, not investing.' },
+      { value: -176000, say: 'Dividends paid stay in financing under both frameworks.' },
     ],
-    solution: 'Interest paid moves to financing (+64,000 to operating); interest received and dividends received move to investing (−9,000 and −5,000). 820,000 + 64,000 − 9,000 − 5,000 = $870,000. Dividends paid stay in financing. Total cash is unchanged.',
+    solution: 'US GAAP investing: −350,000 + 40,000 = −310,000. Under IAS 7 as amended by IFRS 18, interest received (9,000) and dividends received (5,000) move from operating to investing: −310,000 + 9,000 + 5,000 = −$296,000. Interest paid moves to financing, and dividends paid stay there.',
   },
   {
     id: 'f02-m4-9', lesson: 'gaap-and-ifrs', type: 'mc', kind: 'conceptual',
-    prompt: 'Hollybank Retail Inc., a fictional US public business entity, has a financial year ending on 30 June. ASU 2024-03 applies to annual reporting periods beginning after 15 December 2026. In which annual statements must Hollybank first provide the new expense disaggregation note (ignoring early adoption)?',
+    prompt: 'Quorndon Retail Inc., a fictional US public business entity, has a financial year ending on 30 June. ASU 2024-03 applies to annual reporting periods beginning after 15 December 2026. In which annual statements must Quorndon first provide the new expense disaggregation note (ignoring early adoption)?',
     options: [
       'The year ending 30 June 2027',
       'The year ending 30 June 2028',
@@ -126,7 +134,7 @@ export const items = [
     answer: 1,
     feedback: {
       0: 'That year began on 1 July 2026, before 15 December 2026, so it is too early.',
-      2: 'Hollybank’s year ends on 30 June; the first annual period beginning after 15 December 2026 is 1 July 2027 to 30 June 2028.',
+      2: 'Quorndon’s year ends on 30 June; the first annual period beginning after 15 December 2026 is 1 July 2027 to 30 June 2028.',
       3: 'That year began on 1 July 2025, well before the effective date.',
     },
     solution: 'The first annual period beginning after 15 December 2026 is the one that begins on 1 July 2027 and ends on 30 June 2028. ASU 2025-01 confirmed that every public business entity first applies the requirements in an annual period; interim reporting follows for interim periods within annual periods beginning after 15 December 2027.',
@@ -144,14 +152,14 @@ export const items = [
     ],
     answer: [0, 1, 3, 4],
     feedback: {
-      2: 'IFRS 18 requires operating profit and profit before financing and income taxes; EBITDA is not a required subtotal (a company that uses it publicly explains it as a management-defined performance measure).',
+      2: 'IFRS 18 requires operating profit and profit before financing and income taxes, not EBITDA. A company may still present operating profit before depreciation, amortisation and IAS 36 impairments; IFRS 18 lists it among the subtotals that are not management-defined performance measures, so it needs no MPM note. An “adjusted EBITDA” that leaves out other items would be one.',
       5: 'Expenses may be presented by nature, by function or by a mix; a company that uses function discloses specified expenses by nature in a note.',
     },
-    solution: 'Required: operating profit; profit before financing and income taxes; income and expenses on borrowings in the financing category; and a single note explaining and reconciling management-defined performance measures. EBITDA is not a required subtotal, and expenses need not be presented by nature on the face.',
+    solution: 'Required: operating profit; profit before financing and income taxes; income and expenses on borrowings in the financing category; and a single note explaining and reconciling any management-defined performance measures. EBITDA is not a required subtotal (operating profit before depreciation, amortisation and IAS 36 impairments may be shown and is not treated as a management-defined performance measure), and expenses need not be presented by nature on the face.',
   },
   {
     id: 'f02-m4-11', lesson: 'gaap-and-ifrs', type: 'num', kind: 'numerical',
-    prompt: 'Brackenfield Medical Ltd, a fictional device maker, spends $240,000 on research and $500,000 on development during the year. All six IAS 38 criteria are met partway through, after which $350,000 of the development spending is incurred. The device is available for use on 1 July and is amortised straight-line over five years from that date, with no residual value. By how much is its profit before tax for the year higher under IFRS than it would be under US GAAP?',
+    prompt: 'Brackenfield Medical Ltd, a fictional device maker, spends $240,000 on research and $500,000 on development during the year. All six IAS 38 criteria are met partway through, after which $350,000 of the development spending is incurred. All of the development spending falls before 1 July; the device is available for use on 1 July and is amortised straight-line over five years from that date, with no residual value. By how much is its profit before tax for the year higher under IFRS than it would be under US GAAP?',
     answer: 315000, check: () => 350000 - 350000 / 5 * 6 / 12, unit: '$', places: 0,
     wrong: [
       { value: 350000, say: 'The asset is available for use from 1 July, so six months of amortisation (35,000) are charged this year under IFRS.' },

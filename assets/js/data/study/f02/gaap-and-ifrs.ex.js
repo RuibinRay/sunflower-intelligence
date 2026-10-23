@@ -1,14 +1,14 @@
 // gaap-and-ifrs.ex.js — F02 · US GAAP and IFRS: widgets, practice and the knowledge check.
 // Answer keys live here, not in the page's HTML. Lantern’s figures are built from case.js; every `check` recomputes.
-// The other businesses (Wildfern Tea, Orrin Kitchenware, Osterley Tiles, Saltire Conference Centre, Harlow Air,
-// Aldgate Coffee, Fieldmark Robotics) are fictional.
-import { FACTS as F, ADJUSTMENTS, DERIVED as D } from './case.js';
+// Items practise this lesson’s own skills (classifying and measuring differences, restating between frameworks, IFRS 18,
+// ASU 2024-03, leases); the single rules are practised in Modules 1–3. Businesses here (Wildfern Tea, Brindley Lodge,
+// Orrin Kitchenware, Ravensworth Outdoor, Pemberly Software, Aldgate Coffee, Fieldmark Robotics) are fictional.
+import { DERIVED as D } from './case.js';
 
 const n = (x) => Math.abs(x).toFixed(Math.abs(x - Math.round(x)) < 1e-9 ? 0 : 2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 const money = (x) => `${x < -1e-9 ? '−' : ''}$${n(Math.round(x * 100) / 100)}`;
 const signed = (x) => (x > 1e-9 ? `+${money(x)}` : money(x));
 const r2 = (x) => Math.round(x * 100) / 100 + 0;
-const e7 = ADJUSTMENTS.find((e) => e.id === 'e7').lines[0].dr;          // 400
 const ip = D.interestPaid;                                               // 450
 
 export const widgets = {
@@ -54,41 +54,50 @@ export const widgets = {
       };
     },
   },
-  'gi-nrv': {
+  'gi-reval': {
     type: 'formula',
-    title: 'Inventory write-downs and recoveries',
-    intro: `The defaults are Lantern’s Holiday Blend: cost ${money(1000)}, written down to ${money(1000 - e7)} at 31 December, with a later net realisable value you can change.`,
+    title: 'Revaluation model and cost model',
+    intro: 'A building revalued once and valued again some years later. The defaults are Fairhaven Hotel’s, from the simple example; the cost-model column is what a US GAAP reporter would show.',
     inputs: [
-      { id: 'cost', label: 'Cost of the items', min: 100, max: 5000, step: 50, value: 1000, fmt: 'money' },
-      { id: 'nrv1', label: 'Net realisable value at the year end', min: 0, max: 5000, step: 50, value: 1000 - e7, fmt: 'money' },
-      { id: 'nrv2', label: 'Net realisable value later, items still held', min: 0, max: 5000, step: 50, value: 900, fmt: 'money' },
+      { id: 'ca', label: 'Carrying amount before the first revaluation', min: 500000, max: 5000000, step: 50000, value: 2000000, fmt: 'money' },
+      { id: 'fv1', label: 'Fair value at the first revaluation', min: 500000, max: 5000000, step: 50000, value: 2600000, fmt: 'money' },
+      { id: 'life', label: 'Remaining useful life', min: 5, max: 40, step: 1, value: 20, fmt: 'int', unit: 'years' },
+      { id: 'years', label: 'Years until the next valuation', min: 1, max: 10, step: 1, value: 2, fmt: 'int', unit: 'years' },
+      { id: 'fv2', label: 'Fair value at the next valuation', min: 0, max: 5000000, step: 50000, value: 1600000, fmt: 'money' },
     ],
     compute: (v) => {
-      const ca1 = Math.min(v.cost, v.nrv1);
-      const wd = v.cost - ca1;
-      const ifrs2 = Math.min(v.cost, v.nrv2);
-      const us2 = Math.min(ca1, v.nrv2);
-      const ifrsChange = ifrs2 - ca1;
-      const usChange = us2 - ca1;
-      let note;
-      if (v.nrv2 > ca1 && wd > 0) note = `Net realisable value has recovered. IFRS reverses ${money(ifrsChange)} of the ${money(wd)} write-down${v.nrv2 >= v.cost ? ', the whole of it, because inventory never goes above cost' : ''}, raising profit; US GAAP keeps the items at ${money(us2)}, their new cost, and the recovery shows up only when they are sold.`;
-      else if (v.nrv2 < ca1) note = `Net realisable value has fallen further, so both frameworks write the items down again, by ${money(ca1 - v.nrv2)}, to ${money(v.nrv2)}.`;
-      else if (wd === 0) note = 'Net realisable value at the year end is at or above cost, so there is no write-down, and nothing to reverse later.';
-      else note = 'Net realisable value is unchanged, so neither framework records anything more.';
+      const surplus = Math.max(0, v.fv1 - v.ca);                // to OCI
+      const loss1 = Math.max(0, v.ca - v.fv1);                  // to profit (no earlier surplus)
+      const depRev = v.fv1 / v.life, depCost = v.ca / v.life;
+      const yrs = Math.min(v.years, v.life);
+      const carry2 = v.fv1 - yrs * depRev;
+      const us2 = v.ca - yrs * depCost;
+      const change = v.fv2 - carry2;
+      let oci2, pl2;
+      if (change < 0) { oci2 = -Math.min(-change, surplus); pl2 = change - oci2; }      // decrease: surplus first, then profit
+      else { pl2 = Math.min(change, loss1); oci2 = change - pl2; }                       // increase: reverse an earlier loss first (simplified)
+      const profitDiff = -loss1 - yrs * (depRev - depCost) + pl2;
+      const note = `The first valuation puts ${surplus > 0 ? `${money(surplus)} into other comprehensive income` : `a loss of ${money(loss1)} into profit`}, and depreciation becomes ${money(depRev)} a year against ${money(depCost)} at cost. At the next valuation the building is carried at ${money(carry2)}; ${change < 0 ? `the fall of ${money(-change)} is taken first against the surplus (${money(-oci2)}) and the rest, ${money(-pl2)}, goes to profit` : change > 0 ? `the rise of ${money(change)} goes ${pl2 > 0 ? `first to profit (${money(pl2)}, reversing the earlier loss) and the rest ` : ''}to other comprehensive income` : 'nothing more is recorded'}. Over the period IFRS profit differs from US GAAP profit by ${signed(profitDiff)}. (Simplified: no transfers from the surplus to retained earnings, and no US GAAP impairment test, which a large fall in value could trigger.)`;
       return {
-        headline: { label: 'Later carrying amount: IFRS / US GAAP', value: `${money(ifrs2)} / ${money(us2)}` },
+        headline: { label: 'Carrying amount after the next valuation: IFRS / US GAAP', value: `${money(v.fv2)} / ${money(us2)}` },
         rows: [
-          ['Write-down at the year end (both frameworks)', money(wd)],
-          ['Carrying amount after the write-down', money(ca1)],
-          ['IFRS: change recognised in profit later', signed(ifrsChange)],
-          ['US GAAP: change recognised in profit later', signed(usChange)],
+          ['First valuation: to other comprehensive income', money(surplus)],
+          ['First valuation: loss in profit', money(loss1)],
+          ['Depreciation a year: IFRS / US GAAP', `${money(depRev)} / ${money(depCost)}`],
+          ['Carrying amount before the next valuation: IFRS / US GAAP', `${money(carry2)} / ${money(us2)}`],
+          ['Next valuation: through other comprehensive income', signed(oci2)],
+          ['Next valuation: in profit or loss', signed(pl2)],
+          ['Profit over the period, IFRS minus US GAAP', signed(profitDiff)],
         ],
         note,
         chart: {
           kind: 'bar',
-          x: { label: 'Carrying amount', values: ['Cost', 'After the write-down', 'Later: IFRS', 'Later: US GAAP'] },
-          series: [{ name: 'Dollars', values: [v.cost, ca1, ifrs2, us2].map(r2) }],
-          y: { label: 'Dollars' },
+          x: { label: 'Point in time', values: ['Before', 'After the first valuation', 'Before the next valuation', 'After the next valuation'] },
+          series: [
+            { name: 'IFRS (revaluation model)', values: [v.ca, v.fv1, carry2, v.fv2].map(r2) },
+            { name: 'US GAAP (cost model)', values: [v.ca, v.ca, us2, us2].map(r2) },
+          ],
+          y: { label: 'Carrying amount ($)' },
         },
       };
     },
@@ -110,55 +119,58 @@ export const widgets = {
 export const guided = [
   {
     id: 'f02-gi-g1', type: 'classify', kind: 'conceptual',
-    prompt: 'Under which framework does each rule hold?',
+    prompt: 'For a company moving from US GAAP to IFRS, what does each difference change in the year it arises?',
     items: [
-      'Inventory may be costed by LIFO.',
-      'Written-down inventory is written back up, as far as its cost, when its net realisable value recovers.',
-      'Land and buildings may be carried at fair value.',
-      'Research costs are expensed as they are incurred.',
-      'Inventory may be costed by FIFO or weighted average.',
-      'Significant parts of an asset with different useful lives must be depreciated separately.',
-      'Interest paid must be classified as an operating cash flow.',
-      'Development costs that meet specified criteria are capitalised as an intangible asset.',
+      'Using FIFO instead of LIFO while purchase prices are rising',
+      'Revaluing land upward under IAS 16, with no earlier revaluation loss on it',
+      'Capitalising development costs that meet the IAS 38 criteria',
+      'Classifying interest paid as a financing rather than an operating cash flow',
+      'Showing operating profit as a required IFRS 18 subtotal',
+      'Reversing an inventory write-down when net realisable value recovers',
+      'Explaining a management-defined performance measure in a note',
+      'Depreciating a significant component over its own shorter life',
     ],
-    categories: ['US GAAP only', 'IFRS only', 'Both US GAAP and IFRS'],
-    answer: [0, 1, 1, 2, 2, 1, 0, 1],
+    categories: ['Changes profit', 'Changes assets and equity, not profit', 'Changes presentation only'],
+    answer: [0, 1, 0, 2, 2, 0, 2, 0],
     hints: [
-      'Two of the rules are shared. For the rest, ask which framework is the more willing to use current values and to capitalise.',
-      'LIFO and the fixed operating classification of interest are US rules; reversals, revaluation, required components and capitalised development are IFRS rules.',
+      'Ask whether the item changes an amount in profit or loss, an amount on the balance sheet only, or only where something is shown.',
+      'A revaluation increase goes to other comprehensive income; classification and subtotals move nothing between profit and the balance sheet.',
     ],
     feedback: {
-      3: 'Research is expensed under both frameworks; only development costs are treated differently.',
-      5: 'US GAAP permits the component approach but doesn’t require it; IAS 16 requires it.',
-      6: 'IAS 7 has allowed operating or financing, and from 2027 most IFRS reporters must show interest paid as financing. Only US GAAP fixes it in operating.',
+      1: 'An IAS 16 revaluation increase goes to other comprehensive income and a revaluation surplus in equity, not to profit. Land isn’t depreciated, so later profit isn’t affected either.',
+      3: 'Total cash and profit are the same; only the split between operating and financing changes.',
+      4: 'A subtotal reorganises the statement; the profit for the year is unchanged.',
+      6: 'The note explains a measure the company already uses; no amount in the statements changes.',
     },
-    solution: 'US GAAP only: LIFO, and interest paid fixed as operating. IFRS only: reversing write-downs, carrying land and buildings at fair value, required component depreciation, capitalising development that meets the criteria. Both: research expensed, FIFO and weighted average permitted.',
+    solution: 'Profit: FIFO vs LIFO, capitalised development, reversed write-downs and component depreciation all change amounts recognised in profit or loss. Assets and equity only: the upward revaluation of land, through other comprehensive income. Presentation only: the cash-flow classification of interest, the IFRS 18 subtotal and the management-defined performance measure note.',
   },
   {
     id: 'f02-gi-g2', type: 'steps', kind: 'numerical',
-    prompt: 'Wildfern Tea Ltd, a fictional tea blender reporting under IFRS, holds gift tins costing $12,000 at its year end. A competitor’s launch means they can now be sold for only $9,100, less $600 of selling costs. Three months later, still unsold, the tins attract a large corporate order, and their net realisable value rises to $11,000.',
-    solution: 'Net realisable value at the year end = 9,100 − 600 = 8,500, so the write-down is 12,000 − 8,500 = $3,500. Three months later IFRS measures the tins at min(11,000, 12,000) = 11,000 and reverses 11,000 − 8,500 = $2,500. Under US GAAP the $8,500 would be the tins’ new cost and they would stay at $8,500.',
+    prompt: 'Brindley Lodge Ltd, a fictional country hotel reporting under IFRS, uses the revaluation model for its buildings. At the start of year 1 the main building is carried at $900,000, has 25 years of use left and no residual value, and is revalued to its fair value of $1,150,000. At the end of year 3 a valuation finds fair value of $700,000. Brindley makes no transfers from the surplus to retained earnings.',
+    solution: 'Surplus 1,150,000 − 900,000 = $250,000, to other comprehensive income. Depreciation 1,150,000 ÷ 25 = 46,000 a year, so the carrying amount at the end of year 3 is 1,150,000 − 3 × 46,000 = $1,012,000. The decrease to 700,000 is 312,000: 250,000 against the surplus, through other comprehensive income, and the remaining $62,000 as a loss in profit or loss.',
     steps: [
-      { id: 'f02-gi-g2-s1', type: 'num', prompt: 'What write-down is recognised at the year end?',
-        answer: 3500, check: () => 12000 - (9100 - 600), unit: '$', places: 0, tol: 0.5,
-        hints: ['Net realisable value is the selling price less the costs of selling.', 'Write-down = cost − (9,100 − 600).'],
+      { id: 'f02-gi-g2-s1', type: 'num', prompt: 'What revaluation surplus arises at the start of year 1?',
+        answer: 250000, check: () => 1150000 - 900000, unit: '$', places: 0, tol: 0.5,
+        hints: ['Surplus = fair value − carrying amount just before the revaluation.'],
         wrong: [
-          { value: 2900, say: 'Deduct the $600 of selling costs: net realisable value is 8,500, not 9,100.' },
-          { value: 8500, say: 'That is the new carrying amount. The write-down is the fall from cost: 12,000 − 8,500.' },
+          { value: 1150000, say: 'That is the new carrying amount. The surplus is the increase over the old one.' },
+          { value: -250000, say: 'Fair value is above the carrying amount, so the surplus is positive.' },
         ] },
-      { id: 'f02-gi-g2-s2', type: 'num', prompt: 'Under IFRS, how much of the write-down is reversed three months later?',
-        answer: 2500, check: () => Math.min(11000, 12000) - (9100 - 600), unit: '$', places: 0, tol: 0.5,
-        hints: ['The tins are again measured at the lower of cost and net realisable value.', 'min(11,000, 12,000) − 8,500.'],
+      { id: 'f02-gi-g2-s2', type: 'num', prompt: 'What is the building’s carrying amount at the end of year 3, before the new valuation?',
+        answer: 1012000, check: () => 1150000 - 3 * (1150000 / 25), unit: '$', places: 0, tol: 0.5,
+        hints: ['After a revaluation, depreciation is based on the revalued amount.', '1,150,000 ÷ 25 = 46,000 a year, for three years.'],
         wrong: [
-          { value: 3500, say: 'Reverse only as far as the new net realisable value, 11,000. The tins don’t go back to cost while they are worth less than cost.' },
-          { value: 0, say: 'That is the US GAAP answer. IAS 2 requires the reversal when net realisable value recovers.' },
+          { value: 1042000, say: 'That uses the old depreciation (900,000 ÷ 25 = 36,000). After the revaluation, depreciate the revalued amount.' },
+          { value: 1150000, say: 'Three years of depreciation have been charged since the revaluation.' },
+          { value: 762000, say: 'That depreciates the old carrying amount, as the cost model would. Under the revaluation model start from 1,150,000.' },
         ] },
-      { id: 'f02-gi-g2-s3', type: 'num', prompt: 'If Wildfern reported under US GAAP, what would the tins’ carrying amount be three months after the year end?',
-        answer: 8500, check: () => Math.min(12000, 9100 - 600), unit: '$', places: 0, tol: 0.5,
-        hints: ['Under US GAAP a write-down creates a new cost basis.', 'The recovery is not recorded until the tins are sold.'],
+      { id: 'f02-gi-g2-s3', type: 'num', prompt: 'How much of the fall to $700,000 is recognised as a loss in profit or loss?',
+        answer: 62000, check: () => (1150000 - 3 * (1150000 / 25) - 700000) - Math.min(1150000 - 3 * (1150000 / 25) - 700000, 250000), unit: '$', places: 0, tol: 0.5,
+        hints: ['The decrease is first taken against the surplus on the same building.', 'Decrease 1,012,000 − 700,000 = 312,000; the surplus is 250,000.'],
         wrong: [
-          { value: 11000, say: 'US GAAP doesn’t write inventory back up after a year-end write-down; the $8,500 is now its cost.' },
-          { value: 12000, say: 'The original cost no longer applies under US GAAP; the written-down amount replaced it.' },
+          { value: 312000, say: 'The first 250,000 of the decrease is taken against the revaluation surplus, through other comprehensive income.' },
+          { value: 0, say: 'The surplus is only 250,000, so it can’t absorb the whole 312,000 decrease.' },
+          { value: 450000, say: 'Measure the decrease from the carrying amount just before the valuation (1,012,000), not from the revalued amount.' },
         ] },
     ],
   },
@@ -211,35 +223,33 @@ export const guided = [
 
 export const independent = [
   {
-    id: 'f02-gi-i1', type: 'num', kind: 'numerical',
-    prompt: 'Osterley Tiles Inc., a fictional US retailer, starts the year with 1,000 boxes of tiles costing $20 each, buys 3,000 boxes at $24 and then 2,000 boxes at $27, and sells 4,500 boxes. It uses a periodic system and its income tax is 21% of income before tax. How much lower is its income tax under LIFO than under FIFO?',
-    answer: 1785, check: () => 0.21 * ((2000 * 27 + 2500 * 24) - (1000 * 20 + 3000 * 24 + 500 * 27)), unit: '$', places: 0,
-    wrong: [
-      { value: 8500, say: 'That is the difference in cost of goods sold. The tax saving is 21% of it.' },
-      { value: -1785, say: 'Prices are rising, so LIFO’s cost of goods sold is higher and its tax lower: enter the saving as a positive number.' },
-      { value: 2125, say: 'Use Osterley’s rate, 21%, not the Lantern case’s 25%.' },
-    ],
-    solution: 'FIFO cost of goods sold: 1,000 × 20 + 3,000 × 24 + 500 × 27 = 105,500. LIFO: 2,000 × 27 + 2,500 × 24 = 114,000. Difference 8,500; tax saving 21% × 8,500 = $1,785. Under IFRS this choice isn’t available, because IAS 2 doesn’t permit LIFO.',
+    id: 'f02-gi-i1', type: 'journal', kind: 'applied', chart: 'f02', date: '2027-03-31',
+    prompt: 'Wildfern Tea Ltd, a fictional tea blender reporting under IFRS, wrote gift tins costing $12,000 down to their net realisable value of $8,500 at its year end. Three months later, still unsold, the tins attract a large corporate order and their net realisable value rises to $11,000. Record the entry IAS 2 requires.',
+    accounts: ['Inventory', 'Cost of Goods Sold', 'Online Sales Revenue', 'Accounts Receivable', 'Cash', 'Retained Earnings', 'Accounts Payable', 'Sales Returns and Allowances'],
+    lines: [{ acct: 'Inventory', dr: 2500 }, { acct: 'Cost of Goods Sold', cr: 2500 }],
+    solution: 'IAS 2 measures the tins at min(cost 12,000, NRV 11,000) = 11,000, so 11,000 − 8,500 = 2,500 of the write-down is reversed: debit Inventory 2,500; credit Cost of Goods Sold 2,500, which lowers the expense of the period. A US GAAP reporter would record nothing, because the $8,500 became the tins’ new cost; its profit would rise only when the tins are sold.',
   },
   {
-    id: 'f02-gi-i2', type: 'num', kind: 'numerical',
-    prompt: 'Saltire Conference Centre Ltd, a fictional company reporting under IFRS, uses the revaluation model for its buildings. At the start of the year a building carried at $3,200,000 (cost less accumulated depreciation) is revalued to its fair value of $3,800,000. Its remaining useful life is 25 years, with no residual value. How much higher is the year’s depreciation than it would have been without the revaluation?',
-    answer: 24000, check: () => 3800000 / 25 - 3200000 / 25, unit: '$', places: 0,
+    id: 'f02-gi-i2', type: 'num', kind: 'applied',
+    prompt: 'Ravensworth Outdoor plc, a fictional retailer with no specified main business activity, leases its flagship store for ten years. This year it paid $50,000 under the lease; under IFRS 16, $38,000 of that repaid the lease liability and $12,000 was interest. An otherwise identical US company accounting for the store as an operating lease under ASC 842 reports cash from operating activities of $400,000. What is Ravensworth’s cash from operating activities under IFRS 16 and IAS 7 as amended by IFRS 18?',
+    answer: 450000, check: () => 400000 + 38000 + 12000, unit: '$', places: 0,
     wrong: [
-      { value: 600000, say: 'That is the revaluation surplus, which goes to other comprehensive income. The question asks about depreciation.' },
-      { value: 152000, say: 'That is the new depreciation charge. Compare it with the charge on the old carrying amount, 3,200,000 ÷ 25.' },
+      { value: 438000, say: 'Under IAS 7 as amended by IFRS 18, interest paid also moves out of operating, to financing.' },
+      { value: 412000, say: 'The principal part of a lease payment is a financing outflow under IFRS 16.' },
+      { value: 400000, say: 'Under ASC 842 operating lease payments are operating; under IFRS 16 they leave the operating section.' },
     ],
-    solution: 'Depreciation after revaluation: 3,800,000 ÷ 25 = 152,000. Without it: 3,200,000 ÷ 25 = 128,000. Difference $24,000 a year, which is the $600,000 surplus spread over 25 years. The surplus itself is not profit.',
+    solution: 'Under ASC 842 the whole $50,000 is an operating outflow. Under IFRS 16 the $38,000 of principal is financing, and under IAS 7 as amended by IFRS 18 the $12,000 of interest paid is financing too. Operating cash flow is 400,000 + 50,000 = $450,000; financing is $50,000 lower, and total cash is the same.',
   },
   {
     id: 'f02-gi-i3', type: 'num', kind: 'numerical',
-    prompt: 'Harlow Air Ltd, a fictional airline reporting under IFRS, buys an aircraft for $60 million. The engines cost $12 million and will last 8 years; the cabin interior costs $6 million and will last 6 years; the airframe, the remaining $42 million, will last 21 years. (Depreciated as one unit over 20 years, the aircraft would cost $3 million a year.) Ignoring residual values, what is the first year’s straight-line depreciation under IFRS, in millions of dollars? Give one decimal place.',
-    answer: 4.5, check: () => 12 / 8 + 6 / 6 + (60 - 12 - 6) / 21, unit: '$ million', places: 1, tol: 0.05,
+    prompt: 'Pemberly Software Inc., a fictional US public business entity, presents one caption, “Selling, general and administrative expenses”, of $9.0 million. Applying ASU 2024-03, it finds the caption includes employee compensation of $4.2 million, depreciation of $0.6 million and intangible asset amortisation of $0.3 million, and no purchases of inventory or depletion. How much of the caption is left to be described qualitatively, in millions of dollars? Give one decimal place.',
+    answer: 3.9, check: () => 9.0 - (4.2 + 0.6 + 0.3), unit: '$ million', places: 1, tol: 0.05,
     wrong: [
-      { value: 3, say: 'That is the single-unit figure. IAS 16 requires significant parts with different lives to be depreciated separately.' },
-      { value: 2, say: 'That is the airframe alone. Add the engines (12 ÷ 8) and the cabin (6 ÷ 6).' },
+      { value: 5.1, say: 'That is the total of the named categories, which are disclosed as amounts. The question asks for the rest.' },
+      { value: 4.8, say: 'Depreciation and intangible asset amortisation are named categories too: subtract them as well.' },
+      { value: 9.0, say: 'The named categories are disclosed as amounts in the tabular note; only the remainder is described in words.' },
     ],
-    solution: 'Engines 12 ÷ 8 = 1.5; cabin 6 ÷ 6 = 1.0; airframe 42 ÷ 21 = 2.0. Total $4.5 million a year, against $3 million as a single unit: the short-lived parts make depreciation faster in the early years.',
+    solution: 'Named categories in the caption: 4.2 + 0.6 + 0.3 = 5.1, each shown in the tabular note. The remaining 9.0 − 5.1 = $3.9 million is described qualitatively. Pemberly also discloses its total selling expenses and, in annual periods, how it defines them; the face of the income statement doesn’t change.',
   },
   {
     id: 'f02-gi-i4', type: 'num', kind: 'applied',
@@ -275,11 +285,11 @@ export const independent = [
     rubric: [
       'States that Lantern’s 2026 net income, total assets and increase in cash would be the same under IFRS.',
       'Names the cash flow difference: $450 of interest paid would move from operating to financing (operating $40,390 instead of $39,940).',
-      'Notes that Lantern uses FIFO, so the LIFO difference doesn’t arise, and that IFRS 18 would show operating profit of $37,716 as a defined subtotal.',
-      'Names at least two differences to check in Aldgate’s notes, such as capitalised development costs, revalued property, inventory write-down reversals or management-defined performance measures.',
+      'Notes why nothing else changes for Lantern: FIFO, no development spending or revalued property, a month-by-month kitchen rent, and operating income of $37,716 that matches IFRS 18’s operating profit.',
+      'Names at least two differences to check in Aldgate’s notes, such as leases, capitalised development costs, revalued property, inventory write-down reversals or management-defined performance measures.',
       'Concludes that the statements can be compared once the identified differences are adjusted for.',
     ],
-    model: 'Under IFRS Lantern’s 2026 net income of $27,387, its total assets and its $42,940 increase in cash would all be unchanged: it uses FIFO, has no development spending or revalued property, and its one inventory write-down hasn’t recovered. The only figure that would move is operating cash flow, $40,390 instead of $39,940, because IFRS 18 puts the $450 of interest paid in financing. Its operating income of $37,716 already matches what IFRS 18 calls operating profit. In Aldgate’s statements I would check the notes for capitalised development costs, revalued property and any reversed inventory write-downs, and read its management-defined performance measures against its IFRS subtotals. Once those are adjusted for, the two companies can be compared.',
+    model: 'Under IFRS Lantern’s 2026 net income of $27,387, its total assets and its $42,940 increase in cash would all be unchanged: it uses FIFO, has no development spending or revalued property, rents its kitchen month by month, and its one inventory write-down hasn’t recovered. The only figure that would move is operating cash flow, $40,390 instead of $39,940, because IFRS 18 puts the $450 of interest paid in financing; its operating income of $37,716 already matches what IFRS 18 calls operating profit. In Aldgate’s statements I would check the lease note, since IFRS 16 puts lease principal in financing, and the notes on capitalised development costs, revalued property and reversed write-downs, and I would read its management-defined performance measures against its IFRS subtotals. Once those are adjusted for, the two companies can be compared.',
   },
 ];
 
@@ -333,13 +343,14 @@ export const check = [
   },
   {
     id: 'f02-gi-k4', type: 'num', kind: 'applied',
-    prompt: `Lantern wrote Holiday Blend bags costing $1,000 down by $${n(e7)} at 31 December 2026. Suppose that in January 2027, with the bags still unsold, their net realisable value rises to $1,150. If Lantern reported under IFRS, how much of the write-down would it reverse?`,
-    answer: 400, check: () => Math.min(1150, 1000) - (1000 - e7), unit: '$', places: 0,
+    prompt: 'An analyst wants Aldgate Coffee plc’s IFRS profit before tax of $14.5 million on a US GAAP basis. This year Aldgate capitalised $2.0 million of development costs, amortised $0.6 million of development costs capitalised in earlier years, and reversed $0.3 million of an inventory write-down after prices recovered. It uses the cost model for its property. Ignoring any other differences, what is its profit before tax on a US GAAP basis, in millions of dollars? Give one decimal place.',
+    answer: 12.8, check: () => 14.5 - 2.0 + 0.6 - 0.3, unit: '$ million', places: 1, tol: 0.05,
     wrong: [
-      { value: 550, say: 'Inventory is measured at the lower of cost and net realisable value, so it can’t go above its $1,000 cost: the reversal is capped at the original write-down.' },
-      { value: 0, say: 'That is the US GAAP answer. IAS 2 requires the reversal.' },
+      { value: 16.2, say: 'The signs are reversed. Capitalising development and reversing write-downs raised IFRS profit, so take them off; amortisation lowered it, so add it back.' },
+      { value: 12.2, say: 'Add back the amortisation: US GAAP expensed that spending when it was incurred, so there is nothing to amortise now.' },
+      { value: 13.1, say: 'US GAAP doesn’t reverse inventory write-downs, so take the $0.3 million reversal off as well.' },
     ],
-    solution: `Carrying amount ${money(1000 - e7)}; new measure min(1,150, 1,000) = 1,000; reversal 1,000 − ${n(1000 - e7)} = $400, the whole original write-down and no more.`,
+    solution: 'US GAAP expenses development as incurred, so subtract the 2.0 capitalised and add back the 0.6 amortised; it doesn’t reverse write-downs, so subtract the 0.3. 14.5 − 2.0 + 0.6 − 0.3 = $12.8 million. Aldgate uses the cost model, so there is no revaluation depreciation to adjust.',
   },
   {
     id: 'f02-gi-k5', type: 'mc', kind: 'applied',

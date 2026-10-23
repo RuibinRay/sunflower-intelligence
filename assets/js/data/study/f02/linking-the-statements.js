@@ -1,6 +1,6 @@
 // linking-the-statements.js — F02 · Linking the statements. Content only; exercises are in linking-the-statements.ex.js.
 // Lantern’s figures come from case.js (DERIVED, STATEMENTS, LEDGER, FACTS) and Ana’s 2027 salary from f04/case.js; prose
-// prints them and `checks` recomputes each one from the imports. Bramble Bakery and Hatherley Print Studio are fictional
+// prints them and `checks` recomputes each one from the imports. Thornwick Bakery and Hatherley Print Studio are fictional
 // and used only in this lesson. The indirect method itself, the sign rules and the roll-forward of balance sheet accounts
 // are taught in f02/indirect-method; this lesson builds on them rather than repeating them.
 import { FACTS as F, LEDGER, DERIVED as D, STATEMENTS as S, ADJUSTMENTS } from './case.js';
@@ -10,7 +10,7 @@ const bal = (n) => LEDGER[n]?.balance || 0;
 const adj = (id) => ADJUSTMENTS.find((e) => e.id === id);
 const t = F.tax.rate;
 const wd = adj('e7').lines[0].dr;                                                                                              // 400
-// Bramble Bakery (simple example)
+// Thornwick Bakery (simple example)
 const BR = { reBeg: 30000, ni: 48000, reEnd: 66000, cashBeg: 9000, cfo: 52000, cfi: -35000, cff: -10000, cashBS: 16000, assets: 214000, liab: 98000, stock: 50000 };
 // Hatherley Print Studio (challenging example)
 const CI = { ni: 41200, dep: 6500, ar: 3200, inv: 2700, ap: 1800, equip: 27500, loan: 8000, div: 9000, cashBeg: 14300, reBeg: 22000 };
@@ -152,7 +152,7 @@ export default {
 
   examples: [
     { level: 'simple', title: 'Finding the missing links for a bakery', fictional: true,
-      setup: 'Bramble Bakery Inc., a fictional company, has drafted its statements for the year. Retained earnings were $30,000 at the start of the year and $66,000 at the end; net income was $48,000. Cash was $9,000 at the start of the year; operating activities provided $52,000, investing activities used $35,000 and financing activities used $10,000. The balance sheet shows cash of $16,000, total assets of $214,000, liabilities of $98,000 and common stock of $50,000. The dividends figure is missing from the draft: find it, and check the links.',
+      setup: 'Thornwick Bakery Inc., a fictional company, has drafted its statements for the year. Retained earnings were $30,000 at the start of the year and $66,000 at the end; net income was $48,000. Cash was $9,000 at the start of the year; operating activities provided $52,000, investing activities used $35,000 and financing activities used $10,000. The balance sheet shows cash of $16,000, total assets of $214,000, liabilities of $98,000 and common stock of $50,000. The dividends figure is missing from the draft: find it, and check the links.',
       steps: [
         String.raw`Retained earnings link, solved for dividends: <m>D = RE_{\text{beg}} + NI - RE_{\text{end}} = 30{,}000 + 48{,}000 - 66{,}000 = 12{,}000</m>.`,
         String.raw`Cash link: <m>9{,}000 + 52{,}000 - 35{,}000 - 10{,}000 = 16{,}000</m>, the balance sheet’s cash. The statement of cash flows explains the whole change in cash, <m>16{,}000 - 9{,}000 = 7{,}000</m>.`,
@@ -160,7 +160,7 @@ export default {
         String.raw`Balance sheet: <m>98{,}000 + 116{,}000 = 214{,}000</m>, equal to total assets.`,
       ],
       answer: 'Dividends were $12,000. Every link holds: retained earnings 30,000 + 48,000 − 12,000 = 66,000; cash 9,000 + 52,000 − 35,000 − 10,000 = 16,000; assets $214,000 = liabilities $98,000 + equity $116,000.',
-      interpretation: 'The links let a reader recover a figure that isn’t printed: dividends declared follow from the opening and closing retained earnings and net income. Bramble paid out a quarter of its profit (12,000 ÷ 48,000) and kept the rest in the business. Passing every check shows the statements are consistent, not that every figure in them is right.' },
+      interpretation: 'The links let a reader recover a figure that isn’t printed: dividends declared follow from the opening and closing retained earnings and net income. Thornwick paid out a quarter of its profit (12,000 ÷ 48,000) and kept the rest in the business. Passing every check shows the statements are consistent, not that every figure in them is right.' },
     { level: 'challenging', title: 'A statement of cash flows that doesn’t tie', fictional: true,
       setup: 'Hatherley Print Studio Inc., a fictional company, began the year with cash of $14,300 and retained earnings of $22,000. Its draft statement of cash flows, prepared by the indirect method, is below; it ends at $19,800, but the balance sheet, taken from the ledger, shows cash of $22,400. The balance sheet also shows retained earnings of $54,200 and a $9,000 dividend payable: the board declared a dividend on 15 December, payable on 10 January. Net income was $41,200. Find the errors and correct the statement.',
       table: {
@@ -323,13 +323,13 @@ export default {
     { what: 'Assets change (tax paid)', value: t * 1000 - 1000, shown: -750 },
     { what: 'Lantern variant: CFO change', value: -(1 - t) * 1000 + 1000 - t * 1000, shown: 0 },
     { what: 'Lantern variant: assets = liabilities + equity', value: -1000, shown: -250 + -750 },
-    // Bramble
-    { what: 'Bramble dividends', value: BR.reBeg + BR.ni - BR.reEnd, shown: 12000 },
-    { what: 'Bramble ending cash', value: BR.cashBeg + BR.cfo + BR.cfi + BR.cff, shown: BR.cashBS },
-    { what: 'Bramble change in cash', value: BR.cashBS - BR.cashBeg, shown: 7000 },
-    { what: 'Bramble equity', value: BR.stock + BR.reEnd, shown: 116000 },
-    { what: 'Bramble L + E', value: BR.liab + BR.stock + BR.reEnd, shown: BR.assets },
-    { what: 'Bramble payout (a quarter)', value: 12000 / 48000, shown: 0.25 },
+    // Thornwick
+    { what: 'Thornwick dividends', value: BR.reBeg + BR.ni - BR.reEnd, shown: 12000 },
+    { what: 'Thornwick ending cash', value: BR.cashBeg + BR.cfo + BR.cfi + BR.cff, shown: BR.cashBS },
+    { what: 'Thornwick change in cash', value: BR.cashBS - BR.cashBeg, shown: 7000 },
+    { what: 'Thornwick equity', value: BR.stock + BR.reEnd, shown: 116000 },
+    { what: 'Thornwick L + E', value: BR.liab + BR.stock + BR.reEnd, shown: BR.assets },
+    { what: 'Thornwick payout (a quarter)', value: 12000 / 48000, shown: 0.25 },
     // Hatherley
     { what: 'Hatherley RE', value: CI.reBeg + CI.ni - CI.div, shown: 54200 },
     { what: 'Hatherley draft CFO', value: ciCfoDraft, shown: 50000 },

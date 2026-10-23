@@ -44,7 +44,7 @@ export const widgets = {
       const dLE = dPayable + dNI;
       const note = d === 0
         ? 'Move the first slider: with no change in depreciation nothing on any statement moves.'
-        : `Net income changes by ${signed(dNI)}: the ${d > 0 ? 'extra' : 'smaller'} expense less the ${v.rate}% tax on it. Operating cash flow changes by ${signed(dCFO)}, which is only the tax ${d > 0 ? 'saved' : 'added'} that is paid within the year${p < 1 && t > 0 ? `; the other ${signed(dPayable)} sits in income taxes payable until the tax is paid` : ''}. Depreciation itself moves no cash. Assets change by ${signed(dAssets)} and liabilities plus equity by ${signed(dLE)}, so the balance sheet still balances.`;
+        : `Net income changes by ${signed(dNI)}: the ${d > 0 ? 'extra' : 'smaller'} expense less the ${v.rate}% tax on it. Operating cash flow changes by ${signed(dCFO)}, which is only the tax ${d > 0 ? 'saved' : 'added'} that is paid within the year${p < 1 && t > 0 ? `; ${p === 0 ? 'all' : 'the rest'} of it, ${signed(dPayable)}, sits in income taxes payable until the tax is paid` : ''}. Depreciation itself moves no cash. Assets change by ${signed(dAssets)} and liabilities plus equity by ${signed(dLE)}, so the balance sheet still balances.`;
       return {
         headline: { label: 'Change in net income', value: signed(dNI) },
         rows: [
