@@ -8,10 +8,11 @@ import { ols } from '../../core/stats.js?v=11';
 import { scatter } from '../../core/charts.js?v=11';
 import * as F from '../../core/format.js?v=11';
 
-/** Numbers as the ToolPak prints them, shortened to 6 significant figures; tiny values in E notation (1.23E-08). */
+/** Numbers as the ToolPak prints them, shortened: 6 significant figures (2 decimals from 10,000 up); tiny values in E notation (1.23E-08). */
 function num(v) {
   if (!Number.isFinite(v)) return '#N/A';
   if (v !== 0 && Math.abs(v) < 1e-4) return v.toExponential(2).replace('e', 'E').replace(/E([+-])(\d)$/, 'E$10$2');
+  if (Math.abs(v) >= 1e4) return String(Math.round(v * 100) / 100);   // large sums of squares keep their whole part
   return String(Number(v.toPrecision(6)));
 }
 const table = (caption, head, rows) => h('div', { class: 'table-scroll' }, h('table', { class: 'data-table study-table' },
