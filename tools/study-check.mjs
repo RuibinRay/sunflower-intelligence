@@ -231,6 +231,14 @@ export async function checkLesson(course, slug, { courseTerms } = {}) {
     try { tex(f.tex, true); } catch (e) { r.err(`${w}: TeX error: ${e.message}`); }
     if (/\\\\[a-zA-Z]/.test(f.tex || '') || /[\t\f\b\v]/.test(f.tex || '')) r.err(`${w}: tex has a doubled backslash or a control character: write it with String.raw and single backslashes`);
     if (!Array.isArray(f.where) || !f.where.length) r.err(`${w}: define every symbol in where`);
+    else {
+      // single-letter symbols used in the formula should each be defined in `where` (words in \text{} don't count)
+      // skips words in \text{}, commands, subscripts and summation indices (_i, _{i=1}, ^{n}), and e as the constant (e^)
+      const letters = (t) => new Set((String(t).replace(/\\(?:text|mathrm|operatorname)\{[^}]*\}/g, ' ').replace(/[_^]\{[^}]*\}|[_^][A-Za-z0-9]/g, ' ').replace(/\be(?=\s*\^)/g, ' ').replace(/\\[a-zA-Z]+/g, ' ').match(/(?<![A-Za-z])[A-Za-z](?![A-Za-z])/g) || []));
+      const defined = new Set(f.where.flatMap((row) => [...letters(row[0])]));
+      const undefinedSyms = [...letters(f.tex)].filter((x) => !defined.has(x));
+      if (undefinedSyms.length) r.warn(`${w}: symbol${undefinedSyms.length > 1 ? 's' : ''} ${undefinedSyms.join(', ')} used but not defined in where`);
+    }
     (f.where || []).forEach((row, j) => { if (!Array.isArray(row) || row.length < 3) r.err(`${w}.where[${j}]: [symbol TeX, meaning, unit]`); else { try { tex(row[0]); } catch (e) { r.err(`${w}.where[${j}]: TeX error: ${e.message}`); } } });
     for (const k of ['assumptions', 'note']) if (f[k]) inline(f[k], ctx, `${w}.${k}`);
   });
