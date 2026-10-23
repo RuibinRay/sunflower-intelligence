@@ -416,7 +416,8 @@ export const items = [
   {
     id: 'f02-fn-24', lesson: 'gaap-and-ifrs', type: 'num', kind: 'numerical',
     prompt: 'Vantor Pumps Inc., a fictional US manufacturer, reports under US GAAP. Its 2027 income before income tax is $2,400,000, and its managers want to know what the figure would be under IFRS. Three differences matter. (1) It uses LIFO; purchase costs rose during 2027, and under FIFO its 2027 cost of goods sold would have been $180,000 lower. (2) At 31 December 2026 it wrote a stock of pump castings down by $60,000; the castings are still unsold, and during 2027 their net realisable value rose above their original cost. (3) Under IFRS it would use the revaluation model for its land, whose fair value rose by $250,000 during 2027. Treating each difference on its own, what would its 2027 income before income tax be under IFRS? Enter whole dollars.',
-    answer: 2640000, check: () => 2400000 + 180000 + Math.min(60000, 60000) + 0 * 250000, unit: '$', places: 0, tol: 0.5,
+    answer: 2640000, check: () => 2400000 + 180000 + 60000,   // FIFO, then the reversal; the revaluation goes to other comprehensive income
+    unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 2890000, say: 'A revaluation increase goes to other comprehensive income and builds a revaluation surplus in equity; it doesn’t pass through profit.' },
       { value: 2830000, say: 'IAS 2 reverses the castings’ write-down once their value recovers, which adds $60,000 to 2027 profit; and the land revaluation belongs in other comprehensive income, not profit.' },
