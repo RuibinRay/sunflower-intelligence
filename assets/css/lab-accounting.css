@@ -391,3 +391,5 @@ html:has(.acc-eqbar-wrap) { scroll-padding-top: calc(var(--header-h) + 104px); }
   .acc-eqbar-row span, .acc-meter span, .acc-ed-acct { transition: none; }
 }
 html.motion-paused .acc-eqbar-row span, html.motion-paused .acc-meter span, html.motion-paused .acc-ed-acct { transition: none; }
+/* a segmented control that wraps onto several lines keeps a gentle radius instead of a pill */
+.acc-lab-bar .segmented, .acc .acc-cf .segmented, .acc-closing > .segmented, .acc-statements-head .segmented { border-radius: 16px; }

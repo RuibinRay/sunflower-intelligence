@@ -43,7 +43,7 @@ export default {
   theory: [
     { h: 'Incrementality: what would have happened anyway?' },
     { p: 'Every return metric above depends on one assumption: that the sales credited to the campaign were caused by it. <g>Incrementality</g> is the part of an outcome that would not have happened without the marketing. The rest would have happened anyway: loyal customers who were going to buy, shoppers who already had the can in their basket, people searching for Lantern by name who would have found it without an ad.' },
-    { p: 'This is not a theoretical worry. In large field experiments at eBay, Blake, Nosko and Tadelis (2015) found that paid search ads on the company’s own brand name had no measurable short-term benefit, because people searching for “eBay” clicked the free link below the ad instead, and that the returns from paid search were a fraction of what the usual non-experimental estimates suggested.' },
+    { p: 'This is not a theoretical worry. In large field experiments at eBay, Blake, Nosko and Tadelis (2015) found that paid search ads on the company’s own brand name had no measurable short-term benefit (people searching for a company by name can reach it through the free search results without the ad), and that the returns from paid search were a fraction of what the usual non-experimental estimates suggested.' },
     { p: 'The only reliable way to measure incrementality is to create a comparison group that didn’t get the marketing, chosen so that it is otherwise the same:' },
     { list: [
       '<b>Holdout (control) group</b>: withhold the ad, email or offer from a randomly chosen <g>holdout group</g> and compare its behaviour with the exposed group. The difference is the incremental effect.',
