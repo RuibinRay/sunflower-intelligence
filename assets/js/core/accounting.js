@@ -692,7 +692,9 @@ export function cashFlows(entries, chart) {
 
 /**
  * A multi-step income statement from an adjusted ledger (before closing). Accounts say where they go:
- * - revenue: `section: 'other'` for non-operating income (interest revenue, gains); otherwise it is operating revenue.
+ * - revenue: `section: 'other'` for non-operating income (interest revenue); a revenue account with `gain: true` and no
+ *   `section: 'other'` is an operating gain, added after operating expenses (ASC 360-10-45-5 puts gains and losses on
+ *   selling long-lived assets inside operating income when that subtotal is shown); otherwise it is operating revenue.
  * - contra-revenue: subtracted from operating revenue (sales returns and allowances, sales discounts).
  * - expense: `section: 'cost'` (cost of sales), 'operating' (the default), 'other' (interest expense, losses) or 'tax'.
  *   `da: true` marks depreciation and amortisation (for EBITDA); `interest: true` marks interest (for EBIT).
@@ -701,13 +703,14 @@ export function cashFlows(entries, chart) {
  */
 export function multiStepIncome(ledger, chart) {
   const ch = asChart(chart);
-  const L = { revenue: [], contra: [], cost: [], operating: [], otherIncome: [], otherExpense: [], tax: [] };
-  const T = { grossRevenue: 0, contra: 0, cost: 0, operating: 0, otherIncome: 0, otherExpense: 0, tax: 0, da: 0, interestExp: 0, interestRev: 0 };
+  const L = { revenue: [], contra: [], cost: [], operating: [], operatingGains: [], otherIncome: [], otherExpense: [], tax: [] };
+  const T = { grossRevenue: 0, contra: 0, cost: 0, operating: 0, operatingGains: 0, otherIncome: 0, otherExpense: 0, tax: 0, da: 0, interestExp: 0, interestRev: 0 };
   for (const a of ch.list) {
     const b = bal(ledger, a.name);
     if (!b) continue;
     if (a.type === 'revenue') {
       if (a.section === 'other') { L.otherIncome.push([a.name, D(b)]); T.otherIncome += b; if (a.interest || /interest/i.test(a.name)) T.interestRev += b; }
+      else if (a.gain) { L.operatingGains.push([a.name, D(b)]); T.operatingGains += b; }
       else { L.revenue.push([a.name, D(b)]); T.grossRevenue += b; }
     } else if (a.type === 'contra-revenue') { L.contra.push([a.name, D(b)]); T.contra += b; }
     else if (a.type === 'expense') {
@@ -720,7 +723,7 @@ export function multiStepIncome(ledger, chart) {
   }
   const revenue = T.grossRevenue - T.contra;
   const grossProfit = revenue - T.cost;
-  const operatingIncome = grossProfit - T.operating;
+  const operatingIncome = grossProfit - T.operating + T.operatingGains;
   const incomeBeforeTax = operatingIncome + T.otherIncome - T.otherExpense;
   const netIncome = incomeBeforeTax - T.tax;
   const ebit = incomeBeforeTax + T.interestExp - T.interestRev;
@@ -728,7 +731,7 @@ export function multiStepIncome(ledger, chart) {
     lists: Object.fromEntries(Object.entries(L)),
     grossRevenue: D(T.grossRevenue), contraRevenue: D(T.contra), revenue: D(revenue),
     costOfSales: D(T.cost), grossProfit: D(grossProfit),
-    operatingExpenses: D(T.operating), operatingIncome: D(operatingIncome),
+    operatingExpenses: D(T.operating), operatingGains: D(T.operatingGains), operatingIncome: D(operatingIncome),
     otherIncome: D(T.otherIncome), otherExpenses: D(T.otherExpense),
     incomeBeforeTax: D(incomeBeforeTax), incomeTax: D(T.tax), netIncome: D(netIncome),
     interestExpense: D(T.interestExp), interestRevenue: D(T.interestRev),

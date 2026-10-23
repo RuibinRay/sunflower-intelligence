@@ -5,16 +5,16 @@
 import { FACTS as F, DERIVED as D, STATEMENTS as S, RESULTS as R, LEDGER } from './case.js';
 
 const bal = (n) => LEDGER[n]?.balance || 0;
-const line = (label) => (R.cashFlows.lines.find((l) => l[0] === label) || [])[1] || 0;
 const money = (v) => `${v < 0 ? '−' : ''}$${Math.abs(v).toLocaleString('en-US')}`;
+const cell = (v) => (v < 0 ? `(${Math.abs(v).toLocaleString('en-US')})` : v.toLocaleString('en-US'));   // a table cell, negatives in parentheses
 
 // Lantern: the direct-method lines and the accrual figures they come from
 const L = {
-  customers: line('Cash received from customers'),                 // 191,220
-  suppliers: -line('Cash paid to suppliers'),                      // 103,330
-  employees: -line('Cash paid to employees'),                      // 41,500
-  interest: -line('Interest paid'),                                // 450
-  taxes: -line('Income taxes paid'),                               // 6,000
+  customers: D.cashFromCustomers,                                  // 191,220
+  suppliers: D.cashToSuppliers,                                    // 103,330
+  employees: D.cashToEmployees,                                    // 41,500
+  interest: D.interestPaid,                                        // 450
+  taxes: D.incomeTaxesPaid,                                        // 6,000
   arGross: bal('Accounts Receivable'),                             // 7,380
   writeOff: F.catering.writtenOff,                                 // 820
   unearned: bal('Unearned Revenue'),                               // 6,100
@@ -24,6 +24,22 @@ const L = {
 };
 // expenses paid to suppliers: cost of sales and operating expenses, less wages, depreciation and bad debts
 L.supplierExpenses = D.costOfSales - F.wages.events + D.operatingExpenses - F.wages.shopAndOffice - D.depreciation - D.badDebt;   // 105,800
+L.arNet = bal('Accounts Receivable') - bal('Allowance for Doubtful Accounts');                                                   // 6,796
+const [paidMarch, paidApril] = F.equipment.paid.map((p) => p.amount);                                                            // 4,000; 8,000
+const conversion = {   // Lantern: from the income statement to the direct-method lines (accrual, adjustment, cash; payments negative)
+  caption: 'Lantern: from the income statement to the direct-method lines',
+  head: ['Line', 'Accrual amount ($)', 'Adjustments ($)', 'Cash ($)'],
+  align: ['l', 'r', 'r', 'r'],
+  rows: [
+    ['Customers', D.revenue, L.customers],
+    ['Suppliers', -L.supplierExpenses, -L.suppliers],
+    ['Employees', -L.wages, -L.employees],
+    ['Interest', -D.interestExpense, -L.interest],
+    ['Income taxes', -D.incomeTax, -L.taxes],
+  ].map(([name, accrual, cash]) => [name, cell(accrual), cell(cash - accrual), cell(cash)]),
+  foot: [['Net cash from operating activities', '', '', cell(D.cfo)]],
+  note: 'Fictional figures. Opening balances were zero, so each change is the 31 December balance.',
+};
 
 // The bridge from opening to closing cash, drawn from the case figures.
 const bridgeSVG = (() => {
@@ -75,7 +91,6 @@ const ctRow = (name, a) => [name, a[0].toLocaleString('en-US'), a[1].toLocaleStr
 const vanInterestYear = F.vanNote.principal * F.vanNote.rate;            // 1,200
 const coastlineInterestYear = F.coastline.principal * F.coastline.rate;  // 600
 const debtService2027 = F.vanNote.instalment + vanInterestYear + coastlineInterestYear;   // 6,800
-const unearnedParts = { deposits: F.catering.depositsReceived - F.catering.depositsEarned, workshop: F.training.paidForJanuary, subscriptions: F.shop.prepaidSubscriptions };
 
 // Pellow Roasters (application), an IFRS reporter after IFRS 18
 const PR = { cfo: 61000, interestPaid: 8000, interestReceived: 1500 };
@@ -114,7 +129,7 @@ export default {
     { h: 'Cash and cash equivalents' },
     { p: 'Cash means currency and deposits that can be withdrawn on demand. <g>Cash equivalents</g> are short-term, highly liquid investments that are readily convertible to known amounts of cash and so near their maturity that changes in interest rates can hardly affect their value. The ASC 230 glossary adds that generally only investments with original maturities of three months or less qualify, where “original” means from the date the business acquired the investment. So a three-year Treasury note bought three months before it matures qualifies, but a note the business has held for years does not become a cash equivalent as its maturity approaches. Treasury bills, commercial paper and money market funds are the usual examples (ASC 230-10-20).' },
     { p: 'IAS 7 uses almost the same definition and says an investment normally qualifies only when it has a short maturity of, say, three months or less from the date of acquisition; equity investments are excluded unless they are cash equivalents in substance, such as preferred shares bought shortly before a set redemption date (IAS 7, paragraphs 6–7). Because cash and cash equivalents are treated as one pool, moving money between them is not a cash flow: buying a 60-day Treasury bill with cash changes neither the total nor any activity, and ASC 230-10-45-5 treats such purchases and sales as cash management whose details need not be reported. A nine-month certificate of deposit is different: it is usually reported as a short-term investment, and buying it is an investing outflow.' },
-    { p: 'Each business must disclose its policy for deciding which items are cash equivalents (ASC 230-10-50-1), and a US GAAP statement explains the change in the total of cash, cash equivalents and any restricted cash (ASC 230-10-45-4). Bank overdrafts are a difference between the frameworks: US GAAP never includes them in cash, whereas IAS 7 lets a company include an overdraft that is repayable on demand and forms an integral part of its cash management (paragraph 8). Lantern holds no cash equivalents, so its cash is the balance of its business bank account.' },
+    { p: 'Each business must disclose its policy for deciding which items are cash equivalents (ASC 230-10-50-1), and a US GAAP statement explains the change in the total of cash, cash equivalents and any restricted cash (ASC 230-10-45-4). Bank overdrafts are a difference between the frameworks: US GAAP never includes them in cash, whereas under IAS 7 an overdraft that is repayable on demand and forms an integral part of cash management is included (paragraph 8). Lantern holds no cash equivalents, so its cash is the balance of its business bank account.' },
   ],
 
   theory: [
@@ -139,27 +154,15 @@ export default {
       note: 'Paragraph references are to ASC 230-10-45; for example, 16(b) is ASC 230-10-45-16(b).',
     } },
     { p: 'Proceeds from selling equipment or other long-term assets, and collections of loans made to others, are investing inflows. Two rows surprise most students. Interest paid is operating although the loan itself is financing: interest is an expense in net income, and ASC 230 keeps the cash effects of net income together, so only the repayment of principal is financing. Dividends paid are financing although dividends received are operating, for the same reason seen from the other side: a dividend paid distributes profit to owners and is not an expense, while a dividend received is income. Customer deposits are operating receipts even though the revenue isn’t earned yet, because they are cash from customers for goods or services.' },
-    { p: 'Paying for an asset over time needs care. Only the down payment and amounts paid at the purchase, or soon before or after it, are investing outflows; if the buyer instead takes on debt directly to the seller, that is a financing transaction, and its later principal payments are financing outflows (ASC 230-10-45-13(c)). Lantern paid $4,000 for its espresso equipment on 3 March and the other $8,000 on 2 April, a month later and without a loan, so all $12,000 is an investing outflow. The van was different: Lantern paid $10,000 in cash, an investing outflow, and signed a $20,000 note with the dealer’s finance company. The note brought in no cash, so it is not in the statement at all; the principal Lantern repays from 2027 will be a financing outflow and the interest an operating one.' },
+    { p: 'Paying for an asset over time needs care. Only the down payment and amounts paid at the purchase, or soon before or after it, are investing outflows; if the buyer instead takes on debt directly to the seller, that is a financing transaction, and its later principal payments are financing outflows (ASC 230-10-45-13(c)). Lantern paid $4,000 for its espresso equipment on 3 March and the other $8,000 on 2 April, on the supplier’s ordinary 30-day terms: trade credit paid soon after the purchase, not financing, so all $12,000 is an investing outflow for the year. F01’s March statement disclosed the $8,000 as a noncash item only because it was still unpaid at 31 March.' },
+    { p: 'The van was different. Lantern paid $10,000 in cash, an investing outflow, and signed a $20,000 note with the dealer’s finance company. The note brought in no cash, so it is not in the statement at all; the principal Lantern repays from 2027 will be a financing outflow and the interest an operating one.' },
     { h: 'Lantern’s year by the direct method' },
     { p: 'The statement below is Lantern’s first annual statement of cash flows, built from the cash lines of the year’s entries. Its operating section uses the direct method: it lists operating receipts and payments by type, as F01’s March statement did.' },
     { statement: S.cashDirect },
     { p: 'Cash received from customers of $191,220 combines catering deposits ($4,040) and collections ($51,720), workshop fees ($22,500) and the online shop’s card receipts ($113,985), less refunds paid back to customers’ cards ($1,025). Cash paid to suppliers of $103,330 covers the beans from Tidewater Roasting, catering supplies, rent, utilities, advertising, insurance, shipping, fuel, card fees and small costs; employees were paid $41,500, interest $450 and estimated income tax $6,000. Investing shows the equipment and the van’s down payment, and financing shows Ana’s $20,000, Coastline’s $10,000 and the two dividends of $300 and $4,700. The closing figure, $42,940, is the cash on the balance sheet at 31 December.' },
     { h: 'From the accrual records to the direct-method lines' },
     { p: 'Few businesses code every bank payment by type as it happens, so preparers usually derive the direct-method lines from the income statement and the balance sheet. The logic is the same for every line: start from the accrual amount and adjust it by the change in the balance sheet account that sits between the accrual and the cash. Revenue becomes cash collected after removing the increase in receivables (sold, not yet collected) and the receivables written off (sold, never collected), and adding the increase in unearned revenue (collected, not yet earned). An expense becomes cash paid after adding the increase in a related asset such as inventory or a prepayment (paid for, not yet an expense) and removing the increase in a related liability such as payables (an expense, not yet paid).' },
-    { table: {
-      caption: 'Lantern: from the income statement to the direct-method lines',
-      head: ['Line', 'Accrual amount ($)', 'Adjustments ($)', 'Cash ($)'],
-      align: ['l', 'r', 'r', 'r'],
-      rows: [
-        ['Customers', '193,320', '(2,100)', '191,220'],
-        ['Suppliers', '(105,800)', '2,470', '(103,330)'],
-        ['Employees', '(43,600)', '2,100', '(41,500)'],
-        ['Interest', '(1,200)', '750', '(450)'],
-        ['Income taxes', '(9,129)', '3,129', '(6,000)'],
-      ],
-      foot: [['Net cash from operating activities', '', '', '39,940']],
-      note: 'Fictional figures. Opening balances were zero, so each change is the 31 December balance.',
-    } },
+    { table: conversion },
     { list: [
       '<b>Customers:</b> net revenue of $193,320, less the increase in receivables ($7,380) and the receivable written off ($820), plus the increase in unearned revenue ($6,100).',
       '<b>Suppliers:</b> cost of goods sold, supplies used and the other cash expenses ($105,800), plus the increases in inventory ($5,800), supplies ($640) and prepaid insurance ($300), less the increase in accounts payable ($9,210).',
@@ -170,7 +173,7 @@ export default {
     { callout: 'note', title: 'One payables account, several suppliers', html: 'Lantern’s $9,210 of accounts payable is $8,400 owed to Tidewater for beans, $520 to supply vendors and the $290 December utility bill. Because Lantern reports a single “cash paid to suppliers” line, the whole increase goes against that line. A business that reports cash paid for inventory separately must split its payables the same way, or one line will be overstated and another understated.' },
     { h: 'Noncash investing and financing activities' },
     { p: 'Some investing and financing transactions involve no cash, or only part of it. They are left out of the statement, but because they change the business’s assets and liabilities they must be disclosed, either on the same page or in a note the statement refers to (ASC 230-10-50-3 to 50-6; IAS 7, paragraph 43, has the same rule). When a transaction is part cash and part noncash, only the cash part goes in the statement (ASC 230-10-50-5). Converting debt into stock is the classic example (ASC 230-10-50-4); in small businesses the commonest is buying an asset by signing a note.' },
-    { p: 'Lantern’s van is a part-cash purchase: the $10,000 paid is an investing outflow and the $20,000 note appears only in the note beneath the statement, “Van of $20,000 bought by signing a note payable.” A reader who saw only the $10,000 would underestimate both what Lantern invested and what it owes; the disclosure closes that gap. Moving the $5,000 instalment due on 1 June 2027 into current liabilities (adjustment e8) is not a noncash investing or financing activity at all, because no transaction with anyone took place.' },
+    { p: `Lantern’s van is a part-cash purchase: the $10,000 paid is an investing outflow, and the disclosure beneath the statement relates the cash and noncash parts, as ASC 230-10-50-3 requires: “${R.cashFlows.noncash[0]}” A reader who saw only the $10,000 would underestimate both what Lantern invested and what it owes; the disclosure closes that gap. Moving the $5,000 instalment due on 1 June 2027 into current liabilities (adjustment e8) is not a noncash investing or financing activity at all, because no transaction with anyone took place.` },
     { h: 'Interest, dividends and income taxes under IFRS' },
     { p: 'IAS 7 agrees with ASC 230 on the three activities but, until the IFRS 18 amendments, gives companies choices that US GAAP does not. A company may classify interest paid as operating or financing, interest and dividends received as operating or investing, and dividends paid as financing or operating, provided it applies its choice consistently from period to period (IAS 7, paragraphs 31, 33 and 34). Taxes on income are operating unless they can be specifically identified with investing or financing activities (paragraph 35).' },
     { p: 'IFRS 18 <i>Presentation and Disclosure in Financial Statements</i> amends IAS 7 to remove those choices, with effect from the same date as IFRS 18 itself: annual reporting periods beginning on or after 1 January 2027. A company whose main business is not investing in assets or providing finance to customers must classify interest paid as financing and interest and dividends received as investing (new paragraph 34A), and every company must classify dividends paid as financing (paragraph 33A). Banks, investment companies and others with those main business activities classify interest paid and interest and dividends received to match where the related expense and income appear in their income statement (paragraph 34B). The amendments also make operating profit, rather than profit, the starting point of the indirect method.' },
@@ -234,7 +237,7 @@ export default {
 
   examples: [
     { level: 'simple', title: 'A clinic’s year, classified', fictional: true,
-      setup: 'Merrow Veterinary Clinic, a fictional business reporting under US GAAP, starts 2026 with $124,000 of cash and cash equivalents. Its cash records for the year show: received from pet owners and insurers $486,000; interest received on a savings account $1,200; paid suppliers of drugs and supplies $142,000; paid employees $238,000; paid rent $36,000; paid interest on its bank loan $4,800; paid income taxes $14,500; bought an X-ray machine for $58,000; sold an old ultrasound scanner for $3,500; bought a 60-day Treasury bill for $20,000; put $15,000 into a nine-month certificate of deposit; repaid $24,000 of the loan’s principal; paid dividends of $30,000. It also acquired a $12,000 surgical table by signing a note with the manufacturer. Prepare the statement of cash flows.',
+      setup: 'Merrow Veterinary Clinic, a fictional business reporting under US GAAP, starts 2026 with $124,000 of cash and cash equivalents. Its cash records for the year show: received from pet owners and insurers $486,000; interest received on a savings account $1,200; paid suppliers of drugs and supplies $142,000; paid employees $238,000; paid rent $36,000; paid interest on its bank loan $4,800; paid income taxes $14,500; bought an X-ray machine for $58,000; sold an old ultrasound scanner for $3,500; bought a 60-day Treasury bill for $20,000 in December, still held at 31 December; put $15,000 into a nine-month certificate of deposit; repaid $24,000 of the loan’s principal; paid dividends of $30,000. It also acquired a $12,000 surgical table by signing a note with the manufacturer. Prepare the statement of cash flows.',
       steps: [
         'Operating (ASC 230-10-45-16 and 45-17, with interest received and paid both operating): <m>486{,}000 + 1{,}200 - 142{,}000 - 238{,}000 - 36{,}000 - 4{,}800 - 14{,}500 = 51{,}900</m>.',
         'Investing: the X-ray machine and the certificate of deposit are outflows, the scanner’s sale an inflow: <m>-58{,}000 + 3{,}500 - 15{,}000 = -69{,}500</m>. The Treasury bill is a cash equivalent (60 days when bought), so buying it moved money inside the cash pool: it is not a cash flow.',
@@ -288,10 +291,10 @@ export default {
         'Operations against investment: <m>39{,}940 - 22{,}000 = 17{,}940</m>. Operating cash covered the equipment and the van’s down payment with $17,940 to spare.',
         'After the dividends: <m>17{,}940 - 5{,}000 = 12{,}940</m> was generated internally. The rest of the $42,940 is the $30,000 of stock and borrowing: <m>12{,}940 + 30{,}000 = 42{,}940</m>.',
         'The noncash note reveals a commitment the cash lines don’t show. In 2027: instalment 5,000, van interest <m>20{,}000 \\times 0.06 = 1{,}200</m>, Coastline interest <m>4 \\times 150 = 600</m>; together <m>6{,}800</m>.',
-        'Part of the operating cash is timing. Cash from customers includes $6,100 for things not yet delivered (January catering deposits $1,640, a January workshop $1,500, subscriptions $2,960), and payments to suppliers exclude $9,210 still owed. About <m>6{,}100 + 9{,}210 = 15{,}310</m> of the operating cash flow will be paid or worked off early in 2027.',
+        'Part of the operating cash is timing. At 31 December Lantern owed $21,289 of operating liabilities that 2027 will settle (bills $9,210, wages $2,100, interest $750, income tax $3,129, and $6,100 of goods and services already paid for), while $13,536 sat in receivables, inventory, supplies and prepaid insurance still to turn into cash or expense. Net, about <m>21{,}289 - 13{,}536 = 7{,}753</m> of the operating cash flow is timing that reverses in 2027.',
       ],
-      answer: 'Yes: operations funded the year’s $22,000 of investing outflows and the $5,000 of dividends, leaving $12,940 of internally generated cash. The 2027 debt payments of about $6,800 look small beside a ten-month operating cash flow of $39,940, but about $15,310 of that cash flow is timing that reverses early in 2027.',
-      interpretation: 'The statement answers the loan officer’s first question (where the cash came from) directly, and the noncash note answers half of the second (what is owed). The rest needs judgement: a first year’s operating cash flow is flattered by receipts in advance and unpaid bills, which the indirect method in the next lesson measures line by line.' },
+      answer: 'Yes: operations funded the year’s $22,000 of investing outflows and the $5,000 of dividends, leaving $12,940 of internally generated cash. The 2027 debt payments of about $6,800 look small beside a ten-month operating cash flow of $39,940, but about $7,753 of it is net timing that reverses in 2027.',
+      interpretation: 'The statement answers the loan officer’s first question (where the cash came from) directly, and the noncash note answers half of the second (what is owed). The rest needs judgement: a first year’s operating cash flow is flattered, on balance, by unpaid bills and receipts in advance, which the indirect method in the next lesson measures line by line.' },
   ],
 
   demo: [
@@ -317,7 +320,7 @@ export default {
   summary: [
     'The statement of cash flows explains the change in cash and cash equivalents over a period by activity: Lantern went from $0 to $42,940 with operating $39,940, investing ($22,000) and financing $25,000.',
     'Cash equivalents are short-term, highly liquid investments, generally with a maturity of three months or less when acquired; moving money between cash and cash equivalents is not a cash flow.',
-    'Under US GAAP interest paid and received and dividends received are operating, and dividends paid are financing. IAS 7 allows choices until IFRS 18 (from 1 January 2027) makes interest paid and dividends paid financing and interest and dividends received investing for most companies.',
+    'Under US GAAP interest paid and received and dividends received are operating, and dividends paid are financing. IAS 7 allows choices until IFRS 18 (from 1 January 2027) makes dividends paid financing for every company and, for most companies, interest paid financing and interest and dividends received investing.',
     'Direct-method lines come from the accrual figures adjusted for the related balance sheet changes: cash collected = revenue − Δreceivables − write-offs + Δunearned revenue; cash paid = expense + Δprepaid or Δinventory − Δpayable.',
     'Noncash investing and financing transactions are left out of the statement and disclosed; only the cash part of a part-cash purchase is included, so Lantern’s van shows $10,000 in investing and a $20,000 note in the disclosure.',
     'ASC 230 and IAS 7 encourage the direct method, but most companies use the indirect method; under US GAAP a company using the direct method must also present the reconciliation of net income.',
@@ -331,6 +334,8 @@ export default {
   ],
 
   references: [
+    { text: 'Franklin, M., Graybeal, P. &amp; Cooper, D. (2019). <i>Principles of Accounting, Volume 1: Financial Accounting</i>, section 16.1, “Explain the Purpose of the Statement of Cash Flows” (including that the vast majority of statements use the indirect method). OpenStax.', url: 'https://openstax.org/books/principles-financial-accounting/pages/16-1-explain-the-purpose-of-the-statement-of-cash-flows', checked: '2026-10-23' },
+    { text: 'IFRS Foundation. <i>IAS 7 Statement of Cash Flows</i>: standard summary page (cash equivalents, the direct and indirect methods, noncash transactions, the IFRS 18 amendments).', url: 'https://www.ifrs.org/issued-standards/list-of-standards/ias-7-statement-of-cash-flows/', checked: '2026-10-23' },
     { text: 'KPMG LLP (2026). <i>Statement of cash flows: Handbook, US GAAP</i> (March 2026), reproducing ASC 230-10-45-13 to 45-17, 45-25 and 50-3 to 50-6.', url: 'https://kpmg.com/kpmg-us/content/dam/kpmg/frv/pdf/2026/statement-cash-flows.pdf', checked: '2026-10-23' },
     { text: 'Ernst &amp; Young LLP (2025). <i>Financial reporting developments: Statement of cash flows</i> (May 2025): ASC 230-10-20 (cash equivalents), 230-10-45-4, 45-5 and 45-25, and practice on the direct and indirect methods.', url: 'https://www.ey.com/content/dam/ey-unified-site/ey-com/en-us/technical/accountinglink/documents/ey-frd42856-05-21-2025_.pdf', checked: '2026-10-23' },
     { text: 'Australian Accounting Standards Board (2023). <i>Compiled AASB Standard AASB 107 Statement of Cash Flows</i>, compiled 31 December 2023. AASB 107 incorporates IAS 7 as issued by the IASB, with the same paragraph numbers; this is the text before IFRS 18 (paragraphs 6–8, 18–19, 31–35 and 43).', url: 'https://www.aasb.gov.au/admin/file/content105/c9/AASB107_08-15_COMPjun23_01-24.pdf', checked: '2026-10-23' },
@@ -350,9 +355,12 @@ export default {
     { what: 'Financing cash flow', value: D.cff, shown: 25000 },
     { what: 'Bridge: after investing', value: D.cfo + D.cfi, shown: 17940 },
     { what: 'Bridge: closing', value: 0 + D.cfo + D.cfi + D.cff, shown: 42940 },
-    { what: 'Equipment: paid 3 March', value: 4000, shown: 4000 },
+    { what: 'Equipment: paid 3 March', value: paidMarch, shown: 4000 },
     { what: 'Equipment: total', value: F.equipment.cost, shown: 12000 },
-    { what: 'Equipment: paid 2 April', value: F.equipment.cost - 4000, shown: 8000 },
+    { what: 'Equipment: paid 2 April', value: paidApril, shown: 8000 },
+    { what: 'Equipment: payments add up to cost', value: paidMarch + paidApril, shown: F.equipment.cost },
+    { what: 'Equipment: days from 3 March to 2 April', value: (Date.parse(F.equipment.paid[1].date) - Date.parse(F.equipment.paid[0].date)) / 86400000, shown: 30 },
+    { what: 'Noncash note: van cost', value: F.van.cost, shown: 30000 },
     { what: 'Van cash down', value: F.van.cashDown, shown: 10000 },
     { what: 'Van cost', value: F.van.cost, shown: 30000 },
     { what: 'Van cost = cash + note', value: F.van.cashDown + F.vanNote.principal, shown: 30000 },
@@ -435,11 +443,12 @@ export default {
     { what: 'Coastline interest for a year', value: coastlineInterestYear, shown: 600 },
     { what: 'Coastline quarterly interest', value: coastlineInterestYear / 4, shown: 150 },
     { what: '2027 debt payments', value: debtService2027, shown: 6800 },
-    { what: 'Unearned: January catering deposits', value: unearnedParts.deposits, shown: 1640 },
-    { what: 'Unearned: January workshop', value: unearnedParts.workshop, shown: 1500 },
-    { what: 'Unearned: subscriptions', value: unearnedParts.subscriptions, shown: 2960 },
-    { what: 'Unearned parts add up', value: unearnedParts.deposits + unearnedParts.workshop + unearnedParts.subscriptions, shown: 6100 },
-    { what: 'Timing in first-year CFO', value: L.unearned + L.ap, shown: 15310 },
+    { what: 'Timing: operating liabilities (case)', value: D.operatingCurrentLiabilities, shown: 21289 },
+    { what: 'Timing: operating liabilities from balances', value: L.ap + L.wagesPayable + L.interestPayable + L.taxPayable + L.unearned, shown: 21289 },
+    { what: 'Timing: operating current assets (case)', value: D.operatingCurrentAssets, shown: 13536 },
+    { what: 'Timing: operating current assets from balances', value: L.arNet + L.inventory + L.supplies + L.prepaid, shown: 13536 },
+    { what: 'Timing: net', value: D.operatingCurrentLiabilities - D.operatingCurrentAssets, shown: 7753 },
+    { what: 'Timing: net = CFO − NI − depreciation', value: D.cfo - D.netIncome - D.depreciation, shown: 7753 },
     { what: 'Van interest rate 6%', value: F.vanNote.rate * 100, shown: 6 },
     // Pellow
     { what: 'Pellow US-basis CFO', value: PR.usBasis, shown: 54500 },

@@ -15,7 +15,7 @@ export const widgets = {
     intro: 'The starting values are Lantern’s first year: its net revenue, the receivables, write-off and unearned revenue at 31 December, and the beans it bought from Tidewater Roasting.',
     inputs: [
       { id: 'rev', label: 'Net revenue', min: 0, max: 400000, step: 10, value: D.revenue, fmt: 'money' },
-      { id: 'dar', label: 'Increase in receivables (negative for a decrease)', min: -30000, max: 30000, step: 10, value: bal('Accounts Receivable'), fmt: 'money' },
+      { id: 'dar', label: 'Increase in receivables before the allowance (negative for a decrease)', min: -30000, max: 30000, step: 10, value: bal('Accounts Receivable'), fmt: 'money' },
       { id: 'wo', label: 'Receivables written off', min: 0, max: 5000, step: 10, value: F.catering.writtenOff, fmt: 'money' },
       { id: 'dun', label: 'Increase in unearned revenue (negative for a decrease)', min: -15000, max: 15000, step: 10, value: bal('Unearned Revenue'), fmt: 'money' },
       { id: 'cogs', label: 'Cost of goods sold', min: 0, max: 150000, step: 10, value: D.cogs, fmt: 'money' },
@@ -43,8 +43,6 @@ export const widgets = {
           ['Net revenue', money(v.rev)],
           ['Cash paid for inventory', money(paid)],
           ['Purchases (cost of goods sold + increase in inventory)', money(v.cogs + v.dinv)],
-          ['Revenue − cost of goods sold', money(v.rev - v.cogs)],
-          ['Cash from customers − cash paid for inventory', money(cash - paid)],
         ],
         note,
         chart: { kind: 'bar', x: { label: 'Line', values: ['Customers', 'Inventory'] },
@@ -160,7 +158,7 @@ export const guided = [
   },
   {
     id: 'f02-cfs-g3', type: 'num', kind: 'numerical',
-    prompt: 'A fictional online furniture retailer reports net revenue of $640,000 for the year. Its accounts receivable rose from $38,000 to $46,500, it wrote off $2,300 of receivables as uncollectible, and customer deposits for made-to-order furniture (unearned revenue) rose from $15,000 to $21,000. How much cash did it receive from customers? Enter whole dollars.',
+    prompt: 'A fictional online furniture retailer reports net revenue of $640,000 for the year. Its accounts receivable (before the allowance) rose from $38,000 to $46,500, it wrote off $2,300 of receivables as uncollectible, and customer deposits for made-to-order furniture (unearned revenue) rose from $15,000 to $21,000. How much cash did it receive from customers? Enter whole dollars.',
     answer: 635200, check: () => 640000 - (46500 - 38000) - 2300 + (21000 - 15000), unit: '$', places: 0, tol: 0.5,
     hints: ['Start from revenue. Which changes mean cash came in later than revenue, earlier than revenue, or never?', 'Revenue − increase in receivables − write-offs + increase in deposits.'],
     wrong: [
@@ -224,7 +222,7 @@ export const independent = [
     prompt: 'Which of these would a fictional manufacturer disclose as noncash investing and financing activities? Select all that apply.',
     options: [
       'Converting $500,000 of its bonds into common stock',
-      'Acquiring a warehouse by signing a $2 million note with the seller',
+      'Buying a warehouse with a $2 million note to the seller',
       'Recording $80,000 of depreciation on its machinery',
       'Buying a 30-day Treasury bill with cash',
       'Paying a $40,000 cash dividend',
@@ -257,7 +255,7 @@ export const independent = [
     prompt: 'A fictional furniture maker reports under IFRS and has applied IFRS 18 since 2027. Its 2027 statement shows net cash from operating activities of $236,000; interest paid of $31,000 (financing); interest received of $4,000 and dividends received of $2,500 (investing); dividends paid of $40,000 (financing). An analyst wants its operating cash flow on a US GAAP basis to compare it with a US competitor. What is it? Enter whole dollars.',
     answer: 211500, check: () => 236000 - 31000 + 4000 + 2500, unit: '$', places: 0, tol: 0.5,
     wrong: [
-      { value: 260500, say: 'Under US GAAP interest paid is an operating outflow: moving it in lowers operating cash flow.' },
+      { value: 260500, say: 'Under US GAAP interest paid is an operating outflow, so moving it in lowers operating cash flow, and the interest and dividends received raise it.' },
       { value: 171500, say: 'Dividends paid are financing under US GAAP too: leave them where they are.' },
       { value: 205000, say: 'Interest and dividends received are operating inflows under US GAAP: add them back in.' },
     ],
@@ -347,7 +345,7 @@ export const check = [
     id: 'f02-cfs-k6', type: 'mc', kind: 'conceptual',
     prompt: 'A US company decides to present its operating cash flows by the direct method, as ASC 230 encourages. What else must it present?',
     options: [
-      'A reconciliation of net income to operating cash flow, in a separate schedule',
+      'A separate schedule reconciling net income to operating cash',
       'Nothing more, because the direct method replaces the reconciliation',
       'Its interest paid and dividends received moved into financing and investing',
       'A full indirect-method statement of cash flows for the previous year as well',

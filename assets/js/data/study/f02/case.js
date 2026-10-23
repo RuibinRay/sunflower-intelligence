@@ -25,7 +25,10 @@
 // Amounts are whole dollars: the shop's sales are rounded to the nearest dollar; everything else is exact.
 import * as A from '../../../core/accounting.js?v=10';
 
-/** Account fields beyond F01's: section (multi-step income statement), da / noncash (depreciation), cashClass. */
+/** Account fields beyond F01's: section (multi-step income statement), da / noncash (depreciation), cashClass.
+ *  Gains and losses on selling equipment are operating: ASC 360-10-45-5 requires them inside operating income when
+ *  that subtotal is shown (many textbooks show them under other income instead). Lantern's shares have no par value,
+ *  so the whole $20,000 is Common Stock and Additional Paid-in Capital stays at zero. */
 export const CHART = [
   { no: 101, name: 'Cash', type: 'asset', group: 'current' },
   { no: 110, name: 'Accounts Receivable', type: 'asset', group: 'current' },
@@ -64,7 +67,7 @@ export const CHART = [
   { no: 404, name: 'Sales Returns and Allowances', type: 'contra-revenue' },
   { no: 405, name: 'Sales Discounts', type: 'contra-revenue' },
   { no: 410, name: 'Interest Revenue', type: 'revenue', section: 'other' },
-  { no: 420, name: 'Gain on Sale of Equipment', type: 'revenue', section: 'other', gain: true },
+  { no: 420, name: 'Gain on Sale of Equipment', type: 'revenue', gain: true },             // operating (ASC 360-10-45-5)
   { no: 501, name: 'Wages Expense', type: 'expense' },
   { no: 505, name: 'Cost of Goods Sold', type: 'expense', section: 'cost' },
   { no: 506, name: 'Cost of Services', type: 'expense', section: 'cost' },
@@ -81,7 +84,7 @@ export const CHART = [
   { no: 585, name: 'Bad Debt Expense', type: 'expense' },
   { no: 599, name: 'Miscellaneous Expense', type: 'expense' },
   { no: 580, name: 'Interest Expense', type: 'expense', section: 'other', interest: true },
-  { no: 590, name: 'Loss on Sale of Equipment', type: 'expense', section: 'other', loss: true },
+  { no: 590, name: 'Loss on Sale of Equipment', type: 'expense', loss: true },              // operating (ASC 360-10-45-5)
   { no: 600, name: 'Income Tax Expense', type: 'expense', section: 'tax' },
 ];
 
@@ -307,8 +310,8 @@ export const STATEMENTS = {
       { head: 'Revenue', rows: [...rows(IS.lists.revenue), ...neg(IS.lists.contra)], total: ['Net revenue', IS.revenue] },
       { head: 'Cost of sales', rows: rows(IS.lists.cost), total: ['Total cost of sales', IS.costOfSales] },
       { rows: [['Net revenue', IS.revenue], ['Less total cost of sales', -IS.costOfSales]], total: ['Gross profit', IS.grossProfit] },
-      { head: 'Operating expenses', rows: rows(IS.lists.operating), total: ['Total operating expenses', IS.operatingExpenses] },
-      { rows: [['Gross profit', IS.grossProfit], ['Less total operating expenses', -IS.operatingExpenses]], total: ['Operating income', IS.operatingIncome] },
+      { head: 'Operating expenses', rows: [...rows(IS.lists.operating), ...neg(IS.lists.operatingGains)], total: ['Total operating expenses', IS.operatingExpenses - IS.operatingGains] },
+      { rows: [['Gross profit', IS.grossProfit], ['Less total operating expenses', -(IS.operatingExpenses - IS.operatingGains)]], total: ['Operating income', IS.operatingIncome] },
       { rows: [['Operating income', IS.operatingIncome], ...neg(IS.lists.otherExpense)], total: ['Income before income tax', IS.incomeBeforeTax] },
       { rows: [['Income before income tax', IS.incomeBeforeTax], ...neg(IS.lists.tax)], total: ['Net income', IS.netIncome] },
     ],

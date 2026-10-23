@@ -287,7 +287,7 @@ const MC = A.makeChart([
   { name: 'Sales Revenue', type: 'revenue' },
   { name: 'Sales Returns and Allowances', type: 'contra-revenue' },
   { name: 'Interest Revenue', type: 'revenue', section: 'other' },
-  { name: 'Gain on Sale of Equipment', type: 'revenue', section: 'other', gain: true },
+  { name: 'Gain on Sale of Equipment', type: 'revenue', section: 'other', gain: true },   // shown as other income here, to test that path
   { name: 'Cost of Goods Sold', type: 'expense', section: 'cost' },
   { name: 'Wages Expense', type: 'expense' },
   { name: 'Bad Debt Expense', type: 'expense' },
@@ -346,6 +346,12 @@ eq('closing with a contra-revenue account: retained earnings', MAfter['Retained 
 ok('closing clears the contra-revenue account', !MAfter['Sales Returns and Allowances'].balance);
 eq('statement of changes in equity with contra revenue', A.equityStatement(ML, MC, OPEN).retainedEarnings.end, 2800 + 7450 - 1500);
 ok('balance sheet balances with contra revenue', A.balanceSheet(ML, MC).balanced);
+// ASC 360-10-45-5: with no section: 'other', the gain is operating and lands inside operating income
+const MC2 = A.makeChart(MC.list.map((x) => (x.name === 'Gain on Sale of Equipment' ? { name: x.name, type: 'revenue', gain: true } : { ...x })));
+const MS2 = A.multiStepIncome(A.post(MY, MC2, OPEN), MC2);
+eq('operating gain: operating income includes the gain', MS2.operatingIncome, 9550 + 600);
+eq('operating gain: net income unchanged', MS2.netIncome, 7450);
+eq('operating gain: not in revenue', MS2.revenue, 49000);
 
 console.log(`${checks - fails} of ${checks} checks passed`);
 if (fails) { console.log(`${fails} failed`); process.exit(1); }
