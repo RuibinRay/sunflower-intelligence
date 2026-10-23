@@ -15,9 +15,9 @@ export default {
   objectives: [
     'Define the six dimensions of data quality (accuracy, completeness, consistency, validity, timeliness and uniqueness) and give a business consequence of a failure in each.',
     'Explain how duplicates, missing values, invalid values, inconsistent codes and time zones distort a metric, and calculate the size of the distortion in simple cases.',
-    'Judge whether a dataset is fit for a stated purpose, and say what would make it fit.',
+    'Assess whether a dataset is fit for a stated purpose, and say what would make it fit.',
     'Identify who produces, owns and uses data in a business, and where in the data lifecycle quality problems enter.',
-    'Inspect a raw export and name its quality problems by dimension, without changing it.',
+    'Identify the quality problems in a raw export by dimension, without changing it.',
   ],
   prerequisites: [
     { lesson: 'b01/data-types', why: 'You need the unit of observation, identifiers and the levels of measurement, which decide what counts as a valid value.' },
@@ -74,7 +74,7 @@ export default {
         ['Planning tomorrow’s packing staff', 'Timeliness; dates in local time', 'Only if the data arrives by morning and days are counted in local time'],
       ],
     } },
-    { p: 'Tolerance matters as much as the dimension. For Ana’s monthly review, revenue within one or two per cent is good enough; for the tax return, the figure must be exact. For a product recall, a single missing e-mail address is a customer who isn’t warned. State the purpose and the tolerance before judging the data, otherwise every dataset either looks fine or looks hopeless.' },
+    { p: 'Tolerance matters as much as the dimension. For Ana’s monthly review, revenue within 1–2% is good enough; for the tax return, the figure must be exact. For a product recall, a single missing e-mail address is a customer who isn’t warned. State the purpose and the tolerance before judging the data, otherwise every dataset either looks fine or looks hopeless.' },
     { h: 'Measuring quality, simply' },
     { p: 'Each dimension can be turned into a number, which makes quality something you can track. <g>Completeness</g> is the share of required values that are present; uniqueness is the number of distinct keys divided by the number of rows; validity is the share of values that pass their rules. Two cautions. Measure completeness only against values that are required: Lantern’s rating is optional, so a blank rating is not a defect, while a blank e-mail address is. And keep accuracy apart: it can only be measured by checking a sample of records against their source, for example 50 orders against the payment records. B02’s lesson on profiling and validation turns these measures into a full set of rules.' },
     { h: 'Who is responsible for quality' },
@@ -190,7 +190,7 @@ export default {
 
   application: [
     { p: `Back to Ana’s three numbers. Her analyst reconciles them before the review starts. The export’s ${EXPORT_ROWS} rows contain ${EXPORT_ROWS - DERIVED.orders[NOV]} exact duplicates, created when the app’s sync with the platform retried after a time-out; removing them leaves ${DERIVED.orders[NOV]} orders, matching the dashboard. The payment provider’s ${PAYMENTS} is not an error at all: ${DERIVED.orders[NOV] - PAYMENTS} November orders were paid with gift vouchers, which never pass through the card system. Three numbers, three definitions: rows, orders and card payments. Only one of them counts what the review needs.` },
-    { p: 'Reconciling sources this way is routine wherever several systems record the same events, and the right test is rarely “are the numbers equal?”. Systems legitimately differ. Google’s own documentation for Google Analytics, for example, says that a discrepancy of 2 to 5 per cent between the total event count in Analytics and the same data exported to Google’s BigQuery database is expected, and warns that comparing data stored in different time zones compares different periods. A sensible business decides in advance how large a gap it will accept between which sources, and investigates anything larger.' },
+    { p: 'Reconciling sources this way is routine wherever several systems record the same events, and the right test is rarely “are the numbers equal?”. Systems legitimately differ. Google’s own documentation for Google Analytics, for example, says that a discrepancy of 2–5% between the total event count in Analytics and the same data exported to Google’s BigQuery data warehouse is expected, and warns that comparing data stored in different time zones compares different periods. A sensible business decides in advance how large a gap it will accept between which sources, and investigates anything larger.' },
     { p: 'From then on, Ana’s analyst runs the same short checklist each month before any figure reaches the review:' },
     { ol: [
       'Reconcile order counts across the dashboard, the export and the payment report, and explain every difference by its cause.',
@@ -292,6 +292,7 @@ export default {
     { what: 'Applied: Friday-evening orders', value: 18, shown: 18 },
     { what: 'Applied: 27 November 2026 is a Friday (getUTCDay 5)', value: new Date(Date.UTC(2026, 10, 27)).getUTCDay(), shown: 5 },
     { what: '18 November 2026 is a Wednesday (getUTCDay 3)', value: new Date(Date.UTC(2026, 10, 18)).getUTCDay(), shown: 3 },
+    { what: 'Revenue tolerance for the monthly review, upper end (%)', value: 2, shown: 2 },
     // application
     { what: 'Google: expected discrepancy, low end (%)', value: 2, shown: 2 },
     { what: 'Google: expected discrepancy, high end (%)', value: 5, shown: 5 },

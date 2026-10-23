@@ -7,6 +7,9 @@
 // 1 September a redesigned website checkout went live; on 5 October a fix for a payment-page bug on mobile browsers
 // was released. November and December bring gift-box orders.
 
+/** The shop's order system stamps times in UTC; Lantern's local time is five hours behind (the same assumption as B02). */
+export const UTC_OFFSET_HOURS = -5;
+
 export const MONTHS = ['Jul 2026', 'Aug 2026', 'Sep 2026', 'Oct 2026', 'Nov 2026', 'Dec 2026'];
 
 /** Sessions (visits) and orders by channel, and average order value (AOV, $) per month. */
