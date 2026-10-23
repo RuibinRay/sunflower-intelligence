@@ -205,7 +205,6 @@ export function mountSimulator(el, opts = {}) {
   const errorBox = h('div', { class: 'mix-error', role: 'alert' });
   const body = h('div', { class: 'mix-body' });
   results.append(caveatNote(), errorBox, body);
-  if (opts.note) results.prepend(h('p', { class: 'mix-note' }, safeHTML(opts.note)));
 
   const tiles = [];
   const tile = (key, label, value, delta, sub = null) => { const t = { key, label, value, delta, sub, dd: h('dd', { class: 'mix-tile-value' }), dsub: h('dd', { class: 'mix-tile-sub' }) }; tiles.push(t); return h('div', { class: 'mix-tile' }, h('dt', {}, label), t.dd, t.dsub); };
@@ -274,6 +273,7 @@ export function mountSimulator(el, opts = {}) {
   const pulse = h('div', { class: 'mix-pulse', 'aria-hidden': 'true' });
   if (isOpenAny()) side.append(pulse);
   grid.append(side, results);
+  if (opts.note) el.append(h('p', { class: 'mix-note mix-note--top' }, safeHTML(opts.note)));
   el.append(grid, live);
 
   // ------------------------------------------------ rendering

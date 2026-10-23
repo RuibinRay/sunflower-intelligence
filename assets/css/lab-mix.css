@@ -97,6 +97,7 @@
 .mix-caveat strong { color: var(--ink); }
 .mix-icon { flex: none; width: 18px; height: 18px; margin-top: 1px; }
 .mix-note { font-size: var(--t-sm); color: var(--ink-2); }
+.mix-note--top { margin-bottom: var(--s-4); max-width: var(--measure); }
 .mix-error:empty { display: none; }
 .mix-notes { display: grid; gap: var(--s-2); }
 .mix-notes:empty { display: none; }
