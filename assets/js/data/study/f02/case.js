@@ -12,7 +12,9 @@
 //   five years, $6,000 residual, $400 a month) is what happened.
 // - b02 and b01: the online shop has sold bags of beans since March. Its order values were $9,096.15 for March–June
 //   (B02's cleaned export) and $101,928.40 for July–December (B01: orders × average order value); together $111,025 to
-//   the nearest dollar. B01 measured order values; the books also record refunds and prepaid subscriptions.
+//   the nearest dollar. B01 measured order values; the books also record refunds and prepaid subscriptions. Shop
+//   revenue is recognised when an order ships (control passes then; the accountant judges the days to delivery
+//   immaterial), so shipped orders are the year's revenue and paid-for subscriptions not yet shipped are unearned.
 // - m01/case.js: 14 workshops averaging 12 participants at $125 ($21,000); catering at an average of $820 an event.
 // - f04/case.js: Ana is paid a salary from 2027, not in 2026.
 //
@@ -96,7 +98,8 @@ export const FACTS = {
   catering: { events: 76, average: 820, depositsReceived: 4_040, depositsEarned: 2_400, invoiced: 59_920, collected: 51_720, writtenOff: 820 },
   training: { workshops: 14, participants: 12, price: 125, paidForJanuary: 1_500 },
   shop: { orderValueMarJun: 9_096.15, orderValueJulDec: 101_928.40, sales: 111_025, refunds: 1_025, prepaidSubscriptions: 2_960, cardFees: 4_010 },
-  inventory: { purchases: 58_600, paid: 50_200, cogsPerpetual: 52_400, writeDown: 400 },
+  inventory: { purchases: 58_600, paid: 50_200, cogsPerpetual: 52_400, writeDown: 400,
+               holidayBlend: { cost: 1_000, nrv: 600 } },        // e7: Holiday Blend bags written down to net realisable value
   supplies: { bought: 11_540, paid: 11_020, onHand: 640 },
   wages: { events: 25_200, shopAndOffice: 18_400, payable: 2_100 },
   utilities: { expense: 2_860, unpaid: 290 },
@@ -121,7 +124,7 @@ export const HOUSE_BLEND_Q4 = {
     { date: '2026-12-03', units: 1_200, cost: 9.00 },
   ],
   sold: 2_600,              // bags shipped in the quarter
-  price: 18,                // list price a bag (B02)
+  price: 14,                // list price of a 250 g bag of House Blend (B02's order export)
 };
 
 const F = FACTS;
@@ -207,7 +210,7 @@ const pre = [
   { id: 'e6', date: '2026-12-31', adjusting: true, kind: 'bad debts', text: 'The aging of receivables says $584 of the $7,380 owed will not be collected; the allowance has a debit balance of $820 after the write-off.',
     lines: [{ acct: 'Bad Debt Expense', dr: badDebt }, { acct: 'Allowance for Doubtful Accounts', cr: badDebt }] },
   { id: 'e7', date: '2026-12-31', adjusting: true, kind: 'inventory write-down', text: 'Holiday Blend bags costing $1,000 can now be sold for only $600 after selling costs: written down to net realisable value.',
-    lines: [{ acct: 'Cost of Goods Sold', dr: inv.writeDown }, { acct: 'Inventory', cr: inv.writeDown }] },
+    lines: [{ acct: 'Cost of Goods Sold', dr: inv.holidayBlend.cost - inv.holidayBlend.nrv }, { acct: 'Inventory', cr: inv.holidayBlend.cost - inv.holidayBlend.nrv }] },
   { id: 'e8', date: '2026-12-31', adjusting: true, kind: 'reclassification', text: 'The $5,000 instalment of the van note due on 1 June 2027 is shown as a current liability.',
     lines: [{ acct: 'Notes Payable', dr: F.vanNote.instalment }, { acct: 'Current Portion of Long-Term Debt', cr: F.vanNote.instalment }] },
 ];
@@ -354,8 +357,8 @@ export const COSTING = {
   units, goodsAvailable, endUnits,
   fifo: { cogs: take(layers, hb.sold), ending: take([...layers].reverse(), endUnits) },                 // 22,560; 3,600
   lifo: { cogs: take([...layers].reverse(), hb.sold), ending: take(layers, endUnits) },                // 22,920; 3,240 (periodic)
-  average: { unitCost: goodsAvailable / units, cogs: goodsAvailable / units * hb.sold, ending: goodsAvailable / units * endUnits },   // 8.72; 22,672; 3,488 (periodic)
-  sales: hb.sold * hb.price,                                                  // 46,800
+  average: { unitCost: goodsAvailable / units, cogs: Math.round(goodsAvailable / units * hb.sold * 100) / 100, ending: Math.round(goodsAvailable / units * endUnits * 100) / 100 },   // 8.72; 22,672; 3,488 (periodic)
+  sales: hb.sold * hb.price,                                                  // 36,400
 };
 
 /** Identities the checker relies on: if any is false, the case is broken. */
@@ -370,4 +373,5 @@ export const IDENTITIES = [
   ['training revenue = workshops × participants × price', bal('Training Revenue') === F.training.workshops * F.training.participants * F.training.price],
   ['allowance = aging estimate', Math.round(bal('Allowance for Doubtful Accounts') * 100) === Math.round(agingAllowance * 100)],
   ['FIFO ending inventory + COGS = goods available', COSTING.fifo.cogs + COSTING.fifo.ending === goodsAvailable],
+  ['the write-down in FACTS = cost − NRV of the Holiday Blend', inv.writeDown === inv.holidayBlend.cost - inv.holidayBlend.nrv],
 ];

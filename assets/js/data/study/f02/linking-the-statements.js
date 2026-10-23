@@ -99,18 +99,17 @@ export default {
       ],
     } },
     { p: 'The van shows one decision touching every statement at different times. On 1 June it changed the balance sheet and, for the $10,000 paid, the investing section. The $20,000 borrowed from the dealer’s finance company never passed through Lantern’s bank account, so it is disclosed as a noncash investing and financing activity rather than shown as both a financing inflow and an investing outflow. From June onward the van generated expenses: $400 a month of depreciation and $100 a month of interest (20,000 × 6% ÷ 12), both reducing net income and so retained earnings. At the year end, entry e8 moved the $5,000 due on 1 June 2027 into current liabilities, which changed the balance sheet’s classification and nothing else.' },
-    { p: 'The write-down shows a subtler pattern. Lantern’s indirect method has no separate line for it: the inventory line shows the increase in inventory net of the write-down, $5,800, so the $400 is already inside it, and adding it back as well would count it twice. Bad debts work the same way. The receivables line uses the net balance, $6,796, so the $1,404 of bad debt expense is already inside it. Depreciation, which reduces a noncurrent asset, is the noncash expense that needs a line of its own.' },
+    { p: 'The write-down shows how an entry with no cash still reaches the statement of cash flows. In the <g>indirect method</g> it lowers net income by $400 and makes the increase in inventory $400 smaller (Lantern’s inventory line, $5,800, is measured after it), and the two effects cancel, as they must when no cash moves. Bad debt expense works the same way through the net receivables line, $6,796, which already includes the $1,404 charge.' },
 
     { h: 'Why profit is not cash' },
-    { p: 'Lantern earned net income of $27,387 and generated $39,940 of cash from operations, $12,553 more. The indirect method lists the reasons, and they fall into three groups.' },
+    { p: 'The indirect method lesson reconciled Lantern’s net income of $27,387 with its $39,940 of cash from operations, line by line. Read across the four statements, the $12,553 gap has three homes, and knowing where each part sits tells a reader what will happen to it next.' },
     { ol: [
-      '<b>A noncash expense, $4,800.</b> Depreciation reduced net income, but the cash for the equipment and the van left as investing outflows when they were bought. Adding it back undoes a deduction; it doesn’t create cash.',
-      '<b>Cash tied up in operating assets, $13,536.</b> Customers owe $6,796 (net of the allowance), the shelves hold $5,800 of bags, and $640 of supplies and $300 of insurance have been paid for but not yet used. Each has been paid for, or earned, without the cash coming back yet.',
-      '<b>Cash not yet paid out, or received before it was earned, $21,289.</b> Lantern owes suppliers $9,210, staff $2,100, lenders $750 of interest and the tax authorities $3,129, and it holds $6,100 of customers’ money for events, workshops and subscriptions it hasn’t yet delivered.',
+      '<b>An earlier investing outflow, $4,800.</b> Depreciation’s cash left the business when the equipment and the van were bought, shown in the investing section of the statement of cash flows. The income statement spreads that cost over their lives, so the <g>add-back</g> undoes a deduction; it doesn’t create cash, as the indirect method lesson stressed.',
+      '<b>The asset side of the balance sheet, $13,536.</b> Customers owe $6,796 net of the allowance, the shelves hold $5,800 of bags, and $640 of supplies and $300 of insurance are paid for but unused: revenue earned before the cash arrived, or cash spent before the expense.',
+      '<b>The liability side of the balance sheet, $21,289.</b> Lantern owes suppliers $9,210, staff $2,100, lenders $750 of interest and the tax authorities $3,129, and holds $6,100 of customers’ money for events, workshops and subscriptions it hasn’t yet delivered.',
     ] },
-    { p: 'So <m>27{,}387 + 4{,}800 - 13{,}536 + 21{,}289 = 39{,}940</m>. The third group deserves the most attention. Operating liabilities financed more than the whole gap, and they reverse: early in 2027 Lantern pays the December bills, the wages and the tax, and it delivers $6,100 of service for which the cash has already arrived. A first year flatters operating cash flow this way, because a new business has no old liabilities to pay off; a lender who projected $39,940 a year into the future would be overestimating.' },
+    { p: 'The third group deserves the most attention. Operating liabilities financed more than the whole gap, and they reverse: early in 2027 Lantern pays the December bills, the wages and the tax, and it delivers $6,100 of service for which the cash has already arrived. A first year flatters operating cash flow this way, because a new business has no old liabilities to pay off; a lender who projected $39,940 a year into the future would be overestimating.' },
     { p: 'Over a business’s whole life the two measures come much closer, because timing differences reverse. Depreciation is the exception: its cash left through investing when the asset was bought. In any single year, though, net income and operating cash flow can differ widely, which is why both statements are required. F03 returns to this comparison when it analyses statements.' },
-    { callout: 'warn', title: 'Depreciation is not a source of cash', html: 'In the indirect method depreciation appears as a positive number, which tempts readers to think it generates cash. It doesn’t. If Lantern had recorded $10,000 of depreciation instead of $4,800, its cash would be exactly the same, apart from any effect on the tax it pays, which the next section explains.' },
 
     { h: 'A three-statement walkthrough' },
     { p: 'Analysts test their understanding of the links, and their spreadsheet models, by pushing one change through all three main statements. The standard exercise: suppose depreciation is $1,000 higher, tax is 25% of income before tax, and the tax is paid in cash within the year.' },
@@ -124,25 +123,16 @@ export default {
   ],
 
   formulas: [
-    { id: 'lnk-cash-identity', name: 'The change in cash from the balance sheet',
-      tex: String.raw`\Delta \text{Cash} = \Delta L + \Delta E - \Delta \text{NCA}`,
+    { id: 'lnk-dividends-paid', name: 'Dividends paid, from the equity statement and the balance sheet',
+      tex: String.raw`D_{\text{paid}} = \underbrace{RE_{\text{beg}} + NI - RE_{\text{end}}}_{\text{dividends declared}} - \Delta \text{DP}`,
       where: [
-        [String.raw`\Delta \text{Cash}`, 'Change in cash over the period', '$'],
-        [String.raw`\Delta L`, 'Change in total liabilities', '$'],
-        [String.raw`\Delta E`, 'Change in total equity', '$'],
-        [String.raw`\Delta \text{NCA}`, 'Change in all noncash assets, net of their contra accounts', '$'],
-      ],
-      assumptions: 'It is the balance sheet equation, assets = liabilities + equity, written for changes and rearranged with cash on its own.',
-      note: String.raw`Lantern, 2026 (all opening balances zero): <m>51{,}289 + 42{,}387 - 50{,}736 = 42{,}940</m>. The indirect method and every three-statement model rest on this identity.` },
-    { id: 'lnk-retained-earnings', name: 'The retained earnings link',
-      tex: String.raw`RE_{\text{end}} = RE_{\text{beg}} + NI - D`,
-      where: [
-        [String.raw`RE_{\text{beg}}`, 'Retained earnings at the start of the period', '$'],
-        [String.raw`RE_{\text{end}}`, 'Retained earnings at the end of the period, as on the balance sheet', '$'],
+        [String.raw`D_{\text{paid}}`, 'Dividends paid in cash during the period: the financing outflow', '$'],
+        [String.raw`RE_{\text{beg}},\ RE_{\text{end}}`, 'Retained earnings at the start and end of the period', '$'],
         [String.raw`NI`, 'Net income for the period, from the income statement (negative for a net loss)', '$'],
-        [String.raw`D`, 'Dividends declared in the period, whether or not paid yet', '$'],
+        [String.raw`\Delta \text{DP}`, 'Closing minus opening dividends payable', '$'],
       ],
-      note: String.raw`Lantern: <m>0 + 27{,}387 - 5{,}000 = 22{,}387</m>. Dividends declared but unpaid reduce retained earnings now and cash later.` },
+      assumptions: 'Retained earnings change only through net income and dividends (no other equity transactions).',
+      note: String.raw`It joins three statements: the retained earnings link gives the dividends declared, and the change in a balance sheet liability turns them into the cash flow. Lantern has no dividends payable: <m>0 + 27{,}387 - 22{,}387 - 0 = 5{,}000</m>.` },
     { id: 'lnk-after-tax', name: 'After-tax effect of a change in a pretax expense',
       tex: String.raw`\Delta NI = -(1 - t)\,\Delta X`,
       where: [
@@ -220,16 +210,16 @@ export default {
   demo: [
     { widget: 'lnk-annual', intro: 'Build Lantern’s annual report from the year’s summary entries and adjustments (y1–y30, e1–e9). Place each account on its statement, then work out net income, ending retained earnings and total assets; the tool checks each link and shows all four statements, including the statement of cash flows.' },
     { widget: 'lnk-walk', intro: 'Push a change in depreciation through the three main statements. Change the amount, the tax rate and the share of the year’s tax paid before the year end, and watch which figures move and how the balance sheet stays in balance.' },
-    { widget: 'lnk-bridge', intro: 'From Lantern’s net income to its cash from operations: each bar is one line of the indirect method. Compare the bars for operating liabilities with the bars for operating assets.' },
+    { widget: 'lnk-trace', intro: 'Analyse seven of Lantern’s entries, from the van to the December dividend. For each, choose the accounts, the sides and the amounts, then tick every statement it changes and, if cash moves, the activity. The feedback shows where each entry lands.' },
   ],
 
   mistakes: [
-    { title: '“Depreciation is a source of cash.”', html: 'It is added back in the indirect method only because it was subtracted to reach net income without any cash leaving. The cash left through investing when the asset was bought. A higher depreciation charge changes cash only through the tax it saves: $1,000 more depreciation at 25% is $250 of cash, not $1,000.' },
+    { title: '“Tax can be left out of a three-statement walkthrough.”', html: 'Without tax, $1,000 more depreciation would lower net income by $1,000 and leave cash unchanged. With tax at 25%, net income falls by only $750, and the $250 of tax saved is cash once the tax is paid. Every pretax change has a tax echo on all three statements: in income tax expense, in cash or income taxes payable, and in retained earnings.' },
     { title: '“If the balance sheet balances, the statements are right.”', html: 'Balancing is one test among several. Hatherley Print Studio’s balance sheet balanced while its statement of cash flows was wrong in two places. Run every link, and remember that some errors, such as an expense posted to the wrong expense account, break none of them.' },
     { title: '“A dividend reduces cash when it is declared.”', html: 'Declaring a dividend reduces retained earnings and creates Dividends Payable; cash falls only when it is paid, and that payment is the financing outflow. A December declaration paid in January appears in this year’s statement of changes in equity and next year’s statement of cash flows.' },
-    { title: '“Add back the inventory write-down as a noncash expense.”', html: 'If the indirect method uses the change in inventory after the write-down, as Lantern’s does (an increase of $5,800), the $400 write-down is already inside that line. Adding it back as well counts it twice and overstates operating cash flow by $400. The same applies to bad debt expense when the receivables line uses the net balance.' },
+    { title: '“The tax saved by an extra expense is always cash this year.”', html: 'Only if the year’s tax is paid within the year. Lantern’s 2026 tax is partly unpaid at 31 December, so $1,000 more depreciation would lower income taxes payable by $250 and leave 2026’s operating cash flow unchanged; the cash saving arrives when the tax is paid in 2027.' },
     { title: '“Operating cash flow above net income is always good news.”', html: 'Lantern’s operating cash flow exceeds its net income by $12,553, but $21,289 of its operating cash came from liabilities that will be paid, or worked off, early in 2027. Read the reasons for the gap before drawing a conclusion from its size.' },
-    { title: '“The van note is a financing inflow and an investing outflow.”', html: 'No cash moved for the $20,000 Lantern owes the dealer’s finance company, so it appears in neither section. Only the $10,000 paid is an investing outflow; the note is disclosed beneath the statement as a noncash investing and financing activity, and its repayments will be financing outflows.' },
+    { title: '“An entry with no cash leaves the statement of cash flows untouched.”', html: 'The accrued interest (e5) moved no cash, yet it appears in Lantern’s indirect reconciliation as an increase in interest payable, and the $20,000 van note appears in the noncash disclosure beneath the statement. What an entry without cash can’t do is change a total: in the reconciliation its effect on net income and its effect on a working-capital line cancel.' },
   ],
 
   application: [
@@ -340,7 +330,6 @@ export default {
     { what: 'Lantern variant: CFO change', value: -(1 - t) * 1000 + 1000 - t * 1000, shown: 0 },
     { what: 'Lantern variant: assets = liabilities + equity', value: -1000, shown: -250 + -750 },
     // formula notes
-    { what: 'Cash identity', value: D.totalLiabilities + D.equity - (D.totalAssets - D.cashEnd), shown: 42940 },
     // Bramble
     { what: 'Bramble dividends', value: BR.reBeg + BR.ni - BR.reEnd, shown: 12000 },
     { what: 'Bramble ending cash', value: BR.cashBeg + BR.cfo + BR.cfi + BR.cff, shown: BR.cashBS },
