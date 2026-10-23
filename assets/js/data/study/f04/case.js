@@ -11,7 +11,7 @@
 
 /** Lantern's existing Coastline note (from F01): interest-only, paid quarterly, principal at maturity. */
 export const COASTLINE_NOTE = {
-  principal: 10_000, rate: 6, paymentsPerYear: 4,
+  principal: 10_000, rate: 6, paymentsPerYear: 4, dayCount: '30/360',   // 30/360 gives exactly $150 a quarter (and F01's $50 a month accrual)
   quarterlyInterest: 10_000 * 0.06 / 4,                  // $150 on 1 June, 1 September, 1 December, 1 March
   issued: '1 March 2026', matures: '1 March 2028',
   marketRateMarch2027: 8,                                // % a year compounded quarterly: what a similar loan costs in March 2027 (fictional)
@@ -48,6 +48,9 @@ const rB = BREWER.loan.apr / 100 / 12;
 const pB = pmt(BREWER.price, rB, 48);
 const qN = COASTLINE_NOTE.marketRateMarch2027 / 100 / 4;
 
+/** The monthly rate at which 24 payments of $1,050 are worth $24,000 today (bisection; the plan's implied rate). */
+const impliedMonthly = (() => { let lo = 1e-9, hi = 0.05; for (let k = 0; k < 200; k++) { const mid = (lo + hi) / 2; (BREWER.vendor.instalment * (1 - (1 + mid) ** -24) / mid > BREWER.price ? (lo = mid) : (hi = mid)); } return (lo + hi) / 2; })();
+
 export const DERIVED = {
   deposit, loan,
   monthlySavingForDeposit: deposit * rSave / ((1 + rSave) ** 60 - 1),          // ≈ 914.19
@@ -60,5 +63,8 @@ export const DERIVED = {
   brewerPayment: pB,                                                           // ≈ 576.94
   brewerTotalInterest: pB * 48 - BREWER.price,                                 // ≈ 3,693
   vendorPVat72: BREWER.vendor.instalment * (1 - (1 + rB) ** -24) / rB,         // ≈ 23,404: cheaper than $24,000 in cash, valued at 7.2%
+  vendorImpliedMonthly: impliedMonthly,                                      // ≈ 0.00394 (0.394% a month)
+  vendorImpliedAPR: impliedMonthly * 12 * 100,                               // ≈ 4.73 %
+  vendorImpliedEAR: ((1 + impliedMonthly) ** 12 - 1) * 100,                  // ≈ 4.83 %
   noteValueMarch2027: COASTLINE_NOTE.quarterlyInterest * (1 - (1 + qN) ** -4) / qN + COASTLINE_NOTE.principal * (1 + qN) ** -4,   // ≈ 9,809.61
 };

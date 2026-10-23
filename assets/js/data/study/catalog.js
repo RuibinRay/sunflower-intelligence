@@ -76,7 +76,7 @@ const ALL = [
     related: [{ plate: 'credit' }, { tool: 'finance/risk/#altman', label: 'Altman Z-scores' }],
   }),
   C({
-    id: 'f04', school: 'finance', code: 'F04', level: 'intro', status: 'in-progress', recommends: ['f00'],
+    id: 'f04', school: 'finance', code: 'F04', level: 'intro', status: 'reviewed', recommends: ['f00'],
     title: 'Mathematics of Finance',
     blurb: 'Interest, present and future value, annuities, loans and inflation, with every formula worked step by step.',
     topics: ['Simple and compound interest', 'Present value and future value', 'Discounting', 'Annuities', 'Perpetuities', 'Loan amortisation', 'Effective annual rates', 'Nominal versus real returns', 'Inflation adjustments', 'Mortgage calculations'],
@@ -84,10 +84,10 @@ const ALL = [
     outcomes: [
       'Calculate simple and compound interest, and solve compound-growth problems for the amount, the rate or the time.',
       'Convert between nominal, periodic and effective annual rates for any compounding frequency, including continuous compounding, and use them to compare offers.',
-      'Calculate the present and future value of single amounts and of uneven cash-flow streams, and the net present value of a decision.',
+      'Calculate the present and future value of single amounts and of uneven cash-flow streams, the net present value of a decision, and the internal rate of return by trial.',
       'Value annuities, annuities due, growing annuities and perpetuities, and solve for the payment, the number of periods or the rate.',
       'Build a loan amortisation schedule, find the balance outstanding at any date, and compare loans, instalment plans and refinancing.',
-      'Distinguish nominal from real amounts and rates, discount consistently, and analyse a fixed-rate mortgage including points and term.',
+      'Distinguish nominal from real amounts and rates, discount consistently, and analyse a fixed-rate mortgage including points and term, and how an adjustable rate resets.',
     ],
     modules: [
       { n: 1, title: 'Interest', lessons: ['simple-and-compound-interest', 'effective-annual-rates'] },

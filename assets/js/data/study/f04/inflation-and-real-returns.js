@@ -1,0 +1,386 @@
+// inflation-and-real-returns.js — F04 · Inflation and real returns. Content only; exercises are in inflation-and-real-returns.ex.js.
+// Builds on F00 interest-and-inflation (CPI, purchasing power, the exact real return), which it refers back to rather than
+// re-teaching. Case facts: Ana's 2.8% inflation assumption (ANA_PLAN.inflation, as in F00) and Lantern in March 2027. New fictional facts used
+// here and only here: the law firm's three-year catering offer ($42,000 fixed or $40,000 indexed) and Lantern's 10%
+// required return. Deliberately does not use ANA_PLAN's home, saving, mortgage or salary figures: the project uses those.
+import { ANA_PLAN } from './case.js';
+
+const INF = ANA_PLAN.inflation / 100;                            // 2.8% a year, Ana's working assumption
+const idx = [100, 103.2, 109.7, 116.4, 119.6, 122.9];          // fictional index, Year 0 = 100
+const af = (r, n) => (1 - (1 + r) ** -n) / r;
+const rReal = 1.10 / (1 + INF) - 1;                              // Lantern: 10% nominal, 2.8% inflation
+const nomFee = (t) => 40000 * (1 + INF) ** t;
+
+export default {
+  slug: 'inflation-and-real-returns',
+  title: 'Inflation and real returns',
+  blurb: 'A dollar next year is not the same unit as a dollar today. Measure inflation over several years, convert amounts into today’s dollars, use the exact Fisher relation, and discount nominal cash flows at nominal rates and real cash flows at real rates, so that every comparison across time is made in one kind of dollar.',
+  status: 'reviewed',
+  objectives: [
+    'Calculate yearly, cumulative and average annual inflation from a price index over several years.',
+    'Convert a nominal amount at any date into real dollars of a chosen base date, and back again.',
+    'Apply the exact Fisher relation to find a real rate, a nominal rate or an inflation rate, using effective rates for the same period.',
+    'Calculate the present value of a cash-flow stream both in nominal terms and in real terms, and explain why consistent discounting gives the same answer.',
+    'Calculate the real growth of a salary or a price, and explain how Treasury Inflation-Protected Securities (TIPS) keep their purchasing power.',
+  ],
+  prerequisites: [
+    { lesson: 'f00/interest-and-inflation', why: 'It introduced inflation, the CPI, purchasing power and the exact real return; this lesson extends them to several years and to whole cash-flow streams.' },
+    { lesson: 'f04/present-and-future-value', why: 'You need discount factors and the idea of moving amounts to a common date.' },
+    { lesson: 'f04/discounting-cash-flows', why: 'You will value an uneven stream of cash flows by discounting each one.' },
+    { lesson: 'f04/annuities', why: 'The growing annuity gives a quick check on the value of a payment that rises with inflation.' },
+  ],
+  case: 'lantern',
+
+  concept: [
+    { case: 'March 2027. Lantern Coffee Co. is a year old, and a law firm in the city (fictional, like everything in the case) wants Lantern to run its office coffee service for three years. It offers two ways to pay, each fee paid at the end of each contract year: a fixed $42,000 a year, or $40,000 a year in March 2027 dollars, raised every year in line with the Consumer Price Index. Ana still assumes, as she did in F00, that prices will rise by about 2.8% a year, and she wants Lantern’s contracts to earn 10% a year, the return she judges fair for the risk of the business. The indexed fee starts lower but grows. Which is worth more today? Answering means comparing dollars paid in different years when each year’s dollar buys a little less than the last.' },
+
+    { h: 'Two kinds of dollars' },
+    { p: 'In F00 you met <g>inflation</g> as a sustained rise in prices and saw that it reduces the <g>purchasing power</g> of money. Over one year that was a single division. Over several years, and with cash flowing in and out at different dates, it pays to be explicit about which kind of dollar each number is measured in.' },
+    { define: [
+      ['<g>Nominal amount</g>', 'An amount in the dollars of the date it is actually paid or received: the number on the cheque. Also called current dollars. Prices, wages, loan payments and bank balances are all quoted in nominal terms.'],
+      ['<g>Real amount</g>', 'The same amount restated in the purchasing power of a chosen <g>base period</g>, by dividing out the inflation between the base and the date of payment. Also called constant dollars, or “today’s dollars” when the base is today.'],
+    ] },
+    { p: 'A real amount answers the question “what would this buy at base-period prices?” Lantern’s indexed fee is set in real terms: $40,000 of March 2027 purchasing power every year. The fixed fee is set in nominal terms: $42,000 in each year’s dollars, which buy less as time passes. Neither form is wrong; mixing them without converting is.' },
+
+    { h: 'Inflation over several years' },
+    { p: 'A <g>price index</g> such as the <g>Consumer Price Index</g> measures the cost of a fixed basket relative to a base period. The table follows a fictional index for five years. Each year’s inflation is the percentage change in the index over that year, exactly as in F00.' },
+    { table: {
+      caption: 'A fictional price index over five years (Year 0 = 100)',
+      head: ['Year', 'Index', 'Inflation during the year', 'Cumulative since Year 0'],
+      align: ['l', 'r', 'r', 'r'],
+      rows: [
+        ['0', '100.0', '—', '—'],
+        ['1', '103.2', '3.20%', '3.20%'],
+        ['2', '109.7', '6.30%', '9.70%'],
+        ['3', '116.4', '6.11%', '16.40%'],
+        ['4', '119.6', '2.75%', '19.60%'],
+        ['5', '122.9', '2.76%', '22.90%'],
+      ],
+      note: 'Fictional figures for teaching. Yearly inflation = this year’s index ÷ last year’s index − 1; cumulative inflation = index ÷ 100 − 1. Percentages rounded to two decimal places.',
+    } },
+    { p: String.raw`Two summary numbers matter. <g>Cumulative inflation</g> is the total rise: <m>122.9 \div 100.0 - 1 = 22.9\%</m>. The <g>average annual inflation rate</g> is the constant yearly rate that would have produced the same total, so it is found by compounding backwards, not by dividing: <m>(122.9 \div 100.0)^{1/5} - 1 \approx 4.21\%</m>. Check it: <m>1.042102^5 \approx 1.229</m>. Dividing the cumulative figure by five gives 4.58%, which is too high, because it ignores the fact that each year’s inflation applies to prices that have already risen.` },
+    { p: String.raw`Yearly rates link by multiplication, never by addition: <m>1.032 \times 1.0630 \times 1.0611 \times 1.0275 \times 1.0276 \approx 1.229</m>, the same ratio as the end and start index levels. This is the compound-growth arithmetic of module 1 applied to prices.` },
+
+    { h: 'Restating amounts in one kind of dollar' },
+    { p: String.raw`To restate a nominal amount paid at date <m>t</m> in dollars of a base date, multiply by the ratio of the index at the base to the index at <m>t</m>. Suppose a fictional technician earned $45,000 in Year 0 and $52,000 in Year 5 on the index above. In Year 0 dollars, the Year 5 salary is <m>52{,}000 \times 100.0 \div 122.9 \approx 42{,}310.82</m> dollars. Her pay rose 15.56% in dollars, but in purchasing power it fell about 5.98%. To have kept pace with prices she would have needed <m>45{,}000 \times 1.229 = 55{,}305</m> dollars in Year 5.` },
+    { p: 'The same ratio works in either direction, and the base can be any date: today, the start of a contract, or a year you want to compare against. What matters is that every amount in one calculation is measured against the same base.' },
+
+    { h: 'Nominal rates, real rates and the Fisher relation' },
+    { p: String.raw`F00 gave the exact link between a <g>nominal return</g>, inflation <m>i</m> and a <g>real return</g>. This course calls it the <g>Fisher relation</g>: <m>1 + r_{\text{nom}} = (1 + r_{\text{real}})(1 + i)</m>. It can be solved for whichever rate is unknown. Ana wants Lantern’s contracts to earn 10% a year in nominal terms; with 2.8% inflation that is a real return of <m>1.10 \div 1.028 - 1 \approx 7.00\%</m>. Run the other way, an investor who wants 7% real when inflation is 2.8% needs <m>1.07 \times 1.028 - 1 \approx 10.00\%</m> nominal.` },
+    { callout: 'key', title: 'Discount like with like', html: 'Nominal cash flows are discounted at a nominal rate; real cash flows are discounted at a real rate. Done consistently, the two routes give exactly the same present value, because inflation is divided out of both the numerator and the denominator. Mixing them, real flows with a nominal rate or nominal flows with a real rate, is one of the most common and most expensive errors in valuation.' },
+    { p: String.raw`For Lantern’s indexed offer, the nominal route grows the fee with expected inflation, <m>40{,}000 \times 1.028^t</m> in year <m>t</m>, and discounts at 10%. The real route keeps the fee at $40,000 and discounts at the real rate of about 7.00%. Both give about $104,965.18. The fixed $42,000, already nominal, is worth <m>42{,}000 \times 2.486852 \approx 104{,}447.78</m> at 10%. On Ana’s inflation assumption the indexed offer is worth about $517.40 more today, and it also protects Lantern if inflation turns out higher. Worked example 2 sets out every step.` },
+  ],
+
+  theory: [
+    { h: 'Price indexes over time' },
+    { p: String.raw`Write <m>\text{CPI}_t</m> for the index level at date <m>t</m>. Inflation over any interval is the ratio of the index levels minus one, however many years the interval spans. Because the ratio over a long interval is the product of the ratios over the shorter intervals inside it, yearly rates compound: <m>(1 + i_1)(1 + i_2)\cdots(1 + i_n) = \text{CPI}_n \div \text{CPI}_0</m>. The average annual rate is the <m>n</m>th root of that product minus one, a geometric average, for the same reason that the average growth rate of an investment is.` },
+    { p: String.raw`Monthly figures annualise the same way. If an index rises 0.3% in a month, the annualised rate is <m>1.003^{12} - 1 \approx 3.66\%</m>, not <m>12 \times 0.3\% = 3.6\%</m>. Over a full year, the year-on-year change in the index (this month’s level against the same month a year earlier) is usually the more reliable figure, because single months are noisy.` },
+    { p: 'A price index is an average over a basket, so it is a measure, not a law of nature. The CPI tracks what urban consumers buy; a business’s own costs, such as coffee beans or rent, may rise faster or slower. When a contract is linked to an index, the parties must name the exact series. The US Bureau of Labor Statistics, which publishes the CPI, recommends the US City Average index for escalation clauses and calls seasonally adjusted figures inappropriate for them; seasonally adjusted data are also revised for up to five years after release.' },
+
+    { h: 'The Fisher relation in full' },
+    { p: String.raw`The exact relation <m>1 + r_{\text{nom}} = (1 + r_{\text{real}})(1 + i)</m> holds over any period, provided all three rates are measured over the <i>same</i> period and compound in the same way. Two consequences follow.` },
+    { list: [
+      String.raw`<b>Use effective rates.</b> A savings account quoted at 4.5% a year compounded monthly has an <g>effective annual rate</g> of <m>(1 + 0.045/12)^{12} - 1 \approx 4.594\%</m>. Its real return at 2.8% inflation is <m>1.04594 \div 1.028 - 1 \approx 1.745\%</m>. Using the quoted 4.5% would give 1.654%, understating the real return by about 0.09 percentage points.`,
+      String.raw`<b>It works over several years.</b> Over <m>n</m> years the growth factors multiply: <m>(1 + r_{\text{nom}})^n = (1 + r_{\text{real}})^n (1 + i)^n</m>. The cumulative real return is the cumulative nominal growth divided by cumulative inflation, minus one. Approximating by subtraction each year and adding up the errors can go badly wrong over long horizons, as F00 showed.`,
+    ] },
+    { p: String.raw`The approximation <m>r_{\text{real}} \approx r_{\text{nom}} - i</m> drops the term <m>r_{\text{real}} \times i</m>. OpenStax’s <i>Principles of Finance</i> presents that subtraction as the working definition of the <g>real interest rate</g>; this course uses the exact form for every calculation and the subtraction only as a mental check.` },
+
+    { h: 'Nominal and real cash flows' },
+    { p: String.raw`A cash flow expected in year <m>t</m> can be written either way. If <m>C^{\text{real}}_t</m> is its value in today’s dollars and inflation is expected to run at <m>i</m> a year, the nominal amount is <m>C^{\text{nom}}_t = C^{\text{real}}_t (1 + i)^t</m>. Discounting each at its matching rate gives the same present value, term by term:` },
+    { math: String.raw`\frac{C^{\text{nom}}_t}{(1 + r_{\text{nom}})^t} = \frac{C^{\text{real}}_t (1 + i)^t}{(1 + r_{\text{real}})^t (1 + i)^t} = \frac{C^{\text{real}}_t}{(1 + r_{\text{real}})^t}` },
+    { table: {
+      caption: 'Lantern’s indexed offer valued both ways (10% nominal, 2.8% inflation, 7.0039% real)',
+      head: ['Year', 'Real fee (March 2027 $)', 'Nominal fee', 'PV: nominal ÷ 1.10^t', 'PV: real ÷ 1.070039^t'],
+      align: ['l', 'r', 'r', 'r', 'r'],
+      rows: [
+        ['1', '$40,000.00', '$41,120.00', '$37,381.82', '$37,381.82'],
+        ['2', '$40,000.00', '$42,271.36', '$34,935.01', '$34,935.01'],
+        ['3', '$40,000.00', '$43,454.96', '$32,648.35', '$32,648.35'],
+      ],
+      foot: [['Total', '', '', '$104,965.18', '$104,965.18']],
+      note: 'Nominal fee = 40,000 × 1.028^t. Present values rounded to the cent at the end; each row is identical by both routes before rounding.',
+    } },
+    { p: String.raw`The two inconsistent mixes show how large the error can be. Discounting the <i>real</i> $40,000 at the <i>nominal</i> 10% gives <m>40{,}000 \times 2.486852 \approx 99{,}474.08</m>, about $5,491.10 too low: it treats the fee as if it never rose, while the discount rate still charges for inflation. Discounting the <i>nominal</i> fees at the <i>real</i> 7.00% gives about $110,815.59, about $5,850.41 too high: inflation is counted in the cash flows but not in the rate.` },
+    { p: String.raw`The <i>annuities</i> lesson gives a check. Nominal fees that start at $41,120 and grow at 2.8% form a growing annuity, whose value at 10% is <m>\dfrac{41{,}120}{0.10 - 0.028}\left[1 - \left(\dfrac{1.028}{1.10}\right)^3\right] \approx 104{,}965.18</m>: the same answer a third way. A level real payment is the same thing as a nominal payment growing at the inflation rate.` },
+    { callout: 'warn', title: 'Which route to choose', html: 'Use whichever route matches how the cash flows are forecast. Prices quoted “in today’s money”, budgets prepared without inflation and CPI-linked contracts are naturally real; loan payments, bond coupons, fixed-price contracts and anything written as a number of dollars on a date are nominal. A fixed nominal payment must be converted before it can be discounted at a real rate, and the conversion needs an inflation forecast.' },
+
+    { h: 'Real growth of salaries and prices' },
+    { p: String.raw`The Fisher relation applies to any growth rate, not only to interest. A salary growing at <m>g</m> a year in nominal terms grows in real terms at <m>g_{\text{real}} = (1 + g) \div (1 + i) - 1</m>. Suppose Lantern hires a barista trainer on $42,000 with raises of 3.5% a year (a fictional offer). At 2.8% inflation the real raise is <m>1.035 \div 1.028 - 1 \approx 0.68\%</m> a year. After four years the salary is <m>42{,}000 \times 1.035^4 \approx 48{,}195.97</m> dollars, which buys what about <m>48{,}195.97 \div 1.028^4 \approx 43{,}155.71</m> dollars buys today: a 14.75% rise in dollars, a 2.75% rise in purchasing power.` },
+
+    { h: 'Inflation-protected bonds' },
+    { p: String.raw`An ordinary <g>bond</g> promises fixed nominal payments, so its holder bears inflation risk: if inflation is higher than expected, the payments buy less. An inflation-protected bond moves that risk to the issuer by indexing the <g>principal</g>. In the United States the best known are <g>Treasury Inflation-Protected Securities</g> (TIPS), issued by the US Treasury.` },
+    { callout: 'standards', title: 'How US TIPS work (US Treasury, checked October 2026)', html: 'The principal of a TIPS goes up with inflation and down with <g>deflation</g>, using the Consumer Price Index from the Bureau of Labor Statistics; Treasury’s TIPS data identify it as the non-seasonally adjusted CPI-U. TIPS pay interest every six months at a fixed rate, set at auction and never less than 0.125%, and each payment is the adjusted principal times half the annual rate, so the dollar amount of interest changes as the principal changes. At maturity the holder receives the adjusted principal or the original principal, whichever is greater. TIPS are sold in terms of 5, 10 and 30 years, in multiples of $100. Interest is subject to federal income tax each year but not to state or local income tax, and changes in the principal during the year may also affect federal tax.' },
+    { p: String.raw`A simplified illustration (fictional numbers; Treasury’s own calculation uses a daily index ratio): $10,000 of TIPS with a fixed rate of 1.75%. If the index ratio is 1.015 at the first payment date, the adjusted principal is $10,150 and the payment is <m>10{,}150 \times 0.0175 \div 2 \approx 88.81</m> dollars. If the ratio reaches 1.032 a year in, the principal is $10,320 and the payment $90.30. If, at maturity, deflation had left the adjusted principal at $9,800, the holder would still receive $10,000.` },
+    { p: String.raw`Because a TIPS fixes a real rate and an ordinary Treasury of the same term fixes a nominal rate, comparing the two reveals the <g>break-even inflation rate</g>: <m>(1 + \text{nominal yield}) \div (1 + \text{real yield}) - 1</m>. If inflation turns out higher than break-even, the TIPS does better; if lower, the ordinary bond does. Worked example 3 makes the comparison.` },
+
+    { h: 'Limits of real analysis' },
+    { p: 'Every real calculation about the future rests on an inflation forecast, and forecasts are uncertain. A plan made at 2.8% looks different at 5%. Good practice is to state the assumption, test two or three alternatives, and prefer contracts or investments whose real value does not hinge on getting it exactly right. Past inflation, measured from an index, is a fact; future inflation is an assumption.' },
+  ],
+
+  formulas: [
+    { id: 'inflation-multi', name: 'Cumulative and average annual inflation',
+      tex: String.raw`I_n = \frac{\text{CPI}_n}{\text{CPI}_0} - 1, \qquad i_{\text{avg}} = \left(\frac{\text{CPI}_n}{\text{CPI}_0}\right)^{1/n} - 1`,
+      where: [
+        [String.raw`I_n`, 'Cumulative inflation over the whole interval, as a decimal', ''],
+        [String.raw`i_{\text{avg}}`, 'Average annual inflation rate: the constant yearly rate giving the same cumulative inflation', 'per year'],
+        [String.raw`\text{CPI}_0`, 'Price index at the start', 'index points'],
+        [String.raw`\text{CPI}_n`, 'Price index at the end', 'index points'],
+        [String.raw`n`, 'Number of years in the interval', 'years'],
+      ],
+      assumptions: 'Any price index can stand in for the CPI; use the same series at both dates.',
+      note: 'Never divide cumulative inflation by n: inflation compounds.' },
+    { id: 'restate-dollars', name: 'Restating an amount in base-period dollars',
+      tex: String.raw`\text{Real amount} = \text{Nominal amount}_t \times \frac{\text{CPI}_{\text{base}}}{\text{CPI}_t} = \frac{\text{Nominal amount}_t}{(1 + i)^{t}}`,
+      where: [
+        [String.raw`\text{Nominal amount}_t`, 'An amount paid or received at date t, in that date’s dollars', '$'],
+        [String.raw`\text{CPI}_t`, 'Price index at date t', 'index points'],
+        [String.raw`\text{CPI}_{\text{base}}`, 'Price index at the base date', 'index points'],
+        [String.raw`i`, 'Constant annual inflation rate (the second form only, for forecasts)', 'per year'],
+        [String.raw`t`, 'Years from the base date to the payment', 'years'],
+        [String.raw`\text{Real amount}`, 'What the amount buys at base-date prices', '$ of the base date'],
+      ],
+      assumptions: 'The index (or the inflation rate) measures the price changes that matter to the person or business.',
+      note: 'Multiply by CPI_t ÷ CPI_base to go the other way, from base-date dollars to date-t dollars.' },
+    { id: 'fisher', name: 'Fisher relation (exact)',
+      tex: String.raw`1 + r_{\text{nom}} = (1 + r_{\text{real}})(1 + i) \quad\Longleftrightarrow\quad r_{\text{real}} = \frac{1 + r_{\text{nom}}}{1 + i} - 1`,
+      where: [
+        [String.raw`r_{\text{nom}}`, 'Nominal rate: growth in dollars, as an effective rate for the period', 'per period'],
+        [String.raw`r_{\text{real}}`, 'Real rate: growth in purchasing power over the same period', 'per period'],
+        [String.raw`i`, 'Inflation over the same period', 'per period'],
+      ],
+      assumptions: 'All three rates cover the same period and are effective rates (convert an APR to an EAR first).',
+      note: 'The shortcut r_real ≈ r_nom − i drops the product r_real × i; use it only as a check.' },
+    { id: 'real-nominal-flows', name: 'Real and nominal cash flows',
+      tex: String.raw`C^{\text{nom}}_t = C^{\text{real}}_t\,(1 + i)^t`,
+      where: [
+        [String.raw`C^{\text{nom}}_t`, 'Cash flow in year t, in the dollars of year t', '$'],
+        [String.raw`C^{\text{real}}_t`, 'The same cash flow in today’s dollars', '$ of today'],
+        [String.raw`i`, 'Expected annual inflation', 'per year'],
+        [String.raw`t`, 'Years from today', 'years'],
+      ],
+      assumptions: 'Inflation is expected to be constant at i; with a forecast that varies, multiply the yearly factors.' },
+    { id: 'consistent-pv', name: 'Consistent discounting',
+      tex: String.raw`\text{PV} = \sum_{t=1}^{n} \frac{C^{\text{nom}}_t}{(1 + r_{\text{nom}})^t} = \sum_{t=1}^{n} \frac{C^{\text{real}}_t}{(1 + r_{\text{real}})^t}`,
+      where: [
+        [String.raw`\text{PV}`, 'Present value today', '$'],
+        [String.raw`C^{\text{nom}}_t`, 'Nominal cash flow at the end of year t', '$'],
+        [String.raw`C^{\text{real}}_t`, 'Real cash flow at the end of year t, in today’s dollars', '$ of today'],
+        [String.raw`r_{\text{nom}}`, 'Nominal discount rate', 'per year'],
+        [String.raw`r_{\text{real}}`, 'Real discount rate, linked to the nominal rate by the Fisher relation', 'per year'],
+        [String.raw`n`, 'Number of years', 'years'],
+        [String.raw`t`, 'Year of each cash flow', 'years'],
+      ],
+      assumptions: 'The same inflation rate links the cash flows and the discount rates.',
+      note: 'Never discount nominal flows at a real rate or real flows at a nominal rate.' },
+    { id: 'real-growth', name: 'Real growth of a salary or price',
+      tex: String.raw`g_{\text{real}} = \frac{1 + g}{1 + i} - 1`,
+      where: [
+        [String.raw`g_{\text{real}}`, 'Growth in purchasing power per year', 'per year'],
+        [String.raw`g`, 'Nominal growth rate per year (for example a pay rise)', 'per year'],
+        [String.raw`i`, 'Inflation per year', 'per year'],
+      ],
+      note: 'The Fisher relation applied to growth instead of interest.' },
+    { id: 'tips-payment', name: 'TIPS principal and interest (simplified)',
+      tex: String.raw`\text{Adjusted principal}_t = \text{Principal} \times \frac{\text{CPI}_t}{\text{CPI}_0}, \qquad \text{Interest}_t = \text{Adjusted principal}_t \times \frac{r_{\text{fixed}}}{2}`,
+      where: [
+        [String.raw`\text{Principal}`, 'Original principal (par value)', '$'],
+        [String.raw`\text{Adjusted principal}_t`, 'Principal after the inflation adjustment at date t', '$'],
+        [String.raw`\text{CPI}_0`, 'Reference price index when the security was issued', 'index points'],
+        [String.raw`\text{CPI}_t`, 'Reference price index at payment date t', 'index points'],
+        [String.raw`r_{\text{fixed}}`, 'Fixed annual interest rate set at auction', 'per year'],
+        [String.raw`\text{Interest}_t`, 'Interest paid at the six-monthly payment date t', '$'],
+      ],
+      assumptions: 'Treasury uses a daily index ratio based on the CPI; the ratio CPI_t ÷ CPI_0 here stands in for it.',
+      note: 'At maturity the holder receives the greater of the adjusted principal and the original principal.' },
+  ],
+
+  examples: [
+    { level: 'simple', title: 'Five years of prices and a pay rise', fictional: true,
+      setup: 'Use the fictional index in “The idea” (100.0 in Year 0, 122.9 in Year 5). A technician’s salary rose from $45,000 in Year 0 to $52,000 in Year 5. Find (a) cumulative inflation, (b) the average annual inflation rate and (c) the Year 5 salary in Year 0 dollars, and say whether her purchasing power rose.',
+      steps: [
+        String.raw`(a) Cumulative inflation is the ratio of the index levels minus one: <m>122.9 \div 100.0 - 1 = 0.229</m>, or 22.9%.`,
+        String.raw`(b) The average annual rate compounds backwards: <m>1.229^{1/5} - 1 \approx 0.042102</m>, about 4.21% a year. (On a calculator: 1.229, then the power key with 0.2.)`,
+        String.raw`(c) Restate the Year 5 salary at Year 0 prices: <m>52{,}000 \times 100.0 \div 122.9 \approx 42{,}310.82</m>.`,
+        String.raw`Compare: in Year 0 dollars her salary went from $45,000 to $42,310.82, a real change of <m>42{,}310.82 \div 45{,}000 - 1 \approx -5.98\%</m>, while in dollars it rose <m>52{,}000 \div 45{,}000 - 1 \approx 15.56\%</m>.`,
+      ],
+      answer: '(a) 22.9%; (b) about 4.21% a year; (c) about $42,310.82 in Year 0 dollars, so her purchasing power fell by about 5.98% despite a 15.56% rise in pay.',
+      interpretation: 'A pay rise is a real rise only if it beats inflation over the same period. To keep pace she needed $55,305 in Year 5. Comparing salaries across years in nominal dollars hides exactly this.' },
+    { level: 'challenging', title: 'Lantern’s catering contract, valued two ways', fictional: true,
+      setup: 'The law firm offers Lantern either $42,000 at the end of each of the next three years, or $40,000 in March 2027 dollars at the end of each year, raised in line with the CPI. Lantern requires a nominal return of 10% a year and expects inflation of 2.8% a year. Value the indexed offer by the nominal route and by the real route, value the fixed offer, and recommend one.',
+      steps: [
+        String.raw`Nominal fees under the indexed offer: <m>40{,}000 \times 1.028 = 41{,}120.00</m>, <m>40{,}000 \times 1.028^2 = 42{,}271.36</m> and <m>40{,}000 \times 1.028^3 \approx 43{,}454.96</m>.`,
+        String.raw`Nominal route: discount each at 10%. <m>41{,}120 \div 1.10 \approx 37{,}381.82</m>; <m>42{,}271.36 \div 1.21 \approx 34{,}935.01</m>; <m>43{,}454.96 \div 1.331 \approx 32{,}648.35</m>. Total about $104,965.18.`,
+        String.raw`Real route: the real rate is <m>1.10 \div 1.028 - 1 \approx 7.0039\%</m>. The real fee is a level $40,000, so use the annuity factor at the real rate: <m>40{,}000 \times \dfrac{1 - 1.070039^{-3}}{0.070039} \approx 40{,}000 \times 2.624129 \approx 104{,}965.18</m>. The same answer, as it must be.`,
+        String.raw`Fixed offer, already nominal, at 10%: <m>42{,}000 \times \dfrac{1 - 1.10^{-3}}{0.10} = 42{,}000 \times 2.486852 \approx 104{,}447.78</m>.`,
+        String.raw`Compare: the indexed offer is worth about <m>104{,}965.18 - 104{,}447.78 = 517.40</m> dollars more. The fixed fee that would make Lantern indifferent is <m>104{,}965.18 \div 2.486852 \approx 42{,}208.05</m> a year.`,
+      ],
+      table: {
+        caption: 'The three-year offers at a glance',
+        head: ['Offer', 'Cash flows are', 'Discount at', 'Present value'],
+        align: ['l', 'l', 'r', 'r'],
+        rows: [
+          ['Indexed, $40,000 real', 'Real', '7.0039%', '$104,965.18'],
+          ['Indexed, grown at 2.8%', 'Nominal', '10%', '$104,965.18'],
+          ['Fixed, $42,000', 'Nominal', '10%', '$104,447.78'],
+        ],
+      },
+      answer: 'The indexed offer is worth about $104,965.18 today by either route; the fixed offer about $104,447.78. On a 2.8% inflation assumption Lantern should prefer the indexed fee, by about $517.40.',
+      interpretation: 'The margin is small, so the decision rests partly on risk. The indexed fee keeps its purchasing power whatever inflation does, which matters to a coffee caterer whose costs rise with prices; the fixed fee wins only if inflation turns out below about 2.54% a year. Lantern should also check which index the contract names and that it is not seasonally adjusted.' },
+    { level: 'applied', title: 'An inflation-protected bond or an ordinary one?', fictional: true,
+      setup: 'Tobias, a hospital pharmacist (fictional), is saving for a sabbatical in five years. He compares a five-year US Treasury note yielding 4.3% a year with five-year TIPS yielding a real 1.8% a year. Treat both yields as effective annual rates and ignore taxes. The yields are illustrations, not current market rates. What inflation rate makes the two equal, and what does each earn if inflation averages 3.5%, or 1.0%?',
+      steps: [
+        String.raw`Break-even inflation from the Fisher relation: <m>1.043 \div 1.018 - 1 \approx 2.456\%</m> a year (the subtraction shortcut says 2.5%).`,
+        String.raw`If inflation averages 3.5%: the TIPS earns <m>1.018 \times 1.035 - 1 \approx 5.363\%</m> nominal, more than the note’s 4.3%. The note’s real return is only <m>1.043 \div 1.035 - 1 \approx 0.773\%</m>, against the TIPS’s fixed 1.8%.`,
+        String.raw`If inflation averages 1.0%: the TIPS earns <m>1.018 \times 1.01 - 1 \approx 2.818\%</m> nominal; the note still pays 4.3%, a real <m>1.043 \div 1.01 - 1 \approx 3.267\%</m>.`,
+        'Judgement: the ordinary note wins if inflation stays below about 2.46% a year; the TIPS wins above it, and its real return is fixed at 1.8% either way.',
+      ],
+      answer: 'Break-even inflation is about 2.46% a year. At 3.5% inflation the TIPS earns about 5.36% nominal against 4.3%; at 1.0% it earns about 2.82% against 4.3%.',
+      interpretation: 'The choice is not about which bond has the higher number on it; it is about who carries inflation risk. Tobias’s sabbatical will be paid for in future prices, so locking in a real return removes a risk he cannot otherwise control. If he expects inflation well below 2.46%, or needs a predictable dollar sum, the ordinary note suits him better.' },
+  ],
+
+  demo: [
+    { widget: 'consistent-pv', intro: 'Value a payment that keeps its purchasing power for several years. The two correct routes always agree; watch how far the two mixed-up routes drift from them as you lengthen the period or raise inflation.' },
+    { widget: 'real-salary', intro: 'A salary that rises by a fixed percentage each year, against steady inflation. Find the raise at which the real salary stops falling, and compare the exact real growth rate with the subtraction shortcut.' },
+    { widget: 'purchasing-power', intro: 'What $1,000 received in a future year is worth in today’s dollars at three steady inflation rates. Even 2% a year takes almost half of its purchasing power over thirty years.' },
+  ],
+
+  mistakes: [
+    { title: 'Dividing cumulative inflation by the number of years', html: 'Prices that rose 22.9% over five years did not rise 4.58% a year: inflation compounds. The average annual rate is the fifth root of 1.229, minus one, about 4.21%.' },
+    { title: 'Discounting real cash flows at a nominal rate', html: 'A forecast in today’s prices has no inflation in it; a nominal rate does. Lantern’s indexed fee discounted at 10% is undervalued by about $5,491. Convert the flows to nominal, or the rate to real, before discounting.' },
+    { title: 'Discounting nominal cash flows at a real rate', html: 'The opposite mix counts inflation in the cash flows but not in the rate, and overvalues: about $5,850 too much for Lantern’s offer. Fixed loan payments, coupons and fixed-price contracts are nominal.' },
+    { title: 'Putting an APR into the Fisher relation', html: 'The Fisher relation links effective rates over the same period. A 4.5% APR compounded monthly is an effective 4.594% a year; use that, or convert everything to monthly rates.' },
+    { title: 'Calling a pay rise a real rise', html: 'A 3.5% raise with 2.8% inflation is a 0.68% real raise; with 4% inflation it is a real cut. Always ask what the increase is worth after prices.' },
+    { title: 'Thinking a TIPS pays its fixed rate on the original principal', html: 'Interest is the adjusted principal times half the fixed annual rate, so the dollar amount of interest rises with inflation and falls with deflation. Only the final repayment has a floor: never less than the original principal.' },
+  ],
+
+  application: [
+    { case: 'Ana takes the indexed fee. Her own costs, beans, milk, rent and wages, rise with prices, so a fee that keeps its purchasing power is a better match for them, and on her 2.8% assumption it is also worth slightly more. Before signing she asks the law firm to name the index (the US City Average CPI, not seasonally adjusted, as the Bureau of Labor Statistics recommends for escalation) and the month used for each year’s adjustment. Lantern’s budget for the contract is prepared in March 2027 dollars and discounted at the real rate, so that her forecast of costs and the fee are measured the same way.' },
+    { p: '<b>Budgeting in constant dollars.</b> The facilities director of a fictional university plans roof and boiler replacements over twenty years. Contractors quote today’s prices, so she keeps the whole plan in real terms and discounts at a real rate. Converting to nominal would add an inflation forecast to every line without changing the answer, as long as the rate is converted the same way. When a contractor quotes a fixed nominal price for work three years away, she converts that single line to real terms before adding it in.' },
+    { p: '<b>Pay negotiations.</b> An HR manager at a fictional regional bus operator compares a union’s claim for a 5% rise with the company’s offer of 3% plus a cost-of-living adjustment linked to the CPI. She restates both offers in real terms under several inflation scenarios: at 2% inflation the fixed 5% is the better deal for staff; at 6% the indexed offer is. Escalation clauses of this kind, common in labour agreements, rental contracts and long supply contracts, move inflation risk from the payee to the payer.' },
+    { p: '<b>Protecting savings.</b> A financial planner helping a fictional retired teacher compares ordinary Treasury securities with TIPS. She computes the break-even inflation rate from the two yields, explains that TIPS fix the real return while ordinary Treasuries fix the nominal one, and points out that the teacher’s pension is fixed in dollars, so some inflation protection elsewhere reduces her overall risk.' },
+    { p: 'The same habit runs through all four: write down whether each number is nominal or real, keep one kind of dollar within a calculation, and state the inflation assumption so others can test it. The next lesson, <i>Mortgages</i>, applies this to the largest fixed nominal payment most households ever make.' },
+  ],
+
+  summary: [
+    'Nominal amounts are in the dollars of the date paid; real amounts are restated in the purchasing power of a base date. Convert with the ratio of index levels.',
+    'Inflation compounds: cumulative inflation = CPI_n ÷ CPI_0 − 1; average annual inflation = (CPI_n ÷ CPI_0)^(1/n) − 1, not cumulative ÷ n.',
+    'Fisher relation (exact): 1 + nominal = (1 + real)(1 + inflation), with effective rates over the same period.',
+    'Discount nominal cash flows at nominal rates and real cash flows at real rates; done consistently, both give the same present value. Lantern’s indexed fee is worth about $104,965.18 either way.',
+    'Mixing them is costly: real flows at a nominal rate undervalue, nominal flows at a real rate overvalue.',
+    'Real growth of a salary or price = (1 + nominal growth) ÷ (1 + inflation) − 1.',
+    'US TIPS index their principal to the CPI, pay a fixed rate on the adjusted principal every six months, and repay at least the original principal; break-even inflation = (1 + nominal yield) ÷ (1 + real yield) − 1.',
+  ],
+
+  glossary: [
+    { term: 'Nominal amount', def: 'An amount of money in the dollars of the date it is paid or received, with no adjustment for inflation. Also called current dollars.' },
+    { term: 'Real amount', def: 'An amount of money restated in the purchasing power of a chosen base period, by dividing out the inflation since that period. Also called constant dollars.' },
+    { term: 'Base period', def: 'The date or period whose prices serve as the yardstick for real amounts; a price index is often set to 100 in it.' },
+    { term: 'Cumulative inflation', def: 'The total percentage rise in prices over an interval of several periods: the end index level divided by the start level, minus 1.' },
+    { term: 'Average annual inflation rate', def: 'The constant yearly inflation rate that would produce the same cumulative inflation over n years: (end index ÷ start index)^(1/n) − 1.' },
+    { term: 'Fisher relation', def: 'The exact link between a nominal rate, a real rate and inflation over the same period: (1 + nominal) = (1 + real) × (1 + inflation).' },
+    { term: 'Escalation clause', def: 'A contract term that changes a payment in line with a named price index, such as the CPI, so that the payment keeps its purchasing power.' },
+    { term: 'Deflation', def: 'A sustained fall in the general level of prices: negative inflation.' },
+    { term: 'Treasury Inflation-Protected Securities', def: 'US Treasury securities whose principal is adjusted with the Consumer Price Index and which pay a fixed rate of interest on the adjusted principal every six months; at maturity the holder receives the greater of the adjusted and the original principal. Often shortened to TIPS.' },
+    { term: 'Break-even inflation rate', def: 'The inflation rate at which an inflation-protected bond and an ordinary bond of the same term give the same return: (1 + nominal yield) ÷ (1 + real yield) − 1.' },
+  ],
+
+  references: [
+    // treasurydirect.gov refuses automated fetching; the two TreasuryDirect pages below were read on 2026-10-23 at the
+    // same paths on savingsbond.gov and bondpro.gov, which serve TreasuryDirect content for the Bureau of the Fiscal Service.
+    { text: 'US Bureau of Labor Statistics. <i>Consumer Price Index</i> (programme home page).', url: 'https://www.bls.gov/cpi/', checked: '2026-10-23' },
+    { text: 'US Bureau of Labor Statistics. <i>How to Use the Consumer Price Index for Escalation</i>. Fact sheet, last modified 8 June 2023.', url: 'https://www.bls.gov/cpi/factsheets/escalation.htm', checked: '2026-10-23' },
+    { text: 'US Department of the Treasury, Bureau of the Fiscal Service. <i>Treasury Inflation-Protected Securities (TIPS)</i>. TreasuryDirect.', url: 'https://www.treasurydirect.gov/marketable-securities/tips/', checked: '2026-10-23' },
+    { text: 'US Department of the Treasury, Bureau of the Fiscal Service. <i>TIPS/CPI Data: reference CPI numbers and daily index ratios</i>. TreasuryDirect.', url: 'https://www.treasurydirect.gov/instit/annceresult/tipscpi/tipscpi.htm', checked: '2026-10-23' },
+    { text: 'Dahlquist, J. &amp; Knight, R. (2022). <i>Principles of Finance</i>, section 3.4, “Interest Rates”. OpenStax.', url: 'https://openstax.org/books/principles-finance/pages/3-4-interest-rates', checked: '2026-10-23' },
+  ],
+
+  checks: [
+    { what: 'Ana’s inflation assumption (%)', value: ANA_PLAN.inflation, shown: 2.8 },
+    // index table
+    { what: 'Year 1 inflation (%)', value: (idx[1] / idx[0] - 1) * 100, shown: 3.2 },
+    { what: 'Year 2 inflation (%)', value: (idx[2] / idx[1] - 1) * 100, shown: 6.30 },
+    { what: 'Year 3 inflation (%)', value: (idx[3] / idx[2] - 1) * 100, shown: 6.11 },
+    { what: 'Year 4 inflation (%)', value: (idx[4] / idx[3] - 1) * 100, shown: 2.75 },
+    { what: 'Year 5 inflation (%)', value: (idx[5] / idx[4] - 1) * 100, shown: 2.76 },
+    { what: 'Cumulative to Year 2 (%)', value: (idx[2] / 100 - 1) * 100, shown: 9.70 },
+    { what: 'Cumulative to Year 3 (%)', value: (idx[3] / 100 - 1) * 100, shown: 16.40 },
+    { what: 'Cumulative to Year 4 (%)', value: (idx[4] / 100 - 1) * 100, shown: 19.60 },
+    { what: 'Cumulative to Year 5 (%)', value: (idx[5] / 100 - 1) * 100, shown: 22.9 },
+    { what: 'Average annual inflation (%)', value: ((idx[5] / 100) ** (1 / 5) - 1) * 100, shown: 4.21 },
+    { what: 'Average annual inflation as a decimal', value: (idx[5] / 100) ** (1 / 5) - 1, shown: 0.042102, tol: 0.0000005 },
+    { what: 'Check: 1.042102^5', value: 1.042102 ** 5, shown: 1.229, tol: 0.0005 },
+    { what: 'Cumulative ÷ 5 (%)', value: (idx[5] / 100 - 1) * 100 / 5, shown: 4.58 },
+    { what: 'Product of yearly factors', value: 1.032 * 1.0630 * 1.0611 * 1.0275 * 1.0276, shown: 1.229, tol: 0.0005 },
+    { what: 'Year 2 factor shown as 1.0630', value: idx[2] / idx[1], shown: 1.0630, tol: 0.00005 },
+    { what: 'Year 3 factor shown as 1.0611', value: idx[3] / idx[2], shown: 1.0611, tol: 0.00005 },
+    { what: 'Year 4 factor shown as 1.0275', value: idx[4] / idx[3], shown: 1.0275, tol: 0.00005 },
+    { what: 'Year 5 factor shown as 1.0276', value: idx[5] / idx[4], shown: 1.0276, tol: 0.00005 },
+    // salary restated
+    { what: 'Year 5 salary in Year 0 dollars', value: 52000 * idx[0] / idx[5], shown: 42310.82 },
+    { what: 'Nominal pay rise (%)', value: (52000 / 45000 - 1) * 100, shown: 15.56 },
+    { what: 'Real pay change (%)', value: (52000 * idx[0] / idx[5] / 45000 - 1) * 100, shown: -5.98 },
+    { what: 'Salary needed to keep pace', value: 45000 * idx[5] / idx[0], shown: 55305 },
+    // Fisher
+    { what: 'Lantern real rate (%)', value: rReal * 100, shown: 7.00 },
+    { what: 'Lantern real rate, 4 places (%)', value: rReal * 100, shown: 7.0039, tol: 0.00005 },
+    { what: 'Real rate factor shown as 1.070039', value: 1 + rReal, shown: 1.070039, tol: 0.0000005 },
+    { what: 'Nominal for 7% real (%)', value: (1.07 * 1.028 - 1) * 100, shown: 10.00 },
+    { what: 'Savings EAR (%)', value: ((1 + 0.045 / 12) ** 12 - 1) * 100, shown: 4.594, tol: 0.0005 },
+    { what: 'Savings real return (%)', value: (((1 + 0.045 / 12) ** 12) / 1.028 - 1) * 100, shown: 1.745, tol: 0.0005 },
+    { what: 'Savings real return from quoted rate (%)', value: (1.045 / 1.028 - 1) * 100, shown: 1.654, tol: 0.0005 },
+    { what: 'Understatement (points)', value: (((1 + 0.045 / 12) ** 12) / 1.028 - 1) * 100 - (1.045 / 1.028 - 1) * 100, shown: 0.09, tol: 0.005 },
+    { what: 'Monthly 0.3% annualised (%)', value: (1.003 ** 12 - 1) * 100, shown: 3.66 },
+    { what: '12 × 0.3 (%)', value: 12 * 0.3, shown: 3.6 },
+    // contract
+    { what: 'Fee year 1', value: nomFee(1), shown: 41120 },
+    { what: 'Fee year 2', value: nomFee(2), shown: 42271.36 },
+    { what: 'Fee year 3', value: nomFee(3), shown: 43454.96 },
+    { what: 'PV year 1', value: nomFee(1) / 1.1, shown: 37381.82 },
+    { what: 'PV year 2', value: nomFee(2) / 1.1 ** 2, shown: 34935.01 },
+    { what: 'PV year 3', value: nomFee(3) / 1.1 ** 3, shown: 32648.35 },
+    { what: 'PV year 1, real route', value: 40000 / (1 + rReal), shown: 37381.82 },
+    { what: 'PV year 2, real route', value: 40000 / (1 + rReal) ** 2, shown: 34935.01 },
+    { what: 'PV year 3, real route', value: 40000 / (1 + rReal) ** 3, shown: 32648.35 },
+    { what: '1.1^2', value: 1.1 ** 2, shown: 1.21 },
+    { what: '1.1^3', value: 1.1 ** 3, shown: 1.331 },
+    { what: 'Indexed PV, nominal route', value: [1, 2, 3].reduce((a, t) => a + nomFee(t) / 1.1 ** t, 0), shown: 104965.18 },
+    { what: 'Indexed PV, real route', value: 40000 * af(rReal, 3), shown: 104965.18 },
+    { what: 'Real annuity factor', value: af(rReal, 3), shown: 2.624129, tol: 0.0000005 },
+    { what: 'Annuity factor 10%, 3 years', value: af(0.1, 3), shown: 2.486852, tol: 0.0000005 },
+    { what: 'Fixed offer PV', value: 42000 * af(0.1, 3), shown: 104447.78 },
+    { what: 'Indexed advantage', value: 40000 * af(rReal, 3) - 42000 * af(0.1, 3), shown: 517.40 },
+    { what: 'Indifference fixed fee', value: 40000 * af(rReal, 3) / af(0.1, 3), shown: 42208.05 },
+    { what: 'Mix: real flows at nominal rate', value: 40000 * af(0.1, 3), shown: 99474.08 },
+    { what: 'Mix error low', value: 40000 * af(rReal, 3) - 40000 * af(0.1, 3), shown: 5491.10 },
+    { what: 'Mix: nominal flows at real rate', value: [1, 2, 3].reduce((a, t) => a + nomFee(t) / (1 + rReal) ** t, 0), shown: 110815.59 },
+    { what: 'Mix error high', value: [1, 2, 3].reduce((a, t) => a + nomFee(t) / (1 + rReal) ** t, 0) - 40000 * af(rReal, 3), shown: 5850.41 },
+    { what: 'Mistake: undervalued by about $5,491', value: 40000 * af(rReal, 3) - 40000 * af(0.1, 3), shown: 5491, tol: 0.5 },
+    { what: 'Mistake: overvalued by about $5,850', value: [1, 2, 3].reduce((a, t) => a + nomFee(t) / (1 + rReal) ** t, 0) - 40000 * af(rReal, 3), shown: 5850, tol: 0.5 },
+    { what: 'Growing annuity check', value: 41120 / (0.10 - 0.028) * (1 - (1.028 / 1.10) ** 3), shown: 104965.18 },
+    { what: 'Fixed fee wins below this inflation rate (%)', value: (() => { let lo = 0, hi = 0.1; for (let k = 0; k < 100; k++) { const m = (lo + hi) / 2; const v = [1, 2, 3].reduce((a, t) => a + 40000 * (1 + m) ** t / 1.1 ** t, 0); if (v < 42000 * af(0.1, 3)) lo = m; else hi = m; } return lo * 100; })(), shown: 2.54, tol: 0.005 },
+    // salary real growth
+    { what: 'Real raise (%)', value: (1.035 / 1.028 - 1) * 100, shown: 0.68 },
+    { what: 'Salary after 4 years', value: 42000 * 1.035 ** 4, shown: 48195.97 },
+    { what: 'In today’s dollars', value: 42000 * 1.035 ** 4 / 1.028 ** 4, shown: 43155.71 },
+    { what: 'Rise in dollars over 4 years (%)', value: (1.035 ** 4 - 1) * 100, shown: 14.75 },
+    { what: 'Rise in purchasing power over 4 years (%)', value: ((1.035 / 1.028) ** 4 - 1) * 100, shown: 2.75 },
+    // TIPS
+    { what: 'TIPS adjusted principal at 1.015', value: 10000 * 1.015, shown: 10150 },
+    { what: 'TIPS first payment', value: 10000 * 1.015 * 0.0175 / 2, shown: 88.81 },
+    { what: 'TIPS adjusted principal at 1.032', value: 10000 * 1.032, shown: 10320 },
+    { what: 'TIPS payment a year in', value: 10000 * 1.032 * 0.0175 / 2, shown: 90.30 },
+    { what: 'TIPS deflation floor', value: Math.max(9800, 10000), shown: 10000 },
+    // break-even
+    { what: 'Break-even inflation (%)', value: (1.043 / 1.018 - 1) * 100, shown: 2.456, tol: 0.0005 },
+    { what: 'Break-even, 2 places (%)', value: (1.043 / 1.018 - 1) * 100, shown: 2.46 },
+    { what: 'Break-even shortcut (%)', value: 4.3 - 1.8, shown: 2.5 },
+    { what: 'TIPS nominal at 3.5% (%)', value: (1.018 * 1.035 - 1) * 100, shown: 5.363, tol: 0.0005 },
+    { what: 'Note real at 3.5% (%)', value: (1.043 / 1.035 - 1) * 100, shown: 0.773, tol: 0.0005 },
+    { what: 'TIPS nominal at 1.0% (%)', value: (1.018 * 1.01 - 1) * 100, shown: 2.818, tol: 0.0005 },
+    { what: 'Note real at 1.0% (%)', value: (1.043 / 1.01 - 1) * 100, shown: 3.267, tol: 0.0005 },
+    { what: 'TIPS nominal at 3.5%, 2 places (%)', value: (1.018 * 1.035 - 1) * 100, shown: 5.36 },
+    { what: 'TIPS nominal at 1.0%, 2 places (%)', value: (1.018 * 1.01 - 1) * 100, shown: 2.82 },
+    // demo intro claim: 2% for 30 years takes almost half
+    { what: '$1,000 in 30 years at 2%, today’s dollars (almost half lost)', value: 1000 / 1.02 ** 30, shown: 552.07 },
+  ],
+};

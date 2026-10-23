@@ -143,7 +143,7 @@ export const items = [
   },
   {
     id: 'f00-fn-10', lesson: 'capital-and-liquidity', type: 'mc', kind: 'applied',
-    prompt: 'Jonah (fictional) is a self-employed electrician whose income varies from month to month. He wants to keep $9,000, about four months of essential spending, as an emergency fund, and he expects inflation of about 3% a year. The banks mentioned are FDIC-insured, and all rates are fictional. Which home for the money best fits what an emergency fund is for?',
+    prompt: 'Desmond (fictional) is a self-employed electrician whose income varies from month to month. He wants to keep $9,000, about four months of essential spending, as an emergency fund, and he expects inflation of about 3% a year. The banks mentioned are FDIC-insured, and all rates are fictional. Which home for the money best fits what an emergency fund is for?',
     options: [
       'A savings account paying 3.5% a year, variable, from which he can withdraw any amount at any time',
       'Banknotes kept at home, because cash is the most liquid asset there is',

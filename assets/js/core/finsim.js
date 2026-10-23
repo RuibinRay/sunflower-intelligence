@@ -1,7 +1,7 @@
 // finsim.js — simulated share prices for invented companies, used by Stock analysis and Risk management.
 // The market follows a GARCH(1,1) process with Student-t shocks, so calm and stormy spells bunch together and
 // big days come more often than a normal curve allows, as in real markets. Every name here is made up.
-import { mulberry32, normalGen } from './rng.js?v=7';
+import { mulberry32, normalGen } from './rng.js?v=8';
 
 export const SIM_STOCKS = [
   { name: 'Arles Rail', beta: 0.8, alpha: 0.02, idio: 0.22, start: 42 },
