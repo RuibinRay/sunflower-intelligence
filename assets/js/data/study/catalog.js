@@ -265,9 +265,24 @@ const ALL = [
 
   // ================================================================ Marketing & Business Strategy
   C({
-    id: 'm01', school: 'marketing', code: 'M01', level: 'intro',
+    id: 'm01', school: 'marketing', code: 'M01', level: 'intro', status: 'in-progress',
     title: 'Marketing Fundamentals',
     blurb: 'What marketing is, how customers decide, and how companies create value for them.',
+    case: 'lantern',
+    outcomes: [
+      'Explain what marketing is and how it creates value through exchange, distinguishing needs, wants and demand.',
+      'Analyse customer value and satisfaction, and calculate a simple customer lifetime value to judge what a customer is worth.',
+      'Compare the main business orientations and explain what a market orientation requires in practice.',
+      'Describe how consumers and organisations decide what to buy, including the stages, the influences and the roles in a buying centre.',
+      'Analyse a business’s situation (SWOT, PESTEL, competitors) and set marketing objectives that are specific and measurable.',
+      'Identify sources of competitive advantage and choose a competitive strategy that fits a business’s strengths and market.',
+    ],
+    modules: [
+      { n: 1, title: 'What marketing is', lessons: ['what-is-marketing', 'customer-value', 'market-orientation'] },
+      { n: 2, title: 'How customers buy', lessons: ['consumer-decisions', 'influences-on-buying', 'business-buying'] },
+      { n: 3, title: 'Foundations of strategy', lessons: ['situation-analysis', 'marketing-objectives', 'competitive-advantage'] },
+    ],
+    project: { title: 'Lantern’s marketing foundations for 2027', blurb: 'Help Ana plan Lantern’s catering marketing: map how a corporate client buys, value a client, analyse Lantern’s situation, set objectives for 2027 and choose how to compete with a cheaper rival.' },
     topics: ['What marketing is', 'Customer needs and value', 'Market orientation', 'The marketing process', 'Customer behaviour', 'B2B versus B2C', 'Marketing objectives', 'Competitive advantage'],
   }),
   C({
