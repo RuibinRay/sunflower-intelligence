@@ -106,7 +106,7 @@ Length: `concept` + `theory` + `application` together should be roughly **1,800â
 
 - `<m>TeX</m>`: inline maths, rendered by KaTeX when the page is built.
 - `<M>TeX</M>`: display maths inside a paragraph (prefer the `{ math }` block).
-- `<g>term</g>`: links the word to its glossary entry. The term must be in this lesson's or an earlier lesson's `glossary`.
+- `<g>term</g>`: links the word to its glossary entry. The term must be in this lesson's or an earlier lesson's `glossary`, or in a course that comes earlier in the study order (the site glossary is shared). A term defined in two courses must be defined identically: the site shows the first.
 
 No other tags, no attributes besides `href` and `title`, no Markdown, no inline styles.
 

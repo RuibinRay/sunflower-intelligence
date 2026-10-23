@@ -76,10 +76,26 @@ const ALL = [
     related: [{ plate: 'credit' }, { tool: 'finance/risk/#altman', label: 'Altman Z-scores' }],
   }),
   C({
-    id: 'f04', school: 'finance', code: 'F04', level: 'intro', recommends: ['f00'],
+    id: 'f04', school: 'finance', code: 'F04', level: 'intro', status: 'in-progress', recommends: ['f00'],
     title: 'Mathematics of Finance',
     blurb: 'Interest, present and future value, annuities, loans and inflation, with every formula worked step by step.',
     topics: ['Simple and compound interest', 'Present value and future value', 'Discounting', 'Annuities', 'Perpetuities', 'Loan amortisation', 'Effective annual rates', 'Nominal versus real returns', 'Inflation adjustments', 'Mortgage calculations'],
+    case: 'lantern',
+    outcomes: [
+      'Calculate simple and compound interest, and solve compound-growth problems for the amount, the rate or the time.',
+      'Convert between nominal, periodic and effective annual rates for any compounding frequency, including continuous compounding, and use them to compare offers.',
+      'Calculate the present and future value of single amounts and of uneven cash-flow streams, and the net present value of a decision.',
+      'Value annuities, annuities due, growing annuities and perpetuities, and solve for the payment, the number of periods or the rate.',
+      'Build a loan amortisation schedule, find the balance outstanding at any date, and compare loans, instalment plans and refinancing.',
+      'Distinguish nominal from real amounts and rates, discount consistently, and analyse a fixed-rate mortgage including points and term.',
+    ],
+    modules: [
+      { n: 1, title: 'Interest', lessons: ['simple-and-compound-interest', 'effective-annual-rates'] },
+      { n: 2, title: 'Present and future value', lessons: ['present-and-future-value', 'discounting-cash-flows'] },
+      { n: 3, title: 'Streams of cash', lessons: ['annuities', 'perpetuities-and-growth', 'loan-amortisation'] },
+      { n: 4, title: 'Real versus nominal', lessons: ['inflation-and-real-returns', 'mortgages'] },
+    ],
+    project: { title: 'Ana’s home plan', blurb: 'Plan how Ana saves a home deposit and which mortgage she takes: a savings schedule, two mortgage offers, points, the balance after five years and what the payments are worth after inflation.' },
     related: [{ plate: 'tvm' }, { tool: 'finance/valuation/#dcf', label: 'Discounted cash flow' }],
   }),
   C({
