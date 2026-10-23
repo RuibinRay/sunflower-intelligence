@@ -13,6 +13,12 @@ const selling = op['Shipping Expense'] + op['Card and Platform Fees Expense'] + 
 const admin = D.operatingExpenses - selling;
 const employee = F.wages.events + F.wages.shopAndOffice;
 const e9 = ADJUSTMENTS.find((t) => t.id === 'e9');
+// EBITDA against cash from operations: interest and tax paid, and the working-capital items of the first year
+const paidInterestTax = F.coastline.interestPaid + F.tax.estimatedPaid;                                   // 6,450
+const accountsPayable = (F.inventory.purchases - F.inventory.paid) + (F.supplies.bought - F.supplies.paid) + F.utilities.unpaid;   // 9,210
+const fundedBy = accountsPayable + F.wages.payable + D.unearned;                                                // 17,410
+const prepaidInsurance = F.insurance.premium - F.insurance.monthly * F.insurance.expired;                       // 300
+const tiedUp = D.receivablesNet + D.inventoryEnd + F.supplies.onHand + prepaidInsurance;                        // 13,536
 // Teasel Yarn Company (simple example)
 const ty = { sales: 420000, returns: 8000, discounts: 2000, cogs: 236000, wages: 61000, rent: 24000, adv: 9500, dep: 7200, util: 5300, intExp: 3000, intRev: 400, rate: 0.25 };
 const tyNet = ty.sales - ty.returns - ty.discounts, tyGP = tyNet - ty.cogs, tyOpex = ty.wages + ty.rent + ty.adv + ty.dep + ty.util;
@@ -69,7 +75,7 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: 'Coastline Bank’s loan agreement asks for annual financial statements within three months of the year end. In F01 Ana sent the bank a single-step income statement for March: revenues added up, expenses added up, one subtraction. For the first full year the accountant prepares a multi-step statement instead. It reaches the same net income, $27,387, but in stages that show the loan officer where the profit came from.' },
+    { case: 'Coastline Bank’s loan agreement also asks for annual financial statements within three months of the year end. In F01 Ana sent the bank a single-step income statement for March: revenues added up, expenses added up, one subtraction. For the first full year the accountant prepares a multi-step statement instead. It reaches the same net income, $27,387, but in stages that show the loan officer where the profit came from.' },
     { p: 'A <g>single-step income statement</g> lists all revenues, then all expenses, and subtracts once. For Lantern’s ten months: net revenue $193,320 minus total expenses $165,933 gives net income of $27,387. It is quick to prepare and hard to misread, but it treats the coffee in a bag, the rent of the kitchen, the interest on the bank loan and the income tax as one undifferentiated pile of cost.' },
     { p: 'A <g>multi-step income statement</g> subtracts the costs in a meaningful order and shows a subtotal after each group. Each subtotal answers a question a reader actually asks:' },
     { list: [
@@ -115,10 +121,11 @@ export default {
       align: ['l', 'l', 'r'],
       rows: [
         ['Selling and fulfilment', 'Shipping, card and platform fees, advertising', '23,140'],
-        ['General and administrative', 'Wages (shop and office), rent, utilities, insurance, depreciation, fuel, bad debts, miscellaneous', '43,564'],
+        ['General, administrative and other', 'Wages (shop and office), rent, utilities, insurance, depreciation, fuel, bad debts, miscellaneous', '43,564'],
       ],
       foot: [['Total operating expenses', '', '66,704']],
     } },
+    { p: 'The grouping is approximate: a full function analysis would allocate the kitchen rent and the espresso equipment’s depreciation between cost of services and administration, the van’s fuel and depreciation to delivery, and part of the shop staff’s wages to fulfilment. Lantern’s summary accounts don’t hold the information to split them, one reason small companies list expenses account by account.' },
     { p: 'The same year by nature looks quite different. There is no cost of sales, so there is no gross profit; instead the reader sees, for example, that wages for all staff come to $43,600, a figure the function method splits between cost of services and operating expenses.' },
     { statement: {
       title: 'Lantern Coffee Co.',
@@ -140,28 +147,28 @@ export default {
           ['Insurance', op['Insurance Expense']],
           ['Bad debts', op['Bad Debt Expense']],
           ['Miscellaneous', op['Miscellaneous Expense']],
-        ], total: ['Total operating expenses', D.costOfSales + D.operatingExpenses] },
-        { rows: [['Net revenue', D.revenue], ['Less total operating expenses', -(D.costOfSales + D.operatingExpenses)]], total: ['Operating income', D.operatingIncome] },
+        ], total: ['Total expenses', D.costOfSales + D.operatingExpenses] },
+        { rows: [['Net revenue', D.revenue], ['Less total expenses', -(D.costOfSales + D.operatingExpenses)]], total: ['Operating income', D.operatingIncome] },
       ],
       note: 'Fictional figures. The increase in inventory is deducted because $5,800 of the coffee bought is still on hand; the write-down is inside it.',
     } },
     { p: 'IFRS requires an analysis of expenses by nature or by function, whichever gives information that is reliable and more relevant (IAS 1 paragraph 99). A company using the function method must show cost of sales separately and disclose additional information on the nature of its expenses, including depreciation and amortisation and employee benefits (paragraphs 103 and 104). US GAAP lets a private company such as Lantern choose a single-step or a multi-step format. IFRS 18, which replaces IAS 1 from 2027, changes these requirements; the course’s last lesson, <i>US GAAP and IFRS</i>, explains how.' },
     { h: 'Operating income' },
-    { p: 'Gross profit less operating expenses is <g>operating income</g> (also called income from operations or operating profit): $37,716 for Lantern. It measures what the business earns from its ordinary activities before the cost of its borrowing and before tax, so it can be compared across businesses financed in different ways. Lantern earns about 19.5 cents of operating income per dollar of revenue; turning such figures into ratios and comparing them is the work of F03.' },
+    { p: 'Gross profit less operating expenses, plus any gains on selling long-lived assets, is <g>operating income</g> (also called income from operations or operating profit): $37,716 for Lantern, which sold nothing in 2026. It measures what the business earns from its ordinary activities before the cost of its borrowing and before tax, so it can be compared across businesses financed in different ways. Lantern earns about 19.5 cents of operating income per dollar of revenue; turning such figures into ratios and comparing them is the work of F03.' },
     { h: 'Other income and expenses' },
-    { p: 'Items that don’t arise from the business’s main operations are shown after operating income, as <g>other income and expenses</g>. Lantern has one: interest expense of $1,200, made up of the $450 paid on the Coastline note on 1 June, 1 September and 1 December, plus $750 accrued at the year end ($50 on the Coastline note for December and $700 on the van note for June to December). Interest revenue on savings, and gains or losses on selling equipment, would also appear here in Lantern’s chart of accounts. Practice varies: some companies include gains and losses on disposals in operating income, so read each company’s policy before comparing.' },
+    { p: 'Items that don’t arise from the business’s main operations are shown after operating income, as <g>other income and expenses</g>. Lantern has one: interest expense of $1,200, made up of the $450 paid on the Coastline note on 1 June, 1 September and 1 December, plus $750 accrued at the year end ($50 on the Coastline note for December and $700 on the van note for June to December). Interest revenue on savings would also appear here. Gains and losses on selling equipment would not: US GAAP requires them to be included in income from operations whenever that subtotal is presented (ASC 360-10-45-5), so Lantern’s chart adds a gain after operating expenses and includes a loss among them. IAS 1 doesn’t define operating income, so IFRS practice has varied; IFRS 18 changes this from 2027, as the course’s last lesson explains.' },
     { h: 'Income tax' },
     { p: 'A corporation pays income tax on its taxable profit. The US federal corporate rate is 21% of taxable income (26 U.S.C. §11(b)), a flat rate that applies to taxable years beginning after 31 December 2017; many states also tax corporate income. The Lantern case assumes a combined rate of 25% and, to keep the course introductory, that taxable income equals income before income tax. When the two differ, as they often do, deferred tax arises; later courses cover it.' },
     { p: '<g>Income tax expense</g> for the year is therefore <m>0.25 \\times 36{,}516 = 9{,}129</m> dollars. Lantern paid $6,000 of estimated tax during the year, so the year-end adjustment records the rest as a liability:' },
     { journal: { caption: 'Lantern’s income tax adjustment at 31 December 2026 (fictional)', entries: [{ date: e9.date, lines: e9.lines, memo: e9.text }] } },
     { p: 'Two rates are worth telling apart. The <g>statutory tax rate</g> is the rate set by law (21% federal). The <g>effective tax rate</g> is income tax expense divided by income before income tax: for Lantern <m>9{,}129 \\div 36{,}516 = 25\\%</m>, equal to the assumed rate only because the case has no tax differences. In real companies the two often differ, and the notes explain why.' },
     { h: 'EBIT and EBITDA' },
-    { p: 'F00 defined <g>EBIT</g> (earnings before interest and taxes) and <g>EBITDA</g> (EBIT plus depreciation and amortisation). With a multi-step statement both can be calculated in two directions. Working up from the bottom, as the SEC staff describe, EBIT is net income with interest and income tax added back: <m>27{,}387 + 1{,}200 + 9{,}129 = 37{,}716</m>. Working down, it is operating income plus any other income: Lantern has none, so EBIT equals operating income, $37,716. Adding back depreciation of $4,800 (Lantern has no amortisation) gives EBITDA of $42,516.' },
+    { p: 'F00 defined <g>EBIT</g> (earnings before interest and taxes) and <g>EBITDA</g> (EBIT plus depreciation and amortisation). With a multi-step statement both can be calculated in two directions. Working up from the bottom, as the SEC staff describe, EBIT is net income with interest and income tax added back: <m>27{,}387 + 1{,}200 + 9{,}129 = 37{,}716</m>. Working down, it is operating income plus or minus any non-operating items other than interest: Lantern has none, so EBIT equals operating income, $37,716. Adding back depreciation of $4,800 (Lantern has no amortisation) gives EBITDA of $42,516.' },
     { math: String.raw`\text{EBIT} = \text{Net income} + \text{Interest expense} + \text{Income tax expense}, \qquad \text{EBITDA} = \text{EBIT} + \text{D\&A}` },
-    { p: 'EBITDA is often described as a proxy for operating cash flow, but it is not cash. Lantern’s net cash from operating activities was $39,940, not $42,516, because Lantern paid interest and tax and built up receivables and inventory during the year; module 3 reconciles the two. And depreciation, though not a cash payment this year, stands for equipment and a van that will have to be replaced.' },
-    { callout: 'standards', title: 'EBITDA and the SEC’s rules on non-GAAP measures', html: 'Neither US GAAP nor IFRS defines EBITDA, so it is a <g>non-GAAP financial measure</g>. When a company registered with the SEC discloses one publicly, Regulation G requires it to present the most directly comparable GAAP measure (for EBITDA, net income) and a quantitative reconciliation between the two, and forbids a presentation that is misleading (17 CFR 244.100(a) and (b)). In filings, Item 10(e) of Regulation S-K also requires the GAAP measure to be shown with equal or greater prominence. The SEC staff’s interpretations define EBITDA as net income plus interest, taxes, depreciation and amortisation, and say a measure calculated differently should not be called EBITDA but given a distinct title, such as <g>Adjusted EBITDA</g> (Non-GAAP Compliance and Disclosure Interpretations 102.10 and 103.01). Lantern is not an SEC registrant, so the rules don’t bind it, but they describe good practice for any business quoting EBITDA to a lender.' },
+    { p: 'EBITDA is often described as a proxy for operating cash flow, but it is not cash. Lantern’s net cash from operating activities was $39,940, not $42,516: it paid $6,450 of interest and tax, which EBITDA ignores, while unpaid bills and customers’ advance payments ($17,410) more than covered the cash tied up in receivables, inventory, supplies and prepaid insurance ($13,536). Module 3 reconciles the two. And depreciation, though not a cash payment this year, stands for equipment and a van that will have to be replaced.' },
+    { callout: 'standards', title: 'EBITDA and the SEC’s rules on non-GAAP measures', html: 'Neither US GAAP nor IFRS defines EBITDA, so it is a <g>non-GAAP financial measure</g>. When a company registered with the SEC discloses one publicly, Regulation G requires it to present the most directly comparable GAAP measure (for EBITDA, net income) and a quantitative reconciliation between the two, and forbids a presentation that is misleading (17 CFR 244.100(a) and (b)). In filings, Item 10(e) of Regulation S-K also requires the GAAP measure to be shown with equal or greater prominence (Non-GAAP Compliance and Disclosure Interpretation 102.10). The SEC staff’s interpretations define EBITDA as net income plus interest, taxes, depreciation and amortisation, and say a measure calculated differently should not be called EBITDA but given a distinct title, such as <g>Adjusted EBITDA</g> (Interpretation 103.01). Lantern is not an SEC registrant, so the rules don’t bind it, but they describe good practice for any business quoting EBITDA to a lender.' },
     { h: 'Earnings per share' },
-    { p: 'Companies whose common shares, or securities that can become common shares, trade in a public market, or that are preparing to sell them in one, must report <g>basic earnings per share</g> and <g>diluted earnings per share</g> (ASC 260-10-15-2; IAS 33 sets a similar requirement under IFRS). Basic EPS divides net income available to common shareholders (net income less preferred dividends) by the weighted average number of common shares outstanding during the period; diluted EPS also counts shares that options and convertible securities could add. For example, a fictional listed company, Quarrybank Foods, with net income of $12.6 million, preferred dividends of $0.6 million, and 7.5 million common shares for the first half of the year and 8.5 million for the second, reports basic EPS of <m>(12.6 - 0.6) \\div 8.0 = 1.50</m> dollars. Lantern’s shares are privately held, so it reports no EPS.' },
+    { p: 'Companies whose common shares, or securities that can become common shares, trade in a public market, or that are preparing to sell them in one, must report <g>basic earnings per share</g>, and <g>diluted earnings per share</g> as well when they have potential common shares such as options or convertible securities (ASC 260-10-15-2; IAS 33 sets a similar requirement under IFRS). Basic EPS divides net income available to common shareholders (net income less preferred dividends) by the weighted average number of common shares outstanding during the period; diluted EPS also counts shares that options and convertible securities could add. For example, a fictional listed company, Quarrybank Foods, with net income of $12.6 million, preferred dividends of $0.6 million, and 7.5 million common shares for the first half of the year and 8.5 million for the second, reports basic EPS of <m>(12.6 - 0.6) \\div 8.0 = 1.50</m> dollars. Lantern’s shares are privately held, so it reports no EPS.' },
   ],
 
   formulas: [
@@ -173,17 +180,18 @@ export default {
       ],
       note: 'Lantern: <m>193{,}320 - 88{,}900 = 104{,}420</m>, a margin of about 54.0%.' },
     { id: 'is-operating-income', name: 'Operating income',
-      tex: String.raw`\text{Operating income} = \text{Gross profit} - \text{Operating expenses}`,
+      tex: String.raw`\text{Operating income} = \text{Gross profit} - \text{Operating expenses} + \text{Gains on disposals}`,
       where: [
         [String.raw`\text{Gross profit}`, 'Net revenue less cost of sales', '$'],
         [String.raw`\text{Operating expenses}`, 'Selling, general and administrative and other costs of running the business, including depreciation', '$'],
+        [String.raw`\text{Gains on disposals}`, 'Gains on selling long-lived assets such as equipment; losses on disposals are included in operating expenses (ASC 360-10-45-5)', '$'],
       ],
-      note: 'Lantern: <m>104{,}420 - 66{,}704 = 37{,}716</m>.' },
+      note: 'Lantern, which sold no equipment in 2026: <m>104{,}420 - 66{,}704 + 0 = 37{,}716</m>.' },
     { id: 'is-net-income', name: 'From operating income to net income',
       tex: String.raw`\text{IBT} = \text{Operating income} + \text{Other income} - \text{Other expenses}, \qquad \text{Net income} = \text{IBT} - \text{Income tax expense}`,
       where: [
         [String.raw`\text{IBT}`, 'Income before income tax', '$'],
-        [String.raw`\text{Other income}, \text{Other expenses}`, 'Non-operating items such as interest revenue, interest expense, and gains and losses on disposals', '$'],
+        [String.raw`\text{Other income}, \text{Other expenses}`, 'Non-operating items such as interest revenue and interest expense (under US GAAP, gains and losses on disposals are operating items)', '$'],
         [String.raw`\text{Income tax expense}`, 'The tax charged on the period’s income (Lantern: 25% of IBT)', '$'],
       ],
       note: 'Lantern: <m>37{,}716 - 1{,}200 = 36{,}516</m>; <m>36{,}516 - 9{,}129 = 27{,}387</m>.' },
@@ -286,7 +294,7 @@ export default {
 
   application: [
     { p: '<b>The loan officer’s reading.</b> Coastline Bank’s loan officer reads Lantern’s statement from the top. Gross profit of $104,420 says the products and services are priced well above their direct cost, and operating income of $37,716 says the business covers its rent, staff and overheads with room to spare. Interest of $1,200 is small against that operating income, so the loans look affordable from profit; whether they are affordable from cash is a question for the statement of cash flows. For a first year, the officer will mostly be looking for a base to compare 2027 against.' },
-    { p: '<b>Ana’s pricing decision.</b> The gross margin table changes how Ana thinks about growth. Each extra dollar of catering revenue brings about 57 cents of gross profit before any overheads, each extra dollar of shop sales about 52 cents, and the shop’s dollar then pays shipping and card fees as well. Before she spends more on shop advertising, she can ask whether the same money would win more catering clients. The multi-step format doesn’t make the decision, but without it the comparison couldn’t be made.' },
+    { p: '<b>Ana’s pricing decision.</b> The gross margin table changes how Ana thinks about growth. Each extra dollar of catering and workshop revenue brings about 57 cents of gross profit before any overheads, each extra dollar of shop sales about 52 cents, and the shop’s dollar then pays shipping and card fees as well. Before she spends more on shop advertising, she can ask whether the same money would win more catering clients. The multi-step format doesn’t make the decision, but without it the comparison couldn’t be made.' },
     { p: '<b>An investor reading a press release.</b> When a listed company leads its results announcement with an adjusted figure, an investor reading “Adjusted EBITDA up 18%” goes first to the reconciliation the SEC requires, to see what was added back: interest, tax, depreciation and amortisation are standard; restructuring costs, share-based pay and “one-off” items that recur every year deserve scrutiny. Then the investor checks net income and earnings per share, which the rules require to be shown at least as prominently. F03 develops the analysis that follows.' },
   ],
 
@@ -306,8 +314,8 @@ export default {
     { term: 'Cost of sales', def: 'The direct cost of the goods and services sold in a period: cost of goods sold, plus cost of services for a business that sells services.' },
     { term: 'Cost of services', def: 'The direct costs of providing services sold, such as the wages of staff who deliver them and the materials they use.' },
     { term: 'Operating expenses', def: 'The costs of running a business that are not part of cost of sales, such as selling, general and administrative costs, rent and depreciation.' },
-    { term: 'Operating income', def: 'Gross profit less operating expenses: what a business earns from its ordinary activities before interest, other non-operating items and income tax. Also called income from operations or operating profit.' },
-    { term: 'Other income and expenses', def: 'Income and expenses that do not arise from a business’s main operations, such as interest revenue and expense and, in many companies, gains and losses on disposals of assets. Shown after operating income.' },
+    { term: 'Operating income', def: 'Gross profit less operating expenses: what a business earns from its ordinary activities before interest, other non-operating items and income tax. Also called income from operations or operating profit. Under US GAAP it includes gains and losses on selling long-lived assets.' },
+    { term: 'Other income and expenses', def: 'Income and expenses that do not arise from a business’s main operations, such as interest revenue and interest expense. Shown after operating income. Under US GAAP, gains and losses on selling long-lived assets are not among them: they are included in operating income.' },
     { term: 'Income tax expense', def: 'The income tax charged on a period’s income, whether or not it has been paid. Deducted from income before income tax to give net income.' },
     { term: 'Statutory tax rate', def: 'The rate of tax set by law, such as the 21% US federal corporate income tax rate.' },
     { term: 'Effective tax rate', def: 'Income tax expense divided by income before income tax.' },
@@ -324,7 +332,8 @@ export default {
     { text: 'Australian Accounting Standards Board. <i>Compiled AASB 101 Presentation of Financial Statements</i> (compiled 31 December 2022), which incorporates IAS 1 with its paragraph numbering; paragraphs 82, 99, 102, 103 and 104. Federal Register of Legislation.', url: 'https://www.legislation.gov.au/F2015L01626/2022-12-31/2022-12-31/text/original/epub/OEBPS/document_1/document_1.html', checked: '2026-10-23' },
     { text: '<i>United States Code</i>, title 26, §11, “Tax imposed” (subsection (b): 21 percent of taxable income), with the note on Pub. L. 115-97, §13001. Office of the Law Revision Counsel, current through Pub. L. 119-120.', url: 'https://uscode.house.gov/us/usc/119-120/t26/s11/', checked: '2026-10-23' },
     { text: '<i>Code of Federal Regulations</i>, title 17, §244.100, “General requirements” (Regulation G). Legal Information Institute, Cornell Law School.', url: 'https://www.law.cornell.edu/cfr/text/17/244.100', checked: '2026-10-23' },
-    { text: 'US Securities and Exchange Commission, Division of Corporation Finance. <i>Non-GAAP Financial Measures: Compliance and Disclosure Interpretations</i>, Questions 102.10 and 103.01. Last updated 13 December 2022.', url: 'https://www.sec.gov/divisions/corpfin/guidance/nongaapinterp.htm', checked: '2026-10-23' },
+    { text: 'US Securities and Exchange Commission, Division of Corporation Finance. <i>Non-GAAP Financial Measures: Compliance and Disclosure Interpretations</i>, Questions 102.10, 103.01 and 103.02. Last updated 13 December 2022.', url: 'https://www.sec.gov/divisions/corpfin/guidance/nongaapinterp.htm', checked: '2026-10-23' },
+    { text: 'Deloitte. <i>Roadmap: Impairments and Disposals of Long-Lived Assets and Discontinued Operations</i>, section 6.3, “Income Statement Presentation for Disposals That Are Not Discontinued Operations” (quotes ASC 360-10-45-5). DART.', url: 'https://dart.deloitte.com/USDART/home/codification/presentation/asc205-20/roadmap-disposals-long-lived-assets-discontinued-operations/chapter-6-presentation-disclosure-requirements-for/6-3-income-statement-presentation-for', checked: '2026-10-23' },
     { text: 'Deloitte. <i>Roadmap: Earnings per Share</i>, section 2.1, “General” (scope of ASC 260, quoting ASC 260-10-15-2). DART.', url: 'https://dart.deloitte.com/USDART/home/codification/presentation/asc260-10/roadmap-earnings-per-share/chapter-2-scope/2-1-general', checked: '2026-10-23' },
   ],
 
@@ -370,7 +379,13 @@ export default {
     { what: 'Interest accrued', value: F.coastline.interestAccrued + F.vanNote.principal * F.vanNote.rate * F.vanNote.months / 12, shown: 750 },
     { what: 'Coastline December interest', value: F.coastline.interestAccrued, shown: 50 },
     { what: 'Van note interest', value: F.vanNote.principal * F.vanNote.rate * F.vanNote.months / 12, shown: 700 },
-    { what: 'Interest = paid + accrued', value: 450 + 750, shown: 1200 },
+    { what: 'Interest = paid + accrued', value: F.coastline.interestPaid + F.coastline.interestAccrued + F.vanNote.principal * F.vanNote.rate * F.vanNote.months / 12, shown: 1200 },
+    // EBITDA against cash from operations
+    { what: 'Interest and tax paid', value: paidInterestTax, shown: 6450 },
+    { what: 'Unpaid bills and advance payments', value: fundedBy, shown: 17410 },
+    { what: 'Cash tied up in receivables, inventory, supplies and prepaid insurance', value: tiedUp, shown: 13536 },
+    { what: 'EBITDA reconciles to cash from operations', value: D.ebitda - paidInterestTax - tiedUp + fundedBy, shown: D.cfo },
+    { what: 'Engine agrees: working-capital total', value: RESULTS.indirect.workingCapital.reduce((s, [, v]) => s + v, 0) + RESULTS.indirect.workingCapital.filter(([n]) => /interest payable|income taxes payable/i.test(n)).reduce((s, [, v]) => s - v, 0), shown: fundedBy - tiedUp },
     { what: 'Income before tax', value: D.incomeBeforeTax, shown: 36516 },
     { what: 'Tax rate', value: F.tax.rate * 100, shown: 25 },
     { what: 'Income tax', value: D.incomeTax, shown: 9129 },

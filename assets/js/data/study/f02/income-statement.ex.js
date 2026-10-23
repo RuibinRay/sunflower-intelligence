@@ -44,7 +44,7 @@ export const widgets = {
   },
 };
 
-const SECTIONS = ['Revenue section', 'Cost of sales', 'Operating expenses', 'Other income and expenses', 'Income tax', 'Not on the income statement'];
+const SECTIONS = ['Revenue section', 'Cost of sales', 'Operating expenses and gains', 'Other income and expenses', 'Income tax', 'Not on the income statement'];
 
 // ---------------------------------------------------------------- guided practice
 export const guided = [
@@ -53,20 +53,20 @@ export const guided = [
     prompt: 'Where does each Lantern account appear on its multi-step income statement?',
     items: ['Sales Returns and Allowances', 'Cost of Services', 'Shipping Expense', 'Depreciation Expense', 'Interest Expense', 'Gain on Sale of Equipment', 'Income Tax Expense', 'Dividends', 'Cost of Goods Sold'],
     categories: SECTIONS,
-    answer: [0, 1, 2, 2, 3, 3, 4, 5, 1],
-    hints: ['Contra-revenue accounts are deducted inside the revenue section; direct costs of what was sold are cost of sales.', 'Interest and gains on disposals are not part of running the business; dividends are not an expense at all.'],
+    answer: [0, 1, 2, 2, 3, 2, 4, 5, 1],
+    hints: ['Contra-revenue accounts are deducted inside the revenue section; direct costs of what was sold are cost of sales.', 'Interest is a cost of financing the business, not of running it; dividends are not an expense at all.'],
     feedback: {
-      2: 'Shipping bags to customers is a selling cost, so it is an operating expense, not cost of sales.',
+      2: 'Lantern treats shipping to customers as a selling cost, so it sits among operating expenses (some companies put it in cost of sales).',
       3: 'Lantern shows depreciation among operating expenses; EBITDA adds it back later.',
-      5: 'Lantern’s chart places gains and losses on disposals after operating income, with interest.',
+      5: 'Under US GAAP a gain on selling equipment is included in operating income (ASC 360-10-45-5): Lantern adds it after its operating expenses.',
       7: 'Dividends are distributions to owners, shown in the statement of changes in equity.',
     },
-    solution: 'Revenue section: Sales Returns and Allowances (deducted). Cost of sales: Cost of Goods Sold, Cost of Services. Operating expenses: Shipping, Depreciation. Other income and expenses: Interest Expense, Gain on Sale of Equipment. Income tax: Income Tax Expense. Not on the income statement: Dividends.',
+    solution: 'Revenue section: Sales Returns and Allowances (deducted). Cost of sales: Cost of Goods Sold, Cost of Services. Operating expenses and gains: Shipping, Depreciation, Gain on Sale of Equipment. Other income and expenses: Interest Expense. Income tax: Income Tax Expense. Not on the income statement: Dividends.',
   },
   {
     id: 'f02-is-g2', type: 'steps', kind: 'numerical',
-    prompt: 'Fellside Outdoor Gear, a fictional retailer, reports for the year: Sales $860,000; Sales Returns and Allowances $14,000; Sales Discounts $6,000; Cost of Goods Sold $472,000; selling expenses $128,000; general and administrative expenses $96,000; Interest Expense $9,000; Gain on Sale of Equipment $3,000. Like Lantern, it shows gains on disposals after operating income. Its income tax rate is 25%.',
-    solution: 'Net sales = 860,000 − 14,000 − 6,000 = 840,000. Gross profit = 840,000 − 472,000 = 368,000. Operating income = 368,000 − 128,000 − 96,000 = 144,000. Income before tax = 144,000 − 9,000 + 3,000 = 138,000; tax 34,500; net income 103,500.',
+    prompt: 'Fellside Outdoor Gear, a fictional retailer, reports for the year: Sales $860,000; Sales Returns and Allowances $14,000; Sales Discounts $6,000; Cost of Goods Sold $472,000; selling expenses $128,000; general and administrative expenses $96,000; Interest Expense $9,000; Gain on Sale of Equipment $3,000. Under US GAAP the gain is included in operating income. Its income tax rate is 25%.',
+    solution: 'Net sales = 860,000 − 14,000 − 6,000 = 840,000. Gross profit = 840,000 − 472,000 = 368,000. Operating income = 368,000 − 128,000 − 96,000 + 3,000 = 147,000. Income before tax = 147,000 − 9,000 = 138,000; tax 34,500; net income 103,500.',
     steps: [
       { id: 'f02-is-g2-s1', type: 'num', prompt: 'What are net sales?',
         answer: 840000, check: () => 860000 - 14000 - 6000, unit: '$', places: 0, tol: 0.5,
@@ -79,21 +79,21 @@ export const guided = [
         wrong: [{ value: 388000, say: 'Start from net sales, not gross sales.' }],
         solution: '840,000 − 472,000 = $368,000.' },
       { id: 'f02-is-g2-s3', type: 'num', prompt: 'What is operating income?',
-        answer: 144000, check: () => 368000 - 128000 - 96000, unit: '$', places: 0, tol: 0.5,
-        hints: ['Deduct the selling and the general and administrative expenses.', 'Interest and the gain come later.'],
+        answer: 147000, check: () => 368000 - 128000 - 96000 + 3000, unit: '$', places: 0, tol: 0.5,
+        hints: ['Deduct the selling and the general and administrative expenses, then add the gain on disposal.', 'Interest comes after operating income.'],
         wrong: [
-          { value: 135000, say: 'Interest is not an operating expense; it comes after operating income.' },
-          { value: 138000, say: 'That is income before tax. Operating income stops before interest and the gain.' },
+          { value: 144000, say: 'That leaves out the $3,000 gain, which US GAAP includes in operating income (ASC 360-10-45-5).' },
+          { value: 138000, say: 'That is income before tax: interest is deducted after operating income.' },
         ],
-        solution: '368,000 − 128,000 − 96,000 = $144,000.' },
+        solution: '368,000 − 128,000 − 96,000 + 3,000 = $147,000.' },
       { id: 'f02-is-g2-s4', type: 'num', prompt: 'What is net income?',
-        answer: 103500, check: () => (144000 - 9000 + 3000) * (1 - 0.25), unit: '$', places: 0, tol: 0.5,
-        hints: ['Income before tax = operating income − interest + gain.', 'Net income = income before tax × (1 − 0.25).'],
+        answer: 103500, check: () => (147000 - 9000) * (1 - 0.25), unit: '$', places: 0, tol: 0.5,
+        hints: ['Income before tax = operating income − interest.', 'Net income = income before tax × (1 − 0.25).'],
         wrong: [
           { value: 138000, say: 'That is income before income tax. Deduct tax at 25%.' },
-          { value: 99000, say: 'The gain on sale adds to income: 144,000 − 9,000 + 3,000.' },
+          { value: 99000, say: 'The gain increases income; it is already inside operating income, so don’t subtract it.' },
         ],
-        solution: 'Income before tax = 144,000 − 9,000 + 3,000 = 138,000; tax = 0.25 × 138,000 = 34,500; net income = $103,500.' },
+        solution: 'Income before tax = 147,000 − 9,000 = 138,000; tax = 0.25 × 138,000 = 34,500; net income = $103,500.' },
     ],
   },
   {
@@ -244,35 +244,37 @@ export const check = [
   {
     id: 'f02-is-k4', type: 'multi', kind: 'conceptual',
     prompt: 'On Lantern’s multi-step income statement, which of these accounts appear below operating income? Select all that apply.',
-    options: ['Interest Expense', 'Income Tax Expense', 'Gain on Sale of Equipment', 'Depreciation Expense', 'Bad Debt Expense', 'Cost of Services', 'Loss on Sale of Equipment'],
-    answer: [0, 1, 2, 6],
+    options: ['Interest Expense', 'Income Tax Expense', 'Gain on Sale of Equipment', 'Depreciation Expense', 'Bad Debt Expense', 'Cost of Services', 'Loss on Sale of Equipment', 'Interest Revenue'],
+    answer: [0, 1, 7],
     feedback: {
+      2: 'Under US GAAP gains and losses on selling equipment are included in operating income (ASC 360-10-45-5).',
       3: 'Depreciation is an operating expense; it is added back only when calculating EBITDA.',
       4: 'Bad debts are a cost of selling on credit, so they are operating expenses.',
       5: 'Cost of Services is part of cost of sales, above gross profit.',
+      6: 'Under US GAAP gains and losses on selling equipment are included in operating income (ASC 360-10-45-5).',
     },
-    solution: 'Below operating income: interest, gains and losses on disposals (other income and expenses in Lantern’s chart) and income tax. Depreciation and bad debts are operating expenses; Cost of Services is cost of sales.',
+    solution: 'Below operating income: Interest Expense and Interest Revenue (other income and expenses) and Income Tax Expense. Gains and losses on selling equipment are inside operating income under US GAAP (ASC 360-10-45-5); depreciation and bad debts are operating expenses; Cost of Services is cost of sales.',
   },
   {
     id: 'f02-is-k5', type: 'mc', kind: 'applied',
-    prompt: 'A listed company calculates net income plus interest, taxes, depreciation, amortisation and share-based compensation, and wants to put the result in its earnings release. According to the SEC staff’s interpretations, what should it call the figure?',
-    options: ['A distinct title, such as “Adjusted EBITDA”', '“EBITDA”, if the footnote explains it', '“Operating cash flow”', '“EBIT”, because it excludes interest'],
+    prompt: 'A listed company presents EBITDA in its earnings release as a measure of its performance. According to the SEC staff’s interpretations, which GAAP measure should EBITDA be reconciled to?',
+    options: ['Net income', 'Operating income', 'Net cash from operating activities', 'Gross profit'],
     answer: 0,
     feedback: {
-      1: 'A footnote isn’t enough: the staff say a differently calculated measure should not be called EBITDA at all.',
-      2: 'Operating cash flow is a GAAP figure from the statement of cash flows; this is not it.',
-      3: 'EBIT doesn’t add back depreciation, amortisation or share-based compensation.',
+      1: 'The staff say operating income is not the most directly comparable measure, because EBITDA adjusts for items that operating income doesn’t include, such as interest and tax.',
+      2: 'Net cash from operating activities is a cash-flow measure. For EBITDA presented as a measure of performance, the staff point to net income.',
+      3: 'Gross profit leaves out operating expenses that EBITDA includes, so it isn’t comparable.',
     },
-    solution: 'C&DI 103.01: EBITDA means net income plus interest, taxes, depreciation and amortisation. A measure with other adjustments must have a distinct title, such as Adjusted EBITDA, and be reconciled to net income.',
+    solution: 'C&DI 103.02: when EBIT or EBITDA is presented as a performance measure, it should be reconciled to net income as presented in the income statement. Operating income is not the most directly comparable measure, because EBIT and EBITDA adjust for items that operating income doesn’t include.',
   },
   {
     id: 'f02-is-k6', type: 'num', kind: 'numerical',
-    prompt: 'A fictional company has income before income tax of $72,400 and a tax rate of 25%. It paid $15,000 of estimated tax during the year. What income taxes payable does it report at the year end?',
-    answer: 3100, check: () => 0.25 * 72400 - 15000, unit: '$', places: 0,
+    prompt: 'A fictional company’s income tax expense for the year is $18,100. Its Income Taxes Payable account rose from $2,400 at the start of the year to $3,100 at the end. How much income tax did it pay during the year?',
+    answer: 17400, check: () => 2400 + 18100 - 3100, unit: '$', places: 0,
     wrong: [
-      { value: 18100, say: 'That is income tax expense for the year. Part of it has already been paid.' },
-      { value: 54300, say: 'That is net income. The question asks for the tax still owed.' },
+      { value: 18100, say: 'That is the expense. Part of it is still owed at the year end, and part of the opening balance was paid.' },
+      { value: 18800, say: 'The payable rose by $700, so the company paid $700 less than the expense, not $700 more.' },
     ],
-    solution: 'Income tax expense = 0.25 × 72,400 = 18,100. Paid 15,000, so payable = 18,100 − 15,000 = $3,100.',
+    solution: 'Tax paid = opening payable + expense − closing payable = 2,400 + 18,100 − 3,100 = $17,400. The payable rose by 700 because the company paid 700 less than it was charged.',
   },
 ];

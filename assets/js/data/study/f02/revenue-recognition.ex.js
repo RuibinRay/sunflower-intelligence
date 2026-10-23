@@ -59,7 +59,7 @@ export const guided = [
   {
     id: 'f02-rr-g1', type: 'steps', kind: 'applied',
     prompt: 'Suppose that on 10 January 2027 a law firm books Lantern to cater its office launch on 5 February 2027 and to run a barista workshop for 12 of its staff on 20 February, for $2,880 in total. It pays a $1,000 deposit on booking; the rest is due after the workshop. Sold separately, Lantern would charge $2,100 for the catering and $1,500 for the workshop (12 seats at $125).',
-    solution: 'Two distinct obligations (catering and workshop). Stand-alone prices total 2,100 + 1,500 = 3,600, so each gets 2,880 ÷ 3,600 = 0.8 of its price: catering 1,680, workshop 1,200. On 10 January: debit Cash 1,000, credit Unearned Revenue 1,000. By 10 February only the catering has been delivered, so revenue to date is $1,680.',
+    solution: 'Two distinct obligations (catering and workshop). Stand-alone prices total 2,100 + 1,500 = 3,600, so each gets 2,880 ÷ 3,600 = 0.8 of its price: catering 1,680, workshop 1,200. On 10 January: debit Cash 1,000, credit Unearned Revenue 1,000. By 10 February only the catering has been delivered, so revenue to date is $1,680. The $1,000 deposit covers part of it; the other $680 isn’t due until after the workshop, so until then it is a contract asset rather than a receivable.',
     steps: [
       { id: 'f02-rr-g1-s1', type: 'mc', prompt: 'How many performance obligations does the contract contain?',
         options: ['One: the client is buying a single launch package', 'Two: the catering and the workshop', 'Three: the deposit, the catering and the workshop'],
@@ -117,7 +117,7 @@ export const guided = [
   },
   {
     id: 'f02-rr-g3', type: 'steps', kind: 'applied',
-    prompt: 'Suppose that on 4 January 2027 Lantern sells 120 bags to a local office on account for $1,800, on terms of 2/10, n/30. The office pays on 12 January. Record the revenue side only; the cost of the bags is the next lesson’s subject. Lantern records discounts when customers take them.',
+    prompt: 'Suppose that on 4 January 2027 Lantern sells 120 bags of assorted coffees to a local office on account for $1,800, on terms of 2/10, n/30. The office pays on 12 January. Record the revenue side only; the cost of the bags is the next lesson’s subject. Lantern records discounts when customers take them.',
     solution: 'Sale: debit Accounts Receivable 1,800, credit Online Sales Revenue 1,800. Payment within 10 days: the discount is 2% × 1,800 = 36, so debit Cash 1,764 and Sales Discounts 36, credit Accounts Receivable 1,800. Net revenue from the sale is 1,800 − 36 = $1,764.',
     steps: [
       { id: 'f02-rr-g3-s1', type: 'journal', chart: 'f02', date: '2027-01-04',
@@ -162,7 +162,7 @@ export const independent = [
     wrong: [
       { value: 375, say: 'You used the stand-alone prices. The package costs $1,000 against $1,250 of separate prices, so each part gets 80% of its own price.' },
       { value: 1000, say: 'Only the kit has been fully delivered. The membership is satisfied over 12 months and the training session by session.' },
-      { value: 960, say: 'The membership runs for 12 months; only three (October–December) have passed.' },
+      { value: 840, say: 'The membership runs for 12 months; only three (October–December) have passed, so only 720 × 3 ÷ 12 of it is earned.' },
     ],
     solution: 'Stand-alone prices total 1,250, so each part gets 1,000 ÷ 1,250 = 0.8: membership 720, training 240, kit 40. Revenue in 2026: membership 720 × 3 ÷ 12 = 180; training 240 × 2 ÷ 6 = 80; kit 40. Total $300.',
   },
@@ -297,7 +297,7 @@ export const check = [
     prompt: `Lantern’s 2026 net revenue is ${money(D.revenue)}. Suppose a junior bookkeeper had recorded the $2,960 of prepaid subscriptions as Online Sales Revenue and the $1,025 of refunds as Miscellaneous Expense. What net revenue would the draft income statement have shown?`,
     answer: 197305, check: () => D.revenue + FACTS.shop.prepaidSubscriptions + FACTS.shop.refunds, unit: '$', places: 0,
     wrong: [
-      { value: 196280, say: 'That corrects only half of it. Moving the refunds to an expense also leaves them out of the revenue section, so net revenue rises by $1,025 as well.' },
+      { value: 196280, say: 'That includes only one of the two errors, the subscriptions. Moving the refunds to an expense also takes them out of the revenue section, so net revenue rises by $1,025 as well.' },
       { value: 194345, say: 'That adds back the refunds but forgets the subscriptions wrongly counted as sales.' },
       { value: 193320, say: 'That is the correct figure. The question asks what the draft with both errors would show.' },
     ],

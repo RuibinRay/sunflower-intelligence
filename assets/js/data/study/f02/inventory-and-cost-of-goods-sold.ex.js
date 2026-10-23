@@ -64,7 +64,7 @@ export const widgets = {
       const ifrs2 = Math.min(v.cost, v.nrv2), us2 = Math.min(c1, v.nrv2);
       const rev = Math.max(0, ifrs2 - c1);
       const note = wd === 0
-        ? 'Net realisable value is at or above cost at the end of year 1, so there is no write-down: the goods stay at cost.'
+        ? (v.nrv2 < v.cost ? 'No write-down is needed at the end of year 1. In year 2 net realisable value falls below cost, so both frameworks write the goods down to it.' : 'Net realisable value stays at or above cost in both years, so there is no write-down: the goods stay at cost.')
         : v.nrv2 > c1
           ? `Value recovers in year 2. IFRS reverses ${money(rev, 0)} of the ${money(wd, 0)} write-down${v.nrv2 >= v.cost ? ', the whole of it, but never above cost' : ''}; US GAAP keeps ${money(c1, 0)} as the new cost and shows the recovery only as profit when the goods are sold.`
           : v.nrv2 < c1 ? 'Value falls further in year 2, so both frameworks write the goods down again.' : 'Value is unchanged in year 2, so neither framework adjusts.';
@@ -95,7 +95,7 @@ export const guided = [
         answer: 100500, check: () => 14000 + 86000 + 2000 - 1500, unit: '$', places: 0, tol: 0.5,
         hints: ['Start from beginning inventory and add net purchases.', 'Freight-in is part of the cost of purchases; returns reduce it.'],
         wrong: [
-          { value: 100000, say: 'Freight-in is a cost of getting the books to the shop: add it to purchases.' },
+          { value: 98500, say: 'Freight-in is a cost of getting the books to the shop: add it to purchases.' },
           { value: 103500, say: 'Purchase returns reduce purchases: subtract the $1,500.' },
         ],
         solution: '14,000 + 86,000 + 2,000 − 1,500 = $100,500.' },
@@ -277,14 +277,14 @@ export const check = [
   },
   {
     id: 'f02-inv-k2', type: 'num', kind: 'numerical',
-    prompt: 'Kelpie Kayaks, a fictional shop, starts the season with 8 kayaks at $600. It buys 12 at $650 and then 20 at $700, and sells 30. Using the periodic weighted average method, what is cost of goods sold?',
-    answer: 19950, check: () => 30 * (8 * 600 + 12 * 650 + 20 * 700) / 40, unit: '$', places: 0,
+    prompt: 'Kelpie Kayaks, a fictional shop, keeps perpetual records and uses the moving average method. It starts the season with 8 kayaks at $600, buys 12 at $650, sells 15, buys 20 at $700 and sells another 15. What is cost of goods sold for the season?',
+    answer: 19740, check: () => { const a1 = (8 * 600 + 12 * 650) / 20; const a2 = (5 * a1 + 20 * 700) / 25; return 15 * a1 + 15 * a2; }, unit: '$', places: 0,
     wrong: [
-      { value: 19500, say: 'You averaged the three prices ($650) without weighting each by the number of kayaks bought at it.' },
-      { value: 6650, say: 'That is ending inventory, the 10 kayaks left. The question asks for the 30 sold.' },
-      { value: 20500, say: 'That is LIFO. The average method uses $665 for every kayak.' },
+      { value: 19950, say: 'That is the periodic weighted average ($665 for every kayak). The moving average is recalculated after each purchase: $630, then $686.' },
+      { value: 19600, say: 'That is FIFO: the oldest kayaks first.' },
+      { value: 20100, say: 'That is perpetual LIFO: the newest kayaks on hand at each sale.' },
     ],
-    solution: 'Pool: 40 kayaks costing 4,800 + 7,800 + 14,000 = 26,600; average 665. COGS = 30 × 665 = $19,950.',
+    solution: 'After the first purchase: 20 kayaks costing 4,800 + 7,800 = 12,600, an average of 630; the first 15 sold cost 9,450, leaving 5 at 630 = 3,150. After the second purchase: 25 kayaks costing 3,150 + 14,000 = 17,150, an average of 686; the next 15 cost 10,290. Cost of goods sold = 9,450 + 10,290 = $19,740.',
   },
   {
     id: 'f02-inv-k3', type: 'num', kind: 'applied',
@@ -302,7 +302,7 @@ export const check = [
       'Using LIFO for interchangeable goods',
       'Using FIFO',
       'Using the weighted average cost formula',
-      'Reversing an earlier inventory write-down when net realisable value recovers',
+      'Reversing a write-down made at an earlier year end when net realisable value recovers',
       'Measuring LIFO inventory at the lower of cost or market',
       'Measuring FIFO inventory at the lower of cost and net realisable value',
       'Specific identification for unique, high-value items',

@@ -6,7 +6,7 @@ import { FACTS, YEAR, ADJUSTMENTS, HOUSE_BLEND_Q4 as HB, COSTING as C, DERIVED a
 const inv = FACTS.inventory, rate = FACTS.tax.rate;
 const find = (id) => [...YEAR, ...ADJUSTMENTS].find((t) => t.id === id);
 const entry = (id, memo) => { const t = find(id); return { date: t.date, lines: t.lines, memo: memo ?? t.text }; };
-const holiday = { cost: 1000, nrv: 600, nrv2027: 800 };          // e7’s Holiday Blend; the 2027 recovery is hypothetical
+const holiday = { ...inv.holidayBlend, nrv2027: 800 };           // e7’s Holiday Blend from case.js; the 2027 recovery is hypothetical
 // Clovehill Spice Traders (challenging example): tins of saffron in March
 const cl = { open: [100, 5], buy1: [100, 6], sell1: 120, buy2: [100, 7], sell2: 80 };
 const clAvail = cl.open[0] * cl.open[1] + cl.buy1[0] * cl.buy1[1] + cl.buy2[0] * cl.buy2[1];   // 1,800
@@ -14,7 +14,7 @@ const mavg1 = (cl.open[0] * cl.open[1] + cl.buy1[0] * cl.buy1[1]) / 200;        
 const mLeft1 = 80 * mavg1;                                                                       // 440
 const mavg2 = (mLeft1 + cl.buy2[0] * cl.buy2[1]) / 180;                                          // 6.333…
 const mCogs = cl.sell1 * mavg1 + cl.sell2 * mavg2;                                               // 1,166.67
-// Aster Hardware Supply (applied example), in dollars
+// Ironvale Hardware Supply (applied example), in dollars
 const as = { fifoCogs: 6_200_000, lifoCogs: 6_600_000, fifoPretax: 1_500_000, covenant: 1_200_000, federal: 0.21 };
 // inventory error illustration
 const err = 2000;
@@ -33,7 +33,8 @@ export default {
   ],
   prerequisites: [
     { lesson: 'f02/revenue-recognition', why: 'Cost of goods sold is matched with the revenue recognised when the bags ship, and the shop’s net sales of $110,000 come from that lesson.' },
-    { lesson: 'f01/adjusting-entries', why: 'The year-end count and the write-down are adjusting entries, and the expense recognition principle decides when a cost leaves the balance sheet.' },
+    { lesson: 'f01/adjusting-entries', why: 'The year-end count and the write-down are adjusting entries.' },
+    { lesson: 'f01/accrual-vs-cash', why: 'The expense recognition principle, introduced there, decides when a cost leaves the balance sheet.' },
   ],
   case: 'lantern',
 
@@ -55,7 +56,7 @@ export default {
   theory: [
     { h: 'What goes into the cost of inventory' },
     { p: 'Inventory is recorded at cost, applying the <g>historical cost principle</g>. Cost includes everything spent to bring the goods to their present location and condition: the purchase price, import duties and taxes the business can’t recover, and transport, handling and other costs directly attributable to buying them; trade discounts, rebates and similar items are deducted (IAS 2 paragraphs 10 and 11). So <g>freight-in</g>, the cost of shipping goods to the buyer, is part of inventory. A discount for paying a supplier early reduces the cost too: a buyer that pays within the discount period credits Inventory for the discount taken.' },
-    { p: 'Costs of selling are not inventory. Shipping goods out to customers (freight-out) is a selling expense of the period in which it happens. Lantern’s $12,630 of Shipping Expense for couriers and postage is therefore an operating expense, not part of cost of goods sold, while Kilnworth’s prices include delivery to Lantern’s kitchen, so freight-in is already inside the $58,600.' },
+    { p: 'Costs of selling are not inventory (IAS 2 paragraph 16). Shipping goods out to customers (freight-out) is never added to inventory; it is an expense of the period in which the goods are shipped. Where it appears is a presentation policy: introductory texts treat it as a selling (delivery) expense and Lantern does the same, so its $12,630 of couriers and postage sits among operating expenses, while some companies include outbound shipping in cost of sales. Kilnworth’s prices include delivery to Lantern’s kitchen, so freight-in is already inside the $58,600.' },
     { h: 'Perpetual and periodic systems' },
     { p: 'A <g>perpetual inventory system</g> updates Inventory with every purchase and every sale. When a bag ships, two entries are made at once: revenue and a receivable or cash, as in the last lesson, and the cost of the bag moved from Inventory to Cost of Goods Sold. Lantern’s shop software does this, so the year’s summary entries record purchases of $58,600 and cost of goods sold of $52,400 from the perpetual records.' },
     { journal: { caption: 'Lantern’s inventory entries for 2026, in summary (fictional)', entries: [entry('y15'), entry('y17')] } },
@@ -86,7 +87,7 @@ export default {
       String.raw`<b>LIFO (periodic).</b> The bags sold take the newest layers first: <m>10{,}800 + 7{,}920 + 500 \times 8.40 = 22{,}920</m>. The 400 bags left carry the oldest costs: <m>2{,}400 + 100 \times 8.40 = 3{,}240</m>.`,
       String.raw`<b>Weighted average (periodic).</b> Average cost <m>26{,}160 \div 3{,}000 = 8.72</m> a bag; cost of goods sold <m>2{,}600 \times 8.72 = 22{,}672</m>; ending inventory <m>400 \times 8.72 = 3{,}488</m>.`,
     ] },
-    { p: 'Each pair adds back to $26,160: the formula only divides the pool. Under a perpetual system FIFO gives the same answer whenever the costs are assigned, because the oldest bags on hand are always the oldest. LIFO and the average do not: applied sale by sale, perpetual LIFO takes the newest cost <i>at the date of each sale</i>, and the moving average recalculates the average after every purchase. The challenging example works one case all four ways. Lantern’s own records are perpetual FIFO, which is why its year-end House Blend is the December layer, $3,600.' },
+    { p: 'Each pair adds back to $26,160: the formula only divides the pool. Under a perpetual system FIFO gives the same answer whenever the costs are assigned, because the oldest bags on hand are always the oldest. LIFO and the average do not: applied sale by sale, perpetual LIFO takes the newest cost <i>at the date of each sale</i>, and the moving average recalculates the average after every purchase. The challenging example works one case every way. Lantern’s own records are perpetual FIFO, which is why its year-end House Blend is the December layer, $3,600.' },
     { h: 'What the choice does when costs rise' },
     { table: {
       caption: 'House Blend, fourth quarter 2026: the three formulas compared (fictional)',
@@ -103,7 +104,7 @@ export default {
     { callout: 'standards', title: 'LIFO: allowed under US GAAP, prohibited under IFRS, tied to tax in the US', html: 'IAS 2 allows only FIFO or the weighted average cost formula for interchangeable items, and requires the same formula for all inventories of a similar nature and use (paragraph 25). The IASB removed LIFO when it revised IAS 2 in December 2003, effective from 2005, because LIFO lacks representational faithfulness of inventory flows. US GAAP still permits LIFO. In the United States the tax rules add the <g>LIFO conformity rule</g>: a taxpayer may use LIFO for tax only if it uses no other method to work out its income in reports to shareholders, partners or other owners, or for credit purposes (26 U.S.C. §472(c) and (e)(2)). If Lantern elected LIFO for its tax return, the statements it gives Ana and Coastline Bank would have to use LIFO too.' },
     { h: 'The lower of cost and net realisable value' },
     { p: 'Inventory is never carried at more than the business expects to recover from it. <g>Net realisable value</g> is the estimated selling price in the ordinary course of business, less the estimated costs of completion and the costs of making the sale. Cost may not be recoverable when goods are damaged or obsolete, when selling prices have fallen, or when the costs to complete or sell them have risen (IAS 2 paragraphs 9 and 28). Inventory is then written down to net realisable value, and the <g>inventory write-down</g> is an expense of the period in which it happens (paragraph 34).' },
-    { p: 'US GAAP reached the same test in 2015. ASU 2015-11, issued in July 2015 and effective for fiscal years beginning after 15 December 2016, requires inventory measured by any method other than LIFO or the retail inventory method to be measured at the <g>lower of cost and net realisable value</g> (ASC 330-10-35-1B). Inventory measured by LIFO or the retail inventory method keeps the older lower of cost or market test (ASC 330-10-35-1C), in which “market” is based on current replacement cost. Older textbooks describe lower of cost or market for all inventory; for a FIFO business like Lantern that is no longer the rule.' },
+    { p: 'US GAAP reached the same test in 2015. ASU 2015-11, issued in July 2015 and effective for fiscal years beginning after 15 December 2016, requires inventory measured by any method other than LIFO or the retail inventory method (which estimates the cost of inventory from its selling prices, using the ratio of cost to retail price) to be measured at the <g>lower of cost and net realisable value</g> (ASC 330-10-35-1B). Inventory measured by LIFO or the retail inventory method keeps the older lower of cost or market test (ASC 330-10-35-1C), in which “market” is based on current replacement cost. Older textbooks describe lower of cost or market for all inventory; for a FIFO business like Lantern that is no longer the rule.' },
     { p: 'Lantern’s count found 125 bags of Holiday Blend, a seasonal coffee in festive packaging, that cost $1,000. After Christmas they can be sold only at a clearance price, which after card fees and shipping leaves $600. The write-down of $400 is charged to Cost of Goods Sold, a common presentation, so the year’s cost of goods sold becomes <m>52{,}400 + 400 = 52{,}800</m>.' },
     { journal: { caption: 'Lantern’s year-end write-down (fictional)', entries: [entry('e7')] } },
     { p: 'What if net realisable value recovers while the goods are still held? Suppose that in February 2027 a café chain offers to take the Holiday Blend for a price that leaves $800 after costs. Under IFRS the business reassesses net realisable value each period and reverses the write-down when it recovers, but only up to the original write-down, so that the carrying amount is the lower of cost and the revised net realisable value; the reversal reduces the inventory expense of the period (IAS 2 paragraphs 33 and 34). Under US GAAP a write-down at the close of a fiscal year makes the reduced amount the cost for later accounting (ASC 330-10-35-14), so it isn’t written back up; the recovery shows as a higher profit when the goods are sold. (Within one fiscal year, a write-down made in an interim period may be recovered in a later interim period of the same year.)' },
@@ -193,7 +194,7 @@ export default {
       ],
       answer: 'Cost of goods sold $52,800; shop gross profit $57,200; gross margin 52%.',
       interpretation: 'Of each dollar of net shop sales, 48 cents paid for the coffee. The 52 cents left must also cover shipping ($12,630), card and platform fees ($4,010) and part of the wages and rent, which the income statement lesson brings in below gross profit.' },
-    { level: 'challenging', title: 'Periodic or perpetual? Four answers for one month', fictional: true,
+    { level: 'challenging', title: 'Periodic or perpetual? Five answers for one month', fictional: true,
       setup: 'Clovehill Spice Traders, a fictional importer, sells tins of saffron. On 1 March it holds 100 tins at $5. It buys 100 tins at $6 on 5 March, sells 120 on 10 March, buys 100 at $7 on 20 March and sells 80 on 28 March. Find March’s cost of goods sold and ending inventory under FIFO, LIFO and the average method, each on a periodic and a perpetual basis. Round to the cent.',
       table: {
         caption: 'Clovehill’s March under each method (fictional)',
@@ -217,15 +218,15 @@ export default {
       answer: 'See the table: five different costs of goods sold, from $1,100.00 (FIFO) to $1,300.00 (periodic LIFO), from the same tins and the same purchases.',
       interpretation: 'FIFO is the only formula that doesn’t care when the sales happened. Perpetual LIFO and the moving average assign some older costs to sales made before the dearer 20 March delivery arrived, so they land between FIFO and their periodic versions. A business must choose one method and apply it consistently, and its notes should say which.' },
     { level: 'applied', title: 'Should a US distributor switch to LIFO?', fictional: true,
-      setup: 'Aster Hardware Supply Inc., a fictional US distributor, uses FIFO. Its suppliers’ prices have risen all year; for this year its controller estimates cost of goods sold of $6.2 million under FIFO and $6.6 million under LIFO, and income before tax of $1.5 million under FIFO. Aster’s bank loan requires income before tax of at least $1.2 million in the statements Aster sends the bank. The finance director wants LIFO to save tax. Ignore state taxes and use a 21% rate, the US federal corporate income tax rate (26 U.S.C. §11(b), covered in the next lesson). What would LIFO save, and what is the catch?',
+      setup: 'Ironvale Hardware Supply Inc., a fictional US distributor, uses FIFO. Its suppliers’ prices have risen all year; for this year its controller estimates cost of goods sold of $6.2 million under FIFO and $6.6 million under LIFO, and income before tax of $1.5 million under FIFO. Ironvale’s bank loan requires income before tax of at least $1.2 million in the statements Ironvale sends the bank, and its finance director wants LIFO to save tax. Ignore state taxes and use a 21% rate, the US federal corporate income tax rate (26 U.S.C. §11(b), covered in the next lesson). What would LIFO save, and what is the catch?',
       steps: [
         'Extra cost of goods sold under LIFO: <m>6.6 - 6.2 = 0.4</m> million dollars, so income before tax falls to <m>1.5 - 0.4 = 1.1</m> million.',
         'Federal tax saved this year: <m>0.21 \\times 400{,}000 = 84{,}000</m> dollars. The saving is real cash, and repeats each year that costs keep rising.',
-        'The LIFO conformity rule (26 U.S.C. §472(c)) means Aster can’t use LIFO for tax and FIFO in the statements it gives its bank, which are reports for credit purposes. The bank would see LIFO income of $1.1 million.',
-        'That is below the loan’s $1.2 million test, so switching would put Aster in breach unless the bank agrees to amend the covenant or to measure it on a FIFO basis.',
+        'The LIFO conformity rule (26 U.S.C. §472(c)) means Ironvale can’t use LIFO for tax and FIFO in the statements it gives its bank, which are reports for credit purposes. The bank would see LIFO income of $1.1 million.',
+        'That is below the loan’s $1.2 million test, so switching would put Ironvale in breach unless the bank agrees to amend the covenant or to measure it on a FIFO basis.',
       ],
       answer: 'LIFO would save about $84,000 of federal tax this year, but it would also cut reported income before tax to $1.1 million, below the bank’s $1.2 million requirement.',
-      interpretation: 'An inventory method is a tax decision, a reporting decision and a financing decision at once. Aster should talk to its bank before switching; and if Aster were ever bought by a group reporting under IFRS, the group accounts would have to restate its inventory on FIFO or the weighted average, because IAS 2 doesn’t allow LIFO.' },
+      interpretation: 'An inventory method is a tax decision, a reporting decision and a financing decision at once. Ironvale should talk to its bank before switching; and if Ironvale were ever bought by a group reporting under IFRS, the group accounts would have to restate its inventory on FIFO or the weighted average, because IAS 2 doesn’t allow LIFO.' },
   ],
 
   demo: [
@@ -235,7 +236,7 @@ export default {
 
   mistakes: [
     { title: '“LIFO means the newest bags are shipped first.”', html: 'The cost formula is an assumption about costs, not goods. A coffee shop ships its oldest bags first whatever its accounting says, because coffee goes stale. FIFO, LIFO and the average only decide which purchase costs are assigned to the bags sold.' },
-    { title: '“Shipping is shipping: it all goes into inventory.”', html: 'Freight-in, the cost of getting goods to the business, is part of their cost. Freight-out, the cost of sending goods to customers, is a selling expense. Lantern’s $12,630 of couriers and postage belongs in operating expenses; putting it into inventory would overstate both inventory and gross profit.' },
+    { title: '“Shipping is shipping: it all goes into inventory.”', html: 'Freight-in, the cost of getting goods to the business, is part of their cost. Freight-out, the cost of sending goods to customers, is never inventory: it is an expense of the year (Lantern shows it among operating expenses). Putting Lantern’s $12,630 of couriers and postage into inventory would overstate both inventory and gross profit.' },
     { title: '“Perpetual and periodic records give the same answer.”', html: 'They do for FIFO. For LIFO and the average they generally don’t, because a perpetual system costs each sale from the layers on hand at that date. Clovehill’s LIFO cost of goods sold is $1,300 periodic but $1,260 perpetual.' },
     { title: '“When prices recover, the write-down comes back.”', html: 'Only under IFRS, and only up to the original write-down. Under US GAAP a year-end write-down sets a new cost that isn’t written back up while the goods are held; the recovery appears as a higher margin when they are sold.' },
     { title: '“An inventory error corrects itself, so it doesn’t matter.”', html: 'It distorts two years’ profits in opposite directions and the first year’s balance sheet. Decisions, bonuses and taxes based on those figures are not corrected by the reversal, and the apparent swing in performance between the years is fictitious.' },
@@ -251,7 +252,7 @@ export default {
   summary: [
     'Inventory is an asset until the goods are sold; its cost then becomes cost of goods sold, an expense of the period in which the revenue is recognised.',
     'Cost of goods sold = beginning inventory + purchases − ending inventory. Lantern, 2026: 0 + 58,600 − 5,800 = $52,800; shop gross profit $57,200 on net sales of $110,000, a gross margin of 52%.',
-    'Inventory cost includes the purchase price, freight-in and other costs of getting the goods ready for sale, less discounts; shipping to customers is a selling expense.',
+    'Inventory cost includes the purchase price, freight-in and other costs of getting the goods ready for sale, less discounts; shipping to customers is an expense of the period, a selling expense in Lantern’s statements.',
     'Perpetual records update inventory with every sale; periodic records rely on a count. Even perpetual systems need a count to find shrinkage and impaired goods.',
     'FIFO, LIFO and the weighted average divide the same pool differently. With rising costs, LIFO gives the highest cost of goods sold, the lowest profit and tax and the smallest inventory: House Blend’s LIFO cost of goods sold is $22,920 against FIFO’s $22,560.',
     'IAS 2 prohibits LIFO; US GAAP allows it, and US tax law’s LIFO conformity rule requires a company that uses LIFO for tax to use it in reports to owners and lenders.',
@@ -281,7 +282,7 @@ export default {
 
   references: [
     { text: 'Franklin, M., Graybeal, P. &amp; Cooper, D. (2019). <i>Principles of Accounting, Volume 1: Financial Accounting</i>, section 10.2, “Calculate the Cost of Goods Sold and Ending Inventory Using the Periodic Method”. OpenStax.', url: 'https://openstax.org/books/principles-financial-accounting/pages/10-2-calculate-the-cost-of-goods-sold-and-ending-inventory-using-the-periodic-method', checked: '2026-10-23' },
-    { text: 'Australian Accounting Standards Board. <i>Compiled AASB 102 Inventories</i> (compiled 31 December 2021), which incorporates IAS 2 with its paragraph numbering; paragraphs 9, 10, 11, 25, 28, 33 and 34. Federal Register of Legislation.', url: 'https://www.legislation.gov.au/F2015L01624/2021-12-31/2021-12-31/text/original/epub/OEBPS/document_1/document_1.html', checked: '2026-10-23' },
+    { text: 'Australian Accounting Standards Board. <i>Compiled AASB 102 Inventories</i> (compiled 31 December 2021), which incorporates IAS 2 with its paragraph numbering; paragraphs 9, 10, 11, 16, 25, 28, 33 and 34. Federal Register of Legislation.', url: 'https://www.legislation.gov.au/F2015L01624/2021-12-31/2021-12-31/text/original/epub/OEBPS/document_1/document_1.html', checked: '2026-10-23' },
     { text: 'International Accounting Standards Board. <i>Basis for Conclusions on IAS 2 Inventories</i> (revised December 2003): the elimination of LIFO. Published by the External Reporting Board (New Zealand).', url: 'https://www.xrb.govt.nz/dmsdocument/6029/', checked: '2026-10-23' },
     { text: 'Financial Accounting Standards Board (2015). <i>Accounting Standards Update No. 2015-11, Inventory (Topic 330): Simplifying the Measurement of Inventory</i> (ASC 330-10-35-1B and 35-1C; effective dates). Full text on PwC Viewpoint.', url: 'https://viewpoint.pwc.com/dt/us/en/fasb_financial_accou/asus_fulltext/2015/asu_201511inventory_/asu_201511inventory__US/asu_201511inventory__US.html', checked: '2026-10-23' },
     { text: 'PwC. <i>Inventory</i> guide, section 3.8.3, “LIFO: reversal of valuation reserves” (quotes ASC 330-10-35-14). Viewpoint.', url: 'https://viewpoint.pwc.com/dt/us/en/pwc/accounting_guides/inventory/Inventory-Guide/3_chapter_LIFO_inv/38_Low_of_cost1.html', checked: '2026-10-23' },
@@ -361,11 +362,11 @@ export default {
     { what: 'Clovehill sale 2 cost', value: cl.sell2 * mavg2, shown: 506.67 },
     { what: 'Clovehill moving average COGS', value: mCogs, shown: 1166.67 },
     { what: 'Clovehill moving average ending', value: clAvail - mCogs, shown: 633.33 },
-    // Aster
-    { what: 'Aster extra COGS (millions)', value: (as.lifoCogs - as.fifoCogs) / 1e6, shown: 0.4 },
-    { what: 'Aster LIFO pretax (millions)', value: (as.fifoPretax - (as.lifoCogs - as.fifoCogs)) / 1e6, shown: 1.1 },
-    { what: 'Aster tax saved', value: as.federal * (as.lifoCogs - as.fifoCogs), shown: 84000 },
-    { what: 'Aster covenant (millions)', value: as.covenant / 1e6, shown: 1.2 },
+    // Ironvale
+    { what: 'Ironvale extra COGS (millions)', value: (as.lifoCogs - as.fifoCogs) / 1e6, shown: 0.4 },
+    { what: 'Ironvale LIFO pretax (millions)', value: (as.fifoPretax - (as.lifoCogs - as.fifoCogs)) / 1e6, shown: 1.1 },
+    { what: 'Ironvale tax saved', value: as.federal * (as.lifoCogs - as.fifoCogs), shown: 84000 },
+    { what: 'Ironvale covenant (millions)', value: as.covenant / 1e6, shown: 1.2 },
     { what: 'Federal rate', value: as.federal * 100, shown: 21 },
   ],
 };
