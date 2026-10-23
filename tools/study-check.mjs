@@ -177,7 +177,7 @@ function checkFormulaItem(x, w, r) {
   const unknown = [...SH.functionsUsed(x.answer)].filter((n) => !SH.FUNCTIONS.includes(n));
   if (unknown.length) { r.err(`${w}: answer uses ${unknown.join(', ')}, which the sheet engine doesn’t have`); return; }
   (x.require || []).forEach((n) => { if (!SH.functionsUsed(x.answer).has(n.toUpperCase())) r.err(`${w}: require lists ${n} but the answer doesn’t use it`); });
-  const g = (formula) => SH.gradeFormula(x.sheet, { cell: x.cell, fill: x.fill, formula, answer: x.answer, require: x.require || [], variants: x.variants ?? 2 });
+  const g = (formula) => SH.gradeFormula(x.sheet, { cell: x.cell, fill: x.fill, formula, answer: x.answer, require: x.require || [], variants: x.variants ?? 3 });
   const self = g(x.answer);
   if (!self.ok) r.err(`${w}: the answer doesn’t pass its own marking: ${self.message}`);
   self.results.forEach((res) => { if (SH.isErr(res.want) && !(x.allowErrors || []).includes(res.cell)) r.err(`${w}: the answer gives ${res.want.code} in ${res.cell}`); });
@@ -220,6 +220,11 @@ function checkSheetWidget(wd, w, r) {
     }
   }
   (wd.rules || []).forEach((ru, i) => { if (!SH.parseRange(ru.range || '')) r.err(`${w}: rules[${i}] needs a range`); });
+  (wd.controls || []).forEach((c, i) => {
+    if (!SH.parseAddr(c.cell || '')) r.err(`${w}: controls[${i}] needs a cell`);
+    if (!Array.isArray(c.options) || c.options.length < 2) r.err(`${w}: controls[${i}] needs at least two options`);
+    if (sh.isFormula(c.cell)) r.err(`${w}: controls[${i}] sets ${c.cell}, which holds a formula`);
+  });
 }
 
 // ---------------------------------------------------------------- widgets

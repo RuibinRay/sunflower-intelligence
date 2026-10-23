@@ -338,6 +338,17 @@ p .katex, li .katex, dd .katex { font-size: 1.04em; }
 .sg-grid td.cf-warn { background: #FBEAB8; color: #6A4300; }
 .sg-grid td.has-bar { background-image: linear-gradient(to right, transparent calc(var(--bar-from) * 100%), rgba(58, 106, 174, .28) calc(var(--bar-from) * 100%), rgba(58, 106, 174, .28) calc(var(--bar-to) * 100%), transparent calc(var(--bar-to) * 100%)); }
 .sg-grid td.has-scale { background-color: color-mix(in srgb, #3A6AAE calc(var(--scale) * 45%), #fff); }
+.sg-icon { display: inline-block; width: 1.1em; margin-right: 4px; font-size: .85em; text-align: center; }
+.sg-icon-up { color: #3B6E2A; } .sg-icon-side { color: #8A6400; } .sg-icon-down { color: #A4421A; }
+.sg-rules { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.sg-rules li { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; padding: 6px 8px; border: 1px solid var(--rule); border-radius: var(--r-sm); font-size: var(--t-sm); }
+.sg-rules li .sg-rule-text { flex: 1 1 14rem; min-width: 0; }
+.sg-rules label { display: inline-flex; gap: 6px; align-items: center; font-size: var(--t-xs); }
+.sg-rules input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--midnight); }
+.sg-controls { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: end; }
+.sg-controls .field { min-width: 10rem; }
+.sg-controls .field label { font-weight: 700; font-size: var(--t-xs); }
+.sg-report td, .sg-report th { white-space: nowrap; }
 .sg-ex { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-3); min-width: 0; }
 .sg-ex .field { max-width: 40rem; }
 .sg-input { font-family: var(--f-mono); font-size: var(--t-sm); }

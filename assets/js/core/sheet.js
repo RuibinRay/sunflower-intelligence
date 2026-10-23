@@ -549,8 +549,12 @@ function binop(op, a, b) {
   const x = toNum(a), y = toNum(b);
   if (isErr(x)) return x; if (isErr(y)) return y;
   switch (op) {
-    case '+': return x + y;
-    case '-': return x - y;
+    case '+': case '-': {
+      // a sum or difference that cancels to within rounding error of zero is shown as 0, as Excel (from Excel 97) and
+      // LibreOffice do: =1.333+1.225-1.333-1.225 gives 0, not -2.22E-16
+      const r = op === '+' ? x + y : x - y;
+      return r !== 0 && Math.abs(r) < Math.max(Math.abs(x), Math.abs(y)) * 2 ** -48 ? 0 : r;
+    }
     case '*': return x * y;
     case '/': return y === 0 ? ERR.DIV0 : x / y;
     case '^': { if (x === 0 && y === 0) return ERR.NUM; const r = x ** y; return Number.isFinite(r) ? r : ERR.NUM; }
@@ -737,6 +741,19 @@ FN.COUNTA = (args, ctx) => args.reduce((n, a) => n + valuesOf(a, ctx).filter((v)
 FN.COUNTBLANK = (args, ctx) => valuesOf(args[0], ctx).filter((v) => v == null || v === '').length;
 FN['PERCENTILE.INC'] = (args, ctx) => { const xs = numbersOf([args[0]], ctx); if (isErr(xs)) return xs; const k = numArg(args[1], ctx); if (isErr(k)) return k; if (!xs.length || k < 0 || k > 1) return ERR.NUM; return percentileInc(xs, k); };
 FN.PERCENTILE = FN['PERCENTILE.INC'];
+function percentileExc(xs, k) {
+  const s = [...xs].sort((a, b) => a - b), n = s.length, h = (n + 1) * k;
+  if (!n || k <= 0 || k >= 1 || h < 1 || h > n) return ERR.NUM;
+  const lo = Math.floor(h);
+  return lo >= n ? s[n - 1] : s[lo - 1] + (h - lo) * (s[lo] - s[lo - 1]);
+}
+FN['PERCENTILE.EXC'] = (args, ctx) => { const xs = numbersOf([args[0]], ctx); if (isErr(xs)) return xs; const k = numArg(args[1], ctx); if (isErr(k)) return k; return percentileExc(xs, k); };
+FN['QUARTILE.EXC'] = (args, ctx) => { const xs = numbersOf([args[0]], ctx); if (isErr(xs)) return xs; const q = Math.trunc(numArg(args[1], ctx)); if (q < 1 || q > 3) return ERR.NUM; return percentileExc(xs, q / 4); };
+// SKEW (sample): n ÷ ((n − 1)(n − 2)) × Σ((x − x̄) ÷ s)³; SKEW.P: Σ((x − x̄) ÷ σ)³ ÷ n; KURT (excess, sample):
+// n(n + 1) ÷ ((n − 1)(n − 2)(n − 3)) × Σ((x − x̄) ÷ s)⁴ − 3(n − 1)² ÷ ((n − 2)(n − 3))
+agg('SKEW', (xs) => { const n = xs.length; if (n < 3) return ERR.DIV0; const m = meanOf(xs), sd = Math.sqrt(varOf(xs, true)); if (!sd) return ERR.DIV0; return (n / ((n - 1) * (n - 2))) * xs.reduce((a, x) => a + ((x - m) / sd) ** 3, 0); });
+agg('SKEW.P', (xs) => { const n = xs.length; if (!n) return ERR.DIV0; const m = meanOf(xs), sd = Math.sqrt(varOf(xs, false)); if (!sd) return ERR.DIV0; return xs.reduce((a, x) => a + ((x - m) / sd) ** 3, 0) / n; });
+agg('KURT', (xs) => { const n = xs.length; if (n < 4) return ERR.DIV0; const m = meanOf(xs), sd = Math.sqrt(varOf(xs, true)); if (!sd) return ERR.DIV0; return (n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3)) * xs.reduce((a, x) => a + ((x - m) / sd) ** 4, 0) - (3 * (n - 1) ** 2) / ((n - 2) * (n - 3)); });
 FN['QUARTILE.INC'] = (args, ctx) => { const xs = numbersOf([args[0]], ctx); if (isErr(xs)) return xs; const q = Math.trunc(numArg(args[1], ctx)); if (!xs.length || q < 0 || q > 4) return ERR.NUM; return percentileInc(xs, q / 4); };
 FN.QUARTILE = FN['QUARTILE.INC'];
 FN.LARGE = (args, ctx) => { const xs = numbersOf([args[0]], ctx); if (isErr(xs)) return xs; const k = Math.ceil(numArg(args[1], ctx)); const s = [...xs].sort((a, b) => b - a); return k >= 1 && k <= s.length ? s[k - 1] : ERR.NUM; };
@@ -802,12 +819,24 @@ FN.SUBTOTAL = (args, ctx) => {
 };
 
 // conditional aggregates
+/** A criteria argument; a reference to an empty cell counts as 0 (Microsoft: “If the criteria argument is a reference
+ *  to an empty cell, the COUNTIFS function treats the empty cell as a 0 value”). */
+function critArg(a, ctx) { const v = scalar(a, ctx); return v == null && a && a.t !== 'missing' && a.t !== 'lit' ? 0 : v; }
+/** SUMIF/AVERAGEIF's sum_range: as many cells as `range`, starting at sum_range's top-left cell (Excel's rule when the
+ *  two differ in size). */
+function sumRangeOf(a, R, ctx) {
+  const r = evRef(a, ctx);
+  if (isErr(r)) return r;
+  if (!isRef(r)) return arrOf(a, ctx);
+  const r0 = r.range ? r.r0 : r.r, c0 = r.range ? r.c0 : r.c;
+  return ctx.sheet.range(r0, c0, r0 + R.h - 1, c0 + R.w - 1);
+}
 function condPairs(args, ctx, start) {
   // args from `start`: range1, crit1, range2, crit2, …; returns a mask over positions or an error
   let mask = null, size = null;
   for (let i = start; i < args.length; i += 2) {
     const R = arrOf(args[i], ctx); if (isErr(R)) return R;
-    const crit = scalar(args[i + 1], ctx);
+    const crit = critArg(args[i + 1], ctx);
     if (isErr(crit)) return crit;                              // an error as the criterion is the result, as in Excel
     const test = criterion(crit);
     const vals = R.flat();
@@ -823,9 +852,9 @@ FN.AVERAGEIFS = (args, ctx) => { const S = arrOf(args[0], ctx); if (isErr(S)) re
 FN.MAXIFS = (args, ctx) => { const S = arrOf(args[0], ctx); if (isErr(S)) return S; const c = condPairs(args, ctx, 1); if (isErr(c)) return c; const xs = S.flat().filter((x, i) => c.mask[i] && typeof x === 'number'); return xs.length ? Math.max(...xs) : 0; };
 FN.MINIFS = (args, ctx) => { const S = arrOf(args[0], ctx); if (isErr(S)) return S; const c = condPairs(args, ctx, 1); if (isErr(c)) return c; const xs = S.flat().filter((x, i) => c.mask[i] && typeof x === 'number'); return xs.length ? Math.min(...xs) : 0; };
 // SUMIF(range, criteria, [sum_range]); AVERAGEIF likewise; COUNTIF(range, criteria)
-FN.SUMIF = (args, ctx) => { if (!need(args, 2, 3)) return ERR.VALUE; const R = arrOf(args[0], ctx); if (isErr(R)) return R; const S = args[2] && args[2].t !== 'missing' ? arrOf(args[2], ctx) : R; if (isErr(S)) return S; const crit = scalar(args[1], ctx); if (isErr(crit)) return crit; const t = criterion(crit); const r = R.flat(); let s = 0; for (let i = 0; i < r.length; i++) { const v = S.flat()[i]; if (t(r[i]) && typeof v === 'number') s += v; } return s; };
-FN.COUNTIF = (args, ctx) => { if (!need(args, 2)) return ERR.VALUE; const R = arrOf(args[0], ctx); if (isErr(R)) return R; const crit = scalar(args[1], ctx); if (isErr(crit)) return crit; const t = criterion(crit); return R.flat().filter(t).length; };
-FN.AVERAGEIF = (args, ctx) => { const R = arrOf(args[0], ctx); if (isErr(R)) return R; const S = args[2] && args[2].t !== 'missing' ? arrOf(args[2], ctx) : R; const crit = scalar(args[1], ctx); if (isErr(crit)) return crit; const t = criterion(crit); const xs = R.flat().map((v, i) => (t(v) ? S.flat()[i] : null)).filter((v) => typeof v === 'number'); return xs.length ? meanOf(xs) : ERR.DIV0; };
+FN.SUMIF = (args, ctx) => { if (!need(args, 2, 3)) return ERR.VALUE; const R = arrOf(args[0], ctx); if (isErr(R)) return R; const S = args[2] && args[2].t !== 'missing' ? sumRangeOf(args[2], R, ctx) : R; if (isErr(S)) return S; const crit = critArg(args[1], ctx); if (isErr(crit)) return crit; const t = criterion(crit); const r = R.flat(); let s = 0; for (let i = 0; i < r.length; i++) { const v = S.flat()[i]; if (t(r[i]) && typeof v === 'number') s += v; } return s; };
+FN.COUNTIF = (args, ctx) => { if (!need(args, 2)) return ERR.VALUE; const R = arrOf(args[0], ctx); if (isErr(R)) return R; const crit = critArg(args[1], ctx); if (isErr(crit)) return crit; const t = criterion(crit); return R.flat().filter(t).length; };
+FN.AVERAGEIF = (args, ctx) => { const R = arrOf(args[0], ctx); if (isErr(R)) return R; const S = args[2] && args[2].t !== 'missing' ? sumRangeOf(args[2], R, ctx) : R; if (isErr(S)) return S; const crit = critArg(args[1], ctx); if (isErr(crit)) return crit; const t = criterion(crit); const xs = R.flat().map((v, i) => (t(v) ? S.flat()[i] : null)).filter((v) => typeof v === 'number'); return xs.length ? meanOf(xs) : ERR.DIV0; };
 FN.SUMPRODUCT = (args, ctx) => {
   const As = args.map((a) => arrOf(a, ctx));
   const e = As.find(isErr); if (e) return e;
@@ -1095,7 +1124,7 @@ export function display(v, fmt = 'general') {
  * across that range, as Excel's fill handle does, and every filled cell must match.
  * Returns { ok, results: [{ cell, got, want }], message }.
  */
-export function gradeFormula(sheetSpec, { cell, formula, answer, fill = null, variants = 2, tol = 1e-9, seed = 7, require = [], perturb = null }) {
+export function gradeFormula(sheetSpec, { cell, formula, answer, fill = null, variants = 3, tol = 1e-9, seed = 7, require = [], perturb = null }) {
   const f = String(formula || '').trim();
   if (!f.startsWith('=')) return { ok: false, results: [], message: 'Start the formula with an equals sign (=).' };
   try { parse(f); } catch (e) { return { ok: false, results: [], message: `Excel couldn’t read that formula: ${e.message}.` }; }
@@ -1116,7 +1145,7 @@ export function gradeFormula(sheetSpec, { cell, formula, answer, fill = null, va
     const mine = base.clone(), model = base.clone();
     for (const t of targets) { mine.set(t.cell, shiftFormula(f, t.dr, t.dc)); model.set(t.cell, shiftFormula(answer, t.dr, t.dc)); }
     for (const t of targets) {
-      const got = mine.get(t.cell), want = model.get(t.cell);
+      const got = fullValue(mine, t.cell), want = fullValue(model, t.cell);
       const same = sameValue(got, want, tol);
       if (si === 0) results.push({ cell: t.cell, got, want, ok: same });
       if (!same) ok = false;
@@ -1126,11 +1155,32 @@ export function gradeFormula(sheetSpec, { cell, formula, answer, fill = null, va
   let message;
   if (ok && missing.length) return { ok: false, results, message: `That gives the right result, but this exercise practises ${missing.join(' and ')}: use it in your formula.` };
   if (ok) message = fill ? `Right in every cell from ${targets[0].cell} to ${targets[targets.length - 1].cell}.` : 'Right.';
-  else if (firstWrong) message = `${firstWrong.cell} shows ${display(firstWrong.got)}; it should show ${display(firstWrong.want)}.`;
+  else if (firstWrong) message = isArr(firstWrong.got) || isArr(firstWrong.want) ? spillMessage(firstWrong) : `${firstWrong.cell} shows ${display(firstWrong.got)}; it should show ${display(firstWrong.want)}.`;
   else message = 'Your formula gives the right answer for this data, but not when the numbers change: it must calculate the result from the cells, not contain it.';
   return { ok, results, message };
 }
+/** A formula cell's whole result: an Arr when it spills (so a spilled answer is marked in every cell), else a value. */
+function fullValue(sheet, cell) {
+  const k = cell.replace(/\$/g, '').toUpperCase();
+  if (!sheet.isFormula(k)) return sheet.get(k);
+  sheet.computeAll();
+  const v = sheet.formulaValue(k);
+  return v == null ? 0 : v;
+}
+const sizeText = (v) => (isArr(v) ? `${v.h} row${v.h === 1 ? '' : 's'} by ${v.w} column${v.w === 1 ? '' : 's'}` : 'one cell');
+function spillMessage({ cell, got, want }) {
+  const G = isArr(got) ? got : new Arr([[got]]), W = isArr(want) ? want : new Arr([[want]]);
+  if (G.h !== W.h || G.w !== W.w) return `The result in ${cell} fills ${sizeText(got)}; it should fill ${sizeText(want)}.`;
+  for (let i = 0; i < W.h; i++) for (let j = 0; j < W.w; j++) if (!sameValue(G.at(i, j), W.at(i, j), 1e-9)) {
+    const p = parseAddr(cell); return `${addr(p.r + i, p.c + j)} shows ${display(G.at(i, j))}; it should show ${display(W.at(i, j))}.`;
+  }
+  return `${cell} doesn’t match.`;
+}
 function sameValue(a, b, tol) {
+  if (isArr(a) || isArr(b)) {
+    const A = isArr(a) ? a : new Arr([[a]]), B = isArr(b) ? b : new Arr([[b]]);
+    return A.h === B.h && A.w === B.w && A.rows.every((row, i) => row.every((v, j) => sameValue(v, B.at(i, j), tol)));
+  }
   if (isErr(a) || isErr(b)) return isErr(a) && isErr(b) && a.code === b.code;
   if (typeof a === 'number' && typeof b === 'number') return Math.abs(a - b) <= tol * Math.max(1, Math.abs(b));
   if (a == null && b === 0) return true;
@@ -1144,13 +1194,19 @@ function fixedSet(list = []) {
   for (const f of list) { const rg = parseRange(f); if (!rg) continue; for (let r = rg.r0; r <= rg.r1; r++) for (let c = rg.c0; c <= rg.c1; c++) out.add(addr(r, c)); }
   return out;
 }
-/** A copy of the sheet's data with every numeric input scaled by a random factor (integers stay integers). Cells in
+/** A copy of the sheet's data with every numeric input scaled by a random factor (integers stay integers). Whole
+ *  numbers that read as dates from 2000 to 2050 (serials 36526–55153) are moved instead, all by the same whole number
+ *  of months, so date windows, month starts and ends keep their meaning while typed-in dates stop matching. Cells in
  *  `spec.fixed` keep their values (a sorted rate table, say, that a formula relies on staying sorted). */
+const isDateLike = (v) => Number.isInteger(v) && v >= 36526 && v <= 55153;
+function shiftMonths(serial, m) { const [y, mo, d] = serialToYMD(serial); const last = serialToYMD(dateSerial(y, mo + m + 1, 0))[2]; return dateSerial(y, mo + m, Math.min(d, last)); }
 function perturbSpec(spec, rand) {
   const cells = {};
   const fixed = fixedSet(spec.fixed);
+  const months = [-3, -2, -1, 1, 2, 3][Math.floor(rand() * 6)];
   for (const [k, v] of Object.entries(spec.cells || {})) {
-    if (typeof v === 'number' && !fixed.has(k.replace(/\$/g, '').toUpperCase())) {
+    if (typeof v === 'number' && isDateLike(v) && !fixed.has(k.replace(/\$/g, '').toUpperCase())) cells[k] = shiftMonths(v, months);
+    else if (typeof v === 'number' && !fixed.has(k.replace(/\$/g, '').toUpperCase())) {
       const f = 0.6 + rand() * 0.9;
       cells[k] = Number.isInteger(v) ? Math.max(Math.round(v * f), v === 0 ? 0 : 1) : Math.round(v * f * 100) / 100;
     } else cells[k] = v;

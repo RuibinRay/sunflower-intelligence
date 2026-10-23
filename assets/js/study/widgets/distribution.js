@@ -1,7 +1,9 @@
 // distribution.js — the `distribution` lesson widget: a histogram of one numeric column with a choice of
 // transformation and outlier rule, showing the shape, skewness, mean against median, the thresholds and the values flagged.
 // config: { dataset, column } or { values: [...], label }, transforms: ['none', 'log', 'log1p', 'sqrt'],
-//         rules: ['iqr', 'z', 'mad'], prepare: [cleaning steps applied to the dataset first] (optional)
+//         rules: ['iqr', 'z', 'mad'], prepare: [cleaning steps applied to the dataset first] (optional),
+//         closed: 'right' (bins include their upper edge, as Excel counts), edges: [upper edges] (Excel's bin range,
+//         used when no transformation is applied)
 import { h, s, onResize } from '../../core/dom.js?v=11';
 import * as F from '../../core/format.js?v=11';
 import * as S from '../../core/stats.js?v=11';
@@ -106,8 +108,9 @@ export async function mount(el, config = {}, ctx = {}) {
     capEl.textContent = `${label}${st.tf === 'none' ? '' : `, after ${T.name}`}: ${data.length} values`;
     const flagged = th.error ? [] : data.map((x, i) => ({ ...x, t: vals[i] })).filter((x) => x.t < th.lo || x.t > th.hi).sort((a, b) => b.v - a.v);
     histogram(chartBox, vals, { lo: th.lo, hi: th.hi, mean: d.mean, median: d.median, label: `${label}${st.tf === 'none' ? '' : ` (${T.label})`}`, flagged: new Set(flagged.map((x) => x.t)) });
-    const hist = S.histogram(vals);
-    tableTwin(twin, { caption: `Histogram of ${label}`, columns: [{ label: 'Bin' }, { label: 'Count', num: true }, { label: 'Flagged', num: true }], rows: hist.bins.map((b, i) => [`${fmt(b.x0)} to ${fmt(b.x1)}`, F.int(b.count), F.int(flagged.filter((x) => x.t >= b.x0 && (x.t < b.x1 || (i === hist.bins.length - 1 && x.t <= b.x1))).length)]) });
+    const hist = S.histogram(vals, 30, binOpts());
+    const inBin = (t, b, i) => (b.closed === 'right' ? (i === 0 ? t <= b.x1 : t > b.x0 && t <= b.x1) || (b.more && t > b.x0) : t >= b.x0 && (t < b.x1 || (i === hist.bins.length - 1 && t <= b.x1)));
+    tableTwin(twin, { caption: `Histogram of ${label}`, columns: [{ label: 'Bin' }, { label: 'Count', num: true }, { label: 'Flagged', num: true }], rows: hist.bins.map((b, i) => [b.more ? `More than ${fmt(b.x0)}` : b.closed === 'right' ? (i === 0 && config.edges ? `${fmt(b.x1)} or less` : `Over ${fmt(b.x0)} to ${fmt(b.x1)}`) : `${fmt(b.x0)} to ${fmt(b.x1)}`, F.int(b.count), F.int(flagged.filter((x) => inBin(x.t, b, i)).length)]) });
     const orig = (v) => (st.tf === 'none' ? '' : ` (${fmt(T.inv(v))} in the original units)`);
     const skewWord = (g) => (!Number.isFinite(g) ? '' : Math.abs(g) < 0.5 ? 'roughly symmetric' : Math.abs(g) <= 1 ? `moderately ${g > 0 ? 'right' : 'left'}-skewed` : `strongly ${g > 0 ? 'right' : 'left'}-skewed`);
     out.append(
@@ -124,8 +127,9 @@ export async function mount(el, config = {}, ctx = {}) {
       blanks || unread ? h('p', { class: 'cl-note' }, `${blanks ? `${blanks} blank value${blanks === 1 ? ' is' : 's are'} left out. ` : ''}${unread ? `${unread} value${unread === 1 ? '' : 's'} couldn’t be read as numbers and ${unread === 1 ? 'is' : 'are'} left out.` : ''}`) : '');
   }
 
+  function binOpts() { return { closed: config.closed || 'left', edges: st.tf === 'none' ? config.edges || null : null }; }
   function histogram(box, vals, o) {
-    const hist = S.histogram(vals);
+    const hist = S.histogram(vals, 30, binOpts());
     const bins = hist.bins;
     const W = Math.max(280, Math.floor(box.clientWidth || el.clientWidth || 600)), H = 230;
     const m = { t: 34, r: 14, b: 44, l: 44 };

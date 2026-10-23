@@ -125,6 +125,9 @@ eq('Microsoft’s A2# example', evaluate('=C2', new Sheet({ cells: { A2: '=SEQUE
   eq('A2# on a formula that doesn’t spill is #REF!', sh.get('D4'), { error: '#REF!' });
   eq('A2# moves when filled', X.shiftFormula('=SUM(C1#)', 1, 1), '=SUM(D2#)');
 }
+eq('near-zero sum is 0 (Microsoft KB 78113)', E('=1.333+1.225-1.333-1.225'), 0);
+eq('empty criterion cell counts as 0', evaluate('=COUNTIF(A1:A4,B1)', new Sheet({ cells: { A1: 0, A2: 3, A4: 0 } })), 2);
+eq('SUMIF sum_range resized from its top-left cell', E('=SUMIF(B2:B13,"Online",F2:F3)'), E('=SUMIF(B2:B13,"Online",F2:F13)'));
 eq('TRIM keeps a non-breaking space', E('=LEN(TRIM(" a "&CHAR(160)))'), 3);
 eq('PROPER after an apostrophe', E('=PROPER("o\'neil")'), "O'Neil");
 eq('CHAR(128) is the euro sign in Windows-1252', E('=CHAR(128)'), '€');
@@ -195,6 +198,15 @@ eq('criterion ~* no wildcard', X.criterion('~*')('a'), false);
   ok('require a function', !X.gradeFormula(spec, { cell: 'C2', answer: '=SUM(A2:A4)', formula: '=A2+A3+A4', require: ['SUM'] }).ok);
   ok('require met', X.gradeFormula(spec, { cell: 'C2', answer: '=SUM(A2:A4)', formula: '=SUM(A2:A4)', require: ['SUM'] }).ok);
   ok('fixed cells stay', X.gradeFormula({ ...spec, fixed: ['E2'] }, { cell: 'C2', answer: '=E2', formula: '=0.08' }).ok);
+  // a spilled answer is marked in every cell it fills
+  const fr = { cells: { A1: 12, A2: 25, A3: 37, A4: 51, A5: 8, C1: 20, C2: 40, C3: 60 } };
+  ok('spill: right', X.gradeFormula(fr, { cell: 'E1', answer: '=FREQUENCY(A1:A5,C1:C3)', formula: '=FREQUENCY(A1:A5,C1:C3)' }).ok);
+  const fw = X.gradeFormula(fr, { cell: 'E1', answer: '=FREQUENCY(A1:A5,C1:C3)', formula: '=FREQUENCY(A1:A5,C1:C2)' });
+  ok('spill: a shorter bin range fails', !fw.ok && /fills 3 rows by 1 column; it should fill 4 rows/.test(fw.message));
+  // dates move by whole months on the test copies, so a month window stays a month window
+  const ds = { cells: { A1: 46083, A2: 46100, A3: 46130, B1: 5, B2: 7, B3: 9, D1: 46082 } };   // 2 Mar, 19 Mar, 18 Apr 2026; D1 = 1 Mar
+  ok('date window by reference', X.gradeFormula(ds, { cell: 'E1', answer: '=SUMIFS(B1:B3,A1:A3,">="&D1,A1:A3,"<"&EDATE(D1,1))', formula: '=SUMIFS(B1:B3,A1:A3,">="&D1,A1:A3,"<="&EOMONTH(D1,0))' }).ok);
+  ok('typed-in date fails', !X.gradeFormula(ds, { cell: 'E1', answer: '=SUMIFS(B1:B3,A1:A3,">="&D1,A1:A3,"<"&EDATE(D1,1))', formula: '=SUMIFS(B1:B3,A1:A3,">="&DATE(2026,3,1),A1:A3,"<"&DATE(2026,4,1))' }).ok);
 }
 
 // ---------------------------------------------------------------- 3e. pivot tables agree with SUMIFS / COUNTIFS

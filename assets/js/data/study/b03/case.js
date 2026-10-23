@@ -27,7 +27,7 @@ import { BUSINESS as M01 } from '../m01/case.js?v=11';
 import { ols } from '../../../core/stats.js?v=11';
 import { Sheet, isoToSerial, addr, colToIndex, solveLP, goalSeek } from '../../../core/sheet.js?v=11';
 
-export { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, RAW_COLUMNS, RAW };
+export { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, RAW_COLUMNS, RAW, isoToSerial };
 
 /** Kilnworth Roasting's spring 2026 price list to Lantern (cost per item, delivered) and Lantern's shop prices. */
 export const PRODUCT_COLUMNS = ['product', 'line', 'size_g', 'price', 'unit_cost'];

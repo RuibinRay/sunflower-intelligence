@@ -52,7 +52,7 @@ export const items = [
   },
   {
     id: 'b03-m4-2', lesson: 'what-if-analysis', type: 'num', kind: 'numerical',
-    prompt: 'Bellwether Flowers prices a wedding package as a $250 design fee plus a price per table, for 15 tables. Its direct costs are $38 of flowers per table and $180 for delivery and setting up. What price per table gives a contribution margin ratio of exactly 40%? This is the answer Goal Seek should return. Give it to the cent.',
+    prompt: 'Primrose Flowers prices a wedding package as a $250 design fee plus a price per table, for 15 tables. Its direct costs are $38 of flowers per table and $180 for delivery and setting up. What price per table gives a contribution margin ratio of exactly 40%? This is the answer Goal Seek should return. Give it to the cent.',
     answer: 66.67, check: () => ((15 * 38 + 180) / (1 - 0.4) - 250) / 15, unit: '$', places: 2, tol: 0.005,
     wrong: [
       { value: 53.33, say: 'That marks the costs up by 40% (750 × 1.4). A 40% ratio is measured on revenue: costs must be 60% of it, so revenue = 750 ÷ 0.6.' },
@@ -129,7 +129,7 @@ export const items = [
   },
   {
     id: 'b03-m4-7', lesson: 'what-if-analysis', type: 'mc', kind: 'applied',
-    prompt: 'In May, Bellwether Flowers made a Scenario summary of its wedding package under three flower-cost scenarios. In June it corrected the delivery cost in the model, but the summary sheet still shows May’s contributions. Why, and what should it do?',
+    prompt: 'In May, Primrose Flowers made a Scenario summary of its wedding package under three flower-cost scenarios. In June it corrected the delivery cost in the model, but the summary sheet still shows May’s contributions. Why, and what should it do?',
     options: [
       'Scenario summaries are not recalculated, so it should create the summary again.',
       'Partial calculation is switched on, which skips scenario reports until F9 is pressed.',

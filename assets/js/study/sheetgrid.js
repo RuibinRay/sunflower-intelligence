@@ -24,16 +24,27 @@ function formatOf(formats, a) {
   return formats[col] || 'general';
 }
 
-/** Conditional formatting: which cells a rule touches and how. Returns Map(addr → { cls, style, bar }). */
+/** Conditional formatting, as Excel applies it: `rules` are in precedence order (the first is at the top of Excel's
+ *  Rules Manager). Where two rules would set the same thing (a fill, a data bar, a colour scale, an icon), the higher
+ *  rule wins; rules that set different things both show. A rule with `stop: true` (Stop If True) stops the rules below
+ *  it for every cell it matches. Returns Map(addr → { cls, bar, scale, icon }). */
 export function applyRules(sheet, rules = []) {
   const out = new Map();
+  const stopped = new Set();
   for (const rule of rules) {
     const rg = parseRange(rule.range);
     if (!rg) continue;
     const cells = [];
     for (let r = rg.r0; r <= rg.r1; r++) for (let c = rg.c0; c <= rg.c1; c++) { const a = addr(r, c); cells.push({ a, r, c, v: sheet.get(a) }); }
     const nums = cells.map((x) => x.v).filter((v) => typeof v === 'number');
-    const set = (a, patch) => out.set(a, { ...(out.get(a) || {}), ...patch });
+    const hits = [];
+    const set = (a, patch) => {
+      if (stopped.has(a)) return;
+      hits.push(a);
+      const cur = out.get(a) || {};
+      const add = Object.fromEntries(Object.entries(patch).filter(([k]) => cur[k] === undefined && !(k === 'scaleKind' && cur.scale !== undefined)));
+      out.set(a, { ...cur, ...add });
+    };
     const lo = Math.min(...nums), hi = Math.max(...nums);
     switch (rule.type) {
       case 'greater': case 'less': case 'between': case 'equal': case 'text': {
@@ -77,6 +88,17 @@ export function applyRules(sheet, rules = []) {
         cells.forEach(({ a, v }) => { if (typeof v === 'number') set(a, { scale: hi === lo ? 0.5 : (v - lo) / (hi - lo), scaleKind: rule.reverse ? 'rev' : 'fwd' }); });
         break;
       }
+      case 'icons': {
+        // three arrows by default thresholds: up from 67% of the way from the lowest to the highest value, sideways
+        // from 33%, down below (Excel's default "Percent" thresholds for a three-icon set)
+        const p = rule.thresholds || [67, 33];
+        cells.forEach(({ a, v }) => {
+          if (typeof v !== 'number') return;
+          const at = hi === lo ? 100 : ((v - lo) / (hi - lo)) * 100;
+          set(a, { icon: at >= p[0] ? 'up' : at >= p[1] ? 'side' : 'down' });
+        });
+        break;
+      }
       case 'formula': {
         // a rule written as a formula for the top-left cell, moved to every other cell as Excel does
         cells.forEach(({ a, r, c }) => {
@@ -88,9 +110,11 @@ export function applyRules(sheet, rules = []) {
       }
       default: break;
     }
+    if (rule.stop) hits.forEach((a) => stopped.add(a));
   }
   return out;
 }
+const ICON = { up: ['▲', 'upper third'], side: ['▶', 'middle third'], down: ['▼', 'lower third'] };
 
 export function sheetGrid(opts) {
   const id = `sg${++gid}`;
@@ -149,6 +173,7 @@ export function sheetGrid(opts) {
     td.classList.toggle('has-formula', typeof raw === 'string' && raw.startsWith('='));
     const cf = cfMap.get(a);
     if (cf && !showFormulas) {
+      if (cf.icon) td.prepend(h('span', { class: `sg-icon sg-icon-${cf.icon}`, 'aria-hidden': 'true' }, ICON[cf.icon][0]), h('span', { class: 'visually-hidden' }, `(${ICON[cf.icon][1]}) `));
       if (cf.cls) td.classList.add(cf.cls);
       if (cf.bar) { td.classList.add('has-bar'); td.style.setProperty('--bar-from', String(Math.min(cf.bar.from, cf.bar.to))); td.style.setProperty('--bar-to', String(Math.max(cf.bar.from, cf.bar.to))); }
       if (cf.scale != null) { td.classList.add('has-scale'); td.style.setProperty('--scale', String(cf.scaleKind === 'rev' ? 1 - cf.scale : cf.scale)); }

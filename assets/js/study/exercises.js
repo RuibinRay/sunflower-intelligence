@@ -522,10 +522,10 @@ T.formula = (item, c) => {
     isEmpty: (r) => !r,
     invalid: (r) => problem(r),
     grade(r) {
-      const res = X.gradeFormula(spec, { cell: item.cell, fill: item.fill, formula: r, answer: item.answer, require: item.require || [], variants: item.variants ?? 2 });
+      const res = X.gradeFormula(spec, { cell: item.cell, fill: item.fill, formula: r, answer: item.answer, require: item.require || [], variants: item.variants ?? 3 });
       const notes = [];
       if (!res.ok) {
-        const slip = wrongs.find((w) => X.gradeFormula(spec, { cell: item.cell, fill: item.fill, formula: r, answer: w.formula, variants: item.variants ?? 2 }).ok);
+        const slip = wrongs.find((w) => X.gradeFormula(spec, { cell: item.cell, fill: item.fill, formula: r, answer: w.formula, variants: item.variants ?? 3 }).ok);
         notes.push(slip ? slip.say : res.message.replace(/&/g, '&amp;').replace(/</g, '&lt;'));
       }
       return { correct: res.ok, score: res.ok ? 1 : 0, notes, mark: () => { clearTimeout(timer); show(); input.classList.toggle('is-right', res.ok); input.classList.toggle('is-wrong', !res.ok); input.setAttribute('aria-invalid', res.ok ? 'false' : 'true'); } };

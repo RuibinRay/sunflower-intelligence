@@ -289,7 +289,7 @@ export const check = [
     ],
     answer: [0, 1, 2, 4],
     feedback: {
-      3: 'Merged and split cells make a sheet harder to navigate with a screen reader. Use Center Across Selection or a text box instead.',
+      3: 'Merged and split cells make a sheet harder to navigate with a screen reader. Put each title in a single cell instead.',
       5: 'Low contrast makes text hard to read for many people. Keep a high contrast between text and background.',
     },
     solution: 'Alt text, descriptive sheet names, meaning that doesn’t rest on colour alone, and the Accessibility Checker all help. Merged cells and low-contrast text make the page harder to use. Dashboards rarely meet every accessibility need, so publish the underlying table too.',

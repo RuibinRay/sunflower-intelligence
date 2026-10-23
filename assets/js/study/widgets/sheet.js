@@ -2,7 +2,7 @@
 // editable cells and see everything recalculate; optional tools are the ones a lesson teaches:
 //   { type: 'sheet', title, sheet: { cells, tables, names }, view: 'A1:F13', formats, widths, editable: true | 'H2:H13',
 //     mark, rules: [conditional-format rules], note,
-//     tools: ['formulas', 'fill', 'goalseek', 'datatable', 'solver', 'cf', 'reset'],
+//     tools: ['formulas', 'fill', 'goalseek', 'datatable', 'solver', 'cf', 'reset'], controls: [{ cell, label, options }],
 //     goalseek: { target, goal, changing },
 //     datatable: { target, input, values: [..], input2?, values2?: [..], format? },
 //     solver: { objective, sense: 'max' | 'min' | 'value', target?, changing: ['C3:C5'], integer: [..],
@@ -23,6 +23,16 @@ export function mount(el, cfg, ctx) {
   let sheet = original.clone();
   const grid = sheetGrid({ sheet, view: cfg.view, formats: cfg.formats, widths: cfg.widths, mark: cfg.mark, editable: cfg.editable ?? true, rules: cfg.rules, label: cfg.title || 'Worksheet', maxHeight: cfg.maxHeight, onEdit: (a) => ctx.report?.('edit', { cell: a }) });
   const tools = cfg.tools || ['formulas', 'reset'];
+  // `controls`: drop-down lists that set an input cell, as a data-validation list does in Excel:
+  // [{ cell: 'B2', label: 'Month', options: [[3, 'March'], [4, 'April']] | ['North', 'South'] }]
+  const ctlReset = [];
+  const controls = (cfg.controls || []).map((c, i) => {
+    const opts = c.options.map((o) => (Array.isArray(o) ? o : [o, String(o)]));
+    const sel = h('select', { class: 'select', id: `${base}-ctl-${i}` }, opts.map(([v, l], k) => h('option', { value: k, selected: v === original.raw(c.cell) }, l)));
+    sel.addEventListener('change', () => { sheet.set(c.cell, opts[+sel.value][0]); grid.refresh(); ctx.report?.('control', { cell: c.cell }); });
+    ctlReset.push(() => { sel.value = String(Math.max(0, opts.findIndex(([v]) => v === original.raw(c.cell)))); });
+    return h('div', { class: 'field' }, h('label', { for: sel.id }, `${c.label} (${c.cell})`), sel);
+  });
   const bar = h('div', { class: 'sg-tools' });
   const panels = h('div', { class: 'sg-panels' });
   const msg = (box, kind, str) => { box.className = `sg-msg${kind ? ` is-${kind}` : ''}`; box.textContent = str; };
@@ -117,8 +127,8 @@ export function mount(el, cfg, ctx) {
       msg(note, '', 'The sheet itself is unchanged: a data table recalculates the model once for each input value.');
       ctx.report?.('datatable', {});
     });
-    box.append(h('h4', {}, 'Data table'), h('div', { class: 'sg-fields' }, field(`${base}-dt-t`, 'Output cell', tgt), field(`${base}-dt-a`, 'Input cell', inp), field(`${base}-dt-v`, 'Input values', vals),
-      inp2 ? field(`${base}-dt-b`, 'Second input cell', inp2) : null, vals2 ? field(`${base}-dt-w`, 'Second input values', vals2) : null), h('div', { class: 'sg-tools' }, go), note, out);
+    box.append(h('h4', {}, 'Data table'), h('div', { class: 'sg-fields' }, field(`${base}-dt-t`, 'Formula (output) cell', tgt), field(`${base}-dt-a`, 'Column input cell', inp), field(`${base}-dt-v`, 'Values down the side', vals),
+      inp2 ? field(`${base}-dt-b`, 'Row input cell', inp2) : null, vals2 ? field(`${base}-dt-w`, 'Values across the top', vals2) : null), h('div', { class: 'sg-tools' }, go), note, out);
   });
 
   panel('solver', 'Solver', (box) => {
@@ -132,6 +142,7 @@ export function mount(el, cfg, ctx) {
     const out = h('p', { class: 'sg-msg', 'aria-live': 'polite' });
     let before = null;
     const undo = h('button', { type: 'button', class: 'btn btn-secondary btn-sm', hidden: true }, 'Restore the original values');
+    const report = h('div', { class: 'table-scroll' });
     const go = h('button', { type: 'button', class: 'btn btn-primary btn-sm' }, 'Solve');
     go.addEventListener('click', () => {
       const vars = sv.changing.flatMap((rg) => { const q = X.parseRange(rg); const o = []; for (let r = q.r0; r <= q.r1; r++) for (let c = q.c0; c <= q.c1; c++) o.push(X.addr(r, c)); return o; });
@@ -140,13 +151,23 @@ export function mount(el, cfg, ctx) {
         constraints: cons.filter((c) => c.cb.checked).map((c) => c.k), integer: integer?.checked ? sv.integer : [], nonNegative: nonneg.checked });
       if (!r.ok) {
         const why = { infeasible: 'Solver could not find a feasible solution: no values satisfy all the constraints at once.', unbounded: `The objective cell's values do not converge: ${sv.objective} can grow without limit, so a constraint is missing.`, nonlinear: 'The linearity conditions required by this LP Solver are not satisfied: the model is not linear in the changing cells.' };
+        report.replaceChildren();
         return msg(out, 'bad', why[r.status] || 'Solver stopped without a solution.');
       }
       replaceSheet(r.sheet);
       msg(out, 'good', `Solver found a solution. ${Object.entries(r.values).map(([k, v]) => `${k} = ${fmtNum(v)}`).join(', ')}; ${sv.objective} = ${fmtNum(r.objective)}.`);
+      // a short Answer Report: each active constraint's value, limit, slack and status
+      const active = cons.filter((c) => c.cb.checked).map((c) => c.k);
+      const rhsVal = (k) => (typeof k.rhs === 'number' ? k.rhs : sheet.get(k.rhs));
+      report.replaceChildren(h('table', { class: 'data-table study-table sg-report' }, h('caption', {}, 'Answer report: constraints'),
+        h('thead', {}, h('tr', {}, ['Constraint', 'Cell value', 'Limit', 'Slack', 'Status'].map((t) => h('th', { scope: 'col' }, t)))),
+        h('tbody', {}, active.map((k) => {
+          const v = sheet.get(k.cell), lim = rhsVal(k), slack = Math.abs(lim - v);
+          return h('tr', {}, h('th', { scope: 'row' }, `${k.cell} ${k.op === '<=' ? '≤' : k.op === '>=' ? '≥' : '='} ${k.rhs}${k.label ? ` (${k.label})` : ''}`), h('td', { class: 'is-num' }, fmtNum(v)), h('td', { class: 'is-num' }, fmtNum(lim)), h('td', { class: 'is-num' }, fmtNum(slack)), h('td', {}, slack < 1e-6 ? 'Binding' : 'Not binding'));
+        }))));
       undo.hidden = false; ctx.report?.('solver', {});
     });
-    undo.addEventListener('click', () => { if (before) { Object.entries(before).forEach(([k, v]) => sheet.set(k, v)); grid.refresh(); before = null; msg(out, '', 'The changing cells are back to their starting values.'); } undo.hidden = true; });
+    undo.addEventListener('click', () => { if (before) { Object.entries(before).forEach(([k, v]) => sheet.set(k, v)); grid.refresh(); before = null; report.replaceChildren(); msg(out, '', 'The changing cells are back to their starting values.'); } undo.hidden = true; });
     const senseText = sv.sense === 'min' ? 'Min' : sv.sense === 'value' ? `Value of ${sv.target}` : 'Max';
     box.append(h('h4', {}, 'Solver'),
       h('p', { class: 'small' }, h('strong', {}, 'Set objective: '), h('code', { class: 'sg-code' }, sv.objective), ` · To: ${senseText} · `, h('strong', {}, 'By changing: '), h('code', { class: 'sg-code' }, sv.changing.join(', '))),
@@ -154,23 +175,37 @@ export function mount(el, cfg, ctx) {
       h('div', { class: 'sg-cons' }, h('label', { for: nonneg.id }, nonneg, h('span', {}, 'Make unconstrained variables non-negative')),
         integer ? h('label', { for: integer.id }, integer, h('span', {}, `${sv.integer.join(', ')} = integer`)) : null),
       h('p', { class: 'small muted' }, 'Solving method: Simplex LP.'),
-      h('div', { class: 'sg-tools' }, go, undo), out);
+      h('div', { class: 'sg-tools' }, go, undo), out, report);
   });
 
   panel('cf', 'Conditional formatting', (box) => {
     const rules = [...(cfg.rules || [])];
     const range = text(cfg.cf?.range || cfg.mark || '');
-    const kind = h('select', { class: 'select' }, [['greater', 'Greater than'], ['less', 'Less than'], ['between', 'Between'], ['top', 'Top N items'], ['bottom', 'Bottom N items'], ['above', 'Above average'], ['below', 'Below average'], ['duplicate', 'Duplicate values'], ['bar', 'Data bars'], ['scale', 'Colour scale'], ['formula', 'Use a formula']].map(([v, l]) => h('option', { value: v }, l)));
+    const kind = h('select', { class: 'select' }, [['greater', 'Greater than'], ['less', 'Less than'], ['between', 'Between'], ['top', 'Top N items'], ['bottom', 'Bottom N items'], ['above', 'Above average'], ['below', 'Below average'], ['duplicate', 'Duplicate values'], ['bar', 'Data bars'], ['scale', 'Colour scale'], ['icons', 'Icon set (3 arrows)'], ['formula', 'Use a formula']].map(([v, l]) => h('option', { value: v }, l)));
     const v1 = text('', { inputmode: 'decimal' }), v2 = text('', { inputmode: 'decimal' });
     const style = h('select', { class: 'select' }, [['good', 'Green fill'], ['bad', 'Red fill'], ['warn', 'Yellow fill']].map(([v, l]) => h('option', { value: v }, l)));
     const f1 = field(`${base}-cf-v1`, 'Value', v1), f2 = field(`${base}-cf-v2`, 'and', v2), fs = field(`${base}-cf-s`, 'Format with', style);
     const sync = () => {
       const k = kind.value;
-      f1.hidden = ['above', 'below', 'duplicate', 'bar', 'scale'].includes(k); f2.hidden = k !== 'between'; fs.hidden = ['bar', 'scale'].includes(k);
+      f1.hidden = ['above', 'below', 'duplicate', 'bar', 'scale', 'icons'].includes(k); f2.hidden = k !== 'between'; fs.hidden = ['bar', 'scale', 'icons'].includes(k);
       f1.querySelector('label').textContent = k === 'formula' ? 'Formula for the first cell' : ['top', 'bottom'].includes(k) ? 'How many' : 'Value';
     };
     kind.addEventListener('change', sync); sync();
     const out = h('p', { class: 'sg-msg', 'aria-live': 'polite' });
+    const list = h('ol', { class: 'sg-rules', 'aria-label': 'Rules, highest precedence first' });
+    const KIND = Object.fromEntries([...kind.options].map((o) => [o.value, o.textContent]));
+    const describe = (ru) => `${ru.range}: ${KIND[ru.type] || ru.type}${ru.type === 'formula' ? ` ${ru.formula}` : ru.value != null ? ` ${ru.value}${ru.value2 != null ? ` and ${ru.value2}` : ''}` : ''}${ru.style && !['bar', 'scale', 'icons'].includes(ru.type) ? ` (${{ good: 'green', bad: 'red', warn: 'yellow' }[ru.style]} fill)` : ''}`;
+    function drawList() {
+      list.replaceChildren(...rules.map((ru, i) => {
+        const stopId = `${base}-cf-stop-${i}`;
+        const stop = h('input', { type: 'checkbox', id: stopId, checked: !!ru.stop });
+        stop.addEventListener('change', () => { ru.stop = stop.checked; grid.setRules(rules); });
+        const mv = (d, label) => h('button', { type: 'button', class: 'btn-text', disabled: i + d < 0 || i + d >= rules.length, 'aria-label': `${label}: ${describe(ru)}`, onclick: () => { [rules[i], rules[i + d]] = [rules[i + d], rules[i]]; grid.setRules(rules); drawList(); msg(out, '', `Moved ${label === 'Move up' ? 'up' : 'down'}: it is now rule ${i + d + 1} of ${rules.length}.`); } }, label);
+        return h('li', {}, h('span', { class: 'sg-rule-text' }, `${i + 1}. ${describe(ru)}`), h('label', { for: stopId }, stop, 'Stop If True'), mv(-1, 'Move up'), mv(1, 'Move down'),
+          h('button', { type: 'button', class: 'btn-text', 'aria-label': `Delete rule: ${describe(ru)}`, onclick: () => { rules.splice(i, 1); grid.setRules(rules); drawList(); msg(out, '', 'Rule deleted.'); } }, 'Delete'));
+      }));
+      list.hidden = !rules.length;
+    }
     const add = h('button', { type: 'button', class: 'btn btn-primary btn-sm' }, 'Apply');
     const clear = h('button', { type: 'button', class: 'btn btn-secondary btn-sm' }, 'Clear rules');
     add.addEventListener('click', () => {
@@ -180,19 +215,22 @@ export function mount(el, cfg, ctx) {
       if (k === 'formula') { if (!v1.value.trim().startsWith('=')) return msg(out, 'bad', 'Write the rule as a formula for the first cell of the range, starting with =.'); rule.formula = v1.value.trim(); }
       else if (!f1.hidden) { rule.value = Number(v1.value); if (!Number.isFinite(rule.value)) return msg(out, 'bad', 'The value must be a number.'); }
       if (k === 'between') { rule.value2 = Number(v2.value); if (!Number.isFinite(rule.value2)) return msg(out, 'bad', 'Give both ends of the range.'); }
-      rules.push(rule); grid.setRules(rules);
-      msg(out, 'good', `Rule added to ${rg}. Rules apply in the order they were added; later ones can cover earlier ones.`);
+      rules.unshift(rule); grid.setRules(rules); drawList();
+      msg(out, 'good', `Rule added to ${rg}, at the top of the list. As in Excel, a new rule takes precedence: where two rules set the same fill, the higher one wins.`);
       ctx.report?.('cf', { type: k });
     });
-    clear.addEventListener('click', () => { rules.length = 0; grid.setRules(rules); msg(out, '', 'All rules cleared.'); });
-    box.append(h('h4', {}, 'Conditional formatting'), h('div', { class: 'sg-fields' }, field(`${base}-cf-r`, 'Apply to range', range), field(`${base}-cf-k`, 'Rule', kind), f1, f2, fs), h('div', { class: 'sg-tools' }, add, clear), out);
+    clear.addEventListener('click', () => { rules.length = 0; grid.setRules(rules); drawList(); msg(out, '', 'All rules cleared.'); });
+    drawList();
+    box.append(h('h4', {}, 'Conditional formatting'), h('div', { class: 'sg-fields' }, field(`${base}-cf-r`, 'Apply to range', range), field(`${base}-cf-k`, 'Rule', kind), f1, f2, fs), h('div', { class: 'sg-tools' }, add, clear), out,
+      h('p', { class: 'small' }, h('strong', {}, 'Rules on this sheet'), ' (the first takes precedence)'), list);
   });
 
   if (tools.includes('reset')) {
-    bar.append(h('button', { type: 'button', class: 'btn-text', onclick: () => { replaceSheet(original.clone()); } }, 'Reset the sheet'));
+    bar.append(h('button', { type: 'button', class: 'btn-text', onclick: () => { replaceSheet(original.clone()); ctlReset.forEach((f) => f()); } }, 'Reset the sheet'));
   }
   el.append(...[
     cfg.title ? h('p', { class: 'fx-title' }, cfg.title) : null,
+    controls.length ? h('div', { class: 'sg-controls' }, controls) : null,
     grid.el,
     bar.childNodes.length ? bar : null,
     panels.childNodes.length ? panels : null,

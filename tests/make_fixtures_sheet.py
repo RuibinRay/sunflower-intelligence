@@ -113,10 +113,14 @@ FORMULAS = [
     '=DATEDIF(A2,DATE(2027,3,1),"M")', '=DATEDIF(A2,A13,"D")', '=WEEKNUM(A2)', '=WEEKNUM(A2,2)', '=WEEKNUM(DATE(2026,1,4))',
     '=LEN(TRIM("  a  b "&CHAR(160)))', '=PROPER("o\'neil 2-way STREET")', '=CODE("A")', '=CHAR(65)', '=CODE(CHAR(160))',
     '=SUMIF(B2:B13,1/0,F2:F13)', '=COUNTIF(B2:B13,NA())', '=SUMIFS(F2:F13,B2:B13,1/0)',
+    '=PERCENTILE.EXC(F2:F13,0.25)', '=QUARTILE.EXC(F2:F13,1)', '=QUARTILE.EXC(F2:F13,3)', '=PERCENTILE.EXC(F2:F13,0.05)',
+    '=SKEW(F2:F13)', '=SKEW.P(F2:F13)', '=KURT(F2:F13)', '=SKEW(D2:D13)', '=KURT(S1:S8)', '=KURT(1,2,3)',
+    '=1.333+1.225-1.333-1.225', '=(1.333+1.225)-(1.333+1.225)', '=0.1+0.2-0.3', '=10.1-10', '=COUNTIF(H1:H8,H4)',
+    '=SUMIF(B2:B13,"Online",F2:F5)', '=AVERAGEIF(B2:B13,"Café",F2)', '=COUNTIFS(D2:D13,H4)',
     '=MROUND(17,5)', '=MROUND(F3,0.05)', '=LOG(8,2)', '=LOG(1000)', '=ISERR(NA())', '=ISERR(1/0)', '=ISLOGICAL(H3)',
 ]
 # Functions written with Excel's "_xlfn." prefix in the file format (introduced after Excel 2007)
-XLFN = ['STDEV.S', 'STDEV.P', 'VAR.S', 'VAR.P', 'PERCENTILE.INC', 'QUARTILE.INC', 'RANK.EQ', 'MODE.SNGL', 'FORECAST.LINEAR',
+XLFN = ['PERCENTILE.EXC', 'QUARTILE.EXC', 'SKEW.P', 'STDEV.S', 'STDEV.P', 'VAR.S', 'VAR.P', 'PERCENTILE.INC', 'QUARTILE.INC', 'RANK.EQ', 'MODE.SNGL', 'FORECAST.LINEAR',
         'COVARIANCE.S', 'COVARIANCE.P', 'MAXIFS', 'MINIFS', 'IFS', 'SWITCH', 'IFNA', 'CONCAT', 'TEXTJOIN', 'DAYS']
 # Cases where LibreOffice gives a different answer from Excel: the test uses Excel's value, with the reason.
 # (a) LibreOffice has no logical type: TRUE is the number 1, so it sums, counts and joins as 1. Excel's COUNT/SUM
@@ -133,8 +137,11 @@ XLFN = ['STDEV.S', 'STDEV.P', 'VAR.S', 'VAR.P', 'PERCENTILE.INC', 'QUARTILE.INC'
 #     with slashes).
 # (g) Excel's CODE help: the code "corresponds to the character set used by your computer" (Windows-1252 on Windows,
 #     where CHAR(160) is the non-breaking space and its code is 160); LibreOffice reports 239 here.
+# (h) Excel's PERCENTILE.EXC help: "If it cannot interpolate for the percentile, k specified, Excel will return #NUM!
+#     error" (here k = 0.05 with 12 values, below 1/(n + 1)); LibreOffice returns #VALUE!.
 EXCEL_DIFFERS = {
     '=DATEVALUE("2011/02/23")': 40597,                                                                     # (f)
+    '=PERCENTILE.EXC(F2:F13,0.05)': {'error': '#NUM!'},                                                     # (h)
     '=CODE(CHAR(160))': 160,                                                                               # (g)
     '=TRUE>"z"': True, '="a"&TRUE': 'aTRUE', '=SUM(H1:H8)': 6.5, '=SUM("5",TRUE)': 6, '=SUM(H1:H8)+H2': 11.5,
     '=AVERAGE(H1:H8)': 6.5 / 3, '=COUNT(H1:H8)': 3, '=TEXTJOIN("-",FALSE,H3,H4,H8)': 'TRUE--0',      # (a)
