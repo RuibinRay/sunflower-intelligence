@@ -212,11 +212,11 @@ export default {
       ],
       note: 'Lantern: <m>9{,}129 \\div 36{,}516 = 25\\%</m>.' },
     { id: 'is-basic-eps', name: 'Basic earnings per share',
-      tex: String.raw`\text{Basic EPS} = \dfrac{\text{Net income} - \text{Preferred dividends}}{\text{Weighted average common shares outstanding}}`,
+      tex: String.raw`\text{Basic EPS} = \dfrac{\text{Net income} - \text{Preferred dividends}}{\text{Weighted shares}}`,
       where: [
         [String.raw`\text{Net income}`, 'Net income for the period', '$'],
         [String.raw`\text{Preferred dividends}`, 'Dividends due to preferred shareholders for the period', '$'],
-        [String.raw`\text{Weighted average common shares outstanding}`, 'Common shares outstanding, each weighted by the fraction of the period it was outstanding', 'shares'],
+        [String.raw`\text{Weighted shares}`, 'The weighted average number of common shares outstanding: each share weighted by the fraction of the period it was outstanding', 'shares'],
       ],
       note: 'Quarrybank Foods: <m>(12.6 - 0.6) \\div 8.0 = 1.50</m> dollars a share.' },
   ],

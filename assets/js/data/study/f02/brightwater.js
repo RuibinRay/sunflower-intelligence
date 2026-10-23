@@ -11,6 +11,7 @@ import * as A from '../../../core/accounting.js?v=10';
 import { CHART as F02_CHART } from './case.js';
 
 const extra = [
+  { no: 245, name: 'Short-Term Notes Payable', type: 'liability', group: 'current' },   // the one-year note (F01's Notes Payable)
   { no: 402, name: 'Repair Revenue', type: 'revenue' },
   { no: 406, name: 'Retail Sales Revenue', type: 'revenue' },
 ];
@@ -26,7 +27,7 @@ export const OPENING = {
   Cash: 17_450, 'Accounts Receivable': 2_860, 'Allowance for Doubtful Accounts': 140, Supplies: 520, 'Prepaid Insurance': 360,
   Equipment: 4_800, 'Accumulated Depreciation—Equipment': 480,
   'Accounts Payable': 1_180, 'Wages Payable': 1_040, 'Interest Payable': 150, 'Unearned Revenue': 600, 'Income Taxes Payable': 1_050,
-  'Current Portion of Long-Term Debt': 5_000,      // the one-year note, due 1 July 2027
+  'Short-Term Notes Payable': 5_000,               // the one-year note, due 1 July 2027
   'Common Stock': 12_000, 'Retained Earnings': 4_350,
 };
 
@@ -74,15 +75,15 @@ const depreciation = oldEquipDep + NEW_EQUIPMENT.monthly * NEW_EQUIPMENT.months;
 
 /** 2027 in summary entries. */
 export const YEAR = [
-  { id: 'w1', date: '2027-03-01', text: 'Borrows $12,000 from Harbour Credit Union at 7%: $3,000 is repaid each 1 March from 2028, with the year’s interest.',
+  { id: 'w1', date: '2027-03-01', text: 'On 1 March, borrows $12,000 from Harbour Credit Union at 7%: $3,000 is repaid each 1 March from 2028, with the year’s interest.',
     lines: [{ acct: 'Cash', dr: NEW_LOAN.principal }, { acct: 'Notes Payable', cr: NEW_LOAN.principal }], cash: 'financing' },
-  { id: 'w2', date: '2027-03-01', text: 'Buys a hydraulic work stand and e-bike diagnostic tools for $9,000 in cash.',
+  { id: 'w2', date: '2027-03-01', text: 'On 1 March, buys a hydraulic work stand and e-bike diagnostic tools for $9,000 in cash.',
     lines: [{ acct: 'Equipment', dr: NEW_EQUIPMENT.cost }, { acct: 'Cash', cr: NEW_EQUIPMENT.cost }], cash: 'investing' },
   { id: 'w3', date: '2027-12-31', text: 'Repairs and servicing: $41,600 paid at the counter and $26,800 invoiced to the courier company, the rental fleet and regular customers.',
     lines: [{ acct: 'Cash', dr: 41_600 }, { acct: 'Accounts Receivable', dr: 26_800 }, { acct: 'Repair Revenue', cr: 68_400 }], cash: 'operating' },
   { id: 'w4', date: '2027-12-31', text: 'Cash collected from customers on account.',
     lines: [{ acct: 'Cash', dr: 22_780 }, { acct: 'Accounts Receivable', cr: 22_780 }], cash: 'operating' },
-  { id: 'w5', date: '2027-08-14', text: 'Pedalpost, a courier start-up, closes owing $380; Brightwater writes the invoice off.',
+  { id: 'w5', date: '2027-08-14', text: 'On 14 August, Pedalpost, a courier start-up, closes owing $380; Brightwater writes the invoice off.',
     lines: [{ acct: 'Allowance for Doubtful Accounts', dr: writtenOff }, { acct: 'Accounts Receivable', cr: writtenOff }] },
   { id: 'w6', date: '2027-12-31', text: 'Service plans: $1,900 paid in advance; tune-ups worth $2,100 delivered (including last year’s $600).',
     lines: [{ acct: 'Cash', dr: 1_900 }, { acct: 'Unearned Revenue', cr: 1_900 }], cash: 'operating' },
@@ -92,11 +93,11 @@ export const YEAR = [
     lines: [{ acct: 'Inventory', dr: bikesBought }, { acct: 'Accounts Payable', cr: bikesBought }] },
   { id: 'w9', date: '2027-12-31', text: 'Accessories bought on account.',
     lines: [{ acct: 'Inventory', dr: ACCESSORIES.purchases }, { acct: 'Accounts Payable', cr: ACCESSORIES.purchases }] },
-  { id: 'w10', date: '2027-04-20', text: 'An ex-demonstration e-bike bought for the shop floor.',
+  { id: 'w10', date: '2027-04-20', text: 'On 20 April, buys an ex-demonstration e-bike for the shop floor for $1,600 in cash.',
     lines: [{ acct: 'Inventory', dr: DEMO_EBIKE.cost }, { acct: 'Cash', cr: DEMO_EBIKE.cost }], cash: 'operating' },
   { id: 'w11', date: '2027-12-31', text: 'Retail sales, paid by card: 24 bikes at $640 and accessories of $9,840.',
     lines: [{ acct: 'Cash', dr: BIKES.sold * BIKES.price + ACCESSORIES.sales }, { acct: 'Retail Sales Revenue', cr: BIKES.sold * BIKES.price + ACCESSORIES.sales }], cash: 'operating' },
-  { id: 'w12', date: '2027-12-31', text: 'Refunds for accessories returned unused (the items were thrown away as damaged).',
+  { id: 'w12', date: '2027-12-31', text: 'Refunds for faulty accessories returned by customers (the faulty items were thrown away).',
     lines: [{ acct: 'Sales Returns and Allowances', dr: 600 }, { acct: 'Cash', cr: 600 }], cash: 'operating', cashLabel: 'Cash received from customers' },
   { id: 'w13', date: '2027-12-31', text: 'Cost of the bikes sold (FIFO, perpetual).',
     lines: [{ acct: 'Cost of Goods Sold', dr: fifo }, { acct: 'Inventory', cr: fifo }] },
@@ -104,7 +105,7 @@ export const YEAR = [
     lines: [{ acct: 'Accounts Payable', dr: 25_490 }, { acct: 'Cash', cr: 25_490 }], cash: 'operating' },
   { id: 'w15', date: '2027-12-31', text: 'Repair parts and workshop supplies bought on account.',
     lines: [{ acct: 'Supplies', dr: 8_100 }, { acct: 'Accounts Payable', cr: 8_100 }] },
-  { id: 'w16', date: '2027-12-31', text: 'Wages for the year; $1,320 earned in late December is paid on 4 January.',
+  { id: 'w16', date: '2027-12-31', text: 'Mechanics’ wages for the year (Brightwater’s only employees; Mateo serves in the shop himself); $1,320 earned in late December is paid on 4 January.',
     lines: [{ acct: 'Wages Expense', dr: 33_600 }, { acct: 'Cash', cr: 33_600 + 1_040 - 1_320 }, { acct: 'Wages Payable', cr: 1_320 - 1_040 }], cash: 'operating', cashLabel: 'Cash paid to employees' },
   { id: 'w17', date: '2027-12-31', text: 'Workshop and shop rent, $1,500 a month.',
     lines: [{ acct: 'Rent Expense', dr: 18_000 }, { acct: 'Cash', cr: 18_000 }], cash: 'operating', cashLabel: 'Cash paid to suppliers' },
@@ -114,16 +115,16 @@ export const YEAR = [
     lines: [{ acct: 'Advertising Expense', dr: 1_800 }, { acct: 'Cash', cr: 1_800 }], cash: 'operating', cashLabel: 'Cash paid to suppliers' },
   { id: 'w20', date: '2027-12-31', text: 'Card-processing fees.',
     lines: [{ acct: 'Card and Platform Fees Expense', dr: 1_051 }, { acct: 'Cash', cr: 1_051 }], cash: 'operating' },
-  { id: 'w21', date: '2027-07-01', text: 'Renews the liability insurance for 1 July 2027 – 30 June 2028.',
+  { id: 'w21', date: '2027-07-01', text: 'On 1 July, renews the liability insurance for 1 July 2027 – 30 June 2028.',
     lines: [{ acct: 'Prepaid Insurance', dr: 780 }, { acct: 'Cash', cr: 780 }], cash: 'operating', cashLabel: 'Cash paid to suppliers' },
-  { id: 'w22', date: '2027-07-01', text: 'Repays the one-year note with its $300 of interest.',
-    lines: [{ acct: 'Current Portion of Long-Term Debt', dr: 5_000 }, { acct: 'Interest Payable', dr: 150 }, { acct: 'Interest Expense', dr: 150 }, { acct: 'Cash', cr: 5_300 }],
+  { id: 'w22', date: '2027-07-01', text: 'On 1 July, repays the one-year note with its $300 of interest.',
+    lines: [{ acct: 'Short-Term Notes Payable', dr: 5_000 }, { acct: 'Interest Payable', dr: 150 }, { acct: 'Interest Expense', dr: 150 }, { acct: 'Cash', cr: 5_300 }],
     cash: { financing: -5_000, operating: -300 } },
-  { id: 'w23a', date: '2027-10-01', text: 'Before the sale, records the stand’s depreciation for January–September 2027 ($25 a month).',
+  { id: 'w23a', date: '2027-10-01', text: 'On 1 October, before the sale, records the stand’s depreciation for January–September 2027 ($25 a month).',
     lines: [{ acct: 'Depreciation Expense', dr: STAND.monthly * 9 }, { acct: 'Accumulated Depreciation—Equipment', cr: STAND.monthly * 9 }] },
-  { id: 'w23', date: '2027-10-01', text: 'Sells the original repair stand (cost $1,500, $25 a month of depreciation since July 2026) for $700 in cash.',
+  { id: 'w23', date: '2027-10-01', text: 'On 1 October, sells the original repair stand (cost $1,500, $25 a month of depreciation since July 2026) for $700 in cash.',
     lines: [{ acct: 'Cash', dr: STAND.price }, { acct: 'Accumulated Depreciation—Equipment', dr: STAND.monthly * STAND.months }, { acct: 'Loss on Sale of Equipment', dr: standLoss }, { acct: 'Equipment', cr: STAND.cost }], cash: 'investing' },
-  { id: 'w24', date: '2027-04-15', text: 'Pays the 2026 income tax owed.',
+  { id: 'w24', date: '2027-04-15', text: 'On 15 April, pays the 2026 income tax owed.',
     lines: [{ acct: 'Income Taxes Payable', dr: 1_050 }, { acct: 'Cash', cr: 1_050 }], cash: 'operating' },
   { id: 'w25', date: '2027-12-31', text: 'Estimated income tax paid for 2027.',
     lines: [{ acct: 'Income Tax Expense', dr: TAX_PAID }, { acct: 'Cash', cr: TAX_PAID }], cash: 'operating' },

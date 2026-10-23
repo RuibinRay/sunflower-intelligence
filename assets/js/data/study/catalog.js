@@ -69,7 +69,7 @@ const ALL = [
     case: 'lantern',
     outcomes: [
       'Apply the five-step revenue recognition model to decide when, and how much, revenue to record, including deferred revenue and refunds.',
-      'Account for inventory under perpetual and periodic systems, and calculate cost of goods sold and ending inventory by FIFO, LIFO and weighted average.',
+      'Account for inventory under perpetual and periodic systems, calculate cost of goods sold and ending inventory by FIFO, LIFO and weighted average, and apply the lower of cost and net realisable value.',
       'Prepare a multi-step income statement and calculate gross profit, operating income, EBIT and EBITDA.',
       'Account for receivables, payables and long-lived assets (bad debts, depreciation, disposals, amortisation), and prepare a classified balance sheet and a statement of changes in equity.',
       'Prepare a statement of cash flows by the direct and the indirect method, and trace how a transaction moves through all four statements.',
@@ -81,8 +81,8 @@ const ALL = [
       { n: 3, title: 'The statement of cash flows', lessons: ['cash-flow-statement', 'indirect-method'] },
       { n: 4, title: 'Putting the statements together', lessons: ['linking-the-statements', 'gaap-and-ifrs'] },
     ],
-    project: { title: 'Brightwater Bike Repair’s first full year', blurb: 'Prepare all four financial statements for Brightwater’s 2027, the year it starts selling parts and bikes: cost its inventory, estimate bad debts, record a disposal, and show how the statements connect.' },
-    topics: ['Income statements: gross profit, EBITDA, EBIT and net income', 'Balance sheets', 'Cash flow statements (direct and indirect methods)', 'Statements of changes in equity', 'Revenue recognition basics', 'Cost of goods sold', 'Operating expenses', 'Depreciation and amortisation', 'Inventory accounting', 'Accounts receivable and payable', 'Working capital', 'Retained earnings', 'How the three statements connect', 'US GAAP versus IFRS'],
+    project: { title: 'Brightwater Bike Repair’s first full year', blurb: 'Prepare all four financial statements for Brightwater’s 2027, the year it starts selling bikes and accessories: cost its inventory, estimate bad debts, record a disposal, and show how the statements connect.' },
+    topics: ['Income statements: gross profit, EBIT, EBITDA and net income', 'Balance sheets', 'Cash flow statements (direct and indirect methods)', 'Statements of changes in equity', 'Revenue recognition basics', 'Cost of goods sold', 'Operating expenses', 'Depreciation and amortisation', 'Inventory accounting', 'Accounts receivable and payable', 'Working capital', 'Retained earnings', 'How the four statements connect', 'US GAAP versus IFRS'],
   }),
   C({
     id: 'f03', school: 'finance', code: 'F03', level: 'intermediate', requires: ['f02'],
