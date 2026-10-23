@@ -41,7 +41,7 @@ const C = (o) => ({ status: 'planned', requires: [], recommends: [], related: []
 const ALL = [
   // ================================================================ Finance & Accounting
   C({
-    id: 'f01', school: 'finance', code: 'F01', level: 'intro', status: 'reviewed', recommends: ['f00'],
+    id: 'f01', school: 'finance', code: 'F01', level: 'intro', status: 'complete', recommends: ['f00'],
     title: 'Introduction to Financial Accounting',
     blurb: 'How a business records what happens to it: the accounting equation, debits and credits, journals and ledgers, adjustments, and the full accounting cycle.',
     case: 'lantern',
@@ -127,7 +127,7 @@ const ALL = [
     topics: ['Descriptive, diagnostic, predictive and prescriptive analytics', 'Data types', 'Business questions and measurable objectives', 'Data collection', 'Data quality', 'KPIs', 'Basic data interpretation', 'Problem-solving frameworks'],
   }),
   C({
-    id: 'b02', school: 'analytics', code: 'B02', level: 'intro', status: 'reviewed', recommends: ['b01'],
+    id: 'b02', school: 'analytics', code: 'B02', level: 'intro', status: 'complete', recommends: ['b01'],
     title: 'Data Cleaning and Preparation',
     blurb: 'Turn a messy export into data you can trust: profile it, fix records and formats, handle missing and unusual values, and prepare it for analysis without biasing the result.',
     case: 'lantern',
@@ -225,7 +225,7 @@ const ALL = [
     topics: ['What marketing is', 'Customer needs and value', 'Market orientation', 'The marketing process', 'Customer behaviour', 'B2B versus B2C', 'Marketing objectives', 'Competitive advantage'],
   }),
   C({
-    id: 'm02', school: 'marketing', code: 'M02', level: 'intro', status: 'reviewed', recommends: ['m01'],
+    id: 'm02', school: 'marketing', code: 'M02', level: 'intro', status: 'complete', recommends: ['m01'],
     title: 'The 4Ps Marketing Mix',
     blurb: 'Design a product, set its price, choose where it is sold and decide how it is promoted, and make the four decisions fit together.',
     case: 'lantern',
