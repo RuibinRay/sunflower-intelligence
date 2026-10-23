@@ -11,6 +11,7 @@ import { initSite } from '../core/site.js?v=11';
 import { $, h, debounce } from '../core/dom.js?v=11';
 import * as P from '../study/progress.js?v=11';
 import { practiceCard, loadCharts } from '../study/exercises.js?v=11';
+import { xl } from '../study/xl.js?v=11';
 import { initOutline, paintOutline, storageWarning, scrollersFocusable } from '../study/common.js?v=11';
 
 initSite();
@@ -44,7 +45,7 @@ if (!PJ) {
     const state = h('p', { class: 'stage-state' });
     const sec = h('section', { class: 'project-stage', id: `stage-${st.id}`, 'aria-labelledby': `stage-${st.id}-h` },
       h('h2', { id: `stage-${st.id}-h` }, h('span', {}, `Stage ${i + 1} of ${PJ.stages.length}`), st.title), state);
-    const intro = h('div', { class: 'stage-html' }); intro.innerHTML = st.html || ''; sec.append(intro);
+    const intro = h('div', { class: 'stage-html' }); intro.innerHTML = xl(st.html || ''); sec.append(intro);
     const need = { tool: !!st.tool && (st.tool.kind === 'recorder' || (st.tool.kind === 'cleaning' && !!st.tool.goals?.length)), items: new Set((st.items || []).map((x) => x.id)) };   // a lab with no goal to meet doesn't hold the stage up
     const have = { tool: !!rec().stages[st.id]?.tool, items: new Set(rec().stages[st.id]?.items || []) };
     const update = () => {
@@ -73,7 +74,7 @@ if (!PJ) {
   // finishing: self-assessment against the rubric
   const rubric = h('section', { class: 'project-stage', id: 'finish', 'aria-labelledby': 'finish-h' },
     h('h2', { id: 'finish-h' }, h('span', {}, 'Finally'), 'Check your work against the rubric'));
-  const list = h('ul', { class: 'rubric', role: 'list' }, (PJ.rubric || []).map((r, k) => { const id = `rub-${k}`; const lab = h('label', { for: id }, h('input', { type: 'checkbox', id }), h('span')); lab.lastChild.innerHTML = r; return h('li', {}, lab); }));
+  const list = h('ul', { class: 'rubric', role: 'list' }, (PJ.rubric || []).map((r, k) => { const id = `rub-${k}`; const lab = h('label', { for: id }, h('input', { type: 'checkbox', id }), h('span')); lab.lastChild.innerHTML = xl(r); return h('li', {}, lab); }));
   const finishBtn = h('button', { type: 'button', class: 'btn btn-primary' }, 'Finish the project');
   const finishNote = h('p', { class: 'field-hint', 'aria-live': 'polite' });
   finishBtn.addEventListener('click', () => { P.projectComplete(course); paintNav(); });

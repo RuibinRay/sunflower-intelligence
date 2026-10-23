@@ -1,5 +1,5 @@
 // exercises.js — renders and marks every exercise type in the course files (see data/study/AUTHORING.md §3):
-//   mc, multi, num, fill, classify, order, journal, equation, rows, short, and steps (a multi-step problem).
+//   mc, multi, num, fill, classify, order, journal, equation, rows, short, formula (B03), and steps (a multi-step problem).
 // Two ways to present them:
 //   renderPractice  one card per question with its own Check button. mode 'guided' adds hints and an open
 //                   solution; 'independent' has no hints and records the first answer; 'review' asks once.
@@ -9,6 +9,7 @@
 import { h, s } from '../core/dom.js?v=11';
 import { verdict } from '../core/ui.js?v=11';
 import { mulberry32 } from '../core/rng.js?v=11';
+import { xl } from './xl.js?v=11';
 
 const LETTERS = 'ABCDEFGHIJ';
 const KIND = { conceptual: 'Concept', numerical: 'Calculation', applied: 'Application' };
@@ -16,7 +17,7 @@ let counter = 0;
 const uid = (p = 'ex') => `${p}-${++counter}`;
 
 // ---------------------------------------------------------------- small helpers
-const html = (tag, cls, str) => { const el = h(tag, cls ? { class: cls } : {}); el.innerHTML = str ?? ''; return el; };
+const html = (tag, cls, str) => { const el = h(tag, cls ? { class: cls } : {}); el.innerHTML = xl(str); return el; };
 function hashStr(str) { let x = 2166136261; for (let i = 0; i < str.length; i++) { x ^= str.charCodeAt(i); x = Math.imul(x, 16777619); } return x >>> 0; }
 function shuffle(list, seed) {
   const r = mulberry32(seed), a = list.slice();
@@ -185,7 +186,7 @@ T.fill = (item, c) => {
   const optOrder = bank ? shuffle(item.blanks[0].options.map((_, k) => k), c.seed) : null;
   const wrap = h('p', { class: 'fill-text' });
   parts.forEach((p, i) => {
-    if (i % 2 === 0) { if (p) { const t = h('span'); t.innerHTML = p; wrap.append(t); } return; }
+    if (i % 2 === 0) { if (p) { const t = h('span'); t.innerHTML = xl(p); wrap.append(t); } return; }
     const n = +p, b = item.blanks[n];
     const id = `${c.uid}-b${n}`;
     let el;
@@ -215,7 +216,7 @@ T.fill = (item, c) => {
     lock: (b) => blanks.forEach((bl) => { bl.el.disabled = b; }),
     answerNode: () => {
       const p = h('p');
-      p.innerHTML = String(item.text).replace(/\[\[(\d+)\]\]/g, (_, n) => { const b = item.blanks[+n]; return `<strong>${b.options ? b.options[b.answer] : b.accept[0]}</strong>`; });
+      p.innerHTML = xl(String(item.text)).replace(/\[\[(\d+)\]\]/g, (_, n) => { const b = item.blanks[+n]; return `<strong>${b.options ? b.options[b.answer] : b.accept[0]}</strong>`; });
       return p;
     },
   };
@@ -228,7 +229,7 @@ T.classify = (item, c) => {
     const id = `${c.uid}-c${i}`;
     const sel = h('select', { class: 'select', id }, h('option', { value: '' }, 'Choose…'), item.categories.map((cat, k) => h('option', { value: k }, cat)));
     const note = h('p', { class: 'ex-note', hidden: true });
-    const lab = h('label', { for: id }); lab.innerHTML = txt;
+    const lab = h('label', { for: id }); lab.innerHTML = xl(txt);
     return { i, sel, note, row: h('div', { class: 'classify-row' }, lab, sel, note) };
   });
   const shown = item.fixed ? item.items.map((_, i) => i) : shuffle(item.items.map((_, i) => i), c.seed);
@@ -242,13 +243,13 @@ T.classify = (item, c) => {
       return { correct, score: right / rows.length, notes: correct ? [] : [`${rows.length - right} of the ${rows.length} are not right yet: see the notes beside them.`],
         mark: () => rows.forEach((row, i) => {
           row.sel.classList.toggle('is-right', res[i]); row.sel.classList.toggle('is-wrong', !res[i]);
-          row.note.hidden = res[i]; row.note.innerHTML = res[i] ? '' : (item.feedback?.[i] || 'Not this category. Think about what this item is, not what it is used for.');
+          row.note.hidden = res[i]; row.note.innerHTML = res[i] ? '' : xl(item.feedback?.[i] || 'Not this category. Think about what this item is, not what it is used for.');
         }) };
     },
-    reveal: () => rows.forEach((row, i) => { if (row.sel.classList.contains('is-wrong')) { row.note.hidden = false; row.note.innerHTML = `${item.feedback?.[i] ? `${item.feedback[i]} ` : ''}<strong>Answer: ${item.categories[item.answer[i]]}.</strong>`; } }),
+    reveal: () => rows.forEach((row, i) => { if (row.sel.classList.contains('is-wrong')) { row.note.hidden = false; row.note.innerHTML = xl(`${item.feedback?.[i] ? `${item.feedback[i]} ` : ''}<strong>Answer: ${item.categories[item.answer[i]]}.</strong>`); } }),
     clear: () => rows.forEach((row) => { row.sel.classList.remove('is-right', 'is-wrong'); row.note.hidden = true; }),
     lock: (b) => rows.forEach((row) => { row.sel.disabled = b; }),
-    answerNode: () => h('ul', {}, shown.map((i) => { const li = h('li'); li.innerHTML = `${item.items[i]}: <strong>${item.categories[item.answer[i]]}</strong>`; return li; })),
+    answerNode: () => h('ul', {}, shown.map((i) => { const li = h('li'); li.innerHTML = xl(`${item.items[i]}: <strong>${item.categories[item.answer[i]]}</strong>`); return li; })),
   };
 };
 
@@ -471,11 +472,81 @@ T.short = (item, c) => {
   };
 };
 
+// A formula typed into a spreadsheet (B03). The item gives the sheet, the cell (and a range to fill, as Excel's fill
+// handle does) and a model formula; the student's formula is marked by its results, on this data and on copies with
+// the numbers changed, so a typed-in answer or a reference that only works by luck is caught (core/sheet.js
+// gradeFormula). `wrong: [{ formula, say }]` names likely slips: a formula giving the same results as one of them gets
+// its feedback. The grid shows the student's results as they type, as Excel does.
+let SHEET = null;   // { X: core/sheet.js, grid: study/sheetgrid.js }, loaded by loadCharts when a page has formula items
+T.formula = (item, c) => {
+  const { X, grid } = SHEET;
+  const spec = item.sheet;
+  const base = new X.Sheet(spec);
+  const target = item.fill || item.cell;
+  const g = grid.sheetGrid({ sheet: base.clone(), view: item.view, formats: item.formats, widths: item.widths, mark: [target], label: `Worksheet for this question; your formula goes in ${target}`, maxHeight: item.maxHeight || '22rem', select: item.cell });
+  const id = `${c.uid}-f`;
+  const input = h('input', { class: 'input sg-input', id, type: 'text', autocomplete: 'off', spellcheck: 'false', autocapitalize: 'off', placeholder: '=' });
+  const what = item.fill ? `Formula for ${item.cell}, filled to ${item.fill.split(':')[1]}` : `Formula for ${item.cell}`;
+  const preview = h('p', { class: 'sg-preview', 'aria-live': 'polite' });
+  const at = X.parseAddr(item.cell);
+  const targets = [];
+  if (item.fill) { const rg = X.parseRange(item.fill); for (let r = rg.r0; r <= rg.r1; r++) for (let k = rg.c0; k <= rg.c1; k++) targets.push({ a: X.addr(r, k), dr: r - at.r, dc: k - at.c }); }
+  else targets.push({ a: item.cell, dr: 0, dc: 0 });
+  const problem = (f) => {
+    if (!f) return '';
+    if (!f.startsWith('=')) return 'Start the formula with an equals sign (=).';
+    try { X.parse(f); } catch (e) { return `Excel couldn’t read that formula: ${e.message}.`; }
+    const unknown = [...X.functionsUsed(f)].filter((n) => !X.FUNCTIONS.includes(n));
+    return unknown.length ? `${unknown[0]} isn’t a function this sheet knows. Check the spelling.` : '';
+  };
+  let timer = 0;
+  function show() {
+    const f = input.value.trim();
+    const sh = base.clone();
+    const bad = problem(f);
+    if (f && !bad) for (const t of targets) sh.set(t.a, X.shiftFormula(f, t.dr, t.dc));
+    g.setSheet(sh);
+    if (!f) { preview.textContent = ''; return; }
+    if (bad) { preview.textContent = bad; preview.classList.add('is-bad'); return; }
+    preview.classList.remove('is-bad');
+    const fmt = (a) => X.display(sh.get(a), (item.formats || {})[a] || (item.formats || {})[a.replace(/\d+$/, '')] || 'general') || 'blank';
+    const first = targets[0].a, last = targets[targets.length - 1].a;
+    preview.textContent = targets.length > 1 ? `${first} shows ${fmt(first)}; filled to ${last}, which shows ${fmt(last)}.` : `${first} shows ${fmt(first)}.`;
+  }
+  input.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(show, 180); });
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); clearTimeout(timer); show(); } });
+  const wrongs = item.wrong || [];
+  return {
+    body: h('div', { class: 'sg-ex' }, g.el, h('div', { class: 'field' }, h('label', { for: id }, what), input), preview),
+    read: () => input.value.trim(),
+    isEmpty: (r) => !r,
+    invalid: (r) => problem(r),
+    grade(r) {
+      const res = X.gradeFormula(spec, { cell: item.cell, fill: item.fill, formula: r, answer: item.answer, require: item.require || [], variants: item.variants ?? 2 });
+      const notes = [];
+      if (!res.ok) {
+        const slip = wrongs.find((w) => X.gradeFormula(spec, { cell: item.cell, fill: item.fill, formula: r, answer: w.formula, variants: item.variants ?? 2 }).ok);
+        notes.push(slip ? slip.say : res.message.replace(/&/g, '&amp;').replace(/</g, '&lt;'));
+      }
+      return { correct: res.ok, score: res.ok ? 1 : 0, notes, mark: () => { clearTimeout(timer); show(); input.classList.toggle('is-right', res.ok); input.classList.toggle('is-wrong', !res.ok); input.setAttribute('aria-invalid', res.ok ? 'false' : 'true'); } };
+    },
+    reveal: () => {},
+    clear: () => { input.classList.remove('is-right', 'is-wrong'); input.removeAttribute('aria-invalid'); },
+    lock: (b) => { input.readOnly = b; },
+    answerNode: () => h('p', {}, h('code', { class: 'sg-code' }, item.answer), item.fill ? ` in ${item.cell}, filled to ${item.fill.split(':')[1]}` : ` in ${item.cell}`),
+  };
+};
+
 // ---------------------------------------------------------------- shared pieces of a card
 export async function loadCharts(items) {
   const need = new Set();
-  const walk = (x) => { if (x.type === 'journal' && x.chart) need.add(x.chart); (x.steps || []).forEach(walk); };
+  let formulas = false;
+  const walk = (x) => { if (x.type === 'journal' && x.chart) need.add(x.chart); if (x.type === 'formula') formulas = true; (x.steps || []).forEach(walk); };
   items.forEach(walk);
+  if (formulas && !SHEET) {
+    const [X, grid] = await Promise.all([import('../core/sheet.js?v=11'), import('./sheetgrid.js?v=11')]);
+    SHEET = { X, grid };
+  }
   const out = {};
   for (const ch of need) {
     try { out[ch] = (await import(`../data/study/${ch.includes('/') ? ch : `${ch}/case`}.js?v=11`)).CHART; } catch { out[ch] = []; }   // 'f01' → f01/case.js; 'f01/brightwater' → that file
@@ -501,8 +572,8 @@ function fillFeedback(box, g, item, { mode, after = '' }) {
   const v = feedbackNode(g, item, { mode });
   const p = v.querySelector('p');
   const extra = h('span');
-  if (g.correct && item.why) extra.innerHTML = ` ${item.why}`;
-  if (!g.correct && g.notes.length === 1) extra.innerHTML = ` ${g.notes[0]}`;
+  if (g.correct && item.why) extra.innerHTML = ` ${xl(item.why)}`;
+  if (!g.correct && g.notes.length === 1) extra.innerHTML = ` ${xl(g.notes[0])}`;
   p.append(extra);
   box.append(v);
   if (!g.correct && g.notes.length > 1) box.append(h('ul', {}, g.notes.map((n) => html('li', '', n))));
@@ -513,7 +584,7 @@ function solutionBox(item, unitObj) {
   const body = h('div', { class: 'sol-body' });
   const ans = unitObj?.answerNode?.();
   if (ans && item.type !== 'short') body.append(h('p', {}, h('strong', {}, 'Answer')), ans);
-  if (item.solution) { const sol = h('div'); sol.innerHTML = item.solution; if (ans) body.append(h('p', {}, h('strong', {}, 'How to get there'))); body.append(sol); }
+  if (item.solution) { const sol = h('div'); sol.innerHTML = xl(item.solution); if (ans) body.append(h('p', {}, h('strong', {}, 'How to get there'))); body.append(sol); }
   det.append(h('summary', {}, 'Worked solution'), body);
   return det;
 }

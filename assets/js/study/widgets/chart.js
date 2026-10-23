@@ -3,6 +3,7 @@
 //   { type: 'chart', kind: 'line' | 'bar', title, x: { label, values }, series: [{ name, values }],
 //     y: { label, format: 'money' | 'pct' | 'int' | 'num' }, note: 'html' }
 import { h } from '../../core/dom.js?v=11';
+import { xl } from '../xl.js?v=11';
 import * as F from '../../core/format.js?v=11';
 import { lineChart, barChart, tableTwin } from '../../core/charts.js?v=11';
 import { onResize } from '../../core/dom.js?v=11';
@@ -41,6 +42,6 @@ export function mount(el, cfg) {
   el.append(cfg.title ? h('p', { class: 'chart-title' }, cfg.title) : '', box);
   const draw = () => drawChart(box, cfg, { height: cfg.height || 280 });
   draw();
-  if (cfg.note) { const n = h('p', { class: 'fx-note' }); n.innerHTML = cfg.note; el.append(n); }
+  if (cfg.note) { const n = h('p', { class: 'fx-note' }); n.innerHTML = xl(cfg.note); el.append(n); }
   onResize(box, draw);
 }

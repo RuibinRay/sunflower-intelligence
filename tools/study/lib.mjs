@@ -51,7 +51,7 @@ export async function loadModuleFile(course, name) {
 
 // ---------------------------------------------------------------- small formatting helpers
 export const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-export const strip = (s) => String(s ?? '').replace(/<m>[\s\S]*?<\/m>/g, ' x ').replace(/<M>[\s\S]*?<\/M>/g, ' x ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+export const strip = (s) => String(s ?? '').replace(/<x>([\s\S]*?)<\/x>/g, (_, t) => t.replace(/</g, '‹').replace(/>/g, '›')).replace(/<m>[\s\S]*?<\/m>/g, ' x ').replace(/<M>[\s\S]*?<\/M>/g, ' x ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 export const words = (s) => (strip(s).match(/[A-Za-z0-9][\w’'-]*/g) || []).length;
 /** Glossary key: lower case, singular ("Liabilities" and "liability" match). */
 export const glossKey = (t) => { let k = strip(t).toLowerCase().replace(/[’']/g, ''); if (/ies$/.test(k)) k = k.replace(/ies$/, 'y'); else if (/[^s]s$/.test(k)) k = k.slice(0, -1); return k; };
@@ -81,8 +81,8 @@ export function tex(src, display = false) {
   return katex.renderToString(String(src), { displayMode: display, throwOnError: true, output: 'htmlAndMathml', strict: 'ignore', trust: false });
 }
 
-const ALLOWED = new Set(['b', 'strong', 'i', 'em', 'sub', 'sup', 'br', 'code', 'abbr', 'a', 'm', 'M', 'g', 'span']);
-const ALLOWED_EX = new Set(['b', 'strong', 'i', 'em', 'sub', 'sup', 'br', 'code', 'abbr', 'a']);
+const ALLOWED = new Set(['b', 'strong', 'i', 'em', 'sub', 'sup', 'br', 'code', 'abbr', 'a', 'm', 'M', 'g', 'span', 'x']);
+const ALLOWED_EX = new Set(['b', 'strong', 'i', 'em', 'sub', 'sup', 'br', 'code', 'abbr', 'a', 'x']);   // <x>: an Excel formula, shown as typed (B03)
 
 /**
  * Check a string's tags against the allow-list. `where` names the field for error messages.
@@ -90,7 +90,7 @@ const ALLOWED_EX = new Set(['b', 'strong', 'i', 'em', 'sub', 'sup', 'br', 'code'
  */
 export function tagProblems(html, where, { exercise = false } = {}) {
   const out = [];
-  const s = String(html ?? '');
+  const s = String(html ?? '').replace(/<x>[\s\S]*?<\/x>/g, '<x></x>');   // a formula's < > & are text, not tags
   const allowed = exercise ? ALLOWED_EX : ALLOWED;
   for (const m of s.matchAll(/<\/?([a-zA-Z][a-zA-Z0-9]*)([^>]*)>/g)) {
     const tag = m[1];
@@ -111,7 +111,7 @@ export function tagProblems(html, where, { exercise = false } = {}) {
  * terms used, and supplies `glossaryHref`.
  */
 export function inline(html, ctx = {}, where = '') {
-  let s = String(html ?? '');
+  let s = String(html ?? '').replace(/<x>([\s\S]*?)<\/x>/g, (_, t) => `<code class="xl">${esc(t)}</code>`);
   s = s.replace(/<M>([\s\S]*?)<\/M>/g, (_, t) => {
     try { return `<span class="math-display">${tex(t, true)}</span>`; } catch (e) { (ctx.errors ||= []).push(`${where}: TeX error in <M>${t}</M>: ${e.message}`); return esc(t); }
   });
@@ -256,9 +256,11 @@ export function blockWords(list) {
   }));
 }
 
-/** Every string inside an object (for tag and typography checks). */
+/** Every string inside an object (for tag and typography checks). Spreadsheet data is not prose: formulas (strings
+ *  starting with =) and the contents of `sheet`, `records` and `cells` (B03) are skipped. */
+const DATA_KEYS = new Set(['sheet', 'records', 'cells']);
 export function* strings(obj, path = '') {
-  if (typeof obj === 'string') { yield [path, obj]; return; }
+  if (typeof obj === 'string') { if (!obj.startsWith('=')) yield [path, obj]; return; }
   if (Array.isArray(obj)) { for (let i = 0; i < obj.length; i++) yield* strings(obj[i], `${path}[${i}]`); return; }
-  if (obj && typeof obj === 'object') for (const [k, v] of Object.entries(obj)) if (typeof v !== 'function') yield* strings(v, path ? `${path}.${k}` : k);
+  if (obj && typeof obj === 'object') for (const [k, v] of Object.entries(obj)) if (typeof v !== 'function' && !DATA_KEYS.has(k)) yield* strings(v, path ? `${path}.${k}` : k);
 }

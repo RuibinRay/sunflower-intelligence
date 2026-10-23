@@ -14,7 +14,7 @@ const { MAP } = await import(pathToFileURL(join(ROOT, 'assets/js/data/study/map.
 
 // in-page: put the keyed answer for one item into `box` (a card or a step), then return nothing
 const ANSWER = (box, item) => {
-  const strip = (s) => { const d = document.createElement('div'); d.innerHTML = String(s); return d.textContent.replace(/\s+/g, ' ').trim(); };
+  const strip = (s) => { const d = document.createElement('div'); d.innerHTML = String(s).replace(/<x>([\s\S]*?)<\/x>/g, (_, t) => `<code>${t.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</code>`); return d.textContent.replace(/\s+/g, ' ').trim(); };
   const body = box.querySelector(':scope > .ex-body') || box.querySelector('.ex-body');
   const fire = (el, type) => el.dispatchEvent(new Event(type, { bubbles: true }));
   const setVal = (el, v) => { el.value = v; fire(el, 'input'); fire(el, 'change'); };
@@ -59,6 +59,7 @@ const ANSWER = (box, item) => {
     }
     case 'rows': item.answer.forEach((i) => body.querySelector(`input[type="checkbox"][value="${i}"]`).click()); break;
     case 'short': setVal(body.querySelector('textarea'), 'A written answer for the automated play-through, long enough to compare.'); break;
+    case 'formula': setVal(body.querySelector('.sg-input'), item.answer); break;
     default: throw new Error(`no answerer for ${item.type}`);
   }
 };
