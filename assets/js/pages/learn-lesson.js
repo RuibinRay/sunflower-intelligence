@@ -71,7 +71,7 @@ function renderCheck() {
         h('p', { class: 'q-kicker' }, `${right} of ${qs.length} right`),
         h('p', { class: 'q-stem' }, right === qs.length ? 'All right. The skill comes back in Practise before you’re likely to forget it.' : 'Worth another look at the worked example, then try again in Practise.'),
         h('p', {}, `Next review in about ${durationWords(hl)}.`),
-        h('div', { class: 'q-actions' }, h('a', { class: 'btn btn-primary', href: '../../#practice' }, 'Go to Practise'), h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => { k = 0; right = 0; renderCheck(); } }, 'Ask me again'))));
+        h('div', { class: 'q-actions' }, h('a', { class: 'btn btn-primary', href: '../../practise/#practice' }, 'Go to Practise'), h('button', { class: 'btn btn-secondary', type: 'button', onclick: () => { k = 0; right = 0; renderCheck(); } }, 'Ask me again'))));
       return;
     }
     const item = qs[k];

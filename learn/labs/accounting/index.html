@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Accounting Lab · Learn · Sunflower Intelligence</title>
+  <meta name="description" content="Analyse transactions, record and post journal entries, and build the trial balance and financial statements for a fictional business.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/labs/accounting/">
+  <meta property="og:title" content="Accounting Lab · Sunflower Intelligence">
+  <meta property="og:description" content="Analyse transactions, record and post journal entries, and build the trial balance and financial statements for a fictional business.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/study.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/lab-accounting.css?v=6">
+</head>
+<body class="room room--learn room--sub room--lab">
+  <a class="skip-link" href="#ledger">Skip to the lab</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../../finance/">Finance</a></li>
+        <li><a href="../../../analytics/">Business analytics</a></li>
+        <li><a href="../../../marketing/">Marketing</a></li>
+        <li><a href="../../../models/">How I build the models</a></li>
+        <li><a href="../../../contact/">Contact</a></li>
+        <li><a href="../../../learn/" aria-current="page">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../../"><img src="../../../assets/img/flower-learn-160.webp" alt="" width="56" height="56"><span>Learn</span></a>
+      <p class="plate-no">Lab · F01 Introduction to Financial Accounting</p>
+      <h1 id="room-title" class="display is-long">Accounting Lab</h1>
+      <p class="chapter-note">Analyse transactions, record journal entries, post them to the ledger and watch the trial balance and the financial statements update.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Learn pages">
+        <ul role="list">
+          <li><a href="../../">Study home</a></li>
+          <li><a href="../../finance/">Finance & Accounting</a></li>
+          <li><a href="../../analytics/">Business Analytics</a></li>
+          <li><a href="../../marketing/">Marketing & Strategy</a></li>
+          <li><a href="../../labs/" aria-current="true">Labs</a></li>
+          <li><a href="../../glossary/">Glossary</a></li>
+          <li><a href="../../formulas/">Formulas</a></li>
+          <li><a href="../../review/">Review</a></li>
+          <li><a href="../../notebook/">Notebook</a></li>
+          <li><a href="../../lessons/">Plates</a></li>
+          <li><a href="../../practise/">Skills check</a></li>
+          <li><a href="../../curriculum/">Curriculum</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#analyse">Analyse a transaction</a></li><li><a href="#record">Record and post</a></li><li><a href="#statements">Statements and closing</a></li><li><a href="#how">How the lab works</a></li></ul></nav>
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../../">The painting</a></li><li><a href="../../">Learn</a></li><li><a href="../">Labs</a></li><li aria-current="page">Accounting Lab</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">Analyse transactions, record journal entries, post them to the ledger and watch the trial balance and the financial statements update.</p>
+        <p>Everything here happens to Lantern Coffee Co., the <span class="acc-fiction">fictional</span> catering business that runs through F01 Introduction to Financial Accounting, in its first month of trading, March 2026. Work through the sections in order, or go straight to the one you need: the lab checks every answer and explains what went wrong.</p>
+      </div>
+
+      <section class="tool" id="analyse" aria-labelledby="analyse-title">
+        <div class="tool-head">
+          <h2 id="analyse-title">Analyse a transaction</h2>
+          <p>Before an accountant writes a journal entry, they take the transaction apart: which accounts change, whether each goes up or down, which side of the entry it belongs on and by how much, what happens to the accounting equation, and which financial statements will show it. Do the same here, one transaction at a time, and check each part.</p>
+          <p>Choose Lantern’s fifteen March transactions, its seven month-end adjustments, or a practice set. Practice sets continue Lantern’s story into April at four levels: cash and stock transactions; purchases and sales on account; prepayments, deposits, accruals, dividends and notes; and compound and adjusting entries.</p>
+        </div>
+        <div class="bench">
+          <div class="acc-mount" id="drill-mount"><p class="acc-loading">The drill needs JavaScript. If it doesn’t appear, check that JavaScript is turned on in your browser.</p></div>
+        </div>
+      </section>
+
+      <section class="tool" id="record" aria-labelledby="record-title">
+        <div class="tool-head">
+          <h2 id="record-title">Record and post</h2>
+          <p>Write the journal entry for each transaction: choose an account for each line and put its amount in the debit or the credit column. When the entry is right it is posted: each line lands in its T-account in the general ledger and the trial balance updates. The equation check stays in view as you scroll, so you can watch the books balance after every entry.</p>
+          <p>Record Lantern’s March and then its adjustments, and the trial balance reaches the $49,110 that the statements below are built from. Your progress is kept in this browser, so you can stop and come back.</p>
+        </div>
+        <div class="bench">
+          <div class="acc-mount" id="record-mount"><p class="acc-loading">Record and post needs JavaScript. If it doesn’t appear, check that JavaScript is turned on in your browser.</p></div>
+        </div>
+      </section>
+
+      <section class="tool" id="statements" aria-labelledby="statements-title">
+        <div class="tool-head">
+          <h2 id="statements-title">Statements and closing</h2>
+          <p>The four financial statements, built from the entries you recorded above: the income statement, the statement of changes in equity, the balance sheet and the statement of cash flows (direct method). Net income flows into retained earnings, retained earnings into the balance sheet, and the change in cash ties the cash-flow statement to the Cash account.</p>
+          <p>Then close the books. Closing entries move revenue, expenses and dividends into retained earnings, through the Income Summary account or directly, so the next month starts with those accounts at zero. The post-closing trial balance lists only balance-sheet accounts.</p>
+        </div>
+        <div class="bench">
+          <div class="acc-mount" id="statements-mount"><p class="acc-loading">The statements need JavaScript. If they don’t appear, check that JavaScript is turned on in your browser.</p></div>
+        </div>
+      </section>
+
+      <section class="tool" id="how" aria-labelledby="how-title">
+        <div class="tool-head">
+          <h2 id="how-title">How the lab works</h2>
+          <p>The rules the lab applies when it checks your work, and what it leaves out. Lantern Coffee Co., its customers, suppliers and lender, and every amount here are fictional, made up for teaching.</p>
+        </div>
+        <ul class="acc-rules" role="list">
+          <li>
+            <h3>Debits, credits and normal balances</h3>
+            <p>Every entry has at least one debit and one credit, and total debits equal total credits to the cent. Whether a debit increases or decreases an account depends on the kind of account.</p>
+            <div class="table-scroll">
+              <table class="data-table">
+                <caption class="visually-hidden">How each kind of account increases, and its normal balance</caption>
+                <thead><tr><th scope="col">Kind of account</th><th scope="col">Increases with</th><th scope="col">Normal balance</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Assets</th><td>Debit</td><td>Debit</td></tr>
+                  <tr><th scope="row">Contra assets (accumulated depreciation)</th><td>Credit</td><td>Credit</td></tr>
+                  <tr><th scope="row">Liabilities</th><td>Credit</td><td>Credit</td></tr>
+                  <tr><th scope="row">Common stock, retained earnings</th><td>Credit</td><td>Credit</td></tr>
+                  <tr><th scope="row">Revenue</th><td>Credit</td><td>Credit</td></tr>
+                  <tr><th scope="row">Expenses</th><td>Debit</td><td>Debit</td></tr>
+                  <tr><th scope="row">Dividends</th><td>Debit</td><td>Debit</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>A debit is simply the left side of an account: it is not good or bad, and it is not an expense. Expenses and dividends both reduce equity, but dividends are a distribution of profit to shareholders, not a cost of earning revenue, so they never appear on the income statement.</p>
+          </li>
+          <li>
+            <h3>How your answers are checked</h3>
+            <p>An entry is compared with the answer key account by account, on the net amount: debits minus credits. The order of your lines doesn’t matter, and you can split an account over two lines. Amounts must match to the cent.</p>
+            <p>Feedback names what went wrong and the rule behind it: an account on the wrong side, a wrong amount, an account that doesn’t change in this transaction, or a kind of account you left out. In Record and post an entry is posted only once it is right, so the trial balance always balances. Choosing “Show the entry” reveals the answer, and that entry no longer counts as right first time.</p>
+          </li>
+          <li>
+            <h3>Which statements a transaction changes</h3>
+            <ul>
+              <li><strong>Income statement:</strong> a revenue or an expense account changes.</li>
+              <li><strong>Statement of changes in equity:</strong> anything inside equity changes: revenue and expenses (through net income), dividends, common stock.</li>
+              <li><strong>Balance sheet:</strong> every transaction, because revenue and expenses end up in retained earnings.</li>
+              <li><strong>Statement of cash flows:</strong> Cash changes.</li>
+            </ul>
+          </li>
+          <li>
+            <h3>Operating, investing or financing</h3>
+            <p>The lab classifies a cash movement by the account on the other side of the entry. Buying or selling long-term assets such as equipment, and lending money to others, is investing. Borrowing and repaying notes, issuing stock and paying dividends is financing. Everything else is operating: cash from customers, and cash paid to suppliers, employees, landlords and insurers, and for interest.</p>
+            <p>Interest paid is an operating cash flow under US GAAP, which Lantern follows. IAS 7 has let companies reporting under IFRS choose to show interest paid as operating or financing; IFRS 18 amends IAS 7 for periods beginning on or after 1 January 2027 so that most companies show it as financing.</p>
+            <p>The statement of cash flows uses the direct method: it lists cash received and paid by purpose. Investing and financing that involve no cash, such as equipment bought on credit, are disclosed below it.</p>
+          </li>
+          <li>
+            <h3>What the lab simplifies</h3>
+            <ul>
+              <li>A small chart of accounts for a service business: no inventory or cost of goods sold, and no income or sales taxes.</li>
+              <li>Lantern closes its books every month so that the whole accounting cycle fits into one month. Most businesses close once a year.</li>
+              <li>Adjusting entries are given as facts at the end of the month; deciding which ones are needed is taught in the lessons.</li>
+              <li>Practice sets are generated by a program from a random seed. Their names and amounts are invented, and every one balances.</li>
+              <li>Your progress is kept in this browser only. Clearing your browser’s data clears it.</li>
+            </ul>
+          </li>
+          <li>
+            <h3>Lantern Coffee Co.</h3>
+            <p>A fictional company. Ana Lim starts it on 1 March 2026 with $20,000 of her savings, in exchange for common stock, and a $10,000 loan from Coastline Bank. It caters coffee for offices and events and runs barista-training workshops. It is a corporation and keeps its books on the accrual basis under US GAAP. Because it sells a service, it holds no inventory: beans, milk and cups are supplies, expensed as they are used.</p>
+            <p>Its March is the case used throughout F01: fifteen transactions, seven adjustments, net income of $990 and total assets of $42,500 at 31 March.</p>
+          </li>
+        </ul>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../../finance/" data-portal="#E8B923"><img src="../../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../../analytics/" data-portal="#192B49"><img src="../../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../../marketing/" data-portal="#56632C"><img src="../../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../../models/" data-portal="#252A31"><img src="../../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../../contact/" data-portal="#F6E7C1"><img src="../../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../../assets/js/pages/lab-accounting.js?v=6"></script>
+</body>
+</html>

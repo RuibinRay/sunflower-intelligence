@@ -61,7 +61,12 @@ function validDate(y, mo, d, ms) {
   const t = new Date(ms);
   return t.getUTCFullYear() === y && t.getUTCMonth() === mo - 1 && t.getUTCDate() === d ? ms : NaN;
 }
-export function parseDate(raw) {
+/**
+ * Parse a date. ISO dates are unambiguous. For slash/dot dates, `order` is 'mdy', 'dmy' or 'auto' (per value:
+ * day/month only when the first part can't be a month). inferColumn decides the order for a whole column, so a
+ * column of day-first dates isn't read as month-first just because some of its days are 12 or less.
+ */
+export function parseDate(raw, order = 'auto') {
   const t = String(raw).trim();
   let m = t.match(ISO);
   if (m) return validDate(+m[1], +m[2], +m[3], Date.UTC(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0)));
@@ -69,11 +74,22 @@ export function parseDate(raw) {
   if (m) {
     let [a, b, y] = [+m[1], +m[2], +m[3]];
     if (y < 100) y += 2000;
-    let month = a, day = b;               // month/day by default (US); day/month when the first part can't be a month
-    if (a > 12 && b <= 12) { month = b; day = a; }
+    let month = a, day = b;
+    if (order === 'dmy' || (order === 'auto' && a > 12 && b <= 12)) { month = b; day = a; }
     return validDate(y, month, day, Date.UTC(y, month - 1, day));
   }
   return NaN;
+}
+
+/** Day/month order for a column of slash dates: { order, note } where note says when the order was a guess. */
+function dateOrder(values) {
+  let firstBig = 0, secondBig = 0, slash = 0;
+  for (const v of values) { const m = String(v).trim().match(MDY); if (!m) continue; slash++; if (+m[1] > 12) firstBig++; if (+m[2] > 12) secondBig++; }
+  if (!slash) return { order: 'auto', note: '' };
+  if (firstBig && secondBig) return { order: 'auto', note: 'mixes day-first and month-first dates; each ambiguous one was read as month/day' };
+  if (firstBig) return { order: 'dmy', note: '' };
+  if (secondBig) return { order: 'mdy', note: '' };
+  return { order: 'mdy', note: 'has dates that could be day/month or month/day; they were read as month/day' };
 }
 
 /**
@@ -107,6 +123,7 @@ export function parseTable(text, { maxRows = 50000 } = {}) {
     const raw = body.map((r) => (r[j] == null ? '' : String(r[j]).trim()));
     return inferColumn(name, raw, decimalComma);
   });
+  columns.forEach((c) => { if (c.dateNote) warnings.push(`“${c.name}” ${c.dateNote}. Check the source.`); });
   return { columns, nRows: body.length, delimiter, decimalComma, header, warnings, rawRows: body.map((r) => names.map((_, j) => (r[j] == null ? '' : String(r[j]).trim()))) };
 }
 
@@ -117,11 +134,13 @@ export function inferColumn(name, raw, decimalComma = false) {
   const numOk = nums.filter((p) => !Number.isNaN(p.value));
   const dateOk = present.filter((v) => !Number.isNaN(parseDate(v)) && /[-/.]/.test(v));
   const unique = new Set(present).size;
-  let type = 'text', values, unit = '';
+  let type = 'text', values, unit = '', dateNote = '';
   const share = (k) => (present.length ? k / present.length : 0);
   if (present.length && share(dateOk.length) >= 0.9 && dateOk.length >= numOk.length) {
     type = 'date';
-    values = raw.map((v) => (MISSING.has(v.toLowerCase()) ? NaN : parseDate(v)));
+    const d = dateOrder(present);
+    values = raw.map((v) => (MISSING.has(v.toLowerCase()) ? NaN : parseDate(v, d.order)));
+    dateNote = d.note;
   } else if (present.length && share(numOk.length) >= 0.9) {
     const pctShare = numOk.filter((p) => p.percent).length / numOk.length;
     const curShare = numOk.filter((p) => p.currency).length / numOk.length;
@@ -136,7 +155,7 @@ export function inferColumn(name, raw, decimalComma = false) {
     if (unique === present.length && present.length > 20) type = 'id';
   }
   const invalid = type === 'number' || type === 'currency' || type === 'percent' ? present.length - numOk.length : type === 'date' ? present.length - dateOk.length : 0;
-  return { name, type, values, raw, missing, unique, unit, invalid };
+  return { name, type, values, raw, missing, unique, unit, invalid, dateNote };
 }
 
 export const isNumeric = (c) => c.type === 'number' || c.type === 'currency' || c.type === 'percent';

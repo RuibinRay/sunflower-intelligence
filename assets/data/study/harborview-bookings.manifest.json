@@ -1,0 +1,696 @@
+{
+  "dataset": "harborview-bookings",
+  "title": "Harborview Hotel bookings, stays from June 2025 to May 2026",
+  "seed": 20250601,
+  "unit": "one row per booking",
+  "key": "booking_id",
+  "fictional": true,
+  "generator": "tools/study-datasets.mjs (fixed seed; rerun to regenerate identical files)",
+  "rowNumbers": "1-based data rows of the raw CSV; the header line is not counted.",
+  "rows": 180,
+  "truthRows": 176,
+  "truthFile": "tests/fixtures-study/harborview-bookings.truth.csv",
+  "alignment": "Delete the extraRow of every exact-duplicate, duplicate-key and near-duplicate entry from the raw file and the remaining rows line up one-to-one with the truth file. Cells then differ only where a defect is listed (numbers compared as numbers, so \"$18.00\" and \"18.00\" count as equal).",
+  "columns": [
+    "booking_id",
+    "booked_on",
+    "check_in",
+    "check_out",
+    "nights",
+    "room_type",
+    "adults",
+    "children",
+    "rate",
+    "channel",
+    "country",
+    "status",
+    "total"
+  ],
+  "counts": {
+    "missing": 20,
+    "inconsistent-category": 18,
+    "out-of-range": 5,
+    "date-order": 3,
+    "rule-violation": 4,
+    "near-duplicate": 4
+  },
+  "rowsWithDefects": 46,
+  "defects": [
+    {
+      "kind": "missing",
+      "rows": [
+        1
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 1
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        3
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 2
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        3
+      ],
+      "column": "country",
+      "original": "United States",
+      "corrupted": "USA",
+      "variant": "code",
+      "id": 3
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        4
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 4
+    },
+    {
+      "kind": "out-of-range",
+      "rows": [
+        5
+      ],
+      "column": "rate",
+      "original": "309",
+      "corrupted": "0",
+      "note": "Placeholder 0 from the channel manager. total ÷ nights recovers the rate.",
+      "id": 5
+    },
+    {
+      "kind": "date-order",
+      "rows": [
+        16
+      ],
+      "column": "check_out",
+      "original": "2025-07-17",
+      "corrupted": "2025-06-17",
+      "rule": "check_out after check_in",
+      "note": "Month typed one too low, so check-out falls before check-in. nights and total are right.",
+      "id": 6
+    },
+    {
+      "kind": "out-of-range",
+      "rows": [
+        16
+      ],
+      "column": "rate",
+      "original": "245",
+      "corrupted": "9999",
+      "note": "Placeholder 9999. total ÷ nights recovers the rate.",
+      "id": 7
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        19
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 8
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        27
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 9
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        27
+      ],
+      "column": "country",
+      "original": "Canada",
+      "corrupted": "CA",
+      "variant": "code",
+      "id": 10
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        29
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 11
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        30
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 12
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        33
+      ],
+      "column": "country",
+      "original": "United States",
+      "corrupted": "US",
+      "variant": "code",
+      "id": 13
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        34
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 14
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        38
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 15
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        39
+      ],
+      "column": "country",
+      "original": "United Kingdom",
+      "corrupted": "UK",
+      "variant": "code",
+      "id": 16
+    },
+    {
+      "kind": "date-order",
+      "rows": [
+        40
+      ],
+      "column": "check_out",
+      "original": "2025-09-14",
+      "corrupted": "2025-08-14",
+      "rule": "check_out after check_in",
+      "note": "Month typed one too low, so check-out falls before check-in. nights and total are right.",
+      "id": 17
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        40
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 18
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        42
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 19
+    },
+    {
+      "kind": "rule-violation",
+      "rows": [
+        43
+      ],
+      "column": "nights",
+      "original": "4",
+      "corrupted": "5",
+      "rule": "nights = days between check_in and check_out",
+      "note": "Counted days instead of nights. total ÷ rate gives the right number.",
+      "id": 20
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        45
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 21
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        45
+      ],
+      "column": "country",
+      "original": "United Kingdom",
+      "corrupted": "GB",
+      "variant": "code",
+      "id": 22
+    },
+    {
+      "kind": "rule-violation",
+      "rows": [
+        48
+      ],
+      "column": "nights",
+      "original": "7",
+      "corrupted": "8",
+      "rule": "nights = days between check_in and check_out",
+      "note": "Counted days instead of nights. total ÷ rate gives the right number.",
+      "id": 23
+    },
+    {
+      "kind": "rule-violation",
+      "rows": [
+        51
+      ],
+      "column": "nights",
+      "original": "1",
+      "corrupted": "2",
+      "rule": "nights = days between check_in and check_out",
+      "note": "Counted days instead of nights. total ÷ rate gives the right number.",
+      "id": 24
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        54
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 25
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        55
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 26
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        64
+      ],
+      "column": "country",
+      "original": "United States",
+      "corrupted": "USA",
+      "variant": "code",
+      "id": 27
+    },
+    {
+      "kind": "near-duplicate",
+      "rows": [
+        67,
+        70
+      ],
+      "extraRow": 70,
+      "keepRow": 67,
+      "column": "booking_id",
+      "original": "HB-25067",
+      "corrupted": "HB-26101",
+      "differences": [
+        {
+          "column": "booking_id",
+          "kept": "HB-25067",
+          "extra": "HB-26101"
+        }
+      ],
+      "note": "The same booking created again by a channel-manager sync: every column matches except booking_id.",
+      "id": 28
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        69
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 29
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        69
+      ],
+      "column": "country",
+      "original": "Germany",
+      "corrupted": "DE",
+      "variant": "code",
+      "id": 30
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        71
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 31
+    },
+    {
+      "kind": "near-duplicate",
+      "rows": [
+        73,
+        76
+      ],
+      "extraRow": 76,
+      "keepRow": 73,
+      "column": "booking_id",
+      "original": "HB-25072",
+      "corrupted": "HB-26102",
+      "differences": [
+        {
+          "column": "booking_id",
+          "kept": "HB-25072",
+          "extra": "HB-26102"
+        }
+      ],
+      "note": "The same booking created again by a channel-manager sync: every column matches except booking_id.",
+      "id": 32
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        74
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 33
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        83
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 34
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        83
+      ],
+      "column": "country",
+      "original": "United States",
+      "corrupted": "US",
+      "variant": "code",
+      "id": 35
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        86
+      ],
+      "column": "country",
+      "original": "United States",
+      "corrupted": "US",
+      "variant": "code",
+      "id": 36
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        89
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 37
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        94
+      ],
+      "column": "country",
+      "original": "Canada",
+      "corrupted": "CA",
+      "variant": "code",
+      "id": 38
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        100
+      ],
+      "column": "children",
+      "original": "0",
+      "corrupted": "",
+      "note": "Blank means 0: the OTA feed left zero children blank until October 2025.",
+      "id": 39
+    },
+    {
+      "kind": "out-of-range",
+      "rows": [
+        100
+      ],
+      "column": "rate",
+      "original": "165",
+      "corrupted": "0",
+      "note": "Placeholder 0 from the channel manager. total ÷ nights recovers the rate.",
+      "id": 40
+    },
+    {
+      "kind": "rule-violation",
+      "rows": [
+        102
+      ],
+      "column": "nights",
+      "original": "1",
+      "corrupted": "2",
+      "rule": "nights = days between check_in and check_out",
+      "note": "Counted days instead of nights. total ÷ rate gives the right number.",
+      "id": 41
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        117
+      ],
+      "column": "country",
+      "original": "United States",
+      "corrupted": "US",
+      "variant": "code",
+      "id": 42
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        124
+      ],
+      "column": "country",
+      "original": "Mexico",
+      "corrupted": "MX",
+      "variant": "code",
+      "id": 43
+    },
+    {
+      "kind": "out-of-range",
+      "rows": [
+        127
+      ],
+      "column": "rate",
+      "original": "199",
+      "corrupted": "0",
+      "note": "Placeholder 0 from the channel manager. total ÷ nights recovers the rate.",
+      "id": 44
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        131
+      ],
+      "column": "country",
+      "original": "United States",
+      "corrupted": "us",
+      "variant": "code",
+      "id": 45
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        143
+      ],
+      "column": "country",
+      "original": "United States",
+      "corrupted": "U.S.",
+      "variant": "code",
+      "id": 46
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        148
+      ],
+      "column": "country",
+      "original": "United Kingdom",
+      "corrupted": "UK",
+      "variant": "code",
+      "id": 47
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        149
+      ],
+      "column": "country",
+      "original": "United States",
+      "corrupted": "USA",
+      "variant": "code",
+      "id": 48
+    },
+    {
+      "kind": "out-of-range",
+      "rows": [
+        159
+      ],
+      "column": "rate",
+      "original": "147",
+      "corrupted": "9999",
+      "note": "Placeholder 9999. total ÷ nights recovers the rate.",
+      "id": 49
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        165
+      ],
+      "column": "country",
+      "original": "United States",
+      "corrupted": "United States ",
+      "variant": "whitespace",
+      "id": 50
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        167
+      ],
+      "column": "country",
+      "original": "United States",
+      "corrupted": "us",
+      "variant": "code",
+      "id": 51
+    },
+    {
+      "kind": "near-duplicate",
+      "rows": [
+        168,
+        170
+      ],
+      "extraRow": 170,
+      "keepRow": 168,
+      "column": "booking_id",
+      "original": "HB-25166",
+      "corrupted": "HB-26103",
+      "differences": [
+        {
+          "column": "booking_id",
+          "kept": "HB-25166",
+          "extra": "HB-26103"
+        }
+      ],
+      "note": "The same booking created again by a channel-manager sync: every column matches except booking_id.",
+      "id": 52
+    },
+    {
+      "kind": "near-duplicate",
+      "rows": [
+        171,
+        172
+      ],
+      "extraRow": 172,
+      "keepRow": 171,
+      "column": "booking_id",
+      "original": "HB-25168",
+      "corrupted": "HB-26104",
+      "differences": [
+        {
+          "column": "booking_id",
+          "kept": "HB-25168",
+          "extra": "HB-26104"
+        }
+      ],
+      "note": "The same booking created again by a channel-manager sync: every column matches except booking_id.",
+      "id": 53
+    },
+    {
+      "kind": "date-order",
+      "rows": [
+        177
+      ],
+      "column": "check_out",
+      "original": "2026-05-11",
+      "corrupted": "2026-04-11",
+      "rule": "check_out after check_in",
+      "note": "Month typed one too low, so check-out falls before check-in. nights and total are right.",
+      "id": 54
+    }
+  ],
+  "notable": [
+    {
+      "kind": "genuine-outlier",
+      "column": "total",
+      "value": "3528",
+      "note": "A genuine long stay (14 nights in a Deluxe room). total is right-skewed: a few long or suite stays sit far above the median.",
+      "rows": [
+        62
+      ]
+    }
+  ],
+  "notes": [
+    "total is the booked room charge (nights × rate) for every booking, including cancellations and no-shows.",
+    "Blank children appear only on OTA bookings made before October 2025; they mean 0, not unknown. The README says so, as a data dictionary should."
+  ]
+}

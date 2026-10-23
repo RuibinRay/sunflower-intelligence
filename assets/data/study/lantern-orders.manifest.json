@@ -1,0 +1,951 @@
+{
+  "dataset": "lantern-orders",
+  "title": "Lantern Coffee Co. online-shop orders, 1 March – 30 June 2026",
+  "seed": 20260301,
+  "unit": "one row per order",
+  "key": "order_id",
+  "fictional": true,
+  "generator": "tools/study-datasets.mjs (fixed seed; rerun to regenerate identical files)",
+  "rowNumbers": "1-based data rows of the raw CSV; the header line is not counted.",
+  "rows": 240,
+  "truthRows": 231,
+  "truthFile": "tests/fixtures-study/lantern-orders.truth.csv",
+  "alignment": "Delete the extraRow of every exact-duplicate, duplicate-key and near-duplicate entry from the raw file and the remaining rows line up one-to-one with the truth file. Cells then differ only where a defect is listed (numbers compared as numbers, so \"$18.00\" and \"18.00\" count as equal).",
+  "columns": [
+    "order_id",
+    "order_date",
+    "customer_id",
+    "email",
+    "region",
+    "product",
+    "size_g",
+    "quantity",
+    "unit_price",
+    "discount",
+    "order_total",
+    "channel",
+    "subscription",
+    "rating"
+  ],
+  "counts": {
+    "date-format": 22,
+    "exact-duplicate": 6,
+    "whitespace": 3,
+    "rule-violation": 5,
+    "inconsistent-category": 20,
+    "missing": 7,
+    "duplicate-key": 3,
+    "case": 3,
+    "out-of-range": 4,
+    "outlier-error": 1,
+    "decimal-comma": 1
+  },
+  "rowsWithDefects": 66,
+  "defects": [
+    {
+      "kind": "date-format",
+      "rows": [
+        2
+      ],
+      "column": "order_date",
+      "original": "2026-03-02",
+      "corrupted": "March 2, 2026",
+      "format": "written",
+      "ambiguous": false,
+      "id": 1
+    },
+    {
+      "kind": "exact-duplicate",
+      "rows": [
+        3,
+        9
+      ],
+      "extraRow": 9,
+      "duplicateOf": 3,
+      "note": "Repeats an earlier row exactly.",
+      "id": 2
+    },
+    {
+      "kind": "whitespace",
+      "rows": [
+        6
+      ],
+      "column": "email",
+      "original": "ivan.zimmer@example.com",
+      "corrupted": " Ivan.Zimmer@Example.Com",
+      "id": 3
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        7
+      ],
+      "column": "order_date",
+      "original": "2026-03-05",
+      "corrupted": "05/03/2026",
+      "format": "DD/MM/YYYY",
+      "ambiguous": true,
+      "note": "Day first; could also be read month first, and both readings fall inside March–June 2026.",
+      "id": 4
+    },
+    {
+      "kind": "rule-violation",
+      "rows": [
+        17
+      ],
+      "column": "order_total",
+      "original": "14.85",
+      "corrupted": "$21.35",
+      "rule": "order_total = quantity × unit_price − discount",
+      "note": "Includes a $6.50 shipping charge that belongs in another column.",
+      "id": 5
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        22
+      ],
+      "column": "product",
+      "original": "Ethiopia Yirgacheffe 250g",
+      "corrupted": "Ethiopia  Yirgacheffe 250g",
+      "variant": "whitespace",
+      "id": 6
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        23
+      ],
+      "column": "region",
+      "original": "North",
+      "corrupted": "N.",
+      "variant": "abbreviation",
+      "id": 7
+    },
+    {
+      "kind": "whitespace",
+      "rows": [
+        28
+      ],
+      "column": "email",
+      "original": "theo.silva@example.com",
+      "corrupted": "theo.silva@example.com ",
+      "id": 8
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        31
+      ],
+      "column": "email",
+      "original": "wren.kowalski@example.org",
+      "corrupted": "",
+      "note": "Recoverable: the same customer_id has the address on another order.",
+      "id": 9
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        31
+      ],
+      "column": "product",
+      "original": "Colombia Huila 250g",
+      "corrupted": "COLOMBIA HUILA 250G",
+      "variant": "case",
+      "id": 10
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        32
+      ],
+      "column": "region",
+      "original": "South",
+      "corrupted": "S.",
+      "variant": "abbreviation",
+      "id": 11
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        36
+      ],
+      "column": "order_date",
+      "original": "2026-03-20",
+      "corrupted": "46101",
+      "format": "serial",
+      "ambiguous": false,
+      "note": "A spreadsheet serial number (days since 30 December 1899, the Excel 1900 date system).",
+      "id": 12
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        36
+      ],
+      "column": "region",
+      "original": "North",
+      "corrupted": "north",
+      "variant": "case",
+      "id": 13
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        39
+      ],
+      "column": "region",
+      "original": "West",
+      "corrupted": "Wset",
+      "variant": "typo",
+      "id": 14
+    },
+    {
+      "kind": "duplicate-key",
+      "rows": [
+        43,
+        46
+      ],
+      "extraRow": 46,
+      "keepRow": 43,
+      "column": "quantity",
+      "original": "2",
+      "corrupted": "3",
+      "differences": [
+        {
+          "column": "quantity",
+          "kept": "2",
+          "extra": "3"
+        },
+        {
+          "column": "order_total",
+          "kept": "$28.00",
+          "extra": "$42.00"
+        }
+      ],
+      "note": "An edited re-export: quantity 3 instead of 2, with the total recomputed, so both copies look internally consistent. The shop system confirms the first copy (quantity 2) is right.",
+      "id": 15
+    },
+    {
+      "kind": "exact-duplicate",
+      "rows": [
+        44,
+        50
+      ],
+      "extraRow": 50,
+      "duplicateOf": 44,
+      "note": "Repeats an earlier row exactly.",
+      "id": 16
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        45
+      ],
+      "column": "product",
+      "original": "House Blend 250g",
+      "corrupted": "house blend 250g",
+      "variant": "case",
+      "id": 17
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        59
+      ],
+      "column": "order_date",
+      "original": "2026-03-29",
+      "corrupted": "29/03/2026",
+      "format": "DD/MM/YYYY",
+      "ambiguous": false,
+      "id": 18
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        61
+      ],
+      "column": "order_date",
+      "original": "2026-03-31",
+      "corrupted": "31/03/2026",
+      "format": "DD/MM/YYYY",
+      "ambiguous": false,
+      "id": 19
+    },
+    {
+      "kind": "case",
+      "rows": [
+        64
+      ],
+      "column": "email",
+      "original": "victor.quist@example.com",
+      "corrupted": "Victor.Quist@Example.Com",
+      "id": 20
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        68
+      ],
+      "column": "email",
+      "original": "liam.usman@example.net",
+      "corrupted": "",
+      "note": "Not recoverable from this file: the customer has no other order.",
+      "id": 21
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        68
+      ],
+      "column": "order_date",
+      "original": "2026-04-03",
+      "corrupted": "03/04/2026",
+      "format": "DD/MM/YYYY",
+      "ambiguous": true,
+      "note": "Day first; could also be read month first, and both readings fall inside March–June 2026.",
+      "id": 22
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        69
+      ],
+      "column": "region",
+      "original": "South",
+      "corrupted": "SOUTH",
+      "variant": "case",
+      "id": 23
+    },
+    {
+      "kind": "duplicate-key",
+      "rows": [
+        79,
+        80
+      ],
+      "extraRow": 79,
+      "keepRow": 80,
+      "column": "email",
+      "original": "dana.tanaka@example.net",
+      "corrupted": "",
+      "differences": [
+        {
+          "column": "email",
+          "kept": "dana.tanaka@example.net",
+          "extra": ""
+        }
+      ],
+      "note": "The same order exported twice; the earlier copy lost its e-mail address. Keeping the most complete copy keeps the right one; keeping the first copy keeps the incomplete one.",
+      "id": 24
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        81
+      ],
+      "column": "order_date",
+      "original": "2026-04-09",
+      "corrupted": "46121",
+      "format": "serial",
+      "ambiguous": false,
+      "note": "A spreadsheet serial number (days since 30 December 1899, the Excel 1900 date system).",
+      "id": 25
+    },
+    {
+      "kind": "out-of-range",
+      "rows": [
+        83
+      ],
+      "column": "quantity",
+      "original": "2",
+      "corrupted": "-2",
+      "note": "Negative: keyed like a refund. order_total matches a quantity of 2.",
+      "id": 26
+    },
+    {
+      "kind": "out-of-range",
+      "rows": [
+        86
+      ],
+      "column": "quantity",
+      "original": "1",
+      "corrupted": "999",
+      "note": "Impossible: 999 is a placeholder. order_total matches a quantity of 1.",
+      "id": 27
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        96
+      ],
+      "column": "email",
+      "original": "emma.diaz@example.net",
+      "corrupted": "",
+      "note": "Recoverable: the same customer_id has the address on another order.",
+      "id": 28
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        96
+      ],
+      "column": "order_date",
+      "original": "2026-04-16",
+      "corrupted": "16/04/2026",
+      "format": "DD/MM/YYYY",
+      "ambiguous": false,
+      "id": 29
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        97
+      ],
+      "column": "region",
+      "original": "East",
+      "corrupted": "east",
+      "variant": "case",
+      "id": 30
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        103
+      ],
+      "column": "order_date",
+      "original": "2026-04-20",
+      "corrupted": "4/20/26",
+      "format": "M/D/YY",
+      "ambiguous": false,
+      "id": 31
+    },
+    {
+      "kind": "out-of-range",
+      "rows": [
+        109
+      ],
+      "column": "quantity",
+      "original": "1",
+      "corrupted": "0",
+      "note": "Zero: an order of nothing. order_total matches a quantity of 1.",
+      "id": 32
+    },
+    {
+      "kind": "rule-violation",
+      "rows": [
+        111
+      ],
+      "column": "order_total",
+      "original": "13.95",
+      "corrupted": "$15.50",
+      "rule": "order_total = quantity × unit_price − discount",
+      "note": "Discount not subtracted.",
+      "id": 33
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        113
+      ],
+      "column": "order_date",
+      "original": "2026-04-23",
+      "corrupted": "23/04/2026",
+      "format": "DD/MM/YYYY",
+      "ambiguous": false,
+      "id": 34
+    },
+    {
+      "kind": "rule-violation",
+      "rows": [
+        116
+      ],
+      "column": "order_total",
+      "original": "46.00",
+      "corrupted": "$64.00",
+      "rule": "order_total = quantity × unit_price − discount",
+      "note": "Two digits swapped.",
+      "id": 35
+    },
+    {
+      "kind": "exact-duplicate",
+      "rows": [
+        121,
+        126
+      ],
+      "extraRow": 126,
+      "duplicateOf": 121,
+      "note": "Repeats an earlier row exactly.",
+      "id": 36
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        122
+      ],
+      "column": "product",
+      "original": "Cold Brew Pack",
+      "corrupted": "Cold brew pack",
+      "variant": "case",
+      "id": 37
+    },
+    {
+      "kind": "case",
+      "rows": [
+        127
+      ],
+      "column": "email",
+      "original": "elif.ahmed@example.com",
+      "corrupted": "Elif.Ahmed@Example.Com",
+      "id": 38
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        133
+      ],
+      "column": "order_date",
+      "original": "2026-05-04",
+      "corrupted": "04/05/2026",
+      "format": "DD/MM/YYYY",
+      "ambiguous": true,
+      "note": "Day first; could also be read month first, and both readings fall inside March–June 2026.",
+      "id": 39
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        134
+      ],
+      "column": "order_date",
+      "original": "2026-05-04",
+      "corrupted": "04/05/2026",
+      "format": "DD/MM/YYYY",
+      "ambiguous": true,
+      "note": "Day first; could also be read month first, and both readings fall inside March–June 2026.",
+      "id": 40
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        135
+      ],
+      "column": "email",
+      "original": "kofi.zimmer@example.org",
+      "corrupted": "",
+      "note": "Not recoverable from this file: the customer has no other order.",
+      "id": 41
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        137
+      ],
+      "column": "order_date",
+      "original": "2026-05-06",
+      "corrupted": "May 6, 2026",
+      "format": "written",
+      "ambiguous": false,
+      "id": 42
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        140
+      ],
+      "column": "region",
+      "original": "South",
+      "corrupted": "Soth",
+      "variant": "typo",
+      "id": 43
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        141
+      ],
+      "column": "order_date",
+      "original": "2026-05-08",
+      "corrupted": "May 8, 2026",
+      "format": "written",
+      "ambiguous": false,
+      "id": 44
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        148
+      ],
+      "column": "email",
+      "original": "gabe.tanaka@example.net",
+      "corrupted": "",
+      "note": "Recoverable: the same customer_id has the address on another order.",
+      "id": 45
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        148
+      ],
+      "column": "order_date",
+      "original": "2026-05-13",
+      "corrupted": "5/13/26",
+      "format": "M/D/YY",
+      "ambiguous": false,
+      "id": 46
+    },
+    {
+      "kind": "duplicate-key",
+      "rows": [
+        151,
+        157
+      ],
+      "extraRow": 157,
+      "keepRow": 151,
+      "column": "region",
+      "original": "North",
+      "corrupted": "north ",
+      "differences": [
+        {
+          "column": "region",
+          "kept": "North",
+          "extra": "north "
+        }
+      ],
+      "note": "A re-export with the region typed as \"north \" (lower case, trailing space). After trimming and standardising the region it becomes an exact duplicate.",
+      "id": 47
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        152
+      ],
+      "column": "order_date",
+      "original": "2026-05-15",
+      "corrupted": "15/05/2026",
+      "format": "DD/MM/YYYY",
+      "ambiguous": false,
+      "id": 48
+    },
+    {
+      "kind": "outlier-error",
+      "rows": [
+        153
+      ],
+      "column": "unit_price",
+      "original": "18.00",
+      "corrupted": "$1,800.00",
+      "note": "Typing error: 18.00 entered without the decimal point. order_total still matches the real price of $18.00, which is the evidence it is an error.",
+      "id": 49
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        154
+      ],
+      "column": "product",
+      "original": "House Blend 250g",
+      "corrupted": "HOUSE BLEND 250G",
+      "variant": "case",
+      "id": 50
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        156
+      ],
+      "column": "email",
+      "original": "kira.evans@example.net",
+      "corrupted": "",
+      "note": "Not recoverable from this file: the customer has no other order.",
+      "id": 51
+    },
+    {
+      "kind": "exact-duplicate",
+      "rows": [
+        158,
+        161
+      ],
+      "extraRow": 161,
+      "duplicateOf": 158,
+      "note": "Repeats an earlier row exactly.",
+      "id": 52
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        163
+      ],
+      "column": "product",
+      "original": "Espresso Roast 250g",
+      "corrupted": "Espresso Roast 250g ",
+      "variant": "whitespace",
+      "id": 53
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        165
+      ],
+      "column": "order_date",
+      "original": "2026-05-23",
+      "corrupted": "5/23/26",
+      "format": "M/D/YY",
+      "ambiguous": false,
+      "id": 54
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        166
+      ],
+      "column": "order_date",
+      "original": "2026-05-23",
+      "corrupted": "5/23/26",
+      "format": "M/D/YY",
+      "ambiguous": false,
+      "id": 55
+    },
+    {
+      "kind": "whitespace",
+      "rows": [
+        173
+      ],
+      "column": "email",
+      "original": "pia.zimmer@example.org",
+      "corrupted": " pia.zimmer@example.org",
+      "id": 56
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        178
+      ],
+      "column": "product",
+      "original": "House Blend 250g",
+      "corrupted": " House Blend 250g",
+      "variant": "whitespace",
+      "id": 57
+    },
+    {
+      "kind": "case",
+      "rows": [
+        182
+      ],
+      "column": "email",
+      "original": "uma.jensen@example.com",
+      "corrupted": "UMA.JENSEN@EXAMPLE.COM",
+      "id": 58
+    },
+    {
+      "kind": "out-of-range",
+      "rows": [
+        182
+      ],
+      "column": "quantity",
+      "original": "1",
+      "corrupted": "0",
+      "note": "Zero: an order of nothing. order_total matches a quantity of 1.",
+      "id": 59
+    },
+    {
+      "kind": "decimal-comma",
+      "rows": [
+        182
+      ],
+      "column": "unit_price",
+      "original": "16.50",
+      "corrupted": "16,50",
+      "note": "Decimal comma (European style). Read with a decimal point it would become 1,650.",
+      "id": 60
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        183
+      ],
+      "column": "region",
+      "original": "North",
+      "corrupted": "Nrth",
+      "variant": "typo",
+      "id": 61
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        185
+      ],
+      "column": "region",
+      "original": "North",
+      "corrupted": "north ",
+      "variant": "whitespace",
+      "id": 62
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        186
+      ],
+      "column": "order_date",
+      "original": "2026-06-03",
+      "corrupted": "46176",
+      "format": "serial",
+      "ambiguous": false,
+      "note": "A spreadsheet serial number (days since 30 December 1899, the Excel 1900 date system).",
+      "id": 63
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        196
+      ],
+      "column": "region",
+      "original": "East",
+      "corrupted": "E.",
+      "variant": "abbreviation",
+      "id": 64
+    },
+    {
+      "kind": "rule-violation",
+      "rows": [
+        198
+      ],
+      "column": "order_total",
+      "original": "97.20",
+      "corrupted": "$79.20",
+      "rule": "order_total = quantity × unit_price − discount",
+      "note": "Two digits swapped.",
+      "id": 65
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        198
+      ],
+      "column": "product",
+      "original": "Decaf Colombia 1kg",
+      "corrupted": "decaf colombia 1kg",
+      "variant": "case",
+      "id": 66
+    },
+    {
+      "kind": "missing",
+      "rows": [
+        201
+      ],
+      "column": "email",
+      "original": "gabe.tanaka@example.net",
+      "corrupted": "",
+      "note": "Recoverable: the same customer_id has the address on another order.",
+      "id": 67
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        201
+      ],
+      "column": "order_date",
+      "original": "2026-06-13",
+      "corrupted": "46186",
+      "format": "serial",
+      "ambiguous": false,
+      "note": "A spreadsheet serial number (days since 30 December 1899, the Excel 1900 date system).",
+      "id": 68
+    },
+    {
+      "kind": "exact-duplicate",
+      "rows": [
+        203,
+        212
+      ],
+      "extraRow": 212,
+      "duplicateOf": 203,
+      "note": "Repeats an earlier row exactly.",
+      "id": 69
+    },
+    {
+      "kind": "rule-violation",
+      "rows": [
+        205
+      ],
+      "column": "order_total",
+      "original": "133.00",
+      "corrupted": "$138.00",
+      "rule": "order_total = quantity × unit_price − discount",
+      "note": "Discount not subtracted.",
+      "id": 70
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        217
+      ],
+      "column": "order_date",
+      "original": "2026-06-20",
+      "corrupted": "6/20/26",
+      "format": "M/D/YY",
+      "ambiguous": false,
+      "id": 71
+    },
+    {
+      "kind": "exact-duplicate",
+      "rows": [
+        225,
+        229
+      ],
+      "extraRow": 229,
+      "duplicateOf": 225,
+      "note": "Repeats an earlier row exactly.",
+      "id": 72
+    },
+    {
+      "kind": "date-format",
+      "rows": [
+        227
+      ],
+      "column": "order_date",
+      "original": "2026-06-25",
+      "corrupted": "June 25, 2026",
+      "format": "written",
+      "ambiguous": false,
+      "id": 73
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        234
+      ],
+      "column": "region",
+      "original": "West",
+      "corrupted": "West ",
+      "variant": "whitespace",
+      "id": 74
+    },
+    {
+      "kind": "inconsistent-category",
+      "rows": [
+        235
+      ],
+      "column": "region",
+      "original": "Central",
+      "corrupted": "central",
+      "variant": "case",
+      "id": 75
+    }
+  ],
+  "notable": [
+    {
+      "kind": "genuine-outlier",
+      "column": "quantity",
+      "value": "120",
+      "note": "A real office order of 120 bags (order_total agrees with quantity × unit_price − discount, after a 10% bulk discount). Extreme but genuine: removing it would understate revenue.",
+      "rows": [
+        149
+      ]
+    }
+  ],
+  "notes": [
+    "rating is blank where the customer left no rating; the truth file is blank there too. One-off buyers rate far less often than subscribers, so the missingness depends on subscription (missing at random given subscription), and subscribers who rate give higher ratings.",
+    "unit_price is stored as text: most values carry a $ sign, some do not. order_total is stored as text with a $ sign and thousands separators. These formats are not listed as defects because the numbers are right once read as numbers.",
+    "The DD/MM/YYYY dates come from web orders and the M/D/YY dates from app orders. Every unambiguous four-digit-year slash date is day first and every two-digit-year date is month first, which is the evidence for reading the ambiguous ones day first."
+  ]
+}

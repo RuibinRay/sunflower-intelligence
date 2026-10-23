@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Data Cleaning Lab · Learn · Sunflower Intelligence</title>
+  <meta name="description" content="Inspect messy fictional datasets, apply cleaning steps and see their consequences, then download the cleaned data and a quality report.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/labs/cleaning/">
+  <meta property="og:title" content="Data Cleaning Lab · Sunflower Intelligence">
+  <meta property="og:description" content="Inspect messy fictional datasets, apply cleaning steps and see their consequences, then download the cleaned data and a quality report.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
+  <link rel="preload" href="../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../../assets/css/base.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/study.css?v=6">
+  <link rel="stylesheet" href="../../../assets/css/lab-cleaning.css?v=6">
+</head>
+<body class="room room--learn room--sub room--lab">
+  <a class="skip-link" href="#ledger">Skip to the lab</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../../finance/">Finance</a></li>
+        <li><a href="../../../analytics/">Business analytics</a></li>
+        <li><a href="../../../marketing/">Marketing</a></li>
+        <li><a href="../../../models/">How I build the models</a></li>
+        <li><a href="../../../contact/">Contact</a></li>
+        <li><a href="../../../learn/" aria-current="page">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    <header class="canvas canvas--sub" aria-labelledby="room-title">
+      <a class="canvas-room" href="../../"><img src="../../../assets/img/flower-learn-160.webp" alt="" width="56" height="56"><span>Learn</span></a>
+      <p class="plate-no">Lab · B02 Data Cleaning and Preparation</p>
+      <h1 id="room-title" class="display is-long">Data Cleaning Lab</h1>
+      <p class="chapter-note">Inspect a messy dataset, choose cleaning steps, and see what each one does to the data and to the conclusions you would draw from it.</p>
+      <!-- chrome:subnav -->
+      <nav class="subnav" aria-label="Learn pages">
+        <ul role="list">
+          <li><a href="../../">Study home</a></li>
+          <li><a href="../../finance/">Finance & Accounting</a></li>
+          <li><a href="../../analytics/">Business Analytics</a></li>
+          <li><a href="../../marketing/">Marketing & Strategy</a></li>
+          <li><a href="../../labs/" aria-current="true">Labs</a></li>
+          <li><a href="../../glossary/">Glossary</a></li>
+          <li><a href="../../formulas/">Formulas</a></li>
+          <li><a href="../../review/">Review</a></li>
+          <li><a href="../../notebook/">Notebook</a></li>
+          <li><a href="../../lessons/">Plates</a></li>
+          <li><a href="../../practise/">Skills check</a></li>
+          <li><a href="../../curriculum/">Curriculum</a></li>
+        </ul>
+      </nav>
+      <!-- /chrome:subnav -->
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#choose">Choose data</a></li><li><a href="#inspect">Inspect</a></li><li><a href="#clean">Clean</a></li><li><a href="#consequences">Consequences</a></li><li><a href="#export">Export</a></li><li><a href="#method">How the lab works</a></li></ul></nav>
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../../">The painting</a></li><li><a href="../../">Learn</a></li><li><a href="../">Labs</a></li><li aria-current="page">Data Cleaning Lab</li></ol></nav>
+      <div class="ledger-intro">
+        <p class="lead">Inspect a messy dataset, choose cleaning steps, and see what each one does to the data and to the conclusions you would draw from it.</p>
+      </div>
+
+      <section class="tool" id="choose" aria-labelledby="choose-title">
+        <div class="tool-head">
+          <h2 id="choose-title">Choose data</h2>
+          <p>Three fictional datasets, each generated clean and then given known problems to find. Or bring your own CSV: it is read in this browser tab and never uploaded.</p>
+        </div>
+        <div class="bench bench-stack cl-bench">
+          <fieldset class="cl-datasets">
+            <legend>Dataset</legend>
+            <div class="cl-cards">
+              <div class="cl-card">
+                <input type="radio" name="cl-dataset" id="ds-lantern" value="lantern-orders">
+                <label for="ds-lantern"><strong>Lantern Coffee orders</strong><span>A coffee roaster’s online-shop export, March–June 2026: duplicates, mixed date formats, prices stored as text, messy regions, missing ratings.</span><span class="cl-meta">240 rows · 14 columns · one row per order</span></label>
+                <a class="cl-dl" href="../../../assets/data/study/lantern-orders.csv" download>Download raw CSV<span class="visually-hidden"> of Lantern Coffee orders</span></a>
+              </div>
+              <div class="cl-card">
+                <input type="radio" name="cl-dataset" id="ds-harborview" value="harborview-bookings">
+                <label for="ds-harborview"><strong>Harborview Hotel bookings</strong><span>An 80-room hotel, June 2025 – May 2026: impossible stays, placeholder rates, country codes, blanks that mean zero, sync duplicates.</span><span class="cl-meta">180 rows · 13 columns · one row per booking</span></label>
+                <a class="cl-dl" href="../../../assets/data/study/harborview-bookings.csv" download>Download raw CSV<span class="visually-hidden"> of Harborview Hotel bookings</span></a>
+              </div>
+              <div class="cl-card">
+                <input type="radio" name="cl-dataset" id="ds-northfield" value="northfield-students">
+                <label for="ds-northfield"><strong>Northfield University students</strong><span>Student records for 2025–26: two GPA scales, attendance above 100%, programme spellings, survey gaps that depend on the year.</span><span class="cl-meta">150 rows · 10 columns · one row per student</span></label>
+                <a class="cl-dl" href="../../../assets/data/study/northfield-students.csv" download>Download raw CSV<span class="visually-hidden"> of Northfield University students</span></a>
+              </div>
+            </div>
+          </fieldset>
+          <p class="cl-note">What each column should contain is in the <a href="../../../assets/data/study/README.md">data dictionary</a>. All data are fictional, generated for teaching.</p>
+          <details class="cl-own" id="cl-own">
+            <summary>Use your own data</summary>
+            <div class="cl-own-body">
+              <div class="input-actions">
+                <label class="btn btn-secondary file-btn" for="cl-file">Upload a CSV<input type="file" id="cl-file" accept=".csv,.tsv,.txt,text/csv,text/plain" class="visually-hidden"></label>
+              </div>
+              <div class="field">
+                <label for="cl-paste">Or paste a table, with column names in the first line</label>
+                <textarea id="cl-paste" class="textarea" spellcheck="false" rows="5" placeholder="order_id,region,amount&#10;A1,North,12.50&#10;A2,north ,$9.00"></textarea>
+              </div>
+              <div class="input-actions"><button class="btn btn-primary" type="button" id="cl-read">Read the pasted table</button></div>
+              <p class="field-hint">Comma, semicolon, tab or pipe separated. Files are processed in this browser tab and never uploaded; recipes for your own data are not remembered.</p>
+            </div>
+          </details>
+          <p class="cl-loaded" id="cl-loaded" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="tool" id="inspect" aria-labelledby="inspect-title">
+        <div class="tool-head">
+          <h2 id="inspect-title">Inspect</h2>
+          <p>Profile every column, read the issues the lab finds and why each matters, then look at the problem cells in the table. Everything here describes the data as it is now, after the steps in your recipe.</p>
+        </div>
+        <div class="bench bench-stack cl-bench">
+          <details class="cl-profilebox" open>
+            <summary><h3 class="cl-h cl-h-inline">Column profiles</h3></summary>
+            <div id="cl-profile"></div>
+          </details>
+          <div>
+            <h3 class="cl-h">Issues</h3>
+            <div id="cl-issues"><p class="cl-loading">Loading the data…</p></div>
+          </div>
+          <div>
+            <h3 class="cl-h">The data</h3>
+            <div id="cl-table"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tool" id="clean" aria-labelledby="clean-title">
+        <div class="tool-head">
+          <h2 id="clean-title">Clean</h2>
+          <p>Pick an operation, set it up (an issue’s “Set up” button fills in sensible values), preview what it would do, then apply it. Each step joins the recipe. Removing a step rebuilds the table from the raw data, so every result can be reproduced.</p>
+        </div>
+        <div class="bench bench-stack cl-bench">
+          <div class="cl-cleangrid">
+            <div class="cl-builder"><h3 class="cl-h">Add a step</h3><div id="cl-builder"></div></div>
+            <div class="cl-recipebox"><h3 class="cl-h">Recipe</h3><div id="cl-recipe"></div></div>
+          </div>
+          <p class="cl-status" id="cl-status" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="tool" id="consequences" aria-labelledby="cons-title">
+        <div class="tool-head">
+          <h2 id="cons-title">Consequences</h2>
+          <p>Cleaning changes the answers you get from the data. After each step, see the rows and cells changed, the statistics of the columns you watch before and after, and the shares of a category, with what this kind of step can do to your conclusions.</p>
+        </div>
+        <div class="bench bench-stack cl-bench"><div id="cl-consequences"></div></div>
+      </section>
+
+      <section class="tool" id="export" aria-labelledby="export-title">
+        <div class="tool-head">
+          <h2 id="export-title">Export</h2>
+          <p>Download the cleaned data, the recipe that produces it and a data quality report in Markdown. All three are generated in this browser.</p>
+        </div>
+        <div class="bench bench-stack cl-bench"><div id="cl-export"></div></div>
+      </section>
+
+      <section class="tool" id="method" aria-labelledby="method-title">
+        <div class="tool-head">
+          <h2 id="method-title">How the lab works</h2>
+          <p>The definitions behind every number, and what the lab will not do for you.</p>
+        </div>
+        <div class="cl-method">
+          <div class="cl-method-grid">
+            <div>
+              <h3 class="cl-h">Summary statistics</h3>
+              <p>The standard deviation is the sample SD, dividing by n − 1. Quartiles use linear interpolation between ordered values: the p-th quantile sits at position (n − 1) × p, counting from 0. This is Hyndman and Fan’s type 7, NumPy’s default and Excel’s QUARTILE.INC. Other software may use another definition and give slightly different quartiles for small samples.</p>
+            </div>
+            <div>
+              <h3 class="cl-h">Skewness</h3>
+              <p>The adjusted Fisher–Pearson coefficient G₁ = √(n(n − 1)) ÷ (n − 2) × m₃ ÷ m₂^(3/2), where m₂ and m₃ are the second and third central moments with n in the denominator (the same as Excel’s SKEW). As a rule of thumb, |G₁| above 1 is strong skew; the lab reports skew for columns with at least 20 values and 12 distinct values.</p>
+            </div>
+            <div>
+              <h3 class="cl-h">Outlier rules</h3>
+              <p><strong>IQR fences:</strong> a value is flagged below Q1 − k × IQR or above Q3 + k × IQR. With k = 1.5 these are the inner fences (mild outliers); k = 3 gives the outer fences (extreme outliers). <strong>z-score:</strong> z = (x − mean) ÷ SD, flagged when |z| exceeds the threshold (3 by default); the mean and SD include the extreme values themselves, which can hide them in small samples. <strong>Modified z-score:</strong> M = 0.6745 × (x − median) ÷ MAD, where MAD is the median absolute deviation from the median; the threshold 3.5 is Iglewicz and Hoaglin’s recommendation. Dividing by 0.6745 is the same as multiplying the MAD by 1.4826, which makes it comparable to an SD for normal data. If more than half the values are equal the MAD is 0 and the lab refuses the rule rather than divide by zero.</p>
+            </div>
+            <div>
+              <h3 class="cl-h">Types, dates and numbers</h3>
+              <p>A value is a number if it reads as one with the chosen decimal mark; with a decimal point, commas must separate groups of three digits, so “16,50” is never silently read as 1,650. Dates become ISO 8601 (YYYY-MM-DD). In automatic order, a slash date that reads both ways (04/05/2026) is left unchanged and listed; choose day first or month first from evidence. Two-digit years 00–68 mean 2000–2068 and 69–99 mean 1969–1999. Spreadsheet serials use Excel’s 1900 date system, counting days from 30 December 1899, so 46085 is 4 March 2026.</p>
+            </div>
+            <div>
+              <h3 class="cl-h">Missing values</h3>
+              <p>Missing completely at random (MCAR): the chance a value is missing is the same for every row. Missing at random (MAR): it depends only on things you observe, such as subscription. Missing not at random (MNAR): it depends on something you don’t observe, often the missing value itself. The lab tests whether missingness differs across the groups of each other column (a chi-square test, reported when p &lt; 0.01 and the rates differ by at least 15 points). A significant result rules out MCAR for that pattern; no test can tell MAR from MNAR.</p>
+            </div>
+            <div>
+              <h3 class="cl-h">Leakage</h3>
+              <p>Scaling, imputation and target encoding learn numbers from the data: a mean, a minimum, a group average. For a model, learn them from the training rows only and apply the same numbers to the test rows; otherwise information from the test rows leaks into training and the test score looks better than it should. The lab offers a seeded 70% training subset (or a split column) for this, and its notes say which rows the parameters came from.</p>
+            </div>
+          </div>
+          <div class="verdict is-warn cl-limits">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 5.5v5.2M10 14.2v.3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <p><strong>Limits.</strong> The lab finds problems that break a pattern or a rule; a value can be wrong and still look normal. Spelling suggestions come from spelling alone and must be checked. Issue detection uses rules from each dataset’s data dictionary; for your own data it can only use general checks. It handles one table at a time (no joins) and is built for teaching-sized data: it stays responsive up to a few thousand rows. Every decision is yours, and the report records it.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="sources" aria-labelledby="sources-title">
+        <h2 id="sources-title">Sources</h2>
+        <ol>
+          <li>NIST/SEMATECH e-Handbook of Statistical Methods, section 1.3.5.17, <a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda35h.htm">Detection of outliers</a> (the modified z-score and the 3.5 threshold).</li>
+          <li>NIST/SEMATECH e-Handbook of Statistical Methods, section 7.1.6, <a href="https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm">What are outliers in the data?</a> (inner and outer fences).</li>
+          <li>NIST/SEMATECH e-Handbook of Statistical Methods, section 1.3.5.11, <a href="https://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm">Measures of skewness and kurtosis</a>.</li>
+          <li>scikit-learn documentation, <a href="https://scikit-learn.org/stable/common_pitfalls.html">Common pitfalls and recommended practices</a>, section 12.2 on data leakage.</li>
+          <li>NumPy documentation, <a href="https://numpy.org/doc/stable/reference/generated/numpy.quantile.html">numpy.quantile</a> (the default linear method, Hyndman and Fan type 7).</li>
+          <li>Microsoft Support, <a href="https://support.microsoft.com/en-us/office/date-systems-in-excel-e7fe7167-48a9-4b96-bb53-5612a800b487">Date systems in Excel</a>.</li>
+          <li>Stef van Buuren, <i>Flexible Imputation of Missing Data</i>, second edition, section 1.2, <a href="https://stefvanbuuren.name/fimd/sec-MCAR.html">Concepts of MCAR, MAR and MNAR</a>.</li>
+        </ol>
+        <p>Sources checked on 22 October 2026.</p>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../../finance/" data-portal="#E8B923"><img src="../../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../../analytics/" data-portal="#192B49"><img src="../../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../../marketing/" data-portal="#56632C"><img src="../../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../../models/" data-portal="#252A31"><img src="../../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../../contact/" data-portal="#F6E7C1"><img src="../../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../../assets/js/pages/lab-cleaning.js?v=6"></script>
+</body>
+</html>

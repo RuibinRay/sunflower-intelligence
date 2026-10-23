@@ -1,0 +1,182 @@
+// assess-m4.js — B02 module 4 test: Preparing data for analysis (scaling, encoding-categories, transforming-data, data-quality-report).
+// No hints; solutions are shown when the student reviews the test. All businesses and figures are fictional.
+export const items = [
+  {
+    id: 'b02-m4-1', lesson: 'scaling', type: 'num', kind: 'numerical',
+    prompt: 'In Northfield University’s training data, weekly <code>study_hours</code> has a median of 12, a first quartile of 8 and a third quartile of 18. What is the robust-scaled value for a student who studies 27 hours a week?',
+    answer: 1.5, check: () => (27 - 12) / (18 - 8), unit: '', places: 2, tol: 0.005,
+    wrong: [
+      { value: 2.7, say: 'You divided the hours by the interquartile range without first subtracting the median.' },
+      { value: 0.83, say: 'You divided by the third quartile, 18. Robust scaling divides by the interquartile range, Q3 − Q1 = 10.' },
+    ],
+    solution: 'Robust scaling: r = (x − median) ÷ (Q3 − Q1) = (27 − 12) ÷ (18 − 8) = 15 ÷ 10 = 1.5. The student is one and a half interquartile ranges above the median.',
+  },
+  {
+    id: 'b02-m4-2', lesson: 'scaling', type: 'num', kind: 'applied',
+    prompt: 'A min–max scaler for <code>entry_score</code> was fitted on the training set, where scores ran from 40 to 90. A new applicant scores 95. What scaled value should the model receive?',
+    answer: 1.1, check: () => (95 - 40) / (90 - 40), unit: '', places: 2, tol: 0.005,
+    wrong: [
+      { value: 1, say: 'Don’t clip or refit the scaler to the new value: apply the training minimum and maximum unchanged. Values outside the training range scale to outside 0–1.' },
+      { value: 0.95, say: 'That divides the score by 100. Min–max scaling uses the training minimum (40) and maximum (90).' },
+    ],
+    solution: 'x′ = (x − min) ÷ (max − min) with the training parameters: (95 − 40) ÷ (90 − 40) = 55 ÷ 50 = 1.1. A value above 1 is expected for a score higher than any in the training set; refitting on new data would be leakage and would change the meaning of every scaled value.',
+  },
+  {
+    id: 'b02-m4-3', lesson: 'scaling', type: 'classify', kind: 'conceptual',
+    prompt: 'For each method, say whether putting the features on comparable scales changes its results.',
+    items: ['k-nearest neighbours', 'k-means clustering', 'Principal component analysis', 'A decision tree', 'A random forest'],
+    categories: ['Scaling changes the result', 'Scaling makes (almost) no difference'],
+    answer: [0, 0, 0, 1, 1],
+    feedback: {
+      0: 'k-nearest neighbours compares distances, which are dominated by whichever feature has the largest units.',
+      1: 'k-means assigns points to the nearest centre by distance, so units matter.',
+      2: 'PCA finds directions of greatest variance, and a feature with large units has large variance just because of its units.',
+      3: 'A tree splits one feature at a time on thresholds; rescaling a feature moves the threshold but not the split.',
+      4: 'A random forest is made of trees, so it inherits their indifference to scale.',
+    },
+    solution: 'Distance- and variance-based methods (k-nearest neighbours, k-means, PCA) give different results on unscaled data, because large-unit features dominate. Tree-based models split on one feature at a time, and a monotone rescaling leaves the splits, and so the predictions, essentially unchanged.',
+  },
+  {
+    id: 'b02-m4-4', lesson: 'encoding-categories', type: 'num', kind: 'numerical',
+    prompt: 'A linear regression with an intercept will use four categorical columns from <code>lantern-orders</code>: <code>region</code> (5 categories), <code>channel</code> (2), <code>subscription</code> (2) and <code>product</code> (11). Using dummy coding with one reference category per variable, how many dummy columns does the model get?',
+    answer: 16, check: () => [5, 2, 2, 11].reduce((s, k) => s + (k - 1), 0), unit: 'columns', places: 0, tol: 0,
+    wrong: [
+      { value: 20, say: 'That is full one-hot encoding. With an intercept, one category per variable must be dropped to avoid the dummy-variable trap.' },
+      { value: 19, say: 'You dropped one column in total. Drop one reference category for each of the four variables.' },
+      { value: 4, say: 'Each variable needs k − 1 columns, not one column each.' },
+    ],
+    solution: 'Dummy coding gives k − 1 columns per variable: region 4, channel 1, subscription 1, product 10, total 16. Full one-hot encoding would give 5 + 2 + 2 + 11 = 20 columns, which with an intercept are perfectly collinear.',
+  },
+  {
+    id: 'b02-m4-5', lesson: 'encoding-categories', type: 'classify', kind: 'conceptual',
+    prompt: 'Choose the most suitable treatment for each variable before it is used in a linear model.',
+    items: [
+      'Roast level: light, medium, dark',
+      'Delivery region: North, South, East, West, Central',
+      'Satisfaction band: poor, fair, good, excellent',
+      'Payment method: card, digital wallet, gift card',
+      '<code>customer_id</code>',
+    ],
+    categories: ['Ordinal encoding', 'One-hot or dummy encoding', 'Leave out of the model'],
+    answer: [0, 1, 0, 1, 2],
+    feedback: {
+      1: 'Regions have no order. Integer codes would invent one and make South look “between” North and East.',
+      3: 'Payment methods are nominal: no method is more or less than another.',
+      4: 'An identifier is unique per customer: it carries no general pattern and lets a model memorise individuals.',
+    },
+    solution: 'Ordered categories (roast level, satisfaction band) suit ordinal encoding with the order supplied explicitly, accepting the equal-steps assumption. Nominal categories (region, payment method) need one-hot or dummy columns so no false order is implied. Identifiers such as customer_id are left out of the model.',
+  },
+  {
+    id: 'b02-m4-6', lesson: 'encoding-categories', type: 'mc', kind: 'applied',
+    prompt: 'To predict whether a Harborview booking will be cancelled, an analyst replaces <code>country</code> with the cancellation rate of each country, computed on all bookings before splitting into training and test sets. Test accuracy is excellent. What is wrong?',
+    options: [
+      'The encoding used the test set’s outcomes, and each row’s own outcome, so test accuracy is too optimistic; compute it on the training set only, out-of-fold and smoothed.',
+      'Nothing: target encoding always uses the whole dataset.',
+      'Country should have been label-encoded alphabetically instead.',
+      'The test set is too small; the encoding itself is fine.',
+    ],
+    answer: 0,
+    feedback: {
+      1: 'Using outcomes from the rows you are about to predict is target leakage, the main risk of target encoding.',
+      2: 'Alphabetical codes would invent an order among countries; that doesn’t address the leakage.',
+      3: 'Sample size isn’t the problem: information from the test outcomes has leaked into the feature.',
+    },
+    solution: 'Target encoding puts the target into a feature. Fitted on all the data, it carries test-set outcomes into training and lets each row see its own outcome, especially for rare countries. Fit it on the training set only, with out-of-fold encodings for training rows and smoothing towards the overall rate, then apply it to the test set unchanged.',
+  },
+  {
+    id: 'b02-m4-7', lesson: 'transforming-data', type: 'num', kind: 'numerical',
+    prompt: 'Student records (one row per student) are left-joined on <code>programme</code> to a fee table that should have one row per programme but holds two fee years for Business Administration. How many rows does the left join return?',
+    data: { table: {
+      head: ['Programme', 'Students (left)', 'Fee rows (right)'],
+      rows: [['Business Administration', '5', '2'], ['Computer Science', '4', '1'], ['Nursing', '3', '1'], ['Psychology', '2', '0']],
+    } },
+    answer: 19, check: () => [[5, 2], [4, 1], [3, 1], [2, 0]].reduce((s, [a, b]) => s + a * Math.max(b, 1), 0), unit: 'rows', places: 0, tol: 0,
+    wrong: [
+      { value: 14, say: 'That is the number of students. Each Business Administration student matches two fee rows and appears twice.' },
+      { value: 17, say: 'That is the inner join. A left join also keeps the two Psychology students, who have no fee row.' },
+    ],
+    solution: 'Business Administration 5 × 2 = 10; Computer Science 4 × 1 = 4; Nursing 3 × 1 = 3; Psychology has no fee row, so its 2 students are kept once each with the fee missing. Total 10 + 4 + 3 + 2 = 19 rows. Fix the fee table (one row per programme for the year in question) and the join returns 14 rows.',
+  },
+  {
+    id: 'b02-m4-8', lesson: 'transforming-data', type: 'rows', kind: 'applied',
+    prompt: 'This table came from left-joining six orders to a product-cost table. Select every row whose order appears more than once in the result.',
+    data: { table: {
+      head: ['Order', 'Product', 'Unit cost ($)'],
+      rows: [
+        ['O1', 'House Blend 250g', '5.20'],
+        ['O2', 'Decaf Colombia 250g', '6.40'],
+        ['O2', 'Decaf Colombia 250g', '6.10'],
+        ['O3', 'Espresso Roast 250g', '5.90'],
+        ['O4', 'Decaf Colombia 250g', '6.40'],
+        ['O4', 'Decaf Colombia 250g', '6.10'],
+        ['O5', 'House Blend 250g', '5.20'],
+        ['O6', 'Cold Brew Pack', ''],
+      ],
+    } },
+    answer: [1, 2, 4, 5],
+    solution: 'Orders O2 and O4 each appear twice, once with each of the two Decaf Colombia 250g cost rows: the cost table holds that product twice, so the join exploded from 6 orders to 8 rows. O6 appears once with a missing cost, which is a left join working as intended. Fix the cost table (keep the cost in force on each order date) and the join returns 6 rows.',
+  },
+  {
+    id: 'b02-m4-9', lesson: 'transforming-data', type: 'mc', kind: 'conceptual',
+    prompt: 'A dashboard shows the average order value for each of Lantern’s five regions. A manager averages the five figures and calls the result the company’s average order value. When is that correct?',
+    options: [
+      'Only when every region has the same number of orders, or all five averages are equal.',
+      'Always, because every region is part of the company.',
+      'Only when there are more than five regions.',
+      'Only when the regional averages are medians rather than means.',
+    ],
+    answer: 0,
+    feedback: {
+      1: 'The company average is total revenue ÷ total orders: a weighted average of the regional averages, weighted by orders.',
+      2: 'The number of groups doesn’t matter; their sizes do.',
+      3: 'Averaging medians is even less meaningful: medians don’t combine into an overall median at all.',
+    },
+    solution: 'The company figure is total revenue ÷ total orders, which equals Σ(orders in region × regional average) ÷ Σ(orders in region): a weighted average of the regional averages. A plain average gives each region the same say, and equals the overall mean only when the regions have equal numbers of orders or identical averages.',
+  },
+  {
+    id: 'b02-m4-10', lesson: 'data-quality-report', type: 'classify', kind: 'conceptual',
+    prompt: 'Choose the section of a data quality report each statement belongs in.',
+    items: [
+      'Exported from the booking system on 2 June 2026 by the revenue team; file checksum recorded.',
+      'Rates of 0 and 9999 replaced by total ÷ nights, because the totals agree with the price list.',
+      'Cancelled and no-show bookings were excluded from the average daily rate, so it describes stays that happened, not every booking taken.',
+      'Guests’ countries were recorded only for some channels, and the rest can’t be recovered.',
+      'Step 6: mapped country codes to names with mapping table version 3; row count unchanged.',
+    ],
+    categories: ['Source', 'Issues and decisions', 'Effect on the analysis', 'Limitations', 'Cleaning log'],
+    answer: [0, 1, 2, 3, 4],
+    feedback: {
+      2: 'It follows from a decision (excluding cancellations and no-shows) and tells the reader what the figure does and doesn’t represent: an effect on the analysis.',
+      3: 'An unrecoverable gap in the data is a limitation, not the consequence of a decision.',
+    },
+    solution: 'Where and when the file came from is the source; a problem with its decision and evidence is an issues-and-decisions entry; what a result represents, given the data used, is an effect on the analysis; an unsolvable gap is a limitation; a numbered, rerunnable step with its row count belongs in the cleaning log.',
+  },
+  {
+    id: 'b02-m4-11', lesson: 'data-quality-report', type: 'num', kind: 'numerical',
+    prompt: 'A fictional gym’s member export has 1,800 rows, and 270 have no phone number (15.0%). Cleaning removes 200 duplicate rows, 10 of which had no phone number. What percentage of phone numbers is missing after cleaning?',
+    answer: 16.25, check: () => (270 - 10) / (1800 - 200) * 100, unit: '%', places: 2, tol: 0.01,
+    wrong: [
+      { value: 14.44, say: 'You divided by the original 1,800 rows. After cleaning there are 1,600.' },
+      { value: 15, say: 'The share changes: the count fell by 10, but the rows fell by 200.' },
+      { value: 16.88, say: 'You kept all 270 missing values. Ten of them left with the duplicates.' },
+    ],
+    solution: 'Missing after = 270 − 10 = 260; rows after = 1,800 − 200 = 1,600; share = 260 ÷ 1,600 × 100 = 16.25%. The share rose by 1.25 percentage points although missing values fell, because the denominator fell proportionally more. The report states both counts and both denominators.',
+  },
+  {
+    id: 'b02-m4-12', lesson: 'data-quality-report', type: 'mc', kind: 'applied',
+    prompt: 'Ratings in Lantern’s cleaned orders are missing far more often for one-off buyers than for subscribers, and subscribers rate higher. Which summary line should the report use?',
+    options: [
+      '“Average rating 4.1 out of 5, from the orders that were rated. Subscribers rate more often and more highly than one-off buyers, so this figure mainly reflects subscribers.”',
+      '“Customers rate Lantern 4.1 out of 5.”',
+      '“Average rating 4.1 out of 5, after missing ratings were filled with the average.”',
+      '“Average rating 4.1 out of 5 (outliers removed).”',
+    ],
+    answer: 0,
+    feedback: {
+      1: 'It presents the raters as if they were all customers, hiding that one-off buyers are under-represented.',
+      2: 'Filling missing ratings with the mean leaves the average unchanged and hides the missingness, while making the data look complete.',
+      3: 'Nothing suggests outliers; vague labels like this invite distrust and hide what was actually done.',
+    },
+    solution: 'Ratings are missing more often for one group, so the average over existing ratings describes the customers who rate. The honest line gives the figure, says what it is computed from, and names the group it over-represents; the report then gives the figures for each group and the response rates.',
+  },
+];
