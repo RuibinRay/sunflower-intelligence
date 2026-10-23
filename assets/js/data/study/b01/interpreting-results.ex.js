@@ -62,9 +62,9 @@ export const widgets = {
       const bothUp = v.wB >= v.wA && v.aB >= v.aA && (v.wB > v.wA || v.aB > v.aA);
       const bothDown = v.wB <= v.wA && v.aB <= v.aA && (v.wB < v.wA || v.aB < v.aA);
       const note = bothUp && total < -0.005
-        ? `Simpson’s paradox: both channels converted better in period B, yet the overall rate fell ${Math.abs(total).toFixed(2)} points, because the mix moved towards the ${v.wB < v.aB ? 'lower' : 'higher'}-converting channel. The rates alone added ${signed(rateEff)} points; the mix took away ${Math.abs(mixEff).toFixed(2)}.`
+        ? `Simpson’s paradox: both channels converted better in period B, yet the overall rate fell ${Math.abs(total).toFixed(2)} points, because the mix moved towards the ${b > a ? 'website' : 'app'}, the lower-converting channel. The rates alone added ${signed(rateEff)} points; the mix took away ${Math.abs(mixEff).toFixed(2)}.`
         : bothDown && total > 0.005
-          ? `The reverse paradox: both channels converted worse in period B, yet the overall rate rose, because the mix moved towards the higher-converting channel.`
+          ? `The reverse paradox: both channels converted worse in period B, yet the overall rate rose ${total.toFixed(2)} points, because the mix moved towards the ${b > a ? 'website' : 'app'}, the higher-converting channel.`
           : `The overall rate changed by ${signed(total)} points: ${signed(rateEff)} from the channel rates and ${signed(mixEff)} from the mix. Set the two periods’ shares equal and the mix effect disappears.`;
       return {
         headline: { label: 'Change in overall conversion', value: `${signed(total)} points` },
@@ -89,7 +89,7 @@ export const widgets = {
       { name: 'Other orders', values: D.orders.map((o, i) => o - S.giftBoxOrders[i]) },
     ],
     y: { label: 'Orders', format: 'int' },
-    note: 'Gift-box orders went from 9 in October to 88 in November and 231 in December: a rise of almost 880% from a tiny base, then 162.5%. Other orders grew far more slowly, from 310 in October to 352 in December. Comparing December with November mixes this seasonal pattern with any underlying change; from 2027 Lantern can compare each month with the same month a year earlier.',
+    note: 'Gift-box orders went from 9 in October to 88 in November and 231 in December: a rise of almost 880% from a tiny base, then 162.5%. Other orders grew far more slowly, from 310 in October to 352 in December. Comparing December with November mixes this seasonal pattern with any underlying change; from March 2027 Lantern can compare each month with the same month a year earlier.',
   },
 };
 
@@ -117,7 +117,7 @@ export const guided = [
     prompt: 'Each statement describes two things that move together. Classify the most likely non-causal explanation.',
     items: [
       'Ice-cream sales and sunburn cases rise and fall together through the year.',
-      'Shops with bigger advertising budgets sell more; each shop’s budget is set as a share of its sales last year.',
+      'Shops that sell more spend more on advertising; each shop’s budget is set at 5% of its sales in the same year.',
       'Over six months, a shop’s orders rose in exactly the months when rainfall rose in a city 3,000 km away.',
       'The three salespeople with the worst March figures were coached, and all three did better in April.',
       'App customers spend more per order than website customers; the app is mostly installed by loyal regular buyers.',
@@ -127,20 +127,20 @@ export const guided = [
     hints: ['Look for a third factor, a cause running the other way, a short series, or units picked because they were extreme.', 'Summer drives one of them; customer loyalty drives another.'],
     feedback: {
       0: 'Sunny weather raises both ice-cream sales and sunburn: a confounder.',
-      1: 'Sales determine next year’s budget, so the causation runs from sales to advertising.',
+      1: 'Each budget is set from the shop’s own sales, so sales drive advertising: the causation runs from sales to advertising, whatever advertising also does.',
       2: 'With six data points, unrelated series often line up by coincidence.',
       3: 'The three were chosen for being the worst; some improvement was likely without coaching.',
       4: 'Loyalty drives both using the app and spending more: the app need not cause the higher spending.',
     },
-    solution: 'Confounding: ice cream and sunburn (summer), app and spending (loyalty). Reverse causation: budgets set from past sales. Chance: rainfall far away over six months. Regression to the mean: the coached worst performers.',
+    solution: 'Confounding: ice cream and sunburn (summer), app and spending (loyalty). Reverse causation: budgets set as a share of sales. Chance: rainfall far away over six months. Regression to the mean: the coached worst performers.',
   },
   {
     id: 'b01-int-g3', type: 'steps', kind: 'applied',
     prompt: 'A fictional hotel’s direct-booking site had, in period A, 4,000 desktop visits with 200 bookings and 6,000 mobile visits with 120 bookings: an overall conversion of 3.20%. In period B it had 3,000 desktop visits with 156 bookings (5.2%) and 9,000 mobile visits with 189 bookings (2.1%). Both devices improved. What happened overall, and why?',
     solution: 'Overall B = 345 ÷ 12,000 = 2.875% ≈ 2.88%, down from 3.20%. At period A’s mix (40% desktop, 60% mobile), period B’s rates give 0.4 × 5.2 + 0.6 × 2.1 = 3.34%, so the rates alone would have raised conversion; the shift towards mobile, the lower-converting device, pulled it down. Simpson’s paradox.',
     steps: [
-      { id: 'b01-int-g3-s1', type: 'num', prompt: 'What was overall conversion in period B? Two decimal places.',
-        answer: 2.88, check: () => (156 + 189) / (3000 + 9000) * 100, unit: '%', places: 2, tol: 0.006,
+      { id: 'b01-int-g3-s1', type: 'num', prompt: 'What was overall conversion in period B? Three decimal places.',
+        answer: 2.875, check: () => (156 + 189) / (3000 + 9000) * 100, unit: '%', places: 3, tol: 0.006,
         hints: ['Add the bookings and the visits across devices.', '345 ÷ 12,000.'],
         wrong: [{ value: 3.65, say: 'That is the plain average of 5.2% and 2.1%. Mobile has three times desktop’s visits: divide total bookings by total visits.' }] },
       { id: 'b01-int-g3-s2', type: 'num', prompt: 'What would period B’s overall conversion have been at period A’s mix of visits (40% desktop, 60% mobile)? Two decimal places.',
@@ -148,7 +148,7 @@ export const guided = [
         hints: ['Weight period B’s device rates by period A’s shares.', '0.4 × 5.2% + 0.6 × 2.1%.'],
         wrong: [{ value: 2.88, say: 'That uses period B’s own mix (25% desktop). Use period A’s shares: 0.4 and 0.6.' }] },
       { id: 'b01-int-g3-s3', type: 'mc', prompt: 'Why did overall conversion fall?',
-        options: ['The mix of visits shifted towards mobile, the lower-converting device', 'Both devices converted worse in period B', 'There were fewer visits in period B', 'Desktop bookings fell, so desktop must have got worse'],
+        options: ['More of the visits came from mobile, the lower-converting device', 'Both devices converted worse in period B than in period A', 'The site had fewer visits in period B, so bookings fell too', 'Desktop bookings fell, which shows that desktop got worse'],
         answer: 0,
         hints: ['Compare the device rates first, then the device shares.'],
         feedback: { 1: 'Both device rates rose: desktop 5.0% to 5.2%, mobile 2.0% to 2.1%.', 2: 'Visits rose, from 10,000 to 12,000.', 3: 'Desktop bookings fell because desktop visits fell; desktop’s rate rose.' } },
@@ -185,7 +185,7 @@ export const independent = [
     answer: 0.3, check: () => (3.9 - 3.2) - (3.4 - 3.0), unit: 'percentage points', places: 1, tol: 0.005,
     wrong: [
       { value: 0.7, say: 'That is the website’s whole rise. The app rose 0.4 points without any redesign, so subtract it.' },
-      { value: 21.88, say: 'That is the website’s relative rise. Work in percentage points and subtract the app’s change.' },
+      { value: 21.88, tol: 0.05, say: 'That is the website’s relative rise. Work in percentage points and subtract the app’s change.' },
     ],
     solution: 'Website change: 3.9 − 3.2 = 0.7 points. App change: 3.4 − 3.0 = 0.4 points, which shows what happened without a redesign (the season, say). Estimated effect: 0.7 − 0.4 = 0.3 points, assuming the two would otherwise have moved in parallel.',
   },
@@ -210,10 +210,10 @@ export const independent = [
     id: 'b01-int-i4', type: 'mc', kind: 'applied',
     prompt: 'A fictional retail chain picks the ten shops with the biggest falls in sales in the first quarter and sends them a turnaround team. In the second quarter all ten improve. What should the analyst say?',
     options: [
-      'Some of the improvement was likely anyway, because shops chosen for an unusually bad quarter tend to move back towards their average; compare them with similar shops that got no team.',
-      'The turnaround team worked, because all ten shops improved.',
-      'The team made no difference, because the improvement is just regression to the mean.',
-      'Nothing can be learned, because the shops were not chosen at random.',
+      'Some of the improvement was likely anyway; compare with similar shops that had no team.',
+      'The team worked: all ten shops improved, and that would be very unlikely to happen by chance.',
+      'The team made no difference: the improvement is all regression to the mean.',
+      'Nothing can be learned at all, because the shops were not chosen at random.',
     ],
     answer: 0,
     feedback: {
@@ -255,10 +255,10 @@ export const check = [
     id: 'b01-int-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Which situation is an example of Simpson’s paradox?',
     options: [
-      'In both regions, a new price raised the share of visitors who bought, yet across the two regions combined the share fell.',
-      'Sales rose after a campaign, but only because of the Christmas season.',
-      'The worst-performing shop improved the next month without any change.',
-      'A chart with an axis starting at 90 made a 2% change look like a 50% change.',
+      'A new price raised the buying rate in both regions, but lowered it for the two combined.',
+      'Sales rose after a campaign, but only because the campaign ran during the Christmas season.',
+      'The worst-performing shop improved the next month, although nothing about it had changed.',
+      'A bar chart with an axis starting near the data made a 2% rise look like a 50% rise.',
     ],
     answer: 0,
     feedback: {
@@ -279,10 +279,10 @@ export const check = [
     id: 'b01-int-k3', type: 'mc', kind: 'applied',
     prompt: 'A fictional report shows a shop’s monthly conversion rate as a line chart whose vertical axis runs from 2.0% to 3.5%, clearly labelled. A manager says the chart is misleading because the axis doesn’t start at zero. Is she right?',
     options: [
-      'Not necessarily: a line chart shows change by position and slope, and a clearly labelled axis that doesn’t start at zero is often needed to see changes in a rate.',
-      'Yes: every chart must start its vertical axis at zero.',
-      'Yes: conversion rates must always be shown on an axis from 0% to 100%.',
-      'No: axis ranges never affect how a chart is read.',
+      'Not necessarily: lines are read by position, so a labelled axis near the data can be fair.',
+      'Yes: every chart, whether it shows lines or bars, must start its vertical axis at zero to be honest.',
+      'Yes: a conversion rate must always be drawn on an axis running from 0% to 100%.',
+      'No: the range of an axis never affects how large a change appears to a reader.',
     ],
     answer: 0,
     feedback: {
@@ -322,12 +322,12 @@ export const check = [
   },
   {
     id: 'b01-int-k6', type: 'fill', kind: 'applied',
-    prompt: 'Complete the finding for a fictional online bookshop that redesigned its desktop site on 1 May and rolled it back on 3 June.',
-    text: 'Bookings fell 12% in May while visits rose. The fall was confined to [[0]], which got the new design; [[1]], which kept the old one, was unchanged. Desktop conversion recovered after the [[2]]. Because this was not a [[3]], we can’t exclude another desktop-only cause, but the evidence [[4]] that the redesign was responsible.',
+    prompt: 'Complete the finding for a fictional online bookshop that redesigned its desktop site on 2 March and rolled it back on 6 April.',
+    text: 'Orders fell 12% in March while visits rose. The fall was confined to [[0]], which got the new design; [[1]], which kept the old one, was unchanged. Desktop conversion recovered after the [[2]]. Because this was not a [[3]], we can’t exclude another desktop-only cause, but the evidence [[4]] that the redesign was responsible.',
     blanks: [
       { options: ['desktop', 'mobile', 'all devices'], answer: 0 },
       { options: ['mobile', 'desktop', 'the whole site'], answer: 0 },
-      { options: ['rollback on 3 June', 'launch on 1 May', 'start of the month'], answer: 0 },
+      { options: ['rollback on 6 April', 'launch on 2 March', 'start of the month'], answer: 0 },
       { options: ['randomised experiment', 'monthly report', 'large sample'], answer: 0 },
       { options: ['strongly suggests', 'proves', 'cannot suggest'], answer: 0 },
     ],
