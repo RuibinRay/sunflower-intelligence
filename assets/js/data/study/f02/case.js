@@ -272,6 +272,12 @@ export const DERIVED = {
   cashEnd: bal('Cash'),                                                            // 42,940
   cfo: CF.operating, cfi: CF.investing, cff: CF.financing, netCash: CF.net,       // 39,940; −22,000; 25,000; 42,940
   cfoIndirect: IND.operating,                                                      // 39,940
+  // the direct method's operating lines (ASC 230's categories)
+  cashFromCustomers: CF.lines.find((l) => l[0] === 'Cash received from customers')[1],   // 191,220 (net of $1,025 refunds)
+  cashToSuppliers: -CF.lines.find((l) => l[0] === 'Cash paid to suppliers')[1],        // 103,330
+  cashToEmployees: -CF.lines.find((l) => l[0] === 'Cash paid to employees')[1],        // 41,500
+  interestPaid: -CF.lines.find((l) => l[0] === 'Interest paid')[1],                     // 450
+  incomeTaxesPaid: -CF.lines.find((l) => l[0] === 'Income taxes paid')[1],              // 6,000
   taxPayable: bal('Income Taxes Payable'),                                         // 3,129
   unadjustedTrialBalance: A.trialBalance(unadjusted, CHART).dr,
   adjustedTrialBalance: A.trialBalance(LEDGER, CHART).dr,
@@ -285,6 +291,7 @@ const title = 'Lantern Coffee Co.';
 const period = 'for the ten months ended 31 December 2026';
 const rows = (list, sign = 1) => list.map(([n, v]) => [n, sign * v]);
 const neg = (list) => rows(list, -1);
+const netLabel = (k) => `Net cash ${CF[k] < 0 ? 'used in' : 'from'} ${k} activities`;
 
 export const STATEMENTS = {
   income: {
@@ -323,8 +330,8 @@ export const STATEMENTS = {
     title, subtitle: `Statement of cash flows (direct method) ${period}`,
     sections: ['operating', 'investing', 'financing'].map((k) => ({
       head: `${k[0].toUpperCase()}${k.slice(1)} activities`, rows: CF.lines.filter((l) => l[2] === k).map(([n, v]) => [n, v]),
-      total: [`Net cash from ${k} activities`, CF[k]] })).concat([
-      { rows: [['Net cash from operating activities', CF.operating], ['Net cash used in investing activities', CF.investing], ['Net cash from financing activities', CF.financing], ['Cash, 1 March 2026', 0]], total: ['Cash, 31 December 2026', CF.net] },
+      total: [netLabel(k), CF[k]] })).concat([
+      { rows: [...['operating', 'investing', 'financing'].map((k) => [netLabel(k), CF[k]]), ['Cash, 1 March 2026', 0]], total: ['Cash, 31 December 2026', CF.net] },
     ]),
     note: 'Noncash investing and financing: ' + CF.noncash.join(' '),
   },

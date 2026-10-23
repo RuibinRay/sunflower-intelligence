@@ -744,7 +744,7 @@ export function indirectOperating(ledger, chart, opening = {}) {
   for (const a of ch.list) {
     const b = bal(ledger, a.name);
     if (!b) continue;
-    if (a.type === 'expense' && (a.noncash || a.loss)) { adjustments.push([a.loss ? `Loss on ${lower(a.name.replace(/^loss on /i, ''))}` : a.name, D(b)]); total += b; }
+    if (a.type === 'expense' && (a.noncash || a.loss)) { adjustments.push([a.loss ? `Loss on ${lower(a.name.replace(/^loss on /i, ''))}` : a.name.replace(/\s+expense$/i, ''), D(b)]); total += b; }
     if (a.type === 'revenue' && a.gain) { adjustments.push([a.name, D(-b)]); total -= b; }
   }
   const open = (name) => C(opening?.[name] || 0);
