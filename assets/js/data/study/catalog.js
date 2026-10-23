@@ -265,7 +265,7 @@ const ALL = [
 
   // ================================================================ Marketing & Business Strategy
   C({
-    id: 'm01', school: 'marketing', code: 'M01', level: 'intro', status: 'reviewed', recommends: ['f00', 'b01'],
+    id: 'm01', school: 'marketing', code: 'M01', level: 'intro', status: 'complete', recommends: ['f00', 'b01'],
     title: 'Marketing Fundamentals',
     blurb: 'What marketing is, how customers and organisations buy, and how a business sets objectives and chooses how to compete.',
     case: 'lantern',
