@@ -160,6 +160,11 @@ function checkSheetSpec(spec, w, r, { allowErrors = [] } = {}) {
     }
   }
   for (const [n, t] of Object.entries(spec.tables || {})) if (!SH.parseRange(t)) r.err(`${w}: table ${n} range ${t} is not a range`);
+  for (const [a, vals] of Object.entries(spec.vary || {})) {
+    if (!(a in spec.cells)) r.err(`${w}: vary names ${a}, which has no value in cells`);
+    else if (!Array.isArray(vals) || !vals.length) r.err(`${w}: vary.${a} must be a list of values`);
+    else if (vals.some((v) => v === spec.cells[a])) r.err(`${w}: vary.${a} repeats the cell’s own value, so a copy wouldn’t differ`);
+  }
   return sh;
 }
 function checkFormulaItem(x, w, r) {

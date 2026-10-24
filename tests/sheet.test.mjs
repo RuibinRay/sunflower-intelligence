@@ -220,6 +220,12 @@ eq('criterion ~* no wildcard', X.criterion('~*')('a'), false);
   ok('require a function', !X.gradeFormula(spec, { cell: 'C2', answer: '=SUM(A2:A4)', formula: '=A2+A3+A4', require: ['SUM'] }).ok);
   ok('require met', X.gradeFormula(spec, { cell: 'C2', answer: '=SUM(A2:A4)', formula: '=SUM(A2:A4)', require: ['SUM'] }).ok);
   ok('fixed cells stay', X.gradeFormula({ ...spec, fixed: ['E2'] }, { cell: 'C2', answer: '=E2', formula: '=0.08' }).ok);
+  // vary: an input cell takes listed values on the copies, so a formula that works only for the shown value fails
+  const vs = { cells: { A1: 46082, A2: 46100, A3: 46130, A4: 46150, B1: 5, B2: 7, B3: 9, B4: 4, D1: 46082 }, fixed: ['A1:A4'], vary: { D1: [46113] } };
+  const vw = (formula) => X.gradeFormula(vs, { cell: 'E1', answer: '=COUNTIFS(A1:A4,">="&D1,A1:A4,"<="&EOMONTH(D1,0))', formula });
+  ok('vary: by reference passes', vw('=COUNTIFS(A1:A4,">="&D1,A1:A4,"<"&EDATE(D1,1))').ok);
+  ok('vary: typed month fails', !vw('=COUNTIFS(A1:A4,">="&DATE(2026,3,1),A1:A4,"<="&DATE(2026,3,31))').ok);
+  ok('vary: typed count fails', !vw('=2').ok);
   // a spilled answer is marked in every cell it fills
   const fr = { cells: { A1: 12, A2: 25, A3: 37, A4: 51, A5: 8, C1: 20, C2: 40, C3: 60 } };
   ok('spill: right', X.gradeFormula(fr, { cell: 'E1', answer: '=FREQUENCY(A1:A5,C1:C3)', formula: '=FREQUENCY(A1:A5,C1:C3)' }).ok);

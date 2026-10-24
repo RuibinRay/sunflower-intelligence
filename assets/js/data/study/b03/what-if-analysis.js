@@ -39,7 +39,7 @@ export default {
   slug: 'what-if-analysis',
   title: 'What-if analysis: data tables, Goal Seek, scenarios and Solver',
   blurb: 'A well-built model answers questions. Use one to see how a catering job’s contribution responds to guests, hours and costs (data tables and scenarios), to find the price that reaches a target margin (Goal Seek), and to choose the month’s best mix of events and workshops within limited time (Solver).',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Build a what-if model with inputs, calculations and outputs separated, one assumption per cell and no typed-in numbers in its formulas.',
     'Use one- and two-variable data tables, sensitivity analysis and Scenario Manager to show how an output responds to its inputs.',

@@ -39,7 +39,7 @@ export default {
   slug: 'dashboards',
   title: 'Dashboards that answer questions',
   blurb: 'A dashboard is one page that tells its readers where things stand. Learn to start from the audience’s questions, give every number a comparison, lay the page out so the most important measure comes first, build it on tables, formulas and PivotTables so it refreshes, and add the documentation and checks that make it trustworthy.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Identify a dashboard’s audience and questions, and choose the measures that answer them, each with a definition, a comparison and an owner.',
     'Design a one-page layout that puts the most important measure first, with consistent scales, formats and labels and a fitting display for each question.',

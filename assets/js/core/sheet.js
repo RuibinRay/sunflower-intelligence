@@ -1299,16 +1299,21 @@ function fixedSet(list = []) {
 /** A copy of the sheet's data with every numeric input scaled by a random factor (integers stay integers). Whole
  *  numbers that read as dates from 2000 to 2050 (serials 36526–55153) are moved instead, all by the same whole number
  *  of months, so date windows, month starts and ends keep their meaning while typed-in dates stop matching. Cells in
- *  `spec.fixed` keep their values (a sorted rate table, say, that a formula relies on staying sorted). */
+ *  `spec.fixed` keep their values (a sorted rate table, say, that a formula relies on staying sorted). A cell in
+ *  `spec.vary` ({ F1: [v1, v2] }) takes one of the listed values instead: an input the reader would change, such as the
+ *  month a dashboard shows, so a formula that only works for the shown value fails. */
 const isDateLike = (v) => Number.isInteger(v) && v >= 36526 && v <= 55153;
 function shiftMonths(serial, m) { const [y, mo, d] = serialToYMD(serial); const last = serialToYMD(dateSerial(y, mo + m + 1, 0))[2]; return dateSerial(y, mo + m, Math.min(d, last)); }
 function perturbSpec(spec, rand) {
   const cells = {};
   const fixed = fixedSet(spec.fixed);
+  const vary = Object.fromEntries(Object.entries(spec.vary || {}).map(([k, v]) => [k.replace(/\$/g, '').toUpperCase(), v]));
   const months = [-3, -2, -1, 1, 2, 3][Math.floor(rand() * 6)];
   for (const [k, v] of Object.entries(spec.cells || {})) {
-    if (typeof v === 'number' && isDateLike(v) && !fixed.has(k.replace(/\$/g, '').toUpperCase())) cells[k] = shiftMonths(v, months);
-    else if (typeof v === 'number' && !fixed.has(k.replace(/\$/g, '').toUpperCase())) {
+    const key = k.replace(/\$/g, '').toUpperCase();
+    if (vary[key]?.length) cells[k] = vary[key][Math.floor(rand() * vary[key].length)];
+    else if (typeof v === 'number' && isDateLike(v) && !fixed.has(key)) cells[k] = shiftMonths(v, months);
+    else if (typeof v === 'number' && !fixed.has(key)) {
       const f = 0.6 + rand() * 0.9;
       cells[k] = Number.isInteger(v) ? Math.max(Math.round(v * f), v === 0 ? 0 : 1) : Math.round(v * f * 100) / 100;
     } else cells[k] = v;
