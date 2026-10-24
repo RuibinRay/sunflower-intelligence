@@ -119,7 +119,7 @@ export const items = [
   {
     id: 'b03-dg-5', lesson: 'tables-and-cleaning', type: 'formula', kind: 'applied',
     prompt: 'Pipit Plant Nursery (fictional) lists its plants in A2:A13 and their type in B2:B13. In E2, write one formula that lists the names of the herbs, sorted A to Z, spilling down from E2. (SORT and FILTER need Excel for Microsoft 365, 2021 or 2024.)',
-    sheet: { cells: { ...grid(['Plant', 'Type', 'Price'], PLANTS), E1: 'Herbs, A to Z' } },
+    sheet: { cells: { ...grid(['Plant', 'Type', 'Price'], PLANTS), E1: 'Herbs, A to Z' }, vary: { B2: ['Shrub'], B5: ['Perennial'], B6: ['Herb'] } },
     cell: 'E2', view: 'A1:E13',
     formats: { C: MONEY }, widths: { A: 11, B: 10, E: 14 },
     answer: '=SORT(FILTER(A2:A13,B2:B13="Herb"))',
@@ -156,15 +156,15 @@ export const items = [
     prompt: 'Swiftpedal Couriers (fictional) wants to know whether longer deliveries take proportionally longer. For each of its last 300 deliveries it has the distance (km) and the time taken (minutes). Which chart answers the question?',
     options: [
       'A scatter chart, with each delivery’s distance on the horizontal axis and its minutes on the vertical',
-      'A line chart of minutes, with the 300 deliveries along the horizontal axis in the order they were made',
+      'A line chart of minutes, with the deliveries sorted by distance and the distances shown as the axis labels',
       'A histogram of delivery minutes, with bins 10 minutes wide, so the spread of times shows clearly',
-      'A pie chart of the total minutes in each distance band, with one slice for every 2 km band',
+      'A column chart with one column per delivery, sorted from the shortest time taken to the longest',
     ],
     answer: 0,
     feedback: {
-      1: 'Joining deliveries in the order they were made shows a sequence, not how minutes depend on distance; distance isn’t on the chart at all.',
+      1: 'A line chart spaces its categories equally, so deliveries of 1.2 and 1.3 km sit as far apart as deliveries of 4 and 9 km, and the shape of the relationship is distorted. A scatter chart puts each point at its true distance.',
       2: 'A histogram shows the distribution of one variable. It can’t show how time changes with distance.',
-      3: 'A pie shows the parts of one whole; total minutes per band mixes the number of deliveries with the time each one takes.',
+      3: 'Sorting by time shows how the times are spread, but distance isn’t on the chart, so it can’t show whether longer trips take longer.',
     },
     solution: 'Two numeric variables measured on the same deliveries is a relationship question: a scatter chart, one point per delivery at (distance, minutes). Points that rise along a straight band suggest time grows in proportion to distance, and a trendline can then summarise it.',
   },
@@ -266,5 +266,6 @@ export const items = [
   },
 ];
 
-// If the student scores at least 80% on the items for every module before the one named, suggest starting there.
-export const route = [{ module: 2, ifAtLeast: 0.8 }, { module: 3, ifAtLeast: 0.8 }, { module: 4, ifAtLeast: 0.8 }];
+// The score for each entry is over all the items of the modules before it, and the highest entry passed wins, so the
+// thresholds rise to need 3 of 3 (module 2), 6 of 6 (module 3) and 9 of 9 (module 4).
+export const route = [{ module: 2, ifAtLeast: 0.8 }, { module: 3, ifAtLeast: 0.9 }, { module: 4, ifAtLeast: 0.9 }];

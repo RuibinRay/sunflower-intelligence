@@ -1,10 +1,11 @@
 // assess-final.js — B03 final assessment: 24 questions across all four modules, in proportion to their lessons (seven
 // each for modules 1 and 2, five each for modules 3 and 4; two or three per lesson). 70% passes.
 // Mixed conceptual, numerical and applied items; twelve ask for a formula (one as a step), the course’s characteristic
-// exercise. Several combine skills: a lookup inside a conditional sum (b03-fn-9), a PivotTable filter reproduced with conditional sums
-// (b03-fn-13), a PivotTable reading and a chart choice (b03-fn-14), a conditional format built on a date function
-// (b03-fn-15), residuals from the least-squares line (b03-fn-18), Goal Seek on a grid built with mixed references
-// (b03-fn-20) and a year-to-date dashboard tile (b03-fn-23).
+// exercise. Several combine skills: a lookup inside a conditional sum (b03-fn-9), a PivotTable filter reproduced with
+// conditional sums (b03-fn-13), a PivotTable reading and a chart choice (b03-fn-14), a conditional format built on a
+// date function (b03-fn-15), residuals from the least-squares line (b03-fn-18), a break-even column checked with Goal
+// Seek (b03-fn-20) and a year-to-date dashboard tile (b03-fn-23). Text inputs that a formula could pick out by eye or
+// type in are varied on the marking copies (`vary`).
 // New questions on businesses used nowhere else on the site, not copies of lesson exercises, module-test items, the
 // diagnostic or the project, and nothing from the project’s own questions (Lantern’s margins, delivery charges, shop
 // model, stock plan or multiple regression). No hints; solutions are shown on review. Every business, record and number
@@ -70,7 +71,7 @@ const surfGroup = feeIf((s) => s[1] === 'group'), surfWeekend = feeIf((s) => s[2
 const surfBoth = feeIf((s) => s[1] === 'group' && s[2] === 'weekend'), surfEither = feeIf((s) => s[1] === 'group' || s[2] === 'weekend');
 // Inglenook Removals: vehicles by capacity and eight jobs
 const VEHICLES = [[10, 'Small van', 95], [18, 'Luton van', 140], [30, '7.5-tonne truck', 210], [45, '18-tonne truck', 290]];
-const LOADS = [8, 10, 10.5, 18, 22, 29.5, 31, 44];
+const LOADS = [8, 10, 10.5, 18, 22, 31, 44, 52];
 // Silverbirch Car Wash: sites, reopening dates after a refit, and sales
 const SITES = [['Canal Street', '2026-06-15'], ['Hill Road', '2026-07-06'], ['Market Square', '2026-06-01'], ['Abbey Park', '2026-07-20']];
 const WASHES = [['Hill Road', '2026-06-12', 42], ['Canal Street', '2026-06-13', 38], ['Market Square', '2026-06-20', 55], ['Hill Road', '2026-06-27', 36],
@@ -110,9 +111,13 @@ const mx = mean(TEMP), my = mean(SMOOTHIES);
 const slope = sum(TEMP.map((x, i) => (x - mx) * (SMOOTHIES[i] - my))) / sum(TEMP.map((x) => (x - mx) ** 2));
 const intercept = my - slope * mx;
 const resid1 = SMOOTHIES[0] - (intercept + slope * TEMP[0]);
-// Starling Street Food: profit grid inputs
-const TRUCK = { variable: 4.2, fixed: 310, prices: [8, 9, 10, 11, 12], meals: [60, 80, 100, 120, 140] };
-const truckProfit = (meals, price) => meals * (price - TRUCK.variable) - TRUCK.fixed;
+// Starling Street Food: costs and possible meals a day
+const TRUCK = { variable: 4.2, fixed: 310, meals: [60, 80, 100, 120, 140] };
+const breakEven = (meals) => TRUCK.variable + TRUCK.fixed / meals;
+// Ferncombe Tutors: sessions (minutes, rating) and the bonus rule
+const SESSIONS = [[75, 5], [45, 5], [60, 5], [90, 4], [30, 3], [60, 4], [55, 5], [120, 2]];
+const MIN_MINUTES = 60;
+const bonus = ([m, r]) => (r === 5 && m >= MIN_MINUTES ? 15 : r >= 4 ? 5 : 0);
 // Wildflower Wedding Barn: events and revenue
 const BARN = [['2025-11-15', 'Wedding', 8200], ['2025-12-06', 'Party', 2400], ['2026-01-17', 'Corporate', 3100], ['2026-02-14', 'Wedding', 6900],
   ['2026-03-21', 'Party', 1850], ['2026-04-11', 'Wedding', 9400], ['2026-04-25', 'Corporate', 2750], ['2026-05-09', 'Wedding', 10200],
@@ -192,16 +197,21 @@ export const items = [
     solution: `<x>=NETWORKDAYS(B2,C2,$F$2:$F$4)</x>: Monday to Friday from the order date to the dispatch date, both counted, less any holiday in the list. J-504 (Wednesday 25 November to Wednesday 2 December) has ${weekdays('2026-11-25', '2026-12-02')} weekdays, one of them Thanksgiving, so ${weekdays('2026-11-25', '2026-12-02', hol)} working days; J-508 (24 December to 4 January) has ${weekdays('2026-12-24', '2027-01-04', hol)}, after Christmas Day and New Year’s Day are left out.`,
   },
   {
-    id: 'b03-fn-5', lesson: 'functions-and-logic', type: 'fill', kind: 'numerical',
-    prompt: 'B2 holds the date 20 May 2026. Choose what each formula returns, shown as a date.',
-    text: '<x>=DATE(2026,14,1)</x> returns [[0]]; <x>=DATE(2026,3,0)</x> returns [[1]]; <x>=EOMONTH(B2,-1)+1</x> returns [[2]]; <x>=EDATE(B2,-2)</x> returns [[3]].',
-    blanks: [
-      { options: ['1 Feb 2026', '1 Feb 2027', '#NUM!'], answer: 1 },
-      { options: ['1 Mar 2026', '#NUM!', '28 Feb 2026'], answer: 2 },
-      { options: ['1 May 2026', '30 Apr 2026', '1 Jun 2026'], answer: 0 },
-      { options: ['21 Mar 2026', '20 Mar 2026', '20 Jul 2026'], answer: 1 },
+    id: 'b03-fn-5', lesson: 'functions-and-logic', type: 'formula', kind: 'applied',
+    prompt: 'Ferncombe Tutors (fictional) pays a tutor a bonus for each session: $15 if the session was rated 5 and lasted at least the minutes in G1; otherwise $5 if it was rated 4 or 5; otherwise nothing. Minutes are in column B and ratings in column C. In D2, write the bonus for the first session, in a formula that will be filled down to D9.',
+    sheet: { cells: { ...grid(['Session', 'Minutes', 'Rating', 'Bonus'], SESSIONS.map(([m, r], i) => [`T-${41 + i}`, m, r])), F1: 'Minimum minutes', G1: MIN_MINUTES }, fixed: ['C2:C9'] },
+    cell: 'D2', fill: 'D2:D9', view: 'A1:G9',
+    formats: { D: MONEY }, widths: { D: 9, F: 16 },
+    answer: '=IF(AND(C2=5,B2>=$G$1),15,IF(C2>=4,5,0))',
+    alt: ['=IFS(AND(C2=5,B2>=$G$1),15,C2>=4,5,TRUE,0)', '=IF(C2<4,0,IF(AND(C2=5,B2>=$G$1),15,5))', '=IF(AND(C2=5,B2>=G$1),15,IF(C2>=4,5,0))'],
+    wrong: [
+      { formula: '=IF(OR(C2=5,B2>=$G$1),15,IF(C2>=4,5,0))', say: 'With OR, a long session rated 4 (T-44, 90 minutes) earns $15. The $15 needs both a 5 and enough minutes: AND.' },
+      { formula: '=IF(C2>=4,5,IF(AND(C2=5,B2>=$G$1),15,0))', say: 'Excel stops at the first TRUE test, and every session rated 5 passes C2>=4 first, so $15 is never paid. Test the most demanding condition first.' },
+      { formula: '=IF(AND(C2=5,B2>=G1),15,IF(C2>=4,5,0))', say: 'Filled down, G1 becomes G2, G3 … which are empty, so short sessions rated 5 earn $15. Fix the minimum with $G$1.' },
+      { formula: '=IF(AND(C2=5,B2>$G$1),15,IF(C2>=4,5,0))', say: '“At least” includes the minimum itself: T-43 lasted exactly 60 minutes and was rated 5, so it earns $15. Use >=.' },
+      { formula: '=IF(AND(C2=5,B2>=60),15,IF(C2>=4,5,0))', say: 'The 60 is typed into the formula, so the bonus stops following the minimum in G1 when it changes. Refer to $G$1.' },
     ],
-    solution: 'DATE rolls extra months into the next year: month 14 of 2026 is February 2027. A day of 0 is the day before the 1st, so <x>=DATE(2026,3,0)</x> is the last day of February, 28 Feb 2026. <x>=EOMONTH(B2,-1)</x> is the last day of the month before (30 April), and adding 1 gives the first day of B2’s month, 1 May 2026. EDATE moves by whole months: two months before 20 May is 20 March, while subtracting 60 days would land on 21 March, because a month is not 30 days.',
+    solution: `<x>=IF(AND(C2=5,B2>=$G$1),15,IF(C2>=4,5,0))</x>. The $15 test comes first because it is the most demanding; a session that fails it falls through to the $5 test, and then to 0. The eight sessions earn ${SESSIONS.map((x) => `$${bonus(x)}`).join(', ')}: $${sum(SESSIONS.map(bonus))} in all. T-43 (exactly 60 minutes, rated 5) earns $15; T-42 (45 minutes, rated 5) earns $5. <x>=IFS(AND(C2=5,B2>=$G$1),15,C2>=4,5,TRUE,0)</x> does the same, with TRUE as the catch-all.`,
   },
   {
     id: 'b03-fn-6', lesson: 'conditional-sums-and-counts', type: 'formula', kind: 'applied',
@@ -222,7 +232,7 @@ export const items = [
   {
     id: 'b03-fn-7', lesson: 'conditional-sums-and-counts', type: 'formula', kind: 'numerical',
     prompt: 'Lapwing Surf School (fictional) pays its instructors a bonus on the fees of bookings that are group lessons or fall on a weekend, or both. Lesson type is in column B, day in C and fee in D. In G2, write one formula for the total fees that qualify, counting each booking once.',
-    sheet: { cells: { ...grid(['Booking', 'Lesson', 'Day', 'Fee'], SURF), F2: 'Group or weekend' } },
+    sheet: { cells: { ...grid(['Booking', 'Lesson', 'Day', 'Fee'], SURF), F2: 'Group or weekend' }, vary: { C3: ['weekend'], B9: ['group'], C12: ['weekend'] } },
     cell: 'G2', view: 'A1:G13',
     formats: { D: MONEY, G2: MONEY }, widths: { C: 10, F: 17, G: 11 },
     answer: '=SUMIFS(D2:D13,B2:B13,"group")+SUMIFS(D2:D13,C2:C13,"weekend")-SUMIFS(D2:D13,B2:B13,"group",C2:C13,"weekend")',
@@ -232,9 +242,8 @@ export const items = [
       '=SUMIFS(D2:D13,B2:B13,"group")+SUMIFS(D2:D13,B2:B13,"private",C2:C13,"weekend")',
     ],
     wrong: [
-      { formula: '=SUMIFS(D2:D13,B2:B13,"group")+SUMIFS(D2:D13,C2:C13,"weekend")', say: 'Group lessons on a weekend are in both sums, so they are counted twice. Subtract that overlap, or use SUMPRODUCT.' },
+      { formula: '=SUMIFS(D2:D13,B2:B13,"group")+SUMIFS(D2:D13,C2:C13,"weekend")', say: 'A group lesson on a weekend meets both conditions, so its fee is counted twice, whether you add two SUMIFS or add the two tests inside SUMPRODUCT. Subtract the overlap, or turn the test into 1 or 0 with >0.' },
       { formula: '=SUMIFS(D2:D13,B2:B13,"group",C2:C13,"weekend")', say: 'Criteria in one SUMIFS must all hold: that is group lessons on a weekend only (AND). The bonus needs either (OR).' },
-      { formula: '=SUMPRODUCT(((B2:B13="group")+(C2:C13="weekend"))*D2:D13)', say: 'Adding the two tests gives 2 for a group lesson on a weekend, so its fee counts twice. Turn the sum into 1 or 0 with >0.' },
     ],
     solution: `<x>=SUMIFS(D2:D13,B2:B13,"group")+SUMIFS(D2:D13,C2:C13,"weekend")-SUMIFS(D2:D13,B2:B13,"group",C2:C13,"weekend")</x> = ${dollars(surfGroup)} + ${dollars(surfWeekend)} − ${dollars(surfBoth)} = ${money(surfEither)}. The two conditions overlap (group lessons at weekends), so adding the sums would count ${dollars(surfBoth)} twice. Equivalent routes: everything except private weekday lessons, or SUMPRODUCT with <x>((B2:B13="group")+(C2:C13="weekend"))>0</x> as a 1-or-0 test.`,
   },
@@ -242,26 +251,26 @@ export const items = [
   // ================================================================ Module 2: finding and summarising data
   {
     id: 'b03-fn-8', lesson: 'lookups', type: 'formula', kind: 'applied',
-    prompt: 'Inglenook Removals (fictional) sends the smallest vehicle that can carry a job’s load. Vehicles are listed in E1:G5 by capacity, smallest first, and a load equal to a capacity fits. In C2, return the vehicle for the load in B2, and fill it down to C9.',
+    prompt: 'Inglenook Removals (fictional) sends the smallest vehicle that can carry a job’s load. Vehicles are listed in E1:G5 by capacity, smallest first, and a load equal to a capacity fits. In C2, return the vehicle for the load in B2, or the text <i>two trips</i> when no vehicle is big enough, and fill it down to C9.',
     sheet: { cells: {
       ...grid(['Job', 'Load (m³)', 'Vehicle'], LOADS.map((l, i) => [`R-${611 + i}`, l])),
       E1: 'Capacity (m³)', F1: 'Vehicle', G1: 'Day rate',
       ...Object.fromEntries(VEHICLES.flatMap(([c, v, rate], i) => [[`E${i + 2}`, c], [`F${i + 2}`, v], [`G${i + 2}`, rate]])),
-    }, fixed: ['E2:E5'] },
+    }, vary: { E2: [9, 12], E3: [16, 20], E4: [27, 33], E5: [42, 50] } },
     cell: 'C2', fill: 'C2:C9', view: 'A1:G9',
     formats: { G: MONEY }, widths: { B: 10, C: 15, E: 13, F: 15 },
-    answer: '=XLOOKUP(B2,$E$2:$E$5,$F$2:$F$5,,1)',
-    alt: ['=XLOOKUP(B2,$E$2:$E$5,$F$2:$F$5,,1,1)', '=INDEX($F$2:$F$5,XMATCH(B2,$E$2:$E$5,1))'],
+    answer: '=XLOOKUP(B2,$E$2:$E$5,$F$2:$F$5,"two trips",1)',
+    alt: ['=XLOOKUP(B2,$E$2:$E$5,$F$2:$F$5,"two trips",1,1)', '=IFNA(XLOOKUP(B2,$E$2:$E$5,$F$2:$F$5,,1),"two trips")', '=IFNA(INDEX($F$2:$F$5,XMATCH(B2,$E$2:$E$5,1)),"two trips")'],
     wrong: [
-      { formula: '=XLOOKUP(B2,$E$2:$E$5,$F$2:$F$5,,-1)', say: 'Match mode −1 returns the next smaller capacity: a 10.5 m³ load would get the 10 m³ van, which can’t take it. Use 1, exact or next larger.' },
-      { formula: '=VLOOKUP(B2,$E$2:$F$5,2,TRUE)', say: 'An approximate VLOOKUP returns the band whose lower bound is not above the value: the next smaller vehicle. Here you need the next larger: XLOOKUP with match mode 1.' },
-      { formula: '=XLOOKUP(B2,$E$2:$E$5,$F$2:$F$5)', say: 'XLOOKUP matches exactly by default, so only loads equal to a capacity are found and the rest show #N/A.' },
-      { formula: '=XLOOKUP(B2,E2:E5,F2:F5,,1)', say: 'Without $ the vehicle table slides down as the formula is filled. Lock both ranges.' },
+      { formula: '=XLOOKUP(B2,$E$2:$E$5,$F$2:$F$5,"two trips",-1)', say: 'That returns the next smaller capacity (XLOOKUP’s match mode −1 and VLOOKUP’s TRUE both do): a 10.5 m³ load would get the 10 m³ van, which can’t take it. Use XLOOKUP with match mode 1, exact match or else the next larger.' },
+      { formula: '=XLOOKUP(B2,$E$2:$E$5,$F$2:$F$5,,1)', say: 'Right for every load a vehicle can take, but the 52 m³ job shows #N/A. Give if_not_found the text “two trips”.' },
+      { formula: '=XLOOKUP(B2,$E$2:$E$5,$F$2:$F$5,"two trips")', say: 'XLOOKUP matches exactly by default, so only loads equal to a capacity are found and the rest show “two trips”. Add match mode 1.' },
+      { formula: '=XLOOKUP(B2,E2:E5,F2:F5,"two trips",1)', say: 'Without $ the vehicle table slides down as the formula is filled. Lock both ranges.' },
     ],
-    solution: '<x>=XLOOKUP(B2,$E$2:$E$5,$F$2:$F$5,,1)</x>: match mode 1 returns an exact match or else the next larger capacity, which is the smallest vehicle big enough. 10 m³ fits the small van exactly; 10.5 m³ needs the Luton van. Match mode −1, like VLOOKUP’s TRUE, would pick the next smaller vehicle instead. A load over 45 m³ returns #N/A, which an if_not_found such as “two trips” could replace. XLOOKUP needs Excel for Microsoft 365, 2021 or 2024.',
+    solution: '<x>=XLOOKUP(B2,$E$2:$E$5,$F$2:$F$5,"two trips",1)</x>: match mode 1 returns an exact match or else the next larger capacity, which is the smallest vehicle big enough, and if_not_found covers a load bigger than every vehicle. 10 m³ fits the small van exactly; 10.5 m³ needs the Luton van; 52 m³ needs two trips. Match mode −1, like VLOOKUP’s TRUE, would pick the next smaller vehicle instead. XLOOKUP needs Excel for Microsoft 365, 2021 or 2024.',
   },
   {
-    id: 'b03-fn-9', lesson: 'lookups', type: 'formula', kind: 'applied',
+    id: 'b03-fn-9', lesson: 'lookups', type: 'formula', kind: 'numerical',
     prompt: 'Silverbirch Car Wash (fictional) refitted its four sites this summer; E1:F5 gives each site’s reopening date. Sales are in A2:C21 (site, date, amount). In F8, total the sales of the site named in F7 on or after its reopening date, in one formula that still works when F7 names another site.',
     sheet: { cells: {
       ...grid(['Site', 'Date', 'Amount'], WASHES),
@@ -342,7 +351,7 @@ export const items = [
   {
     id: 'b03-fn-13', lesson: 'pivot-tables', type: 'formula', kind: 'numerical',
     prompt: 'Cobalt Bay Dive Centre (fictional) built a PivotTable on A1:D21 with dive in Rows, Sum of price in Values, and channel in the Filters area with two of its three items ticked: website and hotel desk. In G2, reproduce the PivotTable’s figure for Wreck with a formula, so that you can reconcile it.',
-    sheet: { cells: { ...grid(['Booking', 'Dive', 'Channel', 'Price'], DIVES), F2: 'Wreck (filtered)' } },
+    sheet: { cells: { ...grid(['Booking', 'Dive', 'Channel', 'Price'], DIVES), F2: 'Wreck (filtered)' }, vary: { C3: ['website'], C10: ['walk-in'] } },
     cell: 'G2', view: 'A1:G21',
     formats: { D: MONEY, G2: MONEY }, widths: { C: 11, F: 15 },
     answer: '=SUMIFS(D2:D21,B2:B21,"Wreck",C2:C21,"website")+SUMIFS(D2:D21,B2:B21,"Wreck",C2:C21,"hotel desk")',
@@ -417,20 +426,20 @@ export const items = [
   },
   {
     id: 'b03-fn-16', lesson: 'charts-and-conditional-formatting', type: 'mc', kind: 'conceptual',
-    prompt: 'Whinchat Bakeries (fictional) has three branches, with each one’s monthly sales in a column of B2:D13. The largest branch sells about twice as much as each of the others. The manager selects B2:D13 and applies Top/Bottom Rules › Above Average, hoping to see each branch’s good months. Which cells are shaded?',
+    prompt: 'Tern Harbour Ferries’ (fictional) average fare rose steadily from $23.10 to $23.90 over twelve months. Which chart shows the rise clearly without distorting it?',
     options: [
-      'Cells above the average of all 36 cells: mostly the largest branch’s months',
-      'In each column, the months above that branch’s own twelve-month average',
-      'In each row, the branches above that month’s average across the three branches',
-      'Only cells more than one standard deviation above the average of their own column',
+      'A line chart of the twelve months, with its value axis running from $22 to $25 and labelled',
+      'A column chart of the twelve months, with the value axis starting at $23 so the rise stands out',
+      'A column chart from $0, with the twelve columns shaded from green in January to red in December',
+      'A pie chart with one slice for each month’s average fare, so the dearer months are easy to spot',
     ],
     answer: 0,
     feedback: {
-      1: 'The rule compares every cell with one average, that of the whole selected range. To compare each branch with itself, apply the rule to one column at a time.',
-      2: 'The rule doesn’t work row by row; it uses the average of all the cells selected.',
-      3: 'Standard-deviation options exist in the rule’s dialog, but plain Above Average compares with the mean of the whole range, not of each column.',
+      1: 'A column carries its value in its length, so it must start at zero. From $23, December’s column ($0.90 above the axis) would look nine times January’s ($0.10).',
+      2: 'From $0 the columns differ in height by only about 3%, so the rise the chart should show almost disappears, and the colours add a judgement the data don’t carry.',
+      3: 'A pie shows the parts of one whole; twelve monthly averages aren’t parts of anything, and a pie has no time order.',
     },
-    solution: 'Microsoft’s Above Average rule formats cells above the average of all the cells in the range. Over B2:D13 that is one average of 36 numbers, and a branch twice the size of the others sits above it almost every month while the smaller ones rarely do. To show each branch’s good months, apply the rule to B2:B13, C2:C13 and D2:D13 separately, or use one formula rule on the whole range, <x>=B2>AVERAGE(B$2:B$13)</x>.',
+    solution: 'A line shows change over time by its position and slope, not by its length, so its axis may start above zero when that lets the reader see the change, provided the axis is labelled. From $22 to $25 the $0.80 rise is clear without being exaggerated. Columns are read by their length and must start at zero, which here would flatten the rise; cutting their axis at $23 would make it look ninefold.',
   },
   {
     id: 'b03-fn-17', lesson: 'descriptive-statistics-and-regression', type: 'num', kind: 'numerical',
@@ -470,54 +479,53 @@ export const items = [
       'On days like these, each extra flight goes with about 1.35 more rentals on average, and a day’s forecast can easily miss by 6',
       'With 60 flights a day under the new schedule, the line gives 3.1 + 1.35 × 60 = 84.1 rentals, a dependable forecast to staff for',
       'Because R Square is 0.48, the number of flights landing causes just under half of each day’s car rentals at the airport desk',
-      'Because the P-value is 0.0001, forecasts of each day’s rentals made from the number of flights will be about 99.99% accurate',
+      'Because the Standard Error is 6.2, the effect of each extra flight could be anywhere from about −4.9 to 7.6 more rentals',
     ],
     answer: 0,
     feedback: {
       1: 'Sixty flights lies far outside the 12 to 40 the line was fitted on; the relationship may not hold there.',
       2: 'R² is the share of the variation in rentals that lines up with flights. It says nothing about causes, or about shares of a day’s rentals.',
-      3: 'The P-value tests whether the slope could be 0. Forecast accuracy is what the Standard Error describes: a typical miss of about 6 rentals.',
+      3: 'The 6.2 is the Standard Error of the regression, the typical miss in rentals. The slope’s own standard error is in the Coefficients table, and with a P-value of 0.0001 it is small.',
     },
-    solution: 'The slope describes an average association within the data’s range; the Standard Error (6.2 rentals) is the typical miss, and R² of 0.48 says about half of the day-to-day variation lines up with flights, leaving much unexplained. Extrapolating to 60 flights, reading R² as a cause and reading the P-value as accuracy are the three classic over-readings.',
+    solution: 'The slope describes an average association within the data’s range; the Standard Error (6.2 rentals) is the typical miss, and R² of 0.48 says about half of the day-to-day variation lines up with flights, leaving much unexplained. Extrapolating to 60 flights, reading R² as a cause and mistaking the regression’s Standard Error for the slope’s are the classic misreadings.',
   },
 
   // ================================================================ Module 4: deciding with a spreadsheet
   {
     id: 'b03-fn-20', lesson: 'what-if-analysis', type: 'steps', kind: 'numerical',
-    prompt: `Starling Street Food (fictional), a food truck, builds a grid of daily profit for possible prices (across row 4) and numbers of meals sold (down column A), from the variable cost per meal in B1 ($${TRUCK.variable.toFixed(2)}) and the fixed cost per day in B2 ($${TRUCK.fixed}: pitch fee and staff).`,
+    prompt: `Starling Street Food (fictional), a food truck, keeps its variable cost per meal in B1 ($${TRUCK.variable.toFixed(2)}) and its fixed cost per day in B2 ($${TRUCK.fixed}: pitch fee and staff). Column A lists possible numbers of meals a day, ${TRUCK.meals[0]} to ${TRUCK.meals[TRUCK.meals.length - 1]}, in A5:A9.`,
     steps: [
       {
         id: 'b03-fn-20-s1', type: 'formula',
-        prompt: 'In B5, write the day’s profit for 60 meals at $8, in a formula that can be filled across and down to F9.',
+        prompt: 'In B5, write the break-even price for the meals in A5 (the price at which the day’s profit is 0), in a formula that can be filled down to B9.',
         sheet: { cells: {
-          A1: 'Variable cost per meal', B1: TRUCK.variable, A2: 'Fixed cost per day', B2: TRUCK.fixed, A4: 'Meals ↓   price →',
-          ...Object.fromEntries(TRUCK.prices.map((p, j) => [`${String.fromCharCode(66 + j)}4`, p])),
+          A1: 'Variable cost per meal', B1: TRUCK.variable, A2: 'Fixed cost per day', B2: TRUCK.fixed, A4: 'Meals a day', B4: 'Break-even price',
           ...Object.fromEntries(TRUCK.meals.map((m, i) => [`A${i + 5}`, m])),
         } },
-        cell: 'B5', fill: 'B5:F9', view: 'A1:F9',
-        formats: { B1: MONEY, B2: MONEY, B4: MONEY, C4: MONEY, D4: MONEY, E4: MONEY, F4: MONEY, B: MONEY, C: MONEY, D: MONEY, E: MONEY, F: MONEY }, widths: { A: 22 },
-        answer: '=$A5*(B$4-$B$1)-$B$2',
-        alt: ['=(B$4-$B$1)*$A5-$B$2', '=$A5*B$4-$A5*$B$1-$B$2'],
+        cell: 'B5', fill: 'B5:B9', view: 'A1:B9',
+        formats: { B: MONEY }, widths: { A: 22, B: 16 },
+        answer: '=$B$1+$B$2/A5',
+        alt: ['=$B$2/A5+$B$1', '=($B$2+$B$1*A5)/A5', '=$B$1+$B$2/$A5'],
         wrong: [
-          { formula: '=A5*(B4-B1)-B2', say: 'Filled across and down, every reference moves. Anchor the meals’ column ($A5), the prices’ row (B$4) and both inputs ($B$1, $B$2).' },
-          { formula: '=$A5*(B$4-B1)-B2', say: 'The grid’s edges are anchored, but B1 and B2 move as the formula is filled. Make them $B$1 and $B$2.' },
-          { formula: '=$A5*B$4-$B$1-$B$2', say: 'The variable cost is per meal: multiply it by the meals too, $A5*(B$4−$B$1).' },
+          { formula: '=$B$2/A5', say: 'That is the fixed cost per meal only. At that price each meal still has to pay its own variable cost: add $B$1.' },
+          { formula: '=B1+B2/A5', say: 'Filled down, B1 and B2 move to B2, B3 …, so the lower rows use the wrong inputs. Fix both with $.' },
+          { formula: '=($B$1+$B$2)/A5', say: 'The variable cost is per meal, so it isn’t shared out over the meals: price = variable cost + fixed cost ÷ meals.' },
         ],
-        solution: `<x>=$A5*(B$4-$B$1)-$B$2</x>: meals × (price − variable cost) − fixed cost. 100 meals at $10: 100 × ${(10 - TRUCK.variable).toFixed(2)} − ${TRUCK.fixed} = ${money(truckProfit(100, 10))}.`,
+        solution: `<x>=$B$1+$B$2/A5</x>. Profit = meals × (price − variable cost) − fixed cost is 0 when price = variable cost + fixed cost ÷ meals. For ${TRUCK.meals[0]} meals: ${TRUCK.variable.toFixed(2)} + ${TRUCK.fixed} ÷ ${TRUCK.meals[0]} = ${money(breakEven(TRUCK.meals[0]))}; for 100 meals, ${money(breakEven(100))}.`,
       },
       {
         id: 'b03-fn-20-s2', type: 'num',
-        prompt: 'With the grid built, the owner runs Goal Seek: Set cell B7 (100 meals at the price in B4), To value 0, By changing cell B4. What price does Goal Seek put in B4? Give it to the cent.',
+        prompt: 'To check the column, the owner sets up one day in D1:D3: a price in D1 ($8.00), and in D3 the profit for 100 meals, <x>=100*(D1-$B$1)-$B$2</x>. She runs Goal Seek: Set cell D3, To value 0, By changing cell D1. What price does Goal Seek put in D1? Give it to the cent.',
         answer: 7.3, check: () => TRUCK.variable + TRUCK.fixed / 100, unit: '$', places: 2, tol: 0.005,
         wrong: [
           { value: 3.1, say: 'That is the fixed cost per meal alone. Each meal must also cover its own variable cost of $4.20.' },
           { value: 4.2, say: 'At $4.20 each meal only covers its variable cost, and the $310 of fixed cost is lost.' },
-          { value: 8, say: 'That is the price B4 held before Goal Seek changed it.' },
+          { value: 8, say: 'That is the price D1 held before Goal Seek changed it.' },
         ],
-        solution: `B7 is 100 × (B4 − ${TRUCK.variable.toFixed(2)}) − ${TRUCK.fixed}, which is 0 when B4 = ${TRUCK.variable.toFixed(2)} + ${TRUCK.fixed} ÷ 100 = ${money(TRUCK.variable + TRUCK.fixed / 100)}.`,
+        solution: `D3 is 100 × (D1 − ${TRUCK.variable.toFixed(2)}) − ${TRUCK.fixed}, which is 0 when D1 = ${TRUCK.variable.toFixed(2)} + ${TRUCK.fixed} ÷ 100 = ${money(TRUCK.variable + TRUCK.fixed / 100)}: the same as B7, the column’s break-even price for 100 meals.`,
       },
     ],
-    solution: `Step 1: <x>=$A5*(B$4-$B$1)-$B$2</x>, with the meals’ column, the prices’ row and both inputs anchored, so one formula fills the grid. Step 2: B7 = 100 × (B4 − ${TRUCK.variable.toFixed(2)}) − ${TRUCK.fixed} = 0 when B4 = ${money(TRUCK.variable + TRUCK.fixed / 100)}, the break-even price for 100 meals. Because the grid refers to its inputs, Goal Seek can work on any of its cells, and a change to B1 or B2 flows through every cell.`,
+    solution: `Step 1: <x>=$B$1+$B$2/A5</x>, with both inputs fixed by $ and the meals left free to move down the column. Step 2: Goal Seek changes D1 until 100 × (D1 − ${TRUCK.variable.toFixed(2)}) − ${TRUCK.fixed} = 0, which gives ${money(TRUCK.variable + TRUCK.fixed / 100)}, the same as B7. Two methods agreeing is the kind of independent check a model needs before anyone prices from it; and because the column refers to its inputs, a new pitch fee in B2 updates every break-even price at once.`,
   },
   {
     id: 'b03-fn-21', lesson: 'what-if-analysis', type: 'mc', kind: 'conceptual',
@@ -569,19 +577,19 @@ export const items = [
   },
   {
     id: 'b03-fn-24', lesson: 'dashboards', type: 'mc', kind: 'applied',
-    prompt: 'Cinderford Bike Hire’s (fictional) twelve monthly revenue tiles add up to $1,180 less than the total of its Hires table for the year. Each tile is <x>=SUMIFS(Hires[amount],Hires[date],">="&B1,Hires[date],"<"&EOMONTH(B1,0))</x>, with the first day of the month in B1. What is wrong?',
+    prompt: 'Cinderford Bike Hire’s (fictional) dashboard shows each of its two shops’ monthly revenue as a column chart, side by side. Excel scaled each value axis automatically: Station Road’s runs from $0 to $20,000 and Mill Lane’s from $0 to $8,000, so the columns look about the same height. What should the dashboard do?',
     options: [
-      'Each window leaves out its month’s last day; the end criterion should be <x>"<="&EOMONTH(B1,0)</x>',
-      'SUMIFS ignores a second criterion on a column it has already tested, so only the start date applies',
-      'Formula tiles must be refreshed, like a PivotTable, before they agree with the table they summarise',
-      'EOMONTH returns the first day of the next month, so each tile takes a day from the month after it',
+      'Give both value axes the same fixed range, $0 to $20,000, so equal heights mean equal revenue',
+      'Start each shop’s value axis at its own lowest month, so the changes within each shop are clearer',
+      'Put both shops on one chart, with Mill Lane’s columns measured against a second vertical axis',
+      'Keep the automatic axes, and colour the larger shop’s columns more strongly so readers see the gap',
     ],
     answer: 0,
     feedback: {
-      1: 'SUMIFS applies every criterion, including two on the same column: that is how a date window works.',
-      2: 'With automatic calculation, formulas recalculate by themselves; PivotTables are the ones that need refreshing.',
-      3: '<x>EOMONTH(B1,0)</x> is the last day of B1’s month. If it were the next month’s first day, the tiles would add to more than the total, not less.',
+      1: 'Columns carry their value in their length, so they must start at zero; two different starting points would make the shops even harder to compare.',
+      2: 'A second axis lets the two scales differ again, so equal heights still wouldn’t mean equal revenue. The charts lesson warns against dual axes for this reason.',
+      3: 'Colour can’t repair a misleading scale, and it shouldn’t carry the meaning on its own: the heights would still say the shops are alike.',
     },
-    solution: 'The criterion <x>"<"&EOMONTH(B1,0)</x> runs up to but not including each month’s last day, so hires on 31 January, 28 February and so on fall in no tile: $1,180 in all. Use <x>"<="&EOMONTH(B1,0)</x>, or <x>"<"&EDATE(B1,1)</x>. A reconciliation check on the dashboard (the tiles’ total minus the table’s total, which should be 0) catches this kind of gap at once.',
+    solution: 'Charts placed side by side invite comparison, so they must share a scale. With automatic axes the two charts have different tops ($20,000 and $8,000), and columns of very different revenue look alike. Set both value axes by hand to $0 to $20,000; then Mill Lane’s columns are visibly shorter, in proportion to its revenue, and a reader comparing the shops at a glance gets the truth.',
   },
 ];
