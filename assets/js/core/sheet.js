@@ -9,6 +9,7 @@
 // fictitious 29 February 1900 is kept, so serials from 61 on match Excel's).
 
 import { tQuantile, tCdf } from './stats.js?v=12';
+import * as INF from './inference.js?v=12';
 
 // ---------------------------------------------------------------- values
 export class Err { constructor(code) { this.code = code; } toString() { return this.code; } }
@@ -889,12 +890,158 @@ FN.TREND = (args, ctx) => {
   else { b0 = 0; b1 = p.xs.reduce((s, x, i) => s + x * p.ys[i], 0) / p.xs.reduce((s, x) => s + x * x, 0); }
   return mapArr(N.h === 1 && N.w === 1 ? N.at(0, 0) : N, (x) => { const n = toNum(x); return isErr(n) ? n : b0 + b1 * n; });
 };
+// ---------------------------------------------------------------- distributions and tests (B04)
+// Arguments as Excel takes them: the documented truncations (degrees of freedom, counts, trials, tails and type) and
+// #NUM! for values outside a function's domain; the maths is core/inference.js, tested against SciPy.
+/** Evaluate args[i] for each i as numbers; the first error wins. `trunc` lists positions truncated to integers. */
+function numArgs(args, ctx, n, { trunc = [], optional = {} } = {}) {
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    if ((args[i] == null || args[i].t === 'missing') && i in optional) { out.push(optional[i]); continue; }
+    const v = numArg(args[i], ctx); if (isErr(v)) return v;
+    out.push(trunc.includes(i) ? Math.trunc(v) : v);
+  }
+  return out;
+}
+const boolArg = (a, ctx) => toBool(scalar(a, ctx));
+FN['NORM.DIST'] = (args, ctx) => {
+  const v = numArgs(args, ctx, 3); if (isErr(v)) return v; const c = boolArg(args[3], ctx); if (isErr(c)) return c;
+  const [x, mu, sd] = v; if (!(sd > 0)) return ERR.NUM;
+  return c ? INF.normal.cdf(x, mu, sd) : INF.normal.pdf(x, mu, sd);
+};
+FN['NORM.S.DIST'] = (args, ctx) => { const z = numArg(args[0], ctx); if (isErr(z)) return z; const c = boolArg(args[1], ctx); if (isErr(c)) return c; return c ? INF.normCdf(z) : INF.normPdf(z); };
+FN['NORM.INV'] = (args, ctx) => { const v = numArgs(args, ctx, 3); if (isErr(v)) return v; const [p, mu, sd] = v; if (!(p > 0 && p < 1) || !(sd > 0)) return ERR.NUM; return INF.normal.inv(p, mu, sd); };
+FN['NORM.S.INV'] = (args, ctx) => { const p = numArg(args[0], ctx); if (isErr(p)) return p; if (!(p > 0 && p < 1)) return ERR.NUM; return INF.normInv(p); };
+FN.STANDARDIZE = (args, ctx) => { const v = numArgs(args, ctx, 3); if (isErr(v)) return v; const [x, mu, sd] = v; if (!(sd > 0)) return ERR.NUM; return (x - mu) / sd; };
+FN['BINOM.DIST'] = (args, ctx) => {
+  const v = numArgs(args, ctx, 3, { trunc: [0, 1] }); if (isErr(v)) return v; const c = boolArg(args[3], ctx); if (isErr(c)) return c;
+  const [k, n, p] = v; if (k < 0 || k > n || !(p >= 0 && p <= 1)) return ERR.NUM;
+  return c ? INF.binomCdf(k, n, p) : INF.binomPmf(k, n, p);
+};
+FN['BINOM.DIST.RANGE'] = (args, ctx) => {
+  const v = numArgs(args, ctx, 3, { trunc: [0, 2] }); if (isErr(v)) return v;
+  const [n, p, k1] = v; let k2 = k1;
+  if (args[3] && args[3].t !== 'missing') { const t = numArg(args[3], ctx); if (isErr(t)) return t; k2 = Math.trunc(t); }
+  if (n < 0 || !(p >= 0 && p <= 1) || k1 < 0 || k1 > n || k2 < k1 || k2 > n) return ERR.NUM;
+  return INF.binomCdf(k2, n, p) - (k1 > 0 ? INF.binomCdf(k1 - 1, n, p) : 0);
+};
+FN['BINOM.INV'] = (args, ctx) => { const v = numArgs(args, ctx, 3, { trunc: [0] }); if (isErr(v)) return v; const [n, p, a] = v; if (n < 0 || !(p >= 0 && p <= 1) || !(a > 0 && a < 1)) return ERR.NUM; return INF.binomInv(a, n, p); };
+FN['POISSON.DIST'] = (args, ctx) => {
+  const v = numArgs(args, ctx, 2, { trunc: [0] }); if (isErr(v)) return v; const c = boolArg(args[2], ctx); if (isErr(c)) return c;
+  const [k, lam] = v; if (k < 0 || lam < 0) return ERR.NUM;
+  return c ? INF.poissonCdf(k, lam) : INF.poissonPmf(k, lam);
+};
+FN['EXPON.DIST'] = (args, ctx) => {
+  const v = numArgs(args, ctx, 2); if (isErr(v)) return v; const c = boolArg(args[2], ctx); if (isErr(c)) return c;
+  const [x, lam] = v; if (x < 0 || !(lam > 0)) return ERR.NUM;
+  return c ? INF.exponCdf(x, lam) : INF.exponPdf(x, lam);
+};
+FN['T.DIST'] = (args, ctx) => {
+  const v = numArgs(args, ctx, 2, { trunc: [1] }); if (isErr(v)) return v; const c = boolArg(args[2], ctx); if (isErr(c)) return c;
+  const [x, df] = v; if (df < 1) return ERR.NUM;
+  return c ? INF.tCdf(x, df) : INF.tPdf(x, df);
+};
+FN['T.DIST.RT'] = (args, ctx) => { const v = numArgs(args, ctx, 2, { trunc: [1] }); if (isErr(v)) return v; const [x, df] = v; if (df < 1) return ERR.NUM; return INF.tSf(x, df); };
+FN['T.TEST'] = (args, ctx) => {
+  const a = numbersOf([args[0]], ctx); if (isErr(a)) return a;
+  const b = numbersOf([args[1]], ctx); if (isErr(b)) return b;
+  const v = numArgs([args[2], args[3]], ctx, 2, { trunc: [0, 1] }); if (isErr(v)) return v;
+  const [tails, type] = v;
+  if (tails !== 1 && tails !== 2) return ERR.NUM;
+  if (![1, 2, 3].includes(type)) return ERR.NUM;
+  let r;
+  if (type === 1) {
+    const A = arrOf(args[0], ctx), B = arrOf(args[1], ctx);              // pairs are kept by position; both cells must hold numbers
+    const fa = A.flat(), fb = B.flat();
+    if (fa.length !== fb.length) return ERR.NA;
+    const xs = [], ys = []; fa.forEach((x, i) => { if (typeof x === 'number' && typeof fb[i] === 'number') { xs.push(x); ys.push(fb[i]); } });
+    if (xs.length < 2) return ERR.DIV0;
+    r = INF.tTestPaired(xs, ys);
+  } else {
+    if (a.length < 2 || b.length < 2) return ERR.DIV0;
+    r = INF.tTest2(a, b, { equalVar: type === 2 });
+  }
+  if (!Number.isFinite(r.t)) return ERR.DIV0;
+  const one = INF.tSf(Math.abs(r.t), r.df);
+  return tails === 1 ? one : Math.min(1, 2 * one);
+};
+FN['Z.TEST'] = (args, ctx) => {
+  const xs = numbersOf([args[0]], ctx); if (isErr(xs)) return xs; if (!xs.length) return ERR.NA;
+  const x = numArg(args[1], ctx); if (isErr(x)) return x;
+  let sigma;
+  if (args[2] && args[2].t !== 'missing') { sigma = numArg(args[2], ctx); if (isErr(sigma)) return sigma; } else { if (xs.length < 2) return ERR.DIV0; sigma = Math.sqrt(varOf(xs, true)); }
+  if (!(sigma > 0)) return ERR.DIV0;
+  return 1 - INF.normCdf((meanOf(xs) - x) / (sigma / Math.sqrt(xs.length)));
+};
+FN['CONFIDENCE.NORM'] = (args, ctx) => { const v = numArgs(args, ctx, 3, { trunc: [2] }); if (isErr(v)) return v; const [a, sd, n] = v; if (!(a > 0 && a < 1) || !(sd > 0) || n < 1) return ERR.NUM; return INF.normInv(1 - a / 2) * sd / Math.sqrt(n); };
+FN.CONFIDENCE = FN['CONFIDENCE.NORM'];
+FN['CHISQ.DIST'] = (args, ctx) => {
+  const v = numArgs(args, ctx, 2, { trunc: [1] }); if (isErr(v)) return v; const c = boolArg(args[2], ctx); if (isErr(c)) return c;
+  const [x, k] = v; if (x < 0 || k < 1 || k > 1e10) return ERR.NUM;
+  return c ? INF.chi2Cdf(x, k) : INF.chi2Pdf(x, k);
+};
+FN['CHISQ.DIST.RT'] = (args, ctx) => { const v = numArgs(args, ctx, 2, { trunc: [1] }); if (isErr(v)) return v; const [x, k] = v; if (x < 0 || k < 1 || k > 1e10) return ERR.NUM; return INF.chi2Sf(x, k); };
+FN['CHISQ.INV'] = (args, ctx) => { const v = numArgs(args, ctx, 2, { trunc: [1] }); if (isErr(v)) return v; const [p, k] = v; if (!(p >= 0 && p <= 1) || k < 1 || k > 1e10) return ERR.NUM; return INF.chi2Inv(p, k); };
+FN['CHISQ.INV.RT'] = (args, ctx) => { const v = numArgs(args, ctx, 2, { trunc: [1] }); if (isErr(v)) return v; const [p, k] = v; if (!(p >= 0 && p <= 1) || k < 1 || k > 1e10) return ERR.NUM; return INF.chi2InvSf(p, k); };
+FN['CHISQ.TEST'] = (args, ctx) => {
+  const A = arrOf(args[0], ctx); if (isErr(A)) return A;
+  const E = arrOf(args[1], ctx); if (isErr(E)) return E;
+  if (A.h * A.w !== E.h * E.w) return ERR.NA;
+  if (A.h === 1 && A.w === 1) return ERR.NA;
+  let stat = 0;
+  for (let i = 0; i < A.h; i++) for (let j = 0; j < A.w; j++) {
+    const o = A.at(i, j), e = E.h === A.h ? E.at(i, j) : E.flat()[i * A.w + j];
+    if (typeof o !== 'number' || typeof e !== 'number') continue;
+    if (e === 0) return ERR.DIV0;
+    stat += (o - e) ** 2 / e;
+  }
+  const df = A.h > 1 && A.w > 1 ? (A.h - 1) * (A.w - 1) : A.h * A.w - 1;
+  return INF.chi2Sf(stat, df);
+};
+FN['F.DIST'] = (args, ctx) => {
+  const v = numArgs(args, ctx, 3, { trunc: [1, 2] }); if (isErr(v)) return v; const c = boolArg(args[3], ctx); if (isErr(c)) return c;
+  const [x, d1, d2] = v; if (x < 0 || d1 < 1 || d2 < 1) return ERR.NUM;
+  return c ? INF.fCdf(x, d1, d2) : INF.fPdf(x, d1, d2);
+};
+FN['F.DIST.RT'] = (args, ctx) => { const v = numArgs(args, ctx, 3, { trunc: [1, 2] }); if (isErr(v)) return v; const [x, d1, d2] = v; if (x < 0 || d1 < 1 || d2 < 1) return ERR.NUM; return INF.fSf(x, d1, d2); };
+FN['F.INV'] = (args, ctx) => { const v = numArgs(args, ctx, 3, { trunc: [1, 2] }); if (isErr(v)) return v; const [p, d1, d2] = v; if (!(p >= 0 && p <= 1) || d1 < 1 || d2 < 1) return ERR.NUM; return INF.fInv(p, d1, d2); };
+FN['F.INV.RT'] = (args, ctx) => { const v = numArgs(args, ctx, 3, { trunc: [1, 2] }); if (isErr(v)) return v; const [p, d1, d2] = v; if (!(p >= 0 && p <= 1) || d1 < 1 || d2 < 1) return ERR.NUM; return INF.fInvSf(p, d1, d2); };
+FN['F.TEST'] = (args, ctx) => {
+  const a = numbersOf([args[0]], ctx); if (isErr(a)) return a; const b = numbersOf([args[1]], ctx); if (isErr(b)) return b;
+  if (a.length < 2 || b.length < 2) return ERR.DIV0;
+  const va = varOf(a, true), vb = varOf(b, true); if (!(va > 0) || !(vb > 0)) return ERR.DIV0;
+  return INF.fTestVar(a, b).p;
+};
+FN.COMBIN = (args, ctx) => { const v = numArgs(args, ctx, 2, { trunc: [0, 1] }); if (isErr(v)) return v; const [n, k] = v; if (n < 0 || k < 0 || n < k) return ERR.NUM; return INF.combin(n, k); };
+FN.PERMUT = (args, ctx) => { const v = numArgs(args, ctx, 2, { trunc: [0, 1] }); if (isErr(v)) return v; const [n, k] = v; if (n <= 0 || k < 0 || n < k) return ERR.NUM; return INF.permut(n, k); };
+FN.FACT = (args, ctx) => { const n = numArg(args[0], ctx); if (isErr(n)) return n; if (n < 0) return ERR.NUM; const f = INF.factorial(Math.trunc(n)); return Number.isFinite(f) ? f : ERR.NUM; };
+agg('DEVSQ', (xs) => (xs.length ? xs.reduce((s, x) => s + (x - meanOf(xs)) ** 2, 0) : ERR.NUM));
+agg('SUMSQ', (xs) => xs.reduce((s, x) => s + x * x, 0));
+agg('AVEDEV', (xs) => { if (!xs.length) return ERR.NUM; const m = meanOf(xs); return xs.reduce((s, x) => s + Math.abs(x - m), 0) / xs.length; });
+agg('GEOMEAN', (xs) => (!xs.length || xs.some((x) => x <= 0) ? ERR.NUM : Math.exp(xs.reduce((s, x) => s + Math.log(x), 0) / xs.length)));
+agg('HARMEAN', (xs) => (!xs.length || xs.some((x) => x <= 0) ? ERR.NUM : xs.length / xs.reduce((s, x) => s + 1 / x, 0)));
+// TRIMMEAN(array, percent): leaves out the same number of points at each end, rounding the number left out down to a
+// multiple of 2, as Microsoft documents
+FN.TRIMMEAN = (args, ctx) => {
+  const xs = numbersOf([args[0]], ctx); if (isErr(xs)) return xs; const p = numArg(args[1], ctx); if (isErr(p)) return p;
+  if (!(p >= 0 && p < 1) || !xs.length) return ERR.NUM;
+  const cut = Math.floor((xs.length * p) / 2), s = [...xs].sort((a, b) => a - b).slice(cut, xs.length - cut);
+  return meanOf(s);
+};
+// MODE.MULT: every value tied for the highest count (each at least twice), as a vertical array that spills
+FN['MODE.MULT'] = (args, ctx) => {
+  const xs = numbersOf(args, ctx); if (isErr(xs)) return xs;
+  const cnt = new Map(); for (const x of xs) cnt.set(p15(x), (cnt.get(p15(x)) || 0) + 1);
+  const top = Math.max(0, ...cnt.values()); if (top < 2) return ERR.NA;
+  const out = []; for (const x of xs) { const k = p15(x); if (cnt.get(k) === top && !out.includes(k)) out.push(k); }
+  return arr1(out);
+};
 // the t distribution (as Excel: T.INV.2T(probability, df) is the two-tailed critical value; T.INV the left-tailed
 // inverse; T.DIST.2T(x, df) the two-tailed probability; CONFIDENCE.T(alpha, sd, n) half the width of a confidence
 // interval for a mean)
 FN['T.INV.2T'] = (args, ctx) => { const pr = numArg(args[0], ctx), df = Math.trunc(numArg(args[1], ctx)); if (isErr(pr)) return pr; if (isErr(df)) return df; if (!(pr > 0 && pr <= 1) || df < 1) return ERR.NUM; return tQuantile(1 - pr / 2, df); };
 FN['T.INV'] = (args, ctx) => { const pr = numArg(args[0], ctx), df = Math.trunc(numArg(args[1], ctx)); if (isErr(pr)) return pr; if (isErr(df)) return df; if (!(pr > 0 && pr < 1) || df < 1) return ERR.NUM; return tQuantile(pr, df); };
-FN['T.DIST.2T'] = (args, ctx) => { const x = numArg(args[0], ctx), df = Math.trunc(numArg(args[1], ctx)); if (isErr(x)) return x; if (isErr(df)) return df; if (x < 0 || df < 1) return ERR.NUM; return 2 * (1 - tCdf(x, df)); };
+FN['T.DIST.2T'] = (args, ctx) => { const x = numArg(args[0], ctx), df = Math.trunc(numArg(args[1], ctx)); if (isErr(x)) return x; if (isErr(df)) return df; if (x < 0 || df < 1) return ERR.NUM; return Math.min(1, 2 * INF.tSf(x, df)); };
 FN['CONFIDENCE.T'] = (args, ctx) => { const a = numArg(args[0], ctx), sd = numArg(args[1], ctx), n = Math.trunc(numArg(args[2], ctx)); for (const v of [a, sd, n]) if (isErr(v)) return v; if (!(a > 0 && a < 1) || sd <= 0) return ERR.NUM; if (n === 1) return ERR.DIV0; if (n < 1) return ERR.NUM; return tQuantile(1 - a / 2, n - 1) * sd / Math.sqrt(n); };
 
 // conditional aggregates

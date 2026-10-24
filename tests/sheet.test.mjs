@@ -220,6 +220,19 @@ eq('criterion ~* no wildcard', X.criterion('~*')('a'), false);
   ok('require a function', !X.gradeFormula(spec, { cell: 'C2', answer: '=SUM(A2:A4)', formula: '=A2+A3+A4', require: ['SUM'] }).ok);
   ok('require met', X.gradeFormula(spec, { cell: 'C2', answer: '=SUM(A2:A4)', formula: '=SUM(A2:A4)', require: ['SUM'] }).ok);
   ok('fixed cells stay', X.gradeFormula({ ...spec, fixed: ['E2'] }, { cell: 'C2', answer: '=E2', formula: '=0.08' }).ok);
+  // functions LibreOffice lacks, against Microsoft's documented examples
+  const ms = (f) => X.evaluate(f);
+  ok('BINOM.DIST.RANGE(60,0.75,48) ≈ 0.084 (Microsoft)', Math.abs(ms('=BINOM.DIST.RANGE(60,0.75,48)') - 0.084) < 0.0005);
+  ok('BINOM.DIST.RANGE(60,0.75,45,50) ≈ 0.524 (Microsoft)', Math.abs(ms('=BINOM.DIST.RANGE(60,0.75,45,50)') - 0.524) < 0.0005);
+  ok('BINOM.DIST.RANGE = BINOM.DIST difference', Math.abs(ms('=BINOM.DIST.RANGE(60,0.75,45,50)') - (ms('=BINOM.DIST(50,60,0.75,TRUE)') - ms('=BINOM.DIST(44,60,0.75,TRUE)'))) < 1e-12);
+  const zt = new X.Sheet({ cells: { A2: 3, A3: 6, A4: 7, A5: 8, A6: 6, A7: 5, A8: 4, A9: 2, A10: 1, A11: 9 } });
+  const zv = (f) => { zt.set('C1', f); return zt.get('C1'); };
+  ok('Z.TEST(A2:A11,4) = 0.090574 (Microsoft)', Math.abs(zv('=Z.TEST(A2:A11,4)') - 0.090574) < 5e-7);
+  ok('two-tailed Z.TEST = 0.181148 (Microsoft)', Math.abs(zv('=2*MIN(Z.TEST(A2:A11,4),1-Z.TEST(A2:A11,4))') - 0.181148) < 5e-7);
+  ok('Z.TEST(A2:A11,6) = 0.863043 (Microsoft)', Math.abs(zv('=Z.TEST(A2:A11,6)') - 0.863043) < 5e-7);
+  ok('T.DIST(60,1,TRUE) = 0.99469533 (Microsoft)', Math.abs(ms('=T.DIST(60,1,TRUE)') - 0.99469533) < 5e-9);
+  ok('T.DIST(8,3,FALSE) = 0.00073691 (Microsoft)', Math.abs(ms('=T.DIST(8,3,FALSE)') - 0.00073691) < 5e-9);
+  ok('TRIMMEAN example = 3.777778 (Microsoft)', Math.abs(ms('=TRIMMEAN({4,5,6,7,2,3,4,5,1,2,3},0.2)') - 3.777778) < 5e-7);
   // whole columns and rows move when filled, as in Excel
   ok('fill: F:F moves to G:G', X.shiftFormula('=SUM(F:F)', 0, 1) === '=SUM(G:G)');
   ok('fill: $F:$F stays', X.shiftFormula('=SUM($F:$F)+F:$G', 0, 2) === '=SUM($F:$F)+H:$G');
