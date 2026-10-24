@@ -126,7 +126,7 @@ export const items = [
       { formula: '=NORM.DIST(B3,B1,SQRT(B1*(1-B1)),TRUE)', say: '√(p(1 − p)) is the spread of a single visit, scored 1 for a swim and 0 otherwise. The share in a sample of B2 visits varies far less: divide by B2 inside the root.' },
       { formula: '=1-NORM.DIST(B3,B1,SQRT(B1*(1-B1)/B2),TRUE)', say: 'That is the probability that the sample share is above B3. NORM.DIST with TRUE already gives the area below.' },
     ],
-    solution: `The sample share p̂ varies around p = ${SWIM.p} with standard error √(${SWIM.p} × ${fx(1 - SWIM.p, 2)} ÷ ${SWIM.n}) = ${fx(seSwim, 4)}. z = (${SWIM.cut} − ${SWIM.p}) ÷ ${fx(seSwim, 4)} = ${neg((SWIM.cut - SWIM.p) / seSwim)}, and the area below it is ${fx(I.normal.cdf(SWIM.cut, SWIM.p, seSwim), 4)}: <x>=NORM.DIST(B3,B1,SQRT(B1*(1-B1)/B2),TRUE)</x>. A week with under 25% swims would happen by chance about once in 30 weeks. The normal model is reasonable: a sample is expected to hold ${SWIM.n * SWIM.p} swims and ${SWIM.n * (1 - SWIM.p)} other visits, both well above 10.`,
+    solution: `The sample share p̂ varies around p = ${SWIM.p} with standard error √(${SWIM.p} × ${fx(1 - SWIM.p, 2)} ÷ ${SWIM.n}) = ${fx(seSwim, 4)}. z = (${SWIM.cut} − ${SWIM.p}) ÷ ${fx(seSwim, 4)} = ${neg((SWIM.cut - SWIM.p) / seSwim)}, and the area below it is ${fx(I.normal.cdf(SWIM.cut, SWIM.p, seSwim), 4)}: <x>=NORM.DIST(B3,B1,SQRT(B1*(1-B1)/B2),TRUE)</x>. A week with under 25% swims would happen by chance about once in 30 weeks. The normal model is reasonable: a sample is expected to hold ${Math.round(SWIM.n * SWIM.p)} swims and ${Math.round(SWIM.n * (1 - SWIM.p))} other visits, both well above 10.`,
   },
   {
     id: 'b04-dg-6', lesson: 'confidence-intervals', type: 'num', kind: 'applied',
@@ -162,7 +162,7 @@ export const items = [
     id: 'b04-dg-8', lesson: 'hypothesis-testing', type: 'mc', kind: 'conceptual',
     prompt: 'Before collecting any data, Ravenscar Dental Practice (fictional) decided to test whether its patients’ mean wait is longer than the 15 minutes it promises (H₁: μ > 15), at α = 0.05. Its software reports only a two-sided p-value: 0.08. The sample’s mean wait was 16.2 minutes. What should the practice conclude?',
     options: [
-      'The one-sided p-value is 0.04, so it rejects H₀: mean waits exceed 15 minutes.',
+      'The one-sided p-value is 0.04, so it rejects H₀: the mean wait exceeds 15 minutes.',
       'The p-value is 0.08 whatever the alternative, so it fails to reject H₀ at the 5% level.',
       'The one-sided p-value is 0.16, because a one-sided test asks for stronger evidence.',
       'The one-sided p-value is 0.92, which is 1 minus the two-sided p-value of 0.08.',
@@ -188,7 +188,7 @@ export const items = [
       { formula: '=T.TEST(B2:B11,C2:C11,2,2)', say: 'Type 2, the pooled test, also treats the months as independent groups, and the large differences between branches swamp the change. Each branch is measured twice: type 1, paired.' },
       { formula: '=T.TEST(B2:B11,C2:C11,1,1)', say: 'tails = 1 gives the one-tailed p-value. The question asks for a two-sided test: tails = 2.' },
     ],
-    solution: `Each branch is measured before and after, so the data are paired: <x>=T.TEST(B2:B11,C2:C11,2,1)</x> ≈ ${PAIR.p.toFixed(6)} (t = ${fx(PAIR.t, 2)} on ${PAIR.df} df; the mean saving is ${fx(PAIR.meanDiff, 2)} minutes a prescription, with a standard deviation of ${fx(PAIR.sdDiff, 2)}). Welch’s test on the same columns gives p ≈ ${fx(WELCH.p, 2)}, because the branches differ from one another (${fx(Math.min(...BEFORE), 1)} to ${fx(Math.max(...BEFORE), 1)} minutes) far more than the software changed them. The paired test shows a real drop; without branches that kept the old software, a change between the two months, such as fewer complex prescriptions, could explain part of it.`,
+    solution: `Each branch is measured before and after, so the data are paired: <x>=T.TEST(B2:B11,C2:C11,2,1)</x> ≈ ${PAIR.p.toFixed(6)} (t = ${fx(PAIR.t, 2)} on ${PAIR.df} df; the mean saving is ${fx(PAIR.meanDiff, 2)} minutes a prescription, with a standard deviation of ${fx(PAIR.sdDiff, 2)}). Welch’s test on the same columns gives p ≈ ${fx(WELCH.p, 2)}, because the branches differ from one another (${fx(Math.min(...BEFORE), 1)} to ${fx(Math.max(...BEFORE), 1)} minutes) far more than the software changed them. The paired test shows a drop larger than chance would produce; without branches that kept the old software, a change between the two months, such as fewer complex prescriptions, could explain part of it.`,
   },
 
   // ================================================================ Module 4: categories and groups

@@ -1441,6 +1441,18 @@ FN.FILTER = (args, ctx) => {
   return new Arr(rows);
 };
 FN.SEQUENCE = (args, ctx) => { const r = numArg(args[0], ctx), c = numArg(args[1], ctx, 1), s = numArg(args[2], ctx, 1), st = numArg(args[3], ctx, 1); return new Arr(Array.from({ length: r }, (_, i) => Array.from({ length: c }, (__, j) => s + (i * c + j) * st))); };
+// MMULT(array1, array2): the matrix product. Microsoft: #VALUE! when any cell is empty or text, or when array1's
+// number of columns differs from array2's number of rows; both arrays must contain only numbers.
+FN.MMULT = (args, ctx) => {
+  if (!need(args, 2)) return ERR.VALUE;
+  const A = arrOf(args[0], ctx); if (isErr(A)) return A;
+  const B = arrOf(args[1], ctx); if (isErr(B)) return B;
+  if (A.w !== B.h) return ERR.VALUE;
+  for (const M of [A, B]) for (const v of M.flat()) { if (isErr(v)) return v; if (typeof v !== 'number') return ERR.VALUE; }
+  return new Arr(Array.from({ length: A.h }, (_, i) => Array.from({ length: B.w }, (__, j) => {
+    let t = 0; for (let k = 0; k < A.w; k++) t += A.at(i, k) * B.at(k, j); return t;
+  })));
+};
 FN.TRANSPOSE = (args, ctx) => { const A = arrOf(args[0], ctx); if (isErr(A)) return A; return new Arr(Array.from({ length: A.w }, (_, j) => A.rows.map((r) => r[j]))); };
 
 function call(node, ctx) {

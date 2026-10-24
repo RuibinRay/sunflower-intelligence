@@ -45,6 +45,7 @@ CELLS.update({f'S{i}': v for i, v in enumerate([3, 5, 5, 7, 3, 9, 2, 1], start=1
 CELLS.update({f'AA{i}': v for i, v in enumerate([250.4, 249.1, 251.8, 250.9, 248.7, 252.2, 250.0, 249.6, 251.1, 250.7], start=1)})
 CELLS.update({f'AB{i}': v for i, v in enumerate([248.9, 251.6, 247.8, 252.4, 249.0, 250.2, 246.9, 251.9, 249.4, 250.8, 248.2, 252.9], start=1)})
 CELLS.update({'AD1': 48, 'AE1': 31, 'AF1': 21, 'AD2': 62, 'AE2': 29, 'AF2': 40})
+CELLS.update({'AP1': 100, 'AP2': 131, 'AQ1': 110, 'AR1': 60, 'AS1': 61, 'AT1': 231})  # AD1:AF2's row totals, column totals, total
 CELLS.update({'AD4': 100 * 110 / 231, 'AE4': 100 * 60 / 231, 'AF4': 100 * 61 / 231, 'AD5': 131 * 110 / 231, 'AE5': 131 * 60 / 231, 'AF5': 131 * 61 / 231})
 CELLS.update({'AH1': 38, 'AI1': 41, 'AJ1': 29, 'AK1': 33, 'AL1': 27, 'AM1': 36, 'AN1': 27})
 CELLS.update({'AH2': 33, 'AI2': 33, 'AJ2': 33, 'AK2': 33, 'AL2': 33, 'AM2': 33, 'AN2': 33})
@@ -149,6 +150,9 @@ FORMULAS = [
     '=PERCENTRANK.INC(S1:S8,5)', '=PERCENTRANK.INC(S1:S8,4.5)', '=PERCENTRANK.INC(S1:S8,4.5,2)', '=PERCENTRANK.EXC(S1:S8,5)', '=PERCENTRANK.EXC(S1:S8,6.2)',
     '=PERCENTRANK.INC(AA1:AA10,250.5)', '=PERCENTRANK.INC(S1:S8,3)', '=PERCENTRANK.EXC(S1:S8,2.5,4)', '=SUM(LARGE(S1:S8,{1,2}))', '=SUM(SMALL(AA1:AA10,{1;2;3}))', '=SUM(BINOM.DIST({0,1},5,0.5,FALSE))',
     '=SUM(POISSON.DIST({0,1,2},2,FALSE))', '=INDEX(NORM.S.DIST({-1,0,1},TRUE),1,3)', '=SUMPRODUCT(T.DIST({-1,1},5,TRUE))',
+    '=CHISQ.TEST(AD1:AF2,MMULT(AP1:AP2,AQ1:AS1)/AT1)', '=SUM(MMULT({1,2,3},{4;5;6}))', '=INDEX(MMULT({1,2;3,4},{5;6}),2,1)',
+    '=INDEX(MMULT({1;2},{3,4}),2,2)', '=ROWS(MMULT(AP1:AP2,AQ1:AS1))', '=COLUMNS(MMULT(AP1:AP2,AQ1:AS1))', '=MMULT({1,2},{1,2})',
+    '=SUM(MMULT(AP1:AP3,{1}))', '=SUM(MMULT({1,"a"},{1;2}))',
     '=SUM(ROW(12:20))', '=ROWS(12:20)', '=SUM(BINOM.DIST(ROW(12:20),20,0.45,FALSE))', '=SUM(ROW($3:$5))',
     '=VLOOKUP(13,J1:K40,2,TRUE)', '=VLOOKUP(260,J:K,2,TRUE)', '=MATCH(120,J1:J40,1)', '=VLOOKUP(-5,J1:K40,2,TRUE)', '=T.INV.2T(0.05,10)', '=T.INV(0.975,30)',
     '=T.DIST.2T(2.1,15)', '=CONFIDENCE.T(0.05,STDEV.S(F2:F13),COUNT(F2:F13))', '=CONFIDENCE.T(0.05,1,1)',

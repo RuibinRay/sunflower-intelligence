@@ -1,7 +1,7 @@
 // assess-final.js — B04 final assessment: 24 questions across all four modules, two or three per lesson (six for module
 // 1, seven for module 2, five for module 3 and six for module 4). 70% passes.
 // Mixed conceptual, numerical and applied items; ten are formula items on small worksheets using Excel’s statistical
-// functions (and four more formula steps), with the inputs a formula should read (a hypothesised value, a cut-off, a
+// functions (and three more formula steps), with the inputs a formula should read (a hypothesised value, a cut-off, a
 // confidence level, a category label) varied on the marking copies, so that typed results and typed inputs fail.
 // Several combine skills: a lookup inside a conditional probability (b04-fn-4), a normal model inside a binomial count
 // (b04-fn-7), a normal model for a sample mean’s cut-off (b04-fn-9), a t interval for one category of a table
@@ -37,7 +37,7 @@ const SCORES = [38, 42, 45, 41, 44, 47, 39, 43, 45, 46, 42, 44, 40, 45, 48, 43, 
 const below = (x) => SCORES.filter((v) => v < x).length, equal = (x) => SCORES.filter((v) => v === x).length;
 const prank = (x) => ((below(x) + 0.5 * equal(x)) / SCORES.length) * 100;
 // Fixpoint Phone Repairs: three screen suppliers
-const SUPPLY = [['Alder', 0.5, 0.01], ['Brook', 0.3, 0.02], ['Cove', 0.2, 0.05]];
+const SUPPLY = [['P', 0.5, 0.01], ['Q', 0.3, 0.02], ['R', 0.2, 0.05]];
 const pFail = sum(SUPPLY.map(([, s, f]) => s * f));
 // Snowgate Ski Hire: rentals by package and insurance
 const SKI = [['Day', 84, 196], ['Weekend', 72, 108], ['Week', 66, 54]];
@@ -110,7 +110,7 @@ const IND = I.chisqIndependence(MEMBER);
 const ENTRANCE = [598, 655, 570, 701, 622, 676], AISLE = [548, 612, 575, 530, 640, 566, 599], BACK = [512, 590, 498, 571, 525];
 const PITCH = I.anova1([ENTRANCE, AISLE, BACK]);
 // Jessamine Paints: six pairwise p-values after a significant ANOVA
-const PAIRS = [['W–X', 0.004], ['W–Y', 0.030], ['W–Z', 0.21], ['X–Y', 0.62], ['X–Z', 0.006], ['Y–Z', 0.12]];
+const PAIRS = [['W–X', 0.004, '0.004'], ['W–Y', 0.030, '0.030'], ['W–Z', 0.21, '0.21'], ['X–Y', 0.62, '0.62'], ['X–Z', 0.006, '0.006'], ['Y–Z', 0.12, '0.12']];
 const bonf = 0.05 / PAIRS.length;
 // Millbeck Garages: service hours at three branches (summary)
 const GAR = [['Northgate', 8, 2.40, 0.30], ['Quarry Road', 10, 2.75, 0.35], ['Riverside', 12, 2.55, 0.32]];
@@ -169,18 +169,18 @@ export const items = [
   },
   {
     id: 'b04-fn-3', lesson: 'probability', type: 'num', kind: 'applied',
-    prompt: 'Fixpoint Phone Repairs (fictional) buys replacement screens from three suppliers: 50% from Alder, 30% from Brook and 20% from Cove. Within a month of fitting, 1% of Alder’s screens fail, 2% of Brook’s and 5% of Cove’s. A customer brings back a screen that failed within a month. What is the probability that it came from Cove? Give three decimal places.',
+    prompt: 'Fixpoint Phone Repairs (fictional) buys replacement screens from three suppliers: 50% from supplier P, 30% from supplier Q and 20% from supplier R. Within a month of fitting, 1% of P’s screens fail, 2% of Q’s and 5% of R’s. A customer brings back a screen that failed within a month. What is the probability that it came from supplier R? Give three decimal places.',
     answer: r((0.2 * 0.05) / pFail, 3),
     check: () => (0.2 * 0.05) / (0.5 * 0.01 + 0.3 * 0.02 + 0.2 * 0.05),
     unit: '', places: 3, tol: 0.0015,
     wrong: [
-      { value: 0.05, say: 'That is P(fail | Cove), the share of Cove’s screens that fail. The question asks the reverse, P(Cove | fail), which depends on how many screens each supplier provides.' },
-      { value: 0.2, say: 'That is Cove’s share of all screens, before you know the screen failed. The failure is evidence: Cove’s screens fail more often, so its share of failed screens is larger.' },
-      { value: 0.01, say: 'That is the joint probability that a screen is from Cove and fails, 0.2 × 0.05. Divide it by the probability that any screen fails.' },
+      { value: 0.05, say: 'That is P(fail | R), the share of R’s screens that fail. The question asks the reverse, P(R | fail), which depends on how many screens each supplier provides.' },
+      { value: 0.2, say: 'That is R’s share of all screens, before you know the screen failed. The failure is evidence: R’s screens fail more often, so its share of failed screens is larger.' },
+      { value: 0.01, say: 'That is the joint probability that a screen is from R and fails, 0.2 × 0.05. Divide it by the probability that any screen fails.' },
       { value: r(pFail, 3), say: 'That is the probability that a screen fails, from all three suppliers together. It is the denominator of Bayes’ rule.' },
       { value: r(0.05 / (0.01 + 0.02 + 0.05), 3), say: 'That compares the three failure rates without weighting each by its supplier’s share of the screens. Weight first: 0.5 × 0.01, 0.3 × 0.02 and 0.2 × 0.05.' },
     ],
-    solution: `By the law of total probability, P(fail) = 0.5 × 0.01 + 0.3 × 0.02 + 0.2 × 0.05 = ${fx(pFail, 3)}. Bayes’ rule: P(Cove | fail) = 0.2 × 0.05 ÷ ${fx(pFail, 3)} = ${fx((0.2 * 0.05) / pFail, 3)}. In natural frequencies, of 1,000 screens 500 come from Alder and 5 fail, 300 from Brook and 6 fail, 200 from Cove and 10 fail: 10 of the 21 failures are Cove’s. Cove supplies a fifth of the screens but almost half of the failures.`,
+    solution: `By the law of total probability, P(fail) = 0.5 × 0.01 + 0.3 × 0.02 + 0.2 × 0.05 = ${fx(pFail, 3)}. Bayes’ rule: P(R | fail) = 0.2 × 0.05 ÷ ${fx(pFail, 3)} = ${fx((0.2 * 0.05) / pFail, 3)}. In natural frequencies, of 1,000 screens 500 come from P and 5 fail, 300 from Q and 6 fail, 200 from R and 10 fail: 10 of the 21 failures are R’s. Supplier R provides a fifth of the screens but almost half of the failures.`,
   },
   {
     id: 'b04-fn-4', lesson: 'probability', type: 'formula', kind: 'applied',
@@ -338,7 +338,7 @@ export const items = [
     id: 'b04-fn-12', lesson: 'confidence-intervals', type: 'mc', kind: 'conceptual',
     prompt: `Lindley Dental (fictional) asked 80 patients chosen at random whether they had any pain after a new numbing gel; 5 said yes. A colleague has calculated the 95% Wald interval for the share of all patients with pain: ${pc(WALD.low)} to ${pc(WALD.high)}. What should the practice report?`,
     options: [
-      `The Wilson interval, about ${pc(WILSON.low)} to ${pc(WILSON.high)}, as only 5 patients had pain`,
+      `The Wilson interval, about ${pc(WILSON.low)} to ${pc(WILSON.high)}, since only 5 of the patients had pain`,
       `The Wald interval as it stands, since its lower limit, ${pc(WALD.low)}, is above zero`,
       'A 99% Wald interval instead, to allow for the small number of patients with pain',
       'No interval: with only 5 patients reporting pain, no interval can be calculated',
@@ -349,7 +349,7 @@ export const items = [
       2: 'A wider Wald interval still rests on the same poor normal approximation. The condition, not the confidence level, is the problem.',
       3: 'An interval can be calculated; the Wilson interval works well even with few successes, and stays between 0 and 1.',
     },
-    solution: `The Wald interval p̂ ± z√(p̂(1 − p̂) ÷ n) needs at least 10 successes and 10 failures; here there are only 5 patients with pain. The course’s rule is to report the Wilson interval then: centred at ${pc(WILSON.centre)}, pulled towards 0.5 from p̂ = ${pc(PAIN.x / PAIN.n)}, it runs from ${pc(WILSON.low)} to ${pc(WILSON.high)}. The practice can say that between about 3% and 14% of patients like these would have pain, from a random sample of 80.`,
+    solution: `The Wald interval p̂ ± z√(p̂(1 − p̂) ÷ n) needs at least 10 successes and 10 failures; here there are only 5 patients with pain. The course’s rule is to report the Wilson interval then: centred at ${pc(WILSON.centre)}, pulled towards 0.5 from p̂ = ${pc(PAIN.x / PAIN.n)}, it runs from ${pc(WILSON.low)} to ${pc(WILSON.high)}. The practice can report that 5 of 80 randomly chosen patients (6%) had pain, with a 95% interval of roughly 3% to 14% for the share among patients like these.`,
   },
   {
     id: 'b04-fn-13', lesson: 'confidence-intervals', type: 'num', kind: 'applied',
@@ -380,7 +380,7 @@ export const items = [
       '=2*NORM.S.DIST(-ABS((COUNTIF(B2:B121,"on time")/COUNTA(B2:B121)-E1)/SQRT(E1*(1-E1)/COUNTA(B2:B121))),TRUE)',
       '=2*(1-NORM.S.DIST(ABS((COUNTIF(B2:B121,"on time")/120-E1)/SQRT(E1*(1-E1)/120)),TRUE))',
       '=2*(1-NORM.S.DIST(ABS((COUNTIF(B2:B121,"on time")/ROWS(B2:B121)-E1)/SQRT(E1*(1-E1)/ROWS(B2:B121))),TRUE))',
-      '=2*(1-NORM.DIST(COUNTIF(B2:B121,"on time")/120,E1,SQRT(E1*(1-E1)/120),TRUE))',
+      '=2*MIN(NORM.DIST(COUNTIF(B2:B121,"on time")/120,E1,SQRT(E1*(1-E1)/120),TRUE),1-NORM.DIST(COUNTIF(B2:B121,"on time")/120,E1,SQRT(E1*(1-E1)/120),TRUE))',
     ],
     wrong: [
       { formula: '=2*(1-NORM.S.DIST(ABS((COUNTIF(B2:B121,"on time")/120-E1)/SQRT(COUNTIF(B2:B121,"on time")/120*(1-COUNTIF(B2:B121,"on time")/120)/120)),TRUE))', say: 'That builds the standard error from p̂. The test works out how p̂ would vary if H₀ were true, so it uses p₀: √(E1 × (1 − E1) ÷ n).' },
@@ -411,7 +411,7 @@ export const items = [
         id: 'b04-fn-15-s2', type: 'mc',
         prompt: 'Suppose the mean really has changed by 2 hours, but the study fails to reject H₀. What has happened, and how likely was it beforehand?',
         options: [
-          `A Type II error, which had a probability of about ${Math.round((1 - kitPower) * 100)}% (1 − power)`,
+          `A Type II error, which had a probability of about ${Math.round((1 - kitPower) * 100)}%, or 1 − power`,
           'A Type I error, which had a probability of 5%, the significance level',
           'A Type II error, which had a probability of 5%, the significance level',
           'No error: failing to reject shows the change was too small to matter',
@@ -457,7 +457,7 @@ export const items = [
         solution: 'A two-sided t test at the 5% level rejects H₀: μ = μ₀ exactly when μ₀ lies outside the 95% t interval. 14, 19 and 21 days lie outside it; 15 and 18 days lie inside.',
       },
     ],
-    solution: `The 95% interval, ${fx(loanLo, 2)} to ${fx(loanHi, 2)} days, is the set of hypothesised means that a two-sided t test at 5% would not reject. So 14, 19 and the budget’s 21 days are rejected, and 15 and 18 days are not. Not rejecting 15 or 18 days doesn’t confirm either: both, and everything between, are compatible with the data. The budget’s 21 days is clearly too long for loans like these.`,
+    solution: `The 95% interval, ${fx(loanLo, 2)} to ${fx(loanHi, 2)} days, is the set of hypothesised means that a two-sided t test at 5% would not reject. So 14, 19 and the budget’s 21 days are rejected, and 15 and 18 days are not. Not rejecting 15 or 18 days doesn’t confirm either: both, and everything between, are compatible with the data. The budget’s 21 days is far above anything these loans support.`,
   },
   {
     id: 'b04-fn-17', lesson: 'comparing-means', type: 'steps', kind: 'applied',
@@ -467,7 +467,7 @@ export const items = [
         id: 'b04-fn-17-s1', type: 'mc',
         prompt: 'Which test should compare the two teams’ mean times?',
         options: [
-          'Welch’s t test: the teams are separate groups whose spreads differ greatly',
+          'Welch’s t test, because the teams are separate groups whose spreads differ greatly',
           'The pooled two-sample t test, because the jobs were allocated to the teams at random',
           'A paired t test: both columns hold the hours of jobs done by the same firm',
           'Run F.TEST first, and use the pooled test if it finds no difference in the spreads',
@@ -569,7 +569,7 @@ export const items = [
         solution: 'df = k − 1 − m = 5 − 1 − 1 = 3: one degree of freedom is lost because the expected counts must add to 120, and one because λ was estimated from the same data.',
       },
     ],
-    solution: `Expected nights: ${EXP_N.map((e) => fx(e, 1)).join(', ')}, all above 5. χ² = Σ(O − E)² ÷ E = ${fx(FIT.stat, 2)} on 3 degrees of freedom, and <x>=CHISQ.DIST.RT(0.96,3)</x> ≈ ${fx(FIT.p, 2)}: no evidence that call-outs per night depart from a Poisson distribution, so the firm can plan its night cover from it, while watching for nights that bunch. CHISQ.TEST on the two columns would use 4 degrees of freedom and give ${fx(FIT_NAIVE.p, 2)}.`,
+    solution: `Expected nights: ${EXP_N.map((e) => fx(e, 1)).join(', ')}, all above 5. χ² = Σ(O − E)² ÷ E = ${fx(FIT.stat, 2)} on 3 degrees of freedom, and <x>=CHISQ.DIST.RT(0.96,3)</x> ≈ ${fx(FIT.p, 2)}: no evidence that call-outs per night depart from a Poisson distribution. That doesn’t prove the model right, but it makes a Poisson model a reasonable basis for planning night cover, while the firm watches for nights that bunch. CHISQ.TEST on the two columns would use 4 degrees of freedom and give ${fx(FIT_NAIVE.p, 2)}.`,
   },
   {
     id: 'b04-fn-20', lesson: 'proportions-and-chi-square', type: 'formula', kind: 'applied',
@@ -634,11 +634,11 @@ export const items = [
       { formula: '=(DEVSQ(A2:C8)-(DEVSQ(A2:A7)+DEVSQ(B2:B8)+DEVSQ(C2:C6)))/(DEVSQ(A2:A7)+DEVSQ(B2:B8)+DEVSQ(C2:C6))', say: 'That divides SS between by SS within. η² divides it by SS total, so that it is a share between 0 and 1.' },
       { formula: '=1-(VAR.S(A2:A7)+VAR.S(B2:B8)+VAR.S(C2:C6))/VAR.S(A2:C8)', say: 'Variances divide each sum of squares by its own degrees of freedom, so they don’t add up the way sums of squares do. Use DEVSQ.' },
     ],
-    solution: `DEVSQ of all 18 Saturdays is SS total, ${fx(PITCH.sst, 1)}; adding each pitch’s DEVSQ gives SS within, ${fx(PITCH.ssw, 1)}; SS between is the rest, ${fx(PITCH.ssb, 1)}. η² = ${fx(PITCH.ssb, 1)} ÷ ${fx(PITCH.sst, 1)} = ${fx(PITCH.eta2, 3)}: about half of the week-to-week variation in takings goes with the pitch. F = ${fx(PITCH.F, 2)} on 2 and 15 degrees of freedom, p ≈ ${fx(PITCH.p, 4)}; the largest standard deviation is ${fx(Math.max(sd(ENTRANCE), sd(AISLE), sd(BACK)) / Math.min(sd(ENTRANCE), sd(AISLE), sd(BACK)), 2)} times the smallest. The stall chose its pitch on different Saturdays, so weather and season could share the credit.`,
+    solution: `DEVSQ of all 18 Saturdays is SS total, ${fx(PITCH.sst, 1)}; adding each pitch’s DEVSQ gives SS within, ${fx(PITCH.ssw, 1)}; SS between is the rest, ${fx(PITCH.ssb, 1)}. η² = ${fx(PITCH.ssb, 1)} ÷ ${fx(PITCH.sst, 1)} = ${fx(PITCH.eta2, 3)}: about half of the Saturday-to-Saturday variation in takings goes with the pitch. F = ${fx(PITCH.F, 2)} on 2 and 15 degrees of freedom, p ≈ ${fx(PITCH.p, 4)}; the largest standard deviation is ${fx(Math.max(sd(ENTRANCE), sd(AISLE), sd(BACK)) / Math.min(sd(ENTRANCE), sd(AISLE), sd(BACK)), 2)} times the smallest. The stall chose its pitch on different Saturdays, so weather and season could share the credit.`,
   },
   {
     id: 'b04-fn-23', lesson: 'anova', type: 'mc', kind: 'conceptual',
-    prompt: `Jessamine Paints (fictional) tested four paint formulas, W, X, Y and Z, on 8 panels each, measuring drying time. A one-way ANOVA gives F = 5.9 and p = ${fx(I.fSf(5.9, 3, 28), 3)}, and the formulas’ standard deviations are similar. Welch t tests on the six pairs give these p-values: ${PAIRS.map(([k, p]) => `${k} ${p}`).join(', ')}. Keeping the family-wise error rate at 5% with a Bonferroni correction, which conclusion is justified?`,
+    prompt: `Jessamine Paints (fictional) tested four paint formulas, W, X, Y and Z, on 8 panels each, measuring drying time. A one-way ANOVA gives F = 5.9 and p = ${fx(I.fSf(5.9, 3, 28), 3)}, and the formulas’ standard deviations are similar. Welch t tests on the six pairs give these p-values: ${PAIRS.map(([k, , t]) => `${k} ${t}`).join(', ')}. Keeping the family-wise error rate at 5% with a Bonferroni correction, which conclusion is justified?`,
     options: [
       'W–X and X–Z differ clearly; the other four pairs show no clear difference.',
       'W–X, W–Y and X–Z differ, since each of those p-values is below 0.05.',
@@ -651,7 +651,7 @@ export const items = [
       2: 'A significant F says the means are not all equal; one formula out of line is enough. Pairwise comparisons, adjusted for multiple testing, say which differ.',
       3: 'Tukey’s HSD is the usual choice for all pairs, but the Bonferroni correction is a valid alternative that works with Excel’s T.TEST.',
     },
-    solution: `With six comparisons, Bonferroni tests each at 0.05 ÷ 6 ≈ ${fx(bonf, 4)}. Only ${PAIRS.filter(([, p]) => p < bonf).map(([k, p]) => `${k} (${p})`).join(' and ')} fall below it, so X’s drying time differs from W’s and from Z’s; W–Y (0.030) would look significant tested alone but doesn’t survive the adjustment. Not finding a difference for the other pairs isn’t evidence that they dry equally fast: with 8 panels each, moderate differences could be missed.`,
+    solution: `With six comparisons, Bonferroni tests each at 0.05 ÷ 6 ≈ ${fx(bonf, 4)}. Only ${PAIRS.filter(([, p]) => p < bonf).map(([k, , t]) => `${k} (${t})`).join(' and ')} fall below it, so X’s drying time differs from W’s and from Z’s; W–Y (0.030) would look significant tested alone but doesn’t survive the adjustment. Not finding a difference for the other pairs isn’t evidence that they dry equally fast: with 8 panels each, moderate differences could be missed.`,
   },
   {
     id: 'b04-fn-24', lesson: 'anova', type: 'steps', kind: 'numerical',
@@ -661,7 +661,7 @@ export const items = [
         id: 'b04-fn-24-s1', type: 'mc',
         prompt: 'Before running a one-way ANOVA, what does the usual rule of thumb say about the spreads?',
         options: [
-          'Equal variances are reasonable: the largest SD is under 1.2 times the smallest.',
+          'Equal variances are reasonable: the largest SD is less than 1.2 times the smallest.',
           'Equal variances fail: the three SDs differ, so Welch’s ANOVA is needed instead.',
           'The rule can’t be applied, because the branches timed different numbers of services.',
           'Equal variances fail: the largest variance is more than 1.3 times the smallest one.',
