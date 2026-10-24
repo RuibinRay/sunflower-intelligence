@@ -41,6 +41,13 @@ CELLS.update({'J1': 'Spend', 'K1': 'Discount', 'J2': 0, 'K2': 0, 'J3': 100, 'K3'
 CELLS.update({'M1': 'Q1', 'N1': 'Q2', 'O1': 'Q3', 'P1': 'Q4', 'M2': 120, 'N2': 135, 'O2': 150, 'P2': 160})
 CELLS.update({'R1': 100, 'R2': 75, 'R3': 50, 'R4': 25})
 CELLS.update({f'S{i}': v for i, v in enumerate([3, 5, 5, 7, 3, 9, 2, 1], start=1)})
+# B04: two samples (bag weights), a contingency table with its expected counts, a one-row goodness-of-fit pair
+CELLS.update({f'AA{i}': v for i, v in enumerate([250.4, 249.1, 251.8, 250.9, 248.7, 252.2, 250.0, 249.6, 251.1, 250.7], start=1)})
+CELLS.update({f'AB{i}': v for i, v in enumerate([248.9, 251.6, 247.8, 252.4, 249.0, 250.2, 246.9, 251.9, 249.4, 250.8, 248.2, 252.9], start=1)})
+CELLS.update({'AD1': 48, 'AE1': 31, 'AF1': 21, 'AD2': 62, 'AE2': 29, 'AF2': 40})
+CELLS.update({'AD4': 100 * 110 / 231, 'AE4': 100 * 60 / 231, 'AF4': 100 * 61 / 231, 'AD5': 131 * 110 / 231, 'AE5': 131 * 60 / 231, 'AF5': 131 * 61 / 231})
+CELLS.update({'AH1': 38, 'AI1': 41, 'AJ1': 29, 'AK1': 33, 'AL1': 27, 'AM1': 36, 'AN1': 27})
+CELLS.update({'AH2': 33, 'AI2': 33, 'AJ2': 33, 'AK2': 33, 'AL2': 33, 'AM2': 33, 'AN2': 33})
 
 FORMULAS = [
     # operators and precedence
@@ -127,6 +134,22 @@ FORMULAS = [
     '=WEEKDAY(A2,11)', '=WEEKDAY(A2,12)', '=WEEKDAY(A2,13)', '=WEEKDAY(A3,14)', '=WEEKDAY(A3,15)', '=WEEKDAY(A3,16)', '=WEEKDAY(A3,17)',
     '=WEEKDAY(A2,4)', '=WEEKDAY(A2,0)', '=WEEKDAY(A2,3)',
     '=10^308*10', '=FORECAST.LINEAR(5,F2:F4,{2;2;2})', '=IFERROR(10^308*10,"big")', '=NUMBERVALUE("2,5",",")',
+    '=NORM.DIST(1000,1004,3,TRUE)', '=NORM.DIST(1000,1004,3,FALSE)', '=NORM.DIST(1,0,0,TRUE)', '=NORM.S.DIST(-1.96,TRUE)', '=NORM.S.DIST(0.5,FALSE)',
+    '=NORM.S.DIST(-8.2,TRUE)', '=NORM.INV(0.01,1004,3)', '=NORM.INV(1,0,1)', '=NORM.S.INV(0.975)', '=STANDARDIZE(12.6,39.38,26.1)', '=STANDARDIZE(1,2,0)',
+    '=BINOM.DIST(3,10,0.3,FALSE)', '=BINOM.DIST(3,10,0.3,TRUE)', '=BINOM.DIST(3.9,10.2,0.3,TRUE)', '=BINOM.DIST(11,10,0.3,TRUE)', '=BINOM.INV(200,0.31,0.025)', '=BINOM.INV(12,0.5,0.99)', '=POISSON.DIST(2,1.9,FALSE)', '=POISSON.DIST(2.7,1.9,TRUE)',
+    '=POISSON.DIST(-1,1.9,TRUE)', '=EXPON.DIST(0.5,2,TRUE)', '=EXPON.DIST(3,0.4,FALSE)', '=T.DIST(60,1,TRUE)', '=T.DIST(8,3,FALSE)', '=T.DIST(-2.1,9,TRUE)',
+    '=T.DIST(2.1,0.5,TRUE)', '=T.DIST.RT(2.1,9)', '=T.DIST.RT(-1.3,4)', '=T.DIST.2T(12,4)', '=T.TEST(AA1:AA10,AB1:AB12,2,3)', '=T.TEST(AA1:AA10,AB1:AB12,1,2)',
+    '=T.TEST(AA1:AA10,AB1:AB10,2,1)', '=T.TEST(AA1:AA10,AB1:AB12,1,1)', '=T.TEST(AA1:AA10,AB1:AB12,3,2)', '=T.TEST(AA1:AA10,AB1:AB12,2.7,3.2)',
+    '=Z.TEST(AA1:AA10,250)', '=Z.TEST(AA1:AA10,250,1.5)', '=CONFIDENCE.NORM(0.05,2.5,50)', '=CONFIDENCE.NORM(0.05,2.5,50.9)', '=CONFIDENCE(0.1,3,40)',
+    '=CHISQ.DIST(3.84,1,TRUE)', '=CHISQ.DIST(3,4,FALSE)', '=CHISQ.DIST.RT(11.07,5)', '=CHISQ.DIST.RT(40,6.5)', '=CHISQ.INV(0.95,3)', '=CHISQ.INV.RT(0.05,6)',
+    '=CHISQ.TEST(AD1:AF2,AD4:AF5)', '=CHISQ.TEST(AH1:AN1,AH2:AN2)', '=CHISQ.TEST(AD1:AF2,AH1:AN1)', '=F.DIST(3.1,3,41,TRUE)', '=F.DIST(1,5,5,FALSE)',
+    '=F.DIST.RT(3.1,3,41)', '=F.INV(0.05,2,10)', '=F.INV.RT(0.05,3,41)', '=F.TEST(AA1:AA10,AB1:AB12)', '=COMBIN(52,5)', '=COMBIN(8.9,2.2)', '=COMBIN(2,3)',
+    '=PERMUT(100,3)', '=FACT(10)', '=FACT(5.9)', '=FACT(-1)', '=DEVSQ(AA1:AA10)', '=SUMSQ(3,4)', '=AVEDEV(AA1:AA10)', '=GEOMEAN(AA1:AA10)', '=HARMEAN(AA1:AA10)',
+    '=TRIMMEAN({4,5,6,7,2,3,4,5,1,2,3},0.2)', '=TRIMMEAN(AB1:AB12,0.25)', '=INDEX(MODE.MULT(S1:S8),1)', '=INDEX(MODE.MULT(S1:S8),2)', '=ROWS(MODE.MULT(S1:S8))',
+    '=PERCENTRANK.INC(S1:S8,5)', '=PERCENTRANK.INC(S1:S8,4.5)', '=PERCENTRANK.INC(S1:S8,4.5,2)', '=PERCENTRANK.EXC(S1:S8,5)', '=PERCENTRANK.EXC(S1:S8,6.2)',
+    '=PERCENTRANK.INC(AA1:AA10,250.5)', '=PERCENTRANK.INC(S1:S8,3)', '=PERCENTRANK.EXC(S1:S8,2.5,4)', '=SUM(LARGE(S1:S8,{1,2}))', '=SUM(SMALL(AA1:AA10,{1;2;3}))', '=SUM(BINOM.DIST({0,1},5,0.5,FALSE))',
+    '=SUM(POISSON.DIST({0,1,2},2,FALSE))', '=INDEX(NORM.S.DIST({-1,0,1},TRUE),1,3)', '=SUMPRODUCT(T.DIST({-1,1},5,TRUE))',
+    '=SUM(ROW(12:20))', '=ROWS(12:20)', '=SUM(BINOM.DIST(ROW(12:20),20,0.45,FALSE))', '=SUM(ROW($3:$5))',
     '=VLOOKUP(13,J1:K40,2,TRUE)', '=VLOOKUP(260,J:K,2,TRUE)', '=MATCH(120,J1:J40,1)', '=VLOOKUP(-5,J1:K40,2,TRUE)', '=T.INV.2T(0.05,10)', '=T.INV(0.975,30)',
     '=T.DIST.2T(2.1,15)', '=CONFIDENCE.T(0.05,STDEV.S(F2:F13),COUNT(F2:F13))', '=CONFIDENCE.T(0.05,1,1)',
     '=SUM(D2:F2 E1:E5)', '=SUM(A1:A2 C1:C2)', '=N(TRUE)+N("7")+N(5)', '=NUMBERVALUE("2.500,27",",",".")', '=NUMBERVALUE("3.5%")',
@@ -134,7 +157,9 @@ FORMULAS = [
 ]
 # Functions written with Excel's "_xlfn." prefix in the file format (introduced after Excel 2007)
 XLFN = ['NUMBERVALUE', 'T.INV.2T', 'T.INV', 'T.DIST.2T', 'CONFIDENCE.T', 'CEILING.MATH', 'FLOOR.MATH', 'PERCENTILE.EXC', 'QUARTILE.EXC', 'SKEW.P', 'STDEV.S', 'STDEV.P', 'VAR.S', 'VAR.P', 'PERCENTILE.INC', 'QUARTILE.INC', 'RANK.EQ', 'MODE.SNGL', 'FORECAST.LINEAR',
-        'COVARIANCE.S', 'COVARIANCE.P', 'MAXIFS', 'MINIFS', 'IFS', 'SWITCH', 'IFNA', 'CONCAT', 'TEXTJOIN', 'DAYS']
+        'COVARIANCE.S', 'COVARIANCE.P', 'MAXIFS', 'MINIFS', 'IFS', 'SWITCH', 'IFNA', 'CONCAT', 'TEXTJOIN', 'DAYS',
+        'NORM.DIST', 'NORM.S.DIST', 'NORM.INV', 'NORM.S.INV', 'BINOM.DIST.RANGE', 'BINOM.DIST', 'BINOM.INV', 'POISSON.DIST', 'EXPON.DIST', 'T.DIST.RT', 'T.DIST',
+        'T.TEST', 'Z.TEST', 'CONFIDENCE.NORM', 'CHISQ.DIST.RT', 'CHISQ.DIST', 'CHISQ.INV.RT', 'CHISQ.INV', 'CHISQ.TEST', 'F.DIST.RT', 'F.DIST', 'F.INV.RT', 'F.INV', 'F.TEST', 'MODE.MULT', 'PERCENTRANK.INC', 'PERCENTRANK.EXC']
 # Cases where LibreOffice gives a different answer from Excel: the test uses Excel's value, with the reason.
 # (a) LibreOffice has no logical type: TRUE is the number 1, so it sums, counts and joins as 1. Excel's COUNT/SUM
 #     help: "Logical values ... typed directly into the list of arguments are counted"; in a reference "only numbers
@@ -156,7 +181,26 @@ XLFN = ['NUMBERVALUE', 'T.INV.2T', 'T.INV', 'T.DIST.2T', 'CONFIDENCE.T', 'CEILIN
 #     signs (%), they are used in the calculation of the result"); LibreOffice returns #VALUE!.
 # (j) Excel's WEEKDAY help: "If return_type is out of the range specified in the table above, a #NUM! error is
 #     returned"; LibreOffice returns #VALUE! for return types 4 and 0.
+# (k) Excel's help documents #NUM! for arguments outside a function's domain: NORM.DIST and STANDARDIZE "If
+#     standard_dev ≤ 0", NORM.INV "If probability <= 0 or if probability >= 1", BINOM.DIST "If number_s < 0 or number_s >
+#     trials", POISSON.DIST "If x < 0", COMBIN "number < number_chosen", FACT "If number is negative"; T.TEST "#NUM!" when
+#     tails is not 1 or 2 and "#N/A" for a paired test (type 1) with different numbers of data points; CHISQ.TEST "#N/A"
+#     when the ranges have different numbers of data points; T.DIST "an error value" when deg_freedom < 1 (the engine
+#     returns #NUM!, as the other t functions do). LibreOffice returns #VALUE! (or #DIV/0! for STANDARDIZE) in these cases.
+# (l) Excel's PERCENTRANK.INC/.EXC cut the result to the significant digits without rounding: Microsoft's examples give
+#     0.555 for 5/9 and 0.666 for 6/9; LibreOffice rounds (0.556, 0.536, 0.54, 0.286, 0.2778).
+# (m) Excel 365 evaluates a function once per element when an argument that takes one value is given an array, and the
+#     results spill (Microsoft, "Guidelines and examples of array formulas": =SMALL(B9:B18,{1;2;3}) evaluates SMALL three
+#     times); LibreOffice, outside an array formula, uses only the first element. The expected value is SciPy's
+#     binom.sf(11, 20, 0.45), the sum over 12 to 20 successes.
 EXCEL_DIFFERS = {
+    '=SUM(BINOM.DIST(ROW(12:20),20,0.45,FALSE))': __import__('scipy.stats', fromlist=['binom']).binom.sf(11, 20, 0.45).item(),   # (m)
+    '=PERCENTRANK.INC(S1:S8,4.5)': 0.535, '=PERCENTRANK.INC(S1:S8,4.5,2)': 0.53, '=PERCENTRANK.EXC(S1:S8,5)': 0.555,       # (l)
+    '=PERCENTRANK.INC(S1:S8,3)': 0.285, '=PERCENTRANK.EXC(S1:S8,2.5,4)': 0.2777,
+    '=NORM.DIST(1,0,0,TRUE)': {'error': '#NUM!'}, '=NORM.INV(1,0,1)': {'error': '#NUM!'}, '=STANDARDIZE(1,2,0)': {'error': '#NUM!'},   # (k)
+    '=BINOM.DIST(11,10,0.3,TRUE)': {'error': '#NUM!'}, '=POISSON.DIST(-1,1.9,TRUE)': {'error': '#NUM!'}, '=T.DIST(2.1,0.5,TRUE)': {'error': '#NUM!'},
+    '=T.TEST(AA1:AA10,AB1:AB12,1,1)': {'error': '#N/A'}, '=T.TEST(AA1:AA10,AB1:AB12,3,2)': {'error': '#NUM!'}, '=CHISQ.TEST(AD1:AF2,AH1:AN1)': {'error': '#N/A'},
+    '=COMBIN(2,3)': {'error': '#NUM!'}, '=FACT(-1)': {'error': '#NUM!'},
     '=WEEKDAY(A2,4)': {'error': '#NUM!'}, '=WEEKDAY(A2,0)': {'error': '#NUM!'},                           # (j)
     '=NUMBERVALUE("3.5%")': 0.035,                                                                         # (i)
     '=DATEVALUE("2011/02/23")': 40597,                                                                     # (f)

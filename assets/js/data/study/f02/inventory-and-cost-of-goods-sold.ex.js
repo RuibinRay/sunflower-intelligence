@@ -1,7 +1,7 @@
 // inventory-and-cost-of-goods-sold.ex.js — F02 · Inventory and cost of goods sold: widgets, practice and the knowledge check.
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // Lantern's figures come from case.js; its 2027 events are hypothetical (“Suppose…”); other businesses are fictional.
-import { FACTS, HOUSE_BLEND_Q4 as HB, COSTING as C } from './case.js';
+import { FACTS, HOUSE_BLEND_Q4 as HB, COSTING as C } from './case.js?v=12';
 
 const money = (x, d = 2) => `${x < -0.004 ? '−' : ''}$${Math.abs(Math.round(x * 100) / 100).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 /** Cost of n units taken from layers [{units, cost}] in the order given. */

@@ -525,7 +525,11 @@ T.formula = (item, c) => {
       const res = X.gradeFormula(spec, { cell: item.cell, fill: item.fill, formula: r, answer: item.answer, require: item.require || [], variants: item.variants ?? 3 });
       const notes = [];
       if (!res.ok) {
-        const slip = wrongs.find((w) => X.gradeFormula(spec, { cell: item.cell, fill: item.fill, formula: r, answer: w.formula, variants: item.variants ?? 3 }).ok);
+        // the named slips whose results match; when several do, prefer the one typed exactly (spaces and case aside),
+        // then the one using the same functions as the student's formula
+        const same = wrongs.filter((w) => X.gradeFormula(spec, { cell: item.cell, fill: item.fill, formula: r, answer: w.formula, variants: item.variants ?? 3 }).ok);
+        const norm = (f) => String(f).replace(/\s+/g, '').toUpperCase(), fns = (f) => [...X.functionsUsed(f)].sort().join();
+        const slip = same.find((w) => norm(w.formula) === norm(r)) || same.find((w) => fns(w.formula) === fns(r)) || same[0];
         notes.push(slip ? slip.say : res.message.replace(/&/g, '&amp;').replace(/</g, '&lt;'));
       }
       return { correct: res.ok, score: res.ok ? 1 : 0, notes, mark: () => { clearTimeout(timer); show(); input.classList.toggle('is-right', res.ok); input.classList.toggle('is-wrong', !res.ok); input.setAttribute('aria-invalid', res.ok ? 'false' : 'true'); } };

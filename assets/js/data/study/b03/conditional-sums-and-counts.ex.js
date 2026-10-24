@@ -1,7 +1,7 @@
 // conditional-sums-and-counts.ex.js — B03 · Conditional sums, counts and averages: widgets, practice and the knowledge
 // check (answer keys live here). Every sheet holds all 231 of Lantern's spring orders from case.js (only the columns the
 // question needs). Formula items are marked by their results on the sheet and on three copies with the numbers changed.
-import { ORDERS, ORDER_COLUMNS, tableCells } from './case.js';
+import { ORDERS, ORDER_COLUMNS, tableCells } from './case.js?v=12';
 
 const MONEY = '$#,##0.00';
 const R = 232;                                         // the last data row
@@ -234,9 +234,8 @@ export const check = [
     answer: `=COUNTIFS($B$2:$B$${R},$E2,$C$2:$C$${R},F$1)`,
     alt: [`=COUNTIFS($C$2:$C$${R},F$1,$B$2:$B$${R},$E2)`],
     wrong: [
-      { formula: `=COUNTIFS(B2:B${R},E2,C2:C${R},F1)`, say: 'With no dollar signs the data ranges and both criteria move as the formula is filled. Fix the data ranges, the region’s column ($E2) and the subscription’s row (F$1).' },
+      { formula: `=COUNTIFS(B2:B${R},E2,C2:C${R},F1)`, say: 'The dollar signs are missing or on the wrong parts, so the ranges or the criteria move the wrong way as the formula is filled. Fix the data ranges completely, the region’s column ($E2) and the subscription’s row (F$1).' },
       { formula: `=COUNTIFS($B$2:$B$${R},$E$2,$C$2:$C$${R},F$1)`, say: '$E$2 fixes the row too, so every row counts North. Fix only the column: $E2.' },
-      { formula: `=COUNTIFS($B$2:$B$${R},E$2,$C$2:$C$${R},$F1)`, say: 'The dollar signs are on the wrong parts: regions run down column E ($E2), the yes/no headings along row 1 (F$1).' },
     ],
     solution: `<x>=COUNTIFS($B$2:$B$232,$E2,$C$2:$C$232,F$1)</x>. North: ${rows.filter((o) => o.region === 'North' && o.subscription === 'yes').length} subscription and ${rows.filter((o) => o.region === 'North' && o.subscription === 'no').length} other orders. The ten counts add up to 231, which is the check.`,
   },

@@ -4,7 +4,7 @@
 //   node tools/study-check.mjs f01                         a whole course: lessons, assessments, project
 //   node tools/study-check.mjs                             every built course
 // Exit code 1 if any error. Warnings are printed but don't fail.
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import * as SH from '../assets/js/core/sheet.js';
 import { ols } from '../assets/js/core/stats.js';
@@ -16,7 +16,7 @@ import {
 const VERBS = /^(Explain|Describe|Define|Identify|Distinguish|Classify|Calculate|Compute|Record|Prepare|Analyse|Apply|Interpret|Evaluate|Compare|Choose|Decide|Use|Recognise|State|Construct|Build|Post|Journalise|Find|Detect|Diagnose|Handle|Transform|Scale|Encode|Write|Document|Justify|Recommend|Estimate|Assess|Plan|Design|Set|Measure|Select|Determine|Correct|Locate|Read|Summarise|Reshape|Combine|Profile|Validate|Clean|Convert|Standardise|Normalise|Map|Draft|Price|Forecast|Test|Name|List|Contrast|Close|Adjust|Trace|Reconcile)\b/;
 const KINDS = ['conceptual', 'numerical', 'applied'];
 const TYPES = ['mc', 'multi', 'num', 'fill', 'classify', 'order', 'journal', 'equation', 'rows', 'short', 'formula', 'steps'];
-const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression'];
+const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak'];
 const DATASETS = ['lantern-orders', 'harborview-bookings', 'northfield-students'];
 const CLEAN_OPS = ['dedupe', 'dedupe-key', 'trim', 'case', 'map', 'to-number', 'to-date', 'fill', 'drop-missing', 'flag-missing', 'validate', 'outliers', 'transform', 'scale', 'encode', 'derive', 'rename', 'drop-column'];
 const near = (a, b, tol) => Math.abs(a - b) <= tol + 1e-9;
@@ -186,6 +186,12 @@ function checkFormulaItem(x, w, r) {
   const self = g(x.answer);
   if (!self.ok) r.err(`${w}: the answer doesn’t pass its own marking: ${self.message}`);
   self.results.forEach((res) => { if (SH.isErr(res.want) && !(x.allowErrors || []).includes(res.cell)) r.err(`${w}: the answer gives ${res.want.code} in ${res.cell}`); });
+  {
+    // copies that put every answer at 0 or 1 (a probability far in a tail), or all at one value, test nothing
+    const vals = SH.variantValues(x.sheet, { cell: x.cell, answer: x.answer, variants: x.variants ?? 3 }).slice(1).filter((v) => typeof v === 'number');
+    const flat = vals.length > 1 && (vals.every((v) => Math.abs(v - vals[0]) < 1e-9) || vals.every((v) => Math.abs(v) < 1e-6 || Math.abs(v - 1) < 1e-6));
+    if (flat && typeof self.results[0]?.want === 'number' && self.results[0].want > 1e-6 && self.results[0].want < 1 - 1e-6) r.warn(`${w}: on the test copies the answer is ${vals.map((v) => SH.display(v)).join(', ')}, so typed-in inputs would pass; set vary on the inputs (a mean and SD that stay close to the cut-offs)`);
+  }
   if (!x.fill) {
     const v = self.results[0]?.want;
     const lit = typeof v === 'number' ? `=${v}` : typeof v === 'string' ? `="${v.replace(/"/g, '""')}"` : typeof v === 'boolean' ? `=${v ? 'TRUE' : 'FALSE'}` : null;
@@ -196,7 +202,33 @@ function checkFormulaItem(x, w, r) {
     try { SH.parse(wf.formula); } catch (e) { r.err(`${w}: wrong[${i}] doesn’t parse: ${e.message}`); return; }
     if (g(wf.formula).ok) r.err(`${w}: wrong[${i}] ${wf.formula} is marked right, so it isn’t a wrong answer`);
   });
+  // the page picks the slip whose results match the student's; between slips with the same results it prefers the one
+  // typed exactly, then the one with the same functions. Two slips with the same results and the same functions are
+  // told apart only when typed exactly as written, so any other spelling of either gets the first one's feedback.
+  const slips = (x.wrong || []).filter((wf) => { try { SH.parse(wf?.formula || ''); return true; } catch { return false; } });
+  const fns = (f) => [...SH.functionsUsed(f)].sort().join();
+  slips.forEach((b, j) => slips.slice(0, j).forEach((a) => {
+    if (fns(a.formula) !== fns(b.formula)) return;
+    const same = SH.gradeFormula(x.sheet, { cell: x.cell, fill: x.fill, formula: b.formula, answer: a.formula, variants: x.variants ?? 3 }).ok;
+    if (same) r.warn(`${w}: wrong ${b.formula} gives the same results as ${a.formula} with the same functions; the page tells them apart only when typed exactly, so make the first feedback fit both or merge them`);
+  }));
   (x.alt || []).forEach((a, i) => { const res = g(a); if (!res.ok) r.err(`${w}: alt[${i}] ${a} should be accepted but isn’t: ${res.message}`); });
+}
+/** Cells a prompt tells the student to change (“Change D10 to 60”) that no sheet widget lets them edit. */
+function lockedChanges(texts, widgets) {
+  const sheets = widgets.filter((wd) => wd?.type === 'sheet');
+  if (!sheets.length) return [];
+  const editable = (wd, a) => {
+    const p = SH.parseAddr(a); const inR = (rg) => rg && p.r >= rg.r0 && p.r <= rg.r1 && p.c >= rg.c0 && p.c <= rg.c1;
+    const list = wd.editable === undefined || wd.editable === true ? [wd.view] : wd.editable ? (Array.isArray(wd.editable) ? wd.editable : [wd.editable]) : [];
+    return list.some((x) => inR(SH.parseRange(x || '')));
+  };
+  const out = [];
+  for (const t of texts) for (const m of String(t || '').matchAll(/\bchange\s+(?:cell\s+)?\$?([A-Z]{1,3})\$?(\d{1,7})\b/gi)) {
+    const a = `${m[1].toUpperCase()}${m[2]}`;
+    if (!sheets.some((wd) => editable(wd, a))) out.push(a);
+  }
+  return [...new Set(out)];
 }
 function checkSheetWidget(wd, w, r) {
   const sh = checkSheetSpec(wd.sheet, `${w}.sheet`, r, { allowErrors: wd.allowErrors || [] });
@@ -294,6 +326,39 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
     (wd.xs || []).forEach((x) => { if (x.values?.length !== n) r.err(`${w}: x ${x.name} length ≠ y length`); });
     const fit = ols((wd.xs || []).map((x) => x.values), wd.y?.values || [], {});
     if (fit.error) r.err(`${w}: regression with every X fails: ${fit.error}`);
+  } else if (wd.type === 'curve') {
+    const P = { normal: ['mean', 'sd'], t: ['df'], chisq: ['df'], f: ['df1', 'df2'], binomial: ['n', 'p'], poisson: ['lambda'] }[wd.dist];
+    if (!P) r.err(`${w}: curve needs dist: normal, t, chisq, f, binomial or poisson`);
+    else {
+      P.forEach((k) => { if (!Number.isFinite(wd.params?.[k])) r.err(`${w}: curve needs params.${k}`); });
+      (wd.vary || []).forEach((k) => { if (!P.includes(k)) r.err(`${w}: vary.${k} isn't a parameter of ${wd.dist}`); });
+      if (wd.dist === 'normal' && !(wd.params?.sd > 0)) r.err(`${w}: sd must be > 0`);
+      if (wd.dist === 'binomial' && !(wd.params?.p >= 0 && wd.params?.p <= 1)) r.err(`${w}: p must be between 0 and 1`);
+      const ASK = ['below', 'above', 'between', 'outside', 'exact', 'inverse'];
+      (wd.asks || []).forEach((k) => { if (!ASK.includes(k)) r.err(`${w}: unknown ask ${k}`); });
+      if ((wd.asks || []).includes('exact') && !['binomial', 'poisson'].includes(wd.dist)) r.err(`${w}: 'exact' needs a discrete distribution`);
+      if ((wd.asks || ['below']).some((k) => ['below', 'above', 'between', 'outside', 'exact'].includes(k)) && !Number.isFinite(wd.a)) r.err(`${w}: give a`);
+      if ((wd.asks || []).includes('between') && !(wd.b >= wd.a)) r.err(`${w}: give b ≥ a for 'between'`);
+      if (wd.critical && !(wd.critical.alpha > 0 && wd.critical.alpha < 1)) r.err(`${w}: critical.alpha must be between 0 and 1`);
+      if ((wd.asks || []).includes('inverse') && !(wd.prob > 0 && wd.prob < 1)) r.err(`${w}: 'inverse' needs prob between 0 and 1`);
+    }
+  } else if (wd.type === 'power') {
+    if (!(wd.sigma > 0) || !(wd.n >= 2) || !Number.isFinite(wd.delta)) r.err(`${w}: power needs sigma > 0, n ≥ 2 and delta`);
+    if (wd.alternative && !['two-sided', 'greater', 'less'].includes(wd.alternative)) r.err(`${w}: alternative must be two-sided, greater or less`);
+  } else if (wd.type === 'sampling') {
+    const pop = wd.population || [];
+    if (pop.length < 10 || !pop.every(Number.isFinite)) r.err(`${w}: sampling needs a numeric population of at least 10 values`);
+    if (wd.stat === 'proportion' && !pop.every((v) => v === 0 || v === 1)) r.err(`${w}: a proportion's population is 0s and 1s`);
+    if (wd.replace === false && (wd.sizes || []).some((n) => n > pop.length)) r.err(`${w}: a sample without replacement can't be larger than the population`);
+  } else if (wd.type === 'toolpak') {
+    const T = ['ttest-paired', 'ttest-equal', 'ttest-unequal', 'anova'];
+    const list = wd.tools || [wd.tool];
+    list.forEach((t) => { if (!T.includes(t)) r.err(`${w}: unknown tool ${t}`); });
+    const G = wd.groups || [];
+    if (G.some((g) => !g.name || !(g.values || []).length || !g.values.every(Number.isFinite))) r.err(`${w}: each group needs a name and numeric values`);
+    if (list.some((t) => t.startsWith('ttest')) && G.length !== 2) r.err(`${w}: a t-test needs exactly two groups`);
+    if (list.includes('anova') && G.length < 2) r.err(`${w}: ANOVA needs at least two groups`);
+    if (list.includes('ttest-paired') && G.length === 2 && G[0].values.length !== G[1].values.length) r.err(`${w}: a paired test needs equal-length groups`);
   } else if (wd.type === 'mixsim') {
     const ok = ['tier', 'range', 'price', 'channels', 'promotion'];
     Object.keys(wd.lock || {}).forEach((k) => { if (!ok.includes(k)) r.err(`${w}: lock.${k} is not a decision`); });
@@ -412,6 +477,10 @@ export async function checkLesson(course, slug, { courseTerms } = {}) {
       if (list.length < lo || list.length > hi) r.warn(`ex.${name}: ${list.length} items (aim for ${lo}–${hi})`);
       list.forEach((x, i) => checkExercise(x, `${name}[${i}]`, r, { course, chart, needHints, caseMod }));
     }
+    const lessonSheets = Object.values(X.widgets || {});
+    for (const [name] of sets) (X[name] || []).forEach((x, i) => {
+      for (const a of lockedChanges([x.prompt, ...(x.steps || []).map((y) => y.prompt)], lessonSheets)) r.warn(`ex.${name}[${i}] (${x.id}): the prompt asks to change ${a}, which no worksheet widget in this lesson lets the student edit`);
+    });
     const kinds = new Set((X.check || []).map((x) => x.kind));
     for (const k of KINDS) if (!kinds.has(k)) r.err(`ex.check: needs at least one ${k} question`);
     if ((X.check || []).some((x) => x.type === 'short')) r.err('ex.check: short (self-marked) items can’t be in the knowledge check');
@@ -449,6 +518,13 @@ async function checkAssessments(course) {
     for (const k of KINDS) if (!kinds.has(k)) r.warn(`${where}: no ${k} items`);
     return items;
   };
+  // every relative import carries the cache-buster (?v=N), which tools/bump.mjs raises: without it a browser can keep an
+  // old copy, and the same module loads twice under two URLs
+  const dir = join(DATA, course);
+  if (existsSync(dir)) for (const fn of readdirSync(dir).filter((x) => x.endsWith('.js'))) {
+    const bad = [...readFileSync(join(dir, fn), 'utf8').matchAll(/from\s+'(\.{1,2}\/[^']+?\.js)'/g)].map((m) => m[1]);
+    if (bad.length) r.err(`${course}/${fn}: import without ?v= (${bad.slice(0, 3).join(', ')}${bad.length > 3 ? ' …' : ''}); write './case.js?v=N' as the other files do`);
+  }
   for (const m of c.modules) {
     const f = await loadModuleFile(course, `assess-m${m.n}`);
     if (!f) { r.warn(`assess-m${m.n}.js missing`); continue; }
@@ -474,6 +550,10 @@ async function checkAssessments(course) {
     if (P?.verify) { try { for (const [what, value, shown, tol = 0.005] of P.verify()) if (Math.abs(value - shown) > tol) r.err(`project: ${what}: computed ${value}, shown ${shown}`); } catch (e) { r.err(`project.verify threw: ${e.message}`); } }
     if (!P?.title || !P?.brief || !Array.isArray(P?.stages) || !P.stages.length) r.err('project: needs title, brief and stages');
     (P?.stages || []).forEach((s, i) => (s.items || []).forEach((x, j) => checkExercise(x, `project.stages[${i}].items[${j}]`, r, { course, chart, caseMod })));
+    (P?.stages || []).forEach((s, i) => {
+      const tools = s.tool?.kind === 'widget' ? [s.tool.widget] : [];
+      for (const x of [...(s.items || []), ...(s.items || []).flatMap((y) => y.steps || [])]) for (const a of lockedChanges([x.prompt, x.solution], tools)) r.err(`project.stages[${i}] ${x.id}: tells the student to change ${a}, which the stage's worksheet locks (add it to editable)`);
+    });
     (P?.stages || []).forEach((s, i) => { if (s.tool?.kind === 'widget') checkWidget(`project.stages[${i}].tool`, s.tool.widget, r, { chart, caseMod }); else if (s.tool && !['recorder', 'cleaning', 'mix'].includes(s.tool.kind)) r.err(`project.stages[${i}]: unknown tool kind ${s.tool.kind}`); });
     if (!Array.isArray(P?.rubric) || P.rubric.length < 3) r.warn('project: give a rubric of at least 3 criteria');
   }

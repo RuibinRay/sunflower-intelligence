@@ -879,3 +879,42 @@ input[type="file"]:focus-visible + .file-btn, .file-btn:focus-within { outline: 
 /* long unbroken strings (formulas such as ROUND(AVERAGE(M2:M232),2)) may break anywhere inside grid items, so a
    definition list or a mistakes list never widens the page on a phone */
 .glossary-mini dt, .glossary-mini dd, .mistake, .define dt, .define dd { overflow-wrap: anywhere; }
+
+/* ---------------------------------------------------------------- B04 distribution widgets (curve, power, sampling, toolpak) */
+.cv-widget { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-3); min-width: 0; }
+.cv-fields { display: flex; flex-wrap: wrap; gap: var(--s-3) var(--s-4); align-items: end; }
+.cv-field { min-width: 0; }
+.cv-num { width: 9rem; max-width: 100%; min-height: 40px; padding: 6px 10px; border: 1px solid var(--rule-strong); border-radius: var(--r-sm); background: var(--paper); font: inherit; font-variant-numeric: tabular-nums; }
+.cv-num:focus-visible { outline: 3px solid var(--midnight); outline-offset: 2px; }
+.cv-chart { min-width: 0; }
+.cv-chart .cv-line { fill: none; stroke: var(--midnight); stroke-width: 1.8; }
+.cv-chart .cv-line.cv-ref, .cv-chart .cv-line.cv-null { stroke: var(--ink-3); stroke-dasharray: 5 4; stroke-width: 1.5; }
+.cv-chart .cv-area.cv-in { fill: var(--series-1); opacity: .32; }
+.cv-chart .cv-area.cv-reject { fill: var(--neg); opacity: .45; }
+.cv-chart .cv-area.cv-power { fill: var(--olive); opacity: .38; }
+.cv-chart .cv-area.cv-beta { fill: var(--ink-3); opacity: .16; }
+.cv-chart .cv-bar { fill: var(--rule-strong); }
+.cv-chart .cv-bar.cv-in { fill: var(--series-1); }
+.cv-chart .cv-bar.cv-reject { fill: var(--neg); }
+.cv-chart .cv-mark { stroke: var(--ink); stroke-width: 1.4; }
+.cv-chart .cv-mark-crit { stroke: var(--bad-ink); stroke-dasharray: 4 3; }
+.cv-chart .cv-mark-stat { stroke: var(--midnight); stroke-width: 2.4; }
+.cv-chart .cv-mark-null { stroke: var(--ink-3); stroke-dasharray: 2 3; }
+.cv-chart .cv-mark-alt { stroke: var(--olive-deep); stroke-dasharray: 2 3; }
+.cv-chart .cv-mark-label { font-size: 11px; fill: var(--ink-2); font-variant-numeric: tabular-nums; }
+.cv-out { display: grid; gap: var(--s-2); min-width: 0; }
+.cv-result { margin: 0; font-size: var(--t-md); font-variant-numeric: tabular-nums; }
+.cv-excel { margin: 0; font-size: var(--t-sm); overflow-wrap: anywhere; }
+.cv-line-text { margin: 0; font-size: var(--t-sm); color: var(--ink-2); }
+.cv-legend { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4); margin: 0; padding: 0; list-style: none; font-size: var(--t-xs); color: var(--ink-2); }
+.cv-legend li { display: flex; align-items: center; gap: 6px; }
+.cv-key { display: inline-block; width: 14px; height: 10px; border-radius: 2px; }
+.cv-key-reject { background: var(--neg); opacity: .6; }
+.cv-key-power { background: var(--olive); opacity: .55; }
+.cv-key-beta { background: var(--ink-3); opacity: .3; }
+.sm-pop .sm-pop-bar { fill: var(--rule-strong); }
+.cv-chart .sm-ci { stroke: var(--series-1); stroke-width: 2; }
+.cv-chart .sm-ci.sm-miss { stroke: var(--bad-ink); stroke-dasharray: 3 2; }
+.cv-chart .sm-dot { fill: var(--series-1); }
+.cv-chart .sm-dot.sm-miss { fill: var(--bad-ink); }
+.tp-table td { text-align: right; font-variant-numeric: tabular-nums; }

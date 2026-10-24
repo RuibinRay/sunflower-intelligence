@@ -2,8 +2,8 @@
 // Lantern's online-shop prices come from the B02 dataset and the delivery terms (free over $35, otherwise $4.95) from
 // b01/case.js. Every other business, person and number is fictional unless a source is cited. `checks` recompute every
 // printed number.
-import { BUSINESS } from './case.js';
-import { DELIVERY as SHIP } from '../b01/case.js';
+import { BUSINESS } from './case.js?v=12';
+import { DELIVERY as SHIP } from '../b01/case.js?v=12';
 
 const PRICE = { houseBlend: 14, huila: 17, giftBox: 58 };   // 250 g bags and the Gift Box Trio (B02 dataset)
 const FREE_OVER = SHIP.freeOver;                           // free delivery on orders over this amount (b01/case.js)

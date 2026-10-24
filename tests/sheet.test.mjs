@@ -220,10 +220,30 @@ eq('criterion ~* no wildcard', X.criterion('~*')('a'), false);
   ok('require a function', !X.gradeFormula(spec, { cell: 'C2', answer: '=SUM(A2:A4)', formula: '=A2+A3+A4', require: ['SUM'] }).ok);
   ok('require met', X.gradeFormula(spec, { cell: 'C2', answer: '=SUM(A2:A4)', formula: '=SUM(A2:A4)', require: ['SUM'] }).ok);
   ok('fixed cells stay', X.gradeFormula({ ...spec, fixed: ['E2'] }, { cell: 'C2', answer: '=E2', formula: '=0.08' }).ok);
+  // functions LibreOffice lacks, against Microsoft's documented examples
+  const ms = (f) => X.evaluate(f);
+  ok('BINOM.DIST.RANGE(60,0.75,48) ≈ 0.084 (Microsoft)', Math.abs(ms('=BINOM.DIST.RANGE(60,0.75,48)') - 0.084) < 0.0005);
+  ok('BINOM.DIST.RANGE(60,0.75,45,50) ≈ 0.524 (Microsoft)', Math.abs(ms('=BINOM.DIST.RANGE(60,0.75,45,50)') - 0.524) < 0.0005);
+  ok('BINOM.DIST.RANGE = BINOM.DIST difference', Math.abs(ms('=BINOM.DIST.RANGE(60,0.75,45,50)') - (ms('=BINOM.DIST(50,60,0.75,TRUE)') - ms('=BINOM.DIST(44,60,0.75,TRUE)'))) < 1e-12);
+  const zt = new X.Sheet({ cells: { A2: 3, A3: 6, A4: 7, A5: 8, A6: 6, A7: 5, A8: 4, A9: 2, A10: 1, A11: 9 } });
+  const zv = (f) => { zt.set('C1', f); return zt.get('C1'); };
+  ok('Z.TEST(A2:A11,4) = 0.090574 (Microsoft)', Math.abs(zv('=Z.TEST(A2:A11,4)') - 0.090574) < 5e-7);
+  ok('two-tailed Z.TEST = 0.181148 (Microsoft)', Math.abs(zv('=2*MIN(Z.TEST(A2:A11,4),1-Z.TEST(A2:A11,4))') - 0.181148) < 5e-7);
+  ok('Z.TEST(A2:A11,6) = 0.863043 (Microsoft)', Math.abs(zv('=Z.TEST(A2:A11,6)') - 0.863043) < 5e-7);
+  ok('T.DIST(60,1,TRUE) = 0.99469533 (Microsoft)', Math.abs(ms('=T.DIST(60,1,TRUE)') - 0.99469533) < 5e-9);
+  ok('T.DIST(8,3,FALSE) = 0.00073691 (Microsoft)', Math.abs(ms('=T.DIST(8,3,FALSE)') - 0.00073691) < 5e-9);
+  const pr = (f) => ms(f.replace('DATA', '{13,12,11,8,4,3,2,1,1,1}'));
+  ok('PERCENTRANK.INC examples (Microsoft): 0.333, 0.555, 0.666, 0.583', pr('=PERCENTRANK.INC(DATA,2)') === 0.333 && pr('=PERCENTRANK.INC(DATA,4)') === 0.555 && pr('=PERCENTRANK.INC(DATA,8)') === 0.666 && pr('=PERCENTRANK.INC(DATA,5)') === 0.583);
+  const pe = (x, sig) => ms(`=PERCENTRANK.EXC({1,2,3,6,6,6,7,8,9},${x}${sig ? `,${sig}` : ''})`);
+  ok('PERCENTRANK.EXC examples (Microsoft): 0.7, 0.381, 0.3', pe(7) === 0.7 && pe(5.43) === 0.381 && pe(5.43, 1) === 0.3);
+  ok('SMALL with an array k evaluates once per element (Microsoft)', ms('=SUM(SMALL({5,1,4,2,3},{1;2;3}))') === 6);
+  ok('BINOM.DIST lifts over an array', Math.abs(ms('=SUM(BINOM.DIST({0,1},5,0.5,FALSE))') - 0.1875) < 1e-15);
+  ok('TRIMMEAN example = 3.777778 (Microsoft)', Math.abs(ms('=TRIMMEAN({4,5,6,7,2,3,4,5,1,2,3},0.2)') - 3.777778) < 5e-7);
   // whole columns and rows move when filled, as in Excel
   ok('fill: F:F moves to G:G', X.shiftFormula('=SUM(F:F)', 0, 1) === '=SUM(G:G)');
   ok('fill: $F:$F stays', X.shiftFormula('=SUM($F:$F)+F:$G', 0, 2) === '=SUM($F:$F)+H:$G');
   ok('fill: 2:2 moves to 3:3', X.shiftFormula('=SUM(2:2)', 1, 0) === '=SUM(3:3)');
+  ok('whole rows parse: =SUM(ROW(12:20))', X.evaluate('=SUM(ROW(12:20))') === 144);
   ok('fill: $2:$2 stays', X.shiftFormula('=SUM($2:$2)', 4, 0) === '=SUM($2:$2)');
   ok('fill: A1:B2 unaffected', X.shiftFormula('=SUM(A1:B2)', 1, 1) === '=SUM(B2:C3)');
   // a non-finite result is #NUM!, so a formula matches itself when marked
