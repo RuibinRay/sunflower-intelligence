@@ -28,6 +28,7 @@ const pUnderSample = I.normal.cdf(K.label, m40, s40);
 const O = D.orders, oW1 = within(ORDER_VALUES, O.mean, O.sd, 1), pNeg = I.normal.cdf(0, O.mean, O.sd);
 const pSub = O.subscriptionShare, nB = 100, muB = nB * pSub, sdB = Math.sqrt(nB * pSub * (1 - pSub));
 const exact40 = I.binomCdf(40, nB, pSub), cc40 = I.normal.cdf(40.5, muB, sdB), nocc40 = I.normal.cdf(40, muB, sdB);
+const cc40typed = I.normal.cdf(40.5, 45.02, 4.975), nocc40typed = I.normal.cdf(40, 45.02, 4.975);   // as typed with rounded inputs
 const DEMAND = { mean: 40, sd: 8 }, z95 = I.normInv(0.95), reorder = DEMAND.mean + z95 * DEMAND.sd;   // fictional
 const giveaway = setting1 - K.setting;
 
@@ -93,7 +94,7 @@ export default {
   objectives: [
     'Explain how a probability density curve gives probabilities as areas, and why the probability of one exact value of a continuous variable is 0.',
     'Calculate z-scores and normal probabilities below, above, between and outside given values, by hand from z and with NORM.DIST, NORM.S.DIST and STANDARDIZE.',
-    'Find the value that cuts off a given probability with NORM.INV and NORM.S.INV, and use it to set a target such as a machine setting or a reorder point.',
+    'Find the value that cuts off a given probability with NORM.INV and NORM.S.INV, and use it to set a target such as a machine setting or a stock level.',
     'Assess whether a normal model is reasonable for a dataset with a histogram, the mean and median, the empirical-rule counts, SKEW and KURT, and a normal probability plot.',
     'Recognise data, such as right-skewed order values, for which a normal model gives wrong answers.',
     'Use the normal approximation to the binomial with a continuity correction, and state when it is adequate.',
@@ -142,7 +143,7 @@ export default {
     { list: [
       String.raw`<b>Two parameters.</b> Changing <m>\mu</m> slides the curve along the axis without changing its shape; changing <m>\sigma</m> stretches it wider and flatter or squeezes it narrower and taller, keeping the area at 1.`,
       String.raw`<b>Symmetry.</b> The mean, median and mode are all <m>\mu</m>, and the area below <m>\mu - d</m> equals the area above <m>\mu + d</m> for any distance <m>d</m>.`,
-      String.raw`<b>Shape.</b> The curve bends from convex to concave at <m>\mu \pm \sigma</m>, one standard deviation either side of the mean. Its tails never reach zero height, but beyond four standard deviations they hold only ${(2 * I.normSf(4) * 100).toFixed(4)}% of the area.`,
+      String.raw`<b>Shape.</b> The curve changes curvature, at its points of inflection, at <m>\mu \pm \sigma</m>, one standard deviation either side of the mean. Its tails never reach zero height, but beyond four standard deviations they hold only ${(2 * I.normSf(4) * 100).toFixed(4)}% of the area.`,
       String.raw`<b>The empirical rule, exactly.</b> The areas within one, two and three standard deviations are ${pc(I.normCdf(1) - I.normCdf(-1), 2)}, ${pc(I.normCdf(2) - I.normCdf(-2), 2)} and ${pc(I.normCdf(3) - I.normCdf(-3), 2)}. Exactly 95% lies within 1.96 standard deviations, a number the next two lessons use constantly.`,
     ] },
 
@@ -197,7 +198,7 @@ export default {
     { h: 'Checking whether a normal model fits' },
     { p: `Kilnworth’s 9.1% assumes the weights follow a normal curve. Before relying on it, check Ana’s 40 bags four ways. None of these checks proves the data are normal; together they can show that they clearly are not.` },
     { ol: [
-      'The histogram (the first Explore widget): one peak, roughly symmetric, no long tail and no gap.',
+      'The histogram (the Explore widget of Ana’s 40 bag weights): one peak, roughly symmetric, no long tail and no gap.',
       `Mean and median: ${m40.toFixed(2)} g and ${med40.toFixed(2)} g, 0.2 g apart, as a symmetric distribution’s should be.`,
       `The empirical-rule counts: ${w1} of 40 bags (${pc(w1 / n40)}) lie within one standard deviation of the mean, ${w2} (${pc(w2 / n40)}) within two and all ${w3} within three, against 68%, 95% and 99.7%.`,
       `Shape statistics: <x>=SKEW(A2:A41)</x> is ${skewness(KG_BAGS).toFixed(2)} and <x>=KURT(A2:A41)</x>, Excel’s excess <g>kurtosis</g>, ${kurtosis(KG_BAGS).toFixed(2)}, both near 0.`,
@@ -216,7 +217,7 @@ export default {
 
     { h: 'The normal approximation to the binomial (in outline)' },
     { p: String.raw`A count with a <g>binomial distribution</g>, n trials and success probability p, has mean <m>np</m> and standard deviation <m>\sqrt{np(1-p)}</m>. When both np and n(1 − p) are large, its bars follow a normal curve with that mean and standard deviation. OpenStax’s business text asks for both to be greater than 5, and many texts ask for at least 10. Because each whole number k stands for the interval from k − 0.5 to k + 0.5, the approximation uses a <g>continuity correction</g>: <m>P(X \le k) \approx P(Y < k + 0.5)</m>, where Y is the normal variable.` },
-    { p: String.raw`Take the next 100 orders, each a subscription with probability <m>104 \div 231 = ${pSub.toFixed(4)}</m>. The count has mean ${muB.toFixed(2)} and standard deviation ${sdB.toFixed(3)}. Exactly, <x>=BINOM.DIST(40,100,104/231,TRUE)</x> gives P(at most 40) = ${exact40.toFixed(4)}; the normal curve with the correction, <x>=NORM.DIST(40.5,45.02,4.975,TRUE)</x>, gives ${cc40.toFixed(4)}; without it, ${nocc40.toFixed(4)}. Excel computes binomial probabilities exactly, so the approximation is rarely needed for a number. It matters for the idea: the next lesson’s sampling distribution of a proportion rests on it.` },
+    { p: String.raw`Take the next 100 orders, each a subscription with probability <m>104 \div 231 = ${pSub.toFixed(4)}</m>. The count has mean ${muB.toFixed(2)} and standard deviation ${sdB.toFixed(3)}. Exactly, <x>=BINOM.DIST(40,100,104/231,TRUE)</x> gives P(at most 40) = ${exact40.toFixed(4)}; the normal curve with the correction, <x>=NORM.DIST(40.5,45.02,4.975,TRUE)</x>, gives ${cc40typed.toFixed(4)}; without it, <x>=NORM.DIST(40,45.02,4.975,TRUE)</x> gives ${nocc40typed.toFixed(4)}. Excel computes binomial probabilities exactly, so the approximation is rarely needed for a number. It matters for the idea: the next lesson’s sampling distribution of a proportion rests on it.` },
   ],
 
   formulas: [
@@ -267,7 +268,7 @@ export default {
       steps: [
         `Shape: the histogram has one peak and no long tail; the mean (${m40.toFixed(2)} g) and median (${med40.toFixed(2)} g) almost agree; SKEW ${skewness(KG_BAGS).toFixed(2)} and KURT ${kurtosis(KG_BAGS).toFixed(2)} are near 0.`,
         `Empirical rule: ${w1}, ${w2} and ${w3} of the 40 bags lie within one, two and three standard deviations (${pc(w1 / n40)}, ${pc(w2 / n40)}, ${pc(w3 / n40)}), close to 68%, 95% and 99.7%. The normal probability plot is close to a straight line. A normal model is reasonable.`,
-        String.raw`Three answers: the specification, <m>N(1{,}004, 3)</m>, gives ${pc(pUnder)}; the sample shows <m>5 \div 40 = 12.5\%</m>; a normal model with the sample’s mean and standard deviation, <x>=NORM.DIST(1000,1002.75,2.66,TRUE)</x>, gives ${pc(pUnderSample)}.`,
+        String.raw`Three answers: the specification, <m>N(1{,}004, 3)</m>, gives ${pc(pUnder)}; the sample shows <m>5 \div 40 = 12.5\%</m>; a normal model with the sample’s mean and standard deviation, <x>=NORM.DIST(1000,AVERAGE(A2:A41),STDEV.S(A2:A41),TRUE)</x> on the 40 weights in A2:A41, gives ${pc(pUnderSample)}.`,
         String.raw`The sample’s spread (${s40.toFixed(2)} g) is a little smaller than the specified 3 g, but its mean is 1.25 g lower, and the lower mean more than offsets the smaller spread: <m>z = (1{,}000 - 1{,}002.75) \div ${s40.toFixed(2)} = ${((K.label - m40) / s40).toFixed(2)}</m>, against −1.33.`,
       ],
       answer: `The normal model fits the bags reasonably. If the machine is running at the sample’s mean and spread, about ${pc(pUnderSample, 0)} of bags are under the label, not ${pc(pUnder)}.`,
@@ -277,7 +278,7 @@ export default {
   demo: [
     { widget: 'nd-kiln', intro: 'Kilnworth’s specification as a normal curve. Choose a question, move a and b, and read the probability and the Excel formula. Then change the mean and standard deviation: find the setting that leaves 1% under 1,000 g with σ = 3, and the σ that does it at 1,004 g.' },
     { widget: 'nd-bags', intro: 'Ana’s 40 bag weights as a histogram. Is there one peak, a long tail, a gap? Switch the outlier rule and see whether any bag is flagged.' },
-    { widget: 'nd-sheet', intro: 'The 40 bags with the normality checks as live formulas, and Kilnworth’s specification in E8:E10. Change the setting in E8 or the standard deviation in E9 and watch the share under the label and the 1% setting recalculate. Turn on Show formulas to see each one.' },
+    { widget: 'nd-sheet', intro: 'The 40 bags with the normality checks as live formulas, and Kilnworth’s specification in G2:G4. Change the setting in G3 or the standard deviation in G4 and watch the share under the label (G5) and the 1% setting (G7) recalculate. Turn on Show formulas to see each one.' },
     { widget: 'nd-z', intro: 'The standard normal distribution. Find the z with 97.5% below it, the area outside ±1.96, and the area below −1.33. Every question about a normal variable can be turned into one of these.' },
   ],
 
@@ -291,7 +292,7 @@ export default {
 
   application: [
     { p: 'Anyone who fills packs by weight or volume, of coffee, flour, cereal or paint, faces Kilnworth’s trade-off. Set the target too close to the label and too many packs are short; set it too high and you give product away on every pack. The normal model turns the trade-off into numbers: the share short at a given setting is one NORM.DIST, and the setting for a given share is one NORM.INV. The same arithmetic sets tolerances in manufacturing and service levels in stock control.' },
-    { p: String.raw`Stock control is the second classic use. Suppose (a fictional figure) Lantern sells a mean of 40 bags of House Blend 1 kg a week with a standard deviation of 8, roughly normal, and reorders weekly. To meet a whole week’s demand from stock in 95% of weeks, the reorder point must be the 95th percentile of weekly demand: <x>=NORM.INV(0.95,40,8)</x> = <m>40 + 1.645 \times 8 = ${reorder.toFixed(1)}</m>, so 54 bags. The extra 14 bags above the average are the safety stock, the price of the 95%.` },
+    { p: String.raw`Stock control is the second classic use. Suppose (a fictional figure) Lantern sells a mean of 40 bags of House Blend 1 kg a week with a standard deviation of 8, roughly normal, and tops up its stock once a week. To meet a whole week’s demand from stock in 95% of weeks, the level it tops up to (the order-up-to level) must be the 95th percentile of weekly demand: <x>=NORM.INV(0.95,40,8)</x> = <m>40 + 1.645 \times 8 = ${reorder.toFixed(1)}</m>, so 54 bags. The extra 14 bags above the average are the safety stock, the price of the 95%.` },
     { case: `Ana writes to Kilnworth: “If your machine runs at 1,004 g with a standard deviation of 3 g, about 9% of bags will be under 1,000 g. To keep short bags below 1%, the setting would need to be about 1,007 g, or the standard deviation below 1.7 g. In October our 40 bags averaged 1,002.75 g, and 5 were short.” She keeps the claim to what the model says, and leaves the question of whether the machine has drifted for a formal test.` },
     { p: 'The model is only as good as its fit, and its weakest point is the tail where these decisions live. Check the shape on real data before quoting a normal probability, keep checking after a process changes, and say when you have used a model rather than counted. For skewed measures, such as order values or waiting times, describe the data directly rather than through a normal curve.' },
   ],
@@ -407,11 +408,13 @@ export default {
     { what: 'Binomial mean', value: muB, shown: 45.02 },
     { what: 'Binomial SD', value: sdB, shown: 4.975, tol: 0.0005 },
     { what: 'Exact P(X ≤ 40)', value: exact40, shown: 0.1819, tol: 0.00005 },
-    { what: 'Normal with CC', value: cc40, shown: 0.1817, tol: 0.00005 },
-    { what: 'Normal without CC', value: nocc40, shown: 0.1564, tol: 0.00005 },
+    { what: 'Normal with CC (exact inputs)', value: cc40, shown: 0.1817, tol: 0.00005 },
+    { what: 'Normal with CC as typed', value: cc40typed, shown: 0.1818, tol: 0.00005 },
+    { what: 'Normal without CC as typed', value: nocc40typed, shown: 0.1565, tol: 0.00005 },
+    { what: 'Typed inputs match the rounded mean and SD', value: Math.abs(muB - 45.02) + Math.abs(sdB - 4.975), shown: 0, tol: 0.006 },
     // application (fictional demand)
-    { what: 'Reorder point', value: reorder, shown: 53.2, tol: 0.05 },
-    { what: 'Reorder point, whole bags', value: Math.ceil(reorder), shown: 54 },
+    { what: 'Order-up-to level', value: reorder, shown: 53.2, tol: 0.05 },
+    { what: 'Order-up-to level, whole bags', value: Math.ceil(reorder), shown: 54 },
     { what: 'Safety stock', value: Math.ceil(reorder) - DEMAND.mean, shown: 14 },
     { what: 'Ana’s letter: about 9%', value: pUnder * 100, shown: 9, tol: 0.5 },
     { what: 'Giveaway per 1,000 bags, kg (1 dp)', value: giveaway, shown: 3.0, tol: 0.05 },

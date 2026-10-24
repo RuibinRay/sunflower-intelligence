@@ -15,7 +15,10 @@ const BULK = D.orders.max, ORDINARY = ORDER_VALUES.filter((x) => x !== BULK);
 const se = (n) => SIGMA / Math.sqrt(n);
 const fpc = (n, Npop = N) => Math.sqrt((Npop - n) / (Npop - 1));
 const G1 = D.orders.skewness, G1o = skewness(ORDINARY);
-const cochran = 25 * G1 ** 2, cochranO = 25 * G1o ** 2;
+/** Excel's SKEW.P: the skewness of a whole population (third central moment ÷ σ³, dividing by N). */
+const skewP = (a) => { const m = mean(a), n = a.length, m2 = a.reduce((s, x) => s + (x - m) ** 2, 0) / n, m3 = a.reduce((s, x) => s + (x - m) ** 3, 0) / n; return m3 / m2 ** 1.5; };
+const G1p = skewP(ORDER_VALUES), G1op = skewP(ORDINARY);
+const cochran = 25 * G1p ** 2, cochranO = 25 * G1op ** 2;
 /** Means of `reps` samples of n drawn with replacement, from a seeded generator. */
 function simulate(pop, n, reps, seed) {
   const r = mulberry32(seed), out = new Float64Array(reps);
@@ -23,6 +26,21 @@ function simulate(pop, n, reps, seed) {
   return out;
 }
 const SIM = simulate(ORDER_VALUES, 30, 100000, 7);
+/** The same without replacement (a partial shuffle for each sample). */
+function simulateNoRepl(pop, n, reps, seed) {
+  const r = mulberry32(seed), out = new Float64Array(reps);
+  for (let k = 0; k < reps; k++) { const idx = pop.map((_, i) => i); let t = 0; for (let i = 0; i < n; i++) { const j = i + Math.floor(r() * (pop.length - i)); [idx[i], idx[j]] = [idx[j], idx[i]]; t += pop[idx[i]]; } out[k] = t / n; }
+  return out;
+}
+const SIM_NR = simulateNoRepl(ORDER_VALUES, 30, 100000, 7);
+const simOver50nr = SIM_NR.filter((x) => x > 50).length / SIM_NR.length;
+/** Share of 95% t intervals from samples of n (with replacement) that contain the population mean. */
+function coverT(pop, n, reps, seed) {
+  const r = mulberry32(seed), mu = mean(pop); let hit = 0;
+  for (let k = 0; k < reps; k++) { const xs = []; for (let i = 0; i < n; i++) xs.push(pop[Math.floor(r() * pop.length)]); const c = I.ciMean(xs); if (c.low <= mu && mu <= c.high) hit++; }
+  return hit / reps;
+}
+const COVER_ORD30 = coverT(ORDINARY, 30, 20000, 3);
 const simOver50 = SIM.filter((x) => x > 50).length / SIM.length;
 const pOffice30 = 1 - ((N - 1) / N) ** 30;
 const z50 = (50 - MU) / se(30), normOver50 = I.normSf(z50), normOver50fpc = I.normSf((50 - MU) / (se(30) * fpc(30)));
@@ -44,7 +62,10 @@ const MONTH_ORDERS = SHOP.webOrders.map((o, i) => o + SHOP.appOrders[i]);
 const SIG_ORD = sd(ORDINARY);
 const AOV = SHOP.aov, seMonth = MONTH_ORDERS.map((n) => SIG_ORD / Math.sqrt(n));
 const julOct = MONTH_ORDERS.slice(0, 4).reduce((s, n, i) => s + n * AOV[i], 0) / MONTH_ORDERS.slice(0, 4).reduce((a, b) => a + b, 0);
-const zNov = (AOV[4] - julOct) / seMonth[4];
+const julOctN = MONTH_ORDERS.slice(0, 4).reduce((a, b) => a + b, 0), seLevel = SIG_ORD / Math.sqrt(julOctN);
+const seDiff = Math.sqrt(seMonth[4] ** 2 + seLevel ** 2), zNov = (AOV[4] - julOct) / seDiff;
+const CV_ORD = SIG_ORD / mean(ORDINARY), sdScaled = CV_ORD * julOct, zNovScaled = zNov * (SIG_ORD / sdScaled);
+const binom15 = I.binomCdf(15, 50, P);
 
 // ---------------------------------------------------------------- formatting
 const f1 = (x) => Math.round(x * 10) / 10;
@@ -128,10 +149,10 @@ export default {
       caption: 'A: the 231 order values (cut at $200). B: the means of 20,000 random samples of 30 orders (drawn with replacement), with the normal curve the central limit theorem predicts (dashed). C: the same for samples from the 230 orders without the office order.',
       alt: `Three histograms. A, the 231 spring orders from $0 to $200: a tall peak below $40 and a long thin tail to the right, with the $1,512 office order off the scale. B, the means of 20,000 samples of 30 orders from $0 to $120: a main hump centred near $33 and a separate low hump near $80, while the dashed normal curve is centred at $39 and spreads over both. C, the means of samples of 30 from the 230 ordinary orders: a single hump near $33, slightly longer on the right, close to its dashed normal curve.`,
     } },
-    { p: `Panel B is not normal. In about ${pc(pOffice30, 0)} of samples the office order is drawn, and it alone adds about $1,512 ÷ 30 ≈ $50 to the mean: those samples form the second hump. Without that one order (panel C) the means of 30 are already close to normal. The central limit theorem is about what happens as n grows; it doesn’t promise that 30 is enough.` },
+    { p: `Panel B is not normal. In about ${pc(pOffice30, 0)} of samples the office order is drawn, and it alone adds about $1,512 ÷ 30 ≈ $50 to the mean: those samples form the second hump. Without that one order (panel C) the means of 30 are already close to normal, though a 95% interval built from them in the next lesson’s way would still capture μ only about ${pc(COVER_ORD30, 0)} of the time. The central limit theorem is about what happens as n grows; it doesn’t promise that 30 is enough.` },
 
     { h: 'The sampling distribution of a proportion' },
-    { p: String.raw`A proportion is a mean of 0s and 1s. Code each order 1 for a subscription and 0 for a one-off and the 231 orders have mean <m>p = 104 \div 231 = ${P.toFixed(3)}</m>. A sample’s proportion <m>\hat{p}</m> has a sampling distribution centred on p with standard error <m>\sqrt{p(1 - p) \div n}</m>: for samples of 50, <m>\sqrt{${P.toFixed(3)} \times ${(1 - P).toFixed(3)} \div 50} = ${SEP50.toFixed(4)}</m>, about 7 percentage points. By the central limit theorem it is close to normal when the sample has enough of each kind, a condition the next lesson states.` },
+    { p: String.raw`A proportion is a mean of 0s and 1s. Code each order 1 for a subscription and 0 for a one-off and the 231 orders have mean <m>p = 104 \div 231 = ${P.toFixed(3)}</m>. A sample’s proportion <m>\hat{p}</m> has a sampling distribution centred on p with standard error <m>\sqrt{p(1 - p) \div n}</m>: for samples of 50, <m>\sqrt{${P.toFixed(3)} \times ${(1 - P).toFixed(3)} \div 50} = ${SEP50.toFixed(4)}</m>, about 7 percentage points. By the central limit theorem it is close to normal when the sample has enough of each kind, a condition the In depth section states.` },
   ],
 
   theory: [
@@ -145,18 +166,18 @@ export default {
 
     { h: 'How large must n be?' },
     { p: `OpenStax’s business text says the theorem needs a sample that is “large enough”, which it puts at 30 observations or more. That rule of thumb works for populations that are not badly skewed. For skewed populations a stricter guide is Cochran’s rule, as Kott and Levine (2024) state it: a 95% interval of the usual kind around a sample mean is reasonable when n is greater than 25 times the square of the population’s skewness.` },
-    { p: String.raw`For the 231 orders, with SKEW ${G1.toFixed(2)}, that is <m>25 \times ${G1.toFixed(2)}^2 \approx ${Math.round(cochran).toLocaleString('en-US')}</m> orders. Without the office order the skewness is ${G1o.toFixed(2)} and the rule asks for more than <m>25 \times ${G1o.toFixed(2)}^2 \approx ${Math.round(cochranO)}</m>. Both are rules of thumb, not theorems; they say the same thing as the figure: the more skewed the population, and the more its mean depends on a few extreme values, the larger the sample it takes before x̄ behaves normally.` },
+    { p: String.raw`The rule needs the population’s skewness, which Excel’s SKEW.P calculates (SKEW adjusts for a sample). For the 231 orders as the population, SKEW.P is ${G1p.toFixed(2)}, so the rule asks for <m>25 \times ${G1p.toFixed(2)}^2 \approx ${Math.round(cochran).toLocaleString('en-US')}</m> orders. Without the office order SKEW.P is ${G1op.toFixed(2)} and the rule asks for more than <m>25 \times ${G1op.toFixed(2)}^2 \approx ${Math.round(cochranO)}</m>. Both are rules of thumb, not theorems; they say the same thing as the figure: the more skewed the population, and the more its mean depends on a few extreme values, the larger the sample it takes before x̄ behaves normally.` },
 
     { h: 'Estimating the standard error from one sample' },
     { p: String.raw`The formula needs σ, the population’s standard deviation, which is rarely known. In practice you put the sample’s s in its place: <m>s \div \sqrt{n}</m>, the line the ToolPak labels Standard Error. Ana’s 40 bags give <m>${D.kg.sd.toFixed(2)} \div \sqrt{40} = ${D.kg.ci.se.toFixed(2)}</m> g: her sample mean of 1,002.75 g is probably within about 1 g of the machine’s true mean. Because s is itself an estimate that varies from sample to sample, a z built from it is a little more variable than one built from σ; the next lesson’s t distribution allows for that.` },
     { p: 'Two habits follow. Report a sample mean with its standard error, so the reader can see how much it could move. And remember that the standard error estimates chance variation only if the sample was drawn at random: from 40 bags chosen because they looked underfilled, s ÷ √n would be a precise-looking answer to the wrong question.' },
 
     { h: 'When is a sample proportion close to normal?' },
-    { p: String.raw`A proportion’s sampling distribution is a binomial count divided by n, so the previous lesson’s condition carries over: it is close to normal when the sample is expected to contain enough of each outcome. With p = 0.45 and n = 50, a sample should hold about <m>50 \times 0.45 = 22.5</m> subscriptions and 27.5 one-off orders, plenty of each. With n = 10 it would hold about 4.5 and 5.5: then <m>\hat{p}</m> can take only 11 values, 0, 0.1, …, 1, and its histogram is a set of separate bars rather than a curve. The third Explore widget shows both.` },
+    { p: String.raw`A proportion’s sampling distribution is a binomial count divided by n, so the previous lesson’s condition carries over: it is close to normal when the sample is expected to contain enough of each outcome. With p = 0.45 and n = 50, a sample should hold about <m>50 \times 0.45 = 22.5</m> subscriptions and 27.5 one-off orders, plenty of each. With n = 10 it would hold about 4.5 and 5.5: then <m>\hat{p}</m> can take only 11 values, 0, 0.1, …, 1, and its histogram is a set of separate bars rather than a curve. The Explore widget of sample proportions shows both.` },
 
     { h: 'Using the normal model for a sample mean' },
     { p: String.raw`When the sampling distribution is close to normal, standardise x̄ as you would one value, with the standard error in place of σ: <m>z = (\bar{x} - \mu) \div (\sigma \div \sqrt{n})</m>. NORM.DIST then gives probabilities for x̄, with the standard error as its standard_dev argument. The challenging example asks how often a sample of 30 orders averages more than $50, and finds that the normal model gets it badly wrong for this population.` },
-    { p: String.raw`The same works for a proportion, with <m>z = (\hat{p} - p) \div \sqrt{p(1 - p) \div n}</m>. How often would a random sample of 50 orders contain 30% subscriptions or fewer, if 45.0% of all orders are subscriptions? <m>z = (0.30 - ${P.toFixed(4)}) \div ${SEP50.toFixed(4)} = ${zP30.toFixed(2)}</m>, and <x>=NORM.S.DIST(-2.13,TRUE)</x> gives about ${pc(I.normCdf(zP30))}: rare, but it happens about once in 60 samples.` },
+    { p: String.raw`The same works for a proportion, with <m>z = (\hat{p} - p) \div \sqrt{p(1 - p) \div n}</m>. How often would a random sample of 50 orders, drawn with replacement, contain 30% subscriptions or fewer, if 45.0% of all orders are subscriptions? <m>z = (0.30 - ${P.toFixed(4)}) \div ${SEP50.toFixed(4)} = ${zP30.toFixed(2)}</m>, and <x>=NORM.S.DIST(-2.13,TRUE)</x> gives about ${pc(I.normCdf(-2.13))}. The exact binomial, <x>=BINOM.DIST(15,50,104/231,TRUE)</x>, gives ${pc(binom15)}: about once in ${Math.round(1 / binom15)} samples. The normal model is a little low this far into the tail, a reminder that it is an approximation.` },
 
     { h: 'How samples are drawn' },
     { p: 'The formulas above assume a <g>simple random sample</g> (B01): every set of n members of the frame equally likely. In Excel, put <x>=RAND()</x> beside each row (it returns a number from 0 up to 1, and a new one each time the sheet recalculates), copy the column and paste it back as values so it stops changing, sort by it, and take the first n rows. Three other designs are common.' },
@@ -222,7 +243,7 @@ export default {
       steps: [
         String.raw`Standard error: <m>${SIGMA.toFixed(2)} \div \sqrt{30} = ${se(30).toFixed(2)}</m> dollars; with the correction for drawing 30 of 231 without replacement, <m>${se(30).toFixed(2)} \times ${fpc(30).toFixed(3)} = ${(se(30) * fpc(30)).toFixed(2)}</m>.`,
         String.raw`Normal model: <m>z = (50 - ${MU.toFixed(2)}) \div ${se(30).toFixed(2)} = ${z50.toFixed(2)}</m>, and <x>=1-NORM.DIST(50,39.38,18.38,TRUE)</x> gives ${normOver50.toFixed(3)}. With the corrected standard error, ${normOver50fpc.toFixed(3)}.`,
-        `Simulation: in 100,000 random samples of 30 (with replacement), ${pc(simOver50)} averaged more than $50.`,
+        `Simulation: in 100,000 random samples of 30 (with replacement), ${pc(simOver50)} averaged more than $50. Drawing without replacement changes little: then 30 ÷ 231 = ${pc(30 / N)} of samples contain the office order, and ${pc(simOver50nr)} of 100,000 such samples averaged more than $50.`,
         String.raw`The gap: a sample averages over $50 almost only when it contains the $1,512 office order, which adds about <m>1{,}512 \div 30 \approx 50</m> dollars. The chance of drawing it in 30 draws is <m>1 - (230 \div 231)^{30} = ${pOffice30.toFixed(3)}</m>. Samples without it average about $33, and very few of them reach $50.`,
       ],
       answer: `The normal model says about ${pc(normOver50, 0)} (${pc(normOver50fpc, 0)} with the correction); the simulation says about ${pc(simOver50, 0)}, almost all of it the ${pc(pOffice30, 1)} of samples that include the office order.`,
@@ -230,12 +251,12 @@ export default {
     { level: 'applied', title: 'Is a month’s average order value a signal or noise?', fictional: true,
       setup: `B01 reported Lantern’s average order value (AOV) month by month: ${MONTH_ORDERS.slice(0, 4).map((n, i) => `${['July', 'August', 'September', 'October'][i]} ${usd(AOV[i])} on ${n} orders`).join(', ')}, then ${usd(AOV[4])} in November. Treat each month’s orders as a sample from Ana’s ordinary business, and assume ordinary orders vary as the spring’s did without the office order (standard deviation ${usd(SIG_ORD)}). How much would a month’s AOV move by chance alone?`,
       steps: [
-        String.raw`Standard error of a month’s AOV: <m>${SIG_ORD.toFixed(2)} \div \sqrt{${MONTH_ORDERS[1]}} = ${seMonth[1].toFixed(2)}</m> dollars for August; the four months give ${seMonth.slice(0, 4).map((x) => usd(x)).join(', ')}.`,
-        String.raw`About 300 orders is more than the 131 that Cochran’s rule asks for with the ordinary orders’ skewness, so the normal model is reasonable: chance alone would put about 95% of months within about 2 standard errors, <m>\pm 2 \times 1.5 \approx \pm 3</m> dollars, of the underlying average. July to October’s AOVs lie within $${(Math.max(...AOV.slice(0, 4)) - Math.min(...AOV.slice(0, 4))).toFixed(2)} of each other, around a combined ${usd(julOct)}: well inside chance variation.`,
-        String.raw`November: <m>(${AOV[4].toFixed(2)} - ${julOct.toFixed(2)}) \div ${seMonth[4].toFixed(2)} = ${zNov.toFixed(1)}</m> standard errors above the July–October level. Chance does not do that; November’s gift boxes do.`,
+        String.raw`Standard error of a month’s AOV: <m>${SIG_ORD.toFixed(2)} \div \sqrt{${MONTH_ORDERS[1]}} = ${seMonth[1].toFixed(2)}</m> dollars for August; the four months give ${seMonth.slice(0, 4).map((x) => usd(x)).join(', ')}. This standard deviation is a planning value: autumn orders average about $41, not $33, and if they vary in proportion (a standard deviation of about $${Math.round(sdScaled)}), every standard error is about a quarter larger. The conclusions below still hold.`,
+        String.raw`About 300 orders is more than the 130 that Cochran’s rule asks for with the ordinary orders’ skewness, so the normal model is reasonable: chance alone would put about 95% of months within about 2 standard errors, <m>\pm 2 \times 1.5 \approx \pm 3</m> dollars, of the underlying average. July to October’s AOVs lie within $${(Math.max(...AOV.slice(0, 4)) - Math.min(...AOV.slice(0, 4))).toFixed(2)} of each other, around a combined ${usd(julOct)}: well inside chance variation.`,
+        String.raw`November: the July–October level is itself a mean of ${julOctN.toLocaleString('en-US')} orders, with standard error <m>${SIG_ORD.toFixed(2)} \div \sqrt{${julOctN}} = ${seLevel.toFixed(2)}</m>, so the difference between November and that level has standard error <m>\sqrt{${seMonth[4].toFixed(2)}^2 + ${seLevel.toFixed(2)}^2} = ${seDiff.toFixed(2)}</m>. November sits <m>(${AOV[4].toFixed(2)} - ${julOct.toFixed(2)}) \div ${seDiff.toFixed(2)} = ${zNov.toFixed(1)}</m> standard errors above it (${zNovScaled.toFixed(1)} with the larger planning value). Chance alone very rarely does that; the likeliest cause is the gift boxes (${SHOP.giftBoxOrders[4]} gift-box orders in November against ${SHOP.giftBoxOrders[3]} in October, B01).`,
         String.raw`One order can do it too: a $1,512 office order in a month of about 300 orders adds about <m>(1{,}512 - 41) \div 300 \approx 4.90</m> dollars to that month’s AOV, more than chance variation, without any change in ordinary customers.`,
       ],
-      answer: 'Month-to-month moves of under a dollar between July and October are noise; November’s rise of $6.50 is about five standard errors and is real.',
+      answer: 'Month-to-month moves of under a dollar between July and October are noise; November’s rise of $6.50 is about four standard errors, far more than chance usually produces.',
       interpretation: 'The standard error is the yardstick for “is this change worth explaining?”. Before treating a dip as news, compare it with σ ÷ √n; before treating a jump as a trend, check whether one large order caused it. Module 3 turns this comparison into a formal test.' },
   ],
 
@@ -257,7 +278,7 @@ export default {
   application: [
     { p: 'Every estimate a business makes from part of its data, a customer satisfaction score, an average basket from last week, a defect rate from a batch, has a sampling distribution behind it. Analysts who know its standard error can say whether this month’s change is larger than the usual wobble. Without it, every dip gets a story and every spike a meeting.' },
     { p: 'Auditors sample invoices, quality teams sample products, and market researchers sample customers, and all of them choose a design before a sample size. Stratifying by a variable that matters (region, product line, customer type) guarantees coverage and usually buys precision; clustering saves cost and loses some. Systematic samples are convenient from a sorted list but can resonate with a cycle in it. The sample size then comes from the standard error, which the next lesson turns into a margin of error.' },
-    { case: `Ana adds a line to her monthly dashboard notes: “A month of about 300 orders has a standard error of about $1.50 on its AOV, so moves within about $3 of the usual level are not worth explaining. One office order can move a month’s AOV by about $5: check the largest orders before reading anything into a jump.”` },
+    { case: `Ana adds a line to her monthly dashboard notes: “A month of about 300 orders has a standard error of about $1.50 on its AOV (a little more if autumn orders vary more than spring’s), so moves within about $3 of the usual level are not worth explaining. One office order can move a month’s AOV by about $5: check the largest orders before reading anything into a jump.”` },
     { p: 'The limits are the ones this lesson has stressed. The standard error assumes random sampling; it says nothing about bias in who was sampled or who replied. And the normal model for a mean needs a sample that is large for the population’s skewness. With a few extreme values in the data, as in Lantern’s orders, check by simulation before trusting a normal probability.' },
   ],
 
@@ -287,7 +308,7 @@ export default {
     { text: 'OpenStax <i>Introductory Business Statistics</i>, section 1.2 “Data, Sampling, and Variation in Data and Sampling”, on Statistics LibreTexts.', url: 'https://stats.libretexts.org/Bookshelves/Applied_Statistics/Business_Statistics_(OpenStax)/01%3A_Sampling_and_Data/1.02%3A_Data_Sampling_and_Variation_in_Data_and_Sampling', checked: '2026-10-24' },
     { text: 'Kott, P. S. &amp; Levine, B. (2024). “Exploring a skewness conjecture: Expanding Cochran’s rule to a proportion estimated from a complex sample”. <i>Survey Methodology</i> 50(2), 543–551. Statistics Canada.', url: 'https://www150.statcan.gc.ca/n1/pub/12-001-x/2024002/article/00001-eng.htm', checked: '2026-10-24' },
     { text: 'NIST/SEMATECH. <i>e-Handbook of Statistical Methods</i>, section 1.3.6.6.1, “Normal Distribution” (the central limit theorem as the basis for the normal model of a mean).', url: 'https://itl.nist.gov/div898/handbook/eda/section3/eda3661.htm', checked: '2026-10-24' },
-    { text: 'Microsoft Support. “RAND function”.', url: 'https://support.microsoft.com/excel/functions/rand-function', checked: '2026-10-24' },
+    { text: 'Microsoft Support. “RAND function”, with the page for SKEW.P (the skewness of a whole population).', url: 'https://support.microsoft.com/excel/functions/rand-function', checked: '2026-10-24' },
   ],
 
   checks: [
@@ -319,12 +340,17 @@ export default {
     { what: 'FPC', value: fpc(30), shown: 0.935, tol: 0.0005 },
     { what: 'SE with FPC', value: se(30) * fpc(30), shown: 17.18 },
     { what: 'Skewness', value: G1, shown: 13.66 },
-    { what: 'Cochran n', value: cochran, shown: 4667, tol: 0.5 },
+    { what: 'Cochran n (SKEW.P)', value: cochran, shown: 4607, tol: 0.5 },
+    { what: 'SKEW.P', value: G1p, shown: 13.57 },
+    { what: 'SKEW.P without office', value: G1op, shown: 2.28 },
+    { what: 'SKEW.P matches Microsoft’s example', value: skewP([3, 4, 5, 2, 3, 4, 5, 6, 4, 7]), shown: 0.303193, tol: 0.0000005 },
     { what: 'Skewness without office', value: G1o, shown: 2.29 },
-    { what: 'Cochran n without', value: cochranO, shown: 131, tol: 0.5 },
+    { what: 'Cochran n without (SKEW.P)', value: cochranO, shown: 130, tol: 0.5 },
+    { what: 'Ordinary means of 30: t-interval coverage (simulated) %', value: COVER_ORD30 * 100, shown: 92, tol: 0.5 },
     { what: 'z for p̂ = 0.30', value: zP30, shown: -2.13, tol: 0.005 },
-    { what: 'P(p̂ ≤ 0.30)', value: I.normCdf(zP30) * 100, shown: 1.6, tol: 0.05 },
-    { what: 'Once in 60', value: 1 / I.normCdf(zP30), shown: 60, tol: 1.5 },
+    { what: 'NORM.S.DIST(−2.13) %', value: I.normCdf(-2.13) * 100, shown: 1.7, tol: 0.05 },
+    { what: 'Exact binomial P(X ≤ 15) %', value: binom15 * 100, shown: 2.2, tol: 0.05 },
+    { what: 'Once in 46', value: 1 / binom15, shown: 46, tol: 0.5 },
     { what: 'NORM.S.DIST(−2.13) close to the exact z', value: I.normCdf(-2.13), shown: I.normCdf(zP30), tol: 0.0005 },
     { what: 'East subscription share %', value: SUBSHARE[2] * 100, shown: 75, tol: 0.5 },
     { what: 'North subscription share %', value: SUBSHARE[0] * 100, shown: 33, tol: 0.5 },
@@ -338,7 +364,7 @@ export default {
     { what: 'Allocation adds to 40', value: ALLOC.reduce((a, b) => a + b, 0), shown: 40 },
     { what: 'Systematic sample from start 1', value: Math.floor((N - 1) / 6) + 1, shown: 39 },
     { what: 'Systematic sample from start 6', value: Math.floor((N - 6) / 6) + 1, shown: 38 },
-    { what: 'A month of about 300 orders exceeds Cochran’s 131', value: Number(Math.min(...MONTH_ORDERS.slice(0, 4)) > cochranO), shown: 1 },
+    { what: 'A month of about 300 orders exceeds Cochran’s 130', value: Number(Math.min(...MONTH_ORDERS.slice(0, 4)) > cochranO), shown: 1 },
     { what: 'Survey invited', value: SURVEY.sent, shown: 240 },
     { what: 'Survey replies', value: SURVEY.responses, shown: 79 },
     { what: 'Response rate %', value: SURVEY.responses / SURVEY.sent * 100, shown: 32.9, tol: 0.05 },
@@ -390,8 +416,20 @@ export default {
     { what: 'Jul–Oct combined AOV', value: julOct, shown: 41.40 },
     { what: 'Nov AOV', value: AOV[4], shown: 47.90 },
     { what: 'Nov SE', value: seMonth[4], shown: 1.28 },
-    { what: 'Nov z', value: zNov, shown: 5.1, tol: 0.05 },
-    { what: 'About five SEs', value: zNov, shown: 5, tol: 0.15 },
+    { what: 'July–October orders', value: julOctN, shown: 1180 },
+    { what: 'SE of the July–October level', value: seLevel, shown: 0.78 },
+    { what: 'SE of the difference', value: seDiff, shown: 1.50 },
+    { what: 'Nov z', value: zNov, shown: 4.3, tol: 0.05 },
+    { what: 'About four SEs', value: zNov, shown: 4, tol: 0.5 },
+    { what: 'Nov z with CV-scaled SD', value: zNovScaled, shown: 3.5, tol: 0.05 },
+    { what: 'Autumn orders about $41', value: julOct, shown: 41, tol: 0.5 },
+    { what: 'Spring ordinary mean about $33', value: mean(ORDINARY), shown: 33, tol: 0.05 },
+    { what: 'CV-scaled SD about $34', value: sdScaled, shown: 34, tol: 0.5 },
+    { what: 'A quarter larger', value: sdScaled / SIG_ORD, shown: 1.25, tol: 0.01 },
+    { what: 'Gift boxes Nov', value: SHOP.giftBoxOrders[4], shown: 88 },
+    { what: 'Gift boxes Oct', value: SHOP.giftBoxOrders[3], shown: 9 },
+    { what: 'Share of samples with the office order, without replacement %', value: 30 / N * 100, shown: 13.0, tol: 0.05 },
+    { what: 'Simulated P(x̄ > 50) without replacement %', value: simOver50nr * 100, shown: 13.1, tol: 0.05 },
     { what: 'Nov rise', value: AOV[4] - julOct, shown: 6.50 },
     { what: 'Office order effect on a month of 300', value: (1512 - 41) / 300, shown: 4.90 },
     { what: 'About $5', value: (1512 - 41) / 300, shown: 5, tol: 0.15 },

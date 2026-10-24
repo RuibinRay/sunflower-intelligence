@@ -167,7 +167,7 @@ export const independent = [
   {
     id: 'b04-sd-i1', type: 'formula', kind: 'numerical',
     prompt: 'Westcliff Gym (fictional) knows that the share of its members who use the sauna is in B1. In B4, calculate the standard error of the proportion in a random sample of the size in B2.',
-    sheet: { cells: { A1: 'Population proportion', B1: 0.3, A2: 'Sample size', B2: 60, A4: 'Standard error' }, vary: { B2: [40, 80] } },
+    sheet: { cells: { A1: 'Population proportion', B1: 0.3, A2: 'Sample size', B2: 60, A4: 'Standard error' }, vary: { B1: [0.25, 0.4], B2: [40, 80] } },
     cell: 'B4', answer: '=SQRT(B1*(1-B1)/B2)',
     alt: ['=(B1*(1-B1)/B2)^0.5', '=SQRT(B1*(1-B1))/SQRT(B2)'],
     view: 'A1:B4', formats: { B1: '0%', B4: '0.0000' }, widths: { A: 22 },
@@ -192,10 +192,10 @@ export const independent = [
     id: 'b04-sd-i3', type: 'classify', kind: 'conceptual',
     prompt: 'Ana wants about 40 of the 231 spring orders for a packing-quality check. Classify each plan by its sampling design.',
     items: [
-      'Number the orders 1 to 231, put =RAND() beside each, sort by it and take the first 40',
+      'Number the orders 1 to 231, put <x>=RAND()</x> beside each, sort by it and take the first 40',
       'Choose a random start between 1 and 6, then take every 6th order in date order',
       'Split the orders by region and draw at random within each region in proportion to its orders',
-      'Pick 8 of the 122 spring days at random and take every order placed on those days',
+      'Pick 21 of the 122 spring days at random and take every order placed on those days (about 40, at 1.9 a day)',
       'Take the first 40 orders that come up when she opens the export',
     ],
     categories: ['Simple random', 'Systematic', 'Stratified', 'Cluster', 'Convenience'],
@@ -209,13 +209,13 @@ export const independent = [
   },
   {
     id: 'b04-sd-i4', type: 'multi', kind: 'applied',
-    prompt: 'Lantern plans an email survey of customers. Select all the problems that sending it to a much larger number of customers would NOT fix.',
+    prompt: 'Norland Pharmacy (fictional) plans an email survey of its loyalty-card customers. Select all the problems that sending it to a much larger number of customers would NOT fix.',
     options: [
-      'Customers who are happy with Lantern are more likely to reply than unhappy ones.',
-      'The email list holds only web customers, and app-only customers are missing.',
-      'One question asks “How much do you love our new blend?”',
-      'With only 50 replies, the share who would recommend Lantern varies a lot from sample to sample.',
-      'A satisfaction score of 7.4 might come out at 7.1 or 7.7 with another sample of the same size.',
+      'Customers who are happy with the pharmacy are more likely to reply than unhappy customers.',
+      'The list holds only customers who signed up online, so in-store sign-ups are missing.',
+      'One question asks customers “How much do you love our new longer opening hours?”',
+      'With only 50 replies, the share who are satisfied varies a lot from one sample to the next.',
+      'A satisfaction score of 7.4 could come out at 7.1 or 7.7 from another sample this size.',
     ],
     answer: [0, 1, 2],
     feedback: {
@@ -226,7 +226,7 @@ export const independent = [
   },
   {
     id: 'b04-sd-i5', type: 'num', kind: 'applied',
-    prompt: `${APP} of the 231 spring orders came through the app. If Ana draws 80 of the orders at random (with replacement), what is the probability, by the normal model, that more than half of the sample are app orders? Give the percentage to one decimal place.`,
+    prompt: `${APP} of the 231 spring orders came through the app. If Ana draws 80 of the orders at random (with replacement), what is the probability, by the normal model, that more than half of the sample are app orders? Use the normal model for p̂ without a continuity correction, and give the percentage to one decimal place.`,
     answer: Math.round(I.normSf(zApp) * 1000) / 10, check: () => I.normSf((0.5 - APP / 231) / Math.sqrt(((APP / 231) * (1 - APP / 231)) / 80)) * 100, unit: '%', places: 1, tol: 0.15,
     wrong: [
       { value: Math.round(I.normCdf(zApp) * 1000) / 10, say: 'That is the chance that half or fewer are app orders. “More than half” is the area above z.' },
@@ -269,7 +269,7 @@ export const check = [
   {
     id: 'b04-sd-k2', type: 'formula', kind: 'numerical',
     prompt: 'Sedgefield Dairy (fictional) fills bottles with mean (B1) and standard deviation (B2) in millilitres. An inspector measures a random sample of the size in B4 and gets the mean in B3. In B6, calculate how many standard errors the sample mean lies from the population mean.',
-    sheet: { cells: { A1: 'Population mean (ml)', B1: MILK.mu, A2: 'Population SD (ml)', B2: MILK.sigma, A3: 'Sample mean (ml)', B3: MILK.xbar, A4: 'Sample size', B4: MILK.n, A6: 'z' }, vary: { B3: [1005.6, 1006.8] } },
+    sheet: { cells: { A1: 'Population mean (ml)', B1: MILK.mu, A2: 'Population SD (ml)', B2: MILK.sigma, A3: 'Sample mean (ml)', B3: MILK.xbar, A4: 'Sample size', B4: MILK.n, A6: 'z' }, vary: { B1: [1005.5, 1006.5], B3: [1005.6, 1006.8] } },
     cell: 'B6', answer: '=(B3-B1)/(B2/SQRT(B4))',
     alt: ['=(B3-B1)*SQRT(B4)/B2', '=STANDARDIZE(B3,B1,B2/SQRT(B4))'],
     view: 'A1:B6', formats: { B6: '0.00' }, widths: { A: 20 },
@@ -292,20 +292,20 @@ export const check = [
   },
   {
     id: 'b04-sd-k4', type: 'mc', kind: 'applied',
-    prompt: 'B01’s survey was sent to 240 customers and 79 replied. Ana could send the next one to 2,400 customers and expect about 790 replies. What would the larger survey change?',
+    prompt: 'Tamarind Kitchen (fictional) emailed a feedback survey to 400 diners and 120 replied. It could send the next one to 4,000 diners and expect about 1,200 replies. What would the larger survey change?',
     options: [
-      'It would shrink the sampling error, but not any bias from the kind of customer who chooses to reply.',
-      'It would remove non-response bias, because 790 replies are enough to represent all the customers.',
-      'It would raise the response rate, because a larger mailing reaches more customers who like to reply.',
-      'It would change nothing, because the standard error depends on the share replying, not on the number.',
+      'It would shrink the sampling error, but not any bias from the kind of diner who chooses to reply.',
+      'It would remove non-response bias, because 1,200 replies are enough to represent all the diners.',
+      'It would raise the response rate, because a larger mailing reaches more diners who like to reply.',
+      'It would change nothing, because the standard error depends on the share replying, not the number.',
     ],
     answer: 0,
     feedback: {
-      1: 'If happier customers are keener to reply, 790 replies are just as tilted as 79, only more precisely so.',
-      2: 'The response rate is the same one-third either way; only the number of replies grows.',
-      3: 'The standard error depends on the number of replies, n: √(p(1 − p) ÷ 790) is about a third of √(p(1 − p) ÷ 79).',
+      1: 'If happier diners are keener to reply, 1,200 replies are just as tilted as 120, only more precisely so.',
+      2: 'The response rate is 30% either way; only the number of replies grows.',
+      3: 'The standard error depends on the number of replies, n: √(p(1 − p) ÷ 1,200) is about a third of √(p(1 − p) ÷ 120).',
     },
-    solution: 'Ten times the replies cuts the standard error by √10, about a factor of 3. Non-response bias, if the customers who reply differ from those who don’t, stays exactly as large. To reduce it, raise the response rate or follow up non-respondents, a question for survey design (M04).',
+    solution: 'Ten times the replies cuts the standard error by √10, about a factor of 3. Non-response bias, if the diners who reply differ from those who don’t, stays exactly as large. To reduce it, raise the response rate or follow up the diners who didn’t reply, a question for survey design (M04).',
   },
   {
     id: 'b04-sd-k5', type: 'formula', kind: 'applied',

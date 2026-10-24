@@ -70,7 +70,7 @@ export const widgets = {
   'ci-cover-orders': {
     type: 'sampling', title: '95% t intervals for the mean order value (the population mean: $39.38)',
     population: ORDER_VALUES, label: 'spring orders', units: 'dollars', stat: 'mean', mode: 'intervals', conf: 0.95, sizes: [10, 30, 100], n: 30, seed: 21, places: 2,
-    note: 'The misses are almost all on the low side: samples without the $1,512 office order have a mean near $33 and a small s, so their intervals sit below $39.38. The capture rate falls far short of 95%, and more samples don’t fix it, because the t interval’s conditions fail for this population.',
+    note: 'The misses are almost all on the low side. Seven samples in eight miss the $1,512 office order; their means centre on about $33 with a small s, and about a third of their intervals lie wholly below $39.38, while every sample that includes the order captures it. The capture rate is about 70% at n = 30 and worse, about 58%, at n = 100, because the samples that miss the order give narrower intervals around $33. Drawing more intervals doesn’t change the rate; the t interval’s conditions fail for this population until samples run into the thousands.',
   },
 };
 
@@ -137,7 +137,7 @@ export const guided = [
   {
     id: 'b04-ci-g2', type: 'formula', kind: 'numerical',
     prompt: 'B1 holds a confidence level and B2 a sample size. In B4, calculate the t multiplier for a two-sided confidence interval for a mean.',
-    sheet: { cells: { A1: 'Confidence level', B1: 0.95, A2: 'Sample size', B2: 15, A4: 't multiplier' }, vary: { B2: [10, 25] } },
+    sheet: { cells: { A1: 'Confidence level', B1: 0.95, A2: 'Sample size', B2: 15, A4: 't multiplier' }, vary: { B1: [0.9, 0.99], B2: [10, 25] } },
     cell: 'B4', answer: '=T.INV.2T(1-B1,B2-1)',
     alt: ['=T.INV(1-(1-B1)/2,B2-1)', '=-T.INV((1-B1)/2,B2-1)', '=T.INV((1+B1)/2,B2-1)'],
     view: 'A1:B4', formats: { B1: '0%', B4: '0.000' }, widths: { A: 18 },
@@ -220,14 +220,14 @@ export const independent = [
   },
   {
     id: 'b04-ci-i4', type: 'multi', kind: 'conceptual',
-    prompt: 'Ana’s 95% confidence interval for the mean set-up time of autumn events is 34.4 to 41.3 minutes. Select all the statements that are correct.',
+    prompt: 'Ana’s 95% confidence interval for Lantern’s mean set-up time is 34.4 to 41.3 minutes. Select all the statements that are correct.',
     options: [
-      'Over many repeated samples, about 95% of intervals built this way would contain the true mean.',
-      'It gives plausible values for the mean set-up time of all the autumn’s events.',
-      'A 99% interval from the same 24 times would be wider than this one.',
-      '95% of individual catering events this autumn take between 34.4 and 41.3 minutes to set up.',
-      'There is a 95% probability that the true mean lies between 34.4 and 41.3 minutes.',
-      'Timing 48 events instead of 24 would halve the width of the interval, to about 3.5 minutes.',
+      'Over many samples, about 95% of intervals built this way would contain the true mean.',
+      'It gives a range of plausible values for Lantern’s long-run mean set-up time.',
+      'A 99% interval from the same 24 set-up times would be wider than this one.',
+      '95% of individual events take between 34.4 and 41.3 minutes to set up.',
+      'There is a 95% probability that Lantern’s true mean lies between 34.4 and 41.3 minutes.',
+      'Timing 48 events instead of 24 would halve the width of the interval.',
     ],
     answer: [0, 1, 2],
     feedback: {
@@ -251,7 +251,7 @@ export const independent = [
     answer: [0, 1, 2, 3, 4],
     feedback: {
       3: 'Three successes is too few for p̂ ± z√(p̂(1 − p̂) ÷ n), which would give a negative lower limit. The Wilson interval stays between 0 and 1.',
-      4: 'With such a skewed population, 95% t intervals from samples of 30 capture the mean only about 70% of the time. Use a much larger sample, or a method that doesn’t rely on normality.',
+      4: 'With such a skewed population, 95% t intervals from samples of 30 capture the mean only about 70% of the time. Use a far larger sample, or describe the orders with the median and percentiles.',
     },
     solution: 'σ known: z. σ estimated, roughly normal data: t. A proportion with at least 10 of each outcome: the Wald interval is adequate (Wilson would also do). Three successes: Wald gives a negative lower limit, so the Wilson interval is needed. A strongly skewed population with a small sample: none of these is reliable as it stands.',
   },

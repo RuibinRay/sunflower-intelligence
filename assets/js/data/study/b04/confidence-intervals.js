@@ -23,11 +23,20 @@ const GYM = { E: 0.05, p0: 0.5, guess: 0.3 };                                 //
 const nGym = I.sampleSizeProp(GYM.E), nGymRaw = (z975 ** 2 * 0.25) / GYM.E ** 2, nGym30 = I.sampleSizeProp(GYM.E, 0.95, GYM.guess);
 const DF = [5, 10, 23, 39, 100, 1000];
 /** Coverage of 95% t intervals for the mean order value from samples of 30: 20,000 seeded samples. */
-const COVER30 = (() => {
-  const r = mulberry32(3), mu = D.orders.mean; let hit = 0;
-  for (let k = 0; k < 20000; k++) { const xs = []; for (let i = 0; i < 30; i++) xs.push(ORDER_VALUES[Math.floor(r() * ORDER_VALUES.length)]); const c = I.ciMean(xs); if (c.low <= mu && mu <= c.high) hit++; }
-  return (hit / 20000) * 100;
-})();
+function coverOrders(n, reps = 20000, seed = 3) {
+  const r = mulberry32(seed), mu = D.orders.mean, big = D.orders.max;
+  let hit = 0, without = 0, withoutLow = 0, withHit = 0;
+  for (let k = 0; k < reps; k++) {
+    const xs = []; let has = false;
+    for (let i = 0; i < n; i++) { const v = ORDER_VALUES[Math.floor(r() * ORDER_VALUES.length)]; if (v === big) has = true; xs.push(v); }
+    const c = I.ciMean(xs), h = c.low <= mu && mu <= c.high;
+    if (h) hit++;
+    if (has) { if (h) withHit++; } else { without++; if (c.high < mu) withoutLow++; }
+  }
+  return { cover: (hit / reps) * 100, withoutShare: without / reps, withoutLowShare: withoutLow / without, withCover: withHit / (reps - without) };
+}
+const C30 = coverOrders(30), C100 = coverOrders(100);
+const COVER30 = C30.cover;
 const ORDINARY_MEAN = mean(ORDER_VALUES.filter((x) => x !== D.orders.max));
 
 // ---------------------------------------------------------------- formatting
@@ -77,7 +86,7 @@ export default {
     { case: 'Clients keep asking Ana how long Lantern needs to set up before a catering event. She drew 24 of the autumn’s bookings at random and timed their set-ups: a mean of 37.9 minutes, with a standard deviation of 8.2. She also owes Kilnworth a figure for its bags, and a summary of September’s survey. Each time the question is the same: the sample gave a number, so what does it say about the whole?' },
 
     { h: 'An estimate and its margin' },
-    { p: 'The sample mean, 37.875 minutes, is a <g>point estimate</g> of the mean set-up time of all autumn events. It is almost certainly not exactly right: another 24 events would have given another mean. A <g>confidence interval</g> adds a range that reflects that uncertainty: the estimate plus or minus a <g>margin of error</g>. The margin is a multiplier times the standard error, and the multiplier depends on the <g>confidence level</g>, the share of samples in which the method captures the true value.' },
+    { p: 'The sample mean, 37.875 minutes, is a <g>point estimate</g> of Lantern’s long-run mean set-up time: the average its set-up process produces, event after event. It is almost certainly not exactly right: another 24 events would have given another mean. A <g>confidence interval</g> adds a range that reflects that uncertainty: the estimate plus or minus a <g>margin of error</g>. The margin is a multiplier times the standard error, and the multiplier depends on the <g>confidence level</g>, the share of samples in which the method captures the true value.' },
     { math: String.raw`\text{estimate} \pm \text{multiplier} \times \text{standard error}` },
     { p: String.raw`Why it works: the previous lesson showed that 95% of sample means fall within 1.96 standard errors of μ. So for 95% of samples, μ is within 1.96 standard errors of <m>\bar{x}</m>, and the interval <m>\bar{x} \pm 1.96 \times \text{SE}</m> captures it.` },
 
@@ -89,7 +98,7 @@ export default {
     { p: String.raw`The t distribution looks like the standard normal but with heavier tails, so its multiplier is larger. With 23 degrees of freedom, <x>=T.INV.2T(0.05,23)</x> returns ${S.crit.toFixed(3)}, against 1.96 for z. Ana’s interval: standard error <m>${S.sd.toFixed(2)} \div \sqrt{24} = ${S.se.toFixed(3)}</m>, margin <m>${S.crit.toFixed(3)} \times ${S.se.toFixed(3)} = ${S.margin.toFixed(2)}</m>, interval ${S.low.toFixed(1)} to ${S.high.toFixed(1)} minutes. <x>=CONFIDENCE.T(0.05,STDEV.S(A2:A25),COUNT(A2:A25))</x> returns the same margin.` },
     { figure: {
       svg: setupFigure(),
-      caption: `The 24 set-up times and the 95% confidence interval for their mean, ${S.low.toFixed(1)} to ${S.high.toFixed(1)} minutes. The interval is about the mean of all autumn set-ups; most individual set-ups lie outside it.`,
+      caption: `The 24 set-up times and the 95% confidence interval for their mean, ${S.low.toFixed(1)} to ${S.high.toFixed(1)} minutes. The interval is about the long-run mean set-up time; most individual set-ups lie outside it.`,
       alt: `A dot plot of the 24 set-up times on a scale from 20 to 52 minutes: the dots spread from 22 to 50 minutes, with most between 36 and 48. Below it a thick horizontal bar marks the 95% confidence interval for the mean, from ${S.low.toFixed(1)} to ${S.high.toFixed(1)} minutes, with a vertical tick at the sample mean, ${S.mean.toFixed(1)}. A label reads ± ${S.margin.toFixed(2)} = t × s ÷ √n.`,
     } },
 
@@ -98,7 +107,7 @@ export default {
 
     { h: 'An interval for a proportion' },
     { p: String.raw`In September ${yes} of the ${SURVEY.responses} customers who replied would recommend Lantern: <m>\hat{p} = ${yes} \div ${SURVEY.responses} = ${R.p.toFixed(3)}</m>. Its standard error, <m>\sqrt{${R.p.toFixed(3)} \times ${(1 - R.p).toFixed(3)} \div ${SURVEY.responses}} = ${R.se.toFixed(4)}</m>, gives a 95% margin of <m>1.96 \times ${R.se.toFixed(4)} = ${R.margin.toFixed(3)}</m>, about 9 percentage points: ${pc(R.low)} to ${pc(R.high)}. The interval rests on the normal model for <m>\hat{p}</m>, which needs enough of each answer: ${yes} yes and ${no} no, both at least 10.` },
-    { p: `That interval covers one thing only: the luck of which customers happened to reply. Only ${SURVEY.responses} of the ${SURVEY.sent} customers invited replied (${pc(D.survey.responseRate)}). If customers who like Lantern were keener to answer, the true share among all customers could lie below the whole interval, and no formula here can detect it. What Ana can say is that among customers like those who replied, 68% to 86% would recommend Lantern.` },
+    { p: `That interval covers one thing only: the luck of which customers happened to reply. Only ${SURVEY.responses} of the ${SURVEY.sent} customers invited replied (${pc(D.survey.responseRate)}). If customers who like Lantern were keener to answer, the true share among all customers could lie below the whole interval, and no formula here can detect it. What Ana can say is that among customers like those who replied, 68% to 86% would recommend Lantern. (The 240 invited were all of September’s customers, so the 79 are a third of that month’s population; the interval is meant for customers like them in general, which is why no finite population correction is applied.)` },
   ],
 
   theory: [
@@ -116,15 +125,16 @@ export default {
     { p: String.raw`The multiplier is the <m>z</m> or <m>t</m> value that leaves <m>\alpha \div 2</m> in each tail: 1.645, 1.96 and 2.576 for 90%, 95% and 99% with z; NORM.S.INV(1 − α/2) in Excel. Microsoft’s functions take alpha, the significance level, rather than the confidence level: for a 95% interval, alpha is 0.05.` },
 
     { h: 'The t distribution' },
-    { p: String.raw`OpenStax lists its properties: like the standard normal it is symmetric about 0, but it has more probability in its tails, and as the degrees of freedom grow it becomes more like the standard normal. The table shows the multiplier for 95% intervals. With 23 degrees of freedom, using 1.96 instead of 2.069 would leave <x>=T.DIST.2T(1.96,23)</x> = ${pc(pTail23)} outside, not 5%: the intervals would be too narrow and capture μ less often than they claim.` },
+    { p: String.raw`OpenStax lists its properties: like the standard normal it is symmetric about 0, but it has more probability in its tails, and as the degrees of freedom grow it becomes more like the standard normal. The table shows the multiplier for 95% intervals. With 23 degrees of freedom, using 1.96 instead of 2.069 would leave <x>=T.DIST.2T(1.96,23)</x> = ${pc(pTail23)} outside, not 5%: the intervals would be too narrow and capture μ less often than they claim. Some texts, OpenStax’s section 8.1 among them, use z with s once n is 30 or more. The t multiplier is the exact one when σ is estimated, it is what CONFIDENCE.T and the ToolPak use, and for n of 30 or more the two multipliers differ by less than 0.1 (${tCrit(0.95, 29).toFixed(3)} against 1.960 at n = 30).` },
     { table: {
       caption: 'The 95% multiplier, T.INV.2T(0.05, df), against z',
       head: ['Degrees of freedom', '5', '10', '23', '39', '100', '1,000', 'z'],
       align: ['l', 'r', 'r', 'r', 'r', 'r', 'r', 'r'],
       rows: [['Multiplier', ...DF.map((d) => tCrit(0.95, d).toFixed(3)), z975.toFixed(3)]],
     } },
-    { p: 'The t interval assumes a random sample of independent values from a population that is roughly normal. It is robust to mild skew, and more so as n grows, but not to strong skew or extreme outliers. Check a dot plot or histogram first. Ana’s set-up times run from 22 to 50 minutes with no outliers; the mean (37.9) is a little below the median (40.5) and SKEW is −0.62, a mild left skew that 24 values can carry.' },
-    { p: 'Lantern’s spring orders show the failure. Draw 30 orders at random from the 231 and build a 95% t interval: in a seeded simulation of 20,000 samples, only about 70% of the intervals contained the population mean of $39.38. Most samples miss the $1,512 office order, so their mean is about $33 and their s small; their intervals sit below $39.38. The second Explore widget repeats the experiment. The 95% is a property of the method under its conditions; with skewed data, check the conditions or use a far larger sample.' },
+    { p: 'The t interval assumes a random sample of independent values from a population that is roughly normal. It is robust to mild skew, and more so as n grows, but not to strong skew or extreme outliers. Check a dot plot or histogram first. Ana’s set-up times run from 22 to 50 minutes with no outliers; the mean (37.9) is a little below the median (40.5) and SKEW is −0.62, a mild left skew that 24 values can carry. The interval treats the times as draws from Lantern’s set-up process, which is what matters for future events; for the autumn’s own bookings alone, with 24 a large share of them, the finite population correction would narrow it.' },
+    { p: `Lantern’s spring orders show the failure. Draw 30 orders at random from the 231 and build a 95% t interval: in a seeded simulation of 20,000 samples, only about ${Math.round(C30.cover)}% of the intervals contained the population mean of $39.38. Seven samples in eight miss the $1,512 office order; their means centre on about $33 with a small s, and about a third of their intervals lie wholly below $39.38, while every sample that includes the order captures it. A larger sample doesn’t help at first: at n = 100 the capture rate falls to about ${Math.round(C100.cover)}%, because samples that miss the order now give narrower intervals around $33. It nears 95% only with samples in the thousands, as Cochran’s rule predicts.` },
+    { p: 'The Explore widget of t intervals for the mean order value repeats the experiment. The 95% is a property of the method under its conditions, not a guarantee: with skewed data, check the conditions, use a far larger sample, or describe the data with the median and percentiles instead.' },
 
     { h: 'Excel’s interval functions' },
     { list: [
@@ -136,7 +146,7 @@ export default {
     { p: `Kilnworth’s bags, with the sample’s own s = ${D.kg.sd.toFixed(2)} g instead of the specified 3 g: <x>=CONFIDENCE.T(0.05,STDEV.S(A2:A41),40)</x> returns ${KT.margin.toFixed(4)}, so the t interval is ${KT.low.toFixed(2)} to ${KT.high.toFixed(2)} g. Either interval lies wholly below the 1,004 g setting, a hint that the machine may be running low; Module 3 shows how an interval and a two-sided test say the same thing.` },
 
     { h: 'Intervals for a proportion: Wald and Wilson' },
-    { p: String.raw`The interval <m>\hat{p} \pm z\sqrt{\hat{p}(1-\hat{p}) \div n}</m> is called the Wald interval. Its usual condition is at least 10 successes and 10 failures in the sample, as in OpenIntro Statistics; OpenStax accepts more than 5 of each. Agresti and Coull (2001) note that the Wald interval behaves poorly even for quite large n, and that the <g>Wilson interval</g> performs well even for small n. The Wilson interval is centred a little towards 0.5 and never strays outside 0 to 1.` },
+    { p: String.raw`The interval <m>\hat{p} \pm z\sqrt{\hat{p}(1-\hat{p}) \div n}</m> is called the Wald interval. Its usual condition is at least 10 successes and 10 failures in the sample, as in OpenIntro Statistics; OpenStax’s <i>Introductory Statistics</i> accepts more than 5 of each. Agresti and Coull (2001) note that the Wald interval behaves poorly even for quite large n, and that the <g>Wilson interval</g> performs well even for small n. The Wilson interval is centred a little towards 0.5 and never strays outside 0 to 1.` },
     { p: String.raw`For the survey the two barely differ: Wilson gives ${pc(W.low)} to ${pc(W.high)}, centred on ${pc(W.centre)}, against Wald’s ${pc(R.low)} to ${pc(R.high)}. With few successes they part company. Suppose (a fictional case) 3 of 40 orders draw a complaint: Wald gives ${pc(FEW.low)} to ${pc(FEW.high)}, a lower limit below zero; Wilson gives ${pc(FEWW.low)} to ${pc(FEWW.high)}. Excel has no Wilson function; build it from NORM.S.INV with the formula card. When a sample has fewer than 10 of either outcome, report the Wilson interval.` },
 
     { h: 'What changes the margin of error' },
@@ -184,6 +194,7 @@ export default {
     { level: 'simple', title: 'A z interval for the bags’ mean', fictional: true,
       setup: 'Ana’s 40 bags have a mean of 1,002.75 g. Taking Kilnworth’s specified standard deviation of 3 g as known, calculate a 95% confidence interval for the mean weight of the bags Kilnworth is filling.',
       steps: [
+        'Conditions: the 40 bags were weighed one by one as they arrived in October, so treat them as independent draws from the machine’s output; the normal-distribution lesson found their weights close to normal; σ = 3 g is taken from the specification, so the z interval applies.',
         String.raw`Standard error: <m>\sigma \div \sqrt{n} = 3 \div \sqrt{40} = ${KZ.se.toFixed(4)}</m> g.`,
         String.raw`Multiplier for 95%: <m>z = 1.96</m> (<x>=NORM.S.INV(0.975)</x>). Margin: <m>1.96 \times ${KZ.se.toFixed(4)} = ${KZ.margin.toFixed(3)}</m> g, or <x>=CONFIDENCE.NORM(0.05,3,40)</x>.`,
         String.raw`Interval: <m>1{,}002.75 \pm ${KZ.margin.toFixed(2)}</m>, from ${KZ.low.toFixed(2)} to ${KZ.high.toFixed(2)} g.`,
@@ -209,7 +220,7 @@ export default {
         `Non-response: ${pc(D.survey.responseRate)} replied. The interval says nothing about the 161 who didn’t; if recommenders were keener to reply, the true share could be lower than the whole interval.`,
       ],
       answer: `About 77% of respondents would recommend Lantern (95% interval roughly 67% to 86%, by either method), from 79 replies to 240 invitations.`,
-      interpretation: 'The sentence Ana writes: “77% of the 79 customers who replied would recommend us (95% interval 68% to 86%). Only a third of those invited replied, so the figure may flatter us.” Reporting the interval without the response rate would overstate what the survey shows.' },
+      interpretation: 'The sentence Ana writes: “77% of the 79 customers who replied would recommend us; among customers like them, the 95% interval is 68% to 86%. Only a third of September’s customers replied, so the figure may flatter us.” Reporting the interval without the response rate would overstate what the survey shows.' },
     { level: 'applied', title: 'How many events to time?', fictional: true,
       setup: `Ana wants to quote the mean set-up time to within ±2 minutes at 95%, using her sample’s standard deviation of ${S.sd.toFixed(2)} minutes as the planning value. How many events should she time, and what would ±1 minute cost?`,
       steps: [
@@ -267,6 +278,7 @@ export default {
     { text: 'Holmes, A., Illowsky, B. &amp; Dean, S. (2023). <i>Introductory Business Statistics 2e</i>, section 8.1 “A Confidence Interval When the Population Standard Deviation Is Known or Large Sample Size”, with sections 8.2–8.4 in the first edition. OpenStax.', url: 'https://openstax.org/books/introductory-business-statistics-2e/pages/8-1-a-confidence-interval-when-the-population-standard-deviation-is-known-or-large-sample-size', checked: '2026-10-24' },
     { text: 'Holmes, A., Illowsky, B. &amp; Dean, S. <i>Introductory Business Statistics</i>, section 8.2 “A Confidence Interval for a Population Standard Deviation Unknown, Small Sample Case”. OpenStax.', url: 'https://openstax.org/books/introductory-business-statistics/pages/8-2-a-confidence-interval-for-a-population-standard-deviation-unknown-small-sample-case', checked: '2026-10-24' },
     { text: 'NIST/SEMATECH. <i>e-Handbook of Statistical Methods</i>, section 1.3.5.2, “Confidence Limits for the Mean”.', url: 'https://www.itl.nist.gov/div898/handbook/eda/section3/eda352.htm', checked: '2026-10-24' },
+    { text: 'Illowsky, B. &amp; Dean, S. <i>Introductory Statistics</i>, section 8.3 “A Population Proportion” (np′ and nq′ both greater than 5; sample size with p′ = 0.5). OpenStax.', url: 'https://openstax.org/books/introductory-statistics/pages/8-3-a-population-proportion', checked: '2026-10-24' },
     { text: 'Diez, D., Barr, C. &amp; Çetinkaya-Rundel, M. <i>OpenIntro Statistics</i>, section 6.1 “Inference for a Single Proportion”, on Statistics LibreTexts.', url: 'https://stats.libretexts.org/Bookshelves/Introductory_Statistics/OpenIntro_Statistics_(Diez_et_al)./06:_Inference_for_Categorical_Data/6.01:_Inference_for_a_Single_Proportion', checked: '2026-10-24' },
     { text: 'Agresti, A. &amp; Coull, B. A. (2001). Comment on “Interval Estimation for a Binomial Proportion”. <i>Statistical Science</i> 16(2), 117–120.', url: 'https://users.stat.ufl.edu/~aa/articles/agresti_coull_2001.pdf', checked: '2026-10-24' },
     { text: 'Microsoft Support. “CONFIDENCE.T function”, with the pages for CONFIDENCE.NORM, T.INV.2T, T.INV and T.DIST.2T.', url: 'https://support.microsoft.com/en-US/Excel/functions/confidence-t-function', checked: '2026-10-24' },
@@ -327,7 +339,14 @@ export default {
     { what: 't df 1000', value: tCrit(0.95, 1000), shown: 1.962, tol: 0.0005 },
     { what: 'Set-up median', value: median(SETUP_MINUTES), shown: 40.5 },
     { what: 'Set-up SKEW', value: skewness(SETUP_MINUTES), shown: -0.62 },
-    { what: 'Orders t-interval coverage at n = 30 (simulated)', value: COVER30, shown: 70, tol: 1 },
+    { what: 'Orders t-interval coverage at n = 30 (simulated)', value: COVER30, shown: 70, tol: 0.5 },
+    { what: 'Seven samples in eight miss the office order (n = 30)', value: C30.withoutShare, shown: 7 / 8, tol: 0.01 },
+    { what: 'About a third of those intervals lie below μ', value: C30.withoutLowShare, shown: 1 / 3, tol: 0.02 },
+    { what: 'Every sample with the office order captures μ (n = 30)', value: C30.withCover, shown: 1, tol: 1e-12 },
+    { what: 'Coverage at n = 100 (simulated)', value: C100.cover, shown: 58, tol: 0.5 },
+    { what: 'n = 30 vs n = 100: worse at 100', value: Number(C100.cover < C30.cover), shown: 1 },
+    { what: 't and z differ by less than 0.1 for n ≥ 30', value: Number(tCrit(0.95, 29) - z975 < 0.1), shown: 1 },
+    { what: 't multiplier at n = 30', value: tCrit(0.95, 29), shown: 2.045, tol: 0.0005 },
     { what: 'Population mean of orders', value: D.orders.mean, shown: 39.38 },
     { what: 'Ordinary orders average about $33', value: ORDINARY_MEAN, shown: 33, tol: 0.05 },
     { what: 'Microsoft CONFIDENCE.NORM example', value: I.ciMeanZ({ n: 50, mean: 30 }, 2.5).margin, shown: 0.692952, tol: 0.0000005 },

@@ -106,7 +106,7 @@ export const guided = [
       {
         id: 'b04-nd-g1-s2', type: 'formula',
         prompt: 'B1:B3 hold the mean, the standard deviation and the cut-off. In B5, calculate the share of loaves that weigh less than the cut-off, with NORM.DIST.',
-        sheet: { cells: { A1: 'Mean (g)', B1: LOAF.mean, A2: 'SD (g)', B2: LOAF.sd, A3: 'Cut-off (g)', B3: LOAF.label, A5: 'Share under the cut-off' }, vary: { B3: [795, 805] } },
+        sheet: { cells: { A1: 'Mean (g)', B1: LOAF.mean, A2: 'SD (g)', B2: LOAF.sd, A3: 'Cut-off (g)', B3: LOAF.label, A5: 'Share under the cut-off' }, vary: { B1: [810, 815], B2: [5, 7], B3: [795, 805] } },
         cell: 'B5', answer: '=NORM.DIST(B3,B1,B2,TRUE)',
         alt: ['=NORM.DIST(B3,B1,B2,1)'],
         require: ['NORM.DIST'],
@@ -115,7 +115,7 @@ export const guided = [
           { formula: '=NORM.DIST(B3,B1,B2,FALSE)', say: 'With FALSE, NORM.DIST returns the height of the density curve, not a probability. Set cumulative to TRUE for the area below the cut-off.' },
           { formula: '=1-NORM.DIST(B3,B1,B2,TRUE)', say: 'That is the share heavier than the cut-off. NORM.DIST with TRUE already gives the area below it.' },
           { formula: '=NORM.DIST(800,812,6,TRUE)', say: 'Right function, but typed numbers don’t update when the inputs change. Point at B3, B1 and B2.' },
-          { formula: '=NORM.S.DIST(B3,TRUE)', say: 'NORM.S.DIST takes a z-score, not grams. Standardise first, (B3 − B1) ÷ B2, or use NORM.DIST with the mean and standard deviation.' },
+          { formula: '=NORM.S.DIST(B3,TRUE)', say: 'NORM.S.DIST takes a z-score, not grams. This step practises NORM.DIST: give it the grams with the mean and standard deviation, NORM.DIST(B3,B1,B2,TRUE).' },
         ],
         hints: ['NORM.DIST(x, mean, standard_dev, cumulative): the cumulative form gives the area below x.', '<x>=NORM.DIST(B3,B1,B2,TRUE)</x>'],
       },
@@ -192,7 +192,7 @@ export const independent = [
   {
     id: 'b04-nd-i1', type: 'formula', kind: 'numerical',
     prompt: 'B1 and B2 hold Kilnworth’s setting and standard deviation. In B5, calculate the share of bags heavier than the weight in B3.',
-    sheet: { cells: { A1: 'Setting (g)', B1: K.setting, A2: 'SD (g)', B2: K.sd, A3: 'Heavier than (g)', B3: 1010, A5: 'Share heavier' }, vary: { B3: [1007, 1012] } },
+    sheet: { cells: { A1: 'Setting (g)', B1: K.setting, A2: 'SD (g)', B2: K.sd, A3: 'Heavier than (g)', B3: 1010, A5: 'Share heavier' }, vary: { B1: [1003, 1006], B2: [2.5, 3.5], B3: [1007, 1012] } },
     cell: 'B5', answer: '=1-NORM.DIST(B3,B1,B2,TRUE)',
     alt: ['=NORM.DIST(2*B1-B3,B1,B2,TRUE)', '=1-NORM.S.DIST((B3-B1)/B2,TRUE)', '=NORM.S.DIST((B1-B3)/B2,TRUE)'],
     view: 'A1:B5', formats: { B5: '0.0000' }, widths: { A: 18 },
@@ -232,9 +232,9 @@ export const independent = [
     options: [
       `${within(1)} of the 40 bags lie within one standard deviation of the mean, and ${within(2)} within two.`,
       'The mean (1,002.75 g) and the median (1,002.55 g) are only 0.2 g apart.',
-      'SKEW returns −0.23 and KURT returns −0.34.',
-      'Five of the 40 bags weigh less than the 1,000 g printed on the label of every bag.',
-      'The bags’ mean, 1,002.75 g, is 1.25 g below the 1,004 g setting in Kilnworth’s specification.',
+      'SKEW returns −0.23 and KURT returns −0.34, both close to 0.',
+      'Five of the 40 bags weigh less than the 1,000 g printed on the label.',
+      'The bags’ mean, 1,002.75 g, is 1.25 g below Kilnworth’s 1,004 g setting.',
       'On a normal probability plot the 40 points lie close to a straight line.',
     ],
     answer: [0, 1, 2, 5],
@@ -290,7 +290,7 @@ export const check = [
   {
     id: 'b04-nd-k2', type: 'formula', kind: 'numerical',
     prompt: 'Sedgefield Dairy (fictional) fills 1-litre bottles; the volume is roughly normal with the mean and standard deviation in B1 and B2. In B6, calculate the share of bottles that hold between the volumes in B3 and B4.',
-    sheet: { cells: { A1: 'Mean (ml)', B1: MILK.mean, A2: 'SD (ml)', B2: MILK.sd, A3: 'From (ml)', B3: MILK.lo, A4: 'To (ml)', B4: MILK.hi, A6: 'Share between' }, vary: { B3: [1001, 1003] } },
+    sheet: { cells: { A1: 'Mean (ml)', B1: MILK.mean, A2: 'SD (ml)', B2: MILK.sd, A3: 'From (ml)', B3: MILK.lo, A4: 'To (ml)', B4: MILK.hi, A6: 'Share between' }, vary: { B1: [1005, 1007], B2: [2, 3], B3: [1001, 1003], B4: [1009, 1011] } },
     cell: 'B6', answer: '=NORM.DIST(B4,B1,B2,TRUE)-NORM.DIST(B3,B1,B2,TRUE)',
     alt: ['=NORM.S.DIST((B4-B1)/B2,TRUE)-NORM.S.DIST((B3-B1)/B2,TRUE)', '=(1-NORM.DIST(B3,B1,B2,TRUE))-(1-NORM.DIST(B4,B1,B2,TRUE))'],
     view: 'A1:B6', formats: { B6: '0.0000' }, widths: { A: 14 },

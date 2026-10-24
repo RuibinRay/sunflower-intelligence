@@ -20,14 +20,16 @@ const BOOK = { mu: 28, sigma: 15, n: 50, cut: 31 };
 const LOOP = { N: 600, n: 150 };
 // Lantern: the 154 star ratings
 const RCI = I.ciMean(RATINGS), FIVE = RATINGS.filter((x) => x === 5).length, PF = FIVE / RATINGS.length;
-const ratingSheet = { cells: { A1: 'Rating (stars)', ...col('A', 2, RATINGS), C2: 'Upper 95% limit' } };
+const WIL = I.ciProp(FIVE, RATINGS.length, 0.95, 'wilson');
+const wilsonNoDen = (PF + Z * Z / (2 * RATINGS.length)) - Z * Math.sqrt(PF * (1 - PF) / RATINGS.length + Z * Z / (4 * RATINGS.length ** 2));
+const ratingSheet = { cells: { A1: 'Rating (stars)', ...col('A', 2, RATINGS), C1: 'Confidence level', D1: 0.95, C2: 'Width of the interval' } };
 
 export const items = [
   // ---------------------------------------------------------------- normal-distribution
   {
     id: 'b04-m2-1', lesson: 'normal-distribution', type: 'formula', kind: 'numerical',
     prompt: 'Marsden Mills (fictional) fills 1.5 kg bags of flour; weights are roughly normal with the mean and standard deviation in B1 and B2 (grams). A bag is rejected if it weighs less than B3 or more than B4. In B6, calculate the share of bags rejected.',
-    sheet: { cells: { A1: 'Mean (g)', B1: FLOUR.mean, A2: 'SD (g)', B2: FLOUR.sd, A3: 'Lightest allowed (g)', B3: FLOUR.lo, A4: 'Heaviest allowed (g)', B4: FLOUR.hi, A6: 'Share rejected' }, vary: { B3: [1498, 1502] } },
+    sheet: { cells: { A1: 'Mean (g)', B1: FLOUR.mean, A2: 'SD (g)', B2: FLOUR.sd, A3: 'Lightest allowed (g)', B3: FLOUR.lo, A4: 'Heaviest allowed (g)', B4: FLOUR.hi, A6: 'Share rejected' }, vary: { B1: [1510, 1514], B2: [5, 7], B3: [1498, 1502], B4: [1523, 1527] } },
     cell: 'B6', answer: '=NORM.DIST(B3,B1,B2,TRUE)+1-NORM.DIST(B4,B1,B2,TRUE)',
     alt: ['=1-(NORM.DIST(B4,B1,B2,TRUE)-NORM.DIST(B3,B1,B2,TRUE))', '=NORM.DIST(B3,B1,B2,TRUE)+NORM.DIST(2*B1-B4,B1,B2,TRUE)'],
     view: 'A1:B6', formats: { B6: '0.00%' }, widths: { A: 20 },
@@ -84,10 +86,10 @@ export const items = [
     id: 'b04-m2-5', lesson: 'sampling-distributions', type: 'multi', kind: 'conceptual',
     prompt: 'Select all the statements about the sampling distribution of the sample mean that are true for random samples.',
     options: [
-      'Its mean equals the population mean μ.',
+      'Its mean equals the population mean μ, whatever the population’s shape.',
       'Its standard deviation is σ ÷ √n, so it shrinks as the sample grows.',
       'If the population is normal, the sample mean is normal for any sample size.',
-      'Its standard deviation depends mainly on the population size N, even when the sample is a small share of it.',
+      'Its standard deviation depends mainly on the population size N, not on n.',
       'A large enough sample makes the values in the sample normally distributed.',
       'With n = 30 it is always close to normal, however skewed the population.',
     ],
@@ -114,7 +116,7 @@ export const items = [
     prompt: 'Put the steps for drawing a simple random sample of 40 rows from a customer list in Excel in order.',
     items: [
       'Make sure the list holds every customer in the population you want to describe (the sampling frame).',
-      'In a new column, type =RAND() beside every customer.',
+      'In a new column, type <x>=RAND()</x> beside every customer.',
       'Copy the column and paste it back as values, so the numbers stop changing.',
       'Sort the whole list by that column.',
       'Take the first 40 rows as the sample.',
@@ -124,27 +126,27 @@ export const items = [
   // ---------------------------------------------------------------- confidence-intervals
   {
     id: 'b04-m2-8', lesson: 'confidence-intervals', type: 'formula', kind: 'numerical',
-    prompt: `A2:A155 hold the ${RATINGS.length} star ratings (1 to 5) that customers gave Lantern’s spring orders. In D2, calculate the upper limit of a 95% t interval for the mean rating, in one formula.`,
-    sheet: ratingSheet,
-    cell: 'D2', answer: '=AVERAGE(A2:A155)+CONFIDENCE.T(0.05,STDEV.S(A2:A155),COUNT(A2:A155))',
-    alt: ['=AVERAGE(A2:A155)+T.INV.2T(0.05,COUNT(A2:A155)-1)*STDEV.S(A2:A155)/SQRT(COUNT(A2:A155))', '=AVERAGE(A2:A155)+CONFIDENCE.T(0.05,STDEV.S(A2:A155),154)'],
-    view: 'A1:D155', maxHeight: '20rem', formats: { D2: '0.000' }, widths: { C: 16 },
+    prompt: `A2:A155 hold the ${RATINGS.length} star ratings (1 to 5) that customers gave Lantern’s spring orders, and D1 holds a confidence level. In D2, calculate the width of the t interval for the mean rating at that level (upper limit minus lower limit), in one formula.`,
+    sheet: { ...ratingSheet, vary: { D1: [0.9, 0.99] } },
+    cell: 'D2', answer: '=2*CONFIDENCE.T(1-D1,STDEV.S(A2:A155),COUNT(A2:A155))',
+    alt: ['=CONFIDENCE.T(1-D1,STDEV.S(A2:A155),COUNT(A2:A155))*2', '=2*T.INV.2T(1-D1,COUNT(A2:A155)-1)*STDEV.S(A2:A155)/SQRT(COUNT(A2:A155))'],
+    view: 'A1:D155', maxHeight: '20rem', formats: { D1: '0%', D2: '0.000' }, widths: { C: 18 },
     wrong: [
-      { formula: '=AVERAGE(A2:A155)+CONFIDENCE.T(0.05,STDEV.S(A2:A155),COUNT(A2:A155))/SQRT(COUNT(A2:A155))', say: 'CONFIDENCE.T already divides by √n. Dividing again makes the margin far too small.' },
-      { formula: '=AVERAGE(A2:A155)+CONFIDENCE.T(0.95,STDEV.S(A2:A155),COUNT(A2:A155))', say: 'The first argument is alpha, 0.05 for a 95% interval.' },
-      { formula: '=AVERAGE(A2:A155)+1.96*STDEV.S(A2:A155)', say: 'That adds 1.96 standard deviations of single ratings, a range for individual ratings. The interval for the mean uses the standard error, s ÷ √n, and the t multiplier.' },
+      { formula: '=CONFIDENCE.T(1-D1,STDEV.S(A2:A155),COUNT(A2:A155))', say: 'CONFIDENCE.T returns the margin of error, the half-width. The interval runs from mean − margin to mean + margin, so its width is twice the margin.' },
+      { formula: '=2*CONFIDENCE.T(D1,STDEV.S(A2:A155),COUNT(A2:A155))', say: 'The first argument is alpha, 1 − the confidence level: 1-D1.' },
+      { formula: '=2*CONFIDENCE.NORM(1-D1,STDEV.S(A2:A155),COUNT(A2:A155))', say: 'The question asks for a t interval, which is what applies when σ is estimated by s: CONFIDENCE.T. (With 154 ratings the two are close, but not the same.)' },
     ],
-    solution: `<x>=AVERAGE(A2:A155)+CONFIDENCE.T(0.05,STDEV.S(A2:A155),COUNT(A2:A155))</x>: mean ${RCI.mean.toFixed(3)}, s ${RCI.sd.toFixed(3)}, margin ${RCI.margin.toFixed(3)}, interval ${RCI.low.toFixed(2)} to ${RCI.high.toFixed(2)} stars. Ratings are whole numbers and left-skewed, but with 154 of them the sample mean is close to normal. The bigger caveat: 77 orders weren’t rated, and customers who rate may differ from those who don’t.`,
+    solution: `<x>=2*CONFIDENCE.T(1-D1,STDEV.S(A2:A155),COUNT(A2:A155))</x>: at 95% the margin is ${RCI.margin.toFixed(3)} stars, so the interval (${RCI.low.toFixed(2)} to ${RCI.high.toFixed(2)}) is ${(2 * RCI.margin).toFixed(3)} stars wide; at 90% it is ${(2 * I.ciMean(RATINGS, 0.9).margin).toFixed(3)} and at 99% ${(2 * I.ciMean(RATINGS, 0.99).margin).toFixed(3)}. Ratings are whole numbers and left-skewed, but with 154 of them the sample mean is close to normal. The bigger caveat: 77 orders weren’t rated, and customers who rate may differ from those who don’t.`,
   },
   {
     id: 'b04-m2-9', lesson: 'confidence-intervals', type: 'num', kind: 'numerical',
-    prompt: `${FIVE} of the ${RATINGS.length} rated spring orders got five stars. What is the lower limit of the 95% Wald confidence interval for the share of five-star ratings? Give the percentage to one decimal place.`,
-    answer: Math.round((PF - Z * Math.sqrt(PF * (1 - PF) / RATINGS.length)) * 1000) / 10, check: () => I.ciProp(FIVE, RATINGS.length).low * 100, unit: '%', places: 1, tol: 0.1,
+    prompt: `${FIVE} of the ${RATINGS.length} rated spring orders got five stars. What is the lower limit of the 95% Wilson interval for the share of five-star ratings? Give the percentage to one decimal place.`,
+    answer: Math.round(WIL.low * 1000) / 10, check: () => I.ciProp(FIVE, RATINGS.length, 0.95, 'wilson').low * 100, unit: '%', places: 1, tol: 0.1,
     wrong: [
-      { value: Math.round((PF - I.normInv(0.95) * Math.sqrt(PF * (1 - PF) / RATINGS.length)) * 1000) / 10, say: 'That uses 1.645, a 90% multiplier. A 95% interval uses 1.96.' },
-      { value: Math.round((PF - Z * Math.sqrt(PF * (1 - PF)) / RATINGS.length) * 1000) / 10, say: 'The standard error is √(p̂(1 − p̂) ÷ n): divide by n inside the square root.' },
+      { value: Math.round(I.ciProp(FIVE, RATINGS.length).low * 1000) / 10, say: 'That is the Wald lower limit, p̂ − 1.96 × √(p̂(1 − p̂) ÷ n). The Wilson interval shifts the centre towards 0.5 and divides by 1 + z²/n.' },
+      { value: Math.round(wilsonNoDen * 1000) / 10, say: 'You left out the denominator, 1 + z² ÷ n: divide both the centre and the half-width by it.' },
     ],
-    solution: `p̂ = ${FIVE} ÷ ${RATINGS.length} = ${PF.toFixed(4)}; SE = √(${PF.toFixed(4)} × ${(1 - PF).toFixed(4)} ÷ ${RATINGS.length}) = ${Math.sqrt(PF * (1 - PF) / RATINGS.length).toFixed(4)}; margin = 1.96 × SE = ${(Z * Math.sqrt(PF * (1 - PF) / RATINGS.length)).toFixed(4)}; interval ${pc(I.ciProp(FIVE, RATINGS.length).low)} to ${pc(I.ciProp(FIVE, RATINGS.length).high)}. Both counts (${FIVE} and ${RATINGS.length - FIVE}) are well above 10.`,
+    solution: `p̂ = ${FIVE} ÷ ${RATINGS.length} = ${PF.toFixed(4)}, z = 1.96, z² ÷ n = ${(Z * Z / RATINGS.length).toFixed(5)}. Centre = (p̂ + z² ÷ 2n) ÷ (1 + z² ÷ n) = ${WIL.centre.toFixed(4)}; half-width = z√(p̂(1 − p̂) ÷ n + z² ÷ 4n²) ÷ (1 + z² ÷ n) = ${WIL.margin.toFixed(4)}; interval ${pc(WIL.low)} to ${pc(WIL.high)}. The Wald interval, ${pc(I.ciProp(FIVE, RATINGS.length).low)} to ${pc(I.ciProp(FIVE, RATINGS.length).high)}, is close because both counts (${FIVE} and ${RATINGS.length - FIVE}) are well above 10.`,
   },
   {
     id: 'b04-m2-10', lesson: 'confidence-intervals', type: 'classify', kind: 'conceptual',
@@ -184,7 +186,7 @@ export const items = [
   {
     id: 'b04-m2-12', lesson: 'confidence-intervals', type: 'formula', kind: 'applied',
     prompt: 'Wyvern Ferries wants to estimate its mean fuel use per crossing to within the margin in B2 (litres) at the confidence level in B3. Past records suggest the standard deviation in B1. In B5, calculate the number of crossings to record, rounded up to a whole number.',
-    sheet: { cells: { A1: 'Planning SD (litres)', B1: FERRY.fuelSd, A2: 'Margin wanted (litres)', B2: FERRY.fuelE, A3: 'Confidence level', B3: 0.95, A5: 'Crossings needed' }, vary: { B2: [5, 10] } },
+    sheet: { cells: { A1: 'Planning SD (litres)', B1: FERRY.fuelSd, A2: 'Margin wanted (litres)', B2: FERRY.fuelE, A3: 'Confidence level', B3: 0.95, A5: 'Crossings needed' }, vary: { B2: [5, 10], B3: [0.9, 0.99] } },
     cell: 'B5', answer: '=ROUNDUP((NORM.S.INV(1-(1-B3)/2)*B1/B2)^2,0)',
     alt: ['=CEILING((NORM.S.INV(1-(1-B3)/2)*B1/B2)^2,1)', '=CEILING.MATH((NORM.S.INV(1-(1-B3)/2)*B1/B2)^2)', '=ROUNDUP(NORM.S.INV((1+B3)/2)^2*B1^2/B2^2,0)'],
     view: 'A1:B5', formats: { B3: '0%', B5: '0' }, widths: { A: 22 },
