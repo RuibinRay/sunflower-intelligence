@@ -74,7 +74,7 @@ export default {
   slug: 'anova',
   title: 'One-way analysis of variance (ANOVA)',
   blurb: 'Compare the means of several groups at once without inflating the chance of a false alarm. Split variation into between- and within-group parts, build the F statistic by hand and with Excel’s Anova: Single Factor, check the conditions, measure the effect with η², and find which groups differ with adjusted comparisons.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain why comparing several means with a t test for every pair inflates the family-wise error rate, and calculate that rate.',
     'Calculate the between-group and within-group sums of squares, degrees of freedom, mean squares and F for a one-way ANOVA, by hand and with DEVSQ.',

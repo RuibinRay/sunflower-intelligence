@@ -1,7 +1,7 @@
 // proportions-and-chi-square.js — B04 · Proportions and chi-square tests. Content only; exercises are in
 // proportions-and-chi-square.ex.js. Uses B01's August and September web conversion (CONVERSION, DERIVED.conversion.test)
 // and app figures (SHOP), the spring orders by weekday (WEEKDAYS, DERIVED.weekdays), orders per day and the Poisson fit
-// (ORDERS_PER_DAY, DERIVED.perDay, refitted here with a "5 or more" category and one df lost for λ), and the channel,
+// (ORDERS_PER_DAY, DERIVED.perDay; the test is DERIVED.perDay.gof, with a "5 or more" category and one df lost for λ), and the channel,
 // rating and region tables (DERIVED.channelSubscription, ratingByChannel, regionSubscription). The bakery and the hotel
 // are fictional. Every printed figure is recomputed in `checks`.
 import { CONVERSION, SHOP, WEEKDAYS, CHANNEL_SUBSCRIPTION, RATING_BY_CHANNEL, REGION_SUBSCRIPTION, MONTHS, DERIVED as D } from './case.js?v=12';
@@ -19,10 +19,10 @@ const regionShare = REGION_SUBSCRIPTION.counts.map((r) => r[0] / (r[0] + r[1]));
 // the Poisson fit: categories 0, 1, 2, 3, 4 and "5 or more"; λ estimated from the same days
 const LAM = D.perDay.lambda, NDAYS = D.perDay.counts.reduce((a, b) => a + b, 0);
 const OBS = D.perDay.counts;                                      // 0..5; no day had more than 5
-const PK = [0, 1, 2, 3, 4].map((k) => I.poissonPmf(k, LAM));
-const P5UP = 1 - PK.reduce((a, b) => a + b, 0);
-const EXP = [...PK.map((p) => NDAYS * p), NDAYS * P5UP];
-const PF = I.chisqGof(OBS, EXP, { ddof: 1 });
+const PF = D.perDay.gof;                                          // 0, 1, 2, 3, 4 and "5 or more"; df = 6 − 1 − 1
+const EXP = PF.expected;
+const PK = EXP.slice(0, 5).map((e) => e / NDAYS);
+const P5UP = EXP[5] / NDAYS;
 const SIXUP = NDAYS * (1 - [0, 1, 2, 3, 4, 5].reduce((s, k) => s + I.poissonPmf(k, LAM), 0));
 // the bakery and the hotel (fictional)
 const BAKE_O = [92, 54, 38, 16], BAKE_P = [0.4, 0.3, 0.2, 0.1];
@@ -67,7 +67,7 @@ function shapesFigure() {
   let s = '<svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" font-size="12" fill="currentColor">';
   const curves = [[1, 'var(--series-1)', '', 0.15], [4, 'var(--series-2)', '6 3', 4], [10, 'var(--series-3)', '2 3', 10]];
   for (const [k, col, dash] of curves) {
-    const start = k === 1 ? 0.02 : 0;
+    const start = k === 1 ? 0.95 : 0;
     s += `<polyline points="${curvePath((x) => I.chi2Pdf(x, k), start, xMax, X, Y, 220).join(' ')}" fill="none" stroke="${col}" stroke-width="2.2"${dash ? ` stroke-dasharray="${dash}"` : ''}/>`;
   }
   s += `<text x="${f1(X(1.6))}" y="${f1(Y(I.chi2Pdf(1.6, 1))) - 6}" font-size="12">1 df</text>`;
@@ -85,7 +85,7 @@ export default {
   slug: 'proportions-and-chi-square',
   title: 'Proportions and chi-square tests',
   blurb: 'Compare two proportions with a z test and a confidence interval, then use the chi-square distribution to test whether counts fit a model and whether two categorical variables are related. Calculate each test by hand and in Excel with CHISQ.TEST, CHISQ.DIST.RT and CHISQ.INV.RT, check its conditions, and say what a result does and doesn’t show.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate a two-proportion z test with the pooled standard error and a confidence interval for the difference in two proportions, and check their conditions.',
     'Describe the chi-square distribution and explain why chi-square tests use the right tail and how their degrees of freedom are counted.',
@@ -109,9 +109,9 @@ export default {
 
     { h: 'Two proportions: was September’s fall real?' },
     { p: String.raw`In August 224 of the 7,700 web visits ended in an order, a sample <g>proportion</g> of 2.91%. In September 158 of 8,800 did: 1.80%. The fall is 1.11 <g>percentage points</g>. The null hypothesis says the two months had the same underlying conversion rate, <m>p_1 = p_2</m>, and the gap is chance: which visitors happened to arrive and which of them happened to buy.` },
-    { p: String.raw`If the null hypothesis is true there is one conversion rate, and the best estimate of it pools both months: <m>\bar{p} = (224 + 158) \div (7{,}700 + 8{,}800) = 382 \div 16{,}500 \approx 0.02315</m>. The <g>standard error</g> of the difference between two sample proportions, worked out from that pooled rate, is <m>\sqrt{0.02315 \times 0.97685 \times (1/7{,}700 + 1/8{,}800)} \approx 0.002347</m>, or 0.2347 percentage points. The observed gap of 1.114 points is <m>z = 1.114 \div 0.2347 \approx 4.75</m> standard errors.` },
+    { p: String.raw`If the null hypothesis is true there is one conversion rate, and the best estimate of it pools both months: 224 + 158 = 382 orders in 7,700 + 8,800 = 16,500 visits, so <m>\bar{p} = 382 \div 16{,}500 \approx 0.023152</m>. The <g>standard error</g> of the difference between two sample proportions is worked out from that pooled rate. With <m>\bar{p}(1 - \bar{p}) \approx 0.02262</m> and <m>1/7{,}700 + 1/8{,}800 \approx 0.0002435</m>, it is <m>\sqrt{0.02262 \times 0.0002435} \approx 0.002347</m>, or 0.2347 percentage points. The observed gap of 1.114 points is <m>z = 1.114 \div 0.2347 \approx 4.75</m> standard errors.` },
     { p: 'If the null hypothesis were true, z would follow the standard normal distribution approximately, and a value 4.75 or more from 0 in either direction has a probability of about 0.000002, two in a million. This is the <g>two-proportion z test</g>. A gap this large is far beyond the month-to-month wobble of a steady 2.3% rate: the evidence that conversion really fell is overwhelming. A 95% confidence interval for the fall, worked out in the In depth section, runs from 0.65 to 1.58 percentage points, and at September’s 8,800 visits a fall of 1.11 points is about 98 orders.' },
-    { p: 'The test says the fall is real; it doesn’t say why. B01’s comparison group helps: app buyers never saw the new website checkout, and app conversion was 3.68% in August and 3.58% in September. The same test on the app gives z = 0.20 and p = 0.84, no evidence of any change. A fall confined to the channel that got the new checkout supports the checkout as the cause, but it doesn’t prove <g>causation</g>: anything else that changed only on the website in September could produce the same pattern.' },
+    { p: 'The test says the fall is very unlikely to be chance; it doesn’t say why. B01’s comparison group helps: app buyers never saw the new website checkout, and app conversion was 3.68% in August and 3.58% in September. The same test on the app gives z = 0.20 and p = 0.84, no evidence of any change. A fall confined to the channel that got the new checkout supports the checkout as the cause, but it doesn’t prove <g>causation</g>: anything else that changed only on the website in September could produce the same pattern.' },
 
     { h: 'Counts against a model: the chi-square statistic' },
     { p: 'Ana’s second question involves seven categories at once. Over the 122 spring days the shop took 231 orders. If the weekday made no difference, every day would have the same expected number of orders, 231 ÷ 122 ≈ 1.89, and each weekday’s <g>expected count</g> would be that rate times the number of such days. The spring had 18 Mondays, Tuesdays and Sundays but 17 of each other weekday, so the expected counts are not 231 ÷ 7 = 33 each: Monday’s is 231 × 18 ÷ 122 ≈ 34.08.' },
@@ -123,7 +123,7 @@ export default {
       foot: [['Total', '122', '231', fx(WK.expected.reduce((a, b) => a + b, 0)), fx(WK.stat, 3)]],
     } },
     { p: String.raw`The <g>chi-square statistic</g> adds up, over the categories, each squared gap between an observed count and its expected count divided by the expected count: <m>\chi^2 = \sum (O - E)^2 \div E</m>. Squaring makes every gap count as positive, and dividing by E scales it, because a gap of 5 matters more when 10 were expected than when 1,000 were. Sunday contributes most: 26 orders where 34.08 were expected, <m>(26 - 34.08)^2 \div 34.08 \approx 1.92</m>. In all, <m>\chi^2 \approx 5.82</m>.` },
-    { p: 'When the null hypothesis is true and the expected counts are large enough, χ² follows approximately a <g>chi-square distribution</g>, a family of right-skewed distributions indexed by their <g>degrees of freedom</g>. Here there are 7 − 1 = 6: once six of the expected counts are set, the seventh is fixed by the total of 231. The p-value is the area to the right of 5.82 under that curve, <x>=CHISQ.DIST.RT(5.82,6)</x> ≈ 0.44.' },
+    { p: 'When the null hypothesis is true and the expected counts are large enough, χ² follows approximately a <g>chi-square distribution</g>, a family of right-skewed distributions indexed by their <g>degrees of freedom</g>. Here there are 7 − 1 = 6: once six of the observed counts are known, the seventh is fixed by the total of 231. The p-value is the area to the right of 5.82 under that curve, <x>=CHISQ.DIST.RT(5.82,6)</x> ≈ 0.44.' },
     { figure: {
       svg: weekdayFigure(),
       caption: 'The chi-square distribution with 6 degrees of freedom. The p-value of the weekday test is the area to the right of the observed χ² of 5.82, about 0.44; the 5% rejection region starts at 12.59, far to the right.',
@@ -149,12 +149,14 @@ export default {
       foot: [['Total', '104', '127', '231']],
     } },
     { p: String.raw`The web had 12.43 fewer subscriptions than independence predicts, and the app 12.43 more. Summing <m>(O - E)^2 \div E</m> over the four cells gives <m>\chi^2 \approx 11.03</m> with <m>(2 - 1)(2 - 1) = 1</m> degree of freedom, and <x>=CHISQ.DIST.RT(11.03,1)</x> ≈ 0.0009. Gaps this large would arise in fewer than one sample in a thousand if channel and subscription were independent: strong evidence that they are associated. The same test on star ratings finds nothing: 44.0% of rated web orders and 44.3% of rated app orders had five stars, giving <m>\chi^2 \approx 0.0009</m> and <m>p \approx 0.98</m>.` },
-    { callout: 'key', title: 'What every chi-square test does', html: 'It compares observed counts with the counts a null hypothesis predicts, adds up (O − E)² ÷ E, and asks how often a total that large would arise by chance. Only large values count against the null hypothesis, so the p-value is always a right-tail area. The expected counts must be large enough (at least 5 is the usual rule), and the data must be counts of separate individuals, not percentages or averages.' },
+    { callout: 'key', title: 'What every chi-square test does', html: 'It compares observed counts with the counts a null hypothesis predicts, adds up (O − E)² ÷ E, and asks how often a total that large would arise by chance. Large values are the evidence against the null hypothesis, so the p-value is a right-tail area, almost without exception. The expected counts must be large enough (at least 5 is the usual rule), and the data must be counts of separate individuals, not percentages or averages.' },
   ],
 
   theory: [
     { h: 'The two-proportion z test' },
-    { p: String.raw`Two independent samples of sizes <m>n_1</m> and <m>n_2</m> contain <m>x_1</m> and <m>x_2</m> successes, giving sample proportions <m>\hat{p}_1 = x_1 \div n_1</m> and <m>\hat{p}_2 = x_2 \div n_2</m>. To test <m>H_0\colon p_1 = p_2</m>, the standard error uses the <g>pooled proportion</g> <m>\bar{p} = (x_1 + x_2) \div (n_1 + n_2)</m>, because under the null hypothesis both samples estimate the same p and the combined sample estimates it best. The statistic <m>z = (\hat{p}_1 - \hat{p}_2) \div \sqrt{\bar{p}(1 - \bar{p})(1/n_1 + 1/n_2)}</m> is compared with the standard normal distribution. The test is two-sided for <m>H_1\colon p_1 \neq p_2</m> and one-sided for <m>p_1 \gt p_2</m> or <m>p_1 \lt p_2</m>, a choice made before looking at the data.` },
+    { p: String.raw`Two independent samples of sizes <m>n_1</m> and <m>n_2</m> contain <m>x_1</m> and <m>x_2</m> successes, giving sample proportions <m>\hat{p}_1 = x_1 \div n_1</m> and <m>\hat{p}_2 = x_2 \div n_2</m>. To test <m>H_0\colon p_1 = p_2</m>, the standard error uses the <g>pooled proportion</g> <m>\bar{p} = (x_1 + x_2) \div (n_1 + n_2)</m>, because under the null hypothesis both samples estimate the same p and the combined sample estimates it best. The test statistic divides the gap between the sample proportions by that standard error:` },
+    { math: String.raw`z = \dfrac{\hat{p}_1 - \hat{p}_2}{\sqrt{\bar{p}(1 - \bar{p})\left(\dfrac{1}{n_1} + \dfrac{1}{n_2}\right)}}` },
+    { p: String.raw`z is compared with the standard normal distribution: two-sided for <m>H_1\colon p_1 \neq p_2</m>, one-sided for <m>p_1 \gt p_2</m> or <m>p_1 \lt p_2</m>, a choice made before looking at the data.` },
     { p: 'Its conditions are those of the one-proportion test, applied to each sample:' },
     { list: [
       '<b>Independence.</b> The two samples are independent of each other, and the observations within each are independent: random samples, randomly assigned groups or, for a process such as Lantern’s visits, trials that don’t influence one another.',
@@ -165,15 +167,17 @@ export default {
     { p: 'Excel has no function for a two-proportion test, so build it from cells. With the orders in B2:C2 and the visits in B3:C3, the pooled proportion is <x>=(B2+C2)/(B3+C3)</x>; with that in B6, the standard error is <x>=SQRT(B6*(1-B6)*(1/B3+1/C3))</x>; and with z in B8, the two-sided p-value is <x>=2*(1-NORM.S.DIST(ABS(B8),TRUE))</x>. For a one-sided alternative, <x>=1-NORM.S.DIST(B8,TRUE)</x> gives P(Z &gt; z), the p-value for <m>p_1 \gt p_2</m>, and <x>=NORM.S.DIST(B8,TRUE)</x> gives P(Z &lt; z), the p-value for <m>p_1 \lt p_2</m>.' },
 
     { h: 'A confidence interval for the difference' },
-    { p: String.raw`An interval estimates how big the difference is, not only whether it is zero. It doesn’t assume the two proportions are equal, so it uses each sample’s own proportion in an unpooled standard error: <m>(\hat{p}_1 - \hat{p}_2) \pm z^* \sqrt{\hat{p}_1(1 - \hat{p}_1) \div n_1 + \hat{p}_2(1 - \hat{p}_2) \div n_2}</m>, with <m>z^* \approx 1.96</m> for 95%. For Lantern the unpooled standard error is 0.002382, the margin <m>1.96 \times 0.002382 \approx 0.00467</m>, and the interval <m>0.01114 \pm 0.00467</m>: 0.65 to 1.58 percentage points.` },
-    { p: 'Because the test and the interval use slightly different standard errors, they can disagree when a result is borderline: an interval that just excludes 0 alongside a p-value just above 0.05. Far from the line, as here, they agree. Report the interval with the test: “conversion fell by 1.1 points (95% CI 0.6 to 1.6)” says both that the fall is real and how large it might be. In relative terms September converted at 62% of August’s rate, a fall of 38%.' },
+    { p: String.raw`An interval estimates how big the difference is, not only whether it is zero. It doesn’t assume the two proportions are equal, so it uses each sample’s own proportion in an unpooled standard error:` },
+    { math: String.raw`(\hat{p}_1 - \hat{p}_2) \pm z^* \sqrt{\dfrac{\hat{p}_1(1 - \hat{p}_1)}{n_1} + \dfrac{\hat{p}_2(1 - \hat{p}_2)}{n_2}}` },
+    { p: String.raw`Here <m>z^* \approx 1.96</m> for 95%. For Lantern the unpooled standard error is 0.002382, the margin <m>1.96 \times 0.002382 \approx 0.00467</m>, and the interval <m>0.01114 \pm 0.00467</m>: 0.65 to 1.58 percentage points.` },
+    { p: 'Because the test and the interval use slightly different standard errors, they can disagree when a result is borderline: an interval that just excludes 0 alongside a p-value just above 0.05. Far from the line, as here, they agree. Report the interval with the test: “conversion fell by 1.1 points (95% CI 0.6 to 1.6)” says both that the fall is unlikely to be chance and how large it might be. In relative terms September converted at 62% of August’s rate, a fall of 38%.' },
 
     { h: 'The chi-square distribution' },
     { p: 'A chi-square distribution with k degrees of freedom is the distribution of the sum of the squares of k independent standard normal variables. It is never negative and it is skewed to the right; its mean equals its degrees of freedom and its standard deviation is √(2k). As the degrees of freedom grow, it moves right, spreads out and becomes more symmetric.' },
     { figure: {
       svg: shapesFigure(),
       caption: 'Chi-square distributions with 1, 4 and 10 degrees of freedom. Each is right-skewed and starts at 0; the mean equals the degrees of freedom, so the curves move right and spread out as the degrees of freedom grow.',
-      alt: 'Three curves over a horizontal axis from 0 to 25. The curve for 1 degree of freedom starts very high near 0 and falls steeply. The curve for 4 degrees of freedom rises from 0 to a peak near 2 and has a long right tail. The curve for 10 degrees of freedom is lower, wider and nearly symmetric, peaking near 8. Short ticks on the axis at 4 and 10 mark the means of the second and third curves, and a note says the mean equals the degrees of freedom.',
+      alt: 'Three curves over a horizontal axis from 0 to 25. The curve for 1 degree of freedom starts very high near 0 and falls steeply. The curve for 4 degrees of freedom rises from 0 to a peak near 2 and has a long right tail. The curve for 10 degrees of freedom is lower, wider and less skewed, peaking near 8. Short ticks on the axis at 4 and 10 mark the means of the second and third curves, and a note says the mean equals the degrees of freedom.',
     } },
     { p: String.raw`Why does the χ² statistic follow it? When counts are large, each standardised gap <m>(O - E) \div \sqrt{E}</m> behaves roughly like a standard normal value, so their squares add up like a chi-square variable. The gaps are not all free, though: they must add to 0, because the observed and expected counts share a total, and every quantity estimated from the data adds another constraint. Each constraint removes one degree of freedom. The approximation is poor when expected counts are small, which is where the rule of at least 5 comes from.` },
     { p: 'Excel’s functions: <x>=CHISQ.DIST.RT(x,deg_freedom)</x> returns the right-tail probability P(χ² &gt; x), the p-value of a chi-square test; Microsoft’s example, <x>=CHISQ.DIST.RT(18.307,10)</x>, returns 0.0500006. <x>=CHISQ.INV.RT(probability,deg_freedom)</x> goes the other way and returns the <g>critical value</g>: <x>=CHISQ.INV.RT(0.05,6)</x> ≈ 12.59 for the weekday test. <x>=CHISQ.DIST(x,deg_freedom,TRUE)</x> returns the left-tail probability, the wrong one for a p-value. Both right-tail functions truncate a deg_freedom that isn’t a whole number.' },
@@ -187,12 +191,12 @@ export default {
       String.raw`Calculate χ² and its degrees of freedom, <m>k - 1 - m</m>, where m is the number of the model’s parameters estimated from the same data.`,
       'Find the right-tail p-value with CHISQ.DIST.RT, and state the conclusion in context.',
     ] },
-    { p: 'The rule of 5 is a convention. OpenStax states it, and Microsoft’s CHISQ.TEST page says that some statisticians suggest it; NIST’s e-Handbook asks only for a sufficient sample size and warns that the result depends on how the data are binned. A χ² far below its degrees of freedom is unusual too, since data that fit a model too well may have been tidied, which is why OpenStax calls the goodness-of-fit test “almost always right-tailed”.' },
+    { p: 'The rule of 5 is a convention. OpenStax states it, and Microsoft’s CHISQ.TEST page says that some statisticians suggest it; NIST’s e-Handbook asks only for a sufficient sample size and warns that the result depends on how the data are binned. OpenStax calls the goodness-of-fit test “almost always right-tailed”: large values of χ² are the evidence against the model. The rare exception is a χ² far below its degrees of freedom, which can mean data that fit too well, for example because they were tidied.' },
     { p: 'Estimated parameters cost degrees of freedom. To test whether orders per day follow a Poisson distribution, Ana must estimate λ from the same 122 days, and a model fitted to the data matches them better than a model fixed in advance. To allow for that, the statistic is compared with a chi-square distribution with one degree of freedom fewer. NIST’s handbook gives the general rule: k − c degrees of freedom, where c is the number of estimated parameters plus 1.' },
     { p: 'In Excel, <x>=CHISQ.TEST(actual_range,expected_range)</x> returns the p-value directly from two ranges of the same size. For a single column of k categories it uses k − 1 degrees of freedom, which is right only when no parameter was estimated. Otherwise calculate χ² yourself, for example <x>=SUMPRODUCT((B2:B7-D2:D7)^2/D2:D7)</x> with the observed counts in B and the expected counts in D, and take <x>=CHISQ.DIST.RT</x> with the correct degrees of freedom.' },
 
     { h: 'The test of independence' },
-    { p: String.raw`For a table with r rows and c columns, the null hypothesis is that the row variable and the column variable are independent, and the alternative is that they are associated. Independence means <m>P(\text{row } i \text{ and column } j) = P(\text{row } i) \times P(\text{column } j)</m>, as in <i>Probability</i>. Estimating each probability by its share of the grand total n and multiplying by n gives the expected count <m>E_{ij} = R_i C_j \div n</m>: the row total times the column total over the grand total.` },
+    { p: String.raw`For a table with r rows and c columns, the null hypothesis is that the row variable and the column variable are independent, and the alternative is that they are associated. Independence means P(row i and column j) = P(row i) × P(column j), as in <i>Probability</i>. Estimating each probability by its share of the grand total n and multiplying by n gives the expected count <m>E_{ij} = R_i C_j \div n</m>: the row total times the column total over the grand total.` },
     { p: String.raw`The degrees of freedom are <m>(r - 1)(c - 1)</m>: with the row and column totals fixed, once <m>(r - 1)(c - 1)</m> cells are filled in, the rest are determined. Lantern’s five regions by subscription status, a 5 × 2 table, have 4. The conditions:` },
     { list: [
       'The table counts individuals (orders, customers, bookings), each in exactly one cell. Percentages and averages can’t go into a chi-square test.',
@@ -235,7 +239,7 @@ export default {
     { id: 'pc-independence', name: 'Test of independence: expected counts and degrees of freedom',
       tex: String.raw`E_{ij} = \dfrac{R_i \, C_j}{n}, \qquad \text{df} = (r - 1)(c - 1)`,
       where: [[String.raw`R_i`, 'Total of row i', 'count'], [String.raw`C_j`, 'Total of column j', 'count'], [String.raw`n`, 'Grand total', 'count'], [String.raw`r, c`, 'Numbers of rows and columns', ''], [String.raw`E_{ij}`, 'Expected count in row i, column j, if the variables are independent', 'count']],
-      note: 'In Excel: =$D2*B$4/$D$4 filled across the expected table, then CHISQ.TEST(observed, expected).' },
+      note: 'In Excel: <x>=$D2*B$4/$D$4</x> filled across the expected table, then <x>=CHISQ.TEST(observed,expected)</x>.' },
     { id: 'pc-cramers-v', name: 'Cramér’s V',
       tex: String.raw`V = \sqrt{\dfrac{\chi^2}{n \times \min(r - 1,\; c - 1)}}`,
       where: [[String.raw`\chi^2`, 'Chi-square statistic of the test of independence', ''], [String.raw`n`, 'Grand total', 'count'], [String.raw`r, c`, 'Numbers of rows and columns', ''], [String.raw`V`, 'Strength of association, from 0 (none) to 1 (complete)', '']],
@@ -244,9 +248,9 @@ export default {
 
   examples: [
     { level: 'simple', title: 'Does Saturday’s bread fit the plan?', fictional: true,
-      setup: 'Clearwater Bakery plans its Saturday bake on a mix of 40% sourdough, 30% white, 20% rye and 10% spelt. Last Saturday it sold 200 loaves: 92 sourdough, 54 white, 38 rye and 16 spelt. Do the sales fit the planned mix, at the 5% level?',
+      setup: 'Millstone Bakery plans its Saturday bake on a mix of 40% sourdough, 30% white, 20% rye and 10% spelt. Last Saturday it sold 200 loaves: 92 sourdough, 54 white, 38 rye and 16 spelt. Do the sales fit the planned mix, at the 5% level?',
       table: {
-        caption: 'Clearwater Bakery’s Saturday sales against its planned mix',
+        caption: 'Millstone Bakery’s Saturday sales against its planned mix',
         head: ['Loaf', 'Planned share', 'Sold (O)', 'Expected (E)', '(O − E)² ÷ E'],
         align: ['l', 'r', 'r', 'r', 'r'],
         rows: ['Sourdough', 'White', 'Rye', 'Spelt'].map((n, i) => [n, `${Math.round(BAKE_P[i] * 100)}%`, String(BAKE_O[i]), String(BK.expected[i]), fx(BK.contrib[i], 1)]),
@@ -290,7 +294,7 @@ export default {
         'The categories must cover every possible count, so the last one is “5 or more”, not “5”: its probability is <x>=1-POISSON.DIST(4,231/122,TRUE)</x> ≈ 0.0436, and its expected count 122 × 0.0436 ≈ 5.31. Splitting it into “5” (3.73 expected) and “6 or more” (1.59) would leave two expected counts below 5, so they stay merged.',
         'The other expected counts are 122 × <x>=POISSON.DIST(k,231/122,FALSE)</x> for k = 0 to 4: 18.37, 34.78, 32.92, 20.78 and 9.84. All six expected counts are at least 5.',
         String.raw`<m>\chi^2 \approx 0.007 + 0.001 + 0.000 + 0.372 + 1.762 + 0.325 \approx 2.47</m>. The largest contribution is the 14 days with four orders, where 9.84 were expected.`,
-        'Degrees of freedom: 6 categories − 1 − 1 estimated parameter (λ) = 4, and <x>=CHISQ.DIST.RT(2.47,4)</x> ≈ 0.65. With the days in B2:B7 and the expected counts in D2:D7, <x>=CHISQ.TEST(B2:B7,D2:D7)</x> would use 5 degrees of freedom and report 0.78, too high, because it can’t know that λ came from the same data.',
+        'Degrees of freedom: 6 categories − 1 − 1 estimated parameter (λ) = 4, and <x>=CHISQ.DIST.RT(2.47,4)</x> ≈ 0.65. With the days in B2:B7 and the expected counts in D2:D7, <x>=CHISQ.TEST(B2:B7,D2:D7)</x> would use 5 degrees of freedom and report 0.78, because it can’t know that λ came from the same data. Strictly, because λ was estimated from the ungrouped daily counts rather than from this grouped table, the exact p-value lies between the 4-df and 5-df values (0.65 and 0.78); the conclusion is the same either way.',
       ],
       answer: 'χ² ≈ 2.47 with 4 degrees of freedom, p ≈ 0.65: no evidence against a Poisson model for orders per day.',
       interpretation: 'The Poisson model is a reasonable working description of spring demand, so Ana can use it for planning, for example the 4% chance of a day with five or more orders. A good fit doesn’t prove the model: with 122 days the test can detect only fairly large departures. And the rate itself changed after the July relaunch, when the shop took between 8 and 19 orders a day, so a model fitted to the spring says nothing about the autumn.' },
@@ -331,7 +335,7 @@ export default {
   summary: [
     'The two-proportion z test compares two rates: z = (p̂₁ − p̂₂) ÷ √(p̄(1 − p̄)(1/n₁ + 1/n₂)), with the pooled proportion p̄. The interval for p₁ − p₂ uses the unpooled standard error.',
     'Conditions for both: independent samples or trials, and at least 10 successes and 10 failures in each sample.',
-    'χ² = Σ(O − E)² ÷ E compares observed with expected counts; under the null hypothesis it follows a chi-square distribution, right-skewed with mean equal to its degrees of freedom. The p-value is always the right tail: CHISQ.DIST.RT.',
+    'χ² = Σ(O − E)² ÷ E compares observed with expected counts; under the null hypothesis it follows a chi-square distribution, right-skewed with mean equal to its degrees of freedom. The p-value is, almost always, the right tail: CHISQ.DIST.RT.',
     'Goodness of fit: E = n × p from the model, df = k − 1 − m (m parameters estimated from the data). Merge categories until every expected count is at least 5.',
     'Independence: E = row total × column total ÷ n, df = (r − 1)(c − 1). CHISQ.TEST(observed, expected) returns the p-value; it needs expected counts, not proportions, and it can’t allow for estimated parameters.',
     'For a 2 × 2 table χ² = z²: the chi-square test is the two-sided two-proportion test.',
@@ -370,8 +374,10 @@ export default {
     { what: 'Fall as a proportion', value: CT.diff, shown: 0.01114, tol: 0.000005 },
     { what: 'Pooled successes', value: CONVERSION.aug.orders + CONVERSION.sep.orders, shown: 382 },
     { what: 'Pooled trials', value: CONVERSION.aug.visits + CONVERSION.sep.visits, shown: 16500 },
-    { what: 'Pooled proportion', value: CT.pool, shown: 0.02315, tol: 0.000005 },
-    { what: '1 − pooled', value: 1 - CT.pool, shown: 0.97685, tol: 0.000005 },
+    { what: 'Pooled proportion', value: CT.pool, shown: 0.023152, tol: 0.0000005 },
+    { what: 'p̄(1 − p̄)', value: CT.pool * (1 - CT.pool), shown: 0.02262, tol: 0.000005 },
+    { what: '1/7,700 + 1/8,800', value: 1 / 7700 + 1 / 8800, shown: 0.0002435, tol: 0.00000005 },
+    { what: 'SE from the rounded pieces', value: Math.sqrt(0.02262 * 0.0002435), shown: 0.002347, tol: 0.0000005 },
     { what: 'Pooled proportion %', value: CT.pool * 100, shown: 2.3, tol: 0.05 },
     { what: 'Pooled SE', value: CT.sePool, shown: 0.002347, tol: 0.0000005 },
     { what: 'Pooled SE in points', value: CT.sePool * 100, shown: 0.2347, tol: 0.00005 },

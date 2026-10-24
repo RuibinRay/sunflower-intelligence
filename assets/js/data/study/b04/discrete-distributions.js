@@ -73,7 +73,7 @@ export default {
   slug: 'discrete-distributions',
   title: 'Discrete distributions',
   blurb: 'Many business questions are about counts: subscriptions among the next orders, orders on a day, boxes sold at a market. Learn to describe a count with a probability distribution, its expected value and its standard deviation, to recognise the binomial and Poisson distributions and check their conditions, and to calculate their probabilities by hand and with BINOM.DIST and POISSON.DIST.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Describe a discrete random variable with a probability distribution, and calculate its expected value, variance and standard deviation.',
     'Identify when a count follows a binomial distribution, and calculate binomial probabilities, the mean np and the standard deviation √(np(1 − p)) by hand and with BINOM.DIST and BINOM.DIST.RANGE.',
@@ -263,7 +263,7 @@ export default {
 
   glossary: [
     { term: 'Random variable', def: 'A number determined by the outcome of an experiment, such as the number of orders on a day. It is discrete if it takes separate values (usually counts) and continuous if it can take any value in a range.' },
-    { term: 'Probability distribution', def: 'A list or formula giving every value a random variable can take and its probability (for a discrete variable), with the probabilities adding to 1.' },
+    { term: 'Probability distribution', def: 'For a discrete random variable, a list or formula giving every value it can take and its probability, with the probabilities adding to 1; for a continuous variable, a density curve whose area over a range is the probability of that range.' },
     { term: 'Binomial distribution', def: 'The distribution of the number of successes in n independent trials, each with the same probability p of success; its mean is np and its standard deviation √(np(1 − p)).' },
     { term: 'Poisson distribution', def: 'The distribution of the number of events in a fixed interval when events occur independently at a constant average rate λ; its mean and variance both equal λ.' },
     { term: 'Exponential distribution', def: 'A continuous distribution of the time between events in a Poisson process with rate λ; its mean is 1/λ and P(T ≤ t) = 1 − e^(−λt).' },

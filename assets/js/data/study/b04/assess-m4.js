@@ -53,7 +53,7 @@ export const items = [
   {
     id: 'b04-m4-1', lesson: 'proportions-and-chi-square', type: 'num', kind: 'numerical',
     prompt: 'Plover Car Share (fictional) finds that 48 of 400 bookings by members under 25 ended with a damage report, against 66 of 900 bookings by members aged 25 and over. Calculate the two-proportion z statistic for under-25s minus older members, as used to test H₀: p₁ = p₂. Give two decimal places.',
-    answer: Math.round(LATE.z * 100) / 100, check: () => { const p = (48 + 66) / 1300; return (48 / 400 - 66 / 900) / Math.sqrt(p * (1 - p) * (1 / 400 + 1 / 900)); }, unit: '', places: 2, tol: 0.01,
+    answer: Math.round(LATE.z * 100) / 100, check: () => { const p = (48 + 66) / 1300; return (48 / 400 - 66 / 900) / Math.sqrt(p * (1 - p) * (1 / 400 + 1 / 900)); }, unit: '', places: 2, tol: 0.02,
     wrong: [
       { value: Math.round((LATE.diff / LATE.se) * 100) / 100, say: 'That uses the unpooled standard error, the one for a confidence interval. The test assumes p₁ = p₂, so it pools: p̄ = 114 ÷ 1,300.' },
       { value: Math.round((LATE.diff / Math.sqrt((LATE.pool * (1 - LATE.pool)) / 1300)) * 100) / 100, say: 'That standard error treats the 1,300 bookings as one sample. The difference between two samples needs 1/n₁ + 1/n₂.' },
@@ -75,7 +75,7 @@ export const items = [
   },
   {
     id: 'b04-m4-3', lesson: 'proportions-and-chi-square', type: 'mc', kind: 'conceptual',
-    prompt: 'A survey cross-tabulates customers’ preferred contact method (four methods) against age band (three bands). One cell’s expected count is 2.6; every other expected count is above 8. What is the best response?',
+    prompt: 'A survey cross-tabulates customers’ preferred contact method (four methods) against age band (three bands). Three cells’ expected counts are 3.1, 2.6 and 0.8; every other expected count is above 8. What is the best response?',
     options: [
       'Merge that category with a neighbouring one that makes sense, or collect more data, and then test.',
       'Delete the row that contains the small cell and run the test of independence on the rest of the table.',
@@ -88,7 +88,7 @@ export const items = [
       2: 'A chi-square test needs counts. Percentages change the scale of χ² and make the test meaningless.',
       3: 'CHISQ.TEST doesn’t check the expected counts; it returns a p-value whose chi-square approximation may be poor.',
     },
-    solution: 'The chi-square approximation needs every expected count to be at least about 5. Merge the sparse category with a similar one (two age bands, say, or two contact methods) or collect more responses, then rerun the test on counts. Excel won’t warn you.',
+    solution: 'The chi-square approximation needs the expected counts to be large: three of the 12 cells are below 5 and one is below 1, so even the looser rule some texts allow (no more than a fifth of cells below 5, none below 1) fails. Merge the sparse category with a similar one (two age bands, say, or two contact methods) or collect more responses, then rerun the test on counts. Excel won’t warn you.',
   },
   {
     id: 'b04-m4-4', lesson: 'proportions-and-chi-square', type: 'formula', kind: 'applied',
@@ -177,20 +177,20 @@ export const items = [
   },
   {
     id: 'b04-m4-10', lesson: 'anova', type: 'mc', kind: 'applied',
-    prompt: 'An analyst (fictional) compares mean repair time across four service centres. The groups have 30, 28, 9 and 31 repairs; their standard deviations are 2.1, 2.4, 6.3 and 2.2 hours; the small group is right-skewed. What should the analyst do?',
+    prompt: 'An analyst (fictional) compares mean repair time across four service centres. Anova: Single Factor gives F = 3.12 on 3 and 93 df, P-value 0.03. Its SUMMARY shows Counts of 30, 28, 8 and 31 and Variances of 4.4, 5.8, 39.7 and 4.8 (hours squared). Welch’s ANOVA on the same data gives p = 0.2. Which result should the analyst report, and why?',
     options: [
-      'Report the ANOVA with Welch’s ANOVA (and perhaps Kruskal–Wallis), noting the unequal spread.',
-      'Drop the centre with the large standard deviation and rerun the ANOVA on the other three centres.',
-      'Run t tests on all six pairs of centres instead, since unequal-variance t tests avoid the problem.',
-      'Use the ANOVA as it stands: the ToolPak would have warned if the spreads were too unequal for it.',
+      'Welch’s p of 0.2: the smallest centre has by far the largest variance, which makes the ordinary F find differences too often.',
+      'The ordinary p of 0.03, because Anova: Single Factor is the standard method and Welch’s ANOVA is only an approximation of it.',
+      'Whichever p is the smaller, since a test that detects a difference is more powerful than a test that fails to detect one.',
+      'Neither: with variances this unequal no test can compare the means, so the analyst should only describe the four centres.',
     ],
     answer: 0,
     feedback: {
-      1: 'Dropping a group because it is awkward removes real data and changes the question.',
-      2: 'Six unadjusted tests raise the family-wise error rate. Welch’s ANOVA handles unequal variances in one test.',
-      3: 'The ToolPak doesn’t check conditions; it prints F and a p-value whatever the data.',
+      1: 'The ordinary F assumes equal variances. Here they run from 4.4 to 39.7, and the largest belongs to the smallest group, the case in which the ordinary F raises false alarms. Welch’s ANOVA is built for unequal variances.',
+      2: 'Picking whichever p-value looks better after running both is p-hacking. Choose the test the data’s conditions call for, ideally before seeing the results.',
+      3: 'Welch’s ANOVA compares means without assuming equal variances; that is what it is for.',
     },
-    solution: 'The largest SD is three times the smallest (6.3 ÷ 2.1), beyond the rule of thumb of about 2, and it sits in a small, skewed group. Run Welch’s ANOVA, which doesn’t assume equal variances, and a Kruskal–Wallis test as a check on the skew; report whether they agree with the ordinary F, and follow up with adjusted comparisons.',
+    solution: 'The variances differ ninefold (39.7 ÷ 4.4; the SDs about 6.3 against 2.1 hours), far beyond the rule of thumb, and the largest variance belongs to the smallest centre (8 repairs). That pairing makes the ordinary F liberal: it finds differences too often. Report Welch’s p = 0.2, no evidence that mean repair times differ, and say why the ordinary F = 3.12 (p = 0.03) was set aside.',
   },
   {
     id: 'b04-m4-11', lesson: 'anova', type: 'classify', kind: 'conceptual',

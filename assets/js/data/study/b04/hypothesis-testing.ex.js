@@ -36,9 +36,9 @@ const demoSheet = {
     D15: '95% interval, upper', E15: '=E4+CONFIDENCE.T(0.05,E5,E3)',
   },
 };
-const labelSheet = (extra = {}) => ({ cells: { ...bags, D1: 'μ₀ (g)', E1: K.label, D2: 'n', E2: '=COUNT(B2:B41)', D3: 't', D4: 'p-value (H₁: μ > μ₀)', ...extra }, vary: { E1: [999, 1001, 1002] } });
+const labelSheet = (extra = {}) => ({ cells: { ...bags, D1: 'μ₀ (g)', E1: K.label, D2: 'n', E2: '=COUNT(B2:B41)', D3: 't', D4: 'p-value (H₁: μ > μ₀)', ...extra }, vary: { E1: [999, 1001, 1002] }, fixed: ['B2:B41'] });
 const T_FORMULA = '=(AVERAGE(B2:B41)-E1)/(STDEV.S(B2:B41)/SQRT(E2))';
-const zSheet = { cells: { ...bags, D1: 'μ₀ (g)', E1: K.setting, D2: 'σ (g)', E2: K.sd, D3: 'p-value (H₁: μ < μ₀)' }, vary: { E1: [1003, 1003.5, 1004.5], E2: [2.5, 3.5] } };
+const zSheet = { cells: { ...bags, D1: 'μ₀ (g)', E1: K.setting, D2: 'σ (g)', E2: K.sd, D3: 'p-value (H₁: μ < μ₀)' }, vary: { E1: [1003, 1003.5, 1004.5], E2: [2.5, 3.5] }, fixed: ['B2:B41'] };
 const SU = I.tTest1(SETUP_MINUTES, 40);
 const setupSheet = {
   cells: {
@@ -54,15 +54,17 @@ const kinSheet = { cells: { A1: 'Letters sent', B1: KIN.letters, A2: 'Donations'
 // Dalton Foods (fictional): 30 cereal boxes labelled 500 g
 const BOXES = [492.8, 496.1, 500.4, 499.4, 499.8, 499.6, 496.3, 492.6, 495.6, 505.9, 502.4, 502.7, 499.4, 497.6, 498.3, 499.1, 504.9, 498.2, 502, 495, 503.7, 498.8, 498.3, 501.5, 495.2, 498.8, 496.4, 498.2, 502.5, 495.3];
 const BX = I.tTest1(BOXES, 500, { alternative: 'less' });
-const boxSheet = { cells: { A1: 'Box', B1: 'Weight (g)', ...col('A', 2, BOXES.map((_, i) => i + 1)), ...col('B', 2, BOXES), D1: 'μ₀ (g)', E1: 500, D2: 'p-value (H₁: μ < μ₀)' }, vary: { E1: [499, 499.5, 501] } };
+const boxSheet = { cells: { A1: 'Box', B1: 'Weight (g)', ...col('A', 2, BOXES.map((_, i) => i + 1)), ...col('B', 2, BOXES), D1: 'μ₀ (g)', E1: 500, D2: 'p-value (H₁: μ < μ₀)' }, vary: { E1: [499, 499.5, 501] }, fixed: ['B2:B31'] };
 // Dalton's planning figures for the power item
 const PL = { delta: 1.5, sigma: 3.3, n: 30, alpha: 0.05 };
 const plPower = I.powerMean({ delta: PL.delta, sigma: PL.sigma, n: PL.n, alpha: PL.alpha, alternative: 'greater' });
 const powerSheet = { cells: { A1: 'True shortfall δ (g)', B1: PL.delta, A2: 'σ (g)', B2: PL.sigma, A3: 'n (boxes)', B3: PL.n, A4: 'α (one-sided)', B4: PL.alpha, A6: 'Power' } };
-// October (B01): the month of the payment-page fix
-const OCT = I.propTest1(SHOP.webOrders[3], SHOP.webVisits[3], TARGETS.conversion / 100, { alternative: 'less' });
-const octPhat = SHOP.webOrders[3] / SHOP.webVisits[3];
-const octWrongSE = (octPhat - 0.03) / Math.sqrt((octPhat * (1 - octPhat)) / SHOP.webVisits[3]);
+// December (B01): the share of orders from returning customers against Ana's 35% target
+const DEC = 5, decOrders = SHOP.webOrders[DEC] + SHOP.appOrders[DEC], decReturning = decOrders - SHOP.newCustomers[DEC], p35 = TARGETS.returningShare / 100;
+const RET = I.propTest1(decReturning, decOrders, p35, { alternative: 'less' });
+const retWrongSE = (RET.p - p35) / Math.sqrt((RET.p * (1 - RET.p)) / decOrders);
+const retWrongNew = (SHOP.newCustomers[DEC] / decOrders - p35) / RET.se0;
+const returningByMonth = SHOP.webOrders.map((w, i) => w + SHOP.appOrders[i] - SHOP.newCustomers[i]);
 const r2 = (x) => Math.round(x * 100) / 100;
 
 export const widgets = {
@@ -94,7 +96,7 @@ export const widgets = {
     sigma: K.sd, delta: -1, n: KG.n, alpha: 0.05, alternative: 'less', null: K.setting, units: 'g',
     vary: ['n', 'delta', 'sigma', 'alpha', 'alternative'],
     xLabel: 'Mean weight of the sample (g)',
-    note: 'The left curve is centred on the true mean (here 1,003 g), the right one on the null value, 1,004 g. Power is the share of the true curve beyond the critical value. Try n = 56 (80% power), δ = −0.5 (a half-gram underfill), and α = 0.01; then switch the alternative to “Greater”: a test looking the wrong way has almost no power.',
+    note: 'The left curve is centred on the true mean (here 1,003 g), the right one on the null value, 1,004 g. Power is the share of the true curve beyond the critical value. Try n = 56 (80% power), δ = −0.5 (a half-gram underfill), and α = 0.01; then switch the alternative to “Greater”: a test looking the wrong way almost never rejects H₀, and no sample size helps.',
   },
 };
 
@@ -128,7 +130,7 @@ export const guided = [
         cell: 'E4', answer: '=T.DIST.RT(E3,E2-1)',
         alt: ['=1-T.DIST(E3,E2-1,TRUE)', '=T.DIST(-E3,E2-1,TRUE)'],
         view: 'A1:E41', maxHeight: '20rem',
-        formats: { B: '0.0', E3: '0.000', E4: '0.0000000000' }, widths: { D: 20, E: 14 },
+        formats: { B: '0.0', E3: '0.000', E4: '0.00E+00' }, widths: { D: 20 },
         wrong: [
           { formula: '=T.DIST(E3,E2-1,TRUE)', say: 'T.DIST with TRUE is the left tail, P(T ≤ t). The alternative μ > μ₀ points right: T.DIST.RT.' },
           { formula: '=T.DIST.2T(ABS(E3),E2-1)', say: 'That is the two-sided p-value, twice the one-sided one. The alternative here is one-sided (μ > μ₀).' },
@@ -195,18 +197,19 @@ export const guided = [
   },
   {
     id: 'b04-ht-g4', type: 'num', kind: 'numerical',
-    prompt: `In October, the month of the 5 October payment-page fix, the web shop took ${SHOP.webOrders[3]} orders from ${SHOP.webVisits[3].toLocaleString('en-US')} visits. Test H₀: p = 0.030 against H₁: p < 0.030. Calculate the z statistic, to two decimal places.`,
-    answer: r2(OCT.z), check: () => (SHOP.webOrders[3] / SHOP.webVisits[3] - 0.03) / Math.sqrt((0.03 * 0.97) / SHOP.webVisits[3]),
+    prompt: `One of Ana’s targets for the shop (B01) is that at least ${TARGETS.returningShare}% of orders come from returning customers. In December the shop took ${decOrders} orders, ${SHOP.newCustomers[DEC]} of them a new customer’s first order. Test H₀: p = 0.35 against H₁: p < 0.35, where p is the underlying share of orders from returning customers. Calculate the z statistic, to two decimal places.`,
+    answer: r2(RET.z), check: () => ((decOrders - SHOP.newCustomers[DEC]) / decOrders - 0.35) / Math.sqrt((0.35 * 0.65) / decOrders),
     unit: '', places: 2, tol: 0.01,
     wrong: [
-      { value: r2(octWrongSE), say: 'You built the standard error from p̂. A test works under H₀, so the standard error uses p₀: √(0.03 × 0.97 ÷ 8,300).' },
-      { value: r2((octPhat - 0.03) * 100), say: 'That is the gap in percentage points. Divide the gap in proportions by its standard error to get z.' },
+      { value: r2(retWrongSE), say: 'You built the standard error from p̂. A test works under H₀, so the standard error uses p₀: √(0.35 × 0.65 ÷ 583).' },
+      { value: r2(retWrongNew), say: 'That uses the share of first orders. Returning orders are the rest: 583 − 414 = 169.' },
+      { value: r2((RET.p - p35) * 100), say: 'That is the gap in percentage points. Divide the gap in proportions by its standard error to get z.' },
     ],
     hints: [
-      'p̂ = 222 ÷ 8,300. The standard error under H₀ is √(p₀(1 − p₀) ÷ n) with p₀ = 0.03.',
-      `z = (${fx(octPhat, 5)} − 0.03) ÷ ${fx(OCT.se0, 6)}.`,
+      'Returning orders are all orders except first orders: 583 − 414. The standard error under H₀ is √(p₀(1 − p₀) ÷ n) with p₀ = 0.35.',
+      `p̂ = 169 ÷ 583 = ${fx(RET.p, 4)}; z = (${fx(RET.p, 4)} − 0.35) ÷ ${fx(RET.se0, 6)}.`,
     ],
-    solution: `p̂ = 222 ÷ 8,300 = ${fx(octPhat, 5)}; SE = √(0.03 × 0.97 ÷ 8,300) = ${fx(OCT.se0, 6)}; z = (${fx(octPhat, 5)} − 0.030) ÷ ${fx(OCT.se0, 6)} ≈ ${neg(OCT.z)}. The p-value, <x>=NORM.S.DIST(${neg(OCT.z, 3).replace('−', '-')},TRUE)</x>, is ${fx(OCT.pValue, 3)}: below 0.05, so H₀ is rejected at 5%, but not at 1%. That is weak evidence, as the ASA’s sixth principle says of p-values near 0.05, and October includes four days before the fix, so Ana should look at November before concluding the fix fell short.`,
+    solution: `p̂ = ${decReturning} ÷ ${decOrders} = ${fx(RET.p, 4)}; SE = √(0.35 × 0.65 ÷ ${decOrders}) = ${fx(RET.se0, 6)}; z = (${fx(RET.p, 4)} − 0.35) ÷ ${fx(RET.se0, 6)} ≈ ${neg(RET.z)}. The p-value, <x>=NORM.S.DIST(${neg(RET.z, 3).replace('−', '-')},TRUE)</x>, is ${fx(RET.pValue, 4)}: strong evidence that December’s share was below 35%. The test doesn’t say the shortfall is bad news. December brought ${SHOP.newCustomers[DEC]} first-time buyers with the gift boxes, and its ${decReturning} returning orders were the most of any month since July (${Math.max(...returningByMonth.slice(0, DEC))} at most before), so the share fell because new customers flooded in. One customer can also place several orders, so orders are only roughly independent trials.`,
   },
 ];
 

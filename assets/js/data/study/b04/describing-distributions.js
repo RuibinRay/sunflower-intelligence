@@ -91,7 +91,7 @@ export default {
   slug: 'describing-distributions',
   title: 'Describing distributions',
   blurb: 'Before you infer anything from data, describe it exactly: its centre, its spread, where a value sits within it and its shape. Learn the notation that separates a population from a sample, why the sample variance divides by n − 1, what z-scores, percentile ranks and the coefficient of variation say, and when the empirical rule or only Chebyshev’s inequality applies.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish a population parameter (μ, σ, N) from a sample statistic (x̄, s, n), and explain why the sample variance divides by n − 1.',
     'Calculate the mean, median, trimmed mean, variance, standard deviation and coefficient of variation by hand and in Excel, and predict how adding a constant or changing units moves each of them.',
@@ -279,7 +279,7 @@ export default {
       steps: [
         `Look at shape first. Launches and breakfasts have medians close to their means (${usd(LS.median)} against ${usd(LS.mean)}; ${usd(ST.Breakfast.median)} against ${usd(ST.Breakfast.mean)}) and no outliers, so mean or median serves. Meetings, team days and conferences have means above their medians and high outliers.`,
         `Quote the median and the middle half (Q1 to Q3) for every type, so that the note uses one method throughout: for meetings, ${usd(MS.median)}, usually between ${usd(MS.q1)} and ${usd(MS.q3)}; for team days, ${usd(TD.median)}, between ${usd(TD.q1)} and ${usd(TD.q3)}; for launches, ${usd(LS.median)}, between ${usd(LS.q1)} and ${usd(LS.q3)}.`,
-        `Measure how tight each guide is with a spread that ignores the outliers the guide leaves out: the IQR as a share of the median. ${byIqr.map((t) => `${PLURAL[t]} ${pc(ST[t].iqr / ST[t].median)}`).join(', ')}. The CV answers a different question, since the outliers inflate it: where a quote far outside the range is most likely. Meetings (${pc(MS.cv)}, one event in 28 at ${usd(MS.max)}) and team days (${pc(TD.cv)}) lead on that measure.`,
+        `Measure how tight each guide is with a spread that ignores the outliers the guide leaves out: the IQR as a share of the median: ${byIqr.map((t) => `${PLURAL[t]} ${pc(ST[t].iqr / ST[t].median)}`).join(', ')}. The CV answers a different question, since the outliers inflate it: where a quote far outside the range is most likely. Meetings (${pc(MS.cv)}, one event in 28 at ${usd(MS.max)}) and team days (${pc(TD.cv)}) lead on that measure.`,
         `Add the cause as a caution: small events cost more per guest because of the fixed set-up charge and minimum. No meeting had fewer than ${minMeetingGuests} guests; under the $${QUOTE.minimum} minimum invoice a 20-guest meeting would pay at least ${usd(QUOTE.minimum / 20)} per guest, far above the quoted range.`,
       ],
       answer: `Quote the median and Q1–Q3 for each type (meetings ${usd(MS.median)}, ${usd(MS.q1)}–${usd(MS.q3)}). Launches and conferences have the tightest ranges; breakfasts the widest typical range (IQR ${pc(ST.Breakfast.iqr / ST.Breakfast.median)} of the median); meetings and team days the most extreme exceptions, all from small events.`,

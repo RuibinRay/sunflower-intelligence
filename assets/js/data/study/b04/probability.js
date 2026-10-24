@@ -66,7 +66,7 @@ export default {
   slug: 'probability',
   title: 'Probability',
   blurb: 'Probability is the language every test and interval in this course is written in. Learn to read joint, marginal and conditional probabilities from a contingency table, to use the addition and multiplication rules, to check whether two events are independent, to draw a tree diagram, and to turn a screen’s accuracy into the probability that a flagged case is real with Bayes’ rule.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Define an experiment, its sample space and its events, and distinguish classical, relative-frequency and subjective probability.',
     'Calculate joint, marginal and conditional probabilities from a contingency table, and the probability of a complement, a union and an intersection.',

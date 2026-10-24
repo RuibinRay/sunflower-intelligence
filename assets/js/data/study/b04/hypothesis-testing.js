@@ -1,9 +1,10 @@
 // hypothesis-testing.js — B04 · Hypothesis testing. Content only; exercises are in hypothesis-testing.ex.js. Uses
 // Kilnworth's 1 kg bags (KG_BAGS, KILNWORTH_1KG; DERIVED.kg) for the z and t tests, power and the link with intervals,
-// and B01's web conversion (CONVERSION, SHOP; DERIVED.conversion.sepVsTarget) for the one-proportion test. Oakhaven
-// Hotel is fictional. The two-proportion test of August against September is module 4's (proportions-and-chi-square).
+// and B01's shop conversion, web and app together (CONVERSION.shop; DERIVED.conversion.sepVsTarget, octVsTarget), for
+// the one-proportion test against the 3.0% target. Oakhaven Hotel is fictional. The two-proportion test of the website's
+// August against its September is module 4's (proportions-and-chi-square).
 // Every figure printed is recomputed in `checks`.
-import { KG_BAGS, KILNWORTH_1KG, CONVERSION, SHOP, DERIVED as D } from './case.js?v=12';
+import { KG_BAGS, KILNWORTH_1KG, CONVERSION, SHOP, TARGETS, DERIVED as D } from './case.js?v=12';
 import * as I from '../../../core/inference.js?v=12';
 import { mean, sd, median } from '../../../core/stats.js?v=12';
 
@@ -28,7 +29,7 @@ const bigZ = (1003.9 - K.setting) / (K.sd / Math.sqrt(4000));
 const underIfLight = I.normal.cdf(K.label, xbar, K.sd);
 
 // ---------------------------------------------------------------- conversion
-const SEP = D.conversion.sepVsTarget, AUG = I.propTest1(CONVERSION.aug.orders, CONVERSION.aug.visits, CONVERSION.target, { alternative: 'less' });
+const SEP = D.conversion.sepVsTarget, OCT = D.conversion.octVsTarget, SH = CONVERSION.shop;
 const se0 = (nn) => Math.sqrt((CONVERSION.target * (1 - CONVERSION.target)) / nn);
 
 // ---------------------------------------------------------------- Oakhaven Hotel (fictional)
@@ -119,7 +120,7 @@ export default {
     { p: 'The <g>p-value</g> is the probability, calculated assuming H₀ is true, of a test statistic at least as extreme as the one observed, in the direction the alternative points. Here it is the area under the t curve with 39 degrees of freedom to the left of −2.98: <x>=T.DIST(-2.976,39,TRUE)</x> returns 0.0025. If the machine really averaged 1,004 g, only about 1 sample of 40 bags in 400 would come out this light or lighter.' },
     { figure: {
       svg: tFigure(),
-      caption: 'The t distribution with 39 degrees of freedom: how the statistic would vary from sample to sample if the machine averaged 1,004 g. The lightly shaded lower tail beyond −1.685 holds 5% of the area, the rejection region at α = 0.05. Ana’s t = −2.98 lies inside it, and the darker area to its left, 0.0025, is the p-value.',
+      caption: 'The t distribution with 39 degrees of freedom: how the test statistic would vary from sample to sample if H₀ were true and the machine averaged 1,004 g. The lightly shaded lower tail beyond the critical value, −1.685, holds 5% of the area: the rejection region at α = 0.05. Ana’s t = −2.98 lies inside it, and the darker area to its left, 0.0025, is the p-value.',
       alt: 'A symmetric bell-shaped t curve over a horizontal axis marked from −3 to 3. A dashed vertical line at −1.685 is labelled critical value −1.685, and the region of the lower tail to its left is lightly shaded and labelled rejection region: 5% of the area. A solid vertical line further left at −2.98 is labelled Ana’s t = −2.98, and the small area to its left is shaded darker and labelled p = 0.0025. A note says the curve shows what t looks like if H₀ is true. The title reads: one-sided test of H₀: μ = 1,004 g against H₁: μ < 1,004 g.',
     } },
     { p: 'Small p-values are evidence against H₀. To decide, compare the p-value with the <g>significance level</g> α (alpha), the risk of rejecting a true null that you are prepared to run, chosen before seeing the data. The value 0.05 is a common convention, not a law. Ana chose α = 0.05; since 0.0025 ≤ 0.05 she rejects H₀: the data are evidence that the machine fills below its 1,004 g setting.' },
@@ -134,7 +135,7 @@ export default {
       'Decide: reject H₀ if p ≤ α; otherwise fail to reject it.',
       'Conclude in the context of the question, with the size of the effect and an interval, not only the word “significant”.',
     ] },
-    { p: 'For Ana’s bags, step 2 was done in the normal-distribution lesson: the 40 weights lie close to a normal curve, with no outliers, and each bag was weighed separately. All 40 were weighed in October, so the conclusion is about the machine as it ran then, not for ever.' },
+    { p: 'For Ana’s bags, the normal-distribution lesson checked the shape: the 40 weights lie close to a normal curve, with no outliers. Independence needs more thought. Bags filled one after another can be alike if the machine drifts, and all 40 came from October’s deliveries, so the test describes the machine as it ran then, not for ever. If neighbouring bags are alike, s ÷ √n also understates the real standard error and the p-value comes out too small.' },
     { p: 'Step 6 matters as much as the arithmetic. Ana’s conclusion reads: “The 40 bags averaged 1,002.75 g, 1.25 g below the 1,004 g setting (95% confidence interval 1,001.90 to 1,003.60 g). A one-sided t test gives p = 0.0025, so a shortfall this large is unlikely to be chance: the machine appears to be filling light.” It doesn’t say the machine is broken, why it drifted, or that every delivery will be light.' },
   ],
 
@@ -147,7 +148,7 @@ export default {
       rows: [
         ['Are Kilnworth’s bags filled below the 1,004 g setting?', String.raw`<m>\mu = 1{,}004</m> g`, String.raw`<m>\mu < 1{,}004</m> g`, 'One (lower tail)'],
         ['Is the average bag above the 1,000 g label?', String.raw`<m>\mu = 1{,}000</m> g`, String.raw`<m>\mu > 1{,}000</m> g`, 'One (upper tail)'],
-        ['Did September’s web conversion fall short of the 3.0% target?', String.raw`<m>p = 0.030</m>`, String.raw`<m>p < 0.030</m>`, 'One (lower tail)'],
+        ['Did the shop’s September conversion fall short of the 3.0% target?', String.raw`<m>p = 0.030</m>`, String.raw`<m>p < 0.030</m>`, 'One (lower tail)'],
         ['Has a hotel’s cleaning time per room changed from 30 minutes?', String.raw`<m>\mu = 30</m> min`, String.raw`<m>\mu \ne 30</m> min`, 'Two'],
       ],
     } },
@@ -156,7 +157,8 @@ export default {
 
     { h: 'The z test when σ is known' },
     { p: String.raw`If the population standard deviation <m>\sigma</m> (sigma) is known, the standard error is <m>\sigma \div \sqrt{n}</m> and the statistic follows the <g>standard normal distribution</g>: a <g>z test</g>. Kilnworth’s specification states <m>\sigma</m> = 3 g. Taking that at its word, <m>z = (1{,}002.75 - 1{,}004) \div (3 \div \sqrt{40}) = -1.25 \div 0.4743 \approx -2.64</m>, and the one-sided p-value is <x>=NORM.S.DIST(-2.635,TRUE)</x> = 0.0042, again below 0.05.` },
-    { p: 'A known σ is rare in business. Here it is Kilnworth’s claim, and if the machine has drifted its spread may have changed too; Ana’s own bags give s = 2.66 g. The <g>one-sample t test</g> uses s and pays for the estimate with the t distribution’s heavier tails, so it needs no claim about σ. Some textbooks, OpenStax’s among them, switch from t to z once n reaches 30, using s in place of σ. Software uses t at every n, and so does this course: at n = 40 the normal curve would give 0.0015 for Ana’s t of −2.98 instead of 0.0025, the same decision with slightly overstated certainty.' },
+    { p: 'The z test is less significant than the t test here because Kilnworth’s σ = 3 g is larger than Ana’s s = 2.66 g: its standard error is 0.474 g against 0.420 g, so the same 1.25 g shortfall is 2.64 standard errors rather than 2.98. A known σ is rare in business, and here it is only Kilnworth’s claim: if the machine has drifted, its spread may have changed too.' },
+    { p: 'The <g>one-sample t test</g> uses Ana’s s and pays for the estimate with the t distribution’s heavier tails, so it needs no claim about σ. Some textbooks, OpenStax’s among them, switch from t to z once n reaches 30, using s in place of σ. Software uses t at every n, and so does this course: at n = 40 the normal curve would give 0.0015 for Ana’s t of −2.98 instead of 0.0025, the same decision with slightly overstated certainty.' },
 
     { h: 'P-values and critical values in Excel' },
     { p: 'Excel has no function for a one-sample t test: T.TEST compares two samples, as the comparing-means lesson shows. Calculate t from AVERAGE, STDEV.S and COUNT, then take the p-value from the function that matches the alternative.' },
@@ -178,8 +180,8 @@ export default {
     { p: 'The p-value for her lower-tail alternative is <x>=1-Z.TEST(B2:B41,1004,3)</x> = 0.0042, the z test’s result above. For a two-sided test Microsoft gives <x>=2*MIN(Z.TEST(B2:B41,1004,3),1-Z.TEST(B2:B41,1004,3))</x>, here 0.0084. Leave out sigma and Z.TEST uses the sample standard deviation but still the normal distribution, so it is still a z test, not a t test.' },
 
     { h: 'Testing a proportion' },
-    { p: String.raw`The same logic tests a proportion against a stated value <m>p_0</m>. Under H₀ the sample proportion <m>\hat{p}</m> (“p-hat”) has standard error <m>\sqrt{p_0(1 - p_0) \div n}</m>, built from the null’s own value because the test asks how the data would behave if H₀ were true; a confidence interval uses <m>\hat{p}</m>, because it has no null value. The <g>one-proportion z test</g> statistic is <m>z = (\hat{p} - p_0) \div \sqrt{p_0(1 - p_0) \div n}</m>, compared with the standard normal. The normal model needs <m>np_0</m> and <m>n(1 - p_0)</m> both at least 10, a common rule of thumb (OpenStax uses more than 5), and independent trials.` },
-    { p: 'In September the web shop took 158 orders from 8,800 visits, a <g>conversion rate</g> of 1.80% against Ana’s 3.0% target. The applied example works the test: z ≈ −6.62, with a p-value of about 1.7 × 10⁻¹¹. Two cautions apply to any test on visits. Visits are not fully independent trials, because one person can visit several times; and the test only says the shortfall is too large to be chance, not what caused it. Comparing September with August directly needs a two-proportion test, which the proportions-and-chi-square lesson teaches.' },
+    { p: String.raw`The same logic tests a proportion against a stated value <m>p_0</m>. Under H₀ the sample proportion <m>\hat{p}</m> (“p-hat”) has standard error <m>\sqrt{p_0(1 - p_0) \div n}</m>, built from the null’s own value because the test asks how the data would behave if H₀ were true; a confidence interval uses <m>\hat{p}</m>, because it has no null value. The <g>one-proportion z test</g> statistic is <m>z = (\hat{p} - p_0) \div \sqrt{p_0(1 - p_0) \div n}</m>, compared with the standard normal. The normal model needs <m>np_0</m> and <m>n(1 - p_0)</m> both at least 10, a common rule of thumb (OpenStax’s version asks that “the sample proportion, p′, times the sample size is greater than 5” and that “1-p′ times the sample size is also greater than 5”), and independent trials.` },
+    { p: 'In September the shop, web and app together and the basis of B01’s target, took 251 orders from 11,400 visits: a <g>conversion rate</g> of 2.20% against Ana’s 3.0% target. The applied example works the test: z ≈ −5.00, with a p-value of about 2.9 × 10⁻⁷. Two cautions apply to any test on visits. Visits are not fully independent trials, because one person can visit several times; and the test only says the shortfall is too large to be chance, not what caused it. Comparing the website’s August with its September needs a two-proportion test, which the proportions-and-chi-square lesson teaches.' },
 
     { h: 'Two ways to be wrong' },
     { p: 'A test decides between two hypotheses from incomplete information, so it can go wrong in two ways. A <g>Type I error</g> rejects a true null: a false alarm. A <g>Type II error</g> fails to reject a false null: a missed effect. The significance level α is the probability of a Type I error when H₀ is true; β (beta) is the probability of a Type II error for a particular true value of the parameter.' },
@@ -214,7 +216,7 @@ export default {
     { p: 'A two-sided test at level α and a (1 − α) <g>confidence interval</g> are two views of one calculation: a two-sided t test at 5% rejects H₀: μ = μ₀ exactly when μ₀ lies outside the 95% t interval. Ana’s 95% interval for the mean fill is 1,001.90 to 1,003.60 g. Both 1,004 g and 1,000 g lie outside it, so two-sided tests reject both (p = 0.0050 and p &lt; 0.0001), while 1,003 g lies inside and would not be rejected.' },
     { figure: {
       svg: ciFigure(),
-      caption: 'Ana’s 95% confidence interval for the machine’s mean fill. A two-sided test at 5% rejects any hypothesised mean outside the interval, such as the 1,004 g setting and the 1,000 g label, and no value inside it, such as 1,003 g.',
+      caption: 'Ana’s 95% confidence interval for the mean fill, 1,001.90 to 1,003.60 g. A two-sided t test at 5% rejects any hypothesised mean outside the interval, such as the 1,004 g setting and the 1,000 g label, and no value inside it, such as 1,003 g.',
       alt: 'A horizontal axis from 1,000 g to 1,004 g. A thick bar runs from 1,001.90 to 1,003.60 g with a dot at the mean, 1,002.75 g, labelled 95% interval 1,001.90 to 1,003.60 g. Three vertical markers: at 1,000 g, labelled label 1,000 g, outside: rejected; at 1,003 g, a dashed marker labelled 1,003 g, inside: not rejected; and at 1,004 g, labelled setting 1,004 g, outside: rejected.',
     } },
     { p: 'The interval says more than the test. The machine’s mean is plausibly between 0.40 g and 2.10 g below its setting, which is the range Ana should keep in mind when she judges whether the shortfall matters. A one-sided test at 5% matches a one-sided 95% bound instead: here the mean is below 1,003.46 g with 95% confidence.' },
@@ -222,13 +224,13 @@ export default {
     { h: 'P-hacking and multiple testing' },
     { p: 'Every test at α = 0.05 has a 5% chance of a false alarm when H₀ is true. Run many tests and false alarms become likely: with 20 independent tests of true nulls, the chance of at least one p ≤ 0.05 is 1 − 0.95²⁰ ≈ 0.64, and one false positive is expected. This is the problem of <g>multiple testing</g>. Testing every metric on a dashboard each month, or every customer segment, will produce “significant” findings that are noise.' },
     { p: '<g>P-hacking</g> is the deliberate or careless version: trying analyses until one gives p below 0.05, and reporting that one. Its common forms are testing many outcomes or subgroups, adding data and retesting until the result crosses the line, dropping awkward values, and choosing one-sided after seeing the data. Each makes the reported p-value smaller than the real chance of a false alarm.' },
-    { p: 'In 2016 the American Statistical Association published a statement on p-values (Wasserstein and Lazar) with six principles. In paraphrase:' },
+    { p: 'In 2016 the American Statistical Association published a statement on p-values (Wasserstein and Lazar) with six principles. In paraphrase, except the fifth, which is quoted:' },
     { ol: [
       'A p-value can show how incompatible the data are with a stated statistical model, such as one in which H₀ is true.',
       'P-values do not measure the probability that the studied hypothesis is true, or the probability that the data arose by chance alone.',
       'Scientific conclusions and business or policy decisions should not rest only on whether a p-value passes a threshold such as 0.05.',
       'Proper inference requires full reporting and transparency: how many hypotheses were explored, which analyses were run and every p-value calculated, not only the significant ones.',
-      'Statistical significance is not the same as a large or important effect: a p-value says nothing about size.',
+      '“A p-value, or statistical significance, does not measure the size of an effect or the importance of a result.”',
       'By itself a p-value is not a good measure of evidence about a model or hypothesis: a p-value near 0.05 is only weak evidence against the null, and a large p-value is not evidence for it.',
     ] },
     { p: 'The defences are habits. Write down the question, the hypotheses, α and the analysis before looking at the results; report every test you ran; treat a surprising result from one of many tests as a lead to check with new data. When you must test several things at once, make each test stricter: the simplest adjustment, Bonferroni’s, tests each of k hypotheses at α ÷ k, and the anova lesson explains the family-wise error rate behind it.' },
@@ -271,7 +273,7 @@ export default {
 
   examples: [
     { level: 'simple', title: 'A two-sided t test: cleaning times at a hotel', fictional: true,
-      setup: 'Oakhaven Hotel allows 30 minutes to clean a room in its housekeeping rota. In a trial of a new cleaning trolley, a supervisor timed 12 rooms chosen at random over a week (minutes): 27, 32, 25, 29, 24, 31, 28, 34, 27, 25, 29 and 30, in B2:B13. Test at α = 0.05 whether the mean time with the new trolley differs from 30 minutes.',
+      setup: 'Oakhaven Hotel’s housekeeping rota allows 30 minutes to clean a room, the average with its old cleaning trolley. In a trial of a new cleaning trolley, a supervisor timed 12 rooms chosen at random over a week (minutes): 27, 32, 25, 29, 24, 31, 28, 34, 27, 25, 29 and 30, in B2:B13. Test at α = 0.05 whether the mean time with the new trolley differs from 30 minutes.',
       steps: [
         'Hypotheses, set before timing anything: H₀: μ = 30 minutes, H₁: μ ≠ 30 minutes. Two-sided, because a slower trolley would break the rota and a faster one would free staff; either would change the plan.',
         'Conditions: the rooms were chosen at random and timed separately, and the 12 times show no outlier and no strong skew (median 28.5, mean 28.42), so a t test is reasonable for this small sample.',
@@ -291,18 +293,18 @@ export default {
         'With the t test Ana will actually run, the NIST handbook’s one iteration, using t values with 55 degrees of freedom (from n = 56), gives n ≈ 57.2, so 58 bags: a little more than the normal approximation.',
       ],
       answer: 'Her 40 bags had about 68% power for a 1 g underfill. 80% power needs 56 bags one-sided (58 with the t iteration), 71 two-sided, and 223 to detect 0.5 g.',
-      interpretation: 'Power is planned from the smallest difference worth catching. A 1 g underfill matters to Ana because it roughly doubles the share of bags under the label, so she decides to weigh 60 bags next time. Detecting 0.5 g would mean weighing more than 200 bags a delivery, more effort than that difference is worth to her. A test too small to detect the difference that matters wastes the effort spent on it, so plan n before collecting.' },
+      interpretation: 'Power is planned from the smallest difference worth catching. A 1 g underfill matters to Ana because it raises the share of bags under the label from 9.1% to about 16%, so she decides to weigh 60 bags next time. Detecting 0.5 g would mean weighing more than 200 bags a delivery, more effort than that difference is worth to her. A test too small to detect the difference that matters wastes the effort spent on it, so plan n before collecting.' },
     { level: 'applied', title: 'Did September’s conversion really fall short?', fictional: true,
-      setup: 'B01’s figures for the web shop: in September, after the checkout redesign of 1 September, 158 orders from 8,800 visits (1.80%); in August, 224 orders from 7,700 visits (2.91%). Ana’s target is a 3.0% conversion rate. For each month, test at α = 0.05 whether the web conversion rate was below 3.0%, and say what the results do and don’t tell her.',
+      setup: 'B01’s figures for the whole shop, web and app together, which is the basis of Ana’s 3.0% conversion target. In September, the month after the website’s checkout redesign of 1 September, the shop took 251 orders from 11,400 visits (2.20%). In October, when a fix for a payment-page bug on mobile browsers was released on 5 October, it took 319 orders from 11,000 visits (2.90%). For each month, test at α = 0.05 whether the shop’s conversion rate was below 3.0%, and say what the results do and don’t tell her.',
       steps: [
         'Hypotheses (the same for both months): H₀: p = 0.030 and H₁: p &lt; 0.030, where p is the month’s underlying conversion rate per visit. One-sided, because Ana’s question is whether the month fell short.',
-        'Conditions: for September np₀ = 8,800 × 0.03 = 264 and n(1 − p₀) = 8,536, for August 231 and 7,469, all far above 10. Visits are treated as independent trials, which repeat visitors make only approximately true.',
-        String.raw`September: <m>\hat{p} = 158 \div 8{,}800 = 0.017955</m>; the standard error under H₀ is <m>\sqrt{0.03 \times 0.97 \div 8{,}800} = 0.0018185</m>; <m>z = (0.017955 - 0.030) \div 0.0018185 \approx -6.62</m>; p = <x>=NORM.S.DIST(-6.624,TRUE)</x> ≈ 1.7 × 10⁻¹¹.`,
-        String.raw`August: <m>\hat{p} = 224 \div 7{,}700 = 0.02909</m>; the standard error is <m>\sqrt{0.03 \times 0.97 \div 7{,}700} = 0.001944</m>; <m>z \approx -0.47</m>; p = <x>=NORM.S.DIST(-0.468,TRUE)</x> ≈ 0.32.`,
-        'Decisions: reject H₀ for September; fail to reject H₀ for August.',
+        'Conditions: for September np₀ = 11,400 × 0.03 = 342 and n(1 − p₀) = 11,058, for October 330 and 10,670, all far above 10. Visits are treated as independent trials, which repeat visitors make only approximately true.',
+        String.raw`September: <m>\hat{p} = 251 \div 11{,}400 = 0.022018</m>; the standard error under H₀ is <m>\sqrt{0.03 \times 0.97 \div 11{,}400} = 0.0015977</m>; <m>z = (0.022018 - 0.030) \div 0.0015977 \approx -5.00</m>; p = <x>=NORM.S.DIST(-4.996,TRUE)</x> ≈ 2.9 × 10⁻⁷.`,
+        String.raw`October: <m>\hat{p} = 319 \div 11{,}000 = 0.0290</m>; the standard error is <m>\sqrt{0.03 \times 0.97 \div 11{,}000} = 0.0016265</m>; <m>z = (0.0290 - 0.030) \div 0.0016265 \approx -0.61</m>; p = <x>=NORM.S.DIST(-0.615,TRUE)</x> ≈ 0.27.`,
+        'Decisions: reject H₀ for September; fail to reject H₀ for October.',
       ],
-      answer: 'September: z ≈ −6.62 and p ≈ 1.7 × 10⁻¹¹, strong evidence that the conversion rate was below 3.0%. August: z ≈ −0.47 and p ≈ 0.32, no evidence that it was below target.',
-      interpretation: 'August’s 2.91% is the kind of miss a month of 7,700 visits produces by chance even when the true rate is 3.0%, so it was no warning sign on its own. September’s fall is far too large for chance. The test doesn’t say why: the checkout redesign is the obvious suspect, but B01’s warning about <g>causation</g> applies, and the formal comparison of the two months is the two-proportion test in the proportions-and-chi-square lesson.' },
+      answer: 'September: z ≈ −5.00 and p ≈ 2.9 × 10⁻⁷, strong evidence that the shop’s conversion rate was below 3.0%. October: z ≈ −0.61 and p ≈ 0.27, no evidence that it was below target.',
+      interpretation: 'October’s 2.90% is the kind of miss a month of 11,000 visits produces by chance even when the true rate is 3.0%, so on its own it is no warning sign; the data are compatible with the shop being back on target after the fix. September’s fall is far too large for chance. The test doesn’t say why: the checkout redesign is the obvious suspect, but B01’s warning about <g>causation</g> applies, and the formal comparison of the website’s August and September is the two-proportion test in the proportions-and-chi-square lesson.' },
   ],
 
   demo: [
@@ -324,7 +326,7 @@ export default {
     { case: 'Ana writes to Kilnworth: “In October I weighed 40 of your 1 kg House Blend bags. They averaged 1,002.75 g (95% confidence interval 1,001.90 to 1,003.60 g), about 1.25 g below your stated 1,004 g setting; a one-sided t test gives p = 0.0025, so a shortfall this large is very unlikely to be chance. The average is still above 1,000 g, but 5 of the 40 bags were under the label. Could you check the machine’s setting? I will weigh 60 bags from the next delivery to confirm.” She keeps the spreadsheet, so that the next check is run the same way.' },
     { p: 'Notice what she leaves out. She doesn’t say the machine is proven faulty, or that there is a 99.75% chance it is: neither follows from a p-value. She reports the estimate, the interval and the p-value together, plans a check with enough power to confirm the finding, and asks a question rather than making an accusation. The test shows the bags are light on average; it doesn’t show why, and a test about the mean says nothing directly about individual bags, which is why she mentions the five under the label.' },
     { p: 'The same pattern runs through business uses of testing: checks against a specification, a month’s KPI against its target, before-and-after comparisons and A/B tests. Good practice is the same in each. State the hypotheses and α in advance, setting α from the costs of each error; plan the sample size from the smallest difference that matters; check the conditions; report the estimate, its interval and the p-value; and treat p-values near α as weak evidence that deserves a second look with new data.' },
-    { p: 'Targets need one more caution. A target is a goal, not a fact about the world, so testing a month against it asks only whether the shortfall is larger than chance would produce. August missed the 3.0% target by 0.09 percentage points with p = 0.32, which is noise; September missed it by 1.2 points with a p-value near zero, which is not. A dashboard that turns every month below target red, without asking how big a miss chance alone produces, will send Ana chasing noise.' },
+    { p: 'Targets need one more caution. A target is a goal, not a fact about the world, so testing a month against it asks only whether the shortfall is larger than chance would produce. October’s conversion was 0.1 points below 3.0% with p = 0.27, which is noise; September’s was 0.8 points below with a p-value near zero, which is not. A dashboard that turns every month below target red, without asking how big a miss chance alone produces, will send Ana chasing noise.' },
   ],
 
   summary: [
@@ -342,7 +344,7 @@ export default {
     { term: 'Null hypothesis', def: 'In a hypothesis test, the statement assumed true while the test is calculated, usually “no difference” or “as specified”. It contains an equality (=, ≤ or ≥) and is written H₀.' },
     { term: 'Alternative hypothesis', def: 'The statement a hypothesis test looks for evidence for, contradicting the null hypothesis. It contains &lt;, &gt; or ≠ and is written H₁ (or Hₐ).' },
     { term: 'Test statistic', def: 'A number calculated from the sample that measures how far the data lie from what the null hypothesis predicts, usually in standard errors: z, t, χ² or F.' },
-    { term: 'Significance level', def: 'The probability of rejecting the null hypothesis when it is true that a test is designed to allow, chosen before the data are seen; written α, often 0.05.' },
+    { term: 'Significance level', def: 'The probability of rejecting a true null hypothesis that a test is designed to allow, chosen before the data are seen; written α, often 0.05.' },
     { term: 'Critical value', def: 'A value of a test statistic’s distribution that cuts off a chosen tail area. A test rejects the null hypothesis when the statistic lies beyond it; a confidence interval uses it as its multiplier (1.96 for a 95% z interval).' },
     { term: 'Rejection region', def: 'The values of the test statistic for which the null hypothesis is rejected at the chosen significance level: those beyond the critical value or values.' },
     { term: 'One-sided test', def: 'A hypothesis test whose alternative points in one direction (&lt; or &gt;), so the p-value comes from one tail. Also called a one-tailed test.' },
@@ -363,9 +365,10 @@ export default {
     { text: 'Holmes, A., Illowsky, B. &amp; Dean, S. (2023). <i>Introductory Business Statistics 2e</i>, chapter 9, “Hypothesis Testing with One Sample” (sections 9.1–9.4). OpenStax.', url: 'https://openstax.org/books/introductory-business-statistics/pages/9-2-outcomes-and-the-type-i-and-type-ii-errors', checked: '2026-10-24' },
     { text: 'Wasserstein, R. L. &amp; Lazar, N. A. (2016). “The ASA’s statement on p-values: context, process, and purpose”. <i>The American Statistician</i>, 70(2), 129–133.', url: 'https://doi.org/10.1080/00031305.2016.1154108', checked: '2026-10-24' },
     { text: 'Microsoft Support. “Z.TEST function”.', url: 'https://support.microsoft.com/en-US/excel/functions/z-test-function', checked: '2026-10-24' },
-    { text: 'Microsoft Support. “T.DIST function”, with “T.DIST.2T function” and “T.INV.2T function”.', url: 'https://support.microsoft.com/en-US/excel/functions/t-dist-function', checked: '2026-10-24' },
-    { text: 'NIST/SEMATECH. <i>e-Handbook of Statistical Methods</i>, section 7.2.2, “Are the data consistent with the assumed process mean?”.', url: 'https://itl.nist.gov/div898/handbook/prc/section2/prc22.htm', checked: '2026-10-24' },
-    { text: 'NIST/SEMATECH. <i>e-Handbook of Statistical Methods</i>, section 7.2.2.2, “Sample sizes required”.', url: 'https://itl.nist.gov/div898/handbook/prc/section2/prc222.htm', checked: '2026-10-24' },
+    { text: 'Microsoft Support. “T.DIST function”.', url: 'https://support.microsoft.com/en-US/excel/functions/t-dist-function', checked: '2026-10-24' },
+    { text: 'Microsoft Support. “T.DIST.2T function”.', url: 'https://support.microsoft.com/en-US/excel/functions/t-dist-2t-function', checked: '2026-10-24' },
+    { text: 'Microsoft Support. “T.INV.2T function”.', url: 'https://support.microsoft.com/en-US/excel/functions/t-inv-2t-function', checked: '2026-10-24' },
+    { text: 'NIST/SEMATECH. <i>e-Handbook of Statistical Methods</i>, sections 7.2.2, “Are the data consistent with the assumed process mean?”, and 7.2.2.2, “Sample sizes required”.', url: 'https://itl.nist.gov/div898/handbook/prc/section2/prc222.htm', checked: '2026-10-24' },
   ],
 
   checks: [
@@ -423,33 +426,35 @@ export default {
     { what: 'Shortfall plausibly to (g)', value: K.setting - CI.low, shown: 2.10 },
     { what: 'One-sided 95% upper bound', value: oneSidedUpper, shown: 1003.46 },
     // conversion
-    { what: 'September web orders', value: CONVERSION.sep.orders, shown: 158 },
-    { what: 'September web visits', value: CONVERSION.sep.visits, shown: 8800 },
-    { what: 'September conversion (%)', value: D.conversion.sep * 100, shown: 1.80 },
+    { what: 'September shop orders', value: SH.sep.orders, shown: 251 },
+    { what: 'September shop visits', value: SH.sep.visits, shown: 11400 },
+    { what: 'September shop conversion (%)', value: D.conversion.shop.sep * 100, shown: 2.20 },
     { what: 'Target (%)', value: CONVERSION.target * 100, shown: 3.0 },
-    { what: 'September p-hat', value: SEP.p, shown: 0.017955, tol: 0.0000005 },
-    { what: 'September SE under H0', value: SEP.se0, shown: 0.0018185, tol: 0.00000005 },
-    { what: 'September z from the printed rounded values', value: (0.017955 - 0.03) / 0.0018185, shown: -6.62 },
-    { what: 'September SE from formula', value: se0(CONVERSION.sep.visits), shown: SEP.se0, tol: 1e-12 },
-    { what: 'September z', value: SEP.z, shown: -6.62 },
-    { what: 'September z (3 dp, Excel)', value: SEP.z, shown: -6.624, tol: 0.0005 },
-    { what: 'September p (× 1E11)', value: SEP.pValue * 1e11, shown: 1.7, tol: 0.05 },
-    { what: 'September n p0', value: CONVERSION.sep.visits * CONVERSION.target, shown: 264 },
-    { what: 'September n(1 − p0)', value: CONVERSION.sep.visits * (1 - CONVERSION.target), shown: 8536 },
-    { what: 'August orders', value: CONVERSION.aug.orders, shown: 224 },
-    { what: 'August visits', value: CONVERSION.aug.visits, shown: 7700 },
-    { what: 'August conversion (%)', value: D.conversion.aug * 100, shown: 2.91 },
-    { what: 'August p-hat', value: AUG.p, shown: 0.02909, tol: 0.000005 },
-    { what: 'August SE', value: AUG.se0, shown: 0.001944, tol: 0.0000005 },
-    { what: 'August z', value: AUG.z, shown: -0.47 },
-    { what: 'August z (3 dp)', value: AUG.z, shown: -0.468, tol: 0.0005 },
-    { what: 'August p', value: AUG.pValue, shown: 0.32 },
-    { what: 'August n p0', value: CONVERSION.aug.visits * CONVERSION.target, shown: 231 },
-    { what: 'August n(1 − p0)', value: CONVERSION.aug.visits * (1 - CONVERSION.target), shown: 7469 },
-    { what: 'August miss (percentage points)', value: (CONVERSION.target - D.conversion.aug) * 100, shown: 0.09 },
-    { what: 'September miss (percentage points)', value: (CONVERSION.target - D.conversion.sep) * 100, shown: 1.2, tol: 0.05 },
-    { what: 'Visits case agrees with B01 SHOP', value: Number(SHOP.webVisits[2] === CONVERSION.sep.visits && SHOP.webOrders[1] === CONVERSION.aug.orders), shown: 1 },
-    { what: 'Rule-of-thumb counts', value: 10 + 5, shown: 15 },
+    { what: 'Target is B01’s', value: TARGETS.conversion, shown: 3.0 },
+    { what: 'Shop is web plus app (September visits)', value: SHOP.webVisits[2] + SHOP.appVisits[2], shown: SH.sep.visits, tol: 1e-9 },
+    { what: 'September p-hat', value: SEP.p, shown: 0.022018, tol: 0.0000005 },
+    { what: 'September SE under H0', value: SEP.se0, shown: 0.0015977, tol: 0.00000005 },
+    { what: 'September SE from formula', value: se0(SH.sep.visits), shown: SEP.se0, tol: 1e-12 },
+    { what: 'September z', value: SEP.z, shown: -5.00 },
+    { what: 'September z (3 dp, Excel)', value: SEP.z, shown: -4.996, tol: 0.0005 },
+    { what: 'September z from the printed rounded values', value: (0.022018 - 0.03) / 0.0015977, shown: -5.00 },
+    { what: 'September p (× 1E7)', value: SEP.pValue * 1e7, shown: 2.9, tol: 0.05 },
+    { what: 'September n p0', value: SH.sep.visits * CONVERSION.target, shown: 342 },
+    { what: 'September n(1 − p0)', value: SH.sep.visits * (1 - CONVERSION.target), shown: 11058 },
+    { what: 'October shop orders', value: SH.oct.orders, shown: 319 },
+    { what: 'October shop visits', value: SH.oct.visits, shown: 11000 },
+    { what: 'October shop conversion (%)', value: D.conversion.shop.oct * 100, shown: 2.90 },
+    { what: 'October p-hat', value: OCT.p, shown: 0.0290, tol: 0.00005 },
+    { what: 'October SE', value: OCT.se0, shown: 0.0016265, tol: 0.00000005 },
+    { what: 'October z', value: OCT.z, shown: -0.61 },
+    { what: 'October z (3 dp, Excel)', value: OCT.z, shown: -0.615, tol: 0.0005 },
+    { what: 'October z from the printed rounded values', value: (0.0290 - 0.03) / 0.0016265, shown: -0.61 },
+    { what: 'October p', value: OCT.pValue, shown: 0.27 },
+    { what: 'October n p0', value: SH.oct.visits * CONVERSION.target, shown: 330 },
+    { what: 'October n(1 − p0)', value: SH.oct.visits * (1 - CONVERSION.target), shown: 10670 },
+    { what: 'October miss (percentage points)', value: (CONVERSION.target - D.conversion.shop.oct) * 100, shown: 0.1, tol: 0.005 },
+    { what: 'September miss (percentage points)', value: (CONVERSION.target - D.conversion.shop.sep) * 100, shown: 0.8, tol: 0.05 },
+    { what: 'September p-value near zero', value: Number(SEP.pValue < 1e-6), shown: 1 },
     // power
     { what: 'True mean in the power example', value: K.setting - 1, shown: 1003 },
     { what: 'Standard errors from the null', value: 1 / seZ, shown: 2.11 },
@@ -486,6 +491,10 @@ export default {
     { what: 'Big-sample p', value: I.normCdf(bigZ), shown: 0.018, tol: 0.0005 },
     { what: 'Under label if mean 1,002.75, sd 3 (%)', value: underIfLight * 100, shown: 18, tol: 0.5 },
     { what: 'Roughly twice the specification share', value: underIfLight / KG.pUnderSpec, shown: 2, tol: 0.05 },
+    { what: 'Under label if the machine averages 1,003 g (%)', value: I.normal.cdf(1000, 1003, 3) * 100, shown: 16, tol: 0.5 },
+    { what: 'z test is less significant: σ > s', value: Number(K.sd > s && Z.p > T.p), shown: 1 },
+    { what: 'Shortfall in z standard errors', value: (K.setting - xbar) / seZ, shown: 2.64 },
+    { what: 'Shortfall in t standard errors', value: (K.setting - xbar) / se, shown: 2.98 },
     { what: 'Shortfall share of a kilogram (%)', value: (K.setting - xbar) / 1000 * 100, shown: 0.1, tol: 0.05 },
     // multiple testing
     { what: 'FWER for 20 tests', value: 1 - 0.95 ** 20, shown: 0.64 },
