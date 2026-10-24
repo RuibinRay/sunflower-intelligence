@@ -186,6 +186,12 @@ function checkFormulaItem(x, w, r) {
   const self = g(x.answer);
   if (!self.ok) r.err(`${w}: the answer doesn’t pass its own marking: ${self.message}`);
   self.results.forEach((res) => { if (SH.isErr(res.want) && !(x.allowErrors || []).includes(res.cell)) r.err(`${w}: the answer gives ${res.want.code} in ${res.cell}`); });
+  {
+    // copies that put every answer at 0 or 1 (a probability far in a tail), or all at one value, test nothing
+    const vals = SH.variantValues(x.sheet, { cell: x.cell, answer: x.answer, variants: x.variants ?? 3 }).slice(1).filter((v) => typeof v === 'number');
+    const flat = vals.length > 1 && (vals.every((v) => Math.abs(v - vals[0]) < 1e-9) || vals.every((v) => Math.abs(v) < 1e-6 || Math.abs(v - 1) < 1e-6));
+    if (flat && typeof self.results[0]?.want === 'number' && self.results[0].want > 1e-6 && self.results[0].want < 1 - 1e-6) r.warn(`${w}: on the test copies the answer is ${vals.map((v) => SH.display(v)).join(', ')}, so typed-in inputs would pass; set vary on the inputs (a mean and SD that stay close to the cut-offs)`);
+  }
   if (!x.fill) {
     const v = self.results[0]?.want;
     const lit = typeof v === 'number' ? `=${v}` : typeof v === 'string' ? `="${v.replace(/"/g, '""')}"` : typeof v === 'boolean' ? `=${v ? 'TRUE' : 'FALSE'}` : null;

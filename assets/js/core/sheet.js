@@ -1526,6 +1526,14 @@ export function gradeFormula(sheetSpec, { cell, formula, answer, fill = null, va
   else message = 'Your formula gives the right answer for this data, but not when the numbers change: it must calculate the result from the cells, not contain it.';
   return { ok, results, message };
 }
+/** The answer's value in `cell` on the sheet and on each test copy (for the checker: copies whose results are all 0 or 1,
+ *  or all the same, can't tell a typed-in input from a reference). */
+export function variantValues(sheetSpec, { cell, answer, variants = 3, seed = 7, perturb = null }) {
+  const rand = mulberry(seed);
+  const specs = [sheetSpec];
+  for (let k = 0; k < variants; k++) specs.push(perturb ? perturb(sheetSpec, k, rand) : perturbSpec(sheetSpec, rand));
+  return specs.map((sp) => { const sh = new Sheet(sp); sh.set(cell, answer); return fullValue(sh, cell); });
+}
 /** A formula cell's whole result: an Arr when it spills (so a spilled answer is marked in every cell), else a value. */
 function fullValue(sheet, cell) {
   const k = cell.replace(/\$/g, '').toUpperCase();
