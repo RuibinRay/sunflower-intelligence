@@ -110,36 +110,40 @@ export default {
       '<b>Composition and ranking</b> are sorted bars. Five event types compare far better as bars than as slices; keep pies, if at all, for two or three parts of a whole.',
       '<b>A few items with details</b>, such as top clients with their revenue and events, are a small sorted table, with the rest grouped as “others” if they are shown at all.',
     ] },
-    { p: 'Avoid what spends space without informing. Gauges and dials take room for one number and add no comparison of their own; 3-D effects distort sizes; a second vertical axis invites false comparisons; and decoration such as shading, pictures and borders competes with the data. Few’s review of failed dashboards names the same culprits.' },
+    { p: 'Avoid what spends space without informing. Gauges and dials take room for one number and add no comparison of their own; 3-D effects distort sizes; a second vertical axis invites false comparisons; and decoration such as shading, pictures and borders competes with the data. Few’s review of failed dashboards singles out gauges and decoration in the same way.' },
     { p: 'Keep everything consistent so that differences mean something. One money format throughout (whole dollars on a summary page), one colour for revenue in every chart, the event types always in the same order, and the same axis range for charts that are meant to be compared side by side. A reader who has to work out each chart afresh will misread one of them.' },
 
     { h: 'Building it so it refreshes' },
     { p: 'A dashboard that takes an hour to update will be out of date. Build it in three layers: the data, untouched, in one <g>Excel table</g> (Events) that grows as rows are added; the calculations, as formulas and <g>PivotTables</g> that read the table; and the page, which only displays results. When January’s events are added, formulas that refer to the table’s columns pick them up at once, and PivotTables pick them up when they are refreshed (the PivotTables lesson shows how).' },
     { p: 'The tiles are formulas driven by one input cell, the month the reader chooses. Each formula reads the month from that cell and builds a date window from it, so a single change updates the whole page:' },
     { table: {
-      caption: 'The tile formulas (events in A2:D35: date, client, type, invoice; plan in G2:H4)',
+      caption: 'The tile formulas (events in A2:D35: date, client, type, invoice; plan in G2:H4; revenue by month in G7:H9)',
       head: ['Cell', 'Shows', 'Formula'],
       rows: [
-        ['F1', 'Month chosen (drop-down: 10, 11 or 12)', '12'],
+        ['F1', 'Month chosen (drop-down: October, November or December)', '12'],
         ['F2', 'First day of that month', '<x>=DATE(2026,F1,1)</x>'],
         ['F3', 'Revenue', '<x>=SUMIFS($D$2:$D$35,$A$2:$A$35,">="&F2,$A$2:$A$35,"<="&EOMONTH(F2,0))</x>'],
         ['F4', 'Events', '<x>=COUNTIFS($A$2:$A$35,">="&F2,$A$2:$A$35,"<="&EOMONTH(F2,0))</x>'],
         ['F5', 'Average invoice', '<x>=F3/F4</x>'],
         ['F6', 'Plan', '<x>=XLOOKUP(F2,G2:G4,H2:H4)</x>'],
+        ['F7', 'Revenue less plan', '<x>=F3-F6</x>'],
         ['F8', 'Share of plan', '<x>=F3/F6</x>'],
+        ['F9', 'Largest invoice', '<x>=MAXIFS($D$2:$D$35,$A$2:$A$35,">="&F2,$A$2:$A$35,"<="&EOMONTH(F2,0))</x>'],
+        ['H7', 'Revenue for the month in G7 (filled to H9)', '<x>=SUMIFS($D$2:$D$35,$A$2:$A$35,">="&G7,$A$2:$A$35,"<="&EOMONTH(G7,0))</x>'],
+        ['F10', 'Check: the months add up to the data', '<x>=IF(ROUND(SUM(H7:H9)-SUM(D2:D35),2)=0,"OK","CHECK")</x>'],
       ],
       note: 'In the full workbook the ranges are the table’s columns, such as Events[invoice], so they grow with the data. The third widget under Explore is this sheet.',
     } },
     { p: 'The average invoice is the month’s revenue divided by its events, not an average of other averages; the challenging example shows why. The charts sit on PivotTables built from the same table, so every figure on the page comes from one source.' },
 
     { h: 'Interactivity: drop-downs, slicers and timelines' },
-    { p: 'A <g>drop-down list</g> lets the reader choose what the formulas show without typing. In Excel it is <g>data validation</g>: select the cell, then Data › Data Validation, set Allow to List and give the Source. If the list itself is an Excel table, the drop-down updates as items are added or removed. The Error Alert tab’s Stop style refuses anything that isn’t on the list, so the formulas never receive a month they can’t read.' },
-    { p: 'A <g>slicer</g> is a panel of buttons that filters a table or a PivotTable and shows which items are selected. Click inside the table or PivotTable and choose Insert › Slicer; hold Ctrl to select several items, and use Clear Filter to show them all again. One slicer can drive several PivotTables through <b>Report Connections</b>, but only PivotTables that share the same data source, which is another reason to build them all on one table. A <g>timeline</g> does the same job for dates in PivotTables: a slider that selects years, quarters, months or days (PivotTable Analyze › Insert Timeline).' },
+    { p: 'A <g>drop-down list</g> lets the reader choose what the formulas show without typing. In Excel it is <g>data validation</g>: select the cell, then Data › Data Validation, set Allow to List and give the Source. If the list itself is an Excel table, the drop-down updates as items are added or removed. The Error Alert tab’s Stop style refuses anything typed that isn’t on the list, so a reader can’t type a month the formulas can’t read (pasted values still get through, as the tables lesson warns).' },
+    { p: 'A <g>slicer</g> is a panel of buttons that filters a table or a PivotTable and shows which items are selected. Click inside the table or PivotTable and choose Insert › Slicer; select one item or several, and use Clear Filter to show them all again. One slicer can drive several PivotTables through <b>Report Connections</b>, but only PivotTables that share the same data source, which is another reason to build them all on one table. A <g>timeline</g> does the same job for dates in PivotTables: a slider that selects years, quarters, months or days (PivotTable Analyze › Insert Timeline).' },
     { callout: 'warn', title: 'Filters and formulas don’t talk to each other', html: 'A slicer on a table hides the rows it filters out. SUBTOTAL, which a table’s total row uses, ignores those rows; SUMIFS, COUNTIFS and the rest do not, and go on adding every row that meets their own criteria. A page that mixes slicer-filtered charts with SUMIFS tiles can show two answers to the same question. Choose one mechanism for each part of the page, or put the slicer’s choice into the formulas as a criterion.' },
 
     { h: 'Documentation and checks' },
     { p: 'A dashboard is trusted only if its readers know what the numbers mean and can see that they add up. A short notes panel does the first job: the source and how it was extracted; the period covered (the Analysis Function’s guidance is to make the dates always clear); the date the data were refreshed, typed in when it happens rather than calculated with TODAY(), which would show the date the file was opened; the definitions, or a link to the KPI dictionary; and the owner. When something changes, a dated change note says what and why.' },
-    { p: String.raw`A <g>reconciliation check</g> does the second. It compares a total on the page with the same total computed another way and flags any difference: the twelve monthly revenues should add up to the total of the Events table, so should the five event types, and both should match the $62,320 of catering revenue in Lantern’s books (F02); the events should number 76. A check cell such as <x>=IF(ROUND(SUM(F3:F12)-SUM(Events[invoice]),2)=0,"OK","CHECK")</x> sits beside the figures it protects. Rounding to the cent stops the tiny binary differences of the cells-and-formulas lesson from raising false alarms.` },
+    { p: String.raw`A <g>reconciliation check</g> does the second. It compares a total on the page with the same total computed another way and flags any difference: the ten monthly revenues (March to December, in J2:J11) should add up to the total of the Events table, so should the five event types, and both should match the $62,320 of catering revenue in Lantern’s books (F02); the events should number 76. A check cell such as <x>=IF(ROUND(SUM(J2:J11)-SUM(Events[invoice]),2)=0,"OK","CHECK")</x> sits beside the figures it protects. Rounding to the cent stops the tiny binary differences of the cells-and-formulas lesson from raising false alarms.` },
 
     { h: 'Common failures' },
     { list: [
@@ -216,7 +220,7 @@ export default {
   demo: [
     { widget: 'db-month', intro: 'Revenue by month against Ana’s plan. Which months beat the plan? Is December a good month or a bad one? Decide what a tile for December should say.' },
     { widget: 'db-pivot', intro: 'The PivotTable behind the type chart. Filter by Month (as a slicer would), change the rows to Client to find the top clients, and switch to Average to see the conference outlier.' },
-    { widget: 'db-sheet', intro: 'One month of the dashboard, built from the October to December events. Change the month in F1 and watch every tile follow; use Show formulas to read the date windows and the check.' },
+    { widget: 'db-sheet', intro: 'One month of the dashboard, built from the October to December events. Pick a month from the drop-down and watch every tile follow; use Show formulas to read the date windows and the check in F10.' },
   ],
 
   mistakes: [
@@ -259,8 +263,7 @@ export default {
 
   references: [
     { text: 'Few, S. (2007). <i>Why Most Dashboards Fail</i>. Perceptual Edge. (Copy hosted for a UC Berkeley School of Information course.)', url: 'https://blogs.ischool.berkeley.edu/i247s13/files/2013/02/WhyMostDashboardsFail.pdf', checked: '2026-10-23' },
-    { text: 'Government Analysis Function (2026). “Data visualisation: testing dashboards for design and accessibility”. UK Government Statistical Service.', url: 'https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-testing-dashboards-for-design-and-accessibility/', checked: '2026-10-23' },
-    { text: 'Government Analysis Function (2026). “Data visualisation: building and managing dashboards”. UK Government Statistical Service.', url: 'https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-building-and-managing-dashboards/', checked: '2026-10-23' },
+    { text: 'Government Analysis Function (2026). “Data visualisation: testing dashboards for design and accessibility” and “Data visualisation: building and managing dashboards” (analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-building-and-managing-dashboards/). UK Government Statistical Service.', url: 'https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-testing-dashboards-for-design-and-accessibility/', checked: '2026-10-23' },
     { text: 'Microsoft. “Use slicers to filter data” and “Create a PivotTable timeline to filter dates”. Microsoft Support.', url: 'https://support.microsoft.com/office/249f966b-a9d5-4b0f-b31a-12651785d29d', checked: '2026-10-23' },
     { text: 'Microsoft. “Create a drop-down list”. Microsoft Support.', url: 'https://support.microsoft.com/office/7693307a-59ef-400a-b769-c5402dce407b', checked: '2026-10-23' },
     { text: 'Microsoft. “SUBTOTAL function”. Microsoft Support.', url: 'https://support.microsoft.com/en-us/excel/subtotal-function', checked: '2026-10-23' },
@@ -349,7 +352,7 @@ export default {
     { what: 'Wireframe axis starts at', value: 0, shown: 0 },
     { what: 'Version history: personal account versions', value: 25, shown: 25 },
     { what: 'WCAG version', value: 2.2, shown: 2.2 },
-    { what: 'Twelve monthly revenues in a year', value: 12, shown: 12 },
+    { what: 'Ten monthly revenues, March to December', value: MONTHS.length, shown: 10 },
     { what: 'Hotel example: hotels', value: 3, shown: 3 },
     { what: 'Hotel example: weeks of bookings', value: 4, shown: 4 },
     { what: 'Hotel example: points below budget', value: 5, shown: 5 },

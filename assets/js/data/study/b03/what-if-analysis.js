@@ -158,7 +158,7 @@ export default {
       ],
     } },
     { p: 'Read along a row and the hourly charge shows its weakness: each extra hour adds $30 to the invoice and $23 for every barista on the job. With one barista an hour earns $7; with two it loses $16, with three $39 and with four $62. Long events with many guests are the ones Ana under-prices, a pattern the challenging example turns into a pricing rule.' },
-    { p: 'A data table recalculates whenever the worksheet does, even if nothing it depends on has changed, so a workbook with several large tables can become slow. Excel can be set to recalculate everything except data tables: in current versions the option is called <b>Partial</b> (File › Options › Formulas, or Formulas › Calculation Options). The tables then update only when you select them and press F9.' },
+    { p: 'A data table recalculates whenever the worksheet does, even if nothing it depends on has changed, so a workbook with several large tables can become slow. Excel can be set to recalculate everything except data tables: in current versions the option is called <b>Partial</b> (<b>Automatic except for data tables</b> in older versions), under File › Options › Formulas or Formulas › Calculation Options. The tables then update only when you ask Excel to recalculate.' },
 
     { h: 'Scenarios and Scenario Manager' },
     { p: 'A <g>scenario</g>, in B01’s sense, is one possible future described by the values of the uncertain inputs. Excel’s <g>Scenario Manager</g> (Data › What-If Analysis › Scenario Manager) saves named sets of values for chosen changing cells, up to 32 of them, and substitutes a set into the sheet when you show it. Its <b>Scenario summary</b> report puts every scenario’s inputs and chosen result cells side by side on a new sheet.' },
@@ -224,9 +224,9 @@ export default {
     { p: 'When Solver stops, choose <b>Keep Solver Solution</b> or <b>Restore Original Values</b>, and pick any reports. Its <b>Integer Optimality (%)</b> option matters for whole-number models: at its default of 1%, Solver may stop at a whole-number plan within 1% of the best possible. Set it to 0 when you need the proven optimum.' },
 
     { h: 'Reading Solver’s answer' },
-    { p: 'A <g>binding constraint</g> holds exactly at the optimum: the resource is used up. The others have <g>slack</g>, the limit minus what the plan uses. In Ana’s whole-number plan the van is binding (45 of 45 hours), while she has 6 of her 90 hours spare, 1 Saturday free and 2 enquiries unaccepted. Solver’s <b>Answer Report</b> lists the original and final values of the objective and the decision variables, and each constraint’s final value, status (binding or not) and slack.' },
+    { p: 'A <g>binding constraint</g> holds exactly at the optimum: the resource is used up. The others have <g>slack</g>, the limit minus what the plan uses. In Ana’s whole-number plan the van is binding (45 of 45 hours), while she has 6 of her 90 hours spare, 1 Saturday free and 2 enquiries unaccepted. Solver’s <b>Answer Report</b> lists the original and final values of the objective and the decision variables, and each constraint’s final value, status (binding or not) and slack. The Solver panel in the second widget shows the constraints part of this report under each result.' },
     { p: 'The <b>Sensitivity Report</b> goes further, but only for models without integer or binary constraints. For each binding constraint it gives a <g>shadow price</g>: how much the optimal objective changes per unit increase in the limit, with the range over which that holds. In Ana’s model without the integer constraint, her hours and the van hours both have a shadow price of $50: with 91 hours the best contribution rises from $6,750 to $6,800. The $50 holds for up to 6 more of her hours; after that the Saturday limit binds and more hours add nothing.' },
-    { p: 'With whole numbers, value comes in lumps. One or two more van hours change nothing in the whole-number plan, because E + W still can’t exceed 15; three more allow a fourteenth event and add $350. Shadow prices describe smooth trade-offs that whole-number plans don’t have, which is why Excel offers no Sensitivity Report once integer constraints are in the model. To see what a change is worth, change the limit and solve again.' },
+    { p: 'With whole numbers, value comes in lumps. One or two more van hours change nothing in the whole-number plan, because E + W still can’t exceed 15; three more allow a fourteenth event and add $350. And a constraint with slack can still hold a whole-number plan back: Ana has 6 hours spare, yet two more (92) would let her swap two events for the third workshop, 11 and 3, worth $6,700. Shadow prices describe smooth trade-offs that whole-number plans don’t have, which is why Excel offers no Sensitivity Report once integer constraints are in the model. To see what a change is worth, change the limit and solve again.' },
     { p: 'Two other outcomes need recognising. If no plan meets every constraint, Solver reports that it could not find a feasible solution: with 16 events already confirmed, Ana’s model has no answer, because only 15 enquiries exist and 45 van hours cover at most 15 jobs. If the objective can grow without limit, Solver reports that the objective cell’s values do not converge, which nearly always means a constraint is missing. Remove her hours, the van and the enquiry limit, and Solver would book events without end.' },
 
     { h: 'Checking a model’s answers' },
@@ -285,9 +285,9 @@ export default {
         String.raw`Explain it with the model. An extra hour adds the hourly charge, $30, to the invoice and adds one paid hour per barista to the wages, <m>23B</m> dollars. The change in contribution per hour is <m>30 - 23B</m>: 7, −16, −39 and −62 for 1 to 4 baristas, exactly the table’s steps.`,
         String.raw`Find the break-even charge. If Ana charged <m>h</m> dollars an hour for each barista, an extra hour would change the contribution by <m>hB - 23B = (h - 23)B</m>, which is never negative when <m>h \ge 23</m>. At $30 per barista-hour every hour earns $7 per barista.`,
         String.raw`Test it on the team day (two baristas, five hours): the hourly charges become <m>30 \times 2 \times 5 = 300</m> dollars instead of $150, the invoice $652.50 and the contribution $315.50, a ratio of 48.4%. On the breakfast (three baristas, three hours) they become $270 instead of $90, an invoice of $1,230, or $10.25 a head.`,
-        'Judge. The change fixes long events but raises short, crowded ones like the breakfast well above the $7.50 a head that Brewline Catering charges, and M01 records five bids lost to Brewline on price already. A narrower rule, charging per barista only for hours beyond three, would fix the team day without touching breakfasts.',
+        'Judge. The change fixes long events but raises short, crowded ones like the breakfast well above the $7.50 a head that Brewline Catering charges, and M01 records five bids lost to Brewline on price already. A narrower rule, charging per barista only for hours beyond three, removes the loss on each hour beyond the third without touching breakfasts: the team day’s hourly charges become 30 × 3 + 30 × 2 × 2 = $210, its invoice $562.50 and its contribution $225.50, a ratio of 40.1%.',
       ],
-      answer: 'Each extra hour changes the contribution by 30 − 23B dollars, so it loses money whenever an event needs two or more baristas. Charging at least $23 per barista-hour removes the loss; $30 per barista-hour lifts the team day to a 48.4% ratio, but would price the breakfast at $10.25 a head. Applying it only to hours beyond three is the better rule.',
+      answer: 'Each extra hour changes the contribution by 30 − 23B dollars, so it loses money whenever an event needs two or more baristas. Charging at least $23 per barista-hour removes the loss; $30 per barista-hour lifts the team day to a 48.4% ratio, but would price the breakfast at $10.25 a head. Applying it only to hours beyond three is the better rule: it removes the loss on each hour beyond the third (the team day rises to a 40.1% ratio) without touching breakfasts.',
       interpretation: 'The data table found the problem; the model’s algebra explained it; the judgement about competitors came from outside the model. That is the usual division of labour: what-if tools show consequences, and people decide which consequences matter.' },
     { level: 'applied', title: 'Ana’s December plan with Solver', fictional: true,
       setup: 'In late November Ana must decide how many December catering events to accept and how many Saturday workshops to run, using the figures and constraints in the In depth section: $350 per event and $950 per workshop; 4 and 16 of her hours (90 available); 3 van hours each (45 available); at most 15 events and 3 workshops; at least 8 events already confirmed. Solve it, check the answer and recommend a plan.',
@@ -296,15 +296,15 @@ export default {
         'Solve with Simplex LP, maximising B6 by changing B4:C4, with the five constraints and B4:C4 = integer. Solver returns 13 events and 2 workshops, a contribution of $6,450.',
         'Read the constraints. Van hours used: 13 × 3 + 2 × 3 = 45 of 45, binding. Her hours: 13 × 4 + 2 × 16 = 84 of 90, 6 hours of slack. One Saturday and two enquiries are left unused.',
         'Check by another route. Without the integer constraint Solver gives 12.5 and 2.5 ($6,750), which is no plan; listing all 32 whole-number plans with 8 to 15 events and 0 to 3 workshops confirms that 13 and 2 is the best, $100 ahead of 10 events and 3 workshops ($6,350).',
-        'Ask what would change the answer. Three more van hours would allow a fourteenth event and $350 more; ten more of her hours would allow the third workshop (12 events, 3 workshops, $7,050). The van, not her diary, is the first limit to relax.',
+        'Ask what would change the answer by changing a limit and solving again. Three more van hours (48) allow a fourteenth event: 14 and 2, $6,800 (+$350). Her hours have 6 hours of slack, yet two more (92) let her swap two events for the third workshop: 11 and 3, $6,700 (+$250); six more (96) give 12 and 3, $7,050. In a whole-number model a constraint with slack can still hold the plan back, so test each limit rather than reading its value off the slack.',
       ],
-      answer: 'Accept 13 catering events and run 2 workshops (5 and 12 December, say), for a contribution of $6,450. The van is the binding constraint; Ana has 6 hours, 1 Saturday and 2 enquiries to spare.',
+      answer: 'Accept 13 catering events and run 2 workshops (5 and 12 December, say), for a contribution of $6,450. The van is the binding constraint; Ana has 6 hours, 1 Saturday and 2 enquiries to spare, though a few more of her own hours would also raise the best plan.',
       interpretation: 'Solver answered the question the model asked. Whether to hire a second van for a few days, or to decline the enquiries politely and keep the clients for January, are business decisions that the model informs but doesn’t make. December in fact brought 13 events, as the events data show.' },
   ],
 
   demo: [
     { widget: 'wi-costing', intro: 'The costing model, starting with the team day. Run Goal Seek as set to find the price per guest for a 45% ratio, then make the two-variable data table of contribution by guests and hours. Change the inputs in B3:B18 to price other events or test other costs, and use Show formulas to see the model.' },
-    { widget: 'wi-plan', intro: 'Ana’s December plan, laid out for Solver. Solve it, then switch the integer constraint and each limit off and on to see which plan wins and which constraints bind. Change a limit (E9, E10 or B15) and solve again.' },
+    { widget: 'wi-plan', intro: 'Ana’s December plan, laid out for Solver. Solve it and read the Answer report under the result: which constraints are binding and how much slack the others have. Then switch the integer constraint and each limit off and on to see which plan wins, and change a limit (E9, E10 or B15) and solve again.' },
   ],
 
   mistakes: [
@@ -321,7 +321,7 @@ export default {
     { p: '<b>A hotel’s room rates.</b> The revenue manager of a seaside hotel keeps a model of a weekend’s revenue from occupancy and the room rate. A two-variable data table of rates against occupancy shows where a lower rate fills enough extra rooms to pay for itself, and Goal Seek answers the owner’s question: what rate keeps revenue at last year’s level if occupancy falls?' },
     { p: '<b>A food bank’s volunteer rota.</b> A food bank schedules volunteers across six shifts a week, each needing a minimum number of people, with each volunteer offering at most two shifts. Solver, with integer constraints, finds the fewest volunteers who can cover the week, and the slack in each shift shows where extra recruits would be wasted.' },
     { p: '<b>A bike shop’s service prices.</b> Before printing next year’s price list, a repair shop saves scenarios for labour and parts costs and checks that every service package keeps its target contribution margin ratio even in the worst case.' },
-    { case: 'Ana used all four tools before December. The scenarios told her that the breakfast-type jobs were safe and the long team days were not. Solver’s plan of 13 events and 2 workshops matched the enquiries she accepted, and the van was, as the model said, the tight resource. From January 2027 her quote sheet charges $30 an hour for each barista on hours of service beyond the third, the narrower rule from the challenging example, and the model, with its inputs in their own cells, took one edit to update.' },
+    { case: 'Ana used all four tools before December. The scenarios told her that the breakfast-type jobs were safe and the long team days were not. Solver’s plan of 13 events and 2 workshops matched the enquiries she accepted, and the van was, as the model said, fully used. From January 2027 her quote sheet charges $30 an hour for each barista on hours of service beyond the third, the narrower rule from the challenging example, and the model, with its inputs in their own cells, took one edit to update.' },
     { p: 'Two habits from this lesson carry into the rest of the course. Build the model so that its assumptions can be changed in one place, and check every answer a tool gives you by a second route before you act on it. The dashboards lesson that follows turns from deciding to reporting: how to show the results of decisions like these to the people who need them.' },
   ],
 
@@ -362,8 +362,7 @@ export default {
     { text: 'Microsoft. “Change formula recalculation, iteration, or precision in Excel”. Microsoft Support.', url: 'https://support.microsoft.com/office/change-formula-recalculation-iteration-or-precision-in-excel-73fc7dac-91cf-4d36-86e8-67124f6bcce4', checked: '2026-10-23' },
     { text: 'Microsoft. “Define and solve a problem by using Solver” and “Load the Solver Add-in in Excel”. Microsoft Support.', url: 'https://support.microsoft.com/en-us/excel/define-and-solve-a-problem-by-using-solver', checked: '2026-10-23' },
     { text: 'Frontline Systems. “Excel Solver Tutorial: Step by Step Easy to use guide for Excel’s Solver”. solver.com.', url: 'https://solver.com/node/181', checked: '2026-10-23' },
-    { text: 'Frontline Systems. “Module 2: Reports and Sensitivity”. solver.com.', url: 'https://www.solver.com/courses/optimization/module-2/reports-and-sensitivity', checked: '2026-10-23' },
-    { text: 'Frontline Systems. “Excel Solver: How Integer, Binary and Alldifferent constraints affect solving”. solver.com.', url: 'https://solver.com/node/192', checked: '2026-10-23' },
+    { text: 'Frontline Systems. “Module 2: Reports and Sensitivity” (the Sensitivity Report) and “Excel Solver: How Integer, Binary and Alldifferent constraints affect solving” (solver.com/node/192, Integer Optimality). solver.com.', url: 'https://www.solver.com/courses/optimization/module-2/reports-and-sensitivity', checked: '2026-10-23' },
   ],
 
   checks: [
@@ -476,6 +475,10 @@ export default {
     { what: 'Breakfast with $30 per barista-hour: hourly charges', value: 30 * 3 * 3, shown: 270 },
     { what: 'Breakfast with $30 per barista-hour: invoice', value: g(bk, 'B21') - 90 + 270, shown: 1230 },
     { what: 'Breakfast with $30 per barista-hour: per head', value: (g(bk, 'B21') - 90 + 270) / 120, shown: 10.25 },
+    { what: 'Narrow rule: team-day hourly charges', value: 30 * 3 + 30 * 2 * (5 - 3), shown: 210 },
+    { what: 'Narrow rule: team-day invoice', value: 60 + 6.5 * 45 + 210, shown: 562.5 },
+    { what: 'Narrow rule: team-day contribution', value: 60 + 6.5 * 45 + 210 - g(team, 'B26'), shown: 225.5 },
+    { what: 'Narrow rule: team-day ratio (%)', value: (60 + 6.5 * 45 + 210 - g(team, 'B26')) / (60 + 6.5 * 45 + 210) * 100, shown: 40.1, tol: 0.05 },
     // December plan
     { what: 'Plan: contribution per event', value: 350, shown: 350 },
     { what: 'Plan: contribution per workshop', value: 12 * 125 - 550, shown: 950 },
@@ -511,6 +514,15 @@ export default {
     { what: 'Integer: 46 van hours, no change', value: solve({ E10: 46 }).objective - sInt.objective, shown: 0 },
     { what: 'Integer: 48 van hours adds', value: solve({ E10: 48 }).objective - sInt.objective, shown: 350 },
     { what: 'Integer: 100 of her hours', value: solve({ E9: 100 }).objective, shown: 7050 },
+    { what: 'Integer: 92 of her hours', value: solve({ E9: 92 }).objective, shown: 6700 },
+    { what: 'Integer: 92 hours, events', value: solve({ E9: 92 }).values.B4, shown: 11 },
+    { what: 'Integer: 92 hours, workshops', value: solve({ E9: 92 }).values.C4, shown: 3 },
+    { what: 'Integer: 92 hours adds', value: solve({ E9: 92 }).objective - sInt.objective, shown: 250 },
+    { what: 'Integer: 92 hours is two more', value: 92 - 90, shown: 2 },
+    { what: 'Integer: 96 of her hours', value: solve({ E9: 96 }).objective, shown: 7050 },
+    { what: 'Integer: 96 hours, events', value: solve({ E9: 96 }).values.B4, shown: 12 },
+    { what: 'Integer: 48 van hours', value: solve({ E10: 48 }).objective, shown: 6800 },
+    { what: 'Integer: 48 van hours, events', value: solve({ E10: 48 }).values.B4, shown: 14 },
     { what: 'Infeasible with 16 confirmed', value: solve({ B15: 16 }).ok ? 1 : 0, shown: 0 },
     { what: '16 events need van hours', value: 16 * 3, shown: 48 },
     { what: '45 van hours cover jobs', value: 45 / 3, shown: 15 },

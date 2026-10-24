@@ -86,13 +86,13 @@ export const widgets = {
     tools: ['formulas', 'goalseek', 'datatable', 'reset'],
     goalseek: { target: 'B28', goal: 0.45, changing: 'B8' },
     datatable: { target: 'B27', input: 'B3', values: [40, 60, 80, 100, 120, 140, 160], input2: 'B4', values2: [2, 3, 4, 5, 6], format: M },
-    note: 'The sheet starts with the team day: 45 guests, five hours, no pastries. Run Goal Seek as set (B28 to 0.45 by changing B8) and compare its price with the simple example. Make the data table as set: guests down the side, hours across the top. Then change B3:B5 to the breakfast (120, 3, 1), or set the guests to 40 and then 41 and watch the contribution fall.',
+    note: 'The sheet starts with the team day: 45 guests, five hours, no pastries. Run Goal Seek as set (B28 to 0.45 by changing B8) and compare its price with the simple example. Make the data table as set: guests down the side, hours across the top (B3 is the Column input cell, B4 the Row input cell). Then change B3:B5 to the breakfast (120, 3, 1), or set the guests to 40 and then 41 and watch the contribution fall.',
   },
   'wi-plan': {
     type: 'sheet', title: 'Ana’s December plan (fictional)',
     sheet: { cells: PLAN_CELLS }, view: 'A1:E15', widths: { A: 32, B: 15, C: 13 }, formats: PLAN_FORMATS, editable: true, mark: ['B4:C4', 'B6'],
     tools: ['formulas', 'solver', 'reset'], solver: PLAN_SOLVER,
-    note: 'B4:C4 hold Ana’s first guess (10 events, 2 workshops). Solve with every constraint, then untick the integer constraint and solve again. Untick the van-hours constraint, then Ana’s hours: which plan wins each time? Change E9 to 91 (with integers off) to see a shadow price, or B15 to 16 to make the model infeasible. Untick Ana’s hours, the van and the enquiries together to see an unbounded model.',
+    note: 'B4:C4 hold Ana’s first guess (10 events, 2 workshops). Solve with every constraint and read the Answer report under the result: which constraints are binding and how much slack the others have. Then untick the integer constraint and solve again. Untick the van-hours constraint, then Ana’s hours: which plan wins each time? Change E9 to 91 (with integers off) to see a shadow price, or B15 to 16 to make the model infeasible. Untick Ana’s hours, the van and the enquiries together to see an unbounded model.',
   },
 };
 
@@ -102,7 +102,7 @@ export const guided = [
     prompt: 'Ana sends one barista for every 40 guests or part of 40; the 40 is in B15. In B20, write the formula for the number of baristas the event in B3 needs.',
     sheet: { cells: costingCells(TEAM_DAY, { results: false }) }, cell: 'B20', view: 'A1:B20', widths: { A: 34, B: 13 }, formats: COSTING_FORMATS,
     answer: '=ROUNDUP(B3/B15,0)',
-    alt: ['=CEILING(B3/B15,1)', '=-INT(-B3/B15)'],
+    alt: ['=CEILING(B3/B15,1)', '=CEILING.MATH(B3/B15)', '=-INT(-B3/B15)'],
     wrong: [
       { formula: '=B3/B15', say: 'That gives 1.125 baristas. People come whole: round the result up with ROUNDUP(…,0).' },
       { formula: '=ROUND(B3/B15,0)', say: 'ROUND goes to the nearest whole number, so 45 guests would get one barista. “Or part of 40” means always rounding up: ROUNDUP.' },
@@ -132,18 +132,18 @@ export const guided = [
   },
   {
     id: 'b03-wi-g3', type: 'steps', kind: 'numerical',
-    prompt: 'An enquiry for a one-day conference: 60 guests, six hours of service, no pastries. At the standard price per guest its contribution margin ratio is 37.3%. Ana wants 40%, so she will run Goal Seek on the price per guest. Work out by hand what Goal Seek should return, using her costs: $23 an hour plus one paid set-up hour per barista, one barista per 40 guests, $0.80 a guest for coffee, milk and cups, and $25 for the van.',
-    solution: 'Two baristas (60 ÷ 40 = 1.5, rounded up) are paid for 7 hours each: 2 × 7 × 23 = $322; with coffee 60 × 0.80 = $48 and the van $25, the direct costs are $395. A 40% ratio leaves 60% of the invoice for costs, so the invoice must be 395 ÷ 0.6 = $658.33. Take off the setup charge ($60) and the hourly charges (6 × $30 = $180) and divide by the guests: (658.33 − 240) ÷ 60 = $6.97 a guest. Goal Seek (B28 to 0.4 by changing B8) returns 6.9722…',
+    prompt: 'An enquiry for a one-day conference: 60 guests, six hours of service, no pastries. At the standard price per guest its contribution margin ratio is 37.3%, below Ana’s rule of at least 45% on every job, so she will run Goal Seek on the price per guest. Work out by hand what Goal Seek should return, using her costs: $23 an hour plus one paid set-up hour per barista, one barista per 40 guests, $0.80 a guest for coffee, milk and cups, and $25 for the van.',
+    solution: 'Two baristas (60 ÷ 40 = 1.5, rounded up) are paid for 7 hours each: 2 × 7 × 23 = $322; with coffee 60 × 0.80 = $48 and the van $25, the direct costs are $395. A 45% ratio leaves 55% of the invoice for costs, so the invoice must be 395 ÷ 0.55 = $718.18. Take off the setup charge ($60) and the hourly charges (6 × $30 = $180) and divide by the guests: (718.18 − 240) ÷ 60 = $7.97 a guest. Goal Seek (B28 to 0.45 by changing B8) returns 7.9697…',
     steps: [
       { id: 'b03-wi-g3-s1', type: 'num', prompt: 'What are the event’s direct costs?', answer: 395, check: () => cost(60, 6, 0), unit: '$', places: 2, tol: 0.5,
         hints: ['Baristas: 60 ÷ 40 rounded up. Each is paid for the six hours of service and one set-up hour.', 'Wages 2 × (6 + 1) × 23, plus 60 × 0.80, plus 25.'],
         wrong: [{ value: 349, say: 'You left out the paid set-up hour: each barista is paid for 6 + 1 = 7 hours.' }, { value: 234, say: 'That is one barista. 60 guests need two: 60 ÷ 40 = 1.5, rounded up.' }] },
-      { id: 'b03-wi-g3-s2', type: 'num', prompt: 'What invoice would give a contribution margin ratio of exactly 40%? Give it to the cent.', answer: 658.33, check: () => cost(60, 6, 0) / (1 - 0.4), unit: '$', places: 2, tol: 0.01,
-        hints: ['If contribution is 40% of the invoice, the costs are the other 60%.', 'Invoice = direct costs ÷ (1 − 0.40).'],
-        wrong: [{ value: 553, say: 'That adds 40% to the costs (a markup). The ratio is measured on the invoice: costs are 60% of it, so divide by 0.6.' }, { value: 987.5, say: 'That divides by 0.4: it would make the costs 40% of the invoice. Divide by 1 − 0.4.' }] },
-      { id: 'b03-wi-g3-s3', type: 'num', prompt: 'What price per guest gives that invoice? Give it to the cent.', answer: 6.97, check: () => (cost(60, 6, 0) / 0.6 - QUOTE.setup - 6 * QUOTE.perHour) / 60, unit: '$', places: 2, tol: 0.005,
-        hints: ['The invoice is 60 + price × 60 + 30 × 6. Solve for the price.', '(658.33 − 60 − 180) ÷ 60.'],
-        wrong: [{ value: 10.97, say: 'That divides the whole invoice by the guests. Take off the setup charge and the hourly charges first: they don’t depend on the price per guest.' }, { value: 9.97, say: 'You took off the setup charge but not the six hours at $30.' }] },
+      { id: 'b03-wi-g3-s2', type: 'num', prompt: 'What invoice would give a contribution margin ratio of exactly 45%? Give it to the cent.', answer: 718.18, check: () => cost(60, 6, 0) / (1 - 0.45), unit: '$', places: 2, tol: 0.01,
+        hints: ['If contribution is 45% of the invoice, the costs are the other 55%.', 'Invoice = direct costs ÷ (1 − 0.45).'],
+        wrong: [{ value: 572.75, say: 'That adds 45% to the costs (a markup). The ratio is measured on the invoice: costs are 55% of it, so divide by 0.55.' }, { value: 877.78, say: 'That divides by 0.45: it would make the costs 45% of the invoice. Divide by 1 − 0.45.' }] },
+      { id: 'b03-wi-g3-s3', type: 'num', prompt: 'What price per guest gives that invoice? Give it to the cent.', answer: 7.97, check: () => (cost(60, 6, 0) / 0.55 - QUOTE.setup - 6 * QUOTE.perHour) / 60, unit: '$', places: 2, tol: 0.005,
+        hints: ['The invoice is 60 + price × 60 + 30 × 6. Solve for the price.', '(718.18 − 60 − 180) ÷ 60.'],
+        wrong: [{ value: 11.97, say: 'That divides the whole invoice by the guests. Take off the setup charge and the hourly charges first: they don’t depend on the price per guest.' }, { value: 10.97, say: 'You took off the setup charge but not the six hours at $30.' }] },
     ],
   },
   {
@@ -209,7 +209,7 @@ export const independent = [
     wrong: [
       { value: 495, say: 'That uses two baristas. 100 guests need three: 100 ÷ 40 = 2.5, rounded up.' },
       { value: 830, say: 'That is the invoice. Take off the direct costs: wages, coffee and the van.' },
-      { value: 455, say: 'That leaves out the paid set-up hour: each barista is paid for 4 + 1 hours.' },
+      { value: 449, say: 'That leaves out the paid set-up hour: each barista is paid for 4 + 1 hours.' },
     ],
     solution: 'Invoice 60 + 6.50 × 100 + 30 × 4 = $830. Three baristas for 5 paid hours: 3 × 5 × 23 = $345; coffee 100 × 0.80 = $80; van $25. Direct costs $450; contribution $380. In the data table it is the 100-guest row, 4-hour column.',
   },
@@ -221,13 +221,13 @@ export const independent = [
       { value: 7250, say: 'That adds 10 × $50, the shadow price of an hour in the model without integers. The $50 holds for only 6 more hours; after that the Saturday limit binds. Solve the model again.' },
       { value: 6450, say: 'That is the plan with 90 hours. Change E9 to 100 before you solve.' },
     ],
-    solution: 'With 100 hours Solver runs 12 events and all 3 workshops: 12 × 350 + 3 × 950 = $7,050. Ana’s hours (12 × 4 + 3 × 16 = 96) are no longer used up; the van (45 of 45) and the Saturdays are binding. Ten more hours are worth $600, less than the 10 × $50 that a shadow price would suggest, because the third workshop slot runs out.',
+    solution: 'With 100 hours Solver runs 12 events and all 3 workshops: 12 × 350 + 3 × 950 = $7,050. Ana’s hours (12 × 4 + 3 × 16 = 96) are no longer used up; the van (45 of 45) and the Saturdays are binding. Ten more hours are worth $600 here, more than 10 × $50. The shadow price holds for only 6 more hours, so the fractional optimum rises just $300 (to $7,050), while the whole-number plan jumps from $6,450 to $7,050: with whole numbers, value comes in lumps.',
   },
   {
     id: 'b03-wi-i5', type: 'formula', kind: 'applied',
     prompt: 'Goal Seek gives one answer for one event. Ana would rather have a formula that always shows the price per guest needed for the target ratio in B29, so she can see it for any event. In B30, write that formula. (Assume the invoice needed is above the minimum.)',
     sheet: { cells: { ...costingCells(TEAM_DAY), A29: 'Target contribution margin ratio', B29: 0.45, A30: 'Price per guest for the target' } },
-    cell: 'B30', view: 'A1:B30', widths: { A: 34, B: 13 }, formats: { ...COSTING_FORMATS, B29: '0.0%', B30: M },
+    cell: 'B30', view: 'A1:B30', maxHeight: '22rem', widths: { A: 34, B: 13 }, formats: { ...COSTING_FORMATS, B29: '0.0%', B30: M },
     answer: '=(B26/(1-B29)-B7-B9*B4-B10*B5)/B3',
     alt: ['=(B26/(1-B29)-(B7+B9*B4+B10*B5))/B3'],
     wrong: [

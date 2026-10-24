@@ -1,5 +1,5 @@
 // assess-m2.js — B03 module 2 test: Finding and summarising data (lookups, tables-and-cleaning, pivot-tables).
-// New questions on businesses the lessons don't use (Birchwood Gym, Moorfield Books, Harbour Bell Inn, Hartley Animal
+// New questions on businesses the lessons don't use (Birchwood Gym, Moorfield Books, Saltwick Inn, Hartley Animal
 // Rescue), not copies of lesson exercises. No hints; solutions are shown when the student reviews the test. Every
 // business, record and number is fictional; every num item's `check` recomputes its answer.
 
@@ -14,31 +14,31 @@ const gym = { A1: 'member_id', B1: 'plan', C1: 'monthly_fee', E1: 'monthly_fee',
 MEMBERS.forEach((m, i) => { gym[`A${i + 2}`] = m[0]; gym[`B${i + 2}`] = m[1]; });
 PLANS.forEach((p, i) => { gym[`E${i + 2}`] = p[0]; gym[`F${i + 2}`] = p[1]; gym[`G${i + 2}`] = p[2]; });
 
-// Harbour Bell Inn: a rate card by room type and season
+// Saltwick Inn: a rate card by room type and season
 const SEASONS = ['Low', 'Mid', 'High'];
 const RATES = { Single: [85, 105, 140], Double: [110, 135, 180], Suite: [190, 230, 310] };
 const rate = (room, season) => RATES[room][SEASONS.indexOf(season)];
 const swapped = (room, season) => { const rooms = Object.keys(RATES); return RATES[rooms[SEASONS.indexOf(season)]][rooms.indexOf(room)]; };
 
 // Moorfield Books: online shipping bands
-const SHIP = [[0, 3.99], [25, 2.49], [50.01, 0]];
-const ORDERS = [12.50, 25.00, 24.99, 50.00, 50.01, 73.40, 38.20, 8.75];
+const SHIP = [[0, 3.99], [25, 2.49], [50, 0]];
+const ORDERS = [12.50, 25.00, 24.99, 50.00, 49.99, 73.40, 38.20, 8.75];
 const ship = { A1: 'order', B1: 'order_value', C1: 'shipping', E1: 'from', F1: 'charge' };
 ORDERS.forEach((v, i) => { ship[`A${i + 2}`] = `MB-${3101 + i}`; ship[`B${i + 2}`] = v; });
 SHIP.forEach((b, i) => { ship[`E${i + 2}`] = b[0]; ship[`F${i + 2}`] = b[1]; });
 
-// a supplier's dates with dots, day first
-const DOTS = ['31.03.2026', '01.04.2026', '15.04.2026', '02.05.2026', '28.05.2026', '09.06.2026'];
+// a supplier's dates as eight digits of text, year first (ISO 8601 basic format)
+const DOTS = ['20260331', '20260401', '20260415', '20260502', '20260528', '20260609'];
 const dots = { A1: 'invoice_date (text)', B1: 'invoice_date' };
 DOTS.forEach((d, i) => { dots[`A${i + 2}`] = d; });
 
 // Hartley Animal Rescue: a table of gifts
-const GIFTS = [['G-201', 'individual', 25, 'no'], ['G-202', 'individual', 100, 'yes'], ['G-203', 'company', 500, 'no'], ['G-204', 'individual', 40, 'yes'], ['G-205', 'individual', 15, 'no'], ['G-206', 'trust', 1200, 'no'], ['G-207', 'individual', 60, 'yes'], ['G-208', 'individual', 35, 'no'], ['G-209', 'individual', 250, 'yes'], ['G-210', 'company', 300, 'no']];
+const GIFTS = [['G-201', 'individual', 25, 'no'], ['G-202', 'individual', 100, 'yes'], ['G-203', 'company', 500, 'no'], ['G-204', 'individual', 40, 'yes'], ['G-205', 'individual', 15, 'no'], ['G-206', 'trust', 1200, 'no'], ['G-207', 'individual', 60, 'yes'], ['G-208', 'individual', 35, 'no'], ['G-209', 'individual', 250, 'yes'], ['G-210', 'company', 300, 'no'], ['G-211', 'individual', 50, 'yes']];
 const gifts = { A1: 'gift_id', B1: 'donor_type', C1: 'amount', D1: 'matched', F1: 'matched gifts' };
 GIFTS.forEach((g, i) => { gifts[`A${i + 2}`] = g[0]; gifts[`B${i + 2}`] = g[1]; gifts[`C${i + 2}`] = g[2]; gifts[`D${i + 2}`] = g[3]; });
-const matched = sum(GIFTS.filter((g) => g[3] === 'yes').map((g) => g[2]));
+const matched = sum(GIFTS.filter((g) => g[3] === 'yes' && g[2] >= 50).map((g) => g[2]));
 
-// Harbour Bell Inn: room revenue by channel and month
+// Saltwick Inn: room revenue by channel and month
 const HB = { Direct: [12400, 15800, 9600], Agency: [8200, 11300, 6100], Website: [14900, 18700, 12300] };
 const hbCol = (j) => sum(Object.values(HB).map((r) => r[j]));
 const hbAll = sum(Object.values(HB).flat());
@@ -69,22 +69,22 @@ export const items = [
     id: 'b03-m2-2', lesson: 'lookups', type: 'mc', kind: 'conceptual',
     prompt: 'Moorfield Books, a fictional bookshop, gives loyalty discounts by yearly spend. Someone has sorted its band table from the largest band down: from $500, 15%; from $200, 10%; from $0, 0%. Each customer’s discount is found with <x>=VLOOKUP(B2,$E$2:$F$4,2,TRUE)</x>. What should the manager expect?',
     options: [
-      'Unreliable discounts, with no error message: approximate match assumes the first column runs from smallest to largest',
+      'Wrong discounts or #N/A for many customers, and no warning about the order',
       'Correct discounts, because VLOOKUP notices that the table is sorted largest first and searches it upwards',
       'Discounts only for spends of exactly $0, $200 or $500, and #N/A for every other customer',
-      'Correct discounts, as long as the fourth argument is changed from TRUE to FALSE',
+      'Correct discounts for every customer, as long as the fourth argument is changed from TRUE to FALSE',
     ],
     answer: 0,
     feedback: {
       1: 'VLOOKUP has no descending mode. Its approximate match assumes ascending order; on a table sorted the other way its answers can’t be trusted.',
-      2: 'That is what an exact match (FALSE) would do. With TRUE, VLOOKUP still returns something for most values; the trouble is that it may be the wrong band.',
+      2: 'That is what an exact match would do. With TRUE on a reversed table some spends get #N/A and others the wrong band.',
       3: 'FALSE makes the lookup exact: only spends equal to a lower bound would be found. Bands need an approximate match on an ascending table.',
     },
-    solution: 'VLOOKUP’s approximate match (and MATCH with match_type 1) assumes the first column is sorted from smallest to largest; on any other order the results are unreliable and come without an error. Sort the band table ascending (0, 200, 500) and test a value on and either side of each boundary.',
+    solution: 'VLOOKUP’s approximate match (and MATCH with match_type 1) assumes the first column is sorted from smallest to largest. On this reversed table the search goes wrong: spends under $200 come back #N/A and larger spends get the wrong band, and Excel gives no warning that the table is in the wrong order. Sort the band table ascending (0, 200, 500) and test a value on and either side of each boundary.',
   },
   {
     id: 'b03-m2-3', lesson: 'lookups', type: 'num', kind: 'numerical',
-    prompt: 'Harbour Bell Inn, a fictional hotel, prices rooms per night from a rate card with room types down the side and seasons across the top: Single $85 (Low), $105 (Mid), $140 (High); Double $110, $135, $180; Suite $190, $230, $310. Its booking sheet finds each rate with <x>=INDEX($B$2:$D$4,MATCH(room,$A$2:$A$4,0),MATCH(season,$B$1:$D$1,0))</x>. A guest books 3 nights in a Double in the High season and 2 nights in a Suite in the Low season. What is the total charge?',
+    prompt: 'Saltwick Inn, a fictional hotel, prices rooms per night from a rate card with room types down the side and seasons across the top: Single $85 (Low), $105 (Mid), $140 (High); Double $110, $135, $180; Suite $190, $230, $310. The rate card is in A1:D4 and its booking sheet finds each rate, for the room type in G2 and the season in H2, with <x>=INDEX($B$2:$D$4,MATCH(G2,$A$2:$A$4,0),MATCH(H2,$B$1:$D$1,0))</x>. A guest books 3 nights in a Double in the High season and 2 nights in a Suite in the Low season. What is the total charge?',
     answer: 3 * rate('Double', 'High') + 2 * rate('Suite', 'Low'), check: () => 3 * RATES.Double[2] + 2 * RATES.Suite[0], unit: '$', places: 2, tol: 0.005,
     wrong: [
       { value: 3 * swapped('Double', 'High') + 2 * swapped('Suite', 'Low'), say: 'You read the rate card with the row and column swapped. INDEX takes the row (room type) first and the column (season) second.' },
@@ -94,42 +94,43 @@ export const items = [
   },
   {
     id: 'b03-m2-4', lesson: 'lookups', type: 'formula', kind: 'applied',
-    prompt: 'Moorfield Books charges online orders $3.99 shipping, $2.49 from $25.00, and nothing for orders over $50. E1:F4 holds the bands. In C2, return the shipping charge for the order value in B2, and fill it down to C9.',
+    prompt: 'Moorfield Books charges online orders $3.99 shipping, $2.49 from $25.00, and nothing from $50.00 up. E1:F4 holds the bands. In C2, return the shipping charge for the order value in B2, and fill it down to C9.',
     sheet: { cells: ship, fixed: ['E2:E4'] }, cell: 'C2', fill: 'C2:C9', answer: '=VLOOKUP(B2,$E$2:$F$4,2,TRUE)',
     view: 'A1:F9', formats: { B: MONEY, C: MONEY, E: MONEY, F: MONEY }, widths: { B: 12, C: 10 },
     alt: ['=XLOOKUP(B2,$E$2:$E$4,$F$2:$F$4,,-1)', '=INDEX($F$2:$F$4,MATCH(B2,$E$2:$E$4,1))', '=VLOOKUP(B2,$E$2:$F$4,2)'],
     wrong: [
-      { formula: '=VLOOKUP(B2,$E$2:$F$4,2,FALSE)', say: 'FALSE asks for an exact match: only order values equal to 0, 25 or 50.01 are found and the rest show #N/A. Bands need TRUE.' },
+      { formula: '=VLOOKUP(B2,$E$2:$F$4,2,FALSE)', say: 'FALSE asks for an exact match: only order values equal to 0, 25 or 50 are found and the rest show #N/A. Bands need TRUE.' },
       { formula: '=XLOOKUP(B2,$E$2:$E$4,$F$2:$F$4)', say: 'XLOOKUP matches exactly by default. Add match_mode −1 (exact or next smaller) for bands.' },
       { formula: '=XLOOKUP(B2,$E$2:$E$4,$F$2:$F$4,,1)', say: 'Match mode 1 takes the next larger band: a $12.50 order would get the $25 rate. Use −1.' },
     ],
-    solution: '<x>=VLOOKUP(B2,$E$2:$F$4,2,TRUE)</x> (or XLOOKUP with match_mode −1), filled to C9. $24.99 pays $3.99, $25.00 pays $2.49 because a value equal to a lower bound belongs to that band, $50.00 still pays $2.49 because it isn’t over $50, and $50.01 ships free.',
+    solution: '<x>=VLOOKUP(B2,$E$2:$F$4,2,TRUE)</x> (or XLOOKUP with match_mode −1), filled to C9. A value equal to a lower bound belongs to that band, so $24.99 pays $3.99, $25.00 pays $2.49, $49.99 still pays $2.49 and $50.00 ships free. “From $50” starts the free band at 50; a rule of “over $50” would start it at 50.01.',
   },
   // ---------------------------------------------------------------- tables-and-cleaning
   {
     id: 'b03-m2-5', lesson: 'tables-and-cleaning', type: 'formula', kind: 'applied',
-    prompt: 'A fictional European equipment supplier writes its invoice dates as text with full stops, day first: 31.03.2026 is 31 March 2026. In B2, turn A2 into a true date that doesn’t depend on the computer’s date settings, and fill it down to B7.',
-    sheet: { cells: dots }, cell: 'B2', fill: 'B2:B7', answer: '=DATE(RIGHT(A2,4),MID(A2,4,2),LEFT(A2,2))',
+    prompt: 'A fictional European equipment supplier exports its invoice dates as eight digits of text, year first: 20260331 is 31 March 2026. In B2, turn A2 into a true date, and fill it down to B7.',
+    sheet: { cells: dots }, cell: 'B2', fill: 'B2:B7', answer: '=DATE(LEFT(A2,4),MID(A2,5,2),RIGHT(A2,2))',
     view: 'A1:B7', formats: { B: 'date' }, widths: { A: 20, B: 14 },
-    alt: ['=DATE(MID(A2,7,4),MID(A2,4,2),LEFT(A2,2))', '=DATE(VALUE(RIGHT(A2,4)),VALUE(MID(A2,4,2)),VALUE(LEFT(A2,2)))'],
+    alt: ['=DATE(VALUE(LEFT(A2,4)),VALUE(MID(A2,5,2)),VALUE(RIGHT(A2,2)))', '=DATE(MID(A2,1,4),MID(A2,5,2),MID(A2,7,2))'],
     wrong: [
-      { formula: '=DATEVALUE(A2)', say: 'DATEVALUE reads date text with the computer’s date settings, and US settings don’t recognise 31.03.2026, so it returns #VALUE!. Build the date from its parts with DATE.' },
-      { formula: '=DATE(RIGHT(A2,4),LEFT(A2,2),MID(A2,4,2))', say: 'That reads the date month first: DATE takes year, month, day, and the month is the middle pair, MID(A2,4,2).' },
+      { formula: '=VALUE(A2)', say: 'VALUE turns the text into the number 20,260,331, not a date: as a date serial it would be thousands of years away. Take the year, month and day apart and rebuild the date with DATE.' },
+      { formula: '=DATEVALUE(A2)', say: 'Eight digits without separators aren’t a date format DATEVALUE recognises, so it returns #VALUE!. Build the date from its parts.' },
+      { formula: '=DATE(LEFT(A2,4),RIGHT(A2,2),MID(A2,5,2))', say: 'DATE takes year, month, day: the month is the middle pair, <x>MID(A2,5,2)</x>, and the day the last two characters.' },
     ],
-    solution: '<x>=DATE(RIGHT(A2,4),MID(A2,4,2),LEFT(A2,2))</x>, filled to B7: year from the last four characters, month from characters 4 and 5, day from the first two. B2 shows 31 Mar 2026. Because the order of day and month is written into the formula, the result is the same on every computer.',
+    solution: '<x>=DATE(LEFT(A2,4),MID(A2,5,2),RIGHT(A2,2))</x>, filled to B7: the year from the first four characters, the month from characters 5 and 6, the day from the last two. B2 shows 31 Mar 2026. DATE turns the text digits into numbers by itself.',
   },
   {
     id: 'b03-m2-6', lesson: 'tables-and-cleaning', type: 'formula', kind: 'numerical',
-    prompt: 'Hartley Animal Rescue, a fictional charity, keeps its gifts in the table <code>Gifts</code> (A1:D11). Some gifts will be matched by the donor’s employer (matched = yes). In F2, use structured references to total the gifts that will be matched.',
-    sheet: { cells: gifts, tables: { Gifts: 'A1:D11' } }, cell: 'F2', answer: '=SUMIFS(Gifts[amount],Gifts[matched],"yes")',
-    view: 'A1:F11', formats: { C: MONEY, F: MONEY }, widths: { B: 12, F: 14 },
-    alt: ['=SUMIF(Gifts[matched],"yes",Gifts[amount])', '=SUMIFS(C2:C11,D2:D11,"yes")', '=SUM(FILTER(Gifts[amount],Gifts[matched]="yes"))'],
+    prompt: 'Hartley Animal Rescue, a fictional charity, keeps its gifts in the table <code>Gifts</code> (A1:D12). Donors’ employers match gifts of $50 or more (matched = yes). In F2, use structured references to total the gifts that will be matched and are $50 or more.',
+    sheet: { cells: gifts, tables: { Gifts: 'A1:D12' } }, cell: 'F2', answer: '=SUMIFS(Gifts[amount],Gifts[matched],"yes",Gifts[amount],">=50")',
+    view: 'A1:F12', formats: { C: MONEY, F: MONEY }, widths: { B: 12, F: 14 },
+    alt: ['=SUMIFS(Gifts[amount],Gifts[amount],">=50",Gifts[matched],"yes")', '=SUMIFS(C2:C12,D2:D12,"yes",C2:C12,">=50")', '=SUM(FILTER(Gifts[amount],(Gifts[matched]="yes")*(Gifts[amount]>=50)))'],
     wrong: [
-      { formula: '=SUM(Gifts[amount])', say: 'That totals every gift. Add the condition <x>"yes"</x> on the matched column.' },
-      { formula: '=SUMIFS(Gifts[amount],Gifts[matched],"no")', say: 'The criterion <x>"no"</x> picks the gifts that won’t be matched.' },
-      { formula: '=COUNTIFS(Gifts[matched],"yes")', say: 'That counts the matched gifts; the question asks for their total amount.' },
+      { formula: '=SUMIFS(Gifts[amount],Gifts[matched],"yes")', say: 'That includes the matched gifts under $50. Add a second condition on the amount column: <x>">=50"</x>.' },
+      { formula: '=SUMIFS(Gifts[amount],Gifts[matched],"yes",Gifts[amount],">50")', say: '<x>">50"</x> leaves out a gift of exactly $50, which the employer does match. Use <x>">=50"</x>.' },
+      { formula: '=SUMIFS(Gifts[amount],Gifts[amount],">=50")', say: 'That totals every gift of $50 or more, matched or not. Add the condition <x>"yes"</x> on the matched column.' },
     ],
-    solution: `<x>=SUMIFS(Gifts[amount],Gifts[matched],"yes")</x> returns $${matched.toFixed(2)}: gifts G-202, G-204, G-207 and G-209. Because it names the table’s columns, the formula keeps working as new gifts are added to the table.`,
+    solution: `<x>=SUMIFS(Gifts[amount],Gifts[matched],"yes",Gifts[amount],">=50")</x> returns $${matched.toFixed(2)}: gifts G-202, G-207, G-209 and G-211 (G-204, $40.00, is matched but under $50). A plain-range version such as <x>=SUMIFS(C2:C12,D2:D12,"yes",C2:C12,">=50")</x> gives the same result and is marked right, but the table’s names stay right as gifts are added.`,
   },
   {
     id: 'b03-m2-7', lesson: 'tables-and-cleaning', type: 'mc', kind: 'conceptual',
@@ -159,7 +160,6 @@ export const items = [
     ],
     categories: ['#CALC!', '#SPILL!', '#N/A', '#VALUE!'],
     answer: [0, 1, 2, 3],
-    fixed: true,
     feedback: {
       0: 'FILTER returns #CALC! when nothing qualifies and no if_empty value is given, because Excel has no empty array.',
       1: 'UNIQUE returns three donor types, which must spill into the cells below; the note blocks them.',
@@ -171,7 +171,7 @@ export const items = [
   // ---------------------------------------------------------------- pivot-tables
   {
     id: 'b03-m2-9', lesson: 'pivot-tables', type: 'num', kind: 'numerical',
-    prompt: `Harbour Bell Inn’s PivotTable of room revenue has booking channel in Rows and months in Columns. July, August, September: Direct $${HB.Direct.map((x) => x.toLocaleString('en-US')).join(', $')}; Agency $${HB.Agency.map((x) => x.toLocaleString('en-US')).join(', $')}; Website $${HB.Website.map((x) => x.toLocaleString('en-US')).join(', $')}. Shown as % of Column Total, what does the Agency / August cell show? One decimal place.`,
+    prompt: `Saltwick Inn’s PivotTable of room revenue has booking channel in Rows and months in Columns. July, August, September: Direct $${HB.Direct.map((x) => x.toLocaleString('en-US')).join(', $')}; Agency $${HB.Agency.map((x) => x.toLocaleString('en-US')).join(', $')}; Website $${HB.Website.map((x) => x.toLocaleString('en-US')).join(', $')}. Shown as % of Column Total, what does the Agency / August cell show? One decimal place.`,
     answer: r2(HB.Agency[1] / hbCol(1) * 1000) / 10, check: () => HB.Agency[1] / hbCol(1) * 100, unit: '%', places: 1, tol: 0.06,
     wrong: [
       { value: r2(HB.Agency[1] / sum(HB.Agency) * 1000) / 10, say: 'You divided by the Agency row’s total: that is % of Row Total. With months in Columns, % of Column Total divides by August’s total.' },
@@ -194,9 +194,9 @@ export const items = [
   },
   {
     id: 'b03-m2-11', lesson: 'pivot-tables', type: 'mc', kind: 'applied',
-    prompt: 'Harbour Bell Inn’s night manager builds a PivotTable on a bookings sheet that a colleague prepared. Its grand total of room revenue is exactly twice the revenue the booking system reports for the quarter, although every individual booking is correct. What is the most likely cause?',
+    prompt: 'Saltwick Inn’s night manager builds a PivotTable on a bookings sheet that a colleague prepared. Its grand total of room revenue is exactly twice the revenue the booking system reports for the quarter, although every individual booking is correct. What is the most likely cause?',
     options: [
-      'The sheet has subtotal rows typed between the bookings, so every booking is counted once and again in its subtotal',
+      'Subtotal rows typed among the bookings, which the PivotTable sums as if they were bookings',
       'The PivotTable has not been refreshed since the bookings were entered, so it is showing an old cache',
       'Revenue is summarised with Count instead of Sum, which doubles the figure for two-night stays',
       'A Filters field is hiding half of the bookings, and the hidden ones are added back into the total',

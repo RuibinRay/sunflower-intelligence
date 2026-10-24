@@ -45,7 +45,7 @@ export default {
   slug: 'tables-and-cleaning',
   title: 'Excel tables and cleaning data',
   blurb: 'Turn a range into an Excel table, so that formulas refer to columns by name and grow with the data; sort, filter and validate it; and clean an imported export with TRIM, VALUE, DATE and the dynamic array functions, keeping the raw data untouched and every step on record.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Build an Excel table, and write structured references, calculated columns and a total row.',
     'Use sorting, filtering, data validation and Remove Duplicates, and explain what each one does to the data.',
@@ -106,7 +106,7 @@ export default {
     { p: 'That makes the total row a live summary of whatever the filter shows. Filter <code>Orders</code> to the app channel and the total row shows the app orders’ value, while <x>=SUM(Orders[order_total])</x> elsewhere still shows all ' + D.orders + ' orders. Neither is wrong; they answer different questions, so label them.' },
 
     { h: 'Sorting and filtering' },
-    { p: 'Sorting rearranges rows: Sort A to Z or Sort Largest to Smallest on a column, or several levels at once with Data › Sort and Add Level. Sort whole records, never one column on its own: Microsoft warns that sorting part of a range “disassociates the sorted range from its original data”, and when Excel detects it, choose Expand the selection. A table always sorts whole rows. If the original order matters (the order the export arrived in, say), keep an id column you can sort back by.' },
+    { p: 'Sorting rearranges rows: Sort A to Z or Sort Largest to Smallest on a column, or several levels at once with Data › Sort and Add Level. Sort whole records, never one column on its own: sorting part of a range separates the sorted cells from the rest of their records, and when Excel notices that you have selected only part of the data it offers to expand the selection, which you should accept. A table always sorts whole rows. If the original order matters (the order the export arrived in, say), keep an id column you can sort back by.' },
     { p: 'Filtering hides the rows that don’t meet a condition; nothing is deleted. A table has filter buttons on its headers already, and a plain range gets them from Data › Filter. Each button offers text, number or date filters to suit the column, such as channel equals app, order_total greater than 35, or order_date in May. Pair a filter with SUBTOTAL, not SUM, when the total should follow what you see.' },
 
     { h: 'Data validation' },
@@ -142,9 +142,9 @@ export default {
         ['rating', 'Blank: no rating given', 'Leave blank; never turn it into 0'],
       ],
     } },
-    { p: 'TRIM removes every space except single spaces between words, but Microsoft is explicit that it was designed for the ordinary space character (code 32): the non-breaking space (code 160) that web pages use survives it, and needs <x>=TRIM(SUBSTITUTE(A2,CHAR(160)," "))</x>. CLEAN removes the non-printing control characters with codes 0 to 31. PROPER capitalises the first letter and every letter that follows a non-letter, and lowers the rest, so it turns “house blend 250g” into “House Blend 250G”: harmless for a lookup, which ignores case, but check its output before you publish it.' },
+    { p: 'TRIM removes every space except single spaces between words, but only the ordinary space character (code 32): the non-breaking space (code 160) that web pages use survives it, and needs <x>=TRIM(SUBSTITUTE(A2,CHAR(160)," "))</x>. CLEAN removes the non-printing control characters with codes 0 to 31. PROPER capitalises the first letter and every letter that follows a non-letter, and lowers the rest, so it turns “house blend 250g” into “House Blend 250G”: harmless for a lookup, which ignores case, but check its output before you publish it.' },
     { p: 'VALUE converts text that looks like a number, date or time in a format Excel recognises: <x>=VALUE("$1,000")</x> is 1000, and arithmetic such as <x>=I2*1</x> converts the same way. SUM does not: it skips text, as B02 showed. After converting, <x>=COUNT(L2:L21)</x> should equal the number of rows; any shortfall is a value that failed to convert and needs a look.' },
-    { p: 'Dates need the most care. DATEVALUE converts date text to a serial number using the computer’s date settings, so the same text can give different dates on different machines. With US settings, “05/03/2026” becomes 3 May 2026, silently. B02 established that Lantern’s web shop writes the day first, so this order was placed on 5 March; <x>=DATE(RIGHT(B2,4),MID(B2,4,2),LEFT(B2,2))</x> builds the date from its parts in the order you decide, and gives the same answer everywhere. Use DATEVALUE only for unambiguous text (ISO dates, written-out months), and test a few results against the source.' },
+    { p: 'Dates need the most care. DATEVALUE converts date text to a serial number, and Microsoft warns that the computer’s system date setting can change its results, so the same text can give different dates on different machines. With US settings, “05/03/2026” becomes 3 May 2026, silently. B02 established that Lantern’s web shop writes the day first, so this order was placed on 5 March; <x>=DATE(RIGHT(B2,4),MID(B2,4,2),LEFT(B2,2))</x> builds the date from its parts in the order you decide, and gives the same answer everywhere. Use DATEVALUE only for unambiguous text (ISO dates, written-out months), and test a few results against the source.' },
     { p: 'Each step goes in the log, B02-style: what the column does, the rule, and the count it affected. For example: “unit_price: VALUE of the raw text; ' + RAW.length + ' of ' + RAW.length + ' converted.” “order_date: DATEVALUE for ISO and written dates (' + (iso + written) + ' rows), DATE from parts for day-first slash dates (' + slash + ' row).” “LC-10003: exact duplicate, second copy removed; ' + RAW.length + ' rows become ' + (RAW.length - 1) + '.” “LC-10016: total disagrees with its parts by ' + money(gap(RAW16)) + '; set to ' + money(clean16) + ', as B02 decided.”' },
 
     { h: 'Text to Columns, Flash Fill, Find and Replace and Power Query' },
@@ -159,7 +159,7 @@ export default {
         ['Power Query (Data › Get & Transform Data)', 'Imports data and records each transformation as a step', 'Learning a new editor', 'Yes: Refresh reruns every step'],
       ],
     } },
-    { p: 'Power Query is the tool built for the monthly export. Microsoft describes it as connecting to data, transforming it, combining it and loading the result to a worksheet or the Data Model, with the original source unchanged. Each transformation appears in the editor’s Applied Steps list, where steps can be renamed, deleted, edited or reordered, and when the query is refreshed each step runs again automatically: a cleaning log that executes itself. It is built into Excel for Windows from Excel 2016 and has come to Excel for Mac since 2019, though not to Excel 2016 or 2019 for Mac. This lesson stays with formulas, which work everywhere and show their logic cell by cell; B07 SQL returns to the same steps as queries.' },
+    { p: 'Power Query is the tool built for the monthly export. It connects to the data, transforms it, can combine it with other sources and loads the result to a worksheet, leaving the original source unchanged. Each transformation appears in the editor’s Applied Steps list, where steps can be renamed, deleted, edited or reordered, and when the query is refreshed each step runs again automatically: a cleaning log that executes itself. Microsoft states that it is available in every stand-alone version of Excel for Windows from Excel 2016, and on a Mac to Microsoft 365 subscribers. This lesson stays with formulas, which work everywhere and show their logic cell by cell; B07 SQL returns to the same steps as queries.' },
 
     { h: 'Dynamic arrays: UNIQUE, SORT, SORTBY and FILTER' },
     { p: 'The lookups lesson showed a formula that returns several values and <g>spills</g> them into neighbouring cells. Four <g>dynamic array functions</g> make that their job. Excel draws a border round the spill range while you select it, only the top-left cell can be edited, and the range grows or shrinks by itself when the source changes. Pointed at a table column, they keep up with the table.' },
@@ -174,8 +174,8 @@ export default {
       ],
     } },
     { p: 'FILTER’s include argument is a column of TRUE and FALSE values as tall as the array. Multiply conditions for AND and add them for OR: <x>=FILTER(Orders,(Orders[region]="Central")*(Orders[channel]="web"))</x> keeps Central’s web orders, all columns. If nothing qualifies and if_empty is left out, FILTER returns #CALC!, because Excel has no empty array. UNIQUE’s exactly_once set to TRUE keeps only values that occur once, and wrapping UNIQUE in ROWS counts the distinct values: <x>=ROWS(UNIQUE(Orders[customer_id]))</x> gives ' + new Set(ORDERS.map((r) => r[oc('customer_id')])).size + ' customers.' },
-    { p: 'A spilled formula fails with #SPILL! when it can’t spill. Microsoft lists several causes: the spill range isn’t empty (delete or move whatever is in the way), the formula is inside a table (spilled array formulas aren’t supported in tables, so put it beside the table), the result would run off the edge of the sheet, or it would spill into merged cells. To refer to a whole spill range, put # after its first cell: if D2 holds <x>=SORT(UNIQUE(Orders[region]))</x>, then <x>=COUNTA(D2#)</x> counts what it spilled, however many rows that becomes.' },
-    { callout: 'standards', title: 'Which versions have dynamic arrays', html: 'UNIQUE, SORT, SORTBY and FILTER work in Excel for Microsoft 365, Excel 2024 and Excel 2021, on Windows and on Mac. Microsoft lists the spilled range operator (#) for Excel for Microsoft 365. In Excel 2019 and earlier these functions don’t exist: use filters, sorting, and COUNTIFS or a PivotTable to count distinct values instead.' },
+    { p: 'A spilled formula fails with #SPILL! when it can’t spill. The usual causes are these: the spill range isn’t empty (delete or move whatever is in the way), the formula is inside a table (spilled array formulas aren’t supported in tables, so put it beside the table), the result would run off the edge of the sheet, or it would spill into merged cells. To refer to a whole spill range, put # after its first cell: if D2 holds <x>=SORT(UNIQUE(Orders[region]))</x>, then <x>=COUNTA(D2#)</x> counts what it spilled, however many rows that becomes.' },
+    { callout: 'standards', title: 'Which versions have dynamic arrays', html: 'UNIQUE, SORT, SORTBY and FILTER work in Excel for Microsoft 365, Excel 2024 and Excel 2021, on Windows and on Mac. The spilled range operator (#) is documented for Excel for Microsoft 365. In Excel 2019 and earlier these functions don’t exist: use filters and sorting instead, and to count distinct values either a helper column such as <x>=COUNTIF($C$2:C2,C2)=1</x> (TRUE at each value’s first appearance) counted with <x>=COUNTIF(D2:D232,TRUE)</x>, or a PivotTable’s Distinct Count.' },
   ],
 
   formulas: [
@@ -214,9 +214,9 @@ export default {
     { level: 'challenging', title: 'Cleaning six rows of the raw export', fictional: true,
       setup: 'Six rows of B02’s raw export, as typed. Every value is text. Build the clean values with formulas, flag what needs a decision, and write the log entries.',
       table: {
-        caption: 'Six raw rows (text exactly as exported)',
-        head: ['order_id', 'order_date', 'quantity', 'unit_price', 'discount', 'order_total', 'channel'],
-        rows: PICK.map((r) => [r[0], `“${r[rc('order_date')]}”`, `“${r[rc('quantity')]}”`, `“${r[rc('unit_price')]}”`, `“${r[rc('discount')]}”`, `“${r[rc('order_total')]}”`, r[rc('channel')]]),
+        caption: 'Six raw rows in A1:G7 (text exactly as exported; row 1 holds the headings)',
+        head: ['', 'A: order_id', 'B: order_date', 'C: quantity', 'D: unit_price', 'E: discount', 'F: order_total', 'G: channel'],
+        rows: PICK.map((r, i) => [String(i + 2), r[0], `“${r[rc('order_date')]}”`, `“${r[rc('quantity')]}”`, `“${r[rc('unit_price')]}”`, `“${r[rc('discount')]}”`, `“${r[rc('order_total')]}”`, r[rc('channel')]]),
       },
       steps: [
         'Numbers: <x>=VALUE(…)</x> on quantity, unit_price, discount and order_total turns “$17.00” into 17, “14.00” into 14 and “$21.35” into 21.35. <x>=COUNT(…)</x> on each new column returns 6: nothing failed to convert.',
@@ -229,9 +229,9 @@ export default {
       interpretation: 'Each problem needed a different tool, and two of them, the slash date and the wrong total, needed a decision that no function can make. Formulas do the routine conversions repeatably; the log records the judgements, so the same choices are made next month and anyone can check them.' },
 
     { level: 'applied', title: 'Who is overloaded in the workshop?', fictional: true,
-      setup: 'Spokewise Cycles, a fictional bike shop, keeps its repair jobs in a table called Jobs: job, mechanic, status, due date and estimated hours. The manager wants each mechanic’s open jobs, soonest first, and to know whether anyone has more open work due by 10 July than the ' + CAPACITY + ' workshop hours they have before then.',
+      setup: 'Spokewise Cycles, a fictional bike shop, keeps its repair jobs in a table called Jobs: job, mechanic, status, due (a date) and estimated hours. The manager wants each mechanic’s open jobs, soonest first, and to know whether anyone has more open work due by 10 July than the ' + CAPACITY + ' workshop hours they have before then.',
       table: {
-        caption: 'The Jobs table (fictional)',
+        caption: 'The Jobs table (fictional; the due column holds dates, shown as day and month)',
         head: ['job', 'mechanic', 'status', 'due', 'hours'],
         align: ['l', 'l', 'l', 'l', 'r'],
         rows: JOBS.map((j) => [j[0], j[1], j[2], j[3], j[4].toFixed(1)]),
@@ -248,7 +248,7 @@ export default {
 
   demo: [
     { widget: 'tc-table', intro: 'The first twelve spring orders as the table Orders. Type a formula with structured references in H2 (try <x>=[@quantity]*[@unit_price]-[@discount]</x>) and use Fill down; then read the formulas in J2:J4 with Show formulas.' },
-    { widget: 'tc-clean', intro: 'The first 17 rows of the raw export, exactly as typed, with the cleaning formulas filled in beside them. Use Show formulas to read them, then find the three rows the checks flag: a day-first slash date, an id that occurs twice and a total that doesn’t add up. Change a raw price and watch the clean columns follow.' },
+    { widget: 'tc-clean', intro: 'The first 17 rows of the raw export, exactly as typed, with the cleaning formulas filled in beside them. Use Show formulas to read them, then find the three problems the checks flag: a day-first slash date, an id that occurs twice and a total that doesn’t add up. Change a raw price and watch the clean columns follow.' },
     { widget: 'tc-arrays', intro: 'UNIQUE, SORT and FILTER on twenty orders. One formula in K2 can’t spill because a note is in its way: delete the note in K4 and watch it spill. Change the threshold in M1 to see FILTER resize.' },
   ],
 
@@ -293,7 +293,8 @@ export default {
     { text: 'Microsoft Support. <i>SUBTOTAL function</i>.', url: 'https://support.microsoft.com/en-us/excel/subtotal-function', checked: '2026-10-23' },
     { text: 'Microsoft Support. <i>More on data validation</i>.', url: 'https://support.microsoft.com/en-US/Excel/more-on-data-validation', checked: '2026-10-23' },
     { text: 'Microsoft Support. <i>Filter for unique values or remove duplicate values</i>.', url: 'https://support.microsoft.com/en-US/excel/get-started/filter-for-unique-values-or-remove-duplicate-values', checked: '2026-10-23' },
-    { text: 'Microsoft Support. <i>Top ten ways to clean your data</i>.', url: 'https://support.microsoft.com/office/top-ten-ways-to-clean-your-data-2844b620-677c-47a7-ac3e-c2e157d1db19', checked: '2026-10-23' },
+    { text: 'Microsoft Support. <i>DATEVALUE function</i>.', url: 'https://support.microsoft.com/office/datevalue-function-df8b07d4-7761-4a93-bc33-b7471bbff252', checked: '2026-10-23' },
+    { text: 'Microsoft Support. <i>Power Query data sources in Excel versions</i>.', url: 'https://support.microsoft.com/office/power-query-data-sources-in-excel-versions-e9332067-8e49-46fc-97ff-f2e1bfa0cb16', checked: '2026-10-23' },
     { text: 'Microsoft Support. <i>Dynamic array formulas and spilled array behavior</i>.', url: 'https://support.microsoft.com/excel/dynamic-array-formulas-and-spilled-array-behavior', checked: '2026-10-23' },
   ],
 

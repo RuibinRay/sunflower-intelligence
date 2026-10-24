@@ -51,6 +51,7 @@ REGIONS.forEach((g, i) => { g3[`F${i + 3}`] = g; });
 const TYPES = ['Breakfast', 'Conference', 'Launch', 'Meeting', 'Team day'];
 const evV = (t) => sum(EVENTS.filter((r) => r[ec('event_type')] === t).map((r) => r[ec('invoice')]));
 const evAll = sum(EVENTS.map((r) => r[ec('invoice')]));
+const evN = (t) => EVENTS.filter((r) => r[ec('event_type')] === t).length;
 
 export const guided = [
   {
@@ -59,7 +60,6 @@ export const guided = [
     items: ['region', 'order_date, grouped by Months', 'order_total', 'subscription', 'product'],
     categories: ['Rows', 'Columns', 'Values', 'Filters', 'Not needed'],
     answer: [0, 1, 2, 3, 4],
-    fixed: true,
     hints: ['Down the side is Rows; across the top is Columns.', 'A field that only decides which records count, without appearing as a row or column, is a filter.'],
     feedback: {
       2: 'order_total is what is added up, so it goes in Values (as Sum).',
@@ -114,8 +114,8 @@ export const guided = [
     prompt: `A PivotTable of Lantern’s 2026 catering events has event type in Rows and Sum of invoice in Values: ${TYPES.map((t) => `${t} $${evV(t).toLocaleString('en-US')}`).join(', ')}; grand total $${evAll.toLocaleString('en-US')}. Shown as % of Grand Total, what does the Breakfast row show? One decimal place.`,
     answer: r2(evV('Breakfast') / evAll * 1000) / 10, check: () => evV('Breakfast') / evAll * 100, unit: '%', places: 1, tol: 0.06,
     hints: ['% of Grand Total divides each value by the grand total.', `${evV('Breakfast').toLocaleString('en-US')} ÷ ${evAll.toLocaleString('en-US')}.`],
-    wrong: [{ value: r2(13 / 76 * 1000) / 10, say: 'That is the share of events (13 of 76), not of invoice value. The Values field here is the sum of invoices.' }],
-    solution: `$${evV('Breakfast').toLocaleString('en-US')} ÷ $${evAll.toLocaleString('en-US')} = ${(evV('Breakfast') / evAll * 100).toFixed(1)}%. Breakfasts were 13 of the 76 events (17.1%) but brought in a larger share of the value, because their average invoice is above the overall average of $820.`,
+    wrong: [{ value: r2(evN('Breakfast') / EVENTS.length * 1000) / 10, say: `That is the share of events (${evN('Breakfast')} of ${EVENTS.length}), not of invoice value. The Values field here is the sum of invoices.` }],
+    solution: `$${evV('Breakfast').toLocaleString('en-US')} ÷ $${evAll.toLocaleString('en-US')} = ${(evV('Breakfast') / evAll * 100).toFixed(1)}%. Breakfasts were ${evN('Breakfast')} of the ${EVENTS.length} events (${(evN('Breakfast') / EVENTS.length * 100).toFixed(1)}%) but brought in a larger share of the value, because their average invoice, $${(evV('Breakfast') / evN('Breakfast')).toFixed(2)}, is above the overall average of $${(evAll / EVENTS.length).toFixed(2)}.`,
   },
 ];
 
@@ -158,7 +158,7 @@ export const independent = [
     id: 'b03-pv-i3', type: 'mc', kind: 'applied',
     prompt: 'Ana’s PivotTable was built in June on the range A1:M180 of her order sheet. She pastes the rest of June’s orders into rows 181 to 232 and clicks Refresh, but the grand total doesn’t change. Why, and what is the lasting fix?',
     options: [
-      'The source range ends at row 180; make the data a table and point the PivotTable at it with Change Data Source',
+      'Its source stops at row 180: make the data a table and use Change Data Source to point at it',
       'Refresh takes effect only after the workbook is saved, closed and opened again, so reopen it',
       'PivotTables can’t take in new rows, so she must build a new PivotTable every month',
       'New rows are filtered out by default until the filter on order_date is cleared',
@@ -200,11 +200,11 @@ export const independent = [
     prompt: `A1:C${last6} holds every third spring order (77 orders). A PivotTable grouped by month shows a value for May. In E2, calculate the same figure with SUMIFS and a date window, so that you can reconcile it.`,
     sheet: { cells: i6o, fixed: [`B2:B${last6}`] }, cell: 'E2', answer: `=SUMIFS(C2:C${last6},B2:B${last6},">="&DATE(2026,5,1),B2:B${last6},"<"&DATE(2026,6,1))`,
     view: `A1:E${last6}`, formats: { B: 'date', C: MONEY, E: MONEY }, widths: { B: 12, E: 16 }, maxHeight: '24rem',
-    alt: [`=SUMIFS(C2:C${last6},B2:B${last6},">="&DATE(2026,5,1),B2:B${last6},"<="&DATE(2026,5,31))`, `=SUMPRODUCT((MONTH(B2:B${last6})=5)*C2:C${last6})`],
+    alt: [`=SUMIFS(C2:C${last6},B2:B${last6},">="&DATE(2026,5,1),B2:B${last6},"<="&DATE(2026,5,31))`, `=SUMIFS(C2:C${last6},B2:B${last6},">=5/1/2026",B2:B${last6},"<6/1/2026")`, `=SUMPRODUCT((MONTH(B2:B${last6})=5)*C2:C${last6})`],
     wrong: [
       { formula: `=SUMIFS(C2:C${last6},B2:B${last6},">="&DATE(2026,5,1))`, say: 'That includes June too. Add the upper end of the window: before 1 June.' },
-      { formula: `=SUMIFS(C2:C${last6},B2:B${last6},">="&DATE(2026,5,1),B2:B${last6},"<="&DATE(2026,6,1))`, say: 'An order placed on 1 June would be included. Use "<"&DATE(2026,6,1), or "<="&DATE(2026,5,31).' },
-      { formula: `=SUMIFS(C2:C${last6},B2:B${last6},">=DATE(2026,5,1)",B2:B${last6},"<DATE(2026,6,1)")`, say: 'Inside quotes, DATE(2026,5,1) is just text, not a date. Join the operator to the date with &: ">="&DATE(2026,5,1).' },
+      { formula: `=SUMIFS(C2:C${last6},B2:B${last6},">="&DATE(2026,5,1),B2:B${last6},"<="&DATE(2026,6,1))`, say: 'An order placed on 1 June would be included. Use <x>"<"&DATE(2026,6,1)</x>, or <x>"<="&DATE(2026,5,31)</x>.' },
+      { formula: `=SUMIFS(C2:C${last6},B2:B${last6},">=DATE(2026,5,1)",B2:B${last6},"<DATE(2026,6,1)")`, say: 'Inside quotes, <x>DATE(2026,5,1)</x> is just text, not a date. Join the operator to the date with &: <x>">="&DATE(2026,5,1)</x>.' },
     ],
     solution: `<x>=SUMIFS(C2:C${last6},B2:B${last6},">="&DATE(2026,5,1),B2:B${last6},"<"&DATE(2026,6,1))</x> returns $${mayEvery3.toFixed(2)}, which should equal the PivotTable’s May cell. A window from the first of the month up to, but not including, the first of the next month catches every May date and nothing else.`,
   },
@@ -264,7 +264,6 @@ export const check = [
     ],
     categories: ['% of Grand Total', '% of Column Total', '% of Row Total', 'Difference From (previous month)'],
     answer: [0, 1, 2, 3],
-    fixed: true,
     feedback: {
       1: 'May is a column here, so a share of May’s total is % of Column Total.',
       2: 'The North is a row, so a share of the North’s total is % of Row Total.',

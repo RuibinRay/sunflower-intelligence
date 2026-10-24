@@ -18,6 +18,8 @@ const chVal = (ch) => D.byChannel.value[ch];
 const chCnt = (ch) => D.byChannel.orders[ch];
 const bulk = ORDERS.find((r) => r[0] === D.bulk.id);
 const customers = new Set(ORDERS.map((r) => r[oc('customer_id')])).size;
+const appShare = (m) => mc(m, 'app') / mc(m);
+const otherMin = Math.min(...['Mar', 'Apr', 'Jun'].map(appShare)), otherMax = Math.max(...['Mar', 'Apr', 'Jun'].map(appShare));
 
 // catering events by type
 const TYPES = ['Breakfast', 'Conference', 'Launch', 'Meeting', 'Team day'];
@@ -47,7 +49,7 @@ export default {
   slug: 'pivot-tables',
   title: 'PivotTables',
   blurb: 'Summarise hundreds of rows by dragging fields: order value by month and channel, events by type, each item’s share of a total. Learn how a PivotTable groups and aggregates its source, how to show percentages and months, how to keep it up to date, and when SUMIFS formulas are the better choice.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Prepare source data for a PivotTable, and explain why an Excel table is the best source.',
     'Build PivotTables with fields in the Rows, Columns, Values and Filters areas, choosing Sum, Count, Average, Max or Min.',
@@ -84,6 +86,7 @@ export default {
       '<b>A single header row</b> of unique, non-blank labels, one per column. Two header rows, or a blank heading, leave a field without a usable name.',
       '<b>Records in rows, fields in columns.</b> A sheet with one column per month is already a summary; reshape it into rows of month and value first (B02’s transforming-data lesson).',
       '<b>One type per value field.</b> Don’t mix text and numbers in a column you will sum.',
+      '<b>No blank rows or columns.</b> Excel takes the source as the block of data around the selected cell, so a blank row or column cuts the data short.',
       '<b>No totals inside the data.</b> A subtotal row typed between the records would be summed with them and counted twice.',
       '<b>Ideally an Excel table.</b> The table grows when rows are added, so the PivotTable sees them at the next refresh.',
     ] },
@@ -92,7 +95,7 @@ export default {
     { p: 'Right-click a value and choose Summarize Values By to pick the aggregation: Sum, Count, Average, Max, Min, Product, StdDev, StdDevp, Var or Varp (the last four belong to B04). A numeric field in Values starts as Sum. Microsoft states the rule for the exception: if the field contains blanks or non-numeric values (text, dates or Booleans) when you place it in Values, the PivotTable uses Count. So a column of order totals stored as text arrives as “Count of order_total”, and a cleaning problem shows up as a summary problem.' },
     { p: `Count counts non-empty values, as COUNTA does, not records. Lantern’s rating column is blank for orders that weren’t rated, so Count of rating gives ${D.rated}, not ${D.orders}; to count orders, count a field that is never blank, such as order_id. Average ignores blanks the same way: the average rating, ${D.meanRating.toFixed(2)}, is the average of the ${D.rated} ratings given, and says nothing about the ${D.orders - D.rated} orders without one.` },
     { p: `Several summaries can sit side by side: drag order_total into Values twice and set one to Sum and one to Average. By channel that gives ${money(chVal('app'))} and an average order of ${money(chVal('app') / chCnt('app'))} for the app, against ${money(chVal('web'))} and ${money(chVal('web') / chCnt('web'))} for the web shop, the <g>average order value</g> of each.` },
-    { p: `Counting <i>different</i> things is another matter. Count of customer_id counts orders (${D.orders}), not customers. Microsoft’s Distinct Count summary counts each value once, but it works only when the PivotTable uses the Data Model: tick “Add this data to the Data Model” when you create it. For Lantern it gives ${customers} customers. Without the Data Model, <x>=ROWS(UNIQUE(Orders[customer_id]))</x> from the last lesson gives the same number.` },
+    { p: `Counting <i>different</i> things is another matter. Count of customer_id counts orders (${D.orders}), not customers. Microsoft’s Distinct Count summary counts each value once, but it works only when the PivotTable uses the Data Model (Excel for Windows): tick “Add this data to the Data Model” when you create it. For Lantern it gives ${customers} customers. Without the Data Model, <x>=ROWS(UNIQUE(Orders[customer_id]))</x> from the last lesson gives the same number.` },
 
     { h: 'Show Values As: shares instead of amounts' },
     { p: 'Right-click a value and choose Show Values As to replace each amount with a calculation on it. Microsoft lists, among others: % of Grand Total, % of Column Total, % of Row Total, % Of (a chosen base item), Difference From, % Difference From, Running Total In and the Rank options. The three percentage-of-total options answer different questions, and the formula cards below give each.' },
@@ -112,15 +115,15 @@ export default {
     { p: 'Numbers group the same way, into equal intervals: right-click an order_total row label, Group, Starting at 0, By 20, and the rows become $0–$20, $20–$40 and so on, the equal-width <g>binning</g> of B02. Bands of unequal width, such as Ana’s order-size bands, need a helper column with an approximate-match lookup (the lookups lesson), which then goes into Rows like any other field.' },
 
     { h: 'Sorting and filtering' },
-    { p: 'Use the arrow on Row Labels or Column Labels to sort A to Z or Z to A, or right-click a cell and choose Sort, which sorts all the items at that level. To rank items by their totals, select a value in the Grand Total column and sort it. Month names typed as text would sort alphabetically (Apr, Jun, Mar, May); grouped dates sort in calendar order, and Excel’s built-in month and weekday custom lists, under More Sort Options, fix text months too.' },
+    { p: 'Use the arrow on Row Labels or Column Labels to sort A to Z or Z to A, or right-click a cell and choose Sort, which sorts all the items at that level. To rank items by their totals, select a value in the Grand Total column and sort it. In a PivotTable, month and weekday names typed as text sort in calendar order by default, because PivotTable Options › Totals & Filters › Use Custom Lists when sorting is on, and Excel’s custom lists include the months and the days of the week. In an ordinary sort, or with that option off, they sort alphabetically (Apr, Jun, Mar, May). When a PivotTable doesn’t sort as you expect, Microsoft suggests Sort › More Sort Options, or unchecking that option.' },
     { p: 'Filters limit which records count. A field in the Filters area filters the whole PivotTable (channel = app, say), and the arrows on the labels filter rows or columns. A <g>slicer</g> does the same job with a panel of buttons that also shows what is selected: click in the PivotTable and choose Insert › Slicer. Slicers work on tables too, and one slicer can drive several PivotTables built from the same source through Report Connections.' },
 
     { h: 'Refresh and the pivot cache' },
-    { p: 'A PivotTable doesn’t read the table cell by cell. It summarises a copy of the source data, the <g>pivot cache</g>; Microsoft’s developer documentation describes the PivotCache object as “the memory cache for a PivotTable report”. When the source changes, the PivotTable keeps showing the old figures until it is refreshed: right-click it and choose Refresh, press Alt+F5, or use Refresh All on the PivotTable Analyze tab for every PivotTable at once. PivotTable Options › Data › “Refresh data when opening the file” refreshes on opening.' },
+    { p: 'A PivotTable doesn’t read the table cell by cell. It summarises a copy of the source data that it holds in memory, the <g>pivot cache</g>. When the source changes, the PivotTable keeps showing the old figures until it is refreshed: right-click it and choose Refresh, press Alt+F5, or use Refresh All on the PivotTable Analyze tab for every PivotTable at once. PivotTable Options › Data › “Refresh data when opening the file” refreshes on opening.' },
     { p: 'Microsoft is adding an Auto Refresh option for PivotTables on data in the same workbook, but when this lesson was checked it was available only to members of the Microsoft 365 Insider programme; don’t count on it. And refresh can only see what the source range covers. A PivotTable built on A1:M232 ignores orders pasted into row 233, refresh or not; built on the table <code>Orders</code>, it includes them, because the table grows. An old PivotTable can be pointed at a table with Change Data Source.' },
 
     { h: 'PivotCharts and GETPIVOTDATA' },
-    { p: 'A PivotChart (Insert › PivotChart) charts a PivotTable’s summary, and the charts lesson covers which chart to choose. To use a PivotTable’s number in an ordinary formula, type = and click the value cell: Excel writes a GETPIVOTDATA formula such as <x>=GETPIVOTDATA("order_total",$A$3,"channel","web")</x>, which finds the value by its labels rather than its position, so it survives a rearranged layout. It returns only data the PivotTable shows, and #REF! if a filter hides it. You can switch the feature off with PivotTable › Options › Generate GetPivotData.' },
+    { p: 'A PivotChart (Insert › PivotChart) charts a PivotTable’s summary, and the charts lesson covers which chart to choose. To use a PivotTable’s number in an ordinary formula, type = and click the value cell: Excel writes a GETPIVOTDATA formula such as <x>=GETPIVOTDATA("order_total",$A$3,"channel","web")</x>, which finds the value by its labels rather than its position, so it survives a rearranged layout. It returns only data the PivotTable shows, and #REF! if a filter hides it. You can switch the feature off with PivotTable Analyze › PivotTable › Options › Generate GetPivotData.' },
 
     { h: 'PivotTable or SUMIFS?' },
     { table: {
@@ -192,10 +195,10 @@ export default {
       steps: [
         'Say the question as a share: “what share of each month’s value came through the app?” The base is the month’s total. Months run across, so each month is a column: % of Column Total.',
         'Each cell is divided by its month’s total: in March ' + money(mc('Mar', 'app')) + ' ÷ ' + money(mc('Mar')) + ' = ' + pct(mc('Mar', 'app') / mc('Mar')) + '; in May ' + money(mc('May', 'app')) + ' ÷ ' + money(mc('May')) + ' = ' + pct(mc('May', 'app') / mc('May')) + '. Each column adds up to 100%.',
-        'May looks like a collapse of the app’s share, from about ' + pct(mc('Apr', 'app') / mc('Apr'), 0) + ' to ' + pct(mc('May', 'app') / mc('May'), 0) + '. Check the records first: the web column includes ' + D.bulk.id + ', ' + money(D.bulk.value) + '. Without it May’s web value is ' + money(mc('May', 'web') - D.bulk.value) + ' and the app’s share of May is ' + money(mc('May', 'app')) + ' ÷ ' + money(mc('May') - D.bulk.value) + ' = ' + pct(mc('May', 'app') / (mc('May') - D.bulk.value)) + ', in line with the other months.',
+        'May looks like a collapse of the app’s share, from about ' + pct(mc('Apr', 'app') / mc('Apr'), 0) + ' to ' + pct(mc('May', 'app') / mc('May'), 0) + '. Check the records first: the web column includes ' + D.bulk.id + ', ' + money(D.bulk.value) + '. Without it May’s web value is ' + money(mc('May', 'web') - D.bulk.value) + ' and the app’s share of May is ' + money(mc('May', 'app')) + ' ÷ ' + money(mc('May') - D.bulk.value) + ' = ' + pct(mc('May', 'app') / (mc('May') - D.bulk.value)) + ', higher than in any other month (' + Math.floor(otherMin * 100) + '–' + Math.ceil(otherMax * 100) + '%), so the app had if anything a good May.',
         'Reconcile one cell before quoting it: <x>=SUMIFS(Orders[order_total],Orders[channel],"web",Orders[order_date],">="&DATE(2026,5,1),Orders[order_date],"<"&DATE(2026,6,1))</x> returns ' + money(mc('May', 'web')) + ', the same as the PivotTable.',
       ],
-      answer: '% of Column Total. The app’s share was ' + MONTHS.map((m) => `${pct(mc(m, 'app') / mc(m))} in ${m}`).join(', ') + '. May’s low figure is one office order, not a shift in how customers buy: without it the app’s May share is ' + pct(mc('May', 'app') / (mc('May') - D.bulk.value)) + '.',
+      answer: '% of Column Total. The app’s share was ' + MONTHS.map((m) => `${pct(mc(m, 'app') / mc(m))} in ${m}`).join(', ') + '. May’s low figure is one office order, not a shift in how customers buy: without it the app’s May share is ' + pct(mc('May', 'app') / (mc('May') - D.bulk.value)) + ', its highest of the spring.',
       interpretation: 'The PivotTable did the arithmetic; the analyst chose the base and checked the records behind the surprise. % of Row Total would have answered a different question (how the app’s spring value was spread over the months) and looked just as tidy.' },
 
     { level: 'applied', title: 'Which catering events to plan for', fictional: true,
@@ -213,7 +216,7 @@ export default {
         'Reconcile: ' + D.events + ' events and ' + money(D.eventValue) + ' of invoices, the totals F02 records for the year.',
         'Meetings are the most frequent type (' + evN('Meeting') + ' events) and bring in the most, ' + money(evV('Meeting')) + ' or ' + pct(evV('Meeting') / D.eventValue) + ', but at the lowest average, ' + money(evV('Meeting') / evN('Meeting')) + '.',
         'Conferences have the highest average, ' + money(evV('Conference') / evN('Conference')) + ', but the cell includes Meridian Partners’ two-day conference at ' + money(meridian[ec('invoice')]) + '. Without it the other ' + (evN('Conference') - 1) + ' average ' + money((evV('Conference') - meridian[ec('invoice')]) / (evN('Conference') - 1)) + ', below breakfasts at ' + money(evV('Breakfast') / evN('Breakfast')) + '.',
-        'By month, events rise through the year: ' + D.eventsByMonth.Mar + ' in March, ' + D.eventsByMonth.Oct + ' in October, ' + D.eventsByMonth.Nov + ' in November and ' + D.eventsByMonth.Dec + ' in December. October to December hold ' + q4 + ' of the ' + D.events + ' events (' + pct(q4 / D.events) + ').',
+        'By month, events build up through the year, apart from a summer dip (' + D.eventsByMonth.Jul + ' in July, ' + D.eventsByMonth.Aug + ' in August): ' + D.eventsByMonth.Mar + ' in March, ' + D.eventsByMonth.Oct + ' in October, ' + D.eventsByMonth.Nov + ' in November and ' + D.eventsByMonth.Dec + ' in December. October to December hold ' + q4 + ' of the ' + D.events + ' events (' + pct(q4 / D.events) + ').',
       ],
       answer: 'Meetings are the volume business and breakfasts the best regular earners per event once the one two-day conference is set aside; ' + pct(q4 / D.events) + ' of events fall in the last quarter, with December the busiest month (' + D.eventsByMonth.Dec + ').',
       interpretation: 'Ana books extra staff for October to December 2027 and promotes breakfasts to the clients who already order meetings. The PivotTable gave the counts and sums; the decision came from reading the averages with their outlier in mind. Whether the quotes cover their costs is a question for the what-if lesson.' },
@@ -264,6 +267,7 @@ export default {
     { text: 'Microsoft Support. <i>Show different calculations in PivotTable value fields</i>.', url: 'https://support.microsoft.com/en-US/Excel/show-different-calculations-in-pivottable-value-fields', checked: '2026-10-23' },
     { text: 'Microsoft Support. <i>Refresh PivotTable data</i>.', url: 'https://support.microsoft.com/office/refresh-pivottable-data-6d24cece-a038-468a-8176-8b6568ca9be2', checked: '2026-10-23' },
     { text: 'Microsoft Support. <i>GETPIVOTDATA function</i>.', url: 'https://support.microsoft.com/en-us/Excel/functions/getpivotdata-function', checked: '2026-10-23' },
+    { text: 'Microsoft Support. <i>When PivotTables don’t sort as expected</i>.', url: 'https://support.microsoft.com/en-gb/office/when-pivottables-don-t-sort-as-expected-a2a96f9d-cf38-448e-a4be-333e96cb3742', checked: '2026-10-23' },
   ],
 
   checks: [
@@ -319,6 +323,11 @@ export default {
     { what: 'Web % of Mar', value: mc('Mar', 'web') / mc('Mar') * 100, shown: 53.9, tol: 0.05 },
     { what: 'May web without bulk', value: mc('May', 'web') - D.bulk.value, shown: 647.05 },
     { what: 'App share of May without bulk', value: mc('May', 'app') / (mc('May') - D.bulk.value) * 100, shown: 54.4, tol: 0.05 },
+    { what: 'Lowest app share of the other months (floor %)', value: Math.floor(otherMin * 100), shown: 46 },
+    { what: 'Highest app share of the other months (ceil %)', value: Math.ceil(otherMax * 100), shown: 48 },
+    { what: 'May without bulk above every other month (1 = yes)', value: mc('May', 'app') / (mc('May') - D.bulk.value) > otherMax ? 1 : 0, shown: 1 },
+    { what: 'July events', value: D.eventsByMonth.Jul, shown: 6 },
+    { what: 'August events', value: D.eventsByMonth.Aug, shown: 5 },
     // applied example
     { what: 'Events', value: D.events, shown: 76 },
     { what: 'Invoices', value: D.eventValue, shown: 62320 },

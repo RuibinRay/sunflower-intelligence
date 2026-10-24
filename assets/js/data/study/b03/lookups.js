@@ -34,7 +34,7 @@ export default {
   slug: 'lookups',
   title: 'Lookups: VLOOKUP, INDEX and MATCH, XLOOKUP',
   blurb: 'Bring a value from one table into another by matching a key: a product’s cost from a price list, a delivery charge from a table of bands. Learn VLOOKUP, INDEX and MATCH, and XLOOKUP, when to match exactly and when approximately, and how to find out why a lookup returns #N/A or, worse, a wrong answer.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Use VLOOKUP with an exact match to bring a value from a lookup table into a list, and explain why leaving out its fourth argument is a trap.',
     'Build INDEX and MATCH lookups, including lookups to the left of the key and two-way lookups by a row and a column label.',

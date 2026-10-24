@@ -99,7 +99,7 @@ export const guided = [
       { formula: '=Orders[quantity]*Orders[unit_price]-Orders[discount]', say: 'Without @ each reference means the whole column, so the formula returns twelve values at once; Excel would show #SPILL!, because spilled formulas aren’t allowed inside a table. Use <code>[@quantity]</code> for this row’s value.' },
     ],
     hints: ['Inside the table, <code>[@quantity]</code> means “the quantity in this row”.', '<x>=[@quantity]*[@unit_price]-[@discount]</x>'],
-    solution: '<x>=[@quantity]*[@unit_price]-[@discount]</x> in F2. In Excel the table fills it down automatically and gives it to any row added later; here, fill it to F13. F2 shows $111.00 (2 × $58.00 − $5.00), which equals the order’s recorded total.',
+    solution: '<x>=[@quantity]*[@unit_price]-[@discount]</x> in F2. In Excel the table fills it down automatically and gives it to any row added later; here, fill it to F13. F2 shows $111.00 (2 × $58.00 − $5.00), which equals the order’s recorded total. <x>=B2*C2-D2</x> gives the same results and is marked right, but the structured version says what it computes and stays right as rows are added to the table.',
   },
   {
     id: 'b03-tc-g2', type: 'formula', kind: 'applied',
@@ -123,7 +123,7 @@ export const guided = [
     alt: ['=DATE(MID(A2,7,4),MID(A2,4,2),LEFT(A2,2))', '=DATE(VALUE(RIGHT(A2,4)),VALUE(MID(A2,4,2)),VALUE(LEFT(A2,2)))'],
     wrong: [
       { formula: '=DATEVALUE(A2)', say: 'DATEVALUE reads the text with the computer’s date settings. With US settings it takes the month first: 05/03/2026 becomes 3 May, and 14/03/2026 gives #VALUE! because there is no month 14. Build the date from its parts.' },
-      { formula: '=DATE(RIGHT(A2,4),LEFT(A2,2),MID(A2,4,2))', say: 'That puts the first two characters in the month: you have read the date month first. DATE takes year, month, day; the month is MID(A2,4,2).' },
+      { formula: '=DATE(RIGHT(A2,4),LEFT(A2,2),MID(A2,4,2))', say: 'That puts the first two characters in the month: you have read the date month first. DATE takes year, month, day; the month is <x>MID(A2,4,2)</x>.' },
     ],
     hints: ['DATE(year, month, day). The year is the last four characters, the month the two in the middle, the day the first two.', '<x>=DATE(RIGHT(A2,4),MID(A2,4,2),LEFT(A2,2))</x>'],
     solution: '<x>=DATE(RIGHT(A2,4),MID(A2,4,2),LEFT(A2,2))</x>, filled to B7. RIGHT takes “2026”, MID the month “03”, LEFT the day “05”, and DATE turns the text digits into a date: 5 Mar 2026. Because the order of day and month is written into the formula, it gives the same answer on any computer, unlike DATEVALUE.',
@@ -179,7 +179,7 @@ export const independent = [
       { formula: '=SUMIFS(Orders[order_total],Orders[subscription],"yes")', say: 'That is the subscription orders’ value. The question asks for their discounts: sum Orders[discount].' },
       { formula: '=SUMIFS(Orders[discount],Orders[subscription],"no")', say: 'The criterion <x>"no"</x> picks the one-off orders. Subscription orders are <x>"yes"</x>.' },
     ],
-    solution: '<x>=SUMIFS(Orders[discount],Orders[subscription],"yes")</x> gives $15.25: the 10% discounts on the subscription orders among the first 20. All discounts together come to $30.25, the rest being $5 promotion codes.',
+    solution: '<x>=SUMIFS(Orders[discount],Orders[subscription],"yes")</x> gives $15.25: the 10% discounts on the subscription orders among the first 20. All discounts together come to $30.25, the rest being $5 promotion codes. A plain-range version such as <x>=SUMIFS(E2:E21,D2:D21,"yes")</x> gives the same result and is marked right, but the table’s names stay right as rows are added.',
   },
   {
     id: 'b03-tc-i3', type: 'formula', kind: 'applied',
@@ -266,7 +266,7 @@ export const check = [
   },
   {
     id: 'b03-tc-k2', type: 'mc', kind: 'conceptual',
-    prompt: 'An export holds two rows for order LC-10102: the original at $14.00 and, below it, a corrected version at $12.60. Ana selects the data and runs Remove Duplicates with only the order_id column ticked. What happens?',
+    prompt: 'A July export (fictional) holds two rows for order LC-20102: the original at $14.00 and, below it, a corrected version at $12.60. Ana selects the data and runs Remove Duplicates with only the order_id column ticked. What happens?',
     options: [
       'The $12.60 correction is deleted: Remove Duplicates keeps the first occurrence',
       'The first row is deleted, because Remove Duplicates keeps the most recent version of each order',
