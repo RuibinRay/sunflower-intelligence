@@ -152,7 +152,8 @@ export function sheetGrid(opts) {
   const table = h('table', { class: 'sg-grid', role: 'grid', 'aria-label': opts.label || 'Spreadsheet', 'aria-readonly': editRanges.length ? 'false' : 'true' },
     h('thead', {}, head), h('tbody', {}, body));
   const scroll = h('div', { class: 'sg-scroll', style: opts.maxHeight ? `max-height:${opts.maxHeight}` : null }, table);
-  const el = h('div', { class: 'sg' }, bar, scroll, live);
+  const circ = h('p', { class: 'sg-msg is-bad', role: 'status', hidden: true });
+  const el = h('div', { class: 'sg' }, bar, scroll, circ, live);
 
   function cellText(a) {
     const raw = sheet.raw(a);
@@ -183,6 +184,10 @@ export function sheetGrid(opts) {
   function refresh() {
     cfMap = applyRules(sheet, rules);
     for (const a of tds.keys()) paint(a);
+    // a circular reference: Excel shows a warning and 0 in the cells involved, and so does this sheet
+    const loop = [...(sheet.circular || [])];
+    circ.hidden = !loop.length;
+    circ.textContent = loop.length ? `Circular reference: ${loop.join(', ')} refers back to itself, directly or through other cells. Excel warns you and shows 0; remove the loop.` : '';
     showSel(false);
   }
   function describe(a) {

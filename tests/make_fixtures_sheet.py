@@ -119,10 +119,13 @@ FORMULAS = [
     '=SUMIF(B2:B13,"Online",F2:F5)', '=AVERAGEIF(B2:B13,"Café",F2)', '=COUNTIFS(D2:D13,H4)',
     '=CEILING.MATH(4.2)', '=CEILING.MATH(4.2,0.5)', '=CEILING.MATH(-4.2)', '=CEILING.MATH(-4.2,1,1)', '=CEILING.MATH(45/40)',
     '=FLOOR.MATH(4.7)', '=FLOOR.MATH(-4.2)', '=FLOOR.MATH(-4.2,1,1)', '=FLOOR.MATH(17,5)',
+    '=INDEX(TREND(F2:F13,D2:D13,{5;12}),2)', '=INDEX(TREND(F2:F13,D2:D13,{5;12},FALSE),1)', '=T.INV.2T(0.05,10)', '=T.INV(0.975,30)',
+    '=T.DIST.2T(2.1,15)', '=CONFIDENCE.T(0.05,STDEV.S(F2:F13),COUNT(F2:F13))', '=CONFIDENCE.T(0.05,1,1)',
+    '=SUM(D2:F2 E1:E5)', '=SUM(A1:A2 C1:C2)', '=N(TRUE)+N("7")+N(5)', '=NUMBERVALUE("2.500,27",",",".")', '=NUMBERVALUE("3.5%")',
     '=MROUND(17,5)', '=MROUND(F3,0.05)', '=LOG(8,2)', '=LOG(1000)', '=ISERR(NA())', '=ISERR(1/0)', '=ISLOGICAL(H3)',
 ]
 # Functions written with Excel's "_xlfn." prefix in the file format (introduced after Excel 2007)
-XLFN = ['CEILING.MATH', 'FLOOR.MATH', 'PERCENTILE.EXC', 'QUARTILE.EXC', 'SKEW.P', 'STDEV.S', 'STDEV.P', 'VAR.S', 'VAR.P', 'PERCENTILE.INC', 'QUARTILE.INC', 'RANK.EQ', 'MODE.SNGL', 'FORECAST.LINEAR',
+XLFN = ['NUMBERVALUE', 'T.INV.2T', 'T.INV', 'T.DIST.2T', 'CONFIDENCE.T', 'CEILING.MATH', 'FLOOR.MATH', 'PERCENTILE.EXC', 'QUARTILE.EXC', 'SKEW.P', 'STDEV.S', 'STDEV.P', 'VAR.S', 'VAR.P', 'PERCENTILE.INC', 'QUARTILE.INC', 'RANK.EQ', 'MODE.SNGL', 'FORECAST.LINEAR',
         'COVARIANCE.S', 'COVARIANCE.P', 'MAXIFS', 'MINIFS', 'IFS', 'SWITCH', 'IFNA', 'CONCAT', 'TEXTJOIN', 'DAYS']
 # Cases where LibreOffice gives a different answer from Excel: the test uses Excel's value, with the reason.
 # (a) LibreOffice has no logical type: TRUE is the number 1, so it sums, counts and joins as 1. Excel's COUNT/SUM
@@ -141,7 +144,10 @@ XLFN = ['CEILING.MATH', 'FLOOR.MATH', 'PERCENTILE.EXC', 'QUARTILE.EXC', 'SKEW.P'
 #     where CHAR(160) is the non-breaking space and its code is 160); LibreOffice reports 239 here.
 # (h) Excel's PERCENTILE.EXC help: "If it cannot interpolate for the percentile, k specified, Excel will return #NUM!
 #     error" (here k = 0.05 with 12 values, below 1/(n + 1)); LibreOffice returns #VALUE!.
+# (i) Excel's NUMBERVALUE help: =NUMBERVALUE("3.5%") returns 0.035 ("If the Text argument ends in one or more percent
+#     signs (%), they are used in the calculation of the result"); LibreOffice returns #VALUE!.
 EXCEL_DIFFERS = {
+    '=NUMBERVALUE("3.5%")': 0.035,                                                                         # (i)
     '=DATEVALUE("2011/02/23")': 40597,                                                                     # (f)
     '=PERCENTILE.EXC(F2:F13,0.05)': {'error': '#NUM!'},                                                     # (h)
     '=CODE(CHAR(160))': 160,                                                                               # (g)

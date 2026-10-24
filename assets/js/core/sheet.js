@@ -8,11 +8,13 @@
 // function that returns several values). Dates are serial numbers in the 1900 date system (1 = 1 January 1900; the
 // fictitious 29 February 1900 is kept, so serials from 61 on match Excel's).
 
+import { tQuantile, tCdf } from './stats.js?v=11';
+
 // ---------------------------------------------------------------- values
 export class Err { constructor(code) { this.code = code; } toString() { return this.code; } }
 export const ERR = Object.freeze({
   DIV0: new Err('#DIV/0!'), NA: new Err('#N/A'), VALUE: new Err('#VALUE!'), REF: new Err('#REF!'),
-  NAME: new Err('#NAME?'), NUM: new Err('#NUM!'), SPILL: new Err('#SPILL!'), CALC: new Err('#CALC!'), CIRC: new Err('#CIRC!'),
+  NAME: new Err('#NAME?'), NUM: new Err('#NUM!'), SPILL: new Err('#SPILL!'), CALC: new Err('#CALC!'), NULL: new Err('#NULL!'),
 });
 export const isErr = (v) => v instanceof Err;
 export class Arr {
@@ -95,7 +97,7 @@ function tokenize(src) {
       t.push({ k: 'str', v: str }); i = j + 1; continue;
     }
     if (ch === '#') {
-      const m = /^#(DIV\/0!|N\/A|VALUE!|REF!|NAME\?|NUM!|SPILL!|CALC!)/i.exec(s.slice(i));
+      const m = /^#(DIV\/0!|N\/A|VALUE!|REF!|NAME\?|NUM!|SPILL!|CALC!|NULL!)/i.exec(s.slice(i));
       if (m) { t.push({ k: 'err', v: Object.values(ERR).find((e) => e.code === m[0].toUpperCase()) }); i += m[0].length; continue; }
     }
     // structured references: Table[Col], Table[@Col], Table[[#Headers],[Col]] (kept simple), [@Col]
@@ -153,7 +155,12 @@ export function parse(formula) {
   }
   function primary() {
     let a = atom();
-    while (isOp(':')) { p++; a = { t: 'rng', a, b: atom() }; }      // the range operator: INDEX(…):INDEX(…)
+    for (;;) {
+      if (isOp(':')) { p++; a = { t: 'rng', a, b: atom() }; continue; }       // the range operator: INDEX(…):INDEX(…)
+      // the intersection operator is a space between two references: =SUM(B7:D7 C6:C8)
+      if (['ref', 'sref', 'rng', 'isect'].includes(a.t) && (peek()?.k === 'ref' || peek()?.k === 'sref')) { a = { t: 'isect', a, b: atom() }; continue; }
+      break;
+    }
     return a;
   }
   function atom() {
@@ -392,7 +399,7 @@ export class Sheet {
     this.names = Object.fromEntries(Object.entries(names).map(([k, v]) => [k.toLowerCase(), v]));
     this.reset();
   }
-  reset() { this.cache = new Map(); this.spills = new Map(); this.spillOwner = new Map(); this.computing = new Set(); this.allDone = false; }
+  reset() { this.cache = new Map(); this.spills = new Map(); this.spillOwner = new Map(); this.computing = new Set(); this.circular = new Set(); this.allDone = false; }
   /** Set a cell (value or "=formula") and clear the results. */
   set(a, v) { const k = a.replace(/\$/g, '').toUpperCase(); if (v == null || v === '') this.input.delete(k); else this.input.set(k, v); this.reset(); }
   raw(a) { return this.input.get(a.replace(/\$/g, '').toUpperCase()); }
@@ -418,7 +425,7 @@ export class Sheet {
   /** A formula cell's full result (an Arr when it spills). */
   formulaValue(k) {
     if (this.cache.has(k)) return this.cache.get(k);
-    if (this.computing.has(k)) return ERR.CIRC;
+    if (this.computing.has(k)) { this.circular.add(k); return 0; }   // Excel warns about a circular reference and shows 0
     this.computing.add(k);
     let res;
     try { res = evaluate(this.input.get(k), this, { at: k }); }
@@ -499,6 +506,15 @@ function evRef(node, ctx) {
     return ERR.NAME;
   }
   if (node.t === 'fn' && (node.name === 'INDEX' || node.name === 'XLOOKUP')) { const r = callRef(node, ctx); if (r) return r; }
+  if (node.t === 'isect') {
+    const a = evRef(node.a, ctx), b = evRef(node.b, ctx);
+    if (!isRef(a) || !isRef(b)) return ERR.VALUE;
+    const box = (x) => (x.range ? x : { r0: x.r, c0: x.c, r1: x.r, c1: x.c });
+    const A = box(a), B = box(b);
+    const r0 = Math.max(A.r0, B.r0), c0 = Math.max(A.c0, B.c0), r1 = Math.min(A.r1, B.r1), c1 = Math.min(A.c1, B.c1);
+    if (r0 > r1 || c0 > c1) return ERR.NULL;                     // ranges that don't meet: #NULL!
+    return r0 === r1 && c0 === c1 ? { range: false, r: r0, c: c0 } : { range: true, r0, c0, r1, c1 };
+  }
   if (node.t === 'rng') {
     const a = evRef(node.a, ctx), b = evRef(node.b, ctx);
     if (!isRef(a) || !isRef(b)) return ERR.REF;
@@ -518,7 +534,7 @@ function ev(node, ctx) {
   switch (node.t) {
     case 'lit': return node.v;
     case 'missing': return null;
-    case 'ref': case 'sref': case 'name': case 'rng': {
+    case 'ref': case 'sref': case 'name': case 'rng': case 'isect': {
       const r = evRef(node, ctx);
       if (isErr(r)) return r;
       const v = deref(r, ctx);
@@ -819,6 +835,28 @@ FN.SUBTOTAL = (args, ctx) => {
   return FN[name]([{ t: 'lit', v: new Arr([vals.length ? vals : [null]]) }], ctx);
 };
 
+// TREND(known_y's, known_x's, [new_x's], [const]): the least-squares line's values at new_x (one x variable), as an
+// array shaped like new_x; const FALSE forces the line through the origin
+FN.TREND = (args, ctx) => {
+  const Y = arrOf(args[0], ctx); if (isErr(Y)) return Y;
+  const Xa = args[1] && args[1].t !== 'missing' ? arrOf(args[1], ctx) : new Arr(Y.rows.map((_, i) => [i + 1]));
+  if (isErr(Xa)) return Xa;
+  const p = pairs({ t: 'lit', v: Xa }, { t: 'lit', v: Y }, ctx); if (isErr(p)) return p;
+  const N = args[2] && args[2].t !== 'missing' ? arrOf(args[2], ctx) : Xa; if (isErr(N)) return N;
+  const withConst = !args[3] || args[3].t === 'missing' || toBool(scalar(args[3], ctx));
+  let b0, b1;
+  if (withConst) { const f = linfit(p.xs, p.ys); b0 = f.intercept; b1 = f.slope; }
+  else { b0 = 0; b1 = p.xs.reduce((s, x, i) => s + x * p.ys[i], 0) / p.xs.reduce((s, x) => s + x * x, 0); }
+  return mapArr(N.h === 1 && N.w === 1 ? N.at(0, 0) : N, (x) => { const n = toNum(x); return isErr(n) ? n : b0 + b1 * n; });
+};
+// the t distribution (as Excel: T.INV.2T(probability, df) is the two-tailed critical value; T.INV the left-tailed
+// inverse; T.DIST.2T(x, df) the two-tailed probability; CONFIDENCE.T(alpha, sd, n) half the width of a confidence
+// interval for a mean)
+FN['T.INV.2T'] = (args, ctx) => { const pr = numArg(args[0], ctx), df = Math.trunc(numArg(args[1], ctx)); if (isErr(pr)) return pr; if (isErr(df)) return df; if (!(pr > 0 && pr <= 1) || df < 1) return ERR.NUM; return tQuantile(1 - pr / 2, df); };
+FN['T.INV'] = (args, ctx) => { const pr = numArg(args[0], ctx), df = Math.trunc(numArg(args[1], ctx)); if (isErr(pr)) return pr; if (isErr(df)) return df; if (!(pr > 0 && pr < 1) || df < 1) return ERR.NUM; return tQuantile(pr, df); };
+FN['T.DIST.2T'] = (args, ctx) => { const x = numArg(args[0], ctx), df = Math.trunc(numArg(args[1], ctx)); if (isErr(x)) return x; if (isErr(df)) return df; if (x < 0 || df < 1) return ERR.NUM; return 2 * (1 - tCdf(x, df)); };
+FN['CONFIDENCE.T'] = (args, ctx) => { const a = numArg(args[0], ctx), sd = numArg(args[1], ctx), n = Math.trunc(numArg(args[2], ctx)); for (const v of [a, sd, n]) if (isErr(v)) return v; if (!(a > 0 && a < 1) || sd <= 0) return ERR.NUM; if (n === 1) return ERR.DIV0; if (n < 1) return ERR.NUM; return tQuantile(1 - a / 2, n - 1) * sd / Math.sqrt(n); };
+
 // conditional aggregates
 /** A criteria argument; a reference to an empty cell counts as 0 (Microsoft: “If the criteria argument is a reference
  *  to an empty cell, the COUNTIFS function treats the empty cell as a 0 value”). */
@@ -847,6 +885,23 @@ function condPairs(args, ctx, start) {
   }
   return { mask, size };
 }
+/** A conditional function given an array (or range) of criteria returns one result per criterion, as dynamic-array
+ *  Excel does: =SUMIFS(C2:C9,B2:B9,{"North","South"}) gives two sums, and SUM around it adds them. */
+function liftCriteria(name, positions) {
+  const f = FN[name];
+  FN[name] = (args, ctx) => {
+    const idx = positions(args.length).filter((i) => args[i] && args[i].t !== 'missing');
+    const vals = idx.map((i) => ev(args[i], ctx));
+    if (!vals.some(isArr)) return f(args, ctx);
+    const h = Math.max(...vals.map((v) => (isArr(v) ? v.h : 1))), w = Math.max(...vals.map((v) => (isArr(v) ? v.w : 1)));
+    const at = (A, i, j) => (!isArr(A) ? A : A.h === 1 && A.w === 1 ? A.at(0, 0) : A.h === 1 ? A.at(0, j) : A.w === 1 ? A.at(i, 0) : A.at(i, j));
+    return new Arr(Array.from({ length: h }, (_, i) => Array.from({ length: w }, (__, j) => {
+      const a2 = args.slice();
+      idx.forEach((k, n) => { const v = at(vals[n], i, j); a2[k] = { t: 'lit', v: v === undefined ? ERR.NA : v }; });
+      return f(a2, ctx);
+    })));
+  };
+}
 FN.SUMIFS = (args, ctx) => { const S = arrOf(args[0], ctx); if (isErr(S)) return S; const c = condPairs(args, ctx, 1); if (isErr(c)) return c; if (S.h !== c.size[0] || S.w !== c.size[1]) return ERR.VALUE; const v = S.flat(); return v.reduce((s, x, i) => s + (c.mask[i] && typeof x === 'number' ? x : 0), 0); };
 FN.COUNTIFS = (args, ctx) => { const c = condPairs(args, ctx, 0); if (isErr(c)) return c; return c.mask.filter(Boolean).length; };
 FN.AVERAGEIFS = (args, ctx) => { const S = arrOf(args[0], ctx); if (isErr(S)) return S; const c = condPairs(args, ctx, 1); if (isErr(c)) return c; const xs = S.flat().filter((x, i) => c.mask[i] && typeof x === 'number'); return xs.length ? meanOf(xs) : ERR.DIV0; };
@@ -856,6 +911,10 @@ FN.MINIFS = (args, ctx) => { const S = arrOf(args[0], ctx); if (isErr(S)) return
 FN.SUMIF = (args, ctx) => { if (!need(args, 2, 3)) return ERR.VALUE; const R = arrOf(args[0], ctx); if (isErr(R)) return R; const S = args[2] && args[2].t !== 'missing' ? sumRangeOf(args[2], R, ctx) : R; if (isErr(S)) return S; const crit = critArg(args[1], ctx); if (isErr(crit)) return crit; const t = criterion(crit); const r = R.flat(); let s = 0; for (let i = 0; i < r.length; i++) { const v = S.flat()[i]; if (t(r[i]) && typeof v === 'number') s += v; } return s; };
 FN.COUNTIF = (args, ctx) => { if (!need(args, 2)) return ERR.VALUE; const R = arrOf(args[0], ctx); if (isErr(R)) return R; const crit = critArg(args[1], ctx); if (isErr(crit)) return crit; const t = criterion(crit); return R.flat().filter(t).length; };
 FN.AVERAGEIF = (args, ctx) => { const R = arrOf(args[0], ctx); if (isErr(R)) return R; const S = args[2] && args[2].t !== 'missing' ? sumRangeOf(args[2], R, ctx) : R; if (isErr(S)) return S; const crit = critArg(args[1], ctx); if (isErr(crit)) return crit; const t = criterion(crit); const xs = R.flat().map((v, i) => (t(v) ? S.flat()[i] : null)).filter((v) => typeof v === 'number'); return xs.length ? meanOf(xs) : ERR.DIV0; };
+for (const [n, pos] of [['SUMIF', () => [1]], ['COUNTIF', () => [1]], ['AVERAGEIF', () => [1]],
+  ['SUMIFS', (len) => Array.from({ length: (len - 1) / 2 }, (_, k) => 2 + 2 * k)], ['AVERAGEIFS', (len) => Array.from({ length: (len - 1) / 2 }, (_, k) => 2 + 2 * k)],
+  ['MAXIFS', (len) => Array.from({ length: (len - 1) / 2 }, (_, k) => 2 + 2 * k)], ['MINIFS', (len) => Array.from({ length: (len - 1) / 2 }, (_, k) => 2 + 2 * k)],
+  ['COUNTIFS', (len) => Array.from({ length: len / 2 }, (_, k) => 1 + 2 * k)]]) liftCriteria(n, pos);
 FN.SUMPRODUCT = (args, ctx) => {
   const As = args.map((a) => arrOf(a, ctx));
   const e = As.find(isErr); if (e) return e;
@@ -952,6 +1011,22 @@ FN.TEXTJOIN = (args, ctx) => { const d = toStr(scalar(args[0], ctx)); const ign 
 FN.SUBSTITUTE = (args, ctx) => { const s = toStr(scalar(args[0], ctx)), o = toStr(scalar(args[1], ctx)), n = toStr(scalar(args[2], ctx)); if (!o) return s; if (args[3]) { const k = numArg(args[3], ctx); let i = -1; for (let j = 0; j < k; j++) { i = s.indexOf(o, i + 1); if (i < 0) return s; } return s.slice(0, i) + n + s.slice(i + o.length); } return s.split(o).join(n); };
 FN.FIND = (args, ctx) => { const f = toStr(scalar(args[0], ctx)), s = toStr(scalar(args[1], ctx)); const st = numArg(args[2], ctx, 1); const i = s.indexOf(f, st - 1); return i < 0 ? ERR.VALUE : i + 1; };
 FN.SEARCH = (args, ctx) => { const f = toStr(scalar(args[0], ctx)), s = toStr(scalar(args[1], ctx)); const st = numArg(args[2], ctx, 1); const re = wildcardRe(f).source.slice(1, -1); const m = new RegExp(re, 'i').exec(s.slice(st - 1)); return m ? m.index + st : ERR.VALUE; };
+// N(value): a number as itself, TRUE as 1, anything else (text, FALSE, blank) as 0; errors pass through
+FN.N = (args, ctx) => { const v = scalar(args[0], ctx); return isErr(v) ? v : typeof v === 'number' ? v : v === true ? 1 : 0; };
+// NUMBERVALUE(text, [decimal_separator], [group_separator]): text to a number whatever the regional settings
+FN.NUMBERVALUE = (args, ctx) => {
+  const v = scalar(args[0], ctx); if (isErr(v)) return v;
+  if (typeof v === 'number') return v;
+  const dec = args[1] && args[1].t !== 'missing' ? toStr(scalar(args[1], ctx))[0] : '.', grp = args[2] && args[2].t !== 'missing' ? toStr(scalar(args[2], ctx))[0] : ',';
+  let t = toStr(v).replace(/\s/g, '');
+  if (!t) return 0;
+  let pct = 0; while (t.endsWith('%')) { pct++; t = t.slice(0, -1); }
+  const di = t.indexOf(dec);
+  if (di >= 0 && t.slice(di + 1).includes(grp)) return ERR.VALUE;     // a group separator after the decimal one
+  t = t.split(grp).join('').replace(dec, '.');
+  if (!/^[-+]?(\d+\.?\d*|\.\d+)(e[-+]?\d+)?$/i.test(t)) return ERR.VALUE;
+  return Number(t) / 100 ** pct;
+};
 FN.EXACT = (args, ctx) => toStr(scalar(args[0], ctx)) === toStr(scalar(args[1], ctx));
 FN.VALUE = (args, ctx) => lift(args[0], ctx, (v) => (typeof v === 'number' ? v : toNum(v)));
 FN.TEXT = (args, ctx) => { const f = toStr(scalar(args[1], ctx)); return lift(args[0], ctx, (v) => (isErr(v) ? v : textFormat(v, f))); };

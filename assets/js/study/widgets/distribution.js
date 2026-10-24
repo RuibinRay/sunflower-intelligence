@@ -169,7 +169,7 @@ export async function mount(el, config = {}, ctx = {}) {
     if (Number.isFinite(o.lo) && o.lo > lo) g.append(s('rect', { x: m.l, y: m.t, width: Math.max(0, x(o.lo) - m.l), height: ih, class: 'cl-zone' }));
     if (Number.isFinite(o.hi) && o.hi < hi) g.append(s('rect', { x: x(o.hi), y: m.t, width: Math.max(0, W - m.r - x(o.hi)), height: ih, class: 'cl-zone' }));
     bins.forEach((b, i) => {
-      const flag = [...o.flagged].some((v) => v >= b.x0 && (v < b.x1 || (i === bins.length - 1 && v <= b.x1)));
+      const flag = [...o.flagged].some((v) => (b.closed === 'right' ? (i === 0 ? v <= b.x1 : v > b.x0 && (v <= b.x1 || b.more)) : v >= b.x0 && (v < b.x1 || (i === bins.length - 1 && v <= b.x1))));
       if (!b.count) return;
       g.append(s('rect', { x: x(b.x0) + 1, y: y(b.count), width: Math.max(1, x(b.x1) - x(b.x0) - 2), height: m.t + ih - y(b.count), class: flag ? 'cl-hbar-flag' : 'cl-hbar', fill: flag ? `url(#${pid})` : null }));
     });
