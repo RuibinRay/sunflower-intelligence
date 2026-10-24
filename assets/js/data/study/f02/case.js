@@ -12,7 +12,12 @@
 //   five years, $6,000 residual, $400 a month) is what happened.
 // - b02 and b01: the online shop has sold bags of beans since March. Its order values were $9,096.15 for March–June
 //   (B02's cleaned export) and $101,928.40 for July–December (B01: orders × average order value); together $111,025 to
-//   the nearest dollar. B01 measured order values; the books also record refunds and prepaid subscriptions.
+//   the nearest dollar. B01 measured order values; the books also record refunds and prepaid subscriptions. Lantern
+//   refunds bags damaged in transit, so it keeps the risk of loss and control strictly passes on delivery; its
+//   accountant recognises shop revenue when an order ships because orders in transit at a year end are immaterial.
+//   So shipped orders are the year's revenue, and paid-for subscriptions not yet shipped are unearned.
+//   House Blend is the shop's cheapest line and earns the lowest margin (about 38% in the fourth quarter at $14 a bag);
+//   single origins, gift boxes and subscriptions earn more, which is how the shop as a whole reaches 52%.
 // - m01/case.js: 14 workshops averaging 12 participants at $125 ($21,000); catering at an average of $820 an event.
 // - f04/case.js: Ana is paid a salary from 2027, not in 2026.
 //
@@ -21,9 +26,12 @@
 // wages, catering supplies, workshop materials) into Cost of Services, so the income statement can show gross profit.
 //
 // Amounts are whole dollars: the shop's sales are rounded to the nearest dollar; everything else is exact.
-import * as A from '../../../core/accounting.js?v=10';
+import * as A from '../../../core/accounting.js?v=12';
 
-/** Account fields beyond F01's: section (multi-step income statement), da / noncash (depreciation), cashClass. */
+/** Account fields beyond F01's: section (multi-step income statement), da / noncash (depreciation), cashClass.
+ *  Gains and losses on selling equipment are operating: ASC 360-10-45-5 requires them inside operating income when
+ *  that subtotal is shown (many textbooks show them under other income instead). Lantern's shares have no par value,
+ *  so the whole $20,000 is Common Stock and Additional Paid-in Capital stays at zero. */
 export const CHART = [
   { no: 101, name: 'Cash', type: 'asset', group: 'current' },
   { no: 110, name: 'Accounts Receivable', type: 'asset', group: 'current' },
@@ -62,7 +70,7 @@ export const CHART = [
   { no: 404, name: 'Sales Returns and Allowances', type: 'contra-revenue' },
   { no: 405, name: 'Sales Discounts', type: 'contra-revenue' },
   { no: 410, name: 'Interest Revenue', type: 'revenue', section: 'other' },
-  { no: 420, name: 'Gain on Sale of Equipment', type: 'revenue', section: 'other', gain: true },
+  { no: 420, name: 'Gain on Sale of Equipment', type: 'revenue', gain: true },             // operating (ASC 360-10-45-5)
   { no: 501, name: 'Wages Expense', type: 'expense' },
   { no: 505, name: 'Cost of Goods Sold', type: 'expense', section: 'cost' },
   { no: 506, name: 'Cost of Services', type: 'expense', section: 'cost' },
@@ -74,12 +82,12 @@ export const CHART = [
   { no: 560, name: 'Depreciation Expense', type: 'expense', da: true, noncash: true },
   { no: 565, name: 'Amortisation Expense', type: 'expense', da: true, noncash: true },
   { no: 570, name: 'Fuel Expense', type: 'expense' },
-  { no: 575, name: 'Delivery Expense', type: 'expense' },
+  { no: 575, name: 'Shipping Expense', type: 'expense' },
   { no: 576, name: 'Card and Platform Fees Expense', type: 'expense' },
   { no: 585, name: 'Bad Debt Expense', type: 'expense' },
   { no: 599, name: 'Miscellaneous Expense', type: 'expense' },
   { no: 580, name: 'Interest Expense', type: 'expense', section: 'other', interest: true },
-  { no: 590, name: 'Loss on Sale of Equipment', type: 'expense', section: 'other', loss: true },
+  { no: 590, name: 'Loss on Sale of Equipment', type: 'expense', loss: true },              // operating (ASC 360-10-45-5)
   { no: 600, name: 'Income Tax Expense', type: 'expense', section: 'tax' },
 ];
 
@@ -88,7 +96,8 @@ export const FACTS = {
   period: { start: '2026-03-01', end: '2026-12-31', months: 10 },
   stock: 20_000,
   coastline: { principal: 10_000, rate: 0.06, interestPaid: 450, interestAccrued: 50 },       // paid 1 Jun, 1 Sep, 1 Dec; December accrued
-  equipment: { cost: 12_000, life: 5, residual: 0, monthly: 200, months: 10 },
+  equipment: { cost: 12_000, life: 5, residual: 0, monthly: 200, months: 10,
+               paid: [{ date: '2026-03-03', amount: 4_000 }, { date: '2026-04-02', amount: 8_000 }] },   // 30-day trade terms
   van: { cost: 30_000, residual: 6_000, life: 5, monthly: 400, months: 7, bought: '2026-06-01', cashDown: 10_000 },
   vanNote: { principal: 20_000, rate: 0.06, instalment: 5_000, first: '2027-06-01', last: '2030-06-01', months: 7 },   // interest paid with each instalment
   insurance: { premium: 1_800, monthly: 150, expired: 10 },
@@ -96,11 +105,12 @@ export const FACTS = {
   catering: { events: 76, average: 820, depositsReceived: 4_040, depositsEarned: 2_400, invoiced: 59_920, collected: 51_720, writtenOff: 820 },
   training: { workshops: 14, participants: 12, price: 125, paidForJanuary: 1_500 },
   shop: { orderValueMarJun: 9_096.15, orderValueJulDec: 101_928.40, sales: 111_025, refunds: 1_025, prepaidSubscriptions: 2_960, cardFees: 4_010 },
-  inventory: { purchases: 58_600, paid: 50_200, cogsPerpetual: 52_400, writeDown: 400 },
+  inventory: { purchases: 58_600, paid: 50_200, cogsPerpetual: 52_400, writeDown: 400,
+               holidayBlend: { cost: 1_000, nrv: 600 } },        // e7: Holiday Blend bags written down to net realisable value
   supplies: { bought: 11_540, paid: 11_020, onHand: 640 },
   wages: { events: 25_200, shopAndOffice: 18_400, payable: 2_100 },
   utilities: { expense: 2_860, unpaid: 290 },
-  advertising: 6_500, delivery: 12_630, fuel: 1_960, misc: 640,
+  advertising: 6_500, shipping: 12_630, fuel: 1_960, misc: 640,
   dividends: [{ date: '2026-03-30', amount: 300 }, { date: '2026-12-15', amount: 4_700 }],
   tax: { rate: 0.25, estimatedPaid: 6_000 },     // a combined federal (21%) and state rate assumed for the case
 };
@@ -121,7 +131,7 @@ export const HOUSE_BLEND_Q4 = {
     { date: '2026-12-03', units: 1_200, cost: 9.00 },
   ],
   sold: 2_600,              // bags shipped in the quarter
-  price: 18,                // list price a bag (B02)
+  price: 14,                // list price of a 250 g bag of House Blend (B02's order export)
 };
 
 const F = FACTS;
@@ -160,9 +170,9 @@ export const YEAR = [
     lines: [{ acct: 'Sales Returns and Allowances', dr: shop.refunds }, { acct: 'Cash', cr: shop.refunds }], cash: 'operating', cashLabel: 'Cash received from customers' },
   { id: 'y14', date: '2026-12-31', text: 'Card-processing and shop-platform fees.',
     lines: [{ acct: 'Card and Platform Fees Expense', dr: shop.cardFees }, { acct: 'Cash', cr: shop.cardFees }], cash: 'operating' },
-  { id: 'y15', date: '2026-12-31', text: 'Bags of roasted beans bought for the shop from Tidewater Roasting on 30-day terms.',
+  { id: 'y15', date: '2026-12-31', text: 'Bags of roasted beans bought for the shop from Kilnworth Roasting on 30-day terms.',
     lines: [{ acct: 'Inventory', dr: inv.purchases }, { acct: 'Accounts Payable', cr: inv.purchases }] },
-  { id: 'y16', date: '2026-12-31', text: 'Payments to Tidewater Roasting.',
+  { id: 'y16', date: '2026-12-31', text: 'Payments to Kilnworth Roasting.',
     lines: [{ acct: 'Accounts Payable', dr: inv.paid }, { acct: 'Cash', cr: inv.paid }], cash: 'operating' },
   { id: 'y17', date: '2026-12-31', text: 'Cost of the bags shipped, from the perpetual inventory records (first in, first out).',
     lines: [{ acct: 'Cost of Goods Sold', dr: inv.cogsPerpetual }, { acct: 'Inventory', cr: inv.cogsPerpetual }] },
@@ -179,7 +189,7 @@ export const YEAR = [
   { id: 'y23', date: '2026-12-31', text: 'Advertising.',
     lines: [{ acct: 'Advertising Expense', dr: F.advertising }, { acct: 'Cash', cr: F.advertising }], cash: 'operating', cashLabel: 'Cash paid to suppliers' },
   { id: 'y24', date: '2026-12-31', text: 'Couriers and postage for shop orders.',
-    lines: [{ acct: 'Delivery Expense', dr: F.delivery }, { acct: 'Cash', cr: F.delivery }], cash: 'operating' },
+    lines: [{ acct: 'Shipping Expense', dr: F.shipping }, { acct: 'Cash', cr: F.shipping }], cash: 'operating' },
   { id: 'y25', date: '2026-12-31', text: 'Fuel for the van.',
     lines: [{ acct: 'Fuel Expense', dr: F.fuel }, { acct: 'Cash', cr: F.fuel }], cash: 'operating' },
   { id: 'y26', date: '2026-12-31', text: 'Bank charges, licences and other small costs.',
@@ -207,7 +217,7 @@ const pre = [
   { id: 'e6', date: '2026-12-31', adjusting: true, kind: 'bad debts', text: 'The aging of receivables says $584 of the $7,380 owed will not be collected; the allowance has a debit balance of $820 after the write-off.',
     lines: [{ acct: 'Bad Debt Expense', dr: badDebt }, { acct: 'Allowance for Doubtful Accounts', cr: badDebt }] },
   { id: 'e7', date: '2026-12-31', adjusting: true, kind: 'inventory write-down', text: 'Holiday Blend bags costing $1,000 can now be sold for only $600 after selling costs: written down to net realisable value.',
-    lines: [{ acct: 'Cost of Goods Sold', dr: inv.writeDown }, { acct: 'Inventory', cr: inv.writeDown }] },
+    lines: [{ acct: 'Cost of Goods Sold', dr: inv.holidayBlend.cost - inv.holidayBlend.nrv }, { acct: 'Inventory', cr: inv.holidayBlend.cost - inv.holidayBlend.nrv }] },
   { id: 'e8', date: '2026-12-31', adjusting: true, kind: 'reclassification', text: 'The $5,000 instalment of the van note due on 1 June 2027 is shown as a current liability.',
     lines: [{ acct: 'Notes Payable', dr: F.vanNote.instalment }, { acct: 'Current Portion of Long-Term Debt', cr: F.vanNote.instalment }] },
 ];
@@ -272,6 +282,15 @@ export const DERIVED = {
   cashEnd: bal('Cash'),                                                            // 42,940
   cfo: CF.operating, cfi: CF.investing, cff: CF.financing, netCash: CF.net,       // 39,940; −22,000; 25,000; 42,940
   cfoIndirect: IND.operating,                                                      // 39,940
+  // the operating working capital the indirect method adjusts for (opening balances are zero, so changes = ending balances)
+  operatingCurrentAssets: -IND.workingCapital.filter(([, v]) => v < 0).reduce((s, [, v]) => s + v, 0),     // 13,536
+  operatingCurrentLiabilities: IND.workingCapital.filter(([, v]) => v > 0).reduce((s, [, v]) => s + v, 0),  // 21,289
+  // the direct method's operating lines (ASC 230's categories)
+  cashFromCustomers: CF.lines.find((l) => l[0] === 'Cash received from customers')[1],   // 191,220 (net of $1,025 refunds)
+  cashToSuppliers: -CF.lines.find((l) => l[0] === 'Cash paid to suppliers')[1],        // 103,330
+  cashToEmployees: -CF.lines.find((l) => l[0] === 'Cash paid to employees')[1],        // 41,500
+  interestPaid: -CF.lines.find((l) => l[0] === 'Interest paid')[1],                     // 450
+  incomeTaxesPaid: -CF.lines.find((l) => l[0] === 'Income taxes paid')[1],              // 6,000
   taxPayable: bal('Income Taxes Payable'),                                         // 3,129
   unadjustedTrialBalance: A.trialBalance(unadjusted, CHART).dr,
   adjustedTrialBalance: A.trialBalance(LEDGER, CHART).dr,
@@ -285,6 +304,7 @@ const title = 'Lantern Coffee Co.';
 const period = 'for the ten months ended 31 December 2026';
 const rows = (list, sign = 1) => list.map(([n, v]) => [n, sign * v]);
 const neg = (list) => rows(list, -1);
+const netLabel = (k) => `Net cash ${CF[k] < 0 ? 'used in' : 'from'} ${k} activities`;
 
 export const STATEMENTS = {
   income: {
@@ -293,8 +313,8 @@ export const STATEMENTS = {
       { head: 'Revenue', rows: [...rows(IS.lists.revenue), ...neg(IS.lists.contra)], total: ['Net revenue', IS.revenue] },
       { head: 'Cost of sales', rows: rows(IS.lists.cost), total: ['Total cost of sales', IS.costOfSales] },
       { rows: [['Net revenue', IS.revenue], ['Less total cost of sales', -IS.costOfSales]], total: ['Gross profit', IS.grossProfit] },
-      { head: 'Operating expenses', rows: rows(IS.lists.operating), total: ['Total operating expenses', IS.operatingExpenses] },
-      { rows: [['Gross profit', IS.grossProfit], ['Less total operating expenses', -IS.operatingExpenses]], total: ['Operating income', IS.operatingIncome] },
+      { head: 'Operating expenses', rows: [...rows(IS.lists.operating), ...neg(IS.lists.operatingGains)], total: ['Total operating expenses', IS.operatingExpenses - IS.operatingGains] },
+      { rows: [['Gross profit', IS.grossProfit], ['Less total operating expenses', -(IS.operatingExpenses - IS.operatingGains)]], total: ['Operating income', IS.operatingIncome] },
       { rows: [['Operating income', IS.operatingIncome], ...neg(IS.lists.otherExpense)], total: ['Income before income tax', IS.incomeBeforeTax] },
       { rows: [['Income before income tax', IS.incomeBeforeTax], ...neg(IS.lists.tax)], total: ['Net income', IS.netIncome] },
     ],
@@ -323,8 +343,8 @@ export const STATEMENTS = {
     title, subtitle: `Statement of cash flows (direct method) ${period}`,
     sections: ['operating', 'investing', 'financing'].map((k) => ({
       head: `${k[0].toUpperCase()}${k.slice(1)} activities`, rows: CF.lines.filter((l) => l[2] === k).map(([n, v]) => [n, v]),
-      total: [`Net cash from ${k} activities`, CF[k]] })).concat([
-      { rows: [['Net cash from operating activities', CF.operating], ['Net cash used in investing activities', CF.investing], ['Net cash from financing activities', CF.financing], ['Cash, 1 March 2026', 0]], total: ['Cash, 31 December 2026', CF.net] },
+      total: [netLabel(k), CF[k]] })).concat([
+      { rows: [...['operating', 'investing', 'financing'].map((k) => [netLabel(k), CF[k]]), ['Cash, 1 March 2026', 0]], total: ['Cash, 31 December 2026', CF.net] },
     ]),
     note: 'Noncash investing and financing: ' + CF.noncash.join(' '),
   },
@@ -347,8 +367,8 @@ export const COSTING = {
   units, goodsAvailable, endUnits,
   fifo: { cogs: take(layers, hb.sold), ending: take([...layers].reverse(), endUnits) },                 // 22,560; 3,600
   lifo: { cogs: take([...layers].reverse(), hb.sold), ending: take(layers, endUnits) },                // 22,920; 3,240 (periodic)
-  average: { unitCost: goodsAvailable / units, cogs: goodsAvailable / units * hb.sold, ending: goodsAvailable / units * endUnits },   // 8.72; 22,672; 3,488 (periodic)
-  sales: hb.sold * hb.price,                                                  // 46,800
+  average: { unitCost: goodsAvailable / units, cogs: Math.round(goodsAvailable / units * hb.sold * 100) / 100, ending: Math.round(goodsAvailable / units * endUnits * 100) / 100 },   // 8.72; 22,672; 3,488 (periodic)
+  sales: hb.sold * hb.price,                                                  // 36,400
 };
 
 /** Identities the checker relies on: if any is false, the case is broken. */
@@ -363,4 +383,5 @@ export const IDENTITIES = [
   ['training revenue = workshops × participants × price', bal('Training Revenue') === F.training.workshops * F.training.participants * F.training.price],
   ['allowance = aging estimate', Math.round(bal('Allowance for Doubtful Accounts') * 100) === Math.round(agingAllowance * 100)],
   ['FIFO ending inventory + COGS = goods available', COSTING.fifo.cogs + COSTING.fifo.ending === goodsAvailable],
+  ['the write-down in FACTS = cost − NRV of the Holiday Blend', inv.writeDown === inv.holidayBlend.cost - inv.holidayBlend.nrv],
 ];

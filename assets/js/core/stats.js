@@ -413,14 +413,31 @@ export function quintileScores(values, higherIsBetter = true) {
 }
 
 /** Histogram bins with Freedman–Diaconis width, nicely rounded. */
-export function histogram(values, maxBins = 30) {
+/** Histogram bins. By default bins are [x0, x1) with the last bin closed. `closed: 'right'` makes them (x0, x1], as
+ *  Excel's FREQUENCY, Histogram chart and Analysis ToolPak count. `edges: [e1, e2, …]` gives the bins' upper edges
+ *  (Excel's bin range): values ≤ e1, then (e1, e2], …, and a last bin for values above the last edge if there are any. */
+export function histogram(values, maxBins = 30, { closed = 'left', edges = null } = {}) {
   const a = sorted(finite(values)); const n = a.length;
   if (!n) return { bins: [], width: 0 };
+  if (edges?.length) {
+    const e = [...edges].sort((x, y) => x - y);
+    const bins = e.map((x1, i) => ({ x0: i ? e[i - 1] : Math.min(a[0], x1 - (e[1] - e[0] || 1)), x1, count: 0, closed: 'right' }));
+    if (a[n - 1] > e[e.length - 1]) bins.push({ x0: e[e.length - 1], x1: a[n - 1], count: 0, closed: 'right', more: true });
+    for (const v of a) { const k = bins.findIndex((b) => v <= b.x1); bins[k < 0 ? bins.length - 1 : k].count++; }
+    return { bins, width: null, closed: 'right' };
+  }
   const lo = a[0], hi = a[n - 1];
   if (lo === hi) return { bins: [{ x0: lo - 0.5, x1: hi + 0.5, count: n }], width: 1 };
   const iqr = quantileSorted(a, 0.75) - quantileSorted(a, 0.25);
   let w = iqr > 0 ? 2 * iqr / Math.cbrt(n) : (hi - lo) / Math.ceil(Math.log2(n) + 1);
   w = niceStep((hi - lo) / Math.min(maxBins, Math.max(5, Math.ceil((hi - lo) / w))));
+  if (closed === 'right') {
+    const start = (Math.ceil(lo / w - 1e-9) - 1) * w;           // lo falls in (start, start + w]
+    const count = Math.max(1, Math.ceil((hi - start) / w - 1e-9));
+    const bins = Array.from({ length: count }, (_, i) => ({ x0: start + i * w, x1: start + (i + 1) * w, count: 0, closed: 'right' }));
+    for (const v of a) { let i = Math.ceil((v - start) / w - 1e-9) - 1; if (i < 0) i = 0; if (i >= count) i = count - 1; bins[i].count++; }
+    return { bins, width: w, closed: 'right' };
+  }
   const start = Math.floor(lo / w) * w;
   const count = Math.max(1, Math.ceil((hi - start) / w + 1e-9));
   const bins = Array.from({ length: count }, (_, i) => ({ x0: start + i * w, x1: start + (i + 1) * w, count: 0 }));

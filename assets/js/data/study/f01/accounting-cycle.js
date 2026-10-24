@@ -358,7 +358,7 @@ export default {
     } },
     { p: 'No arrangement is foolproof. Ana herself both approves payments and reconciles the bank, so the check on the owner is the external accountant’s review at year end. The aim is reasonable assurance at a sensible cost, which is exactly what COSO’s definition asks for. The controls also make the bookkeeper’s work easier to trust, which matters when a lender asks to see the statements.' },
     { h: 'Where F02 goes next' },
-    { p: 'Lantern sells only services so far, so it holds no inventory and its statements fit on a page. When it starts selling coffee beans, it will need to account for stock and for the cost of the goods it sells. F02, Financial Statement Preparation, builds on the cycle you now know: the four statements in depth and how they connect, inventory and the cost of goods sold, depreciation methods beyond straight-line, receivables and payables, working capital, and the differences between US GAAP and IFRS.' },
+    { p: 'This course has kept Lantern’s books for its catering and workshops, which are services: they hold no inventory, and the statements fit on a page. Lantern’s online shop sells bags of coffee beans, and those need accounts for stock and for the cost of the goods it sells. F02, Financial Statement Preparation, builds on the cycle you now know: the four statements in depth and how they connect, inventory and the cost of goods sold, depreciation methods beyond straight-line, receivables and payables, working capital, and the differences between US GAAP and IFRS.' },
   ],
 
   summary: [

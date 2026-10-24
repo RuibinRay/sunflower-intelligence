@@ -4,14 +4,17 @@
 //   { kind: 'recorder', scenario }                              Accounting Lab recorder: done when every entry is posted
 //   { kind: 'cleaning', dataset, ops, watch, task, goals }      Data Cleaning Lab: done when every goal is met
 //   { kind: 'mix', lock, show, plan }                           Marketing Mix Simulator: the plan is kept for the write-up
+//   { kind: 'widget', widget: { type: 'sheet' | 'pivot' | … } }  a lesson widget (B03's worksheet, PivotTable,
+//                                                               regression output); it doesn't hold the stage up
 // A stage's `items` are questions (any exercise type; `short` for writing). A stage is done when its tool's goal
 // is met (if it has one) and every question has been answered. The project is finished when every stage is done
 // and the student has marked it against the rubric. Projects never change mastery.
-import { initSite } from '../core/site.js?v=10';
-import { $, h, debounce } from '../core/dom.js?v=10';
-import * as P from '../study/progress.js?v=10';
-import { practiceCard, loadCharts } from '../study/exercises.js?v=10';
-import { initOutline, paintOutline, storageWarning, scrollersFocusable } from '../study/common.js?v=10';
+import { initSite } from '../core/site.js?v=12';
+import { $, h, debounce } from '../core/dom.js?v=12';
+import * as P from '../study/progress.js?v=12';
+import { practiceCard, loadCharts } from '../study/exercises.js?v=12';
+import { xl } from '../study/xl.js?v=12';
+import { initOutline, paintOutline, storageWarning, scrollersFocusable } from '../study/common.js?v=12';
 
 initSite();
 initOutline();
@@ -20,7 +23,7 @@ paintOutline(course);
 const box = $('#project-root');
 
 let mod;
-try { mod = await import(`../data/study/${course}/project.js?v=10`); } catch (e) { console.error(e); }
+try { mod = await import(`../data/study/${course}/project.js?v=12`); } catch (e) { console.error(e); }
 const PJ = mod?.default || mod?.project;
 if (!PJ) {
   box.replaceChildren(h('p', { class: 'note' }, 'The project didn’t load. Reload the page to try again.'));
@@ -44,7 +47,7 @@ if (!PJ) {
     const state = h('p', { class: 'stage-state' });
     const sec = h('section', { class: 'project-stage', id: `stage-${st.id}`, 'aria-labelledby': `stage-${st.id}-h` },
       h('h2', { id: `stage-${st.id}-h` }, h('span', {}, `Stage ${i + 1} of ${PJ.stages.length}`), st.title), state);
-    const intro = h('div', { class: 'stage-html' }); intro.innerHTML = st.html || ''; sec.append(intro);
+    const intro = h('div', { class: 'stage-html' }); intro.innerHTML = xl(st.html || ''); sec.append(intro);
     const need = { tool: !!st.tool && (st.tool.kind === 'recorder' || (st.tool.kind === 'cleaning' && !!st.tool.goals?.length)), items: new Set((st.items || []).map((x) => x.id)) };   // a lab with no goal to meet doesn't hold the stage up
     const have = { tool: !!rec().stages[st.id]?.tool, items: new Set(rec().stages[st.id]?.items || []) };
     const update = () => {
@@ -73,7 +76,7 @@ if (!PJ) {
   // finishing: self-assessment against the rubric
   const rubric = h('section', { class: 'project-stage', id: 'finish', 'aria-labelledby': 'finish-h' },
     h('h2', { id: 'finish-h' }, h('span', {}, 'Finally'), 'Check your work against the rubric'));
-  const list = h('ul', { class: 'rubric', role: 'list' }, (PJ.rubric || []).map((r, k) => { const id = `rub-${k}`; const lab = h('label', { for: id }, h('input', { type: 'checkbox', id }), h('span')); lab.lastChild.innerHTML = r; return h('li', {}, lab); }));
+  const list = h('ul', { class: 'rubric', role: 'list' }, (PJ.rubric || []).map((r, k) => { const id = `rub-${k}`; const lab = h('label', { for: id }, h('input', { type: 'checkbox', id }), h('span')); lab.lastChild.innerHTML = xl(r); return h('li', {}, lab); }));
   const finishBtn = h('button', { type: 'button', class: 'btn btn-primary' }, 'Finish the project');
   const finishNote = h('p', { class: 'field-hint', 'aria-live': 'polite' });
   finishBtn.addEventListener('click', () => { P.projectComplete(course); paintNav(); });
@@ -94,20 +97,24 @@ function summarise(results) {
 async function mountTool(el, tool, cb) {
   try {
     if (tool.kind === 'recorder') {
-      const { mountRecorder } = await import('../study/labs/accounting-ui.js?v=10');
+      const { mountRecorder } = await import('../study/labs/accounting-ui.js?v=12');
       el.replaceChildren();
       mountRecorder(el, tool.scenario, { onProgress: ({ done, total }) => { if (total && done >= total) cb.done(); }, store: { load: () => { try { return JSON.parse(localStorage.getItem(cb.key) || 'null'); } catch { return null; } }, save: (v) => { try { localStorage.setItem(cb.key, JSON.stringify(v)); } catch { /* not kept */ } } } });
     } else if (tool.kind === 'cleaning') {
-      const { mountLab } = await import('../study/labs/cleaning-ui.js?v=10');
+      const { mountLab } = await import('../study/labs/cleaning-ui.js?v=12');
       el.replaceChildren();
       const { kind, ...opts } = tool;
       mountLab(el, { ...opts, storageKey: cb.key, onProgress: (met, total) => { if (total && met >= total) cb.done(); } });
     } else if (tool.kind === 'mix') {
-      const { mountSimulator } = await import('../study/labs/mix-ui.js?v=10');
+      const { mountSimulator } = await import('../study/labs/mix-ui.js?v=12');
       el.replaceChildren();
       const { kind, ...opts } = tool;
       const keep = debounce((plan, results) => cb.plan(plan, results), 600);   // saving on every slider step would be wasteful
       mountSimulator(el, { ...opts, onChange: (plan, results) => keep(plan, results) });
+    } else if (tool.kind === 'widget' && /^[a-z][a-z-]*$/.test(tool.widget?.type || '')) {
+      const mod = await import(`../study/widgets/${tool.widget.type}.js?v=12`);
+      el.replaceChildren();
+      await mod.mount(el, tool.widget, { id: cb.key.replace(/[^a-z0-9-]/gi, '-'), report: () => {} });
     } else throw new Error(`unknown tool ${tool.kind}`);
   } catch (e) {
     console.error(e);

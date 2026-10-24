@@ -9,7 +9,7 @@
 // { acct, dr } or { acct, cr }. `cash` optionally classifies the cash movement for the statement of cash flows:
 // 'operating' | 'investing' | 'financing', or { operating, investing, financing } in signed dollars for a split.
 // `cashLabel` optionally names the line on a direct-method statement of cash flows (e.g. 'Cash paid to employees').
-import { mulberry32 } from './rng.js?v=10';
+import { mulberry32 } from './rng.js?v=12';
 
 // ---------------------------------------------------------------- account types
 
@@ -618,6 +618,13 @@ function flowLabel(cls, a, inflow) {
   return inflow ? `Proceeds from ${lower(n || 'borrowing')}` : `Repayment of ${lower(n || 'borrowing')}`;
 }
 
+/** The noncash part of a purchase when some cash was paid: "on credit", "through a note payable". */
+function partBy(a) {
+  if (/accounts payable/i.test(a.name)) return 'on credit';
+  if (/notes? payable/i.test(a.name)) return 'through a note payable';
+  if (a.type === 'equity') return `in ${lower(a.name)}`;
+  return `through ${lower(a.name)}`;
+}
 /** How a noncurrent asset was paid for when no cash moved: "on credit", "by signing a note payable". */
 function acquiredBy(a) {
   if (/accounts payable/i.test(a.name)) return 'bought on credit';
@@ -660,7 +667,11 @@ export function cashFlows(entries, chart) {
       const nc = Math.min(assetCents - Math.max(paid, 0), finCents);
       if (nc > 0) {
         const how = finCredits.sort((x, y) => C(sideOf(y).amount) - C(sideOf(x).amount))[0];
-        noncash.push(`${ncDebits.map((l) => l.acct).join(' and ')} of ${usd(D(nc))} ${acquiredBy(ch.byName[how.acct])}.`);
+        const what = ncDebits.map((l) => l.acct).join(' and ');
+        // ASC 230-10-50-3: relate the cash and noncash parts of a part-cash purchase
+        noncash.push(paid > 0
+          ? `${what} costing ${usd(D(assetCents))} acquired for ${usd(D(paid))} in cash (shown in investing activities) and ${usd(D(nc))} ${partBy(ch.byName[how.acct])}.`
+          : `${what} of ${usd(D(nc))} ${acquiredBy(ch.byName[how.acct])}.`);
       }
     } else if (!sp.net) {
       // debt settled by issuing stock
@@ -681,7 +692,9 @@ export function cashFlows(entries, chart) {
 
 /**
  * A multi-step income statement from an adjusted ledger (before closing). Accounts say where they go:
- * - revenue: `section: 'other'` for non-operating income (interest revenue, gains); otherwise it is operating revenue.
+ * - revenue: `section: 'other'` for non-operating income (interest revenue); a revenue account with `gain: true` and no
+ *   `section: 'other'` is an operating gain, added after operating expenses (ASC 360-10-45-5 puts gains and losses on
+ *   selling long-lived assets inside operating income when that subtotal is shown); otherwise it is operating revenue.
  * - contra-revenue: subtracted from operating revenue (sales returns and allowances, sales discounts).
  * - expense: `section: 'cost'` (cost of sales), 'operating' (the default), 'other' (interest expense, losses) or 'tax'.
  *   `da: true` marks depreciation and amortisation (for EBITDA); `interest: true` marks interest (for EBIT).
@@ -690,13 +703,14 @@ export function cashFlows(entries, chart) {
  */
 export function multiStepIncome(ledger, chart) {
   const ch = asChart(chart);
-  const L = { revenue: [], contra: [], cost: [], operating: [], otherIncome: [], otherExpense: [], tax: [] };
-  const T = { grossRevenue: 0, contra: 0, cost: 0, operating: 0, otherIncome: 0, otherExpense: 0, tax: 0, da: 0, interestExp: 0, interestRev: 0 };
+  const L = { revenue: [], contra: [], cost: [], operating: [], operatingGains: [], otherIncome: [], otherExpense: [], tax: [] };
+  const T = { grossRevenue: 0, contra: 0, cost: 0, operating: 0, operatingGains: 0, otherIncome: 0, otherExpense: 0, tax: 0, da: 0, interestExp: 0, interestRev: 0 };
   for (const a of ch.list) {
     const b = bal(ledger, a.name);
     if (!b) continue;
     if (a.type === 'revenue') {
       if (a.section === 'other') { L.otherIncome.push([a.name, D(b)]); T.otherIncome += b; if (a.interest || /interest/i.test(a.name)) T.interestRev += b; }
+      else if (a.gain) { L.operatingGains.push([a.name, D(b)]); T.operatingGains += b; }
       else { L.revenue.push([a.name, D(b)]); T.grossRevenue += b; }
     } else if (a.type === 'contra-revenue') { L.contra.push([a.name, D(b)]); T.contra += b; }
     else if (a.type === 'expense') {
@@ -709,7 +723,7 @@ export function multiStepIncome(ledger, chart) {
   }
   const revenue = T.grossRevenue - T.contra;
   const grossProfit = revenue - T.cost;
-  const operatingIncome = grossProfit - T.operating;
+  const operatingIncome = grossProfit - T.operating + T.operatingGains;
   const incomeBeforeTax = operatingIncome + T.otherIncome - T.otherExpense;
   const netIncome = incomeBeforeTax - T.tax;
   const ebit = incomeBeforeTax + T.interestExp - T.interestRev;
@@ -717,7 +731,7 @@ export function multiStepIncome(ledger, chart) {
     lists: Object.fromEntries(Object.entries(L)),
     grossRevenue: D(T.grossRevenue), contraRevenue: D(T.contra), revenue: D(revenue),
     costOfSales: D(T.cost), grossProfit: D(grossProfit),
-    operatingExpenses: D(T.operating), operatingIncome: D(operatingIncome),
+    operatingExpenses: D(T.operating), operatingGains: D(T.operatingGains), operatingIncome: D(operatingIncome),
     otherIncome: D(T.otherIncome), otherExpenses: D(T.otherExpense),
     incomeBeforeTax: D(incomeBeforeTax), incomeTax: D(T.tax), netIncome: D(netIncome),
     interestExpense: D(T.interestExp), interestRevenue: D(T.interestRev),
@@ -744,7 +758,7 @@ export function indirectOperating(ledger, chart, opening = {}) {
   for (const a of ch.list) {
     const b = bal(ledger, a.name);
     if (!b) continue;
-    if (a.type === 'expense' && (a.noncash || a.loss)) { adjustments.push([a.loss ? `Loss on ${lower(a.name.replace(/^loss on /i, ''))}` : a.name, D(b)]); total += b; }
+    if (a.type === 'expense' && (a.noncash || a.loss)) { adjustments.push([a.loss ? `Loss on ${lower(a.name.replace(/^loss on /i, ''))}` : a.name.replace(/\s+expense$/i, ''), D(b)]); total += b; }
     if (a.type === 'revenue' && a.gain) { adjustments.push([a.name, D(-b)]); total -= b; }
   }
   const open = (name) => C(opening?.[name] || 0);

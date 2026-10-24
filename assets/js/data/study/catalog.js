@@ -63,13 +63,13 @@ const ALL = [
     project: { title: 'One month at Brightwater Bike Repair', blurb: 'Run a full accounting cycle for a fictional repair shop: journalise a month of transactions, adjust, prepare the statements and close the books.' },
   }),
   C({
-    id: 'f02', school: 'finance', code: 'F02', level: 'intro', status: 'in-progress', requires: ['f01'],
+    id: 'f02', school: 'finance', code: 'F02', level: 'intro', status: 'reviewed', requires: ['f01'],
     title: 'Financial Statement Preparation',
     blurb: 'Build all four financial statements and see how every transaction flows through them.',
     case: 'lantern',
     outcomes: [
       'Apply the five-step revenue recognition model to decide when, and how much, revenue to record, including deferred revenue and refunds.',
-      'Account for inventory under perpetual and periodic systems, and calculate cost of goods sold and ending inventory by FIFO, LIFO and weighted average.',
+      'Account for inventory under perpetual and periodic systems, calculate cost of goods sold and ending inventory by FIFO, LIFO and weighted average, and apply the lower of cost and net realisable value.',
       'Prepare a multi-step income statement and calculate gross profit, operating income, EBIT and EBITDA.',
       'Account for receivables, payables and long-lived assets (bad debts, depreciation, disposals, amortisation), and prepare a classified balance sheet and a statement of changes in equity.',
       'Prepare a statement of cash flows by the direct and the indirect method, and trace how a transaction moves through all four statements.',
@@ -81,8 +81,8 @@ const ALL = [
       { n: 3, title: 'The statement of cash flows', lessons: ['cash-flow-statement', 'indirect-method'] },
       { n: 4, title: 'Putting the statements together', lessons: ['linking-the-statements', 'gaap-and-ifrs'] },
     ],
-    project: { title: 'Brightwater Bike Repair’s first full year', blurb: 'Prepare all four financial statements for Brightwater’s 2027, the year it starts selling parts and bikes: cost its inventory, estimate bad debts, record a disposal, and show how the statements connect.' },
-    topics: ['Income statements: gross profit, EBITDA, EBIT and net income', 'Balance sheets', 'Cash flow statements (direct and indirect methods)', 'Statements of changes in equity', 'Revenue recognition basics', 'Cost of goods sold', 'Operating expenses', 'Depreciation and amortisation', 'Inventory accounting', 'Accounts receivable and payable', 'Working capital', 'Retained earnings', 'How the three statements connect', 'US GAAP versus IFRS'],
+    project: { title: 'Brightwater Bike Repair’s first full year', blurb: 'Prepare all four financial statements for Brightwater’s 2027, the year it starts selling bikes and accessories: cost its inventory, estimate bad debts, record a disposal, and show how the statements connect.' },
+    topics: ['Income statements: gross profit, EBIT, EBITDA and net income', 'Balance sheets', 'Cash flow statements (direct and indirect methods)', 'Statements of changes in equity', 'Revenue recognition basics', 'Cost of goods sold', 'Operating expenses', 'Depreciation and amortisation', 'Inventory accounting', 'Accounts receivable and payable', 'Working capital', 'Retained earnings', 'How the four statements connect', 'US GAAP versus IFRS'],
   }),
   C({
     id: 'f03', school: 'finance', code: 'F03', level: 'intermediate', requires: ['f02'],
@@ -213,10 +213,27 @@ const ALL = [
     related: [{ tool: 'analytics/explore/#data', label: 'Data-quality audit' }],
   }),
   C({
-    id: 'b03', school: 'analytics', code: 'B03', level: 'intro', recommends: ['b01'],
+    id: 'b03', school: 'analytics', code: 'B03', level: 'intro', status: 'reviewed', recommends: ['b01', 'b02'],
     title: 'Excel for Business Analytics',
-    blurb: 'Formulas, lookups, pivot tables, charts, what-if analysis and dashboards in a spreadsheet.',
-    topics: ['Formulas and functions', 'IF, SUMIF, COUNTIF, XLOOKUP', 'Tables', 'Pivot tables', 'Charts', 'Conditional formatting', 'Descriptive statistics', 'Data cleaning workflows', 'What-if analysis', 'Goal Seek and Solver', 'Regression output', 'Dashboards'],
+    blurb: 'Formulas, lookups, tables and cleaning, PivotTables, charts, descriptive statistics and regression output, what-if analysis and dashboards in Excel.',
+    case: 'lantern',
+    outcomes: [
+      'Build formulas with the right relative, absolute and mixed references, and lay out a workbook so its inputs, calculations and results are separate and can be checked.',
+      'Use logical, text, date and conditional functions (IF, IFS, AND, OR, IFERROR, SUMIFS, COUNTIFS, AVERAGEIFS) to answer business questions from transaction data.',
+      'Retrieve values with XLOOKUP, INDEX and MATCH, and VLOOKUP, choosing exact or approximate matching correctly, and organise data in Excel tables with structured references.',
+      'Clean imported data with text, date and value functions in a documented, repeatable workflow, and extract sorted, filtered and unique lists with FILTER, SORT and UNIQUE.',
+      'Summarise data with PivotTables, choose the chart that answers the question and present it honestly, and use conditional formatting to show what matters.',
+      'Calculate descriptive statistics in Excel and read regression output (coefficients, R², standard error, p-values, confidence intervals) without claiming more than it shows.',
+      'Model decisions with Goal Seek, data tables, scenarios and Solver, and design a dashboard that answers its audience’s questions.',
+    ],
+    modules: [
+      { n: 1, title: 'Formulas that work', lessons: ['cells-and-formulas', 'functions-and-logic', 'conditional-sums-and-counts'] },
+      { n: 2, title: 'Finding and summarising data', lessons: ['lookups', 'tables-and-cleaning', 'pivot-tables'] },
+      { n: 3, title: 'Showing and describing data', lessons: ['charts-and-conditional-formatting', 'descriptive-statistics-and-regression'] },
+      { n: 4, title: 'Deciding with a spreadsheet', lessons: ['what-if-analysis', 'dashboards'] },
+    ],
+    project: { title: 'Lantern’s summer workbook', blurb: 'Analyse Lantern’s spring shop orders and its 2026 catering events in a spreadsheet: build the formulas and summaries Ana needs, read a regression of catering invoices, find the relaunched shop’s break-even with Goal Seek and a data table, plan July’s stock order with Solver, and recommend what her shop dashboard should show.' },
+    topics: ['Formulas and functions', 'IF, SUMIF, COUNTIF, XLOOKUP', 'Tables', 'PivotTables', 'Charts', 'Conditional formatting', 'Descriptive statistics', 'Data cleaning workflows', 'What-if analysis', 'Goal Seek and Solver', 'Regression output', 'Dashboards'],
   }),
   C({
     id: 'b04', school: 'analytics', code: 'B04', level: 'intermediate', requires: ['b01'], recommends: ['b02'],
@@ -281,7 +298,7 @@ const ALL = [
 
   // ================================================================ Marketing & Business Strategy
   C({
-    id: 'm01', school: 'marketing', code: 'M01', level: 'intro', status: 'reviewed', recommends: ['f00', 'b01'],
+    id: 'm01', school: 'marketing', code: 'M01', level: 'intro', status: 'complete', recommends: ['f00', 'b01'],
     title: 'Marketing Fundamentals',
     blurb: 'What marketing is, how customers and organisations buy, and how a business sets objectives and chooses how to compete.',
     case: 'lantern',

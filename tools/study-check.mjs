@@ -6,6 +6,8 @@
 // Exit code 1 if any error. Warnings are printed but don't fail.
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
+import * as SH from '../assets/js/core/sheet.js';
+import { ols } from '../assets/js/core/stats.js';
 import {
   catalog, BUILT, DATA, chartFor, chartSync, caseFor, lessonsOf, loadLesson, loadEx, loadModuleFile, blocks, blockWords,
   inline, tex, tagProblems, strings, words, strip, sum, glossKey,
@@ -13,8 +15,8 @@ import {
 
 const VERBS = /^(Explain|Describe|Define|Identify|Distinguish|Classify|Calculate|Compute|Record|Prepare|Analyse|Apply|Interpret|Evaluate|Compare|Choose|Decide|Use|Recognise|State|Construct|Build|Post|Journalise|Find|Detect|Diagnose|Handle|Transform|Scale|Encode|Write|Document|Justify|Recommend|Estimate|Assess|Plan|Design|Set|Measure|Select|Determine|Correct|Locate|Read|Summarise|Reshape|Combine|Profile|Validate|Clean|Convert|Standardise|Normalise|Map|Draft|Price|Forecast|Test|Name|List|Contrast|Close|Adjust|Trace|Reconcile)\b/;
 const KINDS = ['conceptual', 'numerical', 'applied'];
-const TYPES = ['mc', 'multi', 'num', 'fill', 'classify', 'order', 'journal', 'equation', 'rows', 'short', 'steps'];
-const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc'];
+const TYPES = ['mc', 'multi', 'num', 'fill', 'classify', 'order', 'journal', 'equation', 'rows', 'short', 'formula', 'steps'];
+const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression'];
 const DATASETS = ['lantern-orders', 'harborview-bookings', 'northfield-students'];
 const CLEAN_OPS = ['dedupe', 'dedupe-key', 'trim', 'case', 'map', 'to-number', 'to-date', 'fill', 'drop-missing', 'flag-missing', 'validate', 'outliers', 'transform', 'scale', 'encode', 'derive', 'rename', 'drop-column'];
 const near = (a, b, tol) => Math.abs(a - b) <= tol + 1e-9;
@@ -27,7 +29,7 @@ class Report {
 }
 
 function straightQuotes(s) {
-  const prose = String(s).replace(/<m>[\s\S]*?<\/m>|<M>[\s\S]*?<\/M>/g, '').replace(/<[^>]+>/g, '');
+  const prose = String(s).replace(/<m>[\s\S]*?<\/m>|<M>[\s\S]*?<\/M>|<x>[\s\S]*?<\/x>/g, '').replace(/<[^>]+>/g, '');
   return /[A-Za-z]'[A-Za-z]|(^|\s)'[A-Za-z]|"[A-Za-z]/.test(prose);
 }
 
@@ -127,6 +129,7 @@ function checkExercise(x, where, r, { course, chart, needHints = false, inSteps 
       if (!x.model) r.err(`${w}: short needs a model answer`);
       break;
     }
+    case 'formula': checkFormulaItem(x, w, r); break;
     case 'steps': {
       if (!Array.isArray(x.steps) || x.steps.length < 2) { r.err(`${w}: steps needs at least 2 steps`); break; }
       x.steps.forEach((s, i) => checkExercise(s, `${w}.steps[${i}]`, r, { course, chart, needHints, inSteps: true, assessment, caseMod }));
@@ -138,6 +141,95 @@ function checkExercise(x, where, r, { course, chart, needHints = false, inSteps 
     const t = x.data.table;
     if (t.head && t.rows) t.rows.forEach((row, i) => { if (row.length !== t.head.length) r.err(`${w}: data.table row ${i} has ${row.length} cells, header has ${t.head.length}`); });
   }
+}
+
+// ---------------------------------------------------------------- spreadsheet items and widgets (B03)
+/** Every formula in a sheet spec parses, uses known functions and evaluates; returns the Sheet. */
+function checkSheetSpec(spec, w, r, { allowErrors = [] } = {}) {
+  if (!spec?.cells || typeof spec.cells !== 'object') { r.err(`${w}: needs sheet.cells`); return null; }
+  let sh;
+  try { sh = new SH.Sheet(spec); } catch (e) { r.err(`${w}: sheet could not be built: ${e.message}`); return null; }
+  for (const [a, v] of Object.entries(spec.cells)) {
+    if (!SH.parseAddr(a)) r.err(`${w}: "${a}" is not a cell address`);
+    if (typeof v === 'string' && v.startsWith('=')) {
+      try { SH.parse(v); } catch (e) { r.err(`${w}: ${a} ${v} doesn’t parse: ${e.message}`); continue; }
+      const unknown = [...SH.functionsUsed(v)].filter((n) => !SH.FUNCTIONS.includes(n));
+      if (unknown.length) r.err(`${w}: ${a} uses ${unknown.join(', ')}, which the sheet engine doesn’t have`);
+      const val = sh.get(a);
+      if (SH.isErr(val) && !allowErrors.includes(a)) r.err(`${w}: ${a} ${v} gives ${val.code} (list it in allowErrors if that is the point)`);
+    }
+  }
+  for (const [n, t] of Object.entries(spec.tables || {})) if (!SH.parseRange(t)) r.err(`${w}: table ${n} range ${t} is not a range`);
+  for (const [a, vals] of Object.entries(spec.vary || {})) {
+    if (!(a in spec.cells)) r.err(`${w}: vary names ${a}, which has no value in cells`);
+    else if (!Array.isArray(vals) || !vals.length) r.err(`${w}: vary.${a} must be a list of values`);
+    else if (vals.some((v) => v === spec.cells[a])) r.err(`${w}: vary.${a} repeats the cell’s own value, so a copy wouldn’t differ`);
+  }
+  return sh;
+}
+function checkFormulaItem(x, w, r) {
+  const sh = checkSheetSpec(x.sheet, `${w}.sheet`, r, { allowErrors: x.allowErrors || [] });
+  if (!sh) return;
+  const at = SH.parseAddr(x.cell || '');
+  if (!at) { r.err(`${w}: cell must be an address like F2`); return; }
+  if (x.fill) { const rg = SH.parseRange(x.fill); if (!rg || rg.r0 !== at.r || rg.c0 !== at.c) r.err(`${w}: fill ${x.fill} must start at the cell ${x.cell}`); }
+  const view = SH.parseRange(x.view || '');
+  if (!view) r.err(`${w}: needs view (the range shown, like A1:F13)`);
+  else { const t = SH.parseRange(x.fill || x.cell); if (t && (t.r0 < view.r0 || t.c0 < view.c0 || t.r1 > view.r1 || t.c1 > view.c1)) r.err(`${w}: view ${x.view} doesn’t show ${x.fill || x.cell}`); }
+  if (x.sheet.cells[x.cell] != null) r.err(`${w}: ${x.cell} already holds something in the sheet; the student's formula goes there`);
+  if (typeof x.answer !== 'string' || !x.answer.startsWith('=')) { r.err(`${w}: answer must be a formula starting with =`); return; }
+  try { SH.parse(x.answer); } catch (e) { r.err(`${w}: answer doesn’t parse: ${e.message}`); return; }
+  const unknown = [...SH.functionsUsed(x.answer)].filter((n) => !SH.FUNCTIONS.includes(n));
+  if (unknown.length) { r.err(`${w}: answer uses ${unknown.join(', ')}, which the sheet engine doesn’t have`); return; }
+  (x.require || []).forEach((n) => { if (!SH.functionsUsed(x.answer).has(n.toUpperCase())) r.err(`${w}: require lists ${n} but the answer doesn’t use it`); });
+  const g = (formula) => SH.gradeFormula(x.sheet, { cell: x.cell, fill: x.fill, formula, answer: x.answer, require: x.require || [], variants: x.variants ?? 3 });
+  const self = g(x.answer);
+  if (!self.ok) r.err(`${w}: the answer doesn’t pass its own marking: ${self.message}`);
+  self.results.forEach((res) => { if (SH.isErr(res.want) && !(x.allowErrors || []).includes(res.cell)) r.err(`${w}: the answer gives ${res.want.code} in ${res.cell}`); });
+  if (!x.fill) {
+    const v = self.results[0]?.want;
+    const lit = typeof v === 'number' ? `=${v}` : typeof v === 'string' ? `="${v.replace(/"/g, '""')}"` : typeof v === 'boolean' ? `=${v ? 'TRUE' : 'FALSE'}` : null;
+    if (lit && g(lit).ok) r.err(`${w}: typing the result (${lit}) would pass; the changed-data copies don’t change it (check fixed, or that the answer depends on numbers)`);
+  }
+  (x.wrong || []).forEach((wf, i) => {
+    if (!wf?.formula || !wf.say) { r.err(`${w}: wrong[${i}] needs formula and say`); return; }
+    try { SH.parse(wf.formula); } catch (e) { r.err(`${w}: wrong[${i}] doesn’t parse: ${e.message}`); return; }
+    if (g(wf.formula).ok) r.err(`${w}: wrong[${i}] ${wf.formula} is marked right, so it isn’t a wrong answer`);
+  });
+  (x.alt || []).forEach((a, i) => { const res = g(a); if (!res.ok) r.err(`${w}: alt[${i}] ${a} should be accepted but isn’t: ${res.message}`); });
+}
+function checkSheetWidget(wd, w, r) {
+  const sh = checkSheetSpec(wd.sheet, `${w}.sheet`, r, { allowErrors: wd.allowErrors || [] });
+  if (!sh) return;
+  if (!SH.parseRange(wd.view || '')) r.err(`${w}: needs view`);
+  const TOOLS = ['formulas', 'fill', 'goalseek', 'datatable', 'solver', 'cf', 'reset'];
+  (wd.tools || []).forEach((t) => { if (!TOOLS.includes(t)) r.err(`${w}: unknown tool ${t}`); });
+  const tools = wd.tools || [];
+  if (tools.includes('goalseek') && wd.goalseek) {
+    const gs = wd.goalseek;
+    if (!sh.isFormula(gs.target)) r.err(`${w}: goalseek.target ${gs.target} must hold a formula`);
+    if (sh.isFormula(gs.changing)) r.err(`${w}: goalseek.changing ${gs.changing} must hold a value`);
+    else if (!SH.goalSeek(sh, gs).ok) r.err(`${w}: Goal Seek doesn’t converge for the default settings`);
+  }
+  if (tools.includes('datatable') && wd.datatable) {
+    const dt = wd.datatable;
+    if (!sh.isFormula(dt.target)) r.err(`${w}: datatable.target must hold a formula`);
+    if (!(dt.values || []).length) r.err(`${w}: datatable needs values`);
+  }
+  if (tools.includes('solver')) {
+    const sv = wd.solver;
+    if (!sv?.objective || !sv.changing?.length) r.err(`${w}: solver needs objective and changing`);
+    else {
+      const res = SH.solveSheet(sh, sv);
+      if (!res.ok && (sv.expect || 'optimal') === 'optimal') r.err(`${w}: Solver finds no optimum for the default model (${res.status})`);
+    }
+  }
+  (wd.rules || []).forEach((ru, i) => { if (!SH.parseRange(ru.range || '')) r.err(`${w}: rules[${i}] needs a range`); });
+  (wd.controls || []).forEach((c, i) => {
+    if (!SH.parseAddr(c.cell || '')) r.err(`${w}: controls[${i}] needs a cell`);
+    if (!Array.isArray(c.options) || c.options.length < 2) r.err(`${w}: controls[${i}] needs at least two options`);
+    if (sh.isFormula(c.cell)) r.err(`${w}: controls[${i}] sets ${c.cell}, which holds a formula`);
+  });
 }
 
 // ---------------------------------------------------------------- widgets
@@ -188,6 +280,20 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
     (wd.ops || []).forEach((o) => { if (!CLEAN_OPS.includes(o)) r.err(`${w}: unknown op ${o}`); });
   } else if (wd.type === 'distribution') {
     if (!(wd.values?.length || (DATASETS.includes(wd.dataset) && wd.column))) r.err(`${w}: needs values, or dataset and column`);
+  } else if (wd.type === 'sheet') {
+    checkSheetWidget(wd, w, r);
+  } else if (wd.type === 'pivot') {
+    const recs = wd.records || [];
+    if (!recs.length) r.err(`${w}: pivot needs records`);
+    const keys = new Set(recs.flatMap((x) => Object.keys(x)));
+    [...(wd.fields || []), ...(wd.values || [])].forEach((f) => { if (!keys.has(f)) r.err(`${w}: field ${f} isn’t in the records`); });
+    if (!(wd.fields || []).length || !(wd.values || []).length) r.err(`${w}: pivot needs fields and values`);
+  } else if (wd.type === 'regression') {
+    const n = wd.y?.values?.length;
+    if (!n) r.err(`${w}: regression needs y.values`);
+    (wd.xs || []).forEach((x) => { if (x.values?.length !== n) r.err(`${w}: x ${x.name} length ≠ y length`); });
+    const fit = ols((wd.xs || []).map((x) => x.values), wd.y?.values || [], {});
+    if (fit.error) r.err(`${w}: regression with every X fails: ${fit.error}`);
   } else if (wd.type === 'mixsim') {
     const ok = ['tier', 'range', 'price', 'channels', 'promotion'];
     Object.keys(wd.lock || {}).forEach((k) => { if (!ok.includes(k)) r.err(`${w}: lock.${k} is not a decision`); });
@@ -368,6 +474,7 @@ async function checkAssessments(course) {
     if (P?.verify) { try { for (const [what, value, shown, tol = 0.005] of P.verify()) if (Math.abs(value - shown) > tol) r.err(`project: ${what}: computed ${value}, shown ${shown}`); } catch (e) { r.err(`project.verify threw: ${e.message}`); } }
     if (!P?.title || !P?.brief || !Array.isArray(P?.stages) || !P.stages.length) r.err('project: needs title, brief and stages');
     (P?.stages || []).forEach((s, i) => (s.items || []).forEach((x, j) => checkExercise(x, `project.stages[${i}].items[${j}]`, r, { course, chart, caseMod })));
+    (P?.stages || []).forEach((s, i) => { if (s.tool?.kind === 'widget') checkWidget(`project.stages[${i}].tool`, s.tool.widget, r, { chart, caseMod }); else if (s.tool && !['recorder', 'cleaning', 'mix'].includes(s.tool.kind)) r.err(`project.stages[${i}]: unknown tool kind ${s.tool.kind}`); });
     if (!Array.isArray(P?.rubric) || P.rubric.length < 3) r.warn('project: give a rubric of at least 3 criteria');
   }
   return r;

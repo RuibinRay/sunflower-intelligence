@@ -2,10 +2,11 @@
 // for screen readers and anyone who prefers them. Also exports drawChart, which the formula explorer reuses.
 //   { type: 'chart', kind: 'line' | 'bar', title, x: { label, values }, series: [{ name, values }],
 //     y: { label, format: 'money' | 'pct' | 'int' | 'num' }, note: 'html' }
-import { h } from '../../core/dom.js?v=10';
-import * as F from '../../core/format.js?v=10';
-import { lineChart, barChart, tableTwin } from '../../core/charts.js?v=10';
-import { onResize } from '../../core/dom.js?v=10';
+import { h } from '../../core/dom.js?v=12';
+import { xl } from '../xl.js?v=12';
+import * as F from '../../core/format.js?v=12';
+import { lineChart, barChart, tableTwin } from '../../core/charts.js?v=12';
+import { onResize } from '../../core/dom.js?v=12';
 
 const CLS = ['m-s1', 'm-s2', 'm-s3'];
 export function formatter(kind) {
@@ -41,6 +42,6 @@ export function mount(el, cfg) {
   el.append(cfg.title ? h('p', { class: 'chart-title' }, cfg.title) : '', box);
   const draw = () => drawChart(box, cfg, { height: cfg.height || 280 });
   draw();
-  if (cfg.note) { const n = h('p', { class: 'fx-note' }); n.innerHTML = cfg.note; el.append(n); }
+  if (cfg.note) { const n = h('p', { class: 'fx-note' }); n.innerHTML = xl(cfg.note); el.append(n); }
   onResize(box, draw);
 }

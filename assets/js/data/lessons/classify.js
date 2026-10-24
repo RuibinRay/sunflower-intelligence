@@ -1,9 +1,9 @@
 // Lesson: classification with logistic regression — odds ratios, thresholds, the confusion matrix and AUC —
 // and why clustering needs columns on a common scale.
 // `checks` recompute every number printed in the worked example; tests/lessons.test.mjs compares them.
-import * as F from '../../core/format.js?v=10';
-import { normQuantile } from '../../core/stats.js?v=10';
-import { confusion, roc } from '../../core/classify.js?v=10';
+import * as F from '../../core/format.js?v=12';
+import { normQuantile } from '../../core/stats.js?v=12';
+import { confusion, roc } from '../../core/classify.js?v=12';
 
 const sigmoid = (z) => 1 / (1 + Math.exp(-z));
 const B0 = -2.0, B1 = 0.405;                       // invented churn model: log-odds = −2.0 + 0.405 × support calls
