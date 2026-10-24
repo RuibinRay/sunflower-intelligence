@@ -72,7 +72,7 @@ export function mount(el, cfg, ctx) {
         ? 'With no true difference, every rejection is a Type I error: the chance of one is α.'
         : wrongWay
           ? `The alternative points the other way from the true ${cfg.twoSample ? 'difference' : 'mean'} (${fmtX(X(delta))}), so the test almost never rejects H₀, however large the sample: a one-sided test can only detect a difference in the direction it names.`
-          : `If the true ${cfg.twoSample ? 'difference' : 'mean'} is ${fmtX(X(delta))}, a sample of ${n}${cfg.twoSample ? ' per group' : ''} detects it ${(power * 100).toFixed(1)}% of the time at α = ${alpha}. The rest of the time the ${cfg.twoSample ? 'difference in sample means' : 'sample mean'} ${alternative === 'two-sided' ? 'falls between the critical values' : 'falls short of the critical value'} and the test misses it.`));
+          : `If the true ${cfg.twoSample ? 'difference' : 'mean'} is ${fmtX(X(delta))}, a sample of ${n}${cfg.twoSample ? ' per group' : ''} detects it ${(power * 100).toFixed(1)}% of the time at α = ${alpha}. The rest of the time the ${cfg.twoSample ? 'difference in sample means' : 'sample mean'} ${alternative === 'two-sided' ? 'falls between the critical values' : 'doesn’t reach the critical value'} and the test misses it.`));
     ctx.report?.('power', { n, power });
   }
   draw();

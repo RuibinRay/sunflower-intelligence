@@ -255,7 +255,7 @@ export const check = [
     id: 'b04-dd-k1', type: 'mc', kind: 'conceptual',
     prompt: `Excel’s KURT returns ${D.orders.kurtosis.toFixed(1)} for Lantern’s 231 spring order values. What does that tell Ana?`,
     options: [
-      'At least one order lies extremely far from the others: the tails are extreme.',
+      'At least one order lies extremely far from all the others: the tails are extreme.',
       'Most orders cluster in a very sharp, narrow peak close to the median order value.',
       'The orders are about 200 times more spread out than a normal distribution would be.',
       'The orders have a long tail to the left, with a few orders far below the mean.',
@@ -322,7 +322,7 @@ export const check = [
     id: 'b04-dd-k6', type: 'mc', kind: 'applied',
     prompt: 'Ana’s assistant writes: “99.6% of spring orders lie within two standard deviations of the mean, so the orders follow the empirical rule closely.” What is the best reply?',
     options: [
-      'It is far above 95% because one order inflates the SD; the data are skewed, so only Chebyshev applies.',
+      'It is far above 95% because one order inflates the SD; the data are skewed, so only Chebyshev’s rule applies.',
       'Agreed: 99.6% is close enough to 95% to treat the order values as bell-shaped for the rest of the review.',
       'The figure must be wrong, because Chebyshev’s inequality caps the share within two SDs at 75% of the data.',
       'The empirical rule only applies to samples, and the 231 orders here are a population, so it can’t be used.',

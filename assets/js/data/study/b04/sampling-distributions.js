@@ -106,7 +106,7 @@ export default {
   slug: 'sampling-distributions',
   title: 'Sampling distributions',
   blurb: 'A sample’s mean or proportion changes from one sample to the next. See how much, through the standard error σ ÷ √n and the central limit theorem, on Lantern’s strongly skewed spring orders; use the normal model for a sample mean, and know when it misleads. Then compare the ways of drawing a sample and the biases that no sample size cures.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish a parameter from a statistic, and explain what a sampling distribution is.',
     'Calculate the standard error of a sample mean and of a sample proportion, with the finite population correction when the sample is a large share of the population.',

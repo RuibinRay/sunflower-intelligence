@@ -53,7 +53,7 @@ function spreadFigure() {
   const Y = (v) => 250 - ((v - 14) / 26) * 200;
   const names = ['Harbour', 'Market', 'Station Sq.'];
   let s = '<svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" font-size="12" fill="currentColor">';
-  [[0, BG, BK, 'As recorded'], [320, spread3, BK3, 'Same means, three times the spread']].forEach(([x0, groups, res, title]) => {
+  [[0, BG, BK, 'As recorded'], [320, spread3, BK3, 'Three times the spread']].forEach(([x0, groups, res, title]) => {
     const L = x0 + 44, R = x0 + 300;
     s += `<text x="${x0 + 172}" y="18" text-anchor="middle" font-size="12">${title}: F = ${res.F.toFixed(2)}, p = ${res.p.toFixed(3)}</text>`;
     s += `<line x1="${L}" x2="${L}" y1="${Y(40)}" y2="${Y(14)}" stroke="var(--ink)" stroke-width="1.2"/><line x1="${L}" x2="${R}" y1="${Y(14)}" y2="${Y(14)}" stroke="var(--ink)" stroke-width="1.2"/>`;
@@ -80,13 +80,14 @@ export default {
     'Calculate the between-group and within-group sums of squares, degrees of freedom, mean squares and F for a one-way ANOVA, by hand and with DEVSQ.',
     'Use Excel’s Anova: Single Factor and read its SUMMARY and ANOVA tables, finding p-values and critical values with F.DIST.RT and F.INV.RT.',
     'Assess the conditions of one-way ANOVA (independence, normality, equal variances) and choose a response when they fail, such as Welch’s ANOVA.',
-    'Interpret a significant or non-significant F with η², and identify which groups differ with Bonferroni-adjusted comparisons or Tukey’s HSD.',
+    'Interpret a significant or non-significant F with η², identify which groups differ with Bonferroni-adjusted comparisons, and explain what Tukey’s HSD does.',
   ],
   prerequisites: [
     { lesson: 'b04/comparing-means', why: 'Two-sample t tests, the pooled variance and Welch’s test are what ANOVA extends to several groups.' },
     { lesson: 'b04/hypothesis-testing', why: 'Null hypotheses, p-values, α and the multiple-testing problem behind the family-wise error rate.' },
     { lesson: 'b04/proportions-and-chi-square', why: 'The chi-square distribution, which the F distribution is built from.' },
-    { lesson: 'b03/descriptive-statistics-and-regression', why: 'The Analysis ToolPak, VAR.S and DEVSQ-style sums of squares, and Lantern’s catering events.' },
+    { lesson: 'b04/describing-distributions', why: 'Sums of squares, DEVSQ and degrees of freedom.' },
+    { lesson: 'b03/descriptive-statistics-and-regression', why: 'The Analysis ToolPak and Lantern’s catering events.' },
   ],
   case: 'lantern',
 
@@ -120,15 +121,15 @@ export default {
 
     { h: 'Degrees of freedom, mean squares and F' },
     { p: String.raw`Each sum of squares has its <g>degrees of freedom</g>: <m>k - 1</m> between groups (k group means, tied together by the grand mean), <m>N - k</m> within groups (N observations, k group means estimated from them) and <m>N - 1</m> in total; the first two add up to the third. A <g>mean square</g> is a sum of squares divided by its degrees of freedom: <m>\text{MSB} = \text{SSB} \div (k - 1)</m> and <m>\text{MSW} = \text{SSW} \div (N - k)</m>. The F statistic is their ratio, <m>F = \text{MSB} \div \text{MSW}</m>.` },
-    { p: String.raw`For Lantern, <m>\text{MSB} = 35.687 \div 4 \approx 8.922</m>, <m>\text{MSW} = 230.759 \div 71 \approx 3.250</m> and <m>F = 8.922 \div 3.250 \approx 2.75</m>. MSW is the pooled variance of the <g>pooled t test</g> extended to k groups, and its square root, $1.80, is the typical distance of an event from its type’s mean. MSB is large only when the group means are spread out relative to that.` },
+    { p: String.raw`For Lantern, <m>\text{MSB} = 35.687 \div 4 \approx 8.922</m>, <m>\text{MSW} = 230.759 \div 71 \approx 3.250</m> and <m>F = 8.922 \div 3.250 \approx 2.75</m>. MSW is the pooled variance of the <g>pooled t test</g> extended to k groups, and its square root, $1.80, is the typical distance of an event from its type’s mean. F is large only when MSB is large relative to MSW: when the group means are spread out more than the within-group scatter explains.` },
 
     { h: 'The F distribution' },
     { p: 'If the null hypothesis and the model’s conditions hold, F follows an <g>F distribution</g> with k − 1 and N − k degrees of freedom, the distribution of the ratio of two independent chi-square variables, each divided by its degrees of freedom. It is never negative and is skewed to the right. Its mean, df₂ ÷ (df₂ − 2), is close to 1 when the denominator df is large: about 1.03 for Lantern’s 71. Only a large F is evidence against the null hypothesis, so the test uses the right tail; OpenStax calls one-way ANOVA “always right-tailed”.' },
     { p: 'In Excel, <x>=F.DIST.RT(x,deg_freedom1,deg_freedom2)</x> returns the right-tail probability, the p-value: <x>=F.DIST.RT(2.745,4,71)</x> ≈ 0.035. <x>=F.INV.RT(probability,deg_freedom1,deg_freedom2)</x> returns the <g>critical value</g>: <x>=F.INV.RT(0.05,4,71)</x> ≈ 2.50, and Lantern’s F of 2.75 lies just beyond it. Microsoft’s examples: <x>=F.DIST.RT(15.2068649,6,4)</x> returns 0.01 and <x>=F.INV.RT(0.01,6,4)</x> returns 15.20686. The numerator df comes first, and swapping the two gives a different distribution; both functions truncate a df that isn’t a whole number.' },
-    { p: 'With two groups, one-way ANOVA is the pooled two-sample t test of <i>Comparing means</i>: F equals t², with the same p-value. Microsoft’s page on the ToolPak makes the same point, suggesting T.TEST when there are only two samples. ANOVA earns its keep with three groups or more.' },
+    { p: 'With two groups, one-way ANOVA is the pooled two-sample t test of <i>Comparing means</i>: F equals t², with the same p-value. Microsoft’s ToolPak page says that with only two samples you can use T.TEST instead; with type 2, the pooled test, it gives the ANOVA’s two-tailed p-value. ANOVA earns its keep with three groups or more.' },
 
     { h: 'Excel’s Anova: Single Factor' },
-    { p: 'With the Analysis ToolPak loaded (B03 showed how), choose Data &gt; Data Analysis &gt; Anova: Single Factor, which Microsoft describes as a simple analysis of variance on data for two or more samples. Put each group in its own column with its name in the first row, select the block as the Input Range, set Grouped By to Columns, tick Labels in first row, and leave Alpha at 0.05 unless you want another level. Like B03’s Descriptive Statistics and Regression tools it writes values, not formulas, so run it again when the data change.' },
+    { p: 'With the Analysis ToolPak loaded (B03 showed how), choose Data &gt; Data Analysis &gt; Anova: Single Factor, which Microsoft describes as a simple analysis of variance on data for two or more samples. Put each group in its own column with its name in the first row, select the block as the Input Range, set Grouped By to Columns, tick Labels in first row, and leave Alpha at 0.05 unless you want another level. The groups needn’t be the same size: leave the cells below a shorter column empty, since a 0 would count as an observation. Like B03’s Descriptive Statistics and Regression tools it writes values, not formulas, so run it again when the data change.' },
     { p: 'The output has two tables. SUMMARY lists each group’s Count, Sum, Average and Variance (the sample variance, as VAR.S gives it). ANOVA has a row each for Between Groups, Within Groups and Total, with the columns SS, df, MS, F, P-value and F crit. Lantern’s, with the event types in five columns:' },
     { table: {
       caption: 'ANOVA: invoice per guest-day by event type, Lantern’s 76 catering events of 2026 (Anova: Single Factor, Alpha 0.05)',
@@ -153,7 +154,7 @@ export default {
       rows: EVENT_TYPES.map((t, i) => [t, String(AN.counts[i]), fx(AN.means[i]), fx(SDS[i])]),
       foot: [['All events', String(AN.n), fx(AN.grand), fx(Math.sqrt(AN.sst / AN.dft))]],
     } },
-    { p: 'When the conditions are doubtful, check whether the conclusion depends on them. <b>Welch’s ANOVA</b> drops the equal-variance assumption by weighting each group by nᵢ ÷ sᵢ², and Delacre and colleagues (2019) recommend it as the default for comparing means. It isn’t in the ToolPak, but statistical software runs it: for Lantern it gives F ≈ 4.13 on 4 and 30.3 df, p ≈ 0.009.' },
+    { p: 'When the conditions are doubtful, check whether the conclusion depends on them. <b>Welch’s ANOVA</b> drops the equal-variance assumption by weighting each group by nᵢ ÷ sᵢ², and Delacre and colleagues (2019) recommend it as the default for comparing means. It isn’t in the ToolPak, but statistical software runs it: for Lantern it gives F ≈ 4.13 on 4 and 30.3 df, p ≈ 0.009. Here the largest group, meetings, also has the largest spread, which makes the ordinary F conservative; when the smallest group has the largest spread it errs the other way and finds differences too often.' },
     { p: 'The <b>Kruskal–Wallis test</b> compares the groups’ ranks instead of their values, so it doesn’t assume normality: for Lantern H ≈ 13.0 on 4 df, p ≈ 0.011. A log transformation (B02) is a third option for right-skewed groups. Here every route points the same way, so the conclusion that the types differ doesn’t rest on the equal-variance assumption.' },
 
     { h: 'How big are the differences?' },
@@ -162,11 +163,11 @@ export default {
     { h: 'What a significant F does and doesn’t tell you' },
     { p: 'A significant F says the group means are not all equal. It doesn’t say which differ, or that they all differ: one group out of line is enough. A non-significant F is not proof of equal means, only a lack of evidence against them, as with any test.' },
     { p: 'To find which groups differ, compare pairs in a way that keeps the family-wise error rate in check. <b>Tukey’s HSD</b> (honestly significant difference) compares every pair and is the usual choice when all pairs matter; NIST’s handbook says it has the edge when all pairwise comparisons are of interest. It needs the studentised range distribution, for which Excel has no function, so it is run in statistical software. The <g>Bonferroni correction</g> works anywhere: to make m comparisons with a family-wise error rate of at most α, test each one at α ÷ m.' },
-    { p: `For Lantern’s five types m = 10, so each pair is tested at 0.05 ÷ 10 = 0.005. Because the variances differ, use <g>Welch’s t test</g> for each pair: with the types in columns A to E in the SUMMARY’s order, <x>=T.TEST(D2:D12,E2:E12,2,3)</x> compares launches with team days. Only that pair clears the bar, with p ≈ 0.004 and team days $2.25 higher; the next smallest p-value, conferences against launches, is 0.018. Tukey’s HSD reaches the same conclusion.` },
+    { p: `For Lantern’s five types m = 10, so each pair is tested at 0.05 ÷ 10 = 0.005. Because the variances differ, use <g>Welch’s t test</g> for each pair: with the types in columns A to E in the SUMMARY’s order, <x>=T.TEST(D2:D12,E2:E12,2,3)</x> compares launches with team days. Only that pair clears the bar, with p ≈ 0.004 and team days $2.25 higher; the next smallest p-value, conferences against launches, is 0.018. Tukey’s HSD, run in statistical software, also finds only this pair; its usual form assumes equal variances, but the Games–Howell version, which doesn’t, agrees.` },
     { p: 'Comparisons planned before seeing the data, such as each type against one standard type, need fewer adjustments than all pairs. Picking the biggest gap after looking and testing only that one is the <g>multiple testing</g> trap in disguise: the biggest of ten gaps is not a fair draw. The challenging example shows it happening.' },
 
     { h: 'Beyond one factor' },
-    { p: 'Two-way ANOVA handles two categorical factors at once, for example event type and season, and tests whether their effects interact; Microsoft notes that the ToolPak’s Anova: Two-Factor With Replication needs the same number of observations for every combination. ANOVA is also a special case of regression on group indicators, which B06 Regression Analysis develops. And the Kruskal–Wallis test above is the rank-based alternative when the groups are far from normal.' },
+    { p: 'Two-way ANOVA handles two categorical factors at once, for example event type and season, and tests whether their effects interact; the ToolPak’s Anova: Two-Factor With Replication needs the same number of observations for every combination (its dialog takes a single Rows per sample). ANOVA is also a special case of regression on group indicators, which B06 Regression Analysis develops. And the Kruskal–Wallis test above is the rank-based alternative when the groups are far from normal.' },
   ],
 
   formulas: [
@@ -234,14 +235,14 @@ export default {
       setup: 'Ana is deciding whether her quote sheet should price event types differently. Using invoice per guest-day for the 76 events of 2026, test whether the types’ means differ, check the conditions, measure the size of the differences and find which types differ.',
       steps: [
         `Describe (the SUMMARY table above): means from $9.00 (launches, 11 events) to $11.25 (team days, 11 events), with ${AN.counts[1]} meetings, the largest group.`,
-        `Conditions: the largest standard deviation over the smallest is 2.15 ÷ 0.68 ≈ 3.2, failing the rule of thumb; meetings are right-skewed with two high values; the events come from ${nClients} repeat clients and are every event of the year, not a random sample.`,
+        `Conditions: the largest standard deviation over the smallest is 2.15 ÷ 0.68 ≈ 3.2, failing the rule of thumb; meetings are right-skewed with two high values; the events come from ${nClients} clients, most of them repeat bookers (Harbor Tech alone booked ${harborTech}), and are every event of the year, not a random sample.`,
         'ANOVA (Anova: Single Factor): F ≈ 2.75 on 4 and 71 df, p ≈ 0.035, F crit 2.50. Because the equal-variance condition fails, check the conclusion with Welch’s ANOVA (p ≈ 0.009) and the Kruskal–Wallis test (p ≈ 0.011): all agree.',
         'Size: η² ≈ 0.134; the highest and lowest type means differ by $2.25 per guest-day.',
         'Which types: Bonferroni-adjusted Welch t tests at 0.005 each. Only team days against launches qualifies, p ≈ 0.004.',
         `Alternative explanations: team days ran ${fx(meanHours('Team day'), 1)} hours on average against ${fx(meanHours('Launch'), 1)} for launches, so event type and event length are tangled.`,
       ],
       answer: 'Invoice per guest-day differs by event type (F ≈ 2.75, p ≈ 0.035; Welch p ≈ 0.009; η² ≈ 0.13). After a Bonferroni adjustment only team days ($11.25) and launches ($9.00) differ clearly.',
-      interpretation: 'The evidence supports looking at team-day and launch pricing, not a surcharge for every type. Because team days also run longer, the difference may be about hours rather than type, and only a model with both, the multiple regression of B06, can separate them. The data are one year’s events from repeat clients, so Ana should treat the result as a description of 2026 and watch whether it holds in 2027.' },
+      interpretation: 'The evidence supports looking at team-day and launch pricing, not a surcharge for every type. Because team days also run longer, the difference may be about hours rather than type, and only a model with both, the multiple regression of B06, can separate them. The data are one year’s events, mostly from repeat clients, so Ana should treat the result as a description of 2026 and watch whether it holds in 2027.' },
   ],
 
   demo: [
@@ -256,13 +257,13 @@ export default {
     { title: '“A significant F means every group differs.”', html: 'It means the means are not all equal. One group out of line is enough: for Lantern only team days against launches survives the follow-up comparisons.' },
     { title: '“p = 0.07, so the four teams perform the same.”', html: 'A non-significant F is a lack of evidence, not proof of equal means. Small groups can miss real differences; say what size of difference the data could have detected, or collect more.' },
     { title: '“F.DIST gives the ANOVA p-value.”', html: '<x>=F.DIST(F,df1,df2,TRUE)</x> is the left-tail probability. The p-value is the right tail, <x>=F.DIST.RT(F,df1,df2)</x>, with the between-groups df first.' },
-    { title: '“The ToolPak checks the conditions for you.”', html: 'It prints F and a p-value whatever the data look like. Check the spread (largest SD within about twice the smallest), outliers and independence yourself, and confirm with Welch’s ANOVA or Kruskal–Wallis when they are doubtful.' },
+    { title: '“The ToolPak checks the conditions for you.”', html: 'It prints F and a p-value whatever the data look like. Check the spread (largest SD within about twice the smallest), outliers and independence yourself. Welch’s ANOVA allows for unequal variances and Kruskal–Wallis for non-normal groups; nothing fixes a lack of independence.' },
     { title: '“A bigger F means bigger differences.”', html: 'F grows with sample size as well as with the gaps between means. Judge size from the means and η², and significance from the p-value.' },
   ],
 
   application: [
     { p: 'Analysts use one-way ANOVA wherever several groups are compared on one measure: handling time across call-centre teams, yield across production lines, basket value across store formats, test scores across training methods. In a designed experiment, where units are assigned to groups at random, a significant F supports a causal conclusion about the groups. In observational data such as Lantern’s it describes differences and leaves their causes open.' },
-    { case: 'Ana’s note for her catering review reads: “Invoice per guest-day differed by event type (one-way ANOVA F = 2.75 on 4 and 71 df, p = 0.035; Welch’s test p = 0.009; η² = 0.13). After a Bonferroni adjustment, only team days ($11.25) and launches ($9.00) differ clearly. These are all 2026 events from 18 repeat clients, not random samples.” Before adding anything to the quote sheet she checks what else goes with team days: they ran 6.6 hours on average against 4.2 for launches, so she asks B06’s question, whether hours or type drives the price, before changing it.' },
+    { case: 'Ana’s note for her catering review reads: “Invoice per guest-day differed by event type (Welch’s ANOVA, which allows for the unequal spreads, p = 0.009; ordinary one-way ANOVA F = 2.75 on 4 and 71 df, p = 0.035; η² = 0.13). After a Bonferroni adjustment, only team days ($11.25) and launches ($9.00) differ clearly. These are all 2026 events from 18 clients, most of them repeat bookers (Harbor Tech alone booked 11), not random samples.” Before adding anything to the quote sheet she checks what else goes with team days: they ran 6.6 hours on average against 4.2 for launches, so she asks B06’s question, whether hours or type drives the price, before changing it.' },
     { p: 'The reporting habit is the same as for every test: the group sizes and means, F with its two degrees of freedom and its p-value, an effect size, the follow-up comparisons with the adjustment named, and the conditions that might weaken the result. A small table of means with the ANOVA line underneath usually tells a reader more than the ToolPak’s full output.' },
   ],
 
@@ -271,7 +272,7 @@ export default {
     'SST = SSB + SSW: variation between group means (weighted by group size) plus variation within groups. In Excel, DEVSQ gives each.',
     'MSB = SSB ÷ (k − 1), MSW = SSW ÷ (N − k), F = MSB ÷ MSW. Under H₀, F follows an F distribution with k − 1 and N − k df and is near 1.',
     'The test is right-tailed: p = F.DIST.RT(F, k − 1, N − k); critical value F.INV.RT(α, k − 1, N − k). Anova: Single Factor prints both, as P-value and F crit.',
-    'Conditions: independence, normality within groups, equal variances (largest SD no more than about twice the smallest). When they fail, check with Welch’s ANOVA or Kruskal–Wallis.',
+    'Conditions: independence, normality within groups, equal variances (largest SD no more than about twice the smallest). Welch’s ANOVA allows for unequal variances and Kruskal–Wallis for non-normal groups; nothing fixes a lack of independence.',
     'η² = SSB ÷ SST measures size. A significant F says not all means are equal; Tukey’s HSD or Bonferroni-adjusted tests (each at α ÷ m) say which differ.',
     'A non-significant F is not proof of equal means, and in observational data a significant one is not proof of a cause.',
   ],
@@ -372,6 +373,8 @@ export default {
     { what: 'Clients', value: nClients, shown: 18 },
     { what: 'Harbor Tech events', value: harborTech, shown: 11 },
     { what: 'Harbor Tech is the most frequent client', value: Number(harborTech === maxClientEvents), shown: 1 },
+    { what: 'Clients who booked more than once', value: [...new Set(clients)].filter((c) => clients.filter((x) => x === c).length > 1).length, shown: 16 },
+    { what: 'Meetings are the largest group', value: Number(AN.counts[T.Meeting] === Math.max(...AN.counts)), shown: 1 },
     { what: 'Meeting SD', value: SDS[T.Meeting], shown: 2.15 },
     { what: 'Launch SD', value: SDS[T.Launch], shown: 0.68 },
     { what: 'Meeting SD is the largest', value: Number(SDS[T.Meeting] === Math.max(...SDS)), shown: 1 },

@@ -90,7 +90,7 @@ export default {
   slug: 'normal-distribution',
   title: 'The normal distribution',
   blurb: 'Model a measurement with the normal curve: turn values into z-scores, find the share of bags under a label weight and the machine setting that keeps it below 1%, with NORM.DIST and NORM.INV and by hand. Then check whether the model fits, and see where it fails.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain how a probability density curve gives probabilities as areas, and why the probability of one exact value of a continuous variable is 0.',
     'Calculate z-scores and normal probabilities below, above, between and outside given values, by hand from z and with NORM.DIST, NORM.S.DIST and STANDARDIZE.',

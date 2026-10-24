@@ -280,7 +280,7 @@ export const independent = [
   {
     id: 'b04-an-i6', type: 'num', kind: 'numerical',
     prompt: 'An ANOVA output shows SS between = 42.3 and SS within = 357.7. What is η²? Give three decimal places.',
-    answer: Math.round((42.3 / (42.3 + 357.7)) * 1000) / 1000, check: () => 42.3 / (42.3 + 357.7), unit: '', places: 3, tol: 0.001,
+    answer: 42.3 / 400, check: () => 42.3 / (42.3 + 357.7), unit: '', places: 3, tol: 0.0011,
     wrong: [
       { value: Math.round((42.3 / 357.7) * 1000) / 1000, say: 'That divides by SS within. η² divides SS between by the total, SS between + SS within = 400.' },
       { value: Math.round((357.7 / 400) * 1000) / 1000, say: 'That is the share within groups. η² is the share between groups: 42.3 ÷ 400.' },
@@ -313,7 +313,7 @@ export const check = [
     answer: 4.5, check: () => { const ssb = 6 * ((12 - 15) ** 2 + (15 - 15) ** 2 + (18 - 15) ** 2), ssw = 5 * (9 + 12 + 15); return (ssb / 2) / (ssw / 15); }, unit: '', places: 1, tol: 0.05,
     wrong: [
       { value: 9, say: 'That is SS between (108) ÷ MS within (12). Divide SS between by its df, 2, first.' },
-      { value: 1.5, say: 'You left out the group size when computing SS between. It is Σ nᵢ(x̄ᵢ − x̄)², with nᵢ = 6.' },
+      { value: ((3 ** 2 + 0 + 3 ** 2) / 2) / 12, say: 'You left out the group size when computing SS between. It is Σ nᵢ(x̄ᵢ − x̄)², with nᵢ = 6.' },
       { value: Math.round(((6 * 18) / 2 / ((9 + 12 + 15) * 5 / 18)) * 10) / 10, say: 'You divided SS within by N = 18. Its df is N − k = 15.' },
     ],
     solution: 'Grand mean 15 (equal groups). SSB = 6 × (3² + 0² + 3²) = 108; MSB = 108 ÷ 2 = 54. SSW = 5 × (9 + 12 + 15) = 180; MSW = 180 ÷ 15 = 12 (with equal groups, the mean of the variances). F = 54 ÷ 12 = 4.5, and <x>=F.DIST.RT(4.5,2,15)</x> ≈ 0.029.',
@@ -322,7 +322,7 @@ export const check = [
     id: 'b04-an-k3', type: 'formula', kind: 'applied',
     prompt: `Lantern’s invoice per guest-day is in A2:E${lastRow}, one column per event type (the columns have different lengths). H1 holds F, H3 the number of events and H5 the number of types. In H2, return the ANOVA p-value, taking the degrees of freedom from H3 and H5.`,
     sheet: eventSheet, cell: 'H2', answer: '=F.DIST.RT(H1,H5-1,H3-H5)',
-    alt: ['=F.DIST.RT(H1,4,71)', '=1-F.DIST(H1,H5-1,H3-H5,TRUE)'],
+    alt: ['=1-F.DIST(H1,H5-1,H3-H5,TRUE)', '=F.DIST.RT(H1,COUNTA(A1:E1)-1,COUNT(A2:E29)-COUNTA(A1:E1))'],
     view: `A1:H${lastRow}`, maxHeight: '20rem', formats: { A: '0.00', B: '0.00', C: '0.00', D: '0.00', E: '0.00', H1: '0.000', H2: '0.0000', H4: '0.00' }, widths: { G: 12, E: 10 },
     wrong: [
       { formula: '=F.DIST(H1,H5-1,H3-H5,TRUE)', say: 'That is the left tail. The ANOVA p-value is the right-tail area beyond F: F.DIST.RT.' },
@@ -330,7 +330,7 @@ export const check = [
       { formula: '=F.DIST.RT(H1,H5,H3)', say: 'Those are k and N. The degrees of freedom are k − 1 and N − k.' },
       { formula: '=F.DIST.RT(H1,H5-1,H3-1)', say: 'N − 1 is the total df. The denominator is the within-groups df, N − k.' },
     ],
-    solution: `<x>=F.DIST.RT(H1,H5-1,H3-H5)</x> = F.DIST.RT(${AN.F.toFixed(3)}, 4, 71) ≈ ${AN.p.toFixed(4)}, the P-value of the ToolPak’s output. Below 0.05, so at the 5% level the event types don’t all share one mean; the conditions (unequal spreads, repeat clients) and the follow-up comparisons still need reporting.`,
+    solution: `<x>=F.DIST.RT(H1,H5-1,H3-H5)</x> = F.DIST.RT(${AN.F.toFixed(3)}, 4, 71) ≈ ${AN.p.toFixed(4)}, the P-value of the ToolPak’s output. Below 0.05, so at the 5% level the event types don’t all share one mean; the conditions (unequal spreads, repeat bookings) and the follow-up comparisons still need reporting.`,
   },
   {
     id: 'b04-an-k4', type: 'mc', kind: 'applied',
@@ -344,7 +344,7 @@ export const check = [
     answer: 0,
     feedback: {
       1: 'A significant F means at least one mean differs; the follow-ups find only one clearly different pair.',
-      2: 'That is a causal claim from observational data. Team days also ran longer hours, and the events come from repeat clients.',
+      2: 'That is a causal claim from observational data. Team days also ran longer hours, and most of the events come from repeat clients.',
       3: 'A p-value is the probability of an F this large if the means were equal, not the probability that they are.',
     },
     solution: 'The F test rejects equal means at the 5% level, and Welch’s ANOVA agrees despite the unequal spreads. The Bonferroni-adjusted comparisons locate the clear difference: team days ($11.25) against launches ($9.00). Because the data are observational and type is tangled with hours, the result describes 2026’s events; it doesn’t show that changing the type would change the price.',

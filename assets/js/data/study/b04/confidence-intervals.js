@@ -66,7 +66,7 @@ export default {
   slug: 'confidence-intervals',
   title: 'Confidence intervals',
   blurb: 'Turn a sample’s mean or proportion into a range for the population’s, with a margin of error that says how far it could be off. Build z and t intervals for a mean and an interval for a proportion, by hand and with CONFIDENCE.NORM and CONFIDENCE.T; say exactly what “95% confident” means; and work out the sample a margin needs.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain a confidence interval as an estimate plus or minus a margin of error, and interpret a 95% confidence level correctly.',
     'Calculate a z interval for a mean when σ is known and a t interval when it isn’t, by hand and with CONFIDENCE.NORM, CONFIDENCE.T and T.INV.2T.',
