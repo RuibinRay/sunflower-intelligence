@@ -285,7 +285,7 @@ export const independent = [
       { value: Math.round((42.3 / 357.7) * 1000) / 1000, say: 'That divides by SS within. η² divides SS between by the total, SS between + SS within = 400.' },
       { value: Math.round((357.7 / 400) * 1000) / 1000, say: 'That is the share within groups. η² is the share between groups: 42.3 ÷ 400.' },
     ],
-    solution: 'SST = 42.3 + 357.7 = 400, so η² = 42.3 ÷ 400 ≈ 0.106: about 11% of the variation lies between the groups. Whether that matters depends on the means themselves and on the business question.',
+    solution: 'SST = 42.3 + 357.7 = 400, so η² = 42.3 ÷ 400 = 0.10575, about 0.106 (0.105 is accepted too): about 11% of the variation lies between the groups. Whether that matters depends on the means themselves and on the business question.',
   },
 ];
 
