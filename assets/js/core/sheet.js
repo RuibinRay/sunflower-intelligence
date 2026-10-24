@@ -243,6 +243,18 @@ export function shiftFormula(formula, dr, dc) {
       out += c < 0 || r < 0 ? '#REF!' : `${m[1]}${indexToCol(c)}${m[3]}${r + 1}`;
       i += m[0].length; continue;
     }
+    const cc = /^(\$?)([A-Za-z]{1,3}):(\$?)([A-Za-z]{1,3})(?![A-Za-z0-9_(])/.exec(rest);   // whole columns, F:F
+    if (cc && !/[A-Za-z0-9_.]/.test(prev)) {
+      const a = colToIndex(cc[2]) + (cc[1] ? 0 : dc), b = colToIndex(cc[4]) + (cc[3] ? 0 : dc);
+      out += a < 0 || b < 0 ? '#REF!' : `${cc[1]}${indexToCol(a)}:${cc[3]}${indexToCol(b)}`;
+      i += cc[0].length; continue;
+    }
+    const rr = /^(\$?)(\d{1,7}):(\$?)(\d{1,7})(?![0-9.A-Za-z])/.exec(rest);                 // whole rows, 2:2
+    if (rr && !/[A-Za-z0-9_.$]/.test(prev)) {
+      const a = Number(rr[2]) + (rr[1] ? 0 : dr), b = Number(rr[4]) + (rr[3] ? 0 : dr);
+      out += a < 1 || b < 1 ? '#REF!' : `${rr[1]}${a}:${rr[3]}${b}`;
+      i += rr[0].length; continue;
+    }
     const w = /^[A-Za-z_][A-Za-z0-9_.]*/.exec(rest);
     if (w && !/[A-Za-z0-9_.]/.test(prev)) { out += w[0]; i += w[0].length; continue; }
     out += ch; i++;
@@ -544,12 +556,19 @@ function ev(node, ctx) {
     }
     case 'neg': return mapArr(ev(node.a, ctx), (v) => { const n = toNum(v); return isErr(n) ? n : -n; });
     case 'pct': return mapArr(ev(node.a, ctx), (v) => { const n = toNum(v); return isErr(n) ? n : n / 100; });
-    case 'bin': return binop(node.op, ev(node.a, ctx), ev(node.b, ctx));
-    case 'fn': return call(node, ctx);
+    case 'bin': return finite(binop(node.op, ev(node.a, ctx), ev(node.b, ctx)));
+    case 'fn': return finite(call(node, ctx));
     default: return ERR.VALUE;
   }
 }
 function mapArr(v, f) { return isArr(v) ? new Arr(v.rows.map((row) => row.map(f))) : f(v); }
+/** A result too large for a number (=10^308*10) or undefined is #NUM! in Excel, never Infinity or NaN. */
+const notFinite = (v) => typeof v === 'number' && !Number.isFinite(v);
+function finite(v) {
+  if (notFinite(v)) return ERR.NUM;
+  if (isArr(v) && v.rows.some((row) => row.some(notFinite))) return mapArr(v, (x) => (notFinite(x) ? ERR.NUM : x));
+  return v;
+}
 function binop(op, a, b) {
   if (isArr(a) || isArr(b)) {
     const A = isArr(a) ? a : new Arr([[a]]), B = isArr(b) ? b : new Arr([[b]]);
@@ -674,12 +693,14 @@ function lookupIndex(value, list, mode = 0, search = 1) {
 /** Binary search as Excel does for approximate VLOOKUP/MATCH(…,1): the last position whose value ≤ the lookup
  *  value, assuming the list is sorted ascending (on unsorted data the answer is unreliable, as in Excel). */
 function approxAsc(value, list) {
-  let lo = 0, hi = list.length - 1, ans = -1;
+  // blank cells and values of another type (a text header above numbers, empty rows below a whole-column table) are
+  // passed over, so =VLOOKUP(30.6,X:Y,2,TRUE) finds its band as it does in Excel
+  const idx = [];
+  for (let i = 0; i < list.length; i++) if (list[i] != null && list[i] !== '' && typeof list[i] === typeof value) idx.push(i);
+  let lo = 0, hi = idx.length - 1, ans = -1;
   while (lo <= hi) {
     const mid = (lo + hi) >> 1;
-    const v = list[mid];
-    if (v == null || typeof v !== typeof value) { hi = mid - 1; continue; }
-    if (compare(v, value) <= 0) { ans = mid; lo = mid + 1; } else hi = mid - 1;
+    if (compare(list[idx[mid]], value) <= 0) { ans = idx[mid]; lo = mid + 1; } else hi = mid - 1;
   }
   return ans;
 }
@@ -789,7 +810,7 @@ FN.RSQ = (args, ctx) => { const r = FN.CORREL(args, ctx); return isErr(r) ? r : 
 // SLOPE(known_y's, known_x's), INTERCEPT(known_y's, known_x's)
 FN.SLOPE = (args, ctx) => { const p = pairs(args[1], args[0], ctx); if (isErr(p)) return p; if (p.xs.length < 2) return ERR.DIV0; const f = linfit(p.xs, p.ys); return Number.isFinite(f.slope) ? f.slope : ERR.DIV0; };
 FN.INTERCEPT = (args, ctx) => { const p = pairs(args[1], args[0], ctx); if (isErr(p)) return p; if (p.xs.length < 2) return ERR.DIV0; const f = linfit(p.xs, p.ys); return Number.isFinite(f.intercept) ? f.intercept : ERR.DIV0; };
-FN['FORECAST.LINEAR'] = (args, ctx) => { const x = numArg(args[0], ctx); if (isErr(x)) return x; const p = pairs(args[2], args[1], ctx); if (isErr(p)) return p; const f = linfit(p.xs, p.ys); return f.intercept + f.slope * x; };
+FN['FORECAST.LINEAR'] = (args, ctx) => { const x = numArg(args[0], ctx); if (isErr(x)) return x; const p = pairs(args[2], args[1], ctx); if (isErr(p)) return p; if (!p.xs.length) return ERR.NA; const f = linfit(p.xs, p.ys); if (!(f.sxx > 0)) return ERR.DIV0; return f.intercept + f.slope * x; };
 FN.FORECAST = FN['FORECAST.LINEAR'];
 FN.STEYX = (args, ctx) => { const p = pairs(args[1], args[0], ctx); if (isErr(p)) return p; if (p.xs.length < 3) return ERR.DIV0; const f = linfit(p.xs, p.ys); return Math.sqrt((f.syy - f.sxy ** 2 / f.sxx) / (f.n - 2)); };
 FN.COVARIANCE_S = null;
@@ -1036,7 +1057,9 @@ FN.N = (args, ctx) => { const v = scalar(args[0], ctx); return isErr(v) ? v : ty
 FN.NUMBERVALUE = (args, ctx) => {
   const v = scalar(args[0], ctx); if (isErr(v)) return v;
   if (typeof v === 'number') return v;
-  const dec = args[1] && args[1].t !== 'missing' ? toStr(scalar(args[1], ctx))[0] : '.', grp = args[2] && args[2].t !== 'missing' ? toStr(scalar(args[2], ctx))[0] : ',';
+  const dec = args[1] && args[1].t !== 'missing' ? toStr(scalar(args[1], ctx))[0] : '.';
+  // the default group separator (US settings: ",") gives way when "," is the decimal separator, as in LibreOffice
+  const grp = args[2] && args[2].t !== 'missing' ? toStr(scalar(args[2], ctx))[0] : dec === ',' ? '.' : ',';
   let t = toStr(v).replace(/\s/g, '');
   if (!t) return 0;
   let pct = 0; while (t.endsWith('%')) { pct++; t = t.slice(0, -1); }

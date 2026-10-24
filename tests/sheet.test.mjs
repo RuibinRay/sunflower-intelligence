@@ -220,6 +220,14 @@ eq('criterion ~* no wildcard', X.criterion('~*')('a'), false);
   ok('require a function', !X.gradeFormula(spec, { cell: 'C2', answer: '=SUM(A2:A4)', formula: '=A2+A3+A4', require: ['SUM'] }).ok);
   ok('require met', X.gradeFormula(spec, { cell: 'C2', answer: '=SUM(A2:A4)', formula: '=SUM(A2:A4)', require: ['SUM'] }).ok);
   ok('fixed cells stay', X.gradeFormula({ ...spec, fixed: ['E2'] }, { cell: 'C2', answer: '=E2', formula: '=0.08' }).ok);
+  // whole columns and rows move when filled, as in Excel
+  ok('fill: F:F moves to G:G', X.shiftFormula('=SUM(F:F)', 0, 1) === '=SUM(G:G)');
+  ok('fill: $F:$F stays', X.shiftFormula('=SUM($F:$F)+F:$G', 0, 2) === '=SUM($F:$F)+H:$G');
+  ok('fill: 2:2 moves to 3:3', X.shiftFormula('=SUM(2:2)', 1, 0) === '=SUM(3:3)');
+  ok('fill: $2:$2 stays', X.shiftFormula('=SUM($2:$2)', 4, 0) === '=SUM($2:$2)');
+  ok('fill: A1:B2 unaffected', X.shiftFormula('=SUM(A1:B2)', 1, 1) === '=SUM(B2:C3)');
+  // a non-finite result is #NUM!, so a formula matches itself when marked
+  ok('overflow marks like itself', X.gradeFormula({ cells: { A1: 3 } }, { cell: 'B1', answer: '=A1*10^308', formula: '=10^308*A1' }).ok);
   // vary: an input cell takes listed values on the copies, so a formula that works only for the shown value fails
   const vs = { cells: { A1: 46082, A2: 46100, A3: 46130, A4: 46150, B1: 5, B2: 7, B3: 9, B4: 4, D1: 46082 }, fixed: ['A1:A4'], vary: { D1: [46113] } };
   const vw = (formula) => X.gradeFormula(vs, { cell: 'E1', answer: '=COUNTIFS(A1:A4,">="&D1,A1:A4,"<="&EOMONTH(D1,0))', formula });

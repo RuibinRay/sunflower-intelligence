@@ -63,7 +63,7 @@ about.column_dimensions['A'].width = 14; about.column_dimensions['B'].width = 11
 table(wb.create_sheet('Orders'), 'Orders', D['ORDER_COLUMNS'], D['ORDERS'], {'order_date': DATE, 'unit_price': MONEY, 'discount': MONEY, 'order_total': MONEY})
 table(wb.create_sheet('Products'), 'Products', D['PRODUCT_COLUMNS'], D['PRODUCTS'], {'price': MONEY, 'unit_cost': MONEY})
 bands = wb.create_sheet('Bands')
-bands.append(['Delivery from', 'Charge', '', 'Size from', 'Band'])
+bands.append(['Order from', 'Delivery', '', 'Size from', 'Band'])
 for i in range(max(len(D['DELIVERY_BANDS']), len(D['SIZE_BANDS']))):
     a = D['DELIVERY_BANDS'][i] if i < len(D['DELIVERY_BANDS']) else [None, None]
     b = D['SIZE_BANDS'][i] if i < len(D['SIZE_BANDS']) else [None, None]
