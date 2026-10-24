@@ -63,7 +63,7 @@ const ALL = [
     project: { title: 'One month at Brightwater Bike Repair', blurb: 'Run a full accounting cycle for a fictional repair shop: journalise a month of transactions, adjust, prepare the statements and close the books.' },
   }),
   C({
-    id: 'f02', school: 'finance', code: 'F02', level: 'intro', status: 'reviewed', requires: ['f01'],
+    id: 'f02', school: 'finance', code: 'F02', level: 'intro', status: 'complete', requires: ['f01'],
     title: 'Financial Statement Preparation',
     blurb: 'Build all four financial statements and see how every transaction flows through them.',
     case: 'lantern',
@@ -213,7 +213,7 @@ const ALL = [
     related: [{ tool: 'analytics/explore/#data', label: 'Data-quality audit' }],
   }),
   C({
-    id: 'b03', school: 'analytics', code: 'B03', level: 'intro', status: 'reviewed', recommends: ['b01', 'b02'],
+    id: 'b03', school: 'analytics', code: 'B03', level: 'intro', status: 'complete', recommends: ['b01', 'b02'],
     title: 'Excel for Business Analytics',
     blurb: 'Formulas, lookups, tables and cleaning, PivotTables, charts, descriptive statistics and regression output, what-if analysis and dashboards in Excel.',
     case: 'lantern',
