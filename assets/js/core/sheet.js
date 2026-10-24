@@ -110,6 +110,8 @@ function tokenize(src) {
     if (m) { t.push({ k: 'ref', v: m[0] }); i += m[0].length; continue; }
     m = /^\$?[A-Za-z]{1,3}:\$?[A-Za-z]{1,3}(?![A-Za-z0-9_(])/.exec(s.slice(i));         // whole columns, A:A
     if (m) { t.push({ k: 'ref', v: m[0], cols: true }); i += m[0].length; continue; }
+    m = /^\$?\d{1,7}:\$?\d{1,7}(?![0-9.A-Za-z_(])/.exec(s.slice(i));               // whole rows, 12:20
+    if (m && !braces) { t.push({ k: 'ref', v: m[0], rows: true }); i += m[0].length; continue; }
     m = /^(\d+\.?\d*|\.\d+)(e[+-]?\d+)?/i.exec(s.slice(i));
     if (m) { t.push({ k: 'num', v: Number(m[0]) }); i += m[0].length; continue; }
     m = FN_RE.exec(s.slice(i));
@@ -171,7 +173,7 @@ export function parse(formula) {
     if (tk.k === 'str') return { t: 'lit', v: tk.v };
     if (tk.k === 'bool') return { t: 'lit', v: tk.v };
     if (tk.k === 'err') return { t: 'lit', v: tk.v };
-    if (tk.k === 'ref') return { t: 'ref', v: tk.v, cols: !!tk.cols, spill: !!tk.spill };
+    if (tk.k === 'ref') return { t: 'ref', v: tk.v, cols: !!tk.cols, rows: !!tk.rows, spill: !!tk.spill };
     if (tk.k === 'sref') return { t: 'sref', table: tk.table, at: tk.at, col: tk.col };
     if (tk.k === 'name') return { t: 'name', v: tk.v };
     if (tk.k === 'fn') {
@@ -501,6 +503,12 @@ function refValue(node, ctx) {
     const { rows } = sheet.extent();
     const c0 = colToIndex(a), c1 = colToIndex(b);
     return { range: true, r0: 0, c0: Math.min(c0, c1), r1: Math.max(rows - 1, 0), c1: Math.max(c0, c1) };
+  }
+  if (node.rows) {
+    const [a, b] = node.v.replace(/\$/g, '').split(':').map(Number);
+    if (!(a >= 1 && b >= 1)) return ERR.REF;
+    const { cols } = sheet.extent();
+    return { range: true, r0: Math.min(a, b) - 1, c0: 0, r1: Math.max(a, b) - 1, c1: Math.max(cols - 1, 0) };
   }
   const rg = parseRange(node.v.replace(/\$/g, ''));
   if (!rg) return ERR.REF;

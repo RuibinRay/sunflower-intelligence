@@ -149,6 +149,7 @@ FORMULAS = [
     '=PERCENTRANK.INC(S1:S8,5)', '=PERCENTRANK.INC(S1:S8,4.5)', '=PERCENTRANK.INC(S1:S8,4.5,2)', '=PERCENTRANK.EXC(S1:S8,5)', '=PERCENTRANK.EXC(S1:S8,6.2)',
     '=PERCENTRANK.INC(AA1:AA10,250.5)', '=PERCENTRANK.INC(S1:S8,3)', '=PERCENTRANK.EXC(S1:S8,2.5,4)', '=SUM(LARGE(S1:S8,{1,2}))', '=SUM(SMALL(AA1:AA10,{1;2;3}))', '=SUM(BINOM.DIST({0,1},5,0.5,FALSE))',
     '=SUM(POISSON.DIST({0,1,2},2,FALSE))', '=INDEX(NORM.S.DIST({-1,0,1},TRUE),1,3)', '=SUMPRODUCT(T.DIST({-1,1},5,TRUE))',
+    '=SUM(ROW(12:20))', '=ROWS(12:20)', '=SUM(BINOM.DIST(ROW(12:20),20,0.45,FALSE))', '=SUM(ROW($3:$5))',
     '=VLOOKUP(13,J1:K40,2,TRUE)', '=VLOOKUP(260,J:K,2,TRUE)', '=MATCH(120,J1:J40,1)', '=VLOOKUP(-5,J1:K40,2,TRUE)', '=T.INV.2T(0.05,10)', '=T.INV(0.975,30)',
     '=T.DIST.2T(2.1,15)', '=CONFIDENCE.T(0.05,STDEV.S(F2:F13),COUNT(F2:F13))', '=CONFIDENCE.T(0.05,1,1)',
     '=SUM(D2:F2 E1:E5)', '=SUM(A1:A2 C1:C2)', '=N(TRUE)+N("7")+N(5)', '=NUMBERVALUE("2.500,27",",",".")', '=NUMBERVALUE("3.5%")',
@@ -188,7 +189,12 @@ XLFN = ['NUMBERVALUE', 'T.INV.2T', 'T.INV', 'T.DIST.2T', 'CONFIDENCE.T', 'CEILIN
 #     returns #NUM!, as the other t functions do). LibreOffice returns #VALUE! (or #DIV/0! for STANDARDIZE) in these cases.
 # (l) Excel's PERCENTRANK.INC/.EXC cut the result to the significant digits without rounding: Microsoft's examples give
 #     0.555 for 5/9 and 0.666 for 6/9; LibreOffice rounds (0.556, 0.536, 0.54, 0.286, 0.2778).
+# (m) Excel 365 evaluates a function once per element when an argument that takes one value is given an array, and the
+#     results spill (Microsoft, "Guidelines and examples of array formulas": =SMALL(B9:B18,{1;2;3}) evaluates SMALL three
+#     times); LibreOffice, outside an array formula, uses only the first element. The expected value is SciPy's
+#     binom.sf(11, 20, 0.45), the sum over 12 to 20 successes.
 EXCEL_DIFFERS = {
+    '=SUM(BINOM.DIST(ROW(12:20),20,0.45,FALSE))': __import__('scipy.stats', fromlist=['binom']).binom.sf(11, 20, 0.45).item(),   # (m)
     '=PERCENTRANK.INC(S1:S8,4.5)': 0.535, '=PERCENTRANK.INC(S1:S8,4.5,2)': 0.53, '=PERCENTRANK.EXC(S1:S8,5)': 0.555,       # (l)
     '=PERCENTRANK.INC(S1:S8,3)': 0.285, '=PERCENTRANK.EXC(S1:S8,2.5,4)': 0.2777,
     '=NORM.DIST(1,0,0,TRUE)': {'error': '#NUM!'}, '=NORM.INV(1,0,1)': {'error': '#NUM!'}, '=STANDARDIZE(1,2,0)': {'error': '#NUM!'},   # (k)

@@ -243,6 +243,7 @@ eq('criterion ~* no wildcard', X.criterion('~*')('a'), false);
   ok('fill: F:F moves to G:G', X.shiftFormula('=SUM(F:F)', 0, 1) === '=SUM(G:G)');
   ok('fill: $F:$F stays', X.shiftFormula('=SUM($F:$F)+F:$G', 0, 2) === '=SUM($F:$F)+H:$G');
   ok('fill: 2:2 moves to 3:3', X.shiftFormula('=SUM(2:2)', 1, 0) === '=SUM(3:3)');
+  ok('whole rows parse: =SUM(ROW(12:20))', X.evaluate('=SUM(ROW(12:20))') === 144);
   ok('fill: $2:$2 stays', X.shiftFormula('=SUM($2:$2)', 4, 0) === '=SUM($2:$2)');
   ok('fill: A1:B2 unaffected', X.shiftFormula('=SUM(A1:B2)', 1, 1) === '=SUM(B2:C3)');
   // a non-finite result is #NUM!, so a formula matches itself when marked
