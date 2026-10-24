@@ -16,7 +16,7 @@ import {
 const VERBS = /^(Explain|Describe|Define|Identify|Distinguish|Classify|Calculate|Compute|Record|Prepare|Analyse|Apply|Interpret|Evaluate|Compare|Choose|Decide|Use|Recognise|State|Construct|Build|Post|Journalise|Find|Detect|Diagnose|Handle|Transform|Scale|Encode|Write|Document|Justify|Recommend|Estimate|Assess|Plan|Design|Set|Measure|Select|Determine|Correct|Locate|Read|Summarise|Reshape|Combine|Profile|Validate|Clean|Convert|Standardise|Normalise|Map|Draft|Price|Forecast|Test|Name|List|Contrast|Close|Adjust|Trace|Reconcile)\b/;
 const KINDS = ['conceptual', 'numerical', 'applied'];
 const TYPES = ['mc', 'multi', 'num', 'fill', 'classify', 'order', 'journal', 'equation', 'rows', 'short', 'formula', 'steps'];
-const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression'];
+const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak'];
 const DATASETS = ['lantern-orders', 'harborview-bookings', 'northfield-students'];
 const CLEAN_OPS = ['dedupe', 'dedupe-key', 'trim', 'case', 'map', 'to-number', 'to-date', 'fill', 'drop-missing', 'flag-missing', 'validate', 'outliers', 'transform', 'scale', 'encode', 'derive', 'rename', 'drop-column'];
 const near = (a, b, tol) => Math.abs(a - b) <= tol + 1e-9;
@@ -320,6 +320,39 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
     (wd.xs || []).forEach((x) => { if (x.values?.length !== n) r.err(`${w}: x ${x.name} length ≠ y length`); });
     const fit = ols((wd.xs || []).map((x) => x.values), wd.y?.values || [], {});
     if (fit.error) r.err(`${w}: regression with every X fails: ${fit.error}`);
+  } else if (wd.type === 'curve') {
+    const P = { normal: ['mean', 'sd'], t: ['df'], chisq: ['df'], f: ['df1', 'df2'], binomial: ['n', 'p'], poisson: ['lambda'] }[wd.dist];
+    if (!P) r.err(`${w}: curve needs dist: normal, t, chisq, f, binomial or poisson`);
+    else {
+      P.forEach((k) => { if (!Number.isFinite(wd.params?.[k])) r.err(`${w}: curve needs params.${k}`); });
+      (wd.vary || []).forEach((k) => { if (!P.includes(k)) r.err(`${w}: vary.${k} isn't a parameter of ${wd.dist}`); });
+      if (wd.dist === 'normal' && !(wd.params?.sd > 0)) r.err(`${w}: sd must be > 0`);
+      if (wd.dist === 'binomial' && !(wd.params?.p >= 0 && wd.params?.p <= 1)) r.err(`${w}: p must be between 0 and 1`);
+      const ASK = ['below', 'above', 'between', 'outside', 'exact', 'inverse'];
+      (wd.asks || []).forEach((k) => { if (!ASK.includes(k)) r.err(`${w}: unknown ask ${k}`); });
+      if ((wd.asks || []).includes('exact') && !['binomial', 'poisson'].includes(wd.dist)) r.err(`${w}: 'exact' needs a discrete distribution`);
+      if ((wd.asks || ['below']).some((k) => ['below', 'above', 'between', 'outside', 'exact'].includes(k)) && !Number.isFinite(wd.a)) r.err(`${w}: give a`);
+      if ((wd.asks || []).includes('between') && !(wd.b >= wd.a)) r.err(`${w}: give b ≥ a for 'between'`);
+      if (wd.critical && !(wd.critical.alpha > 0 && wd.critical.alpha < 1)) r.err(`${w}: critical.alpha must be between 0 and 1`);
+      if ((wd.asks || []).includes('inverse') && !(wd.prob > 0 && wd.prob < 1)) r.err(`${w}: 'inverse' needs prob between 0 and 1`);
+    }
+  } else if (wd.type === 'power') {
+    if (!(wd.sigma > 0) || !(wd.n >= 2) || !Number.isFinite(wd.delta)) r.err(`${w}: power needs sigma > 0, n ≥ 2 and delta`);
+    if (wd.alternative && !['two-sided', 'greater', 'less'].includes(wd.alternative)) r.err(`${w}: alternative must be two-sided, greater or less`);
+  } else if (wd.type === 'sampling') {
+    const pop = wd.population || [];
+    if (pop.length < 10 || !pop.every(Number.isFinite)) r.err(`${w}: sampling needs a numeric population of at least 10 values`);
+    if (wd.stat === 'proportion' && !pop.every((v) => v === 0 || v === 1)) r.err(`${w}: a proportion's population is 0s and 1s`);
+    if (wd.replace === false && (wd.sizes || []).some((n) => n > pop.length)) r.err(`${w}: a sample without replacement can't be larger than the population`);
+  } else if (wd.type === 'toolpak') {
+    const T = ['ttest-paired', 'ttest-equal', 'ttest-unequal', 'anova'];
+    const list = wd.tools || [wd.tool];
+    list.forEach((t) => { if (!T.includes(t)) r.err(`${w}: unknown tool ${t}`); });
+    const G = wd.groups || [];
+    if (G.some((g) => !g.name || !(g.values || []).length || !g.values.every(Number.isFinite))) r.err(`${w}: each group needs a name and numeric values`);
+    if (list.some((t) => t.startsWith('ttest')) && G.length !== 2) r.err(`${w}: a t-test needs exactly two groups`);
+    if (list.includes('anova') && G.length < 2) r.err(`${w}: ANOVA needs at least two groups`);
+    if (list.includes('ttest-paired') && G.length === 2 && G[0].values.length !== G[1].values.length) r.err(`${w}: a paired test needs equal-length groups`);
   } else if (wd.type === 'mixsim') {
     const ok = ['tier', 'range', 'price', 'channels', 'promotion'];
     Object.keys(wd.lock || {}).forEach((k) => { if (!ok.includes(k)) r.err(`${w}: lock.${k} is not a decision`); });
