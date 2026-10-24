@@ -27,7 +27,7 @@ export default {
   slug: 'functions-and-logic',
   title: 'Functions, logic, text and dates',
   blurb: 'Excel’s built-in functions do the heavy lifting: counting exactly what you mean, rounding by a business rule, making decisions with IF, taking text apart and joining it, and calculating with dates. Learn how each one works, where each one trips people up, and how to handle errors without hiding them.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Write functions with the right syntax, arguments and nesting, and choose between SUM, AVERAGE, MIN, MAX, COUNT, COUNTA and COUNTBLANK by exactly what each counts.',
     'Choose between ROUND, ROUNDUP, ROUNDDOWN, INT and MROUND to round by a business rule, and explain the choice.',

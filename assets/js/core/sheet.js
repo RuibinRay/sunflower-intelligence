@@ -1061,7 +1061,19 @@ FN.DAY = (args, ctx) => lift(args[0], ctx, (v) => { const n = toNum(v); return i
 FN.EOMONTH = (args, ctx) => { const s = numArg(args[0], ctx), k = numArg(args[1], ctx); if (isErr(s)) return s; if (isErr(k)) return k; const [y, m] = serialToYMD(s); return dateSerial(y, m + Math.trunc(k) + 1, 0); };
 FN.EDATE = (args, ctx) => { const s = numArg(args[0], ctx), k = numArg(args[1], ctx); if (isErr(s)) return s; if (isErr(k)) return k; const [y, m, d] = serialToYMD(s); const last = serialToYMD(dateSerial(y, m + Math.trunc(k) + 1, 0))[2]; return dateSerial(y, m + Math.trunc(k), Math.min(d, last)); };
 // WEEKDAY(serial, [type]): type 1 (default) Sunday = 1 … Saturday = 7; type 2 Monday = 1 … Sunday = 7
-FN.WEEKDAY = (args, ctx) => { const s = numArg(args[0], ctx), t = numArg(args[1], ctx, 1); if (isErr(s)) return s; const [y, m, d] = serialToYMD(s); const w = new Date(Date.UTC(y, m - 1, d)).getUTCDay(); return t === 2 ? (w === 0 ? 7 : w) : t === 3 ? (w + 6) % 7 : w + 1; };
+// WEEKDAY(serial, [return_type]): 1 (or omitted) Sunday = 1 … Saturday = 7; 2 Monday = 1 … Sunday = 7; 3 Monday = 0 …
+// Sunday = 6; 11–17 number the week from 1 starting on Monday (11), Tuesday (12) … Sunday (17); any other type #NUM!
+FN.WEEKDAY = (args, ctx) => {
+  const s = numArg(args[0], ctx); if (isErr(s)) return s;
+  const t = args[1] && args[1].t !== 'missing' ? Math.trunc(numArg(args[1], ctx)) : 1; if (isErr(t)) return t;
+  if (s < 0) return ERR.NUM;
+  const [y, m, d] = serialToYMD(Math.floor(s)); const w = new Date(Date.UTC(y, m - 1, d)).getUTCDay();   // Sunday = 0
+  if (t === 1) return w + 1;
+  if (t === 2) return w === 0 ? 7 : w;
+  if (t === 3) return (w + 6) % 7;
+  if (t >= 11 && t <= 17) { const start = (t - 10) % 7; return ((w - start + 7) % 7) + 1; }
+  return ERR.NUM;
+};
 FN.DAYS = (args, ctx) => { const e = numArg(args[0], ctx), s = numArg(args[1], ctx); if (isErr(e)) return e; if (isErr(s)) return s; return Math.floor(e) - Math.floor(s); };
 FN.DATEVALUE = (args, ctx) => lift(args[0], ctx, (v) => { if (isErr(v)) return v; if (typeof v !== 'string') return ERR.VALUE; const d = dateText(v); return d == null ? ERR.VALUE : d; });
 FN.TODAY = () => { const n = new Date(); return dateSerial(n.getFullYear(), n.getMonth() + 1, n.getDate()); };

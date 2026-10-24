@@ -158,7 +158,7 @@ export const independent = [
       4: '10^400 is far beyond the largest number Excel can hold (about 1E+308), so the result is an invalid number.',
       6: 'Text in a formula must be in double quotes. Without them Excel looks for names called large and small, finds none, and returns #NAME?.',
     },
-    solution: 'E2/F2 with F2 empty: #DIV/0!. C2*D2 with text in D2: #VALUE!. SUMM: #NAME? (no such function). SUM(B2,C2,D2) after deleting C: #REF!. 10^400: #NUM! (too large). A failed lookup: #N/A. IF(B2>50,large,small): #NAME?, because unquoted text is read as a name.',
+    solution: '<x>=E2/F2</x> with F2 empty: #DIV/0!. <x>=C2*D2</x> with text in D2: #VALUE!. <x>=SUMM(F2:F9)</x>: #NAME? (no such function). <x>=SUM(B2,C2,D2)</x> after deleting C: #REF!. <x>=10^400</x>: #NUM! (too large). A failed lookup: #N/A. <x>=IF(B2>50,large,small)</x>: #NAME?, because unquoted text is read as a name.',
   },
   {
     id: 'b03-cf-i2', type: 'formula', kind: 'applied',

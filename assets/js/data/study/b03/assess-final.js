@@ -1,8 +1,7 @@
 // assess-final.js — B03 final assessment: 24 questions across all four modules, in proportion to their lessons (seven
 // each for modules 1 and 2, five each for modules 3 and 4; two or three per lesson). 70% passes.
 // Mixed conceptual, numerical and applied items; twelve ask for a formula (one as a step), the course’s characteristic
-// exercise. Several
-// combine skills: a lookup inside a conditional sum (b03-fn-9), a PivotTable filter reproduced with conditional sums
+// exercise. Several combine skills: a lookup inside a conditional sum (b03-fn-9), a PivotTable filter reproduced with conditional sums
 // (b03-fn-13), a PivotTable reading and a chart choice (b03-fn-14), a conditional format built on a date function
 // (b03-fn-15), residuals from the least-squares line (b03-fn-18), Goal Seek on a grid built with mixed references
 // (b03-fn-20) and a year-to-date dashboard tile (b03-fn-23).
@@ -94,7 +93,7 @@ const DIVES = [['CB-401', 'Reef', 'website', 65], ['CB-402', 'Wreck', 'walk-in',
 const wreck = (f) => sum(DIVES.filter((d) => d[1] === 'Wreck' && f(d[2])).map((d) => d[3]));
 // Ormond Stationers: sales by product line and quarter
 const ORMOND = [['Pens', [3600, 3900, 4500, 4200]], ['Paper', [5800, 6400, 7100, 6100]], ['Art supplies', [2900, 3100, 3800, 3300]], ['Gifts', [2100, 2400, 3100, 8400]]];
-const q4Total = sum(ORMOND.map((l) => l[1][3]));
+const q3Total = sum(ORMOND.map((l) => l[1][2])), q4Total = sum(ORMOND.map((l) => l[1][3]));
 const gifts = ORMOND.find((l) => l[0] === 'Gifts')[1];
 const ormondAll = sum(ORMOND.flatMap((l) => l[1]));
 // Heronsgate Pottery Studio: one week’s rota
@@ -127,15 +126,14 @@ export const items = [
   {
     id: 'b03-fn-1', lesson: 'cells-and-formulas', type: 'fill', kind: 'conceptual',
     prompt: 'Choose what Excel returns for each formula.',
-    text: '<x>=-3^2</x> returns [[0]]; <x>=0-3^2</x> returns [[1]]; <x>=2^3^2</x> returns [[2]]; <x>=(1+5%)^2*100</x> returns [[3]].',
+    text: '<x>=-4^2</x> returns [[0]]; <x>=10-4^2</x> returns [[1]]; <x>=2^3^2</x> returns [[2]]; <x>=(1+5%)^2*100</x> returns [[3]].',
     blanks: [
-      { options: ['9', '−9', '#VALUE!'], answer: 0 },
-      { options: ['−9', '9', '−6'], answer: 0 },
+      { options: ['−16', '16', '#VALUE!'], answer: 1 },
+      { options: ['36', '26', '−6'], answer: 2 },
       { options: ['64', '512', '18'], answer: 0 },
-      { options: ['110.25', '110.5', '10.25'], answer: 0 },
+      { options: ['10.25', '110.5', '110.25'], answer: 2 },
     ],
-    fixed: true,
-    solution: 'Negation is applied before ^, so <x>=-3^2</x> squares −3: 9. In <x>=0-3^2</x> the minus is subtraction, which comes after ^: 0 − 9 = −9. Operators on the same level are worked from left to right, so <x>=2^3^2</x> is (2³)² = 8² = 64, not 2⁹ = 512 as in algebra. The % turns 5 into 0.05, so (1 + 5%)² = 1.05² = 1.1025, and × 100 gives 110.25. Parentheses remove the doubt: write <x>=-(3^2)</x> or <x>=2^(3^2)</x> if that is what you mean.',
+    solution: 'Negation is applied before ^, so <x>=-4^2</x> squares −4: 16. In <x>=10-4^2</x> the minus is subtraction, which comes after ^: 10 − 16 = −6. Operators on the same level are worked from left to right, so <x>=2^3^2</x> is (2³)² = 8² = 64, not 2⁹ = 512 as in algebra. The % turns 5 into 0.05, so (1 + 5%)² = 1.05² = 1.1025, and × 100 gives 110.25. Parentheses remove the doubt: write <x>=-(4^2)</x> or <x>=2^(3^2)</x> if that is what you mean.',
   },
   {
     id: 'b03-fn-2', lesson: 'cells-and-formulas', type: 'formula', kind: 'numerical',
@@ -198,12 +196,11 @@ export const items = [
     prompt: 'B2 holds the date 20 May 2026. Choose what each formula returns, shown as a date.',
     text: '<x>=DATE(2026,14,1)</x> returns [[0]]; <x>=DATE(2026,3,0)</x> returns [[1]]; <x>=EOMONTH(B2,-1)+1</x> returns [[2]]; <x>=EDATE(B2,-2)</x> returns [[3]].',
     blanks: [
-      { options: ['1 Feb 2027', '1 Feb 2026', '#NUM!'], answer: 0 },
-      { options: ['28 Feb 2026', '1 Mar 2026', '#NUM!'], answer: 0 },
+      { options: ['1 Feb 2026', '1 Feb 2027', '#NUM!'], answer: 1 },
+      { options: ['1 Mar 2026', '#NUM!', '28 Feb 2026'], answer: 2 },
       { options: ['1 May 2026', '30 Apr 2026', '1 Jun 2026'], answer: 0 },
-      { options: ['20 Mar 2026', '21 Mar 2026', '20 Jul 2026'], answer: 0 },
+      { options: ['21 Mar 2026', '20 Mar 2026', '20 Jul 2026'], answer: 1 },
     ],
-    fixed: true,
     solution: 'DATE rolls extra months into the next year: month 14 of 2026 is February 2027. A day of 0 is the day before the 1st, so <x>=DATE(2026,3,0)</x> is the last day of February, 28 Feb 2026. <x>=EOMONTH(B2,-1)</x> is the last day of the month before (30 April), and adding 1 gives the first day of B2’s month, 1 May 2026. EDATE moves by whole months: two months before 20 May is 20 March, while subtracting 60 days would land on 21 March, because a month is not 30 days.',
   },
   {
@@ -316,13 +313,14 @@ export const items = [
       '=VALUE(SUBSTITUTE(LEFT(A2,LEN(A2)-3),",","."))',
       '=VALUE(SUBSTITUTE(TEXTBEFORE(A2," "),",","."))',
       '=--SUBSTITUTE(SUBSTITUTE(A2," kg",""),",",".")',
+      '=NUMBERVALUE(SUBSTITUTE(A2,"kg",""),",",".")',
     ],
     wrong: [
       { formula: '=VALUE(A2)', say: 'VALUE can’t read text with a unit after the number: it returns #VALUE!. Remove “ kg” and swap the comma first.' },
       { formula: '=SUBSTITUTE(SUBSTITUTE(A2," kg",""),",",".")', say: 'That gives the text “2.5”, which looks right but is still text: SUM skips it. Wrap it in VALUE.' },
       { formula: '=VALUE(SUBSTITUTE(A2," kg",""))', say: 'With US settings the comma isn’t a decimal separator, so VALUE doesn’t return 2.5. Swap the comma for a full stop as well.' },
     ],
-    solution: '<x>=VALUE(SUBSTITUTE(SUBSTITUTE(A2," kg",""),",","."))</x>: the inner SUBSTITUTE removes the unit, the outer one swaps the decimal comma for a full stop, and VALUE turns the text “2.5” into the number 2.5. Values without a comma, such as “12 kg”, pass through unchanged. Keep the supplier’s column untouched, convert in a new one, and record the step in the cleaning log.',
+    solution: '<x>=VALUE(SUBSTITUTE(SUBSTITUTE(A2," kg",""),",","."))</x>: the inner SUBSTITUTE removes the unit, the outer one swaps the decimal comma for a full stop, and VALUE turns the text “2.5” into the number 2.5. Values without a comma, such as “12 kg”, pass through unchanged. In Excel 2016 and later, <x>=NUMBERVALUE(SUBSTITUTE(A2,"kg",""),",",".")</x> does the same, because NUMBERVALUE takes the decimal separator as an argument and ignores spaces. Keep the supplier’s column untouched, convert in a new one, and record the step in the cleaning log.',
   },
   {
     id: 'b03-fn-12', lesson: 'tables-and-cleaning', type: 'mc', kind: 'conceptual',
@@ -370,13 +368,14 @@ export const items = [
     steps: [
       {
         id: 'b03-fn-14-s1', type: 'num',
-        prompt: 'Shown as % of Column Total, what does the Gifts / Q4 cell show? Give a percentage to one decimal place.',
-        answer: 38.2, check: () => gifts[3] / q4Total * 100, unit: '%', places: 1, tol: 0.06,
+        prompt: 'Shown as % of Column Total, by how many percentage points did Gifts’ share of the quarter’s sales rise from Q3 to Q4? Give one decimal place.',
+        answer: 21.4, check: () => (gifts[3] / q4Total - gifts[2] / q3Total) * 100, unit: 'percentage points', places: 1, tol: 0.06,
         wrong: [
-          { value: 52.5, say: 'You divided by the Gifts row’s total: that is % of Row Total. % of Column Total divides by Q4’s total.' },
-          { value: 11.9, say: 'That is % of Grand Total, divided by all four quarters of all four lines.' },
+          { value: Math.round((gifts[3] / q4Total / (gifts[2] / q3Total) - 1) * 1000) / 10, say: 'That is the percentage change in the share. The question asks for the difference between the two shares, in percentage points.' },
+          { value: Math.round((gifts[3] / gifts[2] - 1) * 1000) / 10, say: 'That is the growth in Gifts’ dollar sales. % of Column Total divides each cell by its quarter’s total first.' },
+          { value: Math.round((gifts[3] - gifts[2]) / sum(gifts) * 1000) / 10, say: 'You divided by the Gifts row’s total, which is % of Row Total. % of Column Total divides by each quarter’s total.' },
         ],
-        solution: `Q4’s column totals ${ORMOND.map((l) => l[1][3].toLocaleString('en-US')).join(' + ')} = ${dollars(q4Total)}; Gifts: ${gifts[3].toLocaleString('en-US')} ÷ ${q4Total.toLocaleString('en-US')} = ${(gifts[3] / q4Total * 100).toFixed(1)}%.`,
+        solution: `Q3’s column totals ${dollars(q3Total)} and Q4’s ${dollars(q4Total)}. Gifts: ${gifts[2].toLocaleString('en-US')} ÷ ${q3Total.toLocaleString('en-US')} = ${(gifts[2] / q3Total * 100).toFixed(1)}% in Q3 and ${gifts[3].toLocaleString('en-US')} ÷ ${q4Total.toLocaleString('en-US')} = ${(gifts[3] / q4Total * 100).toFixed(1)}% in Q4, a rise of ${((gifts[3] / q4Total - gifts[2] / q3Total) * 100).toFixed(1)} percentage points.`,
       },
       {
         id: 'b03-fn-14-s2', type: 'mc',
@@ -396,7 +395,7 @@ export const items = [
         solution: 'Each quarter’s column adds to 100%, which is what a 100% stacked column chart draws: four equal-height columns, each split by product line, so a change in the mix shows as a change in a segment’s height.',
       },
     ],
-    solution: `% of Column Total divides each cell by its quarter’s total: Gifts / Q4 = ${gifts[3].toLocaleString('en-US')} ÷ ${q4Total.toLocaleString('en-US')} = ${(gifts[3] / q4Total * 100).toFixed(1)}%, and each quarter then adds to 100%. A 100% stacked column chart draws exactly those figures, one column per quarter, so Gifts’ jump from ${(gifts[2] / sum(ORMOND.map((l) => l[1][2])) * 100).toFixed(1)}% of Q3 to ${(gifts[3] / q4Total * 100).toFixed(1)}% of Q4 stands out. Dividing by the Gifts row (${(gifts[3] / sum(gifts) * 100).toFixed(1)}%) or by the grand total (${(gifts[3] / ormondAll * 100).toFixed(1)}%) answers different questions.`,
+    solution: `% of Column Total divides each cell by its quarter’s total, so each quarter adds to 100%: Gifts is ${(gifts[2] / q3Total * 100).toFixed(1)}% of Q3 and ${(gifts[3] / q4Total * 100).toFixed(1)}% of Q4, up ${((gifts[3] / q4Total - gifts[2] / q3Total) * 100).toFixed(1)} percentage points. A 100% stacked column chart draws exactly those figures, one column per quarter, so the jump in Gifts’ segment stands out. Dividing by the Gifts row (% of Row Total: Q4 is ${(gifts[3] / sum(gifts) * 100).toFixed(1)}% of the year’s gifts) or by the grand total (${(gifts[3] / ormondAll * 100).toFixed(1)}%) answers different questions.`,
   },
 
   // ================================================================ Module 3: showing and describing data

@@ -123,7 +123,9 @@ FORMULAS = [
     '=INDEX(LINEST(F2:F13,D2:D13,FALSE),1)', '=INDEX(LINEST(F2:F13,D2:D13,FALSE),2)', '=INDEX(LINEST(F2:F13,D2:D13,FALSE,TRUE),2,1)',
     '=INDEX(LINEST(F2:F13,D2:D13,FALSE,TRUE),2,2)', '=INDEX(LINEST(F2:F13,D2:D13,FALSE,TRUE),3,1)', '=INDEX(LINEST(F2:F13,D2:D13,FALSE,TRUE),3,2)',
     '=INDEX(LINEST(F2:F13,D2:D13,FALSE,TRUE),4,1)', '=INDEX(LINEST(F2:F13,D2:D13,FALSE,TRUE),4,2)', '=INDEX(LINEST(F2:F13,D2:D13,FALSE,TRUE),5,1)',
-    '=INDEX(LINEST(F2:F13,D2:D13,FALSE,TRUE),5,2)', '=INDEX(LINEST(F2:F13),1)', '=INDEX(LINEST(F2:F13,,TRUE,TRUE),3,1)', '=T.INV.2T(0.05,10)', '=T.INV(0.975,30)',
+    '=INDEX(LINEST(F2:F13,D2:D13,FALSE,TRUE),5,2)', '=INDEX(LINEST(F2:F13),1)', '=INDEX(LINEST(F2:F13,,TRUE,TRUE),3,1)',
+    '=WEEKDAY(A2,11)', '=WEEKDAY(A2,12)', '=WEEKDAY(A2,13)', '=WEEKDAY(A3,14)', '=WEEKDAY(A3,15)', '=WEEKDAY(A3,16)', '=WEEKDAY(A3,17)',
+    '=WEEKDAY(A2,4)', '=WEEKDAY(A2,0)', '=WEEKDAY(A2,3)', '=T.INV.2T(0.05,10)', '=T.INV(0.975,30)',
     '=T.DIST.2T(2.1,15)', '=CONFIDENCE.T(0.05,STDEV.S(F2:F13),COUNT(F2:F13))', '=CONFIDENCE.T(0.05,1,1)',
     '=SUM(D2:F2 E1:E5)', '=SUM(A1:A2 C1:C2)', '=N(TRUE)+N("7")+N(5)', '=NUMBERVALUE("2.500,27",",",".")', '=NUMBERVALUE("3.5%")',
     '=MROUND(17,5)', '=MROUND(F3,0.05)', '=LOG(8,2)', '=LOG(1000)', '=ISERR(NA())', '=ISERR(1/0)', '=ISLOGICAL(H3)',
@@ -150,7 +152,10 @@ XLFN = ['NUMBERVALUE', 'T.INV.2T', 'T.INV', 'T.DIST.2T', 'CONFIDENCE.T', 'CEILIN
 #     error" (here k = 0.05 with 12 values, below 1/(n + 1)); LibreOffice returns #VALUE!.
 # (i) Excel's NUMBERVALUE help: =NUMBERVALUE("3.5%") returns 0.035 ("If the Text argument ends in one or more percent
 #     signs (%), they are used in the calculation of the result"); LibreOffice returns #VALUE!.
+# (j) Excel's WEEKDAY help: "If return_type is out of the range specified in the table above, a #NUM! error is
+#     returned"; LibreOffice returns #VALUE! for return types 4 and 0.
 EXCEL_DIFFERS = {
+    '=WEEKDAY(A2,4)': {'error': '#NUM!'}, '=WEEKDAY(A2,0)': {'error': '#NUM!'},                           # (j)
     '=NUMBERVALUE("3.5%")': 0.035,                                                                         # (i)
     '=DATEVALUE("2011/02/23")': 40597,                                                                     # (f)
     '=PERCENTILE.EXC(F2:F13,0.05)': {'error': '#NUM!'},                                                     # (h)

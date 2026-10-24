@@ -21,7 +21,7 @@ const KAYAK = [['K-301', 45], ['K-302', 70], ['K-303', 120], ['K-304', 95], ['K-
 const SUNDIAL = [['Ama Boateng', '2026-08-28'], ['Leo Hart', '2026-09-01'], ['Priya Nair', '2026-09-03'], ['Tom Ruiz', '2026-09-10'], ['Hana Sato', '2026-09-15'], ['Omar Diaz', '2026-09-16'], ['Ella Byrne', '2026-09-30'], ['Kofi Mensah', '2026-10-14']];
 // Bellwether Bakery: product codes
 const SKUS = ['BRD-0042', 'CK-0107', 'PASTRY-0003', 'BRD-0118', 'PIE-0021', 'CK-0215', 'BUN-0009', 'PASTRY-0044'];
-// Brookline Food Bank: donations
+// Quillbrook Food Share: donations
 const DONATIONS = [
   ['2026-11-20', 'Winter', 'individual', 50], ['2026-11-28', 'General', 'individual', 25], ['2026-12-01', 'Winter', 'corporate', 500],
   ['2026-12-03', 'Winter', 'individual', 40], ['2026-12-05', 'Schools', 'individual', 30], ['2026-12-08', 'Winter', 'individual', 75],
@@ -32,7 +32,7 @@ const DONATIONS = [
   ['2027-01-07', 'Winter', 'individual', 30], ['2027-01-10', 'General', 'individual', 60],
 ];
 const winterDec = DONATIONS.filter((d) => d[1] === 'Winter' && d[0] >= '2026-12-01' && d[0] < '2027-01-01').reduce((s, d) => s + d[3], 0);
-// Gatehouse Theatre: performances
+// Pellmoor Playhouse: performances
 const SHOWS = [
   ['The Tempest', 'evening', 212], ['The Tempest', 'matinee', 140], ['Our Town', 'evening', 180], ['The Tempest', 'evening', 236],
   ['Hamlet', 'evening', 250], ['Our Town', 'matinee', 95], ['The Tempest', 'matinee', 158], ['Hamlet', 'matinee', 170],
@@ -54,7 +54,7 @@ export const items = [
     answer: '=B3/$B$2-1',
     alt: ['=(B3-$B$2)/$B$2', '=B3/B$2-1'],
     wrong: [
-      { formula: '=B3/B2-1', say: 'Without a dollar sign the base moves down too, so each month is compared with the month before it, not with January. Fix the base: $B$2.' },
+      { formula: '=B3/B2-1', say: 'Without a dollar sign the base moves down too, so each month is compared with the month before it, not with January. Fix the base: <x>$B$2</x>.' },
       { formula: '=B3/$B$2', say: 'That is the ratio to January (1.35 means 35% higher). Subtract 1 to get the change.' },
       { formula: '=(B3-$B$2)/B3', say: 'A percentage change divides by the starting value, January, not by the month being compared.' },
     ],
@@ -73,12 +73,16 @@ export const items = [
     solution: 'When you move a formula, Microsoft notes, its references stay the same whatever their type. So G10 holds <x>=$B4*C$1</x>, still reading B4 and C1. Copying and pasting would have given <x>=$B10*F$1</x>.',
   },
   {
-    id: 'b03-m1-3', lesson: 'cells-and-formulas', type: 'num', kind: 'numerical',
-    prompt: 'A2 holds 0.125 and is formatted as a percentage with no decimal places, so it shows 13%. What does <x>=A2*200</x> return?',
-    answer: 25, check: () => 0.125 * 200, unit: '', places: 0, tol: 0.001,
-    wrong: [{ value: 26, say: 'The 13% is only what the format shows. The cell stores 0.125, and 0.125 × 200 = 25.' }],
-    solution: 'A number format changes only the display. The formula uses the stored value: 0.125 × 200 = 25.',
+    id: 'b03-m1-3', lesson: 'cells-and-formulas', type: 'fill', kind: 'conceptual',
+    prompt: 'A2 holds 2.345 and is formatted to two decimal places, so it shows 2.35. B2 holds the number 2.35. Choose what each comparison returns.',
+    text: '<x>=A2=B2</x> returns [[0]]; <x>=ROUND(A2,2)=B2</x> returns [[1]].',
+    blanks: [
+      { options: ['TRUE', 'FALSE'], answer: 1 },
+      { options: ['TRUE', 'FALSE'], answer: 0 },
+    ],
+    solution: 'A number format changes only what is shown: A2 still stores 2.345, which is not equal to 2.35, so <x>=A2=B2</x> is FALSE. ROUND changes the value itself: <x>=ROUND(A2,2)</x> is 2.35, so the second comparison is TRUE. Compare rounded values when the displayed figure is the one that matters.',
   },
+
   {
     id: 'b03-m1-4', lesson: 'cells-and-formulas', type: 'classify', kind: 'conceptual',
     prompt: 'You are checking a colleague’s workbook. Which Excel tool does each job best?',
@@ -123,8 +127,8 @@ export const items = [
     alt: ['=IF(AND(B2-$F$1>=0,B2-$F$1<=14),"remind","")', '=IF(OR(B2<$F$1,B2>$F$1+14),"","remind")'],
     wrong: [
       { formula: '=IF(OR(B2>=$F$1,B2<=$F$1+14),"remind","")', say: 'OR is TRUE if either test is, and every date is either after the report date or before the end of the window, so everyone is reminded. Both must hold: AND.' },
-      { formula: '=IF(B2<=$F$1+14,"remind","")', say: 'That also reminds members whose membership has already ended. Add the test B2>=$F$1.' },
-      { formula: '=IF(AND(B2>$F$1,B2<$F$1+14),"remind","")', say: 'The rule includes the report date itself and the 14th day after it: use >= and <=.' },
+      { formula: '=IF(B2<=$F$1+14,"remind","")', say: 'That also reminds members whose membership has already ended. Add the test <x>B2>=$F$1</x>.' },
+      { formula: '=IF(AND(B2>$F$1,B2<$F$1+14),"remind","")', say: 'The rule includes the report date itself and the 14th day after it: use <x>>=</x> and <x><=</x>.' },
       { formula: '=IF(AND(B2>=F1,B2<=F1+14),"remind","")', say: 'F1 moves down when the formula is filled. Fix the report date: $F$1.' },
     ],
     solution: '<x>=IF(AND(B2>=$F$1,B2<=$F$1+14),"remind","")</x>. With a report date of 1 September 2026 the window runs to 15 September, both ends included: Leo Hart (1 September), Priya Nair, Tom Ruiz and Hana Sato (15 September) are reminded; Ama Boateng’s membership has already ended, and the others end later.',
@@ -142,7 +146,7 @@ export const items = [
       { formula: '=LEFT(A2,FIND("-",A2))', say: 'FIND gives the hyphen’s position, so LEFT with that many characters includes the hyphen. Subtract 1.' },
       { formula: '=MID(A2,FIND("-",A2)+1,LEN(A2))', say: 'That is the part after the hyphen, the product number. The family is before it: LEFT.' },
     ],
-    solution: '<x>=LEFT(A2,FIND("-",A2)-1)</x>. FIND returns the hyphen’s position (4 in BRD-0042, 7 in PASTRY-0003), and LEFT takes the characters before it. In Microsoft 365, <x>=TEXTBEFORE(A2,"-")</x> does the same in one function.',
+    solution: '<x>=LEFT(A2,FIND("-",A2)-1)</x>. FIND returns the hyphen’s position (4 in BRD-0042, 7 in PASTRY-0003), and LEFT takes the characters before it. In Microsoft 365 and Excel 2024, <x>=TEXTBEFORE(A2,"-")</x> does the same in one function.',
   },
   {
     id: 'b03-m1-8', lesson: 'functions-and-logic', type: 'num', kind: 'numerical',
@@ -158,8 +162,8 @@ export const items = [
   // ---------------------------------------------------------------- conditional-sums-and-counts
   {
     id: 'b03-m1-9', lesson: 'conditional-sums-and-counts', type: 'formula', kind: 'numerical',
-    prompt: 'Brookline Food Bank’s donations: date in A, campaign in B, donor type in C, amount in D. G1 holds the campaign name Winter, G2 1 December 2026 and G3 1 January 2027. In G5, write one formula for the Winter campaign’s donations received on or after the date in G2 and before the date in G3.',
-    sheet: { cells: { ...rowsToCells(['Date', 'Campaign', 'Donor', 'Amount ($)'], DONATIONS), F1: 'campaign', G1: 'Winter', F2: 'from', G2: serial('2026-12-01'), F3: 'before', G3: serial('2027-01-01'), F5: 'total' }, fixed: ['G2:G3'] },
+    prompt: 'Quillbrook Food Share’s donations: date in A, campaign in B, donor type in C, amount in D. G1 holds the campaign name Winter, G2 1 December 2026 and G3 1 January 2027. In G5, write one formula for the Winter campaign’s donations received on or after the date in G2 and before the date in G3.',
+    sheet: { cells: { ...rowsToCells(['Date', 'Campaign', 'Donor', 'Amount ($)'], DONATIONS), F1: 'campaign', G1: 'Winter', F2: 'from', G2: serial('2026-12-01'), F3: 'before', G3: serial('2027-01-01'), F5: 'total' } },
     cell: 'G5', view: 'A1:G21',
     formats: { A: 'date', D: MONEY, G2: 'date', G3: 'date', G5: MONEY }, widths: { A: 13, B: 10, C: 11, G: 13 },
     answer: '=SUMIFS(D2:D21,B2:B21,G1,A2:A21,">="&G2,A2:A21,"<"&G3)',
@@ -167,13 +171,14 @@ export const items = [
     wrong: [
       { formula: '=SUMIFS(D2:D21,B2:B21,G1,A2:A21,">="&G2,A2:A21,"<="&G3)', say: '“On or before 1 January” includes the two donations received on New Year’s Day. Stop before the date in G3.' },
       { formula: '=SUMIF(B2:B21,G1,D2:D21)', say: 'That is every Winter donation, including November and January. Add the two date criteria with SUMIFS.' },
-      { formula: '=SUMIFS(D2:D21,B2:B21,G1,A2:A21,">=G2",A2:A21,"<G3")', say: 'Inside quotes, G2 and G3 are just text, so no date matches and the result is 0. Join the operator to the cell: ">="&G2.' },
+      { formula: '=SUMIFS(D2:D21,B2:B21,"Winter",A2:A21,">="&DATE(2026,12,1),A2:A21,"<"&DATE(2027,1,1))', say: 'The campaign and dates are typed into the formula, so it won’t follow G1:G3 when they change. Refer to the cells.' },
+      { formula: '=SUMIFS(D2:D21,B2:B21,G1,A2:A21,">=G2",A2:A21,"<G3")', say: 'Inside quotes, G2 and G3 are just text, so no date matches and the result is 0. Join the operator to the cell: <x>">="&G2</x>.' },
     ],
     solution: `<x>=SUMIFS(D2:D21,B2:B21,G1,A2:A21,">="&G2,A2:A21,"<"&G3)</x> returns $${winterDec.toLocaleString('en-US')}.00: the nine Winter donations dated 1 to 31 December. The window stops before 1 January, so the $550 received on New Year’s Day counts towards January.`,
   },
   {
     id: 'b03-m1-10', lesson: 'conditional-sums-and-counts', type: 'formula', kind: 'applied',
-    prompt: 'Gatehouse Theatre’s performances: show in A, slot (matinee or evening) in B, seats sold in C. In F2, write a formula for the average number of seats sold at evening performances of The Tempest.',
+    prompt: 'Pellmoor Playhouse’s performances: show in A, slot (matinee or evening) in B, seats sold in C. In F2, write a formula for the average number of seats sold at evening performances of The Tempest.',
     sheet: { cells: { ...rowsToCells(['Show', 'Slot', 'Seats sold'], SHOWS), E2: 'Tempest, evenings' } },
     cell: 'F2', view: 'A1:F17',
     formats: { F2: '0.0' }, widths: { A: 13, E: 17 },
@@ -188,23 +193,23 @@ export const items = [
   },
   {
     id: 'b03-m1-11', lesson: 'conditional-sums-and-counts', type: 'num', kind: 'numerical',
-    prompt: 'Sparrow Lane Florist’s orders have the product in A2:A9 and the quantity in B2:B9: Rose bouquet 3, Rose single 12, Tulip bunch 6, Rose box 1, Lily bunch 8, Tulip single 20, Rose bouquet 5, Orchid pot 2. What does <x>=SUMIFS(B2:B9,A2:A9,"Rose*",B2:B9,"<10")</x> return?',
-    answer: 9, check: () => FLORIST.filter(([p, q]) => p.startsWith('Rose') && q < 10).reduce((s, [, q]) => s + q, 0), unit: 'items', places: 0, tol: 0,
+    prompt: 'Sparrow Lane Florist’s orders have the product in A2:A9 and the quantity in B2:B9: Rose bouquet 3, Rose single 12, Tulip bunch 6, Rose box 1, Lily bunch 8, Tulip single 20, Rose bouquet 5, Orchid pot 2. What does <x>=SUMIFS(B2:B9,A2:A9,"???? *")</x> return?',
+    answer: 29, check: () => FLORIST.filter(([p]) => /^.{4} /.test(p)).reduce((s, [, q]) => s + q, 0), unit: 'items', places: 0, tol: 0,
     wrong: [
-      { value: 21, say: 'That is every rose order. The second criterion keeps only quantities under 10, which drops the 12 single roses.' },
-      { value: 25, say: 'That is every order under 10. Both criteria must hold: the product starts with Rose and the quantity is under 10.' },
-      { value: 8, say: 'Rose bouquet appears twice (3 and 5), and both count. Check the Rose box (1) too: 3 + 1 + 5.' },
+      { value: 57, say: 'Each ? matches exactly one character, not any number of them, so the criterion needs a first word of exactly four letters followed by a space. Tulip and Orchid have more.' },
+      { value: 21, say: 'Rose isn’t the only four-letter first word: Lily bunch matches too.' },
     ],
-    solution: '<x>"Rose*"</x> matches every product starting with Rose; <x>"<10"</x> keeps quantities under 10. Rose bouquet 3, Rose box 1 and Rose bouquet 5 pass both tests: 3 + 1 + 5 = 9. Rose single (12) fails the second test.',
+    solution: '<x>"???? *"</x> means exactly four characters, then a space, then anything. Rose bouquet, Rose single, Rose box, Lily bunch and Rose bouquet match; Tulip and Orchid have five and six letters. 3 + 12 + 1 + 8 + 5 = 29.',
   },
+
   {
     id: 'b03-m1-12', lesson: 'conditional-sums-and-counts', type: 'mc', kind: 'conceptual',
     prompt: 'Channels are in B2:B9 and order totals in C2:C9. <x>=SUMPRODUCT((B2:B9="web"),C2:C9)</x> returns 0, although there are web orders. Why?',
     options: [
-      'SUMPRODUCT treats non-numbers as zero, so the TRUE and FALSE values count as 0; multiply instead, <x>=SUMPRODUCT((B2:B9="web")*C2:C9)</x>.',
-      'The two ranges are different sizes.',
-      'SUMPRODUCT can’t take a condition; only SUMIFS can.',
-      'The criterion <x>"web"</x> must be typed in a cell and referred to.',
+      'TRUE and FALSE count as 0 in SUMPRODUCT unless arithmetic turns them into 1 and 0.',
+      'The two ranges are different sizes, so SUMPRODUCT can’t pair the cells up.',
+      'SUMPRODUCT can’t take a condition at all; only SUMIFS and SUMIF can do that.',
+      'The criterion <x>"web"</x> must be typed in a cell and referred to, not typed in.',
     ],
     answer: 0,
     feedback: {

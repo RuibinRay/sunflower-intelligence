@@ -21,7 +21,7 @@ export default {
   slug: 'cells-and-formulas',
   title: 'Cells, references and formulas',
   blurb: 'A spreadsheet is only as trustworthy as its formulas. Learn how Excel reads a formula, how references move when a formula is filled or copied, why a number can look rounded without being rounded, what each error value means, and how to lay out a worksheet that someone else can check.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Identify cells, ranges and references in a worksheet, and distinguish a typed value from a formula.',
     'Calculate what a formula returns using Excel’s order of operations, including negation and the percent sign.',
@@ -97,7 +97,7 @@ export default {
 
     { h: 'Filling, copying and moving' },
     { p: 'The fill handle is the small square at the bottom-right corner of the selected cell: drag it down or across and Excel copies the formula into each cell it passes, adjusting relative references as it goes. Ctrl+D fills the top cell of a selection down, and Ctrl+R fills the left-hand cell right; on a Mac, Control+D and Control+R do the same (<a href="https://support.microsoft.com/en-us/excel/copy-a-formula-by-dragging-the-fill-handle-in-excel-for-mac">Microsoft’s Mac page</a>). Copying and pasting adjusts references in the same way. Moving a formula, by cutting and pasting it or dragging its cell, does not: Microsoft notes that the references stay the same whatever their type.' },
-    { p: 'A column of calculations should hold one formula, filled. Show Formulas (below) makes this easy to check, because every cell in the column should then read the same apart from its row numbers. A cell that differs, such as a typed-in number among formulas or a formula pointing at the wrong row, is one of the commonest signs of a spreadsheet error, and the applied example finds one.' },
+    { p: 'A column of calculations should hold one formula, filled. Show Formulas (below) makes this easy to check, because every cell in the column should then read the same apart from its row numbers. A cell that differs, such as a typed-in number among formulas or a formula pointing at the wrong row, is a common sign of a spreadsheet error, and the applied example finds one.' },
 
     { h: 'Ranges and whole-column references' },
     { p: 'Functions work on ranges: <x>=SUM(J2:J232)</x> adds the 231 order totals. If Ana pastes July’s orders below row 232, that range doesn’t grow; a whole-column reference such as <x>=SUM(J:J)</x> does, and SUM skips the text heading in J1.' },

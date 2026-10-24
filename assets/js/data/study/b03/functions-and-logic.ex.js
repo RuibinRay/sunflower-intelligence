@@ -1,6 +1,6 @@
 // functions-and-logic.ex.js — B03 · Functions, logic, text and dates: widgets, practice and the knowledge check (answer
 // keys live here). Lantern's orders come from case.js; the discount-audit typo is fictional and labelled. Formula items
-// are marked by their results on the sheet and on two copies with the numbers (and dates) changed.
+// are marked by their results on the sheet and on three copies with the numbers (and dates) changed.
 import { ORDERS, ORDER_COLUMNS, tableCells } from './case.js';
 
 const MONEY = '$#,##0.00';
@@ -51,19 +51,21 @@ export const widgets = {
 export const guided = [
   {
     id: 'b03-fl-g1', type: 'formula', kind: 'applied',
-    prompt: 'H1 holds Lantern’s subscription discount (10%). In E2, write the discount each order should carry: quantity × unit price × the rate if the order is a subscription (column D says yes), otherwise 0. Your formula will be filled down to E9.',
-    sheet: { cells: { ...pick(G1, ['order_id', 'quantity', 'unit_price', 'subscription']).cells, E1: 'expected discount', G1: 'Subscription discount', H1: 0.1 }, fixed: ['C2:C9', 'H1'] },
+    prompt: 'H1 holds Lantern’s subscription discount (10%). In E2, write the discount each order should carry: quantity × unit price × the rate, rounded to the cent, if the order is a subscription (column D says yes), otherwise 0. Your formula will be filled down to E9.',
+    sheet: { cells: { ...pick(G1, ['order_id', 'quantity', 'unit_price', 'subscription']).cells, E1: 'expected discount', G1: 'Subscription discount', H1: 0.1 } },
     cell: 'E2', fill: 'E2:E9', view: 'A1:H9',
     formats: { C: MONEY, E: MONEY, H1: '0%' }, widths: { E: 16, G: 20 },
-    answer: '=IF(D2="yes",B2*C2*$H$1,0)',
-    alt: ['=IF(D2="yes",ROUND(B2*C2*$H$1,2),0)', '=IF(D2<>"yes",0,B2*C2*$H$1)', '=(D2="yes")*B2*C2*$H$1'],
+    answer: '=IF(D2="yes",ROUND(B2*C2*$H$1,2),0)',
+    alt: ['=IF(D2<>"yes",0,ROUND(B2*C2*$H$1,2))', '=(D2="yes")*ROUND(B2*C2*$H$1,2)', '=ROUND(IF(D2="yes",B2*C2*$H$1,0),2)'],
     wrong: [
-      { formula: '=IF(D2="yes",B2*C2*H1,0)', say: 'H1 moves to H2, H3 … when the formula is filled, and those are empty. The rate needs dollar signs: $H$1.' },
-      { formula: '=IF(D2=yes,B2*C2*$H$1,0)', say: 'Text in a formula needs double quotes: <x>D2="yes"</x>. Without them Excel looks for a name called yes and returns #NAME?.' },
-      { formula: '=B2*C2*$H$1', say: 'That gives every order the subscription discount. Only subscription orders get it: wrap it in <x>IF(D2="yes",…,0)</x>.' },
+      { formula: '=IF(D2="yes",ROUND(B2*C2*H1,2),0)', say: 'H1 moves to H2, H3 … when the formula is filled, and those are empty. The rate needs dollar signs: $H$1.' },
+      { formula: '=IF(D2="yes",ROUND(B2*C2*0.1,2),0)', say: 'The rate is typed into the formula, so it won’t follow H1 if Lantern changes the discount. Refer to $H$1.' },
+      { formula: '=IF(D2=yes,ROUND(B2*C2*$H$1,2),0)', say: 'Text in a formula needs double quotes: <x>D2="yes"</x>. Without them Excel looks for a name called yes and returns #NAME?.' },
+      { formula: '=IF(D2="yes",B2*C2*$H$1,0)', say: 'Money is charged in whole cents: round the discount with <x>ROUND(…,2)</x>.' },
+      { formula: '=ROUND(B2*C2*$H$1,2)', say: 'That gives every order the subscription discount. Only subscription orders get it: wrap it in <x>IF(D2="yes",…,0)</x>.' },
     ],
-    hints: ['IF(test, value if true, value if false): the test is <x>D2="yes"</x>.', 'The value if true is <x>B2*C2*$H$1</x>, and the value if false is 0: <x>=IF(D2="yes",B2*C2*$H$1,0)</x>.'],
-    solution: `<x>=IF(D2="yes",B2*C2*$H$1,0)</x>. ${idOf(1)} is a subscription order: 2 × 17.00 × 10% = $3.40. ${idOf(0)} isn’t, so it gets 0. Wrapping the product in ROUND(…,2) is good practice for money and gives the same results here, because Lantern’s prices give whole cents.`,
+    hints: ['IF(test, value if true, value if false): the test is <x>D2="yes"</x>.', 'The value if true is <x>ROUND(B2*C2*$H$1,2)</x>, and the value if false is 0: <x>=IF(D2="yes",ROUND(B2*C2*$H$1,2),0)</x>.'],
+    solution: `<x>=IF(D2="yes",ROUND(B2*C2*$H$1,2),0)</x>. ${idOf(1)} is a subscription order: 2 × 17.00 × 10% = $3.40. ${idOf(0)} isn’t, so it gets 0. The rate is referred to absolutely, not typed in, so a change of discount in H1 flows through; ROUND keeps every discount in whole cents.`,
   },
   {
     id: 'b03-fl-g2', type: 'fill', kind: 'conceptual',
@@ -81,9 +83,9 @@ export const guided = [
   },
   {
     id: 'b03-fl-g3', type: 'formula', kind: 'applied',
-    prompt: 'Label each order by its total in column B: “large” for $75 or more, “medium” for $25 or more, otherwise “small”. Write the formula in C2; it will be filled down to C9.',
-    sheet: { cells: { ...pick([0, 1, 2, 3, 4, 5, 6, 7], ['order_id', 'order_total']).cells, C1: 'size' } },
-    cell: 'C2', fill: 'C2:C9', view: 'A1:C9',
+    prompt: 'For the packing rota, label each order by its total in column B: “large” for $75 or more, “medium” for $25 or more, otherwise “small”. Write the formula in C2; it will be filled down to C11. Rows 10 and 11 test the boundaries, at exactly $75 and $25.',
+    sheet: { cells: { ...pick([0, 1, 2, 3, 4, 5, 6, 7], ['order_id', 'order_total']).cells, C1: 'size', A10: 'boundary test', B10: 75, A11: 'boundary test', B11: 25 } },
+    cell: 'C2', fill: 'C2:C11', view: 'A1:C11',
     formats: { B: MONEY }, widths: { A: 10, C: 10 },
     answer: '=IF(B2>=75,"large",IF(B2>=25,"medium","small"))',
     alt: ['=IFS(B2>=75,"large",B2>=25,"medium",TRUE,"small")', '=IF(B2<25,"small",IF(B2<75,"medium","large"))'],
@@ -91,9 +93,11 @@ export const guided = [
       { formula: '=IF(B2>=25,"medium",IF(B2>=75,"large","small"))', say: 'Excel stops at the first TRUE test, so every order of $25 or more is “medium” and nothing is ever “large”. Test the $75 threshold first.' },
       { formula: '=IFS(B2>=75,"large",B2>=25,"medium")', say: 'IFS returns #N/A when no test is TRUE, so small orders show #N/A. End with <x>TRUE,"small"</x> as a catch-all.' },
       { formula: '=IF(B2>=75,"large","medium")', say: 'That has only two outcomes. Nest a second IF in the false branch for medium and small.' },
+      { formula: '=IF(B2>75,"large",IF(B2>25,"medium","small"))', say: 'The rule says “$75 or more”, so an order of exactly $75.00 is large and one of exactly $25.00 is medium: use >= at both boundaries.' },
+      { formula: '=IF(B2>=75,"large",IF(B2>25,"medium","small"))', say: 'An order of exactly $25.00 is “medium” ($25 or more): the second test needs >= too.' },
     ],
     hints: ['Start with the most demanding test: <x>B2>=75</x>.', 'Put the second test in the false branch: <x>=IF(B2>=75,"large",IF(B2>=25,"medium","small"))</x>.'],
-    solution: '<x>=IF(B2>=75,"large",IF(B2>=25,"medium","small"))</x>, or <x>=IFS(B2>=75,"large",B2>=25,"medium",TRUE,"small")</x>. The tests run from the highest threshold down; LC-10001 ($111.00) is large, LC-10002 ($30.60) medium and LC-10003 ($14.00) small.',
+    solution: '<x>=IF(B2>=75,"large",IF(B2>=25,"medium","small"))</x>, or <x>=IFS(B2>=75,"large",B2>=25,"medium",TRUE,"small")</x>. The tests run from the highest threshold down; LC-10001 ($111.00) is large, LC-10002 ($30.60) medium and LC-10003 ($14.00) small. The boundary rows check the >= signs: $75.00 is large and $25.00 medium.',
   },
   {
     id: 'b03-fl-g4', type: 'formula', kind: 'applied',
@@ -107,7 +111,7 @@ export const guided = [
       { formula: '=RIGHT(A2,5)', say: 'RIGHT returns text too. Wrap it in VALUE, or multiply it by 1.' },
       { formula: '=VALUE(LEFT(A2,5))', say: 'LEFT takes characters from the start: “LC-10”, which isn’t a number. The digits start at position 4.' },
     ],
-    hints: ['The digits are characters 4 to 8: MID(A2,4,5) or RIGHT(A2,5).', 'Those return text; VALUE turns text into a number.'],
+    hints: ['The digits are characters 4 to 8: <x>MID(A2,4,5)</x> or <x>RIGHT(A2,5)</x>.', 'Those return text; VALUE turns text into a number.'],
     solution: '<x>=VALUE(MID(A2,4,5))</x> (or <x>=VALUE(RIGHT(A2,5))</x>). MID takes 5 characters starting at position 4, “10001”, and VALUE converts the text to the number 10001. If the prefix could vary in length, find the hyphen: <x>=VALUE(MID(A2,FIND("-",A2)+1,LEN(A2)))</x>.',
   },
 ];
@@ -124,7 +128,7 @@ export const independent = [
     wrong: [
       { formula: '=EOMONTH(B2,1)', say: 'The second argument counts months ahead: 1 gives the end of next month. Use 0 for this month.' },
       { formula: '=EDATE(B2,1)', say: 'EDATE gives the same day next month, not the end of this month.' },
-      { formula: '=B2+30', say: 'Adding 30 days doesn’t land on a month’s end. EOMONTH(B2,0) does, whatever the month’s length.' },
+      { formula: '=B2+30', say: 'Adding 30 days doesn’t land on a month’s end. <x>EOMONTH(B2,0)</x> does, whatever the month’s length.' },
     ],
     solution: '<x>=EOMONTH(B2,0)</x>: the last day of the month 0 months after the date, formatted as a date. LC-10001 (1 March 2026) gives 31 March 2026. <x>=DATE(YEAR(B2),MONTH(B2)+1,0)</x> also works: day 0 of next month is the last day of this one.',
   },
@@ -181,7 +185,7 @@ export const independent = [
   {
     id: 'b03-fl-i6', type: 'formula', kind: 'applied',
     prompt: 'Eight orders pasted from an older export (fictional: one discount was mistyped). In F2, write a flag that shows “check” for a subscription order (D is yes) whose discount in E differs from quantity × price × the rate in H1, rounded to the cent, and “ok” for every other order. It will be filled down to F9.',
-    sheet: { cells: audit, fixed: ['H1'] },
+    sheet: { cells: audit, fixed: ['B2:C9', 'E2:E9'] },
     cell: 'F2', fill: 'F2:F9', view: 'A1:H9',
     formats: { C: MONEY, E: MONEY, H1: '0%' }, widths: { A: 10, G: 20 },
     answer: '=IF(AND(D2="yes",E2<>ROUND(B2*C2*$H$1,2)),"check","ok")',
@@ -189,6 +193,7 @@ export const independent = [
     wrong: [
       { formula: '=IF(E2<>ROUND(B2*C2*$H$1,2),"check","ok")', say: 'That flags every order whose discount isn’t 10%, including the promotion-code orders, which aren’t subscriptions. Add the subscription test with AND.' },
       { formula: '=IF(OR(D2="yes",E2<>ROUND(B2*C2*$H$1,2)),"check","ok")', say: 'OR flags an order if either test is TRUE, so every subscription order is flagged. Both must be TRUE: use AND.' },
+      { formula: '=IF(AND(D2="yes",E2<>ROUND(B2*C2*0.1,2)),"check","ok")', say: 'The rate is typed into the formula, so the flag ignores H1 if the discount ever changes. Refer to $H$1.' },
     ],
     solution: `<x>=IF(AND(D2="yes",E2<>ROUND(B2*C2*$H$1,2)),"check","ok")</x>. Only ${ORDERS[9][0]} is flagged: a subscription order whose 10% discount should be $1.65 but was typed as $1.17. ${ORDERS[0][0]} and ${ORDERS[3][0]} carry $5.00 promotion discounts, but they aren’t subscriptions, so the AND keeps them out.`,
   },
@@ -225,7 +230,7 @@ export const check = [
     formats: { B: 'date', C: 'date' }, widths: { A: 10, B: 13, C: 13 },
     answer: '=EDATE(B2,1)',
     wrong: [
-      { formula: '=B2+30', say: 'Months have 28 to 31 days, so adding 30 lands on the wrong day for most months. EDATE(B2,1) gives the same day next month.' },
+      { formula: '=B2+30', say: 'Months have 28 to 31 days, so adding 30 lands on the wrong day for most months. <x>EDATE(B2,1)</x> gives the same day next month.' },
       { formula: '=EOMONTH(B2,1)', say: 'EOMONTH gives the last day of next month, not the same day.' },
       { formula: '=EOMONTH(B2,0)+1', say: 'That is the first day of next month, which is the renewal date only for orders placed on the 1st.' },
     ],
@@ -246,8 +251,8 @@ export const check = [
     answer: [0, 1, 2, 3, 4, 5],
     feedback: {
       1: 'Order IDs are text, which COUNT ignores; COUNTA counts every non-empty cell.',
-      3: 'ROUND would go down as well as up; ROUNDUP(B2,0) always goes up.',
-      4: 'MROUND(B2,0.05) rounds to the nearest multiple of 0.05.',
+      3: 'ROUND would go down as well as up; <x>ROUNDUP(B2,0)</x> always goes up.',
+      4: '<x>MROUND(B2,0.05)</x> rounds to the nearest multiple of 0.05.',
     },
     solution: 'COUNT counts numbers (the ratings), COUNTA counts non-empty cells (the text IDs), COUNTBLANK counts empty cells (unrated orders), ROUNDUP(…,0) always rounds up to a whole number, MROUND(…,0.05) rounds to a multiple of 5 cents, and FIND returns a character’s position.',
   },
@@ -261,7 +266,7 @@ export const check = [
     alt: ['=CONCAT(A2," (",TEXT(B2,"mmm"),")")', '=A2&" ("&LEFT(TEXT(B2,"mmmm"),3)&")"'],
     wrong: [
       { formula: '=A2&" ("&B2&")"', say: 'Joined to text, a date shows its serial number, “LC-10001 (46082)”. Convert it with <x>TEXT(B2,"mmm")</x>.' },
-      { formula: '=A2&"("&TEXT(B2,"mmm")&")"', say: 'The label needs a space before the parenthesis: " (".' },
+      { formula: '=A2&"("&TEXT(B2,"mmm")&")"', say: 'The label needs a space before the parenthesis: <x>" ("</x>.' },
       { formula: '=A2&" ("&MONTH(B2)&")"', say: 'MONTH gives the month number, 3, not its name. <x>TEXT(B2,"mmm")</x> gives “Mar”.' },
     ],
     solution: '<x>=A2&" ("&TEXT(B2,"mmm")&")"</x>. <x>&</x> joins the pieces; <x>TEXT(B2,"mmm")</x> turns the date into “Mar”. Without TEXT the date would appear as its serial number.',

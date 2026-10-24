@@ -210,9 +210,9 @@ export const items = [
         prompt: 'Complete the Goal Seek dialog.',
         text: 'Set cell: [[0]]. To value: [[1]]. By changing cell: [[2]].',
         blanks: [
-          { options: ['B7', 'B3', 'B2'], answer: 0 },
-          { options: ['2000', 'B7', '0'], answer: 0 },
-          { options: ['B3', 'B7', 'B2', 'B4'], answer: 0 },
+          { options: ['B3', 'B7', 'B2'], answer: 1 },
+          { options: ['B7', '0', '2000'], answer: 2 },
+          { options: ['B2', 'B4', 'B3', 'B7'], answer: 2 },
         ],
         solution: 'Set cell is the formula whose result you want (the profit, B7); To value is the result wanted, typed as a number (2000); By changing cell is the input Goal Seek may change (the fee, B3). Goal Seek changes only one input.',
       },
