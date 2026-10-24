@@ -61,6 +61,8 @@ for (const [x, n, wald, wilson] of fx.tests.ciProp) {
   expd.forEach((row, i) => row.forEach((e, j) => close(`indep expected[${i}][${j}]`, r.expected[i][j], e, 1e-12)));
 }
 { const [F, p, fc] = fx.tests.anova; const r = I.anova1(groups); close('anova F', r.F, F, 1e-10); close('anova p', r.p, p, 1e-8); close('anova F crit', r.fCrit, fc, 1e-9); }
+{ const [F, p, df2] = fx.tests.welch; const r = I.anovaWelch(groups); close('Welch ANOVA F', r.F, F, 1e-10); close('Welch ANOVA p', r.p, p, 1e-8); close('Welch ANOVA df2', r.df2, df2, 1e-10); }
+for (const [g, H, p] of fx.tests.kruskal) { const r = I.kruskal(g); close('Kruskal–Wallis H', r.H, H, 1e-10); close('Kruskal–Wallis p', r.p, p, 1e-8); }
 for (const [delta, sigma, n, w] of fx.power.oneSample) close(`power one-sample ${delta}/${sigma}/${n}`, I.powerMean({ delta, sigma, n }), w, 1e-9);
 for (const [delta, sigma, n, w] of fx.power.twoSample) close(`power two-sample ${delta}/${sigma}/${n}`, I.powerMean({ delta, sigma, n, twoSample: true }), w, 1e-9);
 for (const [delta, sigma, n, w] of fx.power.oneSided) close(`power one-sided`, I.powerMean({ delta, sigma, n, alternative: 'greater' }), w, 1e-9);

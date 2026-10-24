@@ -65,6 +65,12 @@ tab = [[48, 31, 21], [62, 29, 40]]
 ci2 = st.chi2_contingency(tab, correction=False)
 t["indep"] = [tab, float(ci2.statistic), float(ci2.pvalue), int(ci2.dof), np.asarray(ci2.expected_freq).tolist()]
 fo = st.f_oneway(*groups)
+from statsmodels.stats.oneway import anova_oneway
+wa = anova_oneway([np.asarray(g) for g in groups], use_var="unequal", welch_correction=True)
+t["welch"] = [float(wa.statistic), float(wa.pvalue), float(wa.df[1])]
+tied = [[3, 4, 4, 5, 6, 6, 6], [5, 6, 7, 7, 8], [2, 3, 3, 4, 5, 6]]
+kw = st.kruskal(*tied); kw2 = st.kruskal(*groups)
+t["kruskal"] = [[tied, float(kw.statistic), float(kw.pvalue)], [groups, float(kw2.statistic), float(kw2.pvalue)]]
 t["anova"] = [float(fo.statistic), float(fo.pvalue), float(st.f.isf(0.05, 3, sum(len(x) for x in groups) - 4))]
 
 p = fx["power"] = {}

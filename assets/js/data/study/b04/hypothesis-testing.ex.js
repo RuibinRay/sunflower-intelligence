@@ -303,7 +303,7 @@ export const independent = [
       { formula: '=1-NORM.S.DIST((B2/B1-B3)/SQRT(B3*(1-B3)/B1),TRUE)', say: 'That is the upper tail. The alternative p < p₀ points down: NORM.S.DIST(z, TRUE) on its own.' },
       { formula: '=NORM.S.DIST((B2/B1-B3)/SQRT(B3*(1-B3)/B1),FALSE)', say: 'With FALSE, NORM.S.DIST returns the height of the curve, not a probability. Use TRUE for the area to the left of z.' },
     ],
-    solution: `p̂ = ${KIN.gifts} ÷ ${KIN.letters.toLocaleString('en-US')} = ${fx(kinT.p, 4)}; SE = √(0.05 × 0.95 ÷ ${KIN.letters.toLocaleString('en-US')}) = ${fx(kinT.se0, 5)}; z ≈ ${neg(kinT.z)}; p ≈ ${fx(kinT.pValue, 4)}. At α = 0.05 the appeal’s response rate is below the 5% benchmark; np₀ = ${(KIN.letters * KIN.p0).toLocaleString('en-US')} and n(1 − p₀) = ${(KIN.letters * (1 - KIN.p0)).toLocaleString('en-US')} are well above 10, so the normal model is reasonable. Whether a shortfall of about ${fx((KIN.p0 - kinT.p) * 100, 1)} points matters depends on what the appeal cost.`,
+    solution: `p̂ = ${KIN.gifts} ÷ ${KIN.letters.toLocaleString('en-US')} = ${fx(kinT.p, 5)}; SE = √(0.05 × 0.95 ÷ ${KIN.letters.toLocaleString('en-US')}) = ${fx(kinT.se0, 5)}; z = (${fx(kinT.p, 5)} − 0.05) ÷ ${fx(kinT.se0, 5)} ≈ ${neg(kinT.z)}; p ≈ ${fx(kinT.pValue, 4)}. At α = 0.05 the appeal’s response rate is below the 5% benchmark; np₀ = ${(KIN.letters * KIN.p0).toLocaleString('en-US')} and n(1 − p₀) = ${(KIN.letters * (1 - KIN.p0)).toLocaleString('en-US')} are well above 10, so the normal model is reasonable. Whether a shortfall of about ${fx((KIN.p0 - kinT.p) * 100, 1)} points matters depends on what the appeal cost.`,
   },
 ];
 
@@ -334,7 +334,7 @@ export const check = [
       { formula: '=T.DIST((AVERAGE(B2:B31)-E1)/(STDEV.S(B2:B31)/SQRT(COUNT(B2:B31))),COUNT(B2:B31),TRUE)', say: 'A one-sample t test has n − 1 degrees of freedom: COUNT(B2:B31)-1.' },
       { formula: '=1-Z.TEST(B2:B31,E1)', say: 'Without sigma, Z.TEST plugs the sample SD into the normal distribution. That is a z test, not the t test asked for.' },
     ],
-    solution: `t = (${fx(BX.mean)} − 500) ÷ (${fx(BX.sd, 3)} ÷ √30) ≈ ${neg(BX.t, 3)} with 29 degrees of freedom, and <x>=T.DIST(t,29,TRUE)</x> ≈ ${fx(BX.p, 4)}. At α = 0.05 the boxes are underweight on average, by about ${fx(500 - BX.mean, 1)} g.`,
+    solution: `t = (${fx(BX.mean, 3)} − 500) ÷ (${fx(BX.sd, 3)} ÷ √30) ≈ ${neg(BX.t, 2)} with 29 degrees of freedom, and <x>=T.DIST(t,29,TRUE)</x> ≈ ${fx(BX.p, 4)}. At α = 0.05 the boxes are underweight on average, by about ${fx(500 - BX.mean, 1)} g.`,
   },
   {
     id: 'b04-ht-k3', type: 'num', kind: 'numerical',

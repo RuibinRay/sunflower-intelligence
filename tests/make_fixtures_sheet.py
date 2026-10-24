@@ -146,6 +146,9 @@ FORMULAS = [
     '=F.DIST.RT(3.1,3,41)', '=F.INV(0.05,2,10)', '=F.INV.RT(0.05,3,41)', '=F.TEST(AA1:AA10,AB1:AB12)', '=COMBIN(52,5)', '=COMBIN(8.9,2.2)', '=COMBIN(2,3)',
     '=PERMUT(100,3)', '=FACT(10)', '=FACT(5.9)', '=FACT(-1)', '=DEVSQ(AA1:AA10)', '=SUMSQ(3,4)', '=AVEDEV(AA1:AA10)', '=GEOMEAN(AA1:AA10)', '=HARMEAN(AA1:AA10)',
     '=TRIMMEAN({4,5,6,7,2,3,4,5,1,2,3},0.2)', '=TRIMMEAN(AB1:AB12,0.25)', '=INDEX(MODE.MULT(S1:S8),1)', '=INDEX(MODE.MULT(S1:S8),2)', '=ROWS(MODE.MULT(S1:S8))',
+    '=PERCENTRANK.INC(S1:S8,5)', '=PERCENTRANK.INC(S1:S8,4.5)', '=PERCENTRANK.INC(S1:S8,4.5,2)', '=PERCENTRANK.EXC(S1:S8,5)', '=PERCENTRANK.EXC(S1:S8,6.2)',
+    '=PERCENTRANK.INC(AA1:AA10,250.5)', '=PERCENTRANK.INC(S1:S8,3)', '=PERCENTRANK.EXC(S1:S8,2.5,4)', '=SUM(LARGE(S1:S8,{1,2}))', '=SUM(SMALL(AA1:AA10,{1;2;3}))', '=SUM(BINOM.DIST({0,1},5,0.5,FALSE))',
+    '=SUM(POISSON.DIST({0,1,2},2,FALSE))', '=INDEX(NORM.S.DIST({-1,0,1},TRUE),1,3)', '=SUMPRODUCT(T.DIST({-1,1},5,TRUE))',
     '=VLOOKUP(13,J1:K40,2,TRUE)', '=VLOOKUP(260,J:K,2,TRUE)', '=MATCH(120,J1:J40,1)', '=VLOOKUP(-5,J1:K40,2,TRUE)', '=T.INV.2T(0.05,10)', '=T.INV(0.975,30)',
     '=T.DIST.2T(2.1,15)', '=CONFIDENCE.T(0.05,STDEV.S(F2:F13),COUNT(F2:F13))', '=CONFIDENCE.T(0.05,1,1)',
     '=SUM(D2:F2 E1:E5)', '=SUM(A1:A2 C1:C2)', '=N(TRUE)+N("7")+N(5)', '=NUMBERVALUE("2.500,27",",",".")', '=NUMBERVALUE("3.5%")',
@@ -155,7 +158,7 @@ FORMULAS = [
 XLFN = ['NUMBERVALUE', 'T.INV.2T', 'T.INV', 'T.DIST.2T', 'CONFIDENCE.T', 'CEILING.MATH', 'FLOOR.MATH', 'PERCENTILE.EXC', 'QUARTILE.EXC', 'SKEW.P', 'STDEV.S', 'STDEV.P', 'VAR.S', 'VAR.P', 'PERCENTILE.INC', 'QUARTILE.INC', 'RANK.EQ', 'MODE.SNGL', 'FORECAST.LINEAR',
         'COVARIANCE.S', 'COVARIANCE.P', 'MAXIFS', 'MINIFS', 'IFS', 'SWITCH', 'IFNA', 'CONCAT', 'TEXTJOIN', 'DAYS',
         'NORM.DIST', 'NORM.S.DIST', 'NORM.INV', 'NORM.S.INV', 'BINOM.DIST.RANGE', 'BINOM.DIST', 'BINOM.INV', 'POISSON.DIST', 'EXPON.DIST', 'T.DIST.RT', 'T.DIST',
-        'T.TEST', 'Z.TEST', 'CONFIDENCE.NORM', 'CHISQ.DIST.RT', 'CHISQ.DIST', 'CHISQ.INV.RT', 'CHISQ.INV', 'CHISQ.TEST', 'F.DIST.RT', 'F.DIST', 'F.INV.RT', 'F.INV', 'F.TEST', 'MODE.MULT']
+        'T.TEST', 'Z.TEST', 'CONFIDENCE.NORM', 'CHISQ.DIST.RT', 'CHISQ.DIST', 'CHISQ.INV.RT', 'CHISQ.INV', 'CHISQ.TEST', 'F.DIST.RT', 'F.DIST', 'F.INV.RT', 'F.INV', 'F.TEST', 'MODE.MULT', 'PERCENTRANK.INC', 'PERCENTRANK.EXC']
 # Cases where LibreOffice gives a different answer from Excel: the test uses Excel's value, with the reason.
 # (a) LibreOffice has no logical type: TRUE is the number 1, so it sums, counts and joins as 1. Excel's COUNT/SUM
 #     help: "Logical values ... typed directly into the list of arguments are counted"; in a reference "only numbers
@@ -183,7 +186,11 @@ XLFN = ['NUMBERVALUE', 'T.INV.2T', 'T.INV', 'T.DIST.2T', 'CONFIDENCE.T', 'CEILIN
 #     tails is not 1 or 2 and "#N/A" for a paired test (type 1) with different numbers of data points; CHISQ.TEST "#N/A"
 #     when the ranges have different numbers of data points; T.DIST "an error value" when deg_freedom < 1 (the engine
 #     returns #NUM!, as the other t functions do). LibreOffice returns #VALUE! (or #DIV/0! for STANDARDIZE) in these cases.
+# (l) Excel's PERCENTRANK.INC/.EXC cut the result to the significant digits without rounding: Microsoft's examples give
+#     0.555 for 5/9 and 0.666 for 6/9; LibreOffice rounds (0.556, 0.536, 0.54, 0.286, 0.2778).
 EXCEL_DIFFERS = {
+    '=PERCENTRANK.INC(S1:S8,4.5)': 0.535, '=PERCENTRANK.INC(S1:S8,4.5,2)': 0.53, '=PERCENTRANK.EXC(S1:S8,5)': 0.555,       # (l)
+    '=PERCENTRANK.INC(S1:S8,3)': 0.285, '=PERCENTRANK.EXC(S1:S8,2.5,4)': 0.2777,
     '=NORM.DIST(1,0,0,TRUE)': {'error': '#NUM!'}, '=NORM.INV(1,0,1)': {'error': '#NUM!'}, '=STANDARDIZE(1,2,0)': {'error': '#NUM!'},   # (k)
     '=BINOM.DIST(11,10,0.3,TRUE)': {'error': '#NUM!'}, '=POISSON.DIST(-1,1.9,TRUE)': {'error': '#NUM!'}, '=T.DIST(2.1,0.5,TRUE)': {'error': '#NUM!'},
     '=T.TEST(AA1:AA10,AB1:AB12,1,1)': {'error': '#N/A'}, '=T.TEST(AA1:AA10,AB1:AB12,3,2)': {'error': '#NUM!'}, '=CHISQ.TEST(AD1:AF2,AH1:AN1)': {'error': '#N/A'},

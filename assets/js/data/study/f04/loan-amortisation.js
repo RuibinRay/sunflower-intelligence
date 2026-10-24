@@ -2,7 +2,7 @@
 // Uses BREWER (the $24,000 Coastline loan at 7.2% over 48 months, and the supplier’s 24 × $1,050 plan), DERIVED.brewerPayment,
 // DERIVED.brewerTotalInterest and DERIVED.vendorPVat72, and COASTLINE_NOTE (Lantern’s interest-only note) from case.js.
 // Mortgages (Module 4) build on the payment, schedule and balance methods defined here; Ana’s own mortgage is the project’s.
-import { BREWER, COASTLINE_NOTE, DERIVED } from './case.js';
+import { BREWER, COASTLINE_NOTE, DERIVED } from './case.js?v=12';
 
 const a = (n, r) => (1 - (1 + r) ** -n) / r;
 const s = (n, r) => ((1 + r) ** n - 1) / r;

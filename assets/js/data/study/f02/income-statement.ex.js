@@ -1,7 +1,7 @@
 // income-statement.ex.js — F02 · The multi-step income statement: widgets, practice and the knowledge check.
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // Lantern's figures come from case.js; its 2027 events are hypothetical (“Suppose…”); other businesses are fictional.
-import { FACTS, DERIVED as D } from './case.js';
+import { FACTS, DERIVED as D } from './case.js?v=12';
 
 const money = (x) => `${x < -0.004 ? '−' : ''}$${Math.abs(Math.round(x)).toLocaleString('en-US')}`;
 const delta = (x) => (Math.abs(x) < 0.5 ? 'unchanged' : `${x > 0 ? 'up' : 'down'} ${money(Math.abs(x))}`);

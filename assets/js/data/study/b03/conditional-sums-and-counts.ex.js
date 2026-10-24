@@ -1,7 +1,7 @@
 // conditional-sums-and-counts.ex.js — B03 · Conditional sums, counts and averages: widgets, practice and the knowledge
 // check (answer keys live here). Every sheet holds all 231 of Lantern's spring orders from case.js (only the columns the
 // question needs). Formula items are marked by their results on the sheet and on three copies with the numbers changed.
-import { ORDERS, ORDER_COLUMNS, tableCells } from './case.js';
+import { ORDERS, ORDER_COLUMNS, tableCells } from './case.js?v=12';
 
 const MONEY = '$#,##0.00';
 const R = 232;                                         // the last data row

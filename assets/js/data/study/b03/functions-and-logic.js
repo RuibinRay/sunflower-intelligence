@@ -1,7 +1,7 @@
 // functions-and-logic.js — B03 · Functions, logic, text and dates. Content only; exercises are in
 // functions-and-logic.ex.js. Lantern's orders and its catering quote rule come from case.js (ORDERS, QUOTE, DERIVED);
 // the three quote requests and Oakridge Fitness are fictional and labelled. Excel's behaviour is cited in `references`.
-import { ORDERS, ORDER_COLUMNS, QUOTE, quote, DERIVED as D } from './case.js';
+import { ORDERS, ORDER_COLUMNS, QUOTE, quote, DERIVED as D } from './case.js?v=12';
 
 const col = (name) => ORDER_COLUMNS.indexOf(name);
 const order = (i) => Object.fromEntries(ORDER_COLUMNS.map((c, k) => [c, ORDERS[i][k]]));

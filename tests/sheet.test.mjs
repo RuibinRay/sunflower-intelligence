@@ -232,6 +232,12 @@ eq('criterion ~* no wildcard', X.criterion('~*')('a'), false);
   ok('Z.TEST(A2:A11,6) = 0.863043 (Microsoft)', Math.abs(zv('=Z.TEST(A2:A11,6)') - 0.863043) < 5e-7);
   ok('T.DIST(60,1,TRUE) = 0.99469533 (Microsoft)', Math.abs(ms('=T.DIST(60,1,TRUE)') - 0.99469533) < 5e-9);
   ok('T.DIST(8,3,FALSE) = 0.00073691 (Microsoft)', Math.abs(ms('=T.DIST(8,3,FALSE)') - 0.00073691) < 5e-9);
+  const pr = (f) => ms(f.replace('DATA', '{13,12,11,8,4,3,2,1,1,1}'));
+  ok('PERCENTRANK.INC examples (Microsoft): 0.333, 0.555, 0.666, 0.583', pr('=PERCENTRANK.INC(DATA,2)') === 0.333 && pr('=PERCENTRANK.INC(DATA,4)') === 0.555 && pr('=PERCENTRANK.INC(DATA,8)') === 0.666 && pr('=PERCENTRANK.INC(DATA,5)') === 0.583);
+  const pe = (x, sig) => ms(`=PERCENTRANK.EXC({1,2,3,6,6,6,7,8,9},${x}${sig ? `,${sig}` : ''})`);
+  ok('PERCENTRANK.EXC examples (Microsoft): 0.7, 0.381, 0.3', pe(7) === 0.7 && pe(5.43) === 0.381 && pe(5.43, 1) === 0.3);
+  ok('SMALL with an array k evaluates once per element (Microsoft)', ms('=SUM(SMALL({5,1,4,2,3},{1;2;3}))') === 6);
+  ok('BINOM.DIST lifts over an array', Math.abs(ms('=SUM(BINOM.DIST({0,1},5,0.5,FALSE))') - 0.1875) < 1e-15);
   ok('TRIMMEAN example = 3.777778 (Microsoft)', Math.abs(ms('=TRIMMEAN({4,5,6,7,2,3,4,5,1,2,3},0.2)') - 3.777778) < 5e-7);
   // whole columns and rows move when filled, as in Excel
   ok('fill: F:F moves to G:G', X.shiftFormula('=SUM(F:F)', 0, 1) === '=SUM(G:G)');

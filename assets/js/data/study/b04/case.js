@@ -117,7 +117,12 @@ export const DERIVED = {
     subscriptionShare: mean(SUBSCRIPTION_FLAGS), subscriptions: SUBSCRIPTION_FLAGS.filter((x) => x === 1).length,
     rated: RATINGS.length, meanRating: mean(RATINGS), fiveStar: RATINGS.filter((x) => x === 5).length,
   },
-  perDay: { lambda, counts: perDayCounts, expected: perDayCounts.map((_, k) => SPRING_DAYS.length * I.poissonPmf(k, lambda)) },
+  // expected: 122 × P(X = k) for k = 0 … 5, to compare day by day; gof: the goodness-of-fit test, with the last category
+  // “5 or more” (122 × P(X ≥ 5)) so the expected counts add to 122, and one degree of freedom lost for the estimated λ
+  perDay: {
+    lambda, counts: perDayCounts, expected: perDayCounts.map((_, k) => SPRING_DAYS.length * I.poissonPmf(k, lambda)),
+    gof: I.chisqGof(perDayCounts, perDayCounts.map((_, k) => SPRING_DAYS.length * (k < perDayCounts.length - 1 ? I.poissonPmf(k, lambda) : I.poissonSf(k - 1, lambda))), { ddof: 1 }),
+  },
   weekdays: I.chisqGof(WEEKDAYS.orders, daysShare),
   channelSubscription: I.chisqIndependence(CHANNEL_SUBSCRIPTION.counts),
   ratingByChannel: I.chisqIndependence(RATING_BY_CHANNEL.counts),

@@ -336,12 +336,21 @@ function compare(a, b) {
 }
 
 /** "General" format: up to 11 characters wide in a cell; here, up to 10 decimal places without trailing zeros. */
+/** n in scientific notation with `places` decimals in the mantissa and an exponent of at least `digits` digits: 4.50E-08. */
+function sciText(n, places, digits = 2) {
+  const [m, e] = n.toExponential(places).split('e');
+  const ex = Number(e);
+  return `${m}E${ex < 0 ? '-' : '+'}${String(Math.abs(ex)).padStart(digits, '0')}`;
+}
 export function generalText(n) {
   if (!Number.isFinite(n)) return '#NUM!';
   if (Number.isInteger(n) && Math.abs(n) < 1e15) return String(n);
   const a = Math.abs(n);
-  if (a !== 0 && (a < 1e-9 || a >= 1e15)) return n.toExponential(5).replace(/\.?0+e/, 'E').replace('e', 'E');
-  return String(Number(n.toPrecision(15))).replace(/(\.\d*?)0+$/, '$1');
+  // very small or large numbers in scientific notation as Excel's General format shows them in a standard column:
+  // a mantissa of up to six significant figures and a signed two-digit exponent (0.000000045 shows as 4.5E-08)
+  if (a !== 0 && (a < 1e-5 || a >= 1e15)) return sciText(n, 5).replace(/\.?0+E/, 'E');
+  const plain = String(Number(n.toPrecision(15))).replace(/(\.\d*?)0+$/, '$1');
+  return a < 1e-4 && plain.length > 11 ? sciText(n, 5).replace(/\.?0+E/, 'E') : plain;
 }
 
 // ---------------------------------------------------------------- criteria (SUMIF, COUNTIF, …)
@@ -713,6 +722,8 @@ export function textFormat(v, fmt) {
   const n = typeof v === 'number' ? v : toNum(v);
   if (isErr(n)) return typeof v === 'string' ? v : n;
   const f = String(fmt);
+  const sci = /^0(?:\.(0+))?E\+(0+)$/i.exec(f);                   // scientific: 0.00E+00
+  if (sci) return sciText(n, sci[1] ? sci[1].length : 0, sci[2].length);
   if (/[yd]|m{3,}/i.test(f) && !/0/.test(f)) {                      // a date format
     const [y, m, d] = serialToYMD(n);
     const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
@@ -1028,6 +1039,31 @@ FN.TRIMMEAN = (args, ctx) => {
   const cut = Math.floor((xs.length * p) / 2), s = [...xs].sort((a, b) => a - b).slice(cut, xs.length - cut);
   return meanOf(s);
 };
+// PERCENTRANK.INC(array, x, [significance]): the share of values below x, (values below) ÷ (n − 1), interpolated between
+// neighbouring values when x isn't in the array; PERCENTRANK.EXC uses (values below + 1) ÷ (n + 1). Both cut the result
+// to `significance` digits (default 3) without rounding, as Microsoft's examples show (5/9 gives 0.555), return #NUM! for
+// significance < 1 or an empty array, and #N/A outside the data's range.
+function percentRank(args, ctx, exc) {
+  const xs = numbersOf([args[0]], ctx); if (isErr(xs)) return xs;
+  const x = numArg(args[1], ctx); if (isErr(x)) return x;
+  let sig = 3;
+  if (args[2] && args[2].t !== 'missing') { const v = numArg(args[2], ctx); if (isErr(v)) return v; sig = Math.trunc(v); }
+  if (sig < 1 || !xs.length) return ERR.NUM;
+  const s = [...xs].sort((a, b) => a - b), n = s.length;
+  if (x < s[0] || x > s[n - 1]) return ERR.NA;
+  // c values lie below x; between two data values x sits `frac` of the way from the last copy of the lower value
+  // (position c − 1) to the first copy of the upper one (position c)
+  const c = s.filter((y) => y < x).length;
+  let pos;
+  if (s.some((y) => p15(y) === p15(x))) pos = c;
+  else { const lo = s[c - 1], hi = s[c]; pos = c - 1 + (x - lo) / (hi - lo); }
+  const r = exc ? (pos + 1) / (n + 1) : n === 1 ? 1 : pos / (n - 1);
+  const f = 10 ** sig;
+  return Math.floor(r * f + 1e-9) / f;
+}
+FN['PERCENTRANK.INC'] = (args, ctx) => percentRank(args, ctx, false);
+FN['PERCENTRANK.EXC'] = (args, ctx) => percentRank(args, ctx, true);
+FN.PERCENTRANK = FN['PERCENTRANK.INC'];
 // MODE.MULT: every value tied for the highest count (each at least twice), as a vertical array that spills
 FN['MODE.MULT'] = (args, ctx) => {
   const xs = numbersOf(args, ctx); if (isErr(xs)) return xs;
@@ -1405,6 +1441,34 @@ function call(node, ctx) {
   try { return f(node.args, ctx); } catch { return ERR.VALUE; }
 }
 /** Names of the functions this engine knows (for autocomplete and checks). */
+// Excel evaluates a function once for each element when an argument that takes a single value is given an array or a
+// range (=SMALL(B9:B18,{1;2;3}), =BINOM.DIST({0,1},5,0.5,FALSE)), and the results spill, as Microsoft's guidelines for
+// array formulas describe. These functions take single values at the listed argument positions.
+const LIFT = {
+  'NORM.DIST': [0, 1, 2, 3], 'NORM.S.DIST': [0, 1], 'NORM.INV': [0, 1, 2], 'NORM.S.INV': [0], STANDARDIZE: [0, 1, 2],
+  'BINOM.DIST': [0, 1, 2, 3], 'BINOM.DIST.RANGE': [0, 1, 2, 3], 'BINOM.INV': [0, 1, 2], 'POISSON.DIST': [0, 1, 2], 'EXPON.DIST': [0, 1, 2],
+  'T.DIST': [0, 1, 2], 'T.DIST.RT': [0, 1], 'T.DIST.2T': [0, 1], 'T.INV': [0, 1], 'T.INV.2T': [0, 1],
+  'CHISQ.DIST': [0, 1, 2], 'CHISQ.DIST.RT': [0, 1], 'CHISQ.INV': [0, 1], 'CHISQ.INV.RT': [0, 1],
+  'F.DIST': [0, 1, 2, 3], 'F.DIST.RT': [0, 1, 2], 'F.INV': [0, 1, 2], 'F.INV.RT': [0, 1, 2],
+  'CONFIDENCE.NORM': [0, 1, 2], 'CONFIDENCE.T': [0, 1, 2], COMBIN: [0, 1], PERMUT: [0, 1], FACT: [0],
+  LARGE: [1], SMALL: [1], 'PERCENTRANK.INC': [1, 2], 'PERCENTRANK.EXC': [1, 2],
+};
+for (const [name, pos] of Object.entries(LIFT)) {
+  const base = FN[name];
+  if (!base) continue;
+  FN[name] = (args, ctx) => {
+    const vals = pos.map((i) => (args[i] && args[i].t !== 'missing' ? ev(args[i], ctx) : null));
+    if (!vals.some(isArr)) return base(args, ctx);
+    const A = vals.map((v) => (isArr(v) ? v : null));
+    const h = Math.max(...A.map((a) => (a ? a.h : 1))), w = Math.max(...A.map((a) => (a ? a.w : 1)));
+    const get = (M, i, j) => (M.h === 1 && M.w === 1 ? M.at(0, 0) : M.h === 1 ? (j < M.w ? M.at(0, j) : ERR.NA) : M.w === 1 ? (i < M.h ? M.at(i, 0) : ERR.NA) : (i < M.h && j < M.w ? M.at(i, j) : ERR.NA));
+    return new Arr(Array.from({ length: h }, (_, i) => Array.from({ length: w }, (__, j) => {
+      const a2 = args.slice();
+      pos.forEach((p, k) => { if (A[k]) a2[p] = { t: 'lit', v: get(A[k], i, j) }; });
+      return base(a2, ctx);
+    })));
+  };
+}
 export const FUNCTIONS = Object.keys(FN).filter((k) => FN[k]).sort();
 
 // ---------------------------------------------------------------- display

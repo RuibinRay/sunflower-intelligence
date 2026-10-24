@@ -4,7 +4,7 @@
 //   node tools/study-check.mjs f01                         a whole course: lessons, assessments, project
 //   node tools/study-check.mjs                             every built course
 // Exit code 1 if any error. Warnings are printed but don't fail.
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import * as SH from '../assets/js/core/sheet.js';
 import { ols } from '../assets/js/core/stats.js';
@@ -512,6 +512,13 @@ async function checkAssessments(course) {
     for (const k of KINDS) if (!kinds.has(k)) r.warn(`${where}: no ${k} items`);
     return items;
   };
+  // every relative import carries the cache-buster (?v=N), which tools/bump.mjs raises: without it a browser can keep an
+  // old copy, and the same module loads twice under two URLs
+  const dir = join(DATA, course);
+  if (existsSync(dir)) for (const fn of readdirSync(dir).filter((x) => x.endsWith('.js'))) {
+    const bad = [...readFileSync(join(dir, fn), 'utf8').matchAll(/from\s+'(\.{1,2}\/[^']+?\.js)'/g)].map((m) => m[1]);
+    if (bad.length) r.err(`${course}/${fn}: import without ?v= (${bad.slice(0, 3).join(', ')}${bad.length > 3 ? ' …' : ''}); write './case.js?v=N' as the other files do`);
+  }
   for (const m of c.modules) {
     const f = await loadModuleFile(course, `assess-m${m.n}`);
     if (!f) { r.warn(`assess-m${m.n}.js missing`); continue; }

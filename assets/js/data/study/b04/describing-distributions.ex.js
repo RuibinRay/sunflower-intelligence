@@ -18,7 +18,7 @@ const typeSheet = (type, extra = {}) => ({ cells: { A1: 'Event', B1: 'Per guest-
 
 const L = G.Launch, M = G.Meeting, TDY = G['Team day'], CONF = G.Conference;
 const CONF_MAX = Math.max(...CONF);
-const LOCATE = 10.14;                                  // EV-021's invoice per guest-day, one of the meetings
+const LOCATE = G.Meeting[11];                          // EV-021's invoice per guest-day (B13 in the meeting sheet)
 // Crowfoot Bakery (fictional): 20 Saturday takings ($)
 const TAKINGS = [1240, 1380, 980, 1510, 1420, 1190, 2650, 1330, 1270, 1460, 1120, 1350, 1290, 1580, 1410, 760, 1300, 1440, 1360, 1230];
 
@@ -171,8 +171,8 @@ export const independent = [
   },
   {
     id: 'b04-dd-i2', type: 'formula', kind: 'numerical',
-    prompt: 'The 28 meetings are in A2:B29, and E2 holds the invoice per guest-day of one of them. In F2, calculate the fraction Excel’s PERCENTRANK.INC would return for it (this worksheet doesn’t have that function): the number of meetings below E2 divided by n − 1.',
-    sheet: { ...typeSheet('Meeting', { D2: 'Value', E2: LOCATE, F1: 'Rank (fraction)' }), vary: { E2: [8.13, 9.46, 11.36] } },
+    prompt: 'The 28 meetings are in A2:B29, and E2 shows the invoice per guest-day of one of them, EV-021. In F2, calculate the fraction Excel’s PERCENTRANK.INC would return for it (this worksheet doesn’t have that function): the number of meetings below E2 divided by n − 1.',
+    sheet: typeSheet('Meeting', { D2: 'EV-021', E2: '=B13', F1: 'Rank (fraction)' }),
     cell: 'F2', answer: '=COUNTIF(B2:B29,"<"&E2)/(COUNT(B2:B29)-1)',
     alt: ['=COUNTIF($B$2:$B$29,"<"&$E$2)/(COUNT($B$2:$B$29)-1)', '=COUNTIFS(B2:B29,"<"&E2)/(COUNTA(B2:B29)-1)'],
     view: 'A1:F29', maxHeight: '20rem', formats: { B: '$#,##0.00', E: '$#,##0.00', F: '0.000' }, widths: { F: 15 },

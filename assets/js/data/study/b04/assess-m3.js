@@ -31,7 +31,7 @@ const AFTER = [82, 75, 62, 78, 69, 76, 63, 66, 70, 70, 81];
 const SP = I.tTestPaired(AFTER, BEFORE);
 const rentSheet = { cells: { A1: 'Branch', B1: 'Before', C1: 'After', ...col('A', 2, BEFORE.map((_, i) => `S${String(i + 1).padStart(2, '0')}`)), ...col('B', 2, BEFORE), ...col('C', 2, AFTER), E1: 'p-value (H₁: rentals fell)' } };
 // Alderley Clinic: 14 receptionists timed before and after a new booking system (paired summary)
-const CL = { n: 14, dbar: 3.1, sd: 4.2 };
+const CL = { n: 14, dbar: 3.1, sd: 4.0 };
 const clT = I.tInv(0.975, CL.n - 1), clSE = CL.sd / Math.sqrt(CL.n);
 
 export const items = [
@@ -212,12 +212,12 @@ export const items = [
   },
   {
     id: 'b04-m3-12', lesson: 'comparing-means', type: 'num', kind: 'numerical',
-    prompt: 'Alderley Clinic (fictional) timed 14 receptionists handling a standard booking before and after a new booking system. The 14 savings in time (before minus after) have mean 3.1 minutes and standard deviation 4.2 minutes. Calculate the lower limit of the 95% confidence interval for the mean saving. Give two decimal places.',
-    answer: r(CL.dbar - clT * clSE, 2), check: () => 3.1 - I.tInv(0.975, 13) * 4.2 / Math.sqrt(14), unit: 'minutes', places: 2, tol: 0.011,
+    prompt: 'Alderley Clinic (fictional) timed 14 receptionists handling a standard booking before and after a new booking system. The 14 savings in time (before minus after) have mean 3.1 minutes and standard deviation 4.0 minutes. Calculate the lower limit of the 95% confidence interval for the mean saving. Give two decimal places.',
+    answer: r(CL.dbar - clT * clSE, 2), check: () => 3.1 - I.tInv(0.975, 13) * 4.0 / Math.sqrt(14), unit: 'minutes', places: 2, tol: 0.011,
     wrong: [
       { value: r(CL.dbar - I.normInv(0.975) * clSE, 2), say: 'That uses z = 1.96. With s_d from 14 pairs, use t with 13 degrees of freedom: 2.160.' },
-      { value: r(CL.dbar - clT * CL.sd / CL.n, 2), say: 'The standard error is s_d ÷ √n = 4.2 ÷ √14, not 4.2 ÷ 14.' },
+      { value: r(CL.dbar - clT * CL.sd / CL.n, 2), say: 'The standard error is s_d ÷ √n = 4.0 ÷ √14, not 4.0 ÷ 14.' },
     ],
-    solution: `SE = 4.2 ÷ √14 = ${fx(clSE, 4)}; t for 95% with 13 df is <x>=T.INV.2T(0.05,13)</x> = ${fx(clT, 3)}; lower limit = 3.1 − ${fx(clT, 3)} × ${fx(clSE, 4)} ≈ ${fx(CL.dbar - clT * clSE, 2)} minutes. The interval, ${fx(CL.dbar - clT * clSE, 2)} to ${fx(CL.dbar + clT * clSE, 2)} minutes, excludes 0, so the saving is significant at 5%, but its size is uncertain.`,
+    solution: `SE = 4.0 ÷ √14 = ${fx(clSE, 4)}; t for 95% with 13 df is <x>=T.INV.2T(0.05,13)</x> = ${fx(clT, 3)}; lower limit = 3.1 − ${fx(clT, 3)} × ${fx(clSE, 4)} ≈ ${fx(CL.dbar - clT * clSE, 2)} minutes. The interval, ${fx(CL.dbar - clT * clSE, 2)} to ${fx(CL.dbar + clT * clSE, 2)} minutes, excludes 0, so the saving is significant at 5%, but its size is uncertain.`,
   },
 ];

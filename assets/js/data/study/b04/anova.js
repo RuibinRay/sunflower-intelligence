@@ -1,11 +1,11 @@
 // anova.js — B04 · One-way analysis of variance. Content only; exercises are in anova.ex.js. Uses the 2026 catering
 // events' invoice per guest-day by event type (PER_GUEST_BY_TYPE; DERIVED.eventTypes.anova) and the events' clients
 // and hours (EVENTS). Welch's ANOVA, the Kruskal–Wallis test and the pairwise Welch t tests are worked here from the
-// data (the engine has no Welch ANOVA, Kruskal–Wallis or Tukey); they were checked against SciPy. The bike-share
+// data with core/inference.js (anovaWelch, kruskal, tTest2), tested against SciPy; the engine has no Tukey HSD. The bike-share
 // scheme and the helpline are fictional. Every printed figure is recomputed in `checks`.
-import { PER_GUEST_BY_TYPE, EVENT_TYPES, EVENTS, EVENT_COLUMNS, DERIVED as D } from './case.js';
-import * as I from '../../../core/inference.js';
-import { mean, variance } from '../../../core/stats.js';
+import { PER_GUEST_BY_TYPE, EVENT_TYPES, EVENTS, EVENT_COLUMNS, DERIVED as D } from './case.js?v=12';
+import * as I from '../../../core/inference.js?v=12';
+import { mean, variance } from '../../../core/stats.js?v=12';
 
 // ---------------------------------------------------------------- Lantern's event types
 const AN = D.eventTypes.anova;
@@ -14,33 +14,7 @@ const T = Object.fromEntries(EVENT_TYPES.map((t, i) => [t, i]));
 const SDS = AN.vars.map(Math.sqrt);
 const sum = (a) => a.reduce((s, x) => s + x, 0);
 const allValues = G.flat();
-/** Welch's (1951) ANOVA: groups weighted by n ÷ s², no equal-variance assumption. */
-function welchAnova(groups) {
-  const k = groups.length, n = groups.map((g) => g.length), m = groups.map(mean), v = groups.map((g) => variance(g));
-  const w = n.map((ni, i) => ni / v[i]), W = sum(w), mw = sum(w.map((wi, i) => wi * m[i])) / W;
-  const A = sum(w.map((wi, i) => wi * (m[i] - mw) ** 2)) / (k - 1);
-  const lam = sum(w.map((wi, i) => (1 - wi / W) ** 2 / (n[i] - 1)));
-  const F = A / (1 + ((2 * (k - 2)) / (k * k - 1)) * lam), df2 = (k * k - 1) / (3 * lam);
-  return { F, df1: k - 1, df2, p: I.fSf(F, k - 1, df2) };
-}
-/** Kruskal–Wallis H with average ranks for ties and the tie correction, referred to chi-square with k − 1 df. */
-function kruskal(groups) {
-  const all = groups.flatMap((g, gi) => g.map((x) => ({ x, gi }))).sort((a, b) => a.x - b.x);
-  const N = all.length, ranks = new Array(N);
-  let ties = 0;
-  for (let i = 0; i < N;) {
-    let j = i;
-    while (j + 1 < N && all[j + 1].x === all[i].x) j += 1;
-    for (let q = i; q <= j; q++) ranks[q] = (i + j) / 2 + 1;
-    ties += (j - i + 1) ** 3 - (j - i + 1);
-    i = j + 1;
-  }
-  const R = groups.map(() => 0);
-  all.forEach((o, i) => { R[o.gi] += ranks[i]; });
-  const H = ((12 / (N * (N + 1))) * sum(R.map((r, i) => (r * r) / groups[i].length)) - 3 * (N + 1)) / (1 - ties / (N ** 3 - N));
-  return { H, df: groups.length - 1, p: I.chi2Sf(H, groups.length - 1) };
-}
-const WELCH = welchAnova(G), KW = kruskal(G);
+const WELCH = I.anovaWelch(G), KW = I.kruskal(G);
 const PAIRS = [];
 EVENT_TYPES.forEach((a, i) => EVENT_TYPES.slice(i + 1).forEach((b) => PAIRS.push({ a, b, ...I.tTest2(PER_GUEST_BY_TYPE[a], PER_GUEST_BY_TYPE[b]) })));
 const byP = [...PAIRS].sort((x, y) => x.p - y.p);

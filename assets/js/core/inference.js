@@ -128,6 +128,9 @@ export function binomPmf(k, n, p) {
   if (!(k >= 0 && k <= n) || k !== Math.floor(k)) return 0;
   if (p === 0) return k === 0 ? 1 : 0;
   if (p === 1) return k === n ? 1 : 0;
+  // direct product where it can't overflow or underflow (exact for small cases: 0.5⁵ × 10 = 0.3125), else logarithms
+  const c = n <= 1020 ? combin(n, k) : Infinity, direct = c * p ** k * (1 - p) ** (n - k);
+  if (Number.isFinite(c) && direct > 1e-280) return direct;
   return Math.exp(lnFact(n) - lnFact(k) - lnFact(n - k) + k * Math.log(p) + (n - k) * Math.log1p(-p));
 }
 export function binomCdf(k, n, p) {
@@ -156,6 +159,7 @@ export function binomInv(alpha, n, p) {
 export function poissonPmf(k, lam) {
   if (!(k >= 0) || k !== Math.floor(k)) return 0;
   if (lam === 0) return k === 0 ? 1 : 0;
+  if (k <= 170) { const direct = (lam ** k * Math.exp(-lam)) / factorial(k); if (Number.isFinite(direct) && direct > 1e-280) return direct; }
   return Math.exp(k * Math.log(lam) - lam - lnFact(k));
 }
 export const poissonCdf = (k, lam) => (Math.floor(k) < 0 ? 0 : lam === 0 ? 1 : gammaQ(Math.floor(k) + 1, lam));
@@ -304,6 +308,33 @@ export function anova1(groups, { alpha = 0.05 } = {}) {
   const ssw = sumOf(groups.map((g, i) => sumOf(g.map((x) => (x - means[i]) ** 2))));
   const dfb = k - 1, dfw = n - k, msb = ssb / dfb, msw = ssw / dfw, F = msb / msw;
   return { k, n, counts, sums, means, vars, grand, ssb, ssw, sst: ssb + ssw, dfb, dfw, dft: n - 1, msb, msw, F, p: fSf(F, dfb, dfw), fCrit: fInvSf(alpha, dfb, dfw), eta2: ssb / (ssb + ssw) };
+}
+
+/** Welch's (1951) one-way ANOVA: groups weighted by n ÷ s², no equal-variance assumption. */
+export function anovaWelch(groups) {
+  const k = groups.length, n = groups.map((g) => g.length), m = groups.map((g) => meanOf(g)), v = groups.map((g) => varOf(g));
+  const w = n.map((ni, i) => ni / v[i]), W = sumOf(w), mw = sumOf(w.map((wi, i) => wi * m[i])) / W;
+  const A = sumOf(w.map((wi, i) => wi * (m[i] - mw) ** 2)) / (k - 1);
+  const lam = sumOf(w.map((wi, i) => (1 - wi / W) ** 2 / (n[i] - 1)));
+  const F = A / (1 + ((2 * (k - 2)) / (k * k - 1)) * lam), df2 = (k * k - 1) / (3 * lam);
+  return { F, df1: k - 1, df2, p: fSf(F, k - 1, df2) };
+}
+/** Kruskal–Wallis H with average ranks for ties and the tie correction, referred to chi-square with k − 1 df. */
+export function kruskal(groups) {
+  const all = groups.flatMap((g, gi) => g.map((x) => ({ x, gi }))).sort((a, b) => a.x - b.x);
+  const N = all.length, ranks = new Array(N);
+  let ties = 0;
+  for (let i = 0; i < N;) {
+    let j = i;
+    while (j + 1 < N && all[j + 1].x === all[i].x) j += 1;
+    for (let q = i; q <= j; q++) ranks[q] = (i + j) / 2 + 1;
+    ties += (j - i + 1) ** 3 - (j - i + 1);
+    i = j + 1;
+  }
+  const R = groups.map(() => 0);
+  all.forEach((o, i) => { R[o.gi] += ranks[i]; });
+  const H = ((12 / (N * (N + 1))) * sumOf(R.map((r, i) => (r * r) / groups[i].length)) - 3 * (N + 1)) / (1 - ties / (N ** 3 - N));
+  return { H, df: groups.length - 1, p: chi2Sf(H, groups.length - 1), rankSums: R };
 }
 
 // ---------------------------------------------------------------- power (normal approximation)

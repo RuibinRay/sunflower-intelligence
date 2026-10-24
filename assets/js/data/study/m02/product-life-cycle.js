@@ -1,7 +1,7 @@
 // product-life-cycle.js — M02 · The product life cycle. Content only; exercises are in product-life-cycle.ex.js.
 // Lantern's market figures come from ./market.js (fictional). The category history and the quarterly sales series are
 // hypothetical, invented for this lesson and labelled as such: market.js gives one year's category volume, not a history.
-import { CATEGORY, COMPETITORS } from './market.js';
+import { CATEGORY, COMPETITORS } from './market.js?v=12';
 
 const hist = [2.1, 2.9, 3.8, 4.4, 4.7, 4.8]; // hypothetical category cans, millions, years 1–6
 const g = (i) => (hist[i] / hist[i - 1] - 1) * 100;
