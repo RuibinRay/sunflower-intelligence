@@ -4,20 +4,20 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Project: Lantern’s summer workbook · B03 · Sunflower Intelligence</title>
-  <meta name="description" content="Analyse Lantern’s spring shop orders and its 2026 catering events in a spreadsheet: build the formulas and summaries Ana needs, read a regression of catering invoices, plan July’s stock order with Solver, and recommend what her shop dashboard should show.">
+  <meta name="description" content="Analyse Lantern’s spring shop orders and its 2026 catering events in a spreadsheet: build the formulas and summaries Ana needs, read a regression of catering invoices, find the relaunched shop’s break-even with Goal Seek and a data table, plan July’s stock order with Solver, and recommend what her shop dashboard should show.">
   <meta name="theme-color" content="#192B49">
   <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/analytics/b03/project/">
   <meta property="og:title" content="Project: Lantern’s summer workbook · B03 · Sunflower Intelligence">
-  <meta property="og:description" content="Analyse Lantern’s spring shop orders and its 2026 catering events in a spreadsheet: build the formulas and summaries Ana needs, read a regression of catering invoices, plan July’s stock order with Solver, and recommend what her shop dashboard should show.">
+  <meta property="og:description" content="Analyse Lantern’s spring shop orders and its 2026 catering events in a spreadsheet: build the formulas and summaries Ana needs, read a regression of catering invoices, find the relaunched shop’s break-even with Goal Seek and a data table, plan July’s stock order with Solver, and recommend what her shop dashboard should show.">
   <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
   <link rel="icon" href="../../../../assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../../assets/img/apple-touch-icon.png">
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}try{if(localStorage.getItem('si:outline')==='closed')document.documentElement.classList.add('outline-closed')}catch(e){}</script>
   <link rel="preload" href="../../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../../../../assets/css/base.css?v=11">
-  <link rel="stylesheet" href="../../../../assets/css/rooms.css?v=11">
-  <link rel="stylesheet" href="../../../../assets/css/study.css?v=11">
+  <link rel="stylesheet" href="../../../../assets/css/base.css?v=12">
+  <link rel="stylesheet" href="../../../../assets/css/rooms.css?v=12">
+  <link rel="stylesheet" href="../../../../assets/css/study.css?v=12">
 </head>
 <body class="room room--learn room--sub room--study school--analytics page--project" data-root="../../../../" data-course="b03" data-slug="project">
   <a class="skip-link" href="#ledger">Skip to the project</a>
@@ -74,7 +74,7 @@
 <p>You can work in the worksheets on this page, or in Excel: <a href="../../../../assets/data/study/lantern-shop-workbook.xlsx">download Lantern’s workbook</a> (the same data on separate sheets: Orders, Products, Bands, Events, Stock plan and Shop model). If you work in Excel, type your answers to the questions below; for the formula tasks, enter your formula in the worksheet here so it can be checked.</p>
 <p>What you have:</p>
 <ul class="prose-list"><li><b>Orders</b>: the shop’s 231 orders for 1 March – 30 June 2026 after B02’s cleaning (order value $9,096.15). Subscription orders carry 10% off; other discounts are a $5 promotion code; LC-10144 is a 120-bag office order with 10% off.</li><li><b>Products</b>: Kilnworth Roasting’s spring price list to Lantern (<code>unit_cost</code>, what Lantern pays per bag or box) and Lantern’s shop price for each of the 11 products, with each product’s line (Blend, Single origin, Decaf, Cold brew, Gift).</li><li><b>Bands</b>: the July delivery rule as a lookup table: orders up to $35.00 pay $4.95; orders from $35.01 travel free.</li><li><b>Events</b>: Lantern’s 76 catering events in 2026 with each event’s guests, hours of service, whether a pastry platter was added, the number of baristas sent and the invoice.</li><li><b>Shop model</b>: one month of the relaunched shop (B01’s July figures and the cost rates from Lantern’s books), and <b>Stock plan</b>: Kilnworth’s allocation, Ana’s stock budget, her packing time and her sales forecast for 1–14 July.</li></ul></div>
-        <h2 class="h-small">What you will produce</h2><ul class="objectives"><li>An order sheet with three new columns: each order’s unit cost, gross margin and July delivery charge, all calculated by formulas that fill down.</li><li>Ana’s answers: the spring gross margin and margin rate, where the margin comes from (product lines, regions, subscriptions) and how many spring orders would have paid delivery.</li><li>A reading of the catering regression and a price for a new quote.</li><li>The relaunched shop’s break-even order count, a profit table and the average order value Ana needs for her profit goal.</li><li>The July stock order from Solver, with the limit that binds and what two of Ana’s rules cost her.</li><li>A short memo recommending what Ana’s shop dashboard should show.</li></ul>
+        <h2 class="h-small">What you will produce</h2><ul class="objectives"><li>An order sheet with three new columns: each order’s unit cost, gross margin and July delivery charge, all calculated by formulas that fill down.</li><li>Ana’s answers: the spring gross margin and margin rate, where the margin comes from (product lines, regions, subscriptions) and how many spring orders would have paid delivery.</li><li>A reading of the catering regression and a price for a new quote.</li><li>The relaunched shop’s break-even order count, a profit table and the average order value Ana needs for her profit goal.</li><li>The July stock order from Solver, with the limit that binds, what five more kilograms would be worth and what Ana’s House Blend rule costs her.</li><li>A short memo recommending what Ana’s shop dashboard should show.</li></ul>
         <p class="assess-record" id="assess-record" aria-live="polite"></p>
       </header>
       <div class="project-root" id="project-root"><p class="ex-loading">Loading the project…</p><noscript><p class="note">The project needs JavaScript.</p></noscript></div>
@@ -104,6 +104,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../../../../assets/js/pages/study-project.js?v=11"></script>
+  <script type="module" src="../../../../assets/js/pages/study-project.js?v=12"></script>
 </body>
 </html>

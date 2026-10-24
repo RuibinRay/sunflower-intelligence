@@ -1,6 +1,6 @@
 // ui.js — small pieces of interface shared by the tool pages: verdict boxes and column pickers.
-import { $$, h, s } from './dom.js?v=11';
-import { mulberry32 } from './rng.js?v=11';
+import { $$, h, s } from './dom.js?v=12';
+import { mulberry32 } from './rng.js?v=12';
 
 /** A verdict box: kind is good | warn | bad; the icon repeats the meaning so colour is never alone. */
 export function verdict(kind, title, text) {

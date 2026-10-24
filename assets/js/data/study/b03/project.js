@@ -6,10 +6,10 @@
 import {
   ORDERS, ORDER_COLUMNS, PRODUCTS, PRODUCT_COLUMNS, DELIVERY_BANDS, EVENTS, EVENT_COLUMNS, SHOP_MODEL, SHOP_SHEET, STOCK_PLAN,
   DERIVED as D, tableCells, orderRecords,
-} from './case.js?v=11';
-import { Sheet, solveSheet, goalSeek, dataTable, shiftFormula } from '../../../core/sheet.js?v=11';
-import { ols } from '../../../core/stats.js?v=11';
-import { TARGETS } from '../b01/case.js?v=11';
+} from './case.js?v=12';
+import { Sheet, solveSheet, goalSeek, dataTable, shiftFormula } from '../../../core/sheet.js?v=12';
+import { ols } from '../../../core/stats.js?v=12';
+import { TARGETS } from '../b01/case.js?v=12';
 
 const WORKBOOK = '../../../../assets/data/study/lantern-shop-workbook.xlsx';
 const num = (id, prompt, answer, check, solution, wrong, { unit = '$', places = 2, tol = 0.005, kind = 'numerical' } = {}) =>

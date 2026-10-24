@@ -1,7 +1,7 @@
 // project.js — F02 applied project: Brightwater Bike Repair's 2027, its first full year and the year it starts selling
 // bikes and accessories. The business, its balances and every entry are in brightwater.js. Each `check` recomputes its
 // answer from the raw facts by hand; `verify` compares the accounting engine's results with the figures shown.
-import * as A from '../../../core/accounting.js?v=11';
+import * as A from '../../../core/accounting.js?v=12';
 import { CHART, OPENING, BIKES, ACCESSORIES, DEMO_EBIKE, AGING, STAND, NEW_EQUIPMENT, NEW_LOAN, TAX_RATE, TAX_PAID, YEAR, YEAR_END, RESULTS as R } from './brightwater.js';
 
 const money = (x) => `$${Math.round(x).toLocaleString('en-US')}`;

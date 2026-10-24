@@ -1,7 +1,7 @@
 // pricing-approaches.js — M02 · Pricing approaches. Content only; exercises are in pricing-approaches.ex.js.
 // Lantern figures come from ./market.js (fictional). Every printed number is recomputed in `checks`; the simulator
 // figures quoted in the challenging example are recomputed with the engine (mixsim.js).
-import { simulate, DEFAULT_PLAN } from '../../../core/mixsim.js?v=11';
+import { simulate, DEFAULT_PLAN } from '../../../core/mixsim.js?v=12';
 
 const sim = simulate(DEFAULT_PLAN);
 const simCh = Object.fromEntries(sim.byChannel.map((c) => [c.id, c]));

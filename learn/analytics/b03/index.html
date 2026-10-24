@@ -4,20 +4,20 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B03 Excel for Business Analytics · Sunflower Intelligence</title>
-  <meta name="description" content="Formulas, lookups, pivot tables, charts, what-if analysis and dashboards in a spreadsheet.">
+  <meta name="description" content="Formulas, lookups, tables and cleaning, PivotTables, charts, descriptive statistics and regression output, what-if analysis and dashboards in Excel.">
   <meta name="theme-color" content="#192B49">
   <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/analytics/b03/">
   <meta property="og:title" content="B03 Excel for Business Analytics · Sunflower Intelligence">
-  <meta property="og:description" content="Formulas, lookups, pivot tables, charts, what-if analysis and dashboards in a spreadsheet.">
+  <meta property="og:description" content="Formulas, lookups, tables and cleaning, PivotTables, charts, descriptive statistics and regression output, what-if analysis and dashboards in Excel.">
   <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
   <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../../assets/img/apple-touch-icon.png">
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}try{if(localStorage.getItem('si:outline')==='closed')document.documentElement.classList.add('outline-closed')}catch(e){}</script>
   <link rel="preload" href="../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../../../assets/css/base.css?v=11">
-  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=11">
-  <link rel="stylesheet" href="../../../assets/css/study.css?v=11">
+  <link rel="stylesheet" href="../../../assets/css/base.css?v=12">
+  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=12">
+  <link rel="stylesheet" href="../../../assets/css/study.css?v=12">
 </head>
 <body class="room room--learn room--sub room--study school--analytics page--course" data-root="../../../" data-course="b03">
   <a class="skip-link" href="#ledger">Skip to the course</a>
@@ -70,14 +70,14 @@
       <header class="lesson-head course-head">
         <p class="lesson-kicker">B03 · Introductory · 10 lessons in four modules · about 12 hours</p>
         <h1 class="lesson-title">Excel for Business Analytics</h1>
-        <p class="lead">Formulas, lookups, pivot tables, charts, what-if analysis and dashboards in a spreadsheet.</p>
+        <p class="lead">Formulas, lookups, tables and cleaning, PivotTables, charts, descriptive statistics and regression output, what-if analysis and dashboards in Excel.</p>
         <div class="course-cta" id="course-cta"><a class="btn btn-primary" href="../../../learn/analytics/b03/cells-and-formulas/">Start with lesson 1</a> <a class="btn btn-secondary" href="../../../learn/analytics/b03/diagnostic/">Take the diagnostic first</a></div>
         <div class="course-progress" id="course-progress" aria-live="polite"></div>
       </header>
 
       <section class="course-section" id="about" aria-labelledby="about-h">
         <h2 id="about-h">What you will learn</h2>
-        <ul class="objectives"><li>Build formulas with the right relative, absolute and mixed references, and lay out a workbook so its inputs, calculations and results are separate and can be checked.</li><li>Use logical, text, date and conditional functions (IF, IFS, AND, OR, IFERROR, SUMIFS, COUNTIFS, AVERAGEIFS) to answer business questions from transaction data.</li><li>Retrieve values with XLOOKUP, INDEX and MATCH, and VLOOKUP, choosing exact or approximate matching correctly, and organise data in Excel tables with structured references.</li><li>Clean imported data with text, date and value functions in a documented, repeatable workflow.</li><li>Summarise data with pivot tables, choose and build the chart that answers the question, and use conditional formatting to show what matters.</li><li>Calculate descriptive statistics in Excel and read regression output (coefficients, R², standard error, p-values, confidence intervals) without claiming more than it shows.</li><li>Model decisions with Goal Seek, data tables, scenarios and Solver, and design a dashboard that answers its audience’s questions.</li></ul>
+        <ul class="objectives"><li>Build formulas with the right relative, absolute and mixed references, and lay out a workbook so its inputs, calculations and results are separate and can be checked.</li><li>Use logical, text, date and conditional functions (IF, IFS, AND, OR, IFERROR, SUMIFS, COUNTIFS, AVERAGEIFS) to answer business questions from transaction data.</li><li>Retrieve values with XLOOKUP, INDEX and MATCH, and VLOOKUP, choosing exact or approximate matching correctly, and organise data in Excel tables with structured references.</li><li>Clean imported data with text, date and value functions in a documented, repeatable workflow, and extract sorted, filtered and unique lists with FILTER, SORT and UNIQUE.</li><li>Summarise data with PivotTables, choose the chart that answers the question and present it honestly, and use conditional formatting to show what matters.</li><li>Calculate descriptive statistics in Excel and read regression output (coefficients, R², standard error, p-values, confidence intervals) without claiming more than it shows.</li><li>Model decisions with Goal Seek, data tables, scenarios and Solver, and design a dashboard that answers its audience’s questions.</li></ul>
         <div class="course-facts">
           <div><h3>Prerequisites</h3><ul class="prereq-list"><li><a href="../../../learn/analytics/b01/">B01 Introduction to Business Analytics</a> — recommended</li><li><a href="../../../learn/analytics/b02/">B02 Data Cleaning and Preparation</a> — recommended</li></ul></div>
           <div><h3>How it works</h3><p>Each lesson teaches the idea from first principles, works examples step by step, lets you explore it in an interactive, then has you practise with feedback. A lesson is complete when you have worked its guided problems and scored 80% on its knowledge check. Mastery is tracked separately and comes back for review before you are likely to forget. Each module ends with a test; the course ends with a project and a final assessment.</p></div>
@@ -112,7 +112,7 @@
 
       <section class="course-section" id="finish" aria-labelledby="finish-h">
         <h2 id="finish-h">Project and final assessment</h2>
-        <ol class="lesson-rows" role="list"><li class="lesson-row is-test" data-test="b03/project"><a href="../../../learn/analytics/b03/project/"><span class="lr-n" aria-hidden="true">✓</span><span class="lr-body"><span class="lr-title">Project: Lantern’s summer workbook</span><span class="lr-blurb">Analyse Lantern’s spring shop orders and its 2026 catering events in a spreadsheet: build the formulas and summaries Ana needs, read a regression of catering invoices, plan July’s stock order with Solver, and recommend what her shop dashboard should show.</span><span class="lr-meta"><span class="lr-status">not taken</span></span></span></a></li><li class="lesson-row is-test" data-test="b03/final"><a href="../../../learn/analytics/b03/final/"><span class="lr-n" aria-hidden="true">✓</span><span class="lr-body"><span class="lr-title">Final assessment</span><span class="lr-blurb">24 questions across the whole course. 70% passes.</span><span class="lr-meta"><span class="lr-status">not taken</span></span></span></a></li></ol>
+        <ol class="lesson-rows" role="list"><li class="lesson-row is-test" data-test="b03/project"><a href="../../../learn/analytics/b03/project/"><span class="lr-n" aria-hidden="true">✓</span><span class="lr-body"><span class="lr-title">Project: Lantern’s summer workbook</span><span class="lr-blurb">Analyse Lantern’s spring shop orders and its 2026 catering events in a spreadsheet: build the formulas and summaries Ana needs, read a regression of catering invoices, find the relaunched shop’s break-even with Goal Seek and a data table, plan July’s stock order with Solver, and recommend what her shop dashboard should show.</span><span class="lr-meta"><span class="lr-status">not taken</span></span></span></a></li><li class="lesson-row is-test" data-test="b03/final"><a href="../../../learn/analytics/b03/final/"><span class="lr-n" aria-hidden="true">✓</span><span class="lr-body"><span class="lr-title">Final assessment</span><span class="lr-blurb">24 questions across the whole course. 70% passes.</span><span class="lr-meta"><span class="lr-status">not taken</span></span></span></a></li></ol>
         <p class="note">The course is complete when every lesson is complete, every module test is passed, the project is finished and the final assessment is passed.</p>
       </section>
 
@@ -217,6 +217,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../../../assets/js/pages/study-course.js?v=11"></script>
+  <script type="module" src="../../../assets/js/pages/study-course.js?v=12"></script>
 </body>
 </html>

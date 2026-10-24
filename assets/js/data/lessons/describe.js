@@ -1,7 +1,7 @@
 // Lesson: describing data — centre, spread and correlation.
 // `checks` recompute every number printed in the worked example; tests/lessons.test.mjs compares them.
-import * as F from '../../core/format.js?v=11';
-import { describe, pearson, spearman } from '../../core/stats.js?v=11';
+import * as F from '../../core/format.js?v=12';
+import { describe, pearson, spearman } from '../../core/stats.js?v=12';
 
 const INCOMES = [3, 4, 4, 5, 6, 7, 30];
 // Twelve months: temperature drives both ice-cream sales and drownings (with a little noise of their own).

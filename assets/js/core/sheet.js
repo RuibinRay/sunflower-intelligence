@@ -8,7 +8,7 @@
 // function that returns several values). Dates are serial numbers in the 1900 date system (1 = 1 January 1900; the
 // fictitious 29 February 1900 is kept, so serials from 61 on match Excel's).
 
-import { tQuantile, tCdf } from './stats.js?v=11';
+import { tQuantile, tCdf } from './stats.js?v=12';
 
 // ---------------------------------------------------------------- values
 export class Err { constructor(code) { this.code = code; } toString() { return this.code; } }

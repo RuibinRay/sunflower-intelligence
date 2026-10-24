@@ -1,12 +1,12 @@
 // lab-mix.js — the Marketing Mix Simulator page (learn/labs/mix/): the launch brief's tables, the full simulator,
 // saved plans compared side by side, and every assumption the model makes. Saved plans stay in this browser only
 // (localStorage 'si:lab-mix').
-import { initSite } from '../core/site.js?v=11';
-import { $, h, debounce, copyText } from '../core/dom.js?v=11';
-import * as F from '../core/format.js?v=11';
-import * as X from '../core/mixsim.js?v=11';
-import { mountSimulator, mountCompare, fmt, SHORT } from '../study/labs/mix-ui.js?v=11';
-import { scrollersFocusable } from '../study/common.js?v=11';
+import { initSite } from '../core/site.js?v=12';
+import { $, h, debounce, copyText } from '../core/dom.js?v=12';
+import * as F from '../core/format.js?v=12';
+import * as X from '../core/mixsim.js?v=12';
+import { mountSimulator, mountCompare, fmt, SHORT } from '../study/labs/mix-ui.js?v=12';
+import { scrollersFocusable } from '../study/common.js?v=12';
 
 initSite();
 

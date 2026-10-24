@@ -1,7 +1,7 @@
 // datasource.js — the table an analytics page works on: a built-in example, the table loaded under Explore
 // (kept for this browser tab in sessionStorage), or one pasted or uploaded here. Nothing is sent anywhere.
-import { $, $$, h } from './dom.js?v=11';
-import { parseTable, applyTransforms, isNumeric } from './csv.js?v=11';
+import { $, $$, h } from './dom.js?v=12';
+import { parseTable, applyTransforms, isNumeric } from './csv.js?v=12';
 
 const KEY = 'si:table';
 export function saveShared(entry) {
