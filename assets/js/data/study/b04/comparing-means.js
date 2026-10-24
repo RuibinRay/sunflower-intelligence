@@ -63,7 +63,7 @@ function pairFigure() {
   svg += `<text x="${f1(X(P.meanDiff)) + 6}" y="100" font-size="11">mean difference 1.583</text>`;
   svg += `<line x1="${X(0)}" x2="${X(0)}" y1="120" y2="200" stroke="var(--ink-3)" stroke-width="1"/><text x="${X(0) - 4}" y="132" text-anchor="end" font-size="11" fill="var(--ink-3)">no change</text>`;
   svg += `<text x="${X(2)}" y="244" text-anchor="middle" font-size="11" fill="var(--ink-3)">After minus before (points)</text>`;
-  svg += `<text x="${X(2)}" y="20" text-anchor="middle">The 12 differences: s_d = 1.505 points</text>`;
+  svg += `<text x="${X(2)}" y="20" text-anchor="middle">The 12 differences: s<tspan baseline-shift="sub" font-size="9">d</tspan> = 1.505 points</text>`;
   return `${svg}</svg>`;
 }
 
@@ -71,7 +71,7 @@ export default {
   slug: 'comparing-means',
   title: 'Comparing two means',
   blurb: 'Compare two means the way the data were collected: with a paired t test when the same units are measured twice, and with Welch’s t test when the groups are separate. Run both by hand, with T.TEST and with the Analysis ToolPak, put an interval and an effect size on the difference, and check the conditions before trusting any of it.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Choose between a paired and an independent-samples test from how the data were collected, and explain why pairing can reveal a difference that a two-sample test misses.',
     'Calculate Welch’s and the pooled two-sample t statistic, degrees of freedom and p-value by hand and with T.TEST types 1 to 3, and explain why Welch’s test is the safer default.',
@@ -95,8 +95,8 @@ export default {
     { p: 'But the columns are not two separate groups: they are the same 12 people measured twice. Trainee 3 scored 16 both times; trainee 5 scored 4 before and 3 after. What matters is each person’s change. Subtract each trainee’s before score from the after score and the 24 numbers become 12 differences: 2, 2, 0, 5, −1, 3, 1, 1, 1, 1, 2 and 2. Ten trainees improved, one stayed the same and one slipped by a point.' },
     { figure: {
       svg: pairFigure(),
-      caption: 'Left: each trainee’s before and after scores joined by a line. The scores run from 3 to 17 points, but nearly every line rises. Right: the 12 differences, after minus before, run from −1 to 5 points around their mean, 1.583, with a standard deviation s_d of only 1.505 points.',
-      alt: 'Two panels. The left panel has a vertical scale from 0 to 20 and two columns of dots, Before and After, for 12 trainees, each pair joined by a line. Scores range from 4 to 16 before and from 3 to 17 after; ten lines slope upwards, one is flat at 16 and one slopes slightly down from 4 to 3. The right panel is a dot plot of the 12 differences on an axis from −2 to 6: one dot at −1, one at 0, four at 1, four at 2, one at 3 and one at 5. A dashed line marks the mean difference, 1.583, and a thin line marks no change at 0. The title gives the differences’ standard deviation, s_d = 1.505 points.',
+      caption: 'Left: each trainee’s before and after scores joined by a line. The scores run from 3 to 17 points, but nearly every line rises. Right: the 12 differences, after minus before, run from −1 to 5 points around their mean, 1.583, with a standard deviation, s<sub>d</sub>, of only 1.505 points.',
+      alt: 'Two panels. The left panel has a vertical scale from 0 to 20 and two columns of dots, Before and After, for 12 trainees, each pair joined by a line. Scores range from 4 to 16 before and from 3 to 17 after; ten lines slope upwards, one is flat at 16 and one slopes slightly down from 4 to 3. The right panel is a dot plot of the 12 differences on an axis from −2 to 6: one dot at −1, one at 0, four at 1, four at 2, one at 3 and one at 5. A dashed line marks the mean difference, 1.583, and a thin line marks no change at 0. The title gives the standard deviation of the differences, 1.505 points.',
     } },
 
     { h: 'The paired t test' },

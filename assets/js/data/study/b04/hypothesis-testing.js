@@ -85,7 +85,7 @@ export default {
   slug: 'hypothesis-testing',
   title: 'Hypothesis testing',
   blurb: 'Turn a business worry into a null and an alternative hypothesis, measure how surprising the data would be if nothing were wrong, and decide with a p-value or a critical value. Test Kilnworth’s 1 kg bags with a z test and a t test and September’s conversion against its target, then weigh Type I and Type II errors, power, practical significance and the traps of running many tests.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'State a null and an alternative hypothesis, one- or two-sided, for a business question, and choose the significance level before seeing the data.',
     'Calculate a z or t statistic for a mean and a z statistic for a proportion, by hand and in Excel, and find the p-value that matches the alternative.',
