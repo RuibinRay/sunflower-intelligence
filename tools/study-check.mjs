@@ -196,7 +196,33 @@ function checkFormulaItem(x, w, r) {
     try { SH.parse(wf.formula); } catch (e) { r.err(`${w}: wrong[${i}] doesn’t parse: ${e.message}`); return; }
     if (g(wf.formula).ok) r.err(`${w}: wrong[${i}] ${wf.formula} is marked right, so it isn’t a wrong answer`);
   });
+  // the page picks the slip whose results match the student's; between slips with the same results it prefers the one
+  // typed exactly, then the one with the same functions. Two slips with the same results and the same functions are
+  // told apart only when typed exactly as written, so any other spelling of either gets the first one's feedback.
+  const slips = (x.wrong || []).filter((wf) => { try { SH.parse(wf?.formula || ''); return true; } catch { return false; } });
+  const fns = (f) => [...SH.functionsUsed(f)].sort().join();
+  slips.forEach((b, j) => slips.slice(0, j).forEach((a) => {
+    if (fns(a.formula) !== fns(b.formula)) return;
+    const same = SH.gradeFormula(x.sheet, { cell: x.cell, fill: x.fill, formula: b.formula, answer: a.formula, variants: x.variants ?? 3 }).ok;
+    if (same) r.warn(`${w}: wrong ${b.formula} gives the same results as ${a.formula} with the same functions; the page tells them apart only when typed exactly, so make the first feedback fit both or merge them`);
+  }));
   (x.alt || []).forEach((a, i) => { const res = g(a); if (!res.ok) r.err(`${w}: alt[${i}] ${a} should be accepted but isn’t: ${res.message}`); });
+}
+/** Cells a prompt tells the student to change (“Change D10 to 60”) that no sheet widget lets them edit. */
+function lockedChanges(texts, widgets) {
+  const sheets = widgets.filter((wd) => wd?.type === 'sheet');
+  if (!sheets.length) return [];
+  const editable = (wd, a) => {
+    const p = SH.parseAddr(a); const inR = (rg) => rg && p.r >= rg.r0 && p.r <= rg.r1 && p.c >= rg.c0 && p.c <= rg.c1;
+    const list = wd.editable === undefined || wd.editable === true ? [wd.view] : wd.editable ? (Array.isArray(wd.editable) ? wd.editable : [wd.editable]) : [];
+    return list.some((x) => inR(SH.parseRange(x || '')));
+  };
+  const out = [];
+  for (const t of texts) for (const m of String(t || '').matchAll(/\bchange\s+(?:cell\s+)?\$?([A-Z]{1,3})\$?(\d{1,7})\b/gi)) {
+    const a = `${m[1].toUpperCase()}${m[2]}`;
+    if (!sheets.some((wd) => editable(wd, a))) out.push(a);
+  }
+  return [...new Set(out)];
 }
 function checkSheetWidget(wd, w, r) {
   const sh = checkSheetSpec(wd.sheet, `${w}.sheet`, r, { allowErrors: wd.allowErrors || [] });
@@ -412,6 +438,10 @@ export async function checkLesson(course, slug, { courseTerms } = {}) {
       if (list.length < lo || list.length > hi) r.warn(`ex.${name}: ${list.length} items (aim for ${lo}–${hi})`);
       list.forEach((x, i) => checkExercise(x, `${name}[${i}]`, r, { course, chart, needHints, caseMod }));
     }
+    const lessonSheets = Object.values(X.widgets || {});
+    for (const [name] of sets) (X[name] || []).forEach((x, i) => {
+      for (const a of lockedChanges([x.prompt, ...(x.steps || []).map((y) => y.prompt)], lessonSheets)) r.warn(`ex.${name}[${i}] (${x.id}): the prompt asks to change ${a}, which no worksheet widget in this lesson lets the student edit`);
+    });
     const kinds = new Set((X.check || []).map((x) => x.kind));
     for (const k of KINDS) if (!kinds.has(k)) r.err(`ex.check: needs at least one ${k} question`);
     if ((X.check || []).some((x) => x.type === 'short')) r.err('ex.check: short (self-marked) items can’t be in the knowledge check');
@@ -474,6 +504,10 @@ async function checkAssessments(course) {
     if (P?.verify) { try { for (const [what, value, shown, tol = 0.005] of P.verify()) if (Math.abs(value - shown) > tol) r.err(`project: ${what}: computed ${value}, shown ${shown}`); } catch (e) { r.err(`project.verify threw: ${e.message}`); } }
     if (!P?.title || !P?.brief || !Array.isArray(P?.stages) || !P.stages.length) r.err('project: needs title, brief and stages');
     (P?.stages || []).forEach((s, i) => (s.items || []).forEach((x, j) => checkExercise(x, `project.stages[${i}].items[${j}]`, r, { course, chart, caseMod })));
+    (P?.stages || []).forEach((s, i) => {
+      const tools = s.tool?.kind === 'widget' ? [s.tool.widget] : [];
+      for (const x of [...(s.items || []), ...(s.items || []).flatMap((y) => y.steps || [])]) for (const a of lockedChanges([x.prompt, x.solution], tools)) r.err(`project.stages[${i}] ${x.id}: tells the student to change ${a}, which the stage's worksheet locks (add it to editable)`);
+    });
     (P?.stages || []).forEach((s, i) => { if (s.tool?.kind === 'widget') checkWidget(`project.stages[${i}].tool`, s.tool.widget, r, { chart, caseMod }); else if (s.tool && !['recorder', 'cleaning', 'mix'].includes(s.tool.kind)) r.err(`project.stages[${i}]: unknown tool kind ${s.tool.kind}`); });
     if (!Array.isArray(P?.rubric) || P.rubric.length < 3) r.warn('project: give a rubric of at least 3 criteria');
   }

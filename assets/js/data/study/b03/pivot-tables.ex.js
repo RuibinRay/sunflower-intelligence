@@ -102,9 +102,8 @@ export const guided = [
     view: 'A1:H31', formats: { D: MONEY, G: MONEY, H: MONEY }, widths: { F: 10, G: 11, H: 11 }, maxHeight: '24rem',
     alt: ['=SUMPRODUCT(($B$2:$B$31=$F3)*($C$2:$C$31=G$2)*$D$2:$D$31)', '=SUMIFS($D$2:$D$31,$C$2:$C$31,G$2,$B$2:$B$31,$F3)'],
     wrong: [
-      { formula: '=SUMIFS(D2:D31,B2:B31,F3,C2:C31,G2)', say: 'Without $ the data ranges slide as you fill, and the criteria drift too: filled to H7 the formula reads rows 6 to 35 and compares with G7. Lock the ranges, the region column ($F3) and the channel row (G$2).' },
-      { formula: '=SUMIFS($D$2:$D$31,$B$2:$B$31,$F$3,$C$2:$C$31,$G$2)', say: 'Locking both criteria fully gives every cell Central’s app value. The region needs a fixed column only ($F3), the channel a fixed row only (G$2).' },
-      { formula: '=SUMIFS($D$2:$D$31,$B$2:$B$31,F3,$C$2:$C$31,G2)', say: 'Filled across, F3 becomes G3 and G2 becomes H2… the criteria move with the formula. Use mixed references: $F3 and G$2.' },
+      { formula: '=SUMIFS(D2:D31,B2:B31,F3,C2:C31,G2)', say: 'Parts without $ move as you fill: unanchored data ranges slide (filled to H7 they read rows 6 to 35), and unanchored criteria drift to G3, H2 and on. Lock the data ranges, the region column ($F3) and the channel row (G$2).' },
+      { formula: '=SUMIFS($D$2:$D$31,$B$2:$B$31,$F$3,$C$2:$C$31,$G$2)', say: 'Locking both criteria fully gives every cell Central’s app value. The region needs a fixed column only ($F3), the channel a fixed row F3 and G$2.' },
     ],
     hints: ['Each cell needs two criteria: the region from column F and the channel from row 2.', 'Mixed references: <x>$F3</x> keeps column F when filled across; <x>G$2</x> keeps row 2 when filled down. <x>=SUMIFS($D$2:$D$31,$B$2:$B$31,$F3,$C$2:$C$31,G$2)</x>'],
     solution: '<x>=SUMIFS($D$2:$D$31,$B$2:$B$31,$F3,$C$2:$C$31,G$2)</x>, filled to H7. This is the PivotTable with region in Rows, channel in Columns and Sum of order_total, built by hand. One difference: South has no web orders among these 30, so H6 shows $0.00 where a PivotTable would leave the cell blank.',
