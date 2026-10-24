@@ -10,17 +10,35 @@ const ev = (name, rows) => rows.map((r) => r[EVENT_COLUMNS.indexOf(name)]);
 const ONE = EVENTS.filter((r) => r[EVENT_COLUMNS.indexOf('days')] === 1);
 const ofType = (t) => EVENTS.filter((r) => r[EVENT_COLUMNS.indexOf('event_type')] === t);
 const sheetOf = (rows, cols, extra = {}) => ({ cells: { ...tableCells(EVENT_COLUMNS, rows, { cols }).cells, ...extra } });
-const RS = D.regression.simple;
+const RS = D.regression.simple, RA = D.regression.allEvents;
+const C0 = RS.coefs.Intercept, C1 = RS.coefs.guests;
 
-// small helpers for the num items' checks
+// numbers as Excel's output prints them (6 significant figures) and small helpers
+const sig = (v, k = 6) => String(Number(v.toPrecision(k)));
+const P0 = Number(sig(C0.b)), P1 = Number(sig(C1.b)), PSE1 = Number(sig(C1.se));     // the printed coefficients
+const sci = (p) => p.toExponential(2).toUpperCase();                                  // 1.47E-34
+const usd = (v, d = 2) => `$${v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const sum = (a) => a.reduce((s, x) => s + x, 0);
 const mean = (a) => sum(a) / a.length;
+/** Least squares of y on one x, with LINEST's statistics. */
+function fit1(xs, ys) {
+  const n = xs.length, mx = mean(xs), my = mean(ys);
+  const sxx = sum(xs.map((x) => (x - mx) ** 2)), sxy = sum(xs.map((x, i) => (x - mx) * (ys[i] - my))), syy = sum(ys.map((y) => (y - my) ** 2));
+  const b = sxy / sxx, a = my - b * mx, sse = syy - b * sxy, df = n - 2, sey = Math.sqrt(sse / df);
+  return { b, a, r: sxy / Math.sqrt(sxx * syy), r2: 1 - sse / syy, sey, seB: sey / Math.sqrt(sxx), seA: sey * Math.sqrt(1 / n + mx * mx / sxx), F: (syy - sse) / (sse / df), df, ssr: syy - sse, sse };
+}
+const G1 = ev('guests', ONE);
+const MEET = fit1(ev('guests', ofType('Meeting')), ev('invoice', ofType('Meeting')));
+const LAUNCH = fit1(ev('guests', ofType('Launch')), ev('invoice', ofType('Launch')));
+const NEW_GUESTS = 130;
 
 // sheets
-const statLabels = [['Count', '=COUNT(B2:B232)'], ['Mean', '=AVERAGE(B2:B232)'], ['Median', '=MEDIAN(B2:B232)'], ['Mode', '=MODE.SNGL(B2:B232)'],
-  ['SD (sample)', '=STDEV.S(B2:B232)'], ['SD (population)', '=STDEV.P(B2:B232)'], ['First quartile', '=QUARTILE.INC(B2:B232,1)'],
-  ['Third quartile', '=QUARTILE.INC(B2:B232,3)'], ['90th percentile', '=PERCENTILE.INC(B2:B232,0.9)'], ['Minimum', '=MIN(B2:B232)'],
-  ['Maximum', '=MAX(B2:B232)'], ['Sum', '=SUM(B2:B232)']];
+const statLabels = [['Count', '=COUNT(B2:B232)', 'general'], ['Mean', '=AVERAGE(B2:B232)'], ['Standard error', '=STDEV.S(B2:B232)/SQRT(COUNT(B2:B232))'],
+  ['Median', '=MEDIAN(B2:B232)'], ['Mode', '=MODE.SNGL(B2:B232)'], ['SD (sample)', '=STDEV.S(B2:B232)'], ['SD (population)', '=STDEV.P(B2:B232)'],
+  ['Q1 (.INC)', '=QUARTILE.INC(B2:B232,1)'], ['Q1 (.EXC)', '=QUARTILE.EXC(B2:B232,1)'], ['Q3 (.INC)', '=QUARTILE.INC(B2:B232,3)'],
+  ['90th percentile', '=PERCENTILE.INC(B2:B232,0.9)'], ['Minimum', '=MIN(B2:B232)'], ['Maximum', '=MAX(B2:B232)'], ['Sum', '=SUM(B2:B232)'],
+  ['Skewness', '=SKEW(B2:B232)', '0.00'], ['Kurtosis', '=KURT(B2:B232)', '0.00'], ['Confidence level (95%)', '=CONFIDENCE.T(0.05,STDEV.S(B2:B232),COUNT(B2:B232))']];
+const statFormats = Object.fromEntries(statLabels.map((x, i) => [`D${i + 2}`, x[2]]).filter((x) => x[1]));
 const statSheet = {
   cells: {
     ...tableCells(ORDER_COLUMNS, ORDERS, { cols: ['order_id', 'order_total'] }).cells,
@@ -34,7 +52,8 @@ const meetingsInv = sheetOf(ofType('Meeting'), ['event_id', 'invoice'], { D1: 'O
 const meetings = sheetOf(ofType('Meeting'), ['event_id', 'guests', 'invoice'], { E1: 'Result' });
 const teamDay = sheetOf(ofType('Team day'), ['event_id', 'guests', 'invoice'], { E1: 'IQR' });
 const teamBins = sheetOf(ofType('Team day'), ['event_id', 'guests', 'invoice'], { E1: 'Bin up to', F1: 'Events', E2: 700, E3: 900, E4: 1100, E5: 'above 1100' });
-const oneDay = sheetOf(ONE, ['event_id', 'guests', 'invoice'], { E1: 'Guests', E2: 120, F1: 'Predicted invoice' });
+const oneDay = sheetOf(ONE, ['event_id', 'guests', 'invoice'], { E1: 'Guests', E2: NEW_GUESTS, F1: 'Predicted invoice' });
+const launchFit = sheetOf(ofType('Launch'), ['event_id', 'guests', 'invoice'], { E1: 'LINEST: slope', F1: 'intercept' });
 
 export const widgets = {
   'ds-orders': {
@@ -43,6 +62,8 @@ export const widgets = {
     label: 'Order total, spring 2026 ($)',
     transforms: ['none', 'log'],
     rules: ['iqr', 'mad'],
+    closed: 'right',
+    edges: [20, 40, 60, 80, 100],
   },
   'ds-sheet': {
     type: 'sheet',
@@ -50,10 +71,10 @@ export const widgets = {
     sheet: statSheet,
     view: 'A1:F232',
     maxHeight: '24rem',
-    formats: { B: '$#,##0.00', D: '$#,##0.00', D2: 'general', E: '$#,##0' },
-    widths: { C: 16, E: 11 },
+    formats: { B: '$#,##0.00', D: '$#,##0.00', ...statFormats, E: '$#,##0' },
+    widths: { C: 20, E: 11 },
     tools: ['formulas', 'reset'],
-    note: 'Row 145 holds LC-10144, the $1,512.00 office order. Change it to 151.2 (as if it had been 12 bags) and compare: the mean, the standard deviations and the maximum move a long way; the median, the quartiles and the mode don’t move, and nor do the FREQUENCY counts, because $151.20 is still above $100. F2 holds one FREQUENCY formula that spills into F2:F7, one count per bin and one for orders above $100.',
+    note: 'Row 145 holds LC-10144, the $1,512.00 office order. Change it to 151.2 (as if it had been 12 bags) and compare, as the challenging example does: the mean, the standard error, the standard deviations, the confidence level, the maximum, the skewness and the kurtosis all move a long way; the median, the quartiles (by either method) and the mode don’t move, and nor do the FREQUENCY counts, because $151.20 is still above $100. F2 holds one FREQUENCY formula that spills into F2:F7, one count per bin and one for orders above $100.',
   },
   'ds-reg': {
     type: 'regression',
@@ -71,7 +92,7 @@ export const widgets = {
     xs: [{ name: 'guests', values: ev('guests', EVENTS) }],
     picked: [0],
     format: { y: 'money' },
-    note: 'One event, Meridian Partners’ two-day conference (263 guests, $4,200), raises the slope from about $6.67 to about $10.15 a guest, turns the intercept negative, lowers R Square from 0.874 to 0.746 and almost triples the Standard Error. The conference is priced day by day and lies beyond the largest one-day event, so the one-day line describes the one-day business better.',
+    note: `One event, Meridian Partners’ two-day conference (263 guests, $4,200), raises the slope from about ${usd(C1.b)} to about ${usd(RA.coefs.guests.b)} a guest, turns the intercept negative, lowers R Square from ${RS.r2.toFixed(3)} to ${RA.r2.toFixed(3)} and almost triples the Standard Error (${usd(RS.se)} to ${usd(RA.se)}). The conference is priced day by day and lies beyond the largest one-day event, so the one-day line describes the one-day business better.`,
   },
 };
 
@@ -163,16 +184,16 @@ export const guided = [
       'SLOPE(known_y’s, known_x’s): y is what you predict (the invoice), x what you predict it from (guests).',
       '<x>=SLOPE(C2:C29,B2:B29)</x>',
     ],
-    solution: '<x>=SLOPE(C2:C29,B2:B29)</x> ≈ 6.0611: across these 28 meetings, each extra guest went with about $6.06 more on the invoice. Swapping the ranges gives the slope of guests on invoice, a different line.',
+    solution: `<x>=SLOPE(C2:C29,B2:B29)</x> ≈ ${MEET.b.toFixed(4)}: across these 28 meetings, each extra guest went with about ${usd(MEET.b)} more on the invoice. Swapping the ranges gives the slope of guests on invoice, a different line.`,
   },
   {
     id: 'b03-ds-g4', type: 'mc', kind: 'applied',
-    prompt: 'Ana’s Regression output for the 75 one-day events shows R Square 0.874 and Significance F 1.47E-34. Which conclusion does it support?',
+    prompt: `Ana’s Regression output for the 75 one-day events shows R Square ${RS.r2.toFixed(3)} and Significance F ${sci(RS.pF)}. Which conclusion does it support?`,
     options: [
-      'There is a clear linear relationship, and the line accounts for about 87% of the variation in these invoices.',
-      'About 87% of the line’s predictions for future events will land within a few dollars of the actual invoice.',
-      'The number of guests causes about 87% of the amount on each invoice, and other factors the rest.',
-      'There is a probability of only 1.47E-34 that the regression line is wrong for these events.',
+      `A clear linear relationship: the line accounts for about ${Math.round(RS.r2 * 100)}% of the variation in these invoices.`,
+      `About ${Math.round(RS.r2 * 100)}% of the line’s predictions for future events will land within a few dollars of the actual invoice.`,
+      `The number of guests causes about ${Math.round(RS.r2 * 100)}% of the amount on each invoice, and other factors the rest.`,
+      `There is a probability of only ${sci(RS.pF)} that the regression line is wrong for these events.`,
     ],
     answer: 0,
     hints: [
@@ -180,11 +201,11 @@ export const guided = [
       'Significance F is a p-value: how likely a slope this far from 0 would be if there were no linear relationship.',
     ],
     feedback: {
-      1: 'R² is not predictive accuracy. The typical miss is the Standard Error, about $85, and only new events show how well the line predicts.',
+      1: `R² is not predictive accuracy. The typical miss is the Standard Error, about ${usd(RS.se, 0)}, and only new events show how well the line predicts.`,
       2: 'R² describes association in past data, not causation, and it isn’t a share of each invoice. Hours, pastries and bespoke changes also affect invoices.',
       3: 'A p-value is not the probability that a model is wrong. It is the probability of so strong a slope if the true slope were 0.',
     },
-    solution: 'R Square 0.874 says 87.4% of the variation in these 75 invoices around their mean lines up with guests. Significance F, 1.47 × 10⁻³⁴, says a slope this strong would essentially never arise if guests had no linear relationship with invoice. Neither number measures future accuracy or proves causation.',
+    solution: `R Square ${RS.r2.toFixed(3)} says ${(RS.r2 * 100).toFixed(1)}% of the variation in these 75 invoices around their mean lines up with guests. Significance F, ${sci(RS.pF)}, says a slope this strong would essentially never arise if guests had no linear relationship with invoice. Neither number measures future accuracy or proves causation.`,
   },
 ];
 
@@ -205,14 +226,21 @@ export const independent = [
     solution: '<x>=QUARTILE.INC(C2:C12,3)-QUARTILE.INC(C2:C12,1)</x> = $980 − $620 = $360. With n = 11, the inclusive quartiles sit at positions 3.5 and 8.5 of the sorted invoices. The exclusive method (positions 3 and 9) gives $990 − $580 = $410.',
   },
   {
-    id: 'b03-ds-i2', type: 'num', kind: 'numerical',
-    prompt: 'Lantern’s 13 conference events in 2026 were invoiced $14,540 in all, including Meridian Partners’ two-day conference at $4,200. What is the mean invoice of the other 12 conferences? Give dollars to the cent.',
-    answer: 861.67, check: () => (14540 - 4200) / 12, unit: '$', places: 2, tol: 0.01,
+    id: 'b03-ds-i2', type: 'formula', kind: 'numerical',
+    prompt: 'For Lantern’s 11 launch events (guests in B2:B12, invoices in C2:C12), return the regression of invoice on guests with its statistics in one formula in E2: LINEST with stats set to TRUE. It spills into E2:F6, as the In depth section describes.',
+    sheet: launchFit,
+    cell: 'E2', answer: '=LINEST(C2:C12,B2:B12,TRUE,TRUE)',
+    alt: ['=LINEST(C2:C12,B2:B12,1,1)'],
+    require: ['LINEST'],
+    view: 'A1:F12',
+    formats: { C: '$#,##0', E: '0.0000', F: '0.0000' },
+    widths: { E: 13, F: 13 },
     wrong: [
-      { value: 1118.46, say: 'That is the mean of all 13, with the two-day conference included.' },
-      { value: 795.38, say: 'You removed the conference’s $4,200 but still divided by 13. Twelve conferences remain.' },
+      { formula: '=LINEST(B2:B12,C2:C12,TRUE,TRUE)', say: 'LINEST takes known_y’s first: the invoices, C2:C12, then the guests.' },
+      { formula: '=LINEST(C2:C12,B2:B12)', say: 'Without the fourth argument LINEST returns only the slope and intercept (one row). Set stats to TRUE for the five rows of statistics.' },
+      { formula: '=LINEST(C2:C12,B2:B12,FALSE,TRUE)', say: 'The third argument FALSE forces the intercept to 0. Leave it TRUE (or omit it) so the intercept is fitted.' },
     ],
-    solution: 'Remove the conference from both the total and the count: (14,540 − 4,200) ÷ (13 − 1) = 10,340 ÷ 12 ≈ $861.67. With it, the mean is 14,540 ÷ 13 ≈ $1,118.46, pulled up by $256.79 by one event; the median of the 13, $870, barely notices it.',
+    solution: `<x>=LINEST(C2:C12,B2:B12,TRUE,TRUE)</x> spills five rows by two columns: slope ${LAUNCH.b.toFixed(4)} and intercept ${LAUNCH.a.toFixed(2)}; their standard errors ${LAUNCH.seB.toFixed(4)} and ${LAUNCH.seA.toFixed(2)}; R² ${LAUNCH.r2.toFixed(4)} and the standard error of the estimate ${LAUNCH.sey.toFixed(2)}; F ${LAUNCH.F.toFixed(1)} and ${LAUNCH.df} residual degrees of freedom; the regression and residual sums of squares. These are the numbers the ToolPak’s Regression output prints, in a different layout.`,
   },
   {
     id: 'b03-ds-i3', type: 'formula', kind: 'applied',
@@ -227,7 +255,7 @@ export const independent = [
       { formula: '=FREQUENCY(C2:C11,E2:E4)', say: 'The data range stops at C11 and leaves out the last team day (row 12). Use C2:C12.' },
       { formula: '=FREQUENCY(E2:E4,C2:C12)', say: 'The arguments are the wrong way round: FREQUENCY(data_array, bins_array). The invoices come first.' },
     ],
-    solution: '<x>=FREQUENCY(C2:C12,E2:E4)</x> spills four counts: 5 invoices up to $700 (including the one of exactly $700), 1 over $700 to $900, 4 over $900 to $1,100 and 1 above $1,100. Four counts for three bins: FREQUENCY always returns one more than the number of bins. In Excel versions without dynamic arrays, select F2:F5, type the formula and press Ctrl+Shift+Enter (on Windows).',
+    solution: '<x>=FREQUENCY(C2:C12,E2:E4)</x> spills four counts: 5 invoices up to $700 (including the one of exactly $700), 1 over $700 to $900, 4 over $900 to $1,100 and 1 above $1,100. Four counts for three bins: FREQUENCY always returns one more than the number of bins. In Excel 2019 and earlier, select F2:F5, type the formula and press Ctrl+Shift+Enter (on Windows).',
   },
   {
     id: 'b03-ds-i4', type: 'classify', kind: 'conceptual',
@@ -260,22 +288,22 @@ export const independent = [
   },
   {
     id: 'b03-ds-i6', type: 'multi', kind: 'applied',
-    prompt: 'Ana’s Regression output for the 75 one-day events: Intercept 227.877, guests 6.66925 (Lower 95% 6.07842, Upper 95% 7.26007), R Square 0.873946, Standard Error 84.6861; guests ranged from 35 to 207. Select all the statements the output supports.',
+    prompt: `Ana’s Regression output for the 75 one-day events: Intercept ${sig(C0.b)}, guests ${sig(C1.b)} (Lower 95% ${sig(C1.low)}, Upper 95% ${sig(C1.high)}), R Square ${sig(RS.r2)}, Standard Error ${sig(RS.se)}; guests ranged from ${Math.min(...G1)} to ${Math.max(...G1)}. Select all the statements the output supports.`,
     options: [
-      'On these events, each extra guest went with about $6.67 more on the invoice, on average.',
-      'A typical invoice was about $85 away from the line.',
+      `On these events, each extra guest went with about ${usd(C1.b)} more on the invoice, on average.`,
+      `A typical invoice was about ${usd(RS.se, 0)} away from the line.`,
       'The 95% interval for the slope doesn’t include 0.',
-      'Ana’s setup charge for an event is $227.88.',
+      `Ana’s setup charge for an event is ${usd(C0.b)}.`,
       'The line predicts the invoice for a 400-guest festival as well as for a 100-guest meeting.',
-      'Because R Square is 0.874, predictions will be within 12.6% of the actual invoice.',
+      `Because R Square is ${RS.r2.toFixed(3)}, predictions will be within ${((1 - RS.r2) * 100).toFixed(1)}% of the actual invoice.`,
     ],
     answer: [0, 1, 2],
     feedback: {
       3: 'The intercept is the predicted invoice at 0 guests, an extrapolation far below the smallest event. It absorbs everything the line leaves out.',
-      4: '400 guests is far beyond the largest event in the data (207): an extrapolation, with no evidence the line still holds.',
-      5: 'R² is not a percentage error. The Standard Error, about $85, describes the typical miss.',
+      4: `400 guests is far beyond the largest event in the data (${Math.max(...G1)}): an extrapolation, with no evidence the line still holds.`,
+      5: `R² is not a percentage error. The Standard Error, about ${usd(RS.se, 0)}, describes the typical miss.`,
     },
-    solution: 'Supported: the slope, $6.67 a guest; the standard error, a typical miss of about $85; and the 95% interval for the slope, $6.08 to $7.26, which excludes 0. Not supported: reading the intercept as a setup charge, predicting far outside 35–207 guests, and treating R² as a measure of prediction error.',
+    solution: `Supported: the slope, ${usd(C1.b)} a guest; the standard error, a typical miss of about ${usd(RS.se, 0)}; and the 95% interval for the slope, ${usd(C1.low)} to ${usd(C1.high)}, which excludes 0. Not supported: reading the intercept as a setup charge, predicting far outside ${Math.min(...G1)}–${Math.max(...G1)} guests, and treating R² as a measure of prediction error.`,
   },
 ];
 
@@ -309,23 +337,23 @@ export const check = [
       { formula: '=RSQ(C2:C29,B2:B29)', say: 'RSQ returns r², the square of the correlation coefficient. CORREL returns r itself.' },
       { formula: '=SLOPE(C2:C29,B2:B29)', say: 'SLOPE gives dollars per guest. The correlation coefficient has no units and lies between −1 and 1: CORREL.' },
     ],
-    solution: '<x>=CORREL(B2:B29,C2:C29)</x> ≈ 0.8591, a strong positive linear relationship. The order of the two ranges doesn’t matter for CORREL; its square, 0.738, is what RSQ returns.',
+    solution: `<x>=CORREL(B2:B29,C2:C29)</x> ≈ ${MEET.r.toFixed(4)}, a strong positive linear relationship. The order of the two ranges doesn’t matter for CORREL; its square, ${(MEET.r ** 2).toFixed(3)}, is what RSQ returns.`,
   },
   {
     id: 'b03-ds-k3', type: 'num', kind: 'numerical',
-    prompt: 'From the Regression output for the 75 one-day events (Intercept 227.877, guests 6.66925), what invoice does the line predict for a one-day event with 60 guests? Give dollars to the cent.',
-    answer: 628.03, check: () => 227.877 + 6.66925 * 60, unit: '$', places: 2, tol: 0.02,
+    prompt: `From the Regression output for the 75 one-day events (Intercept ${sig(C0.b)}, guests ${sig(C1.b)}), what invoice does the line predict for a one-day event with 60 guests? Give dollars to the cent.`,
+    answer: Math.round((P0 + P1 * 60) * 100) / 100, check: () => C0.b + C1.b * 60, unit: '$', places: 2, tol: 0.02,
     wrong: [
-      { value: 400.16, say: 'You left out the intercept. The prediction is intercept + slope × guests.' },
-      { value: 13900.17, say: 'You multiplied the intercept by 60. The slope multiplies the guests; the intercept is added once.' },
+      { value: Math.round(P1 * 60 * 100) / 100, say: 'You left out the intercept. The prediction is intercept + slope × guests.' },
+      { value: Math.round((P0 * 60 + P1) * 100) / 100, say: 'You multiplied the intercept by 60. The slope multiplies the guests; the intercept is added once.' },
     ],
-    solution: 'ŷ = 227.877 + 6.66925 × 60 = 227.877 + 400.155 ≈ $628.03. Sixty guests lies inside the data’s range (35 to 207), so this is an interpolation; actual invoices at that size have typically been about $85 either side of the line.',
+    solution: `ŷ = ${P0} + ${P1} × 60 = ${P0} + ${(P1 * 60).toFixed(3)} ≈ ${usd(P0 + P1 * 60)}. Sixty guests lies inside the data’s range (${Math.min(...G1)} to ${Math.max(...G1)}), so this is an interpolation; actual invoices at that size have typically been about ${usd(RS.se, 0)} either side of the line.`,
   },
   {
     id: 'b03-ds-k4', type: 'mc', kind: 'conceptual',
     prompt: 'A bike-repair shop (fictional) regresses the invoice on minutes of labour for 200 repairs, all between 15 and 240 minutes. The intercept is $18.40. What is the right reading?',
     options: [
-      'It is the line’s value at 0 minutes, outside the data, so it anchors the line but needn’t be a real charge.',
+      'It is the line’s value at 0 minutes, outside the data: it anchors the line, not a real charge.',
       'Every repair includes a fixed charge of $18.40, which the shop adds before charging for labour time.',
       'A repair that needs no labour at all would cost a customer $18.40 on average, according to the shop’s data.',
       'The intercept is the average invoice of the 200 repairs, the point where the line crosses the y-axis.',
@@ -343,25 +371,26 @@ export const check = [
     prompt: 'A new client asks Ana for a rough estimate for a one-day event with the number of guests in E2. Using the 75 one-day events (guests in B2:B76, invoices in C2:C76), calculate in F2 the invoice the least-squares line predicts.',
     sheet: oneDay,
     cell: 'F2', answer: '=FORECAST.LINEAR(E2,C2:C76,B2:B76)',
-    alt: ['=FORECAST(E2,C2:C76,B2:B76)', '=INTERCEPT(C2:C76,B2:B76)+SLOPE(C2:C76,B2:B76)*E2'],
+    alt: ['=FORECAST(E2,C2:C76,B2:B76)', '=INTERCEPT(C2:C76,B2:B76)+SLOPE(C2:C76,B2:B76)*E2', '=TREND(C2:C76,B2:B76,E2)'],
     view: 'A1:F76', maxHeight: '20rem',
     formats: { C: '$#,##0', F: '$#,##0.00' },
     widths: { F: 16 },
     wrong: [
       { formula: '=FORECAST.LINEAR(E2,B2:B76,C2:C76)', say: 'FORECAST.LINEAR(x, known_y’s, known_x’s): the invoices are the y’s and come first.' },
-      { formula: '=FORECAST.LINEAR(120,C2:C76,B2:B76)', say: 'Point at E2 rather than typing 120, so the estimate updates when the client changes the number of guests.' },
+      { formula: `=FORECAST.LINEAR(${NEW_GUESTS},C2:C76,B2:B76)`, say: `Point at E2 rather than typing ${NEW_GUESTS}, so the estimate updates when the client changes the number of guests.` },
       { formula: '=SLOPE(C2:C76,B2:B76)*E2', say: 'That leaves out the intercept. The line is intercept + slope × guests.' },
+      { formula: `=${P0}+${P1}*E2`, say: 'The typed coefficients are rounded and don’t update; calculate them from the cells (FORECAST.LINEAR, or INTERCEPT + SLOPE).' },
     ],
-    solution: '<x>=FORECAST.LINEAR(E2,C2:C76,B2:B76)</x> gives about $1,028.19 for 120 guests, the same as <x>=INTERCEPT(C2:C76,B2:B76)+SLOPE(C2:C76,B2:B76)*E2</x>. It is a rough check, not a quote: the line’s typical miss is about $85, and it ignores hours and pastries, which Ana’s quote sheet prices separately.',
+    solution: `<x>=FORECAST.LINEAR(E2,C2:C76,B2:B76)</x> gives about ${usd(C0.b + C1.b * NEW_GUESTS)} for ${NEW_GUESTS} guests, the same as <x>=INTERCEPT(C2:C76,B2:B76)+SLOPE(C2:C76,B2:B76)*E2</x>. It is a rough check, not a quote: the line’s typical miss is about ${usd(RS.se, 0)}, and it ignores hours and pastries, which Ana’s quote sheet prices separately.`,
   },
   {
     id: 'b03-ds-k6', type: 'num', kind: 'numerical',
-    prompt: 'In the Coefficients table, the guests row shows Coefficients 6.66925 and Standard Error 0.29645. What t Stat does Excel print beside them? Give two decimal places.',
-    answer: 22.5, check: () => 6.66925 / 0.29645, unit: '', places: 2, tol: 0.01,
+    prompt: `In the Coefficients table, the guests row shows Coefficients ${P1} and Standard Error ${PSE1}. What t Stat does Excel print beside them? Give two decimal places.`,
+    answer: Math.round((P1 / PSE1) * 100) / 100, check: () => C1.b / C1.se, unit: '', places: 2, tol: 0.01,
     wrong: [
-      { value: 0.04, say: 'That is the standard error divided by the coefficient. t Stat = coefficient ÷ standard error.' },
-      { value: 1.98, say: 'That is the product of the two. t Stat = coefficient ÷ standard error.' },
+      { value: Math.round((PSE1 / P1) * 100) / 100, say: 'That is the standard error divided by the coefficient. t Stat = coefficient ÷ standard error.' },
+      { value: Math.round(P1 * PSE1 * 100) / 100, say: 'That is the product of the two. t Stat = coefficient ÷ standard error.' },
     ],
-    solution: 't Stat = 6.66925 ÷ 0.29645 ≈ 22.50: the slope is about 22.5 standard errors from 0, which is why its P-value is tiny (1.47E-34).',
+    solution: `t Stat = ${P1} ÷ ${PSE1} ≈ ${(P1 / PSE1).toFixed(2)}: the slope is about ${(P1 / PSE1).toFixed(1)} standard errors from 0, which is why its P-value is tiny (${sci(C1.p)}).`,
   },
 ];

@@ -1,6 +1,6 @@
 // cells-and-formulas.ex.js — B03 · Cells, references and formulas: widgets, practice and the knowledge check (answer
 // keys live here). Lantern's orders, prices and monthly values come from case.js; Riverbend Cycles and the Blue Heron
-// Inn are fictional. Formula items are marked by their results on the sheet and on two copies with the numbers changed.
+// Inn are fictional. Formula items are marked by their results on the sheet and on three copies with the numbers changed.
 import { ORDERS, ORDER_COLUMNS, PRODUCTS, DERIVED as D, tableCells } from './case.js';
 
 const r2 = (x) => Math.round(x * 100) / 100;
@@ -19,9 +19,11 @@ const priceRows = (at) => Object.fromEntries(SIX.flatMap((p, i) => [[`A${at + i}
 
 // the two-way price table: prices down B3:B6, rises across C2:E2
 const FOUR = ['House Blend 250g', 'Colombia Huila 250g', 'Ethiopia Yirgacheffe 250g', 'Espresso Roast 1kg'];
+// guided 4 uses other products and rises than the lesson's challenging example
+const G4_PRODUCTS = ['Espresso Roast 250g', 'Decaf Colombia 250g', 'Sumatra Mandheling 250g', 'House Blend 1kg'];
 const twoWay = {
-  A1: 'New price after a rise of:', A2: 'Product', B2: 'Price', C2: 0.04, D2: 0.06, E2: 0.10,
-  ...Object.fromEntries(FOUR.flatMap((p, i) => [[`A${i + 3}`, p], [`B${i + 3}`, price(p)]])),
+  A1: 'New price after a rise of:', A2: 'Product', B2: 'Price', C2: 0.03, D2: 0.05, E2: 0.08,
+  ...Object.fromEntries(G4_PRODUCTS.flatMap((p, i) => [[`A${i + 3}`, p], [`B${i + 3}`, price(p)]])),
 };
 
 // Riverbend Cycles (fictional): a labour rate named Rate in B1, service hours in B, parts in C
@@ -85,7 +87,7 @@ export const guided = [
       { formula: '=C2*D2', say: 'That is the value before the discount. Subtract the discount in column E.' },
       { formula: '=C2*(D2-E2)', say: 'The parentheses take the discount off every item. The discount is for the whole order: multiply first, then subtract.' },
     ],
-    hints: ['Quantity is in column C, unit price in D and the discount in E, all on row 2.', 'Multiplication comes before subtraction, so no parentheses are needed: =C2*D2-E2.'],
+    hints: ['Quantity is in column C, unit price in D and the discount in E, all on row 2.', 'Multiplication comes before subtraction, so no parentheses are needed: <x>=C2*D2-E2</x>.'],
     solution: '<x>=C2*D2-E2</x> gives 2 × 58 − 5 = 111 for LC-10001. The references are relative, so filled down each copy reads its own row: F3 is <x>=C3*D3-E3</x>, and so on to F9.',
   },
   {
@@ -125,12 +127,12 @@ export const guided = [
     alt: ['=$B3+$B3*C$2', '=(1+C$2)*$B3'],
     wrong: [
       { formula: '=B3*(1+C2)', say: 'With no dollar signs both references move: one column to the right, the price reference points at the previous new price instead of column B, and the rise reference drops below row 2.' },
-      { formula: '=$B$3*(1+C$2)', say: '$B$3 fixes the row as well, so every row shows House Blend’s prices. Fix only the column: $B3.' },
-      { formula: '=$B3*(1+$C$2)', say: '$C$2 fixes the column as well, so every column uses the 4% rise. Fix only the row: C$2.' },
+      { formula: '=$B$3*(1+C$2)', say: '$B$3 fixes the row as well, so every row shows the Espresso Roast 250g prices. Fix only the column: $B3.' },
+      { formula: '=$B3*(1+$C$2)', say: '$C$2 fixes the column as well, so every column uses the 3% rise. Fix only the row: C$2.' },
       { formula: '=B$3*(1+$C2)', say: 'The dollar signs are on the wrong parts. The prices run down column B (fix the column, $B3); the rises run along row 2 (fix the row, C$2).' },
     ],
     hints: ['Every cell needs the price from column B on its own row, and the rise from row 2 in its own column.', 'Fix the column of the price reference ($B3) and the row of the rise reference (C$2).'],
-    solution: '<x>=$B3*(1+C$2)</x>. Filled across and down, $B3 always reads column B on the cell’s own row and C$2 always reads row 2 in the cell’s own column; in E6, for example, it becomes <x>=$B6*(1+E$2)</x> = 49.00 × 1.10 = $53.90.',
+    solution: '<x>=$B3*(1+C$2)</x>. Filled across and down, $B3 always reads column B on the cell’s own row and C$2 always reads row 2 in the cell’s own column; in E6, for example, it becomes <x>=$B6*(1+E$2)</x> = 46.00 × 1.08 = $49.68.',
   },
 ];
 

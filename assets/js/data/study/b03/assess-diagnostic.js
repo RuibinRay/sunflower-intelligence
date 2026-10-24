@@ -88,7 +88,7 @@ export const items = [
   {
     id: 'b03-dg-3', lesson: 'conditional-sums-and-counts', type: 'formula', kind: 'numerical',
     prompt: 'Cairnbrook Language School (fictional) lists its students’ level in column B and attendance in column C. F1 holds a level and F2 a minimum attendance. In F4, write a formula that counts the students at the level in F1 whose attendance is at least the figure in F2, so that the count follows whatever F1 and F2 hold.',
-    sheet: { cells: { ...grid(['Student', 'Level', 'Attendance'], STUDENTS), E1: 'Level', F1: 'Intermediate', E2: 'Minimum attendance', F2: 0.8, E4: 'Students' } },
+    sheet: { cells: { ...grid(['Student', 'Level', 'Attendance'], STUDENTS), E1: 'Level', F1: 'Intermediate', E2: 'Minimum attendance', F2: 0.8, E4: 'Students' }, vary: { F1: ['Beginner', 'Advanced'] } },
     cell: 'F4', view: 'A1:F15',
     formats: { C: '0%', F2: '0%' }, widths: { B: 13, C: 11, E: 19, F: 13 },
     answer: '=COUNTIFS(B2:B15,F1,C2:C15,">="&F2)',
@@ -155,7 +155,7 @@ export const items = [
     id: 'b03-dg-7', lesson: 'charts-and-conditional-formatting', type: 'mc', kind: 'conceptual',
     prompt: 'Swiftpedal Couriers (fictional) wants to know whether longer deliveries take proportionally longer. For each of its last 300 deliveries it has the distance (km) and the time taken (minutes). Which chart answers the question?',
     options: [
-      'A scatter chart, with distance on the horizontal axis and minutes on the vertical axis',
+      'A scatter chart, with each delivery’s distance on the horizontal axis and its minutes on the vertical',
       'A line chart of minutes, with the 300 deliveries along the horizontal axis in the order they were made',
       'A histogram of delivery minutes, with bins 10 minutes wide, so the spread of times shows clearly',
       'A pie chart of the total minutes in each distance band, with one slice for every 2 km band',
@@ -242,7 +242,7 @@ export const items = [
     answer: 0,
     feedback: {
       1: 'Simplex LP is for linear models. Price × (400 − 5 × price) contains the price squared, so the model isn’t linear, however few variables it has.',
-      2: 'Evolutionary is for non-smooth models, such as ones built on IF or lookups. An uncertain estimate doesn’t make the formula non-smooth.',
+      2: 'Evolutionary is for non-smooth models, with jumps or steps, such as IF applied to a decision variable. An uncertain estimate doesn’t make the formula non-smooth.',
       3: 'An integer constraint doesn’t make the revenue formula linear: it still contains the price squared.',
     },
     solution: 'Revenue = price × (400 − 5 × price) = 400 × price − 5 × price²: a smooth, curved function of the decision variable. Microsoft’s guidance: Simplex LP for linear problems, GRG Nonlinear for smooth nonlinear ones, Evolutionary for non-smooth ones. GRG Nonlinear finds the peak at $40 a seat: 200 bookings and $8,000 of revenue.',
@@ -251,7 +251,7 @@ export const items = [
     id: 'b03-dg-12', lesson: 'dashboards', type: 'mc', kind: 'applied',
     prompt: 'The owner of Wren Street Pharmacy (fictional) wants one visual on her dashboard to answer: “Month by month this year, are sales on track against the monthly target?” Which is best?',
     options: [
-      'A column chart of each month’s sales, with the monthly target drawn as a line across the columns',
+      'A column chart of each month’s sales in calendar order, with the monthly target drawn as a line',
       'Twelve gauges, one for each month, each with its needle pointing at that month’s sales as a share of target',
       'A pie chart with one slice per month, so the owner can see which months contributed most to the year',
       'A 3-D column chart of sales and target side by side, with the value axis starting at the lowest month',

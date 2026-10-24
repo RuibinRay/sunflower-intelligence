@@ -4,6 +4,7 @@
 // labelled: Ana's draft chart with an axis starting at 45, and Pedalworks' parts sheet (applied example).
 // Every figure printed is recomputed in `checks`.
 import { ORDERS, ORDER_COLUMNS, PRODUCTS, DERIVED as D } from './case.js';
+import { PARTS } from './charts-and-conditional-formatting.ex.js';
 
 const col = (n) => ORDERS.map((r) => r[ORDER_COLUMNS.indexOf(n)]);
 const sum = (a) => a.reduce((s, x) => s + x, 0);
@@ -21,11 +22,9 @@ const lin = (c) => { const s = c / 255; return s <= 0.04045 ? s / 12.92 : ((s + 
 const lum = (g) => lin(g);                    // a grey: R = G = B
 const ratio = (a, b) => { const [hi, lo] = [Math.max(a, b), Math.min(a, b)]; return (hi + 0.05) / (lo + 0.05); };
 
-// Pedalworks' parts sheet (fictional): part, on hand, reorder point, weekly use
-const PARTS = [
-  ['Inner tube 700c', 14, 20, 9], ['Brake pads (pair)', 0, 10, 4], ['Chain, 11-speed', 7, 6, 2], ['Tyre 700 × 28', 22, 12, 5],
-  ['Brake cable set', 3, 5, 2], ['Bar tape', 9, 4, 1], ['Disc rotor 160 mm', 2, 3, 1], ['Valve cores (pack)', 0, 8, 3],
-];
+// Pedalworks' parts sheet (fictional; defined in the .ex.js for the demo widget): part, on hand, reorder point, weekly use
+const onHand = PARTS.map((p) => p[1]);
+const iconLo = Math.min(...onHand), iconHi = Math.max(...onHand);
 const out = PARTS.filter((p) => p[1] === 0), low = PARTS.filter((p) => p[1] > 0 && p[1] <= p[2]);
 
 // ---------------------------------------------------------------- figures (built from the data so they stay exact)
@@ -63,6 +62,25 @@ function ruleFigure() {
   s += `<text x="${X0}" y="${Y0 + 7 * rh + 44}" font-size="12">In D4 Excel evaluates  =$F4=&quot;yes&quot;   (column locked by $, row moves)</text>`;
   s += `<text x="${X0}" y="${Y0 + 7 * rh + 64}" font-size="12">Without the $, D4 would test I4, an empty cell, and never highlight.</text>`;
   return `${s}</svg>`;
+}
+
+function comboFigure() {
+  const orders = [M.orders.Mar, M.orders.Apr, M.orders.May, M.orders.Jun], value = [M.value.Mar, M.value.Apr, M.value.May, M.value.Jun];
+  const mons = ['Mar', 'Apr', 'May', 'Jun'];
+  let s = '<svg viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg" font-size="12" fill="currentColor">';
+  const panel = (x0, lo, hi, title) => {
+    const yb = 220, yt = 40, w = 240, yp = (v) => yb - (v / 70) * (yb - yt), ys = (v) => yb - ((v - lo) / (hi - lo)) * (yb - yt);
+    s += `<text x="${x0 + w / 2}" y="18" text-anchor="middle" font-size="13">${title}</text>`;
+    [0, 35, 70].forEach((t) => { s += `<line x1="${x0}" x2="${x0 + w}" y1="${fmt1(yp(t))}" y2="${fmt1(yp(t))}" stroke="var(--rule-strong)" stroke-width="0.6" stroke-dasharray="3 3"/><text x="${x0 - 6}" y="${fmt1(yp(t)) + 4}" text-anchor="end" font-size="11" fill="var(--ink-3)">${t}</text>`; });
+    [lo, (lo + hi) / 2, hi].forEach((t) => { s += `<text x="${x0 + w + 6}" y="${fmt1(ys(t)) + 4}" font-size="11" fill="var(--ink-3)">$${t.toLocaleString('en-US')}</text>`; });
+    orders.forEach((v, i) => { const cx = x0 + 30 + i * 60; s += `<rect x="${cx - 18}" y="${fmt1(yp(v))}" width="36" height="${fmt1(yb - yp(v))}" fill="var(--series-1)" opacity="0.55"/><text x="${cx}" y="${yb + 16}" text-anchor="middle" font-size="11">${mons[i]}</text>`; });
+    s += `<polyline points="${value.map((v, i) => `${x0 + 30 + i * 60},${fmt1(ys(v))}`).join(' ')}" fill="none" stroke="var(--series-2)" stroke-width="2.6"/>`;
+    value.forEach((v, i) => { s += `<circle cx="${x0 + 30 + i * 60}" cy="${fmt1(ys(v))}" r="4" fill="var(--series-2)"/>`; });
+    s += `<line x1="${x0}" x2="${x0 + w}" y1="${yb}" y2="${yb}" stroke="var(--ink)" stroke-width="1.2"/>`;
+  };
+  panel(50, 0, 6000, 'Secondary axis $0 to $6,000');
+  panel(370, 1800, 3000, 'Secondary axis $1,800 to $3,000');
+  return `${s}<text x="340" y="268" text-anchor="middle" font-size="11" fill="var(--ink-3)">Columns: orders per month (left axis, 0 to 70). Line: order value (right axis).</text></svg>`;
 }
 
 export default {
@@ -105,11 +123,11 @@ export default {
     { p: 'The question also decides what goes on the axes. For a comparison, the categories go on one axis and the measure on the other; sort the bars so that the order itself says something. For change over time, time runs left to right at equal intervals. For a relationship, the variable you think drives the other goes on the horizontal axis.' },
 
     { h: 'The parts of a chart' },
-    { p: 'Every Excel chart is built from <g>data series</g>: sets of related values, such as order value for each region, each drawn in its own colour. A column, bar or line chart has a <g>category axis</g>, which spaces its labels (regions, months) evenly, and a <g>value axis</g>, which has a numeric scale. A <g>scatter chart</g> has two value axes. Around them sit the chart title, axis titles, a legend that names the series, data labels on the bars or points, and gridlines.' },
+    { p: 'Every Excel chart is built from <g>data series</g>: sets of related values, such as order value for each region, each drawn in its own colour. A column, bar or line chart has a <g>category axis</g>, which places its labels (regions, months) in order along it, and a <g>value axis</g>, which has a numeric scale. A <g>scatter chart</g> has two value axes. Around them sit the chart title, axis titles, a legend that names the series, data labels on the bars or points, and gridlines.' },
     { p: 'Two of these do most of the work. The <b>title</b> should state the finding, not the topic: “Central led spring order value only because of one $1,512 office order” tells the reader what to see, while “Order value by region” leaves them to work it out. <b>Labels</b> should sit next to what they name; with one or two series, label the lines or bars directly and delete the legend, which forces the eye to travel back and forth.' },
 
     { h: 'Making a chart in Excel' },
-    { p: 'Arrange the data as a small table: labels in the first column, one column per series, a header in the first row. Select it and choose Insert &gt; Recommended Charts, which previews the charts Excel suggests for that data; the All Charts tab lists every type. On Windows, Alt+F1 creates a default chart at once beside the data (F11 puts it on a separate chart sheet), though Microsoft warns it might not be the best chart for the data. The chart stays linked to its cells, so it redraws when they change; a chart built on a PivotTable is a PivotChart, which the PivotTable lesson introduces.' },
+    { p: 'Arrange the data as a small table: labels in the first column, one column per series, a header in the first row. Select it and choose Insert &gt; Recommended Charts, which previews the charts Excel suggests for that data; the All Charts tab lists every type. On Windows, Alt+F1 inserts a chart of the default type beside the data at once, and F11 puts one on a separate chart sheet; neither asks what the chart is for. The chart stays linked to its cells, so it redraws when they change; a chart built on a PivotTable is a PivotChart, which the PivotTable lesson introduces.' },
     { p: 'Once the chart exists, add or remove parts with the Chart Elements button beside it (titles, axis titles, data labels, legend, trendline), change its type with Change Chart Type, and change which cells it plots with Select Data. Right-click a part and choose its Format command, such as Format Axis, to set its options, including the minimum and maximum of a value axis.' },
 
     { h: 'Honest scales' },
@@ -148,10 +166,15 @@ export default {
 
     { h: 'Choosing between similar charts' },
     { p: '<b>Column or bar.</b> Both compare categories. Microsoft suggests a bar chart (horizontal) when the labels are long, and bars also suit a ranking of many items, because the labels read left to right. Columns suit a handful of periods.' },
-    { p: '<b>Line or scatter.</b> In a line chart the horizontal axis is a category axis: it places its labels at equal spacing whatever their values. A scatter chart has two value axes and places every point at its numeric x. So if the x values are numbers that aren’t evenly spaced, such as the number of guests at each catering event, a line chart misplaces them; Microsoft’s rule of thumb is a line chart for non-numeric x values and a scatter chart for numeric ones.' },
+    { p: '<b>Line or scatter.</b> In a line chart the horizontal axis is a category axis: text labels go at equal spacing whatever they say, a date axis puts dates in time order, and numbers are treated as labels. A scatter chart has two value axes and places every point at its numeric x. So if the x values are numbers that aren’t evenly spaced, such as the number of guests at each catering event, a line chart misplaces them; Microsoft’s rule of thumb is a line chart for non-numeric x values and a scatter chart for numeric ones.' },
     { p: '<b>Stacked and 100% stacked.</b> A stacked column emphasises the total and shows the parts inside it; a 100% stacked column makes every column the same height and shows shares, which suits comparing a mix across months or regions. Use either with two or three parts at most, and put the part the reader must compare on the baseline.' },
     { p: '<b>Histogram and box and whisker.</b> Both show a distribution, and Excel 2016 and later have both (Insert &gt; Insert Statistic Chart). A histogram groups a numeric column into bins and draws a bar for the count in each: by default Excel sets the bin width by Scott’s normal reference rule, and you can set a bin width, a number of bins, and overflow and underflow bins instead. A <g>box and whisker chart</g> draws the quartiles as a box, the median inside it and whiskers beyond, with outlier points past the whiskers. The next lesson builds the frequency table behind a histogram.' },
     { p: '<b>Combo charts and secondary axes.</b> A <g>combo chart</g> combines chart types, typically columns with a line, and Microsoft suggests a <g>secondary axis</g> when series vary widely or are of different kinds, such as price and volume. Use it with care: the two scales are independent, so where the line crosses the columns, and how steep it looks, depend on axis limits that someone chose. Label both axes with units, colour each axis like its series, and ask whether a ratio of the two (order value per order, say) or two charts one above the other would say it more plainly.' },
+    { figure: {
+      svg: comboFigure(),
+      caption: 'The same spring orders (columns) and order value (line) twice, with only the secondary axis’s limits changed. On the left the line lies flat below every column; on the right it starts low, crosses the columns twice and spikes in May.',
+      alt: 'Two combo charts of Lantern’s March to June 2026. In both, columns show orders per month (59, 63, 49 and 60) against a left axis from 0 to 70, and a line shows order value ($1,975.85, $2,175.55, $2,929.75 and $2,015.00) against a right axis. In the left chart the right axis runs from $0 to $6,000, so the line is low and nearly flat, below all four columns. In the right chart the right axis runs from $1,800 to $3,000, so the line starts near the bottom, rises steeply above the May column and falls again, crossing the columns twice.',
+    } },
     { p: '<b>Sparklines.</b> A <g>sparkline</g> is a tiny chart inside one worksheet cell (Insert &gt; Sparklines: Line, Column or Win/Loss). Put one at the end of each row of a table, for example each product’s weekly sales, to show many trends side by side without a chart for each. Markers can pick out individual points, and an axis can be shown when values change sign.' },
 
     { h: 'Truncated axes and their exaggeration' },
@@ -163,10 +186,10 @@ export default {
       '<b>Top/Bottom Rules</b>: Top 10 Items, Top 10%, Bottom 10 Items, Bottom 10%, Above Average and Below Average. The 10 is only the default: you can choose 1 to 1,000 items or 1% to 100% of the range. Average rules compare with the mean of the selected range.',
       '<b>Data Bars</b>: a bar inside each cell, longer for larger values.',
       '<b>Color Scales</b>: a two- or three-colour gradient between the minimum, a midpoint and the maximum.',
-      '<b>Icon Sets</b>: three to five icons, each for a band of values set by thresholds.',
+      '<b>Icon Sets</b>: three to five icons, each for a band of values set by thresholds. Microsoft says the default bands are equal in size; with three arrows that is roughly the top, middle and bottom third of the way from the lowest value to the highest (the sheets in this lesson split at 67% and 33%).',
       '<b>New Rule &gt; Use a formula to determine which cells to format</b>: any formula that returns TRUE or FALSE.',
     ] },
-    { p: 'Data bars and colour scales measure each cell against the range’s lowest and highest values unless you change the minimum and maximum types (a number, a percent, a percentile or a formula). That matters when one value dwarfs the rest. Lantern’s office order of $1,512 would stretch the data bar scale so far that a $58 gift box got a sliver of a bar; setting the maximum to a number, such as 200, or to a percentile, restores the comparison among ordinary orders.' },
+    { p: 'By default (Automatic) a data bar’s length is proportional to its value, so the longest bar belongs to the largest value; a colour scale runs from the lowest value to the highest. You can change either by setting the minimum and maximum types (a number, a percent, a percentile or a formula). That matters when one value dwarfs the rest. Lantern’s office order of $1,512 would stretch the data bars so far that a $58 gift box got a sliver of a bar; setting the maximum to a number, such as 200, or to a percentile, restores the comparison among ordinary orders.' },
     { h: 'Formula rules and mixed references' },
     { p: 'A formula rule is written for the top-left cell of the “Applies to” range, and Excel adjusts it for every other cell as if the formula had been filled across and down: relative references move, absolute ones don’t. That is why whole-row highlighting needs a <g>mixed reference</g> such as <code>$F2</code>, with the column locked and the row free. The formula must return TRUE or FALSE (or 1 or 0), and it must start with an equals sign.' },
     { figure: {
@@ -179,7 +202,7 @@ export default {
 
     { h: 'Rule order and Stop If True' },
     { p: 'Home &gt; Conditional Formatting &gt; Manage Rules lists the rules for a range in order of precedence, top to bottom; a new rule goes to the top, and Move Up and Move Down change the order. When two true rules set different things (one bold, one a red fill), both apply. When they conflict (two fills), the rule higher in the list wins. A true rule also overrides any manual formatting of the cell.' },
-    { p: 'Stop If True, a tick box beside each rule, stops Excel evaluating the rules below it once that rule is true. Microsoft describes it as a backward-compatibility setting, and it isn’t available for data bars, colour scales or icon sets. In practice it lets an urgent rule, such as “out of stock”, suppress a milder one below it, such as “below the reorder point”.' },
+    { p: 'Stop If True, a tick box beside each rule, stops Excel evaluating the rules below it once that rule is true. Microsoft describes it as a backward-compatibility setting, and it isn’t available for data bars, colour scales or icon sets. Because conflicting formats are already settled by precedence, Stop If True matters when a lower rule sets something that doesn’t conflict, such as bold, a data bar or an icon set, which a formula rule with Stop If True hides for the rows it matches.' },
     { callout: 'warn', title: 'Pitfalls', html: 'Copying, pasting and filling cells that carry a rule create new rules for the destination, so a busy sheet can collect dozens of near-duplicates: check Manage Rules (show rules for “This Worksheet”) now and then. Keep to a few rules with clear meanings, give every colour a meaning stated in a note or a status column, and remember that a rule that returns an error formats nothing.' },
   ],
 
@@ -223,7 +246,7 @@ export default {
       },
       steps: [
         'Name the question: a comparison of five categories on one measure. A bar or column chart answers it; sorted bars read as a ranking, so sort the table from largest to smallest before charting (it already is).',
-        'Select A1:A6 and C1:C6, choose Insert &gt; Recommended Charts and pick a clustered bar chart. Check that the value axis starts at $0, as a bar chart must, and that the bars appear in the sorted order.',
+        'Select A1:A6, hold Ctrl (Command on a Mac) and select C1:C6, then choose Insert &gt; Recommended Charts and pick a clustered bar chart. Excel draws a bar chart’s first row nearest the axis, so the sorted table puts Central at the bottom: in Format Axis for the vertical (category) axis, tick Categories in reverse order to put the largest bar at the top. Check that the value axis starts at $0, as a bar chart must.',
         'Check what drives the ranking before writing the title. Central has the fewest orders (25) but the most value because LC-10144, the $1,512 office order, is one of them. Without it Central’s value is <m>2{,}125.90 - 1{,}512.00 = 613.90</m> dollars, the smallest of the five.',
         'Write a title that states the finding: “Central led spring order value only because of one $1,512 office order”. Add data labels so readers don’t have to read values off the axis, and delete the legend (there is one series).',
       ],
@@ -234,7 +257,7 @@ export default {
       steps: [
         String.raw`True ratio of April to May orders: <m>63 \div 49 \approx 1.29</m>, so April had 29% more orders.`,
         String.raw`Apparent ratio with the axis starting at 45: the bars are <m>63 - 45 = 18</m> and <m>49 - 45 = 4</m> units long, a ratio of <m>18 \div 4 = 4.5</m>. The draft makes April look four and a half times May. Set the minimum back to 0.`,
-        'The combo chart puts two measures with unrelated scales on one picture. Whether the order-value line rises above the order columns, and how steep it looks, depends only on the limits chosen for each axis; a reader will still compare them as if they shared one. May’s order value also jumps because of one order: $1,512 of its $2,929.75 is LC-10144.',
+        'The combo chart puts two measures with unrelated scales on one picture. Whether the order-value line rises above the order columns, and how steep it looks, depends only on the limits chosen for each axis, as the figure in the In depth section shows; a reader will still compare them as if they shared one. May’s order value also jumps because of one order: $1,512 of its $2,929.75 is LC-10144.',
         String.raw`A plainer alternative is a ratio of the two measures, order value per order: March <m>1{,}975.85 \div 59 \approx 33.49</m>, April <m>2{,}175.55 \div 63 \approx 34.53</m>, May <m>2{,}929.75 \div 49 \approx 59.79</m>, June <m>2{,}015.00 \div 60 \approx 33.58</m> dollars. Without LC-10144, May’s is <m>1{,}417.75 \div 48 \approx 29.54</m> dollars.`,
         'Chart average order value by month as one series from zero, with a note on May, or keep orders and order value as two separate column charts with the same months, one above the other.',
       ],
@@ -251,23 +274,25 @@ export default {
       steps: [
         'Select A2:E9, the whole block, starting from A2, so each rule is written for row 2.',
         'Rule 1 (urgent): New Rule &gt; Use a formula, <x>=$B2=0</x>, red fill. The <code>$</code> on B keeps every cell of the row looking at its own on-hand count.',
-        'Rule 2 (this week): <x>=$B2<=$C2</x>, yellow fill. An out-of-stock part also satisfies this rule, so the two fills conflict. In Manage Rules put rule 1 above rule 2 (the higher rule wins a conflict) and tick Stop If True on rule 1, so an out-of-stock row is never yellow.',
+        'Rule 2 (this week): <x>=$B2<=$C2</x>, yellow fill. An out-of-stock part also satisfies this rule, so the two fills conflict. Excel puts each new rule at the top, so in Manage Rules move rule 1 above rule 2: the higher rule wins the conflicting fill, so an out-of-stock row is red, never yellow. Stop If True isn’t needed for that; it would matter only if rule 2 also set something that doesn’t conflict, such as bold.',
+        `Rule 3 (stock at a glance): an icon set of three arrows on B2:B9. The bands are equal in size, so with on-hand counts from ${iconLo} to ${iconHi} an arrow points up at about ${(iconLo + 0.67 * (iconHi - iconLo)).toFixed(1)} or more and sideways at about ${(iconLo + 0.33 * (iconHi - iconLo)).toFixed(1)} or more. A down arrow on an out-of-stock row adds nothing to the red, and that is where Stop If True helps: ticked on rule 1, it stops every rule below, the icon set included, for the rows rule 1 matches, so those rows show red with no arrow.`,
         'Don’t rely on colour: fill E2 with <x>=IF(B2=0,"Out",IF(B2<=C2,"Reorder","OK"))</x> and copy it down. The status word says what the colour says, for the colour-blind mechanic, for a printout in black and white and for a filter.',
         `Read the result. Out: ${out.map((p) => p[0]).join(' and ')} (${out.length} rows, red). Reorder: ${low.map((p) => p[0]).join(', ')} (${low.length} rows, yellow). Chain, tyres and bar tape are above their reorder points.`,
       ],
-      answer: `Two formula rules on A2:E9, <x>=$B2=0</x> above <x>=$B2<=$C2</x> with Stop If True on the first, plus a status column. This Monday’s order list has ${out.length + low.length} parts: ${out.length} urgent and ${low.length} at or below their reorder points.`,
+      answer: `Two formula rules on A2:E9, <x>=$B2=0</x> above <x>=$B2<=$C2</x>, an icon set on B2:B9 that Stop If True on the first rule hides for out-of-stock rows, and a status column. This Monday’s order list has ${out.length + low.length} parts: ${out.length} urgent and ${low.length} at or below their reorder points.`,
       interpretation: 'The rules turn a list into a decision, and they keep working when next week’s counts are typed in. The status column is not decoration: it makes the meaning independent of colour, and it lets the manager filter the sheet to the rows that need an order.' },
   ],
 
   demo: [
-    { widget: 'cc-region', intro: 'Spring order value by region, sorted, with and without the $1,512 office order. Which bar changes, and how would you title each version?' },
+    { widget: 'cc-region', intro: 'Spring order value by region, sorted, with and without the $1,512 office order, drawn here as columns (in Excel the simple example’s bar chart, largest at the top, reads more easily as a ranking). Which bar changes, and how would you title each version?' },
     { widget: 'cc-weekly', intro: 'Orders per week over 17 spring weeks. The line chart’s value axis is zoomed to the data, which is fine for a line: read the slope and the dips, not the height above zero.' },
     { widget: 'cc-cf', intro: 'Lantern’s first 15 orders with one rule already applied: whole rows of subscription orders, <x>=$F2="yes"</x> on A2:F16. Open Conditional formatting and add your own: data bars on D2:D16, the top 3 orders, or a formula rule such as <x>=AND($E2="app",$D2>=30)</x>. Then try the same rule without the <code>$</code> signs and see which cells it misses.' },
-    { widget: 'cc-invoices', intro: 'A histogram of all 76 catering invoices in 2026. Which bin holds the typical event, and what is the lone bar far to the right? The next lesson explains why that event is set aside.' },
+    { widget: 'cc-invoices', intro: 'A histogram of all 76 catering invoices in 2026, with bins that include their upper edge, as Excel counts. Where does the median event ($790) fall, and what is the lone bar far to the right? The next lesson explains why that event is set aside.' },
+    { widget: 'cc-parts', intro: 'Pedalworks’ parts sheet from the applied example, with its three rules. Untick Stop If True on the first rule and watch arrows appear on the out-of-stock rows; move the rules up and down and see which fill wins.' },
   ],
 
   mistakes: [
-    { title: '“Excel picked the chart, so it must suit the data.”', html: 'Recommended Charts and Alt+F1 suggest a chart for the shape of the selection, not for your question. Decide the question first (comparison, trend, composition, distribution, relationship), then the chart.' },
+    { title: '“Excel picked the chart, so it must suit the data.”', html: 'Recommended Charts suggests charts for the shape of the selection, and Alt+F1 inserts the default chart type, whatever your question. Decide the question first (comparison, trend, composition, distribution, relationship), then the chart.' },
     { title: '“The title is ‘Order value by region’.”', html: 'That is a label, not a message. State the finding, such as “Central led only because of one $1,512 office order”, so the reader knows what to look for and you are forced to check it is true.' },
     { title: '“Starting the axis at 45 makes the differences easier to see.”', html: 'In a bar chart it makes them wrong: 63 against 49 looked like 4.5 to 1. Start bars at zero; zoom only line charts, and label the axis.' },
     { title: '“Red for bad, green for good is clear enough.”', html: 'Many readers can’t tell some pairs of colours apart, and printouts are often black and white. WCAG 1.4.1 asks that colour is never the only cue: add a status word, an icon or a direct label.' },
@@ -294,17 +319,17 @@ export default {
 
   glossary: [
     { term: 'Data series', def: 'A set of related values plotted together in a chart, such as order value for each month. Each series has its own colour or marker and its own entry in the legend.' },
-    { term: 'Category axis', def: 'The axis of a column, bar or line chart that places text or date labels at equal spacing, whatever their values.' },
+    { term: 'Category axis', def: 'The axis of a column, bar or line chart that places text labels at equal spacing whatever they say, or dates in time order (a date axis); numbers placed on it are treated as labels.' },
     { term: 'Value axis', def: 'A chart axis with a numeric scale. Column, bar and line charts have one; a scatter chart has two.' },
     { term: 'Scatter chart', def: 'A chart with two value axes that plots each observation as a point at its x and y values, used to show the relationship between two numeric variables. Also called an XY chart.' },
-    { term: 'Box and whisker chart', def: 'A chart of a distribution that draws the first and third quartiles as a box with the median inside it, whiskers for the spread beyond the box, and separate points for outliers. Also called a box plot.' },
+    { term: 'Box and whisker chart', def: 'A chart of a distribution that draws the first and third quartiles as a box with the median inside it, whiskers for the spread beyond the box, a marker for the mean, and separate points for outliers. Also called a box plot.' },
     { term: 'Combo chart', def: 'A chart that combines two or more chart types, such as columns and a line, often with a secondary axis.' },
     { term: 'Secondary axis', def: 'A second value axis, usually on the right of a chart, with its own scale for one or more series.' },
     { term: 'Sparkline', def: 'A tiny chart inside a single worksheet cell that shows the trend of a row or column of numbers.' },
     { term: 'Truncated axis', def: 'A value axis that starts above zero. It distorts bar lengths, and so the comparisons a bar chart makes.' },
     { term: 'Contrast ratio', def: 'A measure of the difference in brightness between two colours, (L₁ + 0.05) ÷ (L₂ + 0.05), where L₁ and L₂ are the relative luminances of the lighter and darker colour; it runs from 1:1 to 21:1.' },
     { term: 'Conditional formatting', def: 'Formatting that a spreadsheet applies to a cell only while a rule about its value, or a formula, is true, and that updates when the values change.' },
-    { term: 'Data bar', def: 'A conditional format that draws a bar inside each cell, longer for larger values, scaled between a minimum and a maximum.' },
+    { term: 'Data bar', def: 'A conditional format that draws a bar inside each cell whose length, by default, is proportional to the cell’s value.' },
     { term: 'Colour scale', def: 'A conditional format that shades cells along a gradient of two or three colours between the lowest and highest values.' },
     { term: 'Icon set', def: 'A conditional format that puts one of three to five icons in each cell according to the band of values, set by thresholds, that the cell falls in.' },
   ],
@@ -375,7 +400,6 @@ export default {
     { what: 'Most orders in a week', value: Math.max(...WEEKLY), shown: 16 },
     // data bars
     { what: 'Gift Box Trio shop price', value: PRODUCTS.find((p) => p[0] === 'Gift Box Trio')[3], shown: 58 },
-    { what: 'Number of icons in a set: three to five', value: 3 + 5, shown: 8 },
     // contrast
     { what: 'Black on white', value: ratio(lum(255), lum(0)), shown: 21 },
     { what: 'Graphical objects threshold', value: 3, shown: 3 },
@@ -385,6 +409,12 @@ export default {
     { what: 'Out of stock', value: out.length, shown: 2 },
     { what: 'At or below reorder point', value: low.length, shown: 3 },
     { what: 'Parts to order', value: out.length + low.length, shown: 5 },
+    { what: 'Lowest on hand', value: iconLo, shown: 0 },
+    { what: 'Highest on hand', value: iconHi, shown: 22 },
+    { what: 'Up arrow from (67%)', value: iconLo + 0.67 * (iconHi - iconLo), shown: 14.7, tol: 0.05 },
+    { what: 'Side arrow from (33%)', value: iconLo + 0.33 * (iconHi - iconLo), shown: 7.3, tol: 0.05 },
+    { what: 'Median catering invoice (76 events)', value: D.eventMedian, shown: 790 },
+    { what: 'Combo figure: May value inside the $1,800–$3,000 axis', value: Number(M.value.May < 3000 && M.value.Mar > 1800), shown: 1 },
   ],
 };
 

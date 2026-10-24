@@ -17,9 +17,9 @@ const ratingSum = rated.reduce((s, x) => s + x, 0);
 const subs = ORDERS.filter((r) => r[col('subscription')] === 'yes');
 const label = (t) => (t >= 75 ? 'large' : t >= 25 ? 'medium' : 'small');
 const REQUESTS = [                                   // fictional quote requests for September 2026
-  { client: 'Alpine Insurance', guests: 40, hours: 3, pastries: 'yes', date: [2026, 9, 15] },
-  { client: 'Tidal Books', guests: 18, hours: 2, pastries: 'no', date: [2026, 9, 18] },
-  { client: 'Northway Clinic', guests: 120, hours: 5, pastries: 'yes', date: [2026, 9, 26] },
+  { client: 'Wrenmere Insurance', guests: 40, hours: 3, pastries: 'yes', date: [2026, 9, 15] },
+  { client: 'Tansymoor Books', guests: 18, hours: 2, pastries: 'no', date: [2026, 9, 18] },
+  { client: 'Corrandale Clinic', guests: 120, hours: 5, pastries: 'yes', date: [2026, 9, 26] },
 ];
 const raw = (q) => QUOTE.setup + QUOTE.perGuest * q.guests + QUOTE.perHour * q.hours + (q.pastries === 'yes' ? QUOTE.platter : 0);
 
@@ -44,7 +44,8 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: `Ana’s next questions about the spring orders are small but exact. Does every subscription order carry exactly the 10% discount Lantern promises? How many orders were rated, and what was the average rating? Which month, and which day of the week, was each order placed on? And can she sort the orders by the number inside their IDs, such as the 10144 in LC-10144? Each question needs a function: one of Excel’s built-in calculations, called by name.` },
+    { case: `Ana’s next questions about the spring orders are small but exact. Does every subscription order carry exactly the 10% discount Lantern promises? How many orders were rated, and what was the average rating? Which month, and which day of the week, was each order placed on? And can she sort the orders by the number inside their IDs, such as the 10144 in LC-10144?` },
+    { p: `Each question needs a function: one of Excel’s built-in calculations, called by name.` },
 
     { h: 'What a function is' },
     { p: 'A <g>function</g> is a named calculation that Excel already knows. You call it inside a formula by its name followed by parentheses holding its <g>argument</g>s, the values it works on, separated by commas: <x>=SUM(J2:J232)</x> adds 231 cells, and <x>=ROUND(J2,0)</x> rounds J2 to a whole number. Microsoft writes each function’s syntax with the optional arguments in square brackets, as in <x>WEEKDAY(serial_number,[return_type])</x>, so you can leave the second one out. An argument can be a value, a reference, a range or another function.' },
@@ -70,12 +71,12 @@ export default {
     { h: 'Rounding by a rule' },
     { p: 'The previous lesson separated formatting, which changes the display, from rounding, which changes the stored value. Excel has a rounding function for each business rule:' },
     { table: {
-      caption: 'Rounding functions, with Microsoft’s examples',
+      caption: 'Rounding functions (the ROUND, INT and MROUND examples are Microsoft’s)',
       head: ['Function', 'Rule', 'Examples'],
       rows: [
         ['<x>ROUND(number,num_digits)</x>', 'To the nearest, halves away from zero; negative digits round to the left of the point', '<x>=ROUND(2.15,1)</x> is 2.2; <x>=ROUND(-1.475,2)</x> is −1.48; <x>=ROUND(21.5,-1)</x> is 20'],
         ['<x>ROUNDUP(number,num_digits)</x>', 'Always away from zero', '<x>=ROUNDUP(3.2,0)</x> is 4'],
-        ['<x>ROUNDDOWN(number,num_digits)</x>', 'Always towards zero', '<x>=ROUNDDOWN(3.7,0)</x> is 3'],
+        ['<x>ROUNDDOWN(number,num_digits)</x>', 'Always towards zero', '<x>=ROUNDDOWN(3.2,0)</x> is 3'],
         ['<x>INT(number)</x>', 'Down to the next whole number, so negatives move away from zero', '<x>=INT(8.9)</x> is 8; <x>=INT(-8.9)</x> is −9'],
         ['<x>MROUND(number,multiple)</x>', 'To the nearest multiple; both arguments must have the same sign', '<x>=MROUND(10,3)</x> is 9; <x>=MROUND(1.3,0.2)</x> is 1.4; <x>=MROUND(5,-2)</x> is #NUM!'],
       ],
@@ -88,14 +89,15 @@ export default {
     { p: 'A comparison such as <x>=J2>=50</x> returns a <g>logical value</g>, TRUE or FALSE. IF turns that into a decision: <x>IF(logical_test,value_if_true,value_if_false)</x> returns its second argument when the test is TRUE and its third when it is FALSE. Text arguments go in double quotation marks; without them Excel looks for a name and returns #NAME?. Numbers go without quotes.' },
     { p: `Lantern promises subscribers 10% off. With the rate in an input cell P1 (10%), the discount a subscription order should carry is <x>=IF(L2="yes",ROUND(G2*H2*$P$1,2),0)</x>: if the subscription column says yes, 10% of quantity times price, rounded to the cent; otherwise nothing. Comparing that with the recorded discount in column I tests the promise row by row, and the simple example does it.` },
     { p: 'AND, OR and NOT combine tests. <x>AND(test1,test2,…)</x> is TRUE only when every test is TRUE; <x>OR(…)</x> is TRUE when at least one is; <x>NOT(test)</x> reverses a test. Microsoft allows up to 255 conditions, and notes that AND ignores text and empty cells inside a range argument and returns #VALUE! if it finds no logical values at all. A flag for orders that need checking is then <x>=IF(AND(L2="yes",I2<>N2),"check","ok")</x>: a subscription order whose recorded discount differs from the expected one in N2.' },
-    { p: 'Excel’s text comparisons ignore letter case, so “Yes” matches “yes”; when case matters, EXACT compares two pieces of text exactly. Lantern’s <code>subscription</code> column is all lower case, so the question doesn’t arise, but data from people often isn’t.' },
+    { p: 'Comparisons with = ignore letter case: <x>="Yes"="yes"</x> returns TRUE (try it). Microsoft describes <a href="https://support.microsoft.com/en-us/excel/exact-function">EXACT</a> as the case-sensitive test, for when case matters. Lantern’s <code>subscription</code> column is all lower case, so the question doesn’t arise, but data typed by people often isn’t.' },
+    { p: 'Comparisons don’t convert text, either: <x>="10"=10</x> is FALSE, and an order total stored as the text “$58.00” passes <x>=J2>=75</x>, because Excel ranks text above numbers in a comparison. Convert such values to numbers first, as B02 showed, before a formula makes decisions with them.' },
     { h: 'Several outcomes: nested IF and IFS' },
-    { p: 'For more than two outcomes, put an IF in the false branch of another. Lantern labels orders of $75 or more “large”, $25 or more “medium”, and the rest “small”: <x>=IF(J2>=75,"large",IF(J2>=25,"medium","small"))</x>. Excel stops at the first test that is TRUE, so the order of the tests is part of the logic. Test the $25 threshold first and a $111 order is labelled “medium”, because 111 ≥ 25 is TRUE before the $75 test is ever reached. Microsoft makes the same point with a nested grading formula and warns that, although Excel allows 64 nested IFs, such formulas are hard to get right and harder to maintain.' },
+    { p: 'For more than two outcomes, put an IF in the false branch of another. For the packing rota, Ana flags orders of $75 or more “large”, $25 or more “medium”, and the rest “small” (packing labels, not the $20, $40 and $100 order-size bands she reports with, which Module 2 looks up from a table): <x>=IF(J2>=75,"large",IF(J2>=25,"medium","small"))</x>. Excel stops at the first test that is TRUE, so the order of the tests is part of the logic. Test the $25 threshold first and a $111 order is labelled “medium”, because 111 ≥ 25 is TRUE before the $75 test is ever reached. Microsoft makes the same point with a commission example, and warns that, although Excel allows 64 nested IFs, such formulas are hard to get right and harder to maintain.' },
     { p: 'IFS lists the tests and their results in pairs: <x>=IFS(J2>=75,"large",J2>=25,"medium",TRUE,"small")</x>. It is available in Excel 2019, 2021 and 2024 and in Microsoft 365, and takes up to 127 conditions. If no test is TRUE, IFS returns #N/A, so the last test is usually <x>TRUE</x>, a catch-all. Two habits help with either form: put the thresholds in input cells rather than in the formula, and when the bands multiply, use a lookup table, which Module 2 builds with an approximate-match lookup.' },
 
     { h: 'Errors you expect and errors you don’t' },
-    { p: '<x>IFERROR(value,value_if_error)</x> returns the value unless it is an error, in which case it returns the second argument. It catches every error type: #N/A, #VALUE!, #REF!, #DIV/0!, #NUM!, #NAME? and #NULL!. <x>IFNA(value,value_if_na)</x> catches only #N/A, the error a lookup returns when a key is missing; Microsoft lists it in Excel 2016 and every later version.' },
-    { p: 'That breadth is the danger. Suppose a cell works out each channel’s average order value as <x>=IFERROR(B2/C2,0)</x>, so that a channel with no orders shows 0 rather than #DIV/0!. If someone later deletes a column the formula used, or mistypes a reference, the #REF! or #NAME? that should have shouted is also turned into 0, and 0 looks like a real result. Microsoft makes the same point: IFERROR suppresses every error, so check that a formula works before you add error handling. Test for the case you expect instead, <x>=IF(C2=0,"",B2/C2)</x>, and keep IFNA for lookups, where #N/A is the expected error.' },
+    { p: '<x>IFERROR(value,value_if_error)</x> returns the value unless it is an error, in which case it returns the second argument. It catches every error type: #N/A, #VALUE!, #REF!, #DIV/0!, #NUM!, #NAME? and #NULL!. <x>IFNA(value,value_if_na)</x> catches only #N/A, the error a lookup returns when a key is missing; IFNA was added in Excel 2013.' },
+    { p: 'That breadth is the danger. Suppose a cell works out each channel’s average order value as <x>=IFERROR(B2/C2,0)</x>, so that a channel with no orders shows 0 rather than #DIV/0!. If someone later deletes a column the formula used, or mistypes a reference, the #REF! or #NAME? that should have shouted is also turned into 0, and 0 looks like a real result. Microsoft’s <a href="https://support.microsoft.com/en-us/excel/how-to-correct-a-div-0-error">page on #DIV/0! errors</a> makes the same point: IFERROR suppresses every error, so check that a formula works before you add error handling. Test for the case you expect instead, <x>=IF(C2=0,"",B2/C2)</x>, and keep IFNA for lookups, where #N/A is the expected error.' },
 
     { h: 'Taking text apart' },
     { p: 'A piece of text in a cell is a <g>text string</g>, and its characters are numbered from 1. LEFT and RIGHT take characters from either end, MID takes them from a given position, and LEN counts them. For LC-10001 in A2, <x>=LEFT(A2,2)</x> is “LC”, <x>=MID(A2,4,5)</x> is “10001” and <x>=LEN(A2)</x> is 8.' },
@@ -108,11 +110,11 @@ export default {
     { p: 'The results of LEFT, MID and RIGHT are text, even when they look like numbers. “10001” sorts as text and SUM skips it. <x>=VALUE(MID(A2,4,5))</x> converts it to the number 10001; Microsoft’s VALUE accepts any number, date or time format Excel recognises, so <x>=VALUE("$1,000")</x> is 1000. An arithmetic operator converts too, which is why <x>=--RIGHT(A2,5)</x> (minus minus) also works.' },
     { h: 'Cleaning and joining text' },
     { p: 'UPPER, LOWER and PROPER change letter case: <x>=PROPER("hOUSE bLEND")</x> is “House Blend”. TRIM removes spaces from the ends of a string and reduces runs of spaces inside it to one, but Microsoft warns that it removes only the ordinary space character (code 32), not the non-breaking space (code 160) that web pages and exports often contain; B02’s lesson on text showed how to find those. <x>SUBSTITUTE(text,old_text,new_text)</x> replaces one string with another: <x>=SUBSTITUTE(A2,"LC-","")</x> leaves “10001”. The full cleaning workflow, on Lantern’s raw export, is in the next module.' },
-    { p: 'The <x>&</x> operator joins text: <x>=A2&" ("&L2&")"</x> gives “LC-10002 (yes)”. Joining is called <g>concatenation</g>. CONCAT does the same for a list of values or ranges, and replaces the older CONCATENATE, which stays for compatibility. TEXTJOIN adds a delimiter between the pieces and can skip empty cells: <x>=TEXTJOIN(", ",TRUE,D2:D6)</x>. Both are available in Excel 2019 and later and in Microsoft 365, and both return #VALUE! if the result would exceed a cell’s 32,767 characters.' },
+    { p: 'The <x>&</x> operator joins text: <x>=A2&" ("&L2&")"</x> gives “LC-10001 (no)” for the first order. Joining is called <g>concatenation</g>. CONCAT does the same for a list of values or ranges, and replaces the older CONCATENATE, which stays for compatibility. TEXTJOIN adds a delimiter between the pieces and can skip empty cells: <x>=TEXTJOIN(", ",TRUE,D2:D6)</x>. Both are available in Excel 2019 and later and in Microsoft 365, and both return #VALUE! if the result would exceed a cell’s 32,767 characters.' },
     { p: 'TEXT formats a number as text: <x>=TEXT(J2,"$#,##0.00")</x> gives “$111.00” and <x>=TEXT(B2,"mmmm")</x> gives “March”. The result is text, which is exactly what you want in a label and exactly what you don’t want in a calculation. Microsoft’s advice is to keep the original value in one cell and use TEXT in another.' },
 
     { h: 'Dates are numbers' },
-    { p: `As B02 showed, Excel stores a date as a <g>serial date</g>: in the default 1900 date system, 1 January 1900 is 1, and Lantern’s first order day, 1 March 2026, is ${serial(2026, 3, 1)}. Because dates are numbers, subtracting one from another gives a number of days, and adding 7 gives the same weekday a week later. Excel treats 1900 as a leap year, which it wasn’t, for compatibility with Lotus 1-2-3; the only consequence Microsoft lists is that WEEKDAY is wrong for dates before 1 March 1900.` },
+    { p: `As B02 showed, Excel stores a date as a <g>serial date</g>: in the default 1900 date system, 1 January 1900 is 1, and Lantern’s first order day, 1 March 2026, is ${serial(2026, 3, 1)}. Because dates are numbers, subtracting one from another gives a number of days, and adding 7 gives the same weekday a week later. Excel <a href="https://support.microsoft.com/kb/214326">treats 1900 as a leap year</a>, which it wasn’t, for compatibility with Lotus 1-2-3; the only consequence Microsoft lists is that WEEKDAY is wrong for dates before 1 March 1900.` },
     { table: {
       caption: 'Date functions, applied to LC-10001’s order date (1 March 2026) in B2',
       head: ['Formula', 'Returns', 'What it does'],
@@ -127,7 +129,7 @@ export default {
         ['<x>=NETWORKDAYS(B2,EOMONTH(B2,0))</x>', String(workdays(Date.UTC(2026, 2, 1), Date.UTC(2026, 2, 31))), 'Whole working days (Monday to Friday) from the order to the month’s end, both dates counted'],
       ],
     } },
-    { p: 'DATE rolls over in Microsoft’s documented way: <x>=DATE(2008,14,2)</x> is 2 February 2009 and <x>=DATE(2008,1,35)</x> is 4 February 2008, which makes month arithmetic safe. Microsoft also advises four-digit years, because DATE adds 1900 to a year from 0 to 1899. NETWORKDAYS takes an optional list of holidays as a third argument, and NETWORKDAYS.INTL handles weekends other than Saturday and Sunday. A month is not 30 days: <x>=B2+30</x> lands on 31 March, while <x>=EDATE(B2,1)</x> lands on 1 April, which is the date a monthly subscription actually renews. Dates that arrive as text, such as “March 2, 2026” in an export, are turned into serial numbers with DATEVALUE; the next module uses it, with the day-and-month caution from B02, on Lantern’s raw export.' },
+    { p: 'DATE rolls over in Microsoft’s documented way: <x>=DATE(2008,14,2)</x> is 2 February 2009 and <x>=DATE(2008,1,35)</x> is 4 February 2008, which makes month arithmetic safe. Microsoft also advises four-digit years, because DATE adds 1900 to a year from 0 to 1899. NETWORKDAYS takes an optional list of holidays as a third argument, and NETWORKDAYS.INTL handles weekends other than Saturday and Sunday. A month is not 30 days: <x>=B2+30</x> lands on 31 March, while <x>=EDATE(B2,1)</x> lands on 1 April, which is the date a monthly subscription actually renews. A date stored as text in a format Excel recognises (“March 2, 2026” is one with US settings) is turned into a serial number with <a href="https://support.microsoft.com/en-us/excel/datevalue-function">DATEVALUE</a>; the next module uses it, with the day-and-month caution from B02, on Lantern’s raw export.' },
     { p: 'You may meet DATEDIF, which counts complete years, months or days between two dates: <x>=DATEDIF(B2,C2,"M")</x>. Microsoft keeps it to support old Lotus 1-2-3 workbooks, warns that it “may calculate incorrect results under certain scenarios”, advises against its “MD” unit, and notes that it returns #NUM! when the start date is after the end date. For days, subtract the dates; for months, prefer a formula you can check.' },
   ],
 
@@ -194,7 +196,7 @@ export default {
       answer: `Order number 10144 (a number), month “May”, a Thursday (WEEKDAY 5, or 4 with return type 2), and ${workdays(Date.UTC(2026, 4, 14), Date.UTC(2026, 4, 31))} working days to the end of May.`,
       interpretation: 'Each answer came from a function that reads the cell, so the same four formulas, filled down, describe all 231 orders. The order number can now be sorted and compared, and the weekday and month are ready to be counted and summed by the conditional functions in the next lesson.' },
     { level: 'challenging', title: 'Labelling order sizes: why the order of the tests matters', fictional: true,
-      setup: 'Ana labels each order “large” ($75 or more), “medium” ($25 or more) or “small”. Write the label for the first eight orders with a nested IF and with IFS, and explain what goes wrong if the tests are reversed or a boundary is mis-stated.',
+      setup: 'For the packing rota (these are not her reporting bands), Ana flags each order “large” ($75 or more), “medium” ($25 or more) or “small”. Write the label for the first eight orders with a nested IF and with IFS, and explain what goes wrong if the tests are reversed or a boundary is mis-stated.',
       table: {
         caption: 'The first eight order totals and their labels',
         head: ['Order', 'J: order_total', 'N: label'],
@@ -245,7 +247,7 @@ export default {
     { p: `<b>Auditing a promise.</b> With the expected discount and the flag filled down all ${D.orders} rows, Ana can tell Lantern’s owner that every one of the ${subs.length} subscription orders carried exactly 10% off, and that the other discounts are the $5 promotion code and the bulk order’s negotiated 10%. The check takes two formulas and will run again unchanged on July’s orders. If Lantern ever changes the rate, the input cell changes and every expected discount follows.` },
     { p: `<b>What the ratings say.</b> ${rated.length} of ${D.orders} orders were rated, a response rate of ${(rated.length / D.orders * 100).toFixed(1)}%, and the average rating given was ${(ratingSum / rated.length).toFixed(2)}. Ana reports both numbers together, using COUNT for the rated orders and AVERAGE for the mean, because an average of ratings means little without the share of customers who gave one. She notes that the unrated orders are blanks, not zeros, so they don’t drag the average down.` },
     { case: 'Oakridge Fitness, a fictional gym, keeps member records with a member ID such as OKF-2291-M, a joining date and a monthly plan. Its manager uses EDATE to show each member’s next payment date, <x>=IF(AND(D2="active",E2<=$H$1+7),"remind","")</x> to list active members whose payment falls within a week of the report date in H1, and <x>=RIGHT(A2,1)</x> to read the plan letter at the end of the ID. When the gym added a plan with a two-letter code, the RIGHT formula silently started returning half of it; the manager replaced it with a formula that reads everything after the last hyphen, and added a check that counts IDs whose plan code isn’t on the list of plans.' },
-    { p: '<b>A house rule on error handling.</b> Many finance teams allow IFERROR only where a specific error is expected and documented, and require a note beside it saying which. Their reason is the one in this lesson: a hidden #REF! is worse than a visible one, because the number that replaces it looks like an answer.' },
+    { p: '<b>Error handling.</b> A sensible house rule: allow IFERROR only where a specific error is expected and documented, with a note beside it saying which. The reason is the one in this lesson: a hidden #REF! is worse than a visible one, because the number that replaces it looks like an answer.' },
   ],
 
   summary: [
@@ -292,7 +294,7 @@ export default {
     { what: 'ROUND(-1.475,2)', value: -Math.round(1.475 * 100 + 1e-9) / 100, shown: -1.48 },
     { what: 'ROUND(21.5,-1)', value: Math.round(21.5 / 10 - 1e-9) * 10, shown: 20 },
     { what: 'ROUNDUP(3.2,0)', value: Math.ceil(3.2), shown: 4 },
-    { what: 'ROUNDDOWN(3.7,0)', value: Math.floor(3.7), shown: 3 },
+    { what: 'ROUNDDOWN(3.2,0)', value: Math.floor(3.2), shown: 3 },
     { what: 'INT(8.9)', value: Math.floor(8.9), shown: 8 },
     { what: 'INT(-8.9)', value: Math.floor(-8.9), shown: -9 },
     { what: 'MROUND(10,3)', value: Math.round(10 / 3) * 3, shown: 9 },

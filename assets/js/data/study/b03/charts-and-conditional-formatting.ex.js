@@ -4,6 +4,18 @@
 import { ORDERS, ORDER_COLUMNS, EVENTS, EVENT_COLUMNS, DERIVED as D, tableCells } from './case.js';
 
 const R = D.byRegion.value;
+// Pedalworks' parts sheet (fictional), used by the lesson's applied example and the cc-parts widget:
+// part, on hand, reorder point, weekly use
+export const PARTS = [
+  ['Inner tube 700c', 14, 20, 9], ['Brake pads (pair)', 0, 10, 4], ['Chain, 11-speed', 7, 6, 2], ['Tyre 700 × 28', 22, 12, 5],
+  ['Brake cable set', 3, 5, 2], ['Bar tape', 9, 4, 1], ['Disc rotor 160 mm', 2, 3, 1], ['Valve cores (pack)', 0, 8, 3],
+];
+const partsSheet = {
+  cells: {
+    A1: 'Part', B1: 'On hand', C1: 'Reorder point', D1: 'Weekly use', E1: 'Status',
+    ...Object.fromEntries(PARTS.flatMap((p, i) => [[`A${i + 2}`, p[0]], [`B${i + 2}`, p[1]], [`C${i + 2}`, p[2]], [`D${i + 2}`, p[3]], [`E${i + 2}`, `=IF(B${i + 2}=0,"Out",IF(B${i + 2}<=C${i + 2},"Reorder","OK"))`]])),
+  },
+};
 const REGIONS = ['Central', 'East', 'West', 'North', 'South'];            // sorted by spring order value
 const L6 = ['order_id', 'customer_id', 'product', 'order_total', 'channel', 'subscription'];
 const first15 = tableCells(ORDER_COLUMNS, ORDERS, { cols: L6, n: 15 });
@@ -17,7 +29,7 @@ const regionSheet = {
   cells: { A1: 'Region', B1: 'Order value', C1: 'Share', ...Object.fromEntries(REGIONS.flatMap((g, i) => [[`A${i + 2}`, g], [`B${i + 2}`, R[g]]])) },
 };
 const ordersBlock = (cols, extra = {}) => ({ cells: { ...tableCells(ORDER_COLUMNS, ORDERS, { cols, n: 15 }).cells, ...extra } });
-const appSheet = ordersBlock(['order_id', 'order_total', 'channel', 'subscription'], { E1: 'Test A', F1: 'Test B' });
+const appSheet = ordersBlock(['order_id', 'quantity', 'channel', 'subscription'], { E1: 'Test A', F1: 'Test B' });
 const topSheet = ordersBlock(['order_id', 'product', 'order_total', 'channel'], { E1: 'Test A', F1: 'Test B' });
 const clientSheet = { cells: { ...tableCells(EVENT_COLUMNS, EVENTS, { cols: ['event_id', 'client', 'guests', 'invoice'], n: 15 }).cells, E1: 'Test A', F1: 'Test B' } };
 const weekSheet = { cells: { A1: 'Week', B1: 'Orders', C1: '4-week average', ...Object.fromEntries(WEEKLY.flatMap((n, i) => [[`A${i + 2}`, i + 1], [`B${i + 2}`, n]])) } };
@@ -52,7 +64,7 @@ export const widgets = {
     rules: [{ range: 'A2:F16', type: 'formula', formula: '=$F2="yes"', style: 'good' }],
     cf: { range: 'D2:D16' },
     tools: ['cf', 'formulas', 'reset'],
-    note: 'The rule <x>=$F2="yes"</x> is written for A2 and moved to every cell of A2:F16, so each row tests its own column F. Rules you add apply in the order you add them, the newest last, so a later rule’s fill covers an earlier one (in Excel a new rule goes to the top of Manage Rules, with the same effect). Try data bars on D2:D16, Top 3 items on D2:D16, Duplicate values on B2:B16 (customer C0034 ordered twice), or a formula rule on A2:F16.',
+    note: 'The rule <x>=$F2="yes"</x> is written for A2 and moved to every cell of A2:F16, so each row tests its own column F. A rule you add goes to the top of the list, as a new rule does in Excel’s Manage Rules, so where two rules set a fill the newer one wins; use Move up and Move down to change that, tick Stop If True, or delete a rule. Try data bars on D2:D16, Top 3 items on D2:D16, an icon set on D2:D16, Duplicate values on B2:B16 (customer C0034 ordered twice), or a formula rule on A2:F16.',
   },
   'cc-invoices': {
     type: 'distribution',
@@ -60,6 +72,22 @@ export const widgets = {
     label: 'Catering invoice, 2026 ($)',
     transforms: ['none', 'log'],
     rules: ['iqr'],
+    closed: 'right',
+  },
+  'cc-parts': {
+    type: 'sheet',
+    title: 'Pedalworks’ parts sheet (fictional): out of stock, at the reorder point, and stock at a glance',
+    sheet: partsSheet,
+    view: 'A1:E9',
+    widths: { A: 20, C: 13, D: 11 },
+    rules: [
+      { range: 'A2:E9', type: 'formula', formula: '=$B2=0', style: 'bad', stop: true },
+      { range: 'A2:E9', type: 'formula', formula: '=$B2<=$C2', style: 'warn' },
+      { range: 'B2:B9', type: 'icons' },
+    ],
+    cf: { range: 'A2:E9' },
+    tools: ['cf', 'formulas', 'reset'],
+    note: 'Rule 1 (red, Stop If True) is at the top, so it wins the conflicting fill on the two out-of-stock rows and stops the rules below it there: those rows have no arrow. The arrows split the on-hand counts into three equal bands between the lowest (0) and the highest (22). Column E repeats each colour in words, so nothing depends on colour alone.',
   },
 };
 
@@ -113,22 +141,22 @@ export const guided = [
   },
   {
     id: 'b03-cc-g3', type: 'formula', kind: 'applied',
-    prompt: 'Ana wants a conditional format on A2:D16 that shades the whole row of every <b>app</b> order of <b>$30 or more</b>. Excel moves a rule from A2 to every other cell exactly as Fill does, so test it first: type the rule as you would write it for A2 into E2, and fill it to E2:F16. E and F stand in for two columns of the range; both should say TRUE in exactly the rows to shade.',
+    prompt: 'Ana wants a conditional format on A2:D16 that shades the whole row of every <b>app</b> order of <b>two or more bags</b> (quantity in column B). Excel moves a rule from A2 to every other cell exactly as Fill does, so test it first: type the rule as you would write it for A2 into E2, and fill it to E2:F16. E and F stand in for two columns of the range; both should say TRUE in exactly the rows to shade.',
     sheet: appSheet,
-    cell: 'E2', fill: 'E2:F16', answer: '=AND($C2="app",$B2>=30)',
-    alt: ['=AND($B2>=30,$C2="app")', '=($C2="app")*($B2>=30)=1'],
+    cell: 'E2', fill: 'E2:F16', answer: '=AND($C2="app",$B2>=2)',
+    alt: ['=AND($B2>=2,$C2="app")', '=($C2="app")*($B2>=2)=1', '=AND($C2="app",$B2>1)'],
     view: 'A1:F16',
-    formats: { B: '$#,##0.00' },
     wrong: [
-      { formula: '=AND(C2="app",B2>=30)', say: 'Column E is right, but in column F your references have moved to D and C, so the test fails there. Lock the columns with <code>$</code>: <x>=AND($C2="app",$B2>=30)</x>.' },
-      { formula: '=AND($C$2="app",$B$2>=30)', say: 'With the rows locked too, every row tests row 2 (an app order of $111.00), so every row would be shaded. Leave the row number free: <code>$C2</code>.' },
-      { formula: '=OR($C2="app",$B2>=30)', say: 'OR shades a row when either condition holds, including every app order under $30 and every web order over $30. The rule needs both: AND.' },
+      { formula: '=AND(C2="app",B2>=2)', say: 'Column E is right, but in column F your references have moved to D and C, so the test fails there. Lock the columns with <code>$</code>: <x>=AND($C2="app",$B2>=2)</x>.' },
+      { formula: '=AND($C$2="app",$B$2>=2)', say: 'With the rows locked too, every row tests row 2 (an app order of two bags), so every row would be shaded. Leave the row number free: <code>$C2</code>.' },
+      { formula: '=OR($C2="app",$B2>=2)', say: 'OR shades a row when either condition holds, including every one-bag app order and every web order of two bags. The rule needs both: AND.' },
+      { formula: '=AND($C2="app",$B2>2)', say: '“Two or more” includes 2: use &gt;=.' },
     ],
     hints: [
-      'Two conditions must both hold: channel (column C) equals <x>"app"</x>, and order_total (column B) is at least 30. Combine them with AND.',
+      'Two conditions must both hold: channel (column C) equals <x>"app"</x>, and quantity (column B) is at least 2. Combine them with AND.',
       'Every cell of a row must look at the same columns, C and B, so put <code>$</code> before the column letters and not before the row numbers.',
     ],
-    solution: '<x>=AND($C2="app",$B2>=30)</x>. The <code>$</code> before C and B locks the columns, so F2 still tests C2 and B2; the free row number lets row 5 test C5 and B5. Rows 2, 3, 5 and 16 (LC-10001, LC-10002, LC-10004 and LC-10015) are TRUE in both columns. Applied to A2:D16 the rule shades those four rows end to end.',
+    solution: '<x>=AND($C2="app",$B2>=2)</x>. The <code>$</code> before C and B locks the columns, so F2 still tests C2 and B2; the free row number lets row 5 test C5 and B5. Rows 2, 3, 5 and 16 (LC-10001, LC-10002, LC-10004 and LC-10015) are TRUE in both columns. Applied to A2:D16 the rule shades those four rows end to end.',
   },
   {
     id: 'b03-cc-g4', type: 'num', kind: 'numerical',
@@ -149,7 +177,7 @@ export const guided = [
 export const independent = [
   {
     id: 'b03-cc-i1', type: 'mc', kind: 'conceptual',
-    prompt: 'Ana selects two columns, guests and invoice, for her 75 one-day catering events and chooses a line chart. What goes wrong?',
+    prompt: 'Ana makes a line chart of invoice for her 75 one-day catering events, with the guest numbers as the horizontal axis labels. What goes wrong?',
     options: [
       'The guest numbers become evenly spaced labels on a category axis instead of values; a scatter chart is needed.',
       'Nothing goes wrong: a line chart and a scatter chart place numeric x values in exactly the same way, so either works.',
@@ -162,7 +190,7 @@ export const independent = [
       2: 'There is no such limit. The problem is how the horizontal axis treats numbers.',
       3: 'The value axis is not the issue. The horizontal axis places 35 guests and 207 guests as if they were neighbouring labels.',
     },
-    solution: 'In a line chart the horizontal axis is a category axis: it can only be a text or date axis, and it spaces its labels evenly. Guest numbers are numeric and unevenly spaced, so they belong on a value axis. A scatter chart places each event at (guests, invoice), which is what a relationship needs, and lets you add a trendline (next lesson).',
+    solution: 'In a line chart the horizontal axis is a category axis: it can only be a text or date axis, so the guest numbers become text labels, spaced evenly in the order of the rows. Guest numbers are numeric and unevenly spaced, so they belong on a value axis. A scatter chart places each event at (guests, invoice), which is what a relationship needs, and lets you add a trendline (next lesson).',
   },
   {
     id: 'b03-cc-i2', type: 'formula', kind: 'applied',
@@ -296,7 +324,7 @@ export const check = [
       2: 'A colour scale with the same endpoints has the same problem: almost every cell would be the colour at the bottom of the scale.',
       3: 'Wider columns help a little, but the bars stay in proportion to $1,512, so the differences among $14 to $111 orders stay tiny.',
     },
-    solution: 'Data bars and colour scales scale between a minimum and a maximum, by default the lowest and highest values. A maximum set to a number (such as 200) or a percentile keeps the comparison among ordinary orders; the office order’s bar fills the cell. Keep the data intact.',
+    solution: 'By default a data bar’s length is proportional to its value, so the $1,512 order sets the longest bar and the rest are slivers. A maximum set to a number (such as 200) or a percentile keeps the comparison among ordinary orders; the office order’s bar fills the cell. Keep the data intact.',
   },
   {
     id: 'b03-cc-k5', type: 'classify', kind: 'conceptual',
