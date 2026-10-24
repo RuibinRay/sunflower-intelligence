@@ -60,15 +60,19 @@ export function mount(el, cfg, ctx) {
       xLabel: cfg.xLabel || (cfg.twoSample ? 'Difference in sample means' : 'Sample mean'), format: (v) => fmtX(X(v), 3),
       label: `Two normal curves for the ${cfg.twoSample ? 'difference in sample means' : 'sample mean'}: centred on the null value ${fmtX(X(0))} and on the true value ${fmtX(X(delta))}, each with standard error ${fmtX(se, 4)}. Power ${(power * 100).toFixed(1)}%.`,
     });
+    // a one-sided test can only detect a difference in its own direction: no sample size reaches 80% power otherwise
+    const wrongWay = (alternative === 'greater' && delta <= 0) || (alternative === 'less' && delta >= 0);
     const nNeed = I.sampleSizeForPower({ delta: Math.abs(delta) || 1e-9, sigma, alpha, power: 0.8, alternative: alternative === 'two-sided' ? 'two-sided' : 'one-sided', twoSample: !!cfg.twoSample });
     out.replaceChildren(
       h('dl', { class: 'stats-row stats-dense' },
         [['Standard error', fmtX(se, 4)], ['Power', `${(power * 100).toFixed(1)}%`], ['β (Type II)', `${((1 - power) * 100).toFixed(1)}%`], ['α (Type I)', String(alpha)],
-          ['n for 80% power', delta === 0 ? '—' : `${nNeed.toLocaleString('en-US')}${cfg.twoSample ? ' per group' : ''}`]]
+          ['n for 80% power', delta === 0 || wrongWay ? '—' : `${nNeed.toLocaleString('en-US')}${cfg.twoSample ? ' per group' : ''}`]]
           .map(([k, v]) => h('div', { class: 'stat' }, h('dt', {}, k), h('dd', { class: 'num' }, v)))),
       h('p', { class: 'fx-note' }, delta === 0
         ? 'With no true difference, every rejection is a Type I error: the chance of one is α.'
-        : `If the true ${cfg.twoSample ? 'difference' : 'mean'} is ${fmtX(X(delta))}, a sample of ${n}${cfg.twoSample ? ' per group' : ''} detects it ${(power * 100).toFixed(1)}% of the time at α = ${alpha}. The rest of the time the sample mean falls between the critical values and the test misses it.`));
+        : wrongWay
+          ? `The alternative points the other way from the true ${cfg.twoSample ? 'difference' : 'mean'} (${fmtX(X(delta))}), so the test almost never rejects H₀, however large the sample: a one-sided test can only detect a difference in the direction it names.`
+          : `If the true ${cfg.twoSample ? 'difference' : 'mean'} is ${fmtX(X(delta))}, a sample of ${n}${cfg.twoSample ? ' per group' : ''} detects it ${(power * 100).toFixed(1)}% of the time at α = ${alpha}. The rest of the time the ${cfg.twoSample ? 'difference in sample means' : 'sample mean'} ${alternative === 'two-sided' ? 'falls between the critical values' : 'falls short of the critical value'} and the test misses it.`));
     ctx.report?.('power', { n, power });
   }
   draw();

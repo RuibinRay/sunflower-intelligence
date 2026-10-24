@@ -73,8 +73,14 @@ export const PER_GUEST_BY_TYPE = Object.fromEntries(EVENT_TYPES.map((t) => [t, E
 // ---------------------------------------------------------------- new lesson data
 /** Kilnworth Roasting's specification for its 1 kg bags: the filling machine is set to 1,004 g with an SD of 3 g. */
 export const KILNWORTH_1KG = { label: 1000, setting: 1004, sd: 3 };
-/** B01's September dip: web visits and orders, August against September. */
-export const CONVERSION = { aug: { visits: SHOP.webVisits[1], orders: SHOP.webOrders[1] }, sep: { visits: SHOP.webVisits[2], orders: SHOP.webOrders[2] }, target: TARGETS.conversion / 100 };
+/** B01's September dip. aug/sep: the website alone (visits and orders), the channel the 1 September redesign changed;
+ *  shop: web and app together, the basis of B01's 3.0% conversion target (July 3.0%, August 3.10%, September 2.20%). */
+const shopMonth = (i) => ({ visits: SHOP.webVisits[i] + SHOP.appVisits[i], orders: SHOP.webOrders[i] + SHOP.appOrders[i] });
+export const CONVERSION = {
+  aug: { visits: SHOP.webVisits[1], orders: SHOP.webOrders[1] }, sep: { visits: SHOP.webVisits[2], orders: SHOP.webOrders[2] },
+  shop: { jul: shopMonth(0), aug: shopMonth(1), sep: shopMonth(2), oct: shopMonth(3) },
+  target: TARGETS.conversion / 100,
+};
 
 // ---------------------------------------------------------------- the project (lessons must not use these)
 /** The November–December 2026 courier trial: business days to delivery, and the price per parcel. Late = more than 3 days. */
@@ -138,7 +144,11 @@ export const DERIVED = {
   conversion: {
     aug: CONVERSION.aug.orders / CONVERSION.aug.visits, sep: CONVERSION.sep.orders / CONVERSION.sep.visits,
     test: I.propTest2(CONVERSION.aug.orders, CONVERSION.aug.visits, CONVERSION.sep.orders, CONVERSION.sep.visits),
-    sepVsTarget: I.propTest1(CONVERSION.sep.orders, CONVERSION.sep.visits, CONVERSION.target, { alternative: 'less' }),
+    // the target is B01's, for the shop as a whole (web and app together)
+    sepVsTarget: I.propTest1(CONVERSION.shop.sep.orders, CONVERSION.shop.sep.visits, CONVERSION.target, { alternative: 'less' }),
+    octVsTarget: I.propTest1(CONVERSION.shop.oct.orders, CONVERSION.shop.oct.visits, CONVERSION.target, { alternative: 'less' }),
+    shop: Object.fromEntries(Object.entries(CONVERSION.shop).map(([k, v]) => [k, v.orders / v.visits])),
+    webSepVsTarget: I.propTest1(CONVERSION.sep.orders, CONVERSION.sep.visits, CONVERSION.target, { alternative: 'less' }),
   },
   survey: { recommend: I.ciProp(SURVEY.wouldRecommend.yes, SURVEY.responses), responseRate: SURVEY.responses / SURVEY.sent },
   eventTypes: { anova: I.anova1(EVENT_TYPES.map((t) => PER_GUEST_BY_TYPE[t])), means: Object.fromEntries(EVENT_TYPES.map((t) => [t, mean(PER_GUEST_BY_TYPE[t])])) },
@@ -170,6 +180,7 @@ export const IDENTITIES = [
   ['channel × subscription table covers every order', CHANNEL_SUBSCRIPTION.counts.flat().reduce((a, b) => a + b, 0) === 231],
   ['76 catering events, $62,320 (B03, F02)', EVENTS.length === B03.events && einv.reduce((a, b) => a + b, 0) === B03.eventValue],
   ['B01: August and September web orders and visits', CONVERSION.aug.orders === 224 && CONVERSION.sep.visits === 8_800],
+  ['B01: shop conversion 3.10% in August, 2.20% in September', Math.abs(CONVERSION.shop.aug.orders / CONVERSION.shop.aug.visits - 0.03098) < 0.00001 && CONVERSION.shop.sep.orders === 251],
   ['B01 survey: 61 of 79 would recommend', SURVEY.responses === 79 && SURVEY.wouldRecommend.yes === 61],
   ['Swiftline charges B03’s $5.20 a parcel', COURIER_TRIAL.swiftline.price === 5.2],
   ['each email line sent to 1,500 customers', EMAIL_TEST.lines.length === 3 && EMAIL_TEST.sent === 1500],

@@ -31,6 +31,7 @@ const empirical = [1, 2, 3].map((k) => 2 * normCdf(k) - 1);
 const cheb = (k) => 1 - 1 / (k * k);
 const zBulk = D.orders.bulkZ;
 const trim10 = trimmean(O, 0.1);
+const trimK = (() => { let k = Math.floor(n * 0.1); k -= k % 2; return k; })();
 
 // ---------------------------------------------------------------- catering: invoice per guest-day by event type
 const T = EVENT_TYPES;                                                  // Conference, Meeting, Breakfast, Launch, Team day
@@ -47,6 +48,8 @@ const evCol = (name) => EVENT_COLUMNS.indexOf(name);
 const smallMeeting = EVENTS.find((r) => r[evCol('event_type')] === 'Meeting' && Math.round(r[evCol('invoice')] / r[evCol('guests')] * 100) / 100 === MS.max);
 const smallTeam = EVENTS.find((r) => r[evCol('event_type')] === 'Team day' && Math.round(r[evCol('invoice')] / r[evCol('guests')] * 100) / 100 === TD.max);
 const zMeet = (MS.max - MS.mean) / MS.sd, zTeam = (TD.max - TD.mean) / TD.sd;
+const PLURAL = { Conference: 'conferences', Meeting: 'meetings', Breakfast: 'breakfasts', Launch: 'launches', 'Team day': 'team days' };
+const byIqr = [...T].sort((a, b) => ST[a].iqr / ST[a].median - ST[b].iqr / ST[b].median);
 const minMeetingGuests = Math.min(...EVENTS.filter((r) => r[evCol('event_type')] === 'Meeting').map((r) => r[evCol('guests')]));
 
 // ---------------------------------------------------------------- ratings and other categories
@@ -92,7 +95,7 @@ export default {
   objectives: [
     'Distinguish a population parameter (μ, σ, N) from a sample statistic (x̄, s, n), and explain why the sample variance divides by n − 1.',
     'Calculate the mean, median, trimmed mean, variance, standard deviation and coefficient of variation by hand and in Excel, and predict how adding a constant or changing units moves each of them.',
-    'Locate a value within its group with a z-score and a percentile rank, using STANDARDIZE and COUNTIF.',
+    'Locate a value within its group with a z-score and a percentile rank, using STANDARDIZE, PERCENTRANK.INC and COUNTIF.',
     'Decide whether the empirical rule or Chebyshev’s inequality applies to a distribution, and apply it.',
     'Describe a distribution’s shape with the five-number summary, a box plot, SKEW and KURT, and a categorical variable with counts, proportions and the mode.',
     'Compare several groups side by side with summaries that suit their shape.',
@@ -106,7 +109,7 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: 'In October 2026 Ana has B03’s spring review, a page of numbers about her online shop and her catering, and wants to know which of them she can lean on. Two questions start the course: how unusual was LC-10144, the office order of $1,512, compared with everything else she sold, and which kind of catering event brings in most per guest, and how consistently? Both are questions about describing data exactly, which is where inference starts.' },
+    { case: 'At the end of 2026 Ana has B03’s spring review of her online shop and a full year of catering invoices, and wants to know which of them she can lean on. Two questions start the course: how unusual was LC-10144, the office order of $1,512, compared with everything else she sold, and which kind of catering event brings in most per guest, and how consistently? Both are questions about describing data exactly, which is where inference starts.' },
     { p: 'This lesson builds the vocabulary that the rest of the course uses. A <b>distribution</b> is the pattern of values a variable takes: which values occur and how often. Four questions describe one: where its centre is, how spread out it is, where a particular value sits within it, and what shape it has (symmetric, or with a long tail on one side).' },
 
     { h: 'Populations, samples and their symbols' },
@@ -128,11 +131,11 @@ export default {
 
     { h: 'Centre: the balance point and the middle' },
     { p: String.raw`The <g>mean</g> is the balance point of the data. Each value’s <b>deviation</b> from the mean, <m>x_i - \bar{x}</m>, is positive above it and negative below, and the deviations always add to exactly 0. Picture the values as equal weights on a plank: the mean is where a support would balance it. That is why one value far out on the plank, like the $1,512 order, moves the mean a long way: it has the longest lever.` },
-    { p: `The <g>median</g> is the middle value, so it depends only on the order of the values. For the spring orders it is ${usd(D.orders.median)} against a mean of ${usd(D.orders.mean)}. A compromise between the two is the <g>trimmed mean</g>: sort the values, drop a fixed share from each end, and average the rest. Excel’s <x>=TRIMMEAN(J2:J232,0.1)</x> drops 10% of the ${n} orders in total, half from each end, and gives ${usd(trim10)}: the large orders still count, but the most extreme ones no longer dominate.` },
+    { p: `The <g>median</g> is the middle value, so it depends only on the order of the values. For the spring orders it is ${usd(D.orders.median)} against a mean of ${usd(D.orders.mean)}. A compromise between the two is the <g>trimmed mean</g>: sort the values, drop a fixed share from each end, and average the rest. Excel’s <x>=TRIMMEAN(J2:J232,0.1)</x> drops 10% of the ${n} orders in total, rounded down to an even number: ${trimK} orders, ${trimK / 2} from each end. The mean of the rest is ${usd(trim10)}: the large orders still count, but the most extreme ones no longer dominate.` },
 
     { h: 'Spread: deviations, squares and n − 1' },
-    { p: String.raw`Spread measures how far values typically lie from the centre. The standard deviation squares each deviation (so negatives don’t cancel positives), adds the squares, averages them and takes the square root. The total of the squared deviations, <m>\sum (x_i - \bar{x})^2</m>, is called the <g>sum of squares</g>; Excel’s DEVSQ returns it. Dividing it by <m>n</m> gives the population variance <m>\sigma^2</m> (VAR.P); dividing by <m>n - 1</m> gives the sample variance <m>s^2</m> (VAR.S).` },
-    { p: String.raw`Why <m>n - 1</m>? A sample’s deviations are measured from its own mean, <m>\bar{x}</m>, which sits in the middle of that sample. They are therefore a little smaller, on average, than the deviations from the population mean <m>\mu</m> would be, and dividing by <m>n</m> would underestimate the population’s variance. Dividing by <m>n - 1</m> corrects this exactly. The In depth section shows it on a population small enough to list every possible sample.` },
+    { p: String.raw`Spread measures how far values typically lie from the centre. The <g>standard deviation</g> squares each deviation (so negatives don’t cancel positives), adds the squares, averages them and takes the square root. The total of the squared deviations, <m>\sum (x_i - \bar{x})^2</m>, is called the <g>sum of squares</g>; Excel’s DEVSQ returns it. Dividing it by <m>n</m> gives the population <g>variance</g> <m>\sigma^2</m> (VAR.P); dividing by <m>n - 1</m> gives the sample variance <m>s^2</m> (VAR.S).` },
+    { p: String.raw`Why <m>n - 1</m>? A sample’s deviations are measured from its own mean, <m>\bar{x}</m>, which sits in the middle of that sample. They are therefore a little smaller, on average, than the deviations from the population mean <m>\mu</m> would be, and dividing by <m>n</m> would underestimate the population’s variance. Dividing by <m>n - 1</m> corrects this exactly, on average over all possible samples. The In depth section shows it on a population small enough to list every possible sample.` },
 
     { h: 'Position: z-scores and percentile ranks' },
     { p: `A <g>z-score</g> says how many standard deviations a value lies above (positive) or below (negative) the mean. The office order scores <m>(1{,}512 - ${tx(D.orders.mean)}) \\div ${tx(D.orders.sd)} \\approx ${f(zBulk, 1)}</m>: it lies ${f(zBulk, 1)} standard deviations above the mean, a position few data sets ever contain. In Excel, <x>=STANDARDIZE(1512,AVERAGE(J2:J232),STDEV.S(J2:J232))</x> gives the same number.` },
@@ -163,19 +166,20 @@ export default {
     { p: String.raw`Another way to say it uses <g>degrees of freedom</g>. The <m>n</m> deviations from the sample mean must add to 0, so once you know <m>n - 1</m> of them the last is fixed: only <m>n - 1</m> are free to vary. The sample variance averages the squared deviations over those <m>n - 1</m> degrees of freedom. The same idea returns in the t, chi-square and F distributions later in the course.` },
 
     { h: 'Adding a constant and changing units' },
-    { p: String.raw`Suppose every value is transformed as <m>y = a + bx</m>: <m>a</m> is added and <m>b</m> multiplies. Measures of centre and position follow the transformation: <m>\bar{y} = a + b\bar{x}</m>, and the median and quartiles move the same way. Measures of spread ignore <m>a</m> and scale by <m>|b|</m>: <m>s_y = |b| s_x</m>, and the IQR likewise, while the variance scales by <m>b^2</m>. z-scores, skewness and kurtosis don’t change at all when <m>b</m> is positive, because they are measured in standard deviations.` },
+    { p: String.raw`Suppose every value is transformed as <m>y = a + bx</m>: <m>a</m> is added and <m>b</m> multiplies. Measures of centre and position follow the transformation: <m>\bar{y} = a + b\bar{x}</m>, and the median and quartiles move the same way. Measures of spread ignore <m>a</m> and scale by <m>|b|</m>: <m>s_y = |b| s_x</m>, and the <g>interquartile range</g> (IQR) likewise, while the variance scales by <m>b^2</m>. z-scores, skewness and kurtosis don’t change at all when <m>b</m> is positive, because they are measured in standard deviations.` },
     { p: `Two Lantern illustrations. If Ana had added a flat $5.20 delivery charge to every spring order (a hypothetical), the mean would rise from ${usd(D.orders.mean)} to ${usd(D.orders.mean + 5.2)} and the median from ${usd(D.orders.median)} to ${usd(D.orders.median + 5.2)}, but the standard deviation and the IQR would stay at ${usd(D.orders.sd)} and ${usd(D.orders.q3 - D.orders.q1)}. And the ${D.kg.n} Kilnworth bags she weighed in October average ${kgMean.toLocaleString('en-US', { minimumFractionDigits: 2 })} g with a standard deviation of ${f(kgSd)} g: in kilograms (<m>b = 1 \\div 1{,}000</m>) that is ${f(kgMean / 1000, 5)} kg and ${f(kgSd / 1000, 5)} kg, and as overfill above the label (<m>y = x - 1{,}000</m>) it is ${f(kgMean - 1000)} g and still ${f(kgSd)} g.` },
 
     { h: 'The coefficient of variation' },
     { p: String.raw`A standard deviation is in the data’s units, so it can’t compare the spread of groups with very different means, or of variables in different units. The <g>coefficient of variation</g> (CV) divides the standard deviation by the mean: <m>\text{CV} = s \div \bar{x}</m>, usually written as a percentage. It measures spread relative to the size of the values. For Ana’s catering, launches vary by ${pc(LS.cv)} of their mean per guest-day and meetings by ${pc(MS.cv)}: meetings are three times as variable, relative to what they charge.` },
-    { p: `The CV only makes sense for a variable measured from a true zero (a ratio scale, in B01’s terms) with a positive mean, such as money, weight or time. Kilnworth’s bag weights have a CV of ${pc(kgSd / kgMean, 2)}, which says the filling machine is very consistent; the same bags’ overfill above 1,000 g has a CV of ${pc(kgSd / (kgMean - 1000), 0)}, although nothing about the bags has changed. Moving the zero changed the mean but not the standard deviation, so the ratio means little. Don’t compute a CV for temperatures in °C, z-scores, profits that can be negative, or ratings.` },
+    { p: `The CV only makes sense for a variable measured from a true zero (a ratio scale, in B01’s terms) with a positive mean, such as money, weight or time. Kilnworth’s bag weights have a CV of ${pc(kgSd / kgMean, 2)}: they vary little relative to their size. The same bags’ overfill above 1,000 g has a CV of ${pc(kgSd / (kgMean - 1000), 0)}, although nothing about the bags has changed. Overfill has no true zero and can be negative (${D.kg.underLabel} of the ${D.kg.n} bags were under 1,000 g); moving the zero changed the mean but not the standard deviation, so the ratio means little. Don’t compute a CV for temperatures in °C, z-scores, profits that can be negative, or ratings.` },
 
     { h: 'Percentiles and percentile ranks' },
-    { p: String.raw`A percentile (B03) goes from a percentage to a value: the 90th percentile of order values is the value with 90% of orders at or below it. A percentile rank goes the other way, from a value to a percentage. OpenStax’s <i>Introductory Business Statistics</i> uses <m>(B + 0.5E) \div n \times 100</m>, where <m>B</m> is the number of values below the one you are ranking and <m>E</m> the number equal to it. Excel’s <x>=PERCENTRANK.INC(array,x)</x> returns a fraction instead: for a value in the data, it is the number of values below it divided by <m>n - 1</m>. Without ties, that is the share of the <i>other</i> values that lie below it.` },
-    { p: `Excel cuts PERCENTRANK.INC off at three digits unless you ask for more, rather than rounding: Microsoft’s own example returns 0.555 for 5 ÷ 9. The worksheets on this site don’t have PERCENTRANK.INC, so its exercises count instead: <x>=COUNTIF(B2:B29,"<"&E2)/(COUNT(B2:B29)-1)</x> gives the same fraction without the truncation. With many ties the two definitions can disagree badly. ${cumBelow4} of the ${R.length} star ratings are below 4 and ${rc[3]} equal 4, so a 4-star rating sits at the ${f((cumBelow4 + 0.5 * rc[3]) / R.length * 100, 0)}th percentile by OpenStax’s formula and at ${f(cumBelow4 / (R.length - 1), 3)} by PERCENTRANK.INC. State the method whenever ties are common.` },
+    { p: String.raw`A <g>percentile</g> (B03) goes from a percentage to a value: the 90th percentile of order values is the value with 90% of orders at or below it. A percentile rank goes the other way, from a value to a percentage. OpenStax’s <i>Introductory Business Statistics</i> uses <m>(B + 0.5E) \div n \times 100</m>, where <m>B</m> is the number of values below the one you are ranking and <m>E</m> the number equal to it. Excel’s <x>=PERCENTRANK.INC(array,x)</x> returns a fraction instead: for a value in the data, it is the number of values below it divided by <m>n - 1</m>. Without ties, that is the share of the <i>other</i> values that lie below it.` },
+    { p: `Excel cuts PERCENTRANK.INC off at three digits unless you ask for more, rather than rounding: Microsoft’s own example returns 0.555 for 5 ÷ 9. Counting gives the same fraction without the truncation: <x>=COUNTIF(B2:B29,"<"&E2)/(COUNT(B2:B29)-1)</x>. For a value that isn’t in the data, PERCENTRANK.INC interpolates between its neighbours, which counting doesn’t. Microsoft’s page doesn’t say how ties are treated; the worksheets on this site count only the values strictly below, as in the definition above.` },
+    { p: `With many ties the two definitions of a percentile rank can disagree badly. ${cumBelow4} of the ${R.length} star ratings are below 4 and ${rc[3]} equal 4, so a 4-star rating sits at the ${f((cumBelow4 + 0.5 * rc[3]) / R.length * 100, 0)}th percentile by OpenStax’s formula and at ${f(Math.floor(cumBelow4 / (R.length - 1) * 1000) / 1000, 3)} by PERCENTRANK.INC (${cumBelow4} ÷ ${R.length - 1} = ${f(cumBelow4 / (R.length - 1), 4)}, cut to three digits). State the method whenever ties are common.` },
 
     { h: 'The five-number summary and box plots' },
-    { p: 'The <g>five-number summary</g> is the minimum, the first quartile, the median, the third quartile and the maximum. It shows the centre, the spread of the middle half and the reach of both tails, and it is what a box plot draws, as B03’s box and whisker chart did. The table and the figure compare Ana’s five kinds of catering event by invoice per guest-day (a two-day event counts its guests on both days).' },
+    { p: 'The <g>five-number summary</g> is the minimum, the first quartile, the median, the third quartile and the maximum. It shows the centre, the spread of the middle half and the reach of both tails, and it is what a box plot draws, as B03’s <g>box and whisker chart</g> did. The table and the figure compare Ana’s five kinds of catering event by invoice per guest-day (a two-day event counts its guests on both days).' },
     { table: {
       caption: 'Invoice per guest-day by event type, Lantern’s 76 catering events of 2026 (quartiles by QUARTILE.INC)',
       head: ['Type', 'Events', 'Mean', 'SD', 'CV', 'Min', 'Q1', 'Median', 'Q3', 'Max'],
@@ -187,11 +191,11 @@ export default {
       caption: `Box plots of invoice per guest-day by event type. Each box runs from Q1 to Q3 with a thick line at the median; the cross marks the mean; whiskers reach the furthest values inside the 1.5 × IQR fences, and circles are values beyond them (${outText}).`,
       alt: `Five horizontal box plots on a shared axis from $6 to $18 per guest-day. ${T.map((t) => { const b = ST[t]; return `${t} (${b.n} events): box from ${usd(b.q1)} to ${usd(b.q3)}, median ${usd(b.median)}, mean ${usd(b.mean)}, whiskers from ${usd(b.wlo)} to ${usd(b.whi)}${b.out.length ? `, with ${['no values', 'one value', 'two values', 'three values'][b.out.length]} drawn separately at ${b.out.map((v) => usd(v)).join(' and ')}` : ''}.`; }).join(' ')} Team days sit highest; launches have the narrowest box and whiskers.`,
     } },
-    { p: `Read the picture before the table. Team days charge most per guest (median ${usd(TD.median)}) and launches least and most consistently (median ${usd(LS.median)}, the narrowest box). Meetings have a modest median, ${usd(MS.median)}, but a long right whisker and outliers: their mean, ${usd(MS.mean)}, sits well above it. Every outlier lies on the high side, and the next section explains why.` },
+    { p: `Read the picture before the table. Team days charge most per guest (median ${usd(TD.median)}) and launches least and most consistently (median ${usd(LS.median)}, the narrowest box). Meetings have a modest median, ${usd(MS.median)}, but a long right whisker and two <g>outlier</g>s: their mean, ${usd(MS.mean)}, sits well above it. Every outlier lies on the high side, and the next section explains why.` },
 
     { h: 'Skewness and kurtosis' },
-    { p: `Excel’s SKEW cubes each value’s z-score, so values far out on one side dominate it: positive for a long right tail, negative for a long left one, near 0 for symmetric data (B02, B03). The meetings’ SKEW is ${f(MS.skew)}, and their mean is above their median, the usual sign of a right tail. The tail has a business cause: invoices include a fixed set-up charge and a minimum, so the smallest events pay most per guest. ${smallMeeting[evCol('event_id')]}, the meeting at ${usd(MS.max)} per guest, had ${smallMeeting[evCol('guests')]} guests, the fewest of any meeting.` },
-    { p: `KURT, Excel’s excess kurtosis, uses fourth powers and is about 0 for normally distributed data. Microsoft’s page describes it as the “relative peakedness or flatness” of a distribution, but Westfall (2014) showed that kurtosis says almost nothing about the peak: it measures how extreme the tails are, that is, how prone the data are to outliers. Lantern’s orders have a KURT of ${f(D.orders.kurtosis, 1)} because of one order, not because of a sharp peak. Read a large KURT as “check the extremes”.` },
+    { p: `Excel’s SKEW measures <g>skewness</g>. It cubes each value’s z-score, so values far out on one side dominate it: positive for a long right tail, negative for a long left one, near 0 for symmetric data (B02, B03). The meetings’ SKEW is ${f(MS.skew)}, and their mean is above their median, the usual sign of a right tail. The tail has a business cause: invoices include a fixed set-up charge and a minimum, so the smallest events pay most per guest. ${smallMeeting[evCol('event_id')]}, the meeting at ${usd(MS.max)} per guest, had ${smallMeeting[evCol('guests')]} guests, the fewest of any meeting.` },
+    { p: `KURT, Excel’s excess <g>kurtosis</g>, uses fourth powers and is about 0 for normally distributed data. Microsoft’s page describes it as the “relative peakedness or flatness” of a distribution, but Westfall (2014) showed that kurtosis says almost nothing about the peak: it measures how extreme the tails are, that is, how prone the data are to outliers. Lantern’s orders have a KURT of ${f(D.orders.kurtosis, 1)} because of one order, not because of a sharp peak. Read a large KURT as “check the extremes”.` },
 
     { h: 'Describing a categorical variable' },
     { p: `For a <g>categorical variable</g> the summaries are counts, proportions and the <g>mode</g>. Of the ${n} spring orders, ${web} came through the web shop and ${app} through the app, proportions of ${f(web / n, 3)} and ${f(app / n, 3)}; the mode is web. A 0/1 variable is a special case: the mean of Lantern’s subscription flags, 1 for a subscription order and 0 otherwise, is ${f(mean(SUBSCRIPTION_FLAGS), 3)}, the proportion of subscription orders (${D.orders.subscriptions} of ${n}). That is why later lessons treat a proportion as the mean of a 0/1 variable.` },
@@ -207,7 +211,7 @@ export default {
     { list: [
       'Use the same summaries, the same quartile method and the same scale for every group, and show each group’s size: a mean of 13 events and a mean of 28 don’t carry the same weight.',
       'Match the summary to the shape. For roughly symmetric groups the mean and standard deviation describe them; for skewed groups, or groups with outliers, add the median and IQR.',
-      'Use relative measures to compare spread across groups of different size or units: the CV, or z-scores within each group.',
+      'Use relative measures to compare spread across groups of different size or units: the CV, the IQR as a share of the median for skewed groups, or z-scores within each group.',
       'Describing a difference is not testing it. Whether team days really earn more per guest than launches, or only did in these 76 events, is the question of ANOVA in module 4.',
     ] },
   ],
@@ -243,7 +247,7 @@ export default {
     { id: 'dd-prank', name: 'Percentile rank',
       tex: String.raw`\text{percentile rank} = \dfrac{B + 0.5E}{n} \times 100, \qquad \text{PERCENTRANK.INC} = \dfrac{B}{n - 1}`,
       where: [[String.raw`B`, 'Number of values below the one being ranked', ''], [String.raw`E`, 'Number of values equal to it (itself included)', ''], [String.raw`n`, 'Number of values', '']],
-      note: 'The first is OpenStax’s formula; the second is Excel’s PERCENTRANK.INC for a value that appears in the data. They differ most when there are many ties.' },
+      note: 'The first is OpenStax’s formula; the second is Excel’s PERCENTRANK.INC for a value that appears in the data, which Excel cuts to three digits (not rounded) unless you give a third argument. They differ most when there are many ties.' },
   ],
 
   examples: [
@@ -275,30 +279,30 @@ export default {
       steps: [
         `Look at shape first. Launches and breakfasts have medians close to their means (${usd(LS.median)} against ${usd(LS.mean)}; ${usd(ST.Breakfast.median)} against ${usd(ST.Breakfast.mean)}) and no outliers, so mean or median serves. Meetings, team days and conferences have means above their medians and high outliers.`,
         `Quote the median and the middle half (Q1 to Q3) for every type, so that the note uses one method throughout: for meetings, ${usd(MS.median)}, usually between ${usd(MS.q1)} and ${usd(MS.q3)}; for team days, ${usd(TD.median)}, between ${usd(TD.q1)} and ${usd(TD.q3)}; for launches, ${usd(LS.median)}, between ${usd(LS.q1)} and ${usd(LS.q3)}.`,
-        `Rank the reliability of each guide by the CV: launches ${pc(LS.cv)}, conferences ${pc(ST.Conference.cv)}, breakfasts ${pc(ST.Breakfast.cv)}, team days ${pc(TD.cv)}, meetings ${pc(MS.cv)}. A guide is least reliable for meetings, where one event in 28 charged ${usd(MS.max)}.`,
+        `Measure how tight each guide is with a spread that ignores the outliers the guide leaves out: the IQR as a share of the median. ${byIqr.map((t) => `${PLURAL[t]} ${pc(ST[t].iqr / ST[t].median)}`).join(', ')}. The CV answers a different question, since the outliers inflate it: where a quote far outside the range is most likely. Meetings (${pc(MS.cv)}, one event in 28 at ${usd(MS.max)}) and team days (${pc(TD.cv)}) lead on that measure.`,
         `Add the cause as a caution: small events cost more per guest because of the fixed set-up charge and minimum. No meeting had fewer than ${minMeetingGuests} guests; under the $${QUOTE.minimum} minimum invoice a 20-guest meeting would pay at least ${usd(QUOTE.minimum / 20)} per guest, far above the quoted range.`,
       ],
-      answer: `Quote the median and Q1–Q3 for each type (meetings ${usd(MS.median)}, ${usd(MS.q1)}–${usd(MS.q3)}), and flag meetings and team days as the least predictable (CV ${pc(MS.cv)} and ${pc(TD.cv)}) and dependent on event size.`,
-      interpretation: 'The medians and quartiles resist the few small, expensive events, and the CV tells Ana which guides to trust. These are descriptions of 76 past events: whether team days really earn more per guest than launches, rather than by chance in this year’s mix, is a question for ANOVA in module 4.' },
+      answer: `Quote the median and Q1–Q3 for each type (meetings ${usd(MS.median)}, ${usd(MS.q1)}–${usd(MS.q3)}). Launches and conferences have the tightest ranges; breakfasts the widest typical range (IQR ${pc(ST.Breakfast.iqr / ST.Breakfast.median)} of the median); meetings and team days the most extreme exceptions, all from small events.`,
+      interpretation: 'The medians and quartiles resist the few small, expensive events. The IQR relative to the median says how tight each typical range is, and the CV, which the outliers inflate, says where an exception is most likely. These are descriptions of 76 past events: whether team days really earn more per guest than launches, rather than by chance in this year’s mix, is a question for ANOVA in module 4.' },
   ],
 
   demo: [
     { widget: 'dd-orders', intro: 'The 231 spring order values. Choose the |z| > 3 rule and compare it with the 1.5 × IQR rule: the z rule flags only the $1,512 office order, whose own size inflates the standard deviation used to judge it, while the quartile rule flags every order above its upper fence. Switch to a log scale and the right tail shrinks.' },
-    { widget: 'dd-sheet', intro: 'Ana’s 28 meetings with live summaries. B23 holds EV-047, the 35-guest meeting at $17.14 per guest-day. Change it to 10 and watch which statistics move (the mean a little; the standard deviations, CV, skewness and kurtosis by a quarter to a third) and which barely move (the median, the quartiles and the trimmed mean). E18 is a value to locate: change it to see its z-score and the share of the other meetings below it.' },
+    { widget: 'dd-sheet', intro: 'Ana’s 28 meetings with live summaries. B23 holds EV-047, the 35-guest meeting at $17.14 per guest-day. Change it to 10 and watch which statistics move (the mean a little; the standard deviations, CV, skewness and kurtosis by a quarter to a third) and which barely move (the median, the quartiles and the trimmed mean). E18 is a value to locate: change it to see its z-score, the share of the other meetings below it (E20, by counting) and Excel’s PERCENTRANK.INC (E21), which agrees, cut to three digits, when E18 is one of the meetings and interpolates otherwise.' },
   ],
 
   mistakes: [
-    { title: '“Dividing by n or by n − 1 makes no real difference.”', html: 'For 231 orders the two standard deviations differ by about 0.2%; for 11 launches, by almost 5%. More important, dividing by n is biased low for every sample, because a sample’s deviations are measured from its own mean. Use STDEV.S and VAR.S for samples, and the .P versions only when the values are the whole population you describe.' },
+    { title: '“Dividing by n or by n − 1 makes no real difference.”', html: 'For 231 orders the two standard deviations differ by about 0.2%; for 11 launches, by almost 5%. More important, dividing by n underestimates σ² on average over all samples, because a sample’s deviations are measured from its own mean. Use STDEV.S and VAR.S for samples, and the .P versions only when the values are the whole population you describe.' },
     { title: '“About 95% of any data lie within two standard deviations of the mean.”', html: 'That is the empirical rule, and it holds only for roughly bell-shaped data. Lantern’s skewed orders have 99.6% within two standard deviations with the office order and 91.7% without it. For data of unknown or skewed shape, only Chebyshev’s guarantee holds: at least 75%.' },
     { title: '“A z-score above 3 means the value is an error.”', html: 'A z-score measures position. The meeting at $17.14 per guest-day (z ≈ 3.5) is genuine: a small event paying a fixed set-up charge. Investigate a flagged value before deciding what it is, as B02 did with the office order.' },
     { title: '“Kurtosis measures how peaked a distribution is.”', html: 'Microsoft’s description says so, but kurtosis is driven almost entirely by the tails (Westfall, 2014). A large KURT says the data contain, or are prone to, extreme values.' },
-    { title: '“The coefficient of variation compares the spread of any two variables.”', html: 'Only for ratio-scale variables with a positive mean. Kilnworth’s bags have a CV of 0.26% as weights but 97% as overfill above 1,000 g: shifting the zero changed the mean and so the ratio. Don’t compute a CV for ratings, temperatures in °C or values that can be negative.' },
+    { title: '“The coefficient of variation compares the spread of any two variables.”', html: 'Only for ratio-scale variables with a positive mean. Kilnworth’s bags have a CV of 0.26% as weights but 97% as overfill above 1,000 g: shifting the zero changed the mean and so the ratio, and overfill can be negative (5 of the 40 bags were under 1,000 g), so it has no true zero. Don’t compute a CV for ratings, temperatures in °C or values that can be negative.' },
   ],
 
   application: [
     { p: 'Every inference in this course starts from a description, and professionals describe before they test. A revenue manager comparing hotels, a quality engineer checking a filling line, a charity comparing donation sizes by channel: each first reports the size of each group, a centre and a spread that suit its shape, and anything extreme, and only then asks whether a difference is real. Skipping the description is how analysts end up testing a mean that one record dominates.' },
     { p: 'Service promises are often stated as percentiles rather than means, because customers experience the tail: “90% of orders dispatched within 24 hours” is a statement about the 90th percentile. For the same reason a z-score or a percentile rank is a better way to tell a manager how unusual a week was than the raw number: “the second-busiest week of the year” or “2.4 standard deviations above a typical week”.' },
-    { case: `Ana’s price note for 2027 gives each event type a median per guest-day and its middle half, with a line on reliability: “Launches and conferences are predictable; meetings and team days vary most (CV ${pc(MS.cv, 0)} and ${pc(TD.cv, 0)}) and cost more per guest when they are small.” For the shop she reports the median order (${usd(D.orders.median)}) beside the mean, and notes that LC-10144 lies ${f(zBulk, 1)} standard deviations above the mean: by Chebyshev, no more than one of the ${n} orders could be that far out.` },
+    { case: `Ana’s price note for 2027 gives each event type a median per guest-day and its middle half, with a line on reliability: “Launches and conferences fall in tight ranges; breakfasts vary most from one to the next; meetings and team days have the most extreme exceptions (CV ${pc(MS.cv, 0)} and ${pc(TD.cv, 0)}), because small events cost more per guest.” For the shop she reports the median order (${usd(D.orders.median)}) beside the mean, and notes that LC-10144 lies ${f(zBulk, 1)} standard deviations above the mean: by Chebyshev, no more than one of the ${n} orders could be that far out.` },
     { p: 'Two habits make these descriptions trustworthy. Say what each number includes (all events or one-day events, with or without the office order, which quartile method), and give the size of every group. A summary that can’t be reproduced, or that hides a group of three behind a percentage, invites the wrong decision.' },
   ],
 
@@ -306,7 +310,7 @@ export default {
     'A parameter describes a population (μ, σ, N, p); a statistic describes a sample (x̄, s, n, p̂). Whether data are a population or a sample depends on the question.',
     'The sample variance divides the sum of squares (DEVSQ) by n − 1, the degrees of freedom, which makes it unbiased; STDEV.S and VAR.S do this, STDEV.P and VAR.P divide by n.',
     'The mean is the balance point and sensitive to extremes; the median and the trimmed mean (TRIMMEAN, whose percent is the total excluded) resist them.',
-    'Adding a constant moves the centre but not the spread; multiplying by b scales both centre and spread by b. z-scores, SKEW and KURT don’t change.',
+    'Adding a constant moves the centre but not the spread; multiplying by b scales the centre by b and the spread by |b|. z-scores, SKEW and KURT don’t change when b > 0.',
     'The coefficient of variation, s ÷ x̄, compares relative spread, but only on ratio scales with a positive mean.',
     'z-scores (STANDARDIZE) and percentile ranks (PERCENTRANK.INC, or COUNTIF ÷ (n − 1)) locate a value within its group; neither says whether the value is wrong.',
     'The empirical rule (68%, 95%, 99.7%) needs bell-shaped data; Chebyshev’s inequality (at least 1 − 1/k²) holds for any data.',
@@ -318,9 +322,9 @@ export default {
     { term: 'Statistic', def: 'A number calculated from a sample, such as its mean x̄, standard deviation s or proportion p̂, often used to estimate a parameter. It varies from one sample to another.' },
     { term: 'Sum of squares', def: 'The total of the squared deviations of values from their mean, Σ(x − x̄)²; Excel’s DEVSQ. Dividing it by n − 1 gives the sample variance.' },
     { term: 'Degrees of freedom', def: 'The number of values in a calculation that are free to vary. For a sample variance it is n − 1, because the deviations from the sample mean must add to 0.' },
-    { term: 'Trimmed mean', def: 'The mean of the values left after a fixed share is removed from each end of the sorted data. Excel’s TRIMMEAN(array, percent) removes percent of the values in total, half from each end.' },
+    { term: 'Trimmed mean', def: 'The mean of the values left after a fixed share is removed from each end of the sorted data. Excel’s TRIMMEAN(array, percent) removes percent of the values in total (rounded down to an even number of values), half from each end.' },
     { term: 'Coefficient of variation', def: 'The standard deviation divided by the mean, usually as a percentage: spread relative to the size of the values. Meaningful only for ratio-scale variables with a positive mean.' },
-    { term: 'Percentile rank', def: 'The percentage of values in a data set that lie below a given value (with a stated rule for ties). Excel’s PERCENTRANK.INC returns it as a fraction.' },
+    { term: 'Percentile rank', def: 'The percentage of values in a data set that lie below a given value (with a stated rule for ties). Excel’s PERCENTRANK.INC gives a related fraction: the values below it ÷ (n − 1), cut to three digits.' },
     { term: 'Empirical rule', def: 'For bell-shaped, symmetric data, about 68% of values lie within one standard deviation of the mean, about 95% within two and about 99.7% within three.' },
     { term: 'Chebyshev’s inequality', def: 'For any data set or distribution, at least 1 − 1/k² of the values lie within k standard deviations of the mean (k > 1): at least 75% within two and 88.9% within three.' },
     { term: 'Five-number summary', def: 'The minimum, first quartile, median, third quartile and maximum of a data set: the values a box plot draws.' },
@@ -336,6 +340,18 @@ export default {
   ],
 
   checks: [
+    { what: 'TRIMMEAN 10% drops (even)', value: trimK, shown: 22 },
+    { what: 'TRIMMEAN drops from each end', value: trimK / 2, shown: 11 },
+    { what: 'Bags under 1,000 g', value: D.kg.underLabel, shown: 5 },
+    { what: 'IQR/median launches %', value: LS.iqr / LS.median * 100, shown: 9.5, tol: 0.05 },
+    { what: 'IQR/median conferences %', value: ST.Conference.iqr / ST.Conference.median * 100, shown: 12.5, tol: 0.05 },
+    { what: 'IQR/median meetings %', value: MS.iqr / MS.median * 100, shown: 20.6, tol: 0.05 },
+    { what: 'IQR/median team days %', value: TD.iqr / TD.median * 100, shown: 20.7, tol: 0.05 },
+    { what: 'IQR/median breakfasts %', value: ST.Breakfast.iqr / ST.Breakfast.median * 100, shown: 25.8, tol: 0.05 },
+    { what: 'Breakfasts widest IQR/median', value: byIqr[byIqr.length - 1] === 'Breakfast' ? 1 : 0, shown: 1 },
+    { what: 'Launches tightest IQR/median', value: byIqr[0] === 'Launch' ? 1 : 0, shown: 1 },
+    { what: 'Conferences second tightest', value: byIqr[1] === 'Conference' ? 1 : 0, shown: 1 },
+    { what: 'Two meeting outliers', value: MS.out.length, shown: 2 },
     // orders
     { what: 'Orders', value: n, shown: 231 },
     { what: 'Mean order', value: D.orders.mean, shown: 39.38 },
@@ -472,7 +488,9 @@ export default {
     { what: 'Last 4-star position', value: cumBelow4 + rc[3], shown: 86 },
     { what: 'Middle positions', value: (R.length + 1) / 2, shown: 77.5 },
     { what: 'Percentile of a 4 (OpenStax)', value: (cumBelow4 + 0.5 * rc[3]) / R.length * 100, shown: 39, tol: 0.5 },
-    { what: 'PERCENTRANK.INC of a 4', value: cumBelow4 / (R.length - 1), shown: 0.229, tol: 0.0005 },
+    { what: 'PERCENTRANK.INC of a 4 (truncated)', value: Math.floor(cumBelow4 / (R.length - 1) * 1000) / 1000, shown: 0.228, tol: 1e-9 },
+    { what: '35 ÷ 153', value: cumBelow4 / (R.length - 1), shown: 0.2288, tol: 0.00005 },
+    { what: 'Ratings minus 1', value: R.length - 1, shown: 153 },
     { what: 'Microsoft PERCENTRANK example 5/9 truncated', value: Math.floor(5 / 9 * 1000) / 1000, shown: 0.555, tol: 1e-9 },
     { what: '4 or 5 stars %', value: (rc[3] + rc[4]) / R.length * 100, shown: 77, tol: 0.5 },
     { what: '1 or 2 stars %', value: (rc[0] + rc[1]) / R.length * 100, shown: 8, tol: 0.5 },

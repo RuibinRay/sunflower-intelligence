@@ -18,6 +18,10 @@ const typeSheet = (type, extra = {}) => ({ cells: { A1: 'Event', B1: 'Per guest-
 
 const L = G.Launch, M = G.Meeting, TDY = G['Team day'], CONF = G.Conference;
 const CONF_MAX = Math.max(...CONF);
+const CM = Number(mean(CONF).toFixed(2)), CSD = Number(sdS(CONF).toFixed(2));          // as the prompt prints them
+const sortedM = [...G.Meeting].sort((a, b) => a - b);
+const qInc = (s, p) => { const h = (s.length - 1) * p, lo = Math.floor(h); return s[lo] + (h - lo) * ((s[lo + 1] ?? s[lo]) - s[lo]); };
+const MQ1 = qInc(sortedM, 0.25), MQ3 = qInc(sortedM, 0.75), MMED = qInc(sortedM, 0.5);
 const LOCATE = G.Meeting[11];                          // EV-021's invoice per guest-day (B13 in the meeting sheet)
 // Crowfoot Bakery (fictional): 20 Saturday takings ($)
 const TAKINGS = [1240, 1380, 980, 1510, 1420, 1190, 2650, 1330, 1270, 1460, 1120, 1350, 1290, 1580, 1410, 760, 1300, 1440, 1360, 1230];
@@ -47,15 +51,15 @@ export const widgets = {
     sheet: typeSheet('Meeting', {
       D1: 'Statistic', E1: 'Value',
       ...Object.fromEntries(statRows.flatMap(([l, f], i) => [[`D${i + 2}`, l], [`E${i + 2}`, f]])),
-      D18: 'Value to locate', E18: 17.14, D19: 'z-score', E19: '=STANDARDIZE(E18,E3,E8)', D20: 'Share of the others below', E20: '=COUNTIF(B2:B29,"<"&E18)/(E2-1)',
+      D18: 'Value to locate', E18: 17.14, D19: 'z-score', E19: '=STANDARDIZE(E18,E3,E8)', D20: 'Share of the others below', E20: '=COUNTIF(B2:B29,"<"&E18)/(E2-1)', D21: 'PERCENTRANK.INC', E21: '=PERCENTRANK.INC(B2:B29,E18)',
     }),
     view: 'A1:E29',
     maxHeight: '24rem',
     editable: ['B2:B29', 'E18:E18'],
-    formats: { B: '$#,##0.00', E: '$#,##0.00', ...statFormats, E19: '0.00', E20: '0.0%' },
+    formats: { B: '$#,##0.00', E: '$#,##0.00', ...statFormats, E19: '0.00', E20: '0.0%', E21: '0.000' },
     widths: { D: 22 },
     tools: ['formulas', 'reset'],
-    note: 'Change B23 (EV-047, $17.14) to 10: the mean falls by about 25 cents, the standard deviations and the CV by about a quarter, and SKEW and KURT by about a third, while the median, the quartiles and the trimmed mean barely move. E20 is the fraction Excel’s PERCENTRANK.INC returns: the values below E18 divided by n − 1.',
+    note: 'Change B23 (EV-047, $17.14) to 10: the mean falls by about 25 cents, the standard deviations and the CV by about a quarter, and SKEW and KURT by about a third, while the median, the quartiles and the trimmed mean barely move. E20 counts the meetings below E18 and divides by n − 1; E21 is Excel’s PERCENTRANK.INC. They agree (E21 cut to three digits) when E18 is one of the meetings; for any other value PERCENTRANK.INC interpolates between its neighbours.',
   },
 };
 
@@ -108,15 +112,15 @@ export const guided = [
   },
   {
     id: 'b04-dd-g2', type: 'num', kind: 'numerical',
-    prompt: `Ana’s most expensive conference charged ${usd(CONF_MAX)} per guest-day. Her 13 conferences averaged $10.32 per guest-day with a standard deviation of $1.67. What is its z-score within the conferences? Give two decimal places.`,
-    answer: Number(((CONF_MAX - 10.32) / 1.67).toFixed(2)), check: () => (CONF_MAX - mean(CONF)) / sdS(CONF), unit: '', places: 2, tol: 0.01,
+    prompt: `Ana’s most expensive conference charged ${usd(CONF_MAX)} per guest-day. Her 13 conferences averaged ${usd(CM)} per guest-day with a standard deviation of ${usd(CSD)}. What is its z-score within the conferences? Give two decimal places.`,
+    answer: Number(((CONF_MAX - CM) / CSD).toFixed(2)), check: () => (CONF_MAX - mean(CONF)) / sdS(CONF), unit: '', places: 2, tol: 0.01,
     wrong: [
-      { value: Number((CONF_MAX - 10.32).toFixed(2)), say: 'That is the distance in dollars. A z-score divides it by the standard deviation to give the distance in standard deviations.' },
-      { value: Number(((10.32 - CONF_MAX) / 1.67).toFixed(2)), say: 'The sign is reversed: z = (value − mean) ÷ SD, which is positive for a value above the mean.' },
-      { value: Number(((CONF_MAX - 10.32) / 1.67 ** 2).toFixed(2)), say: 'You divided by the variance (1.67²). Divide by the standard deviation itself.' },
+      { value: Number((CONF_MAX - CM).toFixed(2)), say: 'That is the distance in dollars. A z-score divides it by the standard deviation to give the distance in standard deviations.' },
+      { value: Number(((CM - CONF_MAX) / CSD).toFixed(2)), say: 'The sign is reversed: z = (value − mean) ÷ SD, which is positive for a value above the mean.' },
+      { value: Number(((CONF_MAX - CM) / CSD ** 2).toFixed(2)), say: `You divided by the variance (${CSD}²). Divide by the standard deviation itself.` },
     ],
-    hints: ['z = (value − mean) ÷ standard deviation.', `(${CONF_MAX} − 10.32) ÷ 1.67.`],
-    solution: `z = (${CONF_MAX} − 10.32) ÷ 1.67 = ${(CONF_MAX - 10.32).toFixed(2)} ÷ 1.67 ≈ ${((CONF_MAX - 10.32) / 1.67).toFixed(2)}. The conference lies about two standard deviations above the average conference: high, but much less unusual within its type than the $17.14 meeting (z ≈ 3.49). In Excel, <x>=STANDARDIZE(${CONF_MAX},10.32,1.67)</x>.`,
+    hints: ['z = (value − mean) ÷ standard deviation.', `(${CONF_MAX} − ${CM}) ÷ ${CSD}.`],
+    solution: `z = (${CONF_MAX} − ${CM}) ÷ ${CSD} = ${(CONF_MAX - CM).toFixed(2)} ÷ ${CSD} ≈ ${((CONF_MAX - CM) / CSD).toFixed(2)}. The conference lies about two standard deviations above the average conference: high, but much less unusual within its type than the $17.14 meeting (z ≈ 3.49). In Excel, <x>=STANDARDIZE(${CONF_MAX},${CM},${CSD})</x>.`,
   },
   {
     id: 'b04-dd-g3', type: 'classify', kind: 'conceptual',
@@ -148,7 +152,7 @@ export const guided = [
       3: 'Chebyshev’s inequality holds for any distribution: at least 75% lie within two SDs of the mean.',
     },
     hints: ['Which rule needs a bell shape, and which needs nothing?', 'No hire is shorter than 0 minutes, so the mean − 2 SD side (−12 minutes) excludes nothing.'],
-    solution: 'The interval mean ± 2 SD runs from −12 to 108 minutes; since no hire is shorter than 0, “within two SDs” means “less than 108 minutes”. For skewed data only Chebyshev’s inequality is guaranteed: at least 1 − 1/2² = 75% of hires. The real share may well be higher, but the empirical rule’s 95% can’t be assumed.',
+    solution: 'The interval mean ± 2 SD runs from −12 to 108 minutes; since no hire is shorter than 0, “within two SDs” means “less than 108 minutes”. For skewed data Chebyshev guarantees at least 1 − 1/2² = 75% of hires. The real share may well be higher, but the empirical rule’s 95% can’t be assumed.',
   },
 ];
 
@@ -171,17 +175,18 @@ export const independent = [
   },
   {
     id: 'b04-dd-i2', type: 'formula', kind: 'numerical',
-    prompt: 'The 28 meetings are in A2:B29, and E2 shows the invoice per guest-day of one of them, EV-021. In F2, calculate the fraction Excel’s PERCENTRANK.INC would return for it (this worksheet doesn’t have that function): the number of meetings below E2 divided by n − 1.',
+    prompt: 'The 28 meetings are in A2:B29, and E2 shows the invoice per guest-day of one of them, EV-021. In F2, calculate its rank by counting, not with PERCENTRANK.INC (which cuts its result to three digits): the number of meetings below E2 divided by n − 1.',
     sheet: typeSheet('Meeting', { D2: 'EV-021', E2: '=B13', F1: 'Rank (fraction)' }),
     cell: 'F2', answer: '=COUNTIF(B2:B29,"<"&E2)/(COUNT(B2:B29)-1)',
     alt: ['=COUNTIF($B$2:$B$29,"<"&$E$2)/(COUNT($B$2:$B$29)-1)', '=COUNTIFS(B2:B29,"<"&E2)/(COUNTA(B2:B29)-1)'],
     view: 'A1:F29', maxHeight: '20rem', formats: { B: '$#,##0.00', E: '$#,##0.00', F: '0.000' }, widths: { F: 15 },
     wrong: [
       { formula: '=COUNTIF(B2:B29,"<"&E2)/COUNT(B2:B29)', say: 'PERCENTRANK.INC divides by n − 1, the number of other values, not by n. Use (COUNT(B2:B29)-1).' },
-      { formula: '=COUNTIF(B2:B29,"<="&E2)/(COUNT(B2:B29)-1)', say: '"<=" counts the meeting itself (and any equal to it). The rank counts only the values below: "<"&E2.' },
-      { formula: '=COUNTIF(B2:B29,"<E2")/(COUNT(B2:B29)-1)', say: 'Inside the quotes, E2 is just text, so Excel compares the numbers with the letters “E2” and counts none. Join the operator to the cell: "<"&E2.' },
+      { formula: '=COUNTIF(B2:B29,"<="&E2)/(COUNT(B2:B29)-1)', say: '<x>"<="</x> counts the meeting itself (and any equal to it). The rank counts only the values below: <x>"<"&E2</x>.' },
+      { formula: '=PERCENTRANK.INC(B2:B29,E2)', say: 'PERCENTRANK.INC gives this rank cut to three digits (0.777). This exercise asks for the exact fraction by counting: COUNTIF(B2:B29,"<"&E2) ÷ (COUNT(B2:B29) − 1).' },
+      { formula: '=COUNTIF(B2:B29,"<E2")/(COUNT(B2:B29)-1)', say: 'Inside the quotes, E2 is just text, so Excel compares the numbers with the letters “E2” and counts none. Join the operator to the cell: <x>"<"&E2</x>.' },
     ],
-    solution: `<x>=COUNTIF(B2:B29,"<"&E2)/(COUNT(B2:B29)-1)</x>. For ${usd(LOCATE)}, ${M.filter((v) => v < LOCATE).length} of the 28 meetings are lower, so the rank is ${M.filter((v) => v < LOCATE).length} ÷ 27 ≈ ${(M.filter((v) => v < LOCATE).length / 27).toFixed(3)}: about ${Math.round(M.filter((v) => v < LOCATE).length / 27 * 100)}% of the other meetings charged less per guest-day. In Excel, <x>=PERCENTRANK.INC(B2:B29,E2)</x> gives ${(Math.floor(M.filter((v) => v < LOCATE).length / 27 * 1000) / 1000).toFixed(3)}, truncated to three digits.`,
+    solution: `<x>=COUNTIF(B2:B29,"<"&E2)/(COUNT(B2:B29)-1)</x>. For ${usd(LOCATE)}, ${M.filter((v) => v < LOCATE).length} of the 28 meetings are lower, so the rank is ${M.filter((v) => v < LOCATE).length} ÷ 27 ≈ ${(M.filter((v) => v < LOCATE).length / 27).toFixed(3)}: about ${Math.round(M.filter((v) => v < LOCATE).length / 27 * 100)}% of the other meetings charged less per guest-day. <x>=PERCENTRANK.INC(B2:B29,E2)</x> gives ${(Math.floor(M.filter((v) => v < LOCATE).length / 27 * 1000) / 1000).toFixed(3)}, the same fraction cut to three digits.`,
   },
   {
     id: 'b04-dd-i3', type: 'num', kind: 'numerical',
@@ -196,9 +201,9 @@ export const independent = [
   },
   {
     id: 'b04-dd-i4', type: 'mc', kind: 'applied',
-    prompt: `Ana writes one line on meetings in her 2027 price note. The 28 meetings’ invoice per guest-day has mean ${usd(mean(M))}, SD ${usd(sdS(M))}, median ${usd(9.215)} and IQR from $8.14 to $10.04; one 35-guest meeting charged $17.14. Which pair should the line use?`,
+    prompt: `Ana writes one line on meetings in her 2027 price note. The 28 meetings’ invoice per guest-day has mean ${usd(mean(M))}, SD ${usd(sdS(M))}, median ${usd(MMED)} and quartiles ${usd(MQ1)} and ${usd(MQ3)} (IQR ${usd(MQ3 - MQ1)}); one 35-guest meeting charged ${usd(Math.max(...M))}. Which pair should the line use?`,
     options: [
-      'The median and the IQR, because one small, costly meeting pulls up the mean and SD.',
+      'The median and the quartiles, because one small, costly meeting pulls up the mean and the SD.',
       'The mean and the standard deviation, because they make use of every meeting’s invoice.',
       'The mode and the range, because they show the most common price and both extremes.',
       'The mean and the CV, because dividing by the mean removes the effect of the outlier.',
@@ -209,26 +214,25 @@ export const independent = [
       2: 'Per-guest invoices hardly repeat, so the mode means little, and the range is set by the single $17.14 meeting.',
       3: 'The CV uses the mean and SD, so the outlier inflates it too.',
     },
-    solution: 'The meetings are right-skewed, with one small event far above the rest. The median ($9.22) and the middle half ($8.14 to $10.04) describe a typical meeting and barely move if that event is left out; the mean and SD would both change noticeably. Ana can mention the small-event effect separately.',
+    solution: `The meetings are right-skewed, with one small event far above the rest. The median (${usd(MMED)}) and the middle half (${usd(MQ1)} to ${usd(MQ3)}) describe a typical meeting and barely move if that event is left out; the mean and SD would both change noticeably. Ana can mention the small-event effect separately.`,
   },
   {
     id: 'b04-dd-i5', type: 'multi', kind: 'conceptual',
     prompt: 'Select all the true statements about dividing the sum of squares by n − 1 in a sample variance.',
     options: [
-      'Deviations from a sample’s own mean are smaller, on average, than deviations from the population mean.',
+      'The squared deviations from a sample’s own mean add up to less than the squared deviations from μ would.',
       'Averaged over all possible samples, the sum of squares divided by n − 1 equals the population variance.',
       'Only n − 1 deviations from the sample mean are free to vary, because all n of them must add to 0.',
       'Dividing by n − 1 instead of n makes the standard deviation resistant to outliers such as the office order.',
-      'The correction matters most for large samples, where more squared deviations are added together.',
+      'The correction matters most for small samples, where dividing by n − 1 instead of n changes the result most.',
       'STDEV.P divides by n − 1, because a population always has one more value than a sample drawn from it.',
     ],
-    answer: [0, 1, 2],
+    answer: [0, 1, 2, 4],
     feedback: {
       3: 'Changing the divisor scales the variance by the same factor whatever the data; it does nothing about one extreme value.',
-      4: 'The ratio (n − 1)/n is close to 1 for large n, so the correction matters most for small samples.',
       5: 'STDEV.P divides by n, for data that are the whole population; STDEV.S divides by n − 1.',
     },
-    solution: 'True: a sample’s deviations are measured from its own mean, which sits in its middle, so they are smaller on average; dividing by n − 1 makes the variance right on average (unbiased); and n − 1 is the degrees of freedom, because the deviations must add to 0. Dividing by n − 1 doesn’t make anything robust, matters least for large samples, and is what STDEV.S (not STDEV.P) does.',
+    solution: 'True: the sample mean is the point that makes the squared deviations smallest, so they add up to less than they would around μ; dividing by n − 1 makes the variance right on average (unbiased); n − 1 is the degrees of freedom, because the deviations must add to 0; and the ratio (n − 1)/n is furthest from 1 for small n. Dividing by n − 1 doesn’t make anything robust, and it is what STDEV.S (not STDEV.P) does.',
   },
   {
     id: 'b04-dd-i6', type: 'fill', kind: 'conceptual',
