@@ -94,7 +94,7 @@ export default {
   slug: 'descriptive-statistics-and-regression',
   title: 'Descriptive statistics and regression in Excel',
   blurb: 'Describe a column of numbers with Excel’s statistics functions and the Analysis ToolPak, see what one large order does to the mean and the standard deviation, build a frequency table, and fit a straight line through catering invoices. Then read every line of the ToolPak’s regression output, and say what it does and doesn’t show.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate the mean, median, mode, standard deviation, variance, quartiles and percentiles of a column with Excel functions, choosing STDEV.S or STDEV.P and the .INC or .EXC quartile deliberately.',
     'Read the Analysis ToolPak’s Descriptive Statistics report and explain what its Standard Error, Kurtosis, Skewness and Confidence Level lines measure.',
@@ -343,8 +343,8 @@ export default {
   ],
 
   demo: [
-    { widget: 'ds-orders', intro: 'All 231 order totals as a histogram. Compare the mean with the median, find the office order on the far right, and switch to a log scale to see the shape of the ordinary orders.' },
-    { widget: 'ds-sheet', intro: 'The order totals with live statistics beside them and a FREQUENCY table. Change B145, LC-10144’s $1,512.00, to 151.2 and watch which statistics move and which don’t. Turn on Show formulas to see how each is calculated.' },
+    { widget: 'ds-orders', intro: 'All 231 order totals as a histogram with the FREQUENCY table’s bins: $20 wide, each including its upper edge, and a last bin for orders above $100. Compare the mean with the median, find the office order in the last bin, and switch to a log scale to see the shape of the ordinary orders.' },
+    { widget: 'ds-sheet', intro: 'The order totals with live statistics beside them and a FREQUENCY table. Change B145, LC-10144’s $1,512.00, to 151.2 and watch which statistics move and which don’t, the skewness and kurtosis included. Turn on Show formulas to see how each is calculated.' },
     { widget: 'ds-reg', intro: 'The ToolPak’s Summary Output for invoice on guests, 75 one-day events, with the scatter chart and the fitted line. Match each number to the explanation in the In depth section.' },
     { widget: 'ds-reg-all', intro: 'The same regression with the two-day conference included (76 events). Compare the slope, the intercept, R Square and the Standard Error with the one-day version.' },
   ],

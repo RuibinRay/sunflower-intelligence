@@ -87,7 +87,7 @@ export default {
   slug: 'charts-and-conditional-formatting',
   title: 'Charts and conditional formatting',
   blurb: 'A chart or a highlighted cell should answer one question at a glance. Choose the chart from the question, build it honestly in Excel (a title that states the finding, bars from zero, colour that never carries the meaning alone), and use conditional formatting, including formula rules with mixed references, to make the cells that matter stand out.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Choose a chart type from the question it must answer: a comparison, a change over time, a composition, a distribution or a relationship.',
     'Build an Excel chart whose title states the finding, with labelled axes, units and direct labels, and calculate the figures it needs, such as shares of a total.',

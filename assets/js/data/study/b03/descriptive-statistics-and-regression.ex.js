@@ -238,7 +238,7 @@ export const independent = [
     wrong: [
       { formula: '=LINEST(B2:B12,C2:C12,TRUE,TRUE)', say: 'LINEST takes known_y’s first: the invoices, C2:C12, then the guests.' },
       { formula: '=LINEST(C2:C12,B2:B12)', say: 'Without the fourth argument LINEST returns only the slope and intercept (one row). Set stats to TRUE for the five rows of statistics.' },
-      { formula: '=LINEST(C2:C12,B2:B12,FALSE,TRUE)', say: 'The third argument FALSE forces the intercept to 0. Leave it TRUE (or omit it) so the intercept is fitted.' },
+      { formula: '=LINEST(C2:C12,B2:B12,FALSE,TRUE)', say: 'The third argument, const, set to FALSE forces the line through the origin: the intercept becomes 0 and every statistic changes. Leave const TRUE and set the fourth argument, stats, to TRUE.' },
     ],
     solution: `<x>=LINEST(C2:C12,B2:B12,TRUE,TRUE)</x> spills five rows by two columns: slope ${LAUNCH.b.toFixed(4)} and intercept ${LAUNCH.a.toFixed(2)}; their standard errors ${LAUNCH.seB.toFixed(4)} and ${LAUNCH.seA.toFixed(2)}; R² ${LAUNCH.r2.toFixed(4)} and the standard error of the estimate ${LAUNCH.sey.toFixed(2)}; F ${LAUNCH.F.toFixed(1)} and ${LAUNCH.df} residual degrees of freedom; the regression and residual sums of squares. These are the numbers the ToolPak’s Regression output prints, in a different layout.`,
   },
@@ -353,7 +353,7 @@ export const check = [
     id: 'b03-ds-k4', type: 'mc', kind: 'conceptual',
     prompt: 'A bike-repair shop (fictional) regresses the invoice on minutes of labour for 200 repairs, all between 15 and 240 minutes. The intercept is $18.40. What is the right reading?',
     options: [
-      'It is the line’s value at 0 minutes, outside the data: it anchors the line, not a real charge.',
+      'It is the line’s value at 0 minutes, outside the data: it anchors the line and needn’t be a charge.',
       'Every repair includes a fixed charge of $18.40, which the shop adds before charging for labour time.',
       'A repair that needs no labour at all would cost a customer $18.40 on average, according to the shop’s data.',
       'The intercept is the average invoice of the 200 repairs, the point where the line crosses the y-axis.',

@@ -795,14 +795,33 @@ FN.STEYX = (args, ctx) => { const p = pairs(args[1], args[0], ctx); if (isErr(p)
 FN.COVARIANCE_S = null;
 FN['COVARIANCE.S'] = (args, ctx) => { const p = pairs(args[0], args[1], ctx); if (isErr(p)) return p; if (p.xs.length < 2) return ERR.DIV0; const f = linfit(p.xs, p.ys); return f.sxy / (f.n - 1); };
 FN['COVARIANCE.P'] = (args, ctx) => { const p = pairs(args[0], args[1], ctx); if (isErr(p)) return p; if (!p.xs.length) return ERR.DIV0; const f = linfit(p.xs, p.ys); return f.sxy / f.n; };
-// LINEST(known_y's, known_x's, [const], [stats]) for one x: [slope, intercept]; with stats a 5 × 2 array
+// LINEST(known_y's, known_x's, [const], [stats]) for one x: [slope, intercept]; with stats a 5 × 2 array. Omitted
+// known_x's are {1;2;3;…}. const FALSE forces the intercept to 0: the second column then holds 0 and #N/A for its
+// standard error, the total sum of squares is uncentred (Σy²) and the residual degrees of freedom are n − 1, as Excel
+// documents.
 FN.LINEST = (args, ctx) => {
-  const p = pairs(args[1] || args[0], args[0], ctx); if (isErr(p)) return p;
-  const f = linfit(p.xs, p.ys);
-  if (!args[3] || !toBool(scalar(args[3], ctx))) return new Arr([[f.slope, f.intercept]]);
-  const sse = f.syy - f.sxy ** 2 / f.sxx, df = f.n - 2, ssr = f.syy - sse;
-  const se = Math.sqrt(sse / df), seSlope = se / Math.sqrt(f.sxx), seInt = se * Math.sqrt(1 / f.n + f.mx ** 2 / f.sxx);
-  return new Arr([[f.slope, f.intercept], [seSlope, seInt], [ssr / f.syy, se], [(ssr / 1) / (sse / df), df], [ssr, sse]]);
+  const Y = arrOf(args[0], ctx); if (isErr(Y)) return Y;
+  const Xa = args[1] && args[1].t !== 'missing' ? arrOf(args[1], ctx) : new Arr(Y.h === 1 ? [Y.rows[0].map((_, i) => i + 1)] : Y.rows.map((_, i) => [i + 1]));
+  if (isErr(Xa)) return Xa;
+  const p = pairs({ t: 'lit', v: Xa }, { t: 'lit', v: Y }, ctx); if (isErr(p)) return p;
+  const withConst = !args[2] || args[2].t === 'missing' || toBool(scalar(args[2], ctx));
+  const stats = args[3] && args[3].t !== 'missing' && toBool(scalar(args[3], ctx));
+  const n = p.xs.length;
+  if (withConst) {
+    if (n < 2) return ERR.DIV0;
+    const f = linfit(p.xs, p.ys);
+    if (!stats) return new Arr([[f.slope, f.intercept]]);
+    const sse = f.syy - f.sxy ** 2 / f.sxx, df = f.n - 2, ssr = f.syy - sse;
+    const se = Math.sqrt(sse / df), seSlope = se / Math.sqrt(f.sxx), seInt = se * Math.sqrt(1 / f.n + f.mx ** 2 / f.sxx);
+    return new Arr([[f.slope, f.intercept], [seSlope, seInt], [ssr / f.syy, se], [(ssr / 1) / (sse / df), df], [ssr, sse]]);
+  }
+  const sxx = p.xs.reduce((a, x) => a + x * x, 0), sxy = p.xs.reduce((a, x, i) => a + x * p.ys[i], 0), syy = p.ys.reduce((a, y) => a + y * y, 0);
+  if (!sxx) return ERR.DIV0;
+  const b = sxy / sxx;
+  if (!stats) return new Arr([[b, 0]]);
+  const sse = Math.max(0, syy - b * sxy), df = n - 1, ssr = syy - sse;
+  const se = Math.sqrt(sse / df);
+  return new Arr([[b, 0], [se / Math.sqrt(sxx), ERR.NA], [ssr / syy, se], [ssr / (sse / df), df], [ssr, sse]]);
 };
 
 // FREQUENCY(data, bins): how many values fall in each bin (≤ the bin's upper edge and > the one before), plus one
