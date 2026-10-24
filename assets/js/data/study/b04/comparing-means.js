@@ -60,10 +60,10 @@ function pairFigure() {
   const seen = {};
   DIFF.forEach((d) => { seen[d] = (seen[d] || 0) + 1; svg += `<circle cx="${X(d)}" cy="${200 - 12 * seen[d]}" r="5" fill="var(--series-1)"/>`; });
   svg += `<line x1="${f1(X(P.meanDiff))}" x2="${f1(X(P.meanDiff))}" y1="90" y2="200" stroke="var(--ink)" stroke-width="1.4" stroke-dasharray="5 4"/>`;
-  svg += `<text x="${f1(X(P.meanDiff)) + 6}" y="100" font-size="11">mean gain 1.58</text>`;
+  svg += `<text x="${f1(X(P.meanDiff)) + 6}" y="100" font-size="11">mean difference 1.583</text>`;
   svg += `<line x1="${X(0)}" x2="${X(0)}" y1="120" y2="200" stroke="var(--ink-3)" stroke-width="1"/><text x="${X(0) - 4}" y="132" text-anchor="end" font-size="11" fill="var(--ink-3)">no change</text>`;
   svg += `<text x="${X(2)}" y="244" text-anchor="middle" font-size="11" fill="var(--ink-3)">After minus before (points)</text>`;
-  svg += `<text x="${X(2)}" y="20" text-anchor="middle">The 12 differences: SD 1.51 points</text>`;
+  svg += `<text x="${X(2)}" y="20" text-anchor="middle">The 12 differences: s_d = 1.505 points</text>`;
   return `${svg}</svg>`;
 }
 
@@ -95,8 +95,8 @@ export default {
     { p: 'But the columns are not two separate groups: they are the same 12 people measured twice. Trainee 3 scored 16 both times; trainee 5 scored 4 before and 3 after. What matters is each person’s change. Subtract each trainee’s before score from the after score and the 24 numbers become 12 differences: 2, 2, 0, 5, −1, 3, 1, 1, 1, 1, 2 and 2. Ten trainees improved, one stayed the same and one slipped by a point.' },
     { figure: {
       svg: pairFigure(),
-      caption: 'Left: each trainee’s before and after scores joined by a line. The scores run from 3 to 17 points, but nearly every line rises. Right: the 12 differences, after minus before, cluster between −1 and 5 points around a mean gain of 1.58, with a standard deviation of only 1.51 points.',
-      alt: 'Two panels. The left panel has a vertical scale from 0 to 20 and two columns of dots, Before and After, for 12 trainees, each pair joined by a line. Scores range from 4 to 16 before and from 3 to 17 after; ten lines slope upwards, one is flat at 16 and one slopes slightly down from 4 to 3. The right panel is a dot plot of the 12 differences on an axis from −2 to 6: one dot at −1, one at 0, four at 1, four at 2, one at 3 and one at 5. A dashed line marks the mean gain of 1.58 and a thin line marks no change at 0. The title says the differences have an SD of 1.51 points.',
+      caption: 'Left: each trainee’s before and after scores joined by a line. The scores run from 3 to 17 points, but nearly every line rises. Right: the 12 differences, after minus before, run from −1 to 5 points around their mean, 1.583, with a standard deviation s_d of only 1.505 points.',
+      alt: 'Two panels. The left panel has a vertical scale from 0 to 20 and two columns of dots, Before and After, for 12 trainees, each pair joined by a line. Scores range from 4 to 16 before and from 3 to 17 after; ten lines slope upwards, one is flat at 16 and one slopes slightly down from 4 to 3. The right panel is a dot plot of the 12 differences on an axis from −2 to 6: one dot at −1, one at 0, four at 1, four at 2, one at 3 and one at 5. A dashed line marks the mean difference, 1.583, and a thin line marks no change at 0. The title gives the differences’ standard deviation, s_d = 1.505 points.',
     } },
 
     { h: 'The paired t test' },
@@ -116,7 +116,7 @@ export default {
     { h: 'Independent samples and Welch’s t test' },
     { p: String.raw`When the two samples are separate groups, such as hires from two bike stations or calls handled with two scripts, they are <g>independent samples</g>, and the question is whether the population means <m>\mu_1</m> and <m>\mu_2</m> differ. The null hypothesis is <m>H_0: \mu_1 - \mu_2 = 0</m> (or a stated difference <m>\Delta_0</m>, “delta-nought”), against a one- or two-sided alternative. The estimate is the difference in sample means, and its standard error combines the two samples’ standard errors:` },
     { math: String.raw`\text{SE} = \sqrt{\dfrac{s_1^2}{n_1} + \dfrac{s_2^2}{n_2}}` },
-    { p: 'A <g>two-sample t test</g> divides the difference by this standard error. <g>Welch’s t test</g> compares the result with a t distribution whose degrees of freedom come from the Welch–Satterthwaite formula in the Formulas section. The formula gives a value between the smaller of n₁ − 1 and n₂ − 1 and n₁ + n₂ − 2, usually not a whole number, and it is smaller when one sample is much noisier or much smaller than the other. The simple example runs the test on two bike-hire stations.' },
+    { p: 'A <g>two-sample t test</g> divides the difference by this standard error. <g>Welch’s t test</g> compares the result with a t distribution whose degrees of freedom come from the Welch–Satterthwaite formula in the Formulas section. Its result always lies between the smaller of n₁ − 1 and n₂ − 1 at the low end and n₁ + n₂ − 2 at the high end. It is usually not a whole number, and it falls towards the low end when one sample is much noisier or much smaller than the other. The simple example runs the test on two bike-hire stations.' },
 
     { h: 'The pooled test, and why Welch is the safer default' },
     { p: String.raw`The older <g>pooled t test</g>, Student’s two-sample t test, assumes the two populations have the same variance. It averages the two sample variances, weighted by their degrees of freedom, into a pooled variance <m>s_p^2</m>, uses <m>s_p\sqrt{1/n_1 + 1/n_2}</m> as the standard error, and has <m>n_1 + n_2 - 2</m> degrees of freedom. When the variances really are equal it is slightly more powerful. With equal sample sizes the two tests give the same t, and only their degrees of freedom differ.` },
@@ -158,7 +158,7 @@ export default {
       ],
     } },
     { p: String.raw`Read it from the top. Pearson Correlation is the r that makes pairing pay. t Stat is <m>\bar{d} \div (s_d \div \sqrt{n})</m> for Variable 1 minus Variable 2, so its sign depends on which range you enter first. “P(T&lt;=t) one-tail” is, whatever its label suggests, the one-tailed p-value in the direction of t, half the two-tail value. The two critical values, 1.796 and 2.201, are positive values at the Alpha you set: reject at 5% two-sided when |t Stat| exceeds t Critical two-tail, or equivalently when P(T&lt;=t) two-tail is below 0.05.` },
-    { p: 'The equal-variances tool adds a Pooled Variance row. The unequal-variances tool calculates Welch’s degrees of freedom and, because the result is usually not a whole number, Microsoft says “the value of df is rounded to the nearest integer” before the tool works out its p-values and critical values. T.TEST with type 3 uses the unrounded df, so the two can disagree slightly: for the calls in the challenging example, 7.83 degrees of freedom become 8 and the two-tailed p-value moves from 0.0713 to 0.0706. Neither is wrong; say which you used.' },
+    { p: 'The equal-variances tool adds a Pooled Variance row. The unequal-variances tool calculates Welch’s degrees of freedom, and Microsoft’s page explains: “Because the result of the calculation is usually not an integer, the value of df is rounded to the nearest integer to obtain a critical value from the t table.” The tool works its p-values from that rounded df too, while T.TEST with type 3 uses the unrounded df, so the two can disagree slightly: for the calls in the challenging example, 7.83 degrees of freedom become 8 and the two-tailed p-value moves from 0.0713 to 0.0706. Neither is wrong; say which you used.' },
 
     { h: 'Confidence intervals for a difference' },
     { p: String.raw`Every test here has an interval to go with it. For independent samples it is <m>(\bar{x}_1 - \bar{x}_2) \pm t^{*} \times \text{SE}</m>, with <m>t^{*}</m> from the t distribution with Welch’s degrees of freedom; for paired samples it is <m>\bar{d} \pm t^{*} \times s_d \div \sqrt{n}</m> with n − 1. In Excel the paired interval’s half-width is <x>=CONFIDENCE.T(0.05,STDEV.S(D2:D13),COUNT(D2:D13))</x> on the column of differences, because a paired interval is a one-sample interval for the differences.` },
@@ -316,10 +316,11 @@ export default {
     { text: 'Holmes, A., Illowsky, B. &amp; Dean, S. (2023). <i>Introductory Business Statistics 2e</i>, chapter 10, “Hypothesis Testing with Two Samples” (sections 10.1, “Comparing Two Independent Population Means”, and 10.2, “Cohen’s Standards for Small, Medium, and Large Effect Sizes”). OpenStax.', url: 'https://openstax.org/books/introductory-business-statistics-2e/pages/10-2-cohens-standards-for-small-medium-and-large-effect-sizes', checked: '2026-10-24' },
     { text: 'Microsoft Support. “T.TEST function”.', url: 'https://support.microsoft.com/en-US/excel/functions/t-test-function', checked: '2026-10-24' },
     { text: 'Microsoft Support. “Use the Analysis ToolPak to perform complex data analysis” (the t-Test and F-Test Two-Sample for Variances tools).', url: 'https://support.microsoft.com/en-us/excel/use-the-analysis-toolpak-to-perform-complex-data-analysis', checked: '2026-10-24' },
-    { text: 'Microsoft Support. “F.TEST function”, with “T.INV.2T function”.', url: 'https://support.microsoft.com/en-US/excel/functions/f-test-function', checked: '2026-10-24' },
+    { text: 'Microsoft Support. “F.TEST function”.', url: 'https://support.microsoft.com/en-US/excel/functions/f-test-function', checked: '2026-10-24' },
+    { text: 'Microsoft Support. “T.INV.2T function”.', url: 'https://support.microsoft.com/en-US/excel/functions/t-inv-2t-function', checked: '2026-10-24' },
     { text: 'NIST/SEMATECH. <i>e-Handbook of Statistical Methods</i>, section 1.3.5.3, “Two-Sample t-Test for Equal Means”.', url: 'https://itl.nist.gov/div898/handbook/eda/section3/eda353.htm', checked: '2026-10-24' },
     { text: 'Delacre, M., Lakens, D. &amp; Leys, C. (2017). “Why psychologists should by default use Welch’s t-test instead of Student’s t-test”. <i>International Review of Social Psychology</i>, 30(1), 92–101.', url: 'https://doi.org/10.5334/irsp.82', checked: '2026-10-24' },
-    { text: 'Illowsky, B., Dean, S. et al. <i>Statistics</i>, section 13.4, “Test of Two Variances”. OpenStax.', url: 'https://openstax.org/books/statistics/pages/13-4-test-of-two-variances', checked: '2026-10-24' },
+    { text: 'Illowsky, B. &amp; Dean, S. <i>Introductory Statistics 2e</i>, section 13.4, “Test of Two Variances”. OpenStax.', url: 'https://openstax.org/books/introductory-statistics-2e/pages/13-4-test-of-two-variances', checked: '2026-10-24' },
   ],
 
   checks: [

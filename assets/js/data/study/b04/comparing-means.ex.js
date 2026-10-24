@@ -134,7 +134,7 @@ export const guided = [
         id: 'b04-cm-g1-s3', type: 'mc',
         prompt: `The paired test gives p ≈ ${fx(MP.p, 4)}; a two-sample test on the same two columns gives p ≈ ${fx(MU.p, 2)}. Why do they differ so much?`,
         options: [
-          'Store sizes vary far more than the change in sales, and pairing each store with itself removes that variation.',
+          'Store sizes vary far more than the change in sales; pairing each store with itself removes that.',
           'The paired test uses twice as many values as the two-sample test, so its standard error is half as large.',
           'The two-sample test is two-sided while the paired test is one-sided, which halves the paired test’s p-value.',
           'The paired test assumes the two weeks have equal variances, which makes its test statistic much larger.',
