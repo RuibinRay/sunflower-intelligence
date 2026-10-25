@@ -11,7 +11,7 @@ import { standardise, kmeans, silhouette } from '../../../core/classify.js?v=14'
 import { ward, cutTree, adjustedRand, leafOrder } from '../../../core/ml.js?v=14';
 import { indexVsAverage } from '../../../core/market.js?v=14';
 import { nearestCentroid, agreement } from '../../../core/percmap.js?v=14';
-import { mulberry32 } from '../../../core/rng.js?v=14';
+import { mulberry32, normalGen } from '../../../core/rng.js?v=14';
 
 // ---------------------------------------------------------------- the study
 const RS = RESPONDENTS, N = RS.length, P = NEEDS.length;
@@ -51,8 +51,8 @@ const spendVar = variance(SP), needsVar = sum(COLS.map(variance));
 const spendShare = spendVar / (spendVar + needsVar);
 const bands = Array.from({ length: 5 }, (_, g) => { const s = SP.filter((_, i) => nsRaw.labels[i] === g); return { n: s.length, lo: Math.min(...s), hi: Math.max(...s) }; }).sort((a, b) => a.lo - b.lo);
 
-// k = 2, 4 and 6 against the five segments
-const KM = (k) => kmeans(Z, k, { restarts: 20 });
+// k = 2, 4 and 6 against the five segments (200 restarts: the 20-restart k = 6 is a local optimum)
+const KM = (k) => kmeans(Z, k, { restarts: 200 });
 const km2 = KM(2), km4 = KM(4), km6 = KM(6);
 const cross = (a, ka, b, kb) => Array.from({ length: ka }, (_, x) => Array.from({ length: kb }, (_, y) => a.filter((l, i) => l === x && b[i] === y).length));
 const ix2 = indexVsAverage(COLS, km2.labels, 2).map((r) => r.map(Math.round));
@@ -81,8 +81,20 @@ const truthAri = Object.fromEntries([2, 4, 6].map((k) => [k, adjustedRand(KM(k).
 const rnd = mulberry32(2027);
 const NOISE = Array.from({ length: N }, () => Array.from({ length: P }, () => 1 + Math.floor(rnd() * 7)));
 const NZ = standardise(Array.from({ length: P }, (_, j) => NOISE.map((r) => r[j]))).rows;
-const NF = Object.fromEntries([2, 3, 4, 5, 6, 7, 8].map((k) => { const km = kmeans(NZ, k, { restarts: 20 }); return [k, { w: km.inertia, sizes: km.sizes, sil: silhouette(NZ, km.labels) }]; }));
+const NF = Object.fromEntries([2, 3, 4, 5, 6, 7, 8].map((k) => { const km = kmeans(NZ, k, { restarts: 100 }); return [k, { w: km.inertia, sizes: km.sizes, sil: silhouette(NZ, km.labels) }]; }));
 const noiseDrops = [3, 4, 5, 6, 7, 8].map((k) => NF[k - 1].w - NF[k].w);
+// two more benchmarks: each need's real answers shuffled independently (keeps every need's spread, breaks the links), and
+// normal data with the needs' own correlations but no clusters (three draws)
+const rsh = mulberry32(2028);
+const shuffled = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(rsh() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+const SHZ = standardise(COLS.map(shuffled)).rows;
+const shufSil = silhouette(SHZ, kmeans(SHZ, 5, { restarts: 20 }).labels);
+const CORR = Array.from({ length: P }, (_, a) => Array.from({ length: P }, (_, b) => sum(Z.map((r) => r[a] * r[b])) / (N - 1)));
+const CH = (() => { const Lm = CORR.map(() => new Array(P).fill(0)); for (let i = 0; i < P; i++) for (let j = 0; j <= i; j++) { let t = CORR[i][j]; for (let k = 0; k < j; k++) t -= Lm[i][k] * Lm[j][k]; Lm[i][j] = i === j ? Math.sqrt(t) : t / Lm[j][j]; } return Lm; })();
+const corrSil = [11, 12, 13].map((seed) => { const g = normalGen(mulberry32(seed)); const G = Array.from({ length: N }, () => { const e = Array.from({ length: P }, () => g()); return CH.map((row) => sum(row.map((v, k) => v * e[k]))); }); const GZ = standardise(Array.from({ length: P }, (_, j) => G.map((r) => r[j]))).rows; return silhouette(GZ, kmeans(GZ, 5, { restarts: 20 }).labels); });
+const corrLo = Math.min(...corrSil), corrHi = Math.max(...corrSil);
+// Kaufman and Rousseeuw's rough scale for the mean silhouette (as reproduced by Emamat et al., 2022)
+const KR = [[0.71, 'strong structure'], [0.51, 'reasonable structure'], [0.26, 'weak structure that could be artificial']];
 
 // sample size: Dolnicar, Grün & Leisch's 2016 guideline (100 per variable) and the 2014 one (70)
 const NEED100 = 100 * P, NEED70 = 70 * P;
@@ -141,25 +153,29 @@ function pathFigure() {
   }
   s += `<text x="${X(4)}" y="372" text-anchor="middle" font-size="13">Low price matters (1–7)</text>`;
   s += `<text transform="translate(16 ${Y(4)}) rotate(-90)" text-anchor="middle" font-size="13">Expert advice matters (1–7)</text>`;
-  // where each label goes, as [dx, dy, anchor]: chosen so that no label sits on a point, a path or another label
-  const CUST = [[14, 5, 'start'], [0, 22, 'middle'], [-13, 5, 'end'], [0, -13, 'middle'], [14, 5, 'start'], [14, 5, 'start'], [0, 24, 'middle'], [-13, 5, 'end']];
-  const STEP = [[[-12, 5, 'end'], [0, 34, 'middle']], [[-10, 20, 'end'], [14, 5, 'start']]];
-  // centre paths: start → after iteration 1 → after iteration 2
-  [[C0[0], C1[0], C2[0]], [C0[1], C1[1], C2[1]]].forEach((path, g) => {
-    s += `<path d="${path.map((c, i) => `${i ? 'L' : 'M'}${X(c[0]).toFixed(1)},${Y(c[1]).toFixed(1)}`).join(' ')}" style="fill:none;stroke:var(--series-${g + 1});stroke-width:2;stroke-dasharray:6 4"/>`;
-    path.forEach((c, i) => {
-      const x = X(c[0]), y = Y(c[1]);
-      s += `<rect x="${(x - 6).toFixed(1)}" y="${(y - 6).toFixed(1)}" width="12" height="12" transform="rotate(45 ${x.toFixed(1)} ${y.toFixed(1)})" style="fill:var(--series-${g + 1});stroke:var(--ink);stroke-width:0.8"/>`;
-      if (i) { const [dx, dy, a] = STEP[g][i - 1]; s += `<text x="${(x + dx).toFixed(1)}" y="${(y + dy).toFixed(1)}" text-anchor="${a}" font-size="12" fill="var(--ink-3)">${i === 1 ? 'after 1' : 'after 2'}</text>`; }
-    });
+  // label positions [dx, dy, anchor], chosen so that no label sits on a point, a path or another label
+  const CUST = [[14, 5, 'start'], [0, 22, 'middle'], [-13, 5, 'end'], [0, -13, 'middle'], [14, 5, 'start'], [14, 5, 'start'], [0, 26, 'middle'], [-14, 5, 'end']];
+  const STEP = [[[-12, 5, 'end'], [12, 26, 'start']], [[-10, 20, 'end'], [14, 5, 'start']]];
+  const paths = [[C0[0], C1[0], C2[0]], [C0[1], C1[1], C2[1]]];
+  // a centre that sits exactly on a customer is drawn just beside it (up and to the right), so both stay visible
+  const onCustomer = (c) => PTS.some((p) => p[0] === c[0] && p[1] === c[1]);
+  const at = (c, i) => { const x = X(c[0]), y = Y(c[1]); return i && onCustomer(c) ? [x + 9, y - 9] : [x, y]; };
+  paths.forEach((path, g) => {
+    s += `<path d="${path.map((c, i) => { const [x, y] = at(c, i); return `${i ? 'L' : 'M'}${x.toFixed(1)},${y.toFixed(1)}`; }).join(' ')}" style="fill:none;stroke:var(--series-${g + 1});stroke-width:2;stroke-dasharray:6 4"/>`;
   });
-  // customers: filled circle = price-first segment at the end, open circle = advice-first segment
+  // customers: filled circle = price-first segment at the end, open circle (page-coloured) = advice-first segment
   PTS.forEach((p, i) => {
     const x = X(p[0]), y = Y(p[1]), fin = L3[i], [dx, dy, a] = CUST[i];
-    s += `<circle cx="${x}" cy="${y}" r="7" style="fill:${fin === 0 ? 'var(--series-1)' : 'none'};stroke:${fin === 0 ? 'var(--ink)' : 'var(--series-2)'};stroke-width:2"/>`;
+    s += `<circle cx="${x}" cy="${y}" r="7" style="fill:${fin === 0 ? 'var(--series-1)' : 'var(--paper)'};stroke:${fin === 0 ? 'var(--ink)' : 'var(--series-2)'};stroke-width:2"/>`;
     s += `<text x="${x + dx}" y="${y + dy}" text-anchor="${a}" font-weight="700">${PM_NAMES[i]}</text>`;
   });
-  s += `<text x="${X(3) + 12}" y="${Y(5) - 14}" font-size="12" fill="var(--ink-3)">G switches in iteration 2</text>`;
+  // centres on top: hollow diamonds at the start (around G and H), filled after each iteration
+  paths.forEach((path, g) => path.forEach((c, i) => {
+    const [x, y] = at(c, i), r = i ? 6 : 11;
+    s += `<rect x="${(x - r).toFixed(1)}" y="${(y - r).toFixed(1)}" width="${2 * r}" height="${2 * r}" transform="rotate(45 ${x.toFixed(1)} ${y.toFixed(1)})" style="fill:${i ? `var(--series-${g + 1})` : 'none'};stroke:${i ? 'var(--ink)' : `var(--series-${g + 1})`};stroke-width:${i ? 0.8 : 2}"/>`;
+    if (i) { const [dx, dy, a] = STEP[g][i - 1]; s += `<text x="${(x + dx).toFixed(1)}" y="${(y + dy).toFixed(1)}" text-anchor="${a}" font-size="12" fill="var(--ink-3)">${i === 1 ? 'after 1' : 'after 2'}</text>`; }
+  }));
+  s += `<text x="${X(3) + 16}" y="${Y(5) - 14}" font-size="12" fill="var(--ink-3)">G switches in iteration 2</text>`;
   s += '</svg>';
   return s;
 }
@@ -216,7 +232,7 @@ export default {
   concept: [
     { case: `In May 2027 Ana Lim bought a needs study from a panel company for $${f0(STUDY.cost)}: ${N} Harbour City adults who drink coffee at least once a week, recruited from an <g>opt-in panel</g> with quotas on age band. Each rated how much ${P} needs matter when they choose coffee, from 1 (not at all important) to 7 (essential): taste and quality, a low price, convenience, sustainability, a strong caffeine kick, health (low in sugar and calories), buying from a local independent business, and new flavours. Module 1 showed that the ratings spread widely. Ana now wants to know whether the ${N} fall into groups that want different things, and if so how many groups and who is in each.` },
     { p: 'OpenStax defines <g>needs-based segmentation</g> as dividing a market into smaller groups of people with approximately the same needs. When the groups are formed from survey answers rather than decided in advance, it is <g>post hoc segmentation</g>, or data-driven, as module 1 explained. The tool is <g>cluster analysis</g>: a family of methods that sort observations into groups, called clusters, whose members are more alike than members of different groups, judged by a measure of distance. This lesson forms the groups; <i>Profiling segments</i> describes, names and sizes them.' },
-    { callout: 'warn', title: 'A cluster analysis always returns groups', html: `Give k-means any data, even ratings drawn at random, and it returns the number of groups you asked for. The groups are a model of the market that you build, choose and check, not segments that were waiting to be discovered. Dolnicar, Grün and Leisch, whose open textbook on segmentation analysis this lesson draws on, report that natural segments, clearly separated in the data, are extremely rare in consumer data.` },
+    { callout: 'warn', title: 'A cluster analysis always returns groups', html: `Give k-means any data, even ratings drawn at random, and it returns the number of groups you asked for. The groups are a model of the market that you build, choose and check, not segments that were waiting to be discovered. Dolnicar, Grün and Leisch, whose open textbook on segmentation analysis this lesson draws on, report that natural segments, clearly separated in the data, are rare in consumer data.` },
 
     { h: 'Six decisions' },
     { p: 'Every needs-based cluster analysis rests on six decisions, and two analysts given the same data can reach different segments by making them differently. Write them down before you run anything, so that they can’t be chosen to flatter the result.' },
@@ -243,8 +259,8 @@ export default {
     { p: `The total it makes small is the <g>within-cluster sum of squares</g> (WCSS): every respondent’s squared distance to their own centre, added up. Each assign move and each update move can only lower it or leave it unchanged, so k-means always stops. Pellmark Cycles’ eight customers, worked below, show the moves on a scale small enough to do by hand: from a poor start the WCSS falls from ${f0(W0)} to ${f2(W1)} after one iteration and to ${f2(W2)} after two, when one customer, G, switches group and nothing moves again.` },
     { figure: {
       svg: pathFigure(),
-      caption: `k-means with two segments on Pellmark Cycles’ eight customers (fictional), started at customers G and H. The diamonds show each centre at the start and after each iteration. Filled circles end in the price-first segment, open circles in the advice-first segment.`,
-      alt: `A scatter plot of eight customers rated 1 to 7 on how much a low price matters (horizontal) and how much expert advice matters (vertical). A at 6 and 2, B at 7 and 1, C at 5 and 2 and D at 6 and 3 form a group at the lower right, shown as filled circles. E at 2 and 6, F at 1 and 7, G at 3 and 5 and H at 2 and 5 form a group at the upper left, shown as open circles. One centre starts on G and moves to 5.4 and 2.6 after iteration 1 and to 6 and 2 after iteration 2. The other starts on H and moves to 1.67 and 6 and then to 2 and 5.75. G switches from the lower-right group to the upper-left group in iteration 2.`,
+      caption: `k-means with two segments on Pellmark Cycles’ eight customers (fictional), started at customers G and H. Hollow diamonds mark the starting centres (on G and H), filled diamonds each centre after iterations 1 and 2; the final price-first centre sits on customer A and is drawn just beside it. Filled circles end in the price-first segment, open circles in the advice-first segment.`,
+      alt: `A scatter plot of eight customers rated 1 to 7 on how much a low price matters (horizontal) and how much expert advice matters (vertical). A at 6 and 2, B at 7 and 1, C at 5 and 2 and D at 6 and 3 form a group at the lower right, shown as filled circles. E at 2 and 6, F at 1 and 7, G at 3 and 5 and H at 2 and 5 form a group at the upper left, shown as open circles. One centre starts on G and moves to 5.4 and 2.6 after iteration 1 and to 6 and 2, on customer A, after iteration 2. The other starts on H and moves to 1.67 and 6 and then to 2 and 5.75. G switches from the lower-right group to the upper-left group in iteration 2.`,
     } },
 
     { h: 'How many segments?' },
@@ -262,8 +278,8 @@ export default {
   theory: [
     { h: 'Choosing the segmentation variables' },
     { p: 'The <g>segmentation variables</g> are the answers that form the segments: module 1’s <g>segmentation base</g>, measured as variables. For a needs-based segmentation they are the needs or benefits that drive the choice the business cares about, worded so that respondents can answer them, as Ana’s eight are. Leave out who people are (age, income, region) and what they do (cups, spend, where they buy): those describe the segments afterwards, and mixing them into the clustering produces groups that are part need, part demographic and hard to interpret or reach.' },
-    { p: 'Three further rules keep the variables honest. Don’t include two items that ask the same thing (“a low price” and “good value for money”): the need they share counts twice in every distance. Leave out items that almost everyone rates alike, which add noise but no separation. And keep the number of variables in proportion to the sample: Dolnicar, Grün and Leisch’s simulations led to a guideline of at least 100 respondents per segmentation variable (an earlier study had suggested 70).' },
-    { p: `By that guideline Ana’s ${P} needs call for ${f0(NEED100)} respondents, and she has ${N}: enough by the older figure of ${f0(NEED70)}, short by the newer one. That doesn’t make the study useless, but it is one more reason to check that the segments are stable before relying on them. Ratings carry one more trap: some people rate everything high and others everything low, a habit of answering rather than a need. Standardising each variable, the next step, doesn’t remove it; analysts sometimes centre each respondent’s ratings on that respondent’s own mean, at the cost of losing whether someone cares about coffee at all.` },
+    { p: 'Three further rules keep the variables honest. Don’t include two items that ask the same thing (“a low price” and “inexpensive”): the need they share counts twice in every distance. Leave out items that almost everyone rates alike, which add noise but no separation. And keep the number of variables in proportion to the sample: Dolnicar, Grün and Leisch’s simulations led to a guideline of at least 100 respondents per segmentation variable (an earlier study had suggested 70).' },
+    { p: `By that guideline Ana’s ${P} needs call for ${f0(NEED100)} respondents, and she has ${N}: enough by the older figure of ${f0(NEED70)}, short by the newer one. That doesn’t make the study useless, but it is one more reason to check that the segments are stable before relying on them. Ratings carry one more trap: some people rate everything high and others everything low, a habit of answering rather than a need. Standardising each variable, the next step, doesn’t remove it; analysts sometimes centre each respondent’s ratings on that respondent’s own mean, at the cost of losing whether someone cares about coffee at all. Whatever the study does, a tool that later places new customers in the segments must transform their answers in exactly the same way.` },
 
     { h: 'Standardising first' },
     { p: `Distances add squared differences, so a variable with a wide spread dominates them. Standardising each variable to mean 0 and standard deviation 1 (B02) makes every need count equally. Ana’s needs share one 1–7 scale and similar spreads (standard deviations from ${f2(sdMin)} to ${f2(sdMax)}), so here standardising changes little: k-means on the raw ratings gives almost the same five segments, with an adjusted Rand index (defined below) of ${f2(rawAri)} against the standardised ones.` },
@@ -277,13 +293,14 @@ export default {
     { p: `Restarts matter on Ana’s data. Of 100 runs from a single k-means++ start each at k = 5, ${reachBest} reached the best solution (WCSS ${f1(W(5))}); the other ${100 - reachBest} stopped at local optima between ${f1(stuckLo)} and ${f1(stuckHi)}, ${pc(stuckLo / W(5) - 1, 0)} to ${pc(stuckHi / W(5) - 1, 0)} worse, and the worst agreed with the best solution only ${f2(worstAri)} on the adjusted Rand index. Even 20 restarts are a heuristic: 200 find the same solution at k = 5 but slightly lower sums at k = 6, 7 and 8 (${f1(MORE[6])}, ${f1(MORE[7])} and ${f1(MORE[8])}, less than 0.1% below the table). Report how many restarts you ran.` },
 
     { h: 'k-means always returns k groups' },
-    { p: `To see what no structure looks like, the lesson made up ${N} respondents whose ${P} ratings were each drawn at random from 1 to 7, independently, and ran the same analysis. k-means still returned five segments, of ${Math.min(...NF[5].sizes)} to ${Math.max(...NF[5].sizes)} people. Their mean silhouette was ${f3(NF[5].sil)}, against ${f3(SIL(5))} for Ana’s data, and the within-cluster sum of squares fell smoothly, by ${f0(noiseDrops[0])}, ${f0(noiseDrops[1])}, ${f0(noiseDrops[2])}, ${f0(noiseDrops[3])}, ${f0(noiseDrops[4])} and ${f0(noiseDrops[5])} from one k to the next, with no elbow. A benchmark like this, data of the same size with the structure destroyed, is a quick way to read what a silhouette means for your data.` },
+    { p: `To see what no structure looks like, the lesson made up ${N} respondents whose ${P} ratings were each drawn at random from 1 to 7, independently, and ran the same analysis with 100 restarts. k-means still returned five segments, of ${Math.min(...NF[5].sizes)} to ${Math.max(...NF[5].sizes)} people. Their mean silhouette was ${f3(NF[5].sil)}, against ${f3(SIL(5))} for Ana’s data, and the within-cluster sum of squares fell smoothly, by ${f0(noiseDrops[0])}, ${f0(noiseDrops[1])}, ${f0(noiseDrops[2])}, ${f0(noiseDrops[3])}, ${f0(noiseDrops[4])} and ${f0(noiseDrops[5])} from one k to the next, with no elbow.` },
+    { p: `Uniform ratings don’t keep each need’s own spread, but shuffling each need’s real answers independently, which does, gives much the same silhouette (${f2(shufSil)}). A stricter benchmark keeps the needs’ correlations with one another but builds in no clusters: normal data with Ana’s correlation matrix give ${f2(corrLo)} to ${f2(corrHi)} in three draws. Benchmarks like these, data of the same size and scale with no clusters built in, are a quick way to read what a silhouette means for your data.` },
 
     { h: 'Ward’s hierarchical clustering and the dendrogram' },
     { p: String.raw`<g>Ward’s method</g> builds segments from the bottom up. It starts with every respondent as a group of one and, at each step, merges the two groups whose merger increases the within-cluster sum of squares least, until one group remains (Ward, 1963, proposed merging to lose least by an objective the investigator chooses; the error sum of squares is the usual one). Merging groups A and B adds <m>\frac{n_A n_B}{n_A + n_B}</m> times the squared distance between their centres to the WCSS, so small groups with close centres merge first. The record of merges is drawn as a <g>dendrogram</g>, a tree whose branches join at the height of each merge; cutting it at any height gives that many segments.` },
     { figure: {
       svg: dendroFigure(),
-      caption: 'Ward’s method on Pellmark Cycles’ eight customers (fictional). Each pair joins at a height that grows with the merge’s cost; the last merge, joining the two segments, costs far more than any before it, which is why a cut below it gives two segments.',
+      caption: `Ward’s method on Pellmark Cycles’ eight customers (fictional). Each pair joins at the merge height SciPy and the site’s engine use for Ward’s method, √(2 × the merge’s cost): A and C, whose merge costs ${f2(wardAC)} by the card below, join at height ${f0(PWARD.merges[0].height)}, and the last merge, at ${f2(PWARD.merges[6].height)}, costs ${f2(PWARD.merges[6].height)}² ÷ 2 = ${f2(mergeCost[6])}, exactly the fall from one segment to two in the example table. It costs far more than any merge before it, which is why a cut below it gives two segments.`,
       alt: `A dendrogram with the eight customers along the bottom in the order B, D, A, C, F, G, E, H. A and C join first at height 1, as do E and H. D joins A and C, and G joins E and H, at about 1.3. B joins the A, C, D group at about 2.3 and F joins the E, G, H group at about 2.6. The two groups of four join at about 11.0. A dashed horizontal line at height 6, below the last merge, cuts the tree into the price-first group B, D, A, C and the advice-first group F, G, E, H.`,
     } },
     { p: `Ward’s method needs no k in advance and shows every number of segments at once, but it never undoes a merge, so an early merge that later looks wrong stays, and it compares every pair of groups, which grows slow for tens of thousands of respondents. k-means needs k and a good start but can move respondents freely. The two are often used together: Ward’s tree to see which values of k look natural, k-means to refine the groups. On Ana’s data, Ward’s five groups and the k-means segments agree closely: ${f0(N - wardDiffer)} of ${N} respondents, ${pc(wardSame)}, are in matching groups, and ${wardDiffer} differ.` },
@@ -293,9 +310,9 @@ export default {
 
     { h: 'Choosing k: the elbow, the silhouette and meaning' },
     { p: String.raw`The <g>elbow</g> method plots the within-cluster sum of squares against k and looks for the bend after which extra segments buy little. The bend is often soft, so read the falls, not only the picture. With standardised data the total sum of squares is <m>(n - 1)p = ${N - 1} \times ${P} = ${f0(TSS)}</m>, so Ana’s five segments leave ${pc(1 - W(5) / TSS)} of the variation in the needs between segments and ${pc(W(5) / TSS)} within them.` },
-    { p: `The <g>silhouette</g> of a respondent, proposed by Rousseeuw (1987), compares a, their average distance to the other members of their own segment, with b, their average distance to the members of the nearest other segment: s = (b − a) ÷ max(a, b). It runs from −1 to 1. Near 1, the respondent sits well inside their segment; near 0, between two segments; below 0, nearer another segment than their own. The mean silhouette over all respondents summarises the solution, and Rousseeuw suggested it might help select the number of clusters.` },
-    { p: `Read the size of a silhouette, not only its peak. Ana’s ${f3(SIL(5))} at k = 5 is about three times the ${f3(NF[5].sil)} of the no-structure benchmark, so the segments are not an accident of the method, but it is far from the values near 1 of tight, well-separated groups: the segments overlap, and many respondents sit near a boundary. The silhouette also tends to favour a few large groups. At k = 2 it is highest, but the two groups are ${c25[g2price].reduce((a, b) => a + b, 0)} people who put price (index ${ix2[g2price][1]} against the average respondent), convenience (${ix2[g2price][2]}) and caffeine (${ix2[g2price][4]}) first, and ${c25[g2other].reduce((a, b) => a + b, 0)} who rate taste, sustainability, health, local and novelty above average: true, and too coarse to plan five different offers around.` },
-    { p: `Meaning settles it. At k = 4, most of segment D (local and taste first) and most of segment C (novelty first) merge into one group of ${merged.reduce((a, b) => a + b, 0)}, although a café that sells itself on Harbour City roots and a brand that launches new flavours every month are different propositions. At k = 6, segment C divides between a group of ${six(cSplit[0].j)} (${cSplit[0].v} of C’s members and ${six(cSplit[0].j) - cSplit[0].v} from D; novelty index ${ix6[cSplit[0].j][7]}, with taste and local above average) and one of ${six(cSplit[1].j)} (novelty ${ix6[cSplit[1].j][7]}, every other need below average): the same need at two strengths, not a new one. Dolnicar, Grün and Leisch put it plainly: statistical criteria are no substitute for the judgement of the people who will use the segments.` },
+    { p: `The <g>silhouette</g> of a respondent, proposed by Rousseeuw (1987), compares a, their average distance to the other members of their own segment, with b, their average distance to the members of the nearest other segment: s = (b − a) ÷ max(a, b). It runs from −1 to 1. Near 1, the respondent sits well inside their segment; near 0, between two segments; below 0, nearer another segment than their own. The mean silhouette over all respondents summarises the solution, and Rousseeuw suggested it might help select the number of clusters. A widely quoted rule of thumb from Kaufman and Rousseeuw’s book on cluster analysis (1990, as reproduced by Emamat and colleagues) reads a mean of ${KR[0][0]} or more as ${KR[0][1]}, ${KR[1][0]} to 0.70 as ${KR[1][1]}, ${KR[2][0]} to 0.50 as ${KR[2][1]}, and 0.25 or less as no substantial structure.` },
+    { p: `Read the size of a silhouette, not only its peak. Ana’s ${f3(SIL(5))} at k = 5 is about three times the ${f3(NF[5].sil)} of random ratings and about twice the ${f2(corrLo)}–${f2(corrHi)} of correlated data without clusters, so the segments are not an accident of the method; on Kaufman and Rousseeuw’s scale it is weak structure, far from the values near 1 of tight, well-separated groups. The segments overlap, and many respondents sit near a boundary. The silhouette often peaks at a small k when one split dominates the data, as here: at k = 2 it is highest, but the two groups are ${c25[g2price].reduce((a, b) => a + b, 0)} people who put price (index ${ix2[g2price][1]} against the average respondent), convenience (${ix2[g2price][2]}) and caffeine (${ix2[g2price][4]}) first, and ${c25[g2other].reduce((a, b) => a + b, 0)} who rate taste, sustainability, health, local and novelty above average: true, and too coarse to plan five different offers around.` },
+    { p: `Meaning settles it. At k = 4, most of segment D (local and taste first) and most of segment C (novelty first) merge into one group of ${merged.reduce((a, b) => a + b, 0)}, although a café that sells itself on Harbour City roots and a brand that launches new flavours every month are different propositions. At k = 6 (the best of 200 restarts), segment C divides between a group of ${six(cSplit[0].j)} (${cSplit[0].v} of C’s members and ${six(cSplit[0].j) - cSplit[0].v} from D; novelty index ${ix6[cSplit[0].j][7]}, with taste and local above average) and one of ${six(cSplit[1].j)} (novelty ${ix6[cSplit[1].j][7]}, every other need below average): the same need at two strengths, not a new one. Dolnicar, Grün and Leisch put it plainly: statistical criteria are no substitute for the judgement of the people who will use the segments.` },
 
     { h: 'Stability' },
     { p: `A segmentation worth acting on should not depend on the luck of one run. Three checks are quick: whether many restarts reach the same best solution (${reachBest} of 100 single starts did), whether a different method finds similar groups (Ward against k-means: an adjusted Rand index of ${f2(D.segments.wardAgreement)}), and whether another half of the sample gives the same segments. For the last, Ana’s analyst segmented the first ${HALF} respondents and the last ${HALF} separately, assigned all ${N} to each half’s nearest centres, and compared the two assignments: an adjusted Rand index of ${f2(splitAri)}.` },
@@ -320,7 +337,7 @@ export default {
         [String.raw`n_g`, 'Number of respondents in segment g', 'respondents'],
         [String.raw`z_{ij}`, 'Standardised rating of respondent i on variable j', 'standard deviations'],
       ],
-      note: 'The update move of k-means recomputes every centre this way. In Excel, <x>=AVERAGEIFS(B$2:B$641,$J$2:$J$641,$L2)</x> gives the centre of the segment named in L2 on the variable in column B.' },
+      note: 'The update move of k-means recomputes every centre this way. In Excel, with the standardised ratings (z-scores) in B2:I641 and each respondent’s segment in J2:J641, <x>=AVERAGEIFS(B$2:B$641,$J$2:$J$641,$L2)</x> gives the centre of the segment named in L2 on the variable in column B.' },
     { id: 'ca-wcss', name: 'Within-cluster sum of squares (WCSS)',
       tex: String.raw`W_k = \sum_{g=1}^{k} \sum_{i \in g} d^2(\mathbf{z}_i, \mathbf{c}_g), \qquad T = (n - 1)\,p`,
       where: [
@@ -331,7 +348,7 @@ export default {
         [String.raw`n`, 'Number of respondents', 'respondents'],
         [String.raw`p`, 'Number of segmentation variables', ''],
       ],
-      assumptions: 'W always falls (or stays level) as k rises, and is 0 when every respondent is a segment of one.',
+      assumptions: 'At its best, W falls (or stays level) as k rises, and is 0 when every respondent is a segment of one; k-means may stop above the best.',
       note: String.raw`1 − W ÷ T is the share of the variation that lies between segments. scikit-learn calls W the inertia.` },
     { id: 'ca-silhouette', name: 'Silhouette of a respondent, and the mean silhouette',
       tex: String.raw`s(i) = \dfrac{b(i) - a(i)}{\max\{a(i),\ b(i)\}}, \qquad \bar{s} = \dfrac{1}{n} \sum_{i=1}^{n} s(i)`,
@@ -403,7 +420,7 @@ export default {
   ],
 
   demo: [
-    { widget: 'ca-needs', intro: `All ${N} respondents’ eight needs. Start at k = 5 and read the profile table: which needs does each segment rate above 100? Then try k = 4 and k = 6 and see which segments merge and split. Untick needs to see how the segments change when a need is left out, and untick “Standardise” to see how little it matters for ratings on one scale. The widget runs 12 restarts, so at k = 7 it may stop at a slightly higher sum (${f1(WIDGET7)}) than the table’s ${f1(W(7))}: a local optimum.` },
+    { widget: 'ca-needs', intro: `All ${N} respondents’ eight needs. Start at k = 5 and read the profile table: which needs does each segment rate above 100? Then try k = 4 and k = 6 and see which segments merge and split. Untick needs to see how the segments change when a need is left out, and untick “Standardise” to see how little it matters for ratings on one scale. The widget runs 12 restarts, so at k = 7 it may stop at a higher sum (${f1(WIDGET7)}) than the table’s ${f1(W(7))}, which is itself a local optimum: 200 restarts reach ${f1(MORE[7])}. At k = 6 its split of segment C may also differ a little from the one described in In depth.` },
     { widget: 'ca-spend', intro: `The same needs with monthly coffee spend in dollars added as a ninth variable. Untick “Standardise” and look at the segments’ spend a head: they become spend bands, with a silhouette (${f2(nsRawSil)} at k = 5) higher than any needs solution’s. Tick it again and the needs take over. Then untick “Monthly spend ($)” to return to the needs alone.` },
   ],
 
@@ -436,7 +453,7 @@ export default {
 
   glossary: [
     { term: 'Cluster analysis', def: 'A family of methods that sort observations into groups (clusters) whose members are more alike than members of different groups, judged by a chosen measure of distance. In marketing it forms segments from survey answers.' },
-    { term: 'Segmentation variable', def: 'A variable used to form segments in a cluster analysis, such as the importance of each need. Variables used only to describe the segments afterwards are descriptor variables.' },
+    { term: 'Segmentation variable', def: 'A variable used to form segments, such as the importance of each need in a needs-based cluster analysis; also called a segmentation base. Variables used only to describe the segments afterwards are descriptor variables (descriptors).' },
     { term: 'k-means clustering', def: 'A cluster analysis that sorts observations into k groups by repeatedly assigning each to the nearest group centre and moving each centre to the mean of its members, until no observation changes group; it makes the within-cluster sum of squares small.' },
     { term: 'Segment centre', def: 'The mean of a segment’s members on every segmentation variable; also called the centroid. In k-means each observation belongs to the segment with the nearest centre.' },
     { term: 'Squared Euclidean distance', def: 'The sum of the squared differences between two observations on every variable, Σ(x_j − y_j)²; the square of the straight-line distance.' },
@@ -452,11 +469,14 @@ export default {
 
   references: [
     { text: 'Gomez Albrecht, M., Green, M. &amp; Hoffman, L. (2023). <i>Principles of Marketing</i>, chapter 5, “Market Segmentation, Targeting, and Positioning”: key terms (needs-based segmentation; market segmentation). OpenStax.', url: 'https://openstax.org/books/principles-marketing/pages/5-key-terms', checked: '2026-10-25' },
-    { text: 'Dolnicar, S., Grün, B. &amp; Leisch, F. (2018). <i>Market Segmentation Analysis: Understanding It, Doing It, and Making It Useful</i>. Springer (Management for Professionals), open access under CC BY 4.0. Chapter 2 (natural, reproducible and constructive segmentation) and Step 5, “Extracting segments”.', url: 'https://link.springer.com/book/10.1007%2F978-981-10-8818-6', checked: '2026-10-25' },
-    { text: 'Dolnicar, S. (2021). Data-driven market segmentation analysis. In <i>Women’s Voices in Tourism Research</i>, chapter 37. The University of Queensland. (The sample-size guideline of 100 respondents per segmentation variable, from Dolnicar, Grün &amp; Leisch, 2016.)', url: 'https://uq.pressbooks.pub/tourismknowledge/chapter/market-segmentation-analysis-sara-dolnicar/', checked: '2026-10-25' },
+    { text: 'Dolnicar, S., Grün, B. &amp; Leisch, F. (2018). <i>Market Segmentation Analysis: Understanding It, Doing It, and Making It Useful</i>. Springer (Management for Professionals), open access under CC BY 4.0. Chapter 2 (natural, reproducible and constructive segmentation), Step 5, “Extracting segments”, and Step 6, “Profiling segments” (statistical criteria are no substitute for user assessment).', url: 'https://link.springer.com/book/10.1007%2F978-981-10-8818-6', checked: '2026-10-25' },
+    { text: 'Dolnicar, S. (2021). Data-driven market segmentation analysis. In <i>Women’s Voices in Tourism Research</i>, chapter 37. The University of Queensland. (States the guideline of 100 respondents per segmentation variable from Dolnicar, Grün &amp; Leisch, 2016, and the earlier 70; summarises natural, reproducible and constructive segmentation.)', url: 'https://uq.pressbooks.pub/tourismknowledge/chapter/market-segmentation-analysis-sara-dolnicar/', checked: '2026-10-25' },
+    { text: 'Dolnicar, S., Grün, B. &amp; Leisch, F. (2016). Increasing sample size compensates for data problems in segmentation studies. <i>Journal of Business Research</i>, 69(2), 992–999. doi:10.1016/j.jbusres.2015.09.004. (The simulations behind the 100-per-variable guideline; the figure itself is given in Dolnicar, 2021, not in this abstract.)', url: 'https://ideas.repec.org/a/eee/jbrese/v69y2016i2p992-999.html', checked: '2026-10-25' },
+    { text: 'Dolnicar, S. &amp; Leisch, F. (2010). Evaluation of structure and reproducibility of cluster solutions using the bootstrap. <i>Marketing Letters</i>, 21(1), 83–101. doi:10.1007/s11002-009-9083-4.', url: 'https://ideas.repec.org/a/kap/mktlet/v21y2010i1p83-101.html', checked: '2026-10-25' },
     { text: 'Arthur, D. &amp; Vassilvitskii, S. (2007). k-means++: the advantages of careful seeding. <i>Proceedings of the 18th Annual ACM-SIAM Symposium on Discrete Algorithms</i>, 1027–1035.', url: 'https://www.haralick.org/ML/kMeansPP-soda.pdf', checked: '2026-10-25' },
-    { text: 'Ward, J. H., Jr. (1963). Hierarchical grouping to optimize an objective function. <i>Journal of the American Statistical Association</i>, 58, 236–244. doi:10.1080/01621459.1963.10500845.', url: 'https://synapsesocial.com/papers/W2016381774', checked: '2026-10-25' },
-    { text: 'Rousseeuw, P. J. (1987). Silhouettes: a graphical aid to the interpretation and validation of cluster analysis. <i>Journal of Computational and Applied Mathematics</i>, 20, 53–65. doi:10.1016/0377-0427(87)90125-7.', url: 'https://iaorifors.com/paper/92', checked: '2026-10-25' },
+    { text: 'Ward, J. H., Jr. (1963). Hierarchical grouping to optimize an objective function. <i>Journal of the American Statistical Association</i>, 58, 236–244. doi:10.1080/01621459.1963.10500845.', url: 'https://doi.org/10.1080/01621459.1963.10500845', checked: '2026-10-25' },
+    { text: 'Rousseeuw, P. J. (1987). Silhouettes: a graphical aid to the interpretation and validation of cluster analysis. <i>Journal of Computational and Applied Mathematics</i>, 20, 53–65. doi:10.1016/0377-0427(87)90125-7.', url: 'https://doi.org/10.1016/0377-0427(87)90125-7', checked: '2026-10-25' },
+    { text: 'Kaufman, L. &amp; Rousseeuw, P. J. (1990). <i>Finding Groups in Data: An Introduction to Cluster Analysis</i>. Wiley. Their rough scale for the mean silhouette as reproduced in Emamat, M. S. M. M. et al. (2022), Using ELECTRE-TRI and FlowSort methods in a stock portfolio selection context, <i>Financial Innovation</i>, 8(1), table 16 (the book itself was not consulted).', url: 'https://jfin-swufe.springeropen.com/articles/10.1186/s40854-021-00318-1/tables/16', checked: '2026-10-25' },
     { text: 'Hubert, L. &amp; Arabie, P. (1985). Comparing partitions. <i>Journal of Classification</i>, 2, 193–218; the adjusted Rand index as documented in scikit-learn 1.9 (<code>adjusted_rand_score</code>).', url: 'https://scikit-learn.org/stable/modules/generated/sklearn.metrics.adjusted_rand_score.html', checked: '2026-10-25' },
   ],
 
