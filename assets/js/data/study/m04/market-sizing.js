@@ -327,7 +327,7 @@ export default {
 
   demo: [
     { widget: 'ms-model', intro: 'Ana’s sizing model as live formulas. Run Goal Seek as set (G12 to 100,000 by changing F9) and compare the rate of sale it finds with what an average supermarket sells of the whole category (B17). Then build the data table (listings in E9 down the side, the rate of sale in F9 across the top) and find the combinations that reach the goal. Change E10 or F10 to test the natural grocers, or B5 for the own channel.' },
-    { widget: 'ms-swing', intro: 'The sensitivity table as a chart: each pair of bars is the year-one estimate with one assumption at Ana’s low value and at her high value, the others held at their central values. Compare the gaps between the bars, and find the assumption to research first.' },
+    { widget: 'ms-swing', intro: 'The sensitivity table as a chart: each pair of bars shows how far the year-one estimate moves from 48,200 cans when one assumption goes to Ana’s low value (below the axis) or her high value (above it), the others held at their central values. Compare the lengths of the pairs to find the assumption to research first, then compare the longest bar with the 51,800 cans the goal would need.' },
   ],
 
   mistakes: [
