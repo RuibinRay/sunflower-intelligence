@@ -81,7 +81,7 @@ export default {
   slug: 'sampling-methods',
   title: 'Sampling methods',
   blurb: 'Who could be in your survey decides what it can tell you. Define the target population, frame and sampling unit; choose among simple random, systematic, stratified, cluster and multistage designs and know what non-probability samples can and can’t support; allocate a stratified sample and estimate from it with a standard error; and size a sample for the subgroups you need to read.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Define the target population, sampling frame and sampling unit of a survey, and identify the undercoverage and overcoverage between them.',
     'Compare simple random, systematic, stratified, cluster and multistage designs on cost, precision and the frame each needs, using the design effect.',

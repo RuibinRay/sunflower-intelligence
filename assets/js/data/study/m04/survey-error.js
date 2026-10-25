@@ -65,7 +65,7 @@ export default {
   slug: 'survey-error',
   title: 'Survey error',
   blurb: 'A margin of error measures one kind of error. Learn the others (coverage, non-response, measurement, processing) as one system, calculate response rates by AAPOR’s definitions, see why a response rate is not a measure of bias, weight responses back to the population and count what weighting costs, and read stated intentions for what they are.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish the components of total survey error (coverage, sampling, non-response, adjustment, measurement and processing) and identify the step at which each enters a survey.',
     'Classify survey cases by AAPOR’s final dispositions and calculate the response rates RR1 and RR2.',

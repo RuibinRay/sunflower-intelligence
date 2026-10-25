@@ -50,7 +50,7 @@ export default {
   slug: 'questionnaire-design',
   title: 'Questionnaire design',
   blurb: 'A survey can only be as good as its questions. Turn research objectives into questions that each earn their place, choose the right question types and rating scales, write options and wording that don’t push answers, guard against response styles and order effects, and pretest the result before anyone sees it.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Write survey questions from research objectives, justifying each by the analysis and decision it serves, and plan a questionnaire’s flow, screening and routing.',
     'Choose among open, closed, dichotomous, multiple-choice, ranking and rating questions, and among Likert, semantic differential, numeric, purchase-intent and Net Promoter scales, stating the level of measurement and the analysis each allows.',
