@@ -198,13 +198,13 @@ export const check = [
     prompt: 'Under last-click attribution, Lantern’s brand-name search ads (shown when people search “Lantern cold brew”) have the highest ROAS of any spending. Why should Lantern be cautious about moving more money into them?',
     options: [
       'Many of these searchers already knew Lantern and would have used the free listing, so the ads’ incremental effect may be small.',
-      'Search ads can never be measured reliably, so any ROAS figure from last-click attribution is close to meaningless.',
+      'Search ads can never be measured reliably, so no test could show whether these ads add any sales.',
       'Last-click attribution always understates search ads, so their true ROAS is even higher than the report shows.',
       'ROAS is always lower than ROI, so the search ads are even better than their high ROAS makes them look.',
     ],
     answer: 0,
     feedback: {
-      1: 'Search ads are among the easiest to measure; the issue is what the measurement credits, not whether it exists.',
+      1: 'Search ads are among the easiest to measure, and a holdout test can show what brand-name ads add; the issue is what last-click credits, not whether measurement is possible.',
       2: 'Last click tends to overstate touchpoints near the purchase, such as brand search, not understate them.',
       3: 'ROAS and ROI measure different things, and neither is always larger. ROI uses contribution, which is usually much smaller than revenue.',
     },

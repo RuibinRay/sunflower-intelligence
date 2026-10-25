@@ -70,7 +70,7 @@ export const guided = [
     id: 'm02-mm-g3', type: 'mc', kind: 'conceptual',
     prompt: 'A commuter usually buys a $5.20 cold brew at a café two streets from her station (a hypothetical price). Lantern puts chilled cans in the station’s convenience store at $3.49. How could this raise customer value for her?',
     options: [
-      'It saves her money and time, so it raises value if she judges the can’s taste close enough to the café’s.',
+      'It saves her money and time, so it adds value if she finds the can’s taste close enough.',
       'It must raise value, because the can is $1.71 cheaper and the price is what decides value.',
       'It can’t raise value, because a can is always a lower-quality product than a drink made fresh in a café.',
       'It raises value only if Lantern also advertises at the station, because advertising adds to what the can is worth.',

@@ -334,7 +334,7 @@ export default {
           id: 'm02-pj-t2', type: 'mc', kind: 'conceptual',
           prompt: 'The pricing lesson worked out by hand that the default plan breaks even at 117,013 cans; the simulator’s estimate is 117,425. Why do they differ?',
           options: [
-            'Their assumptions differ: the hand version counts all promotion as fixed and spreads cans by category volume; the model doesn’t.',
+            'They rest on different assumptions about promotion costs and the channel mix.',
             'One of them must contain an arithmetic error, because a plan’s break-even volume has only one correct answer.',
             'The simulator includes the competitors’ costs, so it needs a few more cans to cover them.',
             'The simulator leaves out the $60,000 overhead, which the hand calculation includes alongside the listing fees in its fixed costs.',

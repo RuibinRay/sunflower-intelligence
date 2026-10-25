@@ -13,12 +13,12 @@ export const items = [
   },
   {
     id: 'm02-m4-2', lesson: M, type: 'num', kind: 'numerical',
-    prompt: 'A fictional dance school is choosing how to promote its autumn classes. A sponsored message in a local parents’ newsletter costs $1,350 and is opened 45,000 times. A month of posters on bus shelters near the school costs $2,880 and is expected to be seen 360,000 times. By how many dollars does the newsletter’s CPM exceed the bus shelters’?',
+    prompt: 'A fictional dance school is choosing how to promote its autumn classes. A sponsored message in a local parents’ newsletter costs $1,350 and is seen in 45,000 newsletter opens. A month of posters on bus shelters near the school costs $2,880 and is expected to be seen 360,000 times. By how many dollars does the newsletter’s CPM exceed the bus shelters’?',
     answer: 22, check: () => 1350 / 45000 * 1000 - 2880 / 360000 * 1000, unit: '$', places: 2, tol: 0.01,
     wrong: [
       { value: 0.022, say: 'That is the difference in cost per single impression. CPM is per thousand impressions: multiply by 1,000.' },
       { value: 3.75, say: 'That is how many times higher the newsletter’s CPM is (30 ÷ 8). The question asks for the difference in dollars.' },
-      { value: -1530, say: 'That compares the two costs, not the cost per thousand impressions. Divide each cost by its impressions first.' },
+      { value: 30, say: 'That is the newsletter’s CPM on its own. The question asks how much it exceeds the bus shelters’ $8.00.' },
     ],
     solution: 'Newsletter CPM = 1,350 ÷ 45,000 × 1,000 = $30.00. Bus-shelter CPM = 2,880 ÷ 360,000 × 1,000 = $8.00. The newsletter costs 30.00 − 8.00 = $22.00 more per thousand impressions. That alone doesn’t make the posters the better buy: the newsletter reaches parents who are choosing activities for their children, and a cheap impression nobody notices is not a bargain.',
   },
@@ -98,7 +98,7 @@ export const items = [
     id: 'm02-m4-10', lesson: M, type: 'mc', kind: 'applied',
     prompt: 'Lantern wants to know whether its emails to online-shop customers actually increase orders. Which design measures this best?',
     options: [
-      'Randomly hold out a share of customers from each email and compare their orders with those who got it.',
+      'Randomly hold some customers out of each email and compare the two groups’ orders.',
       'Count the orders placed within a week of each email and credit them all to the email.',
       'Compare customers who open emails with those who don’t, and treat the difference as the email’s effect.',
       'Compare orders in the month after the email programme started with the month before.',
@@ -115,7 +115,7 @@ export const items = [
     id: 'm02-m4-11', lesson: P, type: 'mc', kind: 'applied',
     prompt: 'Lantern’s ads present the single-origin can as a café-quality treat at $3.49, but its trade budget funds “2 for $5” deals in supermarkets every other week. What principle does this break, and what should Lantern do?',
     options: [
-      'Integrated marketing communications: the deals say “cheap” and contradict the ads; keep them to a few planned windows.',
+      'Integrated marketing communications: the deals contradict the ads, so keep them to a few planned windows.',
       'Competitive parity: Lantern should match Daily Grind’s $2.29 shelf price so that the frequent deals are no longer needed.',
       'Push strategy: Lantern should stop all trade promotions at once and rely on consumer advertising alone.',
       'AIDA: the deals skip the desire stage, so Lantern should advertise more heavily to build desire before each deal.',

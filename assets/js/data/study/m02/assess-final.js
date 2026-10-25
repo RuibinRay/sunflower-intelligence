@@ -89,7 +89,7 @@ export const items = [
       'A shopping product: selective distribution through outlets that can advise customers and let them compare.',
       'A convenience product: intensive distribution in as many outlets as possible, so runners never have to search.',
       'A specialty product: exclusive distribution through one outlet in each city.',
-      'An unsought product: personal selling to make people aware of a need they don’t think about.',
+      'An unsought product: personal selling to make people aware of a need they don’t think about until it arises.',
     ],
     answer: 0,
     feedback: {
@@ -117,7 +117,7 @@ export const items = [
     prompt: 'The table shows a hypothetical regional market for canned nitro coffee, a product form within ready-to-drink coffee. Average shelf prices have held steady, and most buyers are still buying it for the first time. Which stage is the form most likely in, and which decisions fit a brand that sells it?',
     data: { table: { head: ['Year', 'Cans sold (thousands)', 'Growth on the year before', 'Brands selling it'], rows: [['1', '300', '—', '2'], ['2', '900', '200%', '3'], ['3', '2,000', '122%', '5'], ['4', '3,400', '70%', '8']] } },
     options: [
-      'Growth: widen distribution, add versions and shift promotion from awareness towards preference for the brand.',
+      'Growth: widen distribution, add versions and shift promotion towards brand preference.',
       'Introduction: keep one basic version, sell selectively and focus promotion on building awareness and first trial.',
       'Maturity: defend share against rivals with frequent price promotions and remind buyers of the brand.',
       'Decline: cut support to the minimum and harvest the remaining profit before the form fades out.',
@@ -281,7 +281,7 @@ export const items = [
     id: 'm02-fn-19', lesson: 'promotion-mix', type: 'mc', kind: 'applied',
     prompt: 'Halfway through Lantern’s launch year (hypothetical figures), a survey shows that awareness among category buyers has risen from 12% to about 24%, but few of the shoppers who know the brand have tried a can. Stores report that shoppers pick the can up, look at the $3.49 price and put it back. Which promotion vehicle should get more of the remaining budget?',
     options: [
-      'In-store sampling and displays: they turn awareness into trial at the shelf, where shoppers hesitate.',
+      'In-store sampling and displays, which turn awareness into trial at the shelf.',
       'Social and search ads: awareness is still only 24%, so building more of it should come first.',
       'Trade promotions: deep, frequent price cuts until shoppers stop putting the can back on the shelf.',
       'PR and events: earned coverage builds awareness slowly and cheaply, and adds credibility to the price.',

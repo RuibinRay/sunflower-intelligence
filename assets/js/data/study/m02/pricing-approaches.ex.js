@@ -205,7 +205,7 @@ export const independent = [
     id: 'm02-pa-i5', type: 'mc', kind: 'conceptual',
     prompt: 'Which statement about the price floor and the price ceiling is correct?',
     options: [
-      'Costs set the floor and customer value sets the ceiling; rivals’ prices sit between and shape how a price is judged.',
+      'Costs set the floor and customer value the ceiling; rivals’ prices sit between and shape how a price is judged.',
       'The ceiling is the highest price any competitor charges, because no customer will ever pay more than a rival’s price.',
       'In the short run, every sale must be priced above the full average cost per unit, including a share of fixed costs.',
       'The floor is set by competitors’ lowest price, because matching the cheapest rival is the least a firm can charge.',
@@ -232,7 +232,7 @@ export const check = [
     id: 'm02-pa-k1', type: 'mc', kind: 'conceptual',
     prompt: 'A product costs $60 and sells for $100. Why is its margin (40%) smaller than its markup (66.7%)?',
     options: [
-      'Both divide the same $40 profit, but the margin divides it by the price, which is larger than the cost.',
+      'Both divide the same $40, but the margin divides by the $100 price and the markup by the $60 cost.',
       'The margin also deducts the product’s share of fixed costs, while the markup counts only the $60 unit cost.',
       'The margin is calculated after tax is taken off the $40, while the markup is calculated before tax.',
       'Retailers use margins and manufacturers use markups, so they measure different profits.',

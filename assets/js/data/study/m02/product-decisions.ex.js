@@ -208,7 +208,7 @@ export const independent = [
     id: 'm02-pd-i5', type: 'mc', kind: 'applied',
     prompt: 'For most of Lantern’s target commuters, a can of cold brew is a convenience product. What does that imply for the rest of Lantern’s mix?',
     options: [
-      'The can needs many outlets near the moment of thirst, a price close to rivals’ and strong visibility on the shelf.',
+      'Many outlets near the moment of thirst, a price close to rivals’ and strong visibility on the shelf.',
       'Lantern should sell in one exclusive outlet in each district, so that commuters make a special trip to buy the can.',
       'Lantern should rely on personal selling, with staff explaining the product to each buyer before they choose.',
       'Price doesn’t matter, because convenience buyers never compare or even notice the prices on the shelf.',
@@ -225,7 +225,7 @@ export const independent = [
     id: 'm02-pd-i6', type: 'mc', kind: 'applied',
     prompt: 'A battery-storage installer (fictional) finds that three competitors offer almost identical batteries at similar prices. Where should it look first to differentiate its offer?',
     options: [
-      'The augmented product: site design, installation, remote monitoring and a performance warranty.',
+      'The augmented product: installation, remote monitoring and a performance warranty.',
       'The core benefit: it should persuade warehouses that they don’t need lower energy costs.',
       'Nowhere: an offer built on identical batteries is a commodity, so it can only compete on price.',
       'The product mix width: it should add unrelated product lines.',

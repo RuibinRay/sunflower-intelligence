@@ -137,7 +137,7 @@ export const independent = [
     id: 'm02-plc-i3', type: 'mc', kind: 'applied',
     prompt: 'A smartphone maker (fictional) launches a new flagship model every September. Last year’s model is still selling steadily in July. What is the most sensible life-cycle decision for last year’s model?',
     options: [
-      'Plan its run-down: cut the price at the new launch, build only the stock needed and set a date to stop production.',
+      'Plan its run-down: cut its price at the new launch, limit stock and set a date to stop production.',
       'Increase its advertising budget, because steady sales in July show the model is in its maturity stage.',
       'Withdraw it immediately, because every product eventually declines and an old model only ties up stock.',
       'Change nothing, because the life cycle will decide what happens to it and falling sales will say when to stop selling.',
@@ -180,7 +180,7 @@ export const independent = [
     id: 'm02-plc-i6', type: 'mc', kind: 'conceptual',
     prompt: 'Which statement best captures Dhalla and Yuspeh’s (1976) criticism of the product life cycle?',
     options: [
-      'Products often don’t follow the stages and the model has little validity for brands, so it shouldn’t dictate decisions.',
+      'The stages often don’t hold and the model has little validity for brands, so it shouldn’t dictate decisions.',
       'The life cycle has five stages, not four, because product development should be counted as a stage of its own.',
       'Executives knew the concept but rarely used it, so it should be exploited much more aggressively as a planning tool.',
       'The life cycle applies well to individual brands but not to product categories, whose sales are too stable to show stages.',
@@ -200,9 +200,9 @@ export const check = [
     id: 'm02-plc-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Which description best fits the maturity stage?',
     options: [
-      'Sales growth has slowed or stopped, competition is intense and gains come mostly from rivals.',
+      'Sales growth has slowed or stopped, competition is intense and share gains come mostly from rivals.',
       'Sales are rising fast, new competitors are entering and the product is reaching more buyers each year.',
-      'Few people know the product, distribution is patchy and the firm is still losing money on it.',
+      'Few people know the product yet, distribution is still patchy and the firm is still losing money on it.',
       'Sales are falling because buyers are switching to a substitute, and some rivals are leaving.',
     ],
     answer: 0,

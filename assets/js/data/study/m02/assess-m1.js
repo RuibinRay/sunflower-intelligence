@@ -7,7 +7,7 @@ export const items = [
     id: 'm02-m1-1', lesson: 'marketing-mix', type: 'mc', kind: 'conceptual',
     prompt: 'A friend says, “Marketing is just advertising.” Which reply is most accurate?',
     options: [
-      'Advertising is one tool of promotion; marketing also covers choosing customers, the product, the price and where it is sold.',
+      'Advertising is one promotion tool; marketing also chooses the customers, the product, the price and where it is sold.',
       'That is right: marketing is the department that buys advertising, and everything else belongs to sales or operations.',
       'Marketing is selling: persuading people to buy whatever the company has already decided to make.',
       'Marketing is market research, finding out what customers think and want; advertising is a separate function run by agencies.',
@@ -55,7 +55,7 @@ export const items = [
     options: [
       'Move most of the trade-promotion money into sampling and PR, keeping occasional promotions only.',
       'Switch to the Classic blend to cut the cost of goods, so the deep promotions cost less per can.',
-      'Add convenience stores to reach more commuters, who are less sensitive to the promoted price.',
+      'Add convenience stores to reach more commuters, who compare prices less than supermarket shoppers do.',
       'Raise the regular shelf price to $4.29 so that the promotions look deeper and the can seems more premium.',
     ],
     answer: 0,
@@ -154,10 +154,10 @@ export const items = [
     id: 'm02-m1-11', lesson: 'product-life-cycle', type: 'mc', kind: 'applied',
     prompt: 'A brand manager (fictional company) says: “Our snack brand is 30 years old and sales have been flat for five years. The product life cycle says decline comes next, so let’s cut its advertising to zero and use the money elsewhere.” What is the best response?',
     options: [
-      'Flat sales mean maturity, not certain decline, and cutting support could cause one; first test changes to the market, product or mix.',
+      'Flat sales mean maturity, not certain decline; cutting support could cause it, so first test market, product or mix changes.',
       'Agree: every product follows the life cycle and maturity is always followed by decline, so advertising a 30-year-old brand is wasted.',
       'Double the advertising budget immediately, because spending always reverses flat sales in a mature brand.',
-      'Withdraw the brand now, before decline starts, to save the cost of the decline stage and free its shelf space.',
+      'Withdraw the brand now, before decline starts, to save the cost of the decline stage and free its shelf space for newer products.',
     ],
     answer: 0,
     feedback: {

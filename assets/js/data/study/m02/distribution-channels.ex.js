@@ -264,9 +264,9 @@ export const check = [
     id: 'm02-dch-k4', type: 'mc', kind: 'applied',
     prompt: 'Lantern is planning the organic single-origin can at $3.99 with a premium, provenance-led positioning and a small launch budget. Which channel strategy fits best?',
     options: [
-      'Start selectively in natural grocers and Lantern’s own cafés and online shop, adding supermarkets once the can sells well.',
+      'Start selectively in natural grocers and Lantern’s cafés and online shop; add supermarkets once it sells well.',
       'Go intensive from day one: every supermarket, convenience store and natural grocer, plus the online shop, to build reach fast.',
-      'Sell only through convenience stores, where shoppers compare prices less and buy chilled cans on impulse.',
+      'Sell only through convenience stores, where shoppers compare prices less and buy chilled cans on impulse near the till.',
       'Sell only through supermarkets, because they have the most shoppers and sell 45% of the category’s cans.',
     ],
     answer: 0,

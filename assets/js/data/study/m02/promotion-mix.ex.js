@@ -278,7 +278,7 @@ export const check = [
     id: 'm02-pm-k6', type: 'mc', kind: 'conceptual',
     prompt: 'What is the main weakness of setting the promotion budget as a percentage of sales?',
     options: [
-      'It treats sales as the cause of promotion, not its result: spending falls with sales and a new product gets none.',
+      'It lets sales drive promotion, so spending falls with sales and a new product gets none.',
       'It is too complicated to calculate, because it needs a forecast of every product’s sales.',
       'It always produces a larger budget than competitors spend, so the firm overspends in a crowded market.',
       'It can only be used by retailers, because manufacturers don’t know their sales until the end of each financial year.',
