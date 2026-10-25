@@ -188,7 +188,7 @@ export default {
     { p: `The behaviour fits the needs, which is a sign the segments are real enough to use: the convenience-driven drink the most cups, the price-driven spend the least, and the segment that values local businesses scores highest on the local-loyalty scale and knows Lantern best. It also holds a tension for later lessons. Cold Brew’s strongest intent is in Craft and local (${pc(S.coldbrewTop2[CL])}), Lantern’s natural customers, and On the go (${pc(S.coldbrewTop2[OG])}), who want convenience Lantern is weak on.` },
 
     { h: 'How big: people and spend' },
-    { p: `A segment has two sizes: its share of the respondents and its share of what they spend. The <g>share of spend</g> is the segment’s total monthly spend divided by everyone’s; <g>spend per head</g> is the segment’s total divided by its respondents. Craft and local are ${pc(SZ[CL].share)} of respondents but account for ${pc(SZ[CL].spendShare)} of their spend, at ${money(SZ[CL].perHead)} a head against ${money(HEAD_ALL)} for everyone; Value routine are ${pc(SZ[VR].share)} of respondents and ${pc(SZ[VR].spendShare)} of spend. Sizing tests whether a segment is substantial, one of the ADAMS criteria in OpenStax’s list (accessible, differentiable, actionable, measurable and substantial) that module 1 applied; the profiles and descriptors test the others.` },
+    { p: `A segment has two sizes: its share of the respondents and its share of what they spend. The <g>share of spend</g> is the segment’s total monthly spend divided by everyone’s; <g>spend per head</g> is the segment’s total divided by its respondents. Craft and local are ${pc(SZ[CL].share)} of respondents but account for ${pc(SZ[CL].spendShare)} of their spend, at ${money(SZ[CL].perHead)} per head against ${money(HEAD_ALL)} for everyone; Value routine are ${pc(SZ[VR].share)} of respondents and ${pc(SZ[VR].spendShare)} of spend. Sizing tests whether a segment is substantial, one of the ADAMS criteria in OpenStax’s list (accessible, differentiable, actionable, measurable and substantial) that module 1 applied; the profiles and descriptors test the others.` },
     { table: {
       caption: `Segment sizes in people and in monthly coffee spend (respondents’ own estimates). Base: ${N} respondents, $${SPEND_ALL.toLocaleString('en-US')} a month in all.`,
       head: ['Segment', 'Respondents', 'Share of respondents', 'Share of spend', 'Spend per head', 'Spend share ÷ respondent share'],
@@ -262,7 +262,7 @@ export default {
         [String.raw`n_g`, 'Respondents in segment g', 'respondents'],
         [String.raw`n`, 'All respondents', 'respondents'],
       ],
-      note: 'The ratio on the right is above 1 when a segment spends more a head than average. Excel: <x>=SUMIFS(H$2:H$641,$B$2:$B$641,$R2)/SUM(H$2:H$641)</x> and <x>=AVERAGEIFS(H$2:H$641,$B$2:$B$641,$R2)</x>.' },
+      note: 'The ratio on the right is above 1 when a segment spends more per head than average. Excel: <x>=SUMIFS(H$2:H$641,$B$2:$B$641,$R2)/SUM(H$2:H$641)</x> and <x>=AVERAGEIFS(H$2:H$641,$B$2:$B$641,$R2)</x>.' },
     { id: 'ps-typing', name: 'Typing a new respondent (nearest centre)',
       tex: String.raw`z_{j} = \dfrac{x_{j} - \bar{x}_{j}}{s_{j}}, \qquad g^{*} = \arg\min_{g} \sum_{j \in Q} (z_{j} - c_{gj})^2`,
       where: [
@@ -316,7 +316,7 @@ export default {
         `Standardise with the study’s means and standard deviations: price (${ANS[1]} − ${f2(MU[1])}) ÷ ${f2(SD[1])} = ${f2(zNew[0])}; sustainability (${ANS[3]} − ${f2(MU[3])}) ÷ ${f2(SD[3])} = ${f2(zNew[1])}; local (${ANS[6]} − ${f2(MU[6])}) ÷ ${f2(SD[6])} = ${f2(zNew[2])}; novelty (${ANS[7]} − ${f2(MU[7])}) ÷ ${f2(SD[7])} = ${f2(zNew[3])}.`,
         `Squared distances to the five centres on those four needs: ${SEG_ORDER.map((g) => `${NAMES[g]} ${f2(dNew[g])}`).join(', ')}.`,
         `The nearest is ${NAMES[nearestNew]} (${f2(dSorted[0])}), well clear of the next (${f2(dSorted[1])}): not a close call.`,
-        `Her segment: ${pc(SZ[CL].share)} of the study’s respondents and ${pc(SZ[CL].spendShare)} of their coffee spend, ${money(SZ[CL].perHead)} a head a month (${f2(valueRatio(CL))} times the average), ${pc(clCafe)} mostly buy from cafés, and ${pc(S.coldbrewTop2[CL])} say they would definitely or probably buy Cold Brew.`,
+        `Her segment: ${pc(SZ[CL].share)} of the study’s respondents and ${pc(SZ[CL].spendShare)} of their coffee spend, ${money(SZ[CL].perHead)} per head a month (${f2(valueRatio(CL))} times the average), ${pc(clCafe)} mostly buy from cafés, and ${pc(S.coldbrewTop2[CL])} say they would definitely or probably buy Cold Brew.`,
       ],
       answer: `${NAMES[nearestNew]}, the segment that puts local, independent businesses and taste first: the most valuable per head in the study.`,
       interpretation: 'The typing tool turns a short in-café question card into a segment, and the segment report turns the segment into what Lantern knows about her kind of customer. Whether Lantern should serve this segment above the others, and how, is the question of the targeting lessons.' },
@@ -357,7 +357,7 @@ export default {
   glossary: [
     { term: 'Profiling', def: 'Describing segments on the segmentation variables that formed them, for example as indexes against the average, to see what each segment wants.' },
     { term: 'Index against the average', def: 'A segment’s mean on a variable divided by the overall mean, times 100: 100 is average, above 100 the segment is higher than average. Often just called an index.' },
-    { term: 'Share of spend', def: 'A segment’s total spend divided by the total spend of everyone in the base; compared with its share of people, it shows whether the segment spends more or less than average a head.' },
+    { term: 'Share of spend', def: 'A segment’s total spend divided by the total spend of everyone in the base; compared with its share of people, it shows whether the segment spends more or less per head than average.' },
     { term: 'Spend per head', def: 'A group’s total spend divided by the number of people in it: the mean spend.' },
     { term: 'Typing tool', def: 'A rule or small model that assigns a new respondent or customer to an existing segment, usually from a few questions, for example by the nearest segment centre.' },
     { term: 'Golden questions', def: 'The short set of questions a typing tool uses to assign people to segments, chosen because they separate the segments best.' },

@@ -42,7 +42,7 @@ export const guided = [
     id: 'm05-dr-g1', type: 'classify', kind: 'conceptual',
     prompt: 'Ana lists ways Lantern could make itself different. Classify each by Kotler and Armstrong’s five ways to differentiate.',
     items: [
-      'Testing Lantern Cold Brew in a few convenience stores.',
+      'Selling Lantern Cold Brew in convenience stores, if module 3’s test works.',
       'Training every barista to talk customers through the month’s guest coffee.',
       'Single-origin Ethiopian coffee steeped for 20 hours.',
       'Pre-ordering in the cafés so that a drink is ready on arrival.',
@@ -60,7 +60,7 @@ export const guided = [
       5: 'Packaging and design are part of the product.',
     },
     hints: ['Ask what the customer meets: the thing itself, help around it, where it is sold, who serves it, or what the brand stands for.', 'Packaging counts as product; events and sponsorship as image.'],
-    solution: 'Channels: convenience-store listing. People: trained baristas. Product: the coffee and the can. Services: pre-ordering. Image: festival sponsorship.',
+    solution: 'Channels: convenience stores. People: trained baristas. Product: the coffee and the can. Services: pre-ordering. Image: festival sponsorship.',
   },
   {
     id: 'm05-dr-g2', type: 'steps', kind: 'numerical',

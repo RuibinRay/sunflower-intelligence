@@ -161,7 +161,7 @@ export const items = [
     ],
     answer: [0, 1, 2],
     feedback: {
-      3: `Check the base rate: ${MS.onlineOthers}% of the school’s other students book online too. A habit most people outside the segment share can’t define it; lead with what the returners want that others don’t.`,
+      3: `Check the base rate: ${MS.onlineOthers}% of the school’s other students book online too. Online booking is common outside the segment too, and it is behaviour, not a need: a persona leads with what the segment wants, and gives behaviour as shares after it.`,
       4: 'A persona summarises the data; the tables, with their bases, stay the evidence for decisions such as a timetable.',
       5: `A name is a harmless label if it is marked as one. The faults are the invented and over-precise details, and a named woman of one age invites assumptions about the other ${100 - MS.women}% and the other age band.`,
     },

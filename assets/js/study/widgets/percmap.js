@@ -60,8 +60,6 @@ export function mount(el, cfg, ctx) {
     const all = [...pts, ...(st.ideals ? ideals.map((d) => d.p) : []), ...(st.moved ? [plan] : [])];
     const R = Math.max(1, ...all.map((p) => Math.max(Math.abs(p[0]), Math.abs(p[1])))) * 1.22;
     const cw = chart.clientWidth || 600, narrow = cw < 520;
-    hint.textContent = narrow && st.vectors && st.ideals ? 'On a small screen the labels crowd: show the arrows or the ideal points one at a time, or use the tables below.' : '';
-    hint.hidden = !hint.textContent;
     const fr = frame(chart, { height: Math.min(560, Math.max(300, Math.round(cw * (narrow ? 1.2 : 0.72)))), label: `Perceptual map of ${nB} ${many} on two dimensions`, margin: { t: 18, r: 12, b: 46, l: 40 } });
     // labels are laid out after every mark is drawn: each is tried at its natural place, then nudged up or down (and,
     // failing that, flipped to the other side) until it overlaps no mark and no label already placed. Widths are
@@ -99,6 +97,7 @@ export function mount(el, cfg, ctx) {
     const boxOf = (L, lx, ly, anchor) => { const x1 = anchor === 'start' ? lx : anchor === 'end' ? lx - L.w : lx - L.w / 2; return [x1, ly - L.size * 0.85, x1 + L.w, ly + L.size * 0.25]; };
     const hit = (a, b) => a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3];
     const placed = [...marks];
+    let crowded = false;
     labels.sort((a, b) => a.pri - b.pri).forEach((L) => {
       const step = L.size * 1.05, sides = [[L.x, L.anchor], ...(L.alt != null ? [[L.alt, L.anchor === 'start' ? 'end' : 'start']] : [])];
       // no free place: take the candidate that overlaps least (crowded maps, mostly on a phone with everything shown)
@@ -106,15 +105,17 @@ export function mount(el, cfg, ctx) {
       let best = null, least = null;
       for (const [lx, anchor] of sides) {
         for (const k of [0, -1, 1, -2, 2, -3, 3]) {
-          const ly = Math.max(L.size, Math.min(fr.ih - 2, L.y + k * step)), bx = boxOf(L, lx, ly, anchor);
-          if (bx[0] < -6 || bx[2] > fr.iw + 10) continue;
-          const cand = { lx, ly, anchor, bx, moved: k !== 0 || lx !== L.x }, o = overlap(bx);
+          const ly = Math.max(L.size, Math.min(fr.ih - 2, L.y + k * step)), raw = boxOf(L, lx, ly, anchor);
+          // a label too long for either side is slid back inside the plot (and so gets a leader line)
+          const sx = raw[0] < 0 ? -raw[0] : raw[2] > fr.iw ? fr.iw - raw[2] : 0;
+          const bx = [raw[0] + sx, raw[1], raw[2] + sx, raw[3]];
+          const cand = { lx: lx + sx, ly, anchor, bx, moved: k !== 0 || lx !== L.x || sx !== 0 }, o = overlap(bx);
           if (o === 0) { best = cand; break; }
           if (!least || o < least.o) least = { ...cand, o };
         }
         if (best) break;
       }
-      if (!best) best = least || { lx: L.x, ly: L.y, anchor: L.anchor, bx: boxOf(L, L.x, L.y, L.anchor) };
+      if (!best) { best = least; crowded = true; }
       placed.push(best.bx);
       // a label pushed away from its point gets a thin leader line, so it can't be read as another point's
       if (best.moved && L.px != null) {
@@ -124,6 +125,10 @@ export function mount(el, cfg, ctx) {
       }
       fr.g.append(s('text', { x: best.lx, y: best.ly, 'text-anchor': best.anchor, class: L.cls }, L.text));
     });
+    // on a small screen, say so when labels had to overlap
+    const hintText = narrow && crowded ? 'On a small screen the labels crowd: switch the arrows or the ideal points off, or use the tables below.' : '';
+    if (hint.textContent !== hintText) hint.textContent = hintText;
+    hint.hidden = !hintText;
     twin.replaceChildren();
     tableTwin(twin, { caption: 'Map coordinates', columns: [{ label: 'Point' }, { label: 'Dimension 1', num: true }, { label: 'Dimension 2', num: true }],
       rows: [...pts.map((p, b) => [cfg.brands[b], f2(p[0]), f2(p[1])]), ...ideals.map((d) => [`Ideal: ${d.name}`, f2(d.p[0]), f2(d.p[1])]), ...(st.moved ? [[`${cfg.brands[hi]} (planned)`, f2(plan[0]), f2(plan[1])]] : [])] });
@@ -137,7 +142,8 @@ export function mount(el, cfg, ctx) {
         h('thead', {}, h('tr', {}, h('th', { scope: 'col' }, 'Ideal point'), ...cols.map((c) => h('th', { scope: 'col' }, c)))),
         h('tbody', {}, ...ideals.map((d) => { const ds = pos.map((p) => distance(p, d.p)); const m = Math.min(...ds); return h('tr', {}, h('th', { scope: 'row' }, d.name), ...ds.map((v) => h('td', { class: 'num' }, v === m ? h('strong', {}, f2(v)) : f2(v)))); }))));
     }
-    out.replaceChildren(h('p', { class: 'fx-note' }, st.moved ? `The axes stay where the ${nWord} ${many} put them, so the planned ${cfg.brands[hi]} moves without moving anyone else. A real change of ratings would come from customers, not a slider.` : `Arrows point roughly towards ${many} rated high on that attribute; ${/^[aeiou]/i.test(one) ? 'an' : 'a'} ${one} far along an arrow tends to be rated high on it, but the map is a summary, so check the averages. Distances are only meaningful within the map, and the map carries only part of the differences.`));
+    const outText = st.moved ? `The axes stay where the ${nWord} ${many} put them, so the planned ${cfg.brands[hi]} moves without moving anyone else. A real change of ratings would come from customers, not a slider.` : `Arrows point roughly towards ${many} rated high on that attribute; ${/^[aeiou]/i.test(one) ? 'an' : 'a'} ${one} far along an arrow tends to be rated high on it, but the map is a summary, so check the averages. Distances are only meaningful within the map, and the map carries only part of the differences.`;
+    if (out.textContent !== outText) out.replaceChildren(h('p', { class: 'fx-note' }, outText));
     ctx.report?.('percmap', { moved: st.moved });
   }
   render();

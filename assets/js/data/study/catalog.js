@@ -29,7 +29,7 @@ export const LEVELS = { intro: 'Introductory', intermediate: 'Intermediate', adv
 export const CASES = {
   lantern: {
     name: 'Lantern Coffee Co.',
-    line: 'A fictional coffee business founded by Ana Lim. It starts as a catering and barista-training service, opens an online shop for beans and its own cafés, and plans a canned cold brew.',
+    line: 'A fictional coffee business founded by Ana Lim. It starts as a catering and barista-training service, opens its own cafés and an online shop for beans, and plans a canned cold brew.',
   },
   brightwater: { name: 'Brightwater Bike Repair', line: 'A fictional small bicycle repair shop used for the F01 project.' },
   harborview: { name: 'Harborview Hotel', line: 'A fictional 80-room hotel whose booking records need cleaning.' },

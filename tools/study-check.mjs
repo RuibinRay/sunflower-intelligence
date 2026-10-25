@@ -646,7 +646,7 @@ async function checkAssessments(course) {
   else {
     const P = pj.default || pj.project;
     for (const st of P?.stages || []) for (const x of [...(st.items || []), ...(st.items || []).flatMap((y) => y.steps || [])]) if (x.chart?.includes('/')) await chartFor(x.chart);
-    if (P?.verify) { try { for (const [what, value, shown, tol = 0.005] of P.verify()) if (Math.abs(value - shown) > tol) r.err(`project: ${what}: computed ${value}, shown ${shown}`); } catch (e) { r.err(`project.verify threw: ${e.message}`); } }
+    if (P?.verify) { try { for (const [what, value, shown, tol = 0.005] of P.verify()) { const bad = typeof shown === 'number' ? !(Math.abs(value - shown) <= tol) : String(value) !== String(shown); if (bad) r.err(`project: ${what}: computed ${value}, shown ${shown}`); } } catch (e) { r.err(`project.verify threw: ${e.message}`); } }
     if (!P?.title || !P?.brief || !Array.isArray(P?.stages) || !P.stages.length) r.err('project: needs title, brief and stages');
     (P?.stages || []).forEach((s, i) => (s.items || []).forEach((x, j) => checkExercise(x, `project.stages[${i}].items[${j}]`, r, { course, chart, caseMod })));
     (P?.stages || []).forEach((s, i) => {

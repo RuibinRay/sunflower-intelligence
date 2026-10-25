@@ -13,7 +13,7 @@
 // barista workshops; a survey of past attendees and newsletter readers; rival workshop providers).
 import { DATA } from './data.js?v=14';
 import { BUSINESS } from '../m01/case.js?v=14';
-import { COMPETITORS, LANTERN as M02_LANTERN } from '../m02/market.js?v=14';
+import { COMPETITORS, LANTERN as M02_LANTERN, DEFAULT_PLAN as M02_PLAN } from '../m02/market.js?v=14';
 import { standardise, kmeans, silhouette } from '../../../core/classify.js?v=14';
 import { ward, cutTree, adjustedRand } from '../../../core/ml.js?v=14';
 import { indexVsAverage, segmentSizes, needsFit } from '../../../core/market.js?v=14';
@@ -268,7 +268,7 @@ const identities = () => [
   ['every brand mean lies on the 1–7 scale', brandMeansM.every((r) => r.every((v) => v >= 1 && v <= 7))],
   ['Lantern’s awareness is close to M02’s pre-launch 12% (within 5 points)', Math.abs(mean(aware) - M02_LANTERN.awareness) < 0.05],
   ['the loyalty scale is internally consistent (alpha above 0.7)', alphaLoyal > 0.7],
-  ['M04’s Cold Brew price and this case agree ($3.49)', BRAND_NOTES.Lantern.includes('$3.49')],
+  ['M02’s Cold Brew price and this case agree', BRAND_NOTES.Lantern.includes(`$${M02_PLAN.price.toFixed(2)}`)],
   ['segment spend shares add to 1', close(sum(sizes.map((s) => s.spendShare)), 1, 1e-9)],
   ['a full workshop contributes $950, as in B03 (12 places at $125 less $550)', WORKSHOP_OFFER.places * WORKSHOP_OFFER.price - WORKSHOP_OFFER.costPerWorkshop === 950],
   ['the workshop survey’s k = 4 has the highest silhouette of k = 2 to 6', WORKSHOP_DERIVED.elbow.every((e) => e.silhouette <= WORKSHOP_DERIVED.elbow.find((x) => x.k === 4).silhouette)],

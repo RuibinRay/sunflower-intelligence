@@ -33,6 +33,7 @@ const IX = WD.index.map((row) => row.map((v) => Math.round(v)));
 const elbow = WD.elbow, I = (k) => elbow.find((e) => e.k === k).inertia, SIL = (k) => elbow.find((e) => e.k === k).silhouette;
 const bestK = elbow.slice().sort((a, b) => b.silhouette - a.silhouette)[0].k;
 const members = (g) => RESP.filter((_, i) => WD.labels[i] === g);
+const AGE_N = LEVELS.age.map((_, a) => sum(WD.age.map((row) => row[a])));   // respondents in each age band
 const ageTop = (g) => { const a = WD.age[g]; const k = a.indexOf(Math.max(...a)); return { band: LEVELS.age[k], share: a[k] / WD.sizes[g] }; };
 
 // the worksheet: one row per respondent with the segment letter, age band, past attendance, willingness to pay and needs
@@ -154,7 +155,7 @@ export default {
           ],
           answer: 0,
           feedback: {
-            1: `Four age bands would hold about ${Math.round(N / 4)} respondents each, no fewer than the needs segments; size isn’t the reason.`,
+            1: `Size isn’t the reason: a segment is worth having for what its members want, and age doesn’t say why anyone books. (The age bands would hold ${Math.min(...AGE_N)} to ${Math.max(...AGE_N)} respondents each.)`,
             2: 'The reverse is usually true: needs-based segments are harder to reach, so you profile them with demographics and channels afterwards.',
             3: 'What rivals segment on doesn’t decide the base; what explains why people book does.',
           },
@@ -249,7 +250,7 @@ export default {
             2: 'Equal weights are a choice too: they say size matters as much as fit. No weighting is free of judgement.',
             3: 'A scorecard’s sensitivity is information, not a failure: it shows which judgement decides the choice.',
           },
-          solution: `The winner flips with the weights: Ana’s weights favour Gift buyers (${sAna[GIFT].toFixed(1)} against ${sAna[HOME].toFixed(1)}), equal weights Home enthusiasts (${sEq[HOME].toFixed(1)} against ${sEq[GIFT].toFixed(1)}). How room is measured matters as well: in all six standardised attributes the nearest rivals are ${ROOM6.rival.map(f2).join(', ')} away, room becomes ${ROOM6.score.map((v) => v.toFixed(1)).join(', ')}, and Gift buyers lead under both weightings (${s6Ana[GIFT].toFixed(1)} against ${s6Ana[HOME].toFixed(1)}; ${s6Eq[GIFT].toFixed(1)} against ${s6Eq[HOME].toFixed(1)}). The scorecard narrows the field to two; the decision is a judgement Ana should state and defend.` },
+          solution: `The winner flips with the weights: Ana’s weights favour Gift buyers (${sAna[GIFT].toFixed(1)} against ${sAna[HOME].toFixed(1)}), equal weights Home enthusiasts (${sEq[HOME].toFixed(1)} against ${sEq[GIFT].toFixed(1)}). How room is measured matters as well: in all six standardised attributes the nearest rivals are ${NAMES.map((n, g) => `${f2(ROOM6.rival[g])} from ${n}`).join(', ')}, room becomes ${NAMES.map((n, g) => `${ROOM6.score[g].toFixed(1)} for ${n}`).join(', ')}, and Gift buyers lead under both weightings (${s6Ana[GIFT].toFixed(1)} against ${s6Ana[HOME].toFixed(1)}; ${s6Eq[GIFT].toFixed(1)} against ${s6Eq[HOME].toFixed(1)}). The scorecard narrows the field to two; the decision is a judgement Ana should state and defend.` },
         { id: 'm05-pj-10', type: 'mc', kind: 'applied',
           prompt: 'Which targeting strategy fits Lantern’s workshops best?',
           options: [
@@ -309,7 +310,7 @@ export default {
             2: 'There is no such rule: a low share would be the worry.',
             3: 'Everyone rated every option, but most respondents haven’t taken the other three, so those ratings are impressions; and the respondents are Lantern’s list, not every workshop customer.',
           },
-          solution: `In 2,000 maps of random ratings for four options on six attributes, two dimensions carried ${pct(SIM.mean, 1)} on average, the top 5% above ${pct(SIM.p95, 1)}, and ${pct(SIM.atLeast(WD.map.cumulative[1]), 1)} reached this map’s ${pct(WD.map.cumulative[1], 1)}. So the share is good but not remarkable. It is also a share of the options’ ratings, not of the segments’ ideal points: only ${pct(inPlane[HOME], 0)} of Home enthusiasts’ ideal (its squared standardised distance from the centre) and ${pct(inPlane[GIFT], 0)} of Gift buyers’ lie in the map’s plane. Measured in all six attributes, Lantern is still the nearest option to both (${f2(FULL[HOME][0])} and ${f2(FULL[GIFT][0])}, against ${f2(nowDist[HOME])} and ${f2(nowDist[GIFT])} on the map). Read the map for its pattern, and check anything that matters in the full ratings.` },
+          solution: `In 2,000 maps of random ratings for four options on six attributes, two dimensions carried ${pct(SIM.mean, 1)} on average, the top 5% above ${pct(SIM.p95, 1)}, and ${pct(SIM.atLeast(WD.map.cumulative[1]), 1)} reached this map’s ${pct(WD.map.cumulative[1], 1)}. So the map shows more than chance, but four options set a high bar: random ratings already average ${pct(SIM.mean, 0)}. It is also a share of the options’ ratings, not of the segments’ ideal points: only ${pct(inPlane[HOME], 0)} of Home enthusiasts’ ideal (its squared standardised distance from the centre) and ${pct(inPlane[GIFT], 0)} of Gift buyers’ lie in the map’s plane. Measured in all six attributes, Lantern is still the nearest option to both (${f2(FULL[HOME][0])} and ${f2(FULL[GIFT][0])}, against ${f2(nowDist[HOME])} and ${f2(nowDist[GIFT])} on the map). Read the map for its pattern, and check anything that matters in the full ratings.` },
         { id: 'm05-pj-13', type: 'mc', kind: 'applied',
           prompt: 'Which option sits nearest each of the two segments Lantern is considering?',
           options: [
@@ -334,7 +335,7 @@ export default {
           prompt: 'Before recommending the plan, Ana’s analyst checks it in all six attributes, using the table of ideal and planned ratings above the map. What does the check show?',
           options: [
             `It takes Lantern farther from both ideals (Gift buyers ${f2(now6[GIFT])} to ${f2(plan6[GIFT])}; Home enthusiasts ${f2(now6[HOME])} to ${f2(plan6[HOME])}): evenings overshoot Gift buyers’ ideal`,
-            `It moves Lantern nearer both ideals (Gift buyers ${f2(now6[GIFT])} to ${f2(planDist[GIFT])}): with ${pct(WD.map.cumulative[1], 0)} of the differences on the map, the map’s distances are the full ones`,
+            `It moves Lantern nearer both ideals (Gift buyers ${f2(nowDist[GIFT])} to ${f2(planDist[GIFT])} on the map): with ${pct(WD.map.cumulative[1], 0)} of the differences on the map, its distances are the full ones`,
             `It helps Gift buyers (gift rating nearer their ${f2(IDEAL[GIFT][GIFTJ])}) but moves Lantern away from Home enthusiasts, whose ideal gift rating is only ${f2(IDEAL[HOME][GIFTJ])}`,
             'It can’t be judged from these ratings, because ideal points are averages of what people say they want, not of what they buy',
           ],
@@ -358,7 +359,7 @@ export default {
             'Hands-on barista workshops in Harbour City',
             'Real espresso and milk skills on professional machines, as the courses it competes with teach',
             'Designed as a gift: a voucher valid for a year and a bag of Lantern’s own beans to take home',
-            'Lantern roasts its own beans, and its trainers are the baristas who run its catering',
+            'Its trainers are the baristas who run Lantern’s catering, and every voucher comes with a bag of the beans Lantern sells in its cafés',
           ],
           categories: ['Target', 'Frame of reference', 'Point of parity', 'Point of difference', 'Reason to believe'],
           answer: [0, 1, 2, 3, 4],
@@ -377,7 +378,7 @@ export default {
             2: `A certificate is what Aspiring baristas want (career index ${IX[BARISTA][CAREER]}); Gift buyers rate it low (${IX[GIFT][CAREER]}), and Lantern can’t credibly offer one.`,
             3: `Any-time access is what CremaClass offers, and Gift buyers rate times below average (index ${IX[GIFT][SCHED]}).`,
           },
-          solution: `Gift is the one attribute that clears the screen for Gift buyers (index ${IX[GIFT][GIFTJ]}), and Lantern leads ${PROVIDERS[KL]} on it by ${f2(lead(KL, GIFTJ))} points. Social (index ${IX[GIFT][SOC]}) doesn’t clear it, and Kettle Lane leads there anyway (by ${f2(-lead(KL, SOC))}), so “sociable” is not a difference to claim. The gift offer is relevant, distinct, credible (Lantern roasts and sells its own beans) and can be consistent, if the vouchers, the booking page and the session all say gift: M01’s four tests.` },
+          solution: `Gift is the one attribute that clears the screen for Gift buyers (index ${IX[GIFT][GIFTJ]}), and Lantern leads ${PROVIDERS[KL]} on it by ${f2(lead(KL, GIFTJ))} points. Social (index ${IX[GIFT][SOC]}) doesn’t clear it, and Kettle Lane leads there anyway (by ${f2(-lead(KL, SOC))}), so “sociable” is not a difference to claim. The gift offer is relevant, distinct, credible (Lantern’s trainers run its catering and it already sells beans) and can be consistent, if the vouchers, the booking page and the session all say gift: M01’s four tests.` },
       ],
     },
     {
@@ -393,7 +394,7 @@ export default {
             `Map: Lantern nearest both target segments, Calder College contesting Home enthusiasts; a high two-dimensional share is easy with four options (random ratings average about ${pct(SIM.mean, 0)}); the vouchers-and-evenings plan looked better on the map but is worse in all six attributes.`,
             'A positioning statement (target, frame of reference, point of difference, reason to believe), with the points of parity named; changes that make it credible (a gift version with vouchers, not weekday evenings for this target) with measures (voucher sales, bookings from new customers, gift ratings in a repeat survey).',
           ],
-          model: `<b>To:</b> Ana · <b>Re:</b> who the workshops are for<br><br><b>Segments.</b> The ${N} replies split into four groups by what they want: Home enthusiasts (${WD.sizes[HOME]}), Social groups (${WD.sizes[SOCIAL]}), Gift buyers (${WD.sizes[GIFT]}) and Aspiring baristas (${WD.sizes[BARISTA]}); the elbow and the silhouette both point to four. These are shares of people on our list who answered, which favours people who already come, not shares of the city.<br><br><b>Target.</b> Gift buyers and Home enthusiasts score almost level (${sAna[GIFT].toFixed(1)} and ${sAna[HOME].toFixed(1)} on your weights; equal weights reverse the order), so I recommend serving both: the core hands-on workshop for Home enthusiasts and a gift version for Gift buyers. Social groups find $${OFFER.price} dear and Aspiring baristas want a certificate we can’t give.<br><br><b>Persona.</b> “The gift giver” buys a workshop as a present for a coffee lover and says they would pay about $${Math.round(WD.wtp[GIFT] / 5) * 5}. Three in four have never been to one of our workshops.<br><br><b>Map.</b> We sit nearest both segments’ ideals, though Calder College is almost as near Home enthusiasts. Vouchers plus weekday evenings look better on the map but are worse in the full ratings: Gift buyers don’t want evenings, and the map hid it.<br><br><b>Positioning.</b> For people looking for a memorable present for a coffee lover, Lantern’s workshop is the hands-on barista class designed as a gift, with a voucher valid for a year and a bag of our beans, because we roast our own beans and our trainers are the baristas who run our catering. Real espresso skills are our point of parity.<br><br><b>Next.</b> Launch vouchers for the gift version; leave weekday evenings for a separate test with office workers. Measure voucher sales, how many bookings come from new customers, and the gift rating in a repeat survey in six months.` },
+          model: `<b>To:</b> Ana · <b>Re:</b> who the workshops are for<br><br><b>Segments.</b> The ${N} replies split into four groups by what they want: Home enthusiasts (${WD.sizes[HOME]}), Social groups (${WD.sizes[SOCIAL]}), Gift buyers (${WD.sizes[GIFT]}) and Aspiring baristas (${WD.sizes[BARISTA]}); the elbow and the silhouette both point to four. These are shares of people on our list who answered, which favours people who already come, not shares of the city.<br><br><b>Target.</b> Gift buyers and Home enthusiasts score almost level (${sAna[GIFT].toFixed(1)} and ${sAna[HOME].toFixed(1)} on your weights; equal weights reverse the order), so I recommend serving both: the core hands-on workshop for Home enthusiasts and a gift version for Gift buyers. Social groups find $${OFFER.price} dear and Aspiring baristas want a certificate we can’t give.<br><br><b>Persona.</b> “The gift giver” buys a workshop as a present for a coffee lover and says they would pay about $${Math.round(WD.wtp[GIFT] / 5) * 5}. Three in four have never been to one of our workshops.<br><br><b>Map.</b> We sit nearest both segments’ ideals, though Calder College is almost as near Home enthusiasts. Vouchers plus weekday evenings look better on the map but are worse in the full ratings: Gift buyers don’t want evenings, and the map hid it.<br><br><b>Positioning.</b> For people looking for a memorable present for a coffee lover, Lantern’s workshop is the hands-on barista class designed as a gift, with a voucher valid for a year and a bag of the beans we sell, because our trainers are the baristas who run our catering. Real espresso skills are our point of parity.<br><br><b>Next.</b> Launch vouchers for the gift version; leave weekday evenings for a separate test with office workers. Measure voucher sales, how many bookings come from new customers, and the gift rating in a repeat survey in six months.` },
       ],
     },
   ],

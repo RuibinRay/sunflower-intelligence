@@ -153,7 +153,7 @@ export const guided = [
         id: 'm05-ps-g2-s3', type: 'mc',
         prompt: `Craft and local are ${(S.sizes[CL].share * 100).toFixed(1)}% of respondents and ${(S.sizes[CL].spendShare * 100).toFixed(1)}% of spend. What follows?`,
         options: [
-          'On average, Craft and local respondents spend about one and a half times as much a head as the average respondent',
+          'On average, Craft and local respondents spend about one and a half times as much per head as the average respondent',
           'Craft and local are the largest segment in Harbour City when it is measured in people rather than in dollars of spend',
           'Craft and local respondents drink more cups a week than any other segment',
           'The two shares contradict each other, so one of them must be a mistake somewhere in the data or in the formulas used',
