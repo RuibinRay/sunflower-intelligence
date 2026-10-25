@@ -84,7 +84,9 @@ export const RESPONDENTS = idx((i) => PEOPLE.status[i] === 2).map((i) => ({
 export const RESPONDENT_COLUMNS = ['respondent', 'segment', 'nps', 'cold_brew', 'age', 'first_heard', 'cups_last_week', 'improve'];
 export const RESPONDENT_ROWS = RESPONDENTS.map((r) => [r.id, SEGMENT[r.stratum], r.nps, LEVELS.coldbrew[r.coldbrew - 1], LEVELS.age[r.age], LEVELS.heard[r.heard], r.cups, LEVELS.theme[r.theme]]);
 const dispo = (h) => { const st = idx((i) => (h == null || stratum[i] === h) && PEOPLE.status[i] > 0).map((i) => PEOPLE.status[i]); const c = (k) => st.filter((x) => x === k).length; return { invited: st.length, I: c(2), P: c(3), R: c(4), NC: c(5), U: c(1) }; };
-/** AAPOR dispositions by stratum: I complete, P partial, R refused, NC bounced (not contacted), U no reply. */
+/** AAPOR dispositions by stratum: I complete, P partial, R refused, NC bounced (not contacted), U no reply. Everyone on
+ *  the list is eligible, so a no-reply could also be counted as an eligible non-respondent; RR1 and RR2 are the same
+ *  either way, because every case is in the denominator (RR3 and RR4 differ only when e < 1). */
 export const DISPOSITIONS = { all: dispo(null), byStratum: STRATA.map((_, h) => dispo(h)) };
 
 // ---------------------------------------------------------------- March 2027: qualitative work on Lantern Cold Brew
