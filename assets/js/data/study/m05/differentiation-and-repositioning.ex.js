@@ -61,7 +61,7 @@ export const guided = [
   {
     id: 'm05-dr-g2', type: 'steps', kind: 'numerical',
     prompt: `On Lantern’s map, one convenience point moves a brand by ${sg3(per(CONV)[0])} on Dimension 1 and ${sg3(per(CONV)[1])} on Dimension 2. Lantern sits at ${pt(MAP.scores[LA])}; the Craft and local ideal is at ${pt(IDEALS[CL])}. Ana plans for customers to rate Lantern 1.5 points higher on convenience, everything else unchanged.`,
-    solution: `Movement: 1.5 × (${sg(per(CONV)[0])}, ${sg(per(CONV)[1])}) = (${sg(1.5 * per(CONV)[0])}, ${sg(1.5 * per(CONV)[1])}); new position ${pt(P15)}. Distance to Craft and local: √((${sg(P15[0])} − ${sg(IDEALS[CL][0])})² + (${sg(P15[1])} − (${sg(IDEALS[CL][1])}))²) ≈ ${f2(distance(P15, IDEALS[CL]))}, down from ${f2(D.map.distances[CL][LA])}. Lantern moves closer to the Craft and local ideal because that ideal asks for a little more convenience than Lantern offers today.`,
+    solution: `Movement: 1.5 × (${sg3(per(CONV)[0])}, ${sg3(per(CONV)[1])}) = (${sg(1.5 * per(CONV)[0])}, ${sg(1.5 * per(CONV)[1])}); new position ${pt(P15)}. Distance to Craft and local: √((${sg(P15[0])} − ${sg(IDEALS[CL][0])})² + (${sg(P15[1])} − (${sg(IDEALS[CL][1])}))²) ≈ ${f2(distance(P15, IDEALS[CL]))}, down from ${f2(D.map.distances[CL][LA])}. Lantern moves closer to the Craft and local ideal because that ideal asks for a little more convenience than Lantern offers today.`,
     steps: [
       {
         id: 'm05-dr-g2-s1', type: 'num',

@@ -110,7 +110,7 @@ export const guided = [
           2: `The energy gap is ${f2(M[SU][ENERGY] - M[LA][ENERGY])}, beyond the 0.5 threshold: parity to reach, like convenience.`,
           3: 'Importance comes from the target’s needs, not from Lantern’s strengths. These are the two attributes On the go care most about.',
         },
-        hints: ['Both are important to the target; now compare Lantern with Summit Brew.', `Gaps: ${f2(M[LA][CONV] - M[SU][CONV])} and ${f2(M[LA][ENERGY] - M[SU][ENERGY])}.`],
+        hints: ['Both are important to the target; now compare Lantern with Summit Brew.', `Gaps: −${f2(M[SU][CONV] - M[LA][CONV])} and −${f2(M[SU][ENERGY] - M[LA][ENERGY])}.`],
       },
       {
         id: 'm05-st-g2-s3', type: 'mc',
@@ -365,7 +365,7 @@ export const check = [
     answer: [0, 1],
     feedback: {
       2: 'That is evidence for Ana, from 61 people rating Lantern’s cafés and beans; it isn’t a fact about the can that customers can check.',
-      3: 'Customers never see the map, and the map rates Lantern as a brand; nobody has rated the can yet.',
+      3: 'Customers never see the map, and the map rates Lantern as a brand; the survey didn’t rate the can.',
     },
     solution: 'A reason to believe is something customers can check about the offer: the coffee and the steeping method, and the local, independent company behind it. Survey ratings and map distances are the evidence Ana used to choose the position; they aren’t proof that customers can see.',
   },

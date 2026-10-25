@@ -1,6 +1,6 @@
 // assess-m4.js — M05 module 4 test: Positioning (perceptual-maps, positioning-statements, differentiation-and-repositioning).
-// New questions on new businesses (an airline, a supermarket chain, Halvard Journeys, a dog-food brand, Pinmoor Building
-// Society, a bank's app, a supermarket's own label and a regional newspaper, all fictional), with angles the lessons
+// New questions on new businesses (an airline, a supermarket chain, Halvard Journeys, a frozen-meals maker, a dog-food brand, Pinmoor Building
+// Society, a theatre, a bank's app, a supermarket's own label, a cinema chain and a regional newspaper, all fictional), with angles the lessons
 // don't drill: the share of an attribute left off a map, choosing the nearest of several ideals, reasons a gap can be
 // empty, sizing a concept cell, a move from two rating changes at once and sizing a tracking wave. No hints; solutions
 // are shown when the student reviews the test. Every num item's `check` recomputes its answer.
@@ -58,11 +58,11 @@ export const items = [
   },
   {
     id: 'm05-m4-4', lesson: 'perceptual-maps', type: 'multi', kind: 'conceptual',
-    prompt: 'A dog-food maker (fictional) finds an empty space on its map where a brand would be seen as both the most nutritious and the cheapest. Which of these could explain why the space is empty? Select all that apply.',
+    prompt: 'A frozen-meals maker (fictional) finds an empty space on its map where a brand would be seen as both the most nutritious and the cheapest. Which of these could explain why the space is empty? Select all that apply.',
     options: [
       'Nutritious recipes cost more to make, so a brand there couldn’t cover its costs.',
-      'No segment of owners has an ideal point near that space.',
-      'Owners wouldn’t believe a brand that claimed both at once.',
+      'No segment of shoppers has an ideal point near that space.',
+      'Shoppers wouldn’t believe a brand that claimed both at once.',
       'A brand the survey didn’t ask about may already be seen that way.',
       'Gaps on a principal-components map are produced by the arbitrary signs of the axes.',
     ],

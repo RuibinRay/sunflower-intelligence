@@ -269,7 +269,7 @@ export const independent = [
       2: 'The pattern is a correlation across six brands as they are today. A brand that changed could break it; that is what repositioning tries to do.',
       3: 'Arrow directions say nothing about importance to customers.',
     },
-    solution: `Opposite arrows mean the two attributes are negatively correlated across the brands (here ${f2(MAP.R[CONV][A('sustainability')])}): brands rated convenient (Corner Cup, Daily Grind RTD, Harbour Basics) are rated low on sustainability, and the reverse. It is a fact about how these six brands are seen, not a law and not a statement about customers’ needs.`,
+    solution: `Opposite arrows mean the two attributes are negatively correlated across the brands (here ${sg(MAP.R[CONV][A('sustainability')])}): brands rated convenient (Corner Cup, Daily Grind RTD, Harbour Basics) are rated low on sustainability, and the reverse. It is a fact about how these six brands are seen, not a law and not a statement about customers’ needs.`,
   },
 ];
 

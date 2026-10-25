@@ -39,6 +39,7 @@ const f2 = (v) => v.toFixed(2), p0 = (v) => `${(v * 100).toFixed(0)}%`, p1 = (v)
 const sg = (v) => (v < 0 ? `−${Math.abs(v).toFixed(2)}` : v.toFixed(2));
 const sgn = (v) => (v < 0 ? `−${Math.abs(v).toFixed(2)}` : `+${v.toFixed(2)}`);
 const sg3 = (v) => (v < 0 ? `−${Math.abs(v).toFixed(3)}` : `+${v.toFixed(3)}`);
+const s3 = (v) => (v < 0 ? `−${Math.abs(v).toFixed(3)}` : v.toFixed(3));
 const pt = (p) => `(${sg(p[0])}, ${sg(p[1])})`;
 
 // ---------------------------------------------------------------- figure: value positions
@@ -132,7 +133,7 @@ export default {
       align: ['l', 'r', 'r'],
       note: 'Dimension 1 runs from cheap and everywhere (negative) to crafted and ethical (positive); Dimension 2 from light and plain to a kick and something new.',
     } },
-    { p: `A convenience point moves a brand ${f2(Math.abs(per(CONV)[0]))} towards the cheap and everywhere end and ${f2(per(CONV)[1])} up. Raising Lantern’s convenience from ${f2(M[LA][CONV])} to 5.00, a rise of ${f2(5 - M[LA][CONV])} points, moves it by ${f2(5 - M[LA][CONV])} × (${sg(per(CONV)[0])}, ${sg(per(CONV)[1])}) = (${sg((5 - M[LA][CONV]) * per(CONV)[0])}, ${sg((5 - M[LA][CONV]) * per(CONV)[1])}), to ${pt(C50)}. Energy works mostly on Dimension 2: a point moves a brand ${f2(per(ENERGY)[1])} up and ${f2(Math.abs(per(ENERGY)[0]))} left.` },
+    { p: `A convenience point moves a brand ${f2(Math.abs(per(CONV)[0]))} towards the cheap and everywhere end and ${f2(per(CONV)[1])} up. Raising Lantern’s convenience from ${f2(M[LA][CONV])} to 5.00, a rise of ${f2(5 - M[LA][CONV])} points, moves it by ${f2(5 - M[LA][CONV])} × (${s3(per(CONV)[0])}, ${s3(per(CONV)[1])}) = (${sg((5 - M[LA][CONV]) * per(CONV)[0])}, ${sg((5 - M[LA][CONV]) * per(CONV)[1])}), to ${pt(C50)}. Energy works mostly on Dimension 2: a point moves a brand ${f2(per(ENERGY)[1])} up and ${f2(Math.abs(per(ENERGY)[0]))} left.` },
     { p: `The limits show at the extremes. Even rated 7 on both convenience and energy, the top of the scale, Lantern would sit at ${pt(C77)}: ${f2(dist(C77, OG))} from On the go’s ideal, still further than Corner Cup, Summit Brew, Daily Grind RTD or Harbour Basics, and ${f2(dist(C77, CL))} from Craft and local, now further than Arcadia (${f2(D.map.distances[CL][AR])}). The map is saying that On the go drinkers want a different kind of coffee brand, not a more convenient Lantern.` },
 
     { h: 'Why the axes stay fixed, and when they don’t' },
@@ -179,7 +180,7 @@ export default {
     { level: 'challenging', title: 'Planning a gym’s move on a fixed map', fictional: true,
       setup: `Tarnley Fitness (fictional) is the busy professionals’ nearest gym on the map from the perceptual-maps lesson: ${f2(distance(G.scores[0], gBusy))} from their ideal, with the hotel club next at ${f2(distance(G.scores[4], gBusy))}. Its manager wants to win the class lovers, whose nearest gym is the leisure centre (${f2(distance(G.scores[3], gClass))}), by adding classes until members rate Tarnley 6.0 on classes, up from 4.0. On the map, one point on classes moves a gym by ${sg3(gw(2)[0])} on Dimension 1 and ${sg3(gw(2)[1])} on Dimension 2. Where would Tarnley land, and is the move worth making?`,
       steps: [
-        `Movement: a rise of 2.0 points moves Tarnley by 2.0 × (${sg(gw(2)[0])}, ${sg(gw(2)[1])}) = (${sg(2 * gw(2)[0])}, ${sg(2 * gw(2)[1])}).`,
+        `Movement: a rise of 2.0 points moves Tarnley by 2.0 × (${s3(gw(2)[0])}, ${s3(gw(2)[1])}) = (${sg(2 * gw(2)[0])}, ${sg(2 * gw(2)[1])}).`,
         `New position: ${pt(G.scores[0])} + (${sg(2 * gw(2)[0])}, ${sg(2 * gw(2)[1])}) = ${pt(gPlan)}.`,
         `Distance to the class lovers’ ideal ${pt(gClass)}: √((${sg(gPlan[0])} − (${sg(gClass[0])}))² + (${sg(gPlan[1])} − (${sg(gClass[1])}))²) = ${f2(distance(gPlan, gClass))}. The leisure centre, at ${f2(distance(G.scores[3], gClass))}, is still nearer.`,
         `Distance to the busy professionals’ ideal ${pt(gBusy)}: ${f2(distance(gPlan, gBusy))}, up from ${f2(distance(G.scores[0], gBusy))}. The hotel club (${f2(distance(G.scores[4], gBusy))}) would now be their nearest gym.`,
@@ -191,7 +192,7 @@ export default {
     { level: 'applied', title: 'How convenient can Lantern become, and how would Ana know?', fictional: true,
       setup: `Ana wants Lantern to be seen as more convenient, mainly through Cold Brew: cans in convenience stores (${p0(conv.volume)} of the city’s canned coffee, a ${p0(conv.margin)} trade margin and $${conv.listing.toLocaleString('en-US')} a year per product to be listed, M02) and a fridge by the door of each café. Plan the target position, check what it does to each segment’s distance, and design the tracking survey.`,
       steps: [
-        `Target: Summit Brew’s convenience rating, ${f2(M[SU][CONV])}, a rise of ${f2(M[SU][CONV] - M[LA][CONV])} points. Movement: ${f2(M[SU][CONV] - M[LA][CONV])} × (${sg(per(CONV)[0])}, ${sg(per(CONV)[1])}) = (${sg(CSU[0] - NOW[0])}, ${sg(CSU[1] - NOW[1])}), from ${pt(NOW)} to ${pt(CSU)}.`,
+        `Target: Summit Brew’s convenience rating, ${f2(M[SU][CONV])}, a rise of ${f2(M[SU][CONV] - M[LA][CONV])} points. Movement: ${f2(M[SU][CONV] - M[LA][CONV])} × (${s3(per(CONV)[0])}, ${s3(per(CONV)[1])}) = (${sg(CSU[0] - NOW[0])}, ${sg(CSU[1] - NOW[1])}), from ${pt(NOW)} to ${pt(CSU)}.`,
         `Segments: Craft and local ${f2(dist(NOW, CL))} → ${f2(dist(CSU, CL))} (still nearest, Arcadia next at ${f2(D.map.distances[CL][AR])}); Explorers ${f2(dist(NOW, EX))} → ${f2(dist(CSU, EX))} (Summit Brew is ${f2(D.map.distances[EX][SU])}); On the go ${f2(dist(NOW, OG))} → ${f2(dist(CSU, OG))}; Mindful ${f2(dist(NOW, MI))} → ${f2(dist(CSU, MI))}; Value routine ${f2(dist(NOW, VR))} → ${f2(dist(CSU, VR))}.`,
         'What would make customers’ ratings move: availability where people already shop (the convenience-store listing), visibility (the café fridge, shelf placement), and nothing that dilutes the craft claims. A price cut or a strength claim would move Lantern towards On the go, but away from the drinkers who already choose it.',
         `Tracking: repeat the study in May 2028 with the same attributes, brands, panel and quotas. A change in Lantern’s convenience mean must exceed about ${f2(tCrit * seChange)} points to be significant with ${nL} ratings per wave; ${nNeed} per wave would detect a 0.3-point change with 80% power. A booster sample of people who know Lantern, used the same way in both waves, keeps the cost near the May budget.`,
