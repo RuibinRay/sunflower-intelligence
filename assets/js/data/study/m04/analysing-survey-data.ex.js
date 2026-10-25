@@ -40,7 +40,7 @@ function npsExplore(v) {
   if (n < 1) return { error: 'Enter at least one answer.' };
   const z = normInv(1 - (1 - v.conf / 100) / 2);
   const c = S.nps({ promoters: v.P, passives: v.Pa, detractors: v.D }, v.conf / 100);
-  const a = S.nps({ promoters: v.P + 0.75, passives: v.Pa + 1.5, detractors: v.D + 0.75 }, v.conf / 100);
+  const a = c.adjusted;                                          // Rocks's (2016) AW(3,T), from survey.js
   const pc = (x) => `${(x * 100).toFixed(1)}%`;
   const small = n < 30;
   return {
