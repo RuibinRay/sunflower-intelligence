@@ -1,14 +1,15 @@
 // assess-m3.js — M04 module 3 test: Markets and competitors (market-sizing, competitor-research). New questions on
 // new businesses and new angles, not copies of lesson exercises: market definitions that differ, a software firm's
-// top-down revenue, a bus route's bottom-up revenue, the listings a target needs, a festival's sensitivity table, a
-// gap between routes, the codes on mystery shopping, a hotel's rate check, per-day pass prices, weighing evidence about
-// a gym chain, and a like-for-like service comparison. Fenwright Software, Brackenmoor Buses and Saltinghall Festival
-// are fictional, as are the other businesses described. No hints; solutions are shown when the student reviews the test.
-// Formula items are marked by their results; every num item's `check` recomputes its answer.
+// top-down revenue, a bus route's revenue with an extra period (bank holidays), the listings a target needs, a
+// festival's sensitivity table, the cost per subscriber a plan needs, the codes on mystery shopping, a hotel's rate
+// check, per-day pass prices, weighing evidence about a gym chain, and a like-for-like service comparison. Fenwright
+// Software, Skerrow Buses and Saltinghall Festival are fictional, as are the other businesses described. No hints;
+// solutions are shown when the student reviews the test. Formula items are marked by their results; every num item's
+// `check` recomputes its answer.
 
-// Brackenmoor Buses (fictional): a weekend route
-const BUS = { departures: [12, 8], load: [0.55, 0.4], seats: 70, weekends: 50, fare: 4.2 };
-const busPassengers = (BUS.departures[0] * BUS.load[0] + BUS.departures[1] * BUS.load[1]) * BUS.seats * BUS.weekends;
+// Skerrow Buses (fictional): a weekend route that also runs on bank-holiday Mondays at Sunday's pattern
+const BUS = { departures: [12, 8], load: [0.55, 0.4], seats: 70, weekends: 50, fare: 4.2, holidays: 6 };
+const busPassengers = ((BUS.departures[0] * BUS.load[0] + BUS.departures[1] * BUS.load[1]) * BUS.weekends + BUS.departures[1] * BUS.load[1] * BUS.holidays) * BUS.seats;
 // Saltinghall Festival (fictional): one-at-a-time sensitivity of a ticket estimate (central 18,000)
 const FEST = [
   ['Share of last year’s visitors who return (55%–75%)', 15200, 20800],
@@ -30,7 +31,7 @@ export const items = [
   // ---------------------------------------------------------------- market-sizing
   {
     id: 'm04-m3-1', lesson: 'market-sizing', type: 'mc', kind: 'conceptual',
-    prompt: 'Two consultancies’ recent reports on the same country’s market for home fitness equipment put its size at $40 million and $120 million a year. Both firms are reputable. What is the most likely explanation, and what should be checked first?',
+    prompt: 'Two consultancies’ (fictional) recent reports on the same country’s market for home fitness equipment put its size at $40 million and $120 million a year. Both firms are reputable. What is the most likely explanation, and what should be checked first?',
     options: [
       'They define the market differently (which products, channels or buyers count); compare the definitions first.',
       'One report must contain a calculation error, because a market has only one true size; recalculate both reports first.',
@@ -58,22 +59,24 @@ export const items = [
   },
   {
     id: 'm04-m3-3', lesson: 'market-sizing', type: 'formula', kind: 'applied',
-    prompt: 'Brackenmoor Buses (fictional) is sizing a weekend route. B2:B3 hold the departures on Saturday and Sunday and C2:C3 the share of seats it expects to fill on each day; B5 holds the seats per bus, B6 the weekends a year and B7 the average fare. In B9, calculate the route’s fare revenue a year.',
+    prompt: 'Skerrow Buses (fictional) is sizing a weekend route. B2:B3 hold the departures on Saturday and Sunday and C2:C3 the share of seats it expects to fill on each day; B5 holds the seats per bus, B6 the weekends a year and B7 the average fare. The route also runs on the bank-holiday Mondays in B8, with Sunday’s departures and Sunday’s share of seats filled. In B10, calculate the route’s fare revenue a year.',
     sheet: { cells: {
       A1: 'Day', B1: 'Departures', C1: 'Share of seats filled',
       A2: 'Saturday', B2: BUS.departures[0], C2: BUS.load[0], A3: 'Sunday', B3: BUS.departures[1], C3: BUS.load[1],
       A5: 'Seats per bus', B5: BUS.seats, A6: 'Weekends a year', B6: BUS.weekends, A7: 'Average fare', B7: BUS.fare,
-      A9: 'Fare revenue a year',
-    } },
-    cell: 'B9', answer: '=SUMPRODUCT(B2:B3,C2:C3)*B5*B6*B7',
-    alt: ['=(B2*C2+B3*C3)*B5*B6*B7', '=SUMPRODUCT(B2:B3*C2:C3)*B5*B6*B7', '=B5*B6*B7*SUMPRODUCT(B2:B3,C2:C3)'],
-    view: 'A1:C9', widths: { A: 18, B: 12, C: 20 }, formats: { C: '0%', B7: '$0.00', B9: '$#,##0' },
+      A8: 'Bank-holiday Mondays a year', B8: BUS.holidays,
+      A10: 'Fare revenue a year',
+    }, vary: { B8: [4, 8] } },
+    cell: 'B10', answer: '=(SUMPRODUCT(B2:B3,C2:C3)*B6+B3*C3*B8)*B5*B7',
+    alt: ['=(B2*C2*B6+B3*C3*(B6+B8))*B5*B7', '=((B2*C2+B3*C3)*B6+B3*C3*B8)*B5*B7', '=B5*B7*(SUMPRODUCT(B2:B3,C2:C3)*B6+B3*C3*B8)'],
+    view: 'A1:C10', widths: { A: 28, B: 12, C: 20 }, formats: { C: '0%', B7: '$0.00', B10: '$#,##0' },
     wrong: [
-      { formula: '=SUM(B2:B3)*AVERAGE(C2:C3)*B5*B6*B7', say: 'Averaging the two days’ shares gives Sunday’s 8 departures the same weight as Saturday’s 12. Multiply each day’s departures by its own share, then add: SUMPRODUCT.' },
-      { formula: '=SUMPRODUCT(B2:B3,C2:C3)*B5*B6', say: 'That is passengers a year. Multiply by the average fare in B7 for revenue.' },
-      { formula: '=SUM(B2:B3)*B5*B6*B7', say: 'That assumes every seat on every bus is filled. Use the expected shares in C2:C3.' },
+      { formula: '=SUMPRODUCT(B2:B3,C2:C3)*B5*B6*B7', say: 'That counts the weekends only. The route also runs on the bank-holiday Mondays in B8: add their Sunday-pattern seat-loads.' },
+      { formula: '=SUMPRODUCT(B2:B3,C2:C3)*(B6+B8)*B5*B7', say: 'That treats each bank holiday as a whole extra weekend, Saturday included. A bank-holiday Monday is one extra day run like a Sunday: B3 × C3 × B8.' },
+      { formula: '=(SUMPRODUCT(B2:B3,C2:C3)*B6+B2*C2*B8)*B5*B7', say: 'That runs the bank holidays at Saturday’s pattern. The route runs Sunday’s departures and Sunday’s share of seats on those days: B3 and C3.' },
+      { formula: '=(SUMPRODUCT(B2:B3,C2:C3)*B6+B3*B8)*B5*B7', say: 'That fills every seat on the bank-holiday buses. Use Sunday’s expected share in C3 for them too.' },
     ],
-    solution: `Seat-loads a weekend: 12 × 0.55 + 8 × 0.40 = 9.8; × 70 seats = 686 passengers; × 50 weekends = ${fmt(busPassengers)} passengers a year; × $4.20 = $${fmt(busPassengers * BUS.fare)}. <x>=SUMPRODUCT(B2:B3,C2:C3)*B5*B6*B7</x>.`,
+    solution: `Busloads a weekend: 12 × 0.55 + 8 × 0.40 = 9.8, so 9.8 × 50 = 490 a year. Bank holidays: 8 × 0.40 × 6 = 19.2. Together 509.2 busloads × 70 seats = ${fmt(busPassengers)} passengers × $4.20 = $${fmt(busPassengers * BUS.fare)} a year: <x>=(SUMPRODUCT(B2:B3,C2:C3)*B6+B3*C3*B8)*B5*B7</x>. Units and periods are where such models go wrong: a bank holiday is one extra Sunday, not an extra weekend.`,
   },
   {
     id: 'm04-m3-4', lesson: 'market-sizing', type: 'num', kind: 'numerical',
@@ -107,21 +110,15 @@ export const items = [
     solution: 'The returning-visitor share has the largest swing (5,600 tickets) and group bookings the smallest (600). One assumption at a time, the estimate runs from 15,200 to 20,800. Adding the swings, planning on the highest value, or treating the ranking as independent of the chosen ranges all misread a sensitivity table.',
   },
   {
-    id: 'm04-m3-6', lesson: 'market-sizing', type: 'mc', kind: 'applied',
-    prompt: 'A language-learning app (fictional) has two first-year estimates. Top-down: 1% of the country’s 5 million adults learning a language, so 50,000 subscribers. Bottom-up: its $400,000 marketing budget at the $50 its pilot campaign spent to win each subscriber, so 8,000. What should it do next?',
-    options: [
-      'Find the input behind the gap, here the assumed 1% share, and test it against the pilot’s cost per subscriber.',
-      'Plan on 29,000 subscribers, the average of the two estimates, since it gives equal weight to both of the methods used.',
-      'Plan on 50,000, because the top-down estimate starts from national statistics and is therefore the more objective one.',
-      'Plan on 8,000, because a bottom-up estimate is always more accurate than a top-down one, whatever its inputs are.',
+    id: 'm04-m3-6', lesson: 'market-sizing', type: 'num', kind: 'applied',
+    prompt: 'A language-learning app (fictional) plans on 50,000 subscribers in its first year: 1% of the country’s 5 million adults learning a language. Its first-year marketing budget is $400,000, and a pilot campaign spent $50 to win each subscriber. What would the average cost of winning a subscriber have to be for the budget to deliver the plan? Whole dollars.',
+    answer: 8, check: () => 400000 / 50000, unit: '$ per subscriber', places: 0, tol: 0.5,
+    wrong: [
+      { value: 50, say: 'That is what the pilot spent per subscriber. The question asks what the cost would have to be for $400,000 to win 50,000 subscribers.' },
+      { value: 50 / 8, say: 'That is how many times cheaper than the pilot each subscriber would have to be. Divide the budget by the planned subscribers for the cost itself.' },
+      { value: 400000 / 5000000, say: 'That spreads the budget over every adult learner in the country. Divide it by the 50,000 subscribers the plan needs.' },
     ],
-    answer: 0,
-    feedback: {
-      1: 'Averaging hides the disagreement. The two routes can’t both be right, and the gap says which assumption to test.',
-      2: 'The 5 million may be well sourced, but the 1% share isn’t: nothing measured it. A top-down estimate is only as good as its weakest share.',
-      3: 'Bottom-up estimates are often more reliable because their inputs can be checked, but not always; this one rests on a pilot’s cost per subscriber, which may rise as the app reaches beyond early enthusiasts.',
-    },
-    solution: 'The 1% share of 5 million is an assumption; the $50 cost per subscriber is a measurement from a pilot. To reach 50,000 subscribers with $400,000 the app would have to win each for $8, about a sixth of what the pilot cost. That is what would have to be true, and it is unlikely, so the bottom-up figure deserves more weight until a larger test says otherwise.',
+    solution: 'Required cost per subscriber = budget ÷ planned subscribers = $400,000 ÷ 50,000 = $8, about a sixth of the $50 the pilot spent. At the pilot’s cost the budget buys 8,000 subscribers. The plan rests on an untested 1% share, and what would have to be true for it is implausible, so the bottom-up 8,000 deserves more weight until a larger test says otherwise.',
   },
 
   // ---------------------------------------------------------------- competitor-research
@@ -151,8 +148,8 @@ export const items = [
     view: 'A1:F13', widths: { A: 12, B: 14, C: 18, E: 34, F: 8 }, formats: { B: '$0', F1: '$0' },
     wrong: [
       { formula: '=COUNTIF(B2:B13,">"&F1)', say: 'That counts every dearer rival, with or without breakfast. Compare like with like: add the condition that breakfast is included.' },
-      { formula: '=COUNTIFS(B2:B13,">="&F1,C2:C13,"Yes")', say: '">=" also counts a rival charging exactly the hotel’s rate, which isn’t dearer. Use ">".' },
-      { formula: '=COUNTIFS(B2:B13,">F1",C2:C13,"Yes")', say: 'Inside quotation marks F1 is text, not a cell. Join the operator to the cell: ">"&F1.' },
+      { formula: '=COUNTIFS(B2:B13,">="&F1,C2:C13,"Yes")', say: '<x>">="</x> also counts a rival charging exactly the hotel’s rate, which isn’t dearer. Use <x>">"</x>.' },
+      { formula: '=COUNTIFS(B2:B13,">F1",C2:C13,"Yes")', say: 'Inside quotation marks F1 is text, not a cell. Join the operator to the cell: <x>">"&F1</x>.' },
     ],
     solution: '<x>=COUNTIFS(B2:B13,">"&F1,C2:C13,"Yes")</x> counts 4 rivals (Hotels D, F, H and J) that include breakfast and charge more than $145. Hotel B charges exactly $145 and isn’t counted; three dearer rivals don’t include breakfast, so their rates aren’t comparable.',
   },
@@ -174,21 +171,21 @@ export const items = [
       'The rival’s membership prices on its website, checked on 1 April',
       'One job advertisement for a manager at a site in the town',
       'Twelve angry online reviews of overcrowding at peak times',
-      'A copy of the rival’s expansion plan, sent by one of its employees in return for a fee',
+      'Class-capacity reports seen by logging in to the rival’s member app with a friend’s password',
       'The rival’s class timetable, noted from the noticeboard in its public reception',
       'A supplier’s remark that the rival plans to cut its prices in May',
-      'The rival’s member list, brought by a new instructor who used to work there',
+      'A pricing plan taken from a staff-room table during a tour of the rival’s gym',
     ],
-    categories: ['Reliable evidence of the rival’s offer', 'A signal to follow up, not yet evidence', 'Not usable: obtained improperly'],
+    categories: ['Reliable evidence of the rival’s offer', 'A signal to check before relying on it', 'Not usable: obtained improperly'],
     answer: [0, 1, 1, 2, 0, 1, 2],
     feedback: {
       1: 'One advertisement suggests a plan; several, or a planning application, would make it evidence.',
       2: 'Reviewers select themselves: the reviews show that overcrowding happens, not how often or how many members mind.',
-      3: 'Paying an employee for a confidential plan is bribery to obtain a trade secret: improper means in law, and unusable.',
+      3: 'Logging in with a friend’s password to see what only members may see is unauthorised access. Unauthorised access to or taking of a holder’s documents is unlawful acquisition and improper means.',
       5: 'Hearsay from a supplier is worth checking against the rival’s published prices in May, not acting on.',
-      6: 'A former employee bringing the member list is very likely breaking a duty of confidence, and the list is personal data too: it can’t be used.',
+      6: 'Taking a plan from a staff-room table is taking a holder’s document without permission. Unauthorised access to or taking of a holder’s documents is unlawful acquisition and improper means.',
     },
-    solution: 'Published prices and a public timetable describe the offer reliably. A single job advertisement, self-selected reviews and a supplier’s remark are signals to check. A plan bought from an employee and a member list brought by a former employee were obtained improperly and must not be used.',
+    solution: 'Published prices and a public timetable describe the offer reliably. A single job advertisement, self-selected reviews and a supplier’s remark are signals to check. Reports seen with someone else’s password and a plan taken from a staff room were obtained improperly and must not be used.',
   },
   {
     id: 'm04-m3-11', lesson: 'competitor-research', type: 'mc', kind: 'applied',

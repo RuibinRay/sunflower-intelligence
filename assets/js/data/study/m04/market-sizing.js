@@ -111,7 +111,7 @@ export default {
   slug: 'market-sizing',
   title: 'Market sizing',
   blurb: 'How big is the market, and how much of it can you win? Define a market by its products, customers, place and period; separate TAM, SAM and SOM; estimate from the top down and the bottom up; use survey intent with an explicit conversion assumption; and report a range with the assumption that drives it, not one hopeful number.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Define a market size by its products, customers, place, period and unit, and convert volume into value at a stated price level.',
     'Distinguish the total addressable, serviceable available and serviceable obtainable markets (TAM, SAM and SOM), stating the definitions you use.',

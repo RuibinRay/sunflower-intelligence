@@ -20,9 +20,11 @@ const wP = D.nps.weighted.pP, wD = D.nps.weighted.pD, nEff = D.weights.kish.nEff
 const Z = I.normInv(0.975);
 const wMargin = 100 * Z * Math.sqrt((wP + wD - (wP - wD) ** 2) / nEff);
 const promMargin = 100 * Z * Math.sqrt(NPS.pP * (1 - NPS.pP) / N);
-// Rocks (2016): the adjusted Wald interval AW(3,T) adds 3/4 to promoters and detractors and 3/2 to passives
-const aw = (c) => S.nps({ promoters: c.promoters + 0.75, passives: c.passives + 1.5, detractors: c.detractors + 0.75 });
-const AW_ALL = aw(NPS), AW_WS = aw(NPSS[2]);
+const ptsOf = (g) => g.map((r) => [-100, 0, 100][r.group]);
+const sdOf = (a) => { const m = a.reduce((x, y) => x + y, 0) / a.length; return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / (a.length - 1)); };
+const STRAT_NPS = S.stratifiedMean(STRATA.map((_, h) => { const v = ptsOf(R.filter((r) => r.stratum === h)); return { N: SIZES[h], n: v.length, mean: v.reduce((x, y) => x + y, 0) / v.length, sd: sdOf(v) }; }));
+// Rocks (2016): the adjusted Wald interval AW(3,T), from survey.js
+const AW_ALL = NPS.adjusted, AW_WS = NPSS[2].adjusted;
 // comparisons between segments (B04's tests)
 const T2 = byS.map((g) => [top2(g), g.length - top2(g)]);
 const CHI5 = I.chisqIndependence(CB.counts), CHI2 = I.chisqIndependence(T2);
@@ -111,7 +113,7 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: 'The February survey closed on 16 February 2027. Of the 2,004 people Ana invited, 516 completed the questionnaire and 56 started it but stopped before the end. Her survey tool exports one row per complete, and she has already coded the open answers to “What one thing could Lantern do better?” into themes. Before the March focus groups she wants three answers: how likely her customers are to recommend Lantern, how many would buy Lantern Cold Brew, and what Lantern should do better.' },
+    { case: 'The February survey closed on 16 February 2027. Of the 2,004 people Ana invited, 516 completed the questionnaire and 56 more returned partial questionnaires. Her survey tool exports one row per complete, and she has already coded the open answers to “What one thing could Lantern do better?” into themes. Before the March focus groups she wants three answers: how likely her customers are to recommend Lantern, how many would buy Lantern Cold Brew, and what Lantern should do better.' },
     { p: 'The export is a table of 516 rows and eight columns: a respondent number, the segment each person came from on the mailing list, the 0–10 recommendation score (Q1), the Cold Brew answer (Q2), cups of coffee bought away from home last week (Q3), how they first heard of Lantern (Q4), their age group (Q5) and the coded improvement theme (Q6). Turning it into answers takes five moves: prepare the data, count each answer, cross one answer with another, summarise scales into scores, and decide how far the results reach beyond the people who replied. Each move comes with one habit that separates honest analysis from a pile of percentages.' },
 
     { h: 'Every figure has a base' },
@@ -124,15 +126,15 @@ export default {
       head: ['Answer', 'Respondents', '% of base'],
       align: ['l', 'r', 'r'],
       rows: LEVELS.coldbrew.map((a, j) => [a, String(CB.colTotals[j]), p1(CB.colTotals[j] / N)]),
-      foot: [['Total', String(N), '100.1%']],
-      note: 'Percentages are rounded, so they add to 100.1%.',
+      foot: [['Total', String(N), '100%']],
+      note: 'Percentages are rounded, so they may not add to exactly 100.',
     } },
     { p: 'Two summaries of a <g>purchase-intent scale</g> are standard in marketing research. The <g>top-box score</g> is the share choosing the most favourable answer, here 15.7% “definitely would buy”; the <g>top-two-box score</g> adds the next answer, giving 42.2% who would definitely or probably buy. Both are shares of the people who answered, not forecasts of buyers: <i>Survey error</i> showed that stated intentions overstate what people go on to do.' },
 
     { h: 'Crossing: who would buy?' },
     { p: 'The total hides what Ana most needs to know: who the likely buyers are. A <g>cross-tabulation</g>, or cross-tab, counts respondents by the answers to two questions at once: a <g>contingency table</g> of the kind B04 tested, shown with the percentages that answer the question. Ana crosses Q2 with the segment each respondent came from.' },
     { table: {
-      caption: 'Cold Brew intent by segment: percentage of each segment’s completes (rows add to 100% allowing for rounding), unweighted',
+      caption: 'Cold Brew intent by segment: percentage of each segment’s completes (rows add to 100% allowing for rounding), unweighted. Workshop participants (base 27) are shown for teaching; under the minimum base in Small bases they would be suppressed.',
       head: ['Segment', 'Top two boxes', 'Might or might not', 'Bottom two boxes', 'Base'],
       align: ['l', 'r', 'r', 'r', 'r'],
       rows: STRATA.map((s, h) => [s, p1(top2(byS[h]) / nS[h]), p1(mid(byS[h]) / nS[h]), p1(bot2(byS[h]) / nS[h]), String(nS[h])]),
@@ -144,7 +146,7 @@ export default {
     { p: 'Q1 asked how likely each person was to recommend Lantern to a friend or colleague, from 0 to 10. The <g>Net Promoter Score</g> (NPS), proposed by Frederick Reichheld in 2003 and introduced in <i>Questionnaire design</i>, sorts the answers into promoters (9 or 10), passives (7 or 8) and detractors (0 to 6), and subtracts the percentage of detractors from the percentage of promoters. Ana had 237 promoters (45.9%), 184 passives (35.7%) and 95 detractors (18.4%), so her NPS is 45.9 − 18.4 = +27.5. The score runs from −100, when everyone is a detractor, to +100, when everyone is a promoter, and is written without a % sign: +27.5 doesn’t mean that 27.5% would recommend Lantern.' },
     { figure: {
       svg: npsFigure(),
-      caption: 'Promoters, passives and detractors among Ana’s 516 completes, by segment (unweighted). The NPS is the promoters’ share minus the detractors’ share; the base is in brackets.',
+      caption: 'Promoters, passives and detractors among Ana’s 516 completes, by segment (unweighted). The NPS is the promoters’ share minus the detractors’ share; the base is in brackets. Workshop participants (base 27) are shown for teaching; under the minimum base in Small bases they would be suppressed.',
       alt: `Five horizontal bars, each split into three parts for detractors, passives and promoters, with each segment’s NPS and base at the right. Subscribers: 11% detractors, 16% passives, 73% promoters, NPS +61.8 (89). Other shop customers: 9%, 29%, 62%, NPS +53.4 (103). Workshop participants: 19%, 22%, 59%, NPS +40.7 (27). Newsletter only: 24%, 45%, 31%, NPS +7.1 (297). All respondents: 18%, 36%, 46%, NPS +27.5 (516).`,
     } },
     { p: 'Like any estimate from a sample, the score has a margin of error: ±6.5 points at 95% for 516 answers, so the survey puts the NPS of people like those who answered between about +21 and +34. Within segments the scores run from +62 among subscribers to +7 among newsletter-only respondents, with wider margins on the smaller bases.' },
@@ -156,7 +158,7 @@ export default {
 
   theory: [
     { h: 'Preparing the data' },
-    { p: '<b>Partial responses.</b> Fifty-six people started Ana’s questionnaire and stopped before the end. <i>Survey error</i> showed how AAPOR’s response rates count these partials; for analysis the question is which of their answers to use. One rule analyses completes only, so every question has the same base. The other keeps each partial’s answers to the questions it reached, so each question has its own base and every table needs its base printed. Ana chose completes only before fieldwork, because her questionnaire is short and one base keeps her tables comparable; whichever rule you choose, fix it before you see the results, so that it can’t be picked to suit them.' },
+    { p: '<b>Partial responses.</b> Fifty-six of Ana’s questionnaires were partials: started, and left unfinished after enough questions to count as partial interviews (people who stopped earlier are <g>break-offs</g>, counted with the refusals). <i>Survey error</i> showed how AAPOR’s response rates count these partials; for analysis the question is which of their answers to use. One rule analyses completes only, so every question has the same base. The other keeps each partial’s answers to the questions it reached, so each question has its own base and every table needs its base printed. Ana chose completes only before fieldwork (fictional), because her questionnaire is short and one base keeps her tables comparable; whichever rule you choose, fix it before you see the results, so that it can’t be picked to suit them.' },
     { p: '<b>Speeders and straight-liners.</b> A <g>speeder</g> finishes far faster than anyone could read the questions; a respondent who is <g>straight-lining</g> gives the same answer to every item in a grid of rating questions. Both are signs of <g>satisficing</g>, answering with too little effort to be accurate, and Zhang and Conrad (2014) found that web respondents who sped also straight-lined more grid questions. Flag them by rules set in advance, such as a completion time under a third of the median, or identical answers across a grid that contains reversed items, which no attentive person would give. Thresholds differ between studies, so state yours, remove a case only when the evidence is strong, and report how many you removed. Lantern’s six questions contain no grid, so the challenging example uses a survey that does.' },
     { p: '<b>Missing answers.</b> A blank can mean that a question wasn’t asked (<g>routing</g> skipped it), that the respondent skipped it (<g>item non-response</g>), or that the answer was “don’t know” or “prefer not to say”. Give each a distinct code and never record any of them as 0, because 0 is a real answer on a 0–10 scale. If “don’t know” is stored as 99, <x>=AVERAGE(C2:C517)</x> averages the 99s with the real scores, while <x>=AVERAGEIFS(C2:C517,C2:C517,"<99")</x> leaves them out. Decide for each figure whether “don’t know” belongs in the base: on a purchase-intent question it is a meaningful answer, best shown as a row of its own. Ana’s completes have an answer to every closed question, so the problem doesn’t arise in her export, but it does in most.' },
     { p: '<b>Coding open answers.</b> Answers to an <g>open question</g> become numbers through a <g>code frame</g>: a list of themes, each with a definition and examples, drafted from a sample of the answers and then applied to all of them. <i>Qualitative research</i> builds <g>codebooks</g> the same way and checks <g>inter-coder agreement</g>. An answer can be single-coded, to its main theme, or multi-coded, to every theme it mentions; with multi-coding the percentages add to more than 100%, and the table must say so. Ana single-coded the 516 answers into seven themes, one of which, “Nothing, or left blank”, joins two different things: people with nothing to suggest and people who skipped the box.' },
@@ -165,13 +167,14 @@ export default {
       head: ['Theme', 'Respondents', '% of all completes (516)', '% of those who suggested something (331)'],
       align: ['l', 'r', 'r', 'r'],
       rows: LEVELS.theme.map((t, k) => [t, String(TH[k]), p1(TH[k] / N), k === 0 ? '—' : p1(TH[k] / SUGG)]),
-      foot: [['Total', String(N), '100.0%', '100.0%']],
+      foot: [['Total', String(N), '100%', '100%']],
+      note: 'Percentages are rounded, so they may not add to exactly 100.',
     } },
     { p: 'Both bases are honest if they are labelled; they answer different questions. Price leads with 84 suggestions, a quarter of them, ahead of range (76) and delivery speed (58). A count of mentions measures how common a theme is, not how strongly people feel or how much it would change their buying, so read the answers behind each code before acting on it. Crossed with segment, delivery speed was raised by 18.0% of subscribers and 8.1% of newsletter-only respondents, which fits the fact that subscribers are the ones waiting for deliveries.' },
 
     { h: 'Frequency tables and cross-tabs in Excel' },
     { p: 'With Ana’s export in A1:H517 (segment in B, the 0–10 score in C, the Cold Brew answer in D), a frequency table is one COUNTIF per answer. With the five answers in J2:J6, <x>=COUNTIF($D$2:$D$517,J2)</x> filled down counts them, and <x>=K2/SUM($K$2:$K$6)</x> turns the counts into percentages of the base. A cross-tab is a grid of COUNTIFS with mixed references, as in B03: with segments down J3:J6 and answers across K2:O2, <x>=COUNTIFS($B$2:$B$517,$J3,$D$2:$D$517,K$2)</x> in K3 fills across and down, and <x>=K3/SUM($K3:$O3)</x> gives row percentages.' },
-    { p: 'A <g>PivotTable</g> builds the same table with segment in Rows, the Cold Brew answer in Columns and a count in Values, shown as % of Row Total. Formulas suit a fixed report layout that must update by itself; a PivotTable suits trying many crosses quickly. Whichever you use, check that the grand total equals the base: a total of 515 points to an answer spelled differently from the others, one with a trailing space perhaps, which is a cleaning job.' },
+    { p: 'A <g>PivotTable</g> builds the same table with segment in Rows, the Cold Brew answer in Columns and a count in Values, shown as % of Row Total. Formulas suit a fixed report layout that must update by itself; a PivotTable suits trying many crosses quickly. With formulas, check that the counts add to the base: a total of 515 points to an answer spelled differently from the five labels, one with a trailing space perhaps. A PivotTable counts every record, so there the same problem shows up as an extra row or column; either way it is a cleaning job.' },
     { p: 'Rounded percentages needn’t add to exactly 100: Q2’s five shares add to 100.1%. Don’t force them; a note that percentages may not add to 100 because of rounding is the convention. Give percentages to whole numbers or one decimal place, and never to more places than the base supports: with 27 respondents each person is 3.7 points, so 51.9% suggests a precision the data don’t have.' },
     { p: 'When neither variable explains the other, as with age group and how people first heard of Lantern, either direction is legitimate, but the table’s title should say which question it answers. Column percentages are sometimes exactly what is wanted: a sales planner deciding where to send free samples needs to know where the likely buyers are, and that is the column view. The error is to calculate one and read it as the other.' },
 
@@ -180,9 +183,9 @@ export default {
 
     { h: 'The Net Promoter Score and its margin of error' },
     { p: String.raw`Give each answer a value of +100 for a promoter, 0 for a passive and −100 for a detractor: the NPS is the mean of those values. Its standard error follows from their variance, which depends only on the shares of promoters and detractors (the formula cards). For Ana, <m>100\sqrt{(0.459 + 0.184 - 0.275^2) \div 516} \approx 3.32</m>, and the 95% margin is <m>1.96 \times 3.32 \approx 6.5</m> points. That is half as wide again as the margin for the promoters’ share alone, ±4.3 points, because the NPS is the difference of two shares that move against each other.` },
-    { p: 'Rocks (2016) compared interval methods for the NPS and found that this simple (Wald) interval is too narrow, covering the true score less often than 95% of the time even at 300 answers. He recommends an adjusted version that adds 3/4 to the promoter and detractor counts and 3/2 to the passive count before applying the same formula. At Ana’s 516 answers the adjustment hardly matters (+27.4 ± 6.5); for the 27 workshop participants it moves the interval from +11.2 to +70.2 to +8.6 to +64.7. On bases that small, use the adjusted interval, or better, don’t report the score at all (see Small bases).' },
+    { p: 'Rocks (2016) compared interval methods for the NPS and found that this simple (Wald) interval is too narrow, covering the true score less often than 95% of the time even at 300 answers (he also found an iterative score interval performs well). He recommends an adjusted version that adds 3/4 to the promoter and detractor counts and 3/2 to the passive count before applying the same formula. At Ana’s 516 answers the adjustment hardly matters (+27.4 ± 6.5); for the 27 workshop participants it moves the interval from +11.2 to +70.2 to +8.6 to +64.7. On bases that small, use the adjusted interval, or better, don’t report the score at all (see Small bases).' },
     { p: String.raw`Two independent groups’ scores are compared through the standard error of their difference, <m>\sqrt{\text{SE}_1^2 + \text{SE}_2^2}</m>. Subscribers (+61.8, SE 7.20) and newsletter-only respondents (+7.1, SE 4.28) differ by 54.7 points with a standard error of 8.37, so z ≈ 6.5: far beyond chance. Two waves of a tracking survey are independent samples too, so the same calculation shows whether a change between waves is larger than chance; In practice shows why a few points usually aren’t.` },
-    { p: 'Reichheld presented the recommendation question as the best single predictor of growth in most of the industries he studied. Keiningham and colleagues (2007), with longitudinal data from 21 Norwegian firms, failed to replicate its claimed superiority over other measures of customer satisfaction and loyalty. The score also throws information away: a 0 and a 6 are both detractors, and half promoters with half detractors scores 0, the same as everyone a passive. Use it as one tracked indicator, with its margin of error, beside the distribution of scores and the reasons people give. Net Promoter Score is a service mark of Bain &amp; Company, NICE Systems and Fred Reichheld.' },
+    { p: 'Reichheld argued that this one question usually predicted growth better than others, and that in most of the industries he studied the share of enthusiastic customers tracked growth relative to competitors. Keiningham and colleagues (2007), with longitudinal data from 21 Norwegian firms, failed to replicate its claimed superiority over other measures of customer satisfaction and loyalty. The score also throws information away: a 0 and a 6 are both detractors, and half promoters with half detractors scores 0, the same as everyone a passive. Use it as one tracked indicator, with its margin of error, beside the distribution of scores and the reasons people give. Net Promoter Score is a service mark of Bain &amp; Company, NICE Systems and Fred Reichheld.' },
 
     { h: 'Weighted results in Excel' },
     { p: String.raw`A weighted share is <m>\sum w_i y_i \div \sum w_i</m>, where <m>y_i</m> is 1 for a respondent who counts (a promoter, say) and 0 otherwise, and <m>w_i</m> is the respondent’s weight: a SUMPRODUCT divided by a SUM. With each respondent’s weight in column I, the weighted top-two-box score is <x>=SUMPRODUCT(I2:I517,(D2:D517="Definitely would buy")+(D2:D517="Probably would buy"))/SUM(I2:I517)</x>, and the weighted NPS is <x>=100*(SUMPRODUCT(I2:I517*(C2:C517>=9))-SUMPRODUCT(I2:I517*(C2:C517<=6)))/SUM(I2:I517)</x>. Every respondent in a segment carries the same weight, so a four-row table gives the same answers: <m>\sum N_h \hat{p}_h \div N</m>, the segments’ shares weighted by their list sizes.` },
@@ -193,7 +196,7 @@ export default {
       rows: STRATA.map((s, h) => [s, int(SIZES[h]), String(nS[h]), W[h].toFixed(2), String(T2[h][0]), p1(T2[h][0] / nS[h])]),
       foot: [['All, unweighted', int(LIST), String(N), '', String(top2(R)), p1(top2(R) / N)], ['All, weighted', int(LIST), String(N), '', '', p1(D.coldbrew.topTwoWeighted)]],
     } },
-    { p: 'Report a weighted percentage with its unweighted base, the number of people it rests on, and a note: “Weighted to the mailing list’s segment sizes; unweighted base 516.” Its margin of error is wider than that base suggests, because unequal weights reduce the <g>effective sample size</g>: Kish’s effective n is 469 (<i>Survey error</i>), so the weighted NPS of +20.4 has a margin of about ±6.8 points. Comparisons between segments don’t need weights, because within a segment every respondent carries the same weight.' },
+    { p: 'Report a weighted percentage with its unweighted base, the number of people it rests on, and a note: “Weighted to the mailing list’s segment sizes; unweighted base 516.” Unequal weights reduce the <g>effective sample size</g>: Kish’s effective n is 469 (<i>Survey error</i>), which gives a quick margin for the weighted NPS of +20.4 of about ±6.8 points. The stratified standard error of <i>Sampling methods</i>, which also credits the stratification, gives ±6.3: use Kish’s figure as a quick check and the design’s own standard error when it matters. Comparisons between segments don’t need weights, because within a segment every respondent carries the same weight.' },
     { callout: 'note', title: 'What Ana couldn’t see', html: 'The case records every person’s (fictional) answers, so the truth is known: the NPS of all 6,000 people on the list is +8.4. Weighting moved Ana’s estimate from +27.5 to +20.4 by correcting for segments that replied at different rates, but within each segment promoters replied more readily than detractors, and no weight built from segments can see that. For Cold Brew intent, the weighted 38.2% is close to the true 39.3%. Non-response bias differs from one question to the next, which is why <i>Survey error</i> treats a low response rate as a warning, not as a measure of bias.' },
 
     { h: 'Comparing groups' },
@@ -202,11 +205,11 @@ export default {
     { p: 'Three cautions. B04’s tests assume simple random samples; each segment is a random sample of its stratum, so comparisons between segments stand, but an interval for a weighted all-respondent figure needs the stratified standard error from <i>Sampling methods</i>. The tests speak only about the people who replied: if keen newsletter readers replied more readily than indifferent ones, the gap the test confirms may be partly a gap in who answered. And twenty cross-tabs tested at the 5% level will produce about one “significant” difference by chance, the <g>multiple testing</g> problem, so choose the few comparisons that matter before looking.' },
 
     { h: 'The mean, the median and skewed counts' },
-    { p: 'Q3 asked how many cups of coffee each person bought away from home last week. The answers run from 0 to 20 with a long right tail: 60 people (11.6%) bought none, the <g>median</g> is 3 and the <g>mean</g> 3.91, pulled up by a few heavy buyers (the standard deviation is 3.40). In Excel, <x>=MEDIAN(G2:G517)</x> and <x>=AVERAGE(G2:G517)</x> give the two. For one segment, <x>=AVERAGEIFS(G2:G517,B2:B517,J2)</x> gives the mean, and <x>=MEDIAN(IF(B2:B517=J2,G2:G517))</x> or <x>=MEDIAN(FILTER(G2:G517,B2:B517=J2))</x> the median, since Excel has no MEDIANIFS.' },
-    { p: 'All four segments have a median of 3 cups, while their means run from 3.65 to 4.04: the differences between the means come from a few heavy buyers, not from the typical respondent. Report the median for a typical customer and the mean when you need a total, because the mean times the number of people gives the cups bought. A recall question about last week also carries <g>measurement error</g>, as <i>Survey error</i> explained, so neither figure deserves more than one decimal place.' },
+    { p: 'Q3 asked how many cups of coffee each person bought away from home last week. The answers run from 0 to 20 with a long right tail: 60 people (11.6%) bought none, the <g>median</g> is 3 and the <g>mean</g> 3.9, pulled up by a few heavy buyers (the standard deviation is 3.4). In Excel, <x>=MEDIAN(G2:G517)</x> and <x>=AVERAGE(G2:G517)</x> give the two. For one segment, <x>=AVERAGEIFS(G2:G517,B2:B517,J2)</x> gives the mean, and <x>=MEDIAN(IF(B2:B517=J2,G2:G517))</x> or <x>=MEDIAN(FILTER(G2:G517,B2:B517=J2))</x> the median, since Excel has no MEDIANIFS. In Excel 2019 and earlier, enter <x>=MEDIAN(IF(…))</x> with Ctrl+Shift+Enter; FILTER needs Excel 2021, Excel 2024 or Microsoft 365.' },
+    { p: 'All four segments have a median of 3 cups, while their means run from 3.7 to 4.0: the differences between the means come from a few heavy buyers, not from the typical respondent. Report the median for a typical customer and the mean when you need a total, because the mean times the number of people gives the cups bought. A recall question about last week also carries <g>measurement error</g>, as <i>Survey error</i> explained, so neither figure deserves more than one decimal place.' },
 
     { h: 'Small bases' },
-    { p: 'Workshop participants returned 27 completes. Their NPS is +40.7 with a margin of ±29.5 points, from about +11 to +70, and their top-two-box score is 51.9% with a margin of ±18.8 points. Figures like these invite over-reading: “workshop participants are less enthusiastic than subscribers” isn’t supported when the two intervals overlap this much. Set a minimum base before the analysis and apply it to every table. One published standard, from the US National Center for Health Statistics, withholds among other things any proportion based on fewer than 30 people or with a 95% confidence interval 30 percentage points wide or more (Parker et al., 2017); Ana adopts the first rule, so workshop participants count in every all-respondent figure but get no figure of their own.' },
+    { p: 'Workshop participants returned 27 completes. Their NPS is +40.7 with a margin of ±29.5 points, from about +11 to +70, and their top-two-box score is 51.9% with a margin of ±18.8 points. Figures like these invite over-reading: “workshop participants are less enthusiastic than subscribers” isn’t supported when the two intervals overlap this much. Set a minimum base before the analysis and apply it to every table. One published standard, from the US National Center for Health Statistics, withholds among other things any proportion whose sample size (or effective sample size) is under 30, or whose 95% Clopper–Pearson confidence interval is 30 percentage points wide or more (Parker et al., 2017); Ana adopts the first rule (fictional), so workshop participants count in every all-respondent figure but get no figure of their own.' },
   ],
 
   formulas: [
@@ -278,7 +281,7 @@ export default {
 
   demo: [
     { widget: 'as-sheet', intro: 'All 516 completes as a worksheet, with each respondent’s weight in column I and a summary area in K to P. Build the frequency table, the NPS by segment and the weighted results with the formulas from In depth, and check your counts add to 516.' },
-    { widget: 'as-pivot', intro: 'The same completes as a PivotTable. Start with Segment in Rows and Cold Brew intent in Columns, shown as % of Row Total. Then try: Average of NPS points by segment (it is each segment’s NPS); Sum of Weight instead of Sum of Respondents (weighted percentages); and % of Column Total, to see the other question the same counts answer.' },
+    { widget: 'as-pivot', intro: 'The same completes as a PivotTable. Start with Segment in Rows and Cold Brew intent in Columns, shown as % of Row Total. Then try: Average of NPS points by segment (it is each segment’s NPS); Sum of Weight instead of Sum of Respondents, where the segment rows don’t move (everyone in a segment has the same weight) but the Grand Total row becomes the weighted result, 38.2% in the top two boxes; and % of Column Total, to see the other question the same counts answer.' },
     { widget: 'as-nps', intro: 'Change the counts of promoters, passives and detractors to see the NPS, its margin of error and Rocks’s adjusted interval. Try Ana’s workshop participants (16, 6 and 5) and then the same shares ten times larger, and watch the margin shrink by about √10.' },
   ],
 
@@ -347,7 +350,7 @@ export default {
     { what: 'Themes', value: LEVELS.theme.length, shown: 7 },
     // frequency table
     { what: 'Definitely %', value: (CB.colTotals[0] / N) * 100, shown: 15.7, tol: 0.05 },
-    { what: 'Rounded shares add to 100.1', value: CB.colTotals.reduce((s, c) => s + Math.round((c / N) * 1000) / 10, 0), shown: 100.1, tol: 0.001 },
+    { what: 'Rounded Q2 shares add to 100.1', value: CB.colTotals.reduce((s, c) => s + Math.round((c / N) * 1000) / 10, 0), shown: 100.1, tol: 0.001 },
     { what: 'Top two %', value: D.coldbrew.topTwo * 100, shown: 42.2, tol: 0.05 },
     { what: 'Bottom two %', value: (bot2(R) / N) * 100, shown: 26.2, tol: 0.05 },
     { what: 'Definitely count', value: CB.colTotals[0], shown: 81 },
@@ -417,6 +420,9 @@ export default {
     { what: 'Weighted top two by the four-row table', value: SIZES.reduce((s, M, h) => s + (M * T2[h][0]) / nS[h], 0) / LIST, shown: D.coldbrew.topTwoWeighted, tol: 1e-12 },
     { what: 'Kish effective n', value: nEff, shown: 469, tol: 0.5 },
     { what: 'Weighted NPS margin (Kish)', value: wMargin, shown: 6.8, tol: 0.05 },
+    { what: 'Weighted NPS margin (stratified SE)', value: STRAT_NPS.margin, shown: 6.3, tol: 0.05 },
+    { what: 'Stratified NPS equals weighted NPS', value: STRAT_NPS.mean, shown: D.nps.weighted.score, tol: 1e-9 },
+    { what: 'Weighted top two from the four-row table equals the pivot grand total', value: D.coldbrew.topTwoWeighted * 100, shown: 38.2, tol: 0.05 },
     { what: 'Truth NPS', value: D.nps.truth, shown: 8.4, tol: 0.05 },
     { what: 'True top two %', value: D.coldbrew.truthTopTwo * 100, shown: 39.3, tol: 0.05 },
     { what: 'List size', value: LIST, shown: 6000 },
@@ -443,12 +449,12 @@ export default {
     { what: 'Cups zero', value: cups.filter((x) => x === 0).length, shown: 60 },
     { what: 'Cups zero %', value: (cups.filter((x) => x === 0).length / N) * 100, shown: 11.6, tol: 0.05 },
     { what: 'Cups median', value: median(cups), shown: 3 },
-    { what: 'Cups mean', value: mean(cups), shown: 3.91 },
-    { what: 'Cups mean from case', value: D.cups.mean, shown: 3.91 },
-    { what: 'Cups SD', value: sdS(cups), shown: 3.40 },
+    { what: 'Cups mean', value: mean(cups), shown: 3.9, tol: 0.05 },
+    { what: 'Cups mean from case', value: D.cups.mean, shown: 3.9, tol: 0.05 },
+    { what: 'Cups SD', value: sdS(cups), shown: 3.4, tol: 0.05 },
     { what: 'Every segment median is 3', value: Number(cupsByS.every((g) => median(g) === 3)), shown: 1 },
-    { what: 'Lowest segment mean', value: Math.min(...cupsByS.map(mean)), shown: 3.65 },
-    { what: 'Highest segment mean', value: Math.max(...cupsByS.map(mean)), shown: 4.04 },
+    { what: 'Lowest segment mean', value: Math.min(...cupsByS.map(mean)), shown: 3.7, tol: 0.05 },
+    { what: 'Highest segment mean', value: Math.max(...cupsByS.map(mean)), shown: 4.0, tol: 0.05 },
     // small bases
     { what: 'Workshop top-two margin', value: wsTop2.margin * 100, shown: 18.8, tol: 0.05 },
     { what: 'One respondent in 27, points', value: 100 / 27, shown: 3.7, tol: 0.05 },

@@ -80,7 +80,7 @@ export default {
   slug: 'competitor-research',
   title: 'Competitor research',
   blurb: 'Find out what rivals offer, charge and plan, from sources you can use honestly: websites, price lists, reviews, job advertisements, trade shows, filings, customers and store checks. Run a shelf-price audit and summarise it by brand and channel, know where the professional codes and the law draw the line on mystery shopping and confidential information, and turn the findings into decisions about your own offer.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Identify what to learn about a competitor (offer, price, positioning, distribution, promotion, resources, performance and plans) and the decision each answers.',
     'Choose and evaluate sources of competitor information, from websites and job advertisements to filings, customers and store checks.',
