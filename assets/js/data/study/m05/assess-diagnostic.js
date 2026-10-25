@@ -8,11 +8,13 @@
 // the period measured.
 // Module 2: k-means++’s rule for choosing the next starting centre (probability proportional to the squared distance);
 // what agreement between Ward’s method and k-means does and doesn’t show (reproducible, not natural, segments; the
-// adjusted Rand index is not a share of people placed correctly); the typing tool (standardise with the study’s means
-// and standard deviations, then the nearest centre), with the two slips the lesson warns about as distractors.
+// adjusted Rand index is not a share of people placed correctly); choosing golden questions for a typing tool (the
+// needs with the highest F statistics across the segments, as a first cut to test as a set; not the most important
+// needs on average or those with the widest overall spread, and not the circular p-values).
 // Module 3: a factor’s pull on a scorecard (weight × the spread of its scores), not its weight alone; a fit score from
 // segment centres and a firm’s strengths (needs fit, then centred on 50 and scaled by the largest fit in either
-// direction); how few members match a persona built from each line’s most common answer.
+// direction); what a persona built from each line’s most common answer describes, and how the card should be written
+// instead (lines as shares of the segment, with its size), against invented details or one interviewed member.
 // Module 4: a map’s share of the variance from the eigenvalues it leaves off (they add up to the number of standardised
 // attributes); a missing point of parity; how far a rating change moves a brand on fixed axes, from the loading, the
 // eigenvalue and the attribute’s spread across brands.
@@ -20,7 +22,9 @@
 // module 4 is not used for routing. New questions on businesses used nowhere else in M05 (all fictional), not copies of
 // lesson exercises, module tests, the final or the project, and nothing from the project’s scenario or data. No hints;
 // solutions are shown on review. Every num item’s `check` recomputes its answer, and every figure a prompt states is
-// computed below from its inputs.
+// computed below from its inputs (Lantern’s persona figures from case.js).
+import { RESPONDENTS, DERIVED, LEVELS } from './case.js?v=14';
+import { fSf } from '../../../core/inference.js?v=14';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const int = (v) => Math.round(v).toLocaleString('en-US');
@@ -42,18 +46,14 @@ const kppSq = KPP.map((d) => d * d);
 const kppP = kppSq[4] / sum(kppSq);
 // a mobile-phone network (fictional): k-means against Ward's method at five segments
 const NET = { n: 800, same: 760, ari: 0.88 };
-// a delicatessen chain's typing tool (fictional)
-const DELI = { qs: ['Low prices', 'Advice at the counter', 'Rare imports'], mu: [4.6, 3.8, 3.2], sd: [1.5, 1.2, 1.8],
-  segs: ['Bargain hunters', 'Advice seekers', 'Collectors'], c: [[1.0, -0.5, -0.6], [-0.2, 1.1, -0.1], [-0.7, 0.2, 1.3]], ans: [6, 5, 5] };
-const deliDist = (z) => DELI.c.map((c) => sum(c.map((v, j) => (z[j] - v) ** 2)));
-const nearest = (d) => d.indexOf(Math.min(...d));
-const deliZ = DELI.ans.map((a, j) => (a - DELI.mu[j]) / DELI.sd[j]);
-const deliD = deliDist(deliZ);
-const deliNoSd = deliDist(DELI.ans.map((a, j) => a - DELI.mu[j]));                    // slip: no division by the SD
-const deliOwnMean = sum(DELI.ans) / DELI.ans.length;
-const deliOwn = deliDist(DELI.ans.map((a, j) => (a - deliOwnMean) / DELI.sd[j]));   // slip: centred on her own mean
-const [dK, dNoSd, dOwn] = [nearest(deliD), nearest(deliNoSd), nearest(deliOwn)];
-const deliSorted = [...deliD].sort((a, b) => a - b);
+// a delicatessen chain (fictional): six needs, four k-means segments, choosing three golden questions
+const DELI = { n: 900, k: 4, needs: ['Freshness', 'Friendly staff', 'Short queues', 'Low prices', 'Advice at the counter', 'Rare imports'],
+  mean: [6.2, 5.8, 5.1, 4.6, 3.8, 3.2], sd: [0.8, 1.0, 1.9, 1.5, 1.2, 1.8], F: [12.4, 18.9, 41.0, 240.3, 265.8, 310.5] };
+const deliP = DELI.F.map((f) => fSf(f, DELI.k - 1, DELI.n - DELI.k));
+const top3 = (a) => a.map((v, j) => ({ v, j })).sort((x, y) => y.v - x.v).slice(0, 3).map((x) => x.j);
+const [byF, byMean, bySd] = [top3(DELI.F), top3(DELI.mean), top3(DELI.sd)];
+const needList = (js) => { const w = js.map((j, i) => (i ? DELI.needs[j].toLowerCase() : DELI.needs[j])); return `${w[0]}, ${w[1]} and ${w[2]}`; };
+const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six'];
 
 // ---------------------------------------------------------------- module 3
 // a solar-panel installer (fictional): weights and the spread of two factors' scores
@@ -74,6 +74,14 @@ const ckMinMax = (100 * (ckFit[2] - Math.min(...ckFit))) / (Math.max(...ckFit) -
 const CRAFT = { n: 400, lines: [['aged 45–59', 0.41], ['household income $60k–90k', 0.38], ['lives in a suburb', 0.52], ['a couple without children at home', 0.44], ['buys online', 0.57]] };
 const craftMin = Math.min(...CRAFT.lines.map((l) => l[1])), craftMax = Math.max(...CRAFT.lines.map((l) => l[1]));
 const craftAvg = sum(CRAFT.lines.map((l) => l[1])) / CRAFT.lines.length;
+// Lantern's Craft and local: members matching the most common answer on four demographic lines and the main source,
+// with each of the two most common (nearly equal) age bands
+const SEG = DERIVED.segments, CLG = SEG.names.indexOf('Craft and local');
+const clR = RESPONDENTS.filter((_, i) => SEG.labels[i] === CLG);
+const modeOf = (key) => { const c = LEVELS[key].map((_, l) => clR.filter((r) => r[key] === l).length); return c.map((v, l) => ({ v, l })).sort((a, b) => b.v - a.v); };
+const [ageModes, incMode, srcMode, areaMode, hhMode] = ['age', 'income', 'source', 'area', 'household'].map(modeOf);
+const matchWith = (age) => clR.filter((r) => r.age === age && r.income === incMode[0].l && r.source === srcMode[0].l && r.area === areaMode[0].l && r.household === hhMode[0].l).length;
+const clMatch = [matchWith(ageModes[0].l), matchWith(ageModes[1].l)].sort((a, b) => a - b);
 
 // ---------------------------------------------------------------- module 4
 // sparkling-water brands (fictional): seven standardised attributes, the eigenvalues left off the map
@@ -107,13 +115,13 @@ export const items = [
     prompt: 'A fictional kombucha brand compares its 40 sales districts. Districts where students make up more of the population have much higher sales of the brand per 1,000 residents (correlation 0.71). The brand manager concludes that students drink more of the brand than other residents do, and plans to move the whole budget to student media. What is the main problem with the conclusion?',
     options: [
       'A pattern across districts needn’t hold for the people in them: the buyers there may be the non-students',
-      'A correlation of 0.71 across districts is too weak to show that students and the brand’s sales are related at all',
-      'Forty districts are too few for a correlation to mean anything; a hundred would be needed',
+      'A correlation of 0.71 leaves about half the variation between districts unexplained, so students probably don’t drive sales',
+      'With only forty districts the correlation is too uncertain to rely on; a hundred districts would be needed',
       'Correlation is not causation, so the brand should first have run a chi-square test of district by sales band',
     ],
     answer: 0,
     feedback: {
-      1: 'A correlation of 0.71 is strong. The problem is the level it is measured at: districts, not people.',
+      1: `A correlation of 0.71 is strong: the student share accounts for about half (${pc(0.71 ** 2, 0)}) of the variation between districts. The problem is the level it is measured at: districts, not people.`,
       2: 'Forty districts can show a clear pattern between districts. What they can’t show is who, inside each district, is buying.',
       3: 'A chi-square test on districts would share the same flaw: it would still compare areas, not students with other residents.',
     },
@@ -126,7 +134,7 @@ export const items = [
       'Higher, nearer 60%: a longer window counts many more light buyers, so the heaviest fifth stand further above the rest',
       `About the same, ${pc(PERIOD.brand, 0)}: the heaviest fifth are much the same households in any period, so their share is stable`,
       'Lower, nearer 30%: over five years heavy buyers lapse and light buyers catch up, so purchases even out',
-      'About 80%: over a long enough period every brand’s sales settle at the Pareto principle’s 80/20',
+      'About 80%: over five years the heaviest fifth’s share reaches the 80/20 of the Pareto principle',
     ],
     answer: 0,
     feedback: {
@@ -170,19 +178,21 @@ export const items = [
   },
   {
     id: 'm05-dg-6', lesson: 'profiling-segments', type: 'mc', kind: 'applied',
-    prompt: `A fictional delicatessen chain’s typing tool asks three golden questions, rated 1–7. A new customer answers ${DELI.ans.join(', ')}. Which segment does the tool put her in?`,
-    data: { table: { head: ['', ...DELI.qs], rows: [
-      ['Study mean', ...DELI.mu.map((v) => fx(v, 1))], ['Study standard deviation', ...DELI.sd.map((v) => fx(v, 1))],
-      ...DELI.segs.map((s, g) => [`Centre (z): ${s}`, ...DELI.c[g].map((v) => sgn(v, 1))]),
-    ], align: ['l', 'r', 'r', 'r'] } },
-    options: [DELI.segs[dK], DELI.segs[dNoSd], DELI.segs[dOwn], 'None: two centres are equally near, so the tool can’t place her'],
+    prompt: `A fictional delicatessen chain segmented ${int(DELI.n)} customers into ${WORDS[DELI.k]} segments with k-means on ${WORDS[DELI.needs.length]} standardised needs, and wants three golden questions for a typing tool at its tills. The table gives each need’s mean importance (1–7) and standard deviation among all the customers, and the F statistic of a one-way ANOVA across the ${WORDS[DELI.k]} segments; ${Math.max(...deliP) < 0.001 ? 'every p-value is below 0.001' : 'the p-values vary'}. Which three needs should the chain start from?`,
+    data: { table: { head: ['Need', 'Mean importance', 'Standard deviation', 'F across segments'], rows: DELI.needs.map((nd, j) => [nd, fx(DELI.mean[j], 1), fx(DELI.sd[j], 1), fx(DELI.F[j], 1)]), align: ['l', 'r', 'r', 'r'] } },
+    options: [
+      `${needList(byF)}: they separate the segments most, a first cut to test as a set`,
+      `${needList(byMean)}: the three that matter most to the chain’s customers on average`,
+      `${needList(bySd)}: the three on which the chain’s customers differ most from one another`,
+      `No basis to choose between them: all ${WORDS[DELI.needs.length]} needs differ significantly across the ${WORDS[DELI.k]} segments, each with p below 0.001`,
+    ],
     answer: 0,
     feedback: {
-      1: `That is what you get without dividing by the standard deviations: the answers must be in standard deviations, like the centres. Standardised, she is nearest ${DELI.segs[dK]}.`,
-      2: 'That centres her answers on her own average, which throws away how high or low her ratings are compared with other customers. Standardise with the study’s stored means and standard deviations.',
-      3: `Her squared distances are ${DELI.segs.map((s, g) => `${s} ${fx(deliD[g])}`).join(', ')}: one centre is clearly nearest.`,
+      1: `A need that every customer rates highly can’t tell the segments apart: ${DELI.needs[byMean[0]].toLowerCase()} matters to all ${WORDS[DELI.k]} segments alike (F ${fx(DELI.F[byMean[0]], 1)}). Golden questions must separate the segments.`,
+      2: `A wide spread among all customers can sit inside every segment: the importance of ${DELI.needs[bySd[0]].toLowerCase()} varies most (standard deviation ${fx(DELI.sd[bySd[0]], 1)}) but separates the segments little (F ${fx(DELI.F[bySd[0]], 1)}). F compares the spread between the segments with the spread within them.`,
+      3: 'k-means formed the segments to differ on these needs, so the p-values are circular and say nothing. The F statistics still rank which needs separate the segments most.',
     },
-    solution: `Standardise each answer with the study’s mean and standard deviation: ${DELI.ans.map((a, j) => `(${a} − ${fx(DELI.mu[j], 1)}) ÷ ${fx(DELI.sd[j], 1)} = ${sgn(deliZ[j])}`).join(', ')}. Squared distances to the centres: ${DELI.segs.map((s, g) => `${s} ${fx(deliD[g])}`).join(', ')}. The nearest is ${DELI.segs[dK]}, ${fx(deliSorted[1] - deliSorted[0])} closer than the next. A tool that is fed raw answers, or answers centred on the customer’s own average, places her elsewhere.`,
+    solution: `Golden questions should be the needs that best tell the segments apart, and ranking the needs by their F statistics is a quick first cut: ${byF.map((j) => `${DELI.needs[j].toLowerCase()} (${fx(DELI.F[j], 1)})`).join(', ')}. The p-values can’t help, because the segments were formed to differ on these needs. And ranking one need at a time ignores how the needs overlap, so test the three as a set (how often they place customers in the same segment as all ${WORDS[DELI.needs.length]} needs), and compare other sets of three, before building the tool.`,
   },
 
   // ================================================================ Module 3: targeting
@@ -216,20 +226,20 @@ export const items = [
   },
   {
     id: 'm05-dg-9', lesson: 'targeting-strategies', type: 'mc', kind: 'applied',
-    prompt: `A fictional craft-supplies shop builds a persona for its ${CRAFT.n}-member “gift makers” segment by taking the most common answer on each of five lines: ${CRAFT.lines.map(([l, s]) => `${l} (${pc(s, 0)} of the segment)`).join(', ')}. What can it say about how many members match the persona on all five lines?`,
+    prompt: `A fictional craft-supplies shop drafts a persona for its ${CRAFT.n}-member “gift makers” segment by taking the most common answer on each of five lines: ${CRAFT.lines.map(([l, s]) => `${l} (${pc(s, 0)} of the segment)`).join(', ')}. What can it say about how many members match the persona on all five lines, and what should the card do about it?`,
     options: [
-      `At most ${pc(craftMin, 0)}, and probably very few: each line leaves out part of the segment`,
-      'Most of them, because every line on the persona is the segment’s most common answer to that question',
-      `About ${pc(craftMax, 0)}, the share on the most common of the five lines, since the persona is built around it`,
-      `About ${pc(craftAvg, 0)}, the average of the five lines’ shares, since each line describes part of the persona`,
+      `Few, at most ${pc(craftMin, 0)}: write each line as the share of the segment it describes, and keep the segment’s size on the card`,
+      `Few, at most ${pc(craftMin, 0)}: so add details such as a job, hobbies and a home, until the card describes one believable member`,
+      `Few, at most ${pc(craftMin, 0)}: so build the card around a member who matches all five lines, interviewed at length`,
+      'Most of them, since each line is the segment’s most common answer, so the card can show one member with an exact age',
     ],
     answer: 0,
     feedback: {
-      1: 'The most common answer on a line can still leave out most of the segment, and every extra line leaves out more. The members who match all five are those in every line’s group at once.',
-      2: `No one can match the persona without matching every line, including the ${pc(craftMin, 0)} one, so the share can’t be higher than that, and the overlap is usually far smaller.`,
-      3: 'Averaging the lines doesn’t count the members who are in all five groups at once; that number can only be smaller than the smallest group.',
+      1: 'Details the survey didn’t measure make the card vivid and wrong, and each one describes fewer members still. Every line should trace to a figure about the segment.',
+      2: 'One member, however well interviewed, is one person, and the card is meant to stand for the segment: give each line as the share of the segment it describes.',
+      3: `No one can match the persona without matching every line, including the ${pc(craftMin, 0)} one, so the share can’t be higher than that, and the overlap is usually far smaller.`,
     },
-    solution: `A member matches the persona only if they are in every line’s group, so at most the smallest group, ${pc(craftMin, 0)}, can match, and usually far fewer: in Lantern’s study only 1 of 109 Craft and local respondents matched the most common answer on five lines. Write demographic lines as shares of the segment, lead with the needs most members share, and keep the base on the card.`,
+    solution: `A member matches the persona only if they are in every line’s group, so at most the smallest group, ${pc(craftMin, 0)}, can match, and usually far fewer: in Lantern’s study only ${clMatch[0]} to ${clMatch[1]} of Craft and local’s ${clR.length} members match the most common answer on five lines (four demographic and the main source), depending on which of its two nearly equal age bands is taken (${ageModes[0].v} and ${ageModes[1].v} members). So a persona card gives each line as the share of the segment it describes (“${pc(CRAFT.lines[0][1], 0)} ${CRAFT.lines[0][0]}”), keeps the segment’s size on the card, and adds nothing the data didn’t measure.`,
   },
 
   // ================================================================ Module 4: positioning

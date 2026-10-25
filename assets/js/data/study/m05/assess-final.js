@@ -1,34 +1,37 @@
 // assess-final.js — M05 final assessment: 24 questions across all four modules and all eight of the course’s outcomes,
 // two or three per lesson (six for module 1, six for module 2, five for module 3 and seven for module 4). 70% passes.
 // Outcomes (main one per item): 1 STP and usable segments fn-1, fn-2; 2 bases fn-3 (demographic), fn-4 (geodemographic),
-// fn-5, fn-6 (behavioural); 3 cluster analysis fn-7 (choosing k, naming, a split-half check), fn-8 (local optima),
-// fn-9 (Ward’s method); 4 profiling, sizing and typing fn-10, fn-11, fn-12; 5 scorecards, sensitivity and strategy
-// fn-13, fn-14, fn-15, fn-17; 6 personas fn-16; 7 perceptual maps fn-18, fn-19 (and fn-22, fn-23); 8 positioning,
-// differentiation and repositioning fn-20, fn-21, fn-22, fn-23, fn-24.
+// fn-5 (behavioural), fn-6 (behavioural and psychographic); 3 cluster analysis fn-7 (choosing k and naming), fn-8 (local
+// optima), fn-9 (Ward’s method); 4 profiling, sizing and typing fn-10 (testing whether segments differ), fn-11 (typing),
+// fn-12 (sizing from a survey); 5 scorecards, sensitivity and strategy fn-13, fn-14, fn-15, fn-17; 6 personas fn-16;
+// 7 perceptual maps fn-18, fn-19 (and fn-22, fn-23); 8 positioning, differentiation and repositioning fn-20, fn-21,
+// fn-22, fn-23, fn-24.
 // Mixed conceptual, numerical and applied items; four are formula items (two of them in steps: fn-13 and fn-23) on
-// worksheets whose inputs are scaled, fixed with chosen cells varied, or varied on the marking copies, so that typed
-// results fail. Items that combine what several lessons teach: a demographic as a descriptor of a needs segment, read
-// from a cross-tab both ways and sharpened by a second descriptor (fn-3: demographics and profiling); choosing k, then
-// naming a segment from its index profile, then a split-half check (fn-7: cluster analysis and profiling); rating
-// indexes against standardised centres (fn-10: profiling and cluster analysis); a new rival on the perceptual map fed
-// into the room factor of Lantern’s scorecard (fn-14: evaluating segments and perceptual maps); two segments’ centres
-// and indexes, then the targeting strategy (fn-15: cluster analysis, profiling and targeting); persona lines judged
-// against segment shares (fn-16: targeting and profiling); a convenience-store listing for a distant segment with
-// cannibalisation and M02’s channel economics (fn-17: targeting and evaluating); the least closely served segment after
-// a rival leaves, judged by Lantern’s distance and fit (fn-18: perceptual maps and evaluating); the all-customer ideal
-// point and why positioning at it suits nobody (fn-19: perceptual maps and why segment); a short arrow on a biplot and
-// which difference is worth promoting (fn-22: perceptual maps and differentiation); a planned move on fixed axes against
-// each segment’s nearest rival (fn-23: perceptual maps, differentiation and targeting); a separate brand rather than
-// repositioning (fn-24: targeting strategies and repositioning).
+// worksheets whose inputs are fixed with chosen cells varied, or varied on the marking copies, so that typed results
+// fail. Items that combine what several lessons teach: a demographic as a descriptor of a needs segment, read from a
+// cross-tab both ways and sharpened by a second descriptor (fn-3: demographics and profiling); choosing k from the elbow,
+// the silhouette and the random benchmark, then naming a segment from its index profile (fn-7: cluster analysis and
+// profiling); tests across k-means segments, circular on a need that formed them and fair on descriptors, with
+// Cramér’s V (fn-10: profiling and cluster analysis); a new rival on the perceptual map fed into the room factor of
+// Lantern’s scorecard (fn-14: evaluating segments and perceptual maps); two segments’ centres and indexes, then whether
+// the launch offer should also serve a third segment (fn-15: cluster analysis, profiling and targeting); a persona card
+// planned from a segment’s index profile (fn-16: targeting and profiling); a convenience-store listing for a distant
+// segment with cannibalisation and M02’s channel economics (fn-17: targeting and evaluating); the least closely served
+// segment after a rival leaves, judged by Lantern’s distance and fit (fn-18: perceptual maps and evaluating); the
+// all-customer ideal point against the segments’ ideals (fn-19: perceptual maps and why segment); a short arrow on a
+// biplot and which difference is worth promoting (fn-22: perceptual maps and differentiation); a planned move on fixed
+// axes against each segment’s nearest rival (fn-23: perceptual maps, differentiation and targeting); a separate brand
+// rather than repositioning (fn-24: targeting strategies and repositioning).
 // Lantern’s needs study appears from new angles (income and café use as descriptors of Craft and local, a new craft
-// entrant’s effect on room, Mindful against Craft and local, the convenience-store channel, Corner Cup leaving the
-// market); the other businesses are fictional and in industries not used elsewhere in M05, and nothing comes from the
-// project’s scenario, data or angles. No hints; solutions are shown on review. Every num item’s `check` recomputes its
-// answer, every figure a prompt states is computed below from its inputs, and every formula item is marked by its
-// results on the sheet and on changed copies.
+// entrant’s effect on room, Mindful against the launch’s two craft segments, the convenience-store channel, Corner Cup
+// leaving the market); the other businesses are fictional and in industries not used elsewhere in M05, and nothing
+// comes from the project’s scenario, data or angles. No hints; solutions are shown on review. Every num item’s `check`
+// recomputes its answer, every figure a prompt states is computed below from its inputs, and every formula item is
+// marked by its results on the sheet and on changed copies.
 import { RESPONDENTS, DERIVED, BRANDS, NEEDS } from './case.js?v=14';
 import { CHANNELS, DEFAULT_PLAN, TIERS, CATEGORY } from '../m02/market.js?v=14';
 import { weightedScore } from '../../../core/percmap.js?v=14';
+import { fSf, chi2Sf } from '../../../core/inference.js?v=14';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const usd = (v, d = 0) => `${v < 0 ? '−' : ''}$${fx(Math.abs(v), d)}`;
@@ -60,9 +63,9 @@ const artsGain = ARTS.groups.map((g) => g.N * artsPer(g) - ARTS.F);
 const artsAll = sum(artsGain);
 const artsBest = sum(artsGain.filter((v) => v > 0));
 const artsMinArtists = Math.ceil(ARTS.F / artsPer(ARTS.groups[2]) - 1e-9);
-// a pet insurer's 'first-time worriers' (fictional)
-const PET = { owners: 52000, share: 0.18, spend: 420, line: 90000, top2: [0.64, 0.22] };
-const petN = PET.owners * PET.share;
+// a boiler-servicing firm's 'anxious first-timers' (fictional)
+const BOIL = { homes: 52000, share: 0.18, spend: 420, line: 90000, top2: [0.64, 0.22], sample: 2000 };
+const boilN = BOIL.homes * BOIL.share;
 // Lantern: income over $80,000 and café use as descriptors of Craft and local
 const hi = (r) => r.income >= 2, cafe = (r) => r.source === 0;
 const cnt = (f) => RS.filter(f).length;
@@ -76,7 +79,7 @@ D3.cl = D3.clHiCafe + D3.clHiOther + D3.clLo; D3.clHi = D3.clHiCafe + D3.clHiOth
 const d3Hi = D3.clHi / D3.allHi, d3HiCafe = D3.clHiCafe / D3.allHiCafe, d3Rev = D3.clHi / D3.cl;
 const d3OutHi = 1 - d3Hi, d3OutCafe = 1 - d3HiCafe;
 const d3PerHi = (D3.allHi - D3.clHi) / D3.clHi, d3PerCafe = (D3.allHiCafe - D3.clHiCafe) / D3.clHiCafe;
-const WORDS = ['no', 'one', 'two', 'three', 'four'];
+const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
 // a pizza-delivery firm (fictional): neighbourhood types, penetration and a test leaflet drop
 const PIZ = { types: ['Suburban owners', 'New-estate families', 'City-centre flats', 'Student areas'], hh: [14000, 11000, 8000, 5000], cust: [1232, 297, 456, 330], test: [3.1, 9.4, 5.2, 2.8], drop: 20000, perType: 2000 };
 const pizPen = PIZ.hh.map((h, i) => (PIZ.cust[i] / h) * 1000);
@@ -94,7 +97,7 @@ const BOX_AVG = { avg: 0.59, lo: 0.44, hi: 0.68 };          // the earlier analy
 
 // ---------------------------------------------------------------- module 2: segmenting with data
 // a comedy club (fictional): 900 respondents, six standardised needs
-const CC = { n: 900, p: 6, ks: [2, 3, 4, 5, 6, 7], wcss: [3880, 3300, 2790, 2450, 2360, 2290], sil: [0.30, 0.25, 0.23, 0.26, 0.22, 0.20], random: 0.09, extra: 41, split: [0.89, 0.48] };
+const CC = { n: 900, p: 6, ks: [2, 3, 4, 5, 6, 7], wcss: [3880, 3300, 2790, 2450, 2360, 2290], sil: [0.30, 0.25, 0.23, 0.26, 0.22, 0.20], random: 0.09, extra: 41 };
 const ccT = (CC.n - 1) * CC.p;
 const ccFall = CC.wcss.map((w, i) => (i ? CC.wcss[i - 1] : ccT) - w);
 const CC_NEEDS = ['A low price', 'Famous headliners', 'New acts', 'Classic comedy nights', 'Late shows', 'A night out with friends'];
@@ -116,14 +119,16 @@ const run1 = kmeans1d(GAME.v, [GAME.v[0], GAME.v[5]]), run2 = kmeans1d(GAME.v, [
 const start2 = sum(GAME.v.map((v) => Math.min((v - GAME.v[0]) ** 2, (v - GAME.v[4]) ** 2)));
 const groupOf = (run, g) => GAME.ids.filter((_, i) => run.labels[i] === g).join(', ');
 // Ward's method on a commercial printer's ten business clients (fictional), three standardised needs
-const WARD = { n: 10, p: 3, cost: [0.3, 0.4, 0.4, 0.6, 0.7, 0.9, 1.1, 6.2, 16.4] };
+const WARD = { n: 10, p: 3, cost: [0.3, 0.4, 0.4, 0.6, 0.7, 0.9, 1.1, 9.4, 13.2] };
+const wardJump = Math.floor(WARD.cost[7] / WARD.cost[6]);
 const wardT = (WARD.n - 1) * WARD.p;                                  // total sum of squares of standardised data
 const wardWcss = (groups) => sum(WARD.cost.slice(0, WARD.n - groups)); // after m merges, n − m groups
-// a skincare brand's 'comfort-first buyers' (fictional): two needs, segment and all-customer means and SDs
-const HF = [
-  { need: 'Fragrance-free formulas', seg: 3.0, all: 2.0, sd: 1.5 },
-  { need: 'Gentle on sensitive skin', seg: 6.4, all: 5.2, sd: 0.8 },
-].map((x) => ({ ...x, index: (x.seg / x.all) * 100, z: (x.seg - x.all) / x.sd }));
+// a theme park (fictional): four k-means segments of 1,200 visitors, tested on a need that formed them and on two descriptors
+const PARK = { n: 1200, k: 4, F: 412.6, party: { chi: 96.0, levels: 3 }, region: { chi: 11.2, levels: 4 } };
+const parkDfF = [PARK.k - 1, PARK.n - PARK.k];
+const parkTest = (t) => { const df = (PARK.k - 1) * (t.levels - 1); return { df, p: chi2Sf(t.chi, df), v: Math.sqrt(t.chi / (PARK.n * (Math.min(PARK.k, t.levels) - 1))) }; };
+const parkParty = parkTest(PARK.party), parkRegion = parkTest(PARK.region), parkPF = fSf(PARK.F, ...parkDfF);
+const pFmt = (p) => (p < 0.001 ? '< 0.001' : fx(p, 2));
 // an olive-oil brand's typing tool (fictional): three golden questions
 const PF = { qs: ['Low price', 'Single estate', 'Strong flavour'], ans: [3, 6, 6], mu: [4.3, 4.9, 3.6], sd: [1.6, 1.2, 1.5],
   segs: ['Bargain buyers', 'Provenance seekers', 'Flavour lovers', 'Everyday cooks'], z: [[1.1, -0.7, -0.4], [-0.5, 1.0, 0.2], [-0.3, 0.1, 1.3], [0.2, -0.6, -0.8]] };
@@ -178,8 +183,7 @@ const miNearest = ORDER.filter((g) => g !== MI).map((g) => ({ g, d: dist(cMI, S.
 const AWARE = DERIVED.aware;
 const MI_BOUGHT = cnt((r, i) => LAB[i] === MI && r.bought);
 // a regional rail operator's 'scenic day-trippers' (fictional)
-const RAIL = { n: 412, others: 2188, age: 239, ageOthers: 687, scenic: 293, scenicOthers: 394, app: 194, station: 128, web: 90, median: 3, mean: 4.6,
-  book: [831, 963, 394], medianOthers: 2, meanOthers: 3.1 };   // other passengers: app, station, website
+const RAIL = { n: 412, total: 2600, age: 239, scenic: 171, seat: 128, fares: 74, fam: { n: 530, fares: 152, scenic: 98 } };
 // Lantern Cold Brew in convenience stores (M02's channel economics)
 const ch = (id) => CHANNELS.find((c) => c.id === id);
 const PRICE = DEFAULT_PLAN.price, COGS = TIERS.find((t) => t.id === DEFAULT_PLAN.tier).cogs;
@@ -204,11 +208,11 @@ const runAll = [0, 1].map((k) => sum(RUN.ideal.map((p, g) => RUN.size[g] * p[k])
 const runD = RUN.ideal.map((p) => dist(runAll, p));
 const runNear = runD.indexOf(Math.min(...runD));
 const runPlain = [0, 1].map((k) => sum(RUN.ideal.map((p) => p[k])) / RUN.ideal.length);
-// opticians chains (fictional): a short arrow
-const OPT = { l1: 0.35, l2: 0.40, P: 6.1, Q: 2.9, share: 0.80, index: 142, appP: 5.2, appQ: 5.1 };
+// tyre-fitting chains (fictional): a short arrow
+const OPT = { l1: 0.35, l2: 0.40, P: 6.1, Q: 2.9, share: 0.80, index: 142, appP: 5.2, appQ: 5.1 };   // tyre-fitting chains
 const optH2 = OPT.l1 ** 2 + OPT.l2 ** 2;
 // an aquarium's planned move (fictional): 'family activities', against each segment's nearest rival
-const AQ = { at: [-0.6, 1.0], per: [0.35, -0.20], rise: 2.0, segs: ['Young families', 'Couples', 'School groups'], ideal: [[0.4, 0.3], [-0.9, 1.3], [1.2, -0.4]],
+const AQ = { at: [-0.6, 1.0], per: [0.30, -0.25], rise: 2.0, segs: ['Young families', 'Couples', 'School groups'], ideal: [[0.4, 0.3], [-0.9, 1.3], [1.2, -0.4]],
   rival: [0.60, 0.70, 0.40], rivalName: ['the science centre', 'the art gallery', 'the city farm'] };
 const aqNew = AQ.at.map((v, k) => v + AQ.rise * AQ.per[k]);
 const aqD0 = AQ.ideal.map((p) => dist(AQ.at, p)), aqD1 = AQ.ideal.map((p) => dist(aqNew, p));
@@ -229,29 +233,29 @@ export const items = [
     prompt: `A fictional community arts centre sells one general membership, each contributing $${ARTS.m1} a year. It could add a tailored membership for each of three groups in its town, each costing $${int(ARTS.F)} a year to run. Anyone in a group who would have bought the general membership would take the group’s tailored one instead. Which plan should the centre adopt?`,
     data: { table: { head: ['Group', 'People', 'Buy the general one', 'Tailored: $ a year', 'Tailored: buy'], rows: ARTS.groups.map((g) => [g.name, int(g.N), pc(g.b1, 0), `$${g.m2}`, pc(g.b2, 0)]), align: ['l', 'r', 'r', 'r', 'r'] } },
     options: [
-      'Tailor for the families and the retired only: there are too few artists to cover a tailored membership’s cost',
+      'Tailor for the families and the retired only: there are too few working artists to cover a tailored membership’s cost',
       'Offer all three: each tailored membership raises its group’s purchase rate, so each one brings in more members than the general one',
-      `Tailor for the retired only: the family membership earns $${ARTS.m1 - ARTS.groups[0].m2} less per member than the general one, so it can only lose money`,
+      `Tailor for the retired only: the family membership earns $${ARTS.m1 - ARTS.groups[0].m2} less per member than the general one, so it loses more than it gains`,
       'Tailor for the artists only: their membership earns the most per member and they have the highest purchase rate of the three groups',
     ],
     answer: 0,
     feedback: {
       1: `More members isn’t enough: each tailored membership must cover its own running cost. The artists’ adds too little contribution to do so and loses ${usd(-artsGain[2])} a year.`,
-      2: 'A lower contribution per member can still pay if many more people buy: the family membership more than doubles the share who join.',
+      2: `A lower contribution per member can still pay if many more people buy: the family membership more than doubles the share who join, and gains ${usd(artsGain[0])} a year after its cost.`,
       3: `Per member the artists’ membership is the best, but there are only ${int(ARTS.groups[2].N)} artists: the group is too small to cover a $${int(ARTS.F)} offer.`,
     },
     solution: `Gain for each group = N × (share × contribution with the tailored membership − share × $${ARTS.m1} with the general one) − $${int(ARTS.F)}. ${ARTS.groups.map((g, i) => `${g.name}: ${int(g.N)} × (${fx(g.b2 * g.m2)} − ${fx(g.b1 * ARTS.m1)}) − ${int(ARTS.F)} = ${usd(artsGain[i])}`).join('. ')}. Two tailored memberships gain ${usd(artsBest)} a year, all three only ${usd(artsAll)}. Each artist would be the most valuable member of all, but the group fails the substantial test: it would take ${int(artsMinArtists)} artists to cover the cost, and the town has ${int(ARTS.groups[2].N)}.`,
   },
   {
     id: 'm05-fn-2', lesson: 'why-segment', type: 'multi', kind: 'conceptual',
-    prompt: `A fictional pet insurer’s cluster analysis of pet owners’ needs found a segment it calls “first-time worriers”. Its notes on the segment:<br>1. A random sample of 2,000 pet owners in the region puts the segment at about ${pc(PET.share, 0)} of the region’s ${int(PET.owners)} owners: about ${int(Math.round(petN / 100) * 100)} people.<br>2. They spend about $${PET.spend} a year each on pet insurance, about $${fx((petN * PET.spend) / 1e6, 1)} million in all; an advice line for them would cost about $${int(PET.line)} a year.<br>3. Most are not yet its customers, and no list or medium the insurer can buy reaches first-time pet owners as such.<br>4. In a concept test they rated a policy with an advice line far higher than other owners did: ${pc(PET.top2[0], 0)} top-two box against ${pc(PET.top2[1], 0)}.<br>5. The insurer employs no vets or veterinary nurses to staff an advice line, and can’t recruit any this year.<br>Select all the tests of a usable segment that the segment already passes.`,
+    prompt: `A fictional boiler-servicing firm’s cluster analysis of homeowners’ needs found a segment it calls “anxious first-timers”. Its notes on the segment:<br>1. A random sample of ${int(BOIL.sample)} homeowners in its region puts the segment at about ${pc(BOIL.share, 0)} of the region’s ${int(BOIL.homes)} homeowners: about ${int(Math.round(boilN / 100) * 100)} households.<br>2. They spend about $${BOIL.spend} a year each on boiler servicing and repairs, about $${fx((boilN * BOIL.spend) / 1e6, 1)} million in all; a telephone advice line for them would cost about $${int(BOIL.line)} a year.<br>3. Most are not yet its customers, and no list or medium the firm can buy reaches first-time homeowners as such.<br>4. In a concept test they rated a service plan with an advice line far higher than other homeowners did: ${pc(BOIL.top2[0], 0)} top-two box against ${pc(BOIL.top2[1], 0)}.<br>5. The firm has no heating engineers to spare for an advice line, and can’t recruit any this year.<br>Select all the tests of a usable segment that the segment already passes.`,
     options: ['Measurable', 'Substantial', 'Accessible', 'Differentiable', 'Actionable'],
     answer: [0, 1, 3],
     feedback: {
-      2: 'No list or medium reaches them, and most aren’t customers: until the insurer can find them (with a question at quote time, say), it can’t reach them at an affordable cost.',
-      4: 'Actionable asks whether the business can design and run the programme with its resources. Without vets or nurses it can’t staff the advice line the segment wants.',
+      2: 'No list or medium reaches them, and most aren’t customers: until the firm can find them (with a question when they book a first service, say), it can’t reach them at an affordable cost.',
+      4: 'Actionable asks whether the business can design and run the programme with its resources. Without engineers to spare it can’t staff the advice line the segment wants.',
     },
-    solution: `Measurable: a probability sample sizes it. Substantial: about $${fx((petN * PET.spend) / 1e6, 1)} million of premiums against a $${int(PET.line)} programme. Differentiable: it responds to the advice-line concept very differently from other owners. It fails accessible (no way yet to reach first-time owners as such) and actionable (no staff to deliver the advice). Each failure has a remedy (a typing question in the quote form; a partnership with a veterinary practice), and the segment can’t be marketed to until both are in place.`,
+    solution: `Measurable: a probability sample sizes it. Substantial: about $${fx((boilN * BOIL.spend) / 1e6, 1)} million of spending against a $${int(BOIL.line)} programme. Differentiable: it responds to the advice-line concept very differently from other homeowners. It fails accessible (no way yet to reach first-time homeowners as such) and actionable (no engineers to give the advice). Each failure has a remedy (a typing question in the booking form; engineers recruited next year or shared with a partner firm), and the segment can’t be marketed to until both are in place.`,
   },
   {
     id: 'm05-fn-3', lesson: 'demographic-and-geographic', type: 'steps', kind: 'numerical',
@@ -292,16 +296,16 @@ export const items = [
         id: 'm05-fn-3-s3', type: 'mc',
         prompt: 'What should Ana tell the agency?',
         options: [
-          'Income describes the segment without defining it: use it with where people buy, and reach the segment in cafés',
+          'Income describes the segment without defining it: use it together with where people buy, and reach the segment in cafés',
           'Income is the right base: when nearly four-fifths of a segment share a trait, advertising by that trait reaches it with little waste',
-          'Drop income altogether: a demographic can’t help find a needs segment, so the agency should buy its media by need instead',
-          'Aim at high earners who buy at cafés: adding a second descriptor guarantees that almost everyone reached is in Craft and local',
+          'Use income alone: adding café use would cut the audience by more than half and lose most of the segment’s high earners',
+          'Aim at high earners who buy at cafés: with that second descriptor, most of the people reached are in Craft and local',
         ],
         answer: 0,
         feedback: {
           1: 'A trait shared by most of a segment can still be shared by many people outside it. What matters for waste is the share of the people reached who are in the segment.',
-          2: 'Nobody sells media by need. Descriptors such as income and café use are how a needs segment is reached, accepting some waste.',
-          3: `Two descriptors sharpen the aim, but about half of the high-earning café buyers (${pc(d3OutCafe, 0)}) are still in other segments.`,
+          2: `Café use cuts the audience from ${D3.allHi} to ${D3.allHiCafe}, but it keeps ${D3.clHiCafe} of the segment’s ${D3.clHi} high earners: of the ${D3.allHi - D3.allHiCafe} people it drops, only ${D3.clHiOther} are in Craft and local.`,
+          3: `Fewer than half: ${pc(d3HiCafe)} of the high-earning café buyers are in Craft and local, and ${pc(d3OutCafe, 0)} are in other segments. Two descriptors sharpen the aim without removing the waste.`,
         },
         solution: `Read the cross-tab both ways. Most of Craft and local are high earners, but most high earners belong to other segments. Adding café use cuts the share of the audience outside the segment from ${pc(d3OutHi, 0)} to ${pc(d3OutCafe, 0)}: about ${WORDS[Math.round(d3PerCafe)]} other drinker per Craft and local member reached, instead of ${WORDS[Math.round(d3PerHi)]}. Only about one in seven of the segment (${D3.clBought} of ${D3.cl}) bought Lantern in the past year, so Lantern’s own cafés reach few of them; advertising where café-goers are is the wider route.`,
       },
@@ -313,15 +317,15 @@ export const items = [
     prompt: `A fictional pizza-delivery firm classifies its delivery area by neighbourhood type, using a geodemographic classification. The table gives each type’s households, its current customers, customers per 1,000 households (penetration) and the new customers won per 1,000 leaflets when, last autumn, it sent ${int(PIZ.perType)} test leaflets into each type. This spring it can afford ${int(PIZ.drop)} leaflets, one per household. Where should most of them go?`,
     data: { table: { head: ['Neighbourhood type', 'Households', 'Customers', 'Per 1,000 households', 'New per 1,000 test leaflets'], rows: PIZ.types.map((t, i) => [t, int(PIZ.hh[i]), int(PIZ.cust[i]), fx(pizPen[i], 1), fx(PIZ.test[i], 1)]), align: ['l', 'r', 'r', 'r', 'r'] } },
     options: [
-      `To the ${PIZ.types[pizBest].toLowerCase()}: the test won most new customers per leaflet there, so low penetration reflects past effort, not low demand`,
-      `To the ${PIZ.types[byPen[0]].toLowerCase()}: the highest penetration shows the best fit, so leaflets there will win the most new customers`,
-      'Spread them evenly: a neighbourhood type describes the area, not each household, so the types can’t guide where leaflets go',
-      `To the ${PIZ.types[3].toLowerCase()}: high penetration and few households mean the type can be covered with the fewest leaflets`,
+      `To the ${PIZ.types[pizBest].toLowerCase()}: the test measured what a leaflet wins now, and it won most there; penetration ranks past success`,
+      `To the ${PIZ.types[byPen[0]].toLowerCase()}: the highest penetration shows the best fit with the firm, so leaflets there will win the most new customers`,
+      `Spread them evenly: from ${int(PIZ.perType)} test leaflets in each type, the gaps between the four test rates are too small to act on`,
+      `To the ${PIZ.types[3].toLowerCase()}: high penetration and few households mean the whole type can be covered with the fewest leaflets of all`,
     ],
     answer: 0,
     feedback: {
       1: 'High penetration says the firm already does well there, so many willing buyers are already customers. The test measures what a leaflet wins now, and suburban owners responded least but one.',
-      2: 'The types can’t describe each household, but they can tell the firm where leaflets work best on average, which is exactly what the test measured.',
+      2: `The best type’s test leaflets won about ${fx((PIZ.test[pizBest] * PIZ.perType) / 1000, 0)} new customers and the worst type’s about ${fx((Math.min(...PIZ.test) * PIZ.perType) / 1000, 0)}: over ${WORDS[Math.floor(PIZ.test[pizBest] / Math.min(...PIZ.test))]} times as many from the same number of leaflets. A small drop in the other types can keep checking the rates.`,
       3: 'Covering a type cheaply is no use if few households respond: the student areas gave the fewest new customers per leaflet.',
     },
     solution: `Penetration is customers ÷ households × 1,000: ${PIZ.types.map((t, i) => `${t.toLowerCase()} ${fx(pizPen[i], 1)}`).join(', ')}. It ranks the types by how well the firm has done, not by how many new customers a leaflet will win. The test drop measures the second directly. Leafleting in order of the test rates (all ${int(PIZ.hh[byTest[0]])} households of the first type, then the ${PIZ.types[byTest[1]].toLowerCase()} and so on) should win about ${fx(pizTestWon, 0)} new customers, against about ${fx(pizPenWon, 0)} in order of penetration. Each test rate rests on ${int(PIZ.perType)} leaflets (about ${fx((PIZ.test[pizBest] * PIZ.perType) / 1000, 0)} new customers in the best type), so keep a small drop in the other types to check the rates.`,
@@ -348,24 +352,26 @@ export const items = [
   },
   {
     id: 'm05-fn-6', lesson: 'psychographic-and-behavioural', type: 'classify', kind: 'conceptual',
-    prompt: 'A fictional chocolate maker has five decisions to make. Which behavioural segmentation base fits each decision best?',
+    prompt: 'A fictional chocolate maker has six decisions to make. Which segmentation base, psychographic or behavioural, fits each decision best?',
     items: [
       'Which weeks of the year to make extra gift boxes',
+      'Whether to advertise in hiking magazines or in home-baking magazines, given how its buyers like to spend their weekends',
       'Whether to lead its range with low-sugar chocolate or with intense 85% dark bars',
       'Which wholesale accounts get a volume discount, judged by how much they order a month',
       'Which customers to thank for buying from no other chocolate maker for three years',
       'What to tell people who have heard of the brand but don’t yet know what it makes',
     ],
-    categories: ['Occasion', 'Benefits sought', 'Usage rate', 'Loyalty status', 'Buyer-readiness stage'],
-    answer: [0, 1, 2, 3, 4],
+    categories: ['Lifestyle', 'Occasion', 'Benefits sought', 'Usage rate', 'Loyalty status', 'Buyer-readiness stage'],
+    answer: [1, 0, 2, 3, 4, 5],
     feedback: {
       0: 'Gift boxes sell around events (holidays, birthdays): the decision turns on when and why people buy, the occasion.',
-      1: 'Low sugar against intensity is a choice between the benefits different buyers seek from chocolate.',
-      2: 'How much an account orders in a period is its usage rate.',
-      3: 'Buying from no other maker for years is strong loyalty status.',
-      4: 'People who know the name but not what it offers sit at an early readiness stage (aware, not yet informed): the job is to inform.',
+      1: 'How buyers spend their time, their activities and interests, is lifestyle, a psychographic base: it says which media reach their world.',
+      2: 'Low sugar against intensity is a choice between the benefits different buyers seek from chocolate.',
+      3: 'How much an account orders in a period is its usage rate.',
+      4: 'Buying from no other maker for years is strong loyalty status.',
+      5: 'People who know the name but not what it offers sit at an early readiness stage (aware, not yet informed): the job is to inform.',
     },
-    solution: 'Each behavioural base answers a different question. Occasion: when and why people buy (gift seasons). Benefits sought: what they want from the product (low sugar or intensity). Usage rate: how much they buy (volume discounts). Loyalty status: how firmly they stick to the brand (rewards for loyal customers). Buyer-readiness stage: how far they are from buying (what to tell the merely aware). Choose the base from the decision, as with demographics.',
+    solution: 'Each base answers a different question. Lifestyle, a psychographic base: how buyers live and spend their time (hiking or baking, and the media that go with each). The behavioural bases: occasion, when and why people buy (gift seasons); benefits sought, what they want from the product (low sugar or intensity); usage rate, how much they buy (volume discounts); loyalty status, how firmly they stick to the brand (thanks for loyal customers); buyer-readiness stage, how far they are from buying (what to tell the merely aware). Choose the base from the decision, as with demographics.',
   },
 
   // ================================================================ Module 2: segmenting with data
@@ -379,15 +385,15 @@ export const items = [
         data: { table: { head: ['k', 'Within-cluster sum of squares', 'Fall from k − 1', 'Mean silhouette'], rows: CC.ks.map((k, i) => [String(k), int(CC.wcss[i]), int(ccFall[i]), fx(CC.sil[i])]), align: ['r', 'r', 'r', 'r'] } },
         options: [
           'Five: the falls shrink sharply after it, its silhouette is a local peak, and four would put two different tastes together',
-          `Two: its mean silhouette, ${fx(CC.sil[0])}, is the highest of all, which makes two the statistically correct number of segments`,
+          `Two: its mean silhouette, ${fx(CC.sil[0])}, is the highest of the six, so two segments describe the audience best`,
           'Seven: its within-cluster sum of squares is the lowest of the six solutions, so it describes the audience in the most detail',
-          `Six: one more segment always adds detail, and the extra ${CC.extra} people are a niche the club could serve on its own`,
+          `Six: its fall of ${int(ccFall[4])} is still a gain, and the extra ${CC.extra} people make a niche the club could serve on its own`,
         ],
         answer: 0,
         feedback: {
           1: 'The silhouette tends to favour a few large groups when one split dominates the data, and two is one broad split. Read it with the elbow and with what the segments mean.',
           2: 'The within-cluster sum of squares always falls as k rises. Look for where the falls shrink, not for the lowest value.',
-          3: `A segment whose ratings are average on every need wants nothing in particular: it adds no new offer, and ${CC.extra} people would hardly pass the substantial test.`,
+          3: `A fall of ${int(ccFall[4])}, after ${int(ccFall[3])}, buys little, and a segment whose ratings are close to average on every need wants nothing in particular: it adds no new offer, and ${CC.extra} people would hardly pass the substantial test.`,
         },
         solution: `The falls are ${ccFall.map(int).join(', ')}: they shrink sharply after five (${int(ccFall[3])}, then ${int(ccFall[4])}). The silhouette is highest at two (${fx(CC.sil[0])}) but has a local peak at five (${fx(CC.sil[3])} against ${fx(CC.sil[2])} and ${fx(CC.sil[4])}). ${fx(CC.sil[3])} is weak structure on Kaufman and Rousseeuw’s scale, at the bottom of their 0.26–0.50 band, but about three times the random benchmark (${fx(CC.random)}): weak but real, with overlapping segments. Four would merge two tastes the club programmes for differently; six adds a segment that wants nothing in particular. Five, then.`,
       },
@@ -403,25 +409,8 @@ export const items = [
         },
         solution: `Name a needs segment by its highest indexes and check the name against the lows. New acts (${CC_INDEX[2]}) stand far above everything else, and classic comedy nights (${CC_INDEX[3]}) and a low price (${CC_INDEX[0]}) are well below average. “New-act seekers” says that and nothing more; the age profile goes in the segment’s description as a share, not in its name.`,
       },
-      {
-        id: 'm05-fn-7-s3', type: 'mc',
-        prompt: `Before profiling, the analyst segments each half of the sample separately at the chosen k, assigns all ${int(CC.n)} respondents to each half’s nearest centres and compares the two assignments: an adjusted Rand index of ${fx(CC.split[0])}. With one segment more, the same check gives ${fx(CC.split[1])}. What do the checks show?`,
-        options: [
-          'The chosen solution is stable: the two halves give much the same segments, which they don’t with one segment more',
-          'The extra segment should be adopted after all: lower agreement shows that it has found something the halves missed',
-          'Neither solution can be trusted, because any agreement below 1 means the two halves found different segments',
-          'Nothing, because a split-half check is needed only when the elbow and the silhouette point to different k',
-        ],
-        answer: 0,
-        feedback: {
-          1: 'Low agreement between halves means the extra segment depends on which respondents happened to be sampled: a sign of instability, not of discovery.',
-          2: 'An adjusted Rand index near 0.9 is close agreement; with overlapping segments a few respondents near the boundaries will always switch.',
-          3: 'Stability is worth checking for any solution you will act on, even when the statistics agree.',
-        },
-        solution: 'An adjusted Rand index compares two groupings of the same people, corrected for chance (1 identical, about 0 chance). Two halves of the sample giving nearly the same segments at the chosen k show that the solution doesn’t hang on the sample; the drop with one segment more says the extra split is not reproducible. With many restarts, a second method such as Ward’s and the split half, the five segments can be called reproducible: stable, but overlapping.',
-      },
     ],
-    solution: 'Five segments: the elbow and a local peak of the silhouette agree, the structure is weak but well above the random benchmark, four would merge two tastes and six adds nothing new. Name each segment from its highs and lows, keeping descriptors such as age for the description, and confirm with a split-half check that the segments don’t depend on the sample.',
+    solution: 'Five segments: the elbow and a local peak of the silhouette agree, the structure is weak but well above the random benchmark, four would merge two tastes and six adds nothing new. Name each segment from its highs and lows, keeping descriptors such as age for the description, and check that the five are stable before profiling them.',
   },
   {
     id: 'm05-fn-8', lesson: 'cluster-analysis', type: 'steps', kind: 'numerical',
@@ -444,16 +433,16 @@ export const items = [
         id: 'm05-fn-8-s2', type: 'mc',
         prompt: `Run 1 stops with ${groupOf(run1, 0)} in one segment and ${groupOf(run1, 1)} in the other, and a within-cluster sum of squares of ${fx(run1.wcss, 1)}. What do the two runs show?`,
         options: [
-          'Run 2 stopped at a local optimum; keep run 1’s grouping and run k-means from many starts',
+          'Run 2 stopped at a local optimum: keep run 1’s lower-sum grouping and run k-means from many starts',
           'Run 2 is the better solution, because its two segments are of equal size while run 1’s are five members and one',
-          'The members have no structure worth segmenting, because two runs of k-means on the same data gave different answers',
-          'Run 1 is invalid, because k-means can’t return a segment with only one member in it, so run 2 is the one to keep',
+          'The six members have little structure to segment, since two runs on the same data stopped at different groupings',
+          'Run 1 went wrong at its start: F, at 30 visits, is an outlier and shouldn’t have been a starting centre',
         ],
         answer: 0,
         feedback: {
-          1: 'k-means is judged by the within-cluster sum of squares, not by how even the segments are, and run 1’s is far lower. Whether a one-member segment is worth an offer is a separate question, the substantial test.',
-          2: 'Different answers from different starts are what local optima look like, even in data with clear structure. Compare the runs’ sums and keep the lowest.',
-          3: 'k-means can return a segment of one; it does here. A tiny segment may fail the substantial test, but that doesn’t make the run invalid.',
+          1: 'k-means is judged by the within-cluster sum of squares, not by how even the segments are, and run 1’s is far lower.',
+          2: 'Different groupings from different starts are what local optima look like, even in data with clear structure. Compare the runs’ sums and keep the lowest.',
+          3: 'k-means++ favours far-off members as starting centres, and run 1’s start led to the far lower sum. Whether a one-member segment is worth an offer is a separate question, the substantial test.',
         },
         solution: 'k-means only improves the solution it starts from, so a poor start can stop at a grouping that no single assign or update move improves, although a better one exists. That is why analysts use k-means++ starts and many restarts, and keep the run with the lowest within-cluster sum of squares.',
       },
@@ -469,15 +458,15 @@ export const items = [
         id: 'm05-fn-9-s1', type: 'mc',
         prompt: 'Where does the dendrogram suggest cutting the tree?',
         options: [
-          `Into three groups: merge 8 would add ${fx(WARD.cost[7], 1)}, more than five times any merge before it`,
+          `Into three groups: merge 8 would add ${fx(WARD.cost[7], 1)}, more than ${['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'][wardJump]} times any merge before it`,
           `Into two groups: the last merge, at ${fx(WARD.cost[8], 1)}, costs more than any other merge in the tree`,
-          'Into ten groups: every merge adds to the within-cluster sum of squares, so none is worth making',
+          'Into seven groups: from merge 4 on, each merge costs more than the one before, so the groups are drifting apart',
           `Into four groups: merge 7 adds ${fx(WARD.cost[6], 1)}, the first increase in the table above 1`,
         ],
         answer: 0,
         feedback: {
-          1: 'Cutting below the last merge only stops the final, costliest step. The jump comes a merge earlier: merge 8 already costs far more than everything before it.',
-          2: 'Every merge raises the sum; the question is which ones raise it by much. Ten groups of one would be no segmentation at all.',
+          1: `In Ward’s method a merge never costs less than the one before, so the last is always the costliest; cut where the cost first jumps (${fx(WARD.cost[6], 1)} to ${fx(WARD.cost[7], 1)}), not at ${fx(WARD.cost[7], 1)} to ${fx(WARD.cost[8], 1)}.`,
+          2: `Merge costs in Ward’s method don’t fall from one merge to the next, so a steady rise (${WARD.cost.slice(3, 7).map((v) => fx(v, 1)).join(', ')}) is normal. Look for the jump, at merge 8.`,
           3: 'Merge 7 costs about as much as the merges before it. The jump comes at merge 8.',
         },
         solution: `The first seven merges each add ${fx(WARD.cost[6], 1)} or less; merge 8 adds ${fx(WARD.cost[7], 1)}. Merges with small costs join groups that are already close; the jump says merge 8 would join groups that are far apart. Cut the tree just below it, leaving three groups, and check the choice with k-means and what the groups mean.`,
@@ -486,7 +475,7 @@ export const items = [
         id: 'm05-fn-9-s2', type: 'num',
         prompt: 'What is the within-cluster sum of squares of the two-group solution? Give one decimal place.',
         answer: r1(wardWcss(2)),
-        check: () => 0.3 + 0.4 + 0.4 + 0.6 + 0.7 + 0.9 + 1.1 + 6.2,
+        check: () => 0.3 + 0.4 + 0.4 + 0.6 + 0.7 + 0.9 + 1.1 + 9.4,
         unit: '', places: 1, tol: 0.05,
         wrong: [
           { value: WARD.cost[7], say: 'That is what merge 8 adds. Ward’s method starts with every client alone (a sum of 0), so the sum after a merge is all the increases so far.' },
@@ -500,22 +489,26 @@ export const items = [
     solution: `Ward’s method merges the two groups that add least to the within-cluster sum of squares, so the merge costs add up to it: ${fx(wardWcss(3), 1)} with three groups, ${fx(wardWcss(2), 1)} with two and the total, ${fx(wardT, 1)}, with one. The jump at merge 8 suggests three groups.`,
   },
   {
-    id: 'm05-fn-10', lesson: 'profiling-segments', type: 'mc', kind: 'conceptual',
-    prompt: 'A fictional skincare brand’s “comfort-first buyers” segment rates two needs as in the table (1–7 importance). Which need sets the segment apart from the average customer more?',
-    data: { table: { head: ['Need', 'Segment mean', 'All customers’ mean', 'All customers’ standard deviation'], rows: HF.map((x) => [x.need, fx(x.seg, 1), fx(x.all, 1), fx(x.sd, 1)]), align: ['l', 'r', 'r', 'r'] } },
+    id: 'm05-fn-10', lesson: 'profiling-segments', type: 'mc', kind: 'applied',
+    prompt: `A fictional theme park segmented ${int(PARK.n)} visitors into ${WORDS[PARK.k]} segments with k-means on seven standardised needs, one of them the importance of thrill rides. Its analyst then tested whether the segments differ on that need and on two descriptors not used to form them: party type (with children, adults only or school group) and home region (${WORDS[PARK.region.levels]} regions). Which reading of the results is right?`,
+    data: { table: { head: ['Test across the segments', 'Statistic', 'df', 'p', 'Cramér’s V'], rows: [
+      ['ANOVA: thrill rides', `F = ${fx(PARK.F, 1)}`, `${parkDfF[0]} and ${int(parkDfF[1])}`, pFmt(parkPF), '—'],
+      ['Chi-square: party type', `χ² = ${fx(PARK.party.chi, 1)}`, String(parkParty.df), pFmt(parkParty.p), fx(parkParty.v)],
+      ['Chi-square: home region', `χ² = ${fx(PARK.region.chi, 1)}`, String(parkRegion.df), pFmt(parkRegion.p), fx(parkRegion.v)],
+    ], align: ['l', 'r', 'r', 'r', 'r'] } },
     options: [
-      `Gentle on sensitive skin: the segment sits ${fx(HF[1].z, 1)} standard deviations above the average customer on it, against ${fx(HF[0].z, 1)} on the other`,
-      `Fragrance-free formulas: its index of ${fx(HF[0].index, 0)} is higher than the other need’s ${fx(HF[1].index, 0)}, so it sets the segment apart more`,
-      `Fragrance-free formulas: the segment cares ${fx(HF[0].index - 100, 0)}% more about them than the average customer, and only ${fx(HF[1].index - 100, 0)}% more about gentleness`,
-      'Neither: two needs with different means among all customers can’t be compared in any way',
+      `Party type is linked to segment, weakly (V = ${fx(parkParty.v)}); region shows no clear link; the thrill-rides test is circular`,
+      'All three support the segments, the thrill-rides ANOVA most strongly, as its statistic is far the largest of the three',
+      'Region shows no clear link, so the segments fail the accessible test and should be re-formed with region added',
+      `Party type accounts for ${fx(parkParty.v * 100, 0)}% of the differences between the segments, so each segment is mostly one type of party`,
     ],
     answer: 0,
     feedback: {
-      1: 'On a rating scale with no true zero, the same gap in points gives a bigger index where the average is low. Compare needs in standard deviations, as the segment centres do.',
-      2: 'A rating index is a ratio of means, not a percentage of caring: 1–7 ratings have no true zero.',
-      3: 'Indexes are hard to compare across needs, but the segment’s centre in standardised units puts both needs on one footing.',
+      1: 'k-means chose the segments to make the needs’ means differ, so the thrill-rides F is large by construction and its p-value means nothing. Only the descriptors, which didn’t form the segments, give fair tests.',
+      2: 'One descriptor without a link isn’t a failure: party type and other descriptors can still help reach the segments, and re-forming needs segments on a descriptor would change what they mean.',
+      3: `Cramér’s V is not a share of anything: ${fx(parkParty.v)} is a weak association, so most segments will mix party types. Percentage the cross-tab within each segment to see how far.`,
     },
-    solution: `Indexes: fragrance-free ${fx(HF[0].seg, 1)} ÷ ${fx(HF[0].all, 1)} × 100 = ${fx(HF[0].index, 0)}, gentle ${fx(HF[1].seg, 1)} ÷ ${fx(HF[1].all, 1)} × 100 = ${fx(HF[1].index, 0)}. In standard deviations: (${fx(HF[0].seg, 1)} − ${fx(HF[0].all, 1)}) ÷ ${fx(HF[0].sd, 1)} = ${fx(HF[0].z, 2)} against (${fx(HF[1].seg, 1)} − ${fx(HF[1].all, 1)}) ÷ ${fx(HF[1].sd, 1)} = ${fx(HF[1].z, 2)}. Customers agree closely about gentleness, so a ${fx(HF[1].seg - HF[1].all, 1)}-point gap is large there; fragrance-free has a low average, which inflates its index. Read rating indexes beside the means or the centres.`,
+    solution: `The segments were formed on the seven needs, so a test of any of them across the segments is circular: k-means made those means differ. Tests on descriptors are fair. Party type: χ² = ${fx(PARK.party.chi, 1)} with ${parkParty.df} degrees of freedom, p ${pFmt(parkParty.p)}, and Cramér’s V = √(${fx(PARK.party.chi, 1)} ÷ (${int(PARK.n)} × ${Math.min(PARK.k, PARK.party.levels) - 1})) = ${fx(parkParty.v)}, a weak association. Home region: χ² = ${fx(PARK.region.chi, 1)} with ${parkRegion.df} degrees of freedom, p = ${fx(parkRegion.p, 2)}: no clear link. Report party type as shares within each segment, a descriptor that helps reach them, and region as not differing detectably.`,
   },
   {
     id: 'm05-fn-11', lesson: 'profiling-segments', type: 'formula', kind: 'numerical',
@@ -545,14 +538,14 @@ export const items = [
       `The ${int(HOME.replies)} who replied may be keener decorators than the card holders who didn’t, which could inflate the segment.`,
       'Comparing the respondents’ recorded spend with all card holders’ spend would show how far the replies lean.',
       'The segment’s profile is more usable than its size until the size has been checked against other evidence.',
-      `A margin of ±${fx(homeMoe * 100, 1)} points (1.96 × √(${fx(HOME.share)} × ${fx(1 - HOME.share)} ÷ ${int(HOME.replies)})) gives the range for the region’s households.`,
-      `Weighting the replies to the card holders’ age mix would make ${pc(HOME.share, 0)} the region’s share.`,
-      `${int(HOME.replies)} answers are enough for the ${pc(HOME.share, 0)} to hold for the region’s households.`,
+      `A margin of ±${fx(homeMoe * 100, 1)} points (1.96 × √(${fx(HOME.share)} × ${fx(1 - HOME.share)} ÷ ${int(HOME.replies)})) gives the range in which the region’s share lies.`,
+      `Weighting the replies to the card holders’ age and gender mix would make ${pc(HOME.share, 0)} a fair estimate of the region’s share.`,
+      `With ${int(HOME.replies)} replies the sample is large enough for the ${pc(HOME.share, 0)} to hold for all the region’s households, card holders or not.`,
     ],
     answer: [0, 1, 2, 3],
     feedback: {
       4: 'A margin of error covers sampling error from the people the survey could reach. It says nothing about the households that aren’t card holders, or about who chose to reply.',
-      5: 'Weighting by age can only correct the age mix among card holders who replied; it can’t add the households outside the list or fix self-selection within an age group.',
+      5: 'Weighting by age and gender corrects the mix of the card holders who replied, but it doesn’t add the households outside the list or fix self-selection within each age and gender group.',
       6: 'A large sample from the wrong frame is still the wrong frame: more replies narrow the margin of error, not the gap between card holders and the region.',
     },
     solution: `The frame is the card list, not the region, so non-customers are missing (coverage); and ${pc(HOME.replies / HOME.cards, 0)} replied, possibly the keenest (non-response). The retailer can test the second with its own records: compare respondents’ spend with all card holders’. A margin of error (±${fx(homeMoe * 100, 1)} points) covers neither problem. Use what the segment wants now, and treat its size as a share of responding card holders until it is checked against other evidence.`,
@@ -582,16 +575,16 @@ export const items = [
         id: 'm05-fn-13-s2', type: 'mc',
         prompt: 'Which judgement does the choice between the two segments depend on most?',
         options: [
-          'The weight on room from rivals: a modest rise would tie them, so check the map behind it first',
+          `The weight on room: a rise of about ${fx(carDelta[3], 1)}, to ${fx(CAR.w[3] + carDelta[3], 1)}, would tie them, so check the map behind room before deciding`,
           'The weight on growth: holidaymakers lead on growth, so growth is the factor that decides the order',
-          'The weight on fit: fit has the largest gap between the two segments, so fit decides the result',
-          'None of them: the leader is ahead on three of the five factors, so no single weight can change the order',
+          'The weight on fit: fit has the largest gap between the two segments, so fit is what decides the result',
+          `The weight on size: business travellers lead on it by ${CAR.A[0] - CAR.B[0]} points, so size is what settles the final order`,
         ],
         answer: 0,
         feedback: {
           1: `Holidaymakers lead on growth by only ${CAR.B[2] - CAR.A[2]} points, so its weight would have to rise by ${fx(carDelta[2])} to close the gap: far more than room needs.`,
           2: `Fit favours business travellers, so only lowering its weight could help holidaymakers, and it would have to fall from ${CAR.w[4]} to ${fx(CAR.w[4] + carDelta[4])}.`,
-          3: `Counting factors won is not how a weighted score works. Holidaymakers lead on room by ${CAR.B[3] - CAR.A[3]} points, so a small rise in room’s weight closes the gap.`,
+          3: `Size favours the leader, so raising its weight only widens the lead; to tie, it would have to fall by ${fx(-carDelta[0])}, below zero. Holidaymakers lead on room by ${CAR.B[3] - CAR.A[3]} points, which is why room’s weight matters most.`,
         },
         solution: `Room needs a rise of only ${fx(carDelta[3])} (from ${CAR.w[3]} to ${fx(CAR.w[3] + carDelta[3])}); growth would need ${fx(carDelta[2])}; fit would have to fall to ${fx(CAR.w[4] + carDelta[4])}; size and spend per head would have to go below zero. The choice turns on how much room from rivals matters, and room is a rough guide: it rests on a map of average ratings and ignores crowding by second-nearest rivals. Check it before relying on the lead.`,
       },
@@ -615,7 +608,7 @@ export const items = [
   },
   {
     id: 'm05-fn-15', lesson: 'targeting-strategies', type: 'steps', kind: 'applied',
-    prompt: 'Ana wonders whether Lantern Cold Brew, planned as a craft can for Craft and local, could serve the Mindful segment too.',
+    prompt: 'Ana wonders whether Lantern Cold Brew, planned as one craft can for Craft and local and Explorers, could serve the Mindful segment too.',
     steps: [
       {
         id: 'm05-fn-15-s1', type: 'num',
@@ -635,54 +628,44 @@ export const items = [
         prompt: `For comparison, Craft and local’s centre is ${fx(dCLEX)} from Explorers’ and ${fx(dCLOG)} from On the go’s; the two segments’ indexes are in the table. Lantern is a small firm launching its first canned product, and ${pc(AWARE)} of the study’s respondents know it. Should the launch also serve Mindful, and how?`,
         data: { table: { head: ['Need', 'Craft and local', 'Mindful'], rows: NEEDS.map((n, j) => [n.label, String(S.index[CL][j]), String(S.index[MI][j])]), align: ['l', 'r', 'r'] } },
         options: [
-          'Not at launch: concentrate on the craft target, and treat a low-sugar Mindful can as a later decision',
-          'Yes, with a separate low-sugar can for Mindful beside the craft can, both launched under the Lantern name',
-          'Yes, with the same craft can for both segments, since their centres are near enough for one offer to serve both',
-          'Yes, with offers tailored to each Mindful drinker from what they have bought in Lantern’s cafés',
+          'Not at launch: keep the one craft can for its two neighbouring segments, and leave a low-sugar Mindful can for later',
+          'Yes, with a separate low-sugar can for Mindful launched beside the craft can, both sold under the Lantern name',
+          'Yes, with the same craft can for Mindful too, since after Explorers it is the segment nearest to Craft and local',
+          'Yes, with offers tailored to each Mindful drinker from what they have bought in Lantern’s cafés and online shop',
         ],
         answer: 0,
         feedback: {
-          1: 'Mindful does need its own product, but a separate variant at launch is differentiated marketing: two products for a small firm with one new can and low awareness. The five considerations (resources, the introduction stage) favour one target first.',
-          2: `Mindful sits further from Craft and local than Explorers do, and differs where it matters: health (${S.index[MI][5]} against ${S.index[CL][5]}) and novelty (${S.index[MI][7]} against ${S.index[CL][7]}). One craft can of new single origins wouldn’t fit it: that would be undifferentiated marketing across segments that want different things.`,
+          1: 'Mindful does need its own product, but a separate variant at launch is differentiated marketing: two products for a small firm with one new can and low awareness. The five considerations (resources, the introduction stage) favour one offer first.',
+          2: `Second-nearest isn’t near enough: Mindful sits further from Craft and local (${fx(dMICL)}) than Explorers do (${fx(dCLEX)}), and differs where it matters: health, low sugar and calories (${S.index[MI][5]} against ${S.index[CL][5]}), and novelty (${S.index[MI][7]} against ${S.index[CL][7]}). A craft can of new single origins wouldn’t fit it.`,
           3: `Individual marketing needs customers whose purchases Lantern already records, and only ${MI_BOUGHT} of the study’s ${S.sizes[MI].n} Mindful drinkers bought Lantern in the past year; it doesn’t create the low-sugar product they want.`,
         },
-        solution: 'Mindful shares Craft and local’s care for sustainability and local businesses but wants low sugar far more and novelty less, so one can won’t serve both. A separate variant would be differentiated marketing, which a small firm launching its first can, with low awareness, can rarely afford at once. Concentrate on the craft target (with Explorers, its near neighbour) and revisit a low-sugar can for Mindful once Cold Brew is established.',
+        solution: 'Mindful shares Craft and local’s care for sustainability and local businesses but wants low sugar far more and novelty less, so the craft can won’t serve it. A separate variant would be differentiated marketing, which a small firm launching its first can, with low awareness, can rarely afford at once. Keep the launch’s one craft offer for Craft and local and Explorers, and revisit a low-sugar can for Mindful once Cold Brew is established.',
       },
     ],
-    solution: `The centres are ${fx(dMICL)} apart: further than Explorers (${fx(dCLEX)}), much nearer than On the go (${fx(dCLOG)}). Mindful’s nearest segment is ${NAMES[miNearest]}, but its needs differ on health and novelty, so it would need its own product; at launch, concentrated marketing on the craft target fits Lantern’s resources and stage.`,
+    solution: `The centres are ${fx(dMICL)} apart: further than Explorers (${fx(dCLEX)}), much nearer than On the go (${fx(dCLOG)}). Mindful’s nearest segment is ${NAMES[miNearest]}, but its needs differ on health and novelty, so it would need its own product; at launch, one offer for the two neighbouring craft segments fits Lantern’s resources and stage.`,
   },
   {
     id: 'm05-fn-16', lesson: 'targeting-strategies', type: 'multi', kind: 'applied',
-    prompt: `A fictional regional rail operator’s survey of ${int(RAIL.n + RAIL.others)} passengers found a “scenic day-trippers” segment of ${RAIL.n}. Its team is drafting a persona from the data in the table. Select all the lines that belong on the persona.`,
-    data: { table: { head: ['Measure', 'Scenic day-trippers', 'Other passengers'], rows: [
-      ['Respondents', String(RAIL.n), int(RAIL.others)],
-      ['Aged 25–44', pc(RAIL.age / RAIL.n), pc(RAIL.ageOthers / RAIL.others)],
-      ['Trips a month: median', String(RAIL.median), String(RAIL.medianOthers)],
-      ['Trips a month: mean', fx(RAIL.mean, 1), fx(RAIL.meanOthers, 1)],
-      ['Rate scenic routes 6 or 7 (1–7)', pc(RAIL.scenic / RAIL.n), pc(RAIL.scenicOthers / RAIL.others)],
-      ['Usually book on the app', pc(RAIL.app / RAIL.n), pc(RAIL.book[0] / RAIL.others)],
-      ['Usually book at a station', pc(RAIL.station / RAIL.n), pc(RAIL.book[1] / RAIL.others)],
-      ['Usually book on the website', pc(RAIL.web / RAIL.n), pc(RAIL.book[2] / RAIL.others)],
-    ], align: ['l', 'r', 'r'] } },
+    prompt: `A fictional regional rail operator surveyed ${int(RAIL.total)} passengers and found a “scenic day-trippers” segment of ${RAIL.n} (${pc(RAIL.n / RAIL.total, 0)}). Its needs indexes against the average passenger are scenic routes ${RAIL.scenic}, a comfortable seat ${RAIL.seat} and low fares ${RAIL.fares}, and ${pc(RAIL.age / RAIL.n, 0)} of its members are aged 25 to 44. Another segment, “weekend families” (${RAIL.fam.n}), also travels mostly at weekends but indexes ${RAIL.fam.fares} on low fares and ${RAIL.fam.scenic} on scenic routes. The marketing team is planning the day-trippers’ persona card; no passengers have been interviewed yet. Select all the steps the team should take.`,
     options: [
-      `${fx((RAIL.age / RAIL.n) * 100, 0)}% are aged 25 to 44.`,
-      `They usually make about ${RAIL.median} trips a month (the median); the mean, ${fx(RAIL.mean, 1)}, is pulled up by frequent travellers.`,
-      `${fx((RAIL.scenic / RAIL.n) * 100, 0)}% rate scenic routes 6 or 7 out of 7, against ${fx((RAIL.scenicOthers / RAIL.others) * 100, 0)}% of other passengers.`,
-      'Books trips through the app.',
-      'Is 34 years old and travels with a partner most weekends.',
-      'Has a creative job and saves weekends for exploring the region by train.',
+      `Open the card with the needs: scenic routes (${RAIL.scenic}) and a comfortable seat (${RAIL.seat}) above average, low fares (${RAIL.fares}) below.`,
+      'Leave the quote off until a member of the segment has been interviewed, and then quote their own words.',
+      'Put the survey’s date on the card, and rebuild the card from the new profile when the segmentation is re-run.',
+      'Make one card for the day-trippers and the weekend families together, since both segments travel mostly at weekends.',
+      'Write a quote in the persona’s voice that sums up what the data say, since no passenger has been interviewed yet.',
+      `Open the card with its age line, “${pc(RAIL.age / RAIL.n, 0)} aged 25 to 44”, since age is the line the agency buys its media against.`,
     ],
     answer: [0, 1, 2],
     feedback: {
-      3: `The app is the most common way, but ${pc(RAIL.app / RAIL.n, 0)} is not most of the segment. Write it as a share: “${pc(RAIL.app / RAIL.n, 0)} book through the app”.`,
-      4: 'The survey recorded age bands, not an exact age, and nothing about partners. A single age and an invented companion describe almost nobody in the segment.',
-      5: 'Neither the job nor the motive was measured. Invented details make a persona vivid and wrong.',
+      3: `The two segments share a travel day, not their needs: weekend families index ${RAIL.fam.fares} on low fares, which day-trippers rate below average (${RAIL.fares}). One card would describe neither segment.`,
+      4: 'A quote written by the team is invented, however well it sums up the data. A quote on a persona should be a real member’s words, from research.',
+      5: `Shares such as ${pc(RAIL.age / RAIL.n, 0)} belong on the card, but after the needs: in a needs-based segmentation the needs define the segment, and age helps reach it.`,
     },
-    solution: 'Every persona line should trace to a figure about the segment, given as the share it describes: the age band as a share, usage with the median beside a mean that frequent travellers pull up, and the defining need with the comparison that shows why it defines the segment. The most common answer is not a description of the persona; exact ages and invented jobs and companions are stereotypes the data never made.',
+    solution: 'A persona card stands for one segment, leads with the needs that define it, says where any quote comes from, and is dated so that it can be rebuilt when the segmentation is refreshed. Merging two segments that share a habit but want different things, writing a quote, or leading with the line the media plan wants would each make the card less true to the segment it is meant to keep in view.',
   },
   {
     id: 'm05-fn-17', lesson: 'targeting-strategies', type: 'num', kind: 'numerical',
-    prompt: `Suppose (fictional) Ana lists Lantern Cold Brew in Harbour City’s convenience stores to reach On the go drinkers, and expects them to sell ${int(CANS)} cans a year. From M02’s figures: at $${fx(PRICE)} a can, convenience stores and their distributors keep ${pc(ch('convenience').margin, 0)} of the price and supermarkets and theirs ${pc(ch('supermarket').margin, 0)}; each can costs Lantern $${fx(COGS)} to make and deliver; and the listing costs $${int(LIST)} a year. If ${pc(CANNIB, 0)} of the convenience-store cans would otherwise have been bought in a supermarket, how much would the listing add to Lantern’s contribution a year? Give a whole number of dollars.`,
+    prompt: `Suppose (fictional) the supermarket test has worked and Cold Brew is stocked across Harbour City’s supermarkets; Ana then lists it in the city’s convenience stores to reach On the go drinkers, and expects them to sell ${int(CANS)} cans a year. From M02’s figures: at $${fx(PRICE)} a can, convenience stores and their distributors keep ${pc(ch('convenience').margin, 0)} of the price and supermarkets and theirs ${pc(ch('supermarket').margin, 0)}; each can costs Lantern $${fx(COGS)} to make and deliver; and the listing costs $${int(LIST)} a year. If ${pc(CANNIB, 0)} of the convenience-store cans would otherwise have been bought in a supermarket, how much would the listing add to Lantern’s contribution a year? Give a whole number of dollars.`,
     answer: Math.round(convNet),
     check: () => 9000 * ((3.49 * 0.6 - 0.74) - 0.3 * (3.49 * 0.68 - 0.74)) - 4000,
     unit: '$', places: 0, tol: 40,
@@ -701,10 +684,10 @@ export const items = [
     prompt: `Suppose (fictional) Corner Cup closes its cafés and leaves the market, and the other brands stay where they are on Lantern’s map. The table gives the distance from each segment’s ideal point to each brand. Which segment would then be least closely served by its nearest brand, and would that be an opening for Lantern?`,
     data: { table: { head: ['Brand', ...ORDER.map((g) => NAMES[g])], rows: BRANDS.map((b, k) => [b, ...ORDER.map((g) => fx(MD[g][k]))]), align: ['l', 'r', 'r', 'r', 'r', 'r'] } },
     options: [
-      `${NAMES[leastServed.g]}, ${fx(leastServed.d)} from ${BRANDS[leastServed.b]}; not an opening: Lantern is ${fx(MD[leastServed.g][0])} away, far behind two rivals`,
-      `${NAMES[VR]}, ${fx(nearestLeft[VR].d)} from ${BRANDS[nearestLeft[VR].b]}; not an opening for Lantern, which fits that segment worst of all`,
-      `Explorers, ${fx(nearestLeft[EX].d)} from ${BRANDS[nearestLeft[EX].b]}; an opening for Lantern, which becomes the Explorers’ second-nearest brand`,
-      `Craft and local, ${fx(MD[CL][BRANDS.indexOf('Arcadia Coffee')])} from Arcadia Coffee; an opening Lantern should claim before Arcadia moves closer`,
+      `${NAMES[leastServed.g]}, ${fx(leastServed.d)} from ${BRANDS[leastServed.b]}; not an opening: Lantern is ${fx(MD[leastServed.g][0])} away, far behind ${BRANDS[leastServed.b]} and ${BRANDS[secondFor(leastServed.g).k]}`,
+      `${NAMES[VR]}, ${fx(nearestLeft[VR].d)} from ${BRANDS[nearestLeft[VR].b]}; not an opening for Lantern, which fits that segment the worst of all five`,
+      `Explorers, ${fx(nearestLeft[EX].d)} from ${BRANDS[nearestLeft[EX].b]}; an opening for Lantern, which would become the Explorers’ second-nearest brand`,
+      `Craft and local, ${fx(MD[CL][BRANDS.indexOf('Arcadia Coffee')])} from Arcadia Coffee; an opening that Lantern should claim before Arcadia moves closer to them`,
     ],
     answer: 0,
     feedback: {
@@ -726,14 +709,14 @@ export const items = [
       { value: r2(runD[1]), say: `That is the distance to the ${RUN.segs[1].toLowerCase()}’ ideal. The ${RUN.segs[runNear].toLowerCase()}’ ideal is nearer.` },
       { value: r2(runD[runNear] ** 2), say: 'That is the squared distance. Take the square root.' },
     ],
-    solution: `Average ideal: (${RUN.size.map((s, g) => `${s} × ${m1(RUN.ideal[g][0])}`).join(' + ')}, ${RUN.size.map((s, g) => `${s} × ${m1(RUN.ideal[g][1])}`).join(' + ')}) = (${fx(runAll[0], 3)}, ${fx(runAll[1], 3)}). Distances: ${RUN.segs.map((s, g) => `${s.toLowerCase()} ${fx(runD[g])}`).join(', ')}. The nearest, the ${RUN.segs[runNear].toLowerCase()}, are ${fx(runD[runNear])} away: a brand placed at the average buyer’s ideal sits far from every segment’s. Positioning for the average is positioning for nobody in particular, which is the case for segmenting in the first place.`,
+    solution: `Average ideal: (${RUN.size.map((s, g) => `${s} × ${m1(RUN.ideal[g][0])}`).join(' + ')}, ${RUN.size.map((s, g) => `${s} × ${m1(RUN.ideal[g][1])}`).join(' + ')}) = (${fx(runAll[0], 3)}, ${fx(runAll[1], 3)}). Distances: ${RUN.segs.map((s, g) => `${s.toLowerCase()} ${fx(runD[g])}`).join(', ')}. The nearest, the ${RUN.segs[runNear].toLowerCase()}, are ${fx(runD[runNear])} away: a brand placed at the average buyer’s ideal sits far from every segment’s. The average of three groups’ ideals is an ideal none of the groups holds, so a positioning is chosen for a segment, not for the average buyer.`,
   },
   {
     id: 'm05-fn-20', lesson: 'positioning-statements', type: 'classify', kind: 'conceptual',
     prompt: 'Keller, Sternthal and Tybout describe three ways to handle two benefits that customers think can’t go together. Which does each fictional brand use?',
     items: [
       'A low-calorie ice lolly spends two years convincing buyers it tastes as good as full-sugar lollies, and only then starts to talk about calories.',
-      'A discount furniture chain, seen as cheap, has a well-known designer create its new range.',
+      'A discount luggage maker, seen as cheap, has a well-known designer create its new range of suitcases.',
       'A language app argues that the easiest lessons are the most effective, because learners who enjoy them keep practising every day.',
       'An e-bike maker first builds a name for the most powerful e-bikes, then adds light, easy models sold on that reputation.',
       'A watch brand known for low prices sponsors a famous round-the-world sailing race.',
@@ -743,7 +726,7 @@ export const items = [
     answer: [0, 1, 2, 0, 1, 2],
     feedback: {
       0: 'Taste first, calories later: one benefit is established before the second is added, as Miller Lite did with “great taste” and then “less filling”.',
-      1: 'The designer lends credibility to style that a cheap chain couldn’t claim on its own: leveraging an endorser.',
+      1: 'The designer lends credibility to style that a cheap brand couldn’t claim on its own: leveraging an endorser.',
       2: 'Easy and effective are presented as going together, not as a trade-off: reframing them as complements.',
       3: 'Power first, ease later, on the strength of the first reputation: sequencing.',
       4: 'An association with precision and endurance borrowed from the race, to counter doubts that a cheap watch is well made: leveraging.',
@@ -765,20 +748,20 @@ export const items = [
   },
   {
     id: 'm05-fn-22', lesson: 'differentiation-and-repositioning', type: 'mc', kind: 'applied',
-    prompt: `On a fictional perceptual map of five opticians chains, built from six attributes, the two dimensions carry ${pc(OPT.share, 0)} of the variance, and chains P and Q sit almost on top of each other. The arrow for “stores nearby” is short, with loadings of ${fx(OPT.l1)} and ${fx(OPT.l2)}. Customers rate P ${fx(OPT.P, 1)} and Q ${fx(OPT.Q, 1)} on stores nearby, and for P’s target segment, older customers with long-term prescriptions, stores nearby has a needs index of ${OPT.index}. Seeing P and Q together on the map, P’s team plans to lead instead with “the friendliest app”, rated ${fx(OPT.appP, 1)} for P and ${fx(OPT.appQ, 1)} for Q. What should P do?`,
+    prompt: `On a fictional perceptual map of five tyre-fitting chains, built from six attributes, the two dimensions carry ${pc(OPT.share, 0)} of the variance, and chains P and Q sit almost on top of each other. The arrow for “branches nearby” is short, with loadings of ${fx(OPT.l1)} and ${fx(OPT.l2)}. Customers rate P ${fx(OPT.P, 1)} and Q ${fx(OPT.Q, 1)} on branches nearby, and for P’s target segment, small-business van drivers, branches nearby has a needs index of ${OPT.index}. Seeing P and Q together on the map, P’s team plans to lead instead with “the easiest booking app”, rated ${fx(OPT.appP, 1)} for P and ${fx(OPT.appQ, 1)} for Q. What should P do?`,
     options: [
-      'Lead with stores nearby: the map hides most of that gap, and it matters to the target, is far ahead of Q and is costly to copy',
-      'Lead with the app: P and Q look alike on the map, so P needs a new feature to set itself apart from Q',
-      'Drop stores nearby: its short arrow shows that customers care little about where their optician is',
-      'Lead with both: the more differences a positioning claims, the more customers it will persuade',
+      'Lead with branches nearby: the map hides that difference, which matters to the target, is large and costly to copy',
+      'Lead with the app: P and Q look alike on the map, so P needs a newer feature to set itself clearly apart from Q',
+      'Drop branches nearby: its short arrow shows that the chains’ customers care little about where their tyre fitter is',
+      'Lead with both: each extra difference a positioning claims gives the target customers one more reason to choose P',
     ],
     answer: 0,
     feedback: {
       1: `The app fails distinctive: ${fx(OPT.appP, 1)} against ${fx(OPT.appQ, 1)} is no lead at all, and any rival could copy an app.`,
-      2: 'An arrow’s length shows how well the map represents an attribute, not how much customers care about it. The target’s index of 142 says it matters a lot.',
+      2: `An arrow’s length shows how well the map represents an attribute, not how much customers care about it. The target’s index of ${OPT.index} says it matters a lot.`,
       3: 'A positioning leads with the difference that best passes the criteria; piling on claims blurs it, and the app adds nothing distinctive.',
     },
-    solution: `Stores nearby has a communality of ${fx(OPT.l1)}² + ${fx(OPT.l2)}² = ${fx(optH2, 4)}: the map shows only about ${pc(optH2, 0)} of how the chains differ on it, so P and Q look alike on the map while the means show a ${fx(OPT.P - OPT.Q, 1)}-point gap. Against Kotler and Armstrong’s criteria, stores nearby is important (index ${OPT.index}), distinctive (${fx(OPT.P, 1)} against ${fx(OPT.Q, 1)}), communicable, and pre-emptive (a store network is slow and costly to copy), and P already has the stores. The app fails distinctive and pre-emptive. Check the table of means before concluding that two brands close on a map have nothing to tell them apart.`,
+    solution: `Branches nearby has a communality of ${fx(OPT.l1)}² + ${fx(OPT.l2)}² = ${fx(optH2, 4)}: the map shows only about ${pc(optH2, 0)} of how the chains differ on it, so P and Q look alike on the map while the means show a ${fx(OPT.P - OPT.Q, 1)}-point gap. Against Kotler and Armstrong’s criteria, branches nearby is important (index ${OPT.index}), distinctive (${fx(OPT.P, 1)} against ${fx(OPT.Q, 1)}), communicable, and pre-emptive (a branch network is slow and costly to copy), and P already has the branches. The app fails distinctive and pre-emptive. Check the table of means before concluding that two brands close on a map have nothing to tell them apart.`,
   },
   {
     id: 'm05-fn-23', lesson: 'differentiation-and-repositioning', type: 'steps', kind: 'numerical',
@@ -807,16 +790,16 @@ export const items = [
         id: 'm05-fn-23-s2', type: 'mc',
         prompt: 'What would the planned rise do to the aquarium’s place in each segment’s choice?',
         options: [
-          'Make it the families’ nearest option, but end its place as the couples’ nearest',
-          'Make it the nearest option for families and couples alike, so nobody is lost',
-          'Make it the school groups’ nearest option, ahead of the city farm',
-          'Nothing that can be read now, because the rivals would move on the map as well',
+          'Make it the families’ nearest option, but put the art gallery nearer than it to the couples',
+          'Make it the nearest option for families and couples, since the move brings it closer to both',
+          'Make it the school groups’ nearest option, ahead of the city farm, and keep the couples',
+          'Leave the families’ choice as it is, since the science centre stays nearer to them',
         ],
         answer: 0,
         feedback: {
-          1: 'The move takes the aquarium away from the couples’ ideal: after it, the art gallery would be nearer to them.',
-          2: 'The school groups’ ideal stays far away; the city farm remains much nearer.',
-          3: 'With the axes fixed, the plan can be read against today’s rivals; whether rivals respond is a risk to weigh, not a reason to skip the check.',
+          1: `The move takes the aquarium away from the couples’ ideal, from ${fx(aqD0[1])} to ${fx(aqD1[1])}, and the art gallery, at ${fx(AQ.rival[1])}, would then be nearer to them.`,
+          2: `The school groups’ ideal stays far away: ${fx(aqD1[2])} after the move, against the city farm’s ${fx(AQ.rival[2])}.`,
+          3: `After the move the aquarium would be ${fx(aqD1[0])} from the families’ ideal, nearer than the science centre’s ${fx(AQ.rival[0])}.`,
         },
         solution: `Today the aquarium is the couples’ nearest option (${sgn(aqGap0[1])} against the art gallery). After the planned rise it would beat the science centre for families (${sgn(aqGap1[0])}) but fall behind the art gallery for couples (${sgn(aqGap1[1])}), and stay far behind the city farm for school groups. A move towards one segment is a move away from another: the plan should count what the couples are worth, and ratings would move only if visitors experienced the new activities.`,
       },
@@ -827,7 +810,7 @@ export const items = [
     id: 'm05-fn-24', lesson: 'differentiation-and-repositioning', type: 'mc', kind: 'applied',
     prompt: 'A fictional craft gin distillery is known for small-batch gins sold in its tasting room and in specialist shops. It is determined to win the large “party” segment, who buy litre bottles of cheap vodka in supermarkets and whose ideal point sits on the far side of the market’s perceptual map from the distillery. Which plan puts least of what it already has at risk?',
     options: [
-      'Launch a vodka under a new name for the party buyers, and leave the distillery’s own brand as it is',
+      'Launch a vodka under a new name for the party buyers, sold in supermarkets, and leave the distillery’s brand as it is',
       'Reposition the distillery’s main brand towards cheap litre bottles, since the party segment is much larger than its current one',
       'Cut the price of its gins to vodka levels in supermarkets, which moves the distillery towards the party ideal on the map',
       'Claim in its advertising that its craft gins are ideal for parties, which repositions the brand without changing the product',
