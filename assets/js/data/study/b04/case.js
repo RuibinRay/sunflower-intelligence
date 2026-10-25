@@ -13,13 +13,13 @@
 // Agrees with other courses (checked in IDENTITIES): b03's 231 spring orders ($9,096.15) and 76 catering events
 // ($62,320); b01's monthly visits and orders, the September survey (79 replies, 61 would recommend) and the 3.0%
 // conversion target; b03's courier cost of $5.20 a parcel.
-import { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, PRODUCTS, SHOP_MODEL, tableCells, DERIVED as B03 } from '../b03/case.js?v=12';
-import { SHOP, SURVEY, MONTHS, TARGETS } from '../b01/case.js?v=12';
+import { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, PRODUCTS, SHOP_MODEL, tableCells, DERIVED as B03 } from '../b03/case.js?v=13';
+import { SHOP, SURVEY, MONTHS, TARGETS } from '../b01/case.js?v=13';
 import {
   KG_BAGS, SETUP_MINUTES, LATTE_PRE, LATTE_POST, SWIFTLINE_DAYS, PARCELBIRD_DAYS, WORKSHOP_IN_PERSON, WORKSHOP_ONLINE, WORKSHOP_HYBRID,
-} from './data.js?v=12';
-import * as I from '../../../core/inference.js?v=12';
-import { mean, sd, variance, median, quantile, skewness, kurtosis } from '../../../core/stats.js?v=12';
+} from './data.js?v=13';
+import * as I from '../../../core/inference.js?v=13';
+import { mean, sd, variance, median, quantile, skewness, kurtosis } from '../../../core/stats.js?v=13';
 
 export { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, PRODUCTS, tableCells, SHOP, SURVEY, MONTHS, TARGETS };
 export { KG_BAGS, SETUP_MINUTES, LATTE_PRE, LATTE_POST };
@@ -86,7 +86,7 @@ export const CONVERSION = {
 /** The 16 November – 18 December 2026 courier trial: each order went with Swiftline (Lantern's courier, B03's $5.20 a
  *  parcel) or Parcelbird, chosen at random, and Ana tracked a random sample of the parcels (about a fifth of the shop's
  *  orders in those weeks): business days to delivery. Late = more than 3 days. planningSD: the pooled SD of delivery
- *  times (0.928), rounded for the power calculation; parcelsPerMonth: Ana's planning figure for 2027. */
+ *  times (0.934, as the ToolPak's equal-variance test pools it), rounded for the power calculation; parcelsPerMonth: Ana's planning figure for 2027. */
 export const COURIER_TRIAL = {
   swiftline: { name: 'Swiftline', days: SWIFTLINE_DAYS, price: SHOP_MODEL.courier },
   parcelbird: { name: 'Parcelbird', days: PARCELBIRD_DAYS, price: 5.65 },
@@ -164,7 +164,7 @@ export const DERIVED = {
       welch: I.tTest2(swift, pbird), pooled: I.tTest2(swift, pbird, { equalVar: true }),
       lateTest: I.propTest2(late(swift), swift.length, late(pbird), pbird.length),
       extraCostPerParcel: r2(COURIER_TRIAL.parcelbird.price - COURIER_TRIAL.swiftline.price),
-      pooledSD: Math.sqrt((variance(swift) + variance(pbird)) / 2),
+      pooledSD: Math.sqrt(((swift.length - 1) * variance(swift) + (pbird.length - 1) * variance(pbird)) / (swift.length + pbird.length - 2)),
       powerHalfDay: I.powerMean({ delta: 0.5, sigma: COURIER_TRIAL.planningSD, n: 60, twoSample: true }),
       nForQuarterDay: I.sampleSizeForPower({ delta: 0.25, sigma: COURIER_TRIAL.planningSD, twoSample: true }),
       lateMonthly: [swift, pbird].map((xs) => (COURIER_TRIAL.parcelsPerMonth * late(xs)) / xs.length),

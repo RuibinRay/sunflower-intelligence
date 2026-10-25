@@ -4,10 +4,10 @@
 // SUBSCRIPTION_FLAGS for a proportion; REGION_SUBSCRIPTION for a stratified sample; B01's monthly AOV (SHOP) for the
 // applied example. Simulated figures use a seeded generator (core/rng.js), so the checks reproduce them exactly.
 // Confidence intervals are the next lesson's; tests are Module 3's. Every figure printed is recomputed in `checks`.
-import { ORDER_VALUES, SUBSCRIPTION_FLAGS, REGION_SUBSCRIPTION, SHOP, SURVEY, DERIVED as D } from './case.js?v=12';
-import * as I from '../../../core/inference.js?v=12';
-import { mean, sd, skewness } from '../../../core/stats.js?v=12';
-import { mulberry32 } from '../../../core/rng.js?v=12';
+import { ORDER_VALUES, SUBSCRIPTION_FLAGS, REGION_SUBSCRIPTION, SHOP, SURVEY, DERIVED as D } from './case.js?v=13';
+import * as I from '../../../core/inference.js?v=13';
+import { mean, sd, skewness } from '../../../core/stats.js?v=13';
+import { mulberry32 } from '../../../core/rng.js?v=13';
 
 // ---------------------------------------------------------------- the population and its parameters
 const N = ORDER_VALUES.length, MU = D.orders.mean, SIGMA = D.orders.sdPop;   // the 231 orders as the population: STDEV.P

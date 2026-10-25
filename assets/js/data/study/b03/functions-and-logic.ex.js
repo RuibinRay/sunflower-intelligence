@@ -1,7 +1,7 @@
 // functions-and-logic.ex.js — B03 · Functions, logic, text and dates: widgets, practice and the knowledge check (answer
 // keys live here). Lantern's orders come from case.js; the discount-audit typo is fictional and labelled. Formula items
 // are marked by their results on the sheet and on three copies with the numbers (and dates) changed.
-import { ORDERS, ORDER_COLUMNS, tableCells } from './case.js?v=12';
+import { ORDERS, ORDER_COLUMNS, tableCells } from './case.js?v=13';
 
 const MONEY = '$#,##0.00';
 const pick = (idx, cols) => {

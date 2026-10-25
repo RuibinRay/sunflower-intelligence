@@ -4,10 +4,10 @@
 // Every figure comes from case.js (COURIER_TRIAL, EMAIL_TEST, WORKSHOP_SCORES, SUBSCRIBER_SURVEY, SURVEY_PLAN, DERIVED
 // .project); each `check` recomputes its answer from the raw data, and `verify` compares the figures shown with SciPy-
 // checked engine results and the spreadsheet engine's Excel functions.
-import { COURIER_TRIAL, EMAIL_TEST, MAILING_LIST, WORKSHOP_SCORES, SUBSCRIBER_SURVEY, SURVEY_PLAN, DERIVED as D } from './case.js?v=12';
-import * as I from '../../../core/inference.js?v=12';
-import { mean, sd, variance } from '../../../core/stats.js?v=12';
-import { Sheet } from '../../../core/sheet.js?v=12';
+import { COURIER_TRIAL, EMAIL_TEST, MAILING_LIST, WORKSHOP_SCORES, SUBSCRIBER_SURVEY, SURVEY_PLAN, DERIVED as D } from './case.js?v=13';
+import * as I from '../../../core/inference.js?v=13';
+import { mean, sd, variance } from '../../../core/stats.js?v=13';
+import { Sheet } from '../../../core/sheet.js?v=13';
 
 const num = (id, prompt, answer, check, solution, wrong, { unit = '', places = 2, tol = 0.005, kind = 'numerical' } = {}) =>
   ({ id, type: 'num', kind, unit, places, prompt, answer, check, tol, solution, ...(wrong ? { wrong } : {}) });
@@ -65,9 +65,10 @@ const pair = (i, j) => I.tTest2(WV[i], WV[j]);
 const sds = WV.map((x) => sd(x)), means = WV.map(mean);
 const col = (c, xs) => Object.fromEntries(xs.map((x, i) => [`${c}${i + 2}`, x]));
 const wEnd = WV.map((x) => x.length + 1), wLast = Math.max(...wEnd);
-const workshopCells = { A1: WN[0], B1: WN[1], C1: WN[2], ...col('A', WV[0]), ...col('B', WV[1]), ...col('C', WV[2]), E2: 'η² (format)', E4: 'Welch p: online v hybrid' };
+const workshopCells = { A1: WN[0], B1: WN[1], C1: WN[2], ...col('A', WV[0]), ...col('B', WV[1]), ...col('C', WV[2]), E2: 'F (format)', E4: 'Welch p: online v hybrid' };
 const within = `DEVSQ(A2:A${wEnd[0]})+DEVSQ(B2:B${wEnd[1]})+DEVSQ(C2:C${wEnd[2]})`;
 const ETA2 = `=1-(${within})/DEVSQ(A2:C${wLast})`;
+const F_ONE = `=((DEVSQ(A2:C${wLast})-(${within}))/(3-1))/((${within})/(COUNT(A2:C${wLast})-3))`;
 const FOLLOW = `=T.TEST(B2:B${wEnd[1]},C2:C${wEnd[2]},2,3)`;
 // Holm's step-down adjustment of the three pairwise p-values, quoted beside Tukey's HSD (statsmodels: 0.048 for in person v online)
 const pairPs = [pair(0, 1).p, pair(0, 2).p, pair(1, 2).p];
@@ -183,7 +184,7 @@ export default {
             num('b04-pj-7-1', 'Swiftline', r(lateMonthSW, 1), () => (PARCELS * lateSW) / SW.length, '', [{ value: r((lateSW / SW.length) * 100, 1), say: 'That is the late share as a percentage. Multiply the share by the 450 parcels a month.' }], { unit: 'parcels', places: 1, tol: 0.06 }),
             num('b04-pj-7-2', 'Parcelbird', r(lateMonthPB, 1), () => (PARCELS * latePB) / PB.length, '', null, { unit: 'parcels', places: 1, tol: 0.06 }),
           ],
-          solution: `${PARCELS} × ${lateSW}/${SW.length} = ${f(lateMonthSW, 1)} and ${PARCELS} × ${latePB}/${PB.length} = ${f(lateMonthPB, 1)}: about ${Math.round(lateMonthSW - lateMonthPB)} fewer late parcels a month with Parcelbird, for $${f(extraMonthly)} more. These are estimates from small counts (Parcelbird’s rests on ${latePB} late parcels), so the true gap could be well above or below ${Math.round(lateMonthSW - lateMonthPB)}.` },
+          solution: `${PARCELS} × ${lateSW}/${SW.length} = ${f(lateMonthSW, 1)} and ${PARCELS} × ${latePB}/${PB.length} = ${f(lateMonthPB, 1)}: about ${Math.round(lateMonthSW - lateMonthPB)} fewer late parcels a month with Parcelbird, for $${f(extraMonthly)} more. These are estimates from small counts (Parcelbird’s rests on ${latePB} late parcels), so the true gap could be well above or below ${Math.round(lateMonthSW - lateMonthPB)}: the 95% interval for the difference in late rates (unpooled) runs from ${f(lateTest.low * 100, 1)} to ${f(lateTest.high * 100, 1)} points, or about ${Math.round(lateTest.low * PARCELS)} to ${Math.round(lateTest.high * PARCELS)} fewer late parcels a month.` },
         { id: 'b04-pj-8', type: 'steps', kind: 'numerical',
           prompt: `Was the trial big enough? Treat the SD of delivery times as ${SIGMA} days for both couriers (the pooled SD, ${f(C.pooledSD, 3)}, rounded) and use the normal approximation for a two-sided test at α = 0.05. For two groups of n with the same σ, the standard error of the difference is √(σ²/n + σ²/n) = σ√(2/n), so the n per group for a given power is 2 × ((z₀.₉₇₅ + z₀.₈₀) × σ ÷ δ)². The trial had ${SW.length} and ${PB.length} parcels; use 60 for each.`,
           steps: [
@@ -212,6 +213,8 @@ export default {
             { formula: '=D2*B5/D5', say: 'Right in B8, but filled across and down the references move: the column total must keep its row (B$5), the row total its column ($D2) and the grand total both ($D$5).' },
             { formula: '=B2', say: 'That copies the observed count. The expected count is what independence would predict: row total × column total ÷ grand total.' },
             { formula: '=$D$5/6', say: 'That spreads the grand total equally over six cells. Clicks are far rarer than non-clicks: use row total × column total ÷ grand total.' },
+            { formula: '=$D$2*B$5/$D$5', say: 'With $D$2 every row uses line A’s total. They are all 1,500 here, but lock only the column ($D2) so each row uses its own total.' },
+            { formula: '=B$5/3', say: 'That works only because every line went to 1,500 people. Row total × column total ÷ grand total holds whatever the group sizes.' },
           ],
           solution: `<x>${EXPECTED}</x> filled to C10. Each line went to ${N.toLocaleString('en-US')} people and ${clicks} clicked in all, so each expected click count is ${N.toLocaleString('en-US')} × ${clicks} ÷ ${(3 * N).toLocaleString('en-US')} = ${f(emailChi.expected[0][0], 2)}; every expected count is well above 5.` },
         { id: 'b04-pj-10', type: 'steps', kind: 'applied',
@@ -225,6 +228,7 @@ export default {
                 { formula: '=SUMPRODUCT((B2:C4-B8:C10)^2/B2:C4)', say: 'That divides by the observed counts. Each term divides by its expected count E.' },
                 { formula: '=SUMPRODUCT((B2:C4-B8:C10)/B8:C10)', say: 'Without squaring, the positive and negative deviations cancel. Square each O − E first.' },
                 { formula: '=SUMPRODUCT((B2:C4-B8:C10)^2)', say: 'Each squared deviation must be divided by its own expected count before adding.' },
+                { formula: '=SUMPRODUCT((B2:B4-B8:B10)^2/B8:B10)', say: 'That adds only the clicked column. χ² adds over all six cells, including those who didn’t click.' },
               ],
               solution: `<x>${CHI_STAT}</x> = ${f(emailChi.stat, 3)}. SUMPRODUCT works through the six cells: (O − E)² ÷ E for each, then the sum.` },
             { id: 'b04-pj-10-2', type: 'formula',
@@ -262,14 +266,15 @@ export default {
       tool: { kind: 'widget', widget: { type: 'toolpak', title: 'Workshop satisfaction (0–10) by format, 2026', tool: 'anova', groups: WN.map((n, i) => ({ name: n, values: WV[i] })), alpha: 0.05 } },
       items: [
         { id: 'b04-pj-12', type: 'formula', kind: 'applied',
-          prompt: `In F2, calculate η², the share of the variation in scores that format accounts for (SS between ÷ SS total), from the scores themselves rather than the ToolPak’s output, so that it would update if a score were corrected.`,
+          prompt: `In F2, calculate the F statistic for format in one formula from the scores themselves, rather than reading it from the ToolPak’s output, so that it would update if a score were corrected.`,
           sheet: { cells: workshopCells }, cell: 'F2', view: `A1:F${wLast}`, maxHeight: '20rem', widths: { A: 10, B: 9, C: 9, E: 22, F: 9 }, formats: { F2: '0.000' },
-          answer: ETA2, alt: [`=(DEVSQ(A2:C${wLast})-(${within}))/DEVSQ(A2:C${wLast})`],
+          answer: F_ONE, alt: [`=((DEVSQ(A2:C${wLast})-(${within}))/2)/((${within})/(COUNT(A2:A${wEnd[0]})+COUNT(B2:B${wEnd[1]})+COUNT(C2:C${wEnd[2]})-3))`],
           wrong: [
-            { formula: `=(DEVSQ(A2:C${wLast})-(${within}))/(${within})`, say: 'That divides SS between by SS within. η² divides SS between by SS total.' },
-            { formula: `=(${within})/DEVSQ(A2:C${wLast})`, say: 'That is SS within ÷ SS total, the share format doesn’t account for. η² is 1 minus it.' },
+            { formula: `=(DEVSQ(A2:C${wLast})-(${within}))/(${within})`, say: 'That divides the sums of squares. F divides the mean squares: each sum of squares ÷ its degrees of freedom (k − 1 = 2 between, N − k = 52 within).' },
+            { formula: `=((DEVSQ(A2:C${wLast})-(${within}))/(3-1))/((${within})/(COUNT(A2:C${wLast})-1))`, say: 'N − 1 is the total degrees of freedom. Within groups they are N − k: 55 − 3 = 52.' },
+            { formula: `=((${within})/(COUNT(A2:C${wLast})-3))/((DEVSQ(A2:C${wLast})-(${within}))/(3-1))`, say: 'That is upside down. F puts the between-groups mean square on top.' },
           ],
-          solution: `SS total is <x>=DEVSQ(A2:C${wLast})</x> (DEVSQ skips the empty cells), SS within is the sum of each format’s DEVSQ, and SS between is the difference: <x>${ETA2}</x> = ${f(aov.eta2, 3)}. Format goes with about a sixth of the variation in scores; most of it is between people within a format. The ToolPak’s table agrees: ${f(aov.ssb, 3)} ÷ ${f(aov.sst, 3)}.` },
+          solution: `SS total is <x>=DEVSQ(A2:C${wLast})</x> = ${f(aov.sst, 3)} (DEVSQ skips the empty cells), SS within is the sum of each format’s DEVSQ, ${f(aov.ssw, 3)}, and SS between is the difference, ${f(aov.ssb, 3)}. With k − 1 = ${aov.dfb} and N − k = ${aov.dfw} degrees of freedom, F = (${f(aov.ssb, 3)} ÷ ${aov.dfb}) ÷ (${f(aov.ssw, 3)} ÷ ${aov.dfw}) = ${f(aov.F, 3)}, as the ToolPak shows. The same sums of squares give the effect size: η² = ${f(aov.ssb, 3)} ÷ ${f(aov.sst, 3)} = ${f(aov.eta2, 3)}, so format goes with about a sixth of the variation in scores.` },
         { id: 'b04-pj-13', type: 'multi', kind: 'conceptual',
           prompt: 'Select every statement that is true of this ANOVA.',
           options: [
@@ -284,7 +289,7 @@ export default {
             1: 'F tests whether all the means are equal. A significant F says at least one differs; follow-up comparisons say which.',
             4: 'Three tests at 5% each give about a 14% chance of at least one false positive if the tests were independent (at most 15%). That is why ANOVA, or adjusted follow-ups, are used.',
           },
-          solution: `The variances are close enough, the scores are independent and roughly normal, and the result is significant (F = ${f(aov.F, 2)} on ${aov.dfb} and ${aov.dfw} df, p = ${aov.p.toFixed(4)}). Welch’s ANOVA (p ≈ ${W.welch.p.toFixed(3)}) and Kruskal–Wallis (p ≈ ${W.kw.p.toFixed(3)}), which relax the equal-variance and normality conditions, agree, so the conclusion doesn’t hang on them. But a significant F only says the means are not all equal, and because people chose their format (online participants may differ in experience or motivation), the difference can’t be put down to the format alone.` },
+          solution: `The variances are close enough, the scores are independent and roughly normal, and the result is significant (F = ${f(aov.F, 2)} on ${aov.dfb} and ${aov.dfw} df, p = ${aov.p.toFixed(4)}). Format accounts for η² = ${pct(aov.eta2)} of the variation; most of it is between people within a format. Welch’s ANOVA (p ≈ ${W.welch.p.toFixed(3)}) and Kruskal–Wallis (p ≈ ${W.kw.p.toFixed(3)}), which relax the equal-variance and normality conditions, agree, so the conclusion doesn’t hang on them. But a significant F only says the means are not all equal, and because people chose their format (online participants may differ in experience or motivation), the difference can’t be put down to the format alone.` },
         { id: 'b04-pj-14', type: 'formula', kind: 'applied',
           prompt: 'Ana follows up the ANOVA with Welch’s t test for each pair of formats. In F4, return the two-tailed p-value of Welch’s test comparing the online scores with the hybrid ones, using T.TEST.',
           sheet: { cells: workshopCells }, cell: 'F4', view: `A1:F${wLast}`, maxHeight: '20rem', widths: { A: 10, B: 9, C: 9, E: 22, F: 9 }, formats: { F4: '0.0000' },
@@ -301,7 +306,7 @@ export default {
           categories: ['Significant at the Bonferroni level', 'Not significant at the Bonferroni level'],
           answer: WN.flatMap((a, i) => WN.slice(i + 1).map((b) => (pair(i, WN.indexOf(b)).p < 0.05 / 3 ? 0 : 1))),
           feedback: { 0: `p = ${pair(0, 1).p.toFixed(3)} is below 0.05 but above 0.0167, the Bonferroni level for three comparisons.` },
-          solution: `Only online against hybrid (p = ${pair(1, 2).p.toFixed(4)}) clears 0.0167. In person against online (p = ${pair(0, 1).p.toFixed(4)}) would pass at 0.05 on its own, but not once the three comparisons are allowed for; in person against hybrid (p = ${pair(0, 2).p.toFixed(4)}) gives no evidence of a difference (means ${f(means[0], 2)} and ${f(means[2], 2)}). Bonferroni is conservative: Tukey’s HSD, run in statistical software, gives an adjusted p ≈ 0.048 for in person against online, and Holm’s method ${holm[0].toFixed(3)}, so that pair is borderline rather than clearly no different. The evidence points to online workshops scoring lower than hybrid ones, and probably lower than in-person ones.` },
+          solution: `Only online against hybrid (p = ${pair(1, 2).p.toFixed(4)}) clears 0.0167. In person against online (p = ${pair(0, 1).p.toFixed(4)}) would pass at 0.05 on its own, but not once the three comparisons are allowed for; in person against hybrid (p = ${pair(0, 2).p.toFixed(4)}) gives no evidence of a difference (means ${f(means[0], 2)} and ${f(means[2], 2)}). Bonferroni is conservative: Tukey’s HSD, run in statistical software, gives an adjusted p ≈ 0.048 for in person against online, and Holm’s method (Bonferroni step by step: the smallest p against 0.05 ÷ 3, the next against 0.05 ÷ 2, the last against 0.05) gives ${holm[0].toFixed(3)}, so that pair is borderline rather than clearly no different. The evidence points to online workshops scoring lower than hybrid ones, and probably lower than in-person ones.` },
       ],
     },
     {
@@ -342,7 +347,7 @@ export default {
     },
     {
       id: 'plan', title: 'Plan the 2027 customer survey',
-      html: `<p>Ana wants to estimate a proportion (for example, the share of customers who would recommend Lantern) to within ±${SURVEY_PLAN.margin * 100} percentage points at ${SURVEY_PLAN.conf * 100}% confidence. She will invite people from the mailing list (about ${MAILING_LIST.toLocaleString('en-US')}), and from past surveys she expects about ${SURVEY_PLAN.responseRate * 100}% of those invited to reply.</p>`,
+      html: `<p>Ana wants to estimate a proportion among the people on her mailing list (for example, the share who would recommend Lantern to a friend) to within ±${SURVEY_PLAN.margin * 100} percentage points at ${SURVEY_PLAN.conf * 100}% confidence. She will invite people from the mailing list (about ${MAILING_LIST.toLocaleString('en-US')}), and from past surveys she expects about ${SURVEY_PLAN.responseRate * 100}% of those invited to reply.</p>`,
       tool: { kind: 'widget', widget: { type: 'curve', title: 'The standard normal distribution: the 95% critical value', dist: 'normal', params: { mean: 0, sd: 1 }, asks: ['inverse', 'outside'], prob: 0.975, a: 1.96, xLabel: 'z' } },
       items: [
         num('b04-pj-19', 'How many completed replies does she need? Use p = 0.5 and round up.', nPlan, () => Math.ceil((I.normInv(0.975) ** 2 * 0.25) / 0.04 ** 2 - 1e-9),
@@ -350,7 +355,7 @@ export default {
           [{ value: Math.ceil((1.645 ** 2 * 0.25) / 0.0016), say: 'That uses 1.645, the critical value for 90% confidence. 95% needs 1.96.' }, { value: Math.ceil((1.96 * 0.5) / 0.04), say: 'Square the whole ratio: n = (z/E)² × p(1 − p).' }],
           { unit: 'replies', places: 0, tol: 0.5 }),
         num('b04-pj-20', 'How many people on the mailing list should she invite? Round up.', invite, () => Math.ceil(nPlan / SURVEY_PLAN.responseRate - 1e-9),
-          `${nPlan} ÷ ${SURVEY_PLAN.responseRate} = ${f(nPlan / SURVEY_PLAN.responseRate, 1)}, so ${invite.toLocaleString('en-US')} invitations, about a third of the list. This buys precision, not representativeness: the 70% who don’t reply may differ from those who do.`,
+          `${nPlan} ÷ ${SURVEY_PLAN.responseRate} = ${f(nPlan / SURVEY_PLAN.responseRate, 1)}, so ${invite.toLocaleString('en-US')} invitations, about a third of the list. This buys precision, not representativeness: the 70% who don’t reply may differ from those who do. The list includes people who have never bought from Lantern; for a question about customers only, she would screen the others out, and the sample size would then apply to customers’ replies.`,
           [{ value: Math.ceil(nPlan * SURVEY_PLAN.responseRate), say: `That multiplies by the response rate. To end up with ${nPlan} replies when 30% reply, divide by 0.3.` }],
           { unit: 'people', places: 0, tol: 0.5, kind: 'applied' }),
         { id: 'b04-pj-21', type: 'mc', kind: 'conceptual',
@@ -368,7 +373,7 @@ export default {
         { id: 'b04-pj-22', type: 'short', kind: 'applied',
           prompt: 'Write Ana a memo of 250–350 words with a recommendation on each of the four questions (courier, subject lines, workshop formats, fortnightly deliveries) and the survey plan. For each, give the key figure with its uncertainty (an interval or a p-value), say whether the difference is large enough to matter, and name one thing the evidence can’t show. For the courier, say what each kind of mistake would cost.',
           rubric: [
-            `Courier: the speed-up with its interval (about 0.10 to 0.76 days) and test; the cost (about $200 a month); what each mistake would cost (paying about $${Math.round(extraMonthly * 12).toLocaleString('en-US')} a year for nothing if Parcelbird is no faster, against about ${Math.round(lateMonthSW - lateMonthPB)} more late parcels a month if it is faster and Ana stays); a recommendation that weighs them; notes the trial’s power, the small number of late parcels and that the trial ran in the Christmas peak.`,
+            `Courier: the speed-up with its interval (about 0.10 to 0.76 days) and test; the cost (about $200 a month); what each mistake would cost (paying about $${Math.round(extraMonthly * 12).toLocaleString('en-US')} a year for nothing if Parcelbird is no faster, against slower parcels and, at the trial’s late rates, about ${Math.round(lateMonthSW - lateMonthPB)} more late parcels a month if Parcelbird really is better and Ana stays); a recommendation that weighs them; notes the trial’s power, the small number of late parcels and that the trial ran in the Christmas peak.`,
             'Email: no clear evidence the subject lines differ in click-through (p ≈ 0.21); doesn’t crown line B on a post-hoc comparison; notes that clicks are not orders; suggests a larger test if the choice matters.',
             'Workshops: a significant ANOVA (p ≈ 0.008, η² ≈ 17%), confirmed by Welch’s ANOVA or Kruskal–Wallis, with follow-ups showing online below hybrid (and probably below in person), and the self-selection caveat (it doesn’t show the format causes the scores).',
             'Survey: the interval for fortnightly delivery (about 54.5% to 65.4% of respondents) with the non-response bounds (36.0% to 76.0% of all subscribers), and a decision the bounds support (an option, not a new default); the 2027 plan of 601 replies and about 2,004 invitations.',
@@ -388,7 +393,7 @@ export default {
   verify() {
     const sh = new Sheet({ cells: { ...courierCells, E1: COURIER_TRIAL.lateAfter, E2: LATE_SHARE, D2: `=T.TEST(A2:A${swEnd},B2:B${pbEnd},2,3)`, D3: `=T.TEST(A2:A${swEnd},B2:B${pbEnd},2,2)` } });
     const em = new Sheet({ cells: { ...emailCells, ...expectedCells, B12: CHI_STAT, B13: '=CHISQ.DIST.RT(B12,2)', B14: '=CHISQ.TEST(B2:C4,B8:C10)' } });
-    const wk = new Sheet({ cells: { ...workshopCells, F2: ETA2, F4: FOLLOW } });
+    const wk = new Sheet({ cells: { ...workshopCells, F2: F_ONE, F3: ETA2, F4: FOLLOW } });
     const vBelow = (x) => (typeof x === 'number' ? x : NaN);
     return [
       ['Welch p (T.TEST type 3)', sh.get('D2'), welch.p, 1e-9], ['pooled p (T.TEST type 2)', sh.get('D3'), pooled.p, 1e-9], ['Welch p = case', welch.p, C.welch.p, 1e-12],
@@ -396,10 +401,10 @@ export default {
       ['late share (COUNTIF)', vBelow(sh.get('E2')), lateSW / SW.length, 1e-12], ['late share', lateSW / SW.length, 0.2031, 0.00005],
       ['late p', lateTest.pValue, 0.0326, 0.00005], ['late counts', lateSW * 100 + latePB, 1304], ['Fisher exact p (SciPy 0.0383)', fisherP, 0.0383, 0.00005], ['Yates p (SciPy 0.0608)', yatesP, 0.0608, 0.00005],
       ['expected late under H0', lateTest.pool * SW.length, 8.92, 0.005], ['extra a month', extraMonthly, 202.5], ['late a month, Swiftline', lateMonthSW, 91.41, 0.005], ['late a month, Parcelbird', lateMonthPB, 31.03, 0.005],
-      ['power, half a day', powerHalf, 0.838, 0.0005], ['parcels for a quarter day', nQuarter, 218], ['pooled SD', C.pooledSD, 0.928, 0.0005],
+      ['power, half a day', powerHalf, 0.838, 0.0005], ['parcels for a quarter day', nQuarter, 218], ['pooled SD (ToolPak pooled variance 0.8728)', C.pooledSD, 0.934, 0.0005], ['pooled variance', C.pooledSD ** 2, pooled.se ** 2 / (1 / SW.length + 1 / PB.length), 1e-9],
       ['email χ² (SUMPRODUCT)', em.get('B12'), emailChi.stat, 1e-9], ['email χ²', emailChi.stat, 3.157, 0.0005], ['email p (CHISQ.DIST.RT)', em.get('B13'), emailChi.p, 1e-9], ['email p (CHISQ.TEST)', em.get('B14'), emailChi.p, 1e-9],
       ['email p', emailChi.p, 0.2063, 0.00005], ['B vs A p', bVsA.pValue, 0.0823, 0.00005], ['expected clicks per line', emailChi.expected[0][0], 48.67, 0.005], ['power for a 1-point gap', gapPower, 0.34, 0.01],
-      ['workshop F', aov.F, 5.31, 0.005], ['workshop p', aov.p, 0.0080, 0.00005], ['η² (DEVSQ)', wk.get('F2'), aov.eta2, 1e-12], ['η²', aov.eta2, 0.1696, 0.00005], ['F = case', aov.F, W.anova.F, 1e-12],
+      ['workshop F', aov.F, 5.31, 0.005], ['workshop p', aov.p, 0.0080, 0.00005], ['F in one formula', wk.get('F2'), aov.F, 1e-9], ['η² (DEVSQ)', wk.get('F3'), aov.eta2, 1e-12], ['late-rate interval (points)', r(lateTest.low * 100, 1) * 1000 + r(lateTest.high * 100, 1), 1600 + 25.2, 1e-9], ['η²', aov.eta2, 0.1696, 0.00005], ['F = case', aov.F, W.anova.F, 1e-12],
       ['Welch ANOVA p (statsmodels 0.0167)', W.welch.p, 0.0167, 0.00005], ['Kruskal–Wallis p (SciPy 0.0135)', W.kw.p, 0.0135, 0.00005],
       ['in person v online p', pair(0, 1).p, 0.0190, 0.00005], ['in person v hybrid p', pair(0, 2).p, 0.4599, 0.00005], ['online v hybrid p', pair(1, 2).p, 0.0062, 0.00005], ['online v hybrid (T.TEST)', wk.get('F4'), pair(1, 2).p, 1e-9],
       ['Holm in person v online (statsmodels 0.0379)', holm[0], 0.0379, 0.00005], ['means in person, hybrid', r(means[0], 2) * 100 + r(means[2], 2), 822 + 8.53, 1e-9],

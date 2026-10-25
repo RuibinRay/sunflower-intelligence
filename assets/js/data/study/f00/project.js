@@ -1,6 +1,6 @@
 // project.js — F00 applied project: where Ana Lim should keep her $6,000 emergency fund for the next two years.
 // Every fact comes from case.js (ANA, SAVINGS_CHOICES); every number is recomputed below and by `verify`.
-import { ANA, SAVINGS_CHOICES as S, PROJECT_RESULTS as R } from './case.js?v=12';
+import { ANA, SAVINGS_CHOICES as S, PROJECT_RESULTS as R } from './case.js?v=13';
 
 const P = ANA.emergencyFund;                       // 6,000
 const cd = S.cd.rate / 100, sav = S.savings.rate / 100, inf = S.inflation / 100;

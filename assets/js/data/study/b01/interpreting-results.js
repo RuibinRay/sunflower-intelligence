@@ -3,7 +3,7 @@
 // dates of the checkout redesign (1 September) and the payment-page fix (5 October). The September diagnosis itself
 // (web against app conversion, August against September) is left to the project: the worked diagnosis uses a fictional
 // shop, Alderbank Outdoor, with the same structure and different numbers. Every other business and figure is fictional.
-import { SHOP as S, DERIVED as D, SURVEY } from './case.js?v=12';
+import { SHOP as S, DERIVED as D, SURVEY } from './case.js?v=13';
 
 const AUG = 1, SEP = 2;
 const fallPct = (D.orders[AUG] - D.orders[SEP]) / D.orders[AUG] * 100;         // 20.6
