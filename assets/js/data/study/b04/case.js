@@ -13,13 +13,13 @@
 // Agrees with other courses (checked in IDENTITIES): b03's 231 spring orders ($9,096.15) and 76 catering events
 // ($62,320); b01's monthly visits and orders, the September survey (79 replies, 61 would recommend) and the 3.0%
 // conversion target; b03's courier cost of $5.20 a parcel.
-import { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, PRODUCTS, SHOP_MODEL, tableCells, DERIVED as B03 } from '../b03/case.js?v=14';
-import { SHOP, SURVEY, MONTHS, TARGETS } from '../b01/case.js?v=14';
+import { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, PRODUCTS, SHOP_MODEL, tableCells, DERIVED as B03 } from '../b03/case.js?v=15';
+import { SHOP, SURVEY, MONTHS, TARGETS } from '../b01/case.js?v=15';
 import {
   KG_BAGS, SETUP_MINUTES, LATTE_PRE, LATTE_POST, SWIFTLINE_DAYS, PARCELBIRD_DAYS, WORKSHOP_IN_PERSON, WORKSHOP_ONLINE, WORKSHOP_HYBRID,
-} from './data.js?v=14';
-import * as I from '../../../core/inference.js?v=14';
-import { mean, sd, variance, median, quantile, skewness, kurtosis } from '../../../core/stats.js?v=14';
+} from './data.js?v=15';
+import * as I from '../../../core/inference.js?v=15';
+import { mean, sd, variance, median, quantile, skewness, kurtosis } from '../../../core/stats.js?v=15';
 
 export { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, PRODUCTS, tableCells, SHOP, SURVEY, MONTHS, TARGETS };
 export { KG_BAGS, SETUP_MINUTES, LATTE_PRE, LATTE_POST };

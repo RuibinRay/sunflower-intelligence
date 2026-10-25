@@ -28,10 +28,10 @@
 // comes from the project’s scenario, data or angles. No hints; solutions are shown on review. Every num item’s `check`
 // recomputes its answer, every figure a prompt states is computed below from its inputs, and every formula item is
 // marked by its results on the sheet and on changed copies.
-import { RESPONDENTS, DERIVED, BRANDS, NEEDS } from './case.js?v=14';
-import { CHANNELS, DEFAULT_PLAN, TIERS, CATEGORY } from '../m02/market.js?v=14';
-import { weightedScore } from '../../../core/percmap.js?v=14';
-import { fSf, chi2Sf } from '../../../core/inference.js?v=14';
+import { RESPONDENTS, DERIVED, BRANDS, NEEDS } from './case.js?v=15';
+import { CHANNELS, DEFAULT_PLAN, TIERS, CATEGORY } from '../m02/market.js?v=15';
+import { weightedScore } from '../../../core/percmap.js?v=15';
+import { fSf, chi2Sf } from '../../../core/inference.js?v=15';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const usd = (v, d = 0) => `${v < 0 ? '−' : ''}$${fx(Math.abs(v), d)}`;
@@ -81,7 +81,7 @@ const d3OutHi = 1 - d3Hi, d3OutCafe = 1 - d3HiCafe;
 const d3PerHi = (D3.allHi - D3.clHi) / D3.clHi, d3PerCafe = (D3.allHiCafe - D3.clHiCafe) / D3.clHiCafe;
 const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
 // a pizza-delivery firm (fictional): neighbourhood types, penetration and a test leaflet drop
-const PIZ = { types: ['Suburban owners', 'New-estate families', 'City-centre flats', 'Student areas'], hh: [14000, 11000, 8000, 5000], cust: [1232, 297, 456, 330], test: [3.1, 9.4, 5.2, 2.8], drop: 20000, perType: 2000 };
+const PIZ = { types: ['Suburban owners', 'New-estate families', 'City-centre flats', 'Student areas'], hh: [14000, 11000, 8000, 5000], cust: [1232, 297, 456, 330], test: [3.0, 9.5, 5.5, 2.5], drop: 20000, perType: 2000 };
 const pizPen = PIZ.hh.map((h, i) => (PIZ.cust[i] / h) * 1000);
 const plan = (order) => { let left = PIZ.drop, won = 0; for (const i of order) { const n = Math.min(left, PIZ.hh[i]); won += (n * PIZ.test[i]) / 1000; left -= n; } return won; };
 const byTest = PIZ.types.map((_, i) => i).sort((a, b) => PIZ.test[b] - PIZ.test[a]);
@@ -357,7 +357,7 @@ export const items = [
       'Which weeks of the year to make extra gift boxes',
       'Whether to advertise in hiking magazines or in home-baking magazines, given how its buyers like to spend their weekends',
       'Whether to lead its range with low-sugar chocolate or with intense 85% dark bars',
-      'Which wholesale accounts get a volume discount, judged by how much they order a month',
+      'Which wholesale accounts get a volume discount',
       'Which customers to thank for buying from no other chocolate maker for three years',
       'What to tell people who have heard of the brand but don’t yet know what it makes',
     ],
@@ -497,7 +497,7 @@ export const items = [
       ['Chi-square: home region', `χ² = ${fx(PARK.region.chi, 1)}`, String(parkRegion.df), pFmt(parkRegion.p), fx(parkRegion.v)],
     ], align: ['l', 'r', 'r', 'r', 'r'] } },
     options: [
-      `Party type is linked to segment, weakly (V = ${fx(parkParty.v)}); region shows no clear link; the thrill-rides test is circular`,
+      `Party type is linked to segment, modestly (V = ${fx(parkParty.v)}); region shows no clear link; the thrill-rides test is circular`,
       'All three support the segments, the thrill-rides ANOVA most strongly, as its statistic is far the largest of the three',
       'Region shows no clear link, so the segments fail the accessible test and should be re-formed with region added',
       `Party type accounts for ${fx(parkParty.v * 100, 0)}% of the differences between the segments, so each segment is mostly one type of party`,
@@ -506,9 +506,9 @@ export const items = [
     feedback: {
       1: 'k-means chose the segments to make the needs’ means differ, so the thrill-rides F is large by construction and its p-value means nothing. Only the descriptors, which didn’t form the segments, give fair tests.',
       2: 'One descriptor without a link isn’t a failure: party type and other descriptors can still help reach the segments, and re-forming needs segments on a descriptor would change what they mean.',
-      3: `Cramér’s V is not a share of anything: ${fx(parkParty.v)} is a weak association, so most segments will mix party types. Percentage the cross-tab within each segment to see how far.`,
+      3: `Cramér’s V is not a share of anything: ${fx(parkParty.v)} is a modest association, so most segments will mix party types. Percentage the cross-tab within each segment to see how far.`,
     },
-    solution: `The segments were formed on the seven needs, so a test of any of them across the segments is circular: k-means made those means differ. Tests on descriptors are fair. Party type: χ² = ${fx(PARK.party.chi, 1)} with ${parkParty.df} degrees of freedom, p ${pFmt(parkParty.p)}, and Cramér’s V = √(${fx(PARK.party.chi, 1)} ÷ (${int(PARK.n)} × ${Math.min(PARK.k, PARK.party.levels) - 1})) = ${fx(parkParty.v)}, a weak association. Home region: χ² = ${fx(PARK.region.chi, 1)} with ${parkRegion.df} degrees of freedom, p = ${fx(parkRegion.p, 2)}: no clear link. Report party type as shares within each segment, a descriptor that helps reach them, and region as not differing detectably.`,
+    solution: `The segments were formed on the seven needs, so a test of any of them across the segments is circular: k-means made those means differ. Tests on descriptors are fair. Party type: χ² = ${fx(PARK.party.chi, 1)} with ${parkParty.df} degrees of freedom, p ${pFmt(parkParty.p)}, and Cramér’s V = √(${fx(PARK.party.chi, 1)} ÷ (${int(PARK.n)} × ${Math.min(PARK.k, PARK.party.levels) - 1})) = ${fx(parkParty.v)}, a real but modest association, far from one party type per segment. Home region: χ² = ${fx(PARK.region.chi, 1)} with ${parkRegion.df} degrees of freedom, p = ${fx(parkRegion.p, 2)}: no clear link. Report party type as shares within each segment, a descriptor that helps reach them, and region as not differing detectably.`,
   },
   {
     id: 'm05-fn-11', lesson: 'profiling-segments', type: 'formula', kind: 'numerical',
@@ -536,7 +536,7 @@ export const items = [
     options: [
       'Only card holders were asked, so households that don’t shop with the retailer are missing from the base.',
       `The ${int(HOME.replies)} who replied may be keener decorators than the card holders who didn’t, which could inflate the segment.`,
-      'Comparing the respondents’ recorded spend with all card holders’ spend would show how far the replies lean.',
+      'Comparing the respondents’ recorded spend with all card holders’ spend would show whether the replies lean towards bigger spenders.',
       'The segment’s profile is more usable than its size until the size has been checked against other evidence.',
       `A margin of ±${fx(homeMoe * 100, 1)} points (1.96 × √(${fx(HOME.share)} × ${fx(1 - HOME.share)} ÷ ${int(HOME.replies)})) gives the range in which the region’s share lies.`,
       `Weighting the replies to the card holders’ age and gender mix would make ${pc(HOME.share, 0)} a fair estimate of the region’s share.`,
@@ -575,7 +575,7 @@ export const items = [
         id: 'm05-fn-13-s2', type: 'mc',
         prompt: 'Which judgement does the choice between the two segments depend on most?',
         options: [
-          `The weight on room: a rise of about ${fx(carDelta[3], 1)}, to ${fx(CAR.w[3] + carDelta[3], 1)}, would tie them, so check the map behind room before deciding`,
+          `The weight on room: a rise of about ${fx(carDelta[3], 1)}, to ${fx(CAR.w[3] + carDelta[3], 1)}, would tie them, so check the map behind room`,
           'The weight on growth: holidaymakers lead on growth, so growth is the factor that decides the order',
           'The weight on fit: fit has the largest gap between the two segments, so fit is what decides the result',
           `The weight on size: business travellers lead on it by ${CAR.A[0] - CAR.B[0]} points, so size is what settles the final order`,
@@ -628,7 +628,7 @@ export const items = [
         prompt: `For comparison, Craft and local’s centre is ${fx(dCLEX)} from Explorers’ and ${fx(dCLOG)} from On the go’s; the two segments’ indexes are in the table. Lantern is a small firm launching its first canned product, and ${pc(AWARE)} of the study’s respondents know it. Should the launch also serve Mindful, and how?`,
         data: { table: { head: ['Need', 'Craft and local', 'Mindful'], rows: NEEDS.map((n, j) => [n.label, String(S.index[CL][j]), String(S.index[MI][j])]), align: ['l', 'r', 'r'] } },
         options: [
-          'Not at launch: keep the one craft can for its two neighbouring segments, and leave a low-sugar Mindful can for later',
+          'Not at launch: keep one craft can for the two neighbouring segments, and leave a low-sugar Mindful can for later',
           'Yes, with a separate low-sugar can for Mindful launched beside the craft can, both sold under the Lantern name',
           'Yes, with the same craft can for Mindful too, since after Explorers it is the segment nearest to Craft and local',
           'Yes, with offers tailored to each Mindful drinker from what they have bought in Lantern’s cafés and online shop',
@@ -650,9 +650,9 @@ export const items = [
     options: [
       `Open the card with the needs: scenic routes (${RAIL.scenic}) and a comfortable seat (${RAIL.seat}) above average, low fares (${RAIL.fares}) below.`,
       'Leave the quote off until a member of the segment has been interviewed, and then quote their own words.',
-      'Put the survey’s date on the card, and rebuild the card from the new profile when the segmentation is re-run.',
+      'Put the survey’s date on the card, since needs change, and rebuild it from the new profile when the segmentation is re-run.',
       'Make one card for the day-trippers and the weekend families together, since both segments travel mostly at weekends.',
-      'Write a quote in the persona’s voice that sums up what the data say, since no passenger has been interviewed yet.',
+      'Write a quote in the persona’s voice that sums up what the data say, to stand in until passengers are interviewed.',
       `Open the card with its age line, “${pc(RAIL.age / RAIL.n, 0)} aged 25 to 44”, since age is the line the agency buys its media against.`,
     ],
     answer: [0, 1, 2],

@@ -1,7 +1,7 @@
 // Lesson: options, Black–Scholes–Merton, put–call parity and the Greeks.
 // `checks` recompute every number printed in the worked example; tests/lessons.test.mjs compares them.
-import * as F from '../../core/format.js?v=14';
-import { blackScholes } from '../../core/fin.js?v=14';
+import * as F from '../../core/format.js?v=15';
+import { blackScholes } from '../../core/fin.js?v=15';
 
 const EX = { S: 50, K: 52, T: 0.5, r: 0.04, sigma: 0.3 };
 

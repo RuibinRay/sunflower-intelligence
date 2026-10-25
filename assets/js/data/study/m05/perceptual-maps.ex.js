@@ -1,9 +1,9 @@
 // perceptual-maps.ex.js — M05 · Perceptual maps: widgets, practice and the knowledge check (answer keys live here).
 // Lantern's map, ideal points and bases come from case.js (DERIVED.map, segments from module 2). The broadband
 // providers, cinema chains, ice-cream maker and hotel brands are fictional. Every num item's `check` recomputes its answer.
-import { BRANDS, NEEDS, RESPONDENTS, DERIVED as D } from './case.js?v=14';
-import { perceptualMap, distance } from '../../../core/percmap.js?v=14';
-import { tInv } from '../../../core/inference.js?v=14';
+import { BRANDS, NEEDS, RESPONDENTS, DERIVED as D } from './case.js?v=15';
+import { perceptualMap, distance } from '../../../core/percmap.js?v=15';
+import { tInv } from '../../../core/inference.js?v=15';
 
 const M = D.map.brandMeans, SC = D.map.scores, SEG = D.segments.names, IDEAL = D.map.ideal.segments;
 const B = (name) => BRANDS.indexOf(name), S = (name) => SEG.indexOf(name), A = (key) => NEEDS.findIndex((n) => n.key === key);

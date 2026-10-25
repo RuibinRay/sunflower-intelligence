@@ -392,7 +392,7 @@ const ALL = [
     related: [{ plate: 'markets' }, { tool: 'marketing/map/', label: 'Market map' }],
   }),
   C({
-    id: 'm05', school: 'marketing', code: 'M05', level: 'intermediate', status: 'in-progress', requires: ['m01', 'b04'], recommends: ['m04', 'b02'],
+    id: 'm05', school: 'marketing', code: 'M05', level: 'intermediate', status: 'reviewed', requires: ['m01', 'b04'], recommends: ['m04', 'b02'],
     title: 'Market Segmentation and Positioning',
     blurb: 'Segment, target and position: find groups of customers who want different things, choose the ones to serve, and decide how to stand out to them, with data rather than hunches.',
     case: 'lantern',

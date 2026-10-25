@@ -5,10 +5,10 @@
 //   { type: 'power', title, sigma, delta, n, alpha: 0.05, alternative: 'two-sided' | 'greater' | 'less',
 //     twoSample: false, vary: ['n', 'delta', 'sigma', 'alpha'], units: 'g', null: 250 (the null value, for labels),
 //     xLabel, note }
-import { h, onResize } from '../../core/dom.js?v=14';
-import { xl } from '../xl.js?v=14';
-import * as I from '../../core/inference.js?v=14';
-import { makeDist, drawDist, fmtX, numberField, segmented } from '../dist-draw.js?v=14';
+import { h, onResize } from '../../core/dom.js?v=15';
+import { xl } from '../xl.js?v=15';
+import * as I from '../../core/inference.js?v=15';
+import { makeDist, drawDist, fmtX, numberField, segmented } from '../dist-draw.js?v=15';
 
 export function mount(el, cfg, ctx) {
   const base = `pw-${ctx.id}`;

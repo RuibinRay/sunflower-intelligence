@@ -2,9 +2,9 @@
 // check (answer keys live here). Lantern's map and ideal points come from case.js (DERIVED.map; segments from module 2).
 // The second survey wave, the hotel map and the other businesses are fictional. Every num item's `check` recomputes its
 // answer.
-import { BRANDS, NEEDS, COMPETITORS, DERIVED as D } from './case.js?v=14';
-import { perceptualMap, distance } from '../../../core/percmap.js?v=14';
-import { TIERS } from '../m02/market.js?v=14';
+import { BRANDS, NEEDS, COMPETITORS, DERIVED as D } from './case.js?v=15';
+import { perceptualMap, distance } from '../../../core/percmap.js?v=15';
+import { TIERS } from '../m02/market.js?v=15';
 
 const M = D.map.brandMeans, MAP = perceptualMap(M), SEG = D.segments.names;
 const B = (name) => BRANDS.indexOf(name), S = (name) => SEG.indexOf(name), A = (key) => NEEDS.findIndex((n) => n.key === key);

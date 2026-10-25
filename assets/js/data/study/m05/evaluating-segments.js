@@ -2,10 +2,10 @@
 // Lantern's five segments come from case.js (DERIVED.segments: sizes, spend per head, crosstabs; DERIVED.targeting.fit
 // and growth; DERIVED.map: nearest rivals and distances). Ana's weights (4, 4, 2, 2, 4) are this lesson's own fictional
 // choice. Cobbleford Cycles and Sorrelbank Software are fictional. Every printed figure is recomputed in `checks`.
-import { DERIVED as D, STUDY, BRANDS, LANTERN_STRENGTHS, MARGIN, NEEDS } from './case.js?v=14';
-import { weightedScore, perceptualMap, idealDistances } from '../../../core/percmap.js?v=14';
-import { targetScores, needsFit } from '../../../core/market.js?v=14';
-import { CHANNELS } from '../m02/market.js?v=14';
+import { DERIVED as D, STUDY, BRANDS, LANTERN_STRENGTHS, MARGIN, NEEDS } from './case.js?v=15';
+import { weightedScore, perceptualMap, idealDistances } from '../../../core/percmap.js?v=15';
+import { targetScores, needsFit } from '../../../core/market.js?v=15';
+import { CHANNELS } from '../m02/market.js?v=15';
 
 // ---------------------------------------------------------------- the five segments, as module 2 left them
 const S = D.segments, NAMES = S.names, K = NAMES.length;

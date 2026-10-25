@@ -23,8 +23,8 @@
 // lesson exercises, module tests, the final or the project, and nothing from the project’s scenario or data. No hints;
 // solutions are shown on review. Every num item’s `check` recomputes its answer, and every figure a prompt states is
 // computed below from its inputs (Lantern’s persona figures from case.js).
-import { RESPONDENTS, DERIVED, LEVELS } from './case.js?v=14';
-import { fSf } from '../../../core/inference.js?v=14';
+import { RESPONDENTS, DERIVED, LEVELS } from './case.js?v=15';
+import { fSf } from '../../../core/inference.js?v=15';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const int = (v) => Math.round(v).toLocaleString('en-US');
@@ -188,7 +188,7 @@ export const items = [
     ],
     answer: 0,
     feedback: {
-      1: `A need that every customer rates highly can’t tell the segments apart: ${DELI.needs[byMean[0]].toLowerCase()} matters to all ${WORDS[DELI.k]} segments alike (F ${fx(DELI.F[byMean[0]], 1)}). Golden questions must separate the segments.`,
+      1: `A need that every customer rates highly can’t tell the segments apart: ${DELI.needs[byMean[0]].toLowerCase()} matters to all ${WORDS[DELI.k]} segments about equally (F ${fx(DELI.F[byMean[0]], 1)}). Golden questions must separate the segments.`,
       2: `A wide spread among all customers can sit inside every segment: the importance of ${DELI.needs[bySd[0]].toLowerCase()} varies most (standard deviation ${fx(DELI.sd[bySd[0]], 1)}) but separates the segments little (F ${fx(DELI.F[bySd[0]], 1)}). F compares the spread between the segments with the spread within them.`,
       3: 'k-means formed the segments to differ on these needs, so the p-values are circular and say nothing. The F statistics still rank which needs separate the segments most.',
     },
@@ -228,9 +228,9 @@ export const items = [
     id: 'm05-dg-9', lesson: 'targeting-strategies', type: 'mc', kind: 'applied',
     prompt: `A fictional craft-supplies shop drafts a persona for its ${CRAFT.n}-member “gift makers” segment by taking the most common answer on each of five lines: ${CRAFT.lines.map(([l, s]) => `${l} (${pc(s, 0)} of the segment)`).join(', ')}. What can it say about how many members match the persona on all five lines, and what should the card do about it?`,
     options: [
-      `Few, at most ${pc(craftMin, 0)}: write each line as the share of the segment it describes, and keep the segment’s size on the card`,
-      `Few, at most ${pc(craftMin, 0)}: so add details such as a job, hobbies and a home, until the card describes one believable member`,
-      `Few, at most ${pc(craftMin, 0)}: so build the card around a member who matches all five lines, interviewed at length`,
+      `Few, at most ${pc(craftMin, 0)}: give each line as a share of the segment, and keep the segment’s size on the card`,
+      `Few, at most ${pc(craftMin, 0)}: add details such as a job, hobbies and a home, until the card describes one believable member`,
+      `Few, at most ${pc(craftMin, 0)}: build the card around a member who matches all five lines, interviewed at length`,
       'Most of them, since each line is the segment’s most common answer, so the card can show one member with an exact age',
     ],
     answer: 0,

@@ -3,7 +3,7 @@
 // Items practise this lesson’s own skills (classifying and measuring differences, restating between frameworks, IFRS 18,
 // ASU 2024-03, leases); the single rules are practised in Modules 1–3. Businesses here (Wildfern Tea, Brindley Lodge,
 // Orrin Kitchenware, Ravensworth Outdoor, Pemberly Software, Aldgate Coffee, Fieldmark Robotics) are fictional.
-import { DERIVED as D } from './case.js?v=14';
+import { DERIVED as D } from './case.js?v=15';
 
 const n = (x) => Math.abs(x).toFixed(Math.abs(x - Math.round(x)) < 1e-9 ? 0 : 2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 const money = (x) => `${x < -1e-9 ? '−' : ''}$${n(Math.round(x * 100) / 100)}`;

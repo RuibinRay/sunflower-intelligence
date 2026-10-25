@@ -3,8 +3,8 @@
 // case.js: order value by region and month, the $1,512 office order LC-10144, weekly orders. New fictional facts,
 // labelled: Ana's draft chart with an axis starting at 45, and Pedalworks' parts sheet (applied example).
 // Every figure printed is recomputed in `checks`.
-import { ORDERS, ORDER_COLUMNS, PRODUCTS, DERIVED as D } from './case.js?v=14';
-import { PARTS } from './charts-and-conditional-formatting.ex.js?v=14';
+import { ORDERS, ORDER_COLUMNS, PRODUCTS, DERIVED as D } from './case.js?v=15';
+import { PARTS } from './charts-and-conditional-formatting.ex.js?v=15';
 
 const col = (n) => ORDERS.map((r) => r[ORDER_COLUMNS.indexOf(n)]);
 const sum = (a) => a.reduce((s, x) => s + x, 0);
