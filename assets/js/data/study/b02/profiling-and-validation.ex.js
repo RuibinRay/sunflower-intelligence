@@ -243,7 +243,7 @@ export const check = [
     prompt: 'Why should you profile a dataset before cleaning it?',
     options: [
       'To learn what the data contains, so that every change answers a known problem instead of a guess.',
-      'To make the dataset smaller before analysis, by finding the columns and rows that can be dropped.',
+      'To make the dataset smaller before analysis, by removing the rows and columns that fail its checks.',
       'Because profiling corrects the most common errors automatically, such as stray spaces, mixed case and mixed date formats.',
       'To produce the summary statistics that will be reported to managers.',
     ],

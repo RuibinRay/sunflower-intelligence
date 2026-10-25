@@ -338,9 +338,9 @@ export const check = [
     id: 'b02-sc-k4', type: 'mc', kind: 'conceptual',
     prompt: 'A report says that customer spend was “normalised” before clustering. What do you need to find out before relying on the numbers?',
     options: [
-      'Which method was meant (min–max, z-scores, unit-length rows or a shift towards normality) and which rows it was fitted on.',
+      'Which method was meant (min–max, z-scores, unit-length rows or a transformation towards normality) and what it was fitted on.',
       'Nothing: normalised data always lie between 0 and 1.',
-      'Whether the data now follow a normal distribution, since turning data into a normal distribution is what normalising means.',
+      'Whether the data now follow a normal distribution, since turning data into a normal distribution is what normalising always means.',
       'Only whether the outliers were removed first.',
     ],
     answer: 0,

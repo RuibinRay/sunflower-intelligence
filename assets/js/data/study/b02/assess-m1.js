@@ -111,13 +111,13 @@ export const items = [
   },
   {
     id: 'b02-m1-8', lesson: 'profiling-and-validation', type: 'rows', kind: 'applied',
-    prompt: 'A fictional bike-hire firm’s rentals file has one rule linking two columns: if <code>returned</code> is Yes, <code>end_time</code> must be filled in and later than <code>start_time</code>; if <code>returned</code> is No, <code>end_time</code> must be blank. Select every rental that breaks the rule. Rows are numbered from 0.',
+    prompt: 'A fictional bike-hire firm’s rentals file has one cross-field rule: if <code>returned</code> is Yes, <code>end_time</code> must be filled in and later than <code>start_time</code>; if <code>returned</code> is No, <code>end_time</code> must be blank. Select every rental that breaks the rule. Rows are numbered from 0.',
     data: { table: { index: 0,
       head: ['rental_id', 'start_time', 'end_time', 'returned'],
-      rows: HIRES.map((r) => [...r]),
+      rows: HIRES.map((r) => r.map((c) => c || '<i>blank</i>')),
     } },
     answer: HIRES.flatMap((r, i) => (hireBreaks(r) ? [i] : [])),
-    solution: `Check each row against the half of the rule its <code>returned</code> value selects. ${HIRES[1][0]} is marked returned but has no end time. ${HIRES[3][0]} ends at ${hireTime(3, 2)}, before its ${hireTime(3, 1)} start. ${HIRES[4][0]} is not returned yet has an end time, so one of the two columns is wrong. ${HIRES[5][0]} ends at the minute it started, which “later than” rules out: a bike docked straight back or a clock fault, to be checked. ${HIRES[6][0]} runs overnight and passes. The blank end times of ${HIRES[2][0]} and ${HIRES[7][0]} pass too, because the rule says when a blank is allowed: a cross-field rule has to be explicit about blanks.`,
+    solution: `Check each row against the half of the rule its <code>returned</code> value selects. ${HIRES[1][0]} is marked returned but has no end time, and ${HIRES[3][0]} ends at ${hireTime(3, 2)}, before its ${hireTime(3, 1)} start. ${HIRES[4][0]} is not returned yet has an end time, so one of the two columns is wrong. ${HIRES[5][0]} ends at the minute it started, which “later than” rules out: a bike docked straight back or a clock fault, to be checked. ${HIRES[6][0]} runs overnight and passes, and so do the blank end times of ${HIRES[2][0]} and ${HIRES[7][0]}, because the rule says when a blank is allowed: a cross-field rule has to be explicit about blanks.`,
   },
   {
     id: 'b02-m1-9', lesson: 'profiling-and-validation', type: 'mc', kind: 'applied',

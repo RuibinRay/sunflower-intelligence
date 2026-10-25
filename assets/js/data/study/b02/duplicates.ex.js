@@ -109,7 +109,7 @@ export const guided = [
     steps: [
       { id: 'b02-dup-g2-s1', type: 'mc',
         prompt: 'What kind of duplicate is this?',
-        options: ['A repeated key with conflicting values', 'An exact duplicate, one row copied into another', 'A near duplicate, like one customer typed two ways', 'Two genuine orders from the same customer'],
+        options: ['A repeated key with conflicting values', 'An exact duplicate, one row copied from another', 'A near duplicate, like one customer’s name typed two ways', 'Two genuine orders from the same customer'],
         answer: 0,
         hints: ['Compare the key column with the other columns.', 'Same <code>order_id</code>, different <code>order_total</code>.'],
         feedback: {
@@ -357,7 +357,7 @@ export const check = [
     answer: 0,
     feedback: {
       1: 'With keep=&#39;last&#39;, duplicated() marks every row of a repeated order except the last, so one row of each group is missing from the review.',
-      2: 'This deletes every row of every repeated order instead of showing them, so nothing is left to review.',
+      2: 'This returns only the orders that occur once: every row of every repeated order is dropped, the opposite of what you want to review.',
       3: 'This removes exact copies only, and doesn’t show you anything to review.',
     },
     solution: '<code>duplicated(subset=[&#39;order_id&#39;], keep=False)</code> marks every row whose order id occurs more than once, first occurrence included. Filtering the table with it shows each group in full, which is what you need before choosing a survivorship rule.',

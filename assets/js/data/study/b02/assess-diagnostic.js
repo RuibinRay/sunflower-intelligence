@@ -20,7 +20,7 @@ export const items = [
     feedback: {
       1: '1,482 distinct values in 1,500 rows means 18 rows share a booking_ref with another row: a return trip is one booking with two legs.',
       2: 'Passengers fly more than once, so passenger_id repeats (1,320 distinct values in 1,500 rows).',
-      3: 'A row number identifies a position in the file, not a passenger on a leg, so it can never reveal a duplicate.',
+      3: 'A row number identifies a position in the file, not a passenger on a leg: it changes whenever the file is sorted or filtered, and it can never reveal a duplicate.',
     },
     solution: 'A primary key must be unique and never blank. Compare each candidate’s distinct count with the row count: only booking_ref + leg has 1,500 distinct values in 1,500 rows, which matches the unit of observation (one leg of one booking). It works because each booking has one passenger; if bookings could hold several passengers, the key would need passenger_id as well.',
   },

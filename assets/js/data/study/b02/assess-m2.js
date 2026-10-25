@@ -39,7 +39,7 @@ export const items = [
       rows: TICKETS.map((r) => [...r]),
     } },
     answer: RESUBMITTED,
-    solution: `${TICKETS[1][0]} repeats ${TICKETS[0][0]}’s purchase (same customer, performance and tickets) ${gap(0, 1)} seconds later, and its payment was voided: one purchase submitted twice. ${TICKETS[7][0]} repeats ${TICKETS[5][0]}’s purchase ${gap(5, 7)} seconds later, and its charge was refunded, so it goes too. ${TICKETS[4][0]} is ${TICKETS[4][1]}’s second order for the same performance, but it was placed the next morning and paid separately: a genuine repeat, which stays. ${TICKETS[3][0]} and ${TICKETS[6][0]} came seconds after other orders, but from different customers. The order numbers prove nothing either way, because each press of “Pay” made one. ${TICKETS.length - RESUBMITTED.length} orders remain.`,
+    solution: `${TICKETS[1][0]} repeats ${TICKETS[0][0]}’s purchase (same customer, performance and tickets) ${gap(0, 1)} seconds later, and its payment was voided: one purchase submitted twice. ${TICKETS[7][0]} repeats ${TICKETS[5][0]}’s purchase ${gap(5, 7)} seconds later, and its charge was refunded, so it goes too. ${TICKETS[4][0]} is ${TICKETS[4][1]}’s second order for the same performance, but it was placed the next morning and paid separately: a genuine repeat, which stays. ${TICKETS[3][0]} and ${TICKETS[6][0]} came seconds after other orders, but from different customers. The order numbers prove nothing either way, because each press of “Pay” made one; ${TICKETS.length - RESUBMITTED.length} orders remain.`,
   },
   {
     id: 'b02-m2-2', lesson: 'duplicates', type: 'num', kind: 'numerical',

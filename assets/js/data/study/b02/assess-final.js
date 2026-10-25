@@ -168,7 +168,7 @@ export const items = [
     prompt: 'In a fictional extract of Northfield University’s records, weekly study_hours is blank for 30% of first-years but 8% of fourth-years, and among students who answered, fourth-years report more hours. Within each year, nothing recorded predicts who left it blank. How should the blanks be filled for an estimate of average study hours across all students?',
     options: [
       'Fill each blank with the mean of the student’s own year, and keep a missing-value indicator',
-      'Fill every blank with the overall mean of the observed hours, so that every student gets the same value',
+      'Fill every blank with the overall mean of the observed hours, which leaves the observed average unchanged',
       'Delete the students with blanks and average the rest, since within each year the blanks are random',
       'Fill every blank with 0, because a student who reported no hours can’t be assumed to have studied',
     ],
@@ -207,7 +207,7 @@ export const items = [
     options: [
       `No |z| among n values can exceed (n − 1) ÷ √n, about ${((10 - 1) / Math.sqrt(10)).toFixed(2)} here, and the extreme value inflates the SD`,
       'The z-score rule only flags values below the mean',
-      'z-scores are computed from the median and the MAD, which ignore the extreme value, so it can’t stand out from the rest',
+      'z-scores are computed from the median and the MAD, so they track the middle of the data rather than its extremes',
       'Ten values are too few to calculate a standard deviation, so the rule can’t return a z-score for any order',
     ],
     answer: 0,

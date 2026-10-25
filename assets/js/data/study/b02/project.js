@@ -216,8 +216,8 @@ export default {
       items: [
         {
           id: 'b02-pj-f1', type: 'rows', kind: 'applied',
-          prompt: 'These are the three order ids that appear twice with different values (raw row numbers in the first column; ␣ marks a space). The shop system confirms that LC-10042 was for 2 bags. Select the rows to remove. Rows are numbered from 0.',
-          data: { table: { index: 0,
+          prompt: 'These are the three order ids that appear twice with different values (their row numbers in the raw export are in the “raw row” column; ␣ marks a space). The shop system confirms that LC-10042 was for 2 bags. Select the rows to remove.',
+          data: { table: { index: { col: 0 },
             head: ['raw row', 'order_id', 'quantity', 'region', 'email', 'order_total'],
             rows: [
               ['43', 'LC-10042', '2', 'West', 'dana.mensah@example.net', '$28.00'],
@@ -229,7 +229,7 @@ export default {
             ],
           } },
           answer: [1, 2, 5],
-          solution: 'LC-10042: both copies are internally consistent (2 × $14 = $28, 3 × $14 = $42), so only the shop system can decide; it confirms 2 bags, so remove row 46. LC-10076: the copies differ only by a blank e-mail, so keep the most complete copy (row 80) and remove row 79. LC-10146: “north␣” becomes North after trimming and case, so the copies are identical; remove the later one, row 157. In the lab, “Remove repeated keys” with “Most complete” keeps exactly rows 43, 80 and 151 (ties go to the first copy); “First” would keep the incomplete row 79, and “Last” would keep the wrong quantity.',
+          solution: 'LC-10042: both copies are internally consistent (2 × $14 = $28, 3 × $14 = $42), so only the shop system can decide; it confirms 2 bags, so remove raw row 46. LC-10076: the copies differ only by a blank e-mail, so keep the most complete copy (raw row 80) and remove raw row 79. LC-10146: “north␣” becomes North after trimming and case, so the copies are identical; remove the later one, raw row 157. In the lab, “Remove repeated keys” with “Most complete” keeps exactly raw rows 43, 80 and 151 (ties go to the first copy); “First” would keep the incomplete raw row 79, and “Last” would keep the wrong quantity.',
         },
         {
           id: 'b02-pj-f2', type: 'mc', kind: 'applied',
@@ -275,7 +275,7 @@ export default {
           options: [
             'Read it with a decimal comma as $16.50, which matches the product’s list price and the order’s total, and record why',
             'Remove the comma and read it as $1,650',
-            'Set it to missing and flag the order, because a price the conversion couldn’t read can’t be trusted until the shop confirms it',
+            'Set it to missing, because a value that failed conversion is unknown, and reading the comma as a decimal point would be a guess',
             'Delete the order',
           ],
           answer: 0,

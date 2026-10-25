@@ -259,7 +259,7 @@ export const check = [
     answer: 0,
     feedback: {
       1: 'Missingness depends on customer type, but it might also depend on satisfaction within each type. That would make it MNAR, and the observed data can’t rule it out.',
-      2: 'Being less satisfied on average doesn’t make the gaps MNAR; MNAR means missingness depends on the missing values themselves. The data can’t establish that either way.',
+      2: 'Lower satisfaction among one-off buyers as a group would only make the gaps depend on customer type. MNAR means missingness depends on each missing rating itself, and the data alone can’t establish that either way.',
       3: 'MCAR means missingness is unrelated to any data. Here it clearly depends on customer type.',
     },
     solution: 'A difference in missingness between recorded groups rules out MCAR. Whether, within each group, missingness depends on the unseen ratings (MNAR) or not (MAR) can’t be tested from the observed data; it has to be judged from how the ratings are collected and explored with what-if analyses.',

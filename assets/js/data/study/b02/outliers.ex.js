@@ -260,9 +260,9 @@ export const check = [
     prompt: 'Lantern is forecasting next month’s demand for home-delivery boxes, which hold up to six bags. Its order data include several genuine office orders of 60 to 150 bags. What should the forecast do with them?',
     options: [
       'Flag them as business orders and forecast household and business demand separately.',
-      'Delete them, since they are outliers, and no home-delivery box could hold an order that size.',
+      'Delete them, since they are outliers and would distort any forecast they are part of.',
       'Winsorise them at the upper fence and forecast from all orders together, so that no order is dropped.',
-      'Keep them all in a single forecast of total demand, since every one of them is a real order.',
+      'Keep them all in one forecast together with the household orders, since every one of them is a real order.',
     ],
     answer: 0,
     feedback: {

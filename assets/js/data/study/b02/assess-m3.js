@@ -66,7 +66,7 @@ export const items = [
     ],
     answer: 0,
     feedback: {
-      1: 'Not necessarily; the point is to keep the test data unseen, not to get a better estimate.',
+      1: 'If anything, a median over all the rows rests on more data; the point is to keep the test data unseen, not to get a better estimate.',
       2: 'Under MCAR any random subset gives an unbiased median; the problem is leakage, not bias.',
       3: 'The test rows must be filled too, using the training value, exactly as new data will be.',
     },
@@ -74,7 +74,7 @@ export const items = [
   },
   {
     id: 'b02-m3-5', lesson: 'outliers', type: 'num', kind: 'numerical',
-    prompt: `Harborview’s housekeeping app (fictional) logs how many minutes each room took to clean. One morning’s ${CLEANS.length} rooms took ${listed(CLEANS)} minutes. A very short time can mean that a room was marked clean without being cleaned. Using quartiles by linear interpolation, what is the lower Tukey fence, below which a time is flagged? (2 decimal places)`,
+    prompt: `Harborview’s housekeeping app (fictional) logs how many minutes each room took to clean. One morning’s ten rooms took ${listed(CLEANS)} minutes. A very short time can mean that a room was marked clean without being cleaned. Using quartiles by linear interpolation, what is the lower Tukey fence, below which a time is flagged? (2 decimal places)`,
     answer: 16.88, check: () => q(CLEANS, 0.25) - 1.5 * (q(CLEANS, 0.75) - q(CLEANS, 0.25)), tol: 0.01, unit: 'minutes', places: 2,
     wrong: [
       { value: C_Q1 - C_IQR, say: 'You subtracted 1 × IQR from Q1. The fence is Q1 − 1.5 × IQR.' },
@@ -82,7 +82,7 @@ export const items = [
       { value: C_Q3 + 1.5 * C_IQR, say: `That is the upper fence, Q3 + 1.5 × IQR. A short cleaning time is a low value, so it is judged against the lower fence, Q1 − 1.5 × IQR.` },
       { value: C_HALF_Q1 - 1.5 * (C_HALF_Q3 - C_HALF_Q1), say: `You used the medians of the lower and upper halves (Q1 = ${num(C_HALF_Q1)}, Q3 = ${num(C_HALF_Q3)}), another common method. With linear interpolation Q1 is at position ${num(1 + (CLEANS.length - 1) * 0.25)}: ${num(C_Q1)}.` },
     ],
-    solution: `Sorted: ${listed(C_S)}. Positions are 1 + ${CLEANS.length - 1}p. Q1 at position ${num(1 + (CLEANS.length - 1) * 0.25)}: ${C_S[2]} + 0.25 × (${C_S[3]} − ${C_S[2]}) = ${num(C_Q1)}. Q3 at position ${num(1 + (CLEANS.length - 1) * 0.75)}: ${C_S[6]} + 0.75 × (${C_S[7]} − ${C_S[6]}) = ${num(C_Q3)}. IQR = ${num(C_IQR)}; lower fence = ${num(C_Q1)} − 1.5 × ${num(C_IQR)} = ${num(C_Q1 - 1.5 * C_IQR)} ≈ ${(C_Q1 - 1.5 * C_IQR).toFixed(2)} minutes. Only the ${C_S[0]}-minute room falls below it (the upper fence, ${num(C_Q3 + 1.5 * C_IQR)}, flags nothing). A flag starts a check of that room, not a correction: low values can be errors as well as high ones.`,
+    solution: `Sorted: ${listed(C_S)}, so positions are 1 + ${CLEANS.length - 1}p. Q1 at position ${num(1 + (CLEANS.length - 1) * 0.25)} is ${C_S[2]} + 0.25 × (${C_S[3]} − ${C_S[2]}) = ${num(C_Q1)}, and Q3 at position ${num(1 + (CLEANS.length - 1) * 0.75)} is ${C_S[6]} + 0.75 × (${C_S[7]} − ${C_S[6]}) = ${num(C_Q3)}. IQR = ${num(C_IQR)}; lower fence = ${num(C_Q1)} − 1.5 × ${num(C_IQR)} = ${num(C_Q1 - 1.5 * C_IQR)} ≈ ${(C_Q1 - 1.5 * C_IQR).toFixed(2)} minutes. Only the ${C_S[0]}-minute room falls below it (the upper fence, ${num(C_Q3 + 1.5 * C_IQR)}, flags nothing). A flag starts a check of that room, not a correction: low values can be errors as well as high ones.`,
   },
   {
     id: 'b02-m3-6', lesson: 'outliers', type: 'num', kind: 'numerical',
@@ -137,7 +137,7 @@ export const items = [
   },
   {
     id: 'b02-m3-10', lesson: 'skewed-data', type: 'num', kind: 'numerical',
-    prompt: `A fictional battery-storage installer reports first-year electricity savings of ${listed(SAVINGS, dollars)} for ${SAVINGS.length} home systems. By how many dollars does the geometric mean saving fall short of the arithmetic mean saving? (2 decimal places)`,
+    prompt: `A fictional battery-storage installer reports first-year electricity savings of ${listed(SAVINGS, dollars)} for five home systems. By how many dollars does the geometric mean saving fall short of the arithmetic mean saving? (2 decimal places)`,
     answer: 154, check: () => SAVINGS.reduce((s, v) => s + v, 0) / SAVINGS.length - SAVINGS.reduce((p, v) => p * v, 1) ** (1 / SAVINGS.length), tol: 0.01, unit: '$', places: 2,
     wrong: [
       { value: S_GM, say: 'That is the geometric mean itself. The question asks how far it falls below the arithmetic mean.' },

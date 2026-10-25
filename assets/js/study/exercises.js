@@ -56,7 +56,8 @@ function fmtAnswer(v, item) {
 const money = (v) => fmtNum(v, Math.abs(v - Math.round(v)) < 1e-9 ? 0 : 2);
 // `t.index` (0 or 1) adds a leading column numbering the rows from that base, for prompts and solutions that refer to
 // rows by number (B02 numbers rows from 0, as pandas does); `rowLabel` gives the same label everywhere else
-const rowLabel = (t, i) => String(i + (Number.isInteger(t?.index) ? t.index : 1));
+// `t.index: { col: 0 }` instead labels each row by its own cell in that column (a "raw row" or id column), adding nothing
+const rowLabel = (t, i) => (Number.isInteger(t?.index?.col) ? String(t.rows?.[i]?.[t.index.col] ?? i + 1).replace(/<[^>]+>/g, '') : String(i + (Number.isInteger(t?.index) ? t.index : 1)));
 function tableEl(t, { pick = false, name = '' } = {}) {
   const ix = Number.isInteger(t.index);
   const head = t.head ? h('thead', {}, h('tr', {}, pick ? h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, 'Select')) : null, ix ? h('th', { scope: 'col' }, 'row') : null, t.head.map((c) => html('th', '', c)))) : null;

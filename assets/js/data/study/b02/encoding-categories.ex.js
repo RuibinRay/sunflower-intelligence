@@ -182,7 +182,7 @@ export const independent = [
       'Central and West look four times as different as Central and East, because of the spelling of the names.',
       'Nothing: k-nearest neighbours ignores categorical variables and measures distance on the numeric ones only.',
       'The model can’t run, because the codes are integers.',
-      'Every region becomes equally distant from every other region, so region no longer changes who the neighbours are.',
+      'Every region becomes equally distant from every other region, as though the five codes carried no order at all.',
     ],
     answer: 0,
     feedback: {
