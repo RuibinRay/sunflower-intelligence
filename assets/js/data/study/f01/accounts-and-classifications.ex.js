@@ -187,7 +187,7 @@ export const independent = [
       'As a current liability, because by then it is due within twelve months',
       'As a noncurrent liability, because it was a two-year note when Lantern signed it',
       'Half current and half noncurrent',
-      'It is not shown, because none of it has been repaid yet and no payment is due until 2028',
+      'It is not shown, because none of it has been repaid yet and the $10,000 is not due until 2028',
     ],
     answer: 0,
     feedback: {
