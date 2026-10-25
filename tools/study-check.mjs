@@ -7,6 +7,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import * as SH from '../assets/js/core/sheet.js';
+import * as PM from '../assets/js/core/percmap.js';
 import { ols } from '../assets/js/core/stats.js';
 import {
   catalog, BUILT, DATA, chartFor, chartSync, caseFor, lessonsOf, loadLesson, loadEx, loadModuleFile, blocks, blockWords,
@@ -16,7 +17,7 @@ import {
 const VERBS = /^(Explain|Describe|Define|Identify|Distinguish|Classify|Calculate|Compute|Record|Prepare|Analyse|Apply|Interpret|Evaluate|Compare|Choose|Decide|Use|Recognise|State|Construct|Build|Post|Journalise|Find|Detect|Diagnose|Handle|Transform|Scale|Encode|Write|Document|Justify|Recommend|Estimate|Assess|Plan|Design|Set|Measure|Select|Determine|Correct|Locate|Read|Summarise|Reshape|Combine|Profile|Validate|Clean|Convert|Standardise|Normalise|Map|Draft|Price|Forecast|Test|Name|List|Contrast|Close|Adjust|Trace|Reconcile)\b/;
 const KINDS = ['conceptual', 'numerical', 'applied'];
 const TYPES = ['mc', 'multi', 'num', 'fill', 'classify', 'order', 'journal', 'equation', 'rows', 'short', 'formula', 'steps'];
-const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak', 'sampler'];
+const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak', 'sampler', 'cluster', 'percmap'];
 const DATASETS = ['lantern-orders', 'harborview-bookings', 'northfield-students'];
 const CLEAN_OPS = ['dedupe', 'dedupe-key', 'trim', 'case', 'map', 'to-number', 'to-date', 'fill', 'drop-missing', 'flag-missing', 'validate', 'outliers', 'transform', 'scale', 'encode', 'derive', 'rename', 'drop-column'];
 const near = (a, b, tol) => Math.abs(a - b) <= tol + 1e-9;
@@ -431,6 +432,19 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
     (wd.methods || []).forEach((m) => { if (!M.includes(m)) r.err(`${w}: unknown method ${m}`); if (m === 'cluster' && !wd.cluster) r.err(`${w}: 'cluster' needs cluster codes`); if (m === 'optin' && !wd.propensity) r.err(`${w}: 'optin' needs propensity`); });
     if (wd.strataNames && wd.strataNames.length !== Math.max(...S0) + 1) r.err(`${w}: strataNames needs one name per stratum`);
     if ((wd.sizes || []).some((k) => !(k > 0) || k > n0)) r.err(`${w}: sizes must be between 1 and the list size`);
+  } else if (wd.type === 'cluster') {
+    const R0 = wd.rows || [], P0 = (wd.vars || []).length;
+    if (R0.length < 20 || P0 < 2 || !R0.every((r) => Array.isArray(r) && r.length === P0 && r.every(Number.isFinite))) r.err(`${w}: cluster needs rows (one array of ${P0} numbers per respondent, at least 20) and vars naming each column`);
+    const ks = wd.ks || [2, 3, 4, 5, 6, 7, 8];
+    if (!ks.every((k) => Number.isInteger(k) && k >= 2 && k <= 8)) r.err(`${w}: ks must be whole numbers from 2 to 8`);
+    if (wd.k != null && !ks.includes(wd.k)) r.err(`${w}: k must be one of ks`);
+    if (wd.spend && wd.spend.length !== R0.length) r.err(`${w}: spend needs one value per respondent`);
+  } else if (wd.type === 'percmap') {
+    const B0 = wd.brands || [], A0 = wd.attributes || [], M0 = wd.means || [];
+    if (B0.length < 3 || M0.length !== B0.length || !M0.every((r) => r.length === A0.length && r.every(Number.isFinite))) r.err(`${w}: percmap needs brands (3 or more), attributes and means (one row of attribute means per brand)`);
+    else { const pm = PM.perceptualMap(M0); if (pm.error) r.err(`${w}: ${pm.error}`); else if (pm.cumulative[1] < 0.6) r.warn(`${w}: the map's two dimensions carry only ${(pm.cumulative[1] * 100).toFixed(0)}% of the differences; say so in the lesson`); }
+    if (wd.highlight && !B0.includes(wd.highlight)) r.err(`${w}: highlight must name one of the brands`);
+    (wd.ideals || []).forEach((d, i) => { if (!d.name || !Array.isArray(d.profile) || d.profile.length !== A0.length) r.err(`${w}: ideal ${i} needs a name and a profile with one value per attribute`); });
   } else if (wd.type === 'toolpak') {
     const T = ['ttest-paired', 'ttest-equal', 'ttest-unequal', 'anova'];
     const list = wd.tools || [wd.tool];

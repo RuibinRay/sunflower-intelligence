@@ -927,3 +927,33 @@ input[type="file"]:focus-visible + .file-btn, .file-btn:focus-within { outline: 
 
 /* the optional row-number column of exercise tables (data.table.index) */
 .study-table .row-ix { color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+/* M05: the cluster widget (k-means segments) and the percmap widget (perceptual maps) */
+.cl-charts { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-3); }
+@media (min-width: 720px) { .cl-charts { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.cl-vars { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4); border: 0; padding: 0; margin: 0; }
+.cl-vars legend { width: 100%; margin-bottom: var(--s-1); }
+.cl-var { display: inline-flex; align-items: center; gap: 6px; }
+.cl-var input { width: 1.1rem; height: 1.1rem; }
+.cv-chart .cl-pt { fill: var(--paper); stroke: var(--midnight); stroke-width: 1.6; }
+.cv-chart .cl-pt-on { fill: var(--midnight); }
+.cl-table td.cl-ix { font-variant-numeric: tabular-nums; }
+.cv-chart .cl-dot { fill: var(--ink-3); opacity: .28; }
+.cv-chart .cl-dot-on { fill: var(--series-1); opacity: .9; stroke: var(--paper); stroke-width: 0.8; }
+.cv-chart .cl-key { font-size: var(--t-xs); fill: var(--ink-2); }
+.pm-chart .pm-zero { stroke: var(--grid); stroke-width: 1; }
+.pm-chart .pm-vec { stroke: var(--ink-3); stroke-width: 1.4; }
+.pm-chart .pm-arrow { fill: var(--ink-3); }
+.pm-chart .pm-vec-label { font-size: var(--t-xs); fill: var(--ink-2); }
+.pm-chart .pm-brand { fill: var(--midnight); stroke: var(--paper); stroke-width: 2; }
+.pm-chart .pm-brand-on { fill: var(--series-1); }
+.pm-chart .pm-label { font-size: var(--t-sm); fill: var(--ink); font-weight: 600; }
+.pm-chart .pm-label-on { fill: var(--ink); }
+.pm-chart .pm-ideal { fill: none; stroke: var(--series-2); stroke-width: 2.4; }
+.pm-chart .pm-ideal-label { font-size: var(--t-xs); fill: var(--ink-2); font-style: italic; }
+.pm-chart .pm-plan { fill: var(--paper); stroke: var(--series-1); stroke-width: 2.4; }
+.pm-chart .pm-move-line { stroke: var(--series-1); stroke-width: 1.6; stroke-dasharray: 4 3; }
+.pm-move { display: grid; gap: var(--s-2); border: 0; padding: 0; margin: 0; }
+.pm-slider { display: grid; grid-template-columns: minmax(7rem, 11rem) minmax(0, 1fr) 2.6rem; gap: var(--s-2); align-items: center; }
+.pm-slider output { text-align: right; }
+@media (max-width: 560px) { .pm-chart .pm-label { font-size: var(--t-xs); } .pm-chart .pm-vec-label, .pm-chart .pm-ideal-label { font-size: 0.72rem; } }
