@@ -180,7 +180,7 @@ export const independent = [
   {
     id: 'b02-sk-i6', type: 'mc', kind: 'applied',
     prompt: 'Lantern’s profit per order is right-skewed and includes losses (negative values) on heavily discounted orders. The analyst wants a more symmetric version for a regression. Which approach works?',
-    options: ['Yeo–Johnson, which is defined for negative, zero and positive values', 'log x', 'log(1 + x)', 'Box–Cox'],
+    options: ['Yeo–Johnson, which works for negative, zero and positive values', 'log x, the standard transformation for right-skewed money amounts', 'log(1 + x), which is defined at zero and so handles small profits', 'Box–Cox, which estimates the best power transformation from the data'],
     answer: 0,
     feedback: {
       1: 'The log is undefined for zero and negative profits.',

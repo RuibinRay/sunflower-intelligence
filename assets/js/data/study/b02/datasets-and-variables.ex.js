@@ -63,7 +63,7 @@ export const guided = [
     steps: [
       { id: 'b02-dv-g1-s1', type: 'mc',
         prompt: 'What does one row of this table describe?',
-        options: ['One coffee in one month’s parcel for one subscription', 'One subscription', 'One customer', 'One month’s parcel for one subscription'],
+        options: ['One coffee in one month’s parcel for one subscription', 'One subscription', 'One customer', 'One month’s parcel for one subscription, with all its coffees'],
         answer: 0,
         hints: ['Look for a subscription that appears more than once in the same month.', 'S-201 has two rows for 2026-04. What differs between them?'],
         feedback: {
@@ -323,10 +323,10 @@ export const check = [
     id: 'b02-dv-k6', type: 'mc', kind: 'conceptual',
     prompt: 'Lantern’s customer table could use email as its primary key instead of customer_id. What is the main problem with that?',
     options: [
-      'Emails change, can be shared, get mistyped and are sometimes blank, so they can’t be relied on to identify one customer for good.',
-      'Emails are text, and a primary key must be a number.',
-      'Emails are too long to store efficiently.',
-      'Emails are nominal, and a key must be ordinal.',
+      'Emails change, can be shared, get mistyped or are left blank, so they can’t identify one customer for good.',
+      'Emails are text, and a primary key must be a whole number so that the database can sort, index and join on it.',
+      'Emails are too long: a key should be short, and an address can run to dozens of characters.',
+      'Emails are nominal, and a primary key must be ordinal so that the rows can be ranked by it.',
     ],
     answer: 0,
     feedback: {

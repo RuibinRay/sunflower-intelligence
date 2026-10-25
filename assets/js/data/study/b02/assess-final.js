@@ -167,8 +167,8 @@ export const items = [
     id: 'b02-fn-11', lesson: 'missing-values', type: 'mc', kind: 'applied',
     prompt: 'In a fictional extract of Northfield University’s records, weekly study_hours is blank for 30% of first-years but 8% of fourth-years, and among students who answered, fourth-years report more hours. Within each year, nothing recorded predicts who left it blank. How should the blanks be filled for an estimate of average study hours across all students?',
     options: [
-      'Fill each blank with the mean of the student’s own year of study, and keep a missing-value indicator',
-      'Fill every blank with the overall mean of the observed hours',
+      'Fill each blank with the mean of the student’s own year, and keep a missing-value indicator',
+      'Fill every blank with the overall mean of the observed hours, so that every student gets the same value',
       'Delete the students with blanks and average the rest',
       'Fill every blank with 0, because the student didn’t report any hours',
     ],
@@ -205,9 +205,9 @@ export const items = [
     id: 'b02-fn-14', lesson: 'outliers', type: 'mc', kind: 'conceptual',
     prompt: 'The ten order totals in the previous question include $1,512, far above the rest, yet the rule |z| > 3 flags nothing. Why?',
     options: [
-      'In a sample of n values no |z| can exceed (n − 1) ÷ √n, about 2.85 for n = 10, and the extreme value also inflates the SD it is measured against',
+      `No |z| in a sample of n can exceed (n − 1) ÷ √n, about ${((10 - 1) / Math.sqrt(10)).toFixed(2)} here, and the extreme value also inflates the SD`,
       'The z-score rule only flags values below the mean',
-      'z-scores are computed from the median and the MAD, which ignore the extreme value',
+      'z-scores are computed from the median and the MAD, which ignore the extreme value, so it can’t stand out from the rest',
       'Ten values are too few to calculate a standard deviation',
     ],
     answer: 0,

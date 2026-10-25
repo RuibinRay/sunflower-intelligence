@@ -46,10 +46,10 @@ export const items = [
     id: 'b02-m3-4', lesson: 'missing-values', type: 'mc', kind: 'conceptual',
     prompt: 'Why should the median used to fill missing values be computed from the training rows only, when a model will be tested on held-out rows?',
     options: [
-      'Otherwise information from the test rows shapes the training data, and the test score overstates how well the model will do on new data.',
-      'Because the training median is always closer to the true population median.',
+      'Otherwise the test rows shape the training data, and the test score overstates how the model will do on new data.',
+      'Because the training median is always closer to the true population median than a median taken over all the rows.',
       'Because medians computed on test rows are biased under MCAR.',
-      'Because the test rows should be left with their gaps unfilled.',
+      'Because the test rows should be left with their gaps unfilled, so that the model is tested on the data exactly as it arrived.',
     ],
     answer: 0,
     feedback: {
@@ -90,8 +90,8 @@ export const items = [
     id: 'b02-m3-8', lesson: 'outliers', type: 'mc', kind: 'conceptual',
     prompt: 'An analyst runs a |z| > 3 rule on a column with two very large errors and flags neither of them. What is the most likely explanation?',
     options: [
-      'Masking: the two errors inflate the mean and standard deviation, so neither looks extreme against them.',
-      'The z-score rule only detects values below the mean.',
+      'Masking: the two errors inflate the mean and the SD, so neither looks extreme against them.',
+      'The z-score rule only detects values below the mean, so it can never flag errors that are too large.',
       'Large errors always have z-scores close to zero.',
       'The column must be left-skewed.',
     ],
@@ -131,9 +131,9 @@ export const items = [
     id: 'b02-m3-11', lesson: 'skewed-data', type: 'mc', kind: 'conceptual',
     prompt: 'An analyst averages ln(order total) over all orders and converts the result back with eˣ. What has she computed?',
     options: [
-      'The geometric mean, which is at or below the arithmetic mean of the order totals.',
+      'The geometric mean, which is at or below the arithmetic mean.',
       'The arithmetic mean of the order totals.',
-      'The median order total, exactly.',
+      'The median order total, exactly, whatever the shape of the distribution.',
       'The skewness of the order totals.',
     ],
     answer: 0,

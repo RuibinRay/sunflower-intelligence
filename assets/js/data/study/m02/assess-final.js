@@ -211,7 +211,7 @@ export const items = [
     id: 'm02-fn-15', lesson: 'price-response', type: 'mc', kind: 'applied',
     prompt: 'A fictional online homeware shop earns a 40% contribution margin ratio on a range of lamps. In a randomised test, a 10% price cut raised the number of lamps sold by 22%. Should it make the cut permanent?',
     options: [
-      'No: volume needed to rise by about 33.3% to keep contribution unchanged, so contribution falls by about 8.5%.',
+      'No: volume rose 22% but needed to rise by about 33.3% to keep contribution unchanged, so contribution falls by about 8.5%.',
       'Yes: demand is elastic (about −2.2), so the cut raises revenue by about 9.8% and pays for itself.',
       'Yes: volume rose by 22%, more than twice the 10% price cut, so the cut more than pays for itself.',
       'No: a price cut always lowers revenue, because every lamp now sells for 10% less.',

@@ -316,7 +316,7 @@ export const check = [
     prompt: 'An analyst left-joins 1,200 orders to a product table and gets 1,350 rows. What is the most likely explanation?',
     options: [
       'Some products appear more than once in the product table, so their orders are repeated.',
-      'Some orders had no matching product and were added as extra rows.',
+      'Some orders had no matching product, and the join added an extra row with blank product columns for each.',
       'The left join added the products that had no orders.',
       'The orders table must contain 150 exact duplicates.',
     ],
@@ -352,7 +352,7 @@ export const check = [
     prompt: 'You pivot a long revenue table (product, month, revenue) to one column per month, and the tool stops with “Index contains duplicate entries, cannot reshape”. What does it mean?',
     options: [
       'At least one product–month pair appears in more than one row, so one cell would need two values.',
-      'Some revenue values are missing and must be filled first.',
+      'Some revenue values are missing, and a pivot can’t build a cell from a blank, so they must be filled first.',
       'The months must be sorted before pivoting.',
       'The table is already in wide format.',
     ],

@@ -12,7 +12,7 @@ export const items = [
     prompt: 'Skylark Air, a fictional airline, exports its boarding file: one row per flight leg of each booking, where every booking is for a single passenger; 1,500 rows, no blank cells. booking_ref has 1,482 distinct values, passenger_id has 1,320, and the pair booking_ref + leg has 1,500. Which should be the primary key?',
     options: [
       'booking_ref + leg, a composite key',
-      'booking_ref on its own',
+      'booking_ref on its own, since every booking is for one passenger',
       'passenger_id on its own',
       'The row number',
     ],
@@ -62,7 +62,7 @@ export const items = [
     prompt: 'Two rows in a fictional coffee shop’s order export share the order_id LC-20417 and agree in every column, except that one has a blank e-mail address and the other has the address. Which copy should survive?',
     options: [
       'The copy with the e-mail address (most complete), because the blank adds nothing the other copy lacks',
-      'The first copy in the file, whatever it contains',
+      'The first copy in the file, whatever it contains, because the first row is the original and later rows are copies',
       'Both copies, because they differ in one column',
       'Neither: delete the order, because its data can’t be trusted',
     ],
@@ -150,9 +150,9 @@ export const items = [
     id: 'b02-dg-11', lesson: 'encoding-categories', type: 'mc', kind: 'conceptual',
     prompt: 'A satisfaction band takes the values poor, fair, good and excellent. You encode it as 0, 1, 2 and 3 in that order. What does that encoding assume?',
     options: [
-      'That the bands are ordered and that each step (poor to fair, fair to good, good to excellent) is the same size',
+      'That the bands are ordered, and that the steps poor to fair, fair to good and good to excellent are equal',
       'Nothing: codes are only labels',
-      'That the bands are unordered, like colours',
+      'That the bands are unordered, like colours, so a model treats each band as a separate category with no ranking',
       'That excellent is three times as good as fair',
     ],
     answer: 0,

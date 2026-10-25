@@ -275,7 +275,7 @@ export default {
           options: [
             'Read it with a decimal comma as $16.50, which matches the product’s list price and the order’s total, and record why',
             'Remove the comma and read it as $1,650',
-            'Set it to missing, because it couldn’t be converted',
+            'Set it to missing and flag the order, because a price the conversion couldn’t read can’t be trusted until the shop confirms it',
             'Delete the order',
           ],
           answer: 0,
@@ -379,10 +379,10 @@ export default {
           id: 'b02-pj-m6', type: 'mc', kind: 'conceptual',
           prompt: 'A colleague suggests filling the 77 missing ratings with the average rating so that every order has one. What is wrong with that?',
           options: [
-            'It invents ratings no customer gave, keeps the subscriber-heavy average, shrinks the spread, and hides that one-off buyers rarely rate',
+            'It invents ratings, keeps the subscriber-heavy average, shrinks the spread and hides that one-off buyers rarely rate',
             'Nothing, as long as the average is rounded to a whole star',
-            'Only that it changes the average rating',
-            'It is wrong only because the mean should be replaced by the median',
+            'Only that it changes the average rating, so the report can no longer be compared with the figures from earlier months',
+            'It is wrong only because the mean should be replaced by the median, which suits ordinal star ratings better',
           ],
           answer: 0,
           feedback: {
@@ -464,8 +464,8 @@ export default {
           id: 'b02-pj-a5', type: 'mc', kind: 'applied',
           prompt: 'LC-10016’s stored total of $21.35 includes a $6.50 shipping charge. Rule V5 rebuilds it as $14.85. What else should happen?',
           options: [
-            'Keep the flag in order_total_invalid and list the order in the report, so the shop team can see that shipping went into the wrong field',
-            'Nothing: once the total is rebuilt the shipping charge doesn’t matter',
+            'Keep the order_total_invalid flag and list the order in the report, so the shop team can fix how shipping is recorded',
+            'Nothing: once V5 has rebuilt the total, the shipping charge no longer affects any figure in the analysis or the report',
             'Keep $21.35, because that is what the customer paid',
             'Delete the order, because one of its values was wrong',
           ],
@@ -481,8 +481,8 @@ export default {
           id: 'b02-pj-a6', type: 'mc', kind: 'conceptual',
           prompt: 'Why does stage 4 delete the <code>email</code> column before the file goes to Ana’s analyst?',
           options: [
-            'Addresses are personal data the analysis doesn’t need: customer_id already identifies repeat customers, so keeping addresses adds risk and no value',
-            'Because some addresses are still missing',
+            'Addresses are personal data the analysis doesn’t need, since customer_id already identifies repeat customers',
+            'Because some addresses are still missing, and a column with gaps can’t be handed over to the analyst for modelling',
             'Because e-mail addresses can’t be one-hot encoded',
             'Because the lab can only export ten columns',
           ],

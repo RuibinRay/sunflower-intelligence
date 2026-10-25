@@ -109,7 +109,7 @@ export const guided = [
     steps: [
       { id: 'b02-dup-g2-s1', type: 'mc',
         prompt: 'What kind of duplicate is this?',
-        options: ['A repeated key with conflicting values', 'An exact duplicate', 'A near duplicate customer', 'Two genuine orders'],
+        options: ['A repeated key with conflicting values', 'An exact duplicate', 'A near duplicate customer', 'Two genuine orders from the same customer'],
         answer: 0,
         hints: ['Compare the key column with the other columns.', 'Same <code>order_id</code>, different <code>order_total</code>.'],
         feedback: {
@@ -121,7 +121,7 @@ export const guided = [
         prompt: 'Which row should survive?',
         options: [
           'The 08:16 row: it is the later update and reflects the discount the customer actually paid.',
-          'The 08:14 row: keep the first occurrence, because it is the original order.',
+          'The 08:14 row: keep the first occurrence, because it records the order as the customer originally placed it.',
           'Neither: delete both rows because they conflict.',
           'Both: they have different totals, so they can’t be duplicates.',
         ],
@@ -199,10 +199,10 @@ export const independent = [
     id: 'b02-dup-i2', type: 'mc', kind: 'applied',
     prompt: 'Lantern merges its online-shop customers with the customer list from the loyalty app in its cafés. For the 300 people in both, the shop record has a verified email address but no phone number; the loyalty record has a phone number and a postal address updated last month, but an email address that was never verified. Which survivorship rule fits best?',
     options: [
-      'Merge field by field: email from the shop record, phone and address from the loyalty record, noting the source of each.',
-      'Keep the most complete record.',
+      'Merge field by field: email from the shop, phone and address from the loyalty app, noting each value’s source.',
+      'Keep the most complete record, the one with the most fields filled in.',
       'Keep the first record, from the shop, because it is older.',
-      'Keep the latest record, from the loyalty app, because it was updated more recently.',
+      'Keep the latest record, from the loyalty app, because it was updated last month and so holds the newest details.',
     ],
     answer: 0,
     feedback: {
@@ -351,13 +351,13 @@ export const check = [
     options: [
       'df[df.duplicated(subset=[&#39;order_id&#39;], keep=False)]',
       'df[df.duplicated()]',
-      'df.drop_duplicates(subset=[&#39;order_id&#39;])',
+      'df.drop_duplicates(subset=[&#39;order_id&#39;], keep=False)',
       'df.drop_duplicates()',
     ],
     answer: 0,
     feedback: {
       1: 'With no subset, duplicated() compares whole rows, so it misses conflicting versions; and with the default keep=&#39;first&#39; it doesn’t mark the first occurrence.',
-      2: 'This deletes rows instead of showing them, and it keeps the first row of each order, whatever that row contains.',
+      2: 'This deletes every row of every repeated order instead of showing them, so nothing is left to review.',
       3: 'This removes exact copies only, and doesn’t show you anything to review.',
     },
     solution: '<code>duplicated(subset=[&#39;order_id&#39;], keep=False)</code> marks every row whose order id occurs more than once, first occurrence included. Filtering the table with it shows each group in full, which is what you need before choosing a survivorship rule.',

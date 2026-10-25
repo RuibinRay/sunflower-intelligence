@@ -134,10 +134,10 @@ export const items = [
     id: 'b02-m1-10', lesson: 'profiling-and-validation', type: 'mc', kind: 'conceptual',
     prompt: 'Every value in a booking extract passes all of its validation rules. What can you conclude?',
     options: [
-      'No value breaks the rules as written; values can still be wrong, and problems the rules don’t test can still be present.',
+      'No value breaks the rules as written; values can still be wrong, and problems the rules don’t test may remain.',
       'The data is accurate.',
       'The data is complete.',
-      'The data needs no further checks before analysis.',
+      'The data needs no further checks before analysis, because every column has a rule and every one of those rules has passed.',
     ],
     answer: 0,
     feedback: {

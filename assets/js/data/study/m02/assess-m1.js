@@ -154,7 +154,7 @@ export const items = [
     id: 'm02-m1-11', lesson: 'product-life-cycle', type: 'mc', kind: 'applied',
     prompt: 'A brand manager (fictional company) says: “Our snack brand is 30 years old and sales have been flat for five years. The product life cycle says decline comes next, so let’s cut its advertising to zero and use the money elsewhere.” What is the best response?',
     options: [
-      'Flat sales mean maturity, not certain decline, and cutting support could cause one; first test market, product or mix changes.',
+      'Flat sales mean maturity, not certain decline, and cutting support could cause one; first test changes to the market, product or mix.',
       'Agree: every product follows the life cycle and maturity is always followed by decline, so advertising a 30-year-old brand is wasted.',
       'Double the advertising budget immediately, because spending always reverses flat sales in a mature brand.',
       'Withdraw the brand now, before decline starts, to save the cost of the decline stage and free its shelf space.',

@@ -232,8 +232,8 @@ export const independent = [
     prompt: 'Lantern is building a model to predict which subscribers will cancel. The analyst has noticed that subscribers who stop rating their deliveries often cancel a few weeks later. She will fill missing ratings with the training median. What else should she do?',
     options: [
       'Add a rating_missing column (1 if the rating was missing) so the model can use the fact of missingness.',
-      'Nothing: once the gaps are filled, the information is preserved in the median values.',
-      'Delete subscribers with missing ratings, since they are probably leaving anyway.',
+      'Nothing: once the gaps are filled, the information about them is preserved in the median values.',
+      'Delete the subscribers with missing ratings, since they are probably leaving anyway and would only add noise.',
       'Fill the gaps with 1 star instead, because silent customers must be unhappy.',
     ],
     answer: 0,
@@ -252,7 +252,7 @@ export const check = [
     prompt: 'Lantern finds that ratings are missing far more often for one-off buyers than for subscribers. What can the analyst conclude from the data alone?',
     options: [
       'The ratings are not MCAR, but the data can’t show whether they are MAR or MNAR.',
-      'The ratings are MAR, because missingness depends on a recorded variable.',
+      'The ratings are MAR, because their missingness depends on a recorded variable, customer type.',
       'The ratings are MNAR, because one-off buyers are less satisfied.',
       'The ratings are MCAR, because both groups have some missing values.',
     ],
@@ -309,7 +309,7 @@ export const check = [
     prompt: 'A courier’s handheld scanner failed on three random days, so 2% of delivery times are missing. You are reporting the median delivery time to management. What is the most sensible treatment?',
     options: [
       'Drop the rows with missing times and note how many were dropped: the gaps are plausibly MCAR and few.',
-      'Fill the gaps with the mean delivery time so that no rows are lost.',
+      'Fill the gaps with the mean delivery time, so that no rows are lost and the median is based on every parcel.',
       'Fill the gaps with 0 days, since those parcels have no recorded time.',
       'Report no median until the missing times can be recovered.',
     ],

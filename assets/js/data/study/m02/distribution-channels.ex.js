@@ -266,7 +266,7 @@ export const check = [
     options: [
       'Start selectively in natural grocers and Lantern’s own cafés and online shop, adding supermarkets once the can sells well.',
       'Go intensive from day one: every supermarket, convenience store and natural grocer, plus the online shop, to build reach fast.',
-      'Sell only through convenience stores, where shoppers compare prices less and pay more for a chilled can.',
+      'Sell only through convenience stores, where shoppers compare prices less and buy chilled cans on impulse.',
       'Sell only through supermarkets, because they have the most shoppers and sell 45% of the category’s cans.',
     ],
     answer: 0,

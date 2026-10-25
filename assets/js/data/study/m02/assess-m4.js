@@ -81,8 +81,8 @@ export const items = [
     id: 'm02-m4-9', lesson: P, type: 'mc', kind: 'conceptual',
     prompt: 'Which statement about AIDA and other hierarchy-of-effects models is best supported?',
     options: [
-      'They help set stage-by-stage objectives, but the evidence doesn’t support a fixed order of stages.',
-      'They have been shown by research to describe the order in which every buyer’s purchase decision happens.',
+      'They help set stage-by-stage objectives, but the evidence gives little support to a fixed order of stages.',
+      'They have been shown by research to describe the order in which every buyer’s purchase decision really happens.',
       'They apply only to personal selling, where a salesperson can lead the buyer through each stage.',
       'They show that more advertising always leads to more sales, because each stage feeds the next.',
     ],
