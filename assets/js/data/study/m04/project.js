@@ -52,15 +52,18 @@ const meanStaff = byBand.map((x) => sum(x.map((o) => o.staff)) / x.length);
 const bottomUpStaff = sum(NH.map((N, h) => N * meanStaff[h]));
 const gapPct = (bottomUpStaff / Z.districtStaff10plus - 1) * 100;
 const tam = Z.districtStaff10plus * PRICE * 12;
-const inSam = (o) => [0, 1, 3].includes(o.arrangement);                                      // none, pods, filter or urn
+// SAM: offices that already pay for a coffee service the subscription would replace (pod machines, a bean-to-cup
+// machine, filter or urn). Offices with no coffee would need a new budget line; catered offices buy their coffee as part
+// of a catering contract, a different purchase. The SOM is counted inside the SAM.
+const inSam = (o) => [1, 2, 3].includes(o.arrangement);
 const samShare = wsum((o) => o.staff * (inSam(o) ? 1 : 0)) / wsum((o) => o.staff);
 const sam = tam * samShare;
-const expOffices = wsum((o) => Z.conversion[o.interest - 1]);
-const expStaff = wsum((o) => o.staff * Z.conversion[o.interest - 1]);
+const expOffices = wsum((o) => (inSam(o) ? Z.conversion[o.interest - 1] : 0));
+const expStaff = wsum((o) => (inSam(o) ? o.staff * Z.conversion[o.interest - 1] : 0));
 const somRevenue = expStaff * PRICE * 12;
 // sensitivity: no "probably" converts; or a third of them do
-const expOfficesNoProb = wsum((o) => (o.interest === 1 ? Z.conversion[0] : 0));
-const expOfficesThirdProb = wsum((o) => (o.interest === 1 ? Z.conversion[0] : o.interest === 2 ? 1 / 3 : 0));
+const expOfficesNoProb = wsum((o) => (inSam(o) && o.interest === 1 ? Z.conversion[0] : 0));
+const expOfficesThirdProb = wsum((o) => (!inSam(o) ? 0 : o.interest === 1 ? Z.conversion[0] : o.interest === 2 ? 1 / 3 : 0));
 
 // ---------------------------------------------------------------- competitors and interviews
 const daystar = OFFICE_COMPETITORS.find((c) => c.perCup);
@@ -78,7 +81,7 @@ export default {
       `<b>A business directory</b> listing the ${NOFF} offices with 10 or more staff in the district, by size band: ${B.map((b, h) => `${NH[h]} with ${b}`).join(', ')}.`,
       `<b>An office survey</b> (March 2027): Ana invited ${INV.map((k, h) => `${k} offices with ${B[h]}`).join(', ')}, chosen at random within each band, and asked the office manager about the current coffee arrangement, the monthly spend and interest in the offer at its price. ${n} replied.`,
       `<b>Interviews</b> with ${managers} office managers, coded remark by remark.`,
-      `<b>Competitors’ offers</b> from published price lists and one quote, and the Harbour City Statistics Office’s count of people working in workplaces of 10 or more staff in the district (${f(Z.districtStaff10plus)}).`,
+      `<b>Competitors’ offers</b> from published price lists and a quote an office manager shared with Ana, and the Harbour City Statistics Office’s count of people working in workplaces of 10 or more staff in the district (${f(Z.districtStaff10plus)}).`,
     ] },
   ],
   deliverables: [
@@ -287,20 +290,20 @@ export default {
             num('m04-pj-13-3', `TAM: every member of staff in the district’s workplaces of 10 or more (the Statistics Office’s count) at $${PRICE} a month for a year, in dollars.`, tam, () => Z.districtStaff10plus * PRICE * 12, '',
               [{ value: Z.districtStaff10plus * PRICE, say: 'That is one month. Multiply by 12 for a year.' }],
               { unit: '$', places: 0, tol: 0.5 }),
-            num('m04-pj-13-4', 'SAM: staff in offices whose current arrangement the offer would replace or upgrade (none, pod machines, or filter or urn), as a weighted share of all staff, times the TAM. Give dollars to the nearest thousand.', r(sam, -3), () => tam * samShare, '',
-              [{ value: r(tam * (1 - samShare), -3), say: 'That is the complement: offices that already have a bean-to-cup machine or catering.' }],
+            num('m04-pj-13-4', 'SAM: staff in offices that already pay for a coffee service the subscription would replace (pod machines, a bean-to-cup machine, or filter or urn), as a weighted share of all staff, times the TAM. Give dollars to the nearest thousand.', r(sam, -3), () => tam * samShare, '',
+              [{ value: r(tam * (1 - samShare), -3), say: 'That is the complement: offices with no coffee service, or with coffee bought as part of catering.' }],
               { unit: '$', places: 0, tol: 500 }),
           ],
-          solution: `Bottom-up: ${NH.map((k, h) => `${k} × ${f(meanStaff[h], 1)}`).join(' + ')} = ${f(bottomUpStaff)} staff, ${f(gapPct, 1)}% above the register’s ${f(Z.districtStaff10plus)}: close enough that the two routes support each other. TAM = ${f(Z.districtStaff10plus)} × $${PRICE} × 12 = ${usd(tam)} a year. Weighted, ${pct(samShare)} of staff work in offices without a bean-to-cup machine or catering, so SAM ≈ ${usd(r(sam, -3))}: the large offices mostly have bean-to-cup machines already.` },
+          solution: `Bottom-up: ${NH.map((k, h) => `${k} × ${f(meanStaff[h], 1)}`).join(' + ')} = ${f(bottomUpStaff)} staff, ${f(gapPct, 1)}% above the register’s ${f(Z.districtStaff10plus)}: close enough that the two routes support each other. TAM = ${f(Z.districtStaff10plus)} × $${PRICE} × 12 = ${usd(tam)} a year. Weighted, ${pct(samShare)} of staff work in offices that already pay for a pod, bean-to-cup or filter service the subscription would replace, so SAM ≈ ${usd(r(sam, -3))}. Offices with no coffee would need a new budget line, and catered offices buy coffee as part of a catering contract, so Ana leaves both out of what she can serve in year one.` },
         { id: 'm04-pj-14', type: 'steps', kind: 'numerical',
-          prompt: 'Estimate the first-year obtainable market (SOM) from the survey with Ana’s conversion assumptions, scaling each reply by its weight.',
+          prompt: 'Estimate the first-year obtainable market (SOM) inside the SAM: count only offices with pod machines, a bean-to-cup machine, or filter or urn, apply Ana’s conversion assumptions, and scale each reply by its weight.',
           steps: [
-            num('m04-pj-14-1', 'How many offices would sign up? Give one decimal place.', r(expOffices, 1), () => sum(OFFICES.map((o) => W(o) * Z.conversion[o.interest - 1])), '',
-              [{ value: r(sum(OFFICES.map((o) => Z.conversion[o.interest - 1])), 1), say: 'That counts only the offices that replied. Each reply stands for its weight in offices.' }, { value: r(wsum((o) => (top2(o) ? 1 : 0)), 1), say: 'That counts every top-two office as a sign-up. Apply the conversion assumptions: half of “definitely”, a sixth of “probably”.' }],
+            num('m04-pj-14-1', 'How many offices would sign up? Give one decimal place.', r(expOffices, 1), () => sum(OFFICES.map((o) => (inSam(o) ? W(o) * Z.conversion[o.interest - 1] : 0))), '',
+              [{ value: r(sum(OFFICES.map((o) => (inSam(o) ? Z.conversion[o.interest - 1] : 0))), 1), say: 'That counts only the offices that replied. Each reply stands for its weight in offices.' }, { value: r(wsum((o) => (inSam(o) && top2(o) ? 1 : 0)), 1), say: 'That counts every top-two office as a sign-up. Apply the conversion assumptions: half of “definitely”, a sixth of “probably”.' }, { value: r(wsum((o) => Z.conversion[o.interest - 1]), 1), say: 'That counts every office, including those outside the SAM. The SOM is the part of the SAM Lantern can win.' }],
               { unit: 'offices', places: 1, tol: 0.06 }),
-            num('m04-pj-14-2', 'What yearly revenue would those offices bring at full year, in dollars (weighted staff × conversion × $14 × 12)? Give the nearest thousand.', r(somRevenue, -3), () => wsum((o) => o.staff * Z.conversion[o.interest - 1]) * PRICE * 12, '', null, { unit: '$', places: 0, tol: 500 }),
+            num('m04-pj-14-2', 'What yearly revenue would those offices bring at full year, in dollars (weighted staff × conversion × $14 × 12)? Give the nearest thousand.', r(somRevenue, -3), () => wsum((o) => (inSam(o) ? o.staff * Z.conversion[o.interest - 1] : 0)) * PRICE * 12, '', null, { unit: '$', places: 0, tol: 500 }),
           ],
-          solution: `Weighted sign-ups: Σ weight × conversion = ${f(expOffices, 1)} offices covering ${f(expStaff)} staff, worth ${usd(r(somRevenue, -3))} a year at full year (${pct(somRevenue / tam)} of the TAM). That is close to the ${Z.maxInstallsYear1} installations Ana can manage, and the large offices may need more than one machine, so capacity, not demand, may limit year one. The figure leans on the conversion assumptions: if no “probably” converted it would be ${f(expOfficesNoProb, 1)} offices; if a third did, ${f(expOfficesThirdProb, 1)}.` },
+          solution: `Within the SAM, weighted sign-ups: Σ weight × conversion = ${f(expOffices, 1)} offices covering ${f(expStaff)} staff, worth ${usd(r(somRevenue, -3))} a year at full year (${pct(somRevenue / sam)} of the SAM). That is within the ${Z.maxInstallsYear1} installations Ana can manage, though large offices may need more than one machine each. The figure leans on the conversion assumptions: if no “probably” converted it would be ${f(expOfficesNoProb, 1)} offices; if a third did, ${f(expOfficesThirdProb, 1)}.` },
         { id: 'm04-pj-15', type: 'mc', kind: 'applied',
           prompt: `The SOM rests on three things: the weighted survey shares (±${f(strat.margin * 100, 0)} points), Ana’s conversion assumptions, and the cap of ${Z.maxInstallsYear1} installations. Which is the most useful next step before committing to the launch?`,
           options: [
@@ -388,7 +391,7 @@ export default {
             'Uses the competitors and interviews: a short contract and no pods are advantages; price and repair speed are weaknesses; managers’ concerns (cost, reliability, contract terms, admin effort, sustainability) shape the offer, with reliability mattering most to large offices.',
             'Recommends a proportionate next step (a paid pilot or a capped launch) with what to measure, and keeps qualitative findings, stated intent and estimates in their place.',
           ],
-          model: `<b>To:</b> Ana · <b>From:</b> analyst · <b>Re:</b> office-coffee subscription<br><br><b>Recommendation.</b> Test before launching: sign a paid pilot with eight to ten offices, including two or three large ones, on 12-month contracts with a trial month.<br><br><b>Why not launch now.</b> On your planning figures, launching now is worth only about $${f(evLaunch)} on average, with a 60% chance of losing $${f(Dn.lossIfWeak)}. Information that could stop a weak launch is worth up to $${f(evpi)}, which is why the $${f(Dn.researchCost)} spent on research was justified.<br><br><b>Demand.</b> Weighted to the directory, ${pct(strat.p, 0)} of offices (±${f(strat.margin * 100, 0)} points) say they would definitely or probably sign up at $${PRICE} a head; they employ about ${pct(staffShareTop2, 0)} of staff, because larger offices are keener. Stated interest overstates sign-ups: with your conversion assumptions about ${Math.round(expOffices)} offices would sign in year one (between ${Math.round(expOfficesNoProb)} and ${Math.round(expOfficesThirdProb)} on other assumptions), near your cap of ${Z.maxInstallsYear1} installations.<br><br><b>Market.</b> About ${f(Math.round(bottomUpStaff / 100) * 100)} staff work in the district’s offices of 10 or more (the register says ${f(Z.districtStaff10plus)}): a TAM of about ${usd(r(tam / 1e6, 1))} million a year at our price, of which about ${usd(r(sam / 1e6, 1))} million is in offices without a bean-to-cup machine or catering.<br><br><b>Competition and concerns.</b> Our 12-month contract and pod-free machine are strengths; we cost more than pods and vending, and Grindhouse repairs the same day. Managers raised cost, reliability, contract terms, admin effort, sustainability and staff wellbeing; reliability matters most to large offices and admin effort to small ones.<br><br><b>Limits.</b> Seventy-six replies; keener managers may have replied more; intent is not behaviour; the interviews show reasons, not shares.<br><br><b>Next.</b> Measure in the pilot: sign-up rate among interested offices, cups per head, repair calls, and renewals intent at month three.` },
+          model: `<b>To:</b> Ana · <b>From:</b> analyst · <b>Re:</b> office-coffee subscription<br><br><b>Recommendation.</b> Test before launching: sign a paid pilot with eight to ten offices, including two or three large ones, on 12-month contracts with a trial month.<br><br><b>Why not launch now.</b> On your planning figures, launching now is worth only about $${f(evLaunch)} on average, with a 60% chance of losing $${f(Dn.lossIfWeak)}. Information that could stop a weak launch is worth up to $${f(evpi)}, which is why the $${f(Dn.researchCost)} spent on research was justified.<br><br><b>Demand.</b> Weighted to the directory, ${pct(strat.p, 0)} of offices (±${f(strat.margin * 100, 0)} points) say they would definitely or probably sign up at $${PRICE} a head; they employ about ${pct(staffShareTop2, 0)} of staff, because larger offices are keener. Stated interest overstates sign-ups: with your conversion assumptions about ${Math.round(expOffices)} offices would sign in year one (between ${Math.round(expOfficesNoProb)} and ${Math.round(expOfficesThirdProb)} on other assumptions), within your cap of ${Z.maxInstallsYear1} installations.<br><br><b>Market.</b> About ${f(Math.round(bottomUpStaff / 100) * 100)} staff work in the district’s offices of 10 or more (the register says ${f(Z.districtStaff10plus)}): a TAM of about ${usd(r(tam / 1e6, 1))} million a year at our price, of which about ${usd(r(sam / 1e6, 1))} million is in offices that already pay for a pod, bean-to-cup or filter service we would replace.<br><br><b>Competition and concerns.</b> Our 12-month contract and pod-free machine are strengths; we cost more than pods and vending, and Grindhouse repairs the same day. Managers raised cost, reliability, contract terms, admin effort, sustainability and staff wellbeing; reliability matters most to large offices and admin effort to small ones.<br><br><b>Limits.</b> Seventy-six replies; keener managers may have replied more; intent is not behaviour; the interviews show reasons, not shares.<br><br><b>Next.</b> Measure in the pilot: sign-up rate among interested offices, cups per head, repair calls, and renewals intent at month three.` },
       ],
     },
   ],
@@ -409,8 +412,8 @@ export default {
       ['top two, large (COUNTIFS)', sh.get('K2'), top2h[2], 1e-9], ['top two by band', top2h.join() === '6,5,7' ? 1 : 0, 1],
       ['unweighted top two', unweightedTop2, 0.2368, 0.00005], ['stratified top two', strat.p, 0.2106, 0.00005], ['margin', strat.margin, 0.1046, 0.00005],
       ['staff share (SUMPRODUCT)', sw.get('K4'), staffShareTop2, 1e-3], ['staff share', staffShareTop2, 0.2597, 0.00005],
-      ['bottom-up staff', bottomUpStaff, 39874.7, 0.05], ['gap %', gapPct, 3.57, 0.005], ['TAM', tam, 6468000], ['SAM share', samShare, 0.4897, 0.00005],
-      ['expected offices', expOffices, 30.75, 0.005], ['SOM revenue', somRevenue, 399802, 1], ['offices if no probably converts', expOfficesNoProb, 14.53, 0.005], ['offices if a third convert', expOfficesThirdProb, 46.96, 0.005],
+      ['bottom-up staff', bottomUpStaff, 39874.7, 0.05], ['gap %', gapPct, 3.57, 0.005], ['TAM', tam, 6468000], ['SAM share', samShare, 0.7725, 0.00005],
+      ['expected offices', expOffices, 18.26, 0.005], ['SOM revenue', somRevenue, 302927, 1], ['SOM inside SAM', somRevenue < sam ? 1 : 0, 1], ['offices if no probably converts', expOfficesNoProb, 7.46, 0.005], ['offices if a third convert', expOfficesThirdProb, 29.06, 0.005],
       ['Daystar a month', daystarMonth, 11.76, 1e-9], ['themes', themeCount.join(), '2,2,2,2,2,2'],
     ];
   },

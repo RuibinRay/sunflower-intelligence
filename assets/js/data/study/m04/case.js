@@ -195,8 +195,8 @@ export const OFFICE_INTERVIEWS = [
   { who: 'OM6', size: '200 staff', theme: 2, text: 'A barista visit now and then would be a nice thing for the team, but it isn’t why we’d buy.' },
   { who: 'OM5', size: '25 staff', theme: 5, text: 'I do the ordering on top of my real job, so less admin is the whole point.' },
 ];
-/** Office-coffee offers in the district (March 2027; prices from the suppliers' published price lists and one quote;
- *  fictional). Price per member of staff a month; minimum contract in months. */
+/** Office-coffee offers in the district (March 2027; prices from the suppliers' published price lists and a quote an
+ *  office manager shared with Ana; fictional). Price per member of staff a month; minimum contract in months. */
 export const OFFICE_COMPETITORS = [
   { name: 'Brewline Office', what: 'Pod machines with monthly pod restock', pricePerStaffMonth: 11, contractMonths: 24, service: 'next working day' },
   { name: 'Daystar Vending', what: 'Coin-free vending machine; cups charged at $0.40 each to the office', pricePerStaffMonth: null, perCup: 0.40, contractMonths: 36, service: 'within 3 working days' },
