@@ -62,7 +62,7 @@ export const LEVELS = {
 };
 export const BRANDS = S.brands;   // Lantern, Summit Brew, Daily Grind RTD, Arcadia Coffee, Harbour Basics, Corner Cup
 export const BRAND_NOTES = {
-  'Lantern': 'Lantern’s own coffee: cafés, beans and, from 2027, Lantern Cold Brew ($3.49 a can)',
+  'Lantern': 'Lantern’s own coffee: catering, cafés and beans; Lantern Cold Brew ($3.49 a can) is planned for later in 2027',
   'Summit Brew': 'premium national ready-to-drink brand ($3.79 a can, M02)',
   'Daily Grind RTD': 'value ready-to-drink brand ($2.29 a can, M02)',
   'Arcadia Coffee': 'mid-priced regional brand ($2.89 a can, M02)',

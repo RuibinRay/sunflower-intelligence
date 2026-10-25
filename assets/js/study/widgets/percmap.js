@@ -11,7 +11,7 @@ import { xl } from '../xl.js?v=14';
 import { frame, lin, axisX, axisY, tableTwin } from '../../core/charts.js?v=14';
 import { perceptualMap, distance } from '../../core/percmap.js?v=14';
 
-const f2 = (v) => (Number.isFinite(v) ? v.toFixed(2) : '—');
+const f2 = (v) => (Number.isFinite(v) ? v.toFixed(2).replace('-', '−') : '—');
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
 
 export function mount(el, cfg, ctx) {

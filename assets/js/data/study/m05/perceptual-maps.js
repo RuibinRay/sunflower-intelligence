@@ -198,7 +198,7 @@ export default {
     ] },
 
     { h: 'Ideal points and their assumptions' },
-    { p: 'Reading the distance from an ideal point as appeal assumes that a segment prefers whichever brand is closest to its ideal, with both dimensions counting equally. That is a model. Three cautions apply. Ideal ratings can drift high on everything desirable (an ideal coffee that tastes great and costs little), which pushes ideal points towards the edge of the map rather than among the brands. A segment’s average ideal hides how much its members disagree. And the distance uses only the two dimensions drawn, so differences on the tenth of the variance left off the map are ignored.' },
+    { p: 'Reading the distance from an ideal point as appeal assumes that a segment prefers whichever brand is closest to its ideal, with both dimensions counting equally. That is a model, and three cautions apply. Ideal ratings can drift high on everything desirable (an ideal coffee that tastes great and costs little), which pushes ideal points towards the edge of the map rather than among the brands. A segment’s average ideal hides how much its members disagree. And the distance uses only the two dimensions drawn, so differences on the tenth of the variance left off the map are ignored.' },
     { p: `The all-respondent ideal sits at ${pt(D.map.ideal.all)}, near the centre-right of the map. A business that positions for that average ideal is positioning for nobody in particular: no segment’s ideal sits close to it (the nearest, the Explorers’, is ${f2(distance(D.map.ideal.all, IDEAL[EX]))} away), which is the argument for segmenting in the first place.` },
 
     { h: 'Other kinds of map, in outline' },
