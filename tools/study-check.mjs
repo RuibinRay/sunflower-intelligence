@@ -23,9 +23,31 @@ const near = (a, b, tol) => Math.abs(a - b) <= tol + 1e-9;
 const isDate = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s);
 
 class Report {
-  constructor(name) { this.name = name; this.errors = []; this.warnings = []; this.stats = {}; }
+  constructor(name) { this.name = name; this.errors = []; this.warnings = []; this.notes = []; this.stats = {}; }
   err(m) { this.errors.push(m); }
   warn(m) { this.warnings.push(m); }
+  note(m) { this.notes.push(m); }
+}
+
+// ---------------------------------------------------------------- answer cues and near-copies
+// Two patterns reviewers kept finding by hand: the keyed multiple-choice option being the longest (a student who picks
+// the longest option scores well), and an assessment item that repeats a lesson exercise with new numbers (it tests
+// memory of the exercise). Text is compared as sets of word trigrams with numbers folded to one token, over the prompt,
+// the options, the classify items and the sheet's labels; 0.5 Jaccard is where the copies reviewers flagged begin.
+const plainText = (s) => String(s ?? '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+const withSteps = (list) => (list || []).flatMap((x) => [x, ...(x.steps || [])]);
+const itemText = (x) => [x.prompt, ...(x.items || []), ...(x.options || []), ...(x.statements || []),
+  x.sheet ? Object.values(x.sheet.cells || {}).filter((v) => typeof v === 'string' && !v.startsWith('=')).join(' ') : '']
+  .map((y) => (typeof y === 'string' ? y : (y && y.text) || '')).join(' ');
+const trigrams = (s) => { const w = plainText(s).toLowerCase().replace(/[0-9][0-9.,]*/g, '#').match(/[a-z#’']+/g) || []; const o = new Set(); for (let i = 0; i + 2 < w.length; i++) o.add(w.slice(i, i + 3).join(' ')); return o; };
+const jaccard = (a, b) => { if (a.size < 4 || b.size < 4) return 0; let n = 0; for (const x of a) if (b.has(x)) n++; return n / (a.size + b.size - n); };
+export const NEAR_COPY = 0.5;
+/** [items whose keyed option is strictly the longest, mc items] over a list (steps included) */
+function longestKeys(items) {
+  const mc = withSteps(items).filter((x) => x.type === 'mc' && Array.isArray(x.options) && Number.isInteger(x.answer));
+  let k = 0;
+  for (const x of mc) { const L = x.options.map((o) => plainText(typeof o === 'string' ? o : o?.text).length); if (L.every((v, i) => i === x.answer || v < L[x.answer])) k++; }
+  return [k, mc.length];
 }
 
 function straightQuotes(s) {
@@ -525,8 +547,10 @@ async function checkAssessments(course) {
     const bad = [...readFileSync(join(dir, fn), 'utf8').matchAll(/from\s+'(\.{1,2}\/[^']+?\.js)'/g)].map((m) => m[1]);
     if (bad.length) r.err(`${course}/${fn}: import without ?v= (${bad.slice(0, 3).join(', ')}${bad.length > 3 ? ' …' : ''}); write './case.js?v=N' as the other files do`);
   }
+  const f0 = {};
   for (const m of c.modules) {
     const f = await loadModuleFile(course, `assess-m${m.n}`);
+    f0[`assess-m${m.n}`] = f;
     if (!f) { r.warn(`assess-m${m.n}.js missing`); continue; }
     const items = itemsCheck(f.items, `assess-m${m.n}`, { lo: 8, hi: 12, lessonsAllowed: new Set(m.lessons) });
     for (const s of m.lessons) if (items && !items.some((x) => x.lesson === s)) r.warn(`assess-m${m.n}: no item on ${s}`);
@@ -557,7 +581,36 @@ async function checkAssessments(course) {
     (P?.stages || []).forEach((s, i) => { if (s.tool?.kind === 'widget') checkWidget(`project.stages[${i}].tool`, s.tool.widget, r, { chart, caseMod }); else if (s.tool && !['recorder', 'cleaning', 'mix'].includes(s.tool.kind)) r.err(`project.stages[${i}]: unknown tool kind ${s.tool.kind}`); });
     if (!Array.isArray(P?.rubric) || P.rubric.length < 3) r.warn('project: give a rubric of at least 3 criteria');
   }
+  await cueChecks(course, r, { modules: c.modules.map((m) => [`assess-m${m.n}`, f0[`assess-m${m.n}`]]), diagnostic: d, final: fin, project: pj });
   return r;
+}
+
+/** The answer-cue and near-copy checks for one course. A course already marked complete (live) gets notes, so the
+ *  backlog stays visible without failing the run; a course in progress gets warnings. */
+async function cueChecks(course, r, { modules, diagnostic, final, project }) {
+  const say = catalog.COURSE[course].status === 'complete' ? (m) => r.note(m) : (m) => r.warn(m);
+  const lessonEx = [];
+  const cue = (where, items) => { const [k, n] = longestKeys(items); if (n >= 3 && k > n / 3) say(`${where}: the keyed option is the longest in ${k} of ${n} multiple-choice items; aim for a third or fewer (make wrong options as specific as the key)`); };
+  for (const { slug } of lessonsOf(course)) {
+    const X = await loadEx(course, slug);
+    if (!X) continue;
+    const items = ['guided', 'independent', 'check'].flatMap((k) => X[k] || []);
+    cue(`${slug}.ex`, items);
+    for (const x of withSteps(items)) lessonEx.push({ where: `${slug} ${x.id}`, sh: trigrams(itemText(x)) });
+  }
+  const assess = [];
+  for (const [name, f] of [...modules, ['assess-diagnostic', diagnostic], ['assess-final', final]]) {
+    if (!f?.items) continue;
+    cue(name, f.items);
+    for (const x of withSteps(f.items)) assess.push({ where: `${name} ${x.id}`, sh: trigrams(itemText(x)), module: name.startsWith('assess-m') });
+  }
+  const P = project?.default || project?.project;
+  const pItems = (P?.stages || []).flatMap((s) => s.items || []);
+  if (pItems.length) cue('project', pItems);
+  const near = (x, pool, what) => { let best = null; for (const y of pool) { const j = jaccard(x.sh, y.sh); if (j >= NEAR_COPY && (!best || j > best.j)) best = { j, y }; } if (best) say(`${x.where} is close to ${what} ${best.y.where} (similarity ${best.j.toFixed(2)}): a student could answer from memory of it; change the scenario and the method's angle, not only the numbers`); };
+  for (const x of assess) near(x, lessonEx, 'lesson exercise');
+  for (const x of assess.filter((a) => !a.module)) near(x, assess.filter((a) => a.module), 'module-test item');
+  for (const x of withSteps(pItems).map((y) => ({ where: `project ${y.id}`, sh: trigrams(itemText(y)) }))) near(x, [...lessonEx, ...assess], 'item');
 }
 
 // ---------------------------------------------------------------- run
@@ -634,6 +687,7 @@ function print(reports) {
     console.log(`\n${r.errors.length ? '✗' : '✓'} ${r.name}${s}`);
     r.errors.forEach((e) => console.log(`   error   ${e}`));
     r.warnings.forEach((w) => console.log(`   warning ${w}`));
+    r.notes.forEach((w) => console.log(`   note    ${w}`));
   }
   console.log(`\n${errs} error${errs === 1 ? '' : 's'}, ${warns} warning${warns === 1 ? '' : 's'}`);
   return errs;

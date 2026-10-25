@@ -336,8 +336,10 @@ export const items = [ { ...exercise, lesson: 'journal-entries' }, … ];   // 8
 ```
 
 - Every assessment item has a `lesson` (the slug it tests) so the answer updates the right mastery.
-- Items are new questions, not copies of lesson exercises, and cover conceptual, numerical and applied knowledge in roughly equal measure, with at least two of the course's characteristic formats (journal entries for F01, `rows` and dataset questions for B02, decisions and calculations for M02).
+- Items are new questions, not copies of lesson exercises (a new scenario and a new angle on the method, not only new numbers: the checker warns when an assessment or project item shares half its word trigrams, numbers aside, with a lesson exercise, or a final or diagnostic item with a module-test item), and cover conceptual, numerical and applied knowledge in roughly equal measure, with at least two of the course's characteristic formats (journal entries for F01, `rows` and dataset questions for B02, decisions and calculations for M02).
 - No hints. `solution` is shown when the student reviews the test after submitting.
+- **No length cue.** In each file the keyed option may be strictly the longest in at most a third of the multiple-choice items (the checker counts, steps included). Make wrong options as specific as the key rather than padding or trimming.
+- **Steps show together in tests.** A test shows every step of a `steps` item at once, so no step's prompt may state another step's answer.
 - `assess-diagnostic.js` exports `items` (8–12, spread across modules) and `route`: `[{ module: 2, ifAtLeast: 0.8 }, …]` meaning “if the student scores at least 80% on the items for modules before this one, suggest starting here”.
 - `assess-final.js` exports `items` (20–25, all modules). 70% passes.
 - `project.js` exports (as `default` or `project`):
