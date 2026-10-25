@@ -182,19 +182,22 @@ export const DERIVED = {
 
 // ---------------------------------------------------------------- the project (lessons and module tests must not use these)
 const W = DATA.workshops;
-/** Lantern's barista workshops (fictional): three-hour sessions for up to eight people, $75 a head, Tuesday and Thursday
- *  evenings in the roastery; 14 workshops in 2026 (M01) and 11 so far in 2027. The June 2027 survey: 210 past
- *  attendees and newsletter readers who opened the invitation (an email survey, not a probability sample). */
-export const WORKSHOP_OFFER = { price: 75, hours: 3, maxPlaces: 8, slots: 'Tuesday and Thursday evenings', held2026: 14, held2027: 11, costPerSession: 260 };
+/** Lantern's barista workshops (fictional), as M01 and B03 describe them: a three-hour Saturday workshop for a small
+ *  group (about 12 places) at $125 a place, run in a hired room with Lantern's training machine; 14 workshops from March
+ *  to December 2026 (in person, online and hybrid, B04; the project is about the in-person one); about $550 a workshop for the room, materials and a second trainer (B03), so $950 from a full one.
+ *  The rivals: CremaClass, an online video course at $39, and Calder College's six-evening course at $210 (M01), and
+ *  Kettle Lane Coffee Club's tasting evenings (new here). The June 2027 survey: 210 past attendees and newsletter
+ *  readers who opened the invitation (an e-mail survey, not a probability sample). */
+export const WORKSHOP_OFFER = { price: BUSINESS.workshops.pricePerPerson, hours: 3, places: BUSINESS.workshops.avgParticipants, slots: 'Saturdays', held2026: BUSINESS.workshops.held, costPerWorkshop: 550, cremaPrice: 39, calderPrice: 210, calderEvenings: 6 };
 export const WORKSHOP_NEEDS = [
   { key: 'skills', label: 'Hands-on skills', q: 'Learning to make café-quality coffee at home' },
   { key: 'social', label: 'Social', q: 'A fun night out with friends' },
   { key: 'gift', label: 'Gift', q: 'Something to give as a present' },
   { key: 'career', label: 'Career', q: 'A qualification that helps me work as a barista' },
   { key: 'value', label: 'Value', q: 'A low price' },
-  { key: 'schedule', label: 'Schedule', q: 'Times that suit me, including weekends' },
+  { key: 'schedule', label: 'Schedule', q: 'Times that suit me, such as weekday evenings' },
 ];
-export const WORKSHOP_PROVIDERS = W.providers;   // Lantern Workshops, Steamline Barista Academy, Kettle Lane Coffee Club, Online videos
+export const WORKSHOP_PROVIDERS = W.providers;   // Lantern Workshops, Calder College, Kettle Lane Coffee Club, CremaClass online
 export const WORKSHOP_LEVELS = { age: LEVELS.age, past: ['Never attended', 'Attended before'] };
 const wNeeds = W.needsBy.map(dec), wIdeal = W.ideal.map(dec), wRatings = W.ratings.map((b) => b.map(dec)), wAge = dec(W.age), wPast = dec(W.past);
 export const WORKSHOP_RESPONDENTS = Array.from({ length: W.n }, (_, i) => ({
@@ -202,6 +205,36 @@ export const WORKSHOP_RESPONDENTS = Array.from({ length: W.n }, (_, i) => ({
   needs: wNeeds.map((c) => c[i]), ideal: wIdeal.map((c) => c[i]), ratings: wRatings.map((b) => b.map((c) => c[i])),
 }));
 export const WORKSHOP_TRUE_TYPE = dec(W.seg);   // what Ana can't see: home enthusiasts, gift buyers, aspiring baristas, social groups
+
+// the project's own analysis (project.js reads these; lessons must not)
+const wCols = WORKSHOP_NEEDS.map((_, j) => WORKSHOP_RESPONDENTS.map((r) => r.needs[j]));
+const wZ = standardise(wCols).rows;
+const W_KS = [2, 3, 4, 5, 6];
+const wFits = W_KS.map((k) => { const km = kmeans(wZ, k, { restarts: 20 }); return { k, km, inertia: km.inertia, silhouette: silhouette(wZ, km.labels) }; });
+const WK = 4, wKm = wFits.find((f) => f.k === WK).km;
+const wMembers = (g) => wKm.labels.map((l, i) => (l === g ? i : -1)).filter((i) => i >= 0);
+const wTrue = dec(W.seg);
+const W_TYPE_NAMES = ['Home enthusiasts', 'Gift buyers', 'Aspiring baristas', 'Social groups'];
+const wName = (g) => { const c = new Array(4).fill(0); wMembers(g).forEach((i) => c[wTrue[i]]++); return W_TYPE_NAMES[c.indexOf(Math.max(...c))]; };
+/** Ana's view of her workshops' strengths on the six needs (+1 strong, −1 weak): hands-on, fun, giftable; no
+ *  certificate, $125 is far above CremaClass's $39, and only on Saturdays. */
+export const WORKSHOP_STRENGTHS = [1, 1, 1, -1, -1, -1];
+const wMeans = WORKSHOP_PROVIDERS.map((_, b) => WORKSHOP_NEEDS.map((_, j) => mean(WORKSHOP_RESPONDENTS.map((r) => r.ratings[b][j]))));
+const wMap = PM.perceptualMap(wMeans);
+const wIdealSeg = Array.from({ length: WK }, (_, g) => WORKSHOP_NEEDS.map((_, j) => mean(wMembers(g).map((i) => WORKSHOP_RESPONDENTS[i].ideal[j]))));
+export const WORKSHOP_DERIVED = {
+  elbow: wFits.map(({ k, inertia, silhouette: sil, km }) => ({ k, inertia, silhouette: sil, sizes: km.sizes })),
+  k: WK, labels: wKm.labels, centres: wKm.centres, names: Array.from({ length: WK }, (_, g) => wName(g)),
+  index: indexVsAverage(wCols, wKm.labels, WK),
+  sizes: Array.from({ length: WK }, (_, g) => wMembers(g).length),
+  wtp: Array.from({ length: WK }, (_, g) => mean(wMembers(g).map((i) => WORKSHOP_RESPONDENTS[i].wtp))),
+  past: Array.from({ length: WK }, (_, g) => mean(wMembers(g).map((i) => WORKSHOP_RESPONDENTS[i].past))),
+  age: Array.from({ length: WK }, (_, g) => WORKSHOP_LEVELS.age.map((_, a) => wMembers(g).filter((i) => WORKSHOP_RESPONDENTS[i].age === a).length)),
+  fit: needsFit(wKm.centres, WORKSHOP_STRENGTHS),
+  trueAgreement: adjustedRand(wKm.labels, wTrue),
+  map: { means: wMeans, ratio: wMap.ratio, cumulative: wMap.cumulative, scores: wMap.scores, loadings: wMap.loadings, ideal: wIdealSeg, idealPts: wIdealSeg.map((p) => wMap.project(p)), distances: PM.idealDistances(wMap, wIdealSeg) },
+  project: (profile) => wMap.project(profile),
+};
 
 // ---------------------------------------------------------------- identities (the checker runs these)
 const close = (a, b, tol = 1e-9) => Math.abs(a - b) <= tol;
@@ -222,4 +255,7 @@ export const IDENTITIES = [
   ['the loyalty scale is internally consistent (alpha above 0.7)', alphaLoyal > 0.7],
   ['M04’s Cold Brew price and this case agree ($3.49)', BRAND_NOTES.Lantern.includes('$3.49')],
   ['segment spend shares add to 1', close(sum(sizes.map((s) => s.spendShare)), 1, 1e-9)],
+  ['a full workshop contributes $950, as in B03 (12 places at $125 less $550)', WORKSHOP_OFFER.places * WORKSHOP_OFFER.price - WORKSHOP_OFFER.costPerWorkshop === 950],
+  ['the workshop survey’s k = 4 has the highest silhouette of k = 2 to 6', WORKSHOP_DERIVED.elbow.every((e) => e.silhouette <= WORKSHOP_DERIVED.elbow.find((x) => x.k === 4).silhouette)],
+  ['every provider mean in the workshop survey lies on the 1–7 scale', WORKSHOP_DERIVED.map.means.every((r) => r.every((v) => v >= 1 && v <= 7))],
 ];

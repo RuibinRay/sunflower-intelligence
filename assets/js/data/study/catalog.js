@@ -412,7 +412,7 @@ const ALL = [
       { n: 3, title: 'Targeting', lessons: ['evaluating-segments', 'targeting-strategies'] },
       { n: 4, title: 'Positioning', lessons: ['perceptual-maps', 'positioning-statements', 'differentiation-and-repositioning'] },
     ],
-    project: { title: 'Positioning Lantern’s barista workshops', blurb: 'Segment the people who come to, or might come to, Lantern’s barista workshops, choose which segment to serve, build a persona from the data, map Lantern against rival workshop providers and free online videos, and write the positioning statement and the changes that would make it true.' },
+    project: { title: 'Positioning Lantern’s barista workshops', blurb: 'Segment the people who come to, or might come to, Lantern’s barista workshops, choose which segment to serve, build a persona from the data, map Lantern against a college course, tasting evenings and an online course, and write the positioning statement and the changes that would make it true.' },
     topics: ['Demographic segmentation', 'Geographic segmentation', 'Psychographic segmentation', 'Behavioural segmentation', 'Target market selection', 'The STP framework', 'Buyer personas', 'Perceptual maps', 'Positioning statements', 'Differentiation strategies'],
     related: [{ plate: 'segment' }, { tool: 'marketing/segmentation/', label: 'Market segmentation' }],
   }),

@@ -128,10 +128,10 @@ rp = np.random.default_rng(6211)
 NP = 210
 WNEEDS = ['skills', 'social', 'gift', 'career', 'value', 'schedule']
 WTYPES = [
-    dict(share=0.35, m=[6.4, 3.6, 2.4, 2.4, 4.2, 4.6], wtp=85, past=0.52, age=[0.18, 0.40, 0.30, 0.12]),  # home enthusiasts
-    dict(share=0.24, m=[3.6, 4.6, 6.5, 2.0, 4.0, 3.8], wtp=95, past=0.22, age=[0.12, 0.34, 0.36, 0.18]),  # gift buyers
-    dict(share=0.15, m=[6.1, 2.8, 1.8, 6.6, 3.6, 5.5], wtp=140, past=0.40, age=[0.62, 0.30, 0.06, 0.02]), # aspiring baristas
-    dict(share=0.26, m=[3.8, 6.5, 3.6, 1.9, 5.6, 5.2], wtp=55, past=0.36, age=[0.40, 0.38, 0.16, 0.06]),  # social groups
+    dict(share=0.35, m=[6.4, 3.6, 2.4, 2.4, 4.2, 4.6], wtp=140, past=0.52, age=[0.18, 0.40, 0.30, 0.12]),  # home enthusiasts
+    dict(share=0.24, m=[3.6, 4.6, 6.5, 2.0, 4.0, 3.8], wtp=160, past=0.22, age=[0.12, 0.34, 0.36, 0.18]),  # gift buyers
+    dict(share=0.15, m=[6.1, 2.8, 1.8, 6.6, 3.6, 5.5], wtp=235, past=0.40, age=[0.62, 0.30, 0.06, 0.02]), # aspiring baristas
+    dict(share=0.26, m=[3.8, 6.5, 3.6, 1.9, 5.6, 5.2], wtp=90, past=0.36, age=[0.40, 0.38, 0.16, 0.06]),  # social groups
 ]
 assert abs(sum(t['share'] for t in WTYPES) - 1) < 1e-9
 wseg = rp.choice(4, size=NP, p=[t['share'] for t in WTYPES])
@@ -142,12 +142,12 @@ for i, s in enumerate(wseg):
 wage = np.array([int(rp.choice(4, p=WTYPES[s]['age'])) for s in wseg])
 wpast = np.array([int(rp.random() < WTYPES[s]['past']) for s in wseg])
 wtp = np.array([int(5 * round(np.exp(rp.normal(np.log(WTYPES[s]['wtp']), 0.25)) / 5)) for s in wseg])
-PROVIDERS = ['Lantern Workshops', 'Steamline Barista Academy', 'Kettle Lane Coffee Club', 'Online videos']
+PROVIDERS = ['Lantern Workshops', 'Calder College', 'Kettle Lane Coffee Club', 'CremaClass online']
 WPOS = np.array([
-    [5.6, 5.2, 5.4, 3.4, 3.9, 3.6],   # Lantern: hands-on, fun, giftable; weekday evenings only, dear
-    [6.2, 3.0, 3.6, 6.4, 3.2, 4.4],   # Steamline: certified, serious
-    [3.8, 6.3, 4.2, 1.8, 5.6, 5.4],   # Kettle Lane: social tastings, cheap, weekends
-    [3.2, 1.6, 1.4, 2.2, 6.8, 6.9],   # online videos: free, any time
+    [5.6, 5.2, 5.4, 3.4, 3.9, 3.6],   # Lantern: hands-on, fun, giftable; Saturdays only, $125
+    [6.2, 3.0, 3.6, 6.4, 3.2, 4.4],   # Calder College (M01): six evenings, a certificate, $210
+    [3.8, 6.3, 4.2, 1.8, 5.6, 5.4],   # Kettle Lane: social tasting evenings, cheap
+    [3.2, 1.6, 1.4, 2.2, 6.8, 6.9],   # CremaClass (M01): online videos, $39, any time
 ])
 wratings = np.zeros((NP, 4, 6), dtype=int)
 for i in range(NP):
