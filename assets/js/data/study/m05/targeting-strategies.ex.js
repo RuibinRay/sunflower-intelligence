@@ -376,7 +376,7 @@ export const check = [
     options: [
       'On the go has too few likely buyers to be worth any campaign, since it is fourth on Ana’s scorecard',
       'Two campaigns would probably cost more than a firm of Lantern’s size can usually afford at a launch',
-      'Two messages under one brand pull against each other, and On the go buys where Lantern earns less',
+      'Two messages under one brand pull against each other, and On the go buys where Lantern would earn less',
       'Convenience stores rarely stock craft products, so few On the go buyers would come across the cans',
     ],
     answer: 2,

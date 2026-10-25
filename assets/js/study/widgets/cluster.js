@@ -4,7 +4,8 @@
 // the respondents on the first two principal components of the chosen needs with one segment picked out.
 //   { type: 'cluster', title, rows: [[r1 … rp] per respondent], vars: ['Taste', …], k: 5, ks: [2 … 8],
 //     choose: true (let the student pick which needs to use), raw: true (offer clustering without standardising),
-//     spend: [per respondent] (adds spend per head and share of spend), seed: 1888, note }
+//     spend: [per respondent] (adds spend per head and share of spend), seed: 1888,
+//     noun: ['variable', 'variables'] (what the columns are called when they aren't all needs; default need/needs), note }
 import { h, s, onResize } from '../../core/dom.js?v=14';
 import { xl } from '../xl.js?v=14';
 import { frame, lin, niceTicks, axisX, axisY, tableTwin } from '../../core/charts.js?v=14';
@@ -19,6 +20,8 @@ const mean = (xs) => xs.reduce((a, b) => a + b, 0) / xs.length;
 export function mount(el, cfg, ctx) {
   const base = `cl-${ctx.id}`;
   const P = cfg.vars.length, N = cfg.rows.length;
+  const [one, many] = cfg.noun || ['need', 'needs'];
+  const cap = (t) => t[0].toUpperCase() + t.slice(1);
   const ks = cfg.ks || [2, 3, 4, 5, 6, 7, 8];
   const st = { k: ks.includes(cfg.k) ? cfg.k : ks[Math.min(3, ks.length - 1)], use: cfg.vars.map(() => true), std: true, show: 0 };
   const cache = new Map();   // key → { fits, pcs }
@@ -38,13 +41,13 @@ export function mount(el, cfg, ctx) {
   }
 
   const kBox = segmented(`${base}-k`, 'Number of segments (k)', ks.map((k) => [String(k), String(k)]), String(st.k), (v) => { st.k = Number(v); st.show = 0; render(); });
-  const varBox = cfg.choose ? h('fieldset', { class: 'field cl-vars' }, h('legend', { class: 'field-label' }, 'Needs to segment on'),
+  const varBox = cfg.choose ? h('fieldset', { class: 'field cl-vars' }, h('legend', { class: 'field-label' }, `${cap(many)} to segment on`),
     ...cfg.vars.map((v, j) => { const id = `${base}-v${j}`; const inp = h('input', { type: 'checkbox', id, checked: '' }); inp.addEventListener('change', () => {
       const next = st.use.slice(); next[j] = inp.checked;
       if (next.filter(Boolean).length < 2) { inp.checked = true; return; }
       st.use = next; st.show = 0; render(); }); return h('span', { class: 'cl-var' }, inp, h('label', { for: id }, v)); })) : null;
   const stdBox = cfg.raw ? (() => { const id = `${base}-std`; const inp = h('input', { type: 'checkbox', id, checked: '' }); inp.addEventListener('change', () => { st.std = inp.checked; st.show = 0; render(); });
-    return h('div', { class: 'field sp-check' }, inp, h('label', { for: id }, 'Standardise each need first (z-scores)')); })() : null;
+    return h('div', { class: 'field sp-check' }, inp, h('label', { for: id }, `Standardise each ${one} first (z-scores)`)); })() : null;
   const charts = h('div', { class: 'cl-charts' });
   const elbowBox = h('div', { class: 'chart-box cv-chart' }), silBox = h('div', { class: 'chart-box cv-chart' });
   charts.append(elbowBox, silBox);
@@ -57,7 +60,7 @@ export function mount(el, cfg, ctx) {
   const scatterBox = h('div', { class: 'chart-box cv-chart' });
   el.classList.add('cv-widget', 'cl-widget');
   el.append(...[cfg.title ? h('p', { class: 'fx-title' }, cfg.title) : null,
-    h('p', { class: 'fx-note' }, `${fmt(N)} respondents rated ${P} needs. k-means sorts them into k segments; the charts show every k at once, the table the k you choose.`),
+    h('p', { class: 'fx-note' }, `${fmt(N)} respondents, ${cfg.noun ? 'measured on' : 'who rated'} ${P} ${many}. k-means sorts them into k segments; the charts show every k at once, the table the k you choose.`),
     h('div', { class: 'cv-fields' }, kBox), varBox, stdBox, charts, twin, out, profCap, profile, showBox, scatterBox,
     cfg.note ? (() => { const p = h('p', { class: 'fx-note' }); p.innerHTML = xl(cfg.note); return p; })() : null].filter(Boolean));
 
@@ -89,7 +92,7 @@ export function mount(el, cfg, ctx) {
     const head = ['Segment', 'Respondents', ...(cfg.spend ? ['Spend a head', 'Share of spend'] : []), ...cfg.vars.map((v, j) => (st.use[j] ? v : `${v} (not used)`))];
     // diverging tint around 100: cool (the site's --pos) above average, warm (--neg) below; the number carries the value
     const cell = (v) => { const t = Math.max(-1, Math.min(1, (v - 100) / 50)); const rgb = t >= 0 ? '47,93,158' : '180,83,42'; return h('td', { class: 'num cl-ix', style: `background: rgba(${rgb},${(0.3 * Math.abs(t)).toFixed(3)})` }, fmt(v)); };
-    profCap.textContent = `Segments for k = ${st.k}: each need’s index against the average respondent (100 = average; above 100, that need matters more to the segment)`;
+    profCap.textContent = `Segments for k = ${st.k}: each ${one}’s index against the average respondent (100 = average; above 100, the segment scores higher than average on it)`;
     profile.replaceChildren(h('table', { class: 'data-table cl-table', 'aria-labelledby': `${base}-pcap` },
       h('thead', {}, h('tr', {}, ...head.map((t) => h('th', { scope: 'col' }, t)))),
       h('tbody', {}, ...segs.map((m, g) => h('tr', {}, h('th', { scope: 'row' }, LETTERS[g]),
@@ -100,7 +103,7 @@ export function mount(el, cfg, ctx) {
     out.replaceChildren(h('dl', { class: 'stats-row stats-dense' },
       ...[['k', String(st.k)], ['Within-cluster sum of squares', fmt(cur.inertia, 1)], ['Mean silhouette', cur.sil.toFixed(3)], ['Highest silhouette', `k = ${best}`]]
         .map(([a, b]) => h('div', { class: 'stat' }, h('dt', {}, a), h('dd', { class: 'num' }, b)))),
-    h('p', { class: 'fx-note' }, `Segments are lettered by size, largest first. ${st.std ? 'Each need was standardised, so every need counts equally in the distances.' : 'Without standardising, needs with a wider spread of answers count for more in the distances.'}`));
+    h('p', { class: 'fx-note' }, `Segments are lettered by size, largest first. ${st.std ? `Each ${one} was standardised, so every ${one} counts equally in the distances.` : `Without standardising, ${many} with a wider spread of values count for more in the distances.`}`));
     // scatter on the first two components, one segment picked out
     showBox.replaceChildren(segmented(`${base}-s`, 'Pick out a segment', segs.map((_, g) => [String(g), LETTERS[g]]), String(st.show), (v) => { st.show = Number(v); drawScatter(km, pc); }));
     drawScatter(km, pc);
@@ -111,7 +114,7 @@ export function mount(el, cfg, ctx) {
     if (!pc || pc.error) { scatterBox.replaceChildren(); return; }
     const pts = pc.scores.map((sc) => [sc[0], sc[1]]);
     const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
-    const fr = frame(scatterBox, { height: 300, label: `Respondents on the first two principal components of the needs used, segment ${LETTERS[st.show]} picked out`, margin: { t: 20, r: 14, b: 46, l: 46 } });
+    const fr = frame(scatterBox, { height: 300, label: `Respondents on the first two principal components of the ${many} used, segment ${LETTERS[st.show]} picked out`, margin: { t: 20, r: 14, b: 46, l: 46 } });
     const tx = niceTicks(Math.min(...xs), Math.max(...xs), 5), ty = niceTicks(Math.min(...ys), Math.max(...ys), 5);
     const x = lin(tx.min, tx.max, 0, fr.iw), y = lin(ty.min, ty.max, fr.ih, 0);
     axisY(fr, y, ty.ticks, { format: (v) => v.toFixed(0), label: `Component 2 (${fmt(pc.ratio[1] * 100)}% of the variance)` });

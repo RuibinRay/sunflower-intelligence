@@ -153,10 +153,10 @@ export default {
     { h: 'Choosing a strategy' },
     { p: 'Kotler and Armstrong’s textbooks list five considerations for choosing among the strategies: the company’s resources, how variable the product is, the product’s life-cycle stage, how variable the market is, and competitors’ strategies (the labels as listed in M. L. Ripley’s course notes on their <i>Marketing: An Introduction</i>). The notes give only the labels, so the middle column below is the usual reading of each, not a quotation. For the life-cycle stage it follows M02’s life-cycle lesson, where a new product starts with one basic version, and OpenStax’s chapter on the life cycle, where firms in maturity extend a product to new customers and alter it to fit them. None of the five decides alone.' },
     { table: {
-      caption: 'Five considerations, what each points towards, and Lantern Cold Brew',
+      caption: 'Five considerations, the usual reading of each, and Lantern Cold Brew',
       head: ['Consideration', 'The usual reading', 'Lantern Cold Brew'],
       rows: [
-        ['Company resources', 'Limited resources favour concentration', 'A small firm with one new product and a launch budget, not a national brand’s'],
+        ['Company resources', 'Limited resources favour concentration', 'A small firm planning one new product, with a launch budget, not a national brand’s'],
         ['Product variability', 'Uniform products (salt, fuel) suit mass marketing; products that can vary suit segmenting', 'Coffee varies in taste, strength, format and provenance'],
         ['Life-cycle stage', 'A new product often launches in one basic version, to everyone or to one segment; separate versions for separate segments become common in maturity', `Cold Brew is planned for later in 2027 and will start in its <g>introduction stage</g>; awareness of Lantern is ${p1(D.aware)}`],
         ['Market variability', 'Buyers who want the same things suit mass marketing; buyers who differ suit segmenting', 'Five segments whose Cold Brew intent ranges from about 10% to 46%'],

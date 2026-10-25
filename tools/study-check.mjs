@@ -439,6 +439,7 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
     if (!ks.every((k) => Number.isInteger(k) && k >= 2 && k <= 8)) r.err(`${w}: ks must be whole numbers from 2 to 8`);
     if (wd.k != null && !ks.includes(wd.k)) r.err(`${w}: k must be one of ks`);
     if (wd.spend && wd.spend.length !== R0.length) r.err(`${w}: spend needs one value per respondent`);
+    if (wd.noun && !(Array.isArray(wd.noun) && wd.noun.length === 2 && wd.noun.every((x) => typeof x === 'string' && x))) r.err(`${w}: noun must be [singular, plural]`);
   } else if (wd.type === 'percmap') {
     const B0 = wd.brands || [], A0 = wd.attributes || [], M0 = wd.means || [];
     if (B0.length < 3 || M0.length !== B0.length || !M0.every((r) => r.length === A0.length && r.every(Number.isFinite))) r.err(`${w}: percmap needs brands (3 or more), attributes and means (one row of attribute means per brand)`);

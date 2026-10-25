@@ -291,7 +291,7 @@ export const independent = [
     id: 'm05-es-i4', type: 'mc', kind: 'conceptual',
     prompt: 'Five segments’ shares of a market range from 18% to 21%. A planner scores size with min–max scaling, 100 × (share − smallest) ÷ (largest − smallest). What is the effect?',
     options: [
-      'A 3-point range in shares becomes a 100-point range of scores, so size can swamp the other factors',
+      'A 3-point range in shares becomes a 100-point range of scores, so size can swamp the other factors in the total',
       'The scores keep the shares’ proportions, so a segment with 18% scores about 86 against the 21% segment’s 100',
       'Size can no longer change the ranking, because min–max scaling puts every segment in the middle of the scale',
       'It is the same as the ratio to the best, because both methods give the largest segment a score of 100',

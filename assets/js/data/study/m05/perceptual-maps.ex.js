@@ -46,7 +46,7 @@ export const guided = [
     id: 'm05-pm-g1', type: 'steps', kind: 'numerical',
     prompt: `A two-attribute map of taste and convenience. The table gives each brand’s mean ratings; the Explorers’ ideal coffee is rated ${f2(exIdeal[TASTE])} on taste and ${f2(exIdeal[CONV])} on convenience.`,
     data: { table: { head: ['Brand', 'Taste and quality', 'Convenience'], rows: BRANDS.map((n, b) => [n, f2(M[b][TASTE]), f2(M[b][CONV])]) } },
-    solution: `Distances from (${f2(exIdeal[TASTE])}, ${f2(exIdeal[CONV])}): ${BRANDS.map((n, b) => `${n} ${f2(twoD(b))}`).join(', ')}. On these two attributes Arcadia Coffee is nearest the Explorers (${f2(twoD(AR))}) and Summit Brew is ${f2(twoD(SU))} away. On the full eight-attribute map Summit Brew is nearest (${f2(D.map.distances[EX][SU])}) and Arcadia is ${f2(D.map.distances[EX][AR])} away, because the full map also counts novelty and energy, where Summit Brew is closer to what Explorers want.`,
+    solution: `Distances from (${f2(exIdeal[TASTE])}, ${f2(exIdeal[CONV])}): ${BRANDS.map((n, b) => `${n} ${f2(twoD(b))}`).join(', ')}. On these two attributes Arcadia Coffee is nearest the Explorers (${f2(twoD(AR))}) and Summit Brew is ${f2(twoD(SU))} away. On the full eight-attribute map Summit Brew is nearest (${f2(D.map.distances[EX][SU])}) and Arcadia is ${f2(D.map.distances[EX][AR])} away, because the full map also counts health, sustainability and novelty, where Summit Brew is much nearer what Explorers want (their ideal is ${f2(exIdeal[A('health')])} on health, ${f2(exIdeal[A('sustainability')])} on sustainability and ${f2(exIdeal[A('novelty')])} on novelty; Summit Brew is rated ${f2(M[SU][A('health')])}, ${f2(M[SU][A('sustainability')])} and ${f2(M[SU][A('novelty')])}, Arcadia ${f2(M[AR][A('health')])}, ${f2(M[AR][A('sustainability')])} and ${f2(M[AR][A('novelty')])}).`,
     steps: [
       {
         id: 'm05-pm-g1-s1', type: 'num',
@@ -75,8 +75,8 @@ export const guided = [
         id: 'm05-pm-g1-s3', type: 'mc',
         prompt: `On the full map, built from all eight attributes, Summit Brew is the Explorers’ nearest brand (${f2(D.map.distances[EX][SU])}) and Arcadia is ${f2(D.map.distances[EX][AR])} away. What best explains why the two maps disagree?`,
         options: [
-          'It leaves out novelty and energy, where Summit Brew is nearer the Explorers’ ideal than Arcadia is',
-          'The full map is the less accurate of the two, because it carries only 90% of the differences between the brands',
+          'It leaves out health, sustainability and novelty, where Summit Brew is much nearer the Explorers’ ideal than Arcadia is',
+          'The full map is the less accurate of the two maps, because it carries only 90% of the differences between the six brands',
           'Different respondents rated the brands for the two maps, so one of the two samples must be biased',
           'Distances on a two-attribute map are in rating points, so they are always shorter than on the full map',
         ],
@@ -86,7 +86,7 @@ export const guided = [
           2: 'Both maps use the same ratings from the same respondents; only the attributes used differ.',
           3: 'The units differ, but that can’t change which brand is nearest. What changes the answer is which attributes count.',
         },
-        hints: ['Which attributes does each map use?', `The Explorers’ ideal is ${f2(exIdeal[A('novelty')])} on novelty; Summit Brew is rated ${f2(M[SU][A('novelty')])} and Arcadia ${f2(M[AR][A('novelty')])}.`],
+        hints: ['Which attributes does each map use?', `On health the Explorers’ ideal is ${f2(exIdeal[A('health')])}; Summit Brew is rated ${f2(M[SU][A('health')])} and Arcadia ${f2(M[AR][A('health')])}. Compare sustainability and novelty the same way.`],
       },
     ],
   },
@@ -340,7 +340,7 @@ export const check = [
     id: 'm05-pm-k5', type: 'multi', kind: 'conceptual',
     prompt: 'Select all the statements about reading a principal-components biplot that are true.',
     options: [
-      'A brand far along an attribute’s arrow is rated high on that attribute compared with the other brands.',
+      'A brand far along an attribute’s arrow is roughly rated high on that attribute compared with the other brands.',
       'An arrow’s squared length is the share of that attribute’s differences the map shows.',
       'Arrows at right angles belong to attributes that are unrelated across the brands.',
       'The longest arrow belongs to the attribute customers care about most.',
@@ -351,15 +351,15 @@ export const check = [
       3: 'Arrow length is about how well the map represents the attribute, not about importance to customers.',
       4: 'Each axis’s sign is arbitrary: flipping it changes nothing. The ends mean what the loadings say.',
     },
-    solution: 'True: projection onto an arrow approximates the brand’s relative rating; the squared length is the communality; right angles mean near-zero correlation across the brands. False: length isn’t importance, and an axis has no good end.',
+    solution: 'True: projection onto an arrow roughly approximates the brand’s relative rating (on maps like Lantern’s, which draw brands by scores and arrows by correlations, only roughly: check the means); the squared length is the communality; right angles mean near-zero correlation across the brands. False: length isn’t importance, and an axis has no good end.',
   },
   {
     id: 'm05-pm-k6', type: 'mc', kind: 'applied',
     prompt: `Lantern’s point on the map rests on ${D.map.counts[LA]} ratings, and 18 of the raters are Craft and local drinkers, a segment that is 17% of the sample. What is the soundest way to describe Lantern’s position in Ana’s report?`,
     options: [
-      'Coffee drinkers in Harbour City see Lantern as the most crafted and ethical brand',
+      'Harbour City’s coffee drinkers place Lantern furthest towards crafted and ethical',
       'Craft and local drinkers see Lantern as their brand: its point sits nearest their ideal',
-      `People who know Lantern see it as the most crafted and ethical brand (base ${D.map.counts[LA]}, leaning towards Craft and local)`,
+      `Those who know Lantern place it furthest towards crafted and ethical (base ${D.map.counts[LA]})`,
       'Lantern’s point is too uncertain to report and should be left off the map',
     ],
     answer: 2,
@@ -368,6 +368,6 @@ export const check = [
       1: 'The map shows Lantern’s profile as rated by everyone who knows it is nearest the Craft and local ideal; it doesn’t show Craft and local drinkers’ own view, which rests on 18 ratings.',
       3: 'Its large differences (taste, local, convenience) are well beyond sampling error. Report the point with its base rather than hiding it.',
     },
-    solution: 'Say whose perception it is and how many stand behind it: people who know Lantern, a base of 61, leaning towards its natural customers. The large differences are reliable; small ones need testing.',
+    solution: 'Say whose perception it is and how many stand behind it: people who know Lantern, a base of 61, leaning towards its natural customers. Say “furthest towards the crafted and ethical end of the map”, not “the most ethical brand”: Arcadia is rated higher on sustainability. The large differences are reliable; small ones need testing.',
   },
 ];

@@ -34,6 +34,7 @@ const usd = (v, d = 0) => `${v < 0 ? '−' : ''}$${fx(Math.abs(v), d)}`;
 const int = (v) => Math.round(v).toLocaleString('en-US');
 const pc = (v, d = 1) => `${fx(v * 100, d)}%`;
 const sgn = (v, d = 2) => `${v < 0 ? '−' : '+'}${fx(Math.abs(v), d)}`;
+const m1 = (v) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), 1)}`;      // one decimal, with a real minus sign
 const sum = (a) => a.reduce((s, x) => s + x, 0);
 const r0 = (x) => Math.round(x), r1 = (x) => Math.round(x * 10) / 10, r2 = (x) => Math.round(x * 100) / 100;
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
@@ -216,7 +217,7 @@ export const items = [
       {
         id: 'm05-fn-1-s1', type: 'num',
         prompt: 'What is the gain from offering all three tailored memberships, against selling these groups the general membership alone? Give a whole number of dollars.',
-        answer: artsAll,
+        answer: Math.round(artsAll),
         check: () => (4000 * (0.05 * 90 - 0.02 * 120) - 7000) + (6000 * (0.06 * 100 - 0.03 * 120) - 7000) + (300 * (0.12 * 260 - 0.08 * 120) - 7000),
         unit: '$', places: 0, tol: 0.5,
         wrong: [
@@ -225,13 +226,13 @@ export const items = [
           { value: sum(ARTS.groups.map((g) => g.N * g.b2 * g.m2)) - 3 * ARTS.F, say: 'That counts every tailored member’s contribution as new. Those who would have bought the general membership already contributed $120 each: subtract it.' },
           { value: sum(ARTS.groups.map((g) => g.N * (g.b2 - g.b1) * ARTS.m1)) - 3 * ARTS.F, say: 'That keeps $120 for every tailored member. Each tailored membership has its own contribution: $90, $100 and $260.' },
         ],
-        solution: `Gain for each group = N × (share × contribution with the tailored membership − share × $${ARTS.m1} with the general one) − $${int(ARTS.F)}. ${ARTS.groups.map((g, i) => `${g.name}: ${int(g.N)} × (${fx(g.b2 * g.m2)} − ${fx(g.b1 * ARTS.m1)}) − ${int(ARTS.F)} = ${usd(artsGain[i])}`).join('; ')}. All three: ${usd(artsAll)}.`,
+        solution: `Gain for each group = N × (share × contribution with the tailored membership − share × $${ARTS.m1} with the general one) − $${int(ARTS.F)}: ${ARTS.groups.map((g, i) => `${g.name.toLowerCase()}: ${int(g.N)} × (${fx(g.b2 * g.m2)} − ${fx(g.b1 * ARTS.m1)}) − ${int(ARTS.F)} = ${usd(artsGain[i])}`).join('; ')}. All three: ${usd(artsAll)}.`,
       },
       {
         id: 'm05-fn-1-s2', type: 'mc',
         prompt: 'Which plan should the centre adopt?',
         options: [
-          'Tailor for the families and the retired, and keep the artists on the general membership: too few of them to cover their offer’s cost',
+          'Tailor for the families and the retired only: there are too few artists to cover a tailored membership’s cost',
           'Offer all three: each tailored membership raises its group’s purchase rate, so each one brings in more members than the general one',
           'Tailor for the retired only: the family membership earns $30 less per member than the general one, so it can only lose money',
           'Tailor for the artists only: their membership earns the most per member and they have the highest purchase rate of the three groups',
@@ -245,7 +246,7 @@ export const items = [
         solution: `Families gain ${usd(artsGain[0])} and the retired ${usd(artsGain[1])}; the artists lose ${usd(-artsGain[2])}, because each artist in the town adds only $${fx(artsPer(ARTS.groups[2]))} a year and it would take ${int(artsMinArtists)} of them to cover the $${int(ARTS.F)}. Two tailored memberships earn ${usd(artsBest)}, more than all three.`,
       },
     ],
-    solution: `Offering all three gains ${usd(artsAll)}; leaving the artists on the general membership gains ${usd(artsBest)}. The artists are the most valuable members each, but they fail the substantial test: ${int(ARTS.groups[2].N)} of them can’t pay for a ${usd(ARTS.F)} offer (the smallest group that could is ${int(artsMinArtists)}). Each tailored offer must pay its own way, and the estimates of who would buy are the thing to test before launching any of them.`,
+    solution: `Offering all three gains ${usd(artsAll)}; leaving the artists on the general membership gains ${usd(artsBest)}. Each artist would be the most valuable member of all, but the group fails the substantial test: ${int(ARTS.groups[2].N)} of them can’t pay for a ${usd(ARTS.F)} offer (the smallest group that could is ${int(artsMinArtists)}). Each tailored offer must pay its own way, and the estimates of who would buy are the thing to test before launching any of them.`,
   },
   {
     id: 'm05-fn-2', lesson: 'why-segment', type: 'multi', kind: 'conceptual',
@@ -318,7 +319,7 @@ export const items = [
         solution: 'Read the cross-tab both ways. Most of Craft and local are high earners, but most high earners belong to other segments, so income alone would spend much of the budget on other drinkers. Adding café use roughly halves the waste, and Lantern’s cafés reach the segment where it already buys. Demographics describe and help reach a needs segment; they don’t define it.',
       },
     ],
-    solution: `Craft and local are ${pc(d3Rev)} high earners, but only ${pc(d3Hi)} of high earners are Craft and local; among high earners who mostly buy at a café, ${pc(d3HiCafe)} are. These are shares of an opt-in panel, so treat them as a guide to how mixed each audience is, not as the city’s figures.`,
+    solution: `${pc(d3Rev)} of Craft and local are high earners, but only ${pc(d3Hi)} of high earners are Craft and local; among high earners who mostly buy at a café, ${pc(d3HiCafe)} are. These are shares of an opt-in panel, so treat them as a guide to how mixed each audience is, not as the city’s figures.`,
   },
   {
     id: 'm05-fn-4', lesson: 'demographic-and-geographic', type: 'mc', kind: 'applied',
@@ -361,8 +362,8 @@ export const items = [
         prompt: 'The shop is thinking of dropping its weekly newsletter for every member outside the heaviest five. What does the result suggest?',
         options: [
           'Keep it: the other twenty members together still buy a large part of the boxes, and some light buyers become heavier',
-          'Drop it: a share like this confirms the 80/20 rule, so the five heaviest members are in effect the whole scheme',
-          'Drop it: light buyers can’t be persuaded to buy more often, so any newsletter sent to them is money wasted',
+          'Drop it: a share like this confirms the 80/20 rule, so in effect the five heaviest members are the whole of the scheme',
+          'Drop it: light buyers can’t be persuaded to buy more often, so any newsletter sent to them is money the shop wastes',
           'Wait: concentration can’t be judged until the share has been tested against chance with a chi-square test',
         ],
         answer: 0,
@@ -371,10 +372,10 @@ export const items = [
           2: 'Nothing in the data says that; and today’s light buyers include tomorrow’s heavier ones, as well as members who would lapse without contact.',
           3: 'The share describes these 25 members exactly; no test is needed to read it. The question is what it implies for the newsletter.',
         },
-        solution: 'Usage is concentrated but nowhere near 80/20, and the lighter four-fifths of members still buy over half the boxes. Ehrenberg-Bass researchers find the same pattern across consumer brands: the heaviest fifth usually give not much more than half of sales. Cutting off light members gives up much of the scheme’s volume.',
+        solution: 'Usage is concentrated but nowhere near 80/20, and the lighter four-fifths of members still buy over half the boxes. Ehrenberg-Bass researchers find the same pattern across consumer brands: the heaviest fifth usually give not much more than half of sales. Cutting off light members puts much of the scheme’s volume at risk.',
       },
     ],
-    solution: `The heaviest 20% (5 of 25 members) bought ${boxTop} of ${sum(BOX)} boxes, ${pc(boxShare)}: concentrated, far from 80/20, and towards the low end of the 44% to 68% range Sharp, Romaniuk and Graham report for consumer brands. The other members buy most of the boxes, so the newsletter should stay.`,
+    solution: `The heaviest 20% (5 of 25 members) bought ${boxTop} of ${sum(BOX)} boxes, ${pc(boxShare)}: concentrated, far from 80/20, and near the low end of the range Sharp, Romaniuk and Graham report across product categories for the heaviest fifth of a brand’s buyers (an average of 59%, from 44% to 68%). The other members buy most of the boxes, so the newsletter should stay.`,
   },
   {
     id: 'm05-fn-6', lesson: 'psychographic-and-behavioural', type: 'mc', kind: 'conceptual',
@@ -397,7 +398,7 @@ export const items = [
   // ================================================================ Module 2: segmenting with data
   {
     id: 'm05-fn-7', lesson: 'cluster-analysis', type: 'steps', kind: 'applied',
-    prompt: `A fictional regional theatre surveyed ${int(TH.n)} people about how much ${TH.p} things matter when they choose a night at the theatre, and ran k-means on the standardised answers with 30 restarts for each k.`,
+    prompt: `A fictional regional theatre surveyed ${int(TH.n)} people about how much six things matter when they choose a night at the theatre, and ran k-means on the standardised answers with 30 restarts for each k.`,
     steps: [
       {
         id: 'm05-fn-7-s1', type: 'mc',
@@ -453,7 +454,7 @@ export const items = [
         id: 'm05-fn-8-s2', type: 'mc',
         prompt: `Run 1 stops with ${groupOf(swim1, 0)} in one segment and ${groupOf(swim1, 1)} in the other, and a within-cluster sum of squares of ${fx(swim1.wcss, 1)}. What do the two runs show?`,
         options: [
-          'Run 2 stopped at a local optimum that no single move improves; keep run 1’s grouping, and run k-means from many starts',
+          'Run 2 stopped at a local optimum; keep run 1’s grouping and run k-means from many starts',
           'Run 2 is the better solution, because its two segments are of equal size while run 1’s are five members and one',
           'The members have no structure worth segmenting, because two runs of k-means on the same data gave different answers',
           'Run 1 is invalid, because k-means can’t return a segment with only one member in it, so run 2 is the one to keep',
@@ -591,7 +592,7 @@ export const items = [
         id: 'm05-fn-13-s2', type: 'mc',
         prompt: 'Which judgement does the choice between the two segments depend on most?',
         options: [
-          'The weight on growth: a modest rise in it would tie them, so the growth estimates are the first thing to test',
+          'The weight on growth: a modest rise would tie them, so test the growth estimates first',
           'The weight on fit: fit has the largest gap between the two segments of any factor, so fit decides the result',
           'The weight on size: the leader’s advantage rests on size, and lowering it slightly would reverse the order',
           'None of them: the leader is ahead on three of the five factors, so no single weight can change the order',
@@ -609,8 +610,8 @@ export const items = [
   },
   {
     id: 'm05-fn-14', lesson: 'evaluating-segments', type: 'num', kind: 'applied',
-    prompt: `Suppose (fictional) Arcadia Coffee relaunches, and the next survey puts it ${fx(ARC)} from the Craft and local ideal on Lantern’s map, with every other distance, score and weight unchanged. Ana scores room from the nearest rival, like size, spend per head and growth, as a ratio to the best segment; fit is centred on 50; her weights are ${W_ANA.join(', ')} for size, spend per head, growth, room and fit. What would Craft and local’s weighted score become? Give one decimal place.`,
-    data: { table: { head: ['Segment', 'Size', 'Spend per head', 'Growth', 'Fit', 'Distance from ideal to nearest rival'], rows: ORDER.map((g) => [NAMES[g], fx(ratio(share)[g], 1), fx(ratio(head)[g], 1), fx(ratio(growth)[g], 1), fx(fitS[g], 1), fx(room[g])]), align: ['l', 'r', 'r', 'r', 'r', 'r'] } },
+    prompt: `Suppose (fictional) Arcadia Coffee relaunches, and the next survey puts it ${fx(ARC)} from the Craft and local ideal on Lantern’s map, with every other distance, score and weight unchanged. The table gives each segment’s scores (0–100) on four factors and the distance from its ideal to its nearest rival. Ana scores room from the nearest rival, like size, spend per head and growth, as a ratio to the best segment; fit is centred on 50; her weights are ${W_ANA.join(', ')} for size, spend per head, growth, room and fit. What would Craft and local’s weighted score become? Give one decimal place.`,
+    data: { table: { head: ['Segment', 'Size score', 'Spend per head score', 'Growth score', 'Fit score', 'Distance from ideal to nearest rival'], rows: ORDER.map((g) => [NAMES[g], fx(ratio(share)[g], 1), fx(ratio(head)[g], 1), fx(ratio(growth)[g], 1), fx(fitS[g], 1), fx(room[g])]), align: ['l', 'r', 'r', 'r', 'r', 'r'] } },
     answer: r1(T1[CL]),
     check: () => { const best = Math.max(...room.map((d, g) => (g === CL ? 0.70 : d))); return (4 * ratio(share)[CL] + 4 * ratio(head)[CL] + 2 * ratio(growth)[CL] + 2 * (100 * 0.70) / best + 4 * fitS[CL]) / 16; },
     unit: '', places: 1, tol: 0.06,
@@ -644,7 +645,7 @@ export const items = [
         prompt: `For comparison, Craft and local’s centre is ${fx(dCLEX)} from Explorers’ and ${fx(dCLOG)} from On the go’s. The two segments’ indexes against the average respondent are in the table. Could one craft offer serve both segments?`,
         data: { table: { head: ['Need', 'Craft and local', 'Mindful'], rows: NEEDS.map((n, j) => [n.label, String(S.index[CL][j]), String(S.index[MI][j])]), align: ['l', 'r', 'r'] } },
         options: [
-          'Partly: Mindful shares the craft pair’s care for sustainability and local sourcing, but wants low sugar far more and new flavours less, so it needs its own variant',
+          'Partly: Mindful shares Craft and local’s care for sustainability and local sourcing, but wants low sugar far more and novelty less, so it needs its own variant',
           'Fully: Mindful is nearer to Craft and local than to any other segment, so the same can and the same message will serve it without change',
           'Not at all: Mindful wants the opposite of Craft and local on almost every need, as On the go does, so it needs a separate brand',
           'Fully: Mindful rates sustainability even higher than Craft and local does, so a craft cold brew is already its ideal coffee',
@@ -688,14 +689,14 @@ export const items = [
   },
   {
     id: 'm05-fn-17', lesson: 'targeting-strategies', type: 'num', kind: 'numerical',
-    prompt: `Suppose (fictional) Ana lists Lantern Cold Brew in Harbour City’s convenience stores to reach On the go drinkers. From M02’s figures: at $${fx(PRICE)} a can the stores keep ${pc(ch('convenience').margin, 0)} of the price, the single-origin liquid costs $${fx(LIQ)} a can, and the listing costs $${int(LIST)} a year; a can sold through a supermarket earns Lantern $${fx(mSup)}. If ${pc(CANNIB, 0)} of the cans sold in convenience stores would otherwise have been bought in a supermarket, how many cans a year must the convenience stores sell for the listing to add anything at all? Round up to a whole number of cans.`,
+    prompt: `Suppose (fictional) Ana lists Lantern Cold Brew in Harbour City’s convenience stores to reach On the go drinkers. From M02’s figures: at $${fx(PRICE)} a can, convenience stores and their distributors keep ${pc(ch('convenience').margin, 0)} of the price, each can costs Lantern $${fx(LIQ)} to make and deliver, and the listing costs $${int(LIST)} a year; a can sold through a supermarket earns Lantern $${fx(mSup)}. If ${pc(CANNIB, 0)} of the cans sold in convenience stores would otherwise have been bought in a supermarket, how many cans a year must the convenience stores sell for the listing to add anything at all? Round up to a whole number of cans.`,
     answer: convNeed,
     check: () => Math.ceil(4000 / ((3.49 * 0.6 - 0.74) - 0.3 * (3.49 * 0.68 - 0.74)) - 1e-9),
     unit: 'cans', places: 0, tol: 0.5,
     wrong: [
       { value: convQ(mConv), say: `That ignores cannibalisation. ${pc(CANNIB, 0)} of the convenience-store cans replace supermarket cans that earned $${fx(mSup)} each, which the listing must make up as well.` },
-      { value: convQ(PRICE * (1 - ch('convenience').margin)), say: `That uses what Lantern receives a can, $${fx(PRICE * (1 - ch('convenience').margin))}, before the liquid. Subtract the $${fx(LIQ)} to get its contribution.` },
-      { value: convQ((1 - CANNIB) * mConv), say: `Cannibalised cans don’t just earn nothing: each one takes away a supermarket can’s $${fx(mSup)}. Net contribution a can = $${fx(mConv)} − ${CANNIB} × $${fx(mSup)}.` },
+      { value: convQ(PRICE * (1 - ch('convenience').margin)), say: `That uses what Lantern receives a can, $${fx(PRICE * (1 - ch('convenience').margin))}, before its cost. Subtract the $${fx(LIQ)} to get its contribution.` },
+      { value: convQ((1 - CANNIB) * mConv), say: `That treats a cannibalised can as adding nothing. It earns $${fx(mConv)} but replaces a supermarket can that earned $${fx(mSup)}, so each one loses $${fx(mSup - mConv)}: net contribution a can = $${fx(mConv)} − ${CANNIB} × $${fx(mSup)}.` },
       { value: convQ(mSup), say: `That uses the supermarket can’s contribution. A convenience-store can earns Lantern $${fx(PRICE)} × ${fx(1 - ch('convenience').margin)} − $${fx(LIQ)} = $${fx(mConv)}.` },
     ],
     solution: `A convenience-store can earns ${fx(PRICE)} × ${fx(1 - ch('convenience').margin)} − ${fx(LIQ)} = $${fx(mConv, 3)}; net of cannibalisation, ${fx(mConv, 3)} − ${CANNIB} × ${fx(mSup, 3)} = $${fx(mConv - CANNIB * mSup, 3)} a can. The listing pays from ${int(LIST)} ÷ ${fx(mConv - CANNIB * mSup, 3)} ≈ ${fx(LIST / (mConv - CANNIB * mSup), 1)}, so ${int(convNeed)} cans a year, about ${pc(convNeed / convChannel, 2)} of the ${fx(convChannel / 1e6, 2)} million cans M02 puts through the city’s convenience stores. The money is not the obstacle; the targeting is. On the go wants convenience and energy, where Lantern is weak, Corner Cup is close to its ideal, and a second message pulls against Lantern’s craft position.`,
@@ -739,7 +740,7 @@ export const items = [
   },
   {
     id: 'm05-fn-20', lesson: 'perceptual-maps', type: 'num', kind: 'numerical',
-    prompt: `On a fictional perceptual map of running shoes, three segments’ ideal points are ${RUN.segs.map((s, g) => `${s.toLowerCase()} (${RUN.size[g] * 100}% of buyers) at (${RUN.ideal[g].map((v) => fx(v, 1).replace('-', '−')).join(', ')})`).join(', ')}. A brand plans to position itself at the ideal point of the average buyer, which lies at the size-weighted average of the three segments’ ideal points. How far is that point from the nearest segment’s ideal? Give two decimal places.`,
+    prompt: `On a fictional perceptual map of running shoes, three segments’ ideal points are ${RUN.segs.map((s, g) => `${s.toLowerCase()} (${fx(RUN.size[g] * 100, 0)}% of buyers) at (${RUN.ideal[g].map(m1).join(', ')})`).join(', ')}. A brand plans to position itself at the ideal point of the average buyer, which lies at the size-weighted average of the three segments’ ideal points. How far is that point from the nearest segment’s ideal? Give two decimal places.`,
     answer: r2(runD[runNear]),
     check: () => Math.hypot(0.4 * 2 + 0.35 * -1.5 + 0.25 * 0.5 - 2.0, 0.4 * 1 + 0.35 * 1.5 + 0.25 * -2 - 1.0),
     unit: 'map units', places: 2, tol: 0.006,
@@ -749,7 +750,7 @@ export const items = [
       { value: r2(runD[1]), say: `That is the distance to the ${RUN.segs[1].toLowerCase()}’ ideal. The ${RUN.segs[runNear].toLowerCase()}’ ideal is nearer.` },
       { value: r2(runD[runNear] ** 2), say: 'That is the squared distance. Take the square root.' },
     ],
-    solution: `Average ideal: (${RUN.size.map((s, g) => `${s} × ${fx(RUN.ideal[g][0], 1)}`).join(' + ')}, ${RUN.size.map((s, g) => `${s} × ${fx(RUN.ideal[g][1], 1)}`).join(' + ')}) = (${fx(runAll[0], 3)}, ${fx(runAll[1], 3)}). Distances: ${RUN.segs.map((s, g) => `${s.toLowerCase()} ${fx(runD[g])}`).join(', ')}. The nearest, the ${RUN.segs[runNear].toLowerCase()}, are ${fx(runD[runNear])} away: a brand placed at the average buyer’s ideal sits far from every segment’s. Positioning for the average is positioning for nobody in particular, which is the case for segmenting in the first place.`,
+    solution: `Average ideal: (${RUN.size.map((s, g) => `${s} × ${m1(RUN.ideal[g][0])}`).join(' + ')}, ${RUN.size.map((s, g) => `${s} × ${m1(RUN.ideal[g][1])}`).join(' + ')}) = (${fx(runAll[0], 3)}, ${fx(runAll[1], 3)}). Distances: ${RUN.segs.map((s, g) => `${s.toLowerCase()} ${fx(runD[g])}`).join(', ')}. The nearest, the ${RUN.segs[runNear].toLowerCase()}, are ${fx(runD[runNear])} away: a brand placed at the average buyer’s ideal sits far from every segment’s. Positioning for the average is positioning for nobody in particular, which is the case for segmenting in the first place.`,
   },
   {
     id: 'm05-fn-21', lesson: 'positioning-statements', type: 'steps', kind: 'applied',
@@ -776,7 +777,7 @@ export const items = [
         solution: `Against ${YO.studios[yoRival]}: ${YO.attrs.map((a, k) => `${a.toLowerCase()} ${SCREEN[screen(k, yoRival)].toLowerCase()}`).join('; ')}.`,
       },
     ],
-    solution: `${YO.studios[yoRival]} is the rival nearest the committed practitioners’ ideal (${fx(yoD[yoRival])}, against Fernlow’s ${fx(yoD[0])}), so it is the rival that sets the frame. Against it, Fernlow’s point of difference is its teachers’ expertise, it holds parity on class times, and it trails on a heated studio, the parity it must reach first. The statement follows: for committed practitioners, Fernlow Yoga is the yoga studio with the town’s most expert teachers, because of whatever checkable fact proves it (their training and years of teaching, say), once its studio is as warm as the rival’s. Against another rival the screen would give different answers: the rival decides what counts as a difference.`,
+    solution: `${YO.studios[yoRival]} is the rival nearest the committed practitioners’ ideal (${fx(yoD[yoRival])}, against Fernlow’s ${fx(yoD[0])}), so it is the rival to position against. Against it, Fernlow’s point of difference is its teachers’ expertise, it holds parity on class times, and it trails on a heated studio, the parity it must reach first. The statement that follows, once its studio is as warm as ${YO.studios[yoRival]}’s: “For committed practitioners, Fernlow Yoga is the yoga studio with the town’s most expert teachers, because [a checkable fact, such as each teacher’s training and years of teaching].” Against another rival the screen would give different answers: the rival decides what counts as a difference.`,
   },
   {
     id: 'm05-fn-22', lesson: 'positioning-statements', type: 'fill', kind: 'conceptual',
@@ -807,13 +808,13 @@ export const items = [
       { formula: '=($B$2+$B$4*$B$3-B7)^2+($C$2+$B$4*$C$3-C7)^2', say: 'That is the squared distance. Take the square root, as the map’s distances do.' },
       { formula: '=SQRT((B2+B4*B3-B7)^2+(C2+B4*C3-C7)^2)', say: 'Without $ the hotel’s position and the planned move slide down as you fill. Lock them: $B$2, $B$3, $B$4, $C$2 and $C$3.' },
     ],
-    solution: `<x>=SQRT(($B$2+$B$4*$B$3-B7)^2+($C$2+$B$4*$C$3-C7)^2)</x>. The planned rise of ${fx(HOT.rise, 1)} moves the hotel from (${HOT.at.map((v) => fx(v, 2)).join(', ')}) to (${hotNew.map((v) => fx(v, 2)).join(', ')}). Distances after the move: ${HOT.segs.map((s, g) => `${s.toLowerCase()} ${fx(hotD1[g])} (from ${fx(hotD0[g])})`).join(', ')}. The hotel would become the business travellers’ near neighbour but move away from the couples, whose ideal it sits nearest today: the plan should count the couples it could lose, and the ratings would only move if guests experienced quieter rooms.`,
+    solution: `<x>=SQRT(($B$2+$B$4*$B$3-B7)^2+($C$2+$B$4*$C$3-C7)^2)</x>. The planned rise of ${fx(HOT.rise, 1)} moves the hotel from (${HOT.at.map((v) => fx(v, 2)).join(', ')}) to (${hotNew.map((v) => fx(v, 2)).join(', ')}). Distances after the move: ${HOT.segs.map((s, g) => `${s.toLowerCase()} ${fx(hotD1[g])} (from ${fx(hotD0[g])})`).join(', ')}. The hotel would end up nearest the business travellers’ ideal but move away from the couples, whose ideal it sits nearest today: the plan should count the couples it could lose, and the ratings would only move if guests experienced quieter rooms.`,
   },
   {
     id: 'm05-fn-24', lesson: 'differentiation-and-repositioning', type: 'mc', kind: 'applied',
     prompt: 'A fictional craft brewery is known for small-batch ales sold in its taproom and in delicatessens. It is determined to win the large “party-pack” segment, who buy twelve-can multipacks of cheap lager in supermarkets and whose ideal point sits on the far side of the market’s perceptual map from the brewery. Which plan puts least of what it already has at risk?',
     options: [
-      'Launch a lager under a separate name, priced and sold for the party-pack buyers, so the brewery’s own brand keeps its craft position',
+      'Launch a lager under a new name for the party-pack buyers, and leave the brewery’s own brand as it is',
       'Reposition the brewery’s main brand towards cheap multipacks, since the party-pack segment is much larger than its current one',
       'Cut the price of its ales to lager levels in supermarkets, which moves the brewery towards the party-pack ideal on the map',
       'Claim in its advertising that its craft ales are ideal for parties, which repositions the brand without changing the product',
