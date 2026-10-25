@@ -151,7 +151,7 @@ export default {
     { h: 'Response styles' },
     { p: 'A <g>response style</g> is a tendency to answer in a particular way whatever the question says. Four matter most in marketing surveys, and all of them are forms of <g>measurement bias</g>.' },
     { list: [
-      '<b><g>Acquiescence</g></b>: agreeing with statements regardless of their content. Krosnick and Presser’s review puts the effect at about 10% on average across studies; Pew finds it stronger among less educated and less informed respondents and when an interviewer is present. Agree/disagree, true/false and yes/no formats invite it.',
+      '<b><g>Acquiescence</g></b>: agreeing with statements regardless of their content. Krosnick and Presser’s review puts the effect at about 10% on average across studies; Pew finds it stronger among less educated and less informed respondents and when an interviewer is present. Agree/disagree, true/false and yes/no formats invite it; Pew’s remedy is to offer a choice between alternative statements, or to ask about the thing itself.',
       '<b><g>Social desirability bias</g></b>: answering in the way that makes you look good. Pew’s examples are people understating how much they drink and overstating how often they vote or go to church; the effect is larger when an interviewer is present. In marketing surveys the same pressure can inflate reported recycling, healthy eating or loyalty to local and ethical brands.',
       '<b>Extreme responding</b>: choosing the end points of scales more than one’s views warrant.',
       '<b>Midpoint responding</b>: retreating to the middle option, sometimes as an easy way out.',
