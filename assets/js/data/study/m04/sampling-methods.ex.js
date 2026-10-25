@@ -3,9 +3,9 @@
 // device. Pennyholt Bakeries, Marrowby Buses, Tamberlake Gyms, Saltreed Festival, Brindlecombe Garden Centre and
 // Orrinsby Software are fictional. Formula items are marked by their results on the sheet and on copies with the numbers
 // changed; num items recompute their answers.
-import { PEOPLE, STRATA, SIZES, SURVEY_2027, SURVEY_PLAN } from './case.js?v=13';
-import * as S from '../../../core/survey.js?v=13';
-import * as I from '../../../core/inference.js?v=13';
+import { PEOPLE, STRATA, SIZES, SURVEY_2027, SURVEY_PLAN } from './case.js?v=14';
+import * as S from '../../../core/survey.js?v=14';
+import * as I from '../../../core/inference.js?v=14';
 
 const Z = I.normInv(0.975);
 const A = SURVEY_2027.allocation, RR = SURVEY_PLAN.responseRate;

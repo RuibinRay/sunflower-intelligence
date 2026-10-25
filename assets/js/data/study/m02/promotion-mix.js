@@ -1,7 +1,7 @@
 // promotion-mix.js — M02 · The promotion mix and integrated marketing communications. Content only; exercises are in promotion-mix.ex.js.
 // Lantern figures come from ./market.js (fictional). Costs in the worked budgets are hypothetical and labelled as such.
 // The simulator results quoted in the trade-promotion note are recomputed with the engine (mixsim.js) in `checks`.
-import { simulate, DEFAULT_PLAN, C } from '../../../core/mixsim.js?v=13';
+import { simulate, DEFAULT_PLAN, C } from '../../../core/mixsim.js?v=14';
 
 const SIM = (() => {
   const base = simulate(DEFAULT_PLAN), none = simulate({ ...DEFAULT_PLAN, promotion: { ...DEFAULT_PLAN.promotion, trade: 0 } });

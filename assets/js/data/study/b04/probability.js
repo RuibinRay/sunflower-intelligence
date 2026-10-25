@@ -3,8 +3,8 @@
 // December order count. The chi-square test of these tables is module 4's: here independence is only compared
 // informally. Tillwise, Lantern's payment provider, and its fraud screen's rates are fictional and labelled, as is Ana's
 // subjective probability. Every printed figure is recomputed in `checks`.
-import { CHANNEL_SUBSCRIPTION as CS, REGION_SUBSCRIPTION as RS, SHOP } from './case.js?v=13';
-import { combin, permut } from '../../../core/inference.js?v=13';
+import { CHANNEL_SUBSCRIPTION as CS, REGION_SUBSCRIPTION as RS, SHOP } from './case.js?v=14';
+import { combin, permut } from '../../../core/inference.js?v=14';
 
 const f = (v, d = 3) => v.toFixed(d);
 const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;

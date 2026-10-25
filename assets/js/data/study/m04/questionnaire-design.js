@@ -3,12 +3,21 @@
 // business here (Tamberlake Gyms, Marrowby Buses) are fictional. Pew Research Center, Krosnick & Presser (2010), the
 // U.S. Census Bureau, OpenStax and Reichheld (2003) are cited for real findings; their figures are checked below.
 // Analysing the answers (frequencies, top box, the Net Promoter Score and its standard error) is module 4's.
-import { SURVEY_2027 } from './case.js?v=13';
+import { SURVEY_2027 } from './case.js?v=14';
 
 const Q = SURVEY_2027.questions;
 const DRAFT = 12, AFTER_REVIEW = 7, FINAL = Q.length;        // Ana's draft, after her review, after the pretest
 const DROPPED = 3, MERGED = 2;                                // review: three questions dropped, two pairs merged
 const PRETEST = { people: 5, unsureRtd: 2 };
+// Brindlecombe Garden Centre (fictional): a three-item "expert advice" scale piloted with six members (1–5 codes)
+const ADV = [[4, 4, 4], [2, 2, 3], [5, 4, 4], [4, 3, 3], [2, 3, 1], [4, 2, 3]];
+const varS = (xs) => { const m = xs.reduce((a, b) => a + b, 0) / xs.length; return xs.reduce((a, b) => a + (b - m) ** 2, 0) / (xs.length - 1); };
+const ADV_ITEM = [0, 1, 2].map((j) => ADV.map((r) => r[j])), ADV_TOT = ADV.map((r) => r[0] + r[1] + r[2]);
+const ADV_IV = ADV_ITEM.map(varS), ADV_TV = varS(ADV_TOT), ADV_K = 3;
+const ADV_ALPHA = ADV_K / (ADV_K - 1) * (1 - ADV_IV.reduce((a, b) => a + b, 0) / ADV_TV);
+// the Saltreed scale in the qd-likert widget (item 3 reverse-worded): alpha with and without reversing
+const FEST = [[4, 4, 2, 5], [5, 4, 1, 5], [2, 3, 4, 3], [3, 3, 3, 4], [4, 5, 2, 4], [1, 2, 5, 2], [4, 3, 3, 4], [4, 4, 2, 4]];
+const festAlpha = (rev) => { const X = FEST.map((r) => [r[0], r[1], rev ? 6 - r[2] : r[2], r[3]]); const iv = [0, 1, 2, 3].map((j) => varS(X.map((r) => r[j]))); return 4 / 3 * (1 - iv.reduce((a, b) => a + b, 0) / varS(X.map((r) => r[0] + r[1] + r[2] + r[3]))); };
 
 // ---------------------------------------------------------------- figure: five rating formats
 const box = (x, y, w, h, l1, l2 = '') => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" style="fill:none;stroke:var(--series-1);stroke-width:1.5"/>`
@@ -49,7 +58,7 @@ const SCALES = '<svg viewBox="0 0 680 430" xmlns="http://www.w3.org/2000/svg" fo
 export default {
   slug: 'questionnaire-design',
   title: 'Questionnaire design',
-  blurb: 'A survey can only be as good as its questions. Turn research objectives into questions that each earn their place, choose the right question types and rating scales, write options and wording that don’t push answers, guard against response styles and order effects, and pretest the result before anyone sees it.',
+  blurb: 'A survey can only be as good as its questions. Turn research objectives into questions that each earn their place, choose the right question types and rating scales, write options and wording that don’t push answers, guard against response styles and order effects, and pretest the result before anyone sees it, and check that multi-item scales are reliable and valid.',
   status: 'reviewed',
   objectives: [
     'Write survey questions from research objectives, justifying each by the analysis and decision it serves, and plan a questionnaire’s flow, screening and routing.',
@@ -57,6 +66,7 @@ export default {
     'Write response options that are mutually exclusive and exhaustive, and identify and fix leading, loaded, double-barrelled, ambiguous, double-negative, jargon-laden, recall and sensitive questions.',
     'Explain acquiescence, social desirability, extreme and midpoint responding, question-order effects and primacy and recency, and reduce them by design.',
     'Plan a pretest with cognitive interviews, and compare web, telephone and face-to-face modes in outline.',
+    'Assess a multi-item scale’s reliability (test–retest, and internal consistency with Cronbach’s alpha) and the evidence for its validity (content, construct and criterion).',
   ],
   prerequisites: [
     { lesson: 'b01/data-collection', why: 'Pew’s basic rules for survey questions (one thing at a time, no leading wording, balanced scales, pretesting) and the table of weak and better questions are taken as read here.' },
@@ -158,6 +168,14 @@ export default {
     ] },
     { p: 'Behind several of these sits <g>satisficing</g>, Krosnick and Presser’s term for taking short cuts instead of doing the work an answer needs: understanding the question, recalling what is relevant, forming a judgement and mapping it onto the options. Satisficing grows with the difficulty of the task and falls with the respondent’s ability and motivation, so long, dull and difficult questionnaires get worse answers. The remedies are design choices. Ask about the thing itself (“How easy or difficult was it to order online?”) instead of asking for agreement with a statement; keep questionnaires short; put sensitive questions in self-administered modes; and word them so that the less flattering answer is easy to give.' },
 
+    { h: 'Reliability and validity' },
+    { p: 'Two questions decide whether a measure is worth having. <g>Reliability</g> is its consistency: whether it gives the same result when nothing has changed. <g>Measurement validity</g> is whether it measures what it is meant to. (B01’s data-quality sense of <g>validity</g>, values that conform to their definition, is a different idea: an answer of 4 on a 1-to-5 scale is valid in that sense whether or not the scale measures the right thing.) A measure can be reliable and still invalid, but, in Tavakol and Dennick’s words, “an instrument cannot be valid unless it is reliable”.' },
+    { p: 'Two checks of reliability are common. <g>Test–retest reliability</g> asks the same people the same questions twice, a short time apart, and correlates the two sets of scores; Price, Jhangiani and Chiang treat a correlation of +.80 or more as good, for things expected to stay stable (an attitude to a brand, not this morning’s mood). <g>Internal consistency</g> asks whether the items of a multi-item scale, such as a Likert scale, move together. It is usually summarised by <g>Cronbach’s alpha</g> (Cronbach, 1951): the variances of the items compared with the variance of their total.' },
+    { math: String.raw`\alpha = \dfrac{k}{k - 1}\left(1 - \dfrac{\sum_i s_i^2}{s_T^2}\right)` },
+    { p: 'If the items move together, the total varies far more than the items do separately, and α approaches 1; if they are unrelated, α is near 0, and it goes negative when items pull against each other, as a reverse-worded item left unreversed does. Tavakol and Dennick note that the acceptable values reported range from 0.70 to 0.95, and Price and colleagues treat +.80 as good. Higher is not always better: Tavakol and Dennick note a recommended maximum of 0.90, because a very high α can mean items that ask the same question in different words, lengthening the questionnaire without adding information. Alpha also assumes the items measure one thing without showing that they do, and it rises with the number of items, so a long scale can reach .70 with weakly related items.' },
+    { p: 'Validity is argued from several kinds of evidence. <g>Content validity</g> asks whether the items cover every part of the idea as defined, judged by comparing the questions with the definition; face validity, whether a measure looks right on the surface, is weaker evidence, because appearances mislead. <g>Construct validity</g> asks whether scores relate to other measures as they should: strongly to other measures of the same idea (convergent validity) and weakly to measures of different ideas (discriminant validity). <g>Criterion validity</g> asks whether scores agree with an outcome measured at the same time (concurrent validity) or later (predictive validity). Texts group this evidence differently: Price, Jhangiani and Chiang count agreement with another measure of the same idea as criterion evidence and don’t use the term construct validity, while marketing-research texts usually treat convergent and discriminant evidence as construct validity, as this lesson does.' },
+    { p: 'Purchase intent is the marketing case of predictive validity. Lantern’s Q2 could give much the same answers if asked twice and still be a poor guide to buying, which is the stated-intent problem Survey error takes up. Its test comes after launch, when Ana can set what list members said in February against what they go on to buy through Lantern’s own channel.' },
+
     { h: 'Order and context effects' },
     { p: 'Pew notes that “earlier questions can unintentionally provide context for the questions that follow”. In one of its December 2008 surveys, 88% said they were dissatisfied with the way things were going in the country when the question came straight after one about the president’s job, against 78% when it came first: ten points from the order alone. Such <g>order effect</g>s are why a questionnaire usually moves from general questions to specific ones, and why a question tracked over time keeps its place in the questionnaire.' },
     { p: 'Lantern’s questionnaire follows that funnel. Q1 asks about Lantern in general before Q2 asks about one new product, so the product question can’t colour the overall judgement; the factual Q3 to Q5 follow; and the open Q6 comes last, when people have already thought about Lantern. Ana kept this order for every respondent so that next year’s answers can be compared with this year’s.' },
@@ -204,6 +222,17 @@ export default {
       ],
       assumptions: 'The items measure one attitude and every item is coded so that a higher code means more of it. Averaging ordinal codes treats the steps as equal, which is a convention, not a fact about the scale.',
       note: 'In Excel, for four items in B2:E2 with the third reverse-worded: <x>=AVERAGE(B2,C2,6-D2,E2)</x>.' },
+    { id: 'qd-alpha', name: 'Cronbach’s alpha (internal consistency of a scale)',
+      tex: String.raw`\alpha = \dfrac{k}{k - 1}\left(1 - \dfrac{\sum_{i=1}^{k} s_i^2}{s_T^2}\right)`,
+      where: [
+        [String.raw`k`, 'The number of items in the scale', ''],
+        [String.raw`s_i^2`, 'The variance of item i across respondents, after any reverse-coding', 'squared scale points'],
+        [String.raw`s_T^2`, 'The variance of respondents’ totals (the sum of their k item codes)', 'squared scale points'],
+        [String.raw`i`, 'The item number, from 1 to k', ''],
+        [String.raw`\alpha`, 'Cronbach’s alpha: up to 1; around 0.70 to 0.90 is the usual target', ''],
+      ],
+      assumptions: 'The items measure one thing and are coded in the same direction. Use the same kind of variance throughout: sample variances (dividing by n − 1, Excel’s VAR.S) here; dividing every variance by n instead gives the same α.',
+      note: 'In Excel, with items in B2:D7 and totals in E2:E7: <x>=3/2*(1-SUM(VAR.S(B2:B7),VAR.S(C2:C7),VAR.S(D2:D7))/VAR.S(E2:E7))</x>.' },
   ],
 
   examples: [
@@ -231,6 +260,19 @@ export default {
       ],
       answer: 'Screen out under-18s first; ask overall satisfaction on a five-point labelled scale before the specific questions; split punctuality from drivers; define “late” and the recall period; replace the long read-aloud list with a coded open question or a short rotating one; and ask frequency as a number of days.',
       interpretation: 'None of the faults would show up in the results as an obvious error. A recency effect in Q3, or an order effect from Q1, would produce plausible-looking percentages that are wrong, which is why the design work comes before fieldwork.' },
+
+    { level: 'challenging', title: 'How consistent is Brindlecombe’s advice scale?', fictional: true,
+      setup: 'Brindlecombe Garden Centre (fictional) piloted a three-item scale on its staff’s advice with six loyalty members, each item from 1 (strongly disagree) to 5 (strongly agree): (1) “Staff know their plants”, (2) “The advice I get works in my garden”, (3) “I trust staff recommendations”. Calculate Cronbach’s alpha with sample variances, and say whether the scale is consistent enough to use.',
+      table: { head: ['Member', 'Item 1', 'Item 2', 'Item 3', 'Total'], rows: ADV.map((r, i) => [i + 1, r[0], r[1], r[2], ADV_TOT[i]]), align: ['l', 'r', 'r', 'r', 'r'] },
+      steps: [
+        String.raw`Item variances (sample, dividing by n − 1 = 5): item 1 has mean 3.5 and squared deviations summing to 7.5, so <m>s_1^2 = 7.5 \div 5 = ${ADV_IV[0].toFixed(1)}</m>; likewise <m>s_2^2 = ${ADV_IV[1].toFixed(1)}</m> and <m>s_3^2 = ${ADV_IV[2].toFixed(1)}</m>. Their sum is ${ADV_IV.reduce((a, b) => a + b, 0).toFixed(1)}.`,
+        String.raw`Totals: ${ADV_TOT.join(', ')}, mean 9.5; squared deviations sum to 37.5, so <m>s_T^2 = 37.5 \div 5 = ${ADV_TV.toFixed(1)}</m>.`,
+        String.raw`Alpha: <m>\alpha = \dfrac{3}{2}\left(1 - \dfrac{${ADV_IV.reduce((a, b) => a + b, 0).toFixed(1)}}{${ADV_TV.toFixed(1)}}\right) = 1.5 \times ${(1 - ADV_IV.reduce((a, b) => a + b, 0) / ADV_TV).toFixed(4)} = ${ADV_ALPHA.toFixed(2)}</m>.`,
+        'Read it. 0.80 is inside the range usually recommended (0.70 to 0.90) and not so high that the items look redundant. But six people are a pilot, not proof: alpha from so few respondents is itself uncertain, and it says nothing about whether the scale measures advice quality rather than general liking for the centre.',
+        'Check validity next: do the three items cover what “good advice” means to gardeners (content)? Do scores track a separate measure, such as whether members followed advice successfully, more than they track liking for the café (construct)?',
+      ],
+      answer: `α = ${ADV_ALPHA.toFixed(2)}: consistent enough for a pilot, to be confirmed on the full sample and backed by evidence of validity.`,
+      interpretation: 'Alpha answers one question, whether the items move together. A scale can pass it and still miss the point: three near-identical items about liking the centre would score higher and measure advice worse.' },
 
     { level: 'applied', title: 'From Ana’s draft to the February questionnaire', fictional: true,
       setup: `Ana’s first draft had ${DRAFT} questions, in this order: age band; household income; satisfaction with coffee and service; “Would you recommend Lantern?” (yes/no); how often she buys coffee out; where people heard of Lantern; excitement about Cold Brew; the “RTD proposition” question; “better than the big chains”; the double negative on ethical coffee; preferred can size; and “What could Lantern do better?”. Turn it into the questionnaire that went out on ${SURVEY_2027.sent}.`,
@@ -264,7 +306,7 @@ export default {
 
   demo: [
     { widget: 'qd-openclosed', intro: 'Pew’s 2008 experiment: the same question asked with five options listed and with none. Compare how many named the economy, and how many gave an answer outside the list, in each version.' },
-    { widget: 'qd-likert', intro: 'A four-item Likert scale from a fictional festival survey; item 3 is worded the other way (“The site felt overcrowded”). Column F reverse-codes it, column G forgets to. Change a respondent’s answers and watch the two scores; then give respondent 8 a 5 on every item, as an acquiescent or straight-lining respondent might. G reports a perfect 5.00, F doesn’t, and column H flags the contradiction.' },
+    { widget: 'qd-likert', intro: 'A four-item Likert scale from a fictional festival survey; item 3 is worded the other way (“The site felt overcrowded”). Column F reverse-codes it, column G forgets to. Change a respondent’s answers and watch the two scores; then give respondent 8 a 5 on every item, as an acquiescent or straight-lining respondent might. G reports a perfect 5.00, F doesn’t, and column H flags the contradiction. Rows 12 and 13 give Cronbach’s alpha for each version of the scale: about 0.96 with item 3 reversed, negative without.' },
   ],
 
   mistakes: [
@@ -290,8 +332,8 @@ export default {
     'The question fixes the level of measurement: ask for a number if you need a mean, and decide the analysis before the wording.',
     'Options must be mutually exclusive and exhaustive. Avoid leading, loaded, double-barrelled, ambiguous, double-negative and jargon-laden wording, long recall periods and sensitive questions nobody needs.',
     'Acquiescence, social desirability, extreme and midpoint responding and satisficing bias answers; question order and option order (primacy on screens, recency on the phone) do too. Design against them.',
-    'Shape the flow: easy opener, general to specific, screening first, routing to relevant questions, sensitive and demographic questions last. Pretest with cognitive interviews and a small field test.',
-    'The mode changes answers: web suits sensitive questions and shows primacy; interviewers bring acquiescence and social desirability. Keep tracked questions in the same mode.',
+    'Reliability is consistency (test–retest; internal consistency, by Cronbach’s alpha = k ÷ (k − 1) × (1 − Σ item variances ÷ total variance), usually 0.70 to 0.90). Measurement validity is measuring the right thing (content, construct, criterion). Reliable is not the same as valid.',
+    'Shape the flow (easy opener, general to specific, screening first, routing, sensitive and demographic questions last), pretest with cognitive interviews, and keep tracked questions in the same mode: web shows primacy; interviewers bring acquiescence and social desirability.',
   ],
 
   glossary: [
@@ -322,6 +364,14 @@ export default {
     { term: 'Routing', def: 'Instructions or programmed rules (skip logic) that send each respondent only to the questions that apply to them, based on their earlier answers.' },
     { term: 'Pretest', def: 'A trial of a questionnaire with people like the intended respondents before fieldwork, to find questions they misunderstand or can’t answer and to check the routing, timing and data.' },
     { term: 'Cognitive interview', def: 'A one-to-one pretest in which a respondent works through a draft questionnaire and describes their thinking, aloud as they answer or afterwards, while the interviewer probes what each question meant to them.' },
+    { term: 'Reliability', def: 'The consistency of a measure: whether it gives the same result when what it measures hasn’t changed, across repeated measurements, across the items of a scale or across observers.' },
+    { term: 'Measurement validity', def: 'The extent to which a measure captures what it is meant to measure, supported by content, construct and criterion evidence. Distinct from validity in the data-quality sense.' },
+    { term: 'Test–retest reliability', def: 'The consistency of a measure over time, assessed by giving the same measure to the same people twice, a short time apart, and correlating the two sets of scores.' },
+    { term: 'Internal consistency', def: 'The extent to which the items of a multi-item scale move together, so that they can be treated as measuring one thing; usually summarised by Cronbach’s alpha.' },
+    { term: 'Cronbach’s alpha', def: 'A measure of internal consistency: k ÷ (k − 1) × (1 − the sum of the k item variances ÷ the variance of the total score). It runs up to 1; values from about 0.70 to 0.90 are the usual target, and it assumes the items measure one thing (Cronbach, 1951).' },
+    { term: 'Content validity', def: 'The extent to which a measure’s items cover every part of the idea it is meant to measure, as defined; judged by comparing the items with the definition. Face validity, whether a measure looks right on the surface, is weaker evidence.' },
+    { term: 'Construct validity', def: 'Evidence that a measure’s scores relate to other measures as they should: strongly to other measures of the same idea (convergent validity) and weakly to measures of different ideas (discriminant validity).' },
+    { term: 'Criterion validity', def: 'The extent to which a measure’s scores agree with a relevant outcome measured at the same time (concurrent validity) or later (predictive validity), such as stated purchase intent against later purchases.' },
     { term: 'Survey mode', def: 'The way questions reach respondents and answers come back, such as a web questionnaire, a telephone interview or a face-to-face interview. The mode can change the answers.' },
   ],
 
@@ -331,6 +381,9 @@ export default {
     { text: 'Krosnick, J. A. &amp; Presser, S. (2010). “Question and Questionnaire Design”. In P. V. Marsden &amp; J. D. Wright (eds), <i>Handbook of Survey Research</i>, 2nd edn, chapter 9, from p. 263. Emerald.', url: 'https://web.stanford.edu/dept/communication/faculty/krosnick/docs/2010/2010 Handbook of Survey Research.pdf', checked: '2026-10-24' },
     { text: 'U.S. Census Bureau. “Appendix A2: Questionnaire Testing and Evaluation Methods for Censuses and Surveys”. Statistical Quality Standards.', url: 'https://census.gov/about/policies/quality/standards/appendixa2.html', checked: '2026-10-24' },
     { text: 'Reichheld, F. F. (2003). “The One Number You Need to Grow”. <i>Harvard Business Review</i> 81(12), 46–54. Paywalled; the question wording and the three groups quoted here were checked against a reprint of the article.', url: 'https://hbr.org/2003/12/the-one-number-you-need-to-grow', checked: '2026-10-24' },
+    { text: 'Cronbach, L. J. (1951). “Coefficient alpha and the internal structure of tests”. <i>Psychometrika</i> 16(3), 297–334. doi:10.1007/BF02310555 (record on IDEAS/RePEc).', url: 'https://ideas.repec.org/a/spr/psycho/v16y1951i3p297-334.html', checked: '2026-10-24' },
+    { text: 'Tavakol, M. &amp; Dennick, R. (2011). “Making sense of Cronbach’s alpha”. <i>International Journal of Medical Education</i> 2, 53–55.', url: 'https://www.ijme.net/archive/2/cronbachs-alpha.pdf', checked: '2026-10-24' },
+    { text: 'Price, P. C., Jhangiani, R. &amp; Chiang, I.-C. A. (2015). <i>Research Methods in Psychology</i>, 2nd Canadian edition, chapter 5, “Reliability and Validity of Measurement”. BCcampus.', url: 'https://opentextbc.ca/researchmethods/chapter/reliability-and-validity-of-measurement/', checked: '2026-10-24' },
     { text: 'Bain &amp; Company. “Measuring Your Net Promoter Score”. Net Promoter System (the question as Bain gives it today, the 0–10 scale, promoters, passives and detractors, and the calculation).', url: 'https://nps.bain.com/about/measuring-your-net-promoter-score/', checked: '2026-10-24' },
   ],
 
@@ -378,6 +431,25 @@ export default {
     { what: 'Tamberlake survey questions', value: 5, shown: 5 },
     // Likert formula note
     { what: 'Reverse code on 1–5: L + H', value: 1 + 5, shown: 6 },
+    // reliability: Brindlecombe's advice scale
+    ...[1.5, 0.8, 1.2].map((v, j) => ({ what: `Advice item ${j + 1} variance`, value: ADV_IV[j], shown: v, tol: 1e-9 })),
+    { what: 'Sum of item variances', value: ADV_IV.reduce((a, b) => a + b, 0), shown: 3.5, tol: 1e-9 },
+    ...[12, 7, 13, 10, 6, 9].map((v, i) => ({ what: `Advice total ${i + 1}`, value: ADV_TOT[i], shown: v })),
+    { what: 'Mean of totals', value: ADV_TOT.reduce((a, b) => a + b, 0) / 6, shown: 9.5 },
+    { what: 'Squared deviations of totals', value: ADV_TOT.reduce((a, t) => a + (t - 9.5) ** 2, 0), shown: 37.5 },
+    { what: 'Item 1 mean', value: ADV_ITEM[0].reduce((a, b) => a + b, 0) / 6, shown: 3.5 },
+    { what: 'Item 1 squared deviations', value: ADV_ITEM[0].reduce((a, x) => a + (x - 3.5) ** 2, 0), shown: 7.5 },
+    { what: 'Total variance', value: ADV_TV, shown: 7.5, tol: 1e-9 },
+    { what: '1 − 3.5 ÷ 7.5', value: 1 - 3.5 / 7.5, shown: 0.5333, tol: 0.00005 },
+    { what: 'k ÷ (k − 1)', value: ADV_K / (ADV_K - 1), shown: 1.5 },
+    { what: 'Alpha (advice scale)', value: ADV_ALPHA, shown: 0.80, tol: 1e-9 },
+    // reliability thresholds quoted (Price et al.; Tavakol and Dennick)
+    { what: 'Price et al.: +.80 good', value: 0.8, shown: 0.8 },
+    { what: 'T&D: 0.70 to 0.95', value: 0.95 - 0.70, shown: 0.25, tol: 1e-9 },
+    { what: 'T&D: maximum 0.90', value: 0.9, shown: 0.9 },
+    // the qd-likert widget's alphas
+    { what: 'Saltreed alpha, reversed', value: festAlpha(true), shown: 0.96, tol: 0.005 },
+    { what: 'Saltreed alpha, unreversed', value: festAlpha(false), shown: -0.86, tol: 0.005 },
     { what: 'Demo: all-5 respondent, unreversed', value: (5 + 5 + 5 + 5) / 4, shown: 5.00 },
     { what: 'Demo: all-5 respondent, reverse-coded (not 5)', value: (5 + 5 + (6 - 5) + 5) / 4, shown: 4 },
   ],

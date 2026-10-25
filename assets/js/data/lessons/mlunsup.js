@@ -1,7 +1,7 @@
 // Lesson: unsupervised learning — k-means and Ward clustering, dendrogram cuts, agreement between groupings, and PCA.
 // `checks` recompute every number printed in the worked example; tests/lessons.test.mjs compares them.
-import * as F from '../../core/format.js?v=13';
-import { jacobiEigen } from '../../core/ml.js?v=13';
+import * as F from '../../core/format.js?v=14';
+import { jacobiEigen } from '../../core/ml.js?v=14';
 
 /** Eigenvalues (largest first) and the matching vectors of a symmetric matrix. */
 function eig(A) {

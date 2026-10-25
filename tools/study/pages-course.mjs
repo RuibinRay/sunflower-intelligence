@@ -212,7 +212,7 @@ export function coursePage(course, ctx) {
   const refs = new Map();
   course.lessons.forEach((l) => (l.L.references || []).forEach((r) => { const k = strip(r.text).slice(0, 80); if (!refs.has(k)) refs.set(k, r); }));
   const related = (c.related || []).map((r) => (r.plate ? `<li><a href="${root}learn/lessons/${r.plate}/">Plate: ${ctx.plates?.[r.plate] || r.plate}</a></li>` : `<li><a href="${root}${r.tool}">${r.label}</a> (tool)</li>`)).join('');
-  const caseBlock = c.case ? `<div class="case-block"><p class="case-tag">Fictional case</p><p><b>${catalog.CASES[c.case].name}.</b> ${esc(catalog.CASES[c.case].line)} Every name and figure in it is invented for teaching.</p></div>` : '';
+  const caseBlock = c.case ? `<div class="case-block"><p class="case-tag">Fictional case</p><p><b>${catalog.CASES[c.case].name.replace(/\.$/, '')}.</b> ${esc(catalog.CASES[c.case].line)} Every name and figure in it is invented for teaching.</p></div>` : '';
   return `${head({ title: `${course.code} ${course.title}`, desc: course.blurb, path: course.href, root, css: [] })}${open({ root, bodyClass: `school--${s.id} page--course`, skip: 'Skip to the course', data: { course: course.id } })}
     ${outline(course, root, 'overview')}
 

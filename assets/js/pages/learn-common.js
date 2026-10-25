@@ -1,10 +1,10 @@
 // learn-common.js — what the Learn page and the lesson pages share: the learner's state (kept in this browser
 // only), the question card, and small helpers. One store, so an answer in a lesson counts in Practise too.
-import { $$, h } from '../core/dom.js?v=13';
-import * as F from '../core/format.js?v=13';
-import { mulberry32 } from '../core/rng.js?v=13';
-import * as L from '../core/learn.js?v=13';
-import { SKILLS, ITEMS } from '../data/learn-items.js?v=13';
+import { $$, h } from '../core/dom.js?v=14';
+import * as F from '../core/format.js?v=14';
+import { mulberry32 } from '../core/rng.js?v=14';
+import * as L from '../core/learn.js?v=14';
+import { SKILLS, ITEMS } from '../data/learn-items.js?v=14';
 
 export const KEY = 'si:learn';
 export const DAY = 86400000;

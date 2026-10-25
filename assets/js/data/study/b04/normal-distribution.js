@@ -4,9 +4,9 @@
 // share (DERIVED.orders.subscriptionShare) for the normal approximation to the binomial. The test of whether the
 // machine runs below its setting is Module 3's; this lesson stops at the model. Every figure printed is recomputed in
 // `checks`. Redfern Bakery and the weekly-demand figures in the application are fictional.
-import { KILNWORTH_1KG as K, KG_BAGS, ORDER_VALUES, DERIVED as D } from './case.js?v=13';
-import * as I from '../../../core/inference.js?v=13';
-import { mean, sd, median, skewness, kurtosis } from '../../../core/stats.js?v=13';
+import { KILNWORTH_1KG as K, KG_BAGS, ORDER_VALUES, DERIVED as D } from './case.js?v=14';
+import * as I from '../../../core/inference.js?v=14';
+import { mean, sd, median, skewness, kurtosis } from '../../../core/stats.js?v=14';
 
 // ---------------------------------------------------------------- the figures the lesson quotes
 const zLabel = (K.label - K.setting) / K.sd;                         // −1.333

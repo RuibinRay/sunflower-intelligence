@@ -4,9 +4,9 @@
 // the five lost bids, the second van). Hobbarn Dairy and Thistlecombe Pet Foods are fictional. The codes and laws cited
 // were read at their sources on the date in `references`. Not the office market or its competitors (the project's).
 // Every printed figure is recomputed in `checks`.
-import { PRICE_AUDIT, COMPETITORS, DEFAULT_PLAN, BREWLINE, CLIENT_INTERVIEWS, FOCUS_GROUPS, DERIVED as D } from './case.js?v=13';
-import { BUSINESS, OUTLOOK_2027 } from '../m01/case.js?v=13';
-import { TIERS } from '../m02/market.js?v=13';
+import { PRICE_AUDIT, COMPETITORS, DEFAULT_PLAN, BREWLINE, CLIENT_INTERVIEWS, FOCUS_GROUPS, DERIVED as D } from './case.js?v=14';
+import { BUSINESS, OUTLOOK_2027 } from '../m01/case.js?v=14';
+import { TIERS } from '../m02/market.js?v=14';
 
 // ---------------------------------------------------------------- the audit, as one row per shelf price
 const BRANDS = PRICE_AUDIT.brands;                                         // Summit Brew, Daily Grind RTD, Arcadia Coffee
@@ -142,7 +142,7 @@ export default {
       ],
     } },
     { p: 'Reviews are the easiest source to over-read. The people who post them form a <g>self-selected sample</g>, weighted towards the delighted and the furious, so they show what can go right or wrong, not how often. Count themes in them as you would code open answers, and never report a share of reviewers as a share of customers.' },
-    { p: 'For listed companies, filings are the richest public source: the US Securities and Exchange Commission’s EDGAR system gives free access to the documents public companies file, with full-text search, and the secondary-research lesson shows how to read such records. Most of a small business’s rivals are private, though, and for them the shelf, the trade and the customer matter more.' },
+    { p: 'For listed companies, filings are the richest public source: the US Securities and Exchange Commission’s EDGAR system gives free access to the documents public companies file, with full-text search, and the secondary-research lesson describes what such filings contain. Most of a small business’s rivals are private, though, and for them the shelf, the trade and the customer matter more.' },
     { p: 'Customers see a rival’s offer from the side that matters. A <g>win–loss analysis</g> interviews buyers soon after they decide, both those who chose you and those who chose a competitor, about what decided it. Asking only the buyers who chose you invites <g>survivorship bias</g>, the flaw in M01’s client interviews; the prospects who went elsewhere hold the evidence you lack.' },
 
     { h: 'Store checks and shelf-price audits' },

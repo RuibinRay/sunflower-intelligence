@@ -8,8 +8,8 @@
 // function that returns several values). Dates are serial numbers in the 1900 date system (1 = 1 January 1900; the
 // fictitious 29 February 1900 is kept, so serials from 61 on match Excel's).
 
-import { tQuantile, tCdf } from './stats.js?v=13';
-import * as INF from './inference.js?v=13';
+import { tQuantile, tCdf } from './stats.js?v=14';
+import * as INF from './inference.js?v=14';
 
 // ---------------------------------------------------------------- values
 export class Err { constructor(code) { this.code = code; } toString() { return this.code; } }
@@ -1517,7 +1517,7 @@ export function gradeFormula(sheetSpec, { cell, formula, answer, fill = null, va
   try { parse(f); } catch (e) { return { ok: false, results: [], message: `Excel couldn’t read that formula: ${e.message}.` }; }
   const used = functionsUsed(f);
   const unknown = [...used].filter((n) => !FN[n]);
-  if (unknown.length) return { ok: false, results: [], message: `${unknown[0]} isn’t a function this sheet knows. Check the spelling.` };
+  if (unknown.length) return { ok: false, results: [], message: `${unknown[0]} isn’t available in this worksheet. Check the spelling; if it is an Excel function this worksheet lacks, get the result another way.` };
   const missing = require.filter((n) => !used.has(n.toUpperCase()));
   const targets = [];
   const at = parseAddr(cell);

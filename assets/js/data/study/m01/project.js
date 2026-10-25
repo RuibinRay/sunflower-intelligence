@@ -1,6 +1,6 @@
 // project.js — M01 applied project: Lantern's marketing foundations for 2027 (its catering business).
 // Every fact comes from case.js; every number is computed here and checked by `verify`.
-import { BUSINESS, CLIENT_INTERVIEWS as I, COMPETITOR as R, HARBOR_TECH as H, OUTLOOK_2027 as O, GOALS as G, DERIVED as D } from './case.js?v=13';
+import { BUSINESS, CLIENT_INTERVIEWS as I, COMPETITOR as R, HARBOR_TECH as H, OUTLOOK_2027 as O, GOALS as G, DERIVED as D } from './case.js?v=14';
 
 const c = BUSINESS.catering;
 const money = (x) => `$${x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

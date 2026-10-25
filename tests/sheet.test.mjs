@@ -211,7 +211,7 @@ eq('criterion ~* no wildcard', X.criterion('~*')('a'), false);
   ok('wrong cell fails', !g('=A2*B3').ok);
   ok('needs =', !g('A2*B2').ok && /equals sign/.test(g('A2*B2').message));
   ok('unreadable', !g('=A2*(B2').ok && /couldn’t read/.test(g('=A2*(B2').message));
-  ok('unknown function', /isn’t a function/.test(g('=MULTIPLY(A2,B2)').message));
+  ok('unknown function', /isn’t available in this worksheet/.test(g('=MULTIPLY(A2,B2)').message));
   const f = (formula) => X.gradeFormula(spec, { cell: 'C2', fill: 'C2:C4', answer: '=A2*B2*(1+$E$2)', formula });
   ok('fill: right with $', f('=A2*B2*(1+$E$2)').ok);
   ok('fill: wrong without $', !f('=A2*B2*(1+E2)').ok);

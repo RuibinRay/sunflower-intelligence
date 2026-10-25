@@ -3,10 +3,10 @@
 // (FOCUS_GROUPS, DERIVED.focus), the price audit (PRICE_AUDIT) and the sizing (COLD_BREW_SIZING, DERIVED.sizing), plus
 // M02's plan (DEFAULT_PLAN) and M01's client interviews. Hollowmere Folk Festival and Yarrowdale Dental are fictional.
 // Ana's recommendation and decision rule are this lesson's (fictional) additions. Every printed figure is in `checks`.
-import { RESPONDENTS, STRATA, FOCUS_GROUPS, PRICE_AUDIT, COLD_BREW_SIZING, DEFAULT_PLAN, CLIENT_INTERVIEWS, DERIVED as D } from './case.js?v=13';
-import { BUSINESS } from '../m01/case.js?v=13';
-import * as I from '../../../core/inference.js?v=13';
-import * as S from '../../../core/survey.js?v=13';
+import { RESPONDENTS, STRATA, FOCUS_GROUPS, PRICE_AUDIT, COLD_BREW_SIZING, DEFAULT_PLAN, CLIENT_INTERVIEWS, DERIVED as D } from './case.js?v=14';
+import { BUSINESS } from '../m01/case.js?v=14';
+import * as I from '../../../core/inference.js?v=14';
+import * as S from '../../../core/survey.js?v=14';
 
 // ---------------------------------------------------------------- the figures this lesson quotes
 const R = RESPONDENTS, N = R.length, Z = I.normInv(0.975);
@@ -275,7 +275,7 @@ export default {
   ],
 
   application: [
-    { case: `Ana’s executive summary, as she presents it to her team on 6 April 2027: “Recommendation: launch Lantern Cold Brew in stages. The people who know Lantern want it: weighted to our list, ${pct(WT)} say they would definitely or probably buy (roughly ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%; 516 completes), with subscribers far keener than newsletter-only contacts (${Math.round(share[0] * 100)}% against ${Math.round(share[3] * 100)}%). In our focus group, ready-to-drink buyers who don’t know Lantern compared ${money(PRICE)} with cans that cost a dollar less and wanted to try before buying. Our bottom-up estimate is about 48,000 cans in year one, half the goal, which this plan can’t reach. So we launch in our own channel and natural grocers, planning on about 33,000 cans, aim free cans at strangers, and test a few supermarkets before listing in the rest. These are stated intentions from our own customers, not forecasts of sales.”` },
+    { case: `Ana’s executive summary, as she presents it to her team on 6 April 2027: “Recommendation: launch Lantern Cold Brew in stages. The people who know Lantern want it: weighted to our list, ${pct(WT)} say they would definitely or probably buy (roughly ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%; 516 completes), with subscribers far keener than newsletter-only contacts (${Math.round(share[0] * 100)}% against ${Math.round(share[3] * 100)}%). In our focus group, ready-to-drink buyers who don’t know Lantern compared ${money(PRICE)} with cans that cost a dollar less and wanted to try before buying. Our bottom-up estimate is about 48,000 cans in year one, half the goal, which this plan can’t reach. So we launch in our own channel and natural grocers, planning on about 33,000 cans, aim free cans at strangers, and test a few supermarkets before listing in the rest. These are stated intentions from people on our own list, not forecasts of sales.”` },
     { p: '<b>She answers the question behind the question.</b> Her team asks whether 38% means the goal is safe. Ana explains that the figure describes people on Lantern’s own list, who know the brand, and that intent overstates buying; the sizing, built from stores and sales per store, is the better guide to volume. She shows the chart with intervals and leaves the workshop participants out, saying why.' },
     { p: '<b>She keeps the respondents out of it.</b> A team member asks who said the can should have a lantern on it. Ana quotes the remark by its code, A2, as in the report, and declines to say more: participants were promised confidentiality. The catering interviews from November 2026 appear as counts of reasons, and any quotation is attributed only to “a catering client”, with details that could point to the firm removed, because 12 clients are few enough to recognise.' },
     { p: '<b>She writes down what would change her mind.</b> The decision log records the plan, the owner of each action, and the rule: if the test supermarkets without free cans average fewer than 10 cans a store a week over 12 weeks, Lantern stays out of the remaining supermarkets for 2027 and puts the money into its own channel. When the test ends she will compare its sales with the bottom-up assumptions, and the gap will tell her how far to trust the next round of research.' },

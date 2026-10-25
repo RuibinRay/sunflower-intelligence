@@ -3,7 +3,7 @@
 // any other business is fictional. Formula items are marked by their results (core/sheet.js gradeFormula), num items
 // recompute their answers in `check`. The regression widgets offer guests as the only X: hours, pastries and baristas
 // belong to the project's multiple regression.
-import { ORDERS, ORDER_COLUMNS, EVENTS, EVENT_COLUMNS, DERIVED as D, tableCells } from './case.js?v=13';
+import { ORDERS, ORDER_COLUMNS, EVENTS, EVENT_COLUMNS, DERIVED as D, tableCells } from './case.js?v=14';
 
 const TOT = ORDERS.map((r) => r[ORDER_COLUMNS.indexOf('order_total')]);
 const ev = (name, rows) => rows.map((r) => r[EVENT_COLUMNS.indexOf(name)]);

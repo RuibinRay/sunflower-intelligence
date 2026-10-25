@@ -226,6 +226,25 @@ export const independent = [
     ],
     solution: '(1.6 − 1.36) ÷ 1.36 × 100 = 17.6%. A gap like this needs explaining before either figure is used: the retail report may miss stores that don’t share their data, and the household survey covers purchases from outlets the retail service misses, and carries sampling and reporting error.',
   },
+  {
+    id: 'm04-sr-i6', type: 'multi', kind: 'applied',
+    prompt: 'A fictional city’s e-scooter hire scheme has 85,000 registered riders. A social-listening tool found 12,400 public posts mentioning the scheme in March; it classed 64% of them as negative, its commonest topic was scooters left on pavements, and the number of posts tripled in the week after a local news story about the problem. Which conclusions can these data support? Select all that apply.',
+    options: [
+      'Scooters left on pavements are a common theme in public posts about the scheme',
+      'The number of posts rose sharply in the week after the news story',
+      'Pavement parking is worth measuring in a survey of a random sample of riders',
+      'About 64% of the scheme’s registered riders are unhappy with how it is run',
+      'Most of the city’s residents would vote to end the scheme if asked',
+      'The news story made riders less satisfied, since negative posts rose after it',
+    ],
+    answer: [0, 1, 2],
+    feedback: {
+      3: 'The posts come from people who chose to post (some of them not riders at all, some of them bots or repeat posters), and the tone was classed by software. It is a self-selected sample of opinion, not a share of riders.',
+      4: 'Posters aren’t a sample of residents, and nobody was asked how they would vote. Only a probability survey of residents could estimate that.',
+      5: 'More posts after a story may mean more people talking, not more unhappy riders, and many other things changed that week. A count of posts can’t show cause.',
+    },
+    solution: 'Social listening shows what is being said and how the conversation moves: pavement parking is a prominent theme, and the volume of posts jumped after the story. It can’t give the share of riders who are unhappy or of residents who oppose the scheme, because posters choose themselves and may include bots and repeat accounts, and it can’t show that the story changed satisfaction. Its proper use here is to suggest what a survey of a random sample of riders should measure, after checking the tool’s query and settings for the period.',
+  },
 ];
 
 export const check = [

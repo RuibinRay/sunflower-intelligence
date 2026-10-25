@@ -1,7 +1,7 @@
 // present-and-future-value.js — F04 · Present and future value. Content only; exercises are in present-and-future-value.ex.js.
 // Uses COASTLINE_NOTE (the $10,000 principal due 1 March 2028; the 8% market rate in March 2027) and ANA_PLAN (the
 // $60,000 deposit, 3.6% monthly) from case.js. Ana's monthly saving is deliberately not computed: that is the project.
-import { COASTLINE_NOTE as N, ANA_PLAN as A, DERIVED as D } from './case.js?v=13';
+import { COASTLINE_NOTE as N, ANA_PLAN as A, DERIVED as D } from './case.js?v=14';
 
 const q = N.marketRateMarch2027 / 100 / 4;                    // 0.02 a quarter
 const pvPrincipal = N.principal / (1 + q) ** 4;               // 9,238.45

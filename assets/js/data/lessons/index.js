@@ -29,7 +29,7 @@ export const ORDER = [
 export async function loadAll({ strict = true } = {}) {
   const out = [];
   for (const id of ORDER) {
-    try { out.push((await import(`./${id}.js?v=13`)).default); } catch (e) { if (strict) throw new Error(`lesson ${id}: ${e.message}`); }
+    try { out.push((await import(`./${id}.js?v=14`)).default); } catch (e) { if (strict) throw new Error(`lesson ${id}: ${e.message}`); }
   }
   return out;
 }

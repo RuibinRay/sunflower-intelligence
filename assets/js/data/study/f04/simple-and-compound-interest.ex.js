@@ -1,7 +1,7 @@
 // simple-and-compound-interest.ex.js — F04 · Simple and compound interest: widgets, practice and the knowledge check.
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // Uses COASTLINE_NOTE from case.js for Lantern's note; every other business and figure is fictional.
-import { COASTLINE_NOTE as N } from './case.js?v=13';
+import { COASTLINE_NOTE as N } from './case.js?v=14';
 
 const money = (v) => `${v < 0 ? '−' : ''}$${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const pct = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toFixed(d)}%`;

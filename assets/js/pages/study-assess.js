@@ -1,11 +1,11 @@
 // study-assess.js — module tests, the diagnostic and the final assessment. Questions come from
 // data/study/<course>/<file>.js (`items`, each tagged with the lesson it tests; the diagnostic also exports `route`).
-import { initSite } from '../core/site.js?v=13';
-import { $, h } from '../core/dom.js?v=13';
-import * as P from '../study/progress.js?v=13';
-import { renderQuiz } from '../study/exercises.js?v=13';
-import { initOutline, paintOutline, pct, storageWarning, scrollersFocusable } from '../study/common.js?v=13';
-import { MAP } from '../data/study/map.js?v=13';
+import { initSite } from '../core/site.js?v=14';
+import { $, h } from '../core/dom.js?v=14';
+import * as P from '../study/progress.js?v=14';
+import { renderQuiz } from '../study/exercises.js?v=14';
+import { initOutline, paintOutline, pct, storageWarning, scrollersFocusable } from '../study/common.js?v=14';
+import { MAP } from '../data/study/map.js?v=14';
 
 initSite();
 initOutline();
@@ -23,7 +23,7 @@ function record() {
 record();
 
 let mod;
-try { mod = await import(`../data/study/${course}/${file}.js?v=13`); } catch (e) { console.error(e); }
+try { mod = await import(`../data/study/${course}/${file}.js?v=14`); } catch (e) { console.error(e); }
 const root$ = $('#assess-root');
 if (!mod?.items?.length) {
   root$.replaceChildren(h('p', { class: 'note' }, 'The questions didn’t load. Reload the page to try again.'));

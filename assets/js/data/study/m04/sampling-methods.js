@@ -3,9 +3,9 @@
 // case.js. The list's known answers (PEOPLE) appear only in the sampler demonstration and its checks, never as something
 // Ana knows. Brindlecombe Garden Centre, Orrinsby Software and Marrowby Buses are fictional. Non-response, response
 // rates and weighting for it are survey-error's; here every design is shown with full response.
-import { SIZES, STRATA, SURVEY_2027, SURVEY_PLAN, PEOPLE } from './case.js?v=13';
-import * as S from '../../../core/survey.js?v=13';
-import * as I from '../../../core/inference.js?v=13';
+import { SIZES, STRATA, SURVEY_2027, SURVEY_PLAN, PEOPLE } from './case.js?v=14';
+import * as S from '../../../core/survey.js?v=14';
+import * as I from '../../../core/inference.js?v=14';
 
 const N = SIZES.reduce((a, b) => a + b, 0), INV = SURVEY_2027.invited, A = SURVEY_2027.allocation;
 const RAW = SIZES.map((k) => (INV * k) / N);

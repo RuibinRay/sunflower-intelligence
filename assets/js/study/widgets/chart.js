@@ -2,11 +2,11 @@
 // for screen readers and anyone who prefers them. Also exports drawChart, which the formula explorer reuses.
 //   { type: 'chart', kind: 'line' | 'bar', title, x: { label, values }, series: [{ name, values }],
 //     y: { label, format: 'money' | 'pct' | 'int' | 'num' }, note: 'html' }
-import { h } from '../../core/dom.js?v=13';
-import { xl } from '../xl.js?v=13';
-import * as F from '../../core/format.js?v=13';
-import { lineChart, barChart, tableTwin } from '../../core/charts.js?v=13';
-import { onResize } from '../../core/dom.js?v=13';
+import { h } from '../../core/dom.js?v=14';
+import { xl } from '../xl.js?v=14';
+import * as F from '../../core/format.js?v=14';
+import { lineChart, barChart, tableTwin } from '../../core/charts.js?v=14';
+import { onResize } from '../../core/dom.js?v=14';
 
 const CLS = ['m-s1', 'm-s2', 'm-s3'];
 export function formatter(kind) {

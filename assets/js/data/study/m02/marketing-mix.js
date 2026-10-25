@@ -1,6 +1,6 @@
 // marketing-mix.js — M02 · The marketing mix and customer value. Content only; exercises are in marketing-mix.ex.js.
 // Every Lantern figure comes from ./market.js (fictional); `checks` recompute them from that file.
-import { TIERS, CHANNELS, COMPETITORS, LANTERN, DEFAULT_PLAN, CATEGORY } from './market.js?v=13';
+import { TIERS, CHANNELS, COMPETITORS, LANTERN, DEFAULT_PLAN, CATEGORY } from './market.js?v=14';
 
 const tier = Object.fromEntries(TIERS.map((t) => [t.id, t]));
 const ch = Object.fromEntries(CHANNELS.map((c) => [c.id, c]));

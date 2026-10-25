@@ -3,9 +3,9 @@
 // derived NPS, Cold Brew intent, weights, cups and themes (DERIVED). The truth (DERIVED.nps.truth, coldbrew.truthTopTwo)
 // appears only in the "What Ana couldn't see" callout. Pindlebury Garden Centre, Rookwell Fitness and Tallyroot Software
 // (with Saoirse Adeyemi) are fictional. Every printed figure is recomputed in `checks`.
-import { RESPONDENTS, STRATA, SIZES, LEVELS, DISPOSITIONS, DERIVED as D } from './case.js?v=13';
-import * as S from '../../../core/survey.js?v=13';
-import * as I from '../../../core/inference.js?v=13';
+import { RESPONDENTS, STRATA, SIZES, LEVELS, DISPOSITIONS, DERIVED as D } from './case.js?v=14';
+import * as S from '../../../core/survey.js?v=14';
+import * as I from '../../../core/inference.js?v=14';
 
 // ---------------------------------------------------------------- the figures this lesson quotes
 const R = RESPONDENTS, N = R.length, LIST = SIZES.reduce((a, b) => a + b, 0);
@@ -182,7 +182,7 @@ export default {
     { p: 'Q2’s answers are an <g>ordinal variable</g>: “probably” lies between “definitely” and “might or might not”, but nothing says the steps are equal. Box shares respect that. A mean of the codes 1 to 5 treats the steps as equal, an assumption the question can’t support, so if you report one, report it beside the box shares, not instead of them. The bottom-two-box score, the share who probably or definitely would not buy, is 26.2%. Turning intent into a forecast needs a conversion assumption for each box, which <i>Market sizing</i> covers.' },
 
     { h: 'The Net Promoter Score and its margin of error' },
-    { p: String.raw`Give each answer a value of +100 for a promoter, 0 for a passive and −100 for a detractor: the NPS is the mean of those values. Its standard error follows from their variance, which depends only on the shares of promoters and detractors (the formula cards). For Ana, <m>100\sqrt{(0.459 + 0.184 - 0.275^2) \div 516} \approx 3.32</m>, and the 95% margin is <m>1.96 \times 3.32 \approx 6.5</m> points. That is half as wide again as the margin for the promoters’ share alone, ±4.3 points, because the NPS is the difference of two shares that move against each other.` },
+    { p: String.raw`Give each answer a value of +100 for a promoter, 0 for a passive and −100 for a detractor: the NPS is the mean of those values. Its standard error follows from their variance, which depends only on the shares of promoters and detractors (the formula cards). For Ana, <m>100\sqrt{(0.459 + 0.184 - 0.275^2) \div 516}</m> <m>\approx 3.32</m>, and the 95% margin is <m>1.96 \times 3.32 \approx 6.5</m> points. That is half as wide again as the margin for the promoters’ share alone, ±4.3 points, because the NPS is the difference of two shares that move against each other.` },
     { p: 'Rocks (2016) compared interval methods for the NPS and found that this simple (Wald) interval is too narrow, covering the true score less often than 95% of the time even at 300 answers (he also found an iterative score interval performs well). He recommends an adjusted version that adds 3/4 to the promoter and detractor counts and 3/2 to the passive count before applying the same formula. At Ana’s 516 answers the adjustment hardly matters (+27.4 ± 6.5); for the 27 workshop participants it moves the interval from +11.2 to +70.2 to +8.6 to +64.7. On bases that small, use the adjusted interval, or better, don’t report the score at all (see Small bases).' },
     { p: String.raw`Two independent groups’ scores are compared through the standard error of their difference, <m>\sqrt{\text{SE}_1^2 + \text{SE}_2^2}</m>. Subscribers (+61.8, SE 7.20) and newsletter-only respondents (+7.1, SE 4.28) differ by 54.7 points with a standard error of 8.37, so z ≈ 6.5: far beyond chance. Two waves of a tracking survey are independent samples too, so the same calculation shows whether a change between waves is larger than chance; In practice shows why a few points usually aren’t.` },
     { p: 'Reichheld argued that this one question usually predicted growth better than others, and that in most of the industries he studied the share of enthusiastic customers tracked growth relative to competitors. Keiningham and colleagues (2007), with longitudinal data from 21 Norwegian firms, failed to replicate its claimed superiority over other measures of customer satisfaction and loyalty. The score also throws information away: a 0 and a 6 are both detractors, and half promoters with half detractors scores 0, the same as everyone a passive. Use it as one tracked indicator, with its margin of error, beside the distribution of scores and the reasons people give. Net Promoter Score is a service mark of Bain &amp; Company, NICE Systems and Fred Reichheld.' },
@@ -245,7 +245,7 @@ export default {
       steps: [
         'Shares: promoters 102 ÷ 240 = 42.5%, passives 84 ÷ 240 = 35.0%, detractors 54 ÷ 240 = 22.5%. The three add to 100%, a check that every answer was classified once.',
         'NPS: 42.5 − 22.5 = +20.0. Passives don’t enter the subtraction, but they stay in the base of 240.',
-        String.raw`Standard error: <m>100\sqrt{(0.425 + 0.225 - 0.200^2) \div 240} = 100\sqrt{0.610 \div 240} \approx 5.04</m> points.`,
+        String.raw`Standard error: first <m>0.425 + 0.225 - 0.200^2</m> <m>= 0.610</m>, then <m>100\sqrt{0.610 \div 240}</m> <m>\approx 5.04</m> points.`,
         String.raw`Margin at 95%: <m>1.96 \times 5.04 \approx 9.9</m> points, so the interval runs from about +10.1 to +29.9.`,
       ],
       answer: 'NPS +20.0, with a 95% margin of error of about ±9.9 points (+10.1 to +29.9). Base: 240 customers.',
