@@ -162,6 +162,49 @@ export const OFFICE_LEVELS = {
  *  quarter, for $14 a member of staff a month (minimum 10 staff). */
 export const OFFICE_OFFER = { pricePerStaffMonth: 14, minimumStaff: 10 };
 export const OFFICES = OFFICE_SURVEY.map(([band, staff, arrangement, spend, interest], i) => ({ id: i + 1, band, staff, arrangement, spend, interest }));
+/** What Ana knows before any research (her planning figures, fictional). A year-one launch makes $48,000 of contribution
+ *  if demand is strong and loses $30,000 (machine leases, a second van, a part-time barista) if it is weak; before the
+ *  research she puts the chance of strong demand at 40%. The survey and the interviews cost $6,000 together. */
+export const OFFICE_DECISION = { gainIfStrong: 48_000, lossIfWeak: 30_000, pStrong: 0.4, researchCost: 6_000 };
+/** Ana's first draft of the office questionnaire (before a colleague's review): each question with the flaw it has. */
+export const OFFICE_DRAFT = [
+  { q: 'Don’t you think your staff deserve better coffee than they get now?', flaw: 'Leading' },
+  { q: 'How satisfied are you with the price and quality of your current coffee?', flaw: 'Double-barrelled' },
+  { q: 'How many cups of coffee did your office drink last year?', flaw: 'Unanswerable from memory' },
+  { q: 'How many staff work at your office? 1–10 / 10–50 / 50–250 / 250 or more', flaw: 'Overlapping options' },
+  { q: 'Would you sign up for Lantern’s premium artisan bean-to-cup service?', flaw: 'Loaded wording, and no price' },
+  { q: 'Which supplier do you use now? Brewline / Daystar / Grindhouse', flaw: 'Options not exhaustive' },
+];
+export const OFFICE_FLAWS = ['Leading', 'Double-barrelled', 'Unanswerable from memory', 'Overlapping options', 'Loaded wording, and no price', 'Options not exhaustive'];
+/** Eight interviews with office managers in March 2027 (anonymised; fictional), each remark coded to one theme. */
+export const OFFICE_INTERVIEW_THEMES = ['Cost', 'Reliability and maintenance', 'Staff wellbeing', 'Contract terms', 'Sustainability', 'Admin effort'];
+export const OFFICE_INTERVIEWS = [
+  { who: 'OM1', size: '30 staff', theme: 0, text: 'Anything per head per month gets questioned by finance. I’d need to show it costs less than what we spend on pods.' },
+  { who: 'OM2', size: '120 staff', theme: 1, text: 'Our last machine was broken for three weeks and nobody came. Fixing it fast matters more to me than the beans.' },
+  { who: 'OM3', size: '400 staff', theme: 2, text: 'People came back to the office for the coffee. It’s one of the few perks everyone notices.' },
+  { who: 'OM4', size: '60 staff', theme: 3, text: 'I won’t sign anything longer than a year. We were stuck in a three-year contract last time.' },
+  { who: 'OM5', size: '25 staff', theme: 4, text: 'We want to get rid of the pods. The plastic goes straight in the bin.' },
+  { who: 'OM6', size: '200 staff', theme: 5, text: 'I just want one invoice and no ordering. If I have to remember to reorder beans, it won’t happen.' },
+  { who: 'OM7', size: '80 staff', theme: 0, text: 'Fourteen dollars a head is more than we pay now, but if it replaces the coffee runs people expense, maybe not.' },
+  { who: 'OM2', size: '120 staff', theme: 3, text: 'A trial month would make it easy to say yes.' },
+  { who: 'OM8', size: '350 staff', theme: 1, text: 'We have three floors. One machine would have a queue; we’d need at least two that are looked after.' },
+  { who: 'OM3', size: '400 staff', theme: 4, text: 'Our sustainability report counts waste, so compostable packaging would help us.' },
+  { who: 'OM6', size: '200 staff', theme: 2, text: 'A barista visit now and then would be a nice thing for the team, but it isn’t why we’d buy.' },
+  { who: 'OM5', size: '25 staff', theme: 5, text: 'I do the ordering on top of my real job, so less admin is the whole point.' },
+];
+/** Office-coffee offers in the district (March 2027; prices from the suppliers' published price lists and one quote;
+ *  fictional). Price per member of staff a month; minimum contract in months. */
+export const OFFICE_COMPETITORS = [
+  { name: 'Brewline Office', what: 'Pod machines with monthly pod restock', pricePerStaffMonth: 11, contractMonths: 24, service: 'next working day' },
+  { name: 'Daystar Vending', what: 'Coin-free vending machine; cups charged at $0.40 each to the office', pricePerStaffMonth: null, perCup: 0.40, contractMonths: 36, service: 'within 3 working days' },
+  { name: 'Grindhouse Office', what: 'Bean-to-cup machine, beans and milk delivered', pricePerStaffMonth: 15, contractMonths: 36, service: 'same day' },
+  { name: 'Lantern (proposed)', what: 'Bean-to-cup machine, beans delivered weekly, a barista visit each quarter', pricePerStaffMonth: OFFICE_OFFER.pricePerStaffMonth, contractMonths: 12, service: 'next working day' },
+];
+/** Secondary data for the top-down size (fictional): the Harbour City Statistics Office's 2026 business register says
+ *  38,500 people work in workplaces of 10 or more staff in Lantern's district; Ana's planning assumptions for turning
+ *  stated interest into sign-ups (half of "definitely", a sixth of "probably", none of the rest) and the most offices she
+ *  can install and serve in the first year (one van, one technician). */
+export const OFFICE_SIZING = { districtStaff10plus: 38_500, conversion: [0.5, 1 / 6, 0, 0, 0], maxInstallsYear1: 35, cupsPerStaffDay: 1.4, workdaysMonth: 21 };
 
 // ---------------------------------------------------------------- derived figures (recomputed by the checker)
 const resp = RESPONDENTS;
