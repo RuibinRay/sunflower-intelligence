@@ -141,8 +141,9 @@ export const PRICE_AUDIT = {
 };
 
 /** Ana's cold brew sizing inputs (March 2027). Store counts are Harbour City's (fictional); the listings and the cans a
- *  store sells a week are Ana's planning assumptions after talking to two store buyers. Direct: cans a month through
- *  Lantern's own channel, from the survey's subscribers. */
+ *  store sells a week are Ana's planning assumptions after talking to two store buyers. Direct: Ana's estimate of the
+ *  cans a month Lantern's own channel (shop and subscriptions) would sell, a judgement informed by what subscribers said
+ *  in the February survey, not a calculation from it. */
 export const COLD_BREW_SIZING = {
   stores: { supermarket: 120, convenience: 260, natural: 45 },
   plan: { supermarket: { listed: 30, cansPerWeek: 10 }, natural: { listed: 25, cansPerWeek: 14 } },

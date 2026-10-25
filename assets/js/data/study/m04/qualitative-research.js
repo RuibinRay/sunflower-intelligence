@@ -64,7 +64,7 @@ export default {
     'Compare depth interviews, focus groups and observation, including group dynamics such as dominant voices and the wish to look good.',
     'Design a screener and a funnel-shaped discussion guide with open questions and neutral probes.',
     'Use evidence on saturation to judge how many interviews or groups a study needs.',
-    'Code transcripts with a codebook, calculate percent agreement and Cohen’s kappa between two coders, and report themes and quotations honestly.',
+    'Apply a codebook to transcripts, calculate percent agreement and Cohen’s kappa between two coders, and report themes and quotations honestly.',
   ],
   prerequisites: [
     { lesson: 'm04/the-research-process', why: 'Qualitative research is the main tool of exploratory designs, and the research codes govern consent and recording.' },
