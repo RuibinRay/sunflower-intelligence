@@ -205,10 +205,10 @@ export const independent = [
     id: 'm02-pa-i5', type: 'mc', kind: 'conceptual',
     prompt: 'Which statement about the price floor and the price ceiling is correct?',
     options: [
-      'Costs set the floor and customers’ value set the ceiling; competitors’ prices sit in between and affect how customers judge a price.',
-      'The ceiling is the highest price any competitor charges, because no customer will pay more than that.',
+      'Costs set the floor and customer value the ceiling; rivals’ prices sit between and shape how a price is judged.',
+      'The ceiling is the highest price any competitor charges, because no customer will ever pay more than a rival’s price.',
       'In the short run, every sale must be priced above the full average cost per unit, including a share of fixed costs.',
-      'The floor is set by competitors’ lowest price, because matching it is the least a firm can charge.',
+      'The floor is set by competitors’ lowest price, because matching the cheapest rival is the least a firm can charge.',
     ],
     answer: 0,
     feedback: {
@@ -232,9 +232,9 @@ export const check = [
     id: 'm02-pa-k1', type: 'mc', kind: 'conceptual',
     prompt: 'A product costs $60 and sells for $100. Why is its margin (40%) smaller than its markup (66.7%)?',
     options: [
-      'Both divide the same $40 profit, but the margin divides it by the price, which is larger than the cost.',
-      'The margin also deducts fixed costs, while the markup does not.',
-      'The margin is calculated after tax and the markup before tax.',
+      'Both divide the same $40, but the margin divides by the $100 price and the markup by the $60 cost.',
+      'The margin also deducts the product’s share of fixed costs, while the markup counts only the $60 unit cost.',
+      'The margin is calculated after tax is taken off the $40, while the markup is calculated before tax.',
       'Retailers use margins and manufacturers use markups, so they measure different profits.',
     ],
     answer: 0,
@@ -263,10 +263,10 @@ export const check = [
     id: 'm02-pa-k4', type: 'mc', kind: 'applied',
     prompt: 'At 6 p.m. a fictional 120-room hotel still has 30 empty rooms for tonight. Its full cost per occupied room-night, with fixed costs spread over a normal month, is $95; the variable cost of an occupied room-night is $28. A walk-in guest offers $70 for a room tonight. Looking only at tonight’s profit, should the hotel accept?',
     options: [
-      'Yes: $70 is above the $28 variable cost, so the room adds $42 towards fixed costs that are paid whether or not it is let.',
-      'No: $70 is below the $95 full cost, so the hotel loses $25 on the room.',
-      'No: a hotel should never let a room for less than its published rate.',
-      'Yes, because any revenue from an empty room is pure profit.',
+      'Yes: $70 is above the $28 variable cost, so the room adds $42 towards fixed costs paid either way.',
+      'No: $70 is below the $95 full cost per room-night, so the hotel would lose $25 by letting the room.',
+      'No: a hotel should never let a room for less than its published rate, even when it would stay empty.',
+      'Yes, because any revenue from a room that would otherwise be empty is pure profit for the night.',
     ],
     answer: 0,
     feedback: {

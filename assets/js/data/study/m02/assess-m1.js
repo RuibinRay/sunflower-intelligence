@@ -7,10 +7,10 @@ export const items = [
     id: 'm02-m1-1', lesson: 'marketing-mix', type: 'mc', kind: 'conceptual',
     prompt: 'A friend says, “Marketing is just advertising.” Which reply is most accurate?',
     options: [
-      'Advertising is one tool of promotion. Marketing also covers choosing customers, designing the product, setting the price and making it available, so as to create and capture value.',
-      'That is right: marketing is the department that buys advertising.',
-      'Marketing is selling: persuading people to buy whatever the company has made.',
-      'Marketing is market research; advertising is a separate function.',
+      'Advertising is one promotion tool; marketing also chooses the customers, the product, the price and where it is sold.',
+      'That is right: marketing is the department that buys advertising, and everything else belongs to sales or operations.',
+      'Marketing is selling: persuading people to buy whatever the company has already decided to make.',
+      'Marketing is market research, finding out what customers think and want; advertising is a separate function run by agencies.',
     ],
     answer: 0,
     feedback: {
@@ -54,9 +54,9 @@ export const items = [
     prompt: 'A plan positions Lantern Cold Brew as café-quality cold brew close to the premium brand’s price. It uses the Organic single-origin liquid at $3.59 in natural grocers and supermarkets with in-store sampling, but puts half the promotion budget into deep, frequent trade promotions that cut the shelf price to about $2.70. Which change would do most to make the mix consistent?',
     options: [
       'Move most of the trade-promotion money into sampling and PR, keeping occasional promotions only.',
-      'Switch to the Classic blend to cut the cost of goods.',
-      'Add convenience stores to reach more commuters.',
-      'Raise the regular shelf price to $4.29 so that the promotions look deeper.',
+      'Switch to the Classic blend to cut the cost of goods, so the deep promotions cost less per can.',
+      'Add convenience stores to reach more commuters, who compare prices less than supermarket shoppers do.',
+      'Raise the regular shelf price to $4.29 so that the promotions look deeper and the can seems more premium.',
     ],
     answer: 0,
     feedback: {
@@ -110,10 +110,10 @@ export const items = [
     id: 'm02-m1-8', lesson: 'product-decisions', type: 'mc', kind: 'applied',
     prompt: 'At a category review, a supermarket buyer tells Lantern that its Vanilla flavour sells far more slowly than Original and Oat Milk Latte, and asks whether to keep it. Lantern pays $9,000 a year to list it. What should Lantern’s product manager do first?',
     options: [
-      'Check how many of Vanilla’s sales are genuinely extra (not taken from the other flavours) and whether its gross margin on them covers its listing fee and other costs.',
-      'Insist on keeping it, because a longer line always brings more sales.',
-      'Drop Original instead, because it is the most ordinary flavour.',
-      'Cut Vanilla’s price, because every slow seller is overpriced.',
+      'Check how many of Vanilla’s sales are extra, not taken from other flavours, and whether their margin covers its listing fee.',
+      'Insist on keeping it, because a longer line always brings more sales and shows the buyer that Lantern is committed to the category.',
+      'Drop Original instead, because it is the most ordinary flavour and the buyer already stocks plain rivals.',
+      'Cut Vanilla’s price, because a flavour that sells slowly must be overpriced compared with the other two.',
     ],
     answer: 0,
     feedback: {
@@ -154,10 +154,10 @@ export const items = [
     id: 'm02-m1-11', lesson: 'product-life-cycle', type: 'mc', kind: 'applied',
     prompt: 'A brand manager (fictional company) says: “Our snack brand is 30 years old and sales have been flat for five years. The product life cycle says decline comes next, so let’s cut its advertising to zero and use the money elsewhere.” What is the best response?',
     options: [
-      'Flat sales signal maturity, not inevitable decline. Cutting all support could cause the decline it predicts; first test ways to extend the brand by modifying the market, the product or the mix.',
-      'Agree: every product follows the life cycle, and maturity is always followed by decline.',
-      'Double the advertising budget immediately, because spending always reverses flat sales.',
-      'Withdraw the brand now, before decline starts, to save the cost of the decline stage.',
+      'Flat sales mean maturity, not certain decline; cutting support could cause it, so first test market, product or mix changes.',
+      'Agree: every product follows the life cycle and maturity is always followed by decline, so advertising a 30-year-old brand is wasted.',
+      'Double the advertising budget immediately, because spending always reverses flat sales in a mature brand.',
+      'Withdraw the brand now, before decline starts, to save the cost of the decline stage and free its shelf space for newer products.',
     ],
     answer: 0,
     feedback: {

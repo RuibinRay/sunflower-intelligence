@@ -86,7 +86,7 @@ export const guided = [
   {
     id: 'b02-dup-g1', type: 'rows', kind: 'applied',
     prompt: 'Eight rows from Lantern’s April order export (fictional). Select every row that is an exact copy of an <i>earlier</i> row, so that removing the selected rows leaves one copy of each. Rows are numbered from 0.',
-    data: { table: ORDERS_G1 },
+    data: { table: { ...ORDERS_G1, index: 0 } },
     answer: [2, 6],
     hints: [
       'Compare every column, not only <code>order_id</code>. A row that differs in any single cell is not an exact copy.',
@@ -109,7 +109,7 @@ export const guided = [
     steps: [
       { id: 'b02-dup-g2-s1', type: 'mc',
         prompt: 'What kind of duplicate is this?',
-        options: ['A repeated key with conflicting values', 'An exact duplicate', 'A near duplicate customer', 'Two genuine orders'],
+        options: ['A repeated key with conflicting values', 'An exact duplicate, one row copied from another', 'A near duplicate, like one customer’s name typed two ways', 'Two genuine orders from the same customer'],
         answer: 0,
         hints: ['Compare the key column with the other columns.', 'Same <code>order_id</code>, different <code>order_total</code>.'],
         feedback: {
@@ -121,9 +121,9 @@ export const guided = [
         prompt: 'Which row should survive?',
         options: [
           'The 08:16 row: it is the later update and reflects the discount the customer actually paid.',
-          'The 08:14 row: keep the first occurrence, because it is the original order.',
+          'The 08:14 row: keep the first occurrence, because it records the order as the customer originally placed it.',
           'Neither: delete both rows because they conflict.',
-          'Both: they have different totals, so they can’t be duplicates.',
+          'Both: they have different totals and update times, so they can’t be duplicates of one order.',
         ],
         answer: 0,
         hints: ['Think about how two versions of one order arise: the order was changed after it was first saved.', 'A later update supersedes an earlier one.'],
@@ -180,7 +180,7 @@ export const independent = [
   {
     id: 'b02-dup-i1', type: 'rows', kind: 'applied',
     prompt: 'Part of Harborview Hotel’s booking feed (fictional). Before choosing a survivorship rule, a reviewer needs to see every row of every repeated booking. Select every row whose <code>booking_id</code> appears more than once, <i>including</i> the first occurrence. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['booking_id', 'received_at', 'check_in', 'nights', 'status', 'total'],
       rows: [
         ['HB-26201', '2026-10-01 10:02', '2026-11-18', '2', 'Confirmed', '$380'],
@@ -199,10 +199,10 @@ export const independent = [
     id: 'b02-dup-i2', type: 'mc', kind: 'applied',
     prompt: 'Lantern merges its online-shop customers with the customer list from the loyalty app in its cafés. For the 300 people in both, the shop record has a verified email address but no phone number; the loyalty record has a phone number and a postal address updated last month, but an email address that was never verified. Which survivorship rule fits best?',
     options: [
-      'Merge field by field: email from the shop record, phone and address from the loyalty record, noting the source of each.',
-      'Keep the most complete record.',
+      'Merge field by field: email from the shop, phone and address from the loyalty app, noting each value’s source.',
+      'Keep the most complete record, the one with the most fields filled in.',
       'Keep the first record, from the shop, because it is older.',
-      'Keep the latest record, from the loyalty app, because it was updated more recently.',
+      'Keep the latest record, from the loyalty app, because it was updated last month and so holds the newest details.',
     ],
     answer: 0,
     feedback: {
@@ -293,7 +293,7 @@ export const check = [
   {
     id: 'b02-dup-k2', type: 'rows', kind: 'applied',
     prompt: 'Select the rows to remove so that each order appears exactly once. Keep the latest version of any order that was updated; if two rows are identical, remove the later one. Rows are numbered from 0 (fictional data).',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['order_id', 'updated_at', 'email', 'product', 'order_total'],
       rows: [
         ['LC-50301', '2026-05-03 09:10', 'maya.okafor@example.com', 'House Blend 250g', '$14.00'],
@@ -350,14 +350,14 @@ export const check = [
     prompt: 'You want to see <i>every</i> row of every <code>order_id</code> that appears more than once, including the first occurrence, so that you can review the groups before deleting anything. Which pandas expression does that?',
     options: [
       'df[df.duplicated(subset=[&#39;order_id&#39;], keep=False)]',
-      'df[df.duplicated()]',
-      'df.drop_duplicates(subset=[&#39;order_id&#39;])',
+      'df[df.duplicated(subset=[&#39;order_id&#39;], keep=&#39;last&#39;)]',
+      'df.drop_duplicates(subset=[&#39;order_id&#39;], keep=False)',
       'df.drop_duplicates()',
     ],
     answer: 0,
     feedback: {
-      1: 'With no subset, duplicated() compares whole rows, so it misses conflicting versions; and with the default keep=&#39;first&#39; it doesn’t mark the first occurrence.',
-      2: 'This deletes rows instead of showing them, and it keeps the first row of each order, whatever that row contains.',
+      1: 'With keep=&#39;last&#39;, duplicated() marks every row of a repeated order except the last, so one row of each group is missing from the review.',
+      2: 'This returns only the orders that occur once: every row of every repeated order is dropped, the opposite of what you want to review.',
       3: 'This removes exact copies only, and doesn’t show you anything to review.',
     },
     solution: '<code>duplicated(subset=[&#39;order_id&#39;], keep=False)</code> marks every row whose order id occurs more than once, first occurrence included. Filtering the table with it shows each group in full, which is what you need before choosing a survivorship rule.',

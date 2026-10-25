@@ -93,9 +93,9 @@ export const items = [
   },
   {
     id: 'f01-m3-9', lesson: 'adjusting-entries', type: 'equation', kind: 'conceptual',
-    prompt: 'Lantern forgets adjustment a7, the $600 breakfast catered for Pier Nine Studio on 31 March and invoiced on 2 April. Enter how far each total on its 31 March balance sheet would be wrong: a positive number if overstated, a negative number if understated, 0 if unaffected.',
-    answer: { assets: -600, liabilities: 0, equity: -600 },
-    solution: 'Without a7, Accounts Receivable is $600 too low, so assets are understated (−600). Catering Revenue is $600 too low, so net income and equity are understated (−600). No liability is involved. The errors satisfy the equation: −600 = 0 + (−600).',
+    prompt: 'On 20 January a fictional climbing gym receives $9,000 from a company for three months of staff climbing sessions, held evenly over February, March and April, and records the whole amount as Unearned Revenue. At the end of February its bookkeeper makes no adjusting entry for the contract. For each total on the gym’s 28 February balance sheet, enter the error: a positive number if the total is too high, a negative number if it is too low, 0 if it is right.',
+    answer: { assets: 0, liabilities: 9000 / 3, equity: -9000 / 3 },
+    solution: 'One of the three months has been delivered, so 9,000 ÷ 3 = $3,000 had been earned by 28 February. The missing adjustment is debit Unearned Revenue $3,000, credit Service Revenue $3,000. Without it, Unearned Revenue still shows $9,000, so liabilities are overstated (+3,000), and February’s revenue, and with it net income and equity, is understated (−3,000). The cash arrived in January, so assets are unaffected. The errors satisfy the equation: 0 = 3,000 + (−3,000).',
   },
 
   // ---------------------------------------------------------------- financial-statements

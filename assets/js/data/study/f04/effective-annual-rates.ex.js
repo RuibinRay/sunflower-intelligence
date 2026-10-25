@@ -247,8 +247,8 @@ export const check = [
     id: 'f04-ear-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Why should two loans be compared by their effective annual rates rather than their quoted nominal rates?',
     options: [
-      'The EAR includes the effect of compounding, so rates compounded at different frequencies are put on the same basis',
-      'The EAR includes all the lender’s fees',
+      'The EAR builds in compounding, so rates compounded at different frequencies are put on the same basis',
+      'The EAR folds the lender’s arrangement and account fees into the rate, so it shows the full cost of each loan',
       'The EAR is always lower than the nominal rate, so it flatters neither loan',
       'Lenders are required to quote EARs, so they are more reliable',
     ],

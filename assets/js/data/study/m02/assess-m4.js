@@ -13,10 +13,14 @@ export const items = [
   },
   {
     id: 'm02-m4-2', lesson: M, type: 'num', kind: 'numerical',
-    prompt: 'A campaign costs $15,600 and delivers 2,400,000 impressions. What is its CPM?',
-    answer: 6.5, check: () => 15600 / 2400000 * 1000, unit: '$', places: 2, tol: 0.01,
-    wrong: [{ value: 0.0065, say: 'That is the cost per impression; CPM is per thousand.' }],
-    solution: 'CPM = 15,600 ÷ 2,400,000 × 1,000 = $6.50.',
+    prompt: 'A fictional dance school is choosing how to promote its autumn classes. A sponsored message in a local parents’ newsletter costs $1,350 and is seen in 45,000 newsletter opens. A month of posters on bus shelters near the school costs $2,880 and is expected to be seen 360,000 times. By how many dollars does the newsletter’s CPM exceed the bus shelters’?',
+    answer: 22, check: () => 1350 / 45000 * 1000 - 2880 / 360000 * 1000, unit: '$', places: 2, tol: 0.01,
+    wrong: [
+      { value: 0.022, say: 'That is the difference in cost per single impression. CPM is per thousand impressions: multiply by 1,000.' },
+      { value: 3.75, say: 'That is how many times higher the newsletter’s CPM is (30 ÷ 8). The question asks for the difference in dollars.' },
+      { value: 30, say: 'That is the newsletter’s CPM on its own. The question asks how much it exceeds the bus shelters’ $8.00.' },
+    ],
+    solution: 'Newsletter CPM = 1,350 ÷ 45,000 × 1,000 = $30.00. Bus-shelter CPM = 2,880 ÷ 360,000 × 1,000 = $8.00. The newsletter costs 30.00 − 8.00 = $22.00 more per thousand impressions. That alone doesn’t make the posters the better buy: the newsletter reaches parents who are choosing activities for their children, and a cheap impression nobody notices is not a bargain.',
   },
   {
     id: 'm02-m4-3', lesson: M, type: 'num', kind: 'numerical',
@@ -77,10 +81,10 @@ export const items = [
     id: 'm02-m4-9', lesson: P, type: 'mc', kind: 'conceptual',
     prompt: 'Which statement about AIDA and other hierarchy-of-effects models is best supported?',
     options: [
-      'They are useful for setting stage-by-stage objectives, but evidence gives little support to a fixed sequence; for low-involvement products trial often comes before liking.',
-      'They have been shown to describe how every purchase happens.',
-      'They apply only to personal selling.',
-      'They show that more advertising always leads to more sales.',
+      'They help set stage-by-stage objectives, but the evidence gives little support to a fixed order of stages.',
+      'They have been shown by research to describe the order in which every buyer’s purchase decision really happens.',
+      'They apply only to personal selling, where a salesperson can lead the buyer through each stage.',
+      'They show that more advertising always leads to more sales, because each stage feeds the next.',
     ],
     answer: 0,
     feedback: {
@@ -94,9 +98,9 @@ export const items = [
     id: 'm02-m4-10', lesson: M, type: 'mc', kind: 'applied',
     prompt: 'Lantern wants to know whether its emails to online-shop customers actually increase orders. Which design measures this best?',
     options: [
-      'Randomly hold out a share of customers from each email and compare their orders with those who got it.',
-      'Count the orders placed within a week of each email.',
-      'Compare customers who open emails with those who don’t.',
+      'Randomly hold some customers out of each email and compare the two groups’ orders.',
+      'Count the orders placed within a week of each email and credit them all to the email.',
+      'Compare customers who open emails with those who don’t, and treat the difference as the email’s effect.',
       'Compare orders in the month after the email programme started with the month before.',
     ],
     answer: 0,
@@ -111,10 +115,10 @@ export const items = [
     id: 'm02-m4-11', lesson: P, type: 'mc', kind: 'applied',
     prompt: 'Lantern’s ads present the single-origin can as a café-quality treat at $3.49, but its trade budget funds “2 for $5” deals in supermarkets every other week. What principle does this break, and what should Lantern do?',
     options: [
-      'Integrated marketing communications: the deals send a “cheap” message that contradicts the ads. Limit trade promotions to a few planned windows at a modest depth.',
-      'Competitive parity: Lantern should match Daily Grind’s prices.',
-      'Push strategy: Lantern should stop all trade promotions and rely on ads alone.',
-      'AIDA: the deals skip the desire stage, so Lantern should advertise more.',
+      'Integrated marketing communications: the deals contradict the ads, so keep them to a few planned windows.',
+      'Competitive parity: Lantern should match Daily Grind’s $2.29 shelf price so that the frequent deals are no longer needed.',
+      'Push strategy: Lantern should stop all trade promotions at once and rely on consumer advertising alone.',
+      'AIDA: the deals skip the desire stage, so Lantern should advertise more heavily to build desire before each deal.',
     ],
     answer: 0,
     feedback: {
@@ -128,10 +132,10 @@ export const items = [
     id: 'm02-m4-12', lesson: M, type: 'mc', kind: 'conceptual',
     prompt: 'Why does last-click attribution tend to overstate the value of brand-name search ads?',
     options: [
-      'It gives all the credit to the final click, and people searching for the brand by name have usually been persuaded already, so many would have bought through the free listing anyway.',
-      'Search ads are counted twice by every analytics tool.',
-      'Last-click gives credit only to the first ad a customer saw.',
-      'Brand-name searches never lead to purchases.',
+      'It credits the final click, but brand searchers have usually been persuaded already, and many would have used the free listing.',
+      'Search ads are counted twice by every analytics tool, once as a click and once as an order.',
+      'Last-click gives all the credit to the first ad a customer saw, which is usually the brand search ad.',
+      'Brand-name searches never lead to purchases, so any sales credited to them must be counting errors.',
     ],
     answer: 0,
     feedback: {

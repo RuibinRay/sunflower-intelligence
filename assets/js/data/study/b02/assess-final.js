@@ -27,10 +27,10 @@ export const items = [
     prompt: 'Complete the description of Lantern’s order export (fictional).',
     text: 'Each row of <code>lantern-orders</code> describes one [[0]]. <code>order_id</code> should be the [[1]]. <code>customer_id</code> repeats, because one customer can place several orders; it points to a row of the customer table, so in this table it is a [[2]]. <code>size_g</code> records the pack weight in grams (250, 480, 750 or 1000), so its level of measurement is [[3]].',
     blanks: [
-      { options: ['order', 'customer', 'product', 'day of trading'], answer: 0 },
+      { options: ['customer', 'order', 'product', 'day of trading'], answer: 1 },
       { options: ['primary key', 'foreign key', 'measure', 'composite key'], answer: 0 },
-      { options: ['foreign key', 'primary key', 'measure', 'derived variable'], answer: 0 },
-      { options: ['ratio', 'nominal', 'ordinal', 'interval'], answer: 0 },
+      { options: ['primary key', 'measure', 'foreign key', 'derived variable'], answer: 2 },
+      { options: ['nominal', 'ratio', 'ordinal', 'interval'], answer: 1 },
     ],
     solution: 'One row is one order, so order_id is the primary key: unique and never blank. customer_id links each order to the customer table and may repeat: a foreign key. Grams have a true zero and 1,000 g is four times 250 g, so size_g is on a ratio scale (even though only four pack sizes occur).',
   },
@@ -47,7 +47,7 @@ export const items = [
   {
     id: 'b02-fn-3', lesson: 'profiling-and-validation', type: 'rows', kind: 'applied',
     prompt: 'Rows from Lantern’s raw export (fictional). The rules are: quantity is a whole number from 1 to 200; region is exactly one of North, South, East, West or Central; rating is a whole number from 1 to 5, or blank (rating is optional). Select every row that breaks at least one rule. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['order_id', 'region', 'quantity', 'rating'],
       rows: [
         ['LC-10001', 'North', '2', '2'],
@@ -86,7 +86,7 @@ export const items = [
   {
     id: 'b02-fn-5', lesson: 'duplicates', type: 'rows', kind: 'applied',
     prompt: 'Rows from Harborview Hotel’s booking export (fictional). A channel-manager sync sometimes creates a booking again under a new booking_id from the HB-261xx series; every other column of the copy matches the original, including those not shown. Select the rows to remove so that each booking appears once. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['booking_id', 'booked_on', 'check_in', 'check_out', 'room_type', 'total ($)'],
       rows: [
         ['HB-25066', '2025-07-30', '2025-08-05', '2025-08-07', 'Standard', '358'],
@@ -142,7 +142,7 @@ export const items = [
   {
     id: 'b02-fn-9', lesson: 'text-and-categories', type: 'rows', kind: 'conceptual',
     prompt: 'Region values from Lantern’s raw export (fictional; ␣ marks a space). After trimming spaces and converting to Title Case, which values still don’t match one of North, South, East, West or Central exactly? Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['region (raw)'],
       rows: [['north␣'], ['N.'], ['SOUTH'], ['Wset'], ['West␣'], ['central'], ['Soth'], ['E.']],
     } },
@@ -167,10 +167,10 @@ export const items = [
     id: 'b02-fn-11', lesson: 'missing-values', type: 'mc', kind: 'applied',
     prompt: 'In a fictional extract of Northfield University’s records, weekly study_hours is blank for 30% of first-years but 8% of fourth-years, and among students who answered, fourth-years report more hours. Within each year, nothing recorded predicts who left it blank. How should the blanks be filled for an estimate of average study hours across all students?',
     options: [
-      'Fill each blank with the mean of the student’s own year of study, and keep a missing-value indicator',
-      'Fill every blank with the overall mean of the observed hours',
-      'Delete the students with blanks and average the rest',
-      'Fill every blank with 0, because the student didn’t report any hours',
+      'Fill each blank with the mean of the student’s own year, and keep a missing-value indicator',
+      'Fill every blank with the overall mean of the observed hours, which leaves the observed average unchanged',
+      'Delete the students with blanks and average the rest, since within each year the blanks are random',
+      'Fill every blank with 0, because a student who reported no hours can’t be assumed to have studied',
     ],
     answer: 0,
     feedback: {
@@ -194,7 +194,7 @@ export const items = [
   {
     id: 'b02-fn-13', lesson: 'outliers', type: 'rows', kind: 'applied',
     prompt: 'Ten fictional Lantern order totals, including its genuine 120-bag office order. Using quartiles by linear interpolation, select every order outside the Tukey fences (Q1 − 1.5 × IQR, Q3 + 1.5 × IQR). Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['order', 'order_total ($)'],
       rows: [['A', '21.00'], ['B', '17.00'], ['C', '58.00'], ['D', '14.00'], ['E', '28.00'], ['F', '1512.00'], ['G', '19.50'], ['H', '15.50'], ['I', '24.00'], ['J', '18.00']],
     } },
@@ -205,10 +205,10 @@ export const items = [
     id: 'b02-fn-14', lesson: 'outliers', type: 'mc', kind: 'conceptual',
     prompt: 'The ten order totals in the previous question include $1,512, far above the rest, yet the rule |z| > 3 flags nothing. Why?',
     options: [
-      'In a sample of n values no |z| can exceed (n − 1) ÷ √n, about 2.85 for n = 10, and the extreme value also inflates the SD it is measured against',
+      `No |z| among n values can exceed (n − 1) ÷ √n, about ${((10 - 1) / Math.sqrt(10)).toFixed(2)} here, and the extreme value inflates the SD`,
       'The z-score rule only flags values below the mean',
-      'z-scores are computed from the median and the MAD, which ignore the extreme value',
-      'Ten values are too few to calculate a standard deviation',
+      'z-scores are computed from the median and the MAD, so they track the middle of the data rather than its extremes',
+      'Ten values are too few to calculate a standard deviation, so the rule can’t return a z-score for any order',
     ],
     answer: 0,
     feedback: {
@@ -260,7 +260,7 @@ export const items = [
   {
     id: 'b02-fn-18', lesson: 'scaling', type: 'rows', kind: 'applied',
     prompt: 'Lantern’s (fictional) min–max scaler for order value was fitted on training orders, where the minimum was $12 and the maximum $60. It is applied to these test orders. Select every test order whose scaled value falls outside 0 to 1. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['test order', 'order value ($)'],
       rows: [['T1', '8'], ['T2', '12'], ['T3', '30'], ['T4', '60'], ['T5', '75'], ['T6', '45']],
     } },
@@ -295,7 +295,7 @@ export const items = [
   {
     id: 'b02-fn-21', lesson: 'transforming-data', type: 'rows', kind: 'applied',
     prompt: 'Harborview’s total should equal nights × rate, where nights is the number of days from check_in to check_out. Derive nights from the dates and select every booking whose stored total disagrees (fictional bookings; 2026 is not a leap year). Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['check_in', 'check_out', 'rate ($)', 'total ($)'],
       rows: [
         ['2026-03-29', '2026-04-02', '150', '600'],

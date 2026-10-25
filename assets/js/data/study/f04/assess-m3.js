@@ -76,9 +76,9 @@ export const items = [
     prompt: 'A growing perpetuity has a first payment of $500. If the discount rate and the growth rate both rise by one percentage point, what happens to its value?',
     options: [
       'Nothing: the value depends only on r − g, which is unchanged',
-      'It falls, because the discount rate is higher',
-      'It rises, because the growth rate is higher',
-      'It cannot be known without the old rates',
+      'It falls, because a higher discount rate always lowers the present value of future payments',
+      'It rises, because faster growth makes every payment after the first larger than before',
+      'It cannot be known without the old rates, because the effect of a one-point rise depends on where r and g start',
     ],
     answer: 0,
     feedback: {

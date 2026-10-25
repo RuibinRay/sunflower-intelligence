@@ -20,10 +20,10 @@ export const items = [
     id: 'm02-fn-2', lesson: 'marketing-mix', type: 'mc', kind: 'applied',
     prompt: 'A colleague proposes launching Lantern’s Classic blend (taste score 6, the same as Arcadia’s) at $3.79, Summit Brew’s price, in natural and specialty grocers and Lantern’s own cafés and online shop, with in-store sampling to show off the taste. Where is the misfit in this mix, and how should it be fixed?',
     options: [
-      'Make the product and the price agree: use a better liquid to justify a price near Summit’s, or price the Classic blend near Arcadia’s $2.89.',
-      'Add convenience stores, so that more shoppers can find the can.',
-      'Spend more on social and search ads, so that more shoppers hear about the can.',
-      'Launch three flavours, so that the range looks more premium.',
+      'Product and price disagree: use a better liquid to justify Summit’s price, or price the Classic blend near Arcadia’s $2.89.',
+      'The channels are too narrow: add convenience stores, so that more shoppers can find the can on a chilled shelf near the till.',
+      'Promotion is too weak: spend more on social and search ads, so that more shoppers hear about the can before they reach the shelf.',
+      'The range is too thin: launch three flavours, so that the range looks more premium beside Summit’s.',
     ],
     answer: 0,
     feedback: {
@@ -87,9 +87,9 @@ export const items = [
     prompt: 'Runners buying a pair of fictional performance running shoes visit two or three shops, try several models on and compare fit, features and price before they buy. Which consumer product class are the shoes for these buyers, and what does that usually imply for place?',
     options: [
       'A shopping product: selective distribution through outlets that can advise customers and let them compare.',
-      'A convenience product: intensive distribution in as many outlets as possible.',
+      'A convenience product: intensive distribution in as many outlets as possible, so runners never have to search.',
       'A specialty product: exclusive distribution through one outlet in each city.',
-      'An unsought product: personal selling to make people aware of a need they don’t think about.',
+      'An unsought product: personal selling to make people aware of a need they don’t think about until it arises.',
     ],
     answer: 0,
     feedback: {
@@ -117,10 +117,10 @@ export const items = [
     prompt: 'The table shows a hypothetical regional market for canned nitro coffee, a product form within ready-to-drink coffee. Average shelf prices have held steady, and most buyers are still buying it for the first time. Which stage is the form most likely in, and which decisions fit a brand that sells it?',
     data: { table: { head: ['Year', 'Cans sold (thousands)', 'Growth on the year before', 'Brands selling it'], rows: [['1', '300', '—', '2'], ['2', '900', '200%', '3'], ['3', '2,000', '122%', '5'], ['4', '3,400', '70%', '8']] } },
     options: [
-      'Growth: widen distribution, add versions and features, and shift promotion from awareness towards preference for the brand.',
-      'Introduction: keep one basic version, sell selectively and focus on building awareness and trial.',
-      'Maturity: defend share with frequent price promotions and remind buyers of the brand.',
-      'Decline: cut support to the minimum and harvest the remaining profit.',
+      'Growth: widen distribution, add versions and shift promotion towards brand preference.',
+      'Introduction: keep one basic version, sell selectively and focus promotion on building awareness and first trial.',
+      'Maturity: defend share against rivals with frequent price promotions and remind buyers of the brand.',
+      'Decline: cut support to the minimum and harvest the remaining profit before the form fades out.',
     ],
     answer: 0,
     feedback: {
@@ -171,9 +171,9 @@ export const items = [
     prompt: 'A fictional battery-storage installer is bidding in a sealed-bid tender for a hospital’s system. It estimates the job will cost it $480,000. It judges that a bid of $560,000 has a 35% chance of winning, $530,000 a 60% chance and $505,000 an 85% chance. On these estimates, which bid gives the highest expected contribution?',
     options: [
       '$530,000, with an expected contribution of 0.60 × $50,000 = $30,000.',
-      '$560,000, because it earns the most if it wins.',
-      '$505,000, because it is the most likely to win.',
-      '$480,000, because a bid at cost can’t lose money.',
+      '$560,000, because it earns $80,000 if it wins, the most of the three bids.',
+      '$505,000, because at 85% it is the most likely of the three to win.',
+      '$480,000, because a bid at cost can’t lose money on the hospital job.',
     ],
     answer: 0,
     feedback: {
@@ -211,10 +211,10 @@ export const items = [
     id: 'm02-fn-15', lesson: 'price-response', type: 'mc', kind: 'applied',
     prompt: 'A fictional online homeware shop earns a 40% contribution margin ratio on a range of lamps. In a randomised test, a 10% price cut raised the number of lamps sold by 22%. Should it make the cut permanent?',
     options: [
-      'No: revenue rises by about 9.8%, but volume needed to rise by about 33.3% to keep contribution unchanged, so contribution falls by about 8.5%.',
-      'Yes: demand is elastic (about −2.2), so the cut raises revenue.',
-      'Yes: volume rose by more than twice the price cut.',
-      'No: a price cut always lowers revenue.',
+      'No: volume rose 22% but needed to rise by about 33.3% to keep contribution unchanged, so contribution falls by about 8.5%.',
+      'Yes: demand is elastic (about −2.2), so the cut raises revenue by about 9.8% and pays for itself.',
+      'Yes: volume rose by 22%, more than twice the 10% price cut, so the cut more than pays for itself.',
+      'No: a price cut always lowers revenue, because every lamp now sells for 10% less.',
     ],
     answer: 0,
     feedback: {
@@ -281,10 +281,10 @@ export const items = [
     id: 'm02-fn-19', lesson: 'promotion-mix', type: 'mc', kind: 'applied',
     prompt: 'Halfway through Lantern’s launch year (hypothetical figures), a survey shows that awareness among category buyers has risen from 12% to about 24%, but few of the shoppers who know the brand have tried a can. Stores report that shoppers pick the can up, look at the $3.49 price and put it back. Which promotion vehicle should get more of the remaining budget?',
     options: [
-      'In-store sampling and displays: they turn awareness into trial at the shelf, where the hesitation happens.',
-      'Social and search ads: more awareness is always the first priority.',
-      'Trade promotions: deep, frequent price cuts until shoppers buy.',
-      'PR and events: earned coverage builds awareness slowly and cheaply.',
+      'In-store sampling and displays, which turn awareness into trial at the shelf.',
+      'Social and search ads: awareness is still only 24%, so building more of it should come first.',
+      'Trade promotions: deep, frequent price cuts until shoppers stop putting the can back on the shelf.',
+      'PR and events: earned coverage builds awareness slowly and cheaply, and adds credibility to the price.',
     ],
     answer: 0,
     feedback: {

@@ -128,9 +128,9 @@ export const guided = [
         prompt: 'A colleague suggests correcting the error by debiting Cash 1,500 and crediting Training Revenue 1,500. What is wrong with that?',
         options: [
           'It would record the workshop revenue a second time and add $1,500 of cash that doesn’t exist.',
-          'Nothing, as long as the trial balance still balances.',
+          'Nothing, as long as the trial balance still balances after the entry is posted.',
           'A correcting entry must always include Cash.',
-          'Training Revenue can be credited only when cash is received.',
+          'Training Revenue can be credited only when cash for the workshop is actually received from the client.',
         ],
         answer: 0,
         hints: ['Ask what the colleague’s entry does to Cash and to total revenue.'],
@@ -204,8 +204,8 @@ export const independent = [
     prompt: 'A fictional hotel’s purchasing manager can set up new suppliers in the accounting system, approve suppliers’ invoices and release payments to them. Which risk does this create, and which control addresses it?',
     options: [
       'She could set up a fake supplier and pay it; someone else should approve new suppliers and release payments.',
-      'Invoices might be paid late; she should be given authority over more suppliers.',
-      'The trial balance might not balance; it should be prepared twice.',
+      'Invoices might be paid late; she should be given authority over more suppliers so that she can pay them faster.',
+      'The trial balance might not balance; it should be prepared twice, by two different people, to catch any errors.',
       'Supplies might be miscounted; they should be counted every month.',
     ],
     answer: 0,
@@ -242,10 +242,10 @@ export const check = [
     id: 'f01-cyc-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Which trial balance are the financial statements prepared from, and why?',
     options: [
-      'The adjusted trial balance, because only after adjustment do revenue and expenses belong to the right period.',
-      'The unadjusted trial balance, because it shows the transactions as they actually happened.',
+      'The adjusted one: only after adjustment are revenue and expenses in the right period.',
+      'The unadjusted trial balance, because it shows the transactions as they actually happened, before any estimates.',
       'The post-closing trial balance, because it is the last one prepared.',
-      'Any of the three, because they all balance.',
+      'Any of the three, because all three balance, so the statements come out the same from each.',
     ],
     answer: 0,
     feedback: {

@@ -168,8 +168,8 @@ export const independent = [
     prompt: 'Halfway through the term of a level-payment loan, more than half of the amount borrowed is usually still owed. Why?',
     options: [
       'Early payments go mostly to interest, because interest is charged on a balance that is still large',
-      'The lender adds a penalty in the early years',
-      'The payment is smaller in the early years',
+      'The lender adds a penalty to the balance in the early years, and it is repaid before any of the principal',
+      'The payment is smaller in the early years and rises later in the term, so less principal is repaid at first',
       'It is not true: exactly half is owed halfway through',
     ],
     answer: 0,
@@ -247,9 +247,9 @@ export const check = [
     prompt: 'Loan A and loan B charge the same rate, 7% a year compounded monthly, on the same amount. Loan A has a five-year term and loan B a three-year term, and loan A’s total interest is much larger. Neither loan charges any fees. What can you conclude?',
     options: [
       'Nothing about cost: loan A’s extra interest pays for keeping the money longer, at the same price',
-      'Loan A is more expensive and should be avoided',
-      'Loan B has a lower APR',
-      'Loan A must include hidden fees',
+      'Loan A is the more expensive loan, because it charges much more interest in total, so it should be avoided',
+      'Loan B has a lower APR, because the APR reflects total interest, which is much smaller on the shorter loan',
+      'Loan A must include hidden fees, because the same rate on the same amount cannot produce so much more interest',
     ],
     answer: 0,
     feedback: {
@@ -296,9 +296,9 @@ export const check = [
     prompt: 'A fictional borrower owes $9,000 with 18 monthly payments left at 9% a year compounded monthly. She could refinance at 7.5% over the same 18 months for a $300 fee, which would cut her payment by about $6.17 a month. What should she do?',
     options: [
       'Keep the current loan: the savings are worth only about $105 today, less than the $300 fee',
-      'Refinance: any lower rate is worth having',
+      'Refinance: a rate 1.5 points lower cuts every payment, and any lower rate is always worth having',
       'Refinance, because the fee is recovered in under two years',
-      'Keep the loan, because refinancing always restarts the term',
+      'Keep the loan, because refinancing always restarts the term and so adds interest over a longer period',
     ],
     answer: 0,
     feedback: {

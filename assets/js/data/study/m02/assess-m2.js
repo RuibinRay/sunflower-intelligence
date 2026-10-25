@@ -75,7 +75,7 @@ export const items = [
     options: [
       'Revenue rises, and because fewer units are sold, variable costs fall too, so contribution rises as well.',
       'Revenue falls, because fewer units are sold.',
-      'Revenue rises, but profit could still fall because profit depends on costs, not revenue.',
+      'Revenue rises, but profit could still fall, because profit depends on costs and the firm now sells fewer units.',
       'Revenue is unchanged, because the price and quantity changes cancel out.',
     ],
     answer: 0,

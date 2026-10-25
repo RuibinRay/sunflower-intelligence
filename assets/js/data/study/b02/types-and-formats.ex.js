@@ -108,7 +108,7 @@ export const guided = [
     prompt: 'Lantern’s web shop writes slash dates day first with a four-digit year, as in 04/03/2026 for 4 March 2026. Choose the explicit format for each tool.',
     text: 'pandas: pd.to_datetime(s, format=[[0]], errors=&#39;coerce&#39;)<br>PostgreSQL: to_date(order_date, [[1]])',
     blanks: [
-      { options: ['%d/%m/%Y', '%m/%d/%Y', '%d/%m/%y', '%Y-%m-%d'], answer: 0 },
+      { options: ['%m/%d/%Y', '%d/%m/%Y', '%d/%m/%y', '%Y-%m-%d'], answer: 1 },
       { options: ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'], answer: 0 },
     ],
     hints: [
@@ -123,7 +123,7 @@ export const independent = [
   {
     id: 'b02-tf-i1', type: 'rows', kind: 'applied',
     prompt: 'These dates come from a file whose source and format are unknown. Select every value that is ambiguous: it could be day/month/year or month/day/year, and the two readings give different dates. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['Raw date'],
       rows: [['12/03/2026'], ['25/03/2026'], ['03/03/2026'], ['07/11/2026'], ['11/30/2026'], ['2026-04-05'], ['01/02/2026'], ['13/01/2026']],
     } },
@@ -193,7 +193,7 @@ export const independent = [
     prompt: 'A colleague converts serial number 46082 by adding 46,082 days to 1 January 1900 and gets 3 March 2026. Excel shows 1 March 2026. Why are they two days apart?',
     options: [
       '1 January 1900 is day 1, not day 0, and Excel also counts a 29 February 1900 that never existed.',
-      'The workbook uses the 1904 date system.',
+      'The workbook uses the 1904 date system, which counts its serial numbers from a later starting day.',
       'Excel rounds serial numbers to the nearest even day.',
       'Two leap days were skipped between 1900 and 2026.',
     ],
@@ -213,14 +213,14 @@ export const check = [
     prompt: 'A column of order dates is stored as text in the form DD/MM/YYYY and sorted from A to Z. What happens?',
     options: [
       'Rows are ordered by the day of the month first, so 01/04/2026 sorts before 02/03/2026.',
-      'The dates sort correctly, because they all have the same year.',
+      'The dates sort correctly, because they all have the same year and the same number of characters.',
       'The sort stops with an error.',
       'The rows are ordered by month and then by day.',
     ],
     answer: 0,
     feedback: {
       1: 'Text is compared character by character from the left, and the left-hand characters here are the day, not the year.',
-      2: 'Sorting text rarely fails; it simply uses the wrong order, which is why the problem goes unnoticed.',
+      2: 'Sorting text rarely fails; it uses the wrong order without any warning, which is why the problem goes unnoticed.',
       3: 'The month is in the middle of the string, so it only matters when two values share the same day.',
     },
     solution: 'Text sorts character by character, so DD/MM/YYYY strings are ordered by day, then month, then year: 1 April comes before 2 March. Converting to a date type, or writing the dates as ISO 8601 (YYYY-MM-DD), fixes the order.',
@@ -238,7 +238,7 @@ export const check = [
   {
     id: 'b02-tf-k3', type: 'rows', kind: 'applied',
     prompt: 'The dates below come from an export whose sources are not recorded. Select the values that cannot be converted to a single date without more information. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['Raw date'],
       rows: [['2026-04-05'], ['14/04/2026'], ['04/05/2026'], ['April 5, 2026'], ['06/06/2026'], ['5/4/26'], ['13/05/2026']],
     } },
@@ -249,10 +249,10 @@ export const check = [
     id: 'b02-tf-k4', type: 'mc', kind: 'applied',
     prompt: 'A claims file’s customer numbers were saved as numbers and lost their leading zeros. In the register, customer numbers have 4, 5 or 6 digits. What should you do?',
     options: [
-      'Go back to the source and export or import the column as text, because padding can’t tell which length each number had.',
-      'Pad every value with zeros to six digits.',
-      'Pad every value to the length of the longest number in the claims file.',
-      'Join on the numeric value and accept the matches that work.',
+      'Export the column again as text from the source: padding can’t tell how long each number was.',
+      'Pad every value with zeros to six digits, the longest length that a customer number has in the register.',
+      'Pad every value with zeros to the length of the longest number in the claims file, so that every number has the same width.',
+      'Join on the numeric value, which ignores leading zeros on both sides, and accept the matches that work.',
     ],
     answer: 0,
     feedback: {

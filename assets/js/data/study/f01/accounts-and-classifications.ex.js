@@ -86,7 +86,7 @@ export const guided = [
         ] },
       { id: 'f01-acc-g3-s4', type: 'mc',
         prompt: 'At 31 March, is the remaining Prepaid Insurance current or noncurrent?',
-        options: ['Current: all of it will be used up within the next twelve months', 'Noncurrent: the policy lasts almost a year', 'Partly current and partly noncurrent', 'Neither: prepaid items are not classified'],
+        options: ['Current: all of it will be used up within the next twelve months', 'Noncurrent: the policy still has almost a full year left to run, too long to count as current', 'Partly current and partly noncurrent, because one month of the policy has already been used', 'Neither: prepaid items are not classified'],
         answer: 0,
         hints: ['When will the last month of cover be used?'],
         feedback: {
@@ -140,9 +140,9 @@ export const independent = [
     prompt: 'Which statement about a contra account is correct?',
     options: [
       'It is paired with another account and reduces it, and the two are reported together.',
-      'It records amounts the business owes because of an asset, so it is a liability.',
+      'It records amounts the business owes because of an asset, so it is reported as a liability.',
       'It is a temporary account, closed at the end of each period.',
-      'It replaces the original account once the asset starts being used.',
+      'It replaces the original account once the asset starts being used, so only the reduced figure is reported.',
     ],
     answer: 0,
     feedback: {
@@ -185,9 +185,9 @@ export const independent = [
     prompt: 'Lantern’s two-year note (1 March 2026 to 1 March 2028) is repayable in full at the end of its term. How will it be classified on Lantern’s balance sheet at 31 March 2027?',
     options: [
       'As a current liability, because by then it is due within twelve months',
-      'As a noncurrent liability, because it is a two-year note',
+      'As a noncurrent liability, because it was a two-year note when Lantern signed it',
       'Half current and half noncurrent',
-      'It is not shown, because none of it has been repaid yet',
+      'It is not shown, because none of it has been repaid yet and the $10,000 is not due until 2028',
     ],
     answer: 0,
     feedback: {

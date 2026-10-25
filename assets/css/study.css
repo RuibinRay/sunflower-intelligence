@@ -924,3 +924,6 @@ input[type="file"]:focus-visible + .file-btn, .file-btn:focus-within { outline: 
 .sp-check { display: flex; align-items: center; gap: var(--s-2); margin: 0; }
 .sp-check input { width: 1.1rem; height: 1.1rem; flex: none; }
 .sp-table .data-table td, .sp-table .data-table th { white-space: nowrap; }
+
+/* the optional row-number column of exercise tables (data.table.index) */
+.study-table .row-ix { color: var(--ink-3); font-variant-numeric: tabular-nums; }

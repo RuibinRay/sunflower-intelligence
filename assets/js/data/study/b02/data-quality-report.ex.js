@@ -122,7 +122,7 @@ export const independent = [
       'Keep the 1-star ratings, since they are valid values on the scale, and report 4.1.',
       'Remove them and report 4.4, noting that outliers were removed.',
       'Report 4.4 in the summary and mention 4.1 in an appendix.',
-      'Keep them but report the median instead, without mentioning the mean.',
+      'Keep them, but report the median instead and leave the mean out, so readers aren’t distracted by two figures.',
     ],
     answer: 0,
     feedback: {
@@ -261,10 +261,10 @@ export const check = [
     id: 'b02-dq-k5', type: 'mc', kind: 'applied',
     prompt: 'Lantern’s regional comparison depends on one decision: if a contested batch of orders is kept, the North region leads; if it is excluded, the West leads. The evidence for excluding the batch is suggestive but not conclusive. What should the report do?',
     options: [
-      'Show both results, explain the evidence for and against excluding the batch, and say which is preferred and why.',
-      'Report whichever result is preferred and leave the other out to avoid confusing readers.',
-      'Report the result that matches what the sales team expected.',
-      'Drop the regional comparison from the report without explanation.',
+      'Show both results, weigh the evidence for and against excluding the batch, and say which you prefer.',
+      'Report whichever result the analyst prefers and leave the other out, so that readers aren’t confused by two competing answers.',
+      'Report the result that matches what the sales team expected, since it knows the regions better than the data does.',
+      'Drop the regional comparison from the report without explanation, since neither result can be trusted.',
     ],
     answer: 0,
     feedback: {

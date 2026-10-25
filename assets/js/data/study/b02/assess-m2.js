@@ -12,25 +12,34 @@ const lev = (a, b) => {
 };
 const serial1900 = (y, m, d) => (Date.UTC(y, m - 1, d) - Date.UTC(1899, 11, 30)) / 86400000;
 
+// b02-m2-1: a theatre’s online box office (fictional) that numbers every press of “Pay”. A row is a double submission
+// when an earlier row has the same customer, performance and tickets, was placed under a minute before, and this
+// row’s payment didn’t settle; the key and the gaps in the solution are computed from the rows.
+const TICKETS = [
+  ['T-8801', 'K-114', 'Sat 12 Sep, 19:30', '2', '2026-09-01 18:02:11', 'Settled'],
+  ['T-8802', 'K-114', 'Sat 12 Sep, 19:30', '2', '2026-09-01 18:02:16', 'Voided'],
+  ['T-8803', 'K-207', 'Sat 12 Sep, 19:30', '2', '2026-09-01 18:40:05', 'Settled'],
+  ['T-8804', 'K-319', 'Sun 13 Sep, 14:30', '4', '2026-09-01 18:40:09', 'Settled'],
+  ['T-8805', 'K-207', 'Sat 12 Sep, 19:30', '2', '2026-09-02 09:15:47', 'Settled'],
+  ['T-8806', 'K-425', 'Sun 13 Sep, 14:30', '3', '2026-09-02 12:30:02', 'Settled'],
+  ['T-8807', 'K-531', 'Sun 13 Sep, 14:30', '3', '2026-09-02 12:30:05', 'Settled'],
+  ['T-8808', 'K-425', 'Sun 13 Sep, 14:30', '3', '2026-09-02 12:30:09', 'Refunded'],
+];
+const secs = (t) => Date.parse(`${t.replace(' ', 'T')}Z`) / 1000;
+const gap = (i, j) => secs(TICKETS[j][4]) - secs(TICKETS[i][4]);
+const RESUBMITTED = TICKETS.flatMap((r, j) => (r[5] !== 'Settled' && TICKETS.some((e, i) => i < j && e[1] === r[1] && e[2] === r[2] && e[3] === r[3] && gap(i, j) < 60) ? [j] : []));
+
 export const items = [
   // ---------------------------------------------------------------- duplicates
   {
     id: 'b02-m2-1', lesson: 'duplicates', type: 'rows', kind: 'applied',
-    prompt: 'Rows from Lantern’s order export (fictional). Select the rows to remove so that each order appears once. Keep the latest version of any order that was updated; if two rows are identical, remove the later one. Rows are numbered from 0.',
-    data: { table: {
-      head: ['order_id', 'updated_at', 'product', 'order_total'],
-      rows: [
-        ['LC-60401', '2026-06-02 10:00', 'House Blend 250g', '$14.00'],
-        ['LC-60402', '2026-06-02 10:05', 'Gift Box Trio', '$58.00'],
-        ['LC-60401', '2026-06-02 10:00', 'House Blend 250g', '$14.00'],
-        ['LC-60402', '2026-06-02 10:40', 'Gift Box Trio', '$53.00'],
-        ['LC-60403', '2026-06-02 12:15', 'Cold Brew Pack', '$22.00'],
-        ['LC-60404', '2026-06-03 09:20', 'Espresso Roast 250g', '$15.50'],
-        ['LC-60402', '2026-06-02 10:05', 'Gift Box Trio', '$58.00'],
-      ],
+    prompt: 'A fictional theatre’s online box office gives every press of “Pay” its own order number, so a customer who presses it twice gets two orders. Select the rows to remove so that each real purchase is counted once, using the evidence in the table. Rows are numbered from 0.',
+    data: { table: { index: 0,
+      head: ['order_id', 'customer_id', 'performance', 'tickets', 'placed_at', 'payment'],
+      rows: TICKETS.map((r) => [...r]),
     } },
-    answer: [1, 2, 6],
-    solution: 'Row 2 is an exact copy of row 0. Order LC-60402 has three rows: rows 1 and 6 are identical copies of the 10:05 version, and row 3 is the 10:40 update (a $5 promotion code: 58.00 − 5.00 = 53.00). Keep row 3 and remove rows 1 and 6. Rows 4 and 5 are separate orders. Four rows remain, one per order.',
+    answer: RESUBMITTED,
+    solution: `${TICKETS[1][0]} repeats ${TICKETS[0][0]}’s purchase (same customer, performance and tickets) ${gap(0, 1)} seconds later, and its payment was voided: one purchase submitted twice. ${TICKETS[7][0]} repeats ${TICKETS[5][0]}’s purchase ${gap(5, 7)} seconds later, and its charge was refunded, so it goes too. ${TICKETS[4][0]} is ${TICKETS[4][1]}’s second order for the same performance, but it was placed the next morning and paid separately: a genuine repeat, which stays. ${TICKETS[3][0]} and ${TICKETS[6][0]} came seconds after other orders, but from different customers. The order numbers prove nothing either way, because each press of “Pay” made one; ${TICKETS.length - RESUBMITTED.length} orders remain.`,
   },
   {
     id: 'b02-m2-2', lesson: 'duplicates', type: 'num', kind: 'numerical',
@@ -92,7 +101,7 @@ export const items = [
   {
     id: 'b02-m2-7', lesson: 'types-and-formats', type: 'rows', kind: 'applied',
     prompt: 'Lantern’s web shop is documented as writing slash dates day/month/year with four-digit years, and you convert its dates with that explicit format. Select the values that will fail to convert to a valid date and need to be flagged. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['Raw order_date'],
       rows: [['12/03/2026'], ['31/04/2026'], ['15/06/2026'], ['29/02/2026'], ['3/14/26'], ['01/01/2026']],
     } },
@@ -159,7 +168,7 @@ export const items = [
   {
     id: 'b02-m2-12', lesson: 'text-and-categories', type: 'rows', kind: 'conceptual',
     prompt: 'From which product names does the case-sensitive pattern <code>(\\d+)\\s?(g|kg)</code> extract a pack size? Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['product'],
       rows: [['House Blend 250g'], ['Decaf Colombia 1kg'], ['Espresso Roast 250 g'], ['Gift Box Trio'], ['Cold Brew Pack'], ['Sumatra Mandheling 250G']],
     } },

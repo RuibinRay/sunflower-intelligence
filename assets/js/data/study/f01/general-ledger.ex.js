@@ -96,8 +96,8 @@ export const guided = [
         options: [
           'A $480 payment to the cabling supplier was posted to the control account but not to the supplier’s account.',
           'A $480 bill from the cabling supplier was posted to the control account but not to the supplier’s account.',
-          'A $480 bill was posted to the inverter supplier’s account instead of the cabling supplier’s.',
-          'A $240 payment was posted to the wrong side of the control account.',
+          'A $480 bill from the cabling supplier was posted to the inverter supplier’s account instead of the cabling supplier’s.',
+          'A $240 payment to the cabling supplier was posted to the wrong side of the control account, as a credit instead of a debit.',
         ],
         answer: 0,
         hints: ['The supplier accounts are higher than the control account. Which kind of posting lowers a payable?', 'A payment is a debit that reduces a payable. If it reached only the control account, which record is left too high?'],
@@ -207,10 +207,10 @@ export const check = [
     id: 'f01-gl-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Why does a business keep a general ledger as well as a journal?',
     options: [
-      'The journal records each transaction whole, in date order; the ledger gathers the same amounts by account so each balance can be read.',
-      'The ledger is a backup copy of the journal in case the journal is lost.',
+      'The journal records each transaction whole, in date order; the ledger sorts the amounts by account so each balance can be read.',
+      'The ledger is a backup copy of the journal, kept in the same date order in case the journal is lost or damaged.',
       'The journal records debits and the ledger records credits.',
-      'Once software is used the journal is no longer kept, so the ledger replaces it.',
+      'Once accounting software is used the journal is no longer kept, so the ledger replaces it and records each transaction directly.',
     ],
     answer: 0,
     feedback: {

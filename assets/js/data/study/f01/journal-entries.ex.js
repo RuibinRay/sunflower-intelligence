@@ -49,9 +49,9 @@ export const guided = [
         prompt: 'Has Lantern earned any revenue on 8 March?',
         options: [
           'No: none of the events has happened, so Lantern owes the service or a refund.',
-          'Yes, $2,400: the cash has arrived.',
+          'Yes, $2,400: the cash has arrived in Lantern’s bank account from Harbor Tech.',
           'Yes, $800: one event’s worth.',
-          'No, and nothing should be recorded until the first event.',
+          'No, and nothing should be recorded until the first event has been catered on 26 March.',
         ],
         answer: 0,
         hints: ['Revenue is earned by delivering the service.', 'What does Lantern owe Harbor Tech right now?'],
@@ -230,10 +230,10 @@ export const check = [
     id: 'f01-je-k4', type: 'mc', kind: 'applied',
     prompt: 'Which source documents should support Lantern’s 30 March entry debiting Dividends and crediting Cash for $300?',
     options: [
-      'The minute of the board meeting that declared the dividend, and the bank record of the payment',
-      'An invoice from Ana Lim to Lantern for $300',
-      'Lantern’s income statement for March',
-      'Ana’s personal bank statement showing $300 received',
+      'The board minute declaring the dividend, and the bank record of the payment',
+      'An invoice from Ana Lim to Lantern for $300, the amount of the dividend she is owed',
+      'Lantern’s income statement for March, which reports the dividend paid',
+      'Ana’s personal bank statement showing the $300 received from Lantern on 30 March',
     ],
     answer: 0,
     feedback: {

@@ -70,10 +70,10 @@ export const items = [
     id: 'b02-m4-6', lesson: 'encoding-categories', type: 'mc', kind: 'applied',
     prompt: 'To predict whether a Harborview booking will be cancelled, an analyst replaces <code>country</code> with the cancellation rate of each country, computed on all bookings before splitting into training and test sets. Test accuracy is excellent. What is wrong?',
     options: [
-      'The encoding used the test set’s outcomes, and each row’s own outcome, so test accuracy is too optimistic; compute it on the training set only, out-of-fold and smoothed.',
-      'Nothing: target encoding always uses the whole dataset.',
+      'The encoding leaked test outcomes, and each row’s own, into the feature, so test accuracy is too optimistic.',
+      'Nothing: target encoding always uses the whole dataset, so that each country’s rate rests on as many bookings as possible.',
       'Country should have been label-encoded alphabetically instead.',
-      'The test set is too small; the encoding itself is fine.',
+      'The test set is too small to trust; the encoding itself is fine, and a larger test set would confirm the score.',
     ],
     answer: 0,
     feedback: {
@@ -121,9 +121,9 @@ export const items = [
     prompt: 'A dashboard shows the average order value for each of Lantern’s five regions. A manager averages the five figures and calls the result the company’s average order value. When is that correct?',
     options: [
       'Only when every region has the same number of orders, or all five averages are equal.',
-      'Always, because every region is part of the company.',
+      'Always, because every region is part of the company and every order belongs to exactly one region.',
       'Only when there are more than five regions.',
-      'Only when the regional averages are medians rather than means.',
+      'Only when the regional averages are medians rather than means, since medians aren’t pulled up by large orders.',
     ],
     answer: 0,
     feedback: {

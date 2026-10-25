@@ -216,8 +216,8 @@ export default {
       items: [
         {
           id: 'b02-pj-f1', type: 'rows', kind: 'applied',
-          prompt: 'These are the three order ids that appear twice with different values (raw row numbers in the first column; ␣ marks a space). The shop system confirms that LC-10042 was for 2 bags. Select the rows to remove. Rows are numbered from 0.',
-          data: { table: {
+          prompt: 'These are the three order ids that appear twice with different values (their row numbers in the raw export are in the “raw row” column; ␣ marks a space). The shop system confirms that LC-10042 was for 2 bags. Select the rows to remove.',
+          data: { table: { index: { col: 0 },
             head: ['raw row', 'order_id', 'quantity', 'region', 'email', 'order_total'],
             rows: [
               ['43', 'LC-10042', '2', 'West', 'dana.mensah@example.net', '$28.00'],
@@ -229,7 +229,7 @@ export default {
             ],
           } },
           answer: [1, 2, 5],
-          solution: 'LC-10042: both copies are internally consistent (2 × $14 = $28, 3 × $14 = $42), so only the shop system can decide; it confirms 2 bags, so remove row 46. LC-10076: the copies differ only by a blank e-mail, so keep the most complete copy (row 80) and remove row 79. LC-10146: “north␣” becomes North after trimming and case, so the copies are identical; remove the later one, row 157. In the lab, “Remove repeated keys” with “Most complete” keeps exactly rows 43, 80 and 151 (ties go to the first copy); “First” would keep the incomplete row 79, and “Last” would keep the wrong quantity.',
+          solution: 'LC-10042: both copies are internally consistent (2 × $14 = $28, 3 × $14 = $42), so only the shop system can decide; it confirms 2 bags, so remove raw row 46. LC-10076: the copies differ only by a blank e-mail, so keep the most complete copy (raw row 80) and remove raw row 79. LC-10146: “north␣” becomes North after trimming and case, so the copies are identical; remove the later one, raw row 157. In the lab, “Remove repeated keys” with “Most complete” keeps exactly raw rows 43, 80 and 151 (ties go to the first copy); “First” would keep the incomplete raw row 79, and “Last” would keep the wrong quantity.',
         },
         {
           id: 'b02-pj-f2', type: 'mc', kind: 'applied',
@@ -254,7 +254,7 @@ export default {
           text: '46176 is [[0]]. 46186 is [[1]].',
           blanks: [
             { options: ['2026-06-02', '2026-06-03', '2026-06-04', '2026-05-03'], answer: 1 },
-            { options: ['2026-06-12', '2026-06-13', '2026-06-14', '2026-05-13'], answer: 1 },
+            { options: ['2026-06-13', '2026-06-12', '2026-06-14', '2026-05-13'], answer: 0 },
           ],
           solution: '46176 − 46082 = 94 days after 1 March. 1 April is 31 days after 1 March, 1 May 61 days and 1 June 92 days, so 94 days after 1 March is 3 June 2026 (2026-06-03). 46186 is 10 days later: 13 June 2026 (2026-06-13).',
         },
@@ -275,7 +275,7 @@ export default {
           options: [
             'Read it with a decimal comma as $16.50, which matches the product’s list price and the order’s total, and record why',
             'Remove the comma and read it as $1,650',
-            'Set it to missing, because it couldn’t be converted',
+            'Set it to missing, because a value that failed conversion is unknown, and reading the comma as a decimal point would be a guess',
             'Delete the order',
           ],
           answer: 0,
@@ -379,10 +379,10 @@ export default {
           id: 'b02-pj-m6', type: 'mc', kind: 'conceptual',
           prompt: 'A colleague suggests filling the 77 missing ratings with the average rating so that every order has one. What is wrong with that?',
           options: [
-            'It invents ratings no customer gave, keeps the subscriber-heavy average, shrinks the spread, and hides that one-off buyers rarely rate',
+            'It invents ratings, keeps the biased average, shrinks the spread and hides that one-off buyers rarely rate',
             'Nothing, as long as the average is rounded to a whole star',
-            'Only that it changes the average rating',
-            'It is wrong only because the mean should be replaced by the median',
+            'Only that it changes the average rating, so the report can no longer be compared with the figures from earlier months',
+            'It is wrong only because the mean should be replaced by the median, which suits ordinal star ratings better',
           ],
           answer: 0,
           feedback: {
@@ -464,8 +464,8 @@ export default {
           id: 'b02-pj-a5', type: 'mc', kind: 'applied',
           prompt: 'LC-10016’s stored total of $21.35 includes a $6.50 shipping charge. Rule V5 rebuilds it as $14.85. What else should happen?',
           options: [
-            'Keep the flag in order_total_invalid and list the order in the report, so the shop team can see that shipping went into the wrong field',
-            'Nothing: once the total is rebuilt the shipping charge doesn’t matter',
+            'Keep the order_total_invalid flag and list the order in the report, so the shop team can fix how shipping is recorded',
+            'Nothing: once V5 has rebuilt the total, the shipping charge no longer affects any figure in the analysis or the report',
             'Keep $21.35, because that is what the customer paid',
             'Delete the order, because one of its values was wrong',
           ],
@@ -481,8 +481,8 @@ export default {
           id: 'b02-pj-a6', type: 'mc', kind: 'conceptual',
           prompt: 'Why does stage 4 delete the <code>email</code> column before the file goes to Ana’s analyst?',
           options: [
-            'Addresses are personal data the analysis doesn’t need: customer_id already identifies repeat customers, so keeping addresses adds risk and no value',
-            'Because some addresses are still missing',
+            'Addresses are personal data the analysis doesn’t need, since customer_id already identifies repeat customers',
+            'Because some addresses are still missing, and a column with gaps can’t be handed over to the analyst for modelling',
             'Because e-mail addresses can’t be one-hot encoded',
             'Because the lab can only export ten columns',
           ],

@@ -74,10 +74,10 @@ export default {
           id: 'm02-pj-s2', type: 'mc', kind: 'applied',
           prompt: 'Which statement of Lantern’s launch problem is best supported by the market file?',
           options: [
-            'Lantern’s first problem is attention and trial: only 12% of category buyers know it, against 50% to 75% for the established brands, so the plan must get the can noticed and tasted where it is sold, at a price that supports its positioning.',
-            'Lantern’s first problem is quality: all three of its liquids taste worse than every competitor’s.',
-            'Lantern has no problem: a better liquid always wins share on the shelf.',
-            'Lantern’s first problem is price: it must undercut Daily Grind’s $2.29 to sell any cans.',
+            'Lantern’s first problem is attention and trial: only 12% of category buyers know it, against 50% to 75% for its rivals.',
+            'Lantern’s first problem is quality: all three of its liquids taste worse than every competitor’s, so it must reformulate before launch.',
+            'Lantern has no problem: a better liquid always wins share on the shelf, so the launch can rely on taste alone.',
+            'Lantern’s first problem is price: it must undercut Daily Grind’s $2.29 to sell any cans against three established brands.',
           ],
           answer: 0,
           feedback: {
@@ -148,10 +148,10 @@ export default {
           id: 'm02-pj-p4', type: 'mc', kind: 'applied',
           prompt: 'In the simulator, moving the default plan from $3.49 to $3.79 changes the simulator’s estimate of Lantern’s supermarket cans by about −14.19% and of its natural-grocer cans by about −8.83%. The rise can absorb volume falls of 11.10% in supermarkets and 11.55% in natural grocers before contribution drops. What follows?',
           options: [
-            'The rise loses contribution in supermarkets, where volume falls by more than it can absorb, and gains it in natural grocers, where volume falls by less; overall, the simulator’s estimate of profit barely moves.',
-            'The rise gains contribution in every channel, because every can earns more.',
-            'The rise loses contribution in every channel, because volume falls everywhere.',
-            'Nothing follows, because the simulator’s numbers aren’t forecasts.',
+            'The rise loses contribution in supermarkets and gains it in natural grocers, so the simulator’s profit estimate barely moves.',
+            'The rise gains contribution in every channel, because every can now earns more than it did at $3.49.',
+            'The rise loses contribution in every channel, because the simulator shows volume falling in supermarkets and natural grocers alike.',
+            'Nothing follows, because the simulator’s numbers aren’t forecasts and can’t be compared with a hand calculation.',
           ],
           answer: 0,
           feedback: {
@@ -165,10 +165,10 @@ export default {
           id: 'm02-pj-p5', type: 'mc', kind: 'conceptual',
           prompt: 'Whatever liquid and price you choose, the simulator shows Lantern’s price elasticity as larger in magnitude in supermarkets than in natural grocers. Which explanation fits the market file and the model?',
           options: [
-            'Supermarket shoppers compare prices on the shelf, so price weighs more in their choice; natural-grocer shoppers weigh quality and provenance more and price less.',
-            'Supermarkets keep a smaller trade margin, so Lantern’s net price changes more there.',
+            'Supermarket shoppers compare prices on the shelf, while natural-grocer shoppers weigh quality and provenance more.',
+            'Supermarkets keep a smaller trade margin, so Lantern’s net price changes more there when the shelf price moves up or down.',
             'Lantern sells more cans in supermarkets, and bigger volumes always mean more elastic demand.',
-            'Natural grocers don’t stock any competitor, so shoppers there have no alternative.',
+            'Natural grocers don’t stock any competitor, so shoppers there have no alternative to Lantern’s can.',
           ],
           answer: 0,
           feedback: {
@@ -220,10 +220,10 @@ export default {
           id: 'm02-pj-c3', type: 'mc', kind: 'conceptual',
           prompt: 'With the default promotion budget ($40,000 of sampling and $20,000 of trade promotions among it), adding a retail channel in the simulator always lowers Lantern’s cans in the retail channels it already uses. Why?',
           options: [
-            'The same sampling and trade budgets are spread over more stores, so each store gets less support and Lantern’s appeal at the shelf rises less.',
-            'The new channel’s shoppers stop buying in the old channels (cannibalisation).',
-            'Competitors cut their prices when Lantern enters a new channel.',
-            'Awareness falls when the brand is spread across more channels.',
+            'The same sampling and trade budgets are spread over more stores, so each store gets less support.',
+            'The new channel’s shoppers stop buying Lantern in the old channels, so the new sales cannibalise the old ones.',
+            'Competitors cut their prices in every channel when Lantern enters a new one, so its existing stores lose sales.',
+            'Awareness falls when the brand is spread across more channels, because each shopper sees it in fewer places.',
           ],
           answer: 0,
           feedback: {
@@ -237,10 +237,10 @@ export default {
           id: 'm02-pj-c4', type: 'mc', kind: 'applied',
           prompt: 'The simulator’s estimate says that adding convenience stores to the default plan raises profit after overhead by about $49,000, yet the course’s channel lesson calls convenience stores the closest call and stops short of a full launch in them. What is the most defensible conclusion for Lantern?',
           options: [
-            'Treat the gain as a hypothesis worth testing: the model assumes full distribution from day one and leaves out the extra selling and delivery work, retailers dropping slow sellers, shoppers who would have bought Lantern in another channel anyway and how competitors would respond, so pilot convenience stores in one chain and check sales per store per week before rolling out.',
-            'Add convenience stores everywhere at launch: the model shows they pay.',
-            'Ignore the simulator: a lesson’s advice always outweighs numbers.',
-            'Drop supermarkets instead, since convenience stores add more profit.',
+            'Treat the gain as a hypothesis: the model assumes full distribution from day one and leaves out delistings, cannibalisation and rivals’ responses, so pilot one chain first.',
+            'Add convenience stores everywhere at launch: the model already counts their 40% margin and fee, and still shows they pay.',
+            'Ignore the simulator: a lesson’s reasoning always outweighs a model’s numbers, so leave convenience stores out entirely.',
+            'Drop supermarkets instead, since convenience stores add more profit and their listing fee is less than half as much.',
           ],
           answer: 0,
           feedback: {
@@ -289,10 +289,10 @@ export default {
           id: 'm02-pj-m3', type: 'mc', kind: 'conceptual',
           prompt: 'The simulator’s estimates for the default plan with sampling budgets of $0, $20,000, $40,000 and $60,000 are about 164,149, 185,194, 198,995 and 208,141 cans. What do they show?',
           options: [
-            'Diminishing returns: each extra $20,000 of sampling buys fewer extra cans (about 21,045, then 13,801, then 9,146), so at some point the next $20,000 costs more than it earns.',
-            'Constant returns: every $20,000 buys the same number of extra cans.',
-            'Increasing returns: the more Lantern spends on sampling, the more each dollar earns.',
-            'Sampling has no effect on sales.',
+            'Diminishing returns: each extra $20,000 of sampling buys fewer extra cans than the one before.',
+            'Constant returns: every extra $20,000 of sampling buys about the same number of extra cans.',
+            'Increasing returns: the more Lantern spends on sampling, the more extra cans each further dollar buys.',
+            'Sampling has no effect on sales, because cans would rise anyway as awareness grows.',
           ],
           answer: 0,
           feedback: {
@@ -334,10 +334,10 @@ export default {
           id: 'm02-pj-t2', type: 'mc', kind: 'conceptual',
           prompt: 'The pricing lesson worked out by hand that the default plan breaks even at 117,013 cans; the simulator’s estimate is 117,425. Why do they differ?',
           options: [
-            'The hand calculation treats the whole $120,000 promotion budget as fixed and assumes cans sell in proportion to each channel’s category volume; the simulator treats trade promotions as discounts on promoted cans and works out its own channel mix.',
-            'One of them must contain an arithmetic error, because break-even has only one answer.',
-            'The simulator includes the competitors’ costs.',
-            'The simulator leaves out the $60,000 overhead.',
+            'They rest on different assumptions about promotion costs and the channel mix.',
+            'One of them must contain an arithmetic error, because a plan’s break-even volume has only one correct answer.',
+            'The simulator includes the competitors’ costs, so it needs a few more cans to cover them.',
+            'The simulator leaves out the $60,000 overhead, which the hand calculation includes alongside the listing fees in its fixed costs.',
           ],
           answer: 0,
           feedback: {
@@ -352,10 +352,10 @@ export default {
           prompt: 'The table shows the simulator’s estimates for three plans. Value: Classic blend at $2.79 in supermarkets and convenience stores, with $40,000 ads, $20,000 sampling and $40,000 trade promotions. Default: Single-origin at $3.49 in supermarkets, natural grocers and Lantern’s own channel, with the default $120,000 budget. Premium: Organic single-origin at $3.79 in the same three channels, with $50,000 ads, $40,000 sampling, $10,000 trade promotions and $20,000 PR. All are one flavour. Which plan does the evidence favour?',
           data: { table: { head: ['Plan', 'Cans in year 1', 'Profit after overhead', 'Break-even cans', 'Margin of safety'], rows: [['Value', '140,024', '$8,590', '131,529', '6.1%'], ['Default', '198,995', '$122,956', '117,425', '41.0%'], ['Premium', '216,501', '$162,161', '115,951', '46.4%']] } },
           options: [
-            'Premium: it has the highest simulated profit and margin of safety, and its decisions fit a café-quality positioning (taste score 8.5 at Summit’s price, natural grocers that pay for provenance), though its price and liquid should be tested before the whole budget is committed.',
-            'Value: a low price always wins in a category with a value brand.',
-            'Default: it is the simulator’s starting plan, so it must be the best.',
-            'None: simulated numbers can’t support any choice.',
+            'Premium: it has the highest simulated profit and margin of safety and fits a café-quality positioning, though its price should be tested first.',
+            'Value: a low price always wins in a category with a value brand, and it sells cans through convenience stores too.',
+            'Default: it is the simulator’s starting plan, so it must be the best balance of the four decisions.',
+            'None: simulated numbers can’t support any choice, so Lantern should launch without comparing the plans.',
           ],
           answer: 0,
           feedback: {

@@ -98,8 +98,8 @@ export const items = [
     options: [
       'Have someone independent of the warehouse count the stock at the year end.',
       'Ask the supervisor to count the stock twice.',
-      'Close the books every month instead of once a year.',
-      'Prepare a post-closing trial balance after the count.',
+      'Close the books every month instead of once a year, so that errors are caught sooner.',
+      'Prepare a post-closing trial balance after the count, to check that the stock figure balances.',
     ],
     answer: 0,
     feedback: {

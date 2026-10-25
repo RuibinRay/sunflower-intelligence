@@ -27,10 +27,10 @@ export const items = [
     id: 'f00-m1-3', lesson: 'finance-time-and-risk', type: 'mc', kind: 'applied',
     prompt: 'A game show contestant can take a certain $500 or flip a coin: heads wins $1,100, tails wins nothing. Which statement is correct?',
     options: [
-      'The flip has an expected value of $550, a $50 premium over the certain amount, yet a risk-averse contestant may still prefer the certain $500.',
-      'The flip has an expected value of $1,100, so anyone sensible should flip.',
-      'The two choices are worth exactly the same to everyone, because their expected values are equal.',
-      'The certain $500 has a higher expected value, because it carries no risk.',
+      'The flip’s expected value is $550, yet a risk-averse contestant may still prefer the certain $500.',
+      'The flip has an expected value of $1,100, its winning prize, so anyone sensible should flip rather than take $500.',
+      'The two choices are worth exactly the same to every contestant, because their expected values are equal.',
+      'The certain $500 has a higher expected value, because it carries no risk and the flip may pay nothing.',
     ],
     answer: 0,
     feedback: {
@@ -63,10 +63,10 @@ export const items = [
     id: 'f00-m1-5', lesson: 'finance-accounting-economics', type: 'mc', kind: 'conceptual',
     prompt: 'A company’s auditor and a bank’s credit analyst both read the company’s financial statements for last year. How do their purposes differ?',
     options: [
-      'The auditor judges whether the statements fairly record what happened under the accounting rules; the analyst uses them as evidence to judge whether the company will be able to repay a loan in future.',
-      'The auditor forecasts next year’s cash flows; the analyst checks that the statements follow US GAAP.',
-      'Both do the same job, because both read the same statements.',
-      'The analyst prepares the statements; the auditor decides whether to lend.',
+      'The auditor judges whether the statements fairly record the past under the accounting rules; the analyst uses them as evidence of whether the company can repay a loan.',
+      'The auditor forecasts next year’s cash flows to see whether the company can borrow; the analyst checks that the statements follow US GAAP.',
+      'Both do the same job, because both read the same statements for the same year and must reach the same conclusion about them.',
+      'The analyst prepares the statements for the bank from the company’s records; the auditor then decides whether the bank should lend.',
     ],
     answer: 0,
     feedback: {
@@ -138,10 +138,10 @@ export const items = [
     id: 'f00-m1-10', lesson: 'decision-principles', type: 'mc', kind: 'conceptual',
     prompt: 'Why does holding shares in twenty companies from many industries reduce risk much more than holding shares in twenty companies from the same industry?',
     options: [
-      'Companies in different industries are less likely to rise and fall together, so losses on some are more often offset by gains on others.',
-      'Twenty companies from many industries remove all risk, including the risk of a recession.',
-      'Companies in different industries always have higher expected returns.',
-      'Risk falls with the number of companies held, whatever they are.',
+      'Firms in different industries are less likely to move together, so losses on some are more often offset by gains on others.',
+      'Twenty companies from many industries remove all risk, including the risk of a recession that hits the whole economy at once.',
+      'Companies in different industries always have higher expected returns, which make up for any losses on the others.',
+      'Risk falls with the number of companies held, whatever they are, so twenty shares reduce it by the same amount either way.',
     ],
     answer: 0,
     feedback: {

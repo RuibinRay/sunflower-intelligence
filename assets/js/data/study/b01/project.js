@@ -102,7 +102,7 @@ export default {
         { id: 'b01-pj-8', type: 'mc', kind: 'applied',
           prompt: 'Taking the half-year as a whole, did the shop meet Ana’s order-value target of at least $45?',
           options: [
-            'Yes for the half-year taken as a whole, although only November and December reached $45 on their own',
+            'Yes for the half-year as a whole, though only November and December reached $45 on their own',
             'No: the average of the six monthly order values is below $45, so the half-year missed the target',
             'Yes: every month was within a few dollars of $45, which is close enough to count as meeting it',
           ],
@@ -124,7 +124,7 @@ export default {
         { id: 'b01-pj-11', type: 'mc', kind: 'applied',
           prompt: 'What does the channel split suggest?',
           options: [
-            'The fall is almost all on the website, which is where the checkout changed; the app, which did not change, held steady',
+            'The fall is almost all on the website, where the checkout changed; the app, which did not change, held steady',
             'Both channels fell by about the same amount, so the cause is something that affects all customers, such as prices',
             'The app caused the fall, because it converts better and its share of visits dropped',
           ],
@@ -138,9 +138,9 @@ export default {
         { id: 'b01-pj-13', type: 'mc', kind: 'applied',
           prompt: 'In October, after the 5 October fix, web conversion recovered to 2.67%. What is the most careful reading?',
           options: [
-            'The fix probably helped, but web conversion is still below August’s 2.91%: the fix may be partial, or something else is also at work',
+            'The fix probably helped, but web conversion is still below August’s 2.91%: the fix may be partial, or something else is at work',
             'The fix fully solved the problem: web conversion jumped from 1.80% to 2.67% within a month of its release',
-            'The fix made no difference: web conversion is still below August’s 2.91%, so the bug was not the cause',
+            'The fix made no difference: web conversion is still below August’s 2.91%, so the checkout bug cannot have been the cause of the fall',
           ],
           answer: 0,
           feedback: { 1: 'October is still below August, and the fix came five days into the month, so the month mixes before and after.', 2: 'A large recovery from 1.80% to 2.67% is unlikely to be chance with this many visits; the fix probably helped.' },

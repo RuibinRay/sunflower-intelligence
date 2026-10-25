@@ -34,7 +34,9 @@ class Report {
 // the longest option scores well), and an assessment item that repeats a lesson exercise with new numbers (it tests
 // memory of the exercise). Text is compared as sets of word trigrams with numbers folded to one token, over the prompt,
 // the options, the classify items and the sheet's labels; 0.5 Jaccard is where the copies reviewers flagged begin.
-const plainText = (s) => String(s ?? '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+// the text a reader sees: tags dropped, entities decoded (so &#39; counts as one character), TeX left as written
+const ENTITY = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', '#39': "'", minus: '−', times: '×' };
+const plainText = (s) => String(s ?? '').replace(/<[^>]+>/g, '').replace(/&(#\d+|#x[0-9a-f]+|[a-z]+);/gi, (m, e) => ENTITY[e.toLowerCase()] ?? (e[0] === '#' ? String.fromCodePoint(e[1] === 'x' || e[1] === 'X' ? parseInt(e.slice(2), 16) : +e.slice(1)) : m)).replace(/\s+/g, ' ').trim();
 const withSteps = (list) => (list || []).flatMap((x) => [x, ...(x.steps || [])]);
 const itemText = (x) => [x.prompt, ...(x.items || []), ...(x.options || []), ...(x.statements || []),
   x.sheet ? Object.values(x.sheet.cells || {}).filter((v) => typeof v === 'string' && !v.startsWith('=')).join(' ') : '']
@@ -43,6 +45,16 @@ const trigrams = (s) => { const w = plainText(s).toLowerCase().replace(/[0-9][0-
 const jaccard = (a, b) => { if (a.size < 4 || b.size < 4) return 0; let n = 0; for (const x of a) if (b.has(x)) n++; return n / (a.size + b.size - n); };
 export const NEAR_COPY = 0.5;
 /** [items whose keyed option is strictly the longest, mc items] over a list (steps included) */
+/** Where the keyed option of an MC item with four or more options sits by length: 'longest', 'second' (exactly one option
+ *  longer), 'shortest', or 'middle'; ties with the key count against the position (a tied key isn't "the longest"). */
+const RANK_SHARE = 0.4;
+function keyPosition(x) {
+  if (x?.type !== 'mc' || !Array.isArray(x.options) || x.options.length < 4 || !Number.isInteger(x.answer)) return null;
+  const L = x.options.map((o) => plainText(typeof o === 'string' ? o : o?.text).length), k = L[x.answer];
+  const longer = L.filter((v, i) => i !== x.answer && v > k).length, shorter = L.filter((v, i) => i !== x.answer && v < k).length;
+  if (longer + shorter < L.length - 1) return 'middle';
+  return longer === 0 ? 'longest' : longer === 1 ? 'second' : shorter === 0 ? 'shortest' : 'middle';
+}
 function longestKeys(items) {
   const mc = withSteps(items).filter((x) => x.type === 'mc' && Array.isArray(x.options) && Number.isInteger(x.answer));
   let k = 0;
@@ -637,7 +649,9 @@ async function checkAssessments(course) {
 async function cueChecks(course, r, { modules, diagnostic, final, project }) {
   const say = catalog.COURSE[course].status === 'complete' ? (m) => r.note(m) : (m) => r.warn(m);
   const lessonEx = [], multiCounts = [];
+  const ranked = [];   // [where, id, position] for every MC item with four or more options, for the course-wide rank check
   const cue = (where, items) => {
+    for (const x of withSteps(items)) { const p = keyPosition(x); if (p) ranked.push([where, x.id, p]); }
     const [k, n] = longestKeys(items); if (n >= 3 && k > n / 3) say(`${where}: the keyed option is the longest in ${k} of ${n} multiple-choice items; aim for a third or fewer (make wrong options as specific as the key)`);
     // a fixed number of right answers in the select-all items is a cue too ("pick three"): collected for the module
     multiCounts.push(...withSteps(items).filter((x) => x.type === 'multi' && Array.isArray(x.answer)).map((x) => [where, x.answer.length, x.options?.length]));
@@ -665,6 +679,19 @@ async function cueChecks(course, r, { modules, diagnostic, final, project }) {
     const xs = multiCounts.filter(([w]) => !m.files || m.files.has(w));
     const shape = new Set(xs.map(([, k, o]) => `${k}/${o}`));
     if (xs.length >= 6 && shape.size === 1) say(`${m.name}: all ${xs.length} select-all items have exactly ${xs[0][1]} right options out of ${xs[0][2]}; vary the number so students can’t learn to pick that many`);
+  }
+  // across the course, the key should not sit at one length position (longest, second-longest or shortest) much more
+  // often than chance (a quarter of four-option items): fixing "longest" by lengthening one distractor past the key moves
+  // the cue to "second-longest", which a test-wise student learns as fast
+  if (ranked.length >= 15) {
+    const NAMES = { longest: 'the longest', second: 'the second-longest', shortest: 'the shortest' };
+    for (const pos of ['longest', 'second', 'shortest']) {
+      const hit = ranked.filter(([, , p]) => p === pos);
+      if (hit.length / ranked.length > RANK_SHARE) {
+        const byFile = Object.entries(hit.reduce((o, [w]) => ((o[w] = (o[w] || 0) + 1), o), {})).sort((x, y) => y[1] - x[1]).slice(0, 6).map(([w, k]) => `${w} ${k}`).join(', ');
+        say(`the course: the keyed option is ${NAMES[pos]} in ${hit.length} of ${ranked.length} multiple-choice items with four or more options (${Math.round((100 * hit.length) / ranked.length)}%; chance is about 25%, aim for ${Math.round(RANK_SHARE * 100)}% or less). Most in: ${byFile}`);
+      }
+    }
   }
   const near = (x, pool, what) => { let best = null; for (const y of pool) { const j = jaccard(x.sh, y.sh); if (j >= NEAR_COPY && (!best || j > best.j)) best = { j, y }; } if (best) say(`${x.where} is close to ${what} ${best.y.where} (similarity ${best.j.toFixed(2)}): a student could answer from memory of it; change the scenario and the method's angle, not only the numbers`); };
   for (const x of assess) near(x, lessonEx, 'lesson exercise');

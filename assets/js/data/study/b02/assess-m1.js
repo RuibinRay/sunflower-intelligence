@@ -1,11 +1,26 @@
 // assess-m1.js — B02 module 1 test: Understanding your data (datasets-and-variables, profiling-and-validation).
 // No hints; solutions are shown when the student reviews the test. All businesses and tables are fictional.
 
+// b02-m1-8: a bike-hire firm’s rentals (fictional) and its conditional cross-field rule. The key is computed from the rows:
+// returned Yes needs an end_time later than start_time; returned No needs a blank end_time.
+const HIRES = [
+  ['R-501', '2026-08-01 09:00', '2026-08-01 10:30', 'Yes'],
+  ['R-502', '2026-08-01 09:15', '', 'Yes'],
+  ['R-503', '2026-08-01 09:40', '', 'No'],
+  ['R-504', '2026-08-01 10:05', '2026-08-01 09:50', 'Yes'],
+  ['R-505', '2026-08-01 10:20', '2026-08-01 12:00', 'No'],
+  ['R-506', '2026-08-01 11:00', '2026-08-01 11:00', 'Yes'],
+  ['R-507', '2026-08-01 11:30', '2026-08-02 08:10', 'Yes'],
+  ['R-508', '2026-08-01 12:45', '', 'No'],
+];
+const hireBreaks = ([, start, end, returned]) => (returned === 'Yes' ? !(end && end > start) : end !== '');
+const hireTime = (i, c) => HIRES[i][c].slice(11);
+
 export const items = [
   {
     id: 'b02-m1-1', lesson: 'datasets-and-variables', type: 'mc', kind: 'conceptual',
     prompt: 'A clothing brand’s returns file (fictional) has the columns return_id, order_id, item_sku, size, reason and refund. One order can produce several returns, and each return covers exactly one item. What is the unit of observation?',
-    options: ['One returned item', 'One order', 'One customer', 'One reason for returning'],
+    options: ['One returned item', 'One order, with all its returns', 'One customer who returned something', 'One reason for returning'],
     answer: 0,
     feedback: {
       1: 'Several rows can share an order_id, so a row is smaller than an order.',
@@ -96,22 +111,13 @@ export const items = [
   },
   {
     id: 'b02-m1-8', lesson: 'profiling-and-validation', type: 'rows', kind: 'applied',
-    prompt: 'Select every Harborview booking (fictional) that breaks the rule “nights equals the number of days from check_in to check_out”.',
-    data: { table: {
-      head: ['booking_id', 'check_in', 'check_out', 'nights'],
-      rows: [
-        ['HB-36001', '2026-09-10', '2026-09-12', '2'],
-        ['HB-36002', '2026-09-10', '2026-09-14', '3'],
-        ['HB-36003', '2026-09-28', '2026-10-01', '3'],
-        ['HB-36004', '2026-09-30', '2026-10-02', '3'],
-        ['HB-36005', '2026-10-01', '2026-10-01', '0'],
-        ['HB-36006', '2026-10-03', '2026-10-10', '7'],
-        ['HB-36007', '2026-10-05', '2026-10-04', '1'],
-        ['HB-36008', '2026-10-06', '2026-10-09', '3'],
-      ],
+    prompt: 'A fictional bike-hire firm’s rentals file has one cross-field rule: if <code>returned</code> is Yes, <code>end_time</code> must be filled in and later than <code>start_time</code>; if <code>returned</code> is No, <code>end_time</code> must be blank. Select every rental that breaks the rule. Rows are numbered from 0.',
+    data: { table: { index: 0,
+      head: ['rental_id', 'start_time', 'end_time', 'returned'],
+      rows: HIRES.map((r) => r.map((c) => c || '<i>blank</i>')),
     } },
-    answer: [1, 3, 6],
-    solution: 'Days between the dates: 2, 4, 3 (September has 30 days), 2, 0, 7, −1 and 3. HB-36002 records 3 nights for 4 days, HB-36004 records 3 for 2, and HB-36007 records 1 where the days are −1. HB-36005 passes this rule (0 = 0) but fails a different one, check_out after check_in, which is why a rule set needs both.',
+    answer: HIRES.flatMap((r, i) => (hireBreaks(r) ? [i] : [])),
+    solution: `Check each row against the half of the rule its <code>returned</code> value selects. ${HIRES[1][0]} is marked returned but has no end time, and ${HIRES[3][0]} ends at ${hireTime(3, 2)}, before its ${hireTime(3, 1)} start. ${HIRES[4][0]} is not returned yet has an end time, so one of the two columns is wrong. ${HIRES[5][0]} ends at the minute it started, which “later than” rules out: a bike docked straight back or a clock fault, to be checked. ${HIRES[6][0]} runs overnight and passes, and so do the blank end times of ${HIRES[2][0]} and ${HIRES[7][0]}, because the rule says when a blank is allowed: a cross-field rule has to be explicit about blanks.`,
   },
   {
     id: 'b02-m1-9', lesson: 'profiling-and-validation', type: 'mc', kind: 'applied',
@@ -134,10 +140,10 @@ export const items = [
     id: 'b02-m1-10', lesson: 'profiling-and-validation', type: 'mc', kind: 'conceptual',
     prompt: 'Every value in a booking extract passes all of its validation rules. What can you conclude?',
     options: [
-      'No value breaks the rules as written; values can still be wrong, and problems the rules don’t test can still be present.',
+      'No value breaks the rules as written; values can still be wrong, and problems the rules don’t test may remain.',
       'The data is accurate.',
       'The data is complete.',
-      'The data needs no further checks before analysis.',
+      'The data needs no further checks before analysis, because every column has a rule and every one of those rules has passed.',
     ],
     answer: 0,
     feedback: {

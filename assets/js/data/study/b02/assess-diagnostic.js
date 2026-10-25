@@ -12,15 +12,15 @@ export const items = [
     prompt: 'Skylark Air, a fictional airline, exports its boarding file: one row per flight leg of each booking, where every booking is for a single passenger; 1,500 rows, no blank cells. booking_ref has 1,482 distinct values, passenger_id has 1,320, and the pair booking_ref + leg has 1,500. Which should be the primary key?',
     options: [
       'booking_ref + leg, a composite key',
-      'booking_ref on its own',
-      'passenger_id on its own',
-      'The row number',
+      'booking_ref on its own, since every booking is for one passenger',
+      'passenger_id on its own, since it identifies the traveller',
+      'The row number, which is unique by construction',
     ],
     answer: 0,
     feedback: {
       1: '1,482 distinct values in 1,500 rows means 18 rows share a booking_ref with another row: a return trip is one booking with two legs.',
       2: 'Passengers fly more than once, so passenger_id repeats (1,320 distinct values in 1,500 rows).',
-      3: 'A row number identifies a position in the file, not a passenger on a leg, so it can never reveal a duplicate.',
+      3: 'A row number identifies a position in the file, not a passenger on a leg: it changes whenever the file is sorted or filtered, and it can never reveal a duplicate.',
     },
     solution: 'A primary key must be unique and never blank. Compare each candidate’s distinct count with the row count: only booking_ref + leg has 1,500 distinct values in 1,500 rows, which matches the unit of observation (one leg of one booking). It works because each booking has one passenger; if bookings could hold several passengers, the key would need passenger_id as well.',
   },
@@ -40,7 +40,7 @@ export const items = [
   {
     id: 'b02-dg-3', lesson: 'profiling-and-validation', type: 'rows', kind: 'applied',
     prompt: 'A fictional coffee shop’s rule says discount must be at least 0 and no more than quantity × unit_price. Select every order that breaks it. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['order', 'quantity', 'unit_price ($)', 'discount ($)'],
       rows: [
         ['A-01', '2', '14.00', '0.00'],
@@ -61,10 +61,10 @@ export const items = [
     id: 'b02-dg-4', lesson: 'duplicates', type: 'mc', kind: 'conceptual',
     prompt: 'Two rows in a fictional coffee shop’s order export share the order_id LC-20417 and agree in every column, except that one has a blank e-mail address and the other has the address. Which copy should survive?',
     options: [
-      'The copy with the e-mail address (most complete), because the blank adds nothing the other copy lacks',
-      'The first copy in the file, whatever it contains',
-      'Both copies, because they differ in one column',
-      'Neither: delete the order, because its data can’t be trusted',
+      'The copy with the e-mail address (most complete): the blank adds nothing the other lacks',
+      'The first copy in the file, whatever it contains, because the first row is the original and later rows are copies',
+      'Both copies, because rows that differ in a column are two different records, not duplicates',
+      'Neither: delete the order, because two copies that disagree mean none of its data can be trusted',
     ],
     answer: 0,
     feedback: {
@@ -150,9 +150,9 @@ export const items = [
     id: 'b02-dg-11', lesson: 'encoding-categories', type: 'mc', kind: 'conceptual',
     prompt: 'A satisfaction band takes the values poor, fair, good and excellent. You encode it as 0, 1, 2 and 3 in that order. What does that encoding assume?',
     options: [
-      'That the bands are ordered and that each step (poor to fair, fair to good, good to excellent) is the same size',
-      'Nothing: codes are only labels',
-      'That the bands are unordered, like colours',
+      'That the bands are ordered and that every step between neighbouring bands is the same size',
+      'Nothing: the codes are only labels, and a model reads them as names of bands rather than as numbers',
+      'That the bands are unordered, like colours, so a model treats each band as a separate category with no ranking',
       'That excellent is three times as good as fair',
     ],
     answer: 0,

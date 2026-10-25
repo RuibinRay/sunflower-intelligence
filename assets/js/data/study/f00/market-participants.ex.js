@@ -121,7 +121,7 @@ export const guided = [
   {
     id: 'f00-mp-g4', type: 'mc', kind: 'conceptual',
     prompt: 'A firm sells you 100 bonds out of its own inventory at its quoted ask price and charges no commission. In this trade, what role is it playing?',
-    options: ['Dealer (a principal), earning the spread', 'Broker (an agent), earning a commission', 'Underwriter, earning an underwriting spread', 'Regulator, supervising the trade'],
+    options: ['Dealer (a principal), earning the spread', 'Broker (an agent), earning a commission on the trade', 'Underwriter, earning an underwriting spread', 'Regulator, supervising the trade'],
     answer: 0,
     hints: ['Did the bonds come from the firm’s own holdings, or did it find another investor to sell them?', 'Trading from inventory means acting as a principal.'],
     feedback: {
@@ -199,7 +199,7 @@ export const independent = [
   {
     id: 'f00-mp-i6', type: 'mc', kind: 'applied',
     prompt: 'A fast-growing clothing brand wants to sell shares to the public for the first time. Which participant will run the sale for it?',
-    options: ['An investment bank acting as underwriter', 'A commercial bank’s lending department', 'The SEC', 'A market maker in its shares'],
+    options: ['An investment bank acting as underwriter', 'A commercial bank’s business-lending department', 'The SEC', 'A market maker that will quote prices in its shares'],
     answer: 0,
     feedback: {
       1: 'A commercial bank could lend to the brand, but selling new shares to the public is underwriting, an investment-banking job.',
@@ -216,8 +216,8 @@ export const check = [
     prompt: 'How does buying a mutual fund differ from buying an exchange-traded fund?',
     options: [
       'Mutual fund shares are bought from the fund at the NAV calculated after the day’s close; ETF shares are bought from other investors on an exchange at market prices during the day',
-      'Mutual funds are FDIC-insured and ETFs are not',
-      'ETF shares can be sold back only to the fund at the end of each quarter',
+      'Mutual funds are FDIC-insured up to $250,000 when bought through a bank, and ETFs are not insured',
+      'ETF shares can be sold back only to the fund itself, at the NAV calculated at the end of each quarter',
       'Mutual funds may invest only in bonds, and ETFs only in shares',
     ],
     answer: 0,
@@ -242,10 +242,10 @@ export const check = [
     id: 'f00-mp-k3', type: 'mc', kind: 'applied',
     prompt: 'Ana considers buying shares of an ETF through a brokerage firm that is a SIPC member. Which statement about her protection is correct?',
     options: [
-      'If the brokerage firm fails and her ETF shares are missing, SIPC protection applies up to its limits; if the ETF only falls in value, no protection applies',
-      'FDIC insurance covers the ETF up to $250,000, as it covers her savings account',
-      'SIPC reimburses her if the ETF falls in value',
-      'Because ETFs are registered with the SEC, the SEC guarantees she will not lose money',
+      'If the firm fails and her ETF shares are missing, SIPC protects her up to its limits; if the ETF only falls in value, nothing does',
+      'FDIC insurance covers the ETF up to $250,000 per depositor, in the same way as it covers the savings account she holds at her bank',
+      'SIPC reimburses her if the ETF falls in value, up to its limits, because the brokerage firm is a member',
+      'Because ETFs are registered with the SEC, the SEC guarantees she will not lose money on them, whatever happens to the market or to the firm',
     ],
     answer: 0,
     feedback: {
@@ -270,9 +270,9 @@ export const check = [
     prompt: 'What does a market maker do?',
     options: [
       'Stands ready to buy a security at its bid and sell it at its ask, earning the spread and providing liquidity',
-      'Matches buyers and sellers without ever owning the security, earning a commission',
-      'Decides which companies may list on an exchange',
-      'Sets the price of a new share issue for the issuer',
+      'Matches buyers and sellers without ever owning the security itself, earning a commission on each trade it arranges',
+      'Decides which companies may list their shares on an exchange, and on which day those shares may start trading',
+      'Sets the price of a new share issue for the issuer and sells the shares to investors',
     ],
     answer: 0,
     feedback: {

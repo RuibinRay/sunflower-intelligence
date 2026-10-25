@@ -232,8 +232,8 @@ export const independent = [
     prompt: 'Lantern is building a model to predict which subscribers will cancel. The analyst has noticed that subscribers who stop rating their deliveries often cancel a few weeks later. She will fill missing ratings with the training median. What else should she do?',
     options: [
       'Add a rating_missing column (1 if the rating was missing) so the model can use the fact of missingness.',
-      'Nothing: once the gaps are filled, the information is preserved in the median values.',
-      'Delete subscribers with missing ratings, since they are probably leaving anyway.',
+      'Nothing: once the gaps are filled, the information about them is preserved in the median values the model sees.',
+      'Delete the subscribers with missing ratings, since they are probably leaving anyway and would only add noise.',
       'Fill the gaps with 1 star instead, because silent customers must be unhappy.',
     ],
     answer: 0,
@@ -252,14 +252,14 @@ export const check = [
     prompt: 'Lantern finds that ratings are missing far more often for one-off buyers than for subscribers. What can the analyst conclude from the data alone?',
     options: [
       'The ratings are not MCAR, but the data can’t show whether they are MAR or MNAR.',
-      'The ratings are MAR, because missingness depends on a recorded variable.',
-      'The ratings are MNAR, because one-off buyers are less satisfied.',
-      'The ratings are MCAR, because both groups have some missing values.',
+      'The ratings are MAR, because their missingness depends on a recorded variable, customer type.',
+      'The ratings are MNAR, because one-off buyers are less satisfied and so rate less often.',
+      'The ratings are MCAR, because one-off buyers and subscribers both have some missing values.',
     ],
     answer: 0,
     feedback: {
       1: 'Missingness depends on customer type, but it might also depend on satisfaction within each type. That would make it MNAR, and the observed data can’t rule it out.',
-      2: 'Being less satisfied on average doesn’t make the gaps MNAR; MNAR means missingness depends on the missing values themselves. The data can’t establish that either way.',
+      2: 'Lower satisfaction among one-off buyers as a group would only make the gaps depend on customer type. MNAR means missingness depends on each missing rating itself, and the data alone can’t establish that either way.',
       3: 'MCAR means missingness is unrelated to any data. Here it clearly depends on customer type.',
     },
     solution: 'A difference in missingness between recorded groups rules out MCAR. Whether, within each group, missingness depends on the unseen ratings (MNAR) or not (MAR) can’t be tested from the observed data; it has to be judged from how the ratings are collected and explored with what-if analyses.',
@@ -309,9 +309,9 @@ export const check = [
     prompt: 'A courier’s handheld scanner failed on three random days, so 2% of delivery times are missing. You are reporting the median delivery time to management. What is the most sensible treatment?',
     options: [
       'Drop the rows with missing times and note how many were dropped: the gaps are plausibly MCAR and few.',
-      'Fill the gaps with the mean delivery time so that no rows are lost.',
+      'Fill the gaps with the mean delivery time, so that no rows are lost and the median is based on every parcel.',
       'Fill the gaps with 0 days, since those parcels have no recorded time.',
-      'Report no median until the missing times can be recovered.',
+      'Report no median until the missing times are recovered, because a median from incomplete data is biased.',
     ],
     answer: 0,
     feedback: {

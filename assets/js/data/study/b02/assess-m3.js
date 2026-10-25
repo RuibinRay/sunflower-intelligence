@@ -3,6 +3,19 @@
 
 const sorted = (a) => [...a].sort((x, y) => x - y);
 const q = (a, p) => { const s = sorted(a); const h = (s.length - 1) * p; const lo = Math.floor(h); return s[lo] + (h - lo) * (s[Math.ceil(h)] - s[lo]); };
+const mean = (a) => a.reduce((s, v) => s + v, 0) / a.length;
+const num = (x) => String(+x.toFixed(3));                        // 26.25, 32.5: no trailing zeros
+const listed = (a, f = String) => `${a.slice(0, -1).map(f).join(', ')} and ${f(a.at(-1))}`;
+
+// b02-m3-5: minutes to clean each of ten hotel rooms one morning (fictional); a very short time is the suspect.
+const CLEANS = [24, 31, 2, 27, 35, 26, 30, 38, 28, 33];
+const C_S = sorted(CLEANS), C_Q1 = q(CLEANS, 0.25), C_Q3 = q(CLEANS, 0.75), C_IQR = C_Q3 - C_Q1;
+const C_HALF_Q1 = q(C_S.slice(0, 5), 0.5), C_HALF_Q3 = q(C_S.slice(5), 0.5);   // medians of the halves, another convention
+
+// b02-m3-10: first-year savings of five home batteries (fictional); one large value stretches the arithmetic mean.
+const SAVINGS = [200, 250, 320, 400, 1600];
+const S_AM = mean(SAVINGS), S_LOGMEAN = mean(SAVINGS.map(Math.log)), S_GM = Math.exp(S_LOGMEAN), S_MEDIAN = q(SAVINGS, 0.5);
+const dollars = (v) => `$${v.toLocaleString('en-US')}`;
 
 export const items = [
   {
@@ -46,14 +59,14 @@ export const items = [
     id: 'b02-m3-4', lesson: 'missing-values', type: 'mc', kind: 'conceptual',
     prompt: 'Why should the median used to fill missing values be computed from the training rows only, when a model will be tested on held-out rows?',
     options: [
-      'Otherwise information from the test rows shapes the training data, and the test score overstates how well the model will do on new data.',
-      'Because the training median is always closer to the true population median.',
+      'Otherwise the test rows shape the training data, and the test score overstates how the model will do on new data.',
+      'Because the training median is always closer to the true population median than a median taken over all the rows.',
       'Because medians computed on test rows are biased under MCAR.',
-      'Because the test rows should be left with their gaps unfilled.',
+      'Because the test rows should be left with their gaps unfilled, so that the model is tested on the data exactly as it arrived.',
     ],
     answer: 0,
     feedback: {
-      1: 'Not necessarily; the point is to keep the test data unseen, not to get a better estimate.',
+      1: 'If anything, a median over all the rows rests on more data; the point is to keep the test data unseen, not to get a better estimate.',
       2: 'Under MCAR any random subset gives an unbiased median; the problem is leakage, not bias.',
       3: 'The test rows must be filled too, using the training value, exactly as new data will be.',
     },
@@ -61,13 +74,15 @@ export const items = [
   },
   {
     id: 'b02-m3-5', lesson: 'outliers', type: 'num', kind: 'numerical',
-    prompt: 'Ten Lantern orders had totals of $12, $14, $15, $15, $16, $18, $19, $21, $24 and $60. Using quartiles by linear interpolation, what is the upper Tukey fence?',
-    answer: 28.75, check: () => { const a = [12, 14, 15, 15, 16, 18, 19, 21, 24, 60]; return q(a, 0.75) + 1.5 * (q(a, 0.75) - q(a, 0.25)); }, tol: 0.01, unit: '$', places: 2,
+    prompt: `Harborview’s housekeeping app (fictional) logs how many minutes each room took to clean. One morning’s ten rooms took ${listed(CLEANS)} minutes. A very short time can mean that a room was marked clean without being cleaned. Using quartiles by linear interpolation, what is the lower Tukey fence, below which a time is flagged? (2 decimal places)`,
+    answer: 16.88, check: () => q(CLEANS, 0.25) - 1.5 * (q(CLEANS, 0.75) - q(CLEANS, 0.25)), tol: 0.01, unit: 'minutes', places: 2,
     wrong: [
-      { value: 26, say: 'You added 1 × IQR to Q3. The fence is Q3 + 1.5 × IQR.' },
-      { value: 30, say: 'You used the medians of the lower and upper halves (Q1 = 15, Q3 = 21), another common method. With linear interpolation Q3 is at position 7.75: 19 + 0.75 × 2 = 20.5.' },
+      { value: C_Q1 - C_IQR, say: 'You subtracted 1 × IQR from Q1. The fence is Q1 − 1.5 × IQR.' },
+      { value: C_Q1 - 3 * C_IQR, say: 'You subtracted 3 × IQR, which gives the outer fence. The usual flag uses 1.5 × IQR.' },
+      { value: C_Q3 + 1.5 * C_IQR, say: `That is the upper fence, Q3 + 1.5 × IQR. A short cleaning time is a low value, so it is judged against the lower fence, Q1 − 1.5 × IQR.` },
+      { value: C_HALF_Q1 - 1.5 * (C_HALF_Q3 - C_HALF_Q1), say: `You used the medians of the lower and upper halves (Q1 = ${num(C_HALF_Q1)}, Q3 = ${num(C_HALF_Q3)}), another common method. With linear interpolation Q1 is at position ${num(1 + (CLEANS.length - 1) * 0.25)}: ${num(C_Q1)}.` },
     ],
-    solution: 'Positions are 1 + 9p. Q1 at position 3.25: 15 + 0.25 × 0 = 15. Q3 at position 7.75: 19 + 0.75 × (21 − 19) = 20.5. IQR = 5.5; upper fence = 20.5 + 1.5 × 5.5 = $28.75. The $60 order is flagged for review.',
+    solution: `Sorted: ${listed(C_S)}, so positions are 1 + ${CLEANS.length - 1}p. Q1 at position ${num(1 + (CLEANS.length - 1) * 0.25)} is ${C_S[2]} + 0.25 × (${C_S[3]} − ${C_S[2]}) = ${num(C_Q1)}, and Q3 at position ${num(1 + (CLEANS.length - 1) * 0.75)} is ${C_S[6]} + 0.75 × (${C_S[7]} − ${C_S[6]}) = ${num(C_Q3)}. IQR = ${num(C_IQR)}; lower fence = ${num(C_Q1)} − 1.5 × ${num(C_IQR)} = ${num(C_Q1 - 1.5 * C_IQR)} ≈ ${(C_Q1 - 1.5 * C_IQR).toFixed(2)} minutes. Only the ${C_S[0]}-minute room falls below it (the upper fence, ${num(C_Q3 + 1.5 * C_IQR)}, flags nothing). A flag starts a check of that room, not a correction: low values can be errors as well as high ones.`,
   },
   {
     id: 'b02-m3-6', lesson: 'outliers', type: 'num', kind: 'numerical',
@@ -90,9 +105,9 @@ export const items = [
     id: 'b02-m3-8', lesson: 'outliers', type: 'mc', kind: 'conceptual',
     prompt: 'An analyst runs a |z| > 3 rule on a column with two very large errors and flags neither of them. What is the most likely explanation?',
     options: [
-      'Masking: the two errors inflate the mean and standard deviation, so neither looks extreme against them.',
-      'The z-score rule only detects values below the mean.',
-      'Large errors always have z-scores close to zero.',
+      'Masking: the two errors inflate the mean and the SD, so neither looks extreme against them.',
+      'The z-score rule only detects values below the mean, so it can never flag errors that are too large.',
+      'Large errors always have z-scores close to zero, however far they lie from the rest of the values.',
       'The column must be left-skewed.',
     ],
     answer: 0,
@@ -122,18 +137,22 @@ export const items = [
   },
   {
     id: 'b02-m3-10', lesson: 'skewed-data', type: 'num', kind: 'numerical',
-    prompt: 'Three Lantern business customers spent $5, $20 and $80 last month. What is their geometric mean spend?',
-    answer: 20, check: () => Math.exp((Math.log(5) + Math.log(20) + Math.log(80)) / 3), tol: 0.01, unit: '$', places: 2,
-    wrong: [{ value: 35, say: 'That is the arithmetic mean. The geometric mean is the cube root of 5 × 20 × 80.' }],
-    solution: '5 × 20 × 80 = 8,000 and 8,000^(1/3) = $20, the same as the back-transformed mean of the logs. The arithmetic mean is $35.',
+    prompt: `A fictional battery-storage installer reports first-year electricity savings of ${listed(SAVINGS, dollars)} for five home systems. By how many dollars does the geometric mean saving fall short of the arithmetic mean saving? (2 decimal places)`,
+    answer: 154, check: () => SAVINGS.reduce((s, v) => s + v, 0) / SAVINGS.length - SAVINGS.reduce((p, v) => p * v, 1) ** (1 / SAVINGS.length), tol: 0.01, unit: '$', places: 2,
+    wrong: [
+      { value: S_GM, say: 'That is the geometric mean itself. The question asks how far it falls below the arithmetic mean.' },
+      { value: S_AM, say: 'That is the arithmetic mean. Subtract the geometric mean from it.' },
+      { value: S_AM - S_MEDIAN, say: `That is the gap between the arithmetic mean and the median (${dollars(S_MEDIAN)}). The geometric mean is the nth root of the product of the values.` },
+    ],
+    solution: `Geometric mean = (${SAVINGS.map((v) => v.toLocaleString('en-US')).join(' × ')})^(1/${SAVINGS.length}) = ${dollars(+num(S_GM))}, the same as e raised to the mean of the logs (${S_LOGMEAN.toFixed(3)}). Arithmetic mean = ${SAVINGS.reduce((s, v) => s + v, 0).toLocaleString('en-US')} ÷ ${SAVINGS.length} = ${dollars(+num(S_AM))}. The gap is ${num(S_AM)} − ${num(S_GM)} = ${dollars(+num(S_AM - S_GM))}. The one large saving pulls the arithmetic mean up far more than the geometric mean, which is why a total across many systems needs the arithmetic mean.`,
   },
   {
     id: 'b02-m3-11', lesson: 'skewed-data', type: 'mc', kind: 'conceptual',
     prompt: 'An analyst averages ln(order total) over all orders and converts the result back with eˣ. What has she computed?',
     options: [
-      'The geometric mean, which is at or below the arithmetic mean of the order totals.',
-      'The arithmetic mean of the order totals.',
-      'The median order total, exactly.',
+      'The geometric mean, which is at or below the arithmetic mean.',
+      'The arithmetic mean of the order totals, because eˣ undoes the log.',
+      'The median order total, exactly, whatever the shape of the distribution.',
       'The skewness of the order totals.',
     ],
     answer: 0,

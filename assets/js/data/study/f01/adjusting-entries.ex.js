@@ -323,8 +323,8 @@ export const check = [
     prompt: 'Lantern forgets adjustment a3, the $200 of depreciation for March. What is the effect on its March financial statements?',
     options: [
       'Net income and equity overstated by $200; total assets overstated by $200',
-      'Net income understated by $200; total assets understated by $200',
-      'Net income overstated by $200; liabilities understated by $200',
+      'Net income and equity understated by $200; total assets understated by $200',
+      'Net income overstated by $200; liabilities (accumulated depreciation) understated by $200',
       'No effect, because depreciation involves no cash',
     ],
     answer: 0,

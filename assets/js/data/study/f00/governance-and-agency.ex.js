@@ -151,9 +151,9 @@ export const independent = [
     prompt: 'A board pays its chief executive mostly in stock options. Which side effect should it watch for most closely?',
     options: [
       'Taking on too much risk, because options gain from a rise in the share price but lose nothing extra from a large fall',
-      'Avoiding all risk, because options lose value whenever the company invests',
-      'Paying out every dollar of profit as dividends',
-      'Refusing to work on anything that affects the share price',
+      'Avoiding all risk, because options lose value whenever the company invests in a project whose outcome is still uncertain',
+      'Paying out every dollar of profit as dividends, to keep shareholders content with her pay',
+      'Refusing to work on anything that affects the share price, so that her options keep their value',
     ],
     answer: 0,
     feedback: {
@@ -195,9 +195,9 @@ export const independent = [
     prompt: 'Which of these is a job of a corporation’s board of directors?',
     options: [
       'Hiring, paying and if necessary replacing the chief executive',
-      'Running the company’s day-to-day operations',
+      'Running the company’s day-to-day operations and supervising its staff',
       'Auditing the company’s financial statements',
-      'Setting the interest rate on the company’s bank loans',
+      'Setting the interest rate on the company’s bank loans each year',
     ],
     answer: 0,
     feedback: {
@@ -237,9 +237,9 @@ export const check = [
     prompt: 'What creates the agency problem between a company’s shareholders and its managers?',
     options: [
       'Managers’ interests differ from shareholders’, and shareholders cannot fully observe or control what managers do',
-      'Managers are usually dishonest',
-      'Shareholders are legally forbidden from knowing anything about the company',
-      'Managers own too many of the company’s shares',
+      'Managers are usually dishonest, so they hide what they do from the shareholders',
+      'Shareholders are legally forbidden from knowing anything about how the company is run, so they cannot check managers',
+      'Managers own too many of the company’s shares, so they can outvote the outside shareholders on every major decision',
     ],
     answer: 0,
     feedback: {
@@ -266,8 +266,8 @@ export const check = [
     options: [
       'A limit on dividends, or a minimum current ratio that a large cash dividend would break',
       'A requirement to send the bank annual financial statements',
-      'A requirement that Ana remain chief executive while the loan is outstanding',
-      'A requirement to keep the equipment insured',
+      'A requirement that Ana remain chief executive and keep running Lantern while the loan is outstanding',
+      'A requirement to keep the equipment insured for its full replacement value while the loan is outstanding',
     ],
     answer: 0,
     feedback: {
@@ -292,7 +292,7 @@ export const check = [
     prompt: 'Under the SEC’s say-on-pay rules, adopted in 2011, what vote do shareholders of companies subject to the federal proxy rules get on executive pay?',
     options: [
       'An advisory, non-binding vote, held at least once every three years',
-      'A binding vote that sets each executive’s salary every year',
+      'A binding vote that sets each executive’s salary and bonus every year',
       'No vote: pay is set by the board alone and never put to shareholders',
       'A vote by the SEC’s commissioners on behalf of shareholders',
     ],

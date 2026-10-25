@@ -63,7 +63,7 @@ export const guided = [
     steps: [
       { id: 'b02-dv-g1-s1', type: 'mc',
         prompt: 'What does one row of this table describe?',
-        options: ['One coffee in one month’s parcel for one subscription', 'One subscription', 'One customer', 'One month’s parcel for one subscription'],
+        options: ['One coffee in one month’s parcel for one subscription', 'One subscription, covering all the parcels it has sent', 'One customer', 'One month’s parcel for one subscription, with all its coffees'],
         answer: 0,
         hints: ['Look for a subscription that appears more than once in the same month.', 'S-201 has two rows for 2026-04. What differs between them?'],
         feedback: {
@@ -311,10 +311,10 @@ export const check = [
     prompt: 'Complete the data dictionary entry for discount in Lantern’s order export, so that order_total can be checked from the other columns.',
     text: 'discount. Meaning: money taken off [[0]]. Unit: [[1]]. Level: [[2]]. Rule: at least 0 and at most [[3]]. Blanks: [[4]].',
     blanks: [
-      { options: ['the whole order', 'each pack', 'the customer’s next order'], answer: 0 },
+      { options: ['each pack', 'the whole order', 'the customer’s next order'], answer: 1 },
       { options: ['dollars', 'percent', 'packs'], answer: 0 },
-      { options: ['ratio', 'interval', 'ordinal', 'nominal'], answer: 0 },
-      { options: ['quantity × unit_price', 'unit_price', 'order_total', '100'], answer: 0 },
+      { options: ['interval', 'ordinal', 'ratio', 'nominal'], answer: 2 },
+      { options: ['unit_price', 'quantity × unit_price', 'order_total', '100'], answer: 1 },
       { options: ['not allowed: record 0 when there is no discount', 'allowed: a blank means no discount', 'allowed: a blank means unknown'], answer: 0 },
     ],
     solution: 'Defined as a dollar amount for the whole order, discount makes the rule order_total = quantity × unit_price − discount checkable. It is a ratio amount (zero means none); it can’t be negative or exceed what the packs cost; and recording 0 rather than a blank removes any doubt about whether a blank means “no discount” or “not recorded”.',
@@ -323,10 +323,10 @@ export const check = [
     id: 'b02-dv-k6', type: 'mc', kind: 'conceptual',
     prompt: 'Lantern’s customer table could use email as its primary key instead of customer_id. What is the main problem with that?',
     options: [
-      'Emails change, can be shared, get mistyped and are sometimes blank, so they can’t be relied on to identify one customer for good.',
-      'Emails are text, and a primary key must be a number.',
-      'Emails are too long to store efficiently.',
-      'Emails are nominal, and a key must be ordinal.',
+      'Emails change, can be shared, get mistyped or are left blank, so they can’t identify one customer for good.',
+      'Emails are text, and a primary key must be a whole number so that the database can sort, index and join on it.',
+      'Emails are too long: a key should be short, and an address can run to dozens of characters.',
+      'Emails are nominal, and a primary key must be ordinal so that the rows can be ranked by it.',
     ],
     answer: 0,
     feedback: {

@@ -152,10 +152,10 @@ export const independent = [
     id: 'm02-pm-i3', type: 'mc', kind: 'conceptual',
     prompt: 'A shopper who has never heard of Lantern grabs a can because it is chilled and next to the till, tastes it, and decides she likes it. What does this suggest about AIDA?',
     options: [
-      'For low-involvement purchases, action (trial) can come before interest and desire, so the stages are not a fixed sequence.',
-      'AIDA is proved wrong and should never be used.',
-      'The shopper skipped attention, which is impossible.',
-      'AIDA applies only to products advertised on television.',
+      'In low-involvement purchases, trial can come before interest and desire: the stages aren’t a fixed order.',
+      'AIDA is proved wrong by this one shopper, so it should never be used to plan Lantern’s promotion.',
+      'The shopper skipped the attention stage, which AIDA says is impossible for any buyer.',
+      'AIDA applies only to products advertised on television, so it can’t describe a can picked up beside the till.',
     ],
     answer: 0,
     feedback: {
@@ -176,10 +176,10 @@ export const independent = [
     id: 'm02-pm-i5', type: 'mc', kind: 'applied',
     prompt: 'Lantern’s ads say “café-quality single-origin, steeped 20 hours”. Meanwhile a supermarket’s weekly flyer shows “Lantern Cold Brew: 2 for $5” every other week, funded by Lantern’s trade budget. What is the main problem, and the best fix?',
     options: [
-      'The messages contradict each other: frequent deep deals tell shoppers the can is a cheap one. Limit trade promotions to a few planned windows and agree how the brand is presented.',
-      'There is no problem: more promotion always means more sales.',
-      'The ads are the problem: Lantern should advertise the 2 for $5 price instead.',
-      'The flyer is the retailer’s business, so Lantern can do nothing about it.',
+      'The messages clash: frequent deep deals say the can is cheap. Limit trade promotions to a few planned windows and agree how the brand is shown.',
+      'There is no problem: more promotion always means more sales, and the deals and the ads reach different shoppers.',
+      'The ads are the problem: Lantern should drop the origin story and advertise the 2 for $5 price instead.',
+      'The flyer is the retailer’s business, so Lantern can do nothing about it except advertise more heavily.',
     ],
     answer: 0,
     feedback: {
@@ -208,10 +208,10 @@ export const check = [
     id: 'm02-pm-k1', type: 'mc', kind: 'conceptual',
     prompt: 'What does integrated marketing communications (IMC) mean?',
     options: [
-      'Planning the promotion tools together so they deliver one clear, consistent message about the brand, each doing the job it does best.',
-      'Running the same advertisement in every medium.',
-      'Spending the promotion budget equally across all five tools.',
-      'Handing all communication to one advertising agency.',
+      'Planning the tools together so they send one consistent brand message, each doing the job it does best.',
+      'Running the same advertisement, word for word, in every medium the brand uses, so that the message never varies.',
+      'Spending the promotion budget equally across all five tools, so that no part of the promotion mix is neglected.',
+      'Handing all communication to one advertising agency, so a single team controls every message.',
     ],
     answer: 0,
     feedback: {
@@ -278,10 +278,10 @@ export const check = [
     id: 'm02-pm-k6', type: 'mc', kind: 'conceptual',
     prompt: 'What is the main weakness of setting the promotion budget as a percentage of sales?',
     options: [
-      'It treats sales as the cause of promotion rather than its result, so it cuts spending when sales fall and gives a new product nothing to start from.',
-      'It is too complicated to calculate.',
-      'It always produces a larger budget than competitors spend.',
-      'It can only be used by retailers.',
+      'It lets sales drive promotion, so spending falls with sales and a new product gets none.',
+      'It is too complicated to calculate, because it needs a forecast of every product’s sales.',
+      'It always produces a larger budget than competitors spend, so the firm overspends in a crowded market.',
+      'It can only be used by retailers, because manufacturers don’t know their sales until the end of each financial year.',
     ],
     answer: 0,
     feedback: {

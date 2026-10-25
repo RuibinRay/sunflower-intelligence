@@ -390,10 +390,10 @@ export const check = [
     prompt: 'Complete the comparison.',
     text: 'Under US GAAP a public company [[0]] goodwill and tests it for impairment at least annually. Under IFRS, property, plant and equipment may be carried at [[1]] if a whole class is revalued, and each significant part of an asset is depreciated [[2]]. An impairment loss on equipment [[3]] be reversed under US GAAP.',
     blanks: [
-      { options: ['does not amortise', 'amortises over ten years', 'amortises over 40 years'], answer: 0 },
+      { options: ['amortises over ten years', 'does not amortise', 'amortises over 40 years'], answer: 1 },
       { options: ['fair value', 'replacement cost', 'tax value'], answer: 0 },
-      { options: ['separately', 'together with the rest', 'only if the auditor asks'], answer: 0 },
-      { options: ['may not', 'must', 'may'], answer: 0 },
+      { options: ['together with the rest', 'only if the auditor asks', 'separately'], answer: 2 },
+      { options: ['must', 'may not', 'may'], answer: 1 },
     ],
     solution: 'Public companies don’t amortise goodwill; they test it at least annually. IAS 16 allows the revaluation model (fair value) for a whole class and requires component depreciation. US GAAP never reverses impairment losses on assets held and used; IAS 36 reverses them except for goodwill.',
   },

@@ -134,10 +134,10 @@ export const guided = [
     prompt: 'Complete Lantern’s KPI dictionary entry for the rating response rate.',
     text: 'Rating response rate. Numerator: [[0]]. Denominator: [[1]]. Both counts refer to orders [[2]] in the month. Report it beside [[3]].',
     blanks: [
-      { options: ['orders placed in the month that were rated', 'ratings received in the month, whenever the order was placed', 'five-star ratings received in the month'], answer: 0 },
+      { options: ['ratings received in the month, whenever the order was placed', 'orders placed in the month that were rated', 'five-star ratings received in the month'], answer: 1 },
       { options: ['orders placed in the month', 'visits in the month', 'customers on the mailing list'], answer: 0 },
-      { options: ['placed', 'delivered', 'rated'], answer: 0 },
-      { options: ['the average rating', 'the conversion rate', 'the average order value'], answer: 0 },
+      { options: ['delivered', 'rated', 'placed'], answer: 2 },
+      { options: ['the conversion rate', 'the average rating', 'the average order value'], answer: 1 },
     ],
     hints: ['The numerator must come from the denominator’s population, and both must cover the same period.', 'A rating can arrive weeks after the order. Which month should it count in, if it is to match the denominator?'],
     solution: 'Rated orders ÷ orders, both for orders placed in the month, so that a late rating is counted with the order it belongs to. The rate says how many customers the average rating speaks for, so report the two together.',

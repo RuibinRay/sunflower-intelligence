@@ -9,13 +9,14 @@ const q = N.marketRateMarch2027 / 100 / 4;   // 2% a quarter
 export const items = [
   {
     id: 'f04-m2-1', lesson: 'present-and-future-value', type: 'num', kind: 'numerical',
-    prompt: 'What is the present value of $18,000 due in two and a half years, at 5.4% a year compounded monthly? Give dollars and cents.',
-    answer: 15731.65, check: () => 18000 * (1 + 0.054 / 12) ** -30, unit: '$', places: 2, tol: 0.9,
+    prompt: 'A fictional picture-framing shop is owed $16,000 by a hotel client, due in 27 months. A finance company offers to buy the debt today, at a price that earns it 6% a year compounded monthly. How much less than $16,000 would the shop receive by selling the debt now? Give dollars and cents.',
+    answer: 2015.84, check: () => 16000 - 16000 * (1 + 0.06 / 12) ** -27, unit: '$', places: 2, tol: 1,
     wrong: [
-      { value: 15782.32, say: 'That treats 5.4% as an effective annual rate (18,000 ÷ 1.054^2.5). With monthly compounding use 0.45% a month for 30 months.' },
-      { value: 20595.42, say: 'That is the future value of $18,000. To find what a later amount is worth today, divide by 1.0045³⁰.' },
+      { value: 13984.16, say: 'That is the price the finance company would pay, the present value of the debt. The question asks how much less than $16,000 that is.' },
+      { value: 1965.99, say: 'That treats 6% as an effective annual rate (16,000 − 16,000 ÷ 1.06^2.25). With monthly compounding use 0.5% a month for 27 months.' },
+      { value: 2160, say: 'That is simple interest on $16,000 for 27 months (16,000 × 0.06 × 27 ÷ 12). The price is the present value, 16,000 ÷ 1.005²⁷, and the shop gives up $16,000 minus that price.' },
     ],
-    solution: 'r = 5.4% ÷ 12 = 0.45% a month; n = 12 × 2.5 = 30 months. Discount factor = 1.0045⁻³⁰ = 0.873981. PV = 18,000 × 0.873981 ≈ $15,731.65.',
+    solution: 'r = 6% ÷ 12 = 0.5% a month; n = 27 months. Discount factor = 1.005⁻²⁷ ≈ 0.874010. Price = 16,000 × 0.874010 ≈ $13,984.16, so the shop gives up 16,000 − 13,984.16 ≈ $2,015.84 to be paid now: the interest the finance company earns over the 27 months.',
   },
   {
     id: 'f04-m2-2', lesson: 'present-and-future-value', type: 'mc', kind: 'conceptual',
@@ -98,9 +99,9 @@ export const items = [
     prompt: 'A fictional company holds a note that pays 5% a year on $50,000, with interest paid quarterly and the principal at maturity in two years. Market rates for similar notes fall to 4%. What happens to the note’s value?',
     options: [
       'It rises above $50,000, because its fixed payments are now discounted at a lower rate',
-      'It falls below $50,000, because the market now pays less',
-      'It stays at $50,000, because the payments have not changed',
-      'It rises only if the borrower becomes safer',
+      'It falls below $50,000, because investors can now earn only 4% elsewhere, so the market pays less',
+      'It stays at $50,000, because the note’s interest payments and its face value are fixed and have not changed',
+      'It rises only if the borrower also becomes safer, because a note’s value reflects its credit risk',
     ],
     answer: 0,
     feedback: {
@@ -112,13 +113,13 @@ export const items = [
   },
   {
     id: 'f04-m2-9', lesson: 'discounting-cash-flows', type: 'num', kind: 'numerical',
-    prompt: 'A project costs $12,000 today and returns $3,000, $5,000 and $6,500 at the end of years 1, 2 and 3. Find its IRR by trial. Give a percentage to two decimal places.',
-    answer: 8.92, check: () => { const f = (r) => -12000 + 3000 / (1 + r) + 5000 / (1 + r) ** 2 + 6500 / (1 + r) ** 3; let lo = 0, hi = 1; for (let i = 0; i < 100; i++) { const m = (lo + hi) / 2; if (f(m) > 0) lo = m; else hi = m; } return lo * 100; }, unit: '%', places: 2, tol: 0.05,
+    prompt: 'A fictional sign-maker borrows $8,000 from an equipment dealer to buy a vinyl cutter, and repays $2,500, $3,000 and $3,800 at the end of years 1, 2 and 3. There are no fees. What annual rate is the sign-maker paying for the loan? Treat it as the IRR of the loan’s cash flows, find it by trial and give a percentage to two decimal places.',
+    answer: 7.37, check: () => { const f = (r) => -8000 + 2500 / (1 + r) + 3000 / (1 + r) ** 2 + 3800 / (1 + r) ** 3; let lo = 0, hi = 1; for (let i = 0; i < 100; i++) { const m = (lo + hi) / 2; if (f(m) > 0) lo = m; else hi = m; } return lo * 100; }, unit: '%', places: 2, tol: 0.05,
     wrong: [
-      { value: 5.56, say: 'That spreads the $2,000 gain evenly over three years as simple interest. The IRR is the rate that makes the NPV zero.' },
-      { value: 16.67, say: 'That is the total gain (2,000 ÷ 12,000), not an annual rate.' },
+      { value: 5.42, say: 'That spreads the $1,300 of interest evenly over three years as simple interest on the full $8,000, but the balance falls as payments are made. The loan’s rate is its IRR: the rate at which the repayments are worth exactly $8,000 today.' },
+      { value: 16.25, say: 'That is the total interest as a share of the loan (1,300 ÷ 8,000), not an annual rate.' },
     ],
-    solution: 'NPV at 8% = +$224.38; at 10% = −$256.95. Interpolating: 8% + 2% × 224.38 ÷ (224.38 + 256.95) ≈ 8.93%. Checking nearby rates (or a spreadsheet’s IRR) gives 8.92%: interpolation overshoots slightly.',
+    solution: 'The sign-maker receives $8,000 now and pays $2,500, $3,000 and $3,800; the dealer’s cash flows are the mirror image, with the same IRR. From the dealer’s side, NPV at 7% = −8,000 + 2,336.45 + 2,620.32 + 3,101.93 ≈ +$58.70; at 8% = −8,000 + 2,314.81 + 2,572.02 + 3,016.56 ≈ −$96.61. Interpolating: 7% + 1% × 58.70 ÷ (58.70 + 96.61) ≈ 7.38%. Checking nearby rates (or a spreadsheet’s IRR) gives 7.37%: the loan costs about 7.37% a year, and interpolation overshoots slightly.',
   },
   {
     id: 'f04-m2-10', lesson: 'discounting-cash-flows', type: 'multi', kind: 'conceptual',

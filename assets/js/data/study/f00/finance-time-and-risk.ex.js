@@ -171,10 +171,10 @@ export const independent = [
     id: 'f00-ftr-i3', type: 'mc', kind: 'applied',
     prompt: 'A supplier offers Lantern a choice: a $1,000 rebate now or $1,050 in one year, for certain. Lantern is short of cash this year and would otherwise have to borrow at 6% a year to cover the gap, so money now is worth 6% a year to it. Which should Lantern choose, and why?',
     options: [
-      'The $1,000 now: at 6% a year it is worth $1,060 in a year’s time, more than $1,050.',
-      'The $1,050 in a year, because it is $50 more.',
-      'Either: they are worth the same because both are certain.',
-      'The $1,050 in a year, because its present value is $1,060.',
+      'The $1,000 now: at 6% it grows to $1,060 in a year, more than $1,050.',
+      'The $1,050 in a year, because it is $50 more than the rebate and both are certain.',
+      'Either: both are certain, so they are worth the same whatever the date.',
+      'The $1,050 in a year, because discounting it at 6% gives a present value of $1,060.',
     ],
     answer: 0,
     feedback: {
@@ -199,9 +199,9 @@ export const independent = [
     prompt: 'Which statement about the risk premium is correct?',
     options: [
       'It is the extra return investors expect, on average, for holding a risky investment instead of a risk-free one.',
-      'It is the extra return a risky investment is guaranteed to pay each year.',
-      'It is the fee a bank charges for keeping savings safe.',
-      'It is negative for most investors, because they enjoy taking risks.',
+      'It is the extra return a risky investment is guaranteed to pay each year, on top of the risk-free rate, in return for its risk.',
+      'It is the fee a bank charges savers for keeping their deposits safe from the risk of loss.',
+      'It is negative for most investors, because most enjoy taking risks and accept a lower return for them.',
     ],
     answer: 0,
     feedback: {
@@ -219,9 +219,9 @@ export const check = [
     prompt: 'Which definition of finance is the most complete?',
     options: [
       'The study of how people, businesses and governments raise, allocate and manage money over time, under uncertainty',
-      'The recording and reporting of a business’s past transactions under accounting standards',
-      'The study of how a whole economy produces and distributes goods and services',
-      'Buying and selling shares on a stock exchange',
+      'The recording, summarising and reporting of a business’s past transactions under accounting standards such as US GAAP or IFRS',
+      'The study of how a whole economy produces and distributes goods and services, and why output and prices change',
+      'The buying and selling of shares, bonds and other securities on stock exchanges and other markets',
     ],
     answer: 0,
     feedback: {
@@ -256,10 +256,10 @@ export const check = [
     id: 'f00-ftr-k4', type: 'mc', kind: 'applied',
     prompt: 'Two fictional customers each promise Lantern $8,000 in one year. One is a large university that always pays; the other is a new start-up. How should Lantern value the two promises today?',
     options: [
-      'Discount the start-up’s promise at a higher rate, so it is worth less today than the university’s.',
-      'Value them equally: the amounts and the dates are the same.',
+      'Discount the start-up’s promise at a higher rate, so it is worth less today.',
+      'Value them equally: the amounts and the dates are the same, so their present values must be too.',
       'Discount the university’s promise at a higher rate, because large organisations pay slowly.',
-      'Value the start-up’s promise more, because start-ups grow quickly.',
+      'Value the start-up’s promise more, because start-ups grow quickly and will find it easier to pay.',
     ],
     answer: 0,
     feedback: {

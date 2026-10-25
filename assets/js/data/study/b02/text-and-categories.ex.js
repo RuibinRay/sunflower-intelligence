@@ -30,7 +30,7 @@ export const guided = [
   {
     id: 'b02-txt-g1', type: 'rows', kind: 'applied',
     prompt: 'Region values from Lantern’s export, with ␣ marking an ordinary space and ⍽ a non-breaking space. Select every row with a whitespace problem. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['Raw region'],
       rows: [['North'], ['South␣'], ['␣West'], ['East'], ['Central⍽'], ['West'], ['South␣␣'], ['N.']],
     } },
@@ -78,9 +78,9 @@ export const guided = [
     id: 'b02-txt-g4', type: 'mc', kind: 'conceptual',
     prompt: 'An analyst extracts pack sizes from product names with the pattern <code>(\\d+)\\s?g</code>. What happens with “Decaf Colombia 1kg”?',
     options: [
-      'No match: after “1” the pattern needs an optional space and then “g”, but the next character is “k”.',
-      'It matches “1kg” and returns 1.',
-      'It returns 1000, because kg means a thousand grams.',
+      'No match: right after “1” the pattern needs a space or a “g”, and the next character is “k”.',
+      'It matches “1kg” and returns 1, because the optional space in the pattern can stand for the “k”.',
+      'It returns 1000, because the pattern recognises “kg” as a thousand grams and converts the size.',
       'It matches the “g” at the end and returns an empty number.',
     ],
     answer: 0,
@@ -125,10 +125,10 @@ export const independent = [
     id: 'b02-txt-i3', type: 'mc', kind: 'applied',
     prompt: 'Two customer records both show the city “Lisboa” and the name “José Alves”, yet an exact comparison says the names differ, and their lengths are 10 and 11 characters. Trimming both values changes nothing. What is the most likely cause, and the fix?',
     options: [
-      'One “é” is a single code point and the other is “e” plus a combining accent; normalise both to NFC before comparing.',
-      'One name has a trailing space; trim both values.',
-      'The names differ in case; lower-case both values.',
-      'One name has a typing error; use an edit distance cut-off of 1.',
+      'One “é” is “e” plus a combining accent; normalise both values to NFC before comparing.',
+      'One name has a trailing space that the display hides; trim both values and compare again.',
+      'The names differ in case somewhere that the font hides; lower-case both values before comparing.',
+      'One name has a typing error that is hard to spot on screen; match them with an edit-distance cut-off of 1.',
     ],
     answer: 0,
     feedback: {
@@ -141,7 +141,7 @@ export const independent = [
   {
     id: 'b02-txt-i4', type: 'rows', kind: 'conceptual',
     prompt: 'A format check uses the pattern <code>^\\d{5}$</code>. Which of these values does it accept? Rows are numbered from 0; ␣ is a space.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['Value'],
       rows: [['02134'], ['2134'], ['02134-1234'], ['␣02134'], ['O2134 (begins with the letter O)'], ['12345'], ['123456']],
     } },
@@ -183,10 +183,10 @@ export const check = [
     id: 'b02-txt-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Why should whitespace and case be normalised <i>before</i> a mapping table is applied?',
     options: [
-      'So that the table needs one row per genuine variant, instead of one per combination of spacing and capitals.',
-      'Because mapping tables can only contain lower-case values.',
+      'So that the table needs one row per genuine variant, not one per combination of spacing and capitals.',
+      'Because mapping tables can only contain lower-case values with no spaces at either end.',
       'Because normalising afterwards would undo the mapping.',
-      'So that the cleaned values keep their original capitals.',
+      'So that the cleaned values keep their original capitals, which a mapping table would otherwise overwrite.',
     ],
     answer: 0,
     feedback: {
@@ -209,7 +209,7 @@ export const check = [
   {
     id: 'b02-txt-k3', type: 'rows', kind: 'applied',
     prompt: 'After applying Excel’s TRIM to each value below, which values would still differ from the text “North” in an exact, case-sensitive comparison? Rows are numbered from 0; ␣ is an ordinary space and ⍽ a non-breaking space.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['Raw value'],
       rows: [['North␣'], ['␣␣North'], ['North⍽'], ['⍽North'], ['North'], ['north␣']],
     } },
@@ -223,13 +223,13 @@ export const check = [
       'It rejects some obvious errors, such as a missing @ or a space, but accepts addresses such as maya@example..com that no server will deliver to.',
       'It guarantees that every accepted address can receive email.',
       'It accepts every address allowed by the formal email syntax.',
-      'It rejects maya@example.com because the address contains a dot before the @.',
+      'It rejects maya.okafor@example.com, because the address contains a dot before the @.',
     ],
     answer: 0,
     feedback: {
       1: 'A pattern checks only the shape of the text. Whether a mailbox exists can be proved only by sending a message to it.',
       2: 'The formal syntax (RFC 5322) allows forms, such as quoted names containing spaces, that this pattern rejects.',
-      3: '[^@\\s]+ allows dots; it excludes only @ and whitespace. maya@example.com is accepted.',
+      3: '[^@\\s]+ allows dots; it excludes only @ and whitespace. maya.okafor@example.com is accepted.',
     },
     solution: 'The pattern requires a run without @ or spaces, an @, another such run, a dot and a final run. That catches missing @ signs and spaces, but “maya@example..com” fits the shape. Use a pattern to catch typing errors and a confirmation email to prove an address works.',
   },

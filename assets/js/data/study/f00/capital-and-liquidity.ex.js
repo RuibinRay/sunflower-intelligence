@@ -187,10 +187,10 @@ export const independent = [
     id: 'f00-cl-i6', type: 'mc', kind: 'applied',
     prompt: 'Lantern earns operating profit (before interest) of $1,500 in a year on its $30,000 of capital, and pays $600 of interest on its $10,000 loan. Ignoring tax, how does Ana’s return on her $20,000 compare with what it would have been had she supplied all $30,000 herself?',
     options: [
-      'Lower: 4.5% instead of 5%, because the business earned less on its capital than the 6% it paid the bank',
-      'Higher: 7.5% instead of 5%, because debt always raises the owner’s return',
-      'The same: 5% either way, because capital structure does not affect returns',
-      'Lower: 3% instead of 5%, because Ana’s $900 is spread over all $30,000 of capital',
+      'Lower: 4.5% instead of 5%, because the business earned less on its capital than the 6% loan rate',
+      'Higher: 7.5% instead of 5%, because debt always raises the owner’s return on the money she put in',
+      'The same: 5% either way, because how a business is financed does not change what its owner earns',
+      'Lower: 3% instead of 5%, because Ana’s $900 of profit after interest is spread over all $30,000 of capital',
     ],
     answer: 0,
     feedback: {
@@ -207,10 +207,10 @@ export const check = [
     id: 'f00-cl-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Why is equity usually expected to cost a business more than debt?',
     options: [
-      'Shareholders are paid last and are promised nothing, so they bear more risk and expect a higher return',
-      'Dividends must legally be higher than interest',
-      'Equity has to be repaid sooner than debt',
-      'Banks charge fees for issuing shares',
+      'Shareholders are paid last and promised nothing, so they bear more risk and expect a higher return',
+      'The law requires a company to pay its shareholders a higher return each year than the interest rate it pays its lenders',
+      'Equity has to be repaid to shareholders sooner than loans have to be repaid to the banks that made them',
+      'Banks charge large fees for issuing shares, and those fees are the main cost of equity',
     ],
     answer: 0,
     feedback: {
@@ -234,10 +234,10 @@ export const check = [
     id: 'f00-cl-k3', type: 'mc', kind: 'applied',
     prompt: 'A fictional builder reports a current ratio of 2.2 but a quick ratio of 0.4. Most of its current assets are unsold new houses. Which conclusion is best?',
     options: [
-      'Its ability to pay near-term bills depends on selling the houses; check how fast they sell and whether it has a credit line',
-      'It is very liquid, because a current ratio above 2 is always safe',
-      'It is insolvent, because the quick ratio is below 1',
-      'The two ratios contradict each other, so one must be wrong',
+      'Paying its near-term bills depends on selling the houses; check how fast they sell and whether it has a credit line',
+      'It is very liquid, because a current ratio above 2 is always a safe sign, whatever its current assets consist of',
+      'It is insolvent, because a quick ratio below 1 means it owes more than it owns',
+      'The two ratios contradict each other, so one of them must have been calculated wrongly',
     ],
     answer: 0,
     feedback: {
@@ -263,9 +263,9 @@ export const check = [
     prompt: 'Which statement about working capital is correct?',
     options: [
       'It is current assets minus current liabilities, a measure of a firm’s short-term cushion',
-      'It is the money shareholders invested to run day-to-day operations',
+      'It is the money shareholders invested to run the firm’s day-to-day operations, such as buying inventory',
       'It is the same thing as the firm’s cash balance',
-      'It is total assets minus total liabilities',
+      'It is total assets minus total liabilities, a measure of what the whole firm is worth to its owners',
     ],
     answer: 0,
     feedback: {
@@ -279,10 +279,10 @@ export const check = [
     id: 'f00-cl-k6', type: 'mc', kind: 'applied',
     prompt: 'After 1 March 2026, Ana owns $20,000 of Lantern’s shares and $6,000 in a savings account. A friend says: “You have $26,000, so you don’t need an emergency fund.” What is the best reply?',
     options: [
-      'Only the $6,000 is liquid; the Lantern shares can’t be sold quickly at a fair price, so they can’t pay an urgent bill',
-      'The friend is right: $26,000 is plenty, whatever form it is in',
-      'The Lantern shares are more liquid than the savings because they could rise in value',
-      'Neither is liquid, because both could lose value',
+      'Only the $6,000 is liquid; the Lantern shares can’t be sold quickly at a fair price to pay an urgent bill',
+      'The friend is right: $26,000 is plenty for an emergency, whatever form the money is in',
+      'The Lantern shares are more liquid than the savings, because they could rise in value before she needs the money',
+      'Neither is liquid, because both the shares and the savings account could lose value',
     ],
     answer: 0,
     feedback: {

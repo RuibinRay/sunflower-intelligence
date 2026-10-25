@@ -143,9 +143,9 @@ export const independent = [
     prompt: 'In which situation is simple interest the right model?',
     options: [
       'A loan whose interest is paid to the lender every quarter, so the balance stays the same',
-      'A savings account that adds interest to the balance every month',
-      'An unpaid credit-card balance',
-      'An investment whose income is reinvested every year',
+      'A savings account that adds interest to the balance every month, where it stays until withdrawn',
+      'An unpaid credit-card balance on which the card company charges interest at the end of every month',
+      'An investment fund whose dividends and interest are reinvested in the fund every year',
     ],
     answer: 0,
     feedback: {
@@ -171,9 +171,9 @@ export const independent = [
     prompt: 'A saver can choose between a fictional account paying 5.9% a year compounded monthly and another paying 6.0% a year compounded annually. Ignoring everything except the rate, which pays more over a year?',
     options: [
       'The 5.9% monthly account: its effective annual rate is about 6.06%',
-      'The 6.0% annual account, because 6.0 is higher than 5.9',
+      'The 6.0% annual account, because a quoted rate of 6.0% is higher than 5.9%',
       'They pay exactly the same',
-      'It cannot be decided without knowing the deposit',
+      'It cannot be decided without knowing how much the saver will deposit',
     ],
     answer: 0,
     feedback: {
@@ -237,7 +237,7 @@ export const check = [
     options: [
       'The percentage change in what an investment can buy, after allowing for inflation',
       'The percentage change in the number of dollars an investment is worth',
-      'The return after the bank’s fees',
+      'The return an investor keeps after the bank’s or fund manager’s fees are deducted',
       'The return guaranteed by the government',
     ],
     answer: 0,
@@ -283,10 +283,10 @@ export const check = [
     id: 'f00-ii-k5', type: 'mc', kind: 'applied',
     prompt: 'In a fictional economy with 20% inflation, a bank offers deposits at 25% a year. A newspaper says savers earn “a real return of 5%”. Which statement is correct?',
     options: [
-      'The exact real return is about 4.17%; the newspaper used the shortcut, which overstates it when rates are this high',
-      'The newspaper is right: 25% − 20% = 5% exactly',
-      'The real return is 45%, because the two rates add',
-      'The real return is negative, because inflation is high',
+      'The exact real return is about 4.17%; the shortcut the newspaper used overstates it when rates are this high',
+      'The newspaper is right: 25% − 20% = 5% exactly, because a real return is always the nominal rate minus inflation',
+      'The real return is 45%, because inflation raises the value of deposits and the two rates add',
+      'The real return is negative, because 20% inflation wipes out more than the whole 25% of interest',
     ],
     answer: 0,
     feedback: {

@@ -99,9 +99,9 @@ export const guided = [
       { id: 'b02-out-g3-s4', type: 'mc', prompt: 'What should the installer’s monitoring rule use?',
         options: [
           'A range check for physically possible readings, then the modified z-score or IQR fences to flag unusual days.',
-          'The |z| > 3 rule, but only after collecting more than ten days of readings.',
+          'The |z| > 3 rule, but only after collecting more than ten days of readings, when a z above 3 becomes possible.',
           'The |z| > 2 rule, since 2.85 is above 2.',
-          'No rule: delete the largest reading each week.',
+          'No rule: delete the largest reading each week, so that any faulty reading is removed before anyone looks at the data.',
         ],
         answer: 0,
         hints: ['The faulty reading is both impossible and extreme. Which tools deal with each?'],
@@ -118,7 +118,7 @@ export const guided = [
     options: [
       'Correct the quantity to 9, keep the original value in a separate column, and log the reason.',
       'Delete the order, because it is an outlier.',
-      'Cap the quantity at the upper Tukey fence.',
+      'Cap the quantity at the upper Tukey fence, so that the order stays in but can’t distort the averages.',
       'Keep 999, because the customer might genuinely have ordered it.',
     ],
     answer: 0,
@@ -211,10 +211,10 @@ export const check = [
     id: 'b02-out-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Northfield’s records show a student with an attendance of 112%. What is the right first step?',
     options: [
-      'Treat it as a validation failure: check the source records and correct it, or set it to missing if it can’t be corrected.',
-      'Winsorise it at the upper Tukey fence.',
-      'Keep it and summarise attendance with the median instead of the mean.',
-      'Compute its modified z-score to decide whether it is an outlier.',
+      'Treat it as a validation failure: correct it from the source, or set it to missing if that isn’t possible.',
+      'Winsorise it at the upper Tukey fence, so that it stays in the data without distorting the averages.',
+      'Keep it, and summarise attendance with the median instead of the mean, which one extreme value barely moves.',
+      'Compute its modified z-score first, to find out whether it lies far enough from the other students to count as an outlier.',
     ],
     answer: 0,
     feedback: {
@@ -260,9 +260,9 @@ export const check = [
     prompt: 'Lantern is forecasting next month’s demand for home-delivery boxes, which hold up to six bags. Its order data include several genuine office orders of 60 to 150 bags. What should the forecast do with them?',
     options: [
       'Flag them as business orders and forecast household and business demand separately.',
-      'Delete them, since they are outliers.',
-      'Winsorise them at the upper fence and forecast from all orders together.',
-      'Keep them in a single forecast, since every order is real.',
+      'Delete them, since they are outliers and would distort any forecast they are part of.',
+      'Winsorise them at the upper fence and forecast from all orders together, so that no order is dropped.',
+      'Keep them all in one forecast together with the household orders, since every one of them is a real order.',
     ],
     answer: 0,
     feedback: {

@@ -274,7 +274,7 @@ export const check = [
     prompt: 'Which statement about the rule of 72 is correct?',
     options: [
       'It overstates the doubling time at low rates and understates it at high rates; it is exact near 7.85%',
-      'It is exact at every rate, because it is derived from the compound interest formula',
+      'It is exact at every rate, because 72 divided by the percentage rate is the compound interest formula solved for the doubling time',
       'It understates the doubling time at low rates and overstates it at high rates',
       'It gives the doubling time under simple interest',
     ],

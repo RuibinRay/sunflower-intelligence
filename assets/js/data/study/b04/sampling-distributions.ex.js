@@ -239,10 +239,10 @@ export const independent = [
     prompt: 'Complete the statements about standard errors.',
     text: 'To halve the standard error of a sample mean, multiply the sample size by [[0]]. The standard error measures how much [[1]] vary from sample to sample. The finite population correction matters when the sample is more than about [[2]] of the population. A larger sample reduces [[3]] but not bias.',
     blanks: [
-      { options: ['4', '2', '√2'], answer: 0 },
+      { options: ['2', '4', '√2'], answer: 1 },
       { options: ['sample means', 'individual values', 'population means'], answer: 0 },
-      { options: ['5%', '50%', '30 members'], answer: 0 },
-      { options: ['sampling error', 'non-response bias', 'measurement bias'], answer: 0 },
+      { options: ['50%', '30 members', '5%'], answer: 2 },
+      { options: ['non-response bias', 'sampling error', 'measurement bias'], answer: 1 },
     ],
     solution: 'SE = σ ÷ √n, so halving it needs √n to double: four times the sample. It describes the variation of sample means, not of single values. The correction is used above about 5% of the population (OpenStax’s guide). Only sampling error shrinks with n.',
   },

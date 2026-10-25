@@ -92,7 +92,7 @@ export const guided = [
         hints: ['k − 1 columns per variable.'],
         wrong: [{ value: 8, say: 'Drop a reference category from each variable, not just one overall.' }] },
       { id: 'b02-enc-g1-s3', type: 'mc', prompt: 'For which model must the analyst use the dummy-coded version?',
-        options: ['An unpenalised logistic regression with an intercept', 'A random forest', 'A ridge-penalised logistic regression', 'A k-nearest-neighbours model'],
+        options: ['An unpenalised logistic regression with an intercept', 'A random forest built from several hundred decision trees', 'A ridge-penalised logistic regression with an intercept', 'A k-nearest-neighbours model that uses scaled distances'],
         answer: 0,
         hints: ['Where does the dummy-variable trap make the coefficients impossible to pin down?'],
         feedback: {
@@ -115,8 +115,8 @@ export const guided = [
         options: [
           'It is that booking’s own outcome, so the feature contains the answer and the model learns to trust it.',
           'Encodings must lie strictly between 0 and 1.',
-          'T3 is a rare agent and should be deleted from the data.',
-          'Target encoding can only be used for continuous targets.',
+          'T3 is a rare agent, and categories with a single booking should be deleted from the data before encoding.',
+          'Target encoding can only be used for continuous targets, not for a yes/no outcome such as whether a booking is cancelled.',
         ],
         answer: 0,
         hints: ['Where does the number 1 come from?'],
@@ -180,9 +180,9 @@ export const independent = [
     prompt: 'A k-nearest-neighbours model uses region label-encoded alphabetically: Central 0, East 1, North 2, South 3, West 4. What goes wrong?',
     options: [
       'Central and West look four times as different as Central and East, because of the spelling of the names.',
-      'Nothing: k-nearest neighbours ignores categorical variables.',
+      'Nothing: k-nearest neighbours ignores categorical variables and measures distance on the numeric ones only.',
       'The model can’t run, because the codes are integers.',
-      'Every region becomes equally distant from every other.',
+      'Every region becomes equally distant from every other region, as though the five codes carried no order at all.',
     ],
     answer: 0,
     feedback: {
@@ -206,10 +206,10 @@ export const independent = [
     id: 'b02-enc-i4', type: 'mc', kind: 'applied',
     prompt: 'Lantern’s model was trained with a dummy-coded region (reference: North). Lantern starts delivering to a sixth region, “Islands”. The encoder is set to encode unknown categories as all zeros. What happens to Islands orders?',
     options: [
-      'They are silently treated as North orders, because all zeros is how the reference region is encoded.',
-      'The encoder raises an error.',
-      'They get the average effect of all five regions.',
-      'They are dropped from the predictions.',
+      'They are silently treated as North orders: all zeros encodes the reference region.',
+      'The encoder raises an error, because Islands was not among the categories it was fitted on.',
+      'They get the average effect of all five regions, because no single region’s column is switched on.',
+      'They are dropped from the predictions, because the model has no column for a region it never saw.',
     ],
     answer: 0,
     feedback: {
@@ -250,9 +250,9 @@ export const check = [
     prompt: 'When must you drop one one-hot column (use a reference category)?',
     options: [
       'When fitting an unpenalised linear or logistic regression with an intercept.',
-      'Whenever you one-hot encode, for any model.',
-      'When fitting a random forest.',
-      'When using k-means clustering.',
+      'Whenever you one-hot encode a variable, whichever kind of model will use the columns.',
+      'When fitting a random forest, so that the trees don’t split on redundant columns.',
+      'When using k-means clustering, so that the distances between categories stay equal.',
     ],
     answer: 0,
     feedback: {
@@ -314,8 +314,8 @@ export const check = [
     id: 'b02-enc-k6', type: 'mc', kind: 'conceptual',
     prompt: 'A tool ordinal-encodes roast without being told the order and produces dark 0, light 1, medium 2. What is wrong, and what else should you check?',
     options: [
-      'The tool used alphabetical order; supply light < medium < dark, and check that equal steps between roasts are plausible.',
-      'Nothing: any consistent integer codes are fine for ordinal data.',
+      'It used alphabetical order: give it light < medium < dark, and check that equal steps are plausible.',
+      'Nothing: any consistent integer codes are fine for ordinal data, as long as each roast always gets the same code.',
       'Ordinal codes must start at 1, not 0.',
       'Roast is nominal, so it should never be ordinal-encoded.',
     ],
