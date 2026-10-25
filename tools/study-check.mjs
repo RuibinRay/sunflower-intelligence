@@ -112,6 +112,18 @@ function checkExercise(x, where, r, { course, chart, needHints = false, inSteps 
         if (b.options) { if (!Number.isInteger(b.answer) || b.answer < 0 || b.answer >= b.options.length) r.err(`${w}: blank ${i} answer must index its options`); }
         else if (!Array.isArray(b.accept) || !b.accept.length) r.err(`${w}: blank ${i} needs options+answer or accept`);
       });
+      // drop-down lists that aren't a shared word bank keep their authored order on the page (exercises.js), so if every
+      // blank's answer sits in the same position, picking that position everywhere scores full marks
+      {
+        const ob = (x.blanks || []).filter((b) => b.options);
+        const lists = ob.map((b) => JSON.stringify(b.options));
+        const isNumOpt = (o) => /^\s*[−-]?[$£]?[\d,.]+%?\s*$/.test(String(o).replace(/<[^>]*>/g, ''));
+        const bank = !x.fixed && ob.length >= 2 && ob.length === (x.blanks || []).length && lists.every((l) => l === lists[0]) && !ob[0].options.every(isNumOpt);
+        if (!bank && ob.length >= 2 && new Set(ob.map((b) => b.answer)).size === 1) {
+          const msg = `${w}: every drop-down's answer is option ${ob[0].answer + 1}, and these lists keep their order on the page; vary the answers' positions`;
+          if (catalog.COURSE[course]?.status === 'complete') r.note(msg); else r.warn(msg);
+        }
+      }
       break;
     }
     case 'classify': {

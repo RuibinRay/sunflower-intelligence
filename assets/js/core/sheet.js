@@ -1471,7 +1471,7 @@ const LIFT = {
   'CHISQ.DIST': [0, 1, 2], 'CHISQ.DIST.RT': [0, 1], 'CHISQ.INV': [0, 1], 'CHISQ.INV.RT': [0, 1],
   'F.DIST': [0, 1, 2, 3], 'F.DIST.RT': [0, 1, 2], 'F.INV': [0, 1, 2], 'F.INV.RT': [0, 1, 2],
   'CONFIDENCE.NORM': [0, 1, 2], 'CONFIDENCE.T': [0, 1, 2], COMBIN: [0, 1], PERMUT: [0, 1], FACT: [0],
-  LARGE: [1], SMALL: [1], 'PERCENTRANK.INC': [1, 2], 'PERCENTRANK.EXC': [1, 2],
+  LARGE: [1], SMALL: [1], 'PERCENTRANK.INC': [1, 2], 'PERCENTRANK.EXC': [1, 2], EXACT: [0, 1],
 };
 for (const [name, pos] of Object.entries(LIFT)) {
   const base = FN[name];

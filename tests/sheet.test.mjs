@@ -327,6 +327,13 @@ eq('criterion ~* no wildcard', X.criterion('~*')('a'), false);
   ok('Solver value of', v.ok && v.values.B1 === 5);
 }
 
+// EXACT compares element by element when given ranges (Excel 365 returns an array), so a case-sensitive count works
+{
+  const sh = new X.Sheet({ cells: { A1: 'a', A2: 'B', A3: 'c', B1: 'a', B2: 'b', B3: 'c', C1: '=SUMPRODUCT(--EXACT(A1:A3,B1:B3))', C2: '=EXACT(A2,"b")' } });
+  ok('EXACT over ranges, counted', sh.get('C1') === 2);
+  ok('EXACT is case-sensitive', sh.get('C2') === false);
+}
+
 // matchFormulas (one pass over the test copies for several slips) agrees with gradeFormula slip by slip
 {
   const spec = { cells: { A1: 'x', A2: 3, A3: 5, A4: 8, A5: 13, B1: 'cut', B2: 4 } };
