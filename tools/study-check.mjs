@@ -34,7 +34,9 @@ class Report {
 // the longest option scores well), and an assessment item that repeats a lesson exercise with new numbers (it tests
 // memory of the exercise). Text is compared as sets of word trigrams with numbers folded to one token, over the prompt,
 // the options, the classify items and the sheet's labels; 0.5 Jaccard is where the copies reviewers flagged begin.
-const plainText = (s) => String(s ?? '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+// the text a reader sees: tags dropped, entities decoded (so &#39; counts as one character), TeX left as written
+const ENTITY = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', '#39': "'", minus: '−', times: '×' };
+const plainText = (s) => String(s ?? '').replace(/<[^>]+>/g, '').replace(/&(#\d+|#x[0-9a-f]+|[a-z]+);/gi, (m, e) => ENTITY[e.toLowerCase()] ?? (e[0] === '#' ? String.fromCodePoint(e[1] === 'x' || e[1] === 'X' ? parseInt(e.slice(2), 16) : +e.slice(1)) : m)).replace(/\s+/g, ' ').trim();
 const withSteps = (list) => (list || []).flatMap((x) => [x, ...(x.steps || [])]);
 const itemText = (x) => [x.prompt, ...(x.items || []), ...(x.options || []), ...(x.statements || []),
   x.sheet ? Object.values(x.sheet.cells || {}).filter((v) => typeof v === 'string' && !v.startsWith('=')).join(' ') : '']
