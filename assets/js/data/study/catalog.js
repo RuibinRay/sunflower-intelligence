@@ -29,7 +29,7 @@ export const LEVELS = { intro: 'Introductory', intermediate: 'Intermediate', adv
 export const CASES = {
   lantern: {
     name: 'Lantern Coffee Co.',
-    line: 'A fictional coffee business founded by Ana Lim. It starts as a catering and barista-training service, opens an online shop for beans, then launches a canned cold brew.',
+    line: 'A fictional coffee business founded by Ana Lim. It starts as a catering and barista-training service, opens its own cafés and an online shop for beans, and plans a canned cold brew.',
   },
   brightwater: { name: 'Brightwater Bike Repair', line: 'A fictional small bicycle repair shop used for the F01 project.' },
   harborview: { name: 'Harborview Hotel', line: 'A fictional 80-room hotel whose booking records need cleaning.' },
@@ -392,9 +392,27 @@ const ALL = [
     related: [{ plate: 'markets' }, { tool: 'marketing/map/', label: 'Market map' }],
   }),
   C({
-    id: 'm05', school: 'marketing', code: 'M05', level: 'intermediate', requires: ['m01'], recommends: ['m04'],
+    id: 'm05', school: 'marketing', code: 'M05', level: 'intermediate', status: 'reviewed', requires: ['m01', 'b04'], recommends: ['m04', 'b02'],
     title: 'Market Segmentation and Positioning',
-    blurb: 'Segment, target and position: decide who to serve and how to stand out to them.',
+    blurb: 'Segment, target and position: find groups of customers who want different things, choose the ones to serve, and decide how to stand out to them, with data rather than hunches.',
+    case: 'lantern',
+    outcomes: [
+      'Explain segmentation, targeting and positioning (STP), and judge whether segments are usable: measurable, substantial, accessible, differentiable and actionable.',
+      'Segment a market by demographic, geographic, psychographic and behavioural bases, and say what each base can and can’t reveal about why people buy.',
+      'Segment customers on their needs with cluster analysis (standardised variables, k-means and Ward’s method), choosing the number of segments by the elbow, the silhouette and what the segments mean, and checking their stability.',
+      'Profile, name and size segments with indexes and cross-tabs, test whether they differ, and build a typing tool that assigns new customers to a segment.',
+      'Evaluate segments’ attractiveness and fit with a weighted scorecard, test how sensitive the choice is to the weights, and choose a targeting strategy.',
+      'Build buyer personas from segment data rather than imagination, and state their limits.',
+      'Build and read perceptual maps from attribute ratings, place ideal points, and judge whether a gap on the map is an opportunity.',
+      'Write a positioning statement with a frame of reference, points of parity and points of difference, choose how to differentiate, and plan a repositioning with its risks.',
+    ],
+    modules: [
+      { n: 1, title: 'Segmentation bases', lessons: ['why-segment', 'demographic-and-geographic', 'psychographic-and-behavioural'] },
+      { n: 2, title: 'Segmenting with data', lessons: ['cluster-analysis', 'profiling-segments'] },
+      { n: 3, title: 'Targeting', lessons: ['evaluating-segments', 'targeting-strategies'] },
+      { n: 4, title: 'Positioning', lessons: ['perceptual-maps', 'positioning-statements', 'differentiation-and-repositioning'] },
+    ],
+    project: { title: 'Positioning Lantern’s barista workshops', blurb: 'Segment the people who come to, or might come to, Lantern’s barista workshops, choose which segment to serve, build a persona from the data, map Lantern against a college course, tasting evenings and an online course, and write the positioning statement and the changes that would make it true.' },
     topics: ['Demographic segmentation', 'Geographic segmentation', 'Psychographic segmentation', 'Behavioural segmentation', 'Target market selection', 'The STP framework', 'Buyer personas', 'Perceptual maps', 'Positioning statements', 'Differentiation strategies'],
     related: [{ plate: 'segment' }, { tool: 'marketing/segmentation/', label: 'Market segmentation' }],
   }),

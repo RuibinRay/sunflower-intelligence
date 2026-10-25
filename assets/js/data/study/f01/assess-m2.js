@@ -24,7 +24,7 @@ export const items = [
       'A debit is only the left side of an account. For an asset such as Cash it records an increase, not an expense.',
       'Nothing: every debit records an expense.',
       'Cash should have been credited, because money came in, and a credit is how a business records money it receives.',
-      'The $3,000 should have been debited to Catering Revenue instead, because the payment is revenue earned on the day it arrives.',
+      'The $3,000 should have been credited to Catering Revenue instead, because the payment is revenue earned on the day it arrives.',
     ],
     answer: 0,
     feedback: {

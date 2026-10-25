@@ -1,10 +1,10 @@
 // study-home.js — the Learn home: search across lessons, terms, formulas and the catalogue; where you left off;
 // progress in each course; the learning-path tabs (with a recommendation from the skills check, if taken).
-import { initSite } from '../core/site.js?v=14';
-import { $, $$, h, debounce } from '../core/dom.js?v=14';
-import * as P from '../study/progress.js?v=14';
-import { pct } from '../study/common.js?v=14';
-import { MAP } from '../data/study/map.js?v=14';
+import { initSite } from '../core/site.js?v=15';
+import { $, $$, h, debounce } from '../core/dom.js?v=15';
+import * as P from '../study/progress.js?v=15';
+import { pct } from '../study/common.js?v=15';
+import { MAP } from '../data/study/map.js?v=15';
 
 initSite();
 const root = document.body.dataset.root;
@@ -14,7 +14,7 @@ const input = $('#search-input'), list = $('#search-results'), count = $('#searc
 let index = null;
 async function loadIndex() {
   if (index) return index;
-  try { index = await (await fetch(`${root}assets/data/study/search.json?v=14`)).json(); } catch { index = []; }
+  try { index = await (await fetch(`${root}assets/data/study/search.json?v=15`)).json(); } catch { index = []; }
   index.forEach((e) => { e._t = e.t.toLowerCase(); e._s = `${e.s} ${e.x}`.toLowerCase(); });
   return index;
 }

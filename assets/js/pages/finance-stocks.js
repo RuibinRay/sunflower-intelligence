@@ -1,12 +1,12 @@
 // finance-stocks.js — stock analysis: return and risk, CAPM beta and alpha, and the long-only efficient frontier.
-import { initSite, syncRanges } from '../core/site.js?v=14';
-import { $, $$, h, s, onResize, debounce } from '../core/dom.js?v=14';
-import * as F from '../core/format.js?v=14';
-import { lineChart, barChart, scatter, tableTwin } from '../core/charts.js?v=14';
-import { verdict, fillSelect, chips, checkedIn, whenNear, afterPaint } from '../core/ui.js?v=14';
-import { parseTable, isNumeric } from '../core/csv.js?v=14';
-import { simulatedMarket } from '../core/finsim.js?v=14';
-import { returns, riskReturn, drawdowns, sma, capm, rollingBeta, moments, minVariance, maxSharpe, frontier, portRet, portVar } from '../core/portfolio.js?v=14';
+import { initSite, syncRanges } from '../core/site.js?v=15';
+import { $, $$, h, s, onResize, debounce } from '../core/dom.js?v=15';
+import * as F from '../core/format.js?v=15';
+import { lineChart, barChart, scatter, tableTwin } from '../core/charts.js?v=15';
+import { verdict, fillSelect, chips, checkedIn, whenNear, afterPaint } from '../core/ui.js?v=15';
+import { parseTable, isNumeric } from '../core/csv.js?v=15';
+import { simulatedMarket } from '../core/finsim.js?v=15';
+import { returns, riskReturn, drawdowns, sma, capm, rollingBeta, moments, minVariance, maxSharpe, frontier, portRet, portVar } from '../core/portfolio.js?v=15';
 
 initSite();
 

@@ -1,8 +1,8 @@
 // Lesson: linear regression — coefficients, R², p-values and the diagnostics that qualify them.
 // `checks` recompute every number printed in the worked example; tests/lessons.test.mjs compares them.
-import * as F from '../../core/format.js?v=14';
-import { ols, mean } from '../../core/stats.js?v=14';
-import { mulberry32, normalGen } from '../../core/rng.js?v=14';
+import * as F from '../../core/format.js?v=15';
+import { ols, mean } from '../../core/stats.js?v=15';
+import { mulberry32, normalGen } from '../../core/rng.js?v=15';
 
 // Eight weeks of invented data: advertising ($k) and sales ($k).
 const AD = [2, 3, 4, 5, 6, 7, 8, 9];

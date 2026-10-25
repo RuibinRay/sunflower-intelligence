@@ -94,7 +94,7 @@ export const guided = [
       { id: 'f01-gl-g4-s3', type: 'mc',
         prompt: 'Which single error explains the difference?',
         options: [
-          'A $480 payment to the cabling supplier was posted to the control account but not to the supplier’s account.',
+          'A $480 payment to the cabling supplier was posted to the control account but not the supplier’s account.',
           'A $480 bill from the cabling supplier was posted to the control account but not to the supplier’s account.',
           'A $480 bill from the cabling supplier was posted to the inverter supplier’s account instead of the cabling supplier’s.',
           'A $240 payment to the cabling supplier was posted to the wrong side of the control account, as a credit instead of a debit.',

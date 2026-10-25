@@ -245,7 +245,7 @@ export const check = [
     feedback: {
       1: 'The problem needs no dishonesty: ordinary differences in pay, effort, risk and horizon are enough.',
       2: 'Shareholders receive financial statements and other disclosure; the problem is that no report shows everything a manager does or why.',
-      3: 'A larger stake actually narrows the gap, because the manager bears more of the cost of her own decisions.',
+      3: 'A larger stake actually narrows the gap, because the manager bears more of the cost of her own decisions. And the agency problem exists even when managers own no shares: it comes from the separation of ownership and control.',
     },
     solution: 'The agency problem has two ingredients: different interests (pay, effort, perks, empire, risk, horizon) and incomplete information, which stops principals from writing and enforcing a contract that makes the agent act exactly as they would.',
   },
@@ -294,7 +294,7 @@ export const check = [
       'An advisory, non-binding vote, held at least once every three years',
       'A binding vote that sets each executive’s salary and bonus every year',
       'No vote: pay is set by the board alone and never put to shareholders',
-      'A vote by the SEC’s commissioners on behalf of shareholders',
+      'A vote by the SEC’s five commissioners on behalf of the shareholders',
     ],
     answer: 0,
     feedback: {

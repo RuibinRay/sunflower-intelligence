@@ -121,7 +121,7 @@ export const guided = [
   {
     id: 'f00-mp-g4', type: 'mc', kind: 'conceptual',
     prompt: 'A firm sells you 100 bonds out of its own inventory at its quoted ask price and charges no commission. In this trade, what role is it playing?',
-    options: ['Dealer (a principal), earning the spread', 'Broker (an agent), earning a commission on the trade', 'Underwriter, earning an underwriting spread', 'Regulator, supervising the trade'],
+    options: ['Dealer (a principal), earning the spread', 'Broker (an agent), earning a commission on the trade', 'Underwriter, earning an underwriting spread', 'Regulator, checking that the trade follows the rules'],
     answer: 0,
     hints: ['Did the bonds come from the firm’s own holdings, or did it find another investor to sell them?', 'Trading from inventory means acting as a principal.'],
     feedback: {

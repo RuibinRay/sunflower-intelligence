@@ -1,10 +1,10 @@
 // learn-lessons.js — the lesson library: what you've read, your mastery of each skill, and what to read next.
-import { initSite } from '../core/site.js?v=14';
-import { $, $$ } from '../core/dom.js?v=14';
-import * as F from '../core/format.js?v=14';
-import * as L from '../core/learn.js?v=14';
-import { LESSON_META } from '../data/lessons/meta.js?v=14';
-import { loadState, nextLesson } from './learn-common.js?v=14';
+import { initSite } from '../core/site.js?v=15';
+import { $, $$ } from '../core/dom.js?v=15';
+import * as F from '../core/format.js?v=15';
+import * as L from '../core/learn.js?v=15';
+import { LESSON_META } from '../data/lessons/meta.js?v=15';
+import { loadState, nextLesson } from './learn-common.js?v=15';
 
 initSite();
 

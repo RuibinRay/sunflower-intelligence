@@ -2,7 +2,7 @@
 // Answer keys live here. Every business and number is fictional; every number is recomputed by `check`.
 // The lantern-orders widget is inspect-only (ops: []): B02 teaches the repairs.
 
-import { UTC_OFFSET_HOURS } from './case.js?v=14';
+import { UTC_OFFSET_HOURS } from './case.js?v=15';
 
 const BEHIND = -UTC_OFFSET_HOURS;   // hours Lantern's local time is behind UTC
 const WORDS = { 4: 'four', 5: 'five', 6: 'six' };

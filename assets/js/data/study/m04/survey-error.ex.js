@@ -2,7 +2,7 @@
 // Lantern's dispositions, completes and weights come from case.js; the samplers use the list's known answers as a
 // teaching device. Brindlecombe Garden Centre, Pennyholt Bakeries, Tamberlake Gyms, Marrowby Buses and Orrinsby Software
 // are fictional. Formula items are marked by their results on the sheet and on copies with the numbers changed.
-import { PEOPLE, STRATA, SIZES, DISPOSITIONS, DERIVED } from './case.js?v=14';
+import { PEOPLE, STRATA, SIZES, DISPOSITIONS, DERIVED } from './case.js?v=15';
 
 const DS = DISPOSITIONS, NC = DERIVED.survey.completesByStratum;
 const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;

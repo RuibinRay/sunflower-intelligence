@@ -2,7 +2,7 @@
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // The note widget starts from COASTLINE_NOTE in case.js ($10,000 at 6%, paid quarterly; 8% market rate in March 2027);
 // the NPV widget starts from Ana's fictional cold-brew estimates in discounting-cash-flows.js.
-import { COASTLINE_NOTE as N } from './case.js?v=14';
+import { COASTLINE_NOTE as N } from './case.js?v=15';
 
 const qInt = N.quarterlyInterest;   // $150
 
@@ -352,7 +352,7 @@ export const check = [
       'The true NPV divided by 1.08: every cash flow, today’s cost included, is discounted one period too many',
       'Exactly right, because NPV() includes the first value at time 0',
       'Too high by the amount of today’s cost, because NPV() skips the first value in the range and starts at A2',
-      'The true NPV multiplied by 1.08, because NPV() compounds each cash flow one period forward instead of discounting it',
+      'The true NPV multiplied by 1.08, because NPV() treats every cash flow as arriving one period earlier than it does',
     ],
     answer: 0,
     feedback: {

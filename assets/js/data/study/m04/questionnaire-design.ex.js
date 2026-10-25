@@ -2,7 +2,7 @@
 // here). Lantern's questions come from case.js; Ana's draft is the lesson's (fictional). Saltreed Festival, Tamberlake
 // Gyms, Pennyholt Bakeries, Brindlecombe Garden Centre, Orrinsby Software and Marrowby Buses are fictional. The Pew
 // figures in the chart are from Pew Research Center's "Writing Survey Questions" (2008 experiment).
-import { SURVEY_2027 } from './case.js?v=14';
+import { SURVEY_2027 } from './case.js?v=15';
 
 const Q = SURVEY_2027.questions;
 const avg = (xs) => xs.reduce((a, b) => a + b, 0) / xs.length;

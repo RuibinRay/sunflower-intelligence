@@ -1,6 +1,6 @@
 // project.js — F04 applied project: Ana's home plan. She saves a deposit for five years, then chooses a mortgage.
 // Every fact comes from case.js (ANA_PLAN); every number is computed below and checked by `verify` and the checker.
-import { ANA_PLAN as A, DERIVED as D } from './case.js?v=14';
+import { ANA_PLAN as A, DERIVED as D } from './case.js?v=15';
 
 const pmt = (pv, r, n) => pv * r / (1 - (1 + r) ** -n);
 const fvAnn = (c, r, n) => c * ((1 + r) ** n - 1) / r;

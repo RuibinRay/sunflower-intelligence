@@ -1,6 +1,6 @@
 // four-kinds-of-analytics.ex.js — B01 · The four kinds of analytics: widgets, practice and the knowledge check.
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
-import { MONTHS, SHOP } from './case.js?v=14';
+import { MONTHS, SHOP } from './case.js?v=15';
 
 const KINDS = ['Descriptive', 'Diagnostic', 'Predictive', 'Prescriptive'];
 const money = (v) => {

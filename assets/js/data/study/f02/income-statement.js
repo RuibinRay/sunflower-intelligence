@@ -1,7 +1,7 @@
 // income-statement.js — F02 · The multi-step income statement. Content only; exercises are in income-statement.ex.js.
 // The centrepiece is STATEMENTS.income from case.js; every Lantern figure comes from DERIVED, FACTS, ADJUSTMENTS or RESULTS.
 // Other businesses are fictional and live only here.
-import { FACTS, ADJUSTMENTS, DERIVED as D, STATEMENTS, RESULTS } from './case.js?v=14';
+import { FACTS, ADJUSTMENTS, DERIVED as D, STATEMENTS, RESULTS } from './case.js?v=15';
 
 const F = FACTS, IS = RESULTS.incomeStatement;
 const op = Object.fromEntries(IS.lists.operating);                 // operating expenses by account

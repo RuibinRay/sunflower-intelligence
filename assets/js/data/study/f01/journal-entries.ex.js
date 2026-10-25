@@ -232,7 +232,7 @@ export const check = [
     options: [
       'The board minute declaring the dividend, and the bank record of the payment',
       'An invoice from Ana Lim to Lantern for $300, the amount of the dividend she is owed',
-      'Lantern’s income statement for March, which reports the dividend paid',
+      'Lantern’s income statement for March, which reports the $300 dividend paid to Ana',
       'Ana’s personal bank statement showing the $300 received from Lantern on 30 March',
     ],
     answer: 0,

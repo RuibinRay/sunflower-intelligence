@@ -268,7 +268,7 @@ export const items = [
     id: 'f00-fn-18', lesson: 'financial-markets', type: 'mc', kind: 'conceptual',
     prompt: 'Why can a bank whose loans are all sound still fail if many depositors ask for their money on the same day?',
     options: [
-      'It funds long-term loans with deposits that can be withdrawn any day, and loans are slow to turn into cash',
+      'It funds long-term loans with deposits repayable on demand, and loans are slow to turn into cash',
       'A run reveals that its loans were bad all along, so the bank was insolvent before the first depositor asked for cash',
       'Depositors are repaid only after the bank’s shareholders, so a run quickly wipes out what depositors are owed',
       'The central bank is not allowed to lend to banks that are short of cash, so nobody can bridge the gap',
