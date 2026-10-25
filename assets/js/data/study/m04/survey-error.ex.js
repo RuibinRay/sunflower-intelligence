@@ -54,7 +54,7 @@ export const widgets = {
     type: 'sheet', title: 'Lantern’s February dispositions, response rates and weights',
     sheet: { cells: seCells }, view: 'A1:H9', editable: true,
     formats: { F: '0.0%', G: '0.0%', H: '0.00', B8: '0.0', B9: '0.000', B2: '#,##0', B3: '#,##0', B4: '#,##0', B5: '#,##0', B6: '#,##0', C: '#,##0' },
-    widths: { A: 21, B: 9, C: 8, D: 9, E: 8, F: 7, G: 7, H: 8 },
+    widths: { A: 19, B: 8, C: 7, D: 8, E: 7, F: 6, G: 6, H: 7 },
     tools: ['formulas', 'reset'],
     note: 'RR1 counts completes, RR2 completes and partials, each over everyone invited (no one on the list is ineligible). The weight is the stratum’s size on the list over its completes. Kish’s n_eff in B8 uses one weight per stratum: (Σ n_h w_h)² ÷ Σ n_h w_h².',
   },
