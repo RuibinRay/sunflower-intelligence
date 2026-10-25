@@ -16,28 +16,28 @@ const SCREEN = (r) => `=IF(B${r}<$B$3,"Less important",IF(E${r}>=$B$4,"Point of 
 function screenCells(target, rival, withScreen) {
   const cells = {
     A1: 'Target segment', B1: target, A2: 'Rival brand', B2: rival,
-    A3: 'Important if the index is at least', B3: 110, A4: 'A lead or gap counts from (points)', B4: 0.5,
-    A6: 'Attribute', B6: 'Target’s index', C6: 'Lantern', D6: 'Rival', E6: 'Lantern − rival', F6: 'Screen',
-    A16: 'Needs index by segment (100 = average respondent)', A17: 'Attribute', A27: 'Mean brand ratings (1–7)', A28: 'Attribute',
+    A3: 'Important if index ≥', B3: 110, A4: 'Lead or gap from', B4: 0.5,
+    A6: 'Attribute', B6: 'Target index', C6: 'Lantern', D6: 'Rival', E6: 'Lantern − rival', F6: 'Screen',
+    H5: 'Needs index by segment (100 = average respondent)', N5: 'Mean brand ratings (1–7)',
   };
-  SEG.forEach((s, k) => { cells[`${'BCDEF'[k]}17`] = s; });
-  BRANDS.forEach((b, k) => { cells[`${'BCDEFG'[k]}28`] = b; });
+  const IXC = 'HIJKL', BMC = 'NOPQRS';
+  SEG.forEach((name, k) => { cells[`${IXC[k]}6`] = name; });
+  BRANDS.forEach((name, k) => { cells[`${BMC[k]}6`] = name; });
   ATTR.forEach((a, j) => {
-    const r = 7 + j, ri = 18 + j, rm = 29 + j;
-    cells[`A${r}`] = a; cells[`A${ri}`] = a; cells[`A${rm}`] = a;
-    SEG.forEach((_, k) => { cells[`${'BCDEF'[k]}${ri}`] = IX[k][j]; });
-    BRANDS.forEach((_, k) => { cells[`${'BCDEFG'[k]}${rm}`] = r2(M[k][j]); });
-    cells[`B${r}`] = `=INDEX(B${ri}:F${ri},MATCH($B$1,$B$17:$F$17,0))`;
-    cells[`C${r}`] = `=INDEX(B${rm}:G${rm},MATCH("Lantern",$B$28:$G$28,0))`;
-    cells[`D${r}`] = `=INDEX(B${rm}:G${rm},MATCH($B$2,$B$28:$G$28,0))`;
+    const r = 7 + j;
+    cells[`A${r}`] = a;
+    SEG.forEach((_, k) => { cells[`${IXC[k]}${r}`] = IX[k][j]; });
+    BRANDS.forEach((_, k) => { cells[`${BMC[k]}${r}`] = Math.round(M[k][j] * 10000) / 10000; });
+    cells[`B${r}`] = `=INDEX(H${r}:L${r},MATCH($B$1,$H$6:$L$6,0))`;
+    cells[`C${r}`] = `=INDEX(N${r}:S${r},MATCH("Lantern",$N$6:$S$6,0))`;
+    cells[`D${r}`] = `=INDEX(N${r}:S${r},MATCH($B$2,$N$6:$S$6,0))`;
     cells[`E${r}`] = `=C${r}-D${r}`;
     if (withScreen) cells[`F${r}`] = SCREEN(r);
   });
   return cells;
 }
-const SHEET_FMT = { B: '0', C: '0.00', D: '0.00', E: '0.00', B4: '0.0', B18: '0', B29: '0.00' };
-const SHEET_W = { A: 34, B: 15, C: 14, D: 15, E: 16, F: 19, G: 14 };
-const fmtRange = Object.fromEntries([...'BCDEF'].flatMap((c) => Array.from({ length: 8 }, (_, j) => [`${c}${18 + j}`, '0'])).concat([...'BCDEFG'].flatMap((c) => Array.from({ length: 8 }, (_, j) => [`${c}${29 + j}`, '0.00']))));
+const SHEET_FMT = { B: '0', C: '0.00', D: '0.00', E: '0.00', B4: '0.0', H: '0', I: '0', J: '0', K: '0', L: '0', N: '0.00', O: '0.00', P: '0.00', Q: '0.00', R: '0.00', S: '0.00' };
+const SHEET_W = { A: 18, B: 13, C: 7, D: 7, E: 12, F: 18, G: 3 };
 // what the screen gives (unrounded ratings) for a target and a rival
 const screenOf = (seg, rival, j) => { const g = M[LA][j] - M[rival][j]; return IX[seg][j] < 110 ? 'Less important' : g >= 0.5 ? 'Point of difference' : g <= -0.5 ? 'Parity to reach' : 'Parity held'; };
 
@@ -46,14 +46,14 @@ export const widgets = {
   'st-screen': {
     type: 'sheet', title: 'Ana’s screen: points of difference and parity for a target and a rival',
     sheet: { cells: screenCells('Craft and local', 'Arcadia Coffee', true) },
-    view: 'A1:G36', editable: 'B3:B4', mark: ['F7:F14'],
+    view: 'A1:S14', editable: 'B3:B4', mark: ['F7:F14'], maxHeight: '30rem',
     controls: [
       { cell: 'B1', label: 'Target segment', options: SEG.map((s) => [s, s]) },
       { cell: 'B2', label: 'Rival brand', options: BRANDS.filter((b) => b !== 'Lantern').map((b) => [b, b]) },
     ],
-    formats: { ...fmtRange, B7: '0', B8: '0', B9: '0', B10: '0', B11: '0', B12: '0', B13: '0', B14: '0', C: '0.00', D: '0.00', E: '0.00', B4: '0.0' },
+    formats: SHEET_FMT,
     widths: SHEET_W, tools: ['formulas', 'reset'],
-    note: 'Column B looks up the target’s needs index (rows 18–25); C and D look up Lantern’s and the rival’s mean ratings (rows 29–36); F applies Ana’s rule of thumb with the thresholds in B3 and B4. The rule is a screen for candidates, not a verdict: an attribute marked “Point of difference” still has to pass the credible and consistent tests.',
+    note: 'Column B looks up the target’s needs index (columns H to L); C and D look up Lantern’s and the rival’s mean ratings (columns N to S); F applies Ana’s rule of thumb with the thresholds in B3 and B4. The rule is a screen for candidates, not a verdict: an attribute marked “Point of difference” still has to pass the credible and consistent tests.',
   },
 };
 
@@ -133,7 +133,7 @@ export const guided = [
   },
   {
     id: 'm05-st-g3', type: 'formula', kind: 'applied',
-    prompt: 'Build Ana’s screen. B1 names the target, B2 the rival; columns B to E look up the target’s needs index, Lantern’s and the rival’s ratings and the gap. In F7, write a formula that can be filled down to F14 and shows “Less important” if the index in B7 is below the threshold in B3; otherwise “Point of difference” if the gap in E7 is at least B4, “Parity to reach” if it is B4 or more below zero, and “Parity held” in between.',
+    prompt: 'Build Ana’s screen. B1 names the target, B2 the rival; columns B to E look up the target’s needs index (from H to L), Lantern’s and the rival’s ratings (from N to S) and the gap. In F7, write a formula that can be filled down to F14 and shows “Less important” if the index in B7 is below the threshold in B3; otherwise “Point of difference” if the gap in E7 is at least B4, “Parity to reach” if it is B4 or more below zero, and “Parity held” in between.',
     sheet: { cells: screenCells('Mindful', 'Arcadia Coffee', false), vary: { B1: ['Craft and local', 'On the go', 'Explorers'], B2: ['Summit Brew', 'Corner Cup'] } },
     cell: 'F7', fill: 'F7:F14', answer: SCREEN(7),
     alt: [
@@ -141,7 +141,7 @@ export const guided = [
       '=IFS(B7<$B$3,"Less important",E7>=$B$4,"Point of difference",E7<=-$B$4,"Parity to reach",TRUE,"Parity held")',
       '=IF(B7<$B$3,"Less important",IF(ABS(E7)<$B$4,"Parity held",IF(E7>0,"Point of difference","Parity to reach")))',
     ],
-    view: 'A1:G36', formats: { ...fmtRange, B7: '0', B8: '0', B9: '0', B10: '0', B11: '0', B12: '0', B13: '0', B14: '0', C: '0.00', D: '0.00', E: '0.00', B4: '0.0' }, widths: SHEET_W, maxHeight: '26rem',
+    view: 'A1:S14', formats: SHEET_FMT, widths: SHEET_W, maxHeight: '30rem',
     wrong: [
       { formula: '=IF(B7<110,"Less important",IF(E7>=0.5,"Point of difference",IF(E7<=-0.5,"Parity to reach","Parity held")))', say: 'With 110 and 0.5 typed in, changing the rule in B3 or B4 changes nothing. Point at $B$3 and $B$4.' },
       { formula: '=IF(B7<B3,"Less important",IF(E7>=B4,"Point of difference",IF(E7<=-B4,"Parity to reach","Parity held")))', say: 'Without $ the thresholds slide down as you fill: F8 compares with B4 and B5. Lock them: $B$3 and $B$4.' },

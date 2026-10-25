@@ -20,7 +20,7 @@ const FACT = ['Size', 'Spend per head', 'Growth', 'Room', 'Fit'];
 const W_ANA = [4, 4, 2, 2, 4];
 const wsum = (w, g) => sum(FS.map((f, k) => w[k] * f[g]));
 const r0 = (x) => Math.round(x), r1 = (x) => Math.round(x * 10) / 10, r2 = (x) => Math.round(x * 100) / 100;
-const f1 = (x) => x.toFixed(1), f2 = (x) => x.toFixed(2);
+const f1 = (x) => x.toFixed(1), f2 = (x) => x.toFixed(2), m2 = (x) => `${x < 0 ? '−' : ''}${Math.abs(x).toFixed(2)}`;
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
 const row = (from, r, values) => Object.fromEntries(values.map((v, j) => [`${String.fromCharCode(from.charCodeAt(0) + j)}${r}`, v]));
 
@@ -246,7 +246,7 @@ export const independent = [
       { value: r2(sum(S.centres[GO].map((z, j) => z * goStrong[j]))), say: 'That is Σ z·k. Divide by Σ|k| = 5 to get the average match.' },
       { value: r2(fit[GO]), say: 'That is the fit with convenience marked weak (−1). Recompute with the mark at 0: both the sum and the divisor change.' },
     ],
-    solution: `Σ z·k = (−0.35)(+1) + (−0.04)(−1) + 1.29 × 0 + (−0.64)(+1) + (−0.74)(+1) + (−0.31)(+1) ≈ ${f2(sum(S.centres[GO].map((z, j) => z * goStrong[j])))}; Σ|k| = 5; fit ≈ ${f2(goFitNew)}. It was ${f2(fit[GO])} with convenience marked weak: the segment’s love of convenience no longer counts against Lantern, but its low interest in local, sustainable and novel coffee still does. A fit that changes this much with one mark deserves a check against customers’ own ratings of Lantern.`,
+    solution: `Σ z·k = (−0.35)(+1) + (−0.04)(−1) + 1.29 × 0 + (−0.64)(+1) + (−0.74)(+1) + (−0.31)(+1) ≈ ${m2(sum(S.centres[GO].map((z, j) => z * goStrong[j])))}; Σ|k| = 5; fit ≈ ${m2(goFitNew)}. It was ${m2(fit[GO])} with convenience marked weak: the segment’s love of convenience no longer counts against Lantern, but its low interest in local, sustainable and novel coffee still does. A fit that changes this much with one mark deserves a check against customers’ own ratings of Lantern.`,
   },
   {
     id: 'm05-es-i2', type: 'classify', kind: 'conceptual',
@@ -409,7 +409,7 @@ export const check = [
     wrong: [
       { value: 75, say: 'That is min–max scaling, (1.6 − 0.4) ÷ (2.0 − 0.4). The ratio to the best is 100 × 1.6 ÷ 2.0.' },
       { value: 25, say: 'More room is better, so divide puppies’ room by the largest, not the smallest by puppies’.' },
-      { value: 32, say: 'That divides by the sum of the four distances. Divide by the largest, 2.0.' },
+      { value: r2((100 * PF.room[1]) / sum(PF.room)), say: 'That divides by the sum of the four distances. Divide by the largest, 2.0.' },
     ],
     solution: 'Room is the distance from the segment’s ideal to the nearest rival: more is better. Ratio to the best: 100 × 1.6 ÷ 2.0 = 80. Working dogs, with a rival only 0.4 away, would score 20.',
   },

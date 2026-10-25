@@ -4,7 +4,7 @@ fictional. NumPy's PCG64 generator with fixed seeds, so the file can be rebuilt 
 read their figures from case.js (which decodes and summarises this file), never from this script.
 
 Lessons: the Harbour City coffee-drinker needs study Ana commissioned in May 2027. 640 adults who drink coffee at least
-once a week answered an online panel survey with quotas on age band and region (a non-probability sample: M04's caveats
+once a week answered an online panel survey with quotas on age band (a non-probability sample: M04's caveats
 apply). Each rated how much eight things matter when they choose coffee (1 not at all, 7 essential), their "ideal
 coffee" and three of six brands on the same eight attributes, a three-item local-loyalty scale, cups a week, monthly
 spend, where they mostly get coffee, demographics, awareness of Lantern and intent to buy Lantern Cold Brew.

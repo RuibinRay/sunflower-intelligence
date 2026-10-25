@@ -26,7 +26,7 @@ const WL = (() => {
   const base = [[3, 4], [1, 3], [1, 3]];
   const rows = [];
   for (let i = 0; i < 40; i++) {
-    const g = i % 3 === 0 ? 0 : i % 3 === 1 ? 1 : 2;
+    const u = rnd(), g = u < 0.35 ? 0 : u < 0.7 ? 1 : 2;
     const [lo, span] = base[g];
     const visits = lo + Math.floor(rnd() * (span + 1));
     const activity = g === 0 ? (rnd() < 0.7 ? 'Gym' : 'Classes') : g === 1 ? (rnd() < 0.8 ? 'Pool' : 'Café') : (rnd() < 0.6 ? 'Pool' : 'Soft play');
@@ -36,7 +36,7 @@ const WL = (() => {
 })();
 const wlCells = { A1: 'member', B1: 'segment', C1: 'visits_last_week', D1: 'main_activity',
   ...Object.assign({}, ...WL.rows.map((r, i) => ({ [`A${i + 2}`]: r[0], [`B${i + 2}`]: r[1], [`C${i + 2}`]: r[2], [`D${i + 2}`]: r[3] }))),
-  F1: 'Segment', G1: 'Fitness first', F2: 'At least this many visits', G2: 3, F4: 'Share of the segment' };
+  F1: 'Segment', G1: 'Fitness first', F2: 'At least this many visits', G2: 5, F4: 'Share of the segment' };
 const wlShare = (seg, k) => WL.rows.filter((r) => r[1] === seg && r[2] >= k).length / WL.rows.filter((r) => r[1] === seg).length;
 
 // a streaming service (fictional): an advertising-funded plan beside the standard plan
@@ -50,7 +50,7 @@ export const items = [
     prompt: 'A gym chain (fictional) scores four member segments on five factors: the number of members, spend per member, the segment’s total spend (members × spend per member), growth and fit with the chain’s strengths. What is the main flaw in this scorecard?',
     options: [
       'Growth should be left out, because any estimate of a segment’s future size is a guess',
-      'Total spend is members × spend per member, so size and spending each get two votes',
+      'Total spend is members × spend per member, so size and spending each get two votes in the total',
       'Fit belongs to a separate decision and shouldn’t appear in a segment scorecard at all',
       'A weighted scorecard can only combine three factors before the totals stop meaning anything',
     ],
@@ -178,7 +178,7 @@ export const items = [
       { formula: '=COUNTIF(C2:C41,">="&G2)/COUNTA(C2:C41)', say: 'That is the share of all members, in every segment. Add the segment criterion.' },
       { formula: '=COUNTIFS(B2:B41,G1,C2:C41,">=G2")/COUNTIF(B2:B41,G1)', say: 'Inside the quotes, G2 is just text, so nothing matches. Join the operator to the cell: ">="&G2.' },
     ],
-    solution: `<x>=COUNTIFS(B2:B41,G1,C2:C41,">="&G2)/COUNTIF(B2:B41,G1)</x>: for Fitness first and 3 visits, ${(wlShare('Fitness first', 3) * 100).toFixed(1)}%. Written on the persona as a share (“${Math.round(wlShare('Fitness first', 3) * 100)}% came three or more times last week”), not as one person’s habit.`,
+    solution: `<x>=COUNTIFS(B2:B41,G1,C2:C41,">="&G2)/COUNTIF(B2:B41,G1)</x>: for Fitness first and 5 visits, ${(wlShare('Fitness first', 5) * 100).toFixed(1)}%. Written on the persona as a share (“${Math.round(wlShare('Fitness first', 5) * 100)}% came five or more times last week”), not as one person’s habit.`,
   },
   {
     id: 'm05-m3-10', lesson: 'targeting-strategies', type: 'mc', kind: 'applied',
@@ -187,7 +187,7 @@ export const items = [
     options: [
       'Book-club readers and students, since both groups read regularly and buy several books a year',
       'Gift buyers and students, since both index below 100 on author events, so one offer could skip them',
-      'Gift buyers and book-club readers, who both value recommendations and new releases',
+      'Gift buyers and book-club readers: both value staff recommendations and new releases above average',
       'None of them, since segments found from data always need separate offers or they wouldn’t be separate',
     ],
     answer: 2,
