@@ -26,6 +26,7 @@ Object.assign(pairCells, {
   A14: 'rows: 6 or 7', B14: `=SUMPRODUCT(--(${colOf('$B$1')}>=6))`,
   A15: 'columns: 6 or 7', B15: `=SUMPRODUCT(--(${colOf('$B$2')}>=6))`,
   A16: 'both 6 or 7', B16: `=SUMPRODUCT((${colOf('$B$1')}>=6)*(${colOf('$B$2')}>=6))`,
+  A17: 'both, if unrelated', B17: `=B14*B15/COUNT($K$2:$K$${L})`,
 });
 for (let k = 1; k <= 7; k++) {
   const c = String.fromCharCode(65 + k);                         // B..H
@@ -64,12 +65,12 @@ export const widgets = {
     type: 'sheet', title: 'Lantern’s needs study: how two needs combine (640 respondents)',
     sheet: { cells: pairCells },
     view: `A1:R${L}`, editable: false, mark: ['B5:H11'], maxHeight: '33rem',
-    formats: { B13: '0.00' },
+    formats: { B13: '0.00', B17: '0.0' },
     widths: { A: 16, B: 6, C: 6, D: 6, E: 6, F: 6, G: 6, H: 6, I: 3, J: 10, K: 9, L: 9, M: 11, N: 13, O: 8, P: 8, Q: 9, R: 9 },
     rules: [{ range: 'B5:H11', type: 'scale' }],
     controls: [{ cell: 'B1', label: 'Rows', options: needOptions }, { cell: 'B2', label: 'Columns', options: needOptions }],
     tools: ['formulas'],
-    note: 'B1 and B2 hold the numbers of the two needs chosen (1 taste … 8 novelty), and rows 14–16 count respondents rating the row need, the column need and both at 6 or 7. Each cell of B5:H11 counts the respondents who gave the row need the rating in column A and the column need the rating in row 4, with <x>=SUMPRODUCT((INDEX($K$2:$R$641,0,$B$1)=$A5)*(INDEX($K$2:$R$641,0,$B$2)=B$4))</x>: INDEX picks the need’s column from the data in K:R. Two needs that move together fill the diagonal from bottom left to top right; two that run against each other fill the opposite corners; unrelated needs spread across the middle.',
+    note: 'B1 and B2 hold the numbers of the two needs chosen (1 taste … 8 novelty), rows 14–16 count respondents rating the row need, the column need and both at 6 or 7, and B17 shows how many would rate both that high if the two needs were unrelated (B14 × B15 ÷ 640). Each cell of B5:H11 counts the respondents who gave the row need the rating in column A and the column need the rating in row 4, with <x>=SUMPRODUCT((INDEX($K$2:$R$641,0,$B$1)=$A5)*(INDEX($K$2:$R$641,0,$B$2)=B$4))</x>: INDEX picks the need’s column from the data in K:R. Rating 1 is the top row, so two needs that move together fill the diagonal from top left to bottom right; two that run against each other, like price and local, fill the other diagonal. (The lesson’s figure puts 7 at the top.) Unrelated needs spread across the middle.',
   },
   'ws-offers': {
     type: 'formula', title: 'One offer or tailored offers?',
@@ -146,7 +147,7 @@ export const guided = [
       '“Free spirits”: the team can’t say how many there are, or how anyone would count them.',
       'Night-shift workers whom no medium the brand can afford reaches.',
       '“Weekday commuters” and “weekday office workers”, who reacted identically to every test advertisement.',
-      'Customers who want same-day delivery, for a brewery with one van and no budget for couriers.',
+      'Drinkers who want a gluten-free beer, for a brewery whose equipment can’t make one.',
     ],
     categories: ['Measurable', 'Substantial', 'Accessible', 'Differentiable', 'Actionable'],
     answer: [1, 0, 2, 3, 4],
@@ -155,10 +156,10 @@ export const guided = [
       1: 'If a segment’s size and buying power can’t be estimated, it fails measurable, however vivid the label.',
       2: 'A segment nobody can reach at an affordable cost fails accessible.',
       3: 'Two groups that respond the same way are one segment for marketing purposes: they fail differentiable.',
-      4: 'The segment is real and reachable, but the brewery can’t deliver what it wants: it fails actionable.',
+      4: 'The segment is real, measurable and reachable, but the brewery can’t make what it wants: it fails actionable.',
     },
     hints: ['Ask each test’s question in turn: can we measure it, is it big enough, can we reach it, does it respond differently, can we serve it?', 'A segment can be easy to describe and still fail one test.'],
-    solution: 'Golfers: substantial. “Free spirits”: measurable. Night-shift workers out of reach: accessible. Commuters and office workers who respond alike: differentiable. Same-day delivery for a one-van brewery: actionable.',
+    solution: 'Golfers: substantial. “Free spirits”: measurable. Night-shift workers out of reach: accessible. Commuters and office workers who respond alike: differentiable. Gluten-free beer for a brewery that can’t make it: actionable.',
   },
   {
     id: 'm05-ws-g3', type: 'multi', kind: 'conceptual',
@@ -306,13 +307,13 @@ export const independent = [
     id: 'm05-ws-i6', type: 'short', kind: 'applied',
     prompt: 'Ana’s operations manager says: “Let’s design Cold Brew for the average Harbour City coffee drinker; that way we appeal to everyone.” Write three or four sentences explaining why the needs study argues against this, using at least two figures from the lesson.',
     rubric: [
-      'Says that an average of different groups can describe nobody, with the evidence that no respondent is within one point of the average on all eight needs.',
-      'Uses the price and local figures: 146 rate price 6 or 7, 110 rate local 6 or 7, and only 1 rates both.',
+      'Says that an average of different groups can fit nobody well, with evidence that the needs pull apart (the correlations, or the almost empty corner where price and local are both very important).',
+      'Uses the price and local figures: 146 rate price 6 or 7, 110 rate local 6 or 7, and only 1 rates both, against about 25 if the two were unrelated.',
       'Draws the conclusion that an average-based product would be a weak fit for each group, so Lantern should plan for segments.',
       'Notes a limit: the study is an opt-in panel, and the segments themselves still have to be formed and evaluated.',
     ],
-    model: 'The averages hide very different coffee drinkers: none of the 640 respondents is within one point of the average on all eight needs. The needs come in opposite bundles: 146 people rate a low price 6 or 7 and 110 rate local and independent 6 or 7, but only one rates both that high. A Cold Brew built for the average would be half price-led and half craft, a weak fit for both groups. We should plan for segments, form them from these ratings and then choose whom to serve, remembering that the panel sample makes the exact percentages uncertain.',
-    solution: 'See the model answer: the evidence is the spread (nobody is average on all eight needs) and the opposite bundles (price against local); the conclusion is to segment before designing the offer.',
+    model: 'The averages hide very different coffee drinkers, because the needs pull apart: price and local correlate at −0.49. 146 people rate a low price 6 or 7 and 110 rate local and independent 6 or 7, but only one rates both that high, where about 25 would if the two needs were unrelated. A Cold Brew built for the average would be half price-led and half craft, a weak fit for both groups. We should plan for segments, form them from these ratings and then choose whom to serve, remembering that the panel sample makes the exact percentages uncertain.',
+    solution: 'See the model answer: the evidence is the bundles of needs that pull apart (price against local, with an almost empty corner where both matter a lot); the conclusion is to segment before designing the offer.',
   },
 ];
 
@@ -352,18 +353,18 @@ export const check = [
   },
   {
     id: 'm05-ws-k3', type: 'mc', kind: 'applied',
-    prompt: 'In Lantern’s study none of the 640 respondents is within one point of the average on all eight needs, and the needs come in bundles: taste with local, convenience with energy, sustainability with health. What does this evidence establish?',
+    prompt: 'In Lantern’s study the needs come in bundles: taste with local, convenience with energy, sustainability with health, while price runs against local (1 respondent rates both price and local 6 or 7, against about 25 if they were unrelated). What does this evidence establish?',
     options: [
       'That the market is worth segmenting, but not yet how many segments there are or which to serve',
       'That Harbour City has exactly three coffee segments, one for each of the three bundles of needs',
       'That Lantern should target the taste-and-local bundle, because it matches what Lantern does well',
-      'That the study’s averages are wrong, since nobody gave answers close to them on every need',
+      'That the averages are still a fair guide to the offer, but each bundle needs its own message',
     ],
     answer: 0,
     feedback: {
       1: 'Bundles suggest groups but don’t count them; forming and choosing the number of segments is module 2’s cluster analysis.',
       2: 'Which segment to serve is a targeting decision (module 3), which needs sizes, spending, growth and competition as well as fit.',
-      3: 'The averages are correct; they summarise different groups, which is why no single person resembles them.',
+      3: 'Averages of needs that pull apart describe a product that is a weak fit for each bundle; separate messages can’t rescue an offer built for nobody in particular.',
     },
     solution: 'Wide spreads and bundles of needs are evidence that buyers differ in systematic ways, so segmenting is worthwhile. How many segments, who is in each and which to serve are later steps of STP.',
   },
@@ -391,7 +392,7 @@ export const check = [
     prompt: 'A regional energy supplier (fictional) has split its 90,000 household customers into 40 segments by tariff, region, home type and payment method, each to get its own mailing. Response rates differ little between most of the segments. What is the best advice?',
     options: [
       'Merge the segments that respond alike, keeping apart only those that repay a mailing',
-      'Keep all 40, since smaller segments are more alike inside and so are always more profitable to market to',
+      'Keep all 40, since smaller segments are more alike inside and so tend to repay tailored mailings better',
       'Replace the 40 segments with one mailing for all 90,000 customers, because segmenting has failed here',
       'Add more variables, such as age and income, so the segments become different enough to justify 40 mailings',
     ],
@@ -409,8 +410,8 @@ export const check = [
     options: [
       'Both can be valid: segments are a model, judged by the decision they serve and the five tests',
       'The six-segment answer is better, because more segments describe the market in more detail',
-      'At most one can be right, since a market contains a fixed number of segments waiting to be discovered',
-      'The four-segment answer must be right, because segments formed on needs are always the true ones',
+      'At most one can be right, since a market contains a particular number of segments waiting to be discovered',
+      'The four-segment answer is the right one, because segments formed on needs are the true ones',
     ],
     answer: 0,
     feedback: {

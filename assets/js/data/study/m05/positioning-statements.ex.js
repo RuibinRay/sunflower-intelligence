@@ -125,7 +125,7 @@ export const guided = [
         feedback: {
           0: 'The opposite: energy and convenience are exactly what On the go care about. The claim is relevant.',
           1: 'Price isn’t the problem the evidence shows. The ratings are.',
-          3: 'Lantern trails Summit Brew on both claims, and three rivals sit closer to On the go’s ideal. It fails credible, and distinct too.',
+          3: 'Lantern trails Summit Brew on both claims, and all five rivals sit closer to On the go’s ideal than Lantern does. It fails credible, and distinct too.',
         },
         hints: ['Which test asks whether the offer is seen to deliver the claim?', 'Compare the claim with Lantern’s ratings.'],
       },
@@ -164,7 +164,7 @@ export const guided = [
     answer: 1,
     feedback: {
       0: 'The frame tells customers what to compare the offer with, so it changes the rivals and with them what counts as parity.',
-      2: 'Summit Brew is the main rival in the canned frame, not the café frame; and local stays a difference against Corner Cup (2.66).',
+      2: 'Summit Brew is the main rival in the canned frame, not the café frame; and local stays a difference against Corner Cup (Lantern 6.30 against Corner Cup’s 2.66).',
       3: 'Every frame has points of parity. Here they would be café taste and something new to try.',
     },
     hints: ['What would a customer compare a “café-quality coffee to take with you” with?', 'In the café frame, which of Lantern’s strengths would be ordinary?'],
@@ -220,12 +220,12 @@ export const independent = [
     prompt: 'Complete the positioning statement for Lantern’s cafés and beans aimed at Craft and local drinkers.',
     text: 'For Harbour City coffee drinkers who [[0]], Lantern is the [[1]] that [[2]], because [[3]].',
     blanks: [
-      { options: ['want the lowest price on a cup', 'need a strong kick on the way to work', 'care about taste and want to support a local business'], answer: 2 },
-      { options: ['independent coffee company', 'supermarket coffee brand', 'national café chain'], answer: 0 },
-      { options: ['is open earlier and in more places than anyone', 'serves better-tasting, carefully sourced coffee with something new to try', 'is the cheapest specialty coffee in the city'], answer: 1 },
-      { options: ['it is owned and run in Harbour City and names the farm behind every coffee', 'its coffee was rated 5.92 on taste in a survey', 'it plans to open more cafés than Corner Cup'], answer: 0 },
+      { options: ['want the lowest price they can find for a cup', 'need a strong caffeine kick on the way to work each morning', 'care about taste and want to support local business'], answer: 2 },
+      { options: ['independent coffee company', 'supermarket’s own-label coffee range', 'national chain of coffee shops'], answer: 0 },
+      { options: ['is open earlier, and in more places, than any other café in the city', 'serves better-tasting coffee and always has something new to try', 'is the cheapest specialty coffee in the whole city'], answer: 1 },
+      { options: ['it is owned and run in Harbour City and adds a new coffee every month', 'its coffee was rated 5.92 out of 7 for taste by the people in Ana’s survey', 'it plans to open more cafés across Harbour City than Corner Cup has'], answer: 0 },
     ],
-    solution: 'Target: drinkers who care about taste and want to support a local business (Craft and local’s top indexes are local and taste). Frame: an independent coffee company, against Corner Cup and Arcadia. Point of difference: better-tasting, carefully sourced coffee with something new to try. Reason to believe: something customers can check, its local ownership and the farm on every coffee (a practice Lantern would have to adopt). A survey score is Ana’s evidence, not a customer’s proof.',
+    solution: 'Target: drinkers who care about taste and want to support a local business (Craft and local’s top indexes are local and taste). Frame: an independent coffee company, against Corner Cup and Arcadia. Point of difference: better-tasting coffee with something new to try (not sustainability, on which Arcadia is rated higher). Reason to believe: something customers can check, its local ownership and a new coffee every month (a practice Lantern would have to adopt). A survey score is Ana’s evidence, not a customer’s proof.',
   },
   {
     id: 'm05-st-i4', type: 'num', kind: 'numerical',
@@ -234,7 +234,7 @@ export const independent = [
     wrong: [
       { value: r2(CTT.diff / Math.sqrt(CTT.pool * (1 - CTT.pool) / CT.n)), say: 'You used the standard error of one proportion. The difference of two needs both samples: √(p̂(1 − p̂)(1/n₁ + 1/n₂)).' },
       { value: r2(100 * CTT.diff), say: 'That is the difference in percentage points. Divide the difference in proportions by its standard error.' },
-      { value: r2(CTT.diff / Math.sqrt(CTT.pool * (1 - CTT.pool) * (1 / 300 + 1 / 300))), say: 'Each concept was read by 150 people, not 300: n₁ = n₂ = 150.' },
+      { value: r2(CTT.diff / Math.sqrt(CTT.pool * (1 - CTT.pool) / 300)), say: 'You used 300 as one sample size. The concepts were read by two separate groups of 150: √(p̂(1 − p̂)(1/150 + 1/150)).' },
     ],
     solution: `Shares: ${p1(CTT.p1)} and ${p1(CTT.p2)}; pooled p̂ = 107 ÷ 300 = ${CTT.pool.toFixed(3)}; SE = √(${CTT.pool.toFixed(3)} × ${(1 - CTT.pool).toFixed(3)} × (1/150 + 1/150)) = ${CTT.sePool.toFixed(4)}; z = ${CTT.diff.toFixed(4)} ÷ ${CTT.sePool.toFixed(4)} ≈ ${CTT.z.toFixed(2)}, two-sided p ≈ ${CTT.pValue.toFixed(3)}. The local-first concept leads, but only just beyond the 5% line; with stated intent overstating purchase, Ana should treat it as the better of two words, not a forecast.`,
   },

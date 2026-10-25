@@ -8,7 +8,7 @@
 import { BRANDS, NEEDS, RESPONDENTS, STUDY, COMPETITORS, DERIVED as D } from './case.js?v=14';
 import { CHANNELS, TIERS } from '../m02/market.js?v=14';
 import { perceptualMap, distance } from '../../../core/percmap.js?v=14';
-import { tInv, sampleSizeForPower } from '../../../core/inference.js?v=14';
+import { tInv, sampleSizeForPower, normCdf, normInv } from '../../../core/inference.js?v=14';
 
 const M = D.map.brandMeans, MAP = perceptualMap(M), SEG = D.segments.names, SIZE = D.segments.sizes;
 const B = (name) => BRANDS.indexOf(name), S = (name) => SEG.indexOf(name), A = (key) => NEEDS.findIndex((n) => n.key === key);
@@ -28,6 +28,17 @@ const mean = (a) => a.reduce((s, x) => s + x, 0) / a.length;
 const sdv = (a) => { const m = mean(a); return Math.sqrt(a.reduce((s, x) => s + (x - m) ** 2, 0) / (a.length - 1)); };
 const lSd = sdv(lConv), nL = lConv.length, seChange = Math.sqrt(2 * lSd ** 2 / nL), tCrit = tInv(0.975, 2 * nL - 2);
 const nNeed = sampleSizeForPower({ delta: 0.3, sigma: lSd, twoSample: true });
+// the same with the t distribution: the smallest n per wave for which 2((t.975 + t.80)σ/δ)² ≤ n
+const nNeedT = (() => { let n = nNeed; while (2 * ((tInv(0.975, 2 * n - 2) + tInv(0.8, 2 * n - 2)) * lSd / 0.3) ** 2 > n) n++; return n; })();
+// but May 2027 is already fixed at nL ratings: power against that baseline (normal approximation, two-sided 5%)
+const zA = normInv(0.975), zB = normInv(0.8);
+const seVs = (n2) => lSd * Math.sqrt(1 / nL + (Number.isFinite(n2) ? 1 / n2 : 0));
+const power = (d, se) => normCdf(d / se - zA) + normCdf(-d / se - zA);
+const se162 = seVs(nNeed), pow03 = power(0.3, se162), pow05 = power(0.5, se162), powInf = power(0.3, seVs(Infinity));
+const det162 = (zA + zB) * se162, detInf = (zA + zB) * seVs(Infinity);
+const lSds = NEEDS.map((_, j) => sdv(RESPONDENTS.filter((r) => r.rated.includes(LA)).map((r) => r.ratings[r.rated.indexOf(LA)][j])));
+const rCS = MAP.R[CONV][SUST];
+const panel = { lantern: single.quality, summit: COMPETITORS.find((c) => c.id === 'summit').quality };   // M02's 0–10 taste panel (fictional)
 const rateShare = nL / STUDY.n, perComplete = STUDY.cost / STUDY.n, sampleNeed = Math.ceil(nNeed / rateShare);
 // Tarnley Fitness (fictional), the gym map from the perceptual-maps lesson
 const GM = [[4.2, 5.6, 4.0, 5.0, 5.8, 4.6], [6.4, 4.4, 2.8, 6.6, 3.2, 2.6], [2.0, 4.8, 6.6, 3.4, 6.2, 5.8], [5.2, 3.6, 4.8, 3.8, 4.6, 3.4], [1.8, 6.0, 3.6, 4.8, 4.8, 6.4]];
@@ -39,6 +50,7 @@ const f2 = (v) => v.toFixed(2), p0 = (v) => `${(v * 100).toFixed(0)}%`, p1 = (v)
 const sg = (v) => (v < 0 ? `−${Math.abs(v).toFixed(2)}` : v.toFixed(2));
 const sgn = (v) => (v < 0 ? `−${Math.abs(v).toFixed(2)}` : `+${v.toFixed(2)}`);
 const sg3 = (v) => (v < 0 ? `−${Math.abs(v).toFixed(3)}` : `+${v.toFixed(3)}`);
+const f3 = (v) => v.toFixed(3);
 const s3 = (v) => (v < 0 ? `−${Math.abs(v).toFixed(3)}` : v.toFixed(3));
 const pt = (p) => `(${sg(p[0])}, ${sg(p[1])})`;
 
@@ -82,7 +94,7 @@ export default {
     { p: 'M01 defined <g>differentiation</g> as one of Porter’s generic strategies: being unique in ways customers value, so that they will pay a premium. This lesson is about the tools: the ways a business can actually make its offer different, how to choose the differences worth promoting, and what to do when the position customers hold in their minds is no longer the one the business needs.' },
 
     { h: 'Five ways to differentiate' },
-    { p: 'Kotler and Armstrong’s textbook lists five broad ways to differentiate an offer. Each works through something customers can see or experience; none works by assertion alone.' },
+    { p: 'Kotler and Armstrong’s textbook groups the ways to differentiate under a few headings: product and services, channels (distribution), people (personnel) and image. This lesson treats product and services separately, which gives five. Each works through something customers can see or experience; none works by assertion alone.' },
     { list: [
       `<b>Product</b>: features, performance, quality, design or style. For Lantern Cold Brew, single-origin Ethiopian coffee steeped for ${single.detail.match(/(\d+) hours/)[1]} hours.`,
       '<b>Services</b>: speed, convenience, delivery, installation, care. Pre-ordering in Lantern’s cafés, or delivery from its online shop.',
@@ -103,23 +115,23 @@ export default {
         ['Communicable', 'Can buyers see it and be told it?', 'Easy: the name, the place, the people'],
         ['Pre-emptive', 'Is it hard for competitors to copy?', 'Hard: Summit Brew can’t become a local independent'],
         ['Affordable', 'Can buyers afford to pay for it?', `A $3.49 can, below Summit Brew’s $${price('summit').toFixed(2)}`],
-        ['Profitable', 'Can the business introduce it at a profit?', 'It costs nothing extra; it can’t be bought'],
+        ['Profitable', 'Can the business introduce it at a profit?', 'Yes: claiming it costs Lantern nothing extra, and rivals can’t buy their way into it'],
       ],
     } },
 
     { h: 'Value positions' },
-    { p: 'Customers weigh what they get against what they pay. Kotler and Armstrong describe five value propositions on which a brand can be positioned, by its benefits and its price relative to rivals. This course calls them <g>value positions</g>, to keep “value proposition” for M01’s promise of benefits.' },
+    { p: 'Customers weigh what they get against what they pay. A widely taught scheme, usually credited to Kotler and Armstrong’s textbook, describes five value propositions on which a brand can be positioned, by its benefits and its price relative to rivals. This course calls them <g>value positions</g>, to keep “value proposition” for M01’s promise of benefits.' },
     { figure: {
       svg: VALUE,
       caption: 'Benefits against price, both compared with rivals. The five solid boxes are the value positions; the dashed ones give customers no better value than a rival and rarely survive comparison.',
-      alt: 'A three-by-three grid. Columns: price more, the same, or less than rivals. Rows: benefits more, the same, or less than rivals. Five boxes are drawn solid: more for more (premium, priced to match), more for the same (attacks a premium rival), more for less (hard to sustain), the same for less (needs lower costs) and less for much less (strips out extras). Four boxes are dashed: the same for more, the same for the same, less for more and less for the same, each noted as giving customers no reason to pay more, to switch or to buy. A note says the solid boxes are the five value positions Kotler and Armstrong describe, and the dashed ones give customers no better value than a rival.',
+      alt: 'A three-by-three grid. Columns: price more, the same, or less than rivals. Rows: benefits more, the same, or less than rivals. Five boxes are drawn solid: more for more (premium, priced to match), more for the same (attacks a premium rival), more for less (hard to sustain), the same for less (needs lower costs) and less for much less (strips out extras). Four boxes are dashed: the same for more, the same for the same, less for more and less for the same, each noted as giving customers no reason to pay more, to switch or to buy. The solid boxes are the five value positions; the dashed ones give customers no better value than a rival.',
     } },
-    { p: `“More for less” is the most attractive to customers and the hardest to hold: unless the business has lower costs than its rivals, which M01 showed is what a lasting low price needs, its margins or its quality give way. Lantern Cold Brew at $3.49 against Summit Brew’s $${price('summit').toFixed(2)} would be more for less if customers judged the can as they judge Lantern (taste ${f2(M[LA][TASTE])} against ${f2(M[SU][TASTE])}). Against Arcadia at $${price('arcadia').toFixed(2)} it would be more for more. Which comparison customers make depends on the frame of reference.` },
+    { p: `“More for less” is the most attractive position to customers. Sherk (2004) calls it the winning one; this course adds M01’s caution that it lasts only if the business has lower costs than its rivals, since otherwise its margins or its quality give way. On the product alone, M02’s taste panel scores Lantern Cold Brew ${panel.lantern} against Summit Brew’s ${panel.summit}, so at $3.49 against $${price('summit').toFixed(2)} the can is nearer “the same, or slightly less, for less”. Customers who judged the can as they judge Lantern’s brand (taste ${f2(M[LA][TASTE])} against ${f2(M[SU][TASTE])}), and who valued local and independent, would see more for less; against Arcadia at $${price('arcadia').toFixed(2)} it would be more for more. Which comparison customers make depends on what they taste and on the frame of reference.` },
 
     { h: 'Repositioning' },
     { p: '<g>Repositioning</g> is an attempt to move an offer to a different place in customers’ minds. The BCcampus open textbook calls it an effort to “move” a product in consumers’ minds, often so that it appeals to different segments; Lumen Learning describes it as changing the market’s perceptions of an offering so that it can compete better. It starts from an existing position, which is what makes it harder than positioning a new offer: customers already believe something.' },
     { p: `A perceptual map lets a business plan the move before paying for it. Hold the map’s axes where the current brands put them, change the planned brand’s mean ratings, and project the new profile with the same standardisation and weights. Raise Lantern’s convenience rating from ${f2(M[LA][CONV])} to Summit Brew’s ${f2(M[SU][CONV])}, keeping every other rating, and Lantern moves from ${pt(NOW)} to ${pt(CSU)}. It ends ${f2(dist(CSU, CL))} from the Craft and local ideal (from ${f2(dist(NOW, CL))}) and ${f2(dist(CSU, EX))} from the Explorers’ (from ${f2(dist(NOW, EX))}), but still ${f2(dist(CSU, OG))} from On the go’s.` },
-    { p: 'The arithmetic answers Ana’s question in two parts. Being seen as more convenient doesn’t cost Lantern its craft position: Craft and local drinkers want a little more convenience than Lantern offers, so the move brings Lantern closer to them, and closer to the Explorers. But convenience alone doesn’t bring Lantern near On the go drinkers, whose ideal also asks for more energy, a lower price and much less of the craft that defines Lantern.' },
+    { p: `The arithmetic answers Ana’s question in two parts, on today’s axes and with every other rating held. Being seen as more convenient need not cost Lantern its craft position: Craft and local drinkers want a little more convenience than Lantern offers, so the move brings Lantern closer to them, and closer to the Explorers. That holds only if the craft ratings don’t fall as convenience rises, and across today’s brands convenience and sustainability are rated almost as opposites (correlation ${sg(rCS)}), so a tracking survey has to check it. Convenience alone also doesn’t bring Lantern near On the go drinkers, whose ideal asks for more energy, a lower price and much less of the craft that defines Lantern.` },
     { callout: 'warn', title: 'A slider is not a customer', html: 'Moving a point on a map changes nothing in Harbour City. Ratings change only when customers experience something different: cans in the chiller of the shop they already pass, a café fridge by the door, a can that tastes as good as Lantern’s coffee. The map shows where those experiences would have to take Lantern; a repeated survey shows whether they did.' },
   ],
 
@@ -142,12 +154,13 @@ export default {
 
     { h: 'Tracking a position over time' },
     { p: 'A <g>tracking survey</g> repeats the same questions on the same kind of sample at intervals, so that changes can be told from differences in method. For a map that means the same attributes in the same wording and scale, the same brands, the same population and sampling design (the same panel and quotas), and the same rule for which brands each respondent rates. Change any of those and a moved point may be an artefact.' },
-    { p: `It also means enough ratings of the brand that matters. Lantern’s ${nL} convenience ratings have a standard deviation of ${f2(lSd)}, so a change between two waves of that size has a standard error of √(${f2(lSd)}² ÷ ${nL} + ${f2(lSd)}² ÷ ${nL}) = ${f2(seChange)}. A change would have to exceed about ${tCrit.toFixed(2)} × ${f2(seChange)} = ${f2(tCrit * seChange)} points to be <g>statistically significant</g> at 5%. To detect a change of 0.3 points with 80% power, B04’s sample-size rule gives ${nNeed} Lantern ratings in each wave.` },
-    { p: `At the study’s current rate (${nL} Lantern ratings from ${STUDY.n} respondents), ${nNeed} ratings would need about ${sampleNeed.toLocaleString('en-US')} respondents a wave, about $${Math.round(sampleNeed * perComplete).toLocaleString('en-US')} at the $${perComplete.toFixed(0)} a complete Ana paid in May (an estimate). A cheaper route is a booster sample of people who know Lantern, recruited by the same panel; it changes who rates Lantern, so it must be used the same way in every wave and reported with its base.` },
+    { p: `It also means enough ratings of the brand that matters. Lantern’s ${nL} convenience ratings have a standard deviation of ${f2(lSd)}, the largest of its eight attributes, so a change between two waves of ${nL} ratings has a standard error of √(${f2(lSd)}² ÷ ${nL} + ${f2(lSd)}² ÷ ${nL}) = ${f2(seChange)} and must exceed about ${tCrit.toFixed(2)} × ${f2(seChange)} = ${f2(tCrit * seChange)} points to be <g>statistically significant</g> at 5%. B04’s sample-size rule says that ${nNeed} ratings in each of two waves would detect a change of 0.3 points with 80% power (${nNeedT} with the t distribution rather than the normal approximation). Because convenience has the largest standard deviation, ${nNeed} covers all eight attributes.` },
+    { p: `Ana’s first wave, though, is already fixed at ${nL} ratings, and its standard error of ${f2(seVs(Infinity))} stays in every comparison with May 2027. With ${nNeed} ratings in 2028 the change has a standard error of ${f3(se162)}: a 0.3-point change is detected with only ${p0(pow03)} power, and 80% power needs a change of about ${f2(det162)}. Even an unlimited 2028 sample couldn’t bring that below ${f2(detInf)}, or lift the power for 0.3 points above ${p0(powInf)}. For Ana’s target of 0.5 points, ${nNeed} ratings in 2028 give ${p0(pow05)} power; changes of 0.3 come within reach only after 2028, once both waves being compared have ${nNeed}.` },
+    { p: `At the study’s current rate (${nL} Lantern ratings from ${STUDY.n} respondents), ${nNeed} ratings would need about ${sampleNeed.toLocaleString('en-US')} respondents a wave, about $${Math.round(sampleNeed * perComplete).toLocaleString('en-US')} at the $${perComplete.toFixed(0)} a complete Ana paid in May. That estimate assumes awareness stays at its 2027 level; Cold Brew’s launch should raise it, and with it the share of respondents who can rate Lantern. Another route is a booster sample of people who know Lantern, recruited by the same panel; it changes who rates Lantern, so it must be used the same way in every wave and reported with its base.` },
 
     { h: 'When to reposition, and what can go wrong' },
-    { p: 'Lumen Learning’s reading suggests considering repositioning when there is a need or an opportunity to improve demand: falling sales, a shrinking target segment, new competitors or a rival’s innovation, a shift in the economy or in consumers’ tastes, or a change in the firm’s own leadership, strategy or technology. The process is the positioning process with a different starting point: research, a new positioning statement, the changes that will make it true, and tracking.' },
-    { p: 'The same reading lists the pitfalls: too little research before the move; going “a bridge too far”, so that customers stop believing the claims; underestimating a return to basics; overpromising what the organisation can’t deliver; and a confusing message. One more risk matters most when the current position is valuable: losing the customers who chose the brand for what it was.' },
+    { p: 'Lumen Learning’s reading suggests considering repositioning when there is a need or an opportunity to improve demand: sales that have slowed, a shrinking target segment, new competitors or a rival’s innovation, a shift in the economy or in consumers’ tastes, or a change in the firm’s own leadership, strategy or technology. The process is the positioning process with a different starting point: research, a new positioning statement, the changes that will make it true, and tracking.' },
+    { p: 'The same reading lists the pitfalls: too little research before the move; going “a bridge too far”, so that customers stop believing the claims; underestimating “back to basics”; overpromising what the organisation can’t deliver; and a confusing message. One more risk matters most when the current position is valuable: losing the customers who chose the brand for what it was.' },
     { p: `For Lantern that risk is concrete. Craft and local drinkers are ${p1(SIZE[CL].share)} of respondents but ${p1(SIZE[CL].spendShare)} of their spending, at $${SIZE[CL].perHead.toFixed(2)} a month a head, with the highest local-loyalty score of any segment (${f2(D.segments.loyalty[CL])} on the 1–5 scale, against ${f2(D.loyalty.mean)} for all respondents). A move that made Lantern look like a convenience brand would put that at risk for a segment, On the go, that the map says Lantern can’t reach.` },
     { p: 'A business that wants to serve a segment far from its current position has other choices than moving its main brand: a separate product with its own name (a sub-brand), a different channel, or leaving that segment to rivals. Which segments to serve is the targeting decision of module 3; repositioning is how a business changes the position it has, and it should follow that decision, not make it.' },
   ],
@@ -187,7 +200,7 @@ export default {
         'Judge it. The move takes Tarnley away from the segment it already suits without making it the class lovers’ first choice. If classes are worth adding, they need a partner change that keeps Tarnley near the busy professionals (longer opening hours move a gym up and right on this map), or the gym should stay where it is.',
       ],
       answer: `Tarnley would move to ${pt(gPlan)}: ${f2(distance(gPlan, gClass))} from the class lovers (still behind the leisure centre’s ${f2(distance(G.scores[3], gClass))}) and ${f2(distance(gPlan, gBusy))} from the busy professionals (behind the hotel club’s ${f2(distance(G.scores[4], gBusy))}). The move as planned loses one segment without winning the other.`,
-      interpretation: 'This is “stuck in the middle” drawn on a map: a position between two segments, nearest neither. The calculation costs nothing and was done before a single class was timetabled. It still assumes the axes stay put and that members would rate the new classes 6.0, which only a tracking survey can confirm.' },
+      interpretation: 'This is a map’s version of being caught between two segments: a position nearest neither. The calculation costs nothing and was done before a single class was timetabled. It still assumes the axes stay put and that members would rate the new classes 6.0, which only a tracking survey can confirm.' },
 
     { level: 'applied', title: 'How convenient can Lantern become, and how would Ana know?', fictional: true,
       setup: `Ana wants Lantern to be seen as more convenient, mainly through Cold Brew: cans in convenience stores (${p0(conv.volume)} of the city’s canned coffee, a ${p0(conv.margin)} trade margin and $${conv.listing.toLocaleString('en-US')} a year per product to be listed, M02) and a fridge by the door of each café. Plan the target position, check what it does to each segment’s distance, and design the tracking survey.`,
@@ -195,11 +208,11 @@ export default {
         `Target: Summit Brew’s convenience rating, ${f2(M[SU][CONV])}, a rise of ${f2(M[SU][CONV] - M[LA][CONV])} points. Movement: ${f2(M[SU][CONV] - M[LA][CONV])} × (${s3(per(CONV)[0])}, ${s3(per(CONV)[1])}) = (${sg(CSU[0] - NOW[0])}, ${sg(CSU[1] - NOW[1])}), from ${pt(NOW)} to ${pt(CSU)}.`,
         `Segments: Craft and local ${f2(dist(NOW, CL))} → ${f2(dist(CSU, CL))} (still nearest, Arcadia next at ${f2(D.map.distances[CL][AR])}); Explorers ${f2(dist(NOW, EX))} → ${f2(dist(CSU, EX))} (Summit Brew is ${f2(D.map.distances[EX][SU])}); On the go ${f2(dist(NOW, OG))} → ${f2(dist(CSU, OG))}; Mindful ${f2(dist(NOW, MI))} → ${f2(dist(CSU, MI))}; Value routine ${f2(dist(NOW, VR))} → ${f2(dist(CSU, VR))}.`,
         'What would make customers’ ratings move: availability where people already shop (the convenience-store listing), visibility (the café fridge, shelf placement), and nothing that dilutes the craft claims. A price cut or a strength claim would move Lantern towards On the go, but away from the drinkers who already choose it.',
-        `Tracking: repeat the study in May 2028 with the same attributes, brands, panel and quotas. A change in Lantern’s convenience mean must exceed about ${f2(tCrit * seChange)} points to be significant with ${nL} ratings per wave; ${nNeed} per wave would detect a 0.3-point change with 80% power. A booster sample of people who know Lantern, used the same way in both waves, keeps the cost near the May budget.`,
+        `Tracking: repeat the study in May 2028 with the same attributes, brands, panel and quotas. Against May 2027’s ${nL} ratings, ${nNeed} Lantern ratings in 2028 would detect Ana’s 0.5-point target with ${p0(pow05)} power, but a 0.3-point change with only ${p0(pow03)}. A booster sample of people who know Lantern, used the same way in every wave, is one way to reach ${nNeed}.`,
         'Success criteria, written before the change: Lantern’s convenience rating up by at least 0.5 points; taste, local and sustainability not down by more than sampling error; Lantern still the nearest brand to the Craft and local ideal.',
       ],
       answer: `Aim for Summit Brew’s convenience (${f2(M[SU][CONV])}): Lantern would move to ${pt(CSU)}, closer to Craft and local (${f2(dist(CSU, CL))}) and to the Explorers (${f2(dist(CSU, EX))}), while On the go stays far (${f2(dist(CSU, OG))}). Track it with a repeated survey and a Lantern booster, judged against criteria set in advance.`,
-      interpretation: 'Ana can pursue convenience without risking the craft position, because it is a point of parity to reach, not a new identity. What the map advises against is a repositioning towards On the go; if Lantern wants those drinkers, a separate product or brand would be the honest way to reach them, and that is a targeting decision, not a repositioning.' },
+      interpretation: 'On the map Ana can pursue convenience with the craft position intact, provided the craft ratings hold as convenience rises, which is what the tracking survey tests: convenience is a point of parity to reach, not a new identity. What the map advises against is a repositioning towards On the go; if Lantern wants those drinkers, a separate product or brand would be the honest way to reach them, and that is a targeting decision, not a repositioning.' },
   ],
 
   demo: [
@@ -225,7 +238,7 @@ export default {
         ['Lantern’s convenience rating', f2(M[LA][CONV]), 'At least 0.5 points higher, beyond sampling error'],
         ['Lantern’s taste, local and sustainability ratings', `${f2(M[LA][TASTE])}, ${f2(M[LA][LOCAL])}, ${f2(M[LA][SUST])}`, 'No fall beyond sampling error'],
         ['Nearest brand to the Craft and local ideal', `Lantern (${f2(D.map.distances[CL][LA])})`, 'Still Lantern'],
-        ['Lantern ratings in the wave', String(nL), `At least ${nNeed}, through a booster sample`],
+        ['Lantern ratings in the wave', String(nL), `At least ${nNeed}: a 0.5-point change detected with ${p0(pow05)} power against May 2027`],
       ],
     } },
     { p: 'The plan is deliberately modest. It changes the parts of the mix that customers experience, not the claims, and it measures the result with a survey designed for the purpose. If convenience rises and the craft ratings hold, Lantern has broken, for itself, the trade-off between convenience and craft that today’s map shows across the market. That would be a real difference, and one hard for rivals on either side of the map to copy.' },
@@ -233,12 +246,12 @@ export default {
   ],
 
   summary: [
-    'Kotler and Armstrong’s five ways to differentiate are product, services, channels, people and image; each works through what customers can see or experience.',
+    'The ways to differentiate, after Kotler and Armstrong, are product, services, channels, people and image; each works through what customers can see or experience.',
     'A difference worth promoting is important, distinctive, superior, communicable, pre-emptive, affordable and profitable.',
     'Value positions place an offer’s benefits against its price relative to rivals: more for more, more for the same, the same for less, less for much less and more for less, the last the hardest to sustain without lower costs.',
     'Repositioning tries to move an offer to a different place in customers’ minds; plan it on the map with the axes fixed, where each rating point moves a brand by the attribute’s weight ÷ its standard deviation across the brands.',
-    'Raising Lantern’s convenience to Summit Brew’s level brings it closer to Craft and local and the Explorers; even at the top of the scale on convenience and energy, it stays far from On the go.',
-    'Track a position with a repeated survey: same attributes, brands, wording and sample design, and enough ratings to detect the change (about 162 Lantern ratings a wave for a 0.3-point change).',
+    'On fixed axes, with its other ratings held, raising Lantern’s convenience to Summit Brew’s level brings it closer to Craft and local and the Explorers; even at the top of the scale on convenience and energy, it stays far from On the go.',
+    `Track a position with a repeated survey: same attributes, brands, wording and sample design, and enough ratings to detect the change. Against May 2027’s ${nL} Lantern ratings, ${nNeed} in 2028 detect a 0.5-point change with ${p0(pow05)} power but a 0.3-point change with only ${p0(pow03)}.`,
     'Repositioning risks the customers who chose the current position, and credibility if it goes too far; reaching a distant segment may call for a separate product or a targeting decision instead.',
   ],
 
@@ -250,8 +263,8 @@ export default {
   ],
 
   references: [
-    { text: 'Kotler, P. &amp; Armstrong, G. <i>Principles of Marketing</i>. Pearson (many editions), the chapter on segmentation, targeting, differentiation and positioning. The book was not consulted; the five ways to differentiate (product and services, channels or distribution, people or personnel, image), the seven criteria for a difference worth promoting and the positioning-statement form were confirmed from lecture slides based on the 2006 edition, chapter 7. Recent editions word the five ways as product, services, channels, people and image.', url: 'https://slidetodoc.com/market-segmentation-targeting-positioning-kotler-p-armstrong-g/', checked: '2026-10-25' },
-    { text: 'Sherk, R. (2004). Value positioning: more for more, more for the same, the same for less, less for much less, more for less. Teaching notes, Oregon Coast Community College. Used to confirm the five value positions; the source does not cite Kotler and Armstrong.', url: 'https://oregoncoast.edu/?p=26515', checked: '2026-10-25' },
+    { text: 'Kotler, P. &amp; Armstrong, G. <i>Principles of Marketing</i>. Pearson (many editions), the chapter on segmentation, targeting, differentiation and positioning. The book was not consulted. Lecture slides based on the 2006 edition, chapter 7, confirm the ways to differentiate under four headings (product and services, distribution, personnel, image), the seven criteria for a difference worth promoting by name, with short definitions of important, distinctive, pre-emptive and affordable, and the positioning-statement form. The questions given here for superior, communicable and profitable are this course’s wording, and the slides do not show the value positions.', url: 'https://slidetodoc.com/market-segmentation-targeting-positioning-kotler-p-armstrong-g/', checked: '2026-10-25' },
+    { text: 'Sherk, R. (2004). Value positioning: more for more, more for the same, the same for less, less for much less, more for less. Teaching notes, Oregon Coast Community College. Confirms the five value positions and their names; it calls more for less “the winning value proposition” and does not cite Kotler and Armstrong. The lesson’s caution that more for less is hard to sustain comes from M01’s argument about cost advantage, not from this source.', url: 'https://oregoncoast.edu/?p=26515', checked: '2026-10-25' },
     { text: 'Lumen Learning. <i>Principles of Marketing</i>, 8.4, “Reading: Repositioning” (when to reposition, the process and its pitfalls). CC BY 4.0.', url: 'https://biz.libretexts.org/Bookshelves/Marketing/Principles_of_Marketing_(Lumen)/08%3A_Positioning/8.04%3A_Reading-_Repositioning', checked: '2026-10-25' },
     { text: '<i>Principles of Marketing – H5P Edition</i> (2022), section 5.4, “Positioning and Repositioning Offerings” (repositioning as moving a product in consumers’ minds). BCcampus Open Education.', url: 'https://opentextbc.ca/principlesofmarketingh5p/chapter/positioning-and-repositioning-offerings/', checked: '2026-10-25' },
     { text: 'Keller, K. L., Sternthal, B. &amp; Tybout, A. M. (2002). Three questions you need to ask about your brand. <i>Harvard Business Review</i>, 80(9), 80–86 (points of difference that are feasible, profitable and defensible).', url: 'https://store.hbr.org/product/three-questions-you-need-to-ask-about-your-brand/R0209F', checked: '2026-10-25' },
@@ -328,6 +341,18 @@ export default {
     { what: 'All loyalty', value: D.loyalty.mean, shown: 3.05 },
     { what: 'Lantern sustainability', value: M[LA][SUST], shown: 5.64 },
     { what: 'Craft and local to Lantern (table)', value: D.map.distances[CL][LA], shown: 0.79 },
+    { what: 'Ratings per wave with t', value: nNeedT, shown: 163 },
+    { what: 'Convenience has the largest SD of Lantern’s attributes', value: lSds.indexOf(Math.max(...lSds)) === CONV ? 1 : 0, shown: 1 },
+    { what: 'SE of May 2027 mean', value: lSd / Math.sqrt(61), shown: 0.12 },
+    { what: 'SE of change, 61 vs 162', value: lSd * Math.sqrt(1 / 61 + 1 / 162), shown: 0.145, tol: 0.0005 },
+    { what: 'Power for 0.3, 61 vs 162 %', value: 100 * (normCdf(0.3 / se162 - 1.959964) + normCdf(-0.3 / se162 - 1.959964)), shown: 55, tol: 0.5 },
+    { what: 'Detectable at 80%, 61 vs 162', value: (1.959964 + 0.841621) * lSd * Math.sqrt(1 / 61 + 1 / 162), shown: 0.41 },
+    { what: 'Detectable at 80%, 61 vs unlimited', value: (1.959964 + 0.841621) * lSd / Math.sqrt(61), shown: 0.35 },
+    { what: 'Power for 0.3, 61 vs unlimited %', value: 100 * powInf, shown: 68, tol: 0.5 },
+    { what: 'Power for 0.5, 61 vs 162 %', value: 100 * pow05, shown: 93, tol: 0.5 },
+    { what: 'Correlation convenience–sustainability across brands', value: rCS, shown: -0.95 },
+    { what: 'M02 panel: single-origin can', value: panel.lantern, shown: 7.5 },
+    { what: 'M02 panel: Summit Brew', value: panel.summit, shown: 8 },
     // the movement table (all eight attributes)
     { what: 'Move per point taste D1', value: MAP.vectors[A('taste')][0] / MAP.sd[A('taste')], shown: 0.347, tol: 0.0005 },
     { what: 'Move per point taste D2', value: MAP.vectors[A('taste')][1] / MAP.sd[A('taste')], shown: 0.337, tol: 0.0005 },

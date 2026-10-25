@@ -1,8 +1,8 @@
 // assess-m4.js — M05 module 4 test: Positioning (perceptual-maps, positioning-statements, differentiation-and-repositioning).
-// New questions on new businesses (an airline, a supermarket chain, Halvard Journeys, a frozen-meals maker, a dog-food brand, Pinmoor Building
-// Society, a theatre, a bank's app, a supermarket's own label, a cinema chain and a regional newspaper, all fictional), with angles the lessons
+// New questions on new businesses (an airline, a supermarket chain, Halvard Journeys, a frozen-meals maker, a dog-food brand, a plant nursery,
+// a theatre, a bank's app, a supermarket's own label, a cinema chain and a regional newspaper, all fictional), with angles the lessons
 // don't drill: the share of an attribute left off a map, choosing the nearest of several ideals, reasons a gap can be
-// empty, sizing a concept cell, a move from two rating changes at once and sizing a tracking wave. No hints; solutions
+// empty, how the frame decides parity, sizing a concept cell, a move from two rating changes at once and sizing a tracking wave. No hints; solutions
 // are shown when the student reviews the test. Every num item's `check` recomputes its answer.
 import { normInv, sampleSizeForPower } from '../../../core/inference.js?v=14';
 
@@ -32,9 +32,9 @@ export const items = [
     id: 'm05-m4-2', lesson: 'perceptual-maps', type: 'mc', kind: 'applied',
     prompt: 'On a perceptual map of five supermarket chains (fictional), the arrows for “fresh produce” and “helpful staff” point to the upper right, close together, and the arrow for “low prices” points to the left. One chain sits far out to the upper right. Which conclusion does the map support?',
     options: [
-      'That chain’s shoppers care more about fresh produce than they do about price',
+      'That chain’s shoppers care more about fresh produce and helpful staff than about price',
       'Helpful staff make shoppers rate a chain’s produce as fresher than it is',
-      'Shoppers rate it above the others on produce and staff, and lower on price',
+      'It is rated above the others on produce and staff, and lower on low prices (dearer)',
       'The chain should cut its prices to move into the empty space on the left',
     ],
     answer: 2,
@@ -43,7 +43,7 @@ export const items = [
       1: 'Arrows close together mean the two ratings go together across these chains; that is a correlation, not a cause.',
       3: 'The left of the map is where cheaper chains sit; moving there would give up what the chain is rated highly for, and an empty space needs demand behind it.',
     },
-    solution: 'A brand far along an arrow is rated high on that attribute relative to the others; one far from the “low prices” arrow, which points the other way, is rated low on price. The map says nothing about importance or causes.',
+    solution: 'A brand far along an arrow is rated high on that attribute relative to the others; one far from the “low prices” arrow, which points the other way, is rated lower on low prices: seen as dearer. On a map that draws brands by scores and arrows by correlations these readings are rough, so check the means. The map says nothing about importance or causes.',
   },
   {
     id: 'm05-m4-3', lesson: 'perceptual-maps', type: 'num', kind: 'numerical',
@@ -75,33 +75,33 @@ export const items = [
   // ---------------------------------------------------------------- positioning-statements
   {
     id: 'm05-m4-5', lesson: 'positioning-statements', type: 'classify', kind: 'applied',
-    prompt: 'Pinmoor Building Society (fictional) wants younger savers, and frames itself as “a savings account” against the big banks’ apps. Classify each element of its positioning.',
+    prompt: 'A plant nursery (fictional) must frame its new houseplant service either as “a garden centre”, against local garden centres that don’t deliver, or as “an online plant shop”, against national websites with no premises and no staff to talk to in person. Classify each feature by the frame in which it would be a point of difference.',
     items: [
-      'An app that opens an account in minutes.',
-      'Savings rates in line with the big banks.',
-      'Someone at a branch in your own town who knows your name.',
-      'It is owned by its members, and every branch is staffed by people from the town.',
-      'Secure log-in with fingerprint or face recognition.',
+      'Delivery to your door within two days.',
+      'A nursery you can visit to choose your own plants.',
+      'Staff on hand to answer questions in person.',
+      'A free video call with a horticulturist about the plants that suit your light.',
+      'Prices close to both the garden centres’ and the national websites’.',
     ],
-    categories: ['Point of parity', 'Point of difference', 'Reason to believe'],
-    answer: [0, 0, 1, 2, 0],
+    categories: ['A difference only as a garden centre', 'A difference only as an online plant shop', 'A difference in both frames', 'Parity in both frames'],
+    answer: [0, 1, 1, 2, 3],
     feedback: {
-      0: 'Every bank app does this: young savers expect it before they will consider Pinmoor.',
-      1: 'Matching the banks’ rates keeps Pinmoor in the comparison; it isn’t why anyone would choose it.',
-      2: 'This is what the banks’ apps can’t offer: a person who knows you.',
-      3: 'Checkable facts that make the personal promise credible.',
-      4: 'Expected of any financial app: parity.',
+      0: 'Garden centres don’t deliver, so delivery sets it apart from them; every national website delivers, so online it is parity.',
+      1: 'Websites have no premises, so a nursery to visit stands out online; every garden centre has one.',
+      2: 'People to talk to in person are normal in a garden centre and missing online.',
+      3: 'Neither rival offers this, so it is a difference whichever frame is chosen.',
+      4: 'Matching both rivals’ prices keeps the nursery in either comparison without setting it apart.',
     },
-    solution: 'In the savings-account frame, a quick app, competitive rates and secure log-in are points of parity. The point of difference is a person locally who knows you; member ownership and local staff are the proof.',
+    solution: 'The frame decides the rivals, and the rivals decide what is parity. Delivery is a difference only against garden centres; premises and staff in person are differences only against websites; the video call is a difference in both; matching prices is parity in both.',
   },
   {
     id: 'm05-m4-6', lesson: 'positioning-statements', type: 'mc', kind: 'conceptual',
     prompt: 'A dog-food brand (fictional) positions on “easier digestion for sensitive dogs”. Which is the strongest reason to believe?',
     options: [
-      'Its packaging shows a calm, healthy-looking dog on every bag',
-      'Every recipe is tested in a published feeding trial run by a veterinary school',
-      'Owners say their dogs love the taste and finish every bowl',
-      'It is the fastest-growing brand in the premium dog-food aisle',
+      'Its packaging shows a calm, healthy-looking dog beside a bowl on every bag',
+      'Each recipe passes a published feeding trial run by a vet school',
+      'Eight in ten owners in its own survey say their dogs love the taste',
+      'Its sales grew faster last year than any other brand in the premium aisle',
     ],
     answer: 1,
     feedback: {
@@ -187,14 +187,14 @@ export const items = [
     id: 'm05-m4-12', lesson: 'differentiation-and-repositioning', type: 'mc', kind: 'conceptual',
     prompt: 'A regional newspaper (fictional) relaunches as “the city’s fastest breaking-news app”, but its app still updates once a day. Readers soon mock the slogan. Which repositioning pitfall is this?',
     options: [
-      'Neglecting a return to basics that would have worked better',
+      'Underestimating a “back to basics” approach that would have worked better',
       'Overpromising: a claim the organisation can’t live up to',
       'A confusing positioning that mixes several different messages',
       'Repositioning when no trigger, such as falling demand, was present',
     ],
     answer: 1,
     feedback: {
-      0: 'A return to basics might be the better route, but the failure described is a promise the product contradicts.',
+      0: 'Going back to basics might have been the better route, but the failure described is a promise the product contradicts.',
       2: 'The message is clear; it just isn’t true.',
       3: 'A relaunch suggests a trigger; the failure is in the claim, not the timing.',
     },

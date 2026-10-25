@@ -50,7 +50,7 @@ const ORDER = [VR, OG, EX, CL, MI];
 // ---------------------------------------------------------------- module 1: segmentation bases
 // a community arts centre (fictional): three tailored memberships beside the general one
 const ARTS = { m1: 120, F: 7000, groups: [
-  { name: 'Families with young children', N: 4000, b1: 0.02, m2: 90, b2: 0.05 },
+  { name: 'Young families', N: 4000, b1: 0.02, m2: 90, b2: 0.05 },
   { name: 'Retired people', N: 6000, b1: 0.03, m2: 100, b2: 0.06 },
   { name: 'Working artists', N: 300, b1: 0.08, m2: 260, b2: 0.12 },
 ] };
@@ -77,7 +77,7 @@ const d3Hi = D3.clHi / D3.allHi, d3HiCafe = D3.clHiCafe / D3.allHiCafe, d3Rev = 
 const BOX = [14, 3, 41, 9, 21, 6, 30, 1, 17, 12, 48, 5, 23, 8, 2, 26, 11, 19, 4, 36, 7, 16, 10, 13, 15];
 const boxTop = sum([...BOX].sort((a, b) => b - a).slice(0, 5));
 const boxShare = boxTop / sum(BOX);
-const boxCells = { A1: 'member', B1: 'boxes last year', ...col('A', 2, BOX.map((_, i) => `M${String(i + 1).padStart(2, '0')}`)), ...col('B', 2, BOX), D2: 'share of boxes bought by the heaviest 20% of members' };
+const boxCells = { A1: 'member', B1: 'boxes last year', ...col('A', 2, BOX.map((_, i) => `M${String(i + 1).padStart(2, '0')}`)), ...col('B', 2, BOX), D2: 'heaviest 20%: share of boxes' };
 
 // ---------------------------------------------------------------- module 2: segmenting with data
 // a regional theatre (fictional): 900 respondents, six standardised needs
@@ -111,7 +111,7 @@ const HF = [
   { need: 'Fresh produce', seg: 6.4, all: 5.2, sd: 0.8 },
 ].map((x) => ({ ...x, index: (x.seg / x.all) * 100, z: (x.seg - x.all) / x.sd }));
 // a pet-food brand's typing tool (fictional): three golden questions
-const PF = { qs: ['A low price', 'Natural ingredients', 'Recommended by vets'], ans: [3, 6, 6], mu: [4.3, 4.9, 3.6], sd: [1.6, 1.2, 1.5],
+const PF = { qs: ['Low price', 'Natural', 'Vet-recommended'], ans: [3, 6, 6], mu: [4.3, 4.9, 3.6], sd: [1.6, 1.2, 1.5],
   segs: ['Bargain feeders', 'Natural first', 'Vet-led', 'Habit buyers'], z: [[1.1, -0.7, -0.4], [-0.5, 1.0, 0.2], [-0.3, 0.1, 1.3], [0.2, -0.6, -0.8]] };
 const pfZ = PF.ans.map((a, j) => (a - PF.mu[j]) / PF.sd[j]);
 const pfD = PF.z.map((c) => sum(c.map((v, j) => (pfZ[j] - v) ** 2)));
@@ -119,10 +119,10 @@ const pfNear = pfD.indexOf(Math.min(...pfD));
 const pfSecond = pfD.map((d, g) => ({ d, g })).sort((a, b) => a.d - b.d)[1].g;
 const pfCells = {
   B1: PF.qs[0], C1: PF.qs[1], D1: PF.qs[2],
-  A2: 'new customer’s answer (1–7)', B2: PF.ans[0], C2: PF.ans[1], D2: PF.ans[2],
+  A2: 'new answer (1–7)', B2: PF.ans[0], C2: PF.ans[1], D2: PF.ans[2],
   A3: 'study mean', B3: PF.mu[0], C3: PF.mu[1], D3: PF.mu[2],
-  A4: 'study standard deviation', B4: PF.sd[0], C4: PF.sd[1], D4: PF.sd[2],
-  A6: 'segment centre (z)', B6: PF.qs[0], C6: PF.qs[1], D6: PF.qs[2], E6: 'squared distance',
+  A4: 'study SD', B4: PF.sd[0], C4: PF.sd[1], D4: PF.sd[2],
+  A6: 'centre (z)', B6: PF.qs[0], C6: PF.qs[1], D6: PF.qs[2], E6: 'squared distance',
   ...Object.fromEntries(PF.segs.flatMap((s, g) => [[`A${g + 7}`, s], ...PF.z[g].map((v, j) => [`${'BCD'[j]}${g + 7}`, v])])),
 };
 // Mindful's size from the panel
@@ -131,14 +131,14 @@ const miMoe = Z * Math.sqrt((miShare * (1 - miShare)) / RS.length);
 
 // ---------------------------------------------------------------- module 3: targeting
 // a car-rental firm (fictional): business travellers (A) against holidaymakers (B)
-const CAR = { factors: ['Size', 'Spend per head', 'Growth', 'Room from the nearest rival', 'Fit with the firm’s strengths'], w: [4, 3, 2, 2, 4], A: [100, 85, 40, 60, 90], B: [80, 70, 100, 75, 60] };
+const CAR = { factors: ['Size', 'Spend per head', 'Growth', 'Room from rivals', 'Fit'], w: [4, 3, 2, 2, 4], A: [100, 85, 40, 60, 90], B: [80, 70, 100, 75, 60] };
 const carSum = (s) => sum(s.map((v, k) => v * CAR.w[k]));
 const carGap = carSum(CAR.A) - carSum(CAR.B);
 const carDelta = CAR.A.map((a, k) => carGap / (CAR.B[k] - a));
 const carCells = {
-  A1: 'factor', B1: 'weight', C1: 'Business travellers', D1: 'Holidaymakers', E1: 'change in weight that ties them',
+  A1: 'factor', B1: 'weight', C1: 'Business', D1: 'Holidaymakers', E1: 'change to tie',
   ...col('A', 2, CAR.factors), ...col('B', 2, CAR.w), ...col('C', 2, CAR.A), ...col('D', 2, CAR.B),
-  A7: 'weighted sum (Σ weight × score)', C7: '=SUMPRODUCT($B$2:$B$6,C2:C6)', D7: '=SUMPRODUCT($B$2:$B$6,D2:D6)',
+  A7: 'weighted sum', C7: '=SUMPRODUCT($B$2:$B$6,C2:C6)', D7: '=SUMPRODUCT($B$2:$B$6,D2:D6)',
 };
 // Lantern's scorecard (evaluating-segments): ratio-to-best scores, fit centred on 50, Ana's weights; then Arcadia moves
 const share = S.sizes.map((s) => s.share), head = S.sizes.map((s) => s.perHead);
@@ -162,7 +162,8 @@ const cMI = S.centres[MI], cCL = S.centres[CL];
 const dMICL = dist(cMI, cCL), dCLEX = dist(cCL, S.centres[EX]), dCLOG = dist(cCL, S.centres[OG]);
 const miNearest = ORDER.filter((g) => g !== MI).map((g) => ({ g, d: dist(cMI, S.centres[g]) })).sort((a, b) => a.d - b.d)[0].g;
 // a regional rail operator's 'weekend explorers' (fictional)
-const RAIL = { n: 412, others: 2188, age: 239, ageOthers: 687, scenic: 293, scenicOthers: 394, app: 194, station: 128, web: 90, median: 3, mean: 4.6 };
+const RAIL = { n: 412, others: 2188, age: 239, ageOthers: 687, scenic: 293, scenicOthers: 394, app: 194, station: 128, web: 90, median: 3, mean: 4.6,
+  book: [831, 963, 394], medianOthers: 2, meanOthers: 3.1 };   // other passengers: app, station, website
 // Lantern Cold Brew in convenience stores (M02's channel economics)
 const ch = (id) => CHANNELS.find((c) => c.id === id);
 const PRICE = DEFAULT_PLAN.price, LIQ = TIERS.find((t) => t.id === DEFAULT_PLAN.tier).cogs;
@@ -201,9 +202,9 @@ const hotD0 = HOT.ideal.map((p) => dist(HOT.at, p)), hotD1 = HOT.ideal.map((p) =
 const hotCells = {
   B1: 'Dimension 1', C1: 'Dimension 2',
   A2: 'the hotel today', B2: HOT.at[0], C2: HOT.at[1],
-  A3: 'move per point of “quiet rooms”', B3: HOT.per[0], C3: HOT.per[1],
-  A4: 'planned rise in the “quiet rooms” rating', B4: HOT.rise,
-  A6: 'segment ideal', B6: 'Dimension 1', C6: 'Dimension 2', D6: 'distance after the move',
+  A3: 'move per rating point', B3: HOT.per[0], C3: HOT.per[1],
+  A4: 'planned rise in the rating', B4: HOT.rise,
+  A6: 'segment ideal', B6: 'Dimension 1', C6: 'Dimension 2', D6: 'distance after move',
   ...Object.fromEntries(HOT.segs.flatMap((s, g) => [[`A${g + 7}`, s], [`B${g + 7}`, HOT.ideal[g][0]], [`C${g + 7}`, HOT.ideal[g][1]]])),
 };
 
@@ -212,7 +213,7 @@ export const items = [
   {
     id: 'm05-fn-1', lesson: 'why-segment', type: 'steps', kind: 'applied',
     prompt: `A fictional community arts centre sells one general membership, each contributing $${ARTS.m1} a year. It could add a tailored membership for each of three groups in its town, each costing $${int(ARTS.F)} a year to run. Anyone in a group who would have bought the general membership would take the group’s tailored one instead.`,
-    data: { table: { head: ['Group', 'People in the town', 'Buy the general membership', 'Tailored membership: contribution a year', 'Tailored membership: share who buy'], rows: ARTS.groups.map((g) => [g.name, int(g.N), pc(g.b1, 0), `$${g.m2}`, pc(g.b2, 0)]), align: ['l', 'r', 'r', 'r', 'r'] } },
+    data: { table: { head: ['Group', 'People', 'Buy the general one', 'Tailored: $ a year', 'Tailored: buy'], rows: ARTS.groups.map((g) => [g.name, int(g.N), pc(g.b1, 0), `$${g.m2}`, pc(g.b2, 0)]), align: ['l', 'r', 'r', 'r', 'r'] } },
     steps: [
       {
         id: 'm05-fn-1-s1', type: 'num',
@@ -250,14 +251,7 @@ export const items = [
   },
   {
     id: 'm05-fn-2', lesson: 'why-segment', type: 'multi', kind: 'conceptual',
-    prompt: 'A fictional pet insurer’s cluster analysis of pet owners’ needs found a segment it calls “first-time worriers”. Its notes on the segment are in the table. Select all the tests of a usable segment that the segment already passes.',
-    data: { table: { head: ['The insurer’s notes'], rows: [
-      [`A random sample of 2,000 pet owners in the region puts the segment at about ${pc(PET.share, 0)} of the region’s ${int(PET.owners)} owners: about ${int(Math.round(petN / 100) * 100)} people.`],
-      [`They spend about $${PET.spend} a year each on pet insurance, about $${fx((petN * PET.spend) / 1e6, 1)} million in all; an advice line for them would cost about $${int(PET.line)} a year.`],
-      ['Most are not yet its customers, and no list or medium the insurer can buy reaches first-time pet owners as such.'],
-      [`In a concept test they rated a policy with an advice line far higher than other owners did: ${pc(PET.top2[0], 0)} top-two box against ${pc(PET.top2[1], 0)}.`],
-      ['The insurer employs no vets or veterinary nurses to staff an advice line, and can’t recruit any this year.'],
-    ] } },
+    prompt: `A fictional pet insurer’s cluster analysis of pet owners’ needs found a segment it calls “first-time worriers”. Its notes on the segment:<br>1. A random sample of 2,000 pet owners in the region puts the segment at about ${pc(PET.share, 0)} of the region’s ${int(PET.owners)} owners: about ${int(Math.round(petN / 100) * 100)} people.<br>2. They spend about $${PET.spend} a year each on pet insurance, about $${fx((petN * PET.spend) / 1e6, 1)} million in all; an advice line for them would cost about $${int(PET.line)} a year.<br>3. Most are not yet its customers, and no list or medium the insurer can buy reaches first-time pet owners as such.<br>4. In a concept test they rated a policy with an advice line far higher than other owners did: ${pc(PET.top2[0], 0)} top-two box against ${pc(PET.top2[1], 0)}.<br>5. The insurer employs no vets or veterinary nurses to staff an advice line, and can’t recruit any this year.<br>Select all the tests of a usable segment that the segment already passes.`,
     options: ['Measurable', 'Substantial', 'Accessible', 'Differentiable', 'Actionable'],
     answer: [0, 1, 3],
     feedback: {
@@ -268,8 +262,8 @@ export const items = [
   },
   {
     id: 'm05-fn-3', lesson: 'demographic-and-geographic', type: 'steps', kind: 'numerical',
-    prompt: `Lantern’s media agency proposes reaching the Craft and local segment with advertising aimed at households with incomes over $80,000, pointing out that ${pc(d3Rev)} of the segment have such incomes. The table counts the needs study’s ${D3.n} respondents (an opt-in panel with age quotas).`,
-    data: { table: { head: ['', 'Over $80k, mostly buy at a café', 'Over $80k, other main source', '$80k or under', 'All'], rows: [
+    prompt: `Lantern’s media agency proposes reaching the Craft and local segment with advertising aimed at households with incomes over $80,000, pointing out that ${pc(d3Rev)} of the segment have such incomes. The table counts the needs study’s ${D3.n} respondents by income and by whether they mostly buy their coffee at a café (an opt-in panel with age quotas).`,
+    data: { table: { head: ['', 'Over $80k, café first', 'Over $80k, other source', '$80k or under', 'All'], rows: [
       ['Craft and local', String(D3.clHiCafe), String(D3.clHiOther), String(D3.clLo), String(D3.cl)],
       ['Other segments', String(D3.allHiCafe - D3.clHiCafe), String(D3.allHiOther - D3.clHiOther), String(D3.allLo - D3.clLo), String(D3.n - D3.cl)],
       ['All respondents', String(D3.allHiCafe), String(D3.allHiOther), String(D3.allLo), String(D3.n)],
@@ -346,7 +340,7 @@ export const items = [
         id: 'm05-fn-5-s1', type: 'formula',
         prompt: 'In E2, calculate the share of all the boxes bought last year that the heaviest 20% of members bought.',
         sheet: { cells: boxCells }, cell: 'E2', view: 'A1:E26', maxHeight: '22rem',
-        formats: { E2: '0.0%' }, widths: { A: 9, B: 15, C: 3, D: 44, E: 10 },
+        formats: { E2: '0.0%' }, widths: { A: 9, B: 15, C: 3, D: 28, E: 10 },
         answer: '=SUM(LARGE(B2:B26,{1,2,3,4,5}))/SUM(B2:B26)',
         alt: ['=SUMPRODUCT(LARGE(B2:B26,{1,2,3,4,5}))/SUM(B2:B26)', '=SUM(LARGE(B2:B26,SEQUENCE(5)))/SUM(B2:B26)'],
         wrong: [
@@ -529,9 +523,9 @@ export const items = [
   },
   {
     id: 'm05-fn-11', lesson: 'profiling-segments', type: 'formula', kind: 'numerical',
-    prompt: 'A fictional pet-food brand’s typing tool asks three golden questions, each rated 1–7. Row 2 holds a new customer’s answers, rows 3 and 4 the study’s means and standard deviations, and rows 7 to 10 each segment’s centre in standardised units. In E7, calculate the customer’s squared distance from the centre in row 7, in a formula that can be filled down to E10.',
+    prompt: 'A fictional pet-food brand’s typing tool asks three golden questions, each rated 1–7: how much a low price, natural ingredients and a vet’s recommendation matter. Row 2 holds a new customer’s answers, rows 3 and 4 the study’s means and standard deviations (SD), and rows 7 to 10 each segment’s centre in standardised units. In E7, calculate the customer’s squared distance from the centre in row 7, in a formula that can be filled down to E10.',
     sheet: { cells: pfCells }, cell: 'E7', fill: 'E7:E10', view: 'A1:E10',
-    formats: { B3: '0.0', C3: '0.0', D3: '0.0', B4: '0.0', C4: '0.0', D4: '0.0', B: '0.0', C: '0.0', D: '0.0', E: '0.00' }, widths: { A: 26, B: 13, C: 18, D: 19, E: 15 },
+    formats: { B3: '0.0', C3: '0.0', D3: '0.0', B4: '0.0', C4: '0.0', D4: '0.0', B: '0.0', C: '0.0', D: '0.0', E: '0.00' }, widths: { A: 14, B: 10, C: 10, D: 15, E: 15 },
     answer: '=SUMPRODUCT((($B$2:$D$2-$B$3:$D$3)/$B$4:$D$4-B7:D7)^2)',
     alt: [
       '=(($B$2-$B$3)/$B$4-B7)^2+(($C$2-$C$3)/$C$4-C7)^2+(($D$2-$D$3)/$D$4-D7)^2',
@@ -571,13 +565,13 @@ export const items = [
   // ================================================================ Module 3: targeting
   {
     id: 'm05-fn-13', lesson: 'evaluating-segments', type: 'steps', kind: 'applied',
-    prompt: 'A fictional car-rental firm scores two segments, business travellers and holidaymakers, on five factors (0–100). Column B holds its weights and row 7 each segment’s weighted sum.',
+    prompt: 'A fictional car-rental firm scores two segments, business travellers (column C) and holidaymakers (column D), on five factors (0–100). Column B holds its weights and row 7 each segment’s weighted sum (Σ weight × score).',
     steps: [
       {
         id: 'm05-fn-13-s1', type: 'formula',
         prompt: 'In E2, calculate how much the weight in row 2 would have to change, with every other weight unchanged, for the two segments to draw level (negative for a fall), in a formula that can be filled down to E6.',
         sheet: { cells: carCells }, cell: 'E2', fill: 'E2:E6', view: 'A1:E7',
-        formats: { C7: '#,##0', D7: '#,##0', E: '0.00' }, widths: { A: 30, B: 8, C: 19, D: 14, E: 30 },
+        formats: { C7: '#,##0', D7: '#,##0', E: '0.00' }, widths: { A: 15, B: 7, C: 10, D: 14, E: 13 },
         answer: '=($C$7-$D$7)/(D2-C2)',
         alt: ['=(C$7-D$7)/(D2-C2)', '=($D$7-$C$7)/(C2-D2)', '=-($C$7-$D$7)/(C2-D2)'],
         wrong: [
@@ -611,7 +605,7 @@ export const items = [
   {
     id: 'm05-fn-14', lesson: 'evaluating-segments', type: 'num', kind: 'applied',
     prompt: `Suppose (fictional) Arcadia Coffee relaunches, and the next survey puts it ${fx(ARC)} from the Craft and local ideal on Lantern’s map, with every other distance, score and weight unchanged. The table gives each segment’s scores (0–100) on four factors and the distance from its ideal to its nearest rival. Ana scores room from the nearest rival, like size, spend per head and growth, as a ratio to the best segment; fit is centred on 50; her weights are ${W_ANA.join(', ')} for size, spend per head, growth, room and fit. What would Craft and local’s weighted score become? Give one decimal place.`,
-    data: { table: { head: ['Segment', 'Size score', 'Spend per head score', 'Growth score', 'Fit score', 'Distance from ideal to nearest rival'], rows: ORDER.map((g) => [NAMES[g], fx(ratio(share)[g], 1), fx(ratio(head)[g], 1), fx(ratio(growth)[g], 1), fx(fitS[g], 1), fx(room[g])]), align: ['l', 'r', 'r', 'r', 'r', 'r'] } },
+    data: { table: { head: ['Segment', 'Size', 'Spend per head', 'Growth', 'Fit', 'Nearest-rival distance'], rows: ORDER.map((g) => [NAMES[g], fx(ratio(share)[g], 1), fx(ratio(head)[g], 1), fx(ratio(growth)[g], 1), fx(fitS[g], 1), fx(room[g])]), align: ['l', 'r', 'r', 'r', 'r', 'r'] } },
     answer: r1(T1[CL]),
     check: () => { const best = Math.max(...room.map((d, g) => (g === CL ? 0.70 : d))); return (4 * ratio(share)[CL] + 4 * ratio(head)[CL] + 2 * ratio(growth)[CL] + 2 * (100 * 0.70) / best + 4 * fitS[CL]) / 16; },
     unit: '', places: 1, tol: 0.06,
@@ -667,9 +661,12 @@ export const items = [
     data: { table: { head: ['Measure', 'Weekend explorers', 'Other passengers'], rows: [
       ['Respondents', String(RAIL.n), int(RAIL.others)],
       ['Aged 25–44', pc(RAIL.age / RAIL.n), pc(RAIL.ageOthers / RAIL.others)],
-      ['Trips a month', `median ${RAIL.median}, mean ${fx(RAIL.mean, 1)}`, 'median 2, mean 3.1'],
+      ['Trips a month: median', String(RAIL.median), String(RAIL.medianOthers)],
+      ['Trips a month: mean', fx(RAIL.mean, 1), fx(RAIL.meanOthers, 1)],
       ['Rate scenic routes 6 or 7 (1–7)', pc(RAIL.scenic / RAIL.n), pc(RAIL.scenicOthers / RAIL.others)],
-      ['Usually book', `app ${pc(RAIL.app / RAIL.n)}, station ${pc(RAIL.station / RAIL.n)}, website ${pc(RAIL.web / RAIL.n)}`, 'app 38%, station 44%, website 18%'],
+      ['Usually book on the app', pc(RAIL.app / RAIL.n), pc(RAIL.book[0] / RAIL.others)],
+      ['Usually book at a station', pc(RAIL.station / RAIL.n), pc(RAIL.book[1] / RAIL.others)],
+      ['Usually book on the website', pc(RAIL.web / RAIL.n), pc(RAIL.book[2] / RAIL.others)],
     ], align: ['l', 'r', 'r'] } },
     options: [
       `${fx((RAIL.age / RAIL.n) * 100, 0)}% are aged 25 to 44.`,
@@ -793,9 +790,9 @@ export const items = [
   },
   {
     id: 'm05-fn-23', lesson: 'differentiation-and-repositioning', type: 'formula', kind: 'numerical',
-    prompt: 'A fictional hotel brand sits at the point in row 2 of its market’s perceptual map. With the axes held fixed, each point on its “quiet rooms” rating moves it by the amounts in row 3, and B4 holds the rise it plans. In D7, calculate the hotel’s distance after the move from the ideal point in row 7, in a formula that can be filled down to D9.',
+    prompt: 'A fictional hotel brand sits at the point in row 2 of its market’s perceptual map. With the axes held fixed, each point on its “quiet rooms” rating moves it by the amounts in row 3, and B4 holds the rise in that rating it plans. In D7, calculate the hotel’s distance after the move from the ideal point in row 7, in a formula that can be filled down to D9.',
     sheet: { cells: hotCells, vary: { B4: [0.8, 2.4] } }, cell: 'D7', fill: 'D7:D9', view: 'A1:D9',
-    formats: { B: '0.00', C: '0.00', D: '0.00' }, widths: { A: 38, B: 12, C: 12, D: 22 },
+    formats: { B: '0.00', C: '0.00', D: '0.00' }, widths: { A: 24, B: 12, C: 12, D: 19 },
     answer: '=SQRT(($B$2+$B$4*$B$3-B7)^2+($C$2+$B$4*$C$3-C7)^2)',
     alt: [
       '=SQRT((B7-$B$2-$B$4*$B$3)^2+(C7-$C$2-$B$4*$C$3)^2)',

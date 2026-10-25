@@ -451,7 +451,7 @@ export default {
     { what: 'Fit pull over size pull ≈ 3', value: Math.round(pull[4] / pull[0]), shown: 3 },
     { what: 'Size threshold as a multiple of Ana’s size weight', value: thrSize / W_ANA[0], shown: 4.5, tol: 0.05 },
     { what: 'Mindful third', value: [...T_ANA].sort((a, b) => b - a).indexOf(T_ANA[MI]), shown: 2 },
-    // Fernhollow
+    // Cobbleford
     { what: 'FH size score commuters', value: fhS[0][0], shown: 75 },
     { what: 'FH size score club', value: fhS[0][1], shown: 25 },
     { what: 'FH spend score commuters', value: fhS[1][0], shown: 26.7, tol: 0.05 },

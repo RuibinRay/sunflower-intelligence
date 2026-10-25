@@ -4,6 +4,7 @@
 // answer.
 import { BRANDS, NEEDS, COMPETITORS, DERIVED as D } from './case.js?v=14';
 import { perceptualMap, distance } from '../../../core/percmap.js?v=14';
+import { TIERS } from '../m02/market.js?v=14';
 
 const M = D.map.brandMeans, MAP = perceptualMap(M), SEG = D.segments.names;
 const B = (name) => BRANDS.indexOf(name), S = (name) => SEG.indexOf(name), A = (key) => NEEDS.findIndex((n) => n.key === key);
@@ -15,6 +16,9 @@ const IDEALS = D.map.segIdeal.map((p) => MAP.project(p));
 const per = (j) => [MAP.vectors[j][0] / MAP.sd[j], MAP.vectors[j][1] / MAP.sd[j]];
 const plan = (changes) => { const p = M[LA].slice(); for (const [j, v] of Object.entries(changes)) p[+j] = v; return MAP.project(p); };
 const P15 = plan({ [CONV]: M[LA][CONV] + 1.5 });
+// the investor's plan for On the go: energy 7, a low price 6.3, convenience 7
+const INV = plan({ [A('energy')]: 7, [A('price')]: 6.3, [CONV]: 7 });
+const panel = { lantern: TIERS.find((t) => t.id === 'single').quality, summit: COMPETITORS.find((c) => c.id === 'summit').quality };   // M02's taste panel (fictional)
 const f2 = (v) => v.toFixed(2), r2 = (v) => Math.round(v * 100) / 100;
 const sg = (v) => (v < 0 ? `−${Math.abs(v).toFixed(2)}` : v.toFixed(2));
 const sg3 = (v) => (v < 0 ? `−${Math.abs(v).toFixed(3)}` : `+${v.toFixed(3)}`);
@@ -28,7 +32,7 @@ export const widgets = {
     brands: BRANDS, means: M, attributes: SHORT,
     ideals: SEG.map((name, s) => ({ name, profile: D.map.segIdeal[s] })),
     highlight: 'Lantern', move: true, vectors: true,
-    note: `The sliders set the mean ratings Lantern would need; the map’s axes, the other brands and the ideal points stay where the May 2027 study put them. Each convenience point moves Lantern by ${sg3(per(CONV)[0])} on Dimension 1 and ${sg3(per(CONV)[1])} on Dimension 2. Lantern’s current ratings rest on ${D.map.counts[LA]} people who know it.`,
+    note: `The sliders set the mean ratings Lantern would need; the map’s axes, the other brands and the ideal points stay where the May 2027 study put them. Each convenience point moves Lantern by ${sg3(per(CONV)[0])} on Dimension 1 and ${sg3(per(CONV)[1])} on Dimension 2. Lantern’s current ratings rest on ${D.map.counts[LA]} people who know it. “Low price” is the rating for “a low price”, so high means cheap.`,
   },
 };
 
@@ -189,7 +193,7 @@ export const independent = [
       3: 'Lumen calls this going “a bridge too far”.',
       5: 'A confusing positioning is a pitfall: the message has to be clear.',
     },
-    solution: 'Reasons: competition, changing consumer tastes, internal change (and the wider economy). Pitfalls: overpromising, a bridge too far, a confusing message (and too little research, and neglecting a return to basics).',
+    solution: 'Reasons: competition, changing consumer tastes, internal change (and the wider economy). Pitfalls: overpromising, a bridge too far, a confusing message (and too little research, and underestimating “back to basics”).',
   },
   {
     id: 'm05-dr-i4', type: 'mc', kind: 'conceptual',
@@ -224,7 +228,7 @@ export const independent = [
     options: [
       `Craft and local drinkers, ${(100 * D.segments.sizes[CL].spendShare).toFixed(1)}% of spending and the most loyal segment, may stop seeing Lantern as theirs.`,
       `Lantern’s ratings on convenience (${f2(M[LA][CONV])}) and energy make the new claims hard to believe.`,
-      'Corner Cup and Summit Brew already sit far closer to On the go’s ideal than Lantern could get.',
+      'Corner Cup and Summit Brew sit far closer to On the go’s ideal than Lantern would be even after those changes.',
       'A lower price without lower costs would erode Lantern’s margin.',
       'On the go drinkers are too few to matter: they are the smallest segment.',
     ],
@@ -232,7 +236,7 @@ export const independent = [
     feedback: {
       4: `On the go is ${D.segments.sizes[OG].n} of 640 respondents and the largest share of spending; the problem is not their size but Lantern’s distance from them.`,
     },
-    solution: `All four real risks: losing the core (Craft and local, ${(100 * D.segments.sizes[CL].spendShare).toFixed(1)}% of spending, loyalty ${f2(D.segments.loyalty[CL])} of 5), a bridge too far (the claims contradict the ratings), entrenched rivals (Corner Cup ${f2(D.map.distances[OG][B('Corner Cup')])}, Summit Brew ${f2(D.map.distances[OG][SU])} from On the go’s ideal), and a price cut without a cost advantage. On the go is not small; it is far away.`,
+    solution: `All four real risks: losing the core (Craft and local, ${(100 * D.segments.sizes[CL].spendShare).toFixed(1)}% of spending, loyalty ${f2(D.segments.loyalty[CL])} of 5), a bridge too far (the claims contradict the ratings), entrenched rivals (even rated 7 on energy and convenience and 6.3 on a low price, Lantern would be ${f2(distance(INV, IDEALS[OG]))} from On the go’s ideal, against ${f2(D.map.distances[OG][B('Corner Cup')])} for Corner Cup and ${f2(D.map.distances[OG][SU])} for Summit Brew, and ${f2(distance(INV, IDEALS[CL]))} from Craft and local’s), and a price cut without a cost advantage. On the go is not small; it is far away.`,
   },
 ];
 
@@ -291,20 +295,20 @@ export const check = [
   },
   {
     id: 'm05-dr-k4', type: 'mc', kind: 'applied',
-    prompt: `Lantern Cold Brew will cost $3.49 against Summit Brew’s $${price('summit').toFixed(2)}. If customers judge the can as they judge Lantern (taste ${f2(M[LA][TASTE])} against Summit Brew’s ${f2(M[SU][TASTE])}), what is its value position against Summit Brew, and what does that position need?`,
+    prompt: `M02’s taste panel scores Lantern Cold Brew’s single-origin can ${panel.lantern} out of 10 against Summit Brew’s ${panel.summit}, and the can is planned at $3.49 against Summit Brew’s $${price('summit').toFixed(2)}. On the product alone, what is its value position against Summit Brew, and what would make that position hold?`,
     options: [
-      'More for more: a premium price for premium coffee, needing nothing further',
-      'The same for less: identical coffee for less, needing lower costs than Summit Brew',
-      'More for less: the hardest to hold, needing lower costs or a price rise later',
-      'Less for much less: a stripped-down can, needing a much lower price to work',
+      'More for more: a premium can at a premium price, which needs nothing further to hold',
+      'More for less: more taste for less money, which needs lower costs than Summit Brew’s',
+      'The same, or slightly less, for less: it needs lower costs or a reason beyond taste',
+      'Less for much less: a stripped-down can that needs a much lower price to work',
     ],
     answer: 2,
     feedback: {
-      0: `Lantern’s price is below Summit Brew’s, not above it. Against Arcadia ($${price('arcadia').toFixed(2)}) it would be more for more.`,
-      1: 'The comparison assumes customers see more benefit (taste, local), not the same.',
-      3: 'Lantern adds benefits; it doesn’t strip them out.',
+      0: `Its price is below Summit Brew’s, not above it; against Arcadia ($${price('arcadia').toFixed(2)}) it would be more for more.`,
+      1: `On the product alone the panel puts the can slightly behind Summit Brew (${panel.lantern} against ${panel.summit}), not ahead. Customers who judge it by Lantern’s brand ratings might see more for less, but a blind test would have to support that.`,
+      3: `$3.49 is only $${(price('summit') - 3.49).toFixed(2)} below Summit Brew, not much less, and nothing has been stripped out.`,
     },
-    solution: 'More benefit (taste, local, sustainability) at a lower price is more for less: attractive to customers, hard for the business to sustain unless its costs are lower than Summit Brew’s. A price rise later, or a clear cost advantage, would be needed, and the low price may even undercut the craft signal.',
+    solution: `On taste alone the can is close to Summit Brew’s, slightly behind (${panel.lantern} against ${panel.summit}), at a lower price: the same, or slightly less, for less. That position lasts only with lower costs than Summit Brew’s or a reason to choose beyond taste, which is why the positioning leads with local and independent. If a blind test showed the can as good as Summit Brew, customers who value local could see it as more for less.`,
   },
   {
     id: 'm05-dr-k5', type: 'mc', kind: 'conceptual',
