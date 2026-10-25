@@ -2,8 +2,8 @@
 // here). Lantern's set-up times, bags, orders and subscription flags come from case.js; Redfern Bakery, Tamarind
 // Kitchen, Ambleside Hotel, Westcliff Gym, Tollgate Bike Hire and Brockwell Clinic are fictional. Formula items are
 // marked by their results on the sheet and on copies with the numbers changed; num items recompute their answers.
-import { SETUP_MINUTES, ORDER_VALUES, SUBSCRIPTION_FLAGS, DERIVED as D } from './case.js?v=12';
-import * as I from '../../../core/inference.js?v=12';
+import { SETUP_MINUTES, ORDER_VALUES, SUBSCRIPTION_FLAGS, SURVEY, DERIVED as D } from './case.js?v=13';
+import * as I from '../../../core/inference.js?v=13';
 
 const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
@@ -314,18 +314,18 @@ export const check = [
   },
   {
     id: 'b04-ci-k4', type: 'mc', kind: 'applied',
-    prompt: 'B01’s September survey: 240 customers invited, 79 replied, 61 would recommend Lantern (77%, 95% interval 68% to 86%). Which sentence can Ana put in her report?',
+    prompt: `B01’s September survey: ${SURVEY.sent} customers invited, ${SURVEY.responses} replied, ${SURVEY.wouldRecommend.yes} would recommend Lantern (${pc(D.survey.recommend.p, 0)}, 95% interval ${pc(D.survey.recommend.low, 0)} to ${pc(D.survey.recommend.high, 0)}). Which sentence can Ana put in her report?`,
     options: [
-      '“Among customers like the 79 who replied, 68% to 86% would recommend us; only a third of those invited replied.”',
-      '“We are 95% confident that between 68% and 86% of all our customers would recommend us to a friend.”',
-      '“77% of the 240 customers we surveyed in September would recommend us to a friend, give or take nine points.”',
+      `“Among customers like the ${SURVEY.responses} who replied, ${pc(D.survey.recommend.low, 0)} to ${pc(D.survey.recommend.high, 0)} would recommend us; only a third of those invited replied.”`,
+      `“We are 95% confident that between ${pc(D.survey.recommend.low, 0)} and ${pc(D.survey.recommend.high, 0)} of all our customers would recommend us to a friend.”`,
+      `“${pc(D.survey.recommend.p, 0)} of the ${SURVEY.sent} customers we surveyed in September would recommend us to a friend, give or take ${['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'][Math.round(D.survey.recommend.margin * 100)] ?? Math.round(D.survey.recommend.margin * 100)} points.”`,
       '“The interval is too wide to say anything, so the survey tells us nothing about our customers’ views.”',
     ],
     answer: 0,
     feedback: {
       1: 'The interval covers only sampling error among those who replied. With two-thirds not replying, a claim about all customers ignores possible non-response bias.',
-      2: 'Only 79 of the 240 answered; nothing is known about the other 161.',
-      3: 'It says a lot: even the lower limit, 68%, is a clear majority of those who replied. The caveat is about who replied, not about the width.',
+      2: `Only ${SURVEY.responses} of the ${SURVEY.sent} answered; nothing is known about the other ${SURVEY.sent - SURVEY.responses}.`,
+      3: `It says a lot: even the lower limit, ${pc(D.survey.recommend.low, 0)}, is a clear majority of those who replied. The caveat is about who replied, not about the width.`,
     },
     solution: 'The margin of error measures sampling error, the luck of which customers ended up among the replies. It doesn’t cover non-response bias: if happier customers were keener to reply, the true share among all customers could be lower. So the claim is limited to customers like those who replied, with the response rate stated.',
   },

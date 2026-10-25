@@ -3,10 +3,10 @@
 // (KG_BAGS, KILNWORTH_1KG; DERIVED.kg.ci) and B01's September survey (SURVEY; DERIVED.survey). Sample sizes are planned
 // for set-up times and for a fictional gym survey, not for the 2027 customer survey, which is the project's. Tests, and
 // the link between a two-sided test and an interval, are Module 3's. Every figure printed is recomputed in `checks`.
-import { SETUP_MINUTES, KG_BAGS, KILNWORTH_1KG as K, SURVEY, ORDER_VALUES, DERIVED as D } from './case.js?v=12';
-import * as I from '../../../core/inference.js?v=12';
-import { mean, median, skewness } from '../../../core/stats.js?v=12';
-import { mulberry32 } from '../../../core/rng.js?v=12';
+import { SETUP_MINUTES, KG_BAGS, KILNWORTH_1KG as K, SURVEY, ORDER_VALUES, DERIVED as D } from './case.js?v=13';
+import * as I from '../../../core/inference.js?v=13';
+import { mean, median, skewness } from '../../../core/stats.js?v=13';
+import { mulberry32 } from '../../../core/rng.js?v=13';
 
 // ---------------------------------------------------------------- the figures the lesson quotes
 const S = D.setup;                                    // t interval for the set-up times
@@ -66,7 +66,7 @@ export default {
   slug: 'confidence-intervals',
   title: 'Confidence intervals',
   blurb: 'Turn a sample’s mean or proportion into a range for the population’s, with a margin of error that says how far it could be off. Build z and t intervals for a mean and an interval for a proportion, by hand and with CONFIDENCE.NORM and CONFIDENCE.T; say exactly what “95% confident” means; and work out the sample a margin needs.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain a confidence interval as an estimate plus or minus a margin of error, and interpret a 95% confidence level correctly.',
     'Calculate a z interval for a mean when σ is known and a t interval when it isn’t, by hand and with CONFIDENCE.NORM, CONFIDENCE.T and T.INV.2T.',

@@ -3,7 +3,7 @@
 // shown when the student reviews the test. Sunnyfold Gym, Glenholt Hotel, Mossgate Clinic, Fairway Contact Centre and
 // all their numbers are fictional. Formula items are marked by their results; every num item's `check` recomputes its
 // answer.
-import { binomPmf, binomSf, poissonSf, normCdf } from '../../../core/inference.js?v=12';
+import { binomPmf, binomSf, poissonSf, normCdf } from '../../../core/inference.js?v=13';
 
 const sum = (a) => a.reduce((s, x) => s + x, 0);
 const mean = (a) => sum(a) / a.length;
@@ -14,7 +14,7 @@ const f = (v, d = 3) => v.toFixed(d);
 // Sunnyfold Gym: visits last month by 30 members chosen at random
 const VISITS = [2, 4, 5, 3, 8, 12, 6, 1, 0, 7, 9, 4, 3, 22, 5, 6, 2, 10, 4, 15, 3, 7, 5, 1, 11, 6, 4, 2, 18, 5];
 const vm = mean(VISITS), vs = sdS(VISITS);
-const within2 = VISITS.filter((v) => Math.abs(v - vm) <= 2 * vs).length;
+const within2 = VISITS.filter((v) => Math.abs(v - vm) <= 2 * vs).length, within1 = VISITS.filter((v) => Math.abs(v - vm) <= vs).length;
 // Fairway Contact Centre: 1,000 contacts by channel and whether resolved first time
 const FC = { phone: [420, 180], chat: [260, 140] };
 const notResolved = FC.phone[1] + FC.chat[1];
@@ -31,40 +31,38 @@ export const items = [
     wrong: [
       { formula: '=COUNTIFS(B2:B31,">="&E1-E2,B2:B31,"<="&E1+E2)/COUNT(B2:B31)', say: 'Those limits are one standard deviation from the mean. For two, use E1-2*E2 and E1+2*E2.' },
       { formula: '=COUNTIFS(B2:B31,">="&E1-2*E2,B2:B31,"<="&E1+2*E2)', say: 'That is the number of members, not the share. Divide by COUNT(B2:B31).' },
-      { formula: '=COUNTIFS(B2:B31,">=E1-2*E2",B2:B31,"<=E1+2*E2")/COUNT(B2:B31)', say: 'Inside quotes, E1-2*E2 is text, not a calculation. Join the operator to the calculated limit: ">="&E1-2*E2.' },
+      { formula: '=COUNTIFS(B2:B31,">=E1-2*E2",B2:B31,"<=E1+2*E2")/COUNT(B2:B31)', say: 'Inside quotes, E1-2*E2 is text, not a calculation. Join the operator to the calculated limit: <x>">="&E1-2*E2</x>.' },
     ],
-    solution: `<x>=COUNTIFS(B2:B31,">="&E1-2*E2,B2:B31,"<="&E1+2*E2)/COUNT(B2:B31)</x>. The mean is ${f(vm, 2)} visits and the SD ${f(vs, 2)}, so the limits are ${vm - 2 * vs < 0 ? '−' : ''}${f(Math.abs(vm - 2 * vs), 2)} and ${f(vm + 2 * vs, 2)}: ${within2} of 30 members (${(within2 / 30 * 100).toFixed(1)}%) lie inside. That is below the empirical rule’s 95%, because the visits are right-skewed (two members came 18 and 22 times), but above Chebyshev’s minimum of 75%.`,
+    solution: `<x>=COUNTIFS(B2:B31,">="&E1-2*E2,B2:B31,"<="&E1+2*E2)/COUNT(B2:B31)</x>. The mean is ${f(vm, 2)} visits and the SD ${f(vs, 2)}, so the limits are ${vm - 2 * vs < 0 ? '−' : ''}${f(Math.abs(vm - 2 * vs), 2)} and ${f(vm + 2 * vs, 2)}: ${within2} of 30 members (${(within2 / 30 * 100).toFixed(1)}%) lie inside. With 30 members, the empirical rule’s 95% would be 28.5, so the two-SD share is close to it and doesn’t reveal the shape. The right skew shows elsewhere: the lower limit is negative, two members came 18 and 22 times, and ${(within1 / 30 * 100).toFixed(1)}% lie within one SD against the rule’s 68%. Chebyshev’s minimum of 75% within two SDs holds, as it must.`,
   },
   {
     id: 'b04-m1-2', lesson: 'describing-distributions', type: 'num', kind: 'applied',
-    prompt: 'Glenholt Hotel (fictional) had nightly room revenue with mean $8,400 and standard deviation $1,900 over the 365 nights of last year. Its distribution is unknown. At least how many nights must have had revenue between $3,650 and $13,150? Give a whole number of nights.',
-    answer: 307, check: () => Math.ceil(365 * (1 - 1 / ((13150 - 8400) / 1900) ** 2)), unit: 'nights', places: 0, tol: 0.5,
+    prompt: 'Glenholt Hotel (fictional) had nightly room revenue with mean $8,400 and standard deviation $1,900 over the 365 nights of last year. Its distribution is unknown. At least how many nights must have had revenue between $5,550 and $11,250? Give a whole number of nights.',
+    answer: 203, check: () => Math.ceil(365 * (1 - 1 / ((11250 - 8400) / 1900) ** 2)), unit: 'nights', places: 0, tol: 0.5,
     wrong: [
-      { value: Math.round(365 * (2 * normCdf(2.5) - 1)), say: 'About 98.8% would lie within 2.5 SDs of a normal distribution, but the shape is unknown. Only Chebyshev’s inequality is guaranteed: 1 − 1/2.5².' },
-      { value: Math.round(365 * 0.95), say: 'The limits are 2.5 standard deviations from the mean, not 2, and the empirical rule needs a bell shape. Use Chebyshev: at least 1 − 1/k².' },
-      { value: Math.round(365 * (1 - 1 / 2.5)), say: 'Chebyshev’s bound squares k: 1 − 1/2.5² = 0.84, not 1 − 1/2.5.' },
+      { value: Math.round(365 * (2 * normCdf(1.5) - 1)), say: 'About 86.6% would lie within 1.5 SDs of a normal distribution, but the shape is unknown. Only Chebyshev’s inequality is guaranteed: 1 − 1/1.5².' },
+      { value: Math.round(365 * (1 - 1 / 1.5)), say: 'Chebyshev’s bound squares k: 1 − 1/1.5² ≈ 0.556, not 1 − 1/1.5.' },
+      { value: Math.floor(365 * (1 - 1 / 1.5 ** 2)), say: '365 × 0.556 = 202.8, and a number of nights that is at least 202.8 must be at least 203: round up, not down.' },
     ],
-    solution: 'The limits are $8,400 ± $4,750, and $4,750 ÷ $1,900 = 2.5 standard deviations. By Chebyshev’s inequality at least 1 − 1/2.5² = 0.84 of the nights lie within them: 0.84 × 365 = 306.6, so at least 307 nights. Without knowing the shape, nothing stronger can be said.',
+    solution: 'The limits are $8,400 ± $2,850, and $2,850 ÷ $1,900 = 1.5 standard deviations. By Chebyshev’s inequality at least 1 − 1/1.5² = 1 − 0.444 = 0.556 of the nights lie within them: 0.556 × 365 = 202.8, so at least 203 nights. Without knowing the shape, nothing stronger can be said.',
   },
   {
-    id: 'b04-m1-3', lesson: 'describing-distributions', type: 'classify', kind: 'conceptual',
-    prompt: 'Mossgate Clinic (fictional) used to record each patient’s wait in minutes. It now records the minutes over its 10-minute target instead (a 7-minute wait becomes −3). What happens to each statistic of the waits?',
-    items: ['The mean', 'The median', 'The standard deviation', 'The interquartile range', 'The variance', 'Each patient’s z-score', 'The skewness (SKEW)', 'The coefficient of variation'],
-    categories: ['Falls by 10 minutes', 'Unchanged', 'Changes, and stops being meaningful'],
-    answer: [0, 0, 1, 1, 1, 1, 1, 2],
-    feedback: {
-      2: 'Subtracting the same 10 minutes from every wait moves them all together; their distances from each other, and from the mean, don’t change.',
-      5: 'Both the wait and the mean fall by 10, so the distance from the mean, and the z-score, stay the same.',
-      7: 'The SD is unchanged but the mean falls by 10, so the ratio changes. The new values have no true zero and can be negative, so a CV no longer means anything.',
-    },
-    solution: 'With y = x − 10 (a = −10, b = 1): measures of centre and position fall by 10; measures of spread (SD, IQR, variance) and standardised measures (z-scores, SKEW) don’t change. The CV changes because its mean changes while its SD doesn’t, and on a scale without a true zero it is meaningless.',
+    id: 'b04-m1-3', lesson: 'describing-distributions', type: 'num', kind: 'numerical',
+    prompt: 'Mossgate Clinic’s medicine fridge (fictional) logs its temperature every hour. Over a month the readings had a mean of 4.6 °C and a standard deviation of 0.8 °C. A new monitor reports in degrees Fahrenheit, F = 32 + 1.8 × C. What is the standard deviation of the month’s readings in °F? Give two decimal places.',
+    answer: 1.44, check: () => Math.abs(1.8) * 0.8, unit: '°F', places: 2, tol: 0.005,
+    wrong: [
+      { value: 33.44, say: 'Adding 32 shifts every reading, and the mean, by the same amount, so it doesn’t change the spread. Only the multiplier 1.8 does.' },
+      { value: 0.8, say: 'A degree Fahrenheit is smaller than a degree Celsius, so the same spread is 1.8 times as many degrees: s_F = 1.8 × s_C.' },
+      { value: Number((1.8 ** 2 * 0.8).toFixed(2)), say: 'Squaring the multiplier is right for the variance, not for the standard deviation: s_F = |1.8| × 0.8.' },
+    ],
+    solution: 'With y = 32 + 1.8x, the standard deviation is |1.8| × 0.8 = 1.44 °F; the 32 moves the mean (to 32 + 1.8 × 4.6 = 40.28 °F) but not the spread. The variance becomes 1.8² × 0.64 ≈ 2.07. A coefficient of variation would change with the switch (0.8 ÷ 4.6 against 1.44 ÷ 40.28), a sign that it means nothing on scales without a true zero.',
   },
   {
     id: 'b04-m1-4', lesson: 'describing-distributions', type: 'mc', kind: 'conceptual',
     prompt: 'Sunnyfold’s North branch members average 12 visits a month with a standard deviation of 3; its South branch members average 20 with a standard deviation of 4. Which statement is right?',
     options: [
-      'South has the larger SD but the smaller spread for its mean: CV 20% against North’s 25%.',
-      'South is more variable in every sense, because its standard deviation is larger than North’s.',
+      'South has the larger SD but the smaller spread for its mean: a CV of 20% against North’s 25%.',
+      'South is more variable in every sense, because its standard deviation is the larger of the two.',
       'The two branches’ spreads can’t be compared at all, because their mean visits are different.',
       'North is more consistent than South, because its standard deviation is smaller by one visit.',
     ],
@@ -80,7 +78,7 @@ export const items = [
   {
     id: 'b04-m1-5', lesson: 'probability', type: 'formula', kind: 'applied',
     prompt: 'At Mossgate Clinic each booked patient misses an appointment with the probability in B1, independently of the others, and B2 patients are booked into a session. In B4, calculate the probability that at least one of them misses the appointment.',
-    sheet: { cells: { A1: 'P(a patient misses)', B1: 0.08, A2: 'Patients booked', B2: 12, A4: 'P(at least one miss)' }, vary: { B1: [0.05, 0.12, 0.1], B2: [10, 15, 8] } },
+    sheet: { cells: { A1: 'P(a patient misses)', B1: 0.1, A2: 'Patients booked', B2: 12, A4: 'P(at least one miss)' }, vary: { B1: [0.05, 0.12, 0.08], B2: [10, 15, 8] } },
     cell: 'B4', answer: '=1-(1-B1)^B2',
     alt: ['=1-BINOM.DIST(0,B2,B1,FALSE)', '=1-POWER(1-B1,B2)'],
     view: 'A1:B4', formats: { B1: '0.00', B4: '0.0000' }, widths: { A: 22 },
@@ -89,7 +87,7 @@ export const items = [
       { formula: '=(1-B1)^B2', say: 'That is the probability that nobody misses. At least one miss is its complement: 1 − (1 − B1)^B2.' },
       { formula: '=1-B1^B2', say: 'B1^B2 is the probability that everyone misses. The complement of “at least one misses” is “nobody misses”, (1 − B1)^B2.' },
     ],
-    solution: `<x>=1-(1-B1)^B2</x>. Each patient attends with probability 1 − 0.08 = 0.92; by independence all 12 attend with probability 0.92¹² ≈ ${f(0.92 ** 12, 4)}, so at least one misses with probability ${f(1 - 0.92 ** 12, 4)}. Small risks per patient add up to a likely gap in almost two sessions out of three.`,
+    solution: `<x>=1-(1-B1)^B2</x>. Each patient attends with probability 1 − 0.1 = 0.9; by independence all 12 attend with probability 0.9¹² ≈ ${f(0.9 ** 12, 4)}, so at least one misses with probability ${f(1 - 0.9 ** 12, 4)}. Small risks per patient add up to a gap in almost three sessions out of four, which is why Mossgate overbooks (item 10).`,
   },
   {
     id: 'b04-m1-6', lesson: 'probability', type: 'num', kind: 'numerical',
@@ -104,23 +102,23 @@ export const items = [
   },
   {
     id: 'b04-m1-7', lesson: 'probability', type: 'num', kind: 'applied',
-    prompt: 'Fairway’s speech-analytics tool flags calls that may be complaints so that a supervisor can call the customer back. 5% of calls are complaints; the tool flags 90% of complaints and 6% of other calls. What percentage of flagged calls are complaints? Give one decimal place.',
-    answer: Number((0.05 * 0.9 / (0.05 * 0.9 + 0.95 * 0.06) * 100).toFixed(1)), check: () => 100 * 0.045 / (0.045 + 0.057), unit: '%', places: 1, tol: 0.1,
+    prompt: 'Fairway’s speech-analytics tool flags calls that may be complaints so that a supervisor can call the customer back. 5% of calls are complaints and the tool flags 90% of them. Supervisors want at least 70% of flagged calls to be real complaints. At most what share of the other calls may the tool flag (its false-positive rate)? Give a percentage to one decimal place.',
+    answer: Number((100 * 0.05 * 0.9 * (1 - 0.7) / (0.7 * 0.95)).toFixed(1)), check: () => 100 * 0.045 * 0.3 / (0.7 * 0.95), unit: '%', places: 1, tol: 0.05,
     wrong: [
-      { value: 90, say: '90% is P(flag | complaint). The question asks P(complaint | flag), which depends on how rare complaints are.' },
-      { value: 4.5, say: '0.05 × 0.9 = 4.5% of all calls are flagged complaints. Divide by the share of all calls that are flagged, 0.045 + 0.057.' },
-      { value: Number((0.045 / (0.045 + 0.06) * 100).toFixed(1)), say: 'The 6% false-positive rate applies to the 95% of calls that are not complaints: 0.95 × 0.06 = 0.057.' },
+      { value: Number((100 * 0.045 * 0.3 / 0.7).toFixed(1)), say: 'The false-positive rate applies only to the 95% of calls that aren’t complaints: the false alarms are 0.95 × f, not f.' },
+      { value: Number((100 * 0.9 * 0.3 / 0.7).toFixed(1)), say: 'That uses the share of complaints flagged (0.9) without the base rate. Flagged complaints are 0.05 × 0.9 = 0.045 of all calls.' },
+      { value: 30, say: '30% is the share of flags that may be false, not the rate at which other calls are flagged. Solve 0.045 ÷ (0.045 + 0.95f) = 0.7 for f.' },
     ],
-    solution: 'P(complaint | flag) = 0.05 × 0.90 ÷ (0.05 × 0.90 + 0.95 × 0.06) = 0.045 ÷ 0.102 ≈ 44.1%. Per 1,000 calls: 50 complaints, 45 flagged; 950 others, 57 flagged. Most flags are false, so a call-back script should not assume the customer is complaining.',
+    solution: `Write f for the false-positive rate. Flagged complaints are 0.05 × 0.9 = 0.045 of all calls and false alarms 0.95f, so P(complaint | flag) = 0.045 ÷ (0.045 + 0.95f). For this to be at least 0.7: 0.045 ≥ 0.7 × 0.045 + 0.7 × 0.95f, so 0.0135 ≥ 0.665f and f ≤ ${(0.0135 / 0.665).toFixed(4)}, about ${(100 * 0.0135 / 0.665).toFixed(1)}%. Because complaints are rare (5%), the tool must flag no more than about one ordinary call in fifty; at 6% only ${(100 * 0.045 / (0.045 + 0.057)).toFixed(0)}% of flags would be complaints.`,
   },
   {
     id: 'b04-m1-8', lesson: 'probability', type: 'mc', kind: 'conceptual',
     prompt: 'For two events, P(A) = 0.3, P(B) = 0.5 and P(A and B) = 0.15. Which description is right?',
     options: [
-      'A and B are independent, and not mutually exclusive.',
+      'A and B are independent events, not mutually exclusive.',
       'A and B are mutually exclusive, and not independent.',
       'A and B are both independent and mutually exclusive.',
-      'A and B are neither independent nor mutually exclusive.',
+      'A and B are neither independent events nor mutually exclusive.',
     ],
     answer: 0,
     feedback: {
@@ -172,19 +170,19 @@ export const items = [
   },
   {
     id: 'b04-m1-12', lesson: 'discrete-distributions', type: 'mc', kind: 'conceptual',
-    prompt: 'Over 600 minutes, Fairway’s calls per minute have a mean of 4.2 and a variance of 9.8. What does that suggest about a Poisson model with λ = 4.2?',
+    prompt: 'Over 300 five-minute intervals, check-ins at Sunnyfold Gym’s front desk had a mean of 4.2 and a variance of 9.8. What does that suggest about a Poisson model with λ = 4.2 check-ins per interval?',
     options: [
-      'Calls are overdispersed: busy and quiet minutes are more common than the model says.',
+      'Check-ins are overdispersed: busy and quiet spells are more frequent than it predicts.',
       'The model fits well, because a Poisson’s variance is usually about twice its mean.',
       'The model should use λ = 9.8, the variance, since that is the larger of the two values.',
       'The model is fine, because the mean is above 4, the minimum a Poisson needs to be used.',
     ],
     answer: 0,
     feedback: {
-      1: 'A Poisson’s variance equals its mean. 9.8 against 4.2 is a sign the rate isn’t constant or calls aren’t independent.',
+      1: 'A Poisson’s variance equals its mean. 9.8 against 4.2 is a sign the rate isn’t constant or check-ins aren’t independent.',
       2: 'λ is the mean number of events. Swapping in the variance doesn’t fix a model whose mean and variance should be equal.',
       3: 'The Poisson has no minimum mean; the issue is that the variance is far above the mean.',
     },
-    solution: 'For a Poisson count the variance equals the mean. A variance of 9.8 against a mean of 4.2 is overdispersion: calls probably bunch (lunch-time peaks, outages), so the model would understate how often the staff are overwhelmed. Staffing should be planned from the observed busy minutes, or from a model with a varying rate.',
+    solution: 'For a Poisson count the variance equals the mean. A variance of 9.8 against a mean of 4.2 is overdispersion: check-ins bunch, for example before each class starts and when friends arrive together, so the model would understate how often the desk is overwhelmed. Staffing should be planned from the observed busy intervals, or from a model with a varying rate.',
   },
 ];

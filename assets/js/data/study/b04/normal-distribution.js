@@ -4,9 +4,9 @@
 // share (DERIVED.orders.subscriptionShare) for the normal approximation to the binomial. The test of whether the
 // machine runs below its setting is Module 3's; this lesson stops at the model. Every figure printed is recomputed in
 // `checks`. Redfern Bakery and the weekly-demand figures in the application are fictional.
-import { KILNWORTH_1KG as K, KG_BAGS, ORDER_VALUES, DERIVED as D } from './case.js?v=12';
-import * as I from '../../../core/inference.js?v=12';
-import { mean, sd, median, skewness, kurtosis } from '../../../core/stats.js?v=12';
+import { KILNWORTH_1KG as K, KG_BAGS, ORDER_VALUES, DERIVED as D } from './case.js?v=13';
+import * as I from '../../../core/inference.js?v=13';
+import { mean, sd, median, skewness, kurtosis } from '../../../core/stats.js?v=13';
 
 // ---------------------------------------------------------------- the figures the lesson quotes
 const zLabel = (K.label - K.setting) / K.sd;                         // −1.333
@@ -90,7 +90,7 @@ export default {
   slug: 'normal-distribution',
   title: 'The normal distribution',
   blurb: 'Model a measurement with the normal curve: turn values into z-scores, find the share of bags under a label weight and the machine setting that keeps it below 1%, with NORM.DIST and NORM.INV and by hand. Then check whether the model fits, and see where it fails.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain how a probability density curve gives probabilities as areas, and why the probability of one exact value of a continuous variable is 0.',
     'Calculate z-scores and normal probabilities below, above, between and outside given values, by hand from z and with NORM.DIST, NORM.S.DIST and STANDARDIZE.',

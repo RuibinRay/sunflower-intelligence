@@ -4,10 +4,10 @@
 // (PRODUCTS) for the stock decision. The Christmas market stall, Ana's demand probabilities and the January markdown are
 // fictional and labelled. The formal goodness-of-fit test of the Poisson model is module 4's. Every printed figure is
 // recomputed in `checks`.
-import { ORDERS_PER_DAY, DERIVED as D } from './case.js?v=12';
-import { PRODUCTS } from '../b03/case.js?v=12';
-import { binomPmf, binomCdf, binomSf, binomInv, poissonPmf, poissonCdf, poissonSf, exponCdf, combin } from '../../../core/inference.js?v=12';
-import { mean, variance } from '../../../core/stats.js?v=12';
+import { ORDERS_PER_DAY, CHANNEL_SUBSCRIPTION as CS, DERIVED as D } from './case.js?v=13';
+import { PRODUCTS } from '../b03/case.js?v=13';
+import { binomPmf, binomCdf, binomSf, binomInv, poissonPmf, poissonCdf, poissonSf, exponCdf, combin } from '../../../core/inference.js?v=13';
+import { mean, variance } from '../../../core/stats.js?v=13';
 
 const f = (v, d = 3) => v.toFixed(d);
 const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
@@ -27,7 +27,8 @@ const P = D.orders.subscriptionShare, NB = 20;
 const muB = NB * P, sdB = Math.sqrt(NB * P * (1 - P));
 const p9 = binomPmf(9, NB, P), p12up = binomSf(11, NB, P), p6to12 = binomCdf(12, NB, P) - binomCdf(5, NB, P);
 const lo2 = Math.ceil(muB - 2 * sdB), hi2 = Math.floor(muB + 2 * sdB), pWithin2 = binomCdf(hi2, NB, P) - binomCdf(lo2 - 1, NB, P);
-const PAPP = 57 / 99, p12upApp = binomSf(11, NB, PAPP);
+const [[WSUB, WONE], [ASUB, AONE]] = CS.counts;                         // web and app: subscription, one-off
+const PAPP = ASUB / (ASUB + AONE), PWEB = WSUB / (WSUB + WONE), p12upApp = binomSf(11, NB, PAPP);
 const inv95 = binomInv(0.95, NB, P);
 const three = [0, 1, 2, 3].map((k) => binomPmf(k, 3, P));
 
@@ -72,7 +73,7 @@ export default {
   slug: 'discrete-distributions',
   title: 'Discrete distributions',
   blurb: 'Many business questions are about counts: subscriptions among the next orders, orders on a day, boxes sold at a market. Learn to describe a count with a probability distribution, its expected value and its standard deviation, to recognise the binomial and Poisson distributions and check their conditions, and to calculate their probabilities by hand and with BINOM.DIST and POISSON.DIST.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Describe a discrete random variable with a probability distribution, and calculate its expected value, variance and standard deviation.',
     'Identify when a count follows a binomial distribution, and calculate binomial probabilities, the mean np and the standard deviation √(np(1 − p)) by hand and with BINOM.DIST and BINOM.DIST.RANGE.',
@@ -116,7 +117,7 @@ export default {
     { p: `For the next 20 orders, with <m>p = ${D.orders.subscriptions} \\div ${D.orders.n} \\approx ${f(P)}</m> from the spring, the chance of exactly 9 subscriptions is <m>\\binom{20}{9} (${f(P)})^9 (${f(1 - P)})^{11} \\approx ${f(p9, 4)}</m>, or <x>=BINOM.DIST(9,20,104/231,FALSE)</x>. A binomial count has mean <m>np = ${f(muB, 2)}</m> and standard deviation <m>\\sqrt{np(1 - p)} \\approx ${f(sdB, 2)}</m>: Ana should expect about 9 subscriptions, give or take about 2.` },
 
     { h: 'The Poisson distribution' },
-    { p: `Orders per day are a different kind of count: there is no fixed number of trials, only orders arriving over time. The <g>Poisson distribution</g> describes the number of events in a fixed interval of time or space when they happen independently of each other, at a constant average rate <m>\\lambda</m> (“lambda”), and never two at exactly the same moment. Its one parameter, <m>\\lambda</m>, is both its mean and its variance.` },
+    { p: `Orders per day are a different kind of count: there is no fixed number of trials, only orders arriving over time. The <g>Poisson distribution</g> describes the number of events in a fixed interval of time or space when they happen independently of each other, at a constant average rate <m>\\lambda</m> (“lambda”), and never two at exactly the same moment. Its one parameter, <m>\\lambda</m>, is both its mean and its variance. The mean scales with the interval: if a day averages <m>\\lambda</m> orders, half a day averages <m>\\lambda \\div 2</m> and a week <m>7\\lambda</m>, and the count in each is Poisson with that mean.` },
     { math: String.raw`P(X = k) = \frac{e^{-\lambda} \lambda^k}{k!}, \qquad k = 0, 1, 2, \dots` },
     { p: String.raw`With <m>\lambda = ${D.orders.n} \div ${DAYS} \approx ${f(LAM)}</m> orders a day, the chance of a day with no orders is <m>e^{-${f(LAM)}} \approx ${f(poissonPmf(0, LAM), 4)}</m>, or <x>=POISSON.DIST(0,231/122,FALSE)</x>. Multiplying each probability by ${DAYS} days gives the number of days the model expects with each count, set against what happened:` },
     { table: {
@@ -138,7 +139,7 @@ export default {
     { p: `Two slips cause most wrong answers. For “at least <m>k</m>” the cumulative probability to subtract stops at <m>k - 1</m>, because <m>P(X \\geq 12) = 1 - P(X \\leq 11)</m>; subtracting <m>P(X \\leq 12)</m> gives <m>P(X > 12)</m>, ${f(binomSf(12, NB, P), 4)}. And FALSE and TRUE answer different questions: FALSE is a single bar of the distribution, TRUE everything up to and including it. BINOM.INV goes the other way: <x>=BINOM.INV(20,104/231,0.95)</x> = ${inv95} is the smallest count with at least a 95% chance of not being exceeded.` },
 
     { h: 'Are the binomial conditions met?' },
-    { p: `The binomial is a model, and its conditions should be checked against how the orders really arrive. <b>Two outcomes</b> and a <b>fixed n</b> are clear. <b>Constant p</b> is doubtful: app orders were subscriptions ${pc(PAPP)} of the time and web orders ${pc(47 / 132)}, so if the next 20 orders were all app orders the right <m>p</m> would be ${f(PAPP)}, and <m>P(X \\geq 12)</m> would be ${f(p12upApp, 3)} rather than ${f(p12up, 3)}. <b>Independence</b> fails if one customer places several of the 20 orders, because a subscriber’s orders are all subscriptions.` },
+    { p: `The binomial is a model, and its conditions should be checked against how the orders really arrive. <b>Two outcomes</b> and a <b>fixed n</b> are clear. <b>Constant p</b> is doubtful: app orders were subscriptions ${pc(PAPP)} of the time and web orders ${pc(PWEB)}, so if the next 20 orders were all app orders the right <m>p</m> would be ${f(PAPP)}, and <m>P(X \\geq 12)</m> would be ${f(p12upApp, 3)} rather than ${f(p12up, 3)}. <b>Independence</b> fails if one customer places several of the 20 orders, because a subscriber’s orders are all subscriptions.` },
     { p: 'Sampling without replacement breaks independence slightly, as the probability lesson showed. When the number drawn is less than about 10% of the population, the binomial is still a good model; for larger shares the hypergeometric distribution, which counts without replacement, is the exact one. A binomial probability is only as good as these conditions, so state the p you used and where it came from.' },
 
     { h: 'Mean and spread of a binomial count' },
@@ -206,10 +207,10 @@ export default {
         String.raw`Exactly 9: <m>\binom{20}{9} (${f(P)})^9 (${f(1 - P)})^{11} = ${combin(20, 9).toLocaleString('en-US').replace(',', '{,}')} \times ${f(P ** 9, 6)} \times ${f((1 - P) ** 11, 6)} \approx ${f(p9, 4)}</m>; <x>=BINOM.DIST(9,20,104/231,FALSE)</x>.`,
         String.raw`At least 12: <m>1 - P(X \leq 11) = 1 - ${f(binomCdf(11, NB, P), 4)} = ${f(p12up, 4)}</m>; <x>=1-BINOM.DIST(11,20,104/231,TRUE)</x>. From 6 to 12: <x>=BINOM.DIST.RANGE(20,104/231,6,12)</x> = ${f(p6to12, 4)}.`,
         String.raw`Mean and spread: <m>np = 20 \times ${f(P)} = ${f(muB, 2)}</m> and <m>\sqrt{20 \times ${f(P)} \times ${f(1 - P)}} \approx ${f(sdB, 2)}</m>.`,
-        String.raw`All app orders: with <m>p = 57 \div 99 \approx ${f(PAPP)}</m>, the mean rises to ${f(NB * PAPP, 2)} and <m>P(X \geq 12)</m> to ${f(p12upApp, 3)}.`,
+        String.raw`All app orders: with <m>p = ${ASUB} \div ${ASUB + AONE} \approx ${f(PAPP)}</m>, the mean rises to ${f(NB * PAPP, 2)} and <m>P(X \geq 12)</m> to ${f(p12upApp, 3)}.`,
       ],
       answer: `P(X = 9) ≈ ${f(p9, 3)}, P(X ≥ 12) ≈ ${f(p12up, 3)}, P(6 ≤ X ≤ 12) ≈ ${f(p6to12, 3)}; mean ${f(muB, 1)}, SD ${f(sdB, 2)}. For 20 app orders, P(X ≥ 12) ≈ ${f(p12upApp, 2)}.`,
-      interpretation: 'Even the single most likely count, 9, happens less than one time in five: a binomial count varies a good deal at n = 20. Twelve or more subscriptions would be unusual for a typical mix of orders but nothing remarkable for app orders, so the answer depends on which p is right. That choice is a business judgement, made before any calculation.' },
+      interpretation: 'Even the single most likely count, 9, happens less than one time in five: a binomial count varies a good deal at n = 20. Twelve or more subscriptions would happen about one time in eight with the spring’s mix of orders, but about half the time for app orders, so the answer depends on which p is right. That choice is a business judgement, made before any calculation.' },
 
     { level: 'applied', title: 'How many gift boxes to take to the Christmas market?', fictional: true,
       setup: `Lantern has a stall at a Saturday Christmas market (fictional). Gift Box Trios sell at ${usd(PRICE)} and cost ${usd(COST)} each to make up (B03’s price list); any left over are sold in January at ${usd(MARKDOWN)}, below cost. Boxes come in cartons of 10. Ana’s subjective probabilities for the day’s demand: 10 boxes 0.2, 20 boxes 0.4, 30 boxes 0.3, 40 boxes 0.1. How many should she take?`,
@@ -230,7 +231,7 @@ export default {
   ],
 
   demo: [
-    { widget: 'dv-binomial', intro: 'Subscriptions among the next 20 orders, with p from the spring. The default shows P(X ≥ 12). Switch to “P(X = k)” to see single bars, or change p to 0.576 (the app share) and watch the whole distribution move right; set n = 100 and it becomes almost bell-shaped.' },
+    { widget: 'dv-binomial', intro: 'Subscriptions among the next 20 orders, with p from the spring. The default shows P(X ≥ 12). Switch to “P(X = k)” to see single bars, or change p to 0.58 (about the app share) and watch the whole distribution move right; set n = 100 and it becomes almost bell-shaped.' },
     { widget: 'dv-poisson', intro: 'Orders per day as a Poisson distribution with λ = 1.893. Compare each bar, multiplied by 122 days, with the observed days in the chart below; then raise λ to see how a busier shop’s days would spread out.' },
     { widget: 'dv-fit', intro: 'Observed spring days by number of orders against the days the Poisson model expects. The bars almost match; the biggest gap is at four orders.' },
   ],
@@ -246,7 +247,7 @@ export default {
   application: [
     { p: 'Counts drive many operational decisions, and the binomial and the Poisson are the first models a planner reaches for. A call centre sizes its shifts from the Poisson distribution of calls per half hour; an airline that sells more tickets than seats uses the binomial distribution of no-shows; a quality team sets an acceptance rule for a delivery from the binomial distribution of defective items in a sample. In each case the model turns an average into the probability of the bad day the business must plan for.' },
     { p: 'Expected values are how such decisions are compared, but rarely the whole story. Two plans with similar expected profits can carry very different risks, which the standard deviation and the worst case show; and the probabilities behind an expected value are often judgements, as Ana’s are. Good practice is to show the expected value, the spread and the worst case side by side, and to test how far the inputs can move before the decision changes.' },
-    { case: `Ana takes 30 gift boxes to the market and writes her stock rule for the shop: on a typical day the Poisson model expects ${f(EXP[0], 0)} days in 122 with no orders and about ${f(DAYS * pFivePlus, 0)} with five or more, so she will keep enough packed stock for a five-order day. For subscriptions she quotes the binomial range, “about 9 in the next 20, usually between ${lo2} and ${hi2}”, and notes that the figure assumes the spring’s mix of web and app orders.` },
+    { case: `Ana takes 30 gift boxes to the market and writes her stock rule for the shop: over a spring like this one, the Poisson model expects about ${f(EXP[0], 0)} of ${DAYS} days with no orders and about ${f(DAYS * pFivePlus, 0)} with five or more, so she will keep enough packed stock for a five-order day. For subscriptions she quotes the binomial range, “about 9 in the next 20, usually between ${lo2} and ${hi2}”, and notes that the figure assumes the spring’s mix of web and app orders.` },
   ],
 
   summary: [
@@ -262,7 +263,7 @@ export default {
 
   glossary: [
     { term: 'Random variable', def: 'A number determined by the outcome of an experiment, such as the number of orders on a day. It is discrete if it takes separate values (usually counts) and continuous if it can take any value in a range.' },
-    { term: 'Probability distribution', def: 'A list or formula giving every value a random variable can take and its probability (for a discrete variable), with the probabilities adding to 1.' },
+    { term: 'Probability distribution', def: 'For a discrete random variable, a list or formula giving every value it can take and its probability, with the probabilities adding to 1; for a continuous variable, a density curve whose area over a range is the probability of that range.' },
     { term: 'Binomial distribution', def: 'The distribution of the number of successes in n independent trials, each with the same probability p of success; its mean is np and its standard deviation √(np(1 − p)).' },
     { term: 'Poisson distribution', def: 'The distribution of the number of events in a fixed interval when events occur independently at a constant average rate λ; its mean and variance both equal λ.' },
     { term: 'Exponential distribution', def: 'A continuous distribution of the time between events in a Poisson process with rate λ; its mean is 1/λ and P(T ≤ t) = 1 − e^(−λt).' },
@@ -353,7 +354,11 @@ export default {
     { what: 'P(5..13)', value: pWithin2, shown: 0.960, tol: 0.0005 },
     { what: 'App p', value: PAPP, shown: 0.576, tol: 0.0005 },
     { what: 'App p %', value: PAPP * 100, shown: 57.6, tol: 0.05 },
-    { what: 'Web p %', value: 47 / 132 * 100, shown: 35.6, tol: 0.05 },
+    { what: 'Web p %', value: PWEB * 100, shown: 35.6, tol: 0.05 },
+    { what: 'App subscriptions', value: ASUB, shown: 57 },
+    { what: 'App orders', value: ASUB + AONE, shown: 99 },
+    { what: 'P(X>=12) about one time in eight', value: 1 / p12up, shown: 8, tol: 0.5 },
+    { what: 'App P(X>=12) about half', value: p12upApp, shown: 0.5, tol: 0.01 },
     { what: 'App mean', value: NB * PAPP, shown: 11.52, tol: 0.005 },
     { what: 'P(X>=12) app', value: p12upApp, shown: 0.507, tol: 0.0005 },
     { what: 'P(X>=12) app 2dp', value: p12upApp, shown: 0.51, tol: 0.005 },

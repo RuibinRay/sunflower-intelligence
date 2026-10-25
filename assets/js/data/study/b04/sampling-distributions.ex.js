@@ -2,8 +2,8 @@
 // live here). Lantern's orders, subscription flags and channel counts come from case.js; Tollgate Bike Hire, Westcliff
 // Gym, Cragside Events, Sedgefield Dairy, Ambleside Hotel and the Whitlow Trust are fictional. Formula items are marked
 // by their results on the sheet and on copies with the numbers changed; num items recompute their answers in `check`.
-import { ORDER_VALUES, SUBSCRIPTION_FLAGS, CHANNEL_SUBSCRIPTION, DERIVED as D } from './case.js?v=12';
-import * as I from '../../../core/inference.js?v=12';
+import { ORDER_VALUES, SUBSCRIPTION_FLAGS, CHANNEL_SUBSCRIPTION, DERIVED as D } from './case.js?v=13';
+import * as I from '../../../core/inference.js?v=13';
 
 const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
 const usd = (v, d = 2) => `$${v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
@@ -70,7 +70,7 @@ export const guided = [
       'The mean of 30 orders Ana drew at random from those 231: $31.20',
       'The share of all the bags Kilnworth fills that weigh under 1,000 g',
       'Five of the 40 bags Ana weighed were under 1,000 g: 12.5%',
-      'The standard deviation of the 40 bags Ana weighed: 2.66 g',
+      `The standard deviation of the ${D.kg.n} bags Ana weighed: ${D.kg.sd.toFixed(2)} g`,
       'The share of all Lantern’s customers who would recommend it to a friend',
     ],
     categories: ['Parameter', 'Statistic'],

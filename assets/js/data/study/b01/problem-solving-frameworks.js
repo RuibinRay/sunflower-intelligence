@@ -1,5 +1,5 @@
 // problem-solving-frameworks.js — B01 · Problem-solving frameworks. Content only; exercises are in problem-solving-frameworks.ex.js.
-import { SHOP } from './case.js?v=12';
+import { SHOP } from './case.js?v=13';
 
 const box = (x, y, w, h, lines, { dash = false, series = 0, size = 13 } = {}) => {
   const stroke = series ? `var(--series-${series})` : 'var(--rule-strong)';

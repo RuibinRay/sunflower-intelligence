@@ -13,13 +13,13 @@
 // Agrees with other courses (checked in IDENTITIES): b03's 231 spring orders ($9,096.15) and 76 catering events
 // ($62,320); b01's monthly visits and orders, the September survey (79 replies, 61 would recommend) and the 3.0%
 // conversion target; b03's courier cost of $5.20 a parcel.
-import { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, PRODUCTS, SHOP_MODEL, tableCells, DERIVED as B03 } from '../b03/case.js?v=12';
-import { SHOP, SURVEY, MONTHS, TARGETS } from '../b01/case.js?v=12';
+import { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, PRODUCTS, SHOP_MODEL, tableCells, DERIVED as B03 } from '../b03/case.js?v=13';
+import { SHOP, SURVEY, MONTHS, TARGETS } from '../b01/case.js?v=13';
 import {
   KG_BAGS, SETUP_MINUTES, LATTE_PRE, LATTE_POST, SWIFTLINE_DAYS, PARCELBIRD_DAYS, WORKSHOP_IN_PERSON, WORKSHOP_ONLINE, WORKSHOP_HYBRID,
-} from './data.js?v=12';
-import * as I from '../../../core/inference.js?v=12';
-import { mean, sd, variance, median, quantile, skewness, kurtosis } from '../../../core/stats.js?v=12';
+} from './data.js?v=13';
+import * as I from '../../../core/inference.js?v=13';
+import { mean, sd, variance, median, quantile, skewness, kurtosis } from '../../../core/stats.js?v=13';
 
 export { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, PRODUCTS, tableCells, SHOP, SURVEY, MONTHS, TARGETS };
 export { KG_BAGS, SETUP_MINUTES, LATTE_PRE, LATTE_POST };
@@ -73,23 +73,36 @@ export const PER_GUEST_BY_TYPE = Object.fromEntries(EVENT_TYPES.map((t) => [t, E
 // ---------------------------------------------------------------- new lesson data
 /** Kilnworth Roasting's specification for its 1 kg bags: the filling machine is set to 1,004 g with an SD of 3 g. */
 export const KILNWORTH_1KG = { label: 1000, setting: 1004, sd: 3 };
-/** B01's September dip: web visits and orders, August against September. */
-export const CONVERSION = { aug: { visits: SHOP.webVisits[1], orders: SHOP.webOrders[1] }, sep: { visits: SHOP.webVisits[2], orders: SHOP.webOrders[2] }, target: TARGETS.conversion / 100 };
+/** B01's September dip. aug/sep: the website alone (visits and orders), the channel the 1 September redesign changed;
+ *  shop: web and app together, the basis of B01's 3.0% conversion target (July 3.0%, August 3.10%, September 2.20%). */
+const shopMonth = (i) => ({ visits: SHOP.webVisits[i] + SHOP.appVisits[i], orders: SHOP.webOrders[i] + SHOP.appOrders[i] });
+export const CONVERSION = {
+  aug: { visits: SHOP.webVisits[1], orders: SHOP.webOrders[1] }, sep: { visits: SHOP.webVisits[2], orders: SHOP.webOrders[2] },
+  shop: { jul: shopMonth(0), aug: shopMonth(1), sep: shopMonth(2), oct: shopMonth(3) },
+  target: TARGETS.conversion / 100,
+};
 
 // ---------------------------------------------------------------- the project (lessons must not use these)
-/** The November–December 2026 courier trial: business days to delivery, and the price per parcel. Late = more than 3 days. */
+/** The 16 November – 18 December 2026 courier trial: each order went with Swiftline (Lantern's courier, B03's $5.20 a
+ *  parcel) or Parcelbird, chosen at random, and Ana tracked a random sample of the parcels (about a fifth of the shop's
+ *  orders in those weeks): business days to delivery. Late = more than 3 days. planningSD: the pooled SD of delivery
+ *  times (0.934, as the ToolPak's equal-variance test pools it), rounded for the power calculation; parcelsPerMonth: Ana's planning figure for 2027. */
 export const COURIER_TRIAL = {
   swiftline: { name: 'Swiftline', days: SWIFTLINE_DAYS, price: SHOP_MODEL.courier },
   parcelbird: { name: 'Parcelbird', days: PARCELBIRD_DAYS, price: 5.65 },
-  lateAfter: 3,
+  lateAfter: 3, planningSD: 0.93, parcelsPerMonth: 450,
 };
-/** The 12 November gift-box email: three subject lines, each sent to 1,500 customers chosen at random; gift-box orders within a week. */
+/** People on Lantern's mailing list at the end of 2026: newsletter sign-ups as well as customers (fictional). */
+export const MAILING_LIST = 6_000;
+/** The 12 November gift-box email: three subject lines, each sent to 1,500 people chosen at random from the mailing list;
+ *  the number in each group who clicked through to the gift-box page within a week. The free-delivery offer applied to
+ *  all three groups; only line C's subject mentioned it. */
 export const EMAIL_TEST = {
   sent: 1500,
   lines: [
-    { id: 'A', subject: 'Gift boxes are back', orders: 41 },
-    { id: 'B', subject: 'Your coffee lover’s gift, sorted', orders: 58 },
-    { id: 'C', subject: 'Free delivery on gift boxes until 15 December', orders: 47 },
+    { id: 'A', subject: 'Gift boxes are back', clicks: 41 },
+    { id: 'B', subject: 'Your coffee lover’s gift, sorted', clicks: 58 },
+    { id: 'C', subject: 'Free delivery on gift boxes until 15 December', clicks: 47 },
   ],
 };
 /** Workshop satisfaction (0–10) by format, 2026. */
@@ -138,7 +151,10 @@ export const DERIVED = {
   conversion: {
     aug: CONVERSION.aug.orders / CONVERSION.aug.visits, sep: CONVERSION.sep.orders / CONVERSION.sep.visits,
     test: I.propTest2(CONVERSION.aug.orders, CONVERSION.aug.visits, CONVERSION.sep.orders, CONVERSION.sep.visits),
-    sepVsTarget: I.propTest1(CONVERSION.sep.orders, CONVERSION.sep.visits, CONVERSION.target, { alternative: 'less' }),
+    // the target is B01's, for the shop as a whole (web and app together)
+    sepVsTarget: I.propTest1(CONVERSION.shop.sep.orders, CONVERSION.shop.sep.visits, CONVERSION.target, { alternative: 'less' }),
+    octVsTarget: I.propTest1(CONVERSION.shop.oct.orders, CONVERSION.shop.oct.visits, CONVERSION.target, { alternative: 'less' }),
+    shop: Object.fromEntries(Object.entries(CONVERSION.shop).map(([k, v]) => [k, v.orders / v.visits])),
   },
   survey: { recommend: I.ciProp(SURVEY.wouldRecommend.yes, SURVEY.responses), responseRate: SURVEY.responses / SURVEY.sent },
   eventTypes: { anova: I.anova1(EVENT_TYPES.map((t) => PER_GUEST_BY_TYPE[t])), means: Object.fromEntries(EVENT_TYPES.map((t) => [t, mean(PER_GUEST_BY_TYPE[t])])) },
@@ -148,15 +164,17 @@ export const DERIVED = {
       welch: I.tTest2(swift, pbird), pooled: I.tTest2(swift, pbird, { equalVar: true }),
       lateTest: I.propTest2(late(swift), swift.length, late(pbird), pbird.length),
       extraCostPerParcel: r2(COURIER_TRIAL.parcelbird.price - COURIER_TRIAL.swiftline.price),
-      powerHalfDay: I.powerMean({ delta: 0.5, sigma: Math.sqrt((variance(swift) + variance(pbird)) / 2), n: 60, twoSample: true }),
-      nForQuarterDay: I.sampleSizeForPower({ delta: 0.25, sigma: Math.sqrt((variance(swift) + variance(pbird)) / 2), twoSample: true }),
+      pooledSD: Math.sqrt(((swift.length - 1) * variance(swift) + (pbird.length - 1) * variance(pbird)) / (swift.length + pbird.length - 2)),
+      powerHalfDay: I.powerMean({ delta: 0.5, sigma: COURIER_TRIAL.planningSD, n: 60, twoSample: true }),
+      nForQuarterDay: I.sampleSizeForPower({ delta: 0.25, sigma: COURIER_TRIAL.planningSD, twoSample: true }),
+      lateMonthly: [swift, pbird].map((xs) => (COURIER_TRIAL.parcelsPerMonth * late(xs)) / xs.length),
     },
     email: {
-      rates: EMAIL_TEST.lines.map((l) => l.orders / EMAIL_TEST.sent),
-      chi: I.chisqIndependence([EMAIL_TEST.lines.map((l) => l.orders), EMAIL_TEST.lines.map((l) => EMAIL_TEST.sent - l.orders)]),
-      bVsA: I.propTest2(EMAIL_TEST.lines[1].orders, EMAIL_TEST.sent, EMAIL_TEST.lines[0].orders, EMAIL_TEST.sent),
+      rates: EMAIL_TEST.lines.map((l) => l.clicks / EMAIL_TEST.sent),
+      chi: I.chisqIndependence(EMAIL_TEST.lines.map((l) => [l.clicks, EMAIL_TEST.sent - l.clicks])),
+      bVsA: I.propTest2(EMAIL_TEST.lines[1].clicks, EMAIL_TEST.sent, EMAIL_TEST.lines[0].clicks, EMAIL_TEST.sent),
     },
-    workshops: { anova: I.anova1(ws), means: ws.map(mean), sds: ws.map((x) => sd(x)) },
+    workshops: { anova: I.anova1(ws), welch: I.anovaWelch(ws), kw: I.kruskal(ws), means: ws.map(mean), sds: ws.map((x) => sd(x)) },
     subscribers: { ci: I.ciProp(SUBSCRIBER_SURVEY.fortnightly, SUBSCRIBER_SURVEY.responded), responseRate: SUBSCRIBER_SURVEY.responded / SUBSCRIBER_SURVEY.invited },
     surveyPlan: { n: nPlan, invite: Math.ceil(nPlan / SURVEY_PLAN.responseRate - 1e-9) },
   },
@@ -170,9 +188,11 @@ export const IDENTITIES = [
   ['channel × subscription table covers every order', CHANNEL_SUBSCRIPTION.counts.flat().reduce((a, b) => a + b, 0) === 231],
   ['76 catering events, $62,320 (B03, F02)', EVENTS.length === B03.events && einv.reduce((a, b) => a + b, 0) === B03.eventValue],
   ['B01: August and September web orders and visits', CONVERSION.aug.orders === 224 && CONVERSION.sep.visits === 8_800],
+  ['B01: shop conversion 3.10% in August, 2.20% in September', Math.abs(CONVERSION.shop.aug.orders / CONVERSION.shop.aug.visits - 0.03098) < 0.00001 && CONVERSION.shop.sep.orders === 251],
   ['B01 survey: 61 of 79 would recommend', SURVEY.responses === 79 && SURVEY.wouldRecommend.yes === 61],
   ['Swiftline charges B03’s $5.20 a parcel', COURIER_TRIAL.swiftline.price === 5.2],
-  ['each email line sent to 1,500 customers', EMAIL_TEST.lines.length === 3 && EMAIL_TEST.sent === 1500],
+  ['each email line sent to 1,500 people, all from the mailing list', EMAIL_TEST.lines.length === 3 && EMAIL_TEST.sent === 1500 && 3 * EMAIL_TEST.sent <= MAILING_LIST],
+  ['2027 survey invitations fit within the mailing list', Math.ceil(nPlan / SURVEY_PLAN.responseRate - 1e-9) <= MAILING_LIST],
   ['subscriber survey: replies within invitations', SUBSCRIBER_SURVEY.responded <= SUBSCRIBER_SURVEY.invited && SUBSCRIBER_SURVEY.fortnightly <= SUBSCRIBER_SURVEY.responded],
   ['latte scores paired (12 and 12)', LATTE_PRE.length === 12 && LATTE_POST.length === 12],
 ];

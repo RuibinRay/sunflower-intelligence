@@ -2,8 +2,8 @@
 // (answer keys live here). Lantern's figures come from case.js (B01's monthly shop figures, the spring weekdays and the
 // channel and region tables); every other business is fictional. Formula items are marked by their results
 // (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { WEEKDAYS, CHANNEL_SUBSCRIPTION, REGION_SUBSCRIPTION, SHOP, DERIVED as D } from './case.js?v=12';
-import * as I from '../../../core/inference.js?v=12';
+import { WEEKDAYS, CHANNEL_SUBSCRIPTION, REGION_SUBSCRIPTION, RATING_BY_CHANNEL, SHOP, DERIVED as D } from './case.js?v=13';
+import * as I from '../../../core/inference.js?v=13';
 
 const WK = D.weekdays, CS = D.channelSubscription, RG = D.regionSubscription;
 const cs = CHANNEL_SUBSCRIPTION.counts, rg = REGION_SUBSCRIPTION.counts;
@@ -115,7 +115,7 @@ export const widgets = {
 export const guided = [
   {
     id: 'b04-pc-g1', type: 'steps', kind: 'numerical',
-    prompt: `The checkout bug fix went live on 5 October. In October the website took ${SHOP.webOrders[3]} orders from ${SHOP.webVisits[3].toLocaleString('en-US')} visits, against ${SHOP.webOrders[2]} from ${SHOP.webVisits[2].toLocaleString('en-US')} in September. Test whether web conversion differed between the two months (two-sided, α = 0.05), building the two-proportion z test in the worksheet.`,
+    prompt: `The fix for the payment-page bug on mobile browsers went live on 5 October. In October the website took ${SHOP.webOrders[3]} orders from ${SHOP.webVisits[3].toLocaleString('en-US')} visits, against ${SHOP.webOrders[2]} from ${SHOP.webVisits[2].toLocaleString('en-US')} in September. Test whether web conversion differed between the two months (two-sided, α = 0.05), building the two-proportion z test in the worksheet.`,
     solution: `Pooled proportion (158 + 222) ÷ (8,800 + 8,300) = 380 ÷ 17,100 ≈ ${OCT.pool.toFixed(4)}. Standard error √(${OCT.pool.toFixed(4)} × ${(1 - OCT.pool).toFixed(4)} × (1/8,800 + 1/8,300)) ≈ ${OCT.sePool.toFixed(6)}. z = (${pct(OCT.p1, 2)} − ${pct(OCT.p2, 2)}) ÷ ${OCT.sePool.toFixed(6)} ≈ ${OCT.z.toFixed(2)}, and the two-sided p-value is about ${OCT.pValue.toFixed(4)}. Reject H₀: October’s web conversion was higher than September’s. The timing fits the fix, but a before-and-after comparison is evidence for a cause, not proof of one.`,
     steps: [
       {
@@ -216,7 +216,7 @@ export const guided = [
 export const independent = [
   {
     id: 'b04-pc-i1', type: 'formula', kind: 'applied',
-    prompt: 'Lantern’s spring orders by region and subscription status are in B2:C6, and the expected counts under independence are already in F2:G6. In B9, return the p-value of the chi-square test of independence in one formula.',
+    prompt: 'Lantern’s spring orders by region and subscription status are in B2:C6, and the expected counts under independence are already in F2:G6. In B9, return the p-value of the chi-square test of independence in one formula, with CHISQ.TEST.',
     sheet: regionSheet, cell: 'B9', answer: '=CHISQ.TEST(B2:C6,F2:G6)',
     require: ['CHISQ.TEST'],
     view: 'A1:G9', formats: { F: '0.00', G: '0.00', B9: '0.000000' }, widths: { A: 10, F: 20, G: 17 },
@@ -294,10 +294,10 @@ export const independent = [
     prompt: 'Complete the statements about chi-square tests.',
     text: 'A chi-square statistic can never be [[0]]. If the null hypothesis is true, its distribution has a mean equal to its [[1]]. Large values are evidence against the null hypothesis, so the p-value is the area in the [[2]] tail. A test of independence on a table with r rows and c columns has [[3]] degrees of freedom.',
     blanks: [
-      { options: ['negative', 'zero', 'more than 1', 'a whole number'], answer: 0 },
-      { options: ['degrees of freedom', 'sample size', 'number of cells', 'expected count'], answer: 0 },
-      { options: ['right', 'left', 'nearer'], answer: 0 },
-      { options: ['(r − 1)(c − 1)', 'r × c − 1', 'r + c − 2', 'r × c'], answer: 0 },
+      { options: ['zero', 'negative', 'more than 1', 'a whole number'], answer: 1 },
+      { options: ['sample size', 'number of cells', 'degrees of freedom', 'expected count'], answer: 2 },
+      { options: ['left', 'right', 'both'], answer: 1 },
+      { options: ['r × c − 1', 'r + c − 2', 'r × c', '(r − 1)(c − 1)'], answer: 3 },
     ],
     fixed: true,
     solution: 'χ² sums squared gaps divided by positive expected counts, so it is never negative (it is 0 when every count matches). Its distribution under H₀ has mean equal to its degrees of freedom, and only large values count against H₀: the right tail. A table with fixed row and column totals has (r − 1)(c − 1) degrees of freedom.',
@@ -361,7 +361,7 @@ export const check = [
   },
   {
     id: 'b04-pc-k5', type: 'mc', kind: 'applied',
-    prompt: 'Lantern’s rated spring orders: 44.0% of web ratings and 44.3% of app ratings were five stars (154 ratings), and the chi-square test of independence gives p = 0.98. What should Ana conclude?',
+    prompt: `Lantern’s rated spring orders: ${RATING_BY_CHANNEL.counts.map(([five, rest]) => pct(five / (five + rest))).join(' of web ratings and ')} of app ratings were five stars (${D.ratingByChannel.n} ratings), and the chi-square test of independence gives p = ${D.ratingByChannel.p.toFixed(2)}. What should Ana conclude?`,
     options: [
       'No evidence of a difference in five-star share, though a gap of several points either way is possible.',
       'The test proves that web and app customers are equally satisfied, since the p-value is so close to 1.',

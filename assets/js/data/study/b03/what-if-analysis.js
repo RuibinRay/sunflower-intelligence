@@ -2,11 +2,11 @@
 // Uses QUOTE and EVENTS from case.js, F02's event wages and M01's contribution margin and competitor (for checking the
 // model), and the costing model, Ana's cost estimates and her December plan from what-if-analysis.ex.js (fictional,
 // introduced here). The shop model and the July stock plan belong to the project and are not used.
-import { QUOTE, EVENTS, EVENT_COLUMNS, DERIVED as D } from './case.js?v=12';
-import { FACTS as F02 } from '../f02/case.js?v=12';
-import { BUSINESS as M01, COMPETITOR, CLIENT_INTERVIEWS } from '../m01/case.js?v=12';
-import { Sheet, goalSeek, dataTable, solveSheet } from '../../../core/sheet.js?v=12';
-import { COSTS as K, TEAM_DAY, BREAKFAST, costingCells, PLAN_CELLS, PLAN_SOLVER } from './what-if-analysis.ex.js?v=12';
+import { QUOTE, EVENTS, EVENT_COLUMNS, DERIVED as D } from './case.js?v=13';
+import { FACTS as F02 } from '../f02/case.js?v=13';
+import { BUSINESS as M01, COMPETITOR, CLIENT_INTERVIEWS } from '../m01/case.js?v=13';
+import { Sheet, goalSeek, dataTable, solveSheet } from '../../../core/sheet.js?v=13';
+import { COSTS as K, TEAM_DAY, BREAKFAST, costingCells, PLAN_CELLS, PLAN_SOLVER } from './what-if-analysis.ex.js?v=13';
 
 // ---------------------------------------------------------------- the costing model, recomputed for the checks
 const sheetFor = (ev, edits = {}) => { const s = new Sheet({ cells: costingCells(ev) }); Object.entries(edits).forEach(([c, x]) => s.set(c, x)); return s; };

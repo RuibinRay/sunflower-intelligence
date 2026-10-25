@@ -1,5 +1,5 @@
 // Run: node tests/sheet.test.mjs   (the B03 spreadsheet engine, assets/js/core/sheet.js)
-// 1. 239 formulas recalculated by LibreOffice Calc (tests/fixtures-sheet.json, made by tests/make_fixtures_sheet.py);
+// 1. Formulas recalculated by LibreOffice Calc (tests/fixtures-sheet.json, made by tests/make_fixtures_sheet.py);
 //    where LibreOffice and Excel differ, the fixture holds Excel's documented value and the reason is in the script.
 // 2. Functions new in Excel 365 (not in LibreOffice 24.2), checked against the rules in Microsoft's help pages.
 // 3. Filling formulas, spills, tables, grading, pivot tables, Goal Seek, data tables and Solver.

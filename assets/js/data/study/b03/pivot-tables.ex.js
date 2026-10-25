@@ -1,8 +1,8 @@
 // pivot-tables.ex.js — B03 · PivotTables: widgets, practice and the knowledge check (answer keys live here). Lantern's
 // orders and events come from case.js; no margin figures (they belong to the project). Every num item's `check`
 // recomputes its answer from the case data; every formula item is marked on the sheet and on changed copies.
-import { ORDERS, ORDER_COLUMNS, EVENTS, EVENT_COLUMNS, orderRecords, eventRecords, ordersCells, eventsCells } from './case.js?v=12';
-import { isoToSerial } from '../../../core/sheet.js?v=12';
+import { ORDERS, ORDER_COLUMNS, EVENTS, EVENT_COLUMNS, orderRecords, eventRecords, ordersCells, eventsCells } from './case.js?v=13';
+import { isoToSerial } from '../../../core/sheet.js?v=13';
 
 const MONEY = '$#,##0.00';
 const oc = (name) => ORDER_COLUMNS.indexOf(name);

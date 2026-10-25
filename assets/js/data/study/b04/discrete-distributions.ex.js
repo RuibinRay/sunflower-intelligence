@@ -2,9 +2,9 @@
 // live here). Lantern's subscription share and orders per day come from case.js; the café client's weekly bags, the
 // online bookshop, the autumn quotes and the gift-box markdown are fictional. Formula items are marked by their results
 // (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { DERIVED as D, ORDERS_PER_DAY } from './case.js?v=12';
-import { variance } from '../../../core/stats.js?v=12';
-import { binomPmf, binomCdf, binomSf, poissonPmf, poissonCdf, poissonSf, exponCdf } from '../../../core/inference.js?v=12';
+import { DERIVED as D, ORDERS_PER_DAY } from './case.js?v=13';
+import { variance } from '../../../core/stats.js?v=13';
+import { binomPmf, binomCdf, binomSf, poissonPmf, poissonCdf, poissonSf, exponCdf } from '../../../core/inference.js?v=13';
 
 const f = (v, d = 3) => v.toFixed(d);
 const sum = (a) => a.reduce((s, x) => s + x, 0);
@@ -82,8 +82,8 @@ export const guided = [
         id: 'b04-dv-g1-s3', type: 'mc',
         prompt: 'What does E(X) = 1.7 bags mean for Ana?',
         options: [
-          'Over many weeks, the client’s orders average 1.7 bags a week.',
-          'In most weeks the client orders 1.7 bags, rounded up to 2 bags.',
+          'Over many weeks, the client’s orders average out at 1.7 bags a week.',
+          'In most weeks the client orders 1.7 bags, which is rounded up to 2 bags.',
           'The client orders at least one bag in 70% of weeks, on average.',
           'The client is certain to order between 1 and 2 bags in any week.',
         ],
@@ -189,8 +189,8 @@ export const independent = [
     id: 'b04-dv-i4', type: 'mc', kind: 'applied',
     prompt: 'Ana models her orders per day with a Poisson distribution. Which observation would most undermine that model?',
     options: [
-      'Orders jump on the day of each promotional email and fall back the day after.',
-      'The shop averages fewer than two orders a day, which is a small number of events.',
+      'Orders jump on the day of every promotional email and fall back on the day after.',
+      'The shop averages fewer than two orders a day, which is a very small number of events.',
       'No day in the spring brought more than five orders to the shop in a single day.',
       'The orders come from more than 200 different customers spread across the regions.',
     ],
@@ -217,20 +217,19 @@ export const independent = [
     id: 'b04-dv-i6', type: 'multi', kind: 'conceptual',
     prompt: 'Select all the true statements about expected values.',
     options: [
-      'An expected value can be a value the random variable never takes.',
-      'The expected value is the long-run average over many repetitions.',
-      'For a binomial count, the expected value is np.',
-      'The expected value is always the most likely value of the variable.',
-      'The expected profit always equals the profit at the expected demand.',
-      'Doubling every value doubles the standard deviation and squares E(X).',
+      'An expected value can be a value that the random variable never actually takes.',
+      'The expected value is the long-run average of the results over many repetitions.',
+      'For a binomial count of successes in n trials, the expected value is np.',
+      'The expected value is always the single most likely value of the variable.',
+      'The expected profit always equals the profit you would make at the expected demand.',
+      'Doubling every value doubles both the expected value and the standard deviation.',
     ],
-    answer: [0, 1, 2],
+    answer: [0, 1, 2, 5],
     feedback: {
       3: 'For orders per day E(X) = 1.89, which is not even possible; the most likely count is 1.',
       4: `Not when profit isn’t a straight-line function of demand: in the gift-box example, stocking 30 earns $${eProfit(30, 12)} on average but $${profit(30, ED, 12)} at the expected demand of ${ED} boxes.`,
-      5: 'Doubling every value doubles E(X) and the standard deviation; the variance is multiplied by 4.',
     },
-    solution: 'An expected value is a probability-weighted, long-run average (1.89 orders a day, which no day can have), and for a binomial it is np. It needn’t be the most likely value, and when the outcome is not a straight-line function of the random variable (profit with leftover stock) the expected outcome differs from the outcome at the expected value.',
+    solution: 'An expected value is a probability-weighted, long-run average (1.89 orders a day, which no day can have), and for a binomial it is np. Doubling every value doubles E(X) and the standard deviation (the variance is multiplied by 4). It needn’t be the most likely value, and when the outcome is not a straight-line function of the random variable (profit with leftover stock) the expected outcome differs from the outcome at the expected value.',
   },
 ];
 
@@ -280,14 +279,14 @@ export const check = [
   },
   {
     id: 'b04-dv-k4', type: 'num', kind: 'applied',
-    prompt: 'For the Christmas market stall (Gift Box Trio $58, cost $20; demand 10, 20, 30 or 40 boxes with probabilities 0.2, 0.4, 0.3, 0.1), suppose leftover boxes could be sold in January for $25 instead of $12. What is the expected profit from taking 30 boxes? Give whole dollars.',
-    answer: eProfit(30, 25), check: () => 0.2 * (58 * 10 + 25 * 20 - 600) + 0.4 * (58 * 20 + 25 * 10 - 600) + 0.4 * (58 * 30 - 600), unit: '$', places: 0, tol: 0.5,
+    prompt: 'For the Christmas market stall (Gift Box Trio $58, cost $20; demand 10, 20, 30 or 40 boxes with probabilities 0.2, 0.4, 0.3, 0.1), suppose leftover boxes could be sold in January for $18 instead of $12. What is the expected profit from taking 30 boxes? Give whole dollars.',
+    answer: eProfit(30, 18), check: () => 0.2 * (58 * 10 + 18 * 20 - 600) + 0.4 * (58 * 20 + 18 * 10 - 600) + 0.4 * (58 * 30 - 600), unit: '$', places: 0, tol: 0.5,
     wrong: [
-      { value: eProfit(30, 12), say: 'That uses the old $12 January price. Recalculate each outcome with leftovers at $25.' },
-      { value: profit(30, ED, 25), say: `That is the profit at the expected demand of ${ED} boxes. The expected profit weights the profit for each demand by its probability, which gives a different answer.` },
-      { value: profit(30, 30, 25), say: 'That assumes all 30 boxes sell. Demand of 10 or 20 boxes has probability 0.6.' },
+      { value: eProfit(30, 12), say: 'That uses the old $12 January price. Recalculate each outcome with leftovers at $18.' },
+      { value: profit(30, ED, 18), say: `That is the profit at the expected demand of ${ED} boxes. The expected profit weights the profit for each demand by its probability, which gives a different answer.` },
+      { value: profit(30, 30, 18), say: 'That assumes all 30 boxes sell. Demand of 10 or 20 boxes has probability 0.6.' },
     ],
-    solution: `Profits with 30 boxes: demand 10 → 580 + 25 × 20 − 600 = $${profit(30, 10, 25)}; demand 20 → 1,160 + 250 − 600 = $${profit(30, 20, 25)}; demand 30 or 40 → $${profit(30, 30, 25).toLocaleString('en-US')}. Expected profit = 0.2 × ${profit(30, 10, 25)} + 0.4 × ${profit(30, 20, 25)} + 0.4 × ${profit(30, 30, 25).toLocaleString('en-US')} = $${eProfit(30, 25)}. A better January price makes leftovers less costly, so stocking 40 now earns $${eProfit(40, 25)} on average and becomes the better choice.`,
+    solution: `Profits with 30 boxes: demand 10 → 580 + 18 × 20 − 600 = $${profit(30, 10, 18)}; demand 20 → 1,160 + 180 − 600 = $${profit(30, 20, 18)}; demand 30 or 40 → $${profit(30, 30, 18).toLocaleString('en-US')}. Expected profit = 0.2 × ${profit(30, 10, 18)} + 0.4 × ${profit(30, 20, 18)} + 0.4 × ${profit(30, 30, 18).toLocaleString('en-US')} = $${eProfit(30, 18)}. A leftover box now costs only $${20 - 18} instead of $8, so carrying extra stock is cheap: 40 boxes would earn $${eProfit(40, 18)} on average, slightly more, at the price of a wider spread.`,
   },
   {
     id: 'b04-dv-k5', type: 'multi', kind: 'conceptual',
@@ -312,7 +311,7 @@ export const check = [
     id: 'b04-dv-k6', type: 'mc', kind: 'applied',
     prompt: `Ana compares her spring days with a Poisson model (λ = ${f(LAM)}): observed ${CNT.join(', ')} days with 0 to 5 orders, against ${[...EXP.slice(0, 5), DAYS * poissonSf(4, LAM)].map((v) => f(v, 1)).join(', ')} expected (the last for 5 or more). The days’ variance is ${f(variance(ORDERS_PER_DAY))} against a mean of ${f(LAM)}. What should she conclude?`,
     options: [
-      'The model describes the days well enough to plan with; a formal fit test comes later.',
+      'The model describes the days well enough to plan with, and a formal test of the fit comes later.',
       'The model is proven correct, which shows that her customers order independently of each other.',
       'The model fails, because the observed and expected days are not equal in any of the six rows.',
       'The model fails, because a Poisson needs at least 30 events a day before it can be used at all.',

@@ -2,7 +2,7 @@
 // Harbourline figures come from case.js (HARBOURLINE, HARBOURLINE_DETAIL, HARBOURLINE_DERIVED): book equity $300m;
 // operating costs excluding D&A 547, interest 11, tax 12, so profit before tax 50 and a 24% tax rate; capital spending
 // about $35m a year. Northbay Roasters and Copperloaf Bakeries are fictional and appear only in this lesson.
-import { HARBOURLINE as H, HARBOURLINE_DETAIL as D } from './case.js?v=12';
+import { HARBOURLINE as H, HARBOURLINE_DETAIL as D } from './case.js?v=13';
 
 export default {
   slug: 'value-and-valuation-words',

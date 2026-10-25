@@ -2,9 +2,9 @@
 // here). The workshop scores and the spring orders come from case.js; Moreno Hardware, Beacon Fitness, Fairweather
 // Bikes, Clearwater Contact Centre and Kinfolk Trust are fictional. Formula items are marked by their results
 // (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { LATTE_PRE as PRE, LATTE_POST as POST, ORDERS, ORDER_COLUMNS } from './case.js?v=12';
-import * as I from '../../../core/inference.js?v=12';
-import { mean, sd } from '../../../core/stats.js?v=12';
+import { LATTE_PRE as PRE, LATTE_POST as POST, ORDERS, ORDER_COLUMNS } from './case.js?v=13';
+import * as I from '../../../core/inference.js?v=13';
+import { mean, sd } from '../../../core/stats.js?v=13';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const neg = (v, d = 2) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), d)}`;
@@ -134,7 +134,7 @@ export const guided = [
         id: 'b04-cm-g1-s3', type: 'mc',
         prompt: `The paired test gives p ≈ ${fx(MP.p, 4)}; a two-sample test on the same two columns gives p ≈ ${fx(MU.p, 2)}. Why do they differ so much?`,
         options: [
-          'Store sizes vary far more than the change in sales, and pairing each store with itself removes that variation.',
+          'Store sizes vary far more than the change in sales; pairing each store with itself removes that.',
           'The paired test uses twice as many values as the two-sample test, so its standard error is half as large.',
           'The two-sample test is two-sided while the paired test is one-sided, which halves the paired test’s p-value.',
           'The paired test assumes the two weeks have equal variances, which makes its test statistic much larger.',

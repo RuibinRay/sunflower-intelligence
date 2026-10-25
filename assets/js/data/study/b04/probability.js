@@ -3,8 +3,8 @@
 // December order count. The chi-square test of these tables is module 4's: here independence is only compared
 // informally. Tillwise, Lantern's payment provider, and its fraud screen's rates are fictional and labelled, as is Ana's
 // subjective probability. Every printed figure is recomputed in `checks`.
-import { CHANNEL_SUBSCRIPTION as CS, REGION_SUBSCRIPTION as RS, SHOP } from './case.js?v=12';
-import { combin, permut } from '../../../core/inference.js?v=12';
+import { CHANNEL_SUBSCRIPTION as CS, REGION_SUBSCRIPTION as RS, SHOP } from './case.js?v=13';
+import { combin, permut } from '../../../core/inference.js?v=13';
 
 const f = (v, d = 3) => v.toFixed(d);
 const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
@@ -66,7 +66,7 @@ export default {
   slug: 'probability',
   title: 'Probability',
   blurb: 'Probability is the language every test and interval in this course is written in. Learn to read joint, marginal and conditional probabilities from a contingency table, to use the addition and multiplication rules, to check whether two events are independent, to draw a tree diagram, and to turn a screen’s accuracy into the probability that a flagged case is real with Bayes’ rule.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Define an experiment, its sample space and its events, and distinguish classical, relative-frequency and subjective probability.',
     'Calculate joint, marginal and conditional probabilities from a contingency table, and the probability of a complement, a union and an intersection.',
@@ -127,7 +127,7 @@ export default {
 
   theory: [
     { h: 'The rules of probability' },
-    { p: String.raw`Every way of assigning probabilities must obey the same rules. For any event, <m>0 \leq P(A) \leq 1</m>, and the whole sample space has probability 1. The complement rule follows: <m>P(A') = 1 - P(A)</m>. The <b>addition rule</b> gives “or”, the union <m>A \cup B</m>: <m>P(A \text{ or } B) = P(A) + P(B) - P(A \text{ and } B)</m>, and the last term is 0 for mutually exclusive events.` },
+    { p: String.raw`Every way of assigning probabilities must obey the same rules. For any event, <m>0 \leq P(A) \leq 1</m>, and the whole sample space has probability 1. The complement rule follows: <m>P(A') = 1 - P(A)</m>. The <b>addition rule</b> gives “or”, the union <m>A \cup B</m>: <m>P(A \text{ or } B) = P(A) + P(B) - P(A \text{ and } B)</m>. Here “and” is the intersection <m>A \cap B</m>, the outcomes in both events, and its probability is 0 for mutually exclusive events.` },
     { p: String.raw`Conditional probability is defined from the joint and marginal probabilities, <m>P(A \mid B) = P(A \text{ and } B) \div P(B)</m>, for any <m>B</m> with <m>P(B) > 0</m>. Rearranged, it is the <b>multiplication rule</b>: <m>P(A \text{ and } B) = P(B) \times P(A \mid B)</m>. With the table, <m>P(\text{app and sub}) = ${f(pApp)} \times ${f(pSubApp)} \approx ${f(pAppSub)}</m>, the same joint probability as before.` },
     { p: String.raw`For independent events the multiplication rule simplifies to <m>P(A \text{ and } B) = P(A) \times P(B)</m>. Three checks are equivalent, and any one of them shows independence: <m>P(A \mid B) = P(A)</m>, <m>P(B \mid A) = P(B)</m>, or <m>P(A \text{ and } B) = P(A)P(B)</m>. For channel and subscription, <m>P(\text{app})P(\text{sub}) = ${f(pApp)} \times ${f(pSub)} \approx ${f(pApp * pSub)}</m>, against the joint probability of ${f(pAppSub)}.` },
     { callout: 'warn', title: 'Mutually exclusive is not independent', html: 'The two ideas are often confused, but they are close to opposites. If two events with positive probabilities are mutually exclusive, knowing that one happened tells you the other didn’t: its probability drops to 0, so they can’t be independent. Independence is about whether one event carries information about the other; mutual exclusivity is about whether they can happen together.' },
@@ -152,7 +152,7 @@ export default {
     { p: String.raw`Tillwise screens every card payment and flags some as possible fraud. Suppose (all rates fictional) that 0.4% of orders are fraudulent, the <g>base rate</g>; that the screen flags 95% of fraudulent orders; and that it also flags 2% of genuine ones, its <g>false positive</g> rate. If an order is flagged, what is the probability it is fraudulent? The screen’s 95% is <m>P(\text{flag} \mid \text{fraud})</m>; the question asks for <m>P(\text{fraud} \mid \text{flag})</m>. <g>Bayes’ rule</g> turns one into the other:` },
     { math: String.raw`P(\text{fraud} \mid \text{flag}) = \frac{P(\text{fraud})\,P(\text{flag} \mid \text{fraud})}{P(\text{fraud})\,P(\text{flag} \mid \text{fraud}) + P(\text{genuine})\,P(\text{flag} \mid \text{genuine})} = \frac{0.004 \times 0.95}{0.004 \times 0.95 + 0.996 \times 0.02} \approx ${f(post)}` },
     { p: `Only about ${pc(post, 0)} of flagged orders are fraudulent. Natural frequencies make the reason visible. Of ${per.toLocaleString('en-US')} orders, ${fraudN} are fraudulent and ${fraudFlag} of them are flagged; of the ${genuineN.toLocaleString('en-US')} genuine orders, 2%, about ${Math.round(genuineFlag)}, are flagged too. So ${fraudFlag} of about ${Math.round(fraudFlag + genuineFlag)} flagged orders are fraud. When the base rate is low, even a small false-positive rate produces more false alarms than real cases.` },
-    { p: `Confusing <m>P(\\text{flag} \\mid \\text{fraud})</m> with <m>P(\\text{fraud} \\mid \\text{flag})</m> is called base-rate neglect, and it lies behind many bad decisions about screening tests, alarms and audits. The reverse question gives a reassuring answer: an order that is <i>not</i> flagged is fraudulent with probability about ${f(postNeg, 4)}, two in ten thousand. A screen like this is good at clearing orders and poor at convicting them.` },
+    { p: `Confusing <m>P(\\text{flag} \\mid \\text{fraud})</m> with <m>P(\\text{fraud} \\mid \\text{flag})</m> is sometimes called the confusion of the inverse; it usually comes from ignoring the base rate (base-rate neglect), and it lies behind many bad decisions about screening tests, alarms and audits. The reverse question gives a reassuring answer: an order that is <i>not</i> flagged is fraudulent with probability about ${f(postNeg, 4)}, two in ten thousand. A screen like this is good at clearing orders and poor at convicting them.` },
 
     { h: 'Counting outcomes: COMBIN and PERMUT' },
     { p: String.raw`Classical probability needs the number of equally likely outcomes, and counting them is often the hard part. The number of ways to choose <m>k</m> items from <m>n</m> when order doesn’t matter is the number of combinations, <m>\binom{n}{k} = n! \div (k!\,(n - k)!)</m>, Excel’s <x>=COMBIN(n,k)</x>; when order matters it is the number of permutations, <m>n! \div (n - k)!</m>, <x>=PERMUT(n,k)</x>. Here <m>n!</m> (“n factorial”) is <m>n \times (n - 1) \times \dots \times 1</m>.` },
@@ -262,18 +262,18 @@ export default {
     { term: 'Event', def: 'A set of outcomes of an experiment, such as “the order drawn is a subscription”.' },
     { term: 'Probability', def: 'A number from 0 (impossible) to 1 (certain) that measures how likely an event is; the probabilities of all the outcomes in a sample space add to 1.' },
     { term: 'Relative frequency', def: 'The number of times an event occurs divided by the number of trials or observations; used as an estimate of its probability.' },
-    { term: 'Law of large numbers', def: 'As an experiment is repeated more and more times, the relative frequency of an event gets closer to its probability.' },
+    { term: 'Law of large numbers', def: 'As an experiment is repeated more and more times, the relative frequency of an event tends to get closer to its probability, and the average of the results to the expected value.' },
     { term: 'Contingency table', def: 'A table that counts observations by two categorical variables at once, one in the rows and one in the columns, with row and column totals.' },
     { term: 'Joint probability', def: 'The probability that two events both happen, P(A and B); in a contingency table, a cell count divided by the grand total.' },
     { term: 'Marginal probability', def: 'The probability of one event regardless of the others; in a contingency table, a row or column total divided by the grand total.' },
     { term: 'Conditional probability', def: 'The probability of an event given that another has happened, P(A | B) = P(A and B) ÷ P(B).' },
     { term: 'Complement', def: 'All the outcomes not in an event A, written A′; P(A′) = 1 − P(A).' },
     { term: 'Mutually exclusive', def: 'Describes events that can’t happen together, so P(A and B) = 0 and P(A or B) = P(A) + P(B).' },
-    { term: 'Independent', def: 'Describes events where knowing one has happened doesn’t change the probability of the other: P(A | B) = P(A), equivalently P(A and B) = P(A) × P(B).' },
+    { term: 'Independent', def: 'Describes events where knowing one has happened doesn’t change the probability of the other: P(A | B) = P(A), equivalently P(A and B) = P(A) × P(B). Two categorical variables are independent when this holds for every pair of their categories.' },
     { term: 'Tree diagram', def: 'A diagram of events in sequence whose branches carry probabilities, conditional on the branches before them; multiplying along a path gives its joint probability.' },
     { term: 'Bayes’ rule', def: 'P(A | B) = P(A) P(B | A) ÷ [P(A) P(B | A) + P(A′) P(B | A′)]: how the probability of A changes once evidence B is seen.' },
     { term: 'Base rate', def: 'How common a condition is in the population before any evidence is seen, such as the share of orders that are fraudulent; the prior probability in Bayes’ rule.' },
-    { term: 'False positive', def: 'A case flagged by a screen or test that does not have the condition, such as a genuine order flagged as fraud. The false-positive rate is the share of such cases flagged.' },
+    { term: 'False positive', def: 'A case flagged by a screen or test that does not have the condition, such as a genuine order flagged as fraud. The false-positive rate is the share of cases without the condition that the screen flags, P(flag | no condition).' },
   ],
 
   references: [

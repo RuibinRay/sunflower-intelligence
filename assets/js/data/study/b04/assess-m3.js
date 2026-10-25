@@ -2,8 +2,8 @@
 // businesses, not copies of lesson exercises. No hints; solutions are shown when the student reviews the test. Every
 // business, person and number is fictional. Formula items are marked by their results (core/sheet.js gradeFormula);
 // every num item's `check` recomputes its answer.
-import * as I from '../../../core/inference.js?v=12';
-import { mean, sd } from '../../../core/stats.js?v=12';
+import * as I from '../../../core/inference.js?v=13';
+import { mean, sd } from '../../../core/stats.js?v=13';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const neg = (v, d = 2) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), d)}`;
@@ -13,7 +13,7 @@ const r = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
 // Brookfield Water: 36 bottles labelled 500 ml; the filler's SD is known to be 4 ml
 const BOTTLES = [493.5, 500.1, 501.9, 495.5, 495.6, 497.5, 495.9, 498.4, 504.8, 497.3, 501.2, 495.8, 499.8, 501.4, 499.1, 504.3, 504.8, 503.1, 494.2, 499.7, 496.8, 495.6, 493.4, 495.8, 500.5, 493.3, 499, 497.4, 497.1, 500.4, 506.2, 503.1, 492.4, 500.5, 498.6, 495.9];
 const BZ = I.zTest1(BOTTLES, 500, 4);
-const bottleSheet = { cells: { A1: 'Bottle', B1: 'Volume (ml)', ...col('A', 2, BOTTLES.map((_, i) => i + 1)), ...col('B', 2, BOTTLES), D1: 'μ₀ (ml)', E1: 500, D2: 'Known σ (ml)', E2: 4, D3: 'p-value, two-sided' }, vary: { E1: [499.5, 500.5], E2: [3.5, 4.5] } };
+const bottleSheet = { cells: { A1: 'Bottle', B1: 'Volume (ml)', ...col('A', 2, BOTTLES.map((_, i) => i + 1)), ...col('B', 2, BOTTLES), D1: 'μ₀ (ml)', E1: 500, D2: 'Known σ (ml)', E2: 4, D3: 'p-value, two-sided' }, vary: { E1: [497.5, 499.5, 500.5], E2: [3.5, 4.5] }, fixed: ['B2:B37'] };
 // Alderley Clinic: 192 of 240 appointments started on time; target 85%
 const AL = I.propTest1(192, 240, 0.85, { alternative: 'less' });
 const alWrong = I.normCdf((192 / 240 - 0.85) / Math.sqrt((0.8 * 0.2) / 240));
@@ -195,9 +195,9 @@ export const items = [
   },
   {
     id: 'b04-m3-11', lesson: 'comparing-means', type: 'mc', kind: 'conceptual',
-    prompt: 'A 95% Welch interval for the difference in mean repair time between two garages (fictional) runs from −0.8 to 6.2 minutes. Which conclusion is correct?',
+    prompt: 'A 95% Welch interval for the difference in mean repair time between two garages (fictional), garage A minus garage B, runs from −0.8 to 6.2 minutes. Which conclusion is correct?',
     options: [
-      'No significant difference at 5%: the data allow a 0.8-minute advantage up to a 6.2-minute disadvantage.',
+      'No significant difference at 5%: garage A could be from 0.8 minutes quicker to 6.2 minutes slower than B.',
       'The two garages’ mean repair times are equal, because the interval includes a difference of 0.',
       'There is a 95% probability that the true difference lies between −0.8 and 6.2 minutes for these two garages.',
       'The difference is significant at 5%, because most of the interval lies above 0 and its centre is at 2.7 minutes.',
@@ -208,7 +208,7 @@ export const items = [
       2: 'Once calculated, an interval either contains the true difference or doesn’t; 95% describes the method’s long-run success rate.',
       3: 'Significance depends on whether 0 is inside the interval, not on where most of it lies.',
     },
-    solution: 'The interval contains 0, so a two-sided Welch test at 5% would not reject H₀. That is not evidence the means are equal: anything from the first garage being 0.8 minutes quicker to 6.2 minutes slower is compatible with the data. “95%” describes how often the method captures the true difference, not the chance for this particular interval.',
+    solution: 'The interval contains 0, so a two-sided Welch test at 5% would not reject H₀. That is not evidence the means are equal: anything from garage A being 0.8 minutes quicker than garage B to 6.2 minutes slower is compatible with the data. “95%” describes how often the method captures the true difference, not the chance for this particular interval.',
   },
   {
     id: 'b04-m3-12', lesson: 'comparing-means', type: 'num', kind: 'numerical',
