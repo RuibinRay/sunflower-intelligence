@@ -16,7 +16,7 @@ import {
 const VERBS = /^(Explain|Describe|Define|Identify|Distinguish|Classify|Calculate|Compute|Record|Prepare|Analyse|Apply|Interpret|Evaluate|Compare|Choose|Decide|Use|Recognise|State|Construct|Build|Post|Journalise|Find|Detect|Diagnose|Handle|Transform|Scale|Encode|Write|Document|Justify|Recommend|Estimate|Assess|Plan|Design|Set|Measure|Select|Determine|Correct|Locate|Read|Summarise|Reshape|Combine|Profile|Validate|Clean|Convert|Standardise|Normalise|Map|Draft|Price|Forecast|Test|Name|List|Contrast|Close|Adjust|Trace|Reconcile)\b/;
 const KINDS = ['conceptual', 'numerical', 'applied'];
 const TYPES = ['mc', 'multi', 'num', 'fill', 'classify', 'order', 'journal', 'equation', 'rows', 'short', 'formula', 'steps'];
-const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak'];
+const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak', 'sampler'];
 const DATASETS = ['lantern-orders', 'harborview-bookings', 'northfield-students'];
 const CLEAN_OPS = ['dedupe', 'dedupe-key', 'trim', 'case', 'map', 'to-number', 'to-date', 'fill', 'drop-missing', 'flag-missing', 'validate', 'outliers', 'transform', 'scale', 'encode', 'derive', 'rename', 'drop-column'];
 const near = (a, b, tol) => Math.abs(a - b) <= tol + 1e-9;
@@ -372,6 +372,15 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
     if (pop.length < 10 || !pop.every(Number.isFinite)) r.err(`${w}: sampling needs a numeric population of at least 10 values`);
     if (wd.stat === 'proportion' && !pop.every((v) => v === 0 || v === 1)) r.err(`${w}: a proportion's population is 0s and 1s`);
     if (wd.replace === false && (wd.sizes || []).some((n) => n > pop.length)) r.err(`${w}: a sample without replacement can't be larger than the population`);
+  } else if (wd.type === 'sampler') {
+    const S0 = wd.strata || [], V = wd.value || [], n0 = S0.length;
+    const M = ['srs', 'stratified', 'cluster', 'optin'];
+    if (n0 < 100 || V.length !== n0 || !V.every((v) => v === 0 || v === 1) || !S0.every((v) => Number.isInteger(v) && v >= 0)) r.err(`${w}: sampler needs strata (integer codes) and value (0s and 1s), one each per person, at least 100 people`);
+    if (wd.propensity && (wd.propensity.length !== n0 || !wd.propensity.every((p) => p >= 0 && p <= 1))) r.err(`${w}: propensity needs one probability per person`);
+    if (wd.cluster && wd.cluster.length !== n0) r.err(`${w}: cluster needs one code per person`);
+    (wd.methods || []).forEach((m) => { if (!M.includes(m)) r.err(`${w}: unknown method ${m}`); if (m === 'cluster' && !wd.cluster) r.err(`${w}: 'cluster' needs cluster codes`); if (m === 'optin' && !wd.propensity) r.err(`${w}: 'optin' needs propensity`); });
+    if (wd.strataNames && wd.strataNames.length !== Math.max(...S0) + 1) r.err(`${w}: strataNames needs one name per stratum`);
+    if ((wd.sizes || []).some((k) => !(k > 0) || k > n0)) r.err(`${w}: sizes must be between 1 and the list size`);
   } else if (wd.type === 'toolpak') {
     const T = ['ttest-paired', 'ttest-equal', 'ttest-unequal', 'anova'];
     const list = wd.tools || [wd.tool];
