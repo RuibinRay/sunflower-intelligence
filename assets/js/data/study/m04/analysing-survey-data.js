@@ -94,7 +94,7 @@ export default {
   slug: 'analysing-survey-data',
   title: 'Analysing survey data',
   blurb: 'Prepare a survey export for analysis, then build frequency tables, cross-tabs, top-box scores and the Net Promoter Score with its margin of error in Excel. Weight results to the population with SUMPRODUCT, compare groups with B04’s tests, choose the median for skewed counts, and know when a base is too small to report.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Prepare survey data for analysis: decide how to treat partial responses, flag speeders and straight-liners, code open answers and missing answers, and state the base of every figure.',
     'Build frequency tables and cross-tabs in Excel with COUNTIF, COUNTIFS and a PivotTable, percentaging within each category of the explanatory variable.',

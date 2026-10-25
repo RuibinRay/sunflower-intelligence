@@ -93,7 +93,7 @@ export default {
   slug: 'insights-and-reporting',
   title: 'Insights and reporting',
   blurb: 'Turn findings into insights and recommendations by combining survey, qualitative and secondary evidence; say what research can’t show and when only an experiment will do; and write a research report with honest charts, uncertainty in plain words and respondents kept anonymous.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish a finding, an insight and a recommendation, and write an insight that explains a finding and implies an action.',
     'Combine quantitative, qualitative and secondary evidence by triangulation, and judge what the combination does and doesn’t support.',
