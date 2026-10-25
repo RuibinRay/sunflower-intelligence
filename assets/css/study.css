@@ -918,3 +918,9 @@ input[type="file"]:focus-visible + .file-btn, .file-btn:focus-within { outline: 
 .cv-chart .sm-dot { fill: var(--series-1); }
 .cv-chart .sm-dot.sm-miss { fill: var(--bad-ink); }
 .tp-table td { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---- M04 sampler widget */
+.sp-toggles { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-5); }
+.sp-check { display: flex; align-items: center; gap: var(--s-2); margin: 0; }
+.sp-check input { width: 1.1rem; height: 1.1rem; flex: none; }
+.sp-table .data-table td, .sp-table .data-table th { white-space: nowrap; }
