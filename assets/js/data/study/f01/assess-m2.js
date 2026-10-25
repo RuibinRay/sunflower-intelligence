@@ -21,10 +21,10 @@ export const items = [
     id: 'f01-m2-2', lesson: 'debits-and-credits', type: 'mc', kind: 'conceptual',
     prompt: 'A new bookkeeper says: “We debited Cash $3,000 when Meridian Partners paid its invoice, so Lantern had a $3,000 expense that day.” What is wrong with this reasoning?',
     options: [
-      'A debit is the left side of an account and nothing more. For an asset such as Cash it records an increase, not an expense.',
+      'A debit is only the left side of an account. For an asset such as Cash it records an increase, not an expense.',
       'Nothing: every debit records an expense.',
-      'Cash should have been credited, because money came in.',
-      'The $3,000 should have been debited to Catering Revenue instead.',
+      'Cash should have been credited, because money came in, and a credit is how a business records money it receives.',
+      'The $3,000 should have been debited to Catering Revenue instead, because the payment is revenue earned on the day it arrives.',
     ],
     answer: 0,
     feedback: {

@@ -169,8 +169,8 @@ export const items = [
     options: [
       'Fill each blank with the mean of the student’s own year, and keep a missing-value indicator',
       'Fill every blank with the overall mean of the observed hours, so that every student gets the same value',
-      'Delete the students with blanks and average the rest',
-      'Fill every blank with 0, because the student didn’t report any hours',
+      'Delete the students with blanks and average the rest, since within each year the blanks are random',
+      'Fill every blank with 0, because a student who reported no hours can’t be assumed to have studied',
     ],
     answer: 0,
     feedback: {
@@ -205,10 +205,10 @@ export const items = [
     id: 'b02-fn-14', lesson: 'outliers', type: 'mc', kind: 'conceptual',
     prompt: 'The ten order totals in the previous question include $1,512, far above the rest, yet the rule |z| > 3 flags nothing. Why?',
     options: [
-      `No |z| in a sample of n can exceed (n − 1) ÷ √n, about ${((10 - 1) / Math.sqrt(10)).toFixed(2)} here, and the extreme value also inflates the SD`,
+      `No |z| among n values can exceed (n − 1) ÷ √n, about ${((10 - 1) / Math.sqrt(10)).toFixed(2)} here, and the extreme value inflates the SD`,
       'The z-score rule only flags values below the mean',
       'z-scores are computed from the median and the MAD, which ignore the extreme value, so it can’t stand out from the rest',
-      'Ten values are too few to calculate a standard deviation',
+      'Ten values are too few to calculate a standard deviation, so the rule can’t return a z-score for any order',
     ],
     answer: 0,
     feedback: {

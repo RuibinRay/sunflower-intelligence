@@ -197,7 +197,7 @@ export const independent = [
       'Hiring, paying and if necessary replacing the chief executive',
       'Running the company’s day-to-day operations and supervising its staff',
       'Auditing the company’s financial statements',
-      'Setting the interest rate on the company’s bank loans',
+      'Setting the interest rate on the company’s bank loans each year',
     ],
     answer: 0,
     feedback: {
@@ -239,7 +239,7 @@ export const check = [
       'Managers’ interests differ from shareholders’, and shareholders cannot fully observe or control what managers do',
       'Managers are usually dishonest, so they hide what they do from the shareholders',
       'Shareholders are legally forbidden from knowing anything about how the company is run, so they cannot check managers',
-      'Managers own too many of the company’s shares',
+      'Managers own too many of the company’s shares, so they can outvote the outside shareholders on every major decision',
     ],
     answer: 0,
     feedback: {
@@ -267,7 +267,7 @@ export const check = [
       'A limit on dividends, or a minimum current ratio that a large cash dividend would break',
       'A requirement to send the bank annual financial statements',
       'A requirement that Ana remain chief executive and keep running Lantern while the loan is outstanding',
-      'A requirement to keep the equipment insured',
+      'A requirement to keep the equipment insured for its full replacement value while the loan is outstanding',
     ],
     answer: 0,
     feedback: {
@@ -292,7 +292,7 @@ export const check = [
     prompt: 'Under the SEC’s say-on-pay rules, adopted in 2011, what vote do shareholders of companies subject to the federal proxy rules get on executive pay?',
     options: [
       'An advisory, non-binding vote, held at least once every three years',
-      'A binding vote that sets each executive’s salary every year',
+      'A binding vote that sets each executive’s salary and bonus every year',
       'No vote: pay is set by the board alone and never put to shareholders',
       'A vote by the SEC’s commissioners on behalf of shareholders',
     ],

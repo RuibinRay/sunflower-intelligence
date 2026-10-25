@@ -13,8 +13,8 @@ export const items = [
     options: [
       'booking_ref + leg, a composite key',
       'booking_ref on its own, since every booking is for one passenger',
-      'passenger_id on its own',
-      'The row number',
+      'passenger_id on its own, since it identifies the traveller',
+      'The row number, which is unique by construction',
     ],
     answer: 0,
     feedback: {
@@ -61,10 +61,10 @@ export const items = [
     id: 'b02-dg-4', lesson: 'duplicates', type: 'mc', kind: 'conceptual',
     prompt: 'Two rows in a fictional coffee shop’s order export share the order_id LC-20417 and agree in every column, except that one has a blank e-mail address and the other has the address. Which copy should survive?',
     options: [
-      'The copy with the e-mail address (most complete), because the blank adds nothing the other copy lacks',
+      'The copy with the e-mail address (most complete): the blank adds nothing the other lacks',
       'The first copy in the file, whatever it contains, because the first row is the original and later rows are copies',
-      'Both copies, because they differ in one column',
-      'Neither: delete the order, because its data can’t be trusted',
+      'Both copies, because rows that differ in a column are two different records, not duplicates',
+      'Neither: delete the order, because two copies that disagree mean none of its data can be trusted',
     ],
     answer: 0,
     feedback: {
@@ -150,8 +150,8 @@ export const items = [
     id: 'b02-dg-11', lesson: 'encoding-categories', type: 'mc', kind: 'conceptual',
     prompt: 'A satisfaction band takes the values poor, fair, good and excellent. You encode it as 0, 1, 2 and 3 in that order. What does that encoding assume?',
     options: [
-      'That the bands are ordered, and that the steps poor to fair, fair to good and good to excellent are equal',
-      'Nothing: codes are only labels',
+      'That the bands are ordered and that every step between neighbouring bands is the same size',
+      'Nothing: the codes are only labels, and a model reads them as names of bands rather than as numbers',
       'That the bands are unordered, like colours, so a model treats each band as a separate category with no ranking',
       'That excellent is three times as good as fair',
     ],

@@ -138,7 +138,7 @@ export default {
           solution: `6,000 × (1 + 0.032 ÷ 12)¹² ≈ ${money(savOut12)}, with no penalty.` },
         { id: 'f00-pj-14', type: 'mc', kind: 'applied',
           prompt: 'What do the two answers tell Ana?',
-          options: ['The certificate wins if she keeps the money there for two years; if she may need it early, the savings account is better', 'The certificate always wins, because its 4.0% rate beats the 3.2% on the savings account, however soon she takes the money out', 'The savings account always wins, because being able to withdraw at any time is worth more than any difference in interest'],
+          options: ['The certificate wins if she leaves the money for two years; if she is likely to need it early, the savings account is better', 'The certificate always wins, because its 4.0% rate beats the 3.2% on the savings account, however soon she takes the money out', 'The savings account always wins, because being able to withdraw at any time is worth more than any difference in interest'],
           answer: 0,
           feedback: { 1: 'Over a full two years it does, by about $94. But an early withdrawal after 12 months leaves her about $75 worse off than in the savings account.', 2: 'Liquidity has a price: if she never touches the money, the certificate gives about $94 more.' },
           solution: `Held two years, the certificate gives ${money(fvCd - fvSav)} more. Withdrawn after one year, it gives ${money(savOut12 - cdOut12)} less. The better choice depends on how likely she is to need the money, which is exactly what an emergency fund is uncertain about.` },

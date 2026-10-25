@@ -20,7 +20,7 @@ export const items = [
   {
     id: 'b02-m1-1', lesson: 'datasets-and-variables', type: 'mc', kind: 'conceptual',
     prompt: 'A clothing brand’s returns file (fictional) has the columns return_id, order_id, item_sku, size, reason and refund. One order can produce several returns, and each return covers exactly one item. What is the unit of observation?',
-    options: ['One returned item', 'One order', 'One customer', 'One reason for returning'],
+    options: ['One returned item', 'One order, with all its returns', 'One customer who returned something', 'One reason for returning'],
     answer: 0,
     feedback: {
       1: 'Several rows can share an order_id, so a row is smaller than an order.',

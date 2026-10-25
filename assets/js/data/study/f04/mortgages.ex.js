@@ -238,9 +238,9 @@ export const independent = [
     prompt: 'Why is the APR on a US mortgage Loan Estimate usually higher than the loan’s interest rate?',
     options: [
       'Because it also reflects points, mortgage broker fees and other charges paid to get the loan',
-      'Because it includes property taxes and homeowners insurance',
+      'Because it includes the property taxes and homeowners insurance paid each month along with the mortgage',
       'Because it is the effective annual rate of the interest rate, including the effect of monthly compounding',
-      'Because it shows the highest rate the loan could ever reach',
+      'Because it shows the highest rate the loan could ever reach if it is an adjustable-rate mortgage',
     ],
     answer: 0,
     feedback: {

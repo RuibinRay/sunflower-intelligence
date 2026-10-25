@@ -174,8 +174,8 @@ export const check = [
     options: [
       'Cash at the end of the statement of cash flows and cash on the balance sheet',
       'Net income and the increase in cash',
-      'Net income and net cash provided by operating activities',
-      'Total revenue and cash received from customers',
+      'Net income on the income statement and net cash provided by operating activities',
+      'Total revenue on the income statement and cash received from customers in the period',
     ],
     answer: 0,
     feedback: {

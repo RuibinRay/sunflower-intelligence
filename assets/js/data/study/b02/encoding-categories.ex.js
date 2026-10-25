@@ -92,7 +92,7 @@ export const guided = [
         hints: ['k − 1 columns per variable.'],
         wrong: [{ value: 8, say: 'Drop a reference category from each variable, not just one overall.' }] },
       { id: 'b02-enc-g1-s3', type: 'mc', prompt: 'For which model must the analyst use the dummy-coded version?',
-        options: ['An unpenalised logistic regression with an intercept', 'A random forest', 'A ridge-penalised logistic regression with an intercept', 'A k-nearest-neighbours model'],
+        options: ['An unpenalised logistic regression with an intercept', 'A random forest built from several hundred decision trees', 'A ridge-penalised logistic regression with an intercept', 'A k-nearest-neighbours model that uses scaled distances'],
         answer: 0,
         hints: ['Where does the dummy-variable trap make the coefficients impossible to pin down?'],
         feedback: {
@@ -115,7 +115,7 @@ export const guided = [
         options: [
           'It is that booking’s own outcome, so the feature contains the answer and the model learns to trust it.',
           'Encodings must lie strictly between 0 and 1.',
-          'T3 is a rare agent and should be deleted from the data.',
+          'T3 is a rare agent, and categories with a single booking should be deleted from the data before encoding.',
           'Target encoding can only be used for continuous targets, not for a yes/no outcome such as whether a booking is cancelled.',
         ],
         answer: 0,
@@ -180,7 +180,7 @@ export const independent = [
     prompt: 'A k-nearest-neighbours model uses region label-encoded alphabetically: Central 0, East 1, North 2, South 3, West 4. What goes wrong?',
     options: [
       'Central and West look four times as different as Central and East, because of the spelling of the names.',
-      'Nothing: k-nearest neighbours ignores categorical variables.',
+      'Nothing: k-nearest neighbours ignores categorical variables and measures distance on the numeric ones only.',
       'The model can’t run, because the codes are integers.',
       'Every region becomes equally distant from every other region, so region no longer changes who the neighbours are.',
     ],
@@ -251,8 +251,8 @@ export const check = [
     options: [
       'When fitting an unpenalised linear or logistic regression with an intercept.',
       'Whenever you one-hot encode a variable, whichever kind of model will use the columns.',
-      'When fitting a random forest.',
-      'When using k-means clustering.',
+      'When fitting a random forest, so that the trees don’t split on redundant columns.',
+      'When using k-means clustering, so that the distances between categories stay equal.',
     ],
     answer: 0,
     feedback: {

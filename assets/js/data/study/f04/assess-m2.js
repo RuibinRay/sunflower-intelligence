@@ -13,8 +13,8 @@ export const items = [
     answer: 2015.84, check: () => 16000 - 16000 * (1 + 0.06 / 12) ** -27, unit: '$', places: 2, tol: 1,
     wrong: [
       { value: 13984.16, say: 'That is the price the finance company would pay, the present value of the debt. The question asks how much less than $16,000 that is.' },
-      { value: 1965.99, say: 'That treats 6% as an effective annual rate (16,000 ÷ 1.06^2.25). With monthly compounding use 0.5% a month for 27 months.' },
-      { value: 2160, say: 'That is simple interest on $16,000 for 27 months (16,000 × 0.06 × 27 ÷ 12). The price is the present value, 16,000 ÷ 1.005²⁷.' },
+      { value: 1965.99, say: 'That treats 6% as an effective annual rate (16,000 − 16,000 ÷ 1.06^2.25). With monthly compounding use 0.5% a month for 27 months.' },
+      { value: 2160, say: 'That is simple interest on $16,000 for 27 months (16,000 × 0.06 × 27 ÷ 12). The price is the present value, 16,000 ÷ 1.005²⁷, and the shop gives up $16,000 minus that price.' },
     ],
     solution: 'r = 6% ÷ 12 = 0.5% a month; n = 27 months. Discount factor = 1.005⁻²⁷ ≈ 0.874010. Price = 16,000 × 0.874010 ≈ $13,984.16, so the shop gives up 16,000 − 13,984.16 ≈ $2,015.84 to be paid now: the interest the finance company earns over the 27 months.',
   },
@@ -99,8 +99,8 @@ export const items = [
     prompt: 'A fictional company holds a note that pays 5% a year on $50,000, with interest paid quarterly and the principal at maturity in two years. Market rates for similar notes fall to 4%. What happens to the note’s value?',
     options: [
       'It rises above $50,000, because its fixed payments are now discounted at a lower rate',
-      'It falls below $50,000, because the market now pays less',
-      'It stays at $50,000, because the payments have not changed',
+      'It falls below $50,000, because investors can now earn only 4% elsewhere, so the market pays less',
+      'It stays at $50,000, because the note’s interest payments and its face value are fixed and have not changed',
       'It rises only if the borrower also becomes safer, because a note’s value reflects its credit risk',
     ],
     answer: 0,

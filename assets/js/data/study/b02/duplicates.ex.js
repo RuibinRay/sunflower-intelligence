@@ -109,7 +109,7 @@ export const guided = [
     steps: [
       { id: 'b02-dup-g2-s1', type: 'mc',
         prompt: 'What kind of duplicate is this?',
-        options: ['A repeated key with conflicting values', 'An exact duplicate', 'A near duplicate customer', 'Two genuine orders from the same customer'],
+        options: ['A repeated key with conflicting values', 'An exact duplicate, one row copied into another', 'A near duplicate, like one customer typed two ways', 'Two genuine orders from the same customer'],
         answer: 0,
         hints: ['Compare the key column with the other columns.', 'Same <code>order_id</code>, different <code>order_total</code>.'],
         feedback: {
@@ -123,7 +123,7 @@ export const guided = [
           'The 08:16 row: it is the later update and reflects the discount the customer actually paid.',
           'The 08:14 row: keep the first occurrence, because it records the order as the customer originally placed it.',
           'Neither: delete both rows because they conflict.',
-          'Both: they have different totals, so they can’t be duplicates.',
+          'Both: they have different totals and update times, so they can’t be duplicates of one order.',
         ],
         answer: 0,
         hints: ['Think about how two versions of one order arise: the order was changed after it was first saved.', 'A later update supersedes an earlier one.'],
@@ -350,13 +350,13 @@ export const check = [
     prompt: 'You want to see <i>every</i> row of every <code>order_id</code> that appears more than once, including the first occurrence, so that you can review the groups before deleting anything. Which pandas expression does that?',
     options: [
       'df[df.duplicated(subset=[&#39;order_id&#39;], keep=False)]',
-      'df[df.duplicated()]',
+      'df[df.duplicated(subset=[&#39;order_id&#39;], keep=&#39;last&#39;)]',
       'df.drop_duplicates(subset=[&#39;order_id&#39;], keep=False)',
       'df.drop_duplicates()',
     ],
     answer: 0,
     feedback: {
-      1: 'With no subset, duplicated() compares whole rows, so it misses conflicting versions; and with the default keep=&#39;first&#39; it doesn’t mark the first occurrence.',
+      1: 'With keep=&#39;last&#39;, duplicated() marks every row of a repeated order except the last, so one row of each group is missing from the review.',
       2: 'This deletes every row of every repeated order instead of showing them, so nothing is left to review.',
       3: 'This removes exact copies only, and doesn’t show you anything to review.',
     },

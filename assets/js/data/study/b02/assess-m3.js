@@ -107,7 +107,7 @@ export const items = [
     options: [
       'Masking: the two errors inflate the mean and the SD, so neither looks extreme against them.',
       'The z-score rule only detects values below the mean, so it can never flag errors that are too large.',
-      'Large errors always have z-scores close to zero.',
+      'Large errors always have z-scores close to zero, however far they lie from the rest of the values.',
       'The column must be left-skewed.',
     ],
     answer: 0,
@@ -151,7 +151,7 @@ export const items = [
     prompt: 'An analyst averages ln(order total) over all orders and converts the result back with eˣ. What has she computed?',
     options: [
       'The geometric mean, which is at or below the arithmetic mean.',
-      'The arithmetic mean of the order totals.',
+      'The arithmetic mean of the order totals, because eˣ undoes the log.',
       'The median order total, exactly, whatever the shape of the distribution.',
       'The skewness of the order totals.',
     ],

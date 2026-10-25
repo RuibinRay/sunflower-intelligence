@@ -80,7 +80,7 @@ export const guided = [
     options: [
       'No match: right after “1” the pattern needs a space or a “g”, and the next character is “k”.',
       'It matches “1kg” and returns 1, because the optional space in the pattern can stand for the “k”.',
-      'It returns 1000, because the pattern recognises “kg” as a thousand grams.',
+      'It returns 1000, because the pattern recognises “kg” as a thousand grams and converts the size.',
       'It matches the “g” at the end and returns an empty number.',
     ],
     answer: 0,
@@ -125,8 +125,8 @@ export const independent = [
     id: 'b02-txt-i3', type: 'mc', kind: 'applied',
     prompt: 'Two customer records both show the city “Lisboa” and the name “José Alves”, yet an exact comparison says the names differ, and their lengths are 10 and 11 characters. Trimming both values changes nothing. What is the most likely cause, and the fix?',
     options: [
-      'One “é” is “e” plus a combining accent, the other one character; normalise both to NFC before comparing.',
-      'One name has a trailing space that the display hides; trim both values.',
+      'One “é” is “e” plus a combining accent; normalise both values to NFC before comparing.',
+      'One name has a trailing space that the display hides; trim both values and compare again.',
       'The names differ in case somewhere that the font hides; lower-case both values before comparing.',
       'One name has a typing error that is hard to spot on screen; match them with an edit-distance cut-off of 1.',
     ],

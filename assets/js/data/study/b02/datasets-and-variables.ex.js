@@ -63,7 +63,7 @@ export const guided = [
     steps: [
       { id: 'b02-dv-g1-s1', type: 'mc',
         prompt: 'What does one row of this table describe?',
-        options: ['One coffee in one month’s parcel for one subscription', 'One subscription', 'One customer', 'One month’s parcel for one subscription, with all its coffees'],
+        options: ['One coffee in one month’s parcel for one subscription', 'One subscription, covering all the parcels it has sent', 'One customer', 'One month’s parcel for one subscription, with all its coffees'],
         answer: 0,
         hints: ['Look for a subscription that appears more than once in the same month.', 'S-201 has two rows for 2026-04. What differs between them?'],
         feedback: {

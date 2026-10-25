@@ -131,7 +131,7 @@ export const guided = [
     prompt: 'An investor holds shares in one airline. Which addition would reduce the risk of her portfolio most?',
     options: [
       'Shares in an oil company, whose results tend to improve when fuel prices rise',
-      'Shares in a second airline, which flies different routes from the first',
+      'Shares in a second airline, which flies different routes from the first, mostly to holiday destinations',
       'More shares in the same airline, bought at today’s lower price',
       'Shares in an aircraft-leasing company, whose income depends on airlines renting its planes',
     ],
@@ -235,7 +235,7 @@ export const check = [
     options: [
       'The $2 million is sunk: it is spent whatever happens, so the decision should rest only on future cash flows from launching or not.',
       'Nothing: past spending should be recovered before a project is dropped, so the product must launch to earn the $2 million back first.',
-      'The $2 million should first be discounted to present value, then compared with the launch’s expected future cash flows.',
+      'The $2 million should first be discounted to present value, then compared with the present value of the launch’s expected future cash flows.',
       'The $2 million is an opportunity cost of launching, so it should be added to the launch costs before deciding.',
     ],
     answer: 0,

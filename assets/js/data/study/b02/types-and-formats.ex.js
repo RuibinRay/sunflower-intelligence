@@ -249,8 +249,8 @@ export const check = [
     id: 'b02-tf-k4', type: 'mc', kind: 'applied',
     prompt: 'A claims file’s customer numbers were saved as numbers and lost their leading zeros. In the register, customer numbers have 4, 5 or 6 digits. What should you do?',
     options: [
-      'Go back to the source and export or import the column as text, because padding can’t tell which length each number had.',
-      'Pad every value with zeros to six digits.',
+      'Export the column again as text from the source: padding can’t tell how long each number was.',
+      'Pad every value with zeros to six digits, the longest length that a customer number has in the register.',
       'Pad every value with zeros to the length of the longest number in the claims file, so that every number has the same width.',
       'Join on the numeric value, which ignores leading zeros on both sides, and accept the matches that work.',
     ],

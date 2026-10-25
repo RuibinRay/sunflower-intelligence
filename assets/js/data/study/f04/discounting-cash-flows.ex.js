@@ -285,7 +285,7 @@ export const check = [
     options: [
       'It earns more than 10% a year: it is worth $4,000 more, in today’s money, than it costs',
       'It will make a profit of $4,000 over its life: its inflows, added up, exceed its cost by that amount',
-      'It earns exactly 10% a year',
+      'It earns exactly 10% a year, because a positive NPV means the project just meets the discount rate',
       'Its IRR is $4,000',
     ],
     answer: 0,
@@ -352,7 +352,7 @@ export const check = [
       'The true NPV divided by 1.08: every cash flow, today’s cost included, is discounted one period too many',
       'Exactly right, because NPV() includes the first value at time 0',
       'Too high by the amount of today’s cost, because NPV() skips the first value in the range and starts at A2',
-      'The true NPV multiplied by 1.08',
+      'The true NPV multiplied by 1.08, because NPV() compounds each cash flow one period forward instead of discounting it',
     ],
     answer: 0,
     feedback: {

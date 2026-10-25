@@ -193,7 +193,7 @@ export const independent = [
       'Their P/E ratios differ, because interest reduces the indebted company’s net income and its shares are riskier',
       'Their P/E ratios must be identical, because the businesses and their operating profits are the same',
       'Their enterprise values must differ, because the indebted company adds a large amount of debt to its market capitalisation',
-      'Their market capitalisations must be identical, because the market values the two businesses equally',
+      'Their market capitalisations must be identical, because the market values the two businesses and their operations equally',
     ],
     answer: 0,
     feedback: {
@@ -239,7 +239,7 @@ export const check = [
     options: [
       'The market value of its equity: share price times shares outstanding',
       'The total value of its operations, including the debt owed to its lenders',
-      'Its shareholders’ equity as recorded in the balance sheet',
+      'Its shareholders’ equity as recorded at book value in the balance sheet',
       'Its annual revenue',
     ],
     answer: 0,

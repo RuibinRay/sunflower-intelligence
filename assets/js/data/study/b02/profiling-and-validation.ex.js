@@ -64,7 +64,7 @@ export const guided = [
       { id: 'b02-pv-g1-s3', type: 'mc',
         prompt: 'What should you do about 104 and 112?',
         options: [
-          'Flag them and ask how attendance is calculated: extra sessions may have been counted, or the wrong denominator used.',
+          'Flag them and ask how attendance is worked out: extra sessions or the wrong denominator may be to blame.',
           'Change them to 100, the nearest valid value.',
           'Delete the two students from the dataset, because a record with an impossible value can’t be trusted at all.',
           'Leave them alone: high attendance is good news, and a range rule on attendance is there to catch students who miss classes.',
@@ -242,7 +242,7 @@ export const check = [
     id: 'b02-pv-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Why should you profile a dataset before cleaning it?',
     options: [
-      'To learn what the data contains, so that every change answers a known problem and nothing is changed blindly.',
+      'To learn what the data contains, so that every change answers a known problem instead of a guess.',
       'To make the dataset smaller before analysis, by finding the columns and rows that can be dropped.',
       'Because profiling corrects the most common errors automatically, such as stray spaces, mixed case and mixed date formats.',
       'To produce the summary statistics that will be reported to managers.',
@@ -316,8 +316,8 @@ export const check = [
     id: 'b02-pv-k6', type: 'mc', kind: 'applied',
     prompt: 'Profiling Lantern’s export shows one order for 40 packs, while almost every other order is for one to three. What should you do first?',
     options: [
-      'Add it to the issue list, flag it with a soft rule and check it against the order record before any analysis.',
-      'Replace it with the median quantity, so that one unusual order can’t distort the averages.',
+      'Record it as an issue, flag it with a soft rule and check it against the order record first.',
+      'Replace it with the median quantity, so that one unusual order can’t distort the averages in the analysis.',
       'Delete the row, because an order that far from all the others is an extreme value and will distort the analysis.',
       'Keep it and report the mean, because 40 is a valid quantity and valid values need no further check.',
     ],

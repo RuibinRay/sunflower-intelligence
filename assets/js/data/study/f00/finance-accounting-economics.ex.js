@@ -138,7 +138,7 @@ export const guided = [
     id: 'f00-fae-g4', type: 'mc', kind: 'applied',
     prompt: 'A fictional bakery owner borrowed heavily at a variable interest rate to open a second shop, because her accounts showed a strong profit for the last three years. A year later the central bank raised interest rates sharply, her loan payments jumped and the shop struggled to pay them. Which perspective did her decision most clearly leave out?',
     options: [
-      'Macroeconomics: she made no allowance for interest rates rising, though her loan rate moved with them.',
+      'Macroeconomics: she made no allowance for a rise in interest rates, which her loan rate followed.',
       'Accounting: she should have checked her last three years of profits more carefully before borrowing.',
       'Microeconomics: she did not study how her customers choose between her loaves and a rival bakery’s.',
       'None: interest rate changes cannot be anticipated at all, so no forecast could have prepared her for them.',
@@ -162,10 +162,10 @@ export const independent = [
     id: 'f00-fae-i1', type: 'mc', kind: 'conceptual',
     prompt: 'Which statement best describes how finance and accounting differ?',
     options: [
-      'Accounting aims at a faithful record of what happened; finance aims at good decisions about the future, using that record as one input.',
+      'Accounting aims at a faithful record of the past; finance aims at good decisions about the future, using that record as one input.',
       'Accounting deals with the day-to-day records of businesses; finance deals only with stock markets and the prices of the shares traded on them.',
       'Accounting uses numbers and rules; finance uses only judgement and experience, without calculations.',
-      'Finance follows reporting standards such as US GAAP or IFRS; accounting has no fixed rules and relies on each firm’s own choices.',
+      'Finance follows reporting standards such as US GAAP or IFRS; accounting has no fixed rules and relies on each firm’s own choices of method.',
     ],
     answer: 0,
     feedback: {
@@ -248,7 +248,7 @@ export const check = [
     id: 'f00-fae-k1', type: 'mc', kind: 'conceptual',
     prompt: 'A financial analyst reads a company’s financial statements for last year. What does she mainly use them for?',
     options: [
-      'As the starting point for forecasting the company’s future cash flows, adjusting the figures where needed',
+      'As the starting point for forecasting the company’s future cash flows, after any adjustments',
       'To check that the company followed US GAAP in preparing them, which is the analyst’s main job',
       'As an exact prediction of next year’s results, since a company’s results tend to repeat from one year to the next',
       'She does not use them: finance looks only forward, so past figures are irrelevant to her work',
@@ -298,7 +298,7 @@ export const check = [
       'Operating cash flow was about $35,000, because depreciation is an expense that used no cash this year.',
       'Operating cash flow was about −$5,000, because depreciation must be paid in cash on top of the other expenses.',
       'The owner is right: profit and cash are always equal for a firm whose customers pay on the day.',
-      'Cash flow cannot be estimated without knowing the vans’ market value.',
+      'Cash flow cannot be estimated without first knowing what the vans would sell for on the second-hand market today.',
     ],
     answer: 0,
     feedback: {

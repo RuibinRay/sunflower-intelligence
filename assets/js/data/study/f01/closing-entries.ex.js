@@ -87,7 +87,7 @@ export const guided = [
           'Retained earnings on the balance sheet, also the closing balance on the statement of changes in equity',
           'Net income on the income statement, because entry 3 closed the whole of Income Summary into this account',
           'Cash on the balance sheet, because retained earnings are profits kept in the bank',
-          'Total equity on the balance sheet, because closing transfers each period’s result into equity',
+          'Total equity on the balance sheet, because closing transfers each period’s result into equity, where it joins the common stock',
         ],
         answer: 0,
         hints: ['Closing exists to make the ledger agree with one particular statement line.'],
@@ -254,7 +254,7 @@ export const check = [
     options: [
       'Retained Earnings is $740, not $690; Interest Expense still shows $50; the post-closing trial balance balances at $42,750.',
       'The post-closing trial balance doesn’t balance: its debits exceed its credits by $50, which reveals the error as soon as it is prepared.',
-      'Retained Earnings is $640 instead of $690, because Income Summary is $50 smaller than it should be.',
+      'Retained Earnings is $640 instead of $690, because leaving out the expense makes Income Summary $50 smaller than it should be.',
       'Net income on March’s income statement becomes $1,040, because Income Summary now holds $1,040.',
     ],
     answer: 0,

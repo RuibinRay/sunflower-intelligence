@@ -167,7 +167,7 @@ export const independent = [
     options: [
       'It is about 4.14%, the tenth root of 1.5 minus 1, because inflation compounds',
       'It is exactly 5% a year, because a 50% rise spread evenly over ten years is 50% ÷ 10',
-      'It cannot be found without each year’s inflation rate',
+      'It cannot be found without each year’s inflation rate, because prices may have risen faster in some years',
       'It is 50%, because that is the inflation over the period',
     ],
     answer: 0,

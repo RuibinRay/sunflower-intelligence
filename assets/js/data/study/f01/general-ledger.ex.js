@@ -96,8 +96,8 @@ export const guided = [
         options: [
           'A $480 payment to the cabling supplier was posted to the control account but not to the supplier’s account.',
           'A $480 bill from the cabling supplier was posted to the control account but not to the supplier’s account.',
-          'A $480 bill from the cabling supplier was posted to the inverter supplier’s account instead of to its own account.',
-          'A $240 payment to the cabling supplier was posted to the wrong side of the control account.',
+          'A $480 bill from the cabling supplier was posted to the inverter supplier’s account instead of the cabling supplier’s.',
+          'A $240 payment to the cabling supplier was posted to the wrong side of the control account, as a credit instead of a debit.',
         ],
         answer: 0,
         hints: ['The supplier accounts are higher than the control account. Which kind of posting lowers a payable?', 'A payment is a debit that reduces a payable. If it reached only the control account, which record is left too high?'],

@@ -87,7 +87,7 @@ export const items = [
     options: [
       'Unsystematic risk can be diversified away cheaply, so no one needs paying to bear it; systematic risk cannot',
       'Unsystematic risk does not move a company’s share price, so investors who hold it bear no real risk',
-      'Systematic risk can be removed by holding enough shares, and investors are paid for the effort of doing so',
+      'Systematic risk can be removed by holding enough shares, and investors are paid for the time and effort of doing so',
       'Regulators require companies to pay investors a premium for market-wide risk but not for company-specific risk',
     ],
     answer: 0,
@@ -128,10 +128,10 @@ export const items = [
     id: 'f00-fn-9', lesson: 'capital-and-liquidity', type: 'mc', kind: 'conceptual',
     prompt: 'Two analysts work from the same balance sheet of a fictional company: interest-bearing debt of $240 million, other liabilities of $180 million and shareholders’ equity of $300 million. One reports a debt-to-equity ratio of 0.8, the other 1.4. Which explanation is right?',
     options: [
-      'The first divides interest-bearing debt by equity, the second total liabilities by equity; both are used',
+      'The first divides interest-bearing debt by equity, the second all liabilities by equity; both are used',
       'One of them has made an arithmetic error, since the debt-to-equity ratio has a single agreed definition',
       'The second used the market value of the equity rather than its book value from the balance sheet',
-      'The first divided equity by debt, turning the ratio upside down, while the second divided debt by equity as it should',
+      'The first divided equity by debt, turning the ratio upside down, while the second divided debt by equity correctly',
     ],
     answer: 0,
     feedback: {
@@ -269,7 +269,7 @@ export const items = [
     prompt: 'Why can a bank whose loans are all sound still fail if many depositors ask for their money on the same day?',
     options: [
       'It funds long-term loans with deposits that can be withdrawn any day, and loans are slow to turn into cash',
-      'A run reveals that its loans were bad all along, so the bank was already insolvent before the run began',
+      'A run reveals that its loans were bad all along, so the bank was insolvent before the first depositor asked for cash',
       'Depositors are repaid only after the bank’s shareholders, so a run quickly wipes out what depositors are owed',
       'The central bank is not allowed to lend to banks that are short of cash, so nobody can bridge the gap',
     ],

@@ -379,7 +379,7 @@ export default {
           id: 'b02-pj-m6', type: 'mc', kind: 'conceptual',
           prompt: 'A colleague suggests filling the 77 missing ratings with the average rating so that every order has one. What is wrong with that?',
           options: [
-            'It invents ratings, keeps the subscriber-heavy average, shrinks the spread and hides that one-off buyers rarely rate',
+            'It invents ratings, keeps the biased average, shrinks the spread and hides that one-off buyers rarely rate',
             'Nothing, as long as the average is rounded to a whole star',
             'Only that it changes the average rating, so the report can no longer be compared with the figures from earlier months',
             'It is wrong only because the mean should be replaced by the median, which suits ordinal star ratings better',

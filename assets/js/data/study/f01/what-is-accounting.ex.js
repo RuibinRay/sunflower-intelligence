@@ -170,7 +170,7 @@ export const independent = [
     prompt: 'Which of these is an example of managerial accounting?',
     options: [
       'A weekly report for Ana showing the profit on each catering event',
-      'Lantern’s March financial statements, sent to Coastline Bank',
+      'Lantern’s March financial statements, prepared under US GAAP and sent to Coastline Bank',
       'Lantern’s corporate income tax return for the year, filed with the IRS',
       'An auditor’s opinion on Lantern’s annual financial statements',
     ],
@@ -253,9 +253,9 @@ export const independent = [
     id: 'f01-wia-i6', type: 'mc', kind: 'conceptual',
     prompt: 'Which statement about who sets accounting rules is accurate?',
     options: [
-      'The FASB, a private-sector body, sets US GAAP; the SEC has legal authority over public companies’ reporting and recognises its standards.',
+      'The FASB, a private-sector body, sets US GAAP; the SEC has legal authority over public companies’ reporting and recognises FASB standards.',
       'The SEC writes every US accounting standard itself under its legal authority over public companies, and the FASB only comments on its drafts.',
-      'US public companies may choose to report under IFRS instead of US GAAP, as long as they say so in their filings.',
+      'US public companies may choose to report under IFRS instead of US GAAP, provided they disclose the choice in the notes to their financial statements.',
       'The IASB decides which countries must use IFRS, and companies in those countries must follow its standards.',
     ],
     answer: 0,
@@ -348,7 +348,7 @@ export const check = [
     options: [
       'It serves people inside the business, follows no externally imposed rules, and can use nonfinancial measures such as events catered each week.',
       'It must follow US GAAP, because managers also read the financial statements and need figures that match them.',
-      'It reports only on past periods, and only for the business as a whole, in the same format as the published statements.',
+      'It reports only on past periods, and only for the business as a whole, in the same format as the statements published for investors and lenders.',
       'It is another name for tax accounting: the work of calculating the taxable income a business must report to the tax authorities at the end of each year.',
     ],
     answer: 0,

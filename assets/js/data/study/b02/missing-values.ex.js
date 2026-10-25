@@ -232,7 +232,7 @@ export const independent = [
     prompt: 'Lantern is building a model to predict which subscribers will cancel. The analyst has noticed that subscribers who stop rating their deliveries often cancel a few weeks later. She will fill missing ratings with the training median. What else should she do?',
     options: [
       'Add a rating_missing column (1 if the rating was missing) so the model can use the fact of missingness.',
-      'Nothing: once the gaps are filled, the information about them is preserved in the median values.',
+      'Nothing: once the gaps are filled, the information about them is preserved in the median values the model sees.',
       'Delete the subscribers with missing ratings, since they are probably leaving anyway and would only add noise.',
       'Fill the gaps with 1 star instead, because silent customers must be unhappy.',
     ],
@@ -253,8 +253,8 @@ export const check = [
     options: [
       'The ratings are not MCAR, but the data can’t show whether they are MAR or MNAR.',
       'The ratings are MAR, because their missingness depends on a recorded variable, customer type.',
-      'The ratings are MNAR, because one-off buyers are less satisfied.',
-      'The ratings are MCAR, because both groups have some missing values.',
+      'The ratings are MNAR, because one-off buyers are less satisfied and so rate less often.',
+      'The ratings are MCAR, because one-off buyers and subscribers both have some missing values.',
     ],
     answer: 0,
     feedback: {
@@ -311,7 +311,7 @@ export const check = [
       'Drop the rows with missing times and note how many were dropped: the gaps are plausibly MCAR and few.',
       'Fill the gaps with the mean delivery time, so that no rows are lost and the median is based on every parcel.',
       'Fill the gaps with 0 days, since those parcels have no recorded time.',
-      'Report no median until the missing times can be recovered.',
+      'Report no median until the missing times are recovered, because a median from incomplete data is biased.',
     ],
     answer: 0,
     feedback: {

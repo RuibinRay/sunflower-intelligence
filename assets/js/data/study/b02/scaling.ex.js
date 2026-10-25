@@ -171,7 +171,7 @@ export const guided = [
         wrong: [{ value: 1, say: 'That is its value under the training-only fit. With the test row included, the maximum rises to 180.' }] },
       { id: 'b02-sc-g3-s3', type: 'mc', prompt: 'Which workflow should the analyst use?',
         options: [
-          'Fit the scaler on the training rows, transform them, then transform the test rows with the same stored parameters.',
+          'Fit the scaler on the training rows only, then transform both sets with the same stored parameters.',
           'Fit the scaler on all rows, so that every scaled value, in training and in testing, lies between 0 and 1.',
           'Fit one scaler on the training rows and a separate one on the test rows, so that each set is scaled to its own range.',
           'Fit on the training rows and clip every test value above 1 back to 1.',

@@ -255,7 +255,7 @@ export const check = [
       'With r − g at only 0.5%, the value is hugely sensitive to the inputs, and 6.5% growth for ever is implausibly high',
       'There is no problem: the growth rate is below the discount rate, which is all the formula needs to give a finite value',
       'The terminal value should be discounted at the growth rate, not the discount rate',
-      'A higher growth assumption always makes a valuation more conservative',
+      'A higher growth assumption always makes a valuation more conservative, so assuming 6.5% growth is the cautious choice here',
     ],
     answer: 0,
     feedback: {

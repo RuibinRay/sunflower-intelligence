@@ -150,7 +150,7 @@ export const independent = [
   {
     id: 'f00-fm-i1', type: 'mc', kind: 'applied',
     prompt: 'A wheat farmer wants to fix today the price at which she will sell her harvest in five months, without selling the wheat now. Which market is she most likely to use?',
-    options: ['The derivatives market, by selling wheat futures', 'The equity market, by buying shares in a flour mill', 'The money market, by buying Treasury bills', 'The primary bond market, by issuing a bond'],
+    options: ['The derivatives market, by selling wheat futures', 'The equity market, by buying shares in a flour mill', 'The money market, by buying short-term Treasury bills', 'The primary bond market, by issuing a bond'],
     answer: 0,
     feedback: {
       1: 'Shares in a mill might rise or fall for many reasons; they do not fix the price of her wheat.',
@@ -220,7 +220,7 @@ export const check = [
     options: [
       'In indirect finance the saver holds a claim on an intermediary, which holds the claim on the borrower',
       'In indirect finance the saver never earns interest, because the intermediary keeps all of it',
-      'Indirect finance takes place only in the money market, through loans that last less than a year',
+      'Indirect finance takes place only in the money market, through loans that always last less than one year',
       'In indirect finance the borrower sells its own shares and bonds to savers, usually through a stock exchange',
     ],
     answer: 0,
@@ -248,7 +248,7 @@ export const check = [
     options: [
       'Treasury bills maturing before the salaries are due',
       'Shares in a stock-market index fund, which can be sold on any trading day',
-      'A ten-year corporate bond',
+      'A ten-year corporate bond from a highly rated company, which pays more interest than bills',
       'Coffee futures',
     ],
     answer: 0,

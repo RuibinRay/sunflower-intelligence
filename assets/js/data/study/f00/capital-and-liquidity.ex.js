@@ -187,7 +187,7 @@ export const independent = [
     id: 'f00-cl-i6', type: 'mc', kind: 'applied',
     prompt: 'Lantern earns operating profit (before interest) of $1,500 in a year on its $30,000 of capital, and pays $600 of interest on its $10,000 loan. Ignoring tax, how does Ana’s return on her $20,000 compare with what it would have been had she supplied all $30,000 herself?',
     options: [
-      'Lower: 4.5% instead of 5%, because the business earned less on its capital than the 6% it paid the bank',
+      'Lower: 4.5% instead of 5%, because the business earned less on its capital than the 6% loan rate',
       'Higher: 7.5% instead of 5%, because debt always raises the owner’s return on the money she put in',
       'The same: 5% either way, because how a business is financed does not change what its owner earns',
       'Lower: 3% instead of 5%, because Ana’s $900 of profit after interest is spread over all $30,000 of capital',
@@ -208,8 +208,8 @@ export const check = [
     prompt: 'Why is equity usually expected to cost a business more than debt?',
     options: [
       'Shareholders are paid last and promised nothing, so they bear more risk and expect a higher return',
-      'The law requires a company’s dividends to be set higher than the interest rate it pays its lenders each year',
-      'Equity has to be repaid to shareholders sooner than loans have to be repaid to banks',
+      'The law requires a company to pay its shareholders a higher return each year than the interest rate it pays its lenders',
+      'Equity has to be repaid to shareholders sooner than loans have to be repaid to the banks that made them',
       'Banks charge large fees for issuing shares, and those fees are the main cost of equity',
     ],
     answer: 0,
@@ -263,9 +263,9 @@ export const check = [
     prompt: 'Which statement about working capital is correct?',
     options: [
       'It is current assets minus current liabilities, a measure of a firm’s short-term cushion',
-      'It is the money shareholders invested to run the firm’s day-to-day operations, such as buying stock',
+      'It is the money shareholders invested to run the firm’s day-to-day operations, such as buying inventory',
       'It is the same thing as the firm’s cash balance',
-      'It is total assets minus total liabilities, a measure of what the firm is worth',
+      'It is total assets minus total liabilities, a measure of what the whole firm is worth to its owners',
     ],
     answer: 0,
     feedback: {
