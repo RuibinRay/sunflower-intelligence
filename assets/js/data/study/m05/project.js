@@ -5,7 +5,7 @@
 // and profiles the segments, scores them, builds a persona, reads the map, writes the positioning and recommends the
 // changes that would make it true. Every figure comes from case.js (WORKSHOP_* exports); `verify` recomputes them.
 import { WORKSHOP_OFFER as OFFER, WORKSHOP_NEEDS as NEEDS, WORKSHOP_PROVIDERS as PROVIDERS, WORKSHOP_LEVELS as LEVELS, WORKSHOP_RESPONDENTS as RESP, WORKSHOP_DERIVED as WD, WORKSHOP_STRENGTHS, tableCells } from './case.js?v=14';
-import { weightedScore, distance } from '../../../core/percmap.js?v=14';
+import { weightedScore, distance, perceptualMap, idealDistances } from '../../../core/percmap.js?v=14';
 import { Sheet } from '../../../core/sheet.js?v=14';
 
 const num = (id, prompt, answer, check, solution, wrong, { unit = '', places = 2, tol = 0.005, kind = 'numerical' } = {}) =>
@@ -63,6 +63,13 @@ const planPt = WD.project(PLAN);
 const planDist = WD.map.idealPts.map((q) => distance(planPt, q));
 const nowDist = WD.map.distances.map((row) => row[0]);
 const nearestOf = (g) => { const d = WD.map.distances[g]; return d.indexOf(Math.min(...d)); };
+// the 97.8% is of the options' ratings; the segments' ideal points can sit partly off the map. In all six standardised
+// dimensions the distances are larger, but the nearest option and the order of the rivals' distances don't change.
+const FULL = idealDistances(perceptualMap(WD.map.means), WD.map.ideal, NEEDS.length);
+const nearestFull = (g) => FULL[g].indexOf(Math.min(...FULL[g]));
+const rivalFull = FULL.map((row) => Math.min(...row.slice(1)));
+const rankOf = (xs) => xs.map((v) => xs.filter((u) => u > v).length);
+const inPlane = WD.map.ideal.map((p) => { const M = perceptualMap(WD.map.means), z = p.map((v, j) => (v - M.mu[j]) / M.sd[j]), q = M.project(p); return (q[0] ** 2 + q[1] ** 2) / z.reduce((a, b) => a + b * b, 0); });
 
 // ---------------------------------------------------------------- economics of a workshop (B03)
 const CONTRIB = OFFER.places * OFFER.price - OFFER.costPerWorkshop;               // a full workshop: $950
@@ -192,7 +199,7 @@ export default {
     },
     {
       id: 'target', title: 'Score and choose',
-      html: `<p>Ana scores each segment from 0 to 100 on four factors: <b>size</b> (share of respondents, against the largest), <b>willingness to pay</b> (against the highest), <b>fit</b> with her workshops’ strengths (50 = average, from each segment’s standardised needs against Ana’s strengths: +1 for skills, social and gift, −1 for career, price and times) and <b>room</b> (how far the segment’s ideal is from the nearest rival on the map, against the farthest). Her weights are size ${W_ANA[0]}, willingness to pay ${W_ANA[1]}, fit ${W_ANA[2]}, room ${W_ANA[3]}.</p><div class="table-scroll"><table class="data-table study-table"><caption>Factor scores (0–100)</caption><thead><tr><th scope="col">Segment</th><th scope="col">Size</th><th scope="col">Willingness to pay</th><th scope="col">Fit</th><th scope="col">Room</th></tr></thead><tbody>${LET.map((L, g) => `<tr><th scope="row">${L}, ${NAMES[g]}</th>${FACTORS.map((F) => `<td class="num">${F[g].toFixed(1)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`,
+      html: `<p>Ana scores each segment from 0 to 100 on four factors: <b>size</b> (share of respondents, against the largest), <b>willingness to pay</b> (against the highest), <b>fit</b> with her workshops’ strengths (50 = average, from each segment’s standardised needs against Ana’s strengths: +1 for skills, social and gift, −1 for career, price and times) and <b>room</b> (how far the segment’s ideal is from the nearest rival on the map, against the farthest; measured in all six dimensions instead, the distances are larger but the order of the four segments is the same). Her weights are size ${W_ANA[0]}, willingness to pay ${W_ANA[1]}, fit ${W_ANA[2]}, room ${W_ANA[3]}.</p><div class="table-scroll"><table class="data-table study-table"><caption>Factor scores (0–100)</caption><thead><tr><th scope="col">Segment</th><th scope="col">Size</th><th scope="col">Willingness to pay</th><th scope="col">Fit</th><th scope="col">Room</th></tr></thead><tbody>${LET.map((L, g) => `<tr><th scope="row">${L}, ${NAMES[g]}</th>${FACTORS.map((F) => `<td class="num">${F[g].toFixed(1)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`,
       items: [
         num('m05-pj-8', 'What is Gift buyers’ weighted score with Ana’s weights? Give one decimal place.', r(sAna[GIFT], 1), () => score(W_ANA)[GIFT],
           `(${W_ANA.map((w, k) => `${w} × ${FACTORS[k][GIFT].toFixed(1)}`).join(' + ')}) ÷ ${sum(W_ANA)} = ${sAna[GIFT].toFixed(1)}.`,
@@ -272,7 +279,7 @@ export default {
             2: 'There is no such rule: a low share would be the worry.',
             3: 'Everyone rated every option here, but the respondents are still Lantern’s list, not every workshop customer.',
           },
-          solution: 'With n options, n − 1 dimensions always carry all the differences between their averages, so four options fit almost perfectly in two or three. Read the map for its broad pattern, check it against the averages, and remember it shows only the attributes Ana asked about.' },
+          solution: `With n options, n − 1 dimensions always carry all the differences between their averages, so four options fit almost perfectly in two or three. And the share is of the options’ ratings, not of the segments’ ideal points: only ${pct(inPlane[HOME], 0)} of Home enthusiasts’ ideal (its squared distance from the centre, standardised) lies in the map’s plane. Measured in all six dimensions, Lantern is still the nearest option to both segments Ana is considering (${FULL[HOME][0].toFixed(2)} and ${FULL[GIFT][0].toFixed(2)}, against ${nowDist[HOME].toFixed(2)} and ${nowDist[GIFT].toFixed(2)} on the map). Read the map for its broad pattern, check it against the averages, and remember it shows only the attributes Ana asked about.` },
         { id: 'm05-pj-13', type: 'mc', kind: 'applied',
           prompt: 'Which option sits nearest each of the two segments Lantern is considering?',
           options: [
@@ -365,7 +372,8 @@ export default {
       ['winner equal', NAMES[top(W_EQUAL)], 'Home enthusiasts'], ['map 2D share', WD.map.cumulative[1], 0.978, 0.0005],
       ['nearest to Gift', PROVIDERS[nearestOf(GIFT)], PROVIDERS[0]], ['nearest to Home', PROVIDERS[nearestOf(HOME)], PROVIDERS[0]],
       ['plan distance to Gift', planDist[GIFT], 0.64, 0.005], ['plan nearer Home too', planDist[HOME] < nowDist[HOME] ? 1 : 0, 1],
-      ['contribution of a full workshop (B03)', CONTRIB, 950], ['Social groups pay below the price', WD.wtp[SOCIAL] < OFFER.price ? 1 : 0, 1],
+      ['contribution of a full workshop (B03)', CONTRIB, 950],
+      ['6-D: Lantern still nearest Home and Gift', [nearestFull(HOME), nearestFull(GIFT)].join(), '0,0'], ['6-D: rival order unchanged', rankOf(rivalFull).join(), rankOf(rivalD).join()], ['Social groups pay below the price', WD.wtp[SOCIAL] < OFFER.price ? 1 : 0, 1],
     ];
   },
 };
