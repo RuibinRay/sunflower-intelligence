@@ -83,19 +83,26 @@ export const CONVERSION = {
 };
 
 // ---------------------------------------------------------------- the project (lessons must not use these)
-/** The November–December 2026 courier trial: business days to delivery, and the price per parcel. Late = more than 3 days. */
+/** The 16 November – 18 December 2026 courier trial: each order went with Swiftline (Lantern's courier, B03's $5.20 a
+ *  parcel) or Parcelbird, chosen at random, and Ana tracked a random sample of the parcels (about a fifth of the shop's
+ *  orders in those weeks): business days to delivery. Late = more than 3 days. planningSD: the pooled SD of delivery
+ *  times (0.928), rounded for the power calculation; parcelsPerMonth: Ana's planning figure for 2027. */
 export const COURIER_TRIAL = {
   swiftline: { name: 'Swiftline', days: SWIFTLINE_DAYS, price: SHOP_MODEL.courier },
   parcelbird: { name: 'Parcelbird', days: PARCELBIRD_DAYS, price: 5.65 },
-  lateAfter: 3,
+  lateAfter: 3, planningSD: 0.93, parcelsPerMonth: 450,
 };
-/** The 12 November gift-box email: three subject lines, each sent to 1,500 customers chosen at random; gift-box orders within a week. */
+/** People on Lantern's mailing list at the end of 2026: newsletter sign-ups as well as customers (fictional). */
+export const MAILING_LIST = 6_000;
+/** The 12 November gift-box email: three subject lines, each sent to 1,500 people chosen at random from the mailing list;
+ *  the number in each group who clicked through to the gift-box page within a week. The free-delivery offer applied to
+ *  all three groups; only line C's subject mentioned it. */
 export const EMAIL_TEST = {
   sent: 1500,
   lines: [
-    { id: 'A', subject: 'Gift boxes are back', orders: 41 },
-    { id: 'B', subject: 'Your coffee lover’s gift, sorted', orders: 58 },
-    { id: 'C', subject: 'Free delivery on gift boxes until 15 December', orders: 47 },
+    { id: 'A', subject: 'Gift boxes are back', clicks: 41 },
+    { id: 'B', subject: 'Your coffee lover’s gift, sorted', clicks: 58 },
+    { id: 'C', subject: 'Free delivery on gift boxes until 15 December', clicks: 47 },
   ],
 };
 /** Workshop satisfaction (0–10) by format, 2026. */
@@ -148,7 +155,6 @@ export const DERIVED = {
     sepVsTarget: I.propTest1(CONVERSION.shop.sep.orders, CONVERSION.shop.sep.visits, CONVERSION.target, { alternative: 'less' }),
     octVsTarget: I.propTest1(CONVERSION.shop.oct.orders, CONVERSION.shop.oct.visits, CONVERSION.target, { alternative: 'less' }),
     shop: Object.fromEntries(Object.entries(CONVERSION.shop).map(([k, v]) => [k, v.orders / v.visits])),
-    webSepVsTarget: I.propTest1(CONVERSION.sep.orders, CONVERSION.sep.visits, CONVERSION.target, { alternative: 'less' }),
   },
   survey: { recommend: I.ciProp(SURVEY.wouldRecommend.yes, SURVEY.responses), responseRate: SURVEY.responses / SURVEY.sent },
   eventTypes: { anova: I.anova1(EVENT_TYPES.map((t) => PER_GUEST_BY_TYPE[t])), means: Object.fromEntries(EVENT_TYPES.map((t) => [t, mean(PER_GUEST_BY_TYPE[t])])) },
@@ -158,15 +164,17 @@ export const DERIVED = {
       welch: I.tTest2(swift, pbird), pooled: I.tTest2(swift, pbird, { equalVar: true }),
       lateTest: I.propTest2(late(swift), swift.length, late(pbird), pbird.length),
       extraCostPerParcel: r2(COURIER_TRIAL.parcelbird.price - COURIER_TRIAL.swiftline.price),
-      powerHalfDay: I.powerMean({ delta: 0.5, sigma: Math.sqrt((variance(swift) + variance(pbird)) / 2), n: 60, twoSample: true }),
-      nForQuarterDay: I.sampleSizeForPower({ delta: 0.25, sigma: Math.sqrt((variance(swift) + variance(pbird)) / 2), twoSample: true }),
+      pooledSD: Math.sqrt((variance(swift) + variance(pbird)) / 2),
+      powerHalfDay: I.powerMean({ delta: 0.5, sigma: COURIER_TRIAL.planningSD, n: 60, twoSample: true }),
+      nForQuarterDay: I.sampleSizeForPower({ delta: 0.25, sigma: COURIER_TRIAL.planningSD, twoSample: true }),
+      lateMonthly: [swift, pbird].map((xs) => (COURIER_TRIAL.parcelsPerMonth * late(xs)) / xs.length),
     },
     email: {
-      rates: EMAIL_TEST.lines.map((l) => l.orders / EMAIL_TEST.sent),
-      chi: I.chisqIndependence([EMAIL_TEST.lines.map((l) => l.orders), EMAIL_TEST.lines.map((l) => EMAIL_TEST.sent - l.orders)]),
-      bVsA: I.propTest2(EMAIL_TEST.lines[1].orders, EMAIL_TEST.sent, EMAIL_TEST.lines[0].orders, EMAIL_TEST.sent),
+      rates: EMAIL_TEST.lines.map((l) => l.clicks / EMAIL_TEST.sent),
+      chi: I.chisqIndependence(EMAIL_TEST.lines.map((l) => [l.clicks, EMAIL_TEST.sent - l.clicks])),
+      bVsA: I.propTest2(EMAIL_TEST.lines[1].clicks, EMAIL_TEST.sent, EMAIL_TEST.lines[0].clicks, EMAIL_TEST.sent),
     },
-    workshops: { anova: I.anova1(ws), means: ws.map(mean), sds: ws.map((x) => sd(x)) },
+    workshops: { anova: I.anova1(ws), welch: I.anovaWelch(ws), kw: I.kruskal(ws), means: ws.map(mean), sds: ws.map((x) => sd(x)) },
     subscribers: { ci: I.ciProp(SUBSCRIBER_SURVEY.fortnightly, SUBSCRIBER_SURVEY.responded), responseRate: SUBSCRIBER_SURVEY.responded / SUBSCRIBER_SURVEY.invited },
     surveyPlan: { n: nPlan, invite: Math.ceil(nPlan / SURVEY_PLAN.responseRate - 1e-9) },
   },
@@ -183,7 +191,8 @@ export const IDENTITIES = [
   ['B01: shop conversion 3.10% in August, 2.20% in September', Math.abs(CONVERSION.shop.aug.orders / CONVERSION.shop.aug.visits - 0.03098) < 0.00001 && CONVERSION.shop.sep.orders === 251],
   ['B01 survey: 61 of 79 would recommend', SURVEY.responses === 79 && SURVEY.wouldRecommend.yes === 61],
   ['Swiftline charges B03’s $5.20 a parcel', COURIER_TRIAL.swiftline.price === 5.2],
-  ['each email line sent to 1,500 customers', EMAIL_TEST.lines.length === 3 && EMAIL_TEST.sent === 1500],
+  ['each email line sent to 1,500 people, all from the mailing list', EMAIL_TEST.lines.length === 3 && EMAIL_TEST.sent === 1500 && 3 * EMAIL_TEST.sent <= MAILING_LIST],
+  ['2027 survey invitations fit within the mailing list', Math.ceil(nPlan / SURVEY_PLAN.responseRate - 1e-9) <= MAILING_LIST],
   ['subscriber survey: replies within invitations', SUBSCRIBER_SURVEY.responded <= SUBSCRIBER_SURVEY.invited && SUBSCRIBER_SURVEY.fortnightly <= SUBSCRIBER_SURVEY.responded],
   ['latte scores paired (12 and 12)', LATTE_PRE.length === 12 && LATTE_POST.length === 12],
 ];

@@ -236,7 +236,7 @@ const ALL = [
     topics: ['Formulas and functions', 'IF, SUMIF, COUNTIF, XLOOKUP', 'Tables', 'PivotTables', 'Charts', 'Conditional formatting', 'Descriptive statistics', 'Data cleaning workflows', 'What-if analysis', 'Goal Seek and Solver', 'Regression output', 'Dashboards'],
   }),
   C({
-    id: 'b04', school: 'analytics', code: 'B04', level: 'intermediate', status: 'in-progress', requires: ['b01'], recommends: ['b02', 'b03'],
+    id: 'b04', school: 'analytics', code: 'B04', level: 'intermediate', status: 'in-progress', requires: ['b01', 'b03'], recommends: ['b02'],
     title: 'Descriptive and Inferential Statistics',
     blurb: 'Describe data and chance, then reason from samples to populations with confidence intervals, tests for means and proportions, chi-square tests and ANOVA.',
     case: 'lantern',
@@ -247,7 +247,8 @@ const ALL = [
       'Explain sampling distributions and the central limit theorem, and calculate and interpret standard errors.',
       'Construct and interpret confidence intervals for means and proportions, and plan the sample size a margin of error needs.',
       'Carry out and report hypothesis tests for means and proportions (one and two samples, paired), with p-values, Type I and Type II errors and power.',
-      'Test relationships between categorical variables with chi-square tests, compare several group means with one-way ANOVA, and check each test’s conditions.',
+      'Test relationships between categorical variables with chi-square tests, compare several group means with one-way ANOVA, and check each test’s conditions, by hand and in Excel (functions and the Analysis ToolPak).',
+      'Report results with intervals and effect sizes, separate statistical from practical significance, allow for multiple comparisons, and say what the evidence can’t show (non-response, self-selection, causation).',
     ],
     modules: [
       { n: 1, title: 'Describing data and chance', lessons: ['describing-distributions', 'probability', 'discrete-distributions'] },

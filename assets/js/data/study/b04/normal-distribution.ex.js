@@ -4,6 +4,9 @@
 // by their results on the sheet and on copies with the numbers changed; num items recompute their answers in `check`.
 import { KILNWORTH_1KG as K, KG_BAGS, DERIVED as D } from './case.js?v=12';
 import * as I from '../../../core/inference.js?v=12';
+import { median } from '../../../core/stats.js?v=12';
+
+const KG2 = (v) => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
@@ -231,7 +234,7 @@ export const independent = [
     prompt: 'Before quoting a normal probability, Ana checks her 40 bags. Select all the findings that support using a normal model for the bags’ weights.',
     options: [
       `${within(1)} of the 40 bags lie within one standard deviation of the mean, and ${within(2)} within two.`,
-      'The mean (1,002.75 g) and the median (1,002.55 g) are only 0.2 g apart.',
+      `The mean (${KG2(D.kg.mean)} g) and the median (${KG2(median(KG_BAGS))} g) are only ${(D.kg.mean - median(KG_BAGS)).toFixed(1)} g apart.`,
       'SKEW returns −0.23 and KURT returns −0.34, both close to 0.',
       'Five of the 40 bags weigh less than the 1,000 g printed on the label.',
       'The bags’ mean, 1,002.75 g, is 1.25 g below Kilnworth’s 1,004 g setting.',

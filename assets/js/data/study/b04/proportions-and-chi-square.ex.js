@@ -2,7 +2,7 @@
 // (answer keys live here). Lantern's figures come from case.js (B01's monthly shop figures, the spring weekdays and the
 // channel and region tables); every other business is fictional. Formula items are marked by their results
 // (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { WEEKDAYS, CHANNEL_SUBSCRIPTION, REGION_SUBSCRIPTION, SHOP, DERIVED as D } from './case.js?v=12';
+import { WEEKDAYS, CHANNEL_SUBSCRIPTION, REGION_SUBSCRIPTION, RATING_BY_CHANNEL, SHOP, DERIVED as D } from './case.js?v=12';
 import * as I from '../../../core/inference.js?v=12';
 
 const WK = D.weekdays, CS = D.channelSubscription, RG = D.regionSubscription;
@@ -361,7 +361,7 @@ export const check = [
   },
   {
     id: 'b04-pc-k5', type: 'mc', kind: 'applied',
-    prompt: 'Lantern’s rated spring orders: 44.0% of web ratings and 44.3% of app ratings were five stars (154 ratings), and the chi-square test of independence gives p = 0.98. What should Ana conclude?',
+    prompt: `Lantern’s rated spring orders: ${RATING_BY_CHANNEL.counts.map(([five, rest]) => pct(five / (five + rest))).join(' of web ratings and ')} of app ratings were five stars (${D.ratingByChannel.n} ratings), and the chi-square test of independence gives p = ${D.ratingByChannel.p.toFixed(2)}. What should Ana conclude?`,
     options: [
       'No evidence of a difference in five-star share, though a gap of several points either way is possible.',
       'The test proves that web and app customers are equally satisfied, since the p-value is so close to 1.',

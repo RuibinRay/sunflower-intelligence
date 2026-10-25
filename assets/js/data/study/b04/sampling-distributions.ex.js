@@ -70,7 +70,7 @@ export const guided = [
       'The mean of 30 orders Ana drew at random from those 231: $31.20',
       'The share of all the bags Kilnworth fills that weigh under 1,000 g',
       'Five of the 40 bags Ana weighed were under 1,000 g: 12.5%',
-      'The standard deviation of the 40 bags Ana weighed: 2.66 g',
+      `The standard deviation of the ${D.kg.n} bags Ana weighed: ${D.kg.sd.toFixed(2)} g`,
       'The share of all Lantern’s customers who would recommend it to a friend',
     ],
     categories: ['Parameter', 'Statistic'],

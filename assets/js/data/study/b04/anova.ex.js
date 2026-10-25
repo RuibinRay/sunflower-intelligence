@@ -334,7 +334,7 @@ export const check = [
   },
   {
     id: 'b04-an-k4', type: 'mc', kind: 'applied',
-    prompt: 'Lantern’s ANOVA of invoice per guest-day by event type gives F = 2.75, p = 0.035 (Welch’s ANOVA p = 0.009). Bonferroni-adjusted Welch t tests find only team days against launches below 0.005. Which conclusion can Ana draw?',
+    prompt: `Lantern’s ANOVA of invoice per guest-day by event type gives F = ${D.eventTypes.anova.F.toFixed(2)}, p = ${D.eventTypes.anova.p.toFixed(3)} (Welch’s ANOVA p = ${I.anovaWelch(EVENT_TYPES.map((t) => PER_GUEST_BY_TYPE[t])).p.toFixed(3)}). Bonferroni-adjusted Welch t tests find only team days against launches below 0.005. Which conclusion can Ana draw?`,
     options: [
       'Not all five types share one mean; after adjustment only team days and launches clearly differ.',
       'Every one of the five event types earns a different average amount per guest-day from all the others.',

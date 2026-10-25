@@ -2,7 +2,7 @@
 // here). Lantern's set-up times, bags, orders and subscription flags come from case.js; Redfern Bakery, Tamarind
 // Kitchen, Ambleside Hotel, Westcliff Gym, Tollgate Bike Hire and Brockwell Clinic are fictional. Formula items are
 // marked by their results on the sheet and on copies with the numbers changed; num items recompute their answers.
-import { SETUP_MINUTES, ORDER_VALUES, SUBSCRIPTION_FLAGS, DERIVED as D } from './case.js?v=12';
+import { SETUP_MINUTES, ORDER_VALUES, SUBSCRIPTION_FLAGS, SURVEY, DERIVED as D } from './case.js?v=12';
 import * as I from '../../../core/inference.js?v=12';
 
 const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
@@ -314,7 +314,7 @@ export const check = [
   },
   {
     id: 'b04-ci-k4', type: 'mc', kind: 'applied',
-    prompt: 'B01’s September survey: 240 customers invited, 79 replied, 61 would recommend Lantern (77%, 95% interval 68% to 86%). Which sentence can Ana put in her report?',
+    prompt: `B01’s September survey: ${SURVEY.sent} customers invited, ${SURVEY.responses} replied, ${SURVEY.wouldRecommend.yes} would recommend Lantern (${pc(D.survey.recommend.p, 0)}, 95% interval ${pc(D.survey.recommend.low, 0)} to ${pc(D.survey.recommend.high, 0)}). Which sentence can Ana put in her report?`,
     options: [
       '“Among customers like the 79 who replied, 68% to 86% would recommend us; only a third of those invited replied.”',
       '“We are 95% confident that between 68% and 86% of all our customers would recommend us to a friend.”',

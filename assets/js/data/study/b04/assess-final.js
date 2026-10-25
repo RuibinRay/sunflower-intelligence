@@ -1,21 +1,21 @@
 // assess-final.js — B04 final assessment: 24 questions across all four modules, two or three per lesson (six for module
 // 1, seven for module 2, five for module 3 and six for module 4). 70% passes.
-// Mixed conceptual, numerical and applied items; ten are formula items on small worksheets using Excel’s statistical
-// functions (and three more formula steps), with the inputs a formula should read (a hypothesised value, a cut-off, a
+// Mixed conceptual, numerical and applied items; nine are formula items on small worksheets using Excel’s statistical
+// functions (and four more formula steps), with the inputs a formula should read (a hypothesised value, a cut-off, a
 // confidence level, a category label) varied on the marking copies, so that typed results and typed inputs fail.
 // Several combine skills: a lookup inside a conditional probability (b04-fn-4), a normal model inside a binomial count
-// (b04-fn-7), a normal model for a sample mean’s cut-off (b04-fn-9), a t interval for one category of a table
+// (b04-fn-7), why a normal model holds for a sample mean, then its cut-off (b04-fn-9), a t interval for one category of a table
 // (b04-fn-11), checking a proportion’s conditions before choosing its interval (b04-fn-12), power read as the chance of a
-// Type II error (b04-fn-15), an interval read as a test (b04-fn-16), checking conditions, then choosing, running and
-// estimating with a two-sample test (b04-fn-17), a paired test rebuilt from a correlation (b04-fn-18), a Poisson model
-// fitted and tested (b04-fn-19), expected counts built inside CHISQ.TEST (b04-fn-21) and the spread rule before an
+// Type II error (b04-fn-15), an interval read as a test (b04-fn-16), checking conditions, then choosing, running (on
+// data by team, with FILTER) and estimating with a two-sample test (b04-fn-17), a paired test rebuilt from a correlation (b04-fn-18), a Poisson model
+// fitted, tested and read (b04-fn-19), expected counts built inside CHISQ.TEST (b04-fn-21) and the spread rule before an
 // ANOVA (b04-fn-24).
 // New questions on businesses used nowhere else on the site, not copies of lesson exercises, module tests, the
 // diagnostic or the project, and nothing from the project’s data or scenarios. No hints; solutions are shown on review.
 // Every business, record and number is fictional; every num item’s `check` recomputes its answer, and every formula item
 // is marked by its results.
 import * as I from '../../../core/inference.js?v=12';
-import { mean, sd, quantile } from '../../../core/stats.js?v=12';
+import { mean, sd, quantile, skewness } from '../../../core/stats.js?v=12';
 
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
 const r = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
@@ -62,7 +62,7 @@ const ORDER_TYPE = ['eat in', 'takeaway', 'takeaway', 'eat in', 'takeaway', 'eat
 const ORDER_MIN = [14.2, 9.8, 11.5, 16.1, 10.4, 13.5, 12.2, 8.9, 15.4, 10.9, 17.2, 11.8, 9.5, 14.8, 12.6, 13.9, 10.1, 11.1, 15.9, 9.2];
 const ofType = (t) => ORDER_MIN.filter((_, i) => ORDER_TYPE[i] === t);
 const CI_EAT = I.ciMean(ofType('eat in')), CI_TAKE = I.ciMean(ofType('takeaway')), CI_ALL = I.ciMean(ORDER_MIN);
-// Lindley Dental: 5 of 80 patients reported pain
+// Quillmere Dental: 5 of 80 patients reported pain
 const PAIN = { x: 5, n: 80 };
 const WALD = I.ciProp(PAIN.x, PAIN.n), WILSON = I.ciProp(PAIN.x, PAIN.n, 0.95, 'wilson');
 // Yewdale Water: ±15 litres at 99%, planning SD 120 litres
@@ -87,6 +87,13 @@ const CLAIMS = [14, 15, 18, 19, 21];
 const NORTH = [5.2, 7.9, 4.1, 9.6, 6.3, 3.8, 8.7, 5.9, 10.4];
 const SOUTH = [5.1, 5.6, 4.8, 5.9, 6.2, 5.3, 4.9, 5.7, 6.0, 5.4, 5.5, 6.1, 4.7, 5.8];
 const WEL = I.tTest2(NORTH, SOUTH), POOL = I.tTest2(NORTH, SOUTH, { equalVar: true });
+const TEAM_ORDER = 'SNSSNSNSSNSNSSNSNSNSSNS'.split('');           // the jobs in date order: 9 North, 14 South
+const teamCells = (() => {
+  const c = { A1: 'Team', B1: 'Hours', D1: 'p-value' };
+  let n = 0, k = 0;
+  TEAM_ORDER.forEach((t, i) => { c[`A${i + 2}`] = t === 'N' ? 'North' : 'South'; c[`B${i + 2}`] = t === 'N' ? NORTH[n++] : SOUTH[k++]; });
+  return c;
+})();
 const welLoTrunc = WEL.diff - I.tInv(0.975, Math.floor(WEL.df)) * WEL.se;
 // Skelwith Supermarket: 16 cashiers before and after training (summary only)
 const TILL = { n: 16, m1: 52.0, s1: 9.0, m2: 48.5, s2: 8.6, r: 0.92 };
@@ -132,17 +139,19 @@ export const items = [
       'The 10% trimmed mean (TRIMMEAN with 0.1)',
       'The coefficient of variation',
       'How many standard deviations the smallest invoice lies below the mean',
+      'The skewness (Excel’s SKEW)',
     ],
     categories: ['Falls', 'Stays the same', 'Rises'],
-    answer: [0, 1, 0, 1, 0, 1, 0, 2],
+    answer: [0, 1, 0, 1, 0, 1, 0, 2, 0],
     feedback: {
       1: 'The median depends only on the middle of the sorted values. The typo was in the largest value, which stays the largest.',
-      3: 'Q1 and Q3 sit inside the middle half of the sorted invoices; the largest invoice affects neither, before or after the correction.',
+      3: 'Q1 and Q3 are the 25th and 75th percentiles of the sorted invoices; the largest invoice affects neither, before or after the correction.',
       5: 'With 20 invoices, TRIMMEAN(…,0.1) leaves out 2 values, one from each end. The largest invoice is left out either way, so the trimmed mean doesn’t change.',
       6: `Both the mean and the standard deviation fall, but the standard deviation far more, so the CV falls from ${pc(sd(TYPO) / mean(TYPO), 0)} to ${pc(sd(FIXED) / mean(FIXED), 0)}.`,
       7: `The typo inflated the standard deviation so much that the smallest invoice looked ordinary (z ≈ ${neg(zMin(TYPO))}). Corrected, it lies ${fx(-zMin(FIXED))} standard deviations below the mean.`,
+      8: `One huge value made the invoices look extremely right-skewed (SKEW ${fx(skewness(TYPO), 2)}); corrected, SKEW is ${fx(skewness(FIXED), 2)}, a mild right skew.`,
     },
-    solution: `With the typo and corrected: mean ${usd(mean(TYPO))} → ${usd(mean(FIXED))}; standard deviation ${usd(sd(TYPO))} → ${usd(sd(FIXED))}; range ${usd(Math.max(...TYPO) - Math.min(...TYPO))} → ${usd(Math.max(...FIXED) - Math.min(...FIXED))}; CV ${pc(sd(TYPO) / mean(TYPO), 0)} → ${pc(sd(FIXED) / mean(FIXED), 0)}. The median (${usd(quantile(FIXED, 0.5))}), the IQR (${usd(iqr(FIXED))}) and the 10% trimmed mean (${usd(trim10(FIXED), 2)}) don’t move, because they never used the largest value’s size. The smallest invoice goes from ${fx(-zMin(TYPO))} to ${fx(-zMin(FIXED))} standard deviations below the mean: one extreme value can hide how unusual the others are. That is why resistant summaries are the safer description when an outlier is suspected, and why the typo should be fixed at source.`,
+    solution: `With the typo and corrected: mean ${usd(mean(TYPO))} → ${usd(mean(FIXED))}; standard deviation ${usd(sd(TYPO))} → ${usd(sd(FIXED))}; range ${usd(Math.max(...TYPO) - Math.min(...TYPO))} → ${usd(Math.max(...FIXED) - Math.min(...FIXED))}; CV ${pc(sd(TYPO) / mean(TYPO), 0)} → ${pc(sd(FIXED) / mean(FIXED), 0)}; SKEW ${fx(skewness(TYPO), 2)} → ${fx(skewness(FIXED), 2)}. The median (${usd(quantile(FIXED, 0.5))}), the IQR (${usd(iqr(FIXED))}) and the 10% trimmed mean (${usd(trim10(FIXED), 2)}) don’t move, because they never used the largest value’s size. The smallest invoice goes from ${fx(-zMin(TYPO))} to ${fx(-zMin(FIXED))} standard deviations below the mean: one extreme value can hide how unusual the others are. That is why resistant summaries are the safer description when an outlier is suspected, and why the typo should be fixed at source.`,
   },
   {
     id: 'b04-fn-2', lesson: 'describing-distributions', type: 'formula', kind: 'numerical',
@@ -160,7 +169,7 @@ export const items = [
       '=(COUNTIF(B2:B25,"<"&E1)+0.5*COUNTIF(B2:B25,E1))/24*100',
     ],
     wrong: [
-      { formula: '=PERCENTRANK.INC(B2:B25,E1)*100', say: 'PERCENTRANK.INC is Excel’s definition: the number of scores below divided by n − 1, given to three digits, with nothing for the ties. The question asks for OpenStax’s (B + 0.5E) ÷ n × 100.' },
+      { formula: '=PERCENTRANK.INC(B2:B25,E1)*100', say: 'PERCENTRANK.INC is Excel’s measure: for a score in the data, the number of scores below it divided by n − 1, cut to three digits, with no half-credit for ties. The question asks for OpenStax’s (B + 0.5E) ÷ n × 100.' },
       { formula: '=COUNTIF(B2:B25,"<"&E1)/COUNT(B2:B25)*100', say: 'That counts only the scores below. OpenStax’s formula adds half the scores equal to E1, which matters here because four learners scored 44.' },
       { formula: '=COUNTIF(B2:B25,"<="&E1)/COUNT(B2:B25)*100', say: 'That counts every tied score in full. The formula counts half of them: + 0.5 × COUNTIF(B2:B25,E1).' },
       { formula: '=(COUNTIF(B2:B25,"<"&E1)+0.5*COUNTIF(B2:B25,E1))/COUNT(B2:B25)', say: 'That is the fraction. The question asks for the percentile rank, times 100.' },
@@ -249,9 +258,9 @@ export const items = [
   // ================================================================ Module 2: from samples to populations
   {
     id: 'b04-fn-7', lesson: 'normal-distribution', type: 'formula', kind: 'applied',
-    prompt: 'Heathercombe Honey (fictional) fills jars labelled with the weight in B3. Fill weights are roughly normal, with the mean and standard deviation in B1 and B2 (grams). A trading-standards officer weighs B4 jars chosen at random and acts if at least B5 of them weigh less than the label weight. In B7, calculate the probability that the officer acts.',
+    prompt: 'Heathercombe Honey (fictional) fills jars labelled with the weight in B3. Fill weights are roughly normal, with the mean and standard deviation in B1 and B2 (grams). An inspector from its largest retail customer weighs B4 jars chosen at random and acts if at least B5 of them weigh less than the label weight. In B7, calculate the probability that the inspector acts.',
     sheet: {
-      cells: { A1: 'Mean fill (g)', B1: JAR.mean, A2: 'SD of fill (g)', B2: JAR.sd, A3: 'Label weight (g)', B3: JAR.label, A4: 'Jars weighed', B4: JAR.n, A5: 'Light jars that trigger action', B5: JAR.k, A7: 'P(officer acts)' },
+      cells: { A1: 'Mean fill (g)', B1: JAR.mean, A2: 'SD of fill (g)', B2: JAR.sd, A3: 'Label weight (g)', B3: JAR.label, A4: 'Jars weighed', B4: JAR.n, A5: 'Light jars that trigger action', B5: JAR.k, A7: 'P(inspector acts)' },
       vary: { B1: [344, 348], B3: [338, 341], B5: [1, 3] },
     },
     cell: 'B7', view: 'A1:B7', formats: { B7: '0.0000' }, widths: { A: 30 },
@@ -261,7 +270,7 @@ export const items = [
       { formula: '=1-BINOM.DIST(B5,B4,NORM.DIST(B3,B1,B2,TRUE),TRUE)', say: 'That is the probability of more than B5 light jars. “At least B5” includes B5 itself: subtract P(at most B5 − 1).' },
       { formula: '=1-BINOM.DIST(B5-1,B4,NORM.DIST(B3,B1,B2,FALSE),TRUE)', say: 'NORM.DIST with FALSE gives the height of the density curve, not the share of jars under the label. Use TRUE for the area below B3.' },
       { formula: '=1-BINOM.DIST(B5-1,B4,1-NORM.DIST(B3,B1,B2,TRUE),TRUE)', say: '1 − NORM.DIST(B3, …, TRUE) is the share of jars above the label. A light jar weighs less than B3: the area below.' },
-      { formula: '=NORM.DIST(B3,B1,B2,TRUE)', say: 'That is the chance that one jar is light. The officer acts on the number of light jars among B4: a binomial count with that probability.' },
+      { formula: '=NORM.DIST(B3,B1,B2,TRUE)', say: 'That is the chance that one jar is light. The inspector acts on the number of light jars among B4: a binomial count with that probability.' },
     ],
     solution: `Two models in turn. First the normal model for one jar: p = P(jar under 340 g) = <x>=NORM.DIST(B3,B1,B2,TRUE)</x>, z = (340 − 346) ÷ 4 = −1.5, p = ${fx(pLight, 4)}. Then the number of light jars among 10 chosen at random is binomial(10, ${fx(pLight, 4)}), and P(at least 2) = 1 − P(at most 1): <x>=1-BINOM.DIST(B5-1,B4,NORM.DIST(B3,B1,B2,TRUE),TRUE)</x> = ${fx(I.binomSf(JAR.k - 1, JAR.n, pLight), 4)}. Even with the mean 6 g above the label, about one inspection in seven finds two or more light jars, a reason to raise the mean or reduce the spread. The answer leans on the normal model’s lower tail, so it is only as good as the fit there.`,
   },
@@ -280,19 +289,43 @@ export const items = [
     solution: `The two cut-offs are equally far into the tails, so the mean is halfway between them: 24 minutes. 30 minutes is the 90th percentile, so 30 = 24 + z × σ with z = <x>=NORM.S.INV(0.9)</x> = ${fx(I.normInv(0.9), 4)}, and σ = 6 ÷ ${fx(I.normInv(0.9), 4)} = ${fx(taxiSd, 2)} minutes. Check: <x>=NORM.DIST(18,24,4.68,TRUE)</x> ≈ 0.10.`,
   },
   {
-    id: 'b04-fn-9', lesson: 'sampling-distributions', type: 'formula', kind: 'applied',
-    prompt: 'Tregarth Labs (fictional) presses tablets whose weights have the mean in B1 and the standard deviation in B2 (mg) when the press is set correctly. Every hour it weighs a random sample of B3 tablets and checks their mean. In B6, calculate the lower warning limit: the sample mean below which a correctly set press would fall only with the probability in B4.',
-    sheet: { cells: { A1: 'Mean tablet weight (mg)', B1: TAB.mean, A2: 'SD of one tablet (mg)', B2: TAB.sd, A3: 'Tablets in a sample', B3: TAB.n, A4: 'Probability below the limit', B4: TAB.tail, A6: 'Lower warning limit (mg)' }, vary: { B4: [0.01, 0.005, 0.05] } },
-    cell: 'B6', view: 'A1:B6', formats: { B4: '0.000', B6: '0.00' }, widths: { A: 26 },
-    answer: '=NORM.INV(B4,B1,B2/SQRT(B3))',
-    alt: ['=B1+NORM.S.INV(B4)*B2/SQRT(B3)', '=B1-NORM.S.INV(1-B4)*B2/SQRT(B3)', '=NORM.INV(B4,B1,B2/B3^0.5)'],
-    wrong: [
-      { formula: '=NORM.INV(B4,B1,B2)', say: 'That is the limit for a single tablet. The mean of B3 tablets varies much less, with the standard error B2 ÷ √B3.' },
-      { formula: '=NORM.INV(B4,B1,B2/B3)', say: 'The standard error of a mean divides σ by √n, not by n.' },
-      { formula: '=NORM.INV(1-B4,B1,B2/SQRT(B3))', say: 'That is the upper warning limit, with B4 of the area above it. NORM.INV takes the area below the value: B4 for a lower limit.' },
-      { formula: '=NORM.DIST(B4,B1,B2/SQRT(B3),TRUE)', say: 'NORM.DIST goes from a value to a probability. Here the probability is given and the value is wanted: NORM.INV.' },
+    id: 'b04-fn-9', lesson: 'sampling-distributions', type: 'steps', kind: 'applied',
+    prompt: `Tregarth Labs (fictional) presses tablets whose weights are roughly normal, with a mean of ${TAB.mean} mg and a standard deviation of ${TAB.sd} mg when the press is set correctly. Every hour it weighs a random sample of ${TAB.n} tablets and checks their mean.`,
+    steps: [
+      {
+        id: 'b04-fn-9-s1', type: 'mc',
+        prompt: 'Why can the normal model be used for the mean of 8 tablets?',
+        options: [
+          'Tablet weights are roughly normal, so the mean of any number of tablets is normal too',
+          'The central limit theorem makes the mean of 8 tablets normal whatever the weights’ shape',
+          'Knowing the standard deviation of one tablet makes the distribution of the mean normal',
+          'A correctly set press centres the hourly means on 250 mg, so their distribution is normal',
+        ],
+        answer: 0,
+        feedback: {
+          1: 'The central limit theorem says the mean gets closer to normal as n grows; 8 values are far too few to rely on it for a skewed shape. The model works here because the weights themselves are roughly normal.',
+          2: 'The standard deviation sets the standard error, σ ÷ √n, but says nothing about shape: the mean of 8 values from a skewed distribution is still skewed.',
+          3: 'Centring says where the means lie, not what shape their distribution has. The shape comes from the weights being roughly normal.',
+        },
+        solution: 'When the population is normal, the sample mean is exactly normal for any sample size. Eight tablets are too few for the central limit theorem to rescue a skewed shape, so the model rests on the weights being roughly normal, which the lab should check.',
+      },
+      {
+        id: 'b04-fn-9-s2', type: 'formula',
+        prompt: 'B1 to B3 hold the mean and standard deviation of one tablet’s weight and the number of tablets in a sample. In B6, calculate the lower warning limit: the sample mean below which a correctly set press would fall only with the probability in B4.',
+        sheet: { cells: { A1: 'Mean tablet weight (mg)', B1: TAB.mean, A2: 'SD of one tablet (mg)', B2: TAB.sd, A3: 'Tablets in a sample', B3: TAB.n, A4: 'Probability below the limit', B4: TAB.tail, A6: 'Lower warning limit (mg)' }, vary: { B4: [0.01, 0.005, 0.05] } },
+        cell: 'B6', view: 'A1:B6', formats: { B4: '0.000', B6: '0.00' }, widths: { A: 26 },
+        answer: '=NORM.INV(B4,B1,B2/SQRT(B3))',
+        alt: ['=B1+NORM.S.INV(B4)*B2/SQRT(B3)', '=B1-NORM.S.INV(1-B4)*B2/SQRT(B3)', '=NORM.INV(B4,B1,B2/B3^0.5)'],
+        wrong: [
+          { formula: '=NORM.INV(B4,B1,B2)', say: 'That is the limit for a single tablet. The mean of B3 tablets varies much less, with the standard error B2 ÷ √B3.' },
+          { formula: '=NORM.INV(B4,B1,B2/B3)', say: 'The standard error of a mean divides σ by √n, not by n.' },
+          { formula: '=NORM.INV(1-B4,B1,B2/SQRT(B3))', say: 'That is the upper warning limit, with B4 of the area above it. NORM.INV takes the area below the value: B4 for a lower limit.' },
+          { formula: '=NORM.DIST(B4,B1,B2/SQRT(B3),TRUE)', say: 'NORM.DIST goes from a value to a probability. Here the probability is given and the value is wanted: NORM.INV.' },
+        ],
+        solution: `The mean of 8 tablets has standard error 3.2 ÷ √8 = ${fx(tabSe, 3)} mg. <x>=NORM.INV(B4,B1,B2/SQRT(B3))</x> = 250 − 1.96 × ${fx(tabSe, 3)} = ${fx(tabLimit, 2)} mg.`,
+      },
     ],
-    solution: `The mean of 8 tablets has standard error 3.2 ÷ √8 = ${fx(tabSe, 3)} mg, and it is normal if tablet weights are (with only 8 tablets the central limit theorem can’t be relied on, so the weights themselves should be checked). <x>=NORM.INV(B4,B1,B2/SQRT(B3))</x> = 250 − 1.96 × ${fx(tabSe, 3)} = ${fx(tabLimit, 2)} mg. A single tablet lighter than that is common (about ${pc(I.normal.cdf(tabLimit, TAB.mean, TAB.sd), 0)} of tablets), so the limit is for hourly means only. With a 2.5% limit, a correctly set press gives a false warning about once in 40 hours.`,
+    solution: `Because tablet weights are roughly normal, the mean of 8 is normal with standard error 3.2 ÷ √8 = ${fx(tabSe, 3)} mg, and the warning limit is <x>=NORM.INV(B4,B1,B2/SQRT(B3))</x> = ${fx(tabLimit, 2)} mg. A single tablet lighter than that is common (about ${pc(I.normal.cdf(tabLimit, TAB.mean, TAB.sd), 0)} of tablets), so the limit is for hourly means only. With a 2.5% limit, a correctly set press gives a false warning about once in 40 hours.`,
   },
   {
     id: 'b04-fn-10', lesson: 'sampling-distributions', type: 'mc', kind: 'conceptual',
@@ -332,11 +365,11 @@ export const items = [
       { formula: '=AVERAGEIF(B2:B21,F1,C2:C21)+CONFIDENCE.T(0.95,STDEV.S(FILTER(C2:C21,B2:B21=F1)),COUNTIF(B2:B21,F1))', say: 'CONFIDENCE.T takes alpha, 1 − the confidence level: 0.05 for a 95% interval. With 0.95 the margin is tiny.' },
       { formula: '=AVERAGEIF(B2:B21,F1,C2:C21)+1.96*STDEV.S(FILTER(C2:C21,B2:B21=F1))', say: 'That adds 1.96 standard deviations of single orders: a range for individual orders. An interval for the mean uses the standard error, s ÷ √n, and the t multiplier.' },
     ],
-    solution: `<x>=AVERAGEIF(B2:B21,F1,C2:C21)+CONFIDENCE.T(0.05,STDEV.S(FILTER(C2:C21,B2:B21=F1)),COUNTIF(B2:B21,F1))</x>. Excel has no STDEV.S that takes a condition, so FILTER (Excel for Microsoft 365, 2021 or 2024) keeps the type’s minutes; STDEV.S(IF(…)) does the same. Eat in: ${CI_EAT.n} orders, mean ${fx(CI_EAT.mean, 2)}, s = ${fx(CI_EAT.sd, 2)}, t with ${CI_EAT.df} df = ${fx(CI_EAT.crit, 3)}, margin ${fx(CI_EAT.margin, 2)}: ${fx(CI_EAT.low, 2)} to ${fx(CI_EAT.high, 2)} minutes. Takeaway: ${CI_TAKE.n} orders, ${fx(CI_TAKE.low, 2)} to ${fx(CI_TAKE.high, 2)}. Pooling both types (${fx(CI_ALL.low, 2)} to ${fx(CI_ALL.high, 2)}) describes neither. With 8 and 12 orders the t interval needs roughly symmetric times without outliers, which these have.`,
+    solution: `<x>=AVERAGEIF(B2:B21,F1,C2:C21)+CONFIDENCE.T(0.05,STDEV.S(FILTER(C2:C21,B2:B21=F1)),COUNTIF(B2:B21,F1))</x>. Excel has no STDEV.S that takes a condition, so FILTER (Excel for Microsoft 365, 2021 or 2024) keeps the type’s minutes; STDEV.S(IF(…)) does the same. Eat in: ${CI_EAT.n} orders, mean ${fx(CI_EAT.mean, 2)}, s = ${fx(CI_EAT.sd, 2)}, t with ${CI_EAT.df} df = ${fx(CI_EAT.crit, 3)}, margin ${fx(CI_EAT.margin, 2)}: ${fx(CI_EAT.low, 2)} to ${fx(CI_EAT.high, 2)} minutes; takeaway: ${CI_TAKE.n} orders, ${fx(CI_TAKE.low, 2)} to ${fx(CI_TAKE.high, 2)}. Pooling both types (${fx(CI_ALL.low, 2)} to ${fx(CI_ALL.high, 2)}) describes neither. With 8 and 12 orders the t interval needs roughly symmetric times without outliers, which these have.`,
   },
   {
     id: 'b04-fn-12', lesson: 'confidence-intervals', type: 'mc', kind: 'conceptual',
-    prompt: `Lindley Dental (fictional) asked 80 patients chosen at random whether they had any pain after a new numbing gel; 5 said yes. A colleague has calculated the 95% Wald interval for the share of all patients with pain: ${pc(WALD.low)} to ${pc(WALD.high)}. What should the practice report?`,
+    prompt: `Quillmere Dental (fictional) asked 80 patients chosen at random whether they had any pain after a new numbing gel; 5 said yes. A colleague has calculated the 95% Wald interval for the share of all patients with pain: ${pc(WALD.low)} to ${pc(WALD.high)}. What should the practice report?`,
     options: [
       `The Wilson interval, about ${pc(WILSON.low)} to ${pc(WILSON.high)}, since only 5 of the patients had pain`,
       `The Wald interval as it stands, since its lower limit, ${pc(WALD.low)}, is above zero`,
@@ -353,7 +386,7 @@ export const items = [
   },
   {
     id: 'b04-fn-13', lesson: 'confidence-intervals', type: 'num', kind: 'applied',
-    prompt: 'Yewdale Water (fictional) wants to estimate the mean daily water use of its customers’ households to within ±15 litres at 99% confidence. A pilot sample suggests a standard deviation of about 120 litres. How many households should it meter? Give a whole number.',
+    prompt: 'Yewdale Water (fictional) wants to estimate the mean daily water use of its customers’ households to within ±15 litres at 99% confidence. A pilot sample suggests a standard deviation of about 120 litres. How many households should it meter? Take the multiplier from NORM.S.INV and give a whole number.',
     answer: I.sampleSizeMean(WATER.sd, WATER.E, 0.99),
     check: () => Math.ceil((I.normInv(0.995) * 120 / 15) ** 2),
     unit: 'households', places: 0, tol: 0.5,
@@ -363,7 +396,7 @@ export const items = [
       { value: Math.ceil(I.normInv(0.995) * WATER.sd / WATER.E), say: 'n = (zσ ÷ E)²: square the bracket before rounding up.' },
       { value: Math.ceil((I.normInv(0.99) * WATER.sd / WATER.E) ** 2), say: '2.326 leaves 1% in one tail. A two-sided 99% margin leaves 0.5% in each: z = 2.576.' },
     ],
-    solution: `n = (z × σ ÷ E)² = (2.576 × 120 ÷ 15)² = ${fx((I.normInv(0.995) * WATER.sd / WATER.E) ** 2, 1)}, rounded up to ${I.sampleSizeMean(WATER.sd, WATER.E, 0.99)} households. At 95% confidence ${I.sampleSizeMean(WATER.sd, WATER.E, 0.95)} would do: the extra confidence costs about 180 meters. The ±15 litres holds only if the pilot’s standard deviation is about right and the households are chosen at random.`,
+    solution: `n = (z × σ ÷ E)² = (2.576 × 120 ÷ 15)² = ${fx((I.normInv(0.995) * WATER.sd / WATER.E) ** 2, 1)}, rounded up to ${I.sampleSizeMean(WATER.sd, WATER.E, 0.99)} households. At 95% confidence ${I.sampleSizeMean(WATER.sd, WATER.E, 0.95)} would do: the extra confidence costs about 180 more households. The ±15 litres holds only if the pilot’s standard deviation is about right and the households are chosen at random.`,
   },
 
   // ================================================================ Module 3: testing hypotheses
@@ -388,7 +421,7 @@ export const items = [
       { formula: '=2*(1-NORM.S.DIST((COUNTIF(B2:B121,"on time")/COUNTA(B2:B121)-E1)/SQRT(E1*(1-E1)/COUNTA(B2:B121)),TRUE))', say: 'z is negative here, so 1 − NORM.S.DIST(z, TRUE) is the larger tail and doubling it gives more than 1. Use ABS(z).' },
       { formula: '=2*(1-NORM.S.DIST(ABS((COUNTIF(B2:B121,"on time")/COUNTA(B2:B121)-0.7)/SQRT(0.7*(1-0.7)/COUNTA(B2:B121))),TRUE))', say: 'The benchmark 0.7 is typed into the formula, so it stops being right when E1 changes. Refer to E1.' },
     ],
-    solution: `${onTime} of 120 repairs were on time: p̂ = ${fx(REP.p, 4)}. Under H₀ the standard error is √(0.7 × 0.3 ÷ 120) = ${fx(REP.se0, 4)}, so z = (${fx(REP.p, 4)} − 0.7) ÷ ${fx(REP.se0, 4)} = ${neg(REP.z)} and the two-sided p-value is ${fx(REP.pValue, 4)}. At the 5% level the association’s on-time rate differs from the benchmark: it is lower, by about 9 percentage points (95% interval ${pc(REP.low)} to ${pc(REP.high)}). The conditions hold: np₀ = 84 and n(1 − p₀) = 36 are both at least 10, and the repairs were chosen at random.`,
+    solution: `${onTime} of 120 repairs were on time: p̂ = ${fx(REP.p, 4)}. Under H₀ the standard error is √(0.7 × 0.3 ÷ 120) = ${fx(REP.se0, 4)}, so z = (${fx(REP.p, 4)} − 0.7) ÷ ${fx(REP.se0, 4)} = ${neg(REP.z)} and the two-sided p-value is ${fx(REP.pValue, 4)}. At the 5% level there is evidence that the association’s on-time rate differs from the benchmark: it appears lower, by about 9 percentage points (95% interval ${pc(REP.low)} to ${pc(REP.high)}). The conditions hold: np₀ = 84 and n(1 − p₀) = 36 are both at least 10, and the repairs were chosen at random.`,
   },
   {
     id: 'b04-fn-15', lesson: 'hypothesis-testing', type: 'steps', kind: 'numerical',
@@ -411,7 +444,7 @@ export const items = [
         id: 'b04-fn-15-s2', type: 'mc',
         prompt: 'Suppose the mean really has changed by 2 hours, but the study fails to reject H₀. What has happened, and how likely was it beforehand?',
         options: [
-          `A Type II error, which had a probability of about ${Math.round((1 - kitPower) * 100)}%, or 1 − power`,
+          'A Type II error, whose probability was 1 − the power found above',
           'A Type I error, which had a probability of 5%, the significance level',
           'A Type II error, which had a probability of 5%, the significance level',
           'No error: failing to reject shows the change was too small to matter',
@@ -446,7 +479,7 @@ export const items = [
       },
       {
         id: 'b04-fn-16-s2', type: 'classify',
-        prompt: `Using only the interval, ${fx(loanLo, 2)} to ${fx(loanHi, 2)} days, decide for each claimed mean loan length whether a two-sided t test at the 5% level would reject it.`,
+        prompt: 'Using only your 95% interval from the first part, decide for each claimed mean loan length whether a two-sided t test at the 5% level would reject it.',
         items: CLAIMS.map((c) => (c === 21 ? '21 days (the figure in the library’s budget)' : `${c} days`)),
         categories: ['Rejected at the 5% level', 'Not rejected'],
         answer: CLAIMS.map((c) => (c < loanLo || c > loanHi ? 0 : 1)),
@@ -461,7 +494,7 @@ export const items = [
   },
   {
     id: 'b04-fn-17', lesson: 'comparing-means', type: 'steps', kind: 'applied',
-    prompt: `Arncliffe Window Fitters (fictional) allocated jobs at random to its North and South teams and recorded the hours each job took: column A holds the North team’s 9 jobs and column B the South team’s 14. The North team’s times vary far more (standard deviation ${fx(sd(NORTH), 2)} hours, against ${fx(sd(SOUTH), 2)}).`,
+    prompt: `Arncliffe Window Fitters (fictional) allocated jobs at random to its North and South teams and recorded the hours each job took: column A gives each job’s team and column B its hours (9 North jobs, 14 South). The North team’s times vary far more (standard deviation ${fx(sd(NORTH), 2)} hours, against ${fx(sd(SOUTH), 2)}).`,
     steps: [
       {
         id: 'b04-fn-17-s1', type: 'mc',
@@ -469,13 +502,13 @@ export const items = [
         options: [
           'Welch’s t test, because the teams are separate groups whose spreads differ greatly',
           'The pooled two-sample t test, because the jobs were allocated to the teams at random',
-          'A paired t test: both columns hold the hours of jobs done by the same firm',
+          'A paired t test: all the jobs were done by the same firm and timed the same way',
           'Run F.TEST first, and use the pooled test if it finds no difference in the spreads',
         ],
         answer: 0,
         feedback: {
           1: 'Random allocation makes the groups comparable, but it doesn’t make their variances equal. With a small, noisy group and a larger steady one, pooling understates the standard error.',
-          2: 'Pairing needs each value in one column to belong with one in the other, such as the same job measured twice. These are different jobs, 9 and 14 of them.',
+          2: 'Pairing needs each value in one group to belong with one in the other, such as the same job measured twice. These are different jobs, 9 and 14 of them.',
           3: 'A preliminary variance test is a poor gate: it is sensitive to non-normal data and misses real differences in small samples. Welch’s test is the safer default whatever F.TEST says.',
         },
         solution: 'Two independent groups with very different spreads and sizes: Welch’s two-sample t test, which doesn’t assume equal variances.',
@@ -483,21 +516,25 @@ export const items = [
       {
         id: 'b04-fn-17-s2', type: 'formula',
         prompt: 'In E1, calculate the two-sided p-value of that test with T.TEST.',
-        sheet: { cells: { A1: 'North (hours)', B1: 'South (hours)', D1: 'p-value', ...col('A', 2, NORTH), ...col('B', 2, SOUTH) } },
-        cell: 'E1', view: 'A1:E15', formats: { A: '0.0', B: '0.0', E1: '0.0000' }, widths: { A: 13, B: 13 },
+        sheet: { cells: teamCells },
+        cell: 'E1', view: 'A1:E24', maxHeight: '20rem', formats: { B: '0.0', E1: '0.0000' }, widths: { A: 8, B: 8 },
         require: ['T.TEST'],
-        answer: '=T.TEST(A2:A10,B2:B15,2,3)',
-        alt: ['=T.TEST(B2:B15,A2:A10,2,3)', '=2*T.TEST(A2:A10,B2:B15,1,3)'],
-        wrong: [
-          { formula: '=T.TEST(A2:A10,B2:B15,2,2)', say: 'Type 2 is the pooled test, which assumes equal variances. Welch’s test is type 3.' },
-          { formula: '=T.TEST(A2:A10,B2:B15,1,3)', say: 'tails = 1 gives the one-tailed p-value. The comparison is two-sided: tails = 2.' },
-          { formula: '=T.TEST(A2:A10,B2:B15,2,1)', say: 'Type 1 is the paired test, which needs the same number of values in each range (here it returns #N/A). These are independent groups: type 3.' },
+        answer: '=T.TEST(FILTER(B2:B24,A2:A24="North"),FILTER(B2:B24,A2:A24="South"),2,3)',
+        alt: [
+          '=T.TEST(FILTER(B2:B24,A2:A24="South"),FILTER(B2:B24,A2:A24="North"),2,3)',
+          '=2*T.TEST(FILTER(B2:B24,A2:A24="North"),FILTER(B2:B24,A2:A24="South"),1,3)',
+          '=T.TEST(IF(A2:A24="North",B2:B24),IF(A2:A24="South",B2:B24),2,3)',
         ],
-        solution: `<x>=T.TEST(A2:A10,B2:B15,2,3)</x> = ${fx(WEL.p, 4)}: Welch’s t = ${fx(WEL.t, 2)} with about ${fx(WEL.df, 1)} degrees of freedom.`,
+        wrong: [
+          { formula: '=T.TEST(FILTER(B2:B24,A2:A24="North"),FILTER(B2:B24,A2:A24="South"),2,2)', say: 'Type 2 is the pooled test, which assumes equal variances. Welch’s test is type 3.' },
+          { formula: '=T.TEST(FILTER(B2:B24,A2:A24="North"),FILTER(B2:B24,A2:A24="South"),1,3)', say: 'tails = 1 gives the one-tailed p-value. The comparison is two-sided: tails = 2.' },
+          { formula: '=T.TEST(FILTER(B2:B24,A2:A24="North"),FILTER(B2:B24,A2:A24="South"),2,1)', say: 'Type 1 is the paired test, which needs the same number of values in each group (here it returns #N/A). These are independent groups: type 3.' },
+        ],
+        solution: `FILTER picks out each team’s hours (Excel for Microsoft 365, 2021 or 2024; IF inside T.TEST does the same): <x>=T.TEST(FILTER(B2:B24,A2:A24="North"),FILTER(B2:B24,A2:A24="South"),2,3)</x> = ${fx(WEL.p, 4)}, Welch’s t = ${fx(WEL.t, 2)} with about ${fx(WEL.df, 1)} degrees of freedom.`,
       },
       {
         id: 'b04-fn-17-s3', type: 'num',
-        prompt: 'Calculate the lower limit of the 95% confidence interval for the difference in mean hours (North minus South), using Welch’s standard error and degrees of freedom. Give hours to two decimal places (it may be negative).',
+        prompt: 'Calculate the lower limit of the 95% confidence interval for the difference in mean hours (North minus South) that goes with the test you chose, using its standard error and degrees of freedom. Give hours to two decimal places (it may be negative).',
         answer: r(WEL.low, 2),
         check: () => { const v1 = sd(NORTH) ** 2 / 9, v2 = sd(SOUTH) ** 2 / 14, se = Math.sqrt(v1 + v2), df = (v1 + v2) ** 2 / (v1 ** 2 / 8 + v2 ** 2 / 13); return mean(NORTH) - mean(SOUTH) - I.tInv(0.975, df) * se; },
         unit: 'hours', places: 2, tol: 0.025,
@@ -546,17 +583,17 @@ export const items = [
       },
       {
         id: 'b04-fn-19-s2', type: 'formula',
-        prompt: 'C2:C5 now hold the expected counts for 0 to 3 call-outs. In C6, calculate the number of nights expected to have 4 or more call-outs, so that the expected counts add up to the number of nights.',
-        sheet: { cells: { ...lockCells, ...Object.fromEntries([2, 3, 4, 5].map((i) => [`C${i}`, `=$F$1*POISSON.DIST(A${i},$F$2,FALSE)`])) }, fixed: ['A2:A6'] },
+        prompt: 'In C6, calculate the number of nights a Poisson distribution with mean F2 expects to have 4 or more call-outs, so that the expected counts in column C add up to the number of nights.',
+        sheet: { cells: lockCells, fixed: ['A2:A6'] },
         cell: 'C6', view: 'A1:F7', formats: { C: '0.00', F2: '0.0000' }, widths: { B: 11, C: 13, E: 20 },
         answer: '=$F$1*(1-POISSON.DIST(A6-1,$F$2,TRUE))',
-        alt: ['=F1*(1-POISSON.DIST(3,F2,TRUE))', '=F1-SUM(C2:C5)', '=F1*(1-POISSON.DIST(A5,F2,TRUE))', '=B7-SUM(C2:C5)', '=F1*(1-SUM(POISSON.DIST({0,1,2,3},F2,FALSE)))'],
+        alt: ['=F1*(1-POISSON.DIST(3,F2,TRUE))', '=F1*(1-POISSON.DIST(A5,F2,TRUE))', '=F1*(1-SUM(POISSON.DIST({0,1,2,3},F2,FALSE)))'],
         wrong: [
           { formula: '=F1*(1-POISSON.DIST(A6,F2,TRUE))', say: 'That is the expected number of nights with 5 or more call-outs. “4 or more” is 1 − P(at most 3).' },
           { formula: '=F1*POISSON.DIST(A6,F2,FALSE)', say: 'That is nights with exactly 4. The last category must take in every count from 4 up, or the expected counts won’t add to the number of nights.' },
           { formula: '=F1*(1-POISSON.DIST(A6-1,F2,FALSE))', say: 'With FALSE you subtract only P(exactly 3). Subtract P(at most 3), with TRUE.' },
         ],
-        solution: `<x>=$F$1*(1-POISSON.DIST(A6-1,$F$2,TRUE))</x> = ${fx(EXP_N[4], 2)} nights, or <x>=F1-SUM(C2:C5)</x>.`,
+        solution: `<x>=$F$1*(1-POISSON.DIST(A6-1,$F$2,TRUE))</x> = ${fx(EXP_N[4], 2)} nights: 1 − P(at most 3), times the number of nights. Once C2:C5 are filled, <x>=F1-SUM(C2:C5)</x> gives the same.`,
       },
       {
         id: 'b04-fn-19-s3', type: 'num',
@@ -568,8 +605,25 @@ export const items = [
         ],
         solution: 'df = k − 1 − m = 5 − 1 − 1 = 3: one degree of freedom is lost because the expected counts must add to 120, and one because λ was estimated from the same data.',
       },
+      {
+        id: 'b04-fn-19-s4', type: 'mc',
+        prompt: `The goodness-of-fit test gives a p-value of about ${fx(FIT.p, 1)}. What should the firm conclude?`,
+        options: [
+          'No evidence against a Poisson model, so it can be used to plan night cover',
+          `Call-outs per night are shown to follow a Poisson distribution with λ ≈ ${fx(LAM, 2)}`,
+          'A Poisson model is rejected, because the p-value is far above 0.05',
+          'No conclusion: the test is invalid because one category combines 4 and 5 call-outs',
+        ],
+        answer: 0,
+        feedback: {
+          1: 'A large p-value means the counts are compatible with a Poisson model, not that they are shown to follow one: failing to reject is not proof.',
+          2: 'A p-value above 0.05 means the data are not surprising if the model is right. Small p-values count against the model, large ones don’t.',
+          3: 'Merging the tail into “4 or more” is what keeps every expected count at least 5 and makes the expected counts add to 120. It is part of a valid test.',
+        },
+        solution: `p ≈ ${fx(FIT.p, 2)} is far above 0.05: the counts are what a Poisson model would often produce, so there is no evidence against it. That doesn’t prove the model right, but it makes it a reasonable basis for planning night cover.`,
+      },
     ],
-    solution: `Expected nights: ${EXP_N.map((e) => fx(e, 1)).join(', ')}, all above 5. χ² = Σ(O − E)² ÷ E = ${fx(FIT.stat, 2)} on 3 degrees of freedom, and <x>=CHISQ.DIST.RT(0.96,3)</x> ≈ ${fx(FIT.p, 2)}: no evidence that call-outs per night depart from a Poisson distribution. That doesn’t prove the model right, but it makes a Poisson model a reasonable basis for planning night cover, while the firm watches for nights that bunch. CHISQ.TEST on the two columns would use 4 degrees of freedom and give ${fx(FIT_NAIVE.p, 2)}.`,
+    solution: `Expected nights: ${EXP_N.map((e) => fx(e, 1)).join(', ')}, all above 5. χ² = Σ(O − E)² ÷ E = ${fx(FIT.stat, 2)} on 3 degrees of freedom, and <x>=CHISQ.DIST.RT(0.96,3)</x> ≈ ${fx(FIT.p, 2)}: no evidence that call-outs per night depart from a Poisson distribution. That doesn’t prove the model right, but it makes a Poisson model a reasonable basis for planning night cover, while the firm watches for nights that bunch. CHISQ.TEST on the observed and expected columns would use 4 degrees of freedom and give ${fx(FIT_NAIVE.p, 2)}.`,
   },
   {
     id: 'b04-fn-20', lesson: 'proportions-and-chi-square', type: 'formula', kind: 'applied',
@@ -589,11 +643,11 @@ export const items = [
       { formula: '=1-NORM.S.DIST((B4-C4)/SQRT(B4*(1-B4)/B3+C4*(1-C4)/C3),TRUE)', say: 'That is the unpooled standard error of a confidence interval. The test assumes p_A = p_B, so it uses the pooled proportion in B5.' },
       { formula: '=1-NORM.S.DIST((B4-C4)/SQRT(B5*(1-B5)),TRUE)', say: 'The standard error of a difference in proportions needs the sample sizes: √(p̄(1 − p̄)(1/n₁ + 1/n₂)).' },
     ],
-    solution: `Press A misprinted ${pc(PRESS.p1, 2)} of sheets and press B ${pc(PRESS.p2, 2)}. Pooled p̄ = 99 ÷ 2,500 = ${pc(PRESS.pool, 2)}; SE = √(p̄(1 − p̄)(1/1,200 + 1/1,300)) = ${fx(PRESS.sePool, 5)}; z = ${fx(PRESS.diff, 5)} ÷ ${fx(PRESS.sePool, 5)} = ${fx(PRESS.z, 2)}; one-sided p = ${fx(PRESS.pValue, 4)}. At the 5% level press A misprints more often, by about 1.7 percentage points (two-sided 95% interval ${fx(PRESS2.low * 100, 2)} to ${fx(PRESS2.high * 100, 2)} points). Both samples have well over 10 misprints and 10 good sheets. The test shows the gap is unlikely to be chance, not that the press’s age causes it: if press A runs harder jobs or cheaper paper, that could explain it too.`,
+    solution: `Press A misprinted ${pc(PRESS.p1, 2)} of sheets and press B ${pc(PRESS.p2, 2)}. Pooled p̄ = 99 ÷ 2,500 = ${pc(PRESS.pool, 2)}; SE = √(p̄(1 − p̄)(1/1,200 + 1/1,300)) = ${fx(PRESS.sePool, 5)}; z = ${fx(PRESS.diff, 5)} ÷ ${fx(PRESS.sePool, 5)} = ${fx(PRESS.z, 2)}; one-sided p = ${fx(PRESS.pValue, 4)}. At the 5% level there is evidence that press A misprints more often, by about 1.7 percentage points (two-sided 95% interval ${fx(PRESS2.low * 100, 2)} to ${fx(PRESS2.high * 100, 2)} points). Both samples have well over 10 misprints and 10 good sheets. The test shows the gap is unlikely to be chance, not that the press’s age causes it: if press A runs harder jobs or cheaper paper, that could explain it too.`,
   },
   {
     id: 'b04-fn-21', lesson: 'proportions-and-chi-square', type: 'formula', kind: 'numerical',
-    prompt: 'Calderbrook Leisure (fictional) cross-tabulated last year’s members by membership type and by whether they renewed: B2:D3 hold the counts, column E the row totals and row 4 the column totals. In B6, calculate in one formula the p-value of the chi-square test of whether renewing is independent of membership type.',
+    prompt: 'Calderbrook Leisure (fictional) cross-tabulated last year’s members by membership type and by whether they renewed: B2:D3 hold the counts, column E the row totals and row 4 the column totals. In B6, calculate in one formula the p-value of the chi-square test of whether renewing is independent of membership type. (In Excel, a column times a row, such as E2:E3*B4:D4, gives a 2 × 3 array: each row’s value times each column’s.)',
     sheet: {
       cells: {
         B1: 'Off-peak', C1: 'Standard', D1: 'Family', E1: 'Total', A2: 'Renewed', A3: 'Didn’t renew', A4: 'Total',
@@ -615,7 +669,7 @@ export const items = [
       { formula: '=CHISQ.TEST(B2:D3,E2:E3/E4*B4:D4/E4)', say: 'That gives the expected shares of the grand total, not counts. Multiply by the grand total once more: row total × column total ÷ grand total.' },
       { formula: '=CHISQ.DIST.RT(SUMPRODUCT((B2:D3-E2:E3*B4:D4/E4)^2/(E2:E3*B4:D4/E4)),5)', say: 'Six cells minus one is not the test’s degrees of freedom. A test of independence has (r − 1)(c − 1) = 1 × 2 = 2.' },
     ],
-    solution: `The expected counts under independence are row total × column total ÷ grand total: <x>E2:E3*B4:D4/E4</x> makes the whole 2 × 3 table at once (${IND.expected[0].join(', ')} renewals; ${IND.expected[1].join(', ')} not), and <x>=CHISQ.TEST(B2:D3,E2:E3*B4:D4/E4)</x> returns ${IND.p.toFixed(6)}. χ² = ${fx(IND.stat, 2)} on (2 − 1)(3 − 1) = 2 degrees of freedom; the smallest expected count is ${IND.minExpected}. Renewal is associated with membership type: ${pc(96 / 160, 0)} of off-peak members renewed, ${pc(210 / 300, 0)} of standard and ${pc(128 / 160, 0)} of family members. Cramér’s V = ${fx(IND.cramersV, 2)}, a modest association, and members chose their type, so it doesn’t show that moving members to family plans would raise renewals.`,
+    solution: `The expected counts under independence are row total × column total ÷ grand total: <x>E2:E3*B4:D4/E4</x> makes the whole 2 × 3 table at once (${IND.expected[0].join(', ')} renewals; ${IND.expected[1].join(', ')} not; <x>MMULT(E2:E3,B4:D4)/E4</x> does the same), and <x>=CHISQ.TEST(B2:D3,E2:E3*B4:D4/E4)</x> returns ${IND.p.toFixed(6)}. χ² = ${fx(IND.stat, 2)} on (2 − 1)(3 − 1) = 2 degrees of freedom; the smallest expected count is ${IND.minExpected}. There is strong evidence that renewal is associated with membership type: ${pc(96 / 160, 0)} of off-peak members renewed, ${pc(210 / 300, 0)} of standard and ${pc(128 / 160, 0)} of family members. Cramér’s V = ${fx(IND.cramersV, 2)}, a modest association, and members chose their type, so it doesn’t show that moving members to family plans would raise renewals.`,
   },
   {
     id: 'b04-fn-22', lesson: 'anova', type: 'formula', kind: 'numerical',
@@ -647,7 +701,7 @@ export const items = [
     ],
     answer: 0,
     feedback: {
-      1: `Six tests at 0.05 each give up to about a ${Math.round((1 - 0.95 ** 6) * 100)}% chance of at least one false alarm. Bonferroni tests each at 0.05 ÷ 6 ≈ ${fx(bonf, 4)}, and W–Y’s 0.030 doesn’t pass.`,
+      1: `Six tests at 0.05 each would give about a ${Math.round((1 - 0.95 ** 6) * 100)}% chance of at least one false alarm if they were independent (1 − 0.95⁶). Bonferroni tests each at 0.05 ÷ 6 ≈ ${fx(bonf, 4)}, and W–Y’s 0.030 doesn’t pass.`,
       2: 'A significant F says the means are not all equal; one formula out of line is enough. Pairwise comparisons, adjusted for multiple testing, say which differ.',
       3: 'Tukey’s HSD is the usual choice for all pairs, but the Bonferroni correction is a valid alternative that works with Excel’s T.TEST.',
     },

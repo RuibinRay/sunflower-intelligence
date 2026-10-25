@@ -1,10 +1,10 @@
 // assess-diagnostic.js — B04 course diagnostic: three items per module, each written so that it needs that module’s
 // statistical method, not the descriptive statistics, Excel and survey basics of B01–B03, so that a student who knows only
 // those courses misses module 1’s items and one who already has a module’s methods gets its items right.
-// Module 1: Chebyshev’s guarantee against a normal-curve range, Bayes’ rule over two independent inspections, a Poisson
+// Module 1: Chebyshev’s guarantee against the empirical rule and a normal-curve range, Bayes’ rule over two independent inspections, a Poisson
 // count over a fraction of the rate’s interval. Module 2: a normal cut-off from the lower tail, the normal model for a
 // sample proportion, the sample size for a proportion with a planning value. Module 3: a one-sided t test from summary
-// figures, a one-sided p-value from a two-sided one, choosing T.TEST’s type from the design. Module 4: goodness of fit
+// figures, a one-sided p-value from a two-sided one, choosing T.TEST’s type from the design (two prices for each item). Module 4: goodness of fit
 // against stated shares, the two-proportion z test, what drives F.
 // Modules 1–3 use only mc, num and formula items, which score 0 or 1, so that the route below can’t be passed on part
 // marks; module 4 is not used for routing. New questions on businesses used nowhere else on the site, not copies of
@@ -17,10 +17,14 @@ const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`
 const r = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const neg = (v, d = 2) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), d)}`;
+const usd2 = (v) => `$${fx(v, 2)}`;
 
 // Ottermere Car Park: daily takings, mean $3,200, SD $400, right-skewed
-const PARK = { mean: 3200, sd: 400 };
-const zMid75 = I.normInv(0.875);
+const PARK = { mean: 3200, sd: 400, share: 0.64 };
+const kCheb = 1 / Math.sqrt(1 - PARK.share);                       // 1 − 1/k² = 0.64 gives k = 1/0.6
+const zMid = I.normInv(0.5 + PARK.share / 2);                      // the normal curve's middle 64%
+const dollars = (x) => `$${Math.round(x).toLocaleString('en-US')}`;
+const parkRange = (k) => `${dollars(PARK.mean - k * PARK.sd)} to ${dollars(PARK.mean + k * PARK.sd)}`;
 // Glasswing Electronics: 3% of boards faulty; each inspection flags 92% of faulty and 6% of good boards
 const BOARD = { base: 0.03, hit: 0.92, falseHit: 0.06 };
 const twoFlags = (b, h, f) => (b * h * h) / (b * h * h + (1 - b) * f * f);
@@ -38,10 +42,10 @@ const TRAM = { E: 0.03, p: 0.2 };
 // Hazelbank Tyres: 16 fittings, mean 32.1, SD 4.2, against 30 minutes
 const FIT = { n: 16, mean: 32.1, sd: 4.2, mu0: 30 };
 const tFit = (FIT.mean - FIT.mu0) / (FIT.sd / Math.sqrt(FIT.n));
-// Sallowmere Pharmacies: minutes per prescription, the month before and after new software, branch by branch
-const BEFORE = [6.8, 9.4, 7.5, 11.2, 8.1, 10.3, 7.9, 12.0, 8.8, 9.7];
-const AFTER = [6.3, 9.0, 7.2, 10.5, 7.8, 9.6, 7.6, 11.4, 8.1, 9.5];
-const PAIR = I.tTestPaired(BEFORE, AFTER), WELCH = I.tTest2(BEFORE, AFTER);
+// Sallowmere Pharmacies: two wholesalers' prices for the same 12 items ($)
+const PRICE_A = [3.40, 12.85, 7.20, 24.60, 5.15, 41.30, 9.95, 2.80, 18.40, 6.75, 31.20, 14.10];
+const PRICE_B = [3.15, 12.10, 7.05, 23.85, 4.70, 40.65, 9.60, 2.70, 17.55, 6.55, 30.40, 13.80];
+const PAIR = I.tTestPaired(PRICE_A, PRICE_B), WELCH = I.tTest2(PRICE_A, PRICE_B);
 // Swallowtail Sweets: 500 sweets counted against the stated mix
 const FLAVOURS = ['Strawberry', 'Lemon', 'Lime', 'Orange'];
 const SWEETS = [182, 128, 101, 89], MIX = [0.3, 0.25, 0.25, 0.2];
@@ -54,24 +58,24 @@ export const items = [
   // ================================================================ Module 1: describing data and chance
   {
     id: 'b04-dg-1', lesson: 'describing-distributions', type: 'mc', kind: 'conceptual',
-    prompt: 'Ottermere Car Park (fictional) took a mean of $3,200 a day over the last two years, with a standard deviation of $400. The daily takings are right-skewed: a few event days take far more than usual. The manager wants the narrowest range, centred on the mean, that is certain to contain at least 75% of the days whatever the shape of the distribution. Which range is it?',
+    prompt: 'Ottermere Car Park (fictional) took a mean of $3,200 a day over the last two years, with a standard deviation of $400. The daily takings are right-skewed: a few event days take far more than usual. The manager wants the narrowest range, centred on the mean, that is certain to contain at least 64% of the days whatever the shape of the distribution. Which range is it?',
     options: [
-      '$2,400 to $4,000: two standard deviations either side of the mean',
-      `$${Math.round(PARK.mean - zMid75 * PARK.sd).toLocaleString('en-US')} to $${Math.round(PARK.mean + zMid75 * PARK.sd).toLocaleString('en-US')}: the middle 75% of a normal curve with that mean and SD`,
-      '$2,000 to $4,400: three standard deviations either side of the mean',
-      '$2,800 to $3,600: one standard deviation either side of the mean',
+      `${parkRange(kCheb)}: ${fx(kCheb, 2)} standard deviations either side of the mean`,
+      `${parkRange(zMid)}: the middle 64% of a normal curve with that mean and SD`,
+      `${parkRange(1)}: one standard deviation, which holds about 68% of the days`,
+      `${parkRange(2)}: two standard deviations either side of the mean`,
     ],
     answer: 0,
     feedback: {
-      1: 'That range holds 75% of the days only if the takings follow a normal curve. They are right-skewed, so no normal-curve range is guaranteed; Chebyshev’s inequality is the rule that holds for every shape.',
-      2: 'Three standard deviations is guaranteed to hold at least 1 − 1/3² = 88.9% of the days, so it certainly holds 75%, but it is wider than it needs to be.',
-      3: 'Within one standard deviation Chebyshev guarantees nothing (1 − 1/1² = 0), and the empirical rule’s 68% needs a bell shape.',
+      1: 'That range holds 64% of the days only if the takings follow a normal curve. They are right-skewed, so no normal-curve range is guaranteed; Chebyshev’s inequality is the rule that holds for every shape.',
+      2: 'About 68% within one standard deviation is the empirical rule, which holds only for bell-shaped data. For any shape, Chebyshev guarantees nothing within one standard deviation (1 − 1/1² = 0).',
+      3: 'Two standard deviations is guaranteed to hold at least 1 − 1/2² = 75% of the days, so it certainly holds 64%, but it is wider than it needs to be.',
     },
-    solution: `Chebyshev’s inequality: for any data, at least 1 − 1/k² of the values lie within k standard deviations of the mean. Setting 1 − 1/k² = 0.75 gives k² = 4, so k = 2: $3,200 ± 2 × $400 = $2,400 to $4,000. The normal curve’s middle 75% ($3,200 ± ${fx(zMid75, 2)} × $400) would be narrower, but for skewed takings nothing guarantees it; three standard deviations is guaranteed but wider than needed.`,
+    solution: `Chebyshev’s inequality: for any data, at least 1 − 1/k² of the values lie within k standard deviations of the mean. Setting 1 − 1/k² = 0.64 gives 1/k² = 0.36, so k = 1 ÷ 0.6 ≈ ${fx(kCheb, 2)}: $3,200 ± ${fx(kCheb, 2)} × $400 = $3,200 ± ${dollars(kCheb * PARK.sd)}, from ${parkRange(kCheb)}. The normal curve’s middle 64% ($3,200 ± ${fx(zMid, 2)} × $400) would be narrower, but for skewed takings nothing guarantees it; two standard deviations is guaranteed but wider than needed.`,
   },
   {
     id: 'b04-dg-2', lesson: 'probability', type: 'num', kind: 'numerical',
-    prompt: 'Glasswing Electronics (fictional) makes circuit boards, 3% of which have a hidden solder fault. An automated inspection flags 92% of faulty boards and 6% of good ones. Every flagged board goes through a second machine with the same rates, whose mistakes are independent of the first’s. A board has been flagged by both machines. What is the probability that it is faulty? Give three decimal places.',
+    prompt: 'Glasswing Electronics (fictional) makes circuit boards, 3% of which have a hidden solder fault. An automated inspection flags 92% of faulty boards and 6% of good ones. Every flagged board goes through a second machine with the same rates, whose mistakes are independent of the first’s. What is the probability that a board flagged by both machines is faulty? Give three decimal places.',
     answer: r(twoFlags(BOARD.base, BOARD.hit, BOARD.falseHit), 3),
     check: () => { const p1 = oneFlag(0.03, 0.92, 0.06); return (p1 * 0.92) / (p1 * 0.92 + (1 - p1) * 0.06); },
     unit: '', places: 3, tol: 0.0015,
@@ -81,7 +85,7 @@ export const items = [
       { value: r((BOARD.base * BOARD.hit * BOARD.hit) / (BOARD.base * BOARD.hit * BOARD.hit + (1 - BOARD.base) * BOARD.falseHit), 3), say: 'You squared the 92% but not the 6%. A good board flagged twice has been wrongly flagged by both machines: 0.97 × 0.06².' },
       { value: r(BOARD.base * BOARD.hit * BOARD.hit, 3), say: 'That is the joint probability that a board is faulty and flagged twice. Divide it by the probability that any board is flagged twice.' },
     ],
-    solution: `Bayes’ rule with the two flags as the evidence. Faulty and flagged twice: 0.03 × 0.92² = ${fx(BOARD.base * BOARD.hit ** 2, 6)}. Good and flagged twice: 0.97 × 0.06² = ${fx((1 - BOARD.base) * BOARD.falseHit ** 2, 6)}. P(faulty | two flags) = ${fx(BOARD.base * BOARD.hit ** 2, 6)} ÷ (${fx(BOARD.base * BOARD.hit ** 2, 6)} + ${fx((1 - BOARD.base) * BOARD.falseHit ** 2, 6)}) ≈ ${fx(twoFlags(BOARD.base, BOARD.hit, BOARD.falseHit), 3)}. One flag alone gives only ${fx(oneFlag(BOARD.base, BOARD.hit, BOARD.falseHit), 3)}; updating that with the second flag gives the same ${fx(twoFlags(BOARD.base, BOARD.hit, BOARD.falseHit), 3)}. The answer rests on the two machines erring independently: if both are fooled by the same boards, a second flag adds far less.`,
+    solution: `Bayes’ rule with the two flags as the evidence. Faulty and flagged twice: 0.03 × 0.92² = ${fx(BOARD.base * BOARD.hit ** 2, 6)}; good and flagged twice: 0.97 × 0.06² = ${fx((1 - BOARD.base) * BOARD.falseHit ** 2, 6)}. P(faulty | two flags) = ${fx(BOARD.base * BOARD.hit ** 2, 6)} ÷ (${fx(BOARD.base * BOARD.hit ** 2, 6)} + ${fx((1 - BOARD.base) * BOARD.falseHit ** 2, 6)}) ≈ ${fx(twoFlags(BOARD.base, BOARD.hit, BOARD.falseHit), 3)}. One flag alone gives only ${fx(oneFlag(BOARD.base, BOARD.hit, BOARD.falseHit), 3)}; updating that with the second flag gives the same ${fx(twoFlags(BOARD.base, BOARD.hit, BOARD.falseHit), 3)}. The answer rests on the two machines erring independently: if both are fooled by the same boards, a second flag adds far less.`,
   },
   {
     id: 'b04-dg-3', lesson: 'discrete-distributions', type: 'formula', kind: 'applied',
@@ -162,7 +166,7 @@ export const items = [
     id: 'b04-dg-8', lesson: 'hypothesis-testing', type: 'mc', kind: 'conceptual',
     prompt: 'Before collecting any data, Ravenscar Dental Practice (fictional) decided to test whether its patients’ mean wait is longer than the 15 minutes it promises (H₁: μ > 15), at α = 0.05. Its software reports only a two-sided p-value: 0.08. The sample’s mean wait was 16.2 minutes. What should the practice conclude?',
     options: [
-      'The one-sided p-value is 0.04, so it rejects H₀: the mean wait exceeds 15 minutes.',
+      'The one-sided p-value is 0.04, so at the 5% level there is evidence that μ > 15.',
       'The p-value is 0.08 whatever the alternative, so it fails to reject H₀ at the 5% level.',
       'The one-sided p-value is 0.16, because a one-sided test asks for stronger evidence.',
       'The one-sided p-value is 0.92, which is 1 minus the two-sided p-value of 0.08.',
@@ -177,18 +181,18 @@ export const items = [
   },
   {
     id: 'b04-dg-9', lesson: 'comparing-means', type: 'formula', kind: 'applied',
-    prompt: 'Sallowmere Pharmacies (fictional) installed new dispensing software in its 10 branches. Column B holds each branch’s average minutes per prescription in the month before the change, and column C the same branch’s average in the month after. In E2, calculate the two-sided p-value for a change in the mean, with T.TEST.',
-    sheet: { cells: { A1: 'Branch', B1: 'Before (min)', C1: 'After (min)', E1: 'Two-sided p-value', ...col('A', 2, BEFORE.map((_, i) => `S${String(i + 1).padStart(2, '0')}`)), ...col('B', 2, BEFORE), ...col('C', 2, AFTER) } },
-    cell: 'E2', view: 'A1:E11', formats: { B: '0.0', C: '0.0', E2: '0.000000' }, widths: { B: 12, C: 11, E: 17 },
+    prompt: 'Sallowmere Pharmacies (fictional) asked two wholesalers to quote for the same 12 items, chosen at random from its stock list. Column B holds wholesaler A’s price for each item and column C wholesaler B’s price for the same item. In E2, calculate the two-sided p-value for a difference in mean price, with T.TEST.',
+    sheet: { cells: { A1: 'Item', B1: 'Wholesaler A ($)', C1: 'Wholesaler B ($)', E1: 'Two-sided p-value', ...col('A', 2, PRICE_A.map((_, i) => `P${String(i + 1).padStart(2, '0')}`)), ...col('B', 2, PRICE_A), ...col('C', 2, PRICE_B) } },
+    cell: 'E2', view: 'A1:E13', formats: { B: '$0.00', C: '$0.00', E2: '0.000000' }, widths: { B: 16, C: 16, E: 17 },
     require: ['T.TEST'],
-    answer: '=T.TEST(B2:B11,C2:C11,2,1)',
-    alt: ['=T.TEST(C2:C11,B2:B11,2,1)', '=2*T.TEST(B2:B11,C2:C11,1,1)'],
+    answer: '=T.TEST(B2:B13,C2:C13,2,1)',
+    alt: ['=T.TEST(C2:C13,B2:B13,2,1)', '=2*T.TEST(B2:B13,C2:C13,1,1)'],
     wrong: [
-      { formula: '=T.TEST(B2:B11,C2:C11,2,3)', say: 'Type 3, Welch’s test, treats the two months as separate groups. The same branches appear in both columns, so the values come in pairs: type 1.' },
-      { formula: '=T.TEST(B2:B11,C2:C11,2,2)', say: 'Type 2, the pooled test, also treats the months as independent groups, and the large differences between branches swamp the change. Each branch is measured twice: type 1, paired.' },
-      { formula: '=T.TEST(B2:B11,C2:C11,1,1)', say: 'tails = 1 gives the one-tailed p-value. The question asks for a two-sided test: tails = 2.' },
+      { formula: '=T.TEST(B2:B13,C2:C13,2,3)', say: 'Type 3, Welch’s test, treats the two price lists as separate samples. Each item is priced by both wholesalers, so the values come in pairs: type 1.' },
+      { formula: '=T.TEST(B2:B13,C2:C13,2,2)', say: 'Type 2, the pooled test, also treats the two lists as independent samples, and the large differences between items swamp the gap between the wholesalers. Each item is priced by both wholesalers: type 1, paired.' },
+      { formula: '=T.TEST(B2:B13,C2:C13,1,1)', say: 'tails = 1 gives the one-tailed p-value. The question asks for a two-sided test: tails = 2.' },
     ],
-    solution: `Each branch is measured before and after, so the data are paired: <x>=T.TEST(B2:B11,C2:C11,2,1)</x> ≈ ${PAIR.p.toFixed(6)} (t = ${fx(PAIR.t, 2)} on ${PAIR.df} df; the mean saving is ${fx(PAIR.meanDiff, 2)} minutes a prescription, with a standard deviation of ${fx(PAIR.sdDiff, 2)}). Welch’s test on the same columns gives p ≈ ${fx(WELCH.p, 2)}, because the branches differ from one another (${fx(Math.min(...BEFORE), 1)} to ${fx(Math.max(...BEFORE), 1)} minutes) far more than the software changed them. The paired test shows a drop larger than chance would produce; without branches that kept the old software, a change between the two months, such as fewer complex prescriptions, could explain part of it.`,
+    solution: `Each item is priced by both wholesalers, so the prices come in pairs: <x>=T.TEST(B2:B13,C2:C13,2,1)</x> ≈ ${PAIR.p.toFixed(6)} (t = ${fx(PAIR.t, 2)} on ${PAIR.df} df; wholesaler B is ${usd2(PAIR.meanDiff)} cheaper per item on average, with a standard deviation of ${usd2(PAIR.sdDiff)}, and cheaper on ${PRICE_A.every((a, i) => PRICE_B[i] < a) ? 'every one of the 12 items' : `${PRICE_A.filter((a, i) => PRICE_B[i] < a).length} of the 12 items`}). Welch’s test on the same columns gives p ≈ ${fx(WELCH.p, 2)}, because the items’ prices (${usd2(Math.min(...PRICE_B))} to ${usd2(Math.max(...PRICE_A))}) differ from one another far more than the wholesalers do. Because the 12 items were chosen at random, the result is evidence about the stock list as a whole: wholesaler B’s prices are lower on average, by more than chance would produce.`,
   },
 
   // ================================================================ Module 4: categories and groups
@@ -244,6 +248,6 @@ export const items = [
 ];
 
 // The score for each entry is over all the items of the modules before it, and the highest entry passed wins. Modules
-// 1–3 score each item 0 or 1, so the thresholds need 3 of 3 (module 2), 6 of 6 (module 3) and 9 of 9 (module 4): a
-// student who misses any item of modules 1–3 starts no later than that item’s module.
-export const route = [{ module: 2, ifAtLeast: 0.8 }, { module: 3, ifAtLeast: 0.9 }, { module: 4, ifAtLeast: 0.9 }];
+// 1–3 score each item 0 or 1, and every entry asks for all the earlier items right: a student who misses any item of
+// modules 1–3 starts no later than that item’s module.
+export const route = [{ module: 2, ifAtLeast: 1 }, { module: 3, ifAtLeast: 1 }, { module: 4, ifAtLeast: 1 }];
