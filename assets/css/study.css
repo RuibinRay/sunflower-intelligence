@@ -305,6 +305,7 @@ p .katex, li .katex, dd .katex { font-size: 1.04em; }
 .fx-out .stats-row { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
 .fx-out .stat dd { font-size: 1.1rem; }
 .fx-note { font-size: var(--t-sm); color: var(--ink-2); line-height: 1.55; }
+.fx-cap { margin: var(--s-4) 0 var(--s-2); font-weight: 700; font-size: var(--t-sm); color: var(--ink); line-height: 1.45; }
 .fx-note.is-error { color: var(--bad-ink); font-weight: 600; }
 .fx-reset { justify-self: start; }
 @media (max-width: 760px) { .fx { grid-template-columns: 1fr; } }
@@ -951,6 +952,8 @@ input[type="file"]:focus-visible + .file-btn, .file-btn:focus-within { outline: 
 .pm-chart .pm-label-on { fill: var(--ink); }
 .pm-chart .pm-ideal { fill: none; stroke: var(--series-2); stroke-width: 2.4; }
 .pm-chart .pm-ideal-label { font-size: var(--t-xs); fill: var(--ink-2); font-style: italic; }
+/* a halo in the card's colour keeps labels legible where an arrow or a guide line crosses them */
+.pm-chart .pm-label, .pm-chart .pm-vec-label, .pm-chart .pm-ideal-label { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; }
 .pm-chart .pm-plan { fill: var(--paper); stroke: var(--series-1); stroke-width: 2.4; }
 .pm-chart .pm-move-line { stroke: var(--series-1); stroke-width: 1.6; stroke-dasharray: 4 3; }
 .pm-move { display: grid; gap: var(--s-2); border: 0; padding: 0; margin: 0; }

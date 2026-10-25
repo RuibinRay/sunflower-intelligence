@@ -444,6 +444,7 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
     if (B0.length < 3 || M0.length !== B0.length || !M0.every((r) => r.length === A0.length && r.every(Number.isFinite))) r.err(`${w}: percmap needs brands (3 or more), attributes and means (one row of attribute means per brand)`);
     else { const pm = PM.perceptualMap(M0); if (pm.error) r.err(`${w}: ${pm.error}`); else if (pm.cumulative[1] < 0.6) r.warn(`${w}: the map's two dimensions carry only ${(pm.cumulative[1] * 100).toFixed(0)}% of the differences; say so in the lesson`); }
     if (wd.highlight && !B0.includes(wd.highlight)) r.err(`${w}: highlight must name one of the brands`);
+    if (wd.noun && !(Array.isArray(wd.noun) && wd.noun.length === 2 && wd.noun.every((x) => typeof x === 'string' && x))) r.err(`${w}: noun must be [singular, plural]`);
     (wd.ideals || []).forEach((d, i) => { if (!d.name || !Array.isArray(d.profile) || d.profile.length !== A0.length) r.err(`${w}: ideal ${i} needs a name and a profile with one value per attribute`); });
   } else if (wd.type === 'toolpak') {
     const T = ['ttest-paired', 'ttest-equal', 'ttest-unequal', 'anova'];

@@ -256,7 +256,7 @@ export default {
     {
       id: 'map', title: 'Read the map',
       html: `<p>The map places the four options by their average ratings on the six attributes; the gold rings are the four segments’ ideal workshops. You can plan a new position for Lantern Workshops with the sliders (the axes stay where the ratings put them).</p>`,
-      tool: { kind: 'widget', widget: { type: 'percmap', title: 'Barista workshops in Harbour City, June 2027', brands: PROVIDERS, means: WD.map.means, attributes: NEEDS.map((n) => n.label), ideals: NAMES.map((nm, g) => ({ name: nm, profile: WD.map.ideal[g] })), highlight: PROVIDERS[0], move: true } },
+      tool: { kind: 'widget', widget: { type: 'percmap', title: 'Barista workshops in Harbour City, June 2027', brands: PROVIDERS, means: WD.map.means, attributes: NEEDS.map((n) => n.label), ideals: NAMES.map((nm, g) => ({ name: nm, profile: WD.map.ideal[g] })), highlight: PROVIDERS[0], move: true, noun: ['option', 'options'] } },
       items: [
         { id: 'm05-pj-12', type: 'mc', kind: 'conceptual',
           prompt: `The map’s two dimensions carry ${pct(WD.map.cumulative[1], 0)} of the differences between the four options. How much should that reassure Ana?`,

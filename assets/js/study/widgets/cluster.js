@@ -50,13 +50,15 @@ export function mount(el, cfg, ctx) {
   charts.append(elbowBox, silBox);
   const twin = h('div');
   const out = h('div', { class: 'cv-out', 'aria-live': 'polite' });
-  const profile = h('div', { class: 'table-scroll cl-profile', tabindex: '0', role: 'region', 'aria-label': 'Segment profiles' });
+  // the caption sits above the scroller (a <caption> scrolls with a wide table and is cut off on a phone)
+  const profCap = h('p', { class: 'fx-cap', id: `${base}-pcap` });
+  const profile = h('div', { class: 'table-scroll cl-profile', tabindex: '0', role: 'region', 'aria-labelledby': `${base}-pcap` });
   const showBox = h('div');
   const scatterBox = h('div', { class: 'chart-box cv-chart' });
   el.classList.add('cv-widget', 'cl-widget');
   el.append(...[cfg.title ? h('p', { class: 'fx-title' }, cfg.title) : null,
     h('p', { class: 'fx-note' }, `${fmt(N)} respondents rated ${P} needs. k-means sorts them into k segments; the charts show every k at once, the table the k you choose.`),
-    h('div', { class: 'cv-fields' }, kBox), varBox, stdBox, charts, twin, out, profile, showBox, scatterBox,
+    h('div', { class: 'cv-fields' }, kBox), varBox, stdBox, charts, twin, out, profCap, profile, showBox, scatterBox,
     cfg.note ? (() => { const p = h('p', { class: 'fx-note' }); p.innerHTML = xl(cfg.note); return p; })() : null].filter(Boolean));
 
   function lineChart(box, ys, { label, yLabel, format }) {
@@ -87,8 +89,8 @@ export function mount(el, cfg, ctx) {
     const head = ['Segment', 'Respondents', ...(cfg.spend ? ['Spend a head', 'Share of spend'] : []), ...cfg.vars.map((v, j) => (st.use[j] ? v : `${v} (not used)`))];
     // diverging tint around 100: cool (the site's --pos) above average, warm (--neg) below; the number carries the value
     const cell = (v) => { const t = Math.max(-1, Math.min(1, (v - 100) / 50)); const rgb = t >= 0 ? '47,93,158' : '180,83,42'; return h('td', { class: 'num cl-ix', style: `background: rgba(${rgb},${(0.3 * Math.abs(t)).toFixed(3)})` }, fmt(v)); };
-    profile.replaceChildren(h('table', { class: 'data-table cl-table' },
-      h('caption', {}, `Segments for k = ${st.k}: each need’s index against the average respondent (100 = average; above 100, that need matters more to the segment)`),
+    profCap.textContent = `Segments for k = ${st.k}: each need’s index against the average respondent (100 = average; above 100, that need matters more to the segment)`;
+    profile.replaceChildren(h('table', { class: 'data-table cl-table', 'aria-labelledby': `${base}-pcap` },
       h('thead', {}, h('tr', {}, ...head.map((t) => h('th', { scope: 'col' }, t)))),
       h('tbody', {}, ...segs.map((m, g) => h('tr', {}, h('th', { scope: 'row' }, LETTERS[g]),
         h('td', { class: 'num' }, `${fmt(m.length)} (${fmt((m.length / N) * 100)}%)`),
