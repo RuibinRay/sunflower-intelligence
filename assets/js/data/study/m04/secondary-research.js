@@ -29,7 +29,7 @@ export default {
   slug: 'secondary-research',
   title: 'Secondary research',
   blurb: 'Before collecting anything new, find out what is already known. Learn to search a business’s own records and outside sources (official statistics, trade associations, syndicated and panel data, company filings), judge each source by who made it and why, its method, definitions, coverage, timeliness and consistency, and combine sources so that each checks the others.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish internal from external secondary data, and identify the internal records that can answer a marketing question.',
     'Describe what official statistics, trade associations, syndicated and panel data and company filings offer, and what each leaves out.',

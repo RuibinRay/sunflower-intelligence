@@ -58,7 +58,7 @@ export default {
   slug: 'qualitative-research',
   title: 'Qualitative research',
   blurb: 'Surveys count; qualitative research explains. Learn when depth interviews, focus groups and observation fit, how to recruit with a screener and write a discussion guide, how many interviews are enough, and how to code transcripts into themes with a codebook, check that two coders agree and report what people said without turning it into numbers it can’t support.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain when qualitative research fits a research objective and what it can’t show, such as the share of a market that holds a view.',
     'Compare depth interviews, focus groups and observation, including group dynamics such as dominant voices and the wish to look good.',

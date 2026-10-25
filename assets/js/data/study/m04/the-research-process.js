@@ -50,7 +50,7 @@ export default {
   slug: 'the-research-process',
   title: 'The research process',
   blurb: 'Research earns its cost only through a decision. Learn to turn a business decision into a research problem and measurable objectives, choose an exploratory, descriptive or causal design, write a brief and read a proposal, put a ceiling on what research is worth, and follow the professional codes that protect the people you study.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish a decision problem from a research problem, and write research objectives that are specific, measurable and tied to an action.',
     'Choose an exploratory, descriptive or causal design for a research objective, and explain what each can and can’t deliver.',
