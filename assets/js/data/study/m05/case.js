@@ -14,7 +14,6 @@
 import { DATA } from './data.js?v=14';
 import { BUSINESS } from '../m01/case.js?v=14';
 import { COMPETITORS, LANTERN as M02_LANTERN } from '../m02/market.js?v=14';
-import { DERIVED as M04 } from '../m04/case.js?v=14';
 import { standardise, kmeans, silhouette } from '../../../core/classify.js?v=14';
 import { ward, cutTree, adjustedRand } from '../../../core/ml.js?v=14';
 import { indexVsAverage, segmentSizes, needsFit } from '../../../core/market.js?v=14';
@@ -145,7 +144,9 @@ const alphaLoyal = (3 / 2) * (1 - sum(loyalCols.map(variance)) / variance(loyalT
 export const LANTERN_STRENGTHS = [1, -1, -1, 1, 0, 0, 1, 1];
 /** Ana's estimates (fictional) of each kind of drinker's growth in Harbour City over the next three years, % a year. */
 export const GROWTH_BY_NAME = { 'Craft and local': 6, 'Value routine': 1, 'On the go': 4, 'Mindful': 7, 'Explorers': 9 };
-/** Lantern's gross margin per $ of sales by what a segment buys most (fictional, Ana's accounts): cafés and beans. */
+/** Ana's estimate (fictional) of the margin left on café and bean sales after the direct costs of making and serving
+ *  them, café staff time included, as a share of sales. It is lower than F02's 52% gross margin on the online shop,
+ *  which carries no café staff. */
 export const MARGIN = 0.38;
 const fit = needsFit(chosen.centres, LANTERN_STRENGTHS);
 

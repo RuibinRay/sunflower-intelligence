@@ -89,7 +89,7 @@ export function mount(el, cfg, ctx) {
     const overall = cols.map(mean);
     const idx = segs.map((m) => cols.map((c, j) => (mean(m.map((i) => c[i])) / overall[j]) * 100));
     const spendTot = cfg.spend ? cfg.spend.reduce((a, b) => a + b, 0) : NaN;
-    const head = ['Segment', 'Respondents', ...(cfg.spend ? ['Spend a head', 'Share of spend'] : []), ...cfg.vars.map((v, j) => (st.use[j] ? v : `${v} (not used)`))];
+    const head = ['Segment', 'Respondents', ...(cfg.spend ? ['Spend per head', 'Share of spend'] : []), ...cfg.vars.map((v, j) => (st.use[j] ? v : `${v} (not used)`))];
     // diverging tint around 100: cool (the site's --pos) above average, warm (--neg) below; the number carries the value
     const cell = (v) => { const t = Math.max(-1, Math.min(1, (v - 100) / 50)); const rgb = t >= 0 ? '47,93,158' : '180,83,42'; return h('td', { class: 'num cl-ix', style: `background: rgba(${rgb},${(0.3 * Math.abs(t)).toFixed(3)})` }, fmt(v)); };
     profCap.textContent = `Segments for k = ${st.k}: each ${one}’s index against the average respondent (100 = average; above 100, the segment scores higher than average on it)`;

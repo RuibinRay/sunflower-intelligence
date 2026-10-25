@@ -15,7 +15,7 @@ const num = (id, prompt, answer, check, solution, wrong, { unit = '', places = 2
 const r = (x, p = 2) => Math.round(x * 10 ** p) / 10 ** p;
 const pct = (x, p = 1) => `${(x * 100).toFixed(p)}%`;
 const f = (x, p = 0) => x.toLocaleString('en-US', { minimumFractionDigits: p, maximumFractionDigits: p });
-const f2 = (x) => x.toFixed(2);
+const f2 = (x) => x.toFixed(2).replace('-', '−');
 const sum = (xs) => xs.reduce((a, b) => a + b, 0);
 const mean = (xs) => sum(xs) / xs.length;
 
@@ -201,9 +201,9 @@ export default {
           alt: [`=COUNTIFS(${SEG_R},N1,${WTP_R},">="&N3)/COUNTIFS(${SEG_R},N1)`, `=COUNTIFS(${SEG_C}:${SEG_C},N1,${WTP_C}:${WTP_C},">="&N3)/COUNTIF(${SEG_C}:${SEG_C},N1)`],
           wrong: [
             { formula: `=COUNTIFS(${SEG_R},N1,${WTP_R},">="&N3)/COUNT(${WTP_R})`, say: 'That divides by all respondents, so it is a share of the survey. Divide by the number in the segment, COUNTIF on the segment column.' },
-            { formula: `=COUNTIFS(${SEG_R},N1,${WTP_R},">"&N3)/COUNTIF(${SEG_R},N1)`, say: 'That leaves out people who would pay exactly the price. “At least” is >=.' },
-            { formula: `=COUNTIFS(${SEG_R},N1,${WTP_R},">=${OFFER.price}")/COUNTIF(${SEG_R},N1)`, say: 'The price is typed in, so the formula won’t follow N3. Join the operator to the cell: ">="&N3.' },
-            { formula: `=COUNTIFS(${WTP_R},N1,${SEG_R},">="&N3)/COUNTIF(${SEG_R},N1)`, say: 'Each criteria range must sit before its own criterion: the segment column goes with N1, the willingness-to-pay column with ">="&N3.' },
+            { formula: `=COUNTIFS(${SEG_R},N1,${WTP_R},">"&N3)/COUNTIF(${SEG_R},N1)`, say: 'That leaves out people who would pay exactly the price. “At least” is <x>>=</x>.' },
+            { formula: `=COUNTIFS(${SEG_R},N1,${WTP_R},">=${OFFER.price}")/COUNTIF(${SEG_R},N1)`, say: 'The price is typed in, so the formula won’t follow N3. Join the operator to the cell: <x>">="&N3</x>.' },
+            { formula: `=COUNTIFS(${WTP_R},N1,${SEG_R},">="&N3)/COUNTIF(${SEG_R},N1)`, say: 'Each criteria range must sit before its own criterion: the segment column goes with N1, the willingness-to-pay column with <x>">="&N3</x>.' },
           ],
           solution: `<x>${PAY_F}</x>. At $${OFFER.price}: ${LET.map((L, g) => `${L} ${pct(payShare(g, OFFER.price))}`).join(', ')}. Most of every segment except ${LET[SOCIAL]} says it would pay the price; in ${LET[SOCIAL]} only ${pct(payShare(SOCIAL, OFFER.price))} do (mean $${f(wtpOf(SOCIAL), 2)}). These are stated answers, so read them as a ranking, not a forecast.` },
         num('m05-pj-6', `What share of the ${N} respondents is in the Gift buyers segment? Give a percentage to one decimal place.`, r(share[GIFT] * 100, 1), () => (WD.sizes[GIFT] / N) * 100,
@@ -292,7 +292,7 @@ export default {
     },
     {
       id: 'map', title: 'Read the map and check the plan',
-      html: `<p>The map places the four options by their average ratings on the six attributes; the gold rings are the four segments’ ideal workshops, also rated on the six attributes (a segment that cares little about an attribute rates its ideal low on it). You can plan a new position for Lantern Workshops with the sliders (the axes stay where the ratings put them).</p><p>For the last question in this stage: the two target segments’ ideal ratings, and Lantern’s ratings now and with Ana’s plan.</p>${idealHtml}`,
+      html: `<p>The map places the four options by their average ratings on the six attributes; the rings are the four segments’ ideal workshops, also rated on the six attributes (a segment that cares little about an attribute rates its ideal low on it). You can plan a new position for Lantern Workshops with the sliders (the axes stay where the ratings put them).</p><p>For the last question in this stage: the two target segments’ ideal ratings, and Lantern’s ratings now and with Ana’s plan.</p>${idealHtml}`,
       tool: { kind: 'widget', widget: { type: 'percmap', title: 'Barista workshops in Harbour City, June 2027', brands: PROVIDERS, means: WD.map.means, attributes: NEEDS.map((n) => n.label), ideals: NAMES.map((nm, g) => ({ name: nm, profile: WD.map.ideal[g] })), highlight: PROVIDERS[0], move: true, noun: ['option', 'options'] } },
       items: [
         { id: 'm05-pj-12', type: 'mc', kind: 'conceptual',
