@@ -158,11 +158,11 @@ export const guided = [
   },
   {
     id: 'm05-ts-g3', type: 'formula', kind: 'applied',
-    prompt: 'Column B holds each respondent’s segment, C their age band and D their household income. J1:J3 hold three lines of a draft persona. In J5, count the respondents who match all three: in the segment in J1, the age band in J2 and the income band in J3.',
+    prompt: 'Column B holds each respondent’s segment, C their age band and D their household income; the worksheet shows the first 24 of the 640 rows, and the data run to row 641. J1:J3 hold three lines of a draft persona. In J5, count the respondents who match all three: in the segment in J1, the age band in J2 and the income band in J3.',
     sheet: { cells: matchCells, vary: { J1: ['Explorers', 'Mindful'], J2: ['30–44', '18–29'] } }, cell: 'J5',
     answer: `=COUNTIFS(B2:B${L},J1,C2:C${L},J2,D2:D${L},J3)`,
     alt: [`=COUNTIFS($B$2:$B$${L},$J$1,$C$2:$C$${L},$J$2,$D$2:$D$${L},$J$3)`, '=COUNTIFS(B:B,J1,C:C,J2,D:D,J3)', `=SUMPRODUCT((B2:B${L}=J1)*(C2:C${L}=J2)*(D2:D${L}=J3))`],
-    view: `A1:J${L}`, widths: { B: 16, C: 8, D: 12, E: 18, F: 9, G: 18, I: 26, J: 16 }, maxHeight: '22rem',
+    view: 'A1:J25', widths: { B: 16, C: 8, D: 12, E: 18, F: 9, G: 18, I: 26, J: 16 }, maxHeight: '22rem',
     wrong: [
       { formula: `=COUNTIFS(C2:C${L},J2,D2:D${L},J3)`, say: 'That counts everyone in the study with that age and income, in every segment. Add the segment criterion, B2:B641 against J1.' },
       { formula: `=COUNTIF(B2:B${L},J1)`, say: 'That is the size of the segment. The persona test needs all three lines at once: COUNTIFS with three range–criterion pairs.' },
@@ -358,11 +358,11 @@ export const check = [
   },
   {
     id: 'm05-ts-k3', type: 'formula', kind: 'applied',
-    prompt: 'Column B holds each respondent’s segment and E their main source of coffee. J1 names a segment and J2 a main source. In J4, calculate the share of that segment’s members whose main source is the one in J2: a line for the segment’s persona.',
+    prompt: 'Column B holds each respondent’s segment and E their main source of coffee; the worksheet shows the first 24 of the 640 rows, and the data run to row 641. J1 names a segment and J2 a main source. In J4, calculate the share of that segment’s members whose main source is the one in J2: a line for the segment’s persona.',
     sheet: { cells: shareCells, vary: { J1: ['Explorers', 'On the go', 'Mindful'], J2: ['Home-brewed', 'Supermarket or RTD'] } }, cell: 'J4',
     answer: `=COUNTIFS(B2:B${L},J1,E2:E${L},J2)/COUNTIF(B2:B${L},J1)`,
     alt: [`=COUNTIFS(E2:E${L},J2,B2:B${L},J1)/COUNTIFS(B2:B${L},J1)`, '=COUNTIFS(B:B,J1,E:E,J2)/COUNTIF(B:B,J1)', `=SUMPRODUCT((B2:B${L}=J1)*(E2:E${L}=J2))/COUNTIF(B2:B${L},J1)`],
-    view: `A1:J${L}`, formats: { J4: '0.0%' }, widths: { B: 16, C: 8, D: 12, E: 18, F: 9, G: 18, I: 38, J: 18 }, maxHeight: '22rem',
+    view: 'A1:J25', formats: { J4: '0.0%' }, widths: { B: 16, C: 8, D: 12, E: 18, F: 9, G: 18, I: 38, J: 18 }, maxHeight: '22rem',
     wrong: [
       { formula: `=COUNTIFS(B2:B${L},J1,E2:E${L},J2)/COUNTA(B2:B${L})`, say: 'That divides by all 640 respondents. A persona line is a share of the segment: divide by COUNTIF(B2:B641,J1).' },
       { formula: `=COUNTIFS(B2:B${L},J1,E2:E${L},J2)/COUNTIF(E2:E${L},J2)`, say: 'That is the share of everyone with that main source who belongs to the segment, a column percentage. The persona needs the share of the segment with that source.' },
@@ -383,7 +383,7 @@ export const check = [
     feedback: {
       0: 'On the go holds the most top-two-box answers of any segment (56 of 187). The problem is fit, cost and position, not numbers.',
       1: 'Cost matters, but nothing in the case says Lantern couldn’t fund a second campaign; the question is whether it earns its cost, and what it does to the brand.',
-      3: 'Nothing in the case says so; the cans will be in supermarkets anyway, and a test in a few convenience stores would show whether On the go buys a craft can.',
+      3: 'Nothing in the case says so; the cans will be in Lantern’s own channel, natural grocers and a few test supermarkets anyway, and a test in a few convenience stores would show whether On the go buys a craft can.',
     },
     solution: 'The plan is differentiated marketing under one brand. On the go’s needs are far from Craft and local’s, so the two campaigns would say opposite things about Lantern; serving On the go well also means convenience stores, where Lantern would earn $1.35 a can rather than $1.63, and competing with Corner Cup, which sits close to the segment’s ideal. A launch with one mix for the two neighbouring craft-minded segments, Craft and local and Explorers, with a later test for On the go, avoids all three problems.',
   },

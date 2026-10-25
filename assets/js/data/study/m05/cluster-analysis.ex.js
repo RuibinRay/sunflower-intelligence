@@ -7,6 +7,8 @@ import { standardise } from '../../../core/classify.js?v=14';
 
 const RS = RESPONDENTS, N = RS.length, P = NEEDS.length;
 const r2 = (x) => Math.round(x * 100) / 100, r1 = (x) => Math.round(x * 10) / 10;
+const mn = (v, d = 1) => v.toFixed(d).replace(/^-/, '−');                       // a real minus sign in prose
+const f1k = (v) => v.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const E = (k) => D.elbow.find((e) => e.k === k);
 const TSS = (N - 1) * P;
 
@@ -16,7 +18,7 @@ export const widgets = {
     type: 'cluster', title: `Lantern’s needs study: k-means on ${N} respondents’ eight needs`,
     rows: RS.map((r) => r.needs.slice()), vars: NEEDS.map((n) => n.label), k: 5, ks: [2, 3, 4, 5, 6, 7, 8],
     choose: true, raw: true, spend: RS.map((r) => r.spend),
-    note: 'Each need was rated 1 (not at all important) to 7 (essential). Spend a head is monthly spend on coffee; it describes the segments and is not used to form them. Segments are lettered by size, largest first, as in the lesson.',
+    note: 'Each need was rated 1 (not at all important) to 7 (essential). Spend per head is monthly spend on coffee; it describes the segments and is not used to form them. Segments are lettered by size, largest first, as in the lesson.',
   },
   'ca-spend': {
     type: 'cluster', title: 'The same respondents with monthly spend added as a ninth variable',
@@ -257,14 +259,14 @@ export const independent = [
   },
   {
     id: 'm05-ca-i3', type: 'num', kind: 'numerical',
-    prompt: `Lantern’s ${N} respondents rated eight needs, standardised before clustering. With three segments the within-cluster sum of squares is ${E(3).inertia.toFixed(1)}. What percentage of the variation in the needs lies between the three segments? Give one decimal place.`,
+    prompt: `Lantern’s ${N} respondents rated eight needs, standardised before clustering. With three segments the within-cluster sum of squares is ${f1k(E(3).inertia)}. What percentage of the variation in the needs lies between the three segments? Give one decimal place.`,
     answer: r1(100 * (1 - E(3).inertia / TSS)), check: () => 100 * (1 - E(3).inertia / ((640 - 1) * 8)), unit: '%', places: 1, tol: 0.05,
     wrong: [
       { value: r1(100 * E(3).inertia / TSS), say: 'That is the share within segments, W ÷ T. Between segments is 1 − W ÷ T.' },
       { value: r1(100 * (1 - E(3).inertia / (640 * 8))), say: 'A standardised variable’s sum of squares is n − 1 = 639, not 640: T = 639 × 8 = 5,112.' },
       { value: r1(100 * (1 - E(3).inertia / E(2).inertia)), say: 'That compares three segments with two. Compare with the total sum of squares, the WCSS of one segment.' },
     ],
-    solution: `T = (640 − 1) × 8 = ${TSS.toLocaleString('en-US')}. 1 − ${E(3).inertia.toFixed(1)} ÷ ${TSS.toLocaleString('en-US')} = ${(100 * (1 - E(3).inertia / TSS)).toFixed(1)}%. Five segments raise it to ${(100 * (1 - E(5).inertia / TSS)).toFixed(1)}%.`,
+    solution: `T = (640 − 1) × 8 = ${TSS.toLocaleString('en-US')}. 1 − ${f1k(E(3).inertia)} ÷ ${TSS.toLocaleString('en-US')} = ${(100 * (1 - E(3).inertia / TSS)).toFixed(1)}%. Five segments raise it to ${(100 * (1 - E(5).inertia / TSS)).toFixed(1)}%.`,
   },
   {
     id: 'm05-ca-i4', type: 'classify', kind: 'conceptual',
@@ -323,7 +325,7 @@ export const independent = [
       { formula: '=AVERAGEIFS(B2:B13,D2:D13,F2)', say: 'Right in G2, but without $ the ranges slide when filled. Lock the rows of the data, the whole segment column and the label’s column.' },
     ],
     hints: ['A centre is its members’ mean: AVERAGEIFS with the segment as the criterion.', 'Mixed references: B$2:B$13 moves across, $D$2:$D$13 stays, $F2 keeps the label column.'],
-    solution: `<x>=AVERAGEIFS(B$2:B$13,$D$2:$D$13,$F2)</x> filled to H4 gives A (${upMean('A', 0).toFixed(2)}, ${upMean('A', 1).toFixed(2)}), B (${upMean('B', 0).toFixed(2)}, ${upMean('B', 1).toFixed(2)}) and C (${upMean('C', 0).toFixed(2)}, ${upMean('C', 1).toFixed(2)}). The next assign move compares every respondent with these three centres.`,
+    solution: `<x>=AVERAGEIFS(B$2:B$13,$D$2:$D$13,$F2)</x> filled to H4 gives A (${mn(upMean('A', 0), 2)}, ${mn(upMean('A', 1), 2)}), B (${mn(upMean('B', 0), 2)}, ${mn(upMean('B', 1), 2)}) and C (${mn(upMean('C', 0), 2)}, ${mn(upMean('C', 1), 2)}). The next assign move compares every respondent with these three centres.`,
   },
 ];
 
@@ -354,7 +356,7 @@ export const check = [
   },
   {
     id: 'm05-ca-k2', type: 'num', kind: 'numerical',
-    prompt: `Two respondents’ standardised ratings on four needs are (${K2A.join(', ')}) and (${K2B.join(', ')}). Calculate the squared Euclidean distance between them. Give two decimal places.`,
+    prompt: `Two respondents’ standardised ratings on four needs are (${K2A.map((v) => mn(v)).join(', ')}) and (${K2B.map((v) => mn(v)).join(', ')}). Calculate the squared Euclidean distance between them. Give two decimal places.`,
     answer: r2(k2d), check: () => (0.8 + 0.4) ** 2 + (-1.2 + 0.2) ** 2 + (0.5 - 1.1) ** 2 + (1.5 - 0.3) ** 2, unit: '', places: 2, tol: 0.01,
     wrong: [
       { value: r2(Math.sqrt(k2d)), say: 'That is the Euclidean distance, the square root. The squared distance stops before the root.' },
@@ -382,7 +384,7 @@ export const check = [
   },
   {
     id: 'm05-ca-k4', type: 'num', kind: 'numerical',
-    prompt: `In Ward’s method, group A has ${WA.n} respondents with centre (${WA.c.join(', ')}) and group B has ${WB.n} with centre (${WB.c.join(', ')}), in standardised units. By how much would merging them increase the within-cluster sum of squares? Give two decimal places.`,
+    prompt: `In Ward’s method, group A has ${WA.n} respondents with centre (${WA.c.map((v) => mn(v)).join(', ')}) and group B has ${WB.n} with centre (${WB.c.map((v) => mn(v)).join(', ')}), in standardised units. By how much would merging them increase the within-cluster sum of squares? Give two decimal places.`,
     answer: r2(wDelta), check: () => (3 * 2) / (3 + 2) * ((1.0 + 0.5) ** 2 + (-0.5 - 0.5) ** 2), unit: '', places: 2, tol: 0.01,
     wrong: [
       { value: r2(wd2), say: 'That is the squared distance between the centres alone. Multiply by n_A n_B ÷ (n_A + n_B) = 6 ÷ 5.' },

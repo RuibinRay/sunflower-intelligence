@@ -192,7 +192,7 @@ export const guided = [
         alt: [`=SUMPRODUCT((B2:B${L}>=F1)*(C2:C${L}>=F1))`, `=COUNTIFS($B$2:$B$${L},">="&$F$1,$C$2:$C$${L},">="&$F$1)`],
         view: `A1:F${L}`, widths: { A: 11, B: 9, C: 20, E: 28, F: 9 }, maxHeight: '22rem',
         wrong: [
-          { formula: `=COUNTIFS(B2:B${L},">=6",C2:C${L},">=6")`, say: 'With 6 typed into the criteria the count ignores F1. Join the operator to the cell: ">="&F1.' },
+          { formula: `=COUNTIFS(B2:B${L},">=6",C2:C${L},">=6")`, say: 'With 6 typed into the criteria the count ignores F1. Join the operator to the cell: <x>">="&F1</x>.' },
           { formula: `=COUNTIFS(B2:B${L},">"&F1,C2:C${L},">"&F1)`, say: '“>” leaves out respondents who gave exactly the threshold. “At or above” is >=.' },
           { formula: `=COUNTIF(B2:B${L},">="&F1)+COUNTIF(C2:C${L},">="&F1)`, say: 'Adding two counts counts people who rate either need highly, some twice. Both conditions must hold for the same person: COUNTIFS with two criteria.' },
         ],

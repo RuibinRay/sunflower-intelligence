@@ -19,7 +19,7 @@ const lanternD = D.map.distances.map((row) => row[0]);
 const cafe = S.crosstabs.source.map((row, g) => row[0] / n[g]);
 const mx = (a) => Math.max(...a), mn = (a) => Math.min(...a);
 const sum = (a) => a.reduce((x, y) => x + y, 0);
-// margin pool: monthly coffee spend of each segment per 1,000 weekly coffee drinkers, at Lantern's gross margin
+// margin pool: monthly coffee spend of each segment per 1,000 weekly coffee drinkers, at Lantern's margin after direct costs
 const pool = share.map((s, g) => 1000 * s * head[g] * MARGIN);
 const pool3 = pool.map((p, g) => p * (1 + growth[g] / 100) ** 3);
 // factor scores 0–100: ratio to the best segment (size, spend per head, growth, room); fit centred on 50
@@ -149,11 +149,11 @@ export default {
       align: ['l', 'r', 'r', 'r', 'l', 'r'],
       note: 'Spend is monthly coffee spend. Growth is Ana’s estimate for the next three years (fictional). The distance runs from the segment’s ideal point to the nearest rival brand on the perceptual map of module 4: the smaller it is, the better a rival already matches what the segment wants, as far as the map can tell (see the caveats under Competition). Fit is Σ z·k ÷ Σ|k| from Ana’s marks for Lantern’s strengths (formula below): 0 means no better than the average respondent.',
     } },
-    { p: `No segment leads on everything, which is why the evaluation needs a method. Value routine is the largest group but spends least, ${money(head[VR], 2)} a month a head. Craft and local is among the smallest, yet spends most per head (${money(head[CL], 2)}) and fits Lantern best. Explorers is expected to grow fastest. On the go and Mindful each have a rival sitting close to their ideal: Corner Cup and Arcadia Coffee.` },
+    { p: `No segment leads on everything, which is why the evaluation needs a method. Value routine is the largest group but spends least: ${money(head[VR], 2)} a month per head. Craft and local is among the smallest, yet spends most per head (${money(head[CL], 2)}) and fits Lantern best. Explorers is expected to grow fastest. On the go and Mindful each have a rival sitting close to their ideal: Corner Cup and Arcadia Coffee.` },
     { p: 'The scorecard later in this lesson uses one measure for each factor. Size is the share of respondents. Spend per head stands in for profitability: one margin applies to every segment, so spending ranks the segments exactly as margin would. Growth is Ana’s estimate, competition is the room left by the nearest rival, and fit is the last column; accessibility is used as a screen rather than scored, for reasons given below.' },
 
     { h: 'Size in money: the margin pool' },
-    { p: `Counting people is only half of size. A segment’s <g>margin pool</g> multiplies its people by their <g>spend per head</g> and by the firm’s margin: the gross margin the segment’s whole spending would earn if the firm won all of it. No firm wins all of it, so the pool is a ceiling, not a forecast; its use is comparing segments. (“Margin pool” is this lesson’s own label; the “profit pool” of strategy writing is a different idea.) Lantern’s <g>gross margin</g> on café and bean sales is ${(MARGIN * 100).toFixed(0)}% (Ana’s accounts, fictional).` },
+    { p: `Counting people is only half of size. A segment’s <g>margin pool</g> multiplies its people by their <g>spend per head</g> and by the firm’s margin: the margin the segment’s whole spending would earn if the firm won all of it. No firm wins all of it, so the pool is a ceiling, not a forecast; its use is comparing segments. (“Margin pool” is this lesson’s own label; the “profit pool” of strategy writing is a different idea.) Ana estimates (a fictional figure) that Lantern keeps ${(MARGIN * 100).toFixed(0)}% of café and bean sales after the direct costs of making and serving them, café staff time included: less than the 52% <g>gross margin</g> F02 found on the online shop, which carries no café staff.` },
     { p: `Per 1,000 weekly coffee drinkers in the study’s mix, On the go spends enough each month to give a pool of ${money(pool[GO])} at that margin, Craft and local ${money(pool[CL])}, Explorers ${money(pool[EX])}, Mindful ${money(pool[MI])} and Value routine ${money(pool[VR])}. The largest segment by headcount has the smallest pool. Grown for three years at Ana’s estimates, Craft and local’s pool becomes ${money(pool3[CL])} and Explorers’ ${money(pool3[EX])}: fast growth from a smaller base doesn’t catch up within her horizon.` },
     { p: 'Keeping the two questions apart on a chart borrows an old idea from strategy. The GE–McKinsey nine-box matrix, which dates from the early 1970s, judges a business unit by two separate measures, the attractiveness of its industry and the unit’s competitive strength in it, rather than by one combined score. The chart below does the same for Lantern’s segments, scoring them as in the scorecard later in this lesson.' },
     { figure: {
@@ -220,10 +220,10 @@ export default {
     { id: 'es-margin-pool', name: 'Margin pool of a segment',
       tex: String.raw`\Pi_s = n_s \times \bar{x}_s \times m`,
       where: [
-        [String.raw`\Pi_s`, 'Margin pool: the gross margin the segment’s whole spending would earn at the firm’s margin', '$ per period'],
+        [String.raw`\Pi_s`, 'Margin pool: the margin the segment’s whole spending would earn at the firm’s margin', '$ per period'],
         [String.raw`n_s`, 'Number of customers in segment s (or its share times the market’s size)', 'people'],
         [String.raw`\bar{x}_s`, 'Spend per head in the segment over the period', '$ per person per period'],
-        ['m', 'The firm’s margin on what the segment buys, as a share of sales', ''],
+        ['m', 'The firm’s margin on what the segment buys, after the direct costs of making and serving it, as a share of sales', ''],
       ],
       assumptions: 'The firm could sell the segment what it now buys at the margin m. The pool is a ceiling for comparing segments, not a sales forecast.',
       note: 'Per 1,000 people in the market, use n_s = 1,000 × the segment’s share. Use a margin per segment when segments buy through channels with different margins.' },
@@ -361,7 +361,7 @@ export default {
   glossary: [
     { term: 'Segment attractiveness', def: 'How worth serving a segment is for any firm that could serve it well: its size, growth and profitability, how well rivals already serve it, and how easily it can be reached.' },
     { term: 'Segment fit', def: 'How well a segment matches a particular company’s objectives, resources and strengths: whether the company can win the segment and wants to.' },
-    { term: 'Margin pool', def: 'The gross margin a segment’s whole spending would earn at a firm’s margin: customers × spend per head × margin. A ceiling for comparing segments, not a sales forecast.' },
+    { term: 'Margin pool', def: 'The margin a segment’s whole spending would earn at a firm’s margin: customers × spend per head × margin. A ceiling for comparing segments, not a sales forecast.' },
     { term: 'Weighted segment scorecard', def: 'A comparison of segments in which each is scored 0–100 on factors of attractiveness and fit, each score is multiplied by the factor’s weight, and the weighted scores are added and divided by the total weight.' },
     { term: 'Threshold weight', def: 'The weight a factor would need, with every other weight unchanged, for a weighted scorecard to rank two options equal; beyond it the order changes.' },
     { term: 'Vulnerable consumers', def: 'People less able than most to judge a marketing message or to protect their own interests in a purchase, such as young children or people under financial or health pressure.' },
@@ -387,6 +387,7 @@ export default {
     { what: 'Lantern strengths listed: taste, sustainability, local, novelty', value: strong.length, shown: 4 },
     { what: 'Lantern weaknesses listed: price, convenience', value: weak.length, shown: 2 },
     { what: 'Margin (case)', value: MARGIN * 100, shown: 38 },
+    { what: 'F02 online-shop gross margin %', value: ((110000 - 52800) / 110000) * 100, shown: 52 },
     { what: 'M02 supermarket trade margin %', value: CHANNELS.find((c) => c.id === 'supermarket').margin * 100, shown: 32 },
     ...NAMES.map((nm, g) => ({ what: `${nm}: margin pool per 1,000 a month`, value: pool[g], shown: [2442, 5075, 4182, 4958, 2455][g], tol: 0.6 })),
     { what: 'C&L pool after 3 years', value: pool3[CL], shown: 5905, tol: 0.6 },

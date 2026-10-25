@@ -42,7 +42,7 @@ export const guided = [
     id: 'm05-dr-g1', type: 'classify', kind: 'conceptual',
     prompt: 'Ana lists ways Lantern could make itself different. Classify each by Kotler and Armstrong’s five ways to differentiate.',
     items: [
-      'Listing Lantern Cold Brew in convenience stores across Harbour City.',
+      'Testing Lantern Cold Brew in a few convenience stores.',
       'Training every barista to talk customers through the month’s guest coffee.',
       'Single-origin Ethiopian coffee steeped for 20 hours.',
       'Pre-ordering in the cafés so that a drink is ready on arrival.',

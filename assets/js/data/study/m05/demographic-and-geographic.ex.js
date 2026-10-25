@@ -118,7 +118,7 @@ export const guided = [
       2: 'A postcode classified into a neighbourhood type combines place and demographics: geodemographic.',
       3: 'Household composition, the life stage, is demographic.',
       4: 'Density describes the place: geographic.',
-      5: 'A general attitude like this is psychographic; attitude toward a particular product is listed among the behavioural bases in the next lesson.',
+      5: 'A general attitude like this is psychographic; attitude towards a particular product is listed among the behavioural bases in the next lesson.',
     },
     hints: ['Demographic: about the person or household. Geographic: about the place.', 'Geodemographic: a type assigned to an area from data about the people who live there.'],
     solution: 'Demographic: income band and children under 5 (life stage). Geographic: climate zone and population density. Geodemographic: the postcode’s neighbourhood type. The preference for independent shops is an attitude, a psychographic base.',

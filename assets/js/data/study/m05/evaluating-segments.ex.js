@@ -106,8 +106,8 @@ const ttGap = ttSum(TT.a) - ttSum(TT.b);
 export const guided = [
   {
     id: 'm05-es-g1', type: 'steps', kind: 'numerical',
-    prompt: `Mindful is ${f2(share[MI] * 100)}% of the study’s respondents and spends $${f2(head[MI])} a head a month on coffee. Lantern’s gross margin is ${(MARGIN * 100).toFixed(0)}%, and Ana expects the segment to grow 7% a year.`,
-    solution: `Margin pool = people × spend per head × margin = 1,000 × 0.1625 × $39.75 × 0.38 ≈ $${r0(mPool).toLocaleString('en-US')} a month per 1,000 weekly coffee drinkers. Three years at 7%: $${r0(mPool).toLocaleString('en-US')} × 1.07³ ≈ $${r0(mPool3).toLocaleString('en-US')}. The pool is the gross margin on the segment’s whole spending, a ceiling for comparing segments, not what Lantern will earn.`,
+    prompt: `Mindful is ${f2(share[MI] * 100)}% of the study’s respondents and spends $${f2(head[MI])} per head a month on coffee. Ana estimates that Lantern keeps ${(MARGIN * 100).toFixed(0)}% of sales after the direct costs of making and serving them, and Ana expects the segment to grow 7% a year.`,
+    solution: `Margin pool = people × spend per head × margin = 1,000 × 0.1625 × $39.75 × 0.38 ≈ $${r0(mPool).toLocaleString('en-US')} a month per 1,000 weekly coffee drinkers. Three years at 7%: $${r0(mPool).toLocaleString('en-US')} × 1.07³ ≈ $${r0(mPool3).toLocaleString('en-US')}. The pool is the margin on the segment’s whole spending, a ceiling for comparing segments, not what Lantern will earn.`,
     steps: [
       {
         id: 'm05-es-g1-s1', type: 'num',
@@ -134,18 +134,18 @@ export const guided = [
         id: 'm05-es-g1-s3', type: 'mc',
         prompt: 'What does Mindful’s margin pool tell Ana?',
         options: [
-          'The gross margin on all the segment’s coffee spending: a ceiling for comparing segments',
-          'The gross margin Lantern should expect to earn from Mindful drinkers each month once it targets them',
+          'The margin on all the segment’s coffee spending: a ceiling for comparing segments',
+          'The margin Lantern should expect to earn from Mindful drinkers each month once it targets them',
           'The profit after every cost that Lantern would make by winning the whole of the Mindful segment',
           'How much more each Mindful drinker would spend each month if Lantern targeted the segment',
         ],
         answer: 0,
         feedback: {
           1: 'Lantern will win only part of the segment’s spending; the pool assumes it wins all of it.',
-          2: 'A 38% gross margin is before overheads, marketing and the cost of reaching the segment.',
+          2: 'The 38% is left after direct costs only: overheads, marketing and the cost of reaching the segment still have to come out of it.',
           3: 'The pool uses what the segment spends now; it says nothing about extra spending.',
         },
-        hints: ['The pool assumes Lantern sells the segment everything it now buys.', 'Gross margin is not profit after all costs.'],
+        hints: ['The pool assumes Lantern sells the segment everything it now buys.', 'A margin after direct costs is not profit after all costs.'],
       },
     ],
   },
@@ -252,7 +252,7 @@ export const independent = [
     id: 'm05-es-i2', type: 'classify', kind: 'conceptual',
     prompt: 'Each finding is about a segment a company is evaluating. Is it about the segment’s attractiveness, about its fit with this company, or a screen to apply before any scoring?',
     items: [
-      'The segment spends $76 a head a month on the category.',
+      'The segment’s spend per head is $76 a month on the category.',
       'The segment rates taste highest, and taste is what the company’s staff are known for.',
       'A rival café chain already sits close to the segment’s ideal on the perceptual map.',
       'An energy-drink maker finds that most of a segment is under 16.',

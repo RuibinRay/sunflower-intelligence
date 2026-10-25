@@ -4,7 +4,7 @@
 // agreements. Everything else quoted here (single starts, more restarts, unstandardised spend, the split halves, the
 // no-structure benchmark) is recomputed below with the same engines (classify.js, ml.js, percmap.js). TRUE_TYPE, the
 // planted kinds Ana can never see, appears only in the "What Ana couldn't see" callout. The segments are lettered by
-// size (as the widget letters them); profiling-segments names them. Pellmark Cycles and Larkspire Software (with
+// size (as the widget letters them); profiling-segments names them. Pellmark Cycles and Tollwick Software (with
 // Teodora Rafferty) are fictional. Every printed figure is recomputed in `checks`.
 import { NEEDS, RESPONDENTS, STUDY, TRUE_TYPE, DERIVED as D } from './case.js?v=14';
 import { standardise, kmeans, silhouette } from '../../../core/classify.js?v=14';
@@ -130,7 +130,7 @@ const mergeCost = PWARD.merges.map((m) => (m.height ** 2) / 2);    // SciPy-styl
 // Ward's cost for the first merge, A with C: (1 × 1 ÷ 2) × 1 = 0.5
 const wardAC = ((1 * 1) / 2) * d2(PTS[0], PTS[2]);
 
-// Larkspire Software (fictional): the application
+// Tollwick Software (fictional): the application
 const LK = { customers: 1150, needs: 7, restarts: 50, sil: { 3: 0.31, 4: 0.29, 5: 0.24 }, split: { 4: 0.91, 5: 0.62 }, sizes: [362, 301, 274, 213] };
 
 // ---------------------------------------------------------------- formatting
@@ -277,7 +277,7 @@ export default {
 
   theory: [
     { h: 'Choosing the segmentation variables' },
-    { p: 'The <g>segmentation variables</g> are the answers that form the segments: module 1’s <g>segmentation base</g>, measured as variables. For a needs-based segmentation they are the needs or benefits that drive the choice the business cares about, worded so that respondents can answer them, as Ana’s eight are. Leave out who people are (age, income, region) and what they do (cups, spend, where they buy): those describe the segments afterwards, and mixing them into the clustering produces groups that are part need, part demographic and hard to interpret or reach.' },
+    { p: 'The segmentation variables, module 1’s <g>segmentation base</g>, are the answers that form the segments. For a needs-based segmentation they are the needs or benefits that drive the choice the business cares about, worded so that respondents can answer them, as Ana’s eight are. Leave out who people are (age, income, region) and what they do (cups, spend, where they buy): those describe the segments afterwards, and mixing them into the clustering produces groups that are part need, part demographic and hard to interpret or reach.' },
     { p: 'Three further rules keep the variables honest. Don’t include two items that ask the same thing (“a low price” and “inexpensive”): the need they share counts twice in every distance. Leave out items that almost everyone rates alike, which add noise but no separation. And keep the number of variables in proportion to the sample: Dolnicar, Grün and Leisch’s simulations led to a guideline of at least 100 respondents per segmentation variable (an earlier study had suggested 70).' },
     { p: `By that guideline Ana’s ${P} needs call for ${f0(NEED100)} respondents, and she has ${N}: enough by the older figure of ${f0(NEED70)}, short by the newer one. That doesn’t make the study useless, but it is one more reason to check that the segments are stable before relying on them. Ratings carry one more trap: some people rate everything high and others everything low, a habit of answering rather than a need. Standardising each variable, the next step, doesn’t remove it; analysts sometimes centre each respondent’s ratings on that respondent’s own mean, at the cost of losing whether someone cares about coffee at all. Whatever the study does, a tool that later places new customers in the segments must transform their answers in exactly the same way.` },
 
@@ -421,7 +421,7 @@ export default {
 
   demo: [
     { widget: 'ca-needs', intro: `All ${N} respondents’ eight needs. Start at k = 5 and read the profile table: which needs does each segment rate above 100? Then try k = 4 and k = 6 and see which segments merge and split. Untick needs to see how the segments change when a need is left out, and untick “Standardise” to see how little it matters for ratings on one scale. The widget runs 12 restarts, so at k = 7 it may stop at a higher sum (${f1(WIDGET7)}) than the table’s ${f1(W(7))}, which is itself a local optimum: 200 restarts reach ${f1(MORE[7])}. At k = 6 its split of segment C may also differ a little from the one described in In depth.` },
-    { widget: 'ca-spend', intro: `The same needs with monthly coffee spend in dollars added as a ninth variable. Untick “Standardise” and look at the segments’ spend a head: they become spend bands, with a silhouette (${f2(nsRawSil)} at k = 5) higher than any needs solution’s. Tick it again and the needs take over. Then untick “Monthly spend ($)” to return to the needs alone.` },
+    { widget: 'ca-spend', intro: `The same needs with monthly coffee spend in dollars added as a ninth variable. Untick “Standardise” and look at the segments’ spend per head: they become spend bands, with a silhouette (${f2(nsRawSil)} at k = 5) higher than any needs solution’s. Tick it again and the needs take over. Then untick “Monthly spend ($)” to return to the needs alone.` },
   ],
 
   mistakes: [
@@ -434,7 +434,7 @@ export default {
   ],
 
   application: [
-    { case: `Larkspire Software, a fictional firm that sells scheduling software to small businesses, wants to rebuild its onboarding around what different customers need. Its customer-insight lead, Teodora Rafferty, surveyed ${f0(LK.customers)} business customers on ${LK.needs} needs, from easy set-up to integration with accounting tools, each rated 1–7.` },
+    { case: `Tollwick Software, a fictional firm that sells scheduling software to small businesses, wants to rebuild its onboarding around what different customers need. Its customer-insight lead, Teodora Rafferty, surveyed ${f0(LK.customers)} business customers on ${LK.needs} needs, from easy set-up to integration with accounting tools, each rated 1–7.` },
     { p: `<b>She writes the specification first.</b> Before looking at any results, Teodora records the segmentation variables (the ${LK.needs} needs, with firm size, sector and plan kept for describing), standardisation, k from 2 to 7, k-means with k-means++ starts and ${LK.restarts} restarts, Ward’s method as a check, and the stability tests. With ${f0(LK.customers)} customers she is above the guideline of 100 a variable (${f0(100 * LK.needs)}).` },
     { p: `<b>She shows the team three solutions, not one.</b> The silhouette is highest at three segments (${f2(LK.sil[3])}), with four close behind (${f2(LK.sil[4])}) and five lower (${f2(LK.sil[5])}). At four, the largest of the three segments splits into customers who want integrations and customers who want reports, and the product team points out that those two need different onboarding paths. Her split-half check gives an adjusted Rand index of ${f2(LK.split[4])} for four segments and ${f2(LK.split[5])} for five, so five is not stable enough to plan around.` },
     { p: `<b>She reports the choice with its evidence and its limits.</b> The team adopts four segments (${LK.sizes.join(', ')} customers), and her one-page summary gives the specification, the elbow and silhouette for every k, the stability results and a sentence on what the segments are not: “four groups of customers with similar needs, overlapping at the edges, not four kinds of customer with nothing in common.” She plans to re-run the segmentation each year with the same specification, so that a change in the segments reflects a change in customers rather than in the method.` },
@@ -453,7 +453,6 @@ export default {
 
   glossary: [
     { term: 'Cluster analysis', def: 'A family of methods that sort observations into groups (clusters) whose members are more alike than members of different groups, judged by a chosen measure of distance. In marketing it forms segments from survey answers.' },
-    { term: 'Segmentation variable', def: 'A variable used to form segments, such as the importance of each need in a needs-based cluster analysis; also called a segmentation base. Variables used only to describe the segments afterwards are descriptor variables (descriptors).' },
     { term: 'k-means clustering', def: 'A cluster analysis that sorts observations into k groups by repeatedly assigning each to the nearest group centre and moving each centre to the mean of its members, until no observation changes group; it makes the within-cluster sum of squares small.' },
     { term: 'Segment centre', def: 'The mean of a segment’s members on every segmentation variable; also called the centroid. In k-means each observation belongs to the segment with the nearest centre.' },
     { term: 'Squared Euclidean distance', def: 'The sum of the squared differences between two observations on every variable, Σ(x_j − y_j)²; the square of the straight-line distance.' },
@@ -678,12 +677,12 @@ export default {
     { what: 'Ward cut at 2 = k-means', value: wardCut2Ari, shown: 1 },
     { what: 'Cut line at height 6, below the last merge and above the rest', value: Number(PWARD.merges[5].height < 6 && PWARD.merges[6].height > 6), shown: 1 },
     { what: 'Leaf order BDACFGEH', value: Number(PORDER.map((i) => PM_NAMES[i]).join('') === 'BDACFGEH'), shown: 1 },
-    // Larkspire
-    { what: 'Larkspire customers', value: LK.customers, shown: 1150 },
-    { what: 'Larkspire needs', value: LK.needs, shown: 7 },
-    { what: 'Larkspire restarts', value: LK.restarts, shown: 50 },
-    { what: 'Larkspire guideline', value: 100 * LK.needs, shown: 700 },
-    { what: 'Larkspire sizes add up', value: sum(LK.sizes), shown: 1150 },
-    { what: 'Larkspire k range top', value: 7, shown: 7 },
+    // Tollwick
+    { what: 'Tollwick customers', value: LK.customers, shown: 1150 },
+    { what: 'Tollwick needs', value: LK.needs, shown: 7 },
+    { what: 'Tollwick restarts', value: LK.restarts, shown: 50 },
+    { what: 'Tollwick guideline', value: 100 * LK.needs, shown: 700 },
+    { what: 'Tollwick sizes add up', value: sum(LK.sizes), shown: 1150 },
+    { what: 'Tollwick k range top', value: 7, shown: 7 },
   ],
 };

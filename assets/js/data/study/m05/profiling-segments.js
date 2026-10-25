@@ -152,7 +152,7 @@ export default {
     { p: 'Answering those questions has two parts. <g>Profiling</g> a segment describes it on the segmentation variables, the needs that formed it; describing a segment uses other information, its <g>descriptor variables</g>: demographics, behaviour, media use, awareness of the brand. Dolnicar, Grün and Leisch treat them as separate steps of a segmentation analysis, because they answer different questions: profiling says what a segment wants, describing says who its members are and how to reach them.' },
 
     { h: 'The index against the average' },
-    { p: String.raw`A segment’s profile is easiest to read as an <g>index</g> against the average respondent: the segment’s mean on a need, divided by the overall mean, times 100. Craft and local segment members rate “from a local, independent business” ${f2(MEANS[CL][6])} on average, against ${f2(MU[6])} for all ${N}, an index of <m>${f2(MEANS[CL][6])} \div ${f2(MU[6])} \times 100 = ${IX[CL][6]}</m>. An index of 100 means the segment is average on that need; above 100, the need matters more to it than to the average respondent; below 100, less. Analysts often treat indexes above about 120 or below about 80 as notable, but that is a convention, not a test.` },
+    { p: String.raw`A segment’s profile is easiest to read as an <g>index against the average</g> respondent, or index for short: the segment’s mean on a need, divided by the overall mean, times 100. Craft and local segment members rate “from a local, independent business” ${f2(MEANS[CL][6])} on average, against ${f2(MU[6])} for all ${N}, an index of <m>${f2(MEANS[CL][6])} \div ${f2(MU[6])} \times 100 = ${IX[CL][6]}</m>. An index of 100 means the segment is average on that need; above 100, the need matters more to it than to the average respondent; below 100, less. Analysts often treat indexes above about 120 or below about 80 as notable, but that is a convention, not a test.` },
     { table: {
       caption: `Lantern’s five segments: each need’s index against the average respondent (100 = average). Base: ${N} respondents; the segments’ names are explained below.`,
       head: ['Need', ...SEG_ORDER.map((g) => NAMES[g])],
@@ -179,7 +179,7 @@ export default {
       align: ['l', 'r', 'r', 'r', 'r', 'r'],
       rows: [
         [`Cups a week (${f1(CUPS_ALL)})`, ...SEG_ORDER.map((g) => f1(S.cups[g]))],
-        [`Spend a head a month ($${f2(HEAD_ALL)})`, ...SEG_ORDER.map((g) => money(SZ[g].perHead))],
+        [`Spend per head a month ($${f2(HEAD_ALL)})`, ...SEG_ORDER.map((g) => money(SZ[g].perHead))],
         [`Local loyalty, 1–5 (${f2(D.loyalty.mean)})`, ...SEG_ORDER.map((g) => f2(S.loyalty[g]))],
         [`Know Lantern (${pc(D.aware)})`, ...SEG_ORDER.map((g) => pc(S.aware[g]))],
         [`Cold Brew, top two boxes (${pc(D.coldbrewTop2)})`, ...SEG_ORDER.map((g) => pc(S.coldbrewTop2[g]))],
@@ -191,7 +191,7 @@ export default {
     { p: `A segment has two sizes: its share of the respondents and its share of what they spend. The <g>share of spend</g> is the segment’s total monthly spend divided by everyone’s; <g>spend per head</g> is the segment’s total divided by its respondents. Craft and local are ${pc(SZ[CL].share)} of respondents but account for ${pc(SZ[CL].spendShare)} of their spend, at ${money(SZ[CL].perHead)} a head against ${money(HEAD_ALL)} for everyone; Value routine are ${pc(SZ[VR].share)} of respondents and ${pc(SZ[VR].spendShare)} of spend. Sizing tests whether a segment is substantial, one of the ADAMS criteria in OpenStax’s list (accessible, differentiable, actionable, measurable and substantial) that module 1 applied; the profiles and descriptors test the others.` },
     { table: {
       caption: `Segment sizes in people and in monthly coffee spend (respondents’ own estimates). Base: ${N} respondents, $${SPEND_ALL.toLocaleString('en-US')} a month in all.`,
-      head: ['Segment', 'Respondents', 'Share of respondents', 'Share of spend', 'Spend a head', 'Spend share ÷ respondent share'],
+      head: ['Segment', 'Respondents', 'Share of respondents', 'Share of spend', 'Spend per head', 'Spend share ÷ respondent share'],
       align: ['l', 'r', 'r', 'r', 'r', 'r'],
       rows: SEG_ORDER.map((g) => [NAMES[g], String(SZ[g].n), pc(SZ[g].share), pc(SZ[g].spendShare), money(SZ[g].perHead), f2(valueRatio(g))]),
       foot: [['All', String(N), '100%', '100%', money(HEAD_ALL), '1.00']],
@@ -209,7 +209,7 @@ export default {
     { p: `The F statistics are still useful as a ranking of which needs separate the segments most: novelty (${f1(FS[0].F)}), local (${f1(FS[1].F)}), sustainability (${f1(FS[2].F)}) and price (${f1(FS[3].F)}) lead, and taste (${f1(S.anova[0].F)}) separates them least. That ranking is a quick way to choose the golden questions, with a limit shown below.` },
 
     { h: 'Testing descriptors' },
-    { p: `Tests on descriptor variables are legitimate, because the segments were not formed from them. The <g>test of independence</g> of B04 on each cross-tab of segment by a descriptor gives p below 0.001 for all five here, and <g>Cramér’s V</g> measures how strong each link is: ${f2(VS.source)} for main source, ${f2(VS.age)} for age, ${f2(VS.income)} for income, ${f2(VS.household)} for household and ${f2(VS.area)} for region. They run from weak (region, below module 1’s rough guide of about 0.2, a cut-off that depends on the table’s size) to moderate (main source): associations, not rules.` },
+    { p: `Tests on descriptor variables are legitimate, because the segments were not formed from them. The <g>test of independence</g> of B04 on each cross-tab of segment by a descriptor gives p below 0.001 for all five here, and <g>Cramér’s V</g> measures how strong each link is: ${f2(VS.source)} for main source, ${f2(VS.age)} for age, ${f2(VS.income)} for income, ${f2(VS.household)} for household and ${f2(VS.area)} for region. They run from weak (region, ${f2(VS.area)}) to moderate (main source, ${f2(VS.source)}); as module 1 noted, V has no universal cut-offs, so read them as associations, not rules.` },
     { p: `Three cautions apply. The sample is not a probability sample, so a p-value says the pattern is unlikely to be chance among people like these respondents, not that it holds in Harbour City. Testing many descriptors invites false positives, as B04’s multiple-testing warning explained, so choose the few that matter before looking. And a strong link still leaves a segment mixed: ${pc(exUnder30, 0)} of Explorers are under 30, but Explorers are only ${pc(exOfUnder30, 0)} of the under-30s, so marketing to under-30s would mostly reach other segments. Demographics describe and help reach a needs segment; they rarely define it, which is why module 1 found needs harder to reach.` },
 
     { h: 'Sizing in people and in spend' },
@@ -323,7 +323,7 @@ export default {
   ],
 
   demo: [
-    { widget: 'ps-sheet', intro: `All ${N} respondents with their segment in column B. In the summary area (R to X), count each segment’s respondents with COUNTIF, its mean local rating with AVERAGEIFS, the index (mean ÷ the overall mean × 100), its share of spend with SUMIFS ÷ SUM and its spend a head with AVERAGEIFS. Craft and local’s local index should come to ${IX[CL][6]} and its share of spend to ${pc(SZ[CL].spendShare)}.` },
+    { widget: 'ps-sheet', intro: `All ${N} respondents with their segment in column B. In the summary area (R to X), count each segment’s respondents with COUNTIF, its mean local rating with AVERAGEIFS, the index (mean ÷ the overall mean × 100), its share of spend with SUMIFS ÷ SUM and its spend per head with AVERAGEIFS. Craft and local’s local index should come to ${IX[CL][6]} and its share of spend to ${pc(SZ[CL].spendShare)}.` },
     { widget: 'ps-pivot', intro: 'The same respondents as a PivotTable. Start with Segment in Rows and Main source in Columns, shown as % of Row Total: each segment’s row adds to 100%. Then try Age and Income in Columns, Average of Spend a month or Cups a week as the value, and Average of Cold Brew top two for each segment’s intent.' },
   ],
 
@@ -356,8 +356,7 @@ export default {
 
   glossary: [
     { term: 'Profiling', def: 'Describing segments on the segmentation variables that formed them, for example as indexes against the average, to see what each segment wants.' },
-    { term: 'Descriptor variable', def: 'A variable used to describe segments after they are formed, such as age, income, spend or where people buy, as distinct from the segmentation variables that formed them; also called a descriptor.' },
-    { term: 'Index', def: 'A segment’s mean on a variable divided by the overall mean, times 100: 100 is average, above 100 the segment is higher than average. Also called an index against the average.' },
+    { term: 'Index against the average', def: 'A segment’s mean on a variable divided by the overall mean, times 100: 100 is average, above 100 the segment is higher than average. Often just called an index.' },
     { term: 'Share of spend', def: 'A segment’s total spend divided by the total spend of everyone in the base; compared with its share of people, it shows whether the segment spends more or less than average a head.' },
     { term: 'Spend per head', def: 'A group’s total spend divided by the number of people in it: the mean spend.' },
     { term: 'Typing tool', def: 'A rule or small model that assigns a new respondent or customer to an existing segment, usually from a few questions, for example by the nearest segment centre.' },
@@ -420,8 +419,8 @@ export default {
     // behaviour table
     { what: 'Cups all', value: CUPS_ALL, shown: 10.6, tol: 0.05 },
     ...SEG_ORDER.map((g) => ({ what: `Cups ${NAMES[g]}`, value: S.cups[g], shown: [12.3, 15.7, 8.6, 8.4, 5.8][g], tol: 0.05 })),
-    { what: 'Spend a head all', value: HEAD_ALL, shown: 50.29, tol: 0.005 },
-    ...SEG_ORDER.map((g) => ({ what: `Spend a head ${NAMES[g]}`, value: SZ[g].perHead, shown: [27.05, 58.54, 54.60, 76.61, 39.75][g], tol: 0.005 })),
+    { what: 'Spend per head all', value: HEAD_ALL, shown: 50.29, tol: 0.005 },
+    ...SEG_ORDER.map((g) => ({ what: `Spend per head ${NAMES[g]}`, value: SZ[g].perHead, shown: [27.05, 58.54, 54.60, 76.61, 39.75][g], tol: 0.005 })),
     { what: 'Loyalty all', value: D.loyalty.mean, shown: 3.05, tol: 0.005 },
     ...SEG_ORDER.map((g) => ({ what: `Loyalty ${NAMES[g]}`, value: S.loyalty[g], shown: [2.46, 2.58, 3.17, 3.94, 3.51][g], tol: 0.005 })),
     { what: 'Loyalty scale top', value: Math.max(...RS.flatMap((r) => r.loyal)), shown: 5 },
@@ -508,8 +507,6 @@ export default {
     { what: 'F health', value: S.anova[5].F, shown: 277.3, tol: 0.05 },
     { what: 'F energy', value: S.anova[4].F, shown: 274.0, tol: 0.05 },
     { what: 'All supermarket or RTD %', value: allRtd * 100, shown: 27.5, tol: 0.05 },
-    { what: 'Module 1 rough guide for weak V', value: 0.2, shown: 0.2 },
-    { what: 'Region V below 0.2', value: Number(VS.area < 0.2), shown: 1 },
     { what: 'Hold-out against truth %', value: HO.againstTruth * 100, shown: 98.1, tol: 0.05 },
     { what: 'Hold-out against truth count', value: HO.againstTruth * HO.test, shown: 157, tol: 1e-9 },
     { what: 'Agency range low', value: 40, shown: 40 },

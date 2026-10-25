@@ -79,7 +79,7 @@ export const guided = [
         view: `A1:E${L}`, formats: { E2: '0.0%', E3: '0.0%' }, widths: { A: 11, B: 10, D: 32, E: 9 }, maxHeight: '22rem',
         wrong: [
           { formula: `=COUNTIF(B2:B${L},">="&E1)/COUNT(B2:B${L})`, say: 'That is the share of respondents who are heavy, not the share of cups they drink. Sum their cups with SUMIFS and divide by all cups.' },
-          { formula: `=SUMIFS(B2:B${L},B2:B${L},">16")/SUM(B2:B${L})`, say: 'With 16 typed in, the formula ignores E1, and “>” leaves out respondents on exactly the cut-off. Use ">="&E1.' },
+          { formula: `=SUMIFS(B2:B${L},B2:B${L},">16")/SUM(B2:B${L})`, say: 'With 16 typed in, the formula ignores E1, and “>” leaves out respondents on exactly the cut-off. Use <x>">="&E1</x>.' },
           { formula: `=SUMIFS(B2:B${L},B2:B${L},">="&E1)/COUNT(B2:B${L})`, say: 'Dividing by the number of respondents gives heavy drinkers’ cups per respondent, not a share. Divide by the total cups, SUM(B2:B641).' },
         ],
         hints: ['Share of cups = cups drunk by heavy users ÷ all cups.', '<x>SUMIFS(B2:B641,B2:B641,">="&E1)</x> adds the cups of everyone at or above the cut-off.'],

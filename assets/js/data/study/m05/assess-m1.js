@@ -1,9 +1,10 @@
 // assess-m1.js — M05 module 1 test: Segmentation bases (why-segment, demographic-and-geographic,
 // psychographic-and-behavioural). New businesses and new angles: the gain from segmenting when tailored offers also change
 // the margin, sorting activities into the stages of STP, a first segmentation from records alone, why the nested B2B
-// approach works from the outside in, penetration in Excel, Cramér's V for a two-row table, age against cohort effects,
-// significance against strength in a very large sample, the share of visits from heavy users given band averages,
-// Kotler's behavioural variables, a psychographic system misapplied to a business market, and sound and unsound uses of geodemographics.
+// approach works from the outside in, penetration in Excel, how table size changes Cramér's V for the same χ², age
+// against cohort effects, significance against strength in a very large sample, the share of visits from heavy users
+// given band averages, Kotler's behavioural variables, a psychographic system misapplied to a business market, and sound
+// and unsound uses of geodemographics.
 // Tamsworth Language School, Fellbrook Animal Rescue, Thistlebay Florists, Corrin Wines, Ravensmere Cinemas, Brightlock
 // Adhesives and the other businesses are fictional. No hints; solutions show when the student reviews the test. Every num
 // item's `check` recomputes its answer.
@@ -24,8 +25,8 @@ const TF = { types: ['Town centre', 'Riverside flats', 'Older suburbs', 'New est
 const tfCells = { A1: 'area type', B1: 'households', C1: 'customers', D1: 'customers per 1,000 households' };
 TF.types.forEach((t, i) => Object.assign(tfCells, { [`A${i + 2}`]: t, [`B${i + 2}`]: TF.hh[i], [`C${i + 2}`]: TF.cust[i] }));
 const tfPen = TF.hh.map((h, i) => (TF.cust[i] / h) * 1000);
-// ticketing app: region (4) by bought in the last month (2)
-const TA = { chi: 24.2, n: 1500 };
+// two surveys with the same χ² and n but tables of different sizes
+const TA = { vA: Math.sqrt(30 / 1000), vB: Math.sqrt(30 / (1000 * 3)) };
 // Ravensmere Cinemas: member bands
 const RC = { share: [0.50, 0.35, 0.15], visits: [2, 6, 16] };
 const rcHeavy = (RC.share[2] * RC.visits[2]) / (RC.share[0] * RC.visits[0] + RC.share[1] * RC.visits[1] + RC.share[2] * RC.visits[2]);
@@ -119,14 +120,15 @@ export const items = [
   },
   {
     id: 'm05-m1-6', lesson: 'demographic-and-geographic', type: 'num', kind: 'numerical',
-    prompt: 'A ticketing app (fictional) crossed 1,500 users’ region (four regions) with whether they bought a ticket in the last month (yes or no), and found χ² = 24.2. What is Cramér’s V? Give three decimal places.',
-    answer: Math.round(Math.sqrt(TA.chi / (TA.n * 1)) * 1000) / 1000, check: () => Math.sqrt(24.2 / (1500 * Math.min(4 - 1, 2 - 1))), unit: '', places: 3, tol: 0.002,
+    prompt: 'Two fictional surveys each have 1,000 respondents and each report χ² = 30 for a cross-tab. Survey A’s table has 2 rows and 2 columns; survey B’s has 4 rows and 5 columns. How many times larger is Cramér’s V for survey A than for survey B? Give two decimal places.',
+    answer: Math.round((TA.vA / TA.vB) * 100) / 100, check: () => Math.sqrt(30 / (1000 * 1)) / Math.sqrt(30 / (1000 * Math.min(4 - 1, 5 - 1))), unit: 'times', places: 2, tol: 0.01,
     wrong: [
-      { value: Math.round(Math.sqrt(TA.chi / (TA.n * 3)) * 1000) / 1000, say: 'You used r − 1 = 3. V uses the smaller of r − 1 and c − 1; with two columns that is 1.' },
-      { value: Math.round(Math.sqrt(TA.chi / (TA.n * 2)) * 1000) / 1000, say: 'You used min(r, c) = 2. V divides by n × min(r − 1, c − 1) = 1,500 × 1.' },
-      { value: Math.round((TA.chi / TA.n) * 1000) / 1000, say: 'That is V², 0.016. Take the square root.' },
+      { value: 1, say: 'The same χ² and n don’t give the same V: V divides by n × min(r − 1, c − 1), which is 1 for a 2 × 2 table and 3 for a 4 × 5 table.' },
+      { value: 3, say: 'That is the ratio of the denominators. V takes a square root, so the ratio of the Vs is √3.' },
+      { value: Math.round(Math.sqrt(4 / 2) * 100) / 100, say: 'You used min(r, c), 2 and 4. V uses min(r − 1, c − 1): 1 and 3.' },
+      { value: Math.round(Math.sqrt(12) * 100) / 100, say: 'You used (r − 1)(c − 1), the degrees of freedom. V uses the smaller of r − 1 and c − 1.' },
     ],
-    solution: `With a 4 × 2 table, min(r − 1, c − 1) = 1, so V = √(24.2 ÷ 1,500) = √0.0161 ≈ ${Math.sqrt(TA.chi / TA.n).toFixed(3)}: a weak association, though highly significant with 3 degrees of freedom.`,
+    solution: `A: V = √(30 ÷ (1,000 × 1)) ≈ ${TA.vA.toFixed(3)}. B: V = √(30 ÷ (1,000 × 3)) = ${TA.vB.toFixed(3)}. Ratio ≈ ${(TA.vA / TA.vB).toFixed(2)}, which is √3. The same χ² spread over a larger table means a weaker association, so χ² alone, or its p-value, can’t compare the strength of associations in tables of different sizes.`,
   },
   {
     id: 'm05-m1-7', lesson: 'demographic-and-geographic', type: 'mc', kind: 'conceptual',

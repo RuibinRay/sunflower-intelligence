@@ -21,7 +21,7 @@ const members = (g) => RS.filter((_, i) => LAB[i] === g);
 const MU = D.needs.means, SD = D.needs.sds, SH = D.typing.short;
 
 // ---------------------------------------------------------------- widgets
-const sheetCells = { ...cellsOf(COLS), R1: 'segment', S1: 'respondents', T1: 'share', U1: 'mean: local', V1: 'index: local', W1: 'share of spend', X1: 'spend a head', ...col('R', 2, ORDER.map((g) => NAMES[g])) };
+const sheetCells = { ...cellsOf(COLS), R1: 'segment', S1: 'respondents', T1: 'share', U1: 'mean: local', V1: 'index: local', W1: 'share of spend', X1: 'spend per head', ...col('R', 2, ORDER.map((g) => NAMES[g])) };
 const records = RS.map((r, i) => ({
   Segment: NAMES[LAB[i]], Region: LEVELS.area[r.area], Age: LEVELS.age[r.age], Household: LEVELS.household[r.household], Income: LEVELS.income[r.income], 'Main source': LEVELS.source[r.source],
   Respondents: 1, 'Spend a month': r.spend, 'Cups a week': r.cups, 'Cold Brew top two': r.coldbrew <= 2 ? 1 : 0, 'Aware of Lantern': r.aware, 'Local-loyalty score': mean(r.loyal),
@@ -53,7 +53,7 @@ export const widgets = {
 const g1Cells = { ...cellsOf(['respondent', 'segment', 'local']), E2: 'segment', F2: 'Explorers', E3: 'mean: local', E4: 'index: local' };
 const localOf = (g) => mean(members(g).map((r) => r.needs[6]));
 const LOCAL_ALL = mean(RS.map((r) => r.needs[6]));
-const g2Cells = { ...cellsOf(['respondent', 'segment', 'spend_month']), E2: 'segment', F2: 'Craft and local', E3: 'share of spend', E4: 'spend a head' };
+const g2Cells = { ...cellsOf(['respondent', 'segment', 'spend_month']), E2: 'segment', F2: 'Craft and local', E3: 'share of spend', E4: 'spend per head' };
 const SPEND_ALL = sum(RS.map((r) => r.spend));
 // typing by hand: a customer answers 6, 2, 2, 3 to price, sustainability, local and novelty
 const TY = [6, 2, 2, 3];
@@ -67,7 +67,7 @@ const shortLabels = SH.map((j) => NEEDS[j].label);
 export const guided = [
   {
     id: 'm05-ps-g1', type: 'steps', kind: 'numerical',
-    prompt: 'Column B holds each respondent’s segment and column C their rating of “from a local, independent business” (1–7). F2 names a segment. Profile that segment on the local need.',
+    prompt: 'Column B holds each respondent’s segment and column C their rating of “from a local, independent business” (1–7). F2 names a segment. Profile that segment on the local need. Rows 2–641 hold all 640 respondents; the view shows the first 25.',
     solution: `<x>=AVERAGEIFS(C2:C641,B2:B641,F2)</x> gives Explorers’ mean, ${localOf(EX).toFixed(2)}; <x>=F3/AVERAGE(C2:C641)*100</x> gives the index, ${r0(localOf(EX) / LOCAL_ALL * 100)}: Explorers rate local businesses about as the average respondent does (${LOCAL_ALL.toFixed(2)}). For Craft and local the same formulas give ${localOf(CL).toFixed(2)} and ${r0(localOf(CL) / LOCAL_ALL * 100)}.`,
     steps: [
       {
@@ -76,7 +76,7 @@ export const guided = [
         sheet: { cells: g1Cells, vary: { F2: ['Mindful', 'Value routine', 'Craft and local'] } }, cell: 'F3',
         answer: `=AVERAGEIFS(C2:C${L},B2:B${L},F2)`,
         alt: [`=AVERAGEIF(B2:B${L},F2,C2:C${L})`, `=SUMIFS(C2:C${L},B2:B${L},F2)/COUNTIF(B2:B${L},F2)`, '=AVERAGEIFS(C:C,B:B,F2)'],
-        view: `A1:F${L}`, formats: { F3: '0.00' }, widths: { B: 15, E: 13, F: 15 }, maxHeight: '22rem',
+        view: 'A1:F26', formats: { F3: '0.00' }, widths: { B: 15, E: 13, F: 15 },
         wrong: [
           { formula: `=AVERAGE(C2:C${L})`, say: 'That is the mean of all 640 respondents, the same whatever F2 says. Average only the segment’s members: AVERAGEIFS with the segment as the criterion.' },
           { formula: `=AVERAGEIFS(C2:C${L},B2:B${L},"Explorers")`, say: 'With the name typed in, the formula ignores F2. Refer to F2 so it profiles any segment.' },
@@ -90,7 +90,7 @@ export const guided = [
         sheet: { cells: { ...g1Cells, F3: `=AVERAGEIFS(C2:C${L},B2:B${L},F2)` }, vary: { F2: ['Mindful', 'Value routine', 'Craft and local'] } }, cell: 'F4',
         answer: `=F3/AVERAGE(C2:C${L})*100`,
         alt: [`=100*F3/AVERAGE(C2:C${L})`, `=AVERAGEIFS(C2:C${L},B2:B${L},F2)/AVERAGE(C2:C${L})*100`],
-        view: `A1:F${L}`, formats: { F3: '0.00', F4: '0' }, widths: { B: 15, E: 13, F: 15 }, maxHeight: '22rem',
+        view: 'A1:F26', formats: { F3: '0.00', F4: '0' }, widths: { B: 15, E: 13, F: 15 },
         wrong: [
           { formula: `=F3/AVERAGE(C2:C${L})`, say: 'That is the ratio (about 1.04 for Explorers). An index multiplies it by 100, so that 100 means average.' },
           { formula: `=(F3-AVERAGE(C2:C${L}))*100`, say: 'An index divides the segment’s mean by the overall mean; it doesn’t subtract.' },
@@ -119,8 +119,8 @@ export const guided = [
   },
   {
     id: 'm05-ps-g2', type: 'steps', kind: 'numerical',
-    prompt: 'Column B holds each respondent’s segment and column C their monthly coffee spend in dollars. F2 names a segment. Size it in spend.',
-    solution: `Share of spend: <x>=SUMIFS(C2:C641,B2:B641,F2)/SUM(C2:C641)</x>, ${(S.sizes[CL].spendShare * 100).toFixed(1)}% for Craft and local. Spend a head: <x>=AVERAGEIFS(C2:C641,B2:B641,F2)</x>, $${S.sizes[CL].perHead.toFixed(2)}. Craft and local are ${(S.sizes[CL].share * 100).toFixed(1)}% of respondents but ${(S.sizes[CL].spendShare * 100).toFixed(1)}% of spend, because on average they spend ${(S.sizes[CL].perHead / (SPEND_ALL / N)).toFixed(2)} times as much a head as the average respondent.`,
+    prompt: 'Column B holds each respondent’s segment and column C their monthly coffee spend in dollars. F2 names a segment. Size it in spend. Rows 2–641 hold all 640 respondents; the view shows the first 25.',
+    solution: `Share of spend: <x>=SUMIFS(C2:C641,B2:B641,F2)/SUM(C2:C641)</x>, ${(S.sizes[CL].spendShare * 100).toFixed(1)}% for Craft and local. Spend per head: <x>=AVERAGEIFS(C2:C641,B2:B641,F2)</x>, $${S.sizes[CL].perHead.toFixed(2)}. Craft and local are ${(S.sizes[CL].share * 100).toFixed(1)}% of respondents but ${(S.sizes[CL].spendShare * 100).toFixed(1)}% of spend, because on average they spend ${(S.sizes[CL].perHead / (SPEND_ALL / N)).toFixed(2)} times as much a head as the average respondent.`,
     steps: [
       {
         id: 'm05-ps-g2-s1', type: 'formula',
@@ -128,26 +128,26 @@ export const guided = [
         sheet: { cells: g2Cells, vary: { F2: ['Value routine', 'On the go', 'Mindful'] } }, cell: 'F3',
         answer: `=SUMIFS(C2:C${L},B2:B${L},F2)/SUM(C2:C${L})`,
         alt: [`=SUMIF(B2:B${L},F2,C2:C${L})/SUM(C2:C${L})`, '=SUMIFS(C:C,B:B,F2)/SUM(C:C)'],
-        view: `A1:F${L}`, formats: { F3: '0.0%' }, widths: { B: 15, E: 14, F: 15 }, maxHeight: '22rem',
+        view: 'A1:F26', formats: { F3: '0.0%' }, widths: { B: 15, E: 14, F: 15 },
         wrong: [
           { formula: `=COUNTIF(B2:B${L},F2)/COUNTA(B2:B${L})`, say: 'That is the segment’s share of respondents. The share of spend adds up their dollars: SUMIFS over column C.' },
-          { formula: `=SUMIFS(C2:C${L},B2:B${L},F2)/COUNTIF(B2:B${L},F2)`, say: 'That divides by the segment’s respondents, giving spend a head. A share divides by everyone’s spend, SUM(C2:C641).' },
+          { formula: `=SUMIFS(C2:C${L},B2:B${L},F2)/COUNTIF(B2:B${L},F2)`, say: 'That divides by the segment’s respondents, giving spend per head. A share divides by everyone’s spend, SUM(C2:C641).' },
           { formula: `=SUMIFS(C2:C${L},B2:B${L},F2)`, say: 'That is the segment’s total spend in dollars. Divide by the total for everyone to make it a share.' },
         ],
         hints: ['Share of spend = the segment’s total spend ÷ everyone’s total spend.', `<x>=SUMIFS(C2:C641,B2:B641,F2)/SUM(C2:C641)</x>.`],
       },
       {
         id: 'm05-ps-g2-s2', type: 'formula',
-        prompt: 'In F4, calculate the segment’s spend a head: the mean monthly spend of its respondents.',
+        prompt: 'In F4, calculate the segment’s spend per head: the mean monthly spend of its respondents.',
         sheet: { cells: g2Cells, vary: { F2: ['Value routine', 'On the go', 'Mindful'] } }, cell: 'F4',
         answer: `=AVERAGEIFS(C2:C${L},B2:B${L},F2)`,
         alt: [`=SUMIFS(C2:C${L},B2:B${L},F2)/COUNTIF(B2:B${L},F2)`, `=AVERAGEIF(B2:B${L},F2,C2:C${L})`],
-        view: `A1:F${L}`, formats: { F4: '$#,##0.00' }, widths: { B: 15, E: 14, F: 15 }, maxHeight: '22rem',
+        view: 'A1:F26', formats: { F4: '$#,##0.00' }, widths: { B: 15, E: 14, F: 15 },
         wrong: [
-          { formula: `=AVERAGE(C2:C${L})`, say: 'That is everyone’s spend a head, $50.29 whatever F2 says. Average the segment’s members only.' },
-          { formula: `=SUMIFS(C2:C${L},B2:B${L},F2)/${N}`, say: 'Dividing by all 640 respondents gives the segment’s spend spread over everyone. Spend a head divides by the segment’s own respondents.' },
+          { formula: `=AVERAGE(C2:C${L})`, say: 'That is everyone’s spend per head, $50.29 whatever F2 says. Average the segment’s members only.' },
+          { formula: `=SUMIFS(C2:C${L},B2:B${L},F2)/${N}`, say: 'Dividing by all 640 respondents gives the segment’s spend spread over everyone. Spend per head divides by the segment’s own respondents.' },
         ],
-        hints: ['Spend a head is the mean spend within the segment.', `<x>=AVERAGEIFS(C2:C641,B2:B641,F2)</x>.`],
+        hints: ['Spend per head is the mean spend within the segment.', `<x>=AVERAGEIFS(C2:C641,B2:B641,F2)</x>.`],
       },
       {
         id: 'm05-ps-g2-s3', type: 'mc',
@@ -162,7 +162,7 @@ export const guided = [
         feedback: {
           1: 'They are the fourth-largest segment by respondents, and the study can’t give shares of Harbour City.',
           2: 'Spend isn’t cups: Craft and local drink fewer cups than average (8.4 a week) but buy them in cafés, at higher prices.',
-          3: 'They measure different things: one counts people, one counts dollars. Together they show spend a head above average.',
+          3: 'They measure different things: one counts people, one counts dollars. Together they show spend per head above average.',
         },
         hints: ['Divide the share of spend by the share of respondents.', '25.9 ÷ 17.0 ≈ 1.5.'],
       },
@@ -281,11 +281,11 @@ export const independent = [
   },
   {
     id: 'm05-ps-i4', type: 'formula', kind: 'numerical',
-    prompt: 'Column B holds each respondent’s segment and column C where they mostly buy coffee. F2 names a segment and F3 a source. In F4, calculate the share of that segment’s respondents who mostly buy from that source, so that the formula works for any segment and source.',
+    prompt: 'Column B holds each respondent’s segment and column C where they mostly buy coffee. F2 names a segment and F3 a source. In F4, calculate the share of that segment’s respondents who mostly buy from that source, so that the formula works for any segment and source. Rows 2–641 hold all 640 respondents; the view shows the first 25.',
     sheet: { cells: i4Cells, vary: { F2: ['Value routine', 'On the go', 'Mindful'], F3: ['Home-brewed', 'Office or vending', 'Supermarket or RTD'] } }, cell: 'F4',
     answer: `=COUNTIFS(B2:B${L},F2,C2:C${L},F3)/COUNTIF(B2:B${L},F2)`,
     alt: [`=COUNTIFS(C2:C${L},F3,B2:B${L},F2)/COUNTIF(B2:B${L},F2)`, '=COUNTIFS(B:B,F2,C:C,F3)/COUNTIF(B:B,F2)'],
-    view: `A1:F${L}`, formats: { F4: '0.0%' }, widths: { B: 15, C: 18, E: 20, F: 18 }, maxHeight: '22rem',
+    view: 'A1:F26', formats: { F4: '0.0%' }, widths: { B: 15, C: 18, E: 20, F: 18 },
     wrong: [
       { formula: `=COUNTIFS(B2:B${L},F2,C2:C${L},F3)/COUNTIF(C2:C${L},F3)`, say: 'That divides by everyone who uses the source: a column percentage (what share of café buyers are in this segment). To describe the segment, divide by its own respondents.' },
       { formula: `=COUNTIFS(B2:B${L},F2,C2:C${L},F3)/${N}`, say: 'That is a share of all 640 respondents. Percentage within the segment: divide by COUNTIF of the segment.' },
@@ -372,7 +372,7 @@ export const check = [
     answer: r1(WY.spend / WY.all * 100), check: () => 567000 / 1800000 * 100, unit: '%', places: 1, tol: 0.05,
     wrong: [
       { value: r1(WY.n / WY.total * 100), say: 'That is the segment’s share of customers. Share of spend divides its dollars by everyone’s dollars.' },
-      { value: r1((WY.spend / WY.all) / (WY.n / WY.total) * 100), say: 'That is the spend share ÷ customer share (times 100): it compares spend a head with the average. The question asks for the share of spend itself.' },
+      { value: r1((WY.spend / WY.all) / (WY.n / WY.total) * 100), say: 'That is the spend share ÷ customer share (times 100): it compares spend per head with the average. The question asks for the share of spend itself.' },
     ],
     solution: `$567,000 ÷ $1,800,000 = 31.5% of spend, from ${(WY.n / WY.total * 100).toFixed(1)}% of customers: each culture seeker spent $${(WY.spend / WY.n).toLocaleString('en-US')} against $${(WY.all / WY.total).toLocaleString('en-US')} on average.`,
   },
@@ -410,7 +410,7 @@ export const check = [
   },
   {
     id: 'm05-ps-k5', type: 'num', kind: 'numerical',
-    prompt: `On the go respondents spend $${OG_HEAD.toFixed(2)} a month on coffee each, against $${ALL_HEAD.toFixed(2)} for all ${N} respondents. What is the segment’s index of spend a head? Give a whole number.`,
+    prompt: `On the go respondents spend $${OG_HEAD.toFixed(2)} a month on coffee each, against $${ALL_HEAD.toFixed(2)} for all ${N} respondents. What is the segment’s index of spend per head? Give a whole number.`,
     answer: r0(OG_HEAD / ALL_HEAD * 100), check: () => S.sizes[OG].perHead / (SPEND_ALL / N) * 100, unit: '', places: 0, tol: 0.6,
     wrong: [
       { value: r0(OG_HEAD - ALL_HEAD), say: 'That is the difference in dollars. An index divides: segment ÷ average × 100.' },
