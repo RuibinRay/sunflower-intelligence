@@ -47,7 +47,7 @@ export const items = [
   {
     id: 'b02-fn-3', lesson: 'profiling-and-validation', type: 'rows', kind: 'applied',
     prompt: 'Rows from Lantern’s raw export (fictional). The rules are: quantity is a whole number from 1 to 200; region is exactly one of North, South, East, West or Central; rating is a whole number from 1 to 5, or blank (rating is optional). Select every row that breaks at least one rule. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['order_id', 'region', 'quantity', 'rating'],
       rows: [
         ['LC-10001', 'North', '2', '2'],
@@ -86,7 +86,7 @@ export const items = [
   {
     id: 'b02-fn-5', lesson: 'duplicates', type: 'rows', kind: 'applied',
     prompt: 'Rows from Harborview Hotel’s booking export (fictional). A channel-manager sync sometimes creates a booking again under a new booking_id from the HB-261xx series; every other column of the copy matches the original, including those not shown. Select the rows to remove so that each booking appears once. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['booking_id', 'booked_on', 'check_in', 'check_out', 'room_type', 'total ($)'],
       rows: [
         ['HB-25066', '2025-07-30', '2025-08-05', '2025-08-07', 'Standard', '358'],
@@ -142,7 +142,7 @@ export const items = [
   {
     id: 'b02-fn-9', lesson: 'text-and-categories', type: 'rows', kind: 'conceptual',
     prompt: 'Region values from Lantern’s raw export (fictional; ␣ marks a space). After trimming spaces and converting to Title Case, which values still don’t match one of North, South, East, West or Central exactly? Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['region (raw)'],
       rows: [['north␣'], ['N.'], ['SOUTH'], ['Wset'], ['West␣'], ['central'], ['Soth'], ['E.']],
     } },
@@ -194,7 +194,7 @@ export const items = [
   {
     id: 'b02-fn-13', lesson: 'outliers', type: 'rows', kind: 'applied',
     prompt: 'Ten fictional Lantern order totals, including its genuine 120-bag office order. Using quartiles by linear interpolation, select every order outside the Tukey fences (Q1 − 1.5 × IQR, Q3 + 1.5 × IQR). Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['order', 'order_total ($)'],
       rows: [['A', '21.00'], ['B', '17.00'], ['C', '58.00'], ['D', '14.00'], ['E', '28.00'], ['F', '1512.00'], ['G', '19.50'], ['H', '15.50'], ['I', '24.00'], ['J', '18.00']],
     } },
@@ -260,7 +260,7 @@ export const items = [
   {
     id: 'b02-fn-18', lesson: 'scaling', type: 'rows', kind: 'applied',
     prompt: 'Lantern’s (fictional) min–max scaler for order value was fitted on training orders, where the minimum was $12 and the maximum $60. It is applied to these test orders. Select every test order whose scaled value falls outside 0 to 1. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['test order', 'order value ($)'],
       rows: [['T1', '8'], ['T2', '12'], ['T3', '30'], ['T4', '60'], ['T5', '75'], ['T6', '45']],
     } },
@@ -295,7 +295,7 @@ export const items = [
   {
     id: 'b02-fn-21', lesson: 'transforming-data', type: 'rows', kind: 'applied',
     prompt: 'Harborview’s total should equal nights × rate, where nights is the number of days from check_in to check_out. Derive nights from the dates and select every booking whose stored total disagrees (fictional bookings; 2026 is not a leap year). Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['check_in', 'check_out', 'rate ($)', 'total ($)'],
       rows: [
         ['2026-03-29', '2026-04-02', '150', '600'],

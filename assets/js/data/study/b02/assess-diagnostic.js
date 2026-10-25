@@ -40,7 +40,7 @@ export const items = [
   {
     id: 'b02-dg-3', lesson: 'profiling-and-validation', type: 'rows', kind: 'applied',
     prompt: 'A fictional coffee shop’s rule says discount must be at least 0 and no more than quantity × unit_price. Select every order that breaks it. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['order', 'quantity', 'unit_price ($)', 'discount ($)'],
       rows: [
         ['A-01', '2', '14.00', '0.00'],

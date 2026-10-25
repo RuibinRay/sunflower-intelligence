@@ -112,7 +112,7 @@ export const items = [
   {
     id: 'b02-m1-8', lesson: 'profiling-and-validation', type: 'rows', kind: 'applied',
     prompt: 'A fictional bike-hire firm’s rentals file has one rule linking two columns: if <code>returned</code> is Yes, <code>end_time</code> must be filled in and later than <code>start_time</code>; if <code>returned</code> is No, <code>end_time</code> must be blank. Select every rental that breaks the rule. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['rental_id', 'start_time', 'end_time', 'returned'],
       rows: HIRES.map((r) => [...r]),
     } },

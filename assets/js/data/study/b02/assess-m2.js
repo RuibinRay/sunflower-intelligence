@@ -34,7 +34,7 @@ export const items = [
   {
     id: 'b02-m2-1', lesson: 'duplicates', type: 'rows', kind: 'applied',
     prompt: 'A fictional theatre’s online box office gives every press of “Pay” its own order number, so a customer who presses it twice gets two orders. Select the rows to remove so that each real purchase is counted once, using the evidence in the table. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['order_id', 'customer_id', 'performance', 'tickets', 'placed_at', 'payment'],
       rows: TICKETS.map((r) => [...r]),
     } },
@@ -101,7 +101,7 @@ export const items = [
   {
     id: 'b02-m2-7', lesson: 'types-and-formats', type: 'rows', kind: 'applied',
     prompt: 'Lantern’s web shop is documented as writing slash dates day/month/year with four-digit years, and you convert its dates with that explicit format. Select the values that will fail to convert to a valid date and need to be flagged. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['Raw order_date'],
       rows: [['12/03/2026'], ['31/04/2026'], ['15/06/2026'], ['29/02/2026'], ['3/14/26'], ['01/01/2026']],
     } },
@@ -168,7 +168,7 @@ export const items = [
   {
     id: 'b02-m2-12', lesson: 'text-and-categories', type: 'rows', kind: 'conceptual',
     prompt: 'From which product names does the case-sensitive pattern <code>(\\d+)\\s?(g|kg)</code> extract a pack size? Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['product'],
       rows: [['House Blend 250g'], ['Decaf Colombia 1kg'], ['Espresso Roast 250 g'], ['Gift Box Trio'], ['Cold Brew Pack'], ['Sumatra Mandheling 250G']],
     } },

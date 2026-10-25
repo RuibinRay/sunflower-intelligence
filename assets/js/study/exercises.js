@@ -54,15 +54,20 @@ function fmtAnswer(v, item) {
   return item.unit ? `${n} ${item.unit}` : n;
 }
 const money = (v) => fmtNum(v, Math.abs(v - Math.round(v)) < 1e-9 ? 0 : 2);
+// `t.index` (0 or 1) adds a leading column numbering the rows from that base, for prompts and solutions that refer to
+// rows by number (B02 numbers rows from 0, as pandas does); `rowLabel` gives the same label everywhere else
+const rowLabel = (t, i) => String(i + (Number.isInteger(t?.index) ? t.index : 1));
 function tableEl(t, { pick = false, name = '' } = {}) {
-  const head = t.head ? h('thead', {}, h('tr', {}, pick ? h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, 'Select')) : null, t.head.map((c) => html('th', '', c)))) : null;
+  const ix = Number.isInteger(t.index);
+  const head = t.head ? h('thead', {}, h('tr', {}, pick ? h('th', { scope: 'col' }, h('span', { class: 'visually-hidden' }, 'Select')) : null, ix ? h('th', { scope: 'col' }, 'row') : null, t.head.map((c) => html('th', '', c)))) : null;
   if (head) head.querySelectorAll('th').forEach((th) => th.setAttribute('scope', 'col'));
   const rows = (t.rows || []).map((r, i) => {
     const tr = h('tr', { 'data-row': i });
     if (pick) {
       const id = `${name}-r${i}`;
-      tr.append(h('td', {}, h('input', { type: 'checkbox', id, value: i, 'aria-label': `Row ${i + 1}${t.head ? `: ${r.map((c, k) => `${String(t.head[k] ?? '').replace(/<[^>]+>/g, '')} ${String(c).replace(/<[^>]+>/g, '')}`).join(', ')}` : ''}` })));
+      tr.append(h('td', {}, h('input', { type: 'checkbox', id, value: i, 'aria-label': `Row ${rowLabel(t, i)}${t.head ? `: ${r.map((c, k) => `${String(t.head[k] ?? '').replace(/<[^>]+>/g, '')} ${String(c).replace(/<[^>]+>/g, '')}`).join(', ')}` : ''}` })));
     }
+    if (ix) tr.append(h('td', { class: 'is-num row-ix' }, rowLabel(t, i)));
     r.forEach((c) => { const td = html('td', typeof c === 'number' ? 'is-num' : '', typeof c === 'number' ? fmtNum(c) : String(c ?? '')); tr.append(td); });
     return tr;
   });
@@ -443,13 +448,13 @@ T.rows = (item, c) => {
       const right = t.rows.filter((_, i) => sel.has(i) === ans.has(i)).length, correct = right === t.rows.length;
       const wrongPicks = r.filter((i) => !ans.has(i)), missedRows = item.answer.filter((i) => !sel.has(i));
       const notes = correct ? [] : [[wrongPicks.length ? `${wrongPicks.length} of the rows you ticked ${wrongPicks.length === 1 ? 'doesn’t' : 'don’t'} apply.` : '', missedRows.length ? `You missed ${missedRows.length} row${missedRows.length === 1 ? '' : 's'}.` : ''].filter(Boolean).join(' ')];
-      if (!correct) [...wrongPicks, ...missedRows].forEach((i) => { if (item.feedback?.[i]) notes.push(`Row ${i + 1}: ${item.feedback[i]}`); });
+      if (!correct) [...wrongPicks, ...missedRows].forEach((i) => { if (item.feedback?.[i]) notes.push(`Row ${rowLabel(t, i)}: ${item.feedback[i]}`); });
       return { correct, score: right / t.rows.length, notes, mark: () => boxes.forEach((b) => { const i = +b.value, tr = b.closest('tr'); tr.classList.toggle('is-right', sel.has(i) && ans.has(i)); tr.classList.toggle('is-wrong', sel.has(i) && !ans.has(i)); }) };
     },
     reveal: () => boxes.forEach((b) => { if (ans.has(+b.value) && !b.checked) b.closest('tr').classList.add('is-missed'); }),
     clear: () => boxes.forEach((b) => b.closest('tr').classList.remove('is-right', 'is-wrong', 'is-missed')),
     lock: (b) => boxes.forEach((x) => { x.disabled = b; }),
-    answerNode: () => h('p', {}, `Rows ${item.answer.map((i) => i + 1).join(', ')}.`),
+    answerNode: () => h('p', {}, `Rows ${item.answer.map((i) => rowLabel(t, i)).join(', ')}.`),
   };
 };
 

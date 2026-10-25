@@ -30,7 +30,7 @@ export const guided = [
   {
     id: 'b02-txt-g1', type: 'rows', kind: 'applied',
     prompt: 'Region values from Lantern’s export, with ␣ marking an ordinary space and ⍽ a non-breaking space. Select every row with a whitespace problem. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['Raw region'],
       rows: [['North'], ['South␣'], ['␣West'], ['East'], ['Central⍽'], ['West'], ['South␣␣'], ['N.']],
     } },
@@ -141,7 +141,7 @@ export const independent = [
   {
     id: 'b02-txt-i4', type: 'rows', kind: 'conceptual',
     prompt: 'A format check uses the pattern <code>^\\d{5}$</code>. Which of these values does it accept? Rows are numbered from 0; ␣ is a space.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['Value'],
       rows: [['02134'], ['2134'], ['02134-1234'], ['␣02134'], ['O2134 (begins with the letter O)'], ['12345'], ['123456']],
     } },
@@ -209,7 +209,7 @@ export const check = [
   {
     id: 'b02-txt-k3', type: 'rows', kind: 'applied',
     prompt: 'After applying Excel’s TRIM to each value below, which values would still differ from the text “North” in an exact, case-sensitive comparison? Rows are numbered from 0; ␣ is an ordinary space and ⍽ a non-breaking space.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['Raw value'],
       rows: [['North␣'], ['␣␣North'], ['North⍽'], ['⍽North'], ['North'], ['north␣']],
     } },

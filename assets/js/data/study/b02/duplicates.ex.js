@@ -86,7 +86,7 @@ export const guided = [
   {
     id: 'b02-dup-g1', type: 'rows', kind: 'applied',
     prompt: 'Eight rows from Lantern’s April order export (fictional). Select every row that is an exact copy of an <i>earlier</i> row, so that removing the selected rows leaves one copy of each. Rows are numbered from 0.',
-    data: { table: ORDERS_G1 },
+    data: { table: { ...ORDERS_G1, index: 0 } },
     answer: [2, 6],
     hints: [
       'Compare every column, not only <code>order_id</code>. A row that differs in any single cell is not an exact copy.',
@@ -180,7 +180,7 @@ export const independent = [
   {
     id: 'b02-dup-i1', type: 'rows', kind: 'applied',
     prompt: 'Part of Harborview Hotel’s booking feed (fictional). Before choosing a survivorship rule, a reviewer needs to see every row of every repeated booking. Select every row whose <code>booking_id</code> appears more than once, <i>including</i> the first occurrence. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['booking_id', 'received_at', 'check_in', 'nights', 'status', 'total'],
       rows: [
         ['HB-26201', '2026-10-01 10:02', '2026-11-18', '2', 'Confirmed', '$380'],
@@ -293,7 +293,7 @@ export const check = [
   {
     id: 'b02-dup-k2', type: 'rows', kind: 'applied',
     prompt: 'Select the rows to remove so that each order appears exactly once. Keep the latest version of any order that was updated; if two rows are identical, remove the later one. Rows are numbered from 0 (fictional data).',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['order_id', 'updated_at', 'email', 'product', 'order_total'],
       rows: [
         ['LC-50301', '2026-05-03 09:10', 'maya.okafor@example.com', 'House Blend 250g', '$14.00'],

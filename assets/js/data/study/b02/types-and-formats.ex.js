@@ -123,7 +123,7 @@ export const independent = [
   {
     id: 'b02-tf-i1', type: 'rows', kind: 'applied',
     prompt: 'These dates come from a file whose source and format are unknown. Select every value that is ambiguous: it could be day/month/year or month/day/year, and the two readings give different dates. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['Raw date'],
       rows: [['12/03/2026'], ['25/03/2026'], ['03/03/2026'], ['07/11/2026'], ['11/30/2026'], ['2026-04-05'], ['01/02/2026'], ['13/01/2026']],
     } },
@@ -238,7 +238,7 @@ export const check = [
   {
     id: 'b02-tf-k3', type: 'rows', kind: 'applied',
     prompt: 'The dates below come from an export whose sources are not recorded. Select the values that cannot be converted to a single date without more information. Rows are numbered from 0.',
-    data: { table: {
+    data: { table: { index: 0,
       head: ['Raw date'],
       rows: [['2026-04-05'], ['14/04/2026'], ['04/05/2026'], ['April 5, 2026'], ['06/06/2026'], ['5/4/26'], ['13/05/2026']],
     } },

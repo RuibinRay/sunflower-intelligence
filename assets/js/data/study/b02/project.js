@@ -217,7 +217,7 @@ export default {
         {
           id: 'b02-pj-f1', type: 'rows', kind: 'applied',
           prompt: 'These are the three order ids that appear twice with different values (raw row numbers in the first column; ␣ marks a space). The shop system confirms that LC-10042 was for 2 bags. Select the rows to remove. Rows are numbered from 0.',
-          data: { table: {
+          data: { table: { index: 0,
             head: ['raw row', 'order_id', 'quantity', 'region', 'email', 'order_total'],
             rows: [
               ['43', 'LC-10042', '2', 'West', 'dana.mensah@example.net', '$28.00'],
