@@ -43,6 +43,7 @@ const model = (sl, sv, nl, nv, d) => (sl * sv + nl * nv) * 52 + d * 12;
 const BASE = [30, 10, 25, 14, 1200], LO = [20, 6, 18, 8, 600], HI = [40, 14, 30, 20, 1800];
 const at = (i, v) => { const a = [...BASE]; a[i] = v; return model(...a); };
 const ORDER = [3, 4, 1, 0, 2];
+const BU = model(...BASE);                                            // 48,200
 
 // Wrexley Garden Centre (fictional): the repotting service
 const WREX = { customers: [3200, 5400, 9800], share: [0.12, 0.05, 0.015], uses: [1.5, 1.2, 1], price: 18 };
@@ -59,14 +60,14 @@ export const widgets = {
     note: `The model opens with Ana’s plan: ${c0(D.sizing.bottomUpCans)} cans, ${(D.sizing.bottomUpShareOfSam * 100).toFixed(1)}% of the SAM. Goal Seek as set finds the supermarket rate of sale that would reach 100,000 cans (about 43 a store a week); compare it with B17. In the data table, listings run down the side (E9 is the column input cell) and rates of sale across the top (F9 is the row input cell): only combinations far beyond the buyers’ figures reach the goal. Set E9 to 120 and F9 to 10 to see that even every supermarket at Ana’s rate falls short.`,
   },
   'ms-swing': {
-    type: 'chart', kind: 'bar', title: 'Lantern’s year-one estimate with one assumption at its low or high value (central estimate 48,200 cans; fictional ranges)',
-    x: { label: 'Assumption (low–high)', values: ['Natural grocers: rate of sale (8–20)', 'Own channel: cans a month (600–1,800)', 'Supermarkets: rate of sale (6–14)', 'Supermarkets listing (20–40)', 'Natural grocers listing (18–30)'] },
+    type: 'chart', kind: 'bar', title: 'Change in Lantern’s year-one estimate with one assumption at its low or high value (fictional ranges)',
+    x: { label: 'Assumption', values: ['Natural rate', 'Own channel', 'Supermarket rate', 'Supermarket listings', 'Natural listings'] },
     series: [
-      { name: 'At the low value', values: ORDER.map((i) => at(i, LO[i])) },
-      { name: 'At the high value', values: ORDER.map((i) => at(i, HI[i])) },
+      { name: 'At the low value', values: ORDER.map((i) => at(i, LO[i]) - BU) },
+      { name: 'At the high value', values: ORDER.map((i) => at(i, HI[i]) - BU) },
     ],
-    y: { label: 'Year-one cans (bottom-up)' },
-    note: 'The assumptions are in order of their swing, the gap between the two bars: natural grocers’ rate of sale moves the estimate by 15,600 cans, their number of listings by 8,736. Every bar is below 60,000, and the goal is 100,000. The ranking reflects Ana’s ranges as much as the model: an assumption she is unsure of gets a wide range and a long swing.',
+    y: { label: 'Change from 48,200 cans' },
+    note: 'Each pair of bars moves one assumption to Ana’s low or high value, the others held at their central values: natural grocers’ rate of sale 8 to 20 cans a store a week (central 14); the own channel 600 to 1,800 cans a month (1,200); supermarkets’ rate of sale 6 to 14 (10); supermarket listings 20 to 40 (30); natural-grocer listings 18 to 30 (25). They are in order of their swing: the natural rate moves the estimate from −7,800 to +7,800 cans, natural listings from −5,096 to +3,640. No bar comes near the +51,800 the 100,000-can goal would need. The ranking reflects Ana’s ranges as much as the model: an assumption she is unsure of gets a wide range and a long swing.',
   },
 };
 
@@ -264,7 +265,7 @@ export const independent = [
   },
   {
     id: 'm04-ms-i6', type: 'num', kind: 'applied',
-    prompt: 'Lantern’s SAM counts every can sold in its three planned channels: 3.36 million. A stricter analyst would count only the stores Ana expects to list Lantern: 30 of the 120 supermarkets, which between them sell 2.16 million category cans a year, and 25 of the 45 natural grocers, which between them sell 720,000. Assuming the listing stores are of average size for their channel, how many category cans a year do those 55 stores sell? Leave out the cafés and online shops.',
+    prompt: 'Lantern’s SAM counts every can sold in its three planned channels: 3.36 million. A stricter analyst would count only the stores Ana expects to list Lantern: 30 of Harbour City’s 120 supermarkets (all 120 together sell 2.16 million category cans a year) and 25 of its 45 natural grocers (all 45 together sell 720,000). Assuming the listing stores are of average size for their channel, how many category cans a year do those 55 stores sell? Leave out the cafés and online shops.',
     answer: 940000, check: () => (30 / 120) * 2_160_000 + (25 / 45) * 720_000, unit: 'cans', places: 0, tol: 500,
     wrong: [
       { value: 2_160_000 + 720_000, say: 'That is every supermarket and natural grocer in the city. Count only the share of each channel’s stores that list Lantern.' },

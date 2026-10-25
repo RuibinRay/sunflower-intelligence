@@ -208,7 +208,7 @@ export const independent = [
     items: [
       'Buying a rival’s canned coffee in several stores and testing its taste and caffeine content',
       'Visiting a rival café as an ordinary customer, buying a drink and noting the price and the wait, without recording the staff',
-      'Phoning a rival caterer as a fictitious office manager to get a detailed quote for an event that will never happen',
+      'Phoning a rival caterer as a fictitious event organiser to get a detailed quote for an event that will never happen',
       'Secretly filming a rival’s staff during a mystery visit, to review their service afterwards',
       'Asking a new employee who used to work for a rival to bring a copy of its client list',
       'Reading a rival’s job advertisements and its published annual report',
@@ -218,12 +218,13 @@ export const independent = [
     answer: [0, 0, 1, 1, 1, 0, 0],
     feedback: {
       0: 'Observing, studying or testing a product made available to the public is lawful acquisition, and no one is misled.',
-      2: 'A bespoke quote takes real staff time for no real customer, and it uses a false identity to obtain prices a rival hasn’t published.',
+      1: 'Mystery shopping of competitors is allowed with conditions: a normal customer visit, no identifying or recording the staff, results in aggregate.',
+      2: 'A detailed quote makes a rival’s staff do real work for a sale that will never happen, more than a normal enquiry, and it is sought under a false identity, which SCIP’s code forbids.',
       3: 'MRS’s guidelines say a competitor’s staff must not be recorded in any way.',
       4: 'Inducing someone to break a duty of confidence to obtain a trade secret is improper means in law.',
       6: 'SCIP’s code requires you to disclose your identity and organisation before an interview; done openly, it is ordinary trade-show conversation.',
     },
-    solution: 'Acceptable: testing a product bought on the open market, an ordinary customer visit without recording staff, reading public job advertisements and reports, and an interview in which you say who you are. Not acceptable: a fictitious enquiry that consumes a rival’s time to extract unpublished prices, covert recording of a rival’s staff, and inducing a former employee to bring confidential documents.',
+    solution: 'Acceptable: testing a product bought on the open market, an ordinary customer visit without recording staff, reading public job advertisements and reports, and an interview in which you say who you are. Not acceptable: a fictitious enquiry that makes a rival prepare a detailed quote for a sale that will never happen, covert recording of a rival’s staff, and inducing a former employee to bring confidential documents.',
   },
   {
     id: 'm04-cr-i5', type: 'multi', kind: 'applied',
@@ -280,17 +281,17 @@ export const check = [
   },
   {
     id: 'm04-cr-k2', type: 'formula', kind: 'numerical',
-    prompt: 'The audit again, with channels in B2:B25. In H8, calculate the average shelf price of the brand in G8 in the channel named in H7, so that the formula can be filled across and down to J10. Where a brand isn’t stocked in a channel, the cell should be blank: wrap the formula in IFERROR with "" as the value if there is an error.',
+    prompt: 'The audit again, with channels in B2:B25. In H8, calculate the average shelf price of the brand in G8 in the channel named in H7, so that the formula can be filled across and down to J10. Where a brand isn’t stocked in a channel, the cell should be blank (<x>""</x>): test for that case with COUNTIFS, or wrap the formula in <x>IFERROR(…,"")</x>.',
     sheet: { cells: { ...audit(), G7: 'Average by channel', H7: CHANNELS[0], I7: CHANNELS[1], J7: CHANNELS[2], G8: BRANDS[0], G9: BRANDS[1], G10: BRANDS[2] } },
     cell: 'H8', fill: 'H8:J10', answer: '=IFERROR(AVERAGEIFS($D$2:$D$25,$C$2:$C$25,$G8,$B$2:$B$25,H$7),"")',
-    alt: ['=IFERROR(AVERAGEIFS($D$2:$D$25,$B$2:$B$25,H$7,$C$2:$C$25,$G8),"")', '=IFERROR(AVERAGEIFS($D:$D,$C:$C,$G8,$B:$B,H$7),"")'],
+    alt: ['=IF(COUNTIFS($C$2:$C$25,$G8,$B$2:$B$25,H$7)=0,"",AVERAGEIFS($D$2:$D$25,$C$2:$C$25,$G8,$B$2:$B$25,H$7))', '=IFERROR(AVERAGEIFS($D$2:$D$25,$B$2:$B$25,H$7,$C$2:$C$25,$G8),"")', '=IFERROR(AVERAGEIFS($D:$D,$C:$C,$G8,$B:$B,H$7),"")'],
     view: 'A1:J25', widths: AUD_WIDTHS, formats: AUD_FORMATS,
     wrong: [
-      { formula: '=AVERAGEIFS($D$2:$D$25,$C$2:$C$25,$G8,$B$2:$B$25,H$7)', say: 'Right where a brand is stocked, but AVERAGEIFS gives #DIV/0! where it isn’t (Daily Grind in natural grocers, Arcadia in convenience stores). Wrap it in IFERROR(…,"").' },
+      { formula: '=AVERAGEIFS($D$2:$D$25,$C$2:$C$25,$G8,$B$2:$B$25,H$7)', say: 'Right where a brand is stocked, but AVERAGEIFS gives #DIV/0! where it isn’t (Daily Grind in natural grocers, Arcadia in convenience stores). Test for that case with COUNTIFS, or wrap the formula in <x>IFERROR(…,"")</x>.' },
       { formula: '=IFERROR(AVERAGEIFS(D2:D25,C2:C25,G8,B2:B25,H7),"")', say: 'Filled across and down, the relative ranges slide off the data. Anchor the ranges fully, the brand’s column ($G8) and the channel’s row (H$7).' },
       { formula: '=IFERROR(AVERAGEIFS($D$2:$D$25,$C$2:$C$25,$G8,$B$2:$B$25,$H$7),"")', say: '$H$7 keeps every column on supermarkets. Anchor only the row, H$7, so the channel changes across the grid.' },
     ],
-    solution: '<x>=IFERROR(AVERAGEIFS($D$2:$D$25,$C$2:$C$25,$G8,$B$2:$B$25,H$7),"")</x>. Summit Brew: $3.72, $4.06, $3.89; Daily Grind RTD: $2.19, $2.52, blank; Arcadia Coffee: $2.89, blank, $3.02. The mixed references ($G8 and H$7) let one formula fill the whole grid.',
+    solution: '<x>=IFERROR(AVERAGEIFS($D$2:$D$25,$C$2:$C$25,$G8,$B$2:$B$25,H$7),"")</x>. Summit Brew: $3.72, $4.06, $3.89; Daily Grind RTD: $2.19, $2.52, blank; Arcadia Coffee: $2.89, blank, $3.02. The mixed references ($G8 and H$7) let one formula fill the whole grid. Testing for the case you expect works too, and says why a cell is blank: <x>=IF(COUNTIFS($C$2:$C$25,$G8,$B$2:$B$25,H$7)=0,"",AVERAGEIFS($D$2:$D$25,$C$2:$C$25,$G8,$B$2:$B$25,H$7))</x>.',
   },
   {
     id: 'm04-cr-k3', type: 'num', kind: 'numerical',
@@ -314,11 +315,11 @@ export const check = [
     ],
     answer: 0,
     feedback: {
-      1: 'A fictitious enquiry consumes Brewline’s time and uses a false identity to obtain prices it hasn’t published.',
+      1: 'A fictitious enquiry for an event that will never happen makes Brewline’s staff prepare a full quote, more than the normal enquiry MRS and ESOMAR allow, under a false pretext.',
       2: 'Paying an employee for a confidential document is bribery to obtain what may be a trade secret: improper means in law.',
-      3: 'Posing as a client to question a rival’s staff breaches SCIP’s rule to disclose your identity before an interview, and misrepresentation is improper means for a trade secret.',
+      3: 'MRS’s guidelines allow a short competitor enquiry with safeguards, but questioning an account manager under a false identity breaches SCIP’s rule to disclose who you are before an interview, and if the discount terms are a trade secret, misrepresentation is improper means.',
     },
-    solution: 'Win–loss calls with the buyers are honest: they choose what to tell, and what they were quoted is theirs to share unless they agreed to keep it confidential. The other three rely on a false identity or a payment to obtain information Brewline keeps private.',
+    solution: 'Win–loss calls with the buyers are honest: they choose what to tell, and what they were quoted is theirs to share unless they agreed to keep it confidential. The other three rely on a false pretext, a false identity or a payment to obtain information Brewline keeps private.',
   },
   {
     id: 'm04-cr-k5', type: 'multi', kind: 'applied',

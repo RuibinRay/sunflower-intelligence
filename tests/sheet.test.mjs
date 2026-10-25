@@ -327,5 +327,17 @@ eq('criterion ~* no wildcard', X.criterion('~*')('a'), false);
   ok('Solver value of', v.ok && v.values.B1 === 5);
 }
 
+// matchFormulas (one pass over the test copies for several slips) agrees with gradeFormula slip by slip
+{
+  const spec = { cells: { A1: 'x', A2: 3, A3: 5, A4: 8, A5: 13, B1: 'cut', B2: 4 } };
+  const cands = ['=COUNTIF(A2:A5,">"&B2)', '=COUNTIF(A2:A5,">="&B2)', '=SUM(A2:A5)', '=COUNT(A2:A5)-1', '=3'];
+  for (const student of ['=COUNTIF(A2:A5,">"&B2)', '=SUMPRODUCT(--(A2:A5>B2))', '=3', '=SUM(A2:A5)', '=COUNTIF(A2:A5,">4")']) {
+    const fast = X.matchFormulas(spec, { cell: 'C2', formula: student, candidates: cands });
+    const slow = cands.map((c) => X.gradeFormula(spec, { cell: 'C2', formula: student, answer: c }).ok);
+    ok(`matchFormulas = gradeFormula for ${student}`, fast.join() === slow.join());
+  }
+  ok('matchFormulas: an unreadable formula matches nothing', X.matchFormulas(spec, { cell: 'C2', formula: '=SUM(', candidates: cands }).every((v) => !v));
+}
+
 console.log(`${checks - fails}/${checks} sheet checks passed`);
 if (fails) process.exit(1);

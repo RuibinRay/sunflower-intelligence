@@ -73,6 +73,7 @@ const BASE = [30, 10, 25, 14, 1200], LO = [20, 6, 18, 8, 600], HI = [40, 14, 30,
 const swing = (i) => { const a = [...BASE], b = [...BASE]; a[i] = LO[i]; b[i] = HI[i]; return [model(...a), model(...b)]; };
 const SW = [0, 1, 2, 3, 4].map(swing);
 const allLow = model(...LO), allHigh = model(...HI);
+const ratesLow = model(BASE[0], LO[1], BASE[2], LO[3], LO[4]), ratesHigh = model(BASE[0], HI[1], BASE[2], HI[3], HI[4]);   // listings as planned
 
 // examples: Quarrymoor Creamery and Tillworth Bakery (fictional)
 const QM = { tubs: 9_000_000, plant: 0.06, channels: 0.8, price: 6.5, trade: 0.35, share: 0.05 };
@@ -165,6 +166,7 @@ export default {
     { p: 'The broader definitions aren’t wrong; they answer different questions. A launch plan needs the category the product will be shelved in, because that is where shoppers compare it and where store buyers judge it.' },
 
     { h: 'TAM, SAM and SOM in practice' },
+    { p: 'A TAM can be measured two ways. Where the category already sells, count what it sells now, as Lantern’s 4.8 million cans do. Where buyers have no current product to count, or you want the ceiling, count every potential customer at the offer’s price (customers × quantity × price), TechTarget’s “100% market share”; it is usually far larger, so say which you used.' },
     { p: 'The TAM is narrowed to the SAM by whatever limits what the business could serve: the channels it will sell through, the regions it can deliver to, the customer types its offer suits. Lantern’s SAM is limited by channel. A stricter analyst would count only the stores expected to list Lantern, which gives a much smaller SAM (an exercise asks you to work it out). Neither choice is wrong, but the shares calculated from them differ, so say which you used.' },
     { p: 'The SOM has to come from evidence about what the business can win: listings, rates of sale, customers who will buy. It is an estimate. A goal is different: a target the business sets itself. When a goal is larger than the SOM, the plan has to change, or the goal does.' },
     { table: {
@@ -184,7 +186,7 @@ export default {
     { callout: 'warn', title: '“If we get just 1% of the market…”', html: `The commonest top-down error is to pick a small share of a large market and call it modest. One per cent of Harbour City’s ${(TAM / 1e6).toFixed(1)} million cans is ${c0(TAM * 0.01)}, almost exactly Ana’s bottom-up estimate, yet for a new brand known to about ${pc(LANTERN.awareness, 0)} of category buyers (M02) that share is not modest: every can has to be won from a store buyer and then from a shopper. A share in a top-down estimate needs evidence of its own, such as what comparable new brands achieved in their first year.` },
 
     { h: 'Bottom-up: from outlets or from customers' },
-    { p: 'For a product sold in shops, a bottom-up estimate multiplies the number of outlets that will stock it by its <g>rate of sale</g>, the units an outlet sells in a period, usually per store per week. Outlet counts come from store lists, distributors and official business statistics: in the United States, the Census Bureau’s County Business Patterns gives the number of <g>establishments</g> by six-digit industry code for every county, each year. Rates of sale come from store buyers, from comparable products and, best of all, from a trial in a few stores.' },
+    { p: 'For a product sold in shops, a bottom-up estimate multiplies the number of outlets that will stock it by its <g>rate of sale</g>, the units an outlet sells in a period, usually per store per week. Outlet counts come from store lists, distributors and official business statistics: in the United States, the Census Bureau’s County Business Patterns gives the number of <g>establishments</g> with paid employees by six-digit industry code for every county, each year. Rates of sale come from store buyers, from comparable products and, best of all, from a trial in a few stores.' },
     { p: 'For a product sold direct, or to customers the business can count, build from customers instead: the number of people in the target group, the share who will buy, how often they buy and how much each time. The same structure fits a service (members × uptake × visits × price) and a business product (firms × adoption × seats × price per seat).' },
     { table: {
       caption: 'Ana’s bottom-up estimate for Lantern Cold Brew’s first year (fictional case)',
@@ -197,7 +199,7 @@ export default {
       ],
       foot: [['Total', '', '', '', c0(BU)]],
     } },
-    { p: 'The listings and rates of sale are Ana’s planning assumptions after talking to two store buyers; the direct figure is her estimate of what Lantern’s own cafés and online shop will sell, based on what subscribers said in the February survey. Each is a number that someone can challenge, which is the point of building from the bottom.' },
+    { p: 'The listings and rates of sale are Ana’s planning assumptions after talking to two store buyers; the direct figure is her estimate of what Lantern’s own cafés and online shop will sell, informed by what subscribers said in the February survey, not a calculation from it. Each is a number that someone can challenge, which is the point of building from the bottom.' },
 
     { h: 'Volume into value' },
     { p: `To turn cans into dollars, multiply by an average price, and choose it with care. The right average is weighted by volume, the price of the average can actually sold, which needs each brand’s sales. Ana’s shelf-price audit (the next lesson) gives ${D.audit.observations} shelf prices from ten stores, averaging $${AUD.toFixed(2)}, so the category is worth about ${(TAM / 1e6).toFixed(1)} million × $${AUD.toFixed(2)} ≈ $${(tamValue / 1e6).toFixed(1)} million a year at shelf prices. The average of the three brands’ own averages is $${meanOfMeans.toFixed(2)}, which gives $${(TAM * meanOfMeans / 1e6).toFixed(1)} million. If the cheapest brand, Daily Grind, sells the most cans (it is the best known, at 75% awareness in M02), the true figure is lower still.` },
@@ -206,14 +208,15 @@ export default {
     { h: 'Using what customers say they will do' },
     { p: `Surveys give another bottom-up route: ask people how likely they are to buy, then count buyers. In February Ana asked her mailing list, on a five-point <g>purchase-intent scale</g>, how likely they would be to buy Lantern Cold Brew at about $3.49 in the next three months. Weighted to the list’s four groups by <g>post-stratification</g> (the survey-error lesson explains the weights), ${pc(pDef)} said they definitely would and ${pc(pProb)} probably would: about ${c0(nDef)} and ${c0(nProb)} of the ${c0(N)} people on the list.` },
     { p: 'Stated intent isn’t behaviour: the survey-error lesson showed that it tends to overstate buying, most of all for new products. Armstrong, Morwitz and Kumar (2000) found that forecasts built on purchase intentions for existing products were more accurate than extrapolating past sales, but they note that intentions-based methods often give biased estimates, overstating or understating actual buying, and that sales data should be used to correct the bias where they exist. A new product has no sales of its own, so the correction is an assumption: a conversion rate for each answer, borrowed where possible from a comparable launch, and varied to see what it does.' },
-    { p: `The list is exactly the people Lantern’s own cafés and online shop can reach, so it suits the <g>direct channel</g>. Suppose 40% of those who said “definitely” and 10% of those who said “probably” become regular buyers, each taking a four-pack a month (fictional assumptions). That gives ${c0(nDef)} × 0.40 + ${c0(nProb)} × 0.10 ≈ ${c0(mid)} regular buyers and about ${c0(mid * PACK)} cans a month, against Ana’s ${c0(SZ.directPerMonth)}.` },
-    { p: `Now vary the assumption. At 25% and 5% the estimate is about ${c0(low * PACK)} cans a month; at 60% and 20%, about ${c0(high * PACK)}. The conversion rates move the answer by a factor of nearly three. Notice also what the question measured: intent to try within three months. How many of those who try come back every month is a separate assumption that no intent question answers.` },
+    { p: `The list is roughly the people Lantern’s own cafés and online shop already reach (café customers who never joined it are missing), so it suits the <g>direct channel</g>, provided those who buy do so there rather than in a supermarket, or they would be counted twice. Suppose 40% of those who said “definitely” and 10% of those who said “probably” become regular buyers, each taking a four-pack a month (fictional assumptions). That gives ${c0(nDef)} × 0.40 + ${c0(nProb)} × 0.10 ≈ ${c0(mid)} regular buyers and about ${c0(mid * PACK)} cans a month, against Ana’s ${c0(SZ.directPerMonth)}.` },
+    { p: `Now vary the assumption. At 25% and 5% the estimate is about ${c0(low * PACK)} cans a month; at 60% and 20%, about ${c0(high * PACK)}. The conversion rates move the answer by a factor of nearly three.` },
+    { p: `The intent route puts the own channel at about ${c0(mid * PACK)} cans a month against Ana’s ${c0(SZ.directPerMonth)}, so her figure is the more cautious; even at ${c0(high * PACK)} a month the bottom-up total would be about ${c0(Math.round((SUP + NAT + high * PACK * 12) / 500) * 500)} cans, still short of the goal. Notice also what the question measured: intent to try within three months. How many of those who try come back every month is a separate assumption that no intent question answers.` },
     { callout: 'note', title: 'What Ana couldn’t see', html: `Because the case holds every person’s answer, the survey can be compared with a truth Ana had no way of observing. On the whole list ${pc(tDef)} would say “definitely” and ${pc(tProb)} “probably”, against her weighted ${pc(pDef)} and ${pc(pProb)}. With the same 40% and 10%, the truth gives about ${c0(truthMid * PACK)} cans a month instead of ${c0(mid * PACK)}: a difference of about ${c0(Math.round((mid - truthMid) * PACK / 10) * 10)} cans, small beside the range of ${c0(low * PACK)} to ${c0(high * PACK)} that the conversion assumption creates.` },
 
     { h: 'Triangulating: what a gap means' },
-    { p: '<g>Triangulation</g> in sizing means estimating the same quantity by independent routes and comparing the results (the secondary-research lesson does the same with sources). Agreement is reassuring only if the routes really are independent. Disagreement is more useful, because it points at the assumption that differs. Lantern has three figures for year one.' },
+    { p: '<g>Triangulation</g> in sizing means estimating the same quantity by independent routes and comparing the results (the secondary-research lesson does the same with sources). Agreement is reassuring only if the routes really are independent. Disagreement is more useful, because it points at the assumption that differs. Lantern has two estimates for year one, and a target.' },
     { table: {
-      caption: 'Three figures for Lantern Cold Brew’s first year',
+      caption: 'Two estimates and a target for Lantern Cold Brew’s first year',
       head: ['Figure', 'Cans', 'What it assumes'],
       align: ['l', 'r', 'l'],
       rows: [
@@ -240,7 +243,8 @@ export default {
         [`Natural grocers listing Lantern (${BASE[2]})`, `${LO[2]}–${HI[2]}`, c0(SW[2][0]), c0(SW[2][1]), c0(SW[2][1] - SW[2][0])],
       ],
     } },
-    { p: `The rate of sale in natural grocers matters most, because Ana is least sure of it and natural grocers supply the largest part of her estimate. The ranking depends on the ranges, so they must be honest, not chosen to make a point. With every input at its low value the model gives ${c0(allLow)} cans, and with every one at its high value ${c0(allHigh)}. Those extremes are wider than any likely outcome, because all five assumptions are unlikely to miss in the same direction, yet even the top of the range is below ${c0(GOAL)}.` },
+    { p: `The rate of sale in natural grocers matters most: natural grocers supply the largest part of Ana’s estimate (${c0(NAT)} cans), and she is unsure of their rate (${LO[3]} to ${HI[3]} cans). Her range for the own channel is wider still in relative terms, but that channel supplies less. The ranking depends on the ranges, so they must be honest, not chosen to make a point.` },
+    { p: `With every input at its low value the model gives ${c0(allLow)} cans, and with every one at its high value ${c0(allHigh)}. Those extremes are unlikely, but not because errors cancel: the three rates of sale all depend on how shoppers take to the can, so they may well miss together. With the listings as planned and every rate at its low value the model gives ${c0(ratesLow)} cans; at its high value, ${c0(ratesHigh)}. Even that is below ${c0(GOAL)}.` },
     { p: `Report the result as a range around a central figure and name what drives it: “about ${c0(Math.round(BU / 1000) * 1000)} cans, ${c0(Math.floor(SW[3][0] / 1000) * 1000)} to ${c0(Math.ceil(SW[3][1] / 1000) * 1000)} if any one assumption is off, and most sensitive to how fast it sells in natural grocers.” Then sanity-check the figure against what you already know.` },
     { list: [
       `<b>The category.</b> An average Harbour City supermarket sells about ${Math.round(supStoreWeek)} ready-to-drink coffee cans a week (${(chCans('supermarket') / 1e6).toFixed(2)} million ÷ ${SZ.stores.supermarket} ÷ ${WEEKS}), so Ana’s ${P.supermarket.cansPerWeek} cans would be ${pc(P.supermarket.cansPerWeek / supStoreWeek)} of a listing store’s category, plausible for a new brand. In natural grocers ${P.natural.cansPerWeek} of about ${Math.round(natStoreWeek)} is ${pc(P.natural.cansPerWeek / natStoreWeek + 1e-9, 2)}.`,
@@ -302,7 +306,7 @@ export default {
         String.raw`Top-down (category × shares): <m>21{,}000 \times 0.07 = 1{,}470</m> households buy gluten-free bread; <m>1{,}470 \times 1.2 \times 52 = 91{,}728</m> loaves a year in the town, the TAM. At Tillworth’s usual 15%: <m>91{,}728 \times 0.15 \approx 13{,}759</m> loaves.`,
         String.raw`Bottom-up by shop (outlets × rate of sale × weeks): the trial shops averaged <m>(40 + 34) \div 2 = 37</m> loaves a week. An average shop would sell about <m>37 \div 1.4 \approx 26.4</m>, so six shops for 52 weeks give <m>26.43 \times 6 \times 52 \approx 8{,}246</m> loaves.`,
         String.raw`Bottom-up by customer (customers × share who buy × frequency × units): <m>2{,}600 \times 0.09 = 234</m> members buying, 26 times a year, one loaf each: <m>6{,}084</m> loaves. Members account for 55% of sales, so if other customers behave alike the total is <m>6{,}084 \div 0.55 \approx 11{,}062</m> loaves.`,
-        'Read the gap. The two bottom-up routes give about 8,200 and 11,100; the top-down gives 13,800. The top-down assumes Tillworth wins gluten-free buyers at its usual share of all bread, but many such households may buy from supermarkets’ free-from shelves, which nothing here measured. The shop route may still be high, because a two-week trial catches curious first-time buyers; the customer route assumes that customers outside the scheme buy like its members.',
+        'Read the gap. The two bottom-up routes give about 8,200 and 11,100; the top-down gives 13,800. The top-down assumes Tillworth wins gluten-free buyers at its usual share of all bread, but many such households may buy from supermarkets’ free-from shelves, which nothing here measured. The shop route may still be high, because a two-week trial catches curious first-time buyers; the customer route assumes that customers outside the scheme buy like its members. The customer route rests on the same two-week trial, so it isn’t independent of the shop route, and it assumes every member who tried the loaf buys it every fortnight all year, a repeat rate the trial couldn’t measure.',
         'Decide. Plan on the bottom-up range, about 8,000 to 11,000 loaves a year (roughly 160 to 210 a week across the six shops), and treat 13,800 as an upper bound until the share has been tested.',
       ],
       answer: 'Top-down about 13,759; by shop about 8,246; by customer about 11,062 loaves a year. Plan for about 8,000 to 11,000 (160 to 210 a week), not 13,800.',
@@ -328,7 +332,7 @@ export default {
 
   mistakes: [
     { title: '“Our TAM is the opportunity.”', html: 'The TAM counts every sale in the category, by every competitor, through every channel. A business can win only part of its SAM, and only with listings, customers and time. Lead with the SOM and show how it was built; quote the TAM for context.' },
-    { title: '“One per cent of a big market is a safe assumption.”', html: 'A share chosen to sound modest is still an assumption, and for a new brand 1% can be hard. One per cent of Harbour City’s category is 48,000 cans, which needs about 55 listings at the rates of sale the buyers expect. Build the share from listings and rates of sale, or from customers, rather than picking it.' },
+    { title: '“One per cent of a big market is a safe assumption.”', html: 'A share chosen to sound modest is still an assumption, and for a new brand 1% can be hard. One per cent of Harbour City’s category is 48,000 cans, which is Ana’s whole plan: 55 listings at the buyers’ rates of sale plus 1,200 cans a month direct. Build the share from listings and rates of sale, or from customers, rather than picking it.' },
     { title: '“The goal is our forecast.”', html: 'A goal is a target; an estimate is what the evidence supports. When the two differ, as 100,000 and 48,200 do, work out what would have to be true for the goal, check it, and change either the plan or the goal.' },
     { title: '“Customers who say they will buy are buyers.”', html: 'Stated intent isn’t behaviour, and intentions-based forecasts can overstate or understate buying. Apply an explicit conversion rate to each answer, vary it, and remember that a question about the next three months measures trial, not repeat purchase.' },
     { title: '“A single number looks more professional.”', html: 'A point estimate hides how uncertain it is. Give a central figure, a range and the assumption that moves it most: that tells the reader what to watch and what to research next.' },
@@ -356,7 +360,7 @@ export default {
 
   glossary: [
     { term: 'Market size', def: 'The quantity of a product bought by a defined group of customers in a defined place over a defined period, measured in units (volume) or money (value).' },
-    { term: 'Total addressable market', def: 'TAM: the whole demand for a product category in a defined place and period, whoever supplies it. Definitions vary between sources; some describe it as the revenue available at a 100% market share.' },
+    { term: 'Total addressable market', def: 'TAM: the whole demand for a product category in a defined place and period, whoever supplies it, measured either as what the category sells now or, as a ceiling, as every potential customer buying at the offer’s price. Definitions vary between sources; some describe it as the revenue available at a 100% market share.' },
     { term: 'Serviceable available market', def: 'SAM: the part of the total addressable market that a business’s offer and routes to market could serve, such as the sales in the channels it plans to use. Definitions vary between sources.' },
     { term: 'Serviceable obtainable market', def: 'SOM: the part of the serviceable available market that a business can realistically win in a stated period, given its resources and competitors. An estimate, not a goal.' },
     { term: 'Top-down market sizing', def: 'Estimating a market, or a business’s sales, by starting from the whole category and narrowing it with shares: the channels or segments served, then the share the business expects to win.' },
@@ -367,8 +371,9 @@ export default {
   references: [
     { text: 'TechTarget (2023). “What is TAM SAM SOM?” Written in 2019 and revised by TechTarget editors in 2023; definitions of TAM, SAM and SOM and of top-down and bottom-up sizing.', url: 'https://www.techtarget.com/enterprise-software/definition/TAM-SAM-SOM', checked: '2026-10-24' },
     { text: 'The Carta Team (2023, 14 April). “Market size: TAM, SAM, &amp; SOM”. Carta.', url: 'https://carta.com/blog/market-size/', checked: '2026-10-24' },
-    { text: 'Armstrong, J. S., Morwitz, V. G. &amp; Kumar, V. (2000). Sales forecasts for existing consumer products and services: do purchase intentions contribute to accuracy? <i>International Journal of Forecasting</i>, 16(3), 383–397. Read from the authors’ working paper and the University of Pennsylvania repository record.', url: 'https://repository.upenn.edu/entities/publication/9859e4e5-e4e2-4f3f-8895-33c857b6506c/full', checked: '2026-10-24' },
+    { text: 'Armstrong, J. S., Morwitz, V. G. &amp; Kumar, V. (2000). Sales forecasts for existing consumer products and services: do purchase intentions contribute to accuracy? <i>International Journal of Forecasting</i>, 16(3), 383–397. The sentences on bias are in the authors’ working paper (MPRA paper 81689, April 2000).', url: 'https://mpra.ub.uni-muenchen.de/81689/1/MPRA_paper_81689.pdf', checked: '2026-10-24' },
     { text: 'U.S. Census Bureau. “County Business Patterns” (programme overview: establishments, employment and payroll by six-digit NAICS industry, for the nation, states, counties, metropolitan areas and ZIP codes, annually since 1964).', url: 'https://www.census.gov/econ/overview/mu0800.html', checked: '2026-10-24' },
+    { text: 'U.S. Census Bureau. “About County Business Patterns (CBP)” (annual statistics for establishments with paid employees).', url: 'https://www.census.gov/programs-surveys/cbp/about.html', checked: '2026-10-24' },
     { text: 'Gomez Albrecht, M., Green, M. &amp; Hoffman, L. (2023). <i>Principles of Marketing</i>, section 6.3, “Steps in a Successful Marketing Research Plan” (internal and external secondary data, including an industry report of all related product sales). OpenStax.', url: 'https://openstax.org/books/principles-marketing/pages/6-3-steps-in-a-successful-marketing-research-plan', checked: '2026-10-24' },
   ],
 
@@ -457,6 +462,15 @@ export default {
     { what: 'Base of the model', value: model(...BASE), shown: 48200 },
     { what: 'All low', value: allLow, shown: 20928 },
     { what: 'All high', value: allHigh, shown: 81920 },
+    { what: 'Rates low, listings as planned', value: ratesLow, shown: 26960 },
+    { what: 'Rates low by hand', value: 30 * 6 * 52 + 25 * 8 * 52 + 600 * 12, shown: 26960 },
+    { what: 'Rates high, listings as planned', value: ratesHigh, shown: 69440 },
+    { what: 'Rates high by hand', value: 30 * 14 * 52 + 25 * 20 * 52 + 1800 * 12, shown: 69440 },
+    { what: 'Natural range low', value: LO[3], shown: 8 },
+    { what: 'Natural range high', value: HI[3], shown: 20 },
+    { what: 'Own channel relative range wider (±50% vs ±43%)', value: Number((HI[4] - LO[4]) / BASE[4] > (HI[3] - LO[3]) / BASE[3]), shown: 1 },
+    { what: 'Bottom-up with intent-high direct (about 71,500)', value: SUP + NAT + high * PACK * 12, shown: 71500, tol: 50 },
+    { what: 'Rounded to 500', value: Math.round((SUP + NAT + high * PACK * 12) / 500) * 500, shown: 71500 },
     { what: 'Range quoted: 40,000', value: Math.floor(SW[3][0] / 1000) * 1000, shown: 40000 },
     { what: 'Range quoted: 56,000', value: Math.ceil(SW[3][1] / 1000) * 1000, shown: 56000 },
     { what: 'Central figure about 48,000', value: Math.round(BU / 1000) * 1000, shown: 48000 },

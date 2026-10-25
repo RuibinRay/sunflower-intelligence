@@ -75,14 +75,21 @@ export function kish(weights) {
 
 /** Net Promoter Score from 0–10 answers (or from counts { promoters, passives, detractors }): promoters score 9–10,
  *  passives 7–8, detractors 0–6, and NPS = 100 × (share of promoters − share of detractors). Its standard error, from
- *  the multinomial variance of the difference of two shares, is 100 × √((p_P + p_D − (p_P − p_D)²) ÷ n). */
+ *  the multinomial variance of the difference of two shares, is 100 × √((p_P + p_D − (p_P − p_D)²) ÷ n). `adjusted` is
+ *  Rocks's (2016) adjusted Wald interval AW(3,T). */
 export function nps(input, conf = 0.95) {
   const c = Array.isArray(input)
     ? { promoters: input.filter((v) => v >= 9).length, passives: input.filter((v) => v >= 7 && v <= 8).length, detractors: input.filter((v) => v <= 6).length }
     : input;
   const n = c.promoters + c.passives + c.detractors, pP = c.promoters / n, pD = c.detractors / n;
   const score = 100 * (pP - pD), se = 100 * Math.sqrt((pP + pD - (pP - pD) ** 2) / n), m = z(conf) * se;
-  return { ...c, n, pP, pD, score, se, margin: m, low: score - m, high: score + m };
+  // Rocks (2016), The American Statistician 70(4): the Wald interval above is too narrow on small bases; the adjusted
+  // Wald interval AW(3,T) adds 3/4 to the promoters and the detractors and 3/2 to the passives, then applies the same
+  // formula (the interval is centred on the adjusted score; the reported NPS stays the unadjusted one)
+  const nA = n + 3, aP = (c.promoters + 0.75) / nA, aD = (c.detractors + 0.75) / nA;
+  const aScore = 100 * (aP - aD), aSe = 100 * Math.sqrt((aP + aD - (aP - aD) ** 2) / nA), aM = z(conf) * aSe;
+  return { ...c, n, pP, pD, score, se, margin: m, low: score - m, high: score + m,
+    adjusted: { n: nA, score: aScore, se: aSe, margin: aM, low: aScore - aM, high: aScore + aM } };
 }
 
 /** AAPOR response rates (Standard Definitions): I complete interviews, P partials, R refusals and break-offs, NC
