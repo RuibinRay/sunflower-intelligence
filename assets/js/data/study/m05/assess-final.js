@@ -347,7 +347,7 @@ export const items = [
         sheet: { cells: boxCells }, cell: 'E2', view: 'A1:E26', maxHeight: '22rem',
         formats: { E2: '0.0%' }, widths: { A: 9, B: 15, C: 3, D: 44, E: 10 },
         answer: '=SUM(LARGE(B2:B26,{1,2,3,4,5}))/SUM(B2:B26)',
-        alt: ['=SUMPRODUCT(LARGE(B2:B26,{1,2,3,4,5}))/SUM(B2:B26)', '=SUMIF(B2:B26,">="&LARGE(B2:B26,5))/SUM(B2:B26)', '=SUM(LARGE(B2:B26,SEQUENCE(5)))/SUM(B2:B26)'],
+        alt: ['=SUMPRODUCT(LARGE(B2:B26,{1,2,3,4,5}))/SUM(B2:B26)', '=SUM(LARGE(B2:B26,SEQUENCE(5)))/SUM(B2:B26)'],
         wrong: [
           { formula: '=LARGE(B2:B26,5)/SUM(B2:B26)', say: 'LARGE(B2:B26,5) is the fifth-largest value alone. The heaviest 20% of 25 members are the top five: add all five, for example with LARGE(B2:B26,{1,2,3,4,5}) inside SUM.' },
           { formula: '=SUM(B2:B6)/SUM(B2:B26)', say: 'B2:B6 are the first five members in the list, not the five heaviest. The list isn’t sorted: pick the largest five with LARGE.' },

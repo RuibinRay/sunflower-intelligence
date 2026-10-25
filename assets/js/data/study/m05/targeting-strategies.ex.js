@@ -113,7 +113,7 @@ export const guided = [
   {
     id: 'm05-ts-g2', type: 'steps', kind: 'numerical',
     prompt: `A regional cinema chain (fictional) plans an off-peak membership for students and retired people. Each off-peak member contributes $${CN.mNew} a month; it expects ${int(CN.Q)} of them, and an extra $${int(CN.F)} a month of fixed costs. ${CN.c * 100}% of off-peak members are expected to be standard members switching down, each of whom contributed $${CN.mOld} a month.`,
-    solution: `ΔC = 5,000 × 7 − 0.25 × 5,000 × 18 − 3,000 = 35,000 − 22,500 − 3,000 = $${int(cnInc)} a month. Break-even rate: (35,000 − 3,000) ÷ (5,000 × 18) = 32,000 ÷ 90,000 ≈ ${p1(cnBE)}. The expected 25% is about ten points below it: the membership adds money, but a modest error in the switching estimate would wipe it out.`,
+    solution: `ΔC = 5,000 × 7 − 0.25 × 5,000 × 18 − 3,000 = 35,000 − 22,500 − 3,000 = $${int(cnInc)} a month. Break-even rate: (35,000 − 3,000) ÷ (5,000 × 18) = 32,000 ÷ 90,000 ≈ ${p1(cnBE)}. The expected 25% is about ${Math.round(cnBE * 100 - 25)} points below it (${(cnBE * 100 - 25).toFixed(1)}): the membership adds money, but a modest error in the switching estimate would wipe it out.`,
     steps: [
       {
         id: 'm05-ts-g2-s1', type: 'num',
@@ -141,8 +141,8 @@ export const guided = [
         id: 'm05-ts-g2-s3', type: 'mc',
         prompt: 'What should the chain take from these results?',
         options: [
-          'The membership is safe: any positive incremental contribution means it should be launched',
-          'It pays at the expected rate, but switching only ten points above it would wipe the gain out',
+          'Launch it with confidence: a positive incremental contribution at the expected rate is generally enough',
+          `It pays at the expected rate, but a rise of about ${Math.round(cnBE * 100 - 25)} points in switching would wipe the gain out`,
           'The membership loses money, because one standard member in four switches down to it',
           'Cannibalisation can be ignored, because the off-peak members are a separate segment',
         ],
@@ -375,17 +375,17 @@ export const check = [
     prompt: 'Lantern’s agency proposes launching Cold Brew with two campaigns under the Lantern name: a craft campaign for Craft and local and Explorers, and an “energy, anywhere” campaign in convenience stores for On the go. What is the strongest objection?',
     options: [
       'On the go has too few likely buyers to be worth any campaign, since it is fourth on Ana’s scorecard',
-      'Two campaigns are always too expensive for a company with Lantern’s turnover and number of cafés',
+      'Two campaigns would probably cost more than a firm of Lantern’s size can usually afford at a launch',
       'Two messages under one brand pull against each other, and On the go buys where Lantern earns less',
-      'Convenience stores never stock craft products, so On the go could not buy the cans in any case',
+      'Convenience stores rarely stock craft products, so few On the go buyers would come across the cans',
     ],
     answer: 2,
     feedback: {
       0: 'On the go holds the most top-two-box answers of any segment (56 of 187). The problem is fit, cost and position, not numbers.',
-      1: '“Always” is too strong; the question is whether this second campaign earns its cost, and what it does to the brand.',
-      3: 'Nothing in the case says so, and a test in a few convenience stores would show whether On the go buys a craft can.',
+      1: 'Cost matters, but nothing in the case says Lantern couldn’t fund a second campaign; the question is whether it earns its cost, and what it does to the brand.',
+      3: 'Nothing in the case says so; the cans will be in supermarkets anyway, and a test in a few convenience stores would show whether On the go buys a craft can.',
     },
-    solution: 'The plan is differentiated marketing under one brand. On the go’s needs are far from Craft and local’s, so the two campaigns would say opposite things about Lantern; serving On the go also means convenience stores, where Lantern earns $1.35 a can rather than $1.63, and competing with Corner Cup, which sits close to the segment’s ideal. A launch concentrated on the craft-minded pair, with a later test for On the go, avoids all three problems.',
+    solution: 'The plan is differentiated marketing under one brand. On the go’s needs are far from Craft and local’s, so the two campaigns would say opposite things about Lantern; serving On the go well also means convenience stores, where Lantern would earn $1.35 a can rather than $1.63, and competing with Corner Cup, which sits close to the segment’s ideal. A launch with one mix for the two neighbouring craft-minded segments, Craft and local and Explorers, with a later test for On the go, avoids all three problems.',
   },
   {
     id: 'm05-ts-k5', type: 'multi', kind: 'conceptual',
@@ -402,7 +402,7 @@ export const check = [
       2: 'The persona keeps the segment in view; the tables, with their bases, remain the evidence.',
       4: 'An exact age describes one person; shares describe the segment. Precision here is false.',
     },
-    solution: 'True: modal answers combine to fit very few members (1 of 109 for Craft and local on five lines); the defining needs are shared by most members; every line should trace to data. False: the persona summarises the data rather than replacing it, and exact figures where the data give shares are invented precision.',
+    solution: 'True: modal answers combine to fit very few members (1 to 3 of 109 for Craft and local on five lines, depending on the age band); the defining needs are shared by most members; every line should trace to data. False: the persona summarises the data rather than replacing it, and exact figures where the data give shares are invented precision.',
   },
   {
     id: 'm05-ts-k6', type: 'fill', kind: 'conceptual',
