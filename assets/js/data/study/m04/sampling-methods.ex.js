@@ -16,7 +16,7 @@ const PEN = { shops: ['Mill Lane', 'Quayside', 'Station Road', 'Westgate'], N: [
 const penCells = (withSample) => {
   const c = { A1: 'Shop', B1: 'Members (N)', A6: 'Total', B6: '=SUM(B2:B5)' };
   PEN.shops.forEach((s, i) => Object.assign(c, { [`A${i + 2}`]: s, [`B${i + 2}`]: PEN.N[i] }));
-  if (withSample) { Object.assign(c, { C1: 'Sampled (n)', D1: 'Would join a bread club', E2: 'Stratified estimate' }); PEN.n.forEach((v, i) => Object.assign(c, { [`C${i + 2}`]: v, [`D${i + 2}`]: PEN.yes[i] })); }
+  if (withSample) { Object.assign(c, { C1: 'Sampled (n)', D1: 'Would join', E2: 'Stratified estimate' }); PEN.n.forEach((v, i) => Object.assign(c, { [`C${i + 2}`]: v, [`D${i + 2}`]: PEN.yes[i] })); }
   else Object.assign(c, { C1: 'Allocation (unrounded)', A8: 'Sample size', B8: 400 });
   return c;
 };
@@ -49,7 +49,7 @@ export const widgets = {
     strata: PEOPLE.stratum, strataNames: STRATA, value: PEOPLE.group.map((g) => (g === 2 ? 1 : 0)), valueLabel: 'promoters',
     propensity: PEOPLE.propensity, cluster: PEOPLE.batch, clusterLabel: 'sign-up batches',
     methods: ['srs', 'stratified', 'cluster', 'optin'], method: 'srs', sizes: [100, 300, 600], n: 300, nonresponse: false, weight: false, seed: 4,
-    note: 'With full response, simple random, stratified and cluster samples all centre on the truth: they are unbiased. They differ in spread. The cluster design takes whole sign-up batches of 100, and people who signed up together answer alike, so three batches carry far less information than 300 separate people. The open link is different in kind: people who are keen on Lantern are far likelier to answer, so its estimates sit well above the truth however many you collect. Leave non-response and weighting off here; the survey-error lesson turns them on.',
+    note: 'With full response, simple random, stratified and cluster samples all centre on the truth: they are unbiased. They differ in spread. The cluster design takes whole sign-up batches of 100, and people who signed up together answer alike, so three batches carry far less information than 300 separate people. The open link is different in kind: people who are keen on Lantern are far likelier to answer, so its estimates sit well above the truth however many you collect. Leave non-response and weighting off here; the Survey error lesson turns them on.',
   },
   'sm-alloc': {
     type: 'sheet', title: 'Lantern’s February allocation and what each stratum can be read to',
@@ -315,7 +315,7 @@ export const check = [
     feedback: {
       1: 'The size of a sample needed doesn’t depend on the size of the population once that is large; 516 random replies from the right frame would do. The problem is the frame.',
       2: 'A stratified estimate describes the whole population the frame covers, by weighting the strata. Here the frame itself covers the wrong population.',
-      3: 'Stated intentions have their own problems (survey-error), but intent scales are used in ordinary surveys. The more basic problem is who could be asked.',
+      3: 'Stated intentions have their own problems (see Survey error), but intent scales are used in ordinary surveys. The more basic problem is who could be asked.',
     },
     solution: 'The target population is Harbour City’s ready-to-drink buyers; the frame is people on Lantern’s list, a small and friendly slice of them. That undercoverage is fixed before sampling and no sample size or weighting fixes it. The survey describes Lantern’s contacts; the market is sized from other sources in module 3.',
   },

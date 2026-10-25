@@ -22,7 +22,7 @@ Object.assign(festCells, { A10: 'Average', F10: '=AVERAGE(F2:F9)', G10: '=AVERAG
 
 // Tamberlake Gyms (fictional): four items on a 1–7 scale about staff; item 2 ("Staff were hard to find") reverse-worded
 const GYM = [[6, 2, 6, 5], [7, 1, 6, 7], [3, 5, 4, 3], [5, 3, 5, 6], [2, 6, 3, 2], [6, 3, 7, 6], [4, 4, 4, 5], [7, 2, 6, 6]];
-const gymCells = { A1: 'Member', B1: 'Staff were friendly', C1: 'Staff were hard to find', D1: 'Staff knew the equipment', E1: 'Staff helped me', F1: 'Staff score' };
+const gymCells = { A1: 'Member', B1: 'Friendly', C1: 'Hard to find', D1: 'Knew the kit', E1: 'Helped me', F1: 'Staff score' };
 GYM.forEach((r, i) => Object.assign(gymCells, { [`A${i + 2}`]: i + 1, [`B${i + 2}`]: r[0], [`C${i + 2}`]: r[1], [`D${i + 2}`]: r[2], [`E${i + 2}`]: r[3] }));
 const gymScore = (r) => avg([r[0], 8 - r[1], r[2], r[3]]);
 
@@ -53,8 +53,8 @@ export const widgets = {
 export const guided = [
   {
     id: 'm04-qd-g1', type: 'steps', kind: 'applied',
-    prompt: 'Work through Lantern’s February questionnaire with Ana’s two aims in mind: the Cold Brew decision and how customers see Lantern.',
-    solution: 'Write each question for the analysis it must support: a number for a mean, ordered points for shares in each box, a list for counts. Then test every question against the aims; one that feeds neither, such as household income, goes.',
+    prompt: 'Work through Lantern’s February questionnaire with the brief’s three survey objectives in mind: interest in Cold Brew, recommending Lantern, and how people buy coffee, found Lantern and think it could improve.',
+    solution: 'Write each question for the analysis it must support: a number for a mean, ordered points for shares in each box, a list for counts. Then test every question against the objectives; one that feeds neither, such as household income, goes.',
     steps: [
       {
         id: 'm04-qd-g1-s1', type: 'mc',
@@ -108,13 +108,13 @@ export const guided = [
           '“How likely would you be to buy Lantern Cold Brew in the next three months?”',
         ],
         answer: 0,
-        hints: ['For each, name the aim it serves.', 'One asks for personal data that no planned analysis uses.'],
+        hints: ['For each, name the objective it serves.', 'One asks for personal data that no planned analysis uses.'],
         feedback: {
-          1: 'This serves the picture of how people come to Lantern, which guides where marketing effort goes.',
-          2: 'This serves the aim of learning how customers see Lantern, and is coded and counted.',
-          3: 'This is the heart of the Cold Brew aim.',
+          1: 'This serves objective 3, how people found Lantern, which guides where marketing effort goes.',
+          2: 'This serves objective 3, what people think Lantern could do better; the answers are coded and counted.',
+          3: 'This serves objective 1, the heart of the Cold Brew decision.',
         },
-        solution: 'Income serves neither aim and no table in the analysis plan uses it. It is also sensitive personal data, so collecting it without a purpose breaks data minimisation. Ana dropped it.',
+        solution: 'Income serves none of the survey’s objectives and no table in the analysis plan uses it. It is also sensitive personal data, so collecting it without a purpose breaks data minimisation. Ana dropped it.',
       },
     ],
   },
@@ -144,7 +144,7 @@ export const guided = [
   },
   {
     id: 'm04-qd-g3', type: 'formula', kind: 'numerical',
-    prompt: 'Tamberlake Gyms (fictional) asked members four questions about its staff on a 1–7 scale (1 = strongly disagree, 7 = strongly agree). Item 2, “Staff were hard to find”, is worded the opposite way. In F2, calculate member 1’s staff score, the average of the four items with item 2 reverse-coded, so that it can be filled down to F9.',
+    prompt: 'Tamberlake Gyms (fictional) asked members to rate four statements about its staff on a 1–7 scale (1 = strongly disagree, 7 = strongly agree): “Staff were friendly”, “Staff were hard to find when I needed help”, “Staff knew the equipment” and “Staff helped me”. Item 2, in column C, is worded the opposite way. In F2, calculate member 1’s staff score, the average of the four items with item 2 reverse-coded, so that it can be filled down to F9.',
     sheet: { cells: gymCells },
     cell: 'F2', fill: 'F2:F9', answer: '=AVERAGE(B2,8-C2,D2,E2)',
     alt: ['=(B2+8-C2+D2+E2)/4', '=(B2+(8-C2)+D2+E2)/4', '=SUM(B2,8-C2,D2,E2)/4', '=AVERAGE(B2,D2,E2,8-C2)'],
@@ -284,7 +284,7 @@ export const check = [
       'Two of five customers took “ready-to-drink” to mean a café drink.',
       'The routing sends everyone who answers 0 to Q3 past Q4 by mistake.',
       'Question 10 contains a double negative that could confuse readers.',
-      'No question in the draft serves the aim about how customers see the brand.',
+      'No question in the draft serves the objective about recommending Lantern.',
     ],
     answer: 0,
     feedback: {
@@ -371,7 +371,7 @@ export const check = [
     ],
     answer: 0,
     feedback: {
-      1: 'Neither version is simply right. The open version shows what comes to mind unprompted; the closed version shows choices among the options offered. The point is that the list changes the result.',
+      1: 'Neither version is the right one. The open version shows what comes to mind unprompted; the closed version shows choices among the options offered. The point is that the list changes the result.',
       2: 'A 23-point gap between two large random samples is far beyond chance, and 43% of the open answers named issues the list didn’t include.',
       3: 'Nothing suggests a coding error; the same pattern appears whenever a list prompts some answers and omits others.',
     },

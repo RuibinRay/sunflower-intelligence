@@ -22,6 +22,8 @@ const cbEvpi = cbPerfect - cbBest;
 // the research plan's cost (fictional): moderator, agency recruitment of group B, incentives, rooms, transcripts, survey tool
 const COST = { moderator: 2600, recruit: 150 * GB.participants, incentives: 75 * (GA.participants + GB.participants), rooms: 2 * 500, transcripts: 600, tool: 425 };
 const cost = Object.values(COST).reduce((a, b) => a + b, 0);
+// the brief's action standard for objective 1 (weighted top-two-box share of the list, %): fictional, set before fieldwork
+const AS = { high: 45, low: 30 };
 
 const box = (x, y, title, sub, lesson) => `<rect x="${x}" y="${y}" width="168" height="80" rx="8" style="fill:none;stroke:var(--series-1);stroke-width:2"/>`
   + `<text x="${x + 84}" y="${y + 25}" text-anchor="middle" font-weight="700" fill="currentColor">${title}</text>`
@@ -228,6 +230,7 @@ export default {
           ['What is known', `M02’s launch plan; the December survey of subscribers (${SUBSCRIBER_SURVEY.responded} of ${SUBSCRIBER_SURVEY.invited} replied); ${CLIENT_INTERVIEWS.interviewed} catering-client interviews (M01); the online shop’s records (B01).`],
           ['Objectives', `(1) Estimate, to within about ±${SURVEY_PLAN.margin * 100} points, the share of the list who would definitely or probably buy Cold Brew at $${DEFAULT_PLAN.price.toFixed(2)} in the next three months. (2) Estimate how likely list members are to recommend Lantern. (3) Describe how often they buy coffee away from home, how they first heard of Lantern and what they think it should do better. (4) Explore how subscribers, and ready-to-drink buyers who have never bought from Lantern, react to the can, the price and where it would be sold.`],
           ['Design', `Descriptive: a web questionnaire to ${f(SURVEY_2027.invited)} people sampled from the ${f(MAILING_LIST)} on the list (B04’s plan: ${PLAN.n} replies at a ${SURVEY_PLAN.responseRate * 100}% response rate). Exploratory: two 90-minute focus groups in March, one of subscribers and one of ready-to-drink buyers who have never bought from Lantern.`],
+          ['Use of results', `Action standard for objective 1, agreed with Jun Park before fieldwork: launch in all three channels only if at least ${AS.high}% of the list, weighted to its four groups, are in the top two boxes (definitely or probably would buy); below ${AS.low}%, sell only through Lantern’s own channel or wait; in between, a limited launch with a test.`],
           ['Who does what', 'The survey in-house; a hired moderator for the groups; a recruitment agency, with a screener, for the group of non-customers.'],
           ['Timing and budget', `Survey sent ${SURVEY_2027.sent}, closing ${SURVEY_2027.closed}; groups on ${GA.date} and ${GB.date}; report by mid-April; $${f(cost)}.`],
           ['Ethics', 'Invitations say who is asking and why, that taking part is voluntary and answers are confidential, and that people can stop at any time; no offers in the questionnaire; groups recorded only with consent; adults only.'],
@@ -235,7 +238,7 @@ export default {
       },
       steps: [
         'Start from the decisions. The brief names two, with their options and a deadline. The Cold Brew decision is the one with money at stake, so objectives 1 and 4 serve it; objectives 2 and 3 serve the 2027 marketing (which customers are keenest, and where new ones come from).',
-        'Test each objective against an action. A high share in objective 1 supports launching widely; a low one points to the own channel or to waiting. Objective 4 can explain a low share, for instance a price or a taste problem that could be fixed. An objective that no answer would act on would be cut.',
+        `Test each objective against an action. The action standard turns objective 1 into a rule written before any answers arrive: ${AS.high}% or more supports launching widely, under ${AS.low}% points to the own channel or to waiting, and anything between calls for a smaller first step. Objective 4 can explain a disappointing share, for instance a price or a taste problem that could be fixed. An objective that no answer would act on would be cut.`,
         `Match the designs. Objectives 1 to 3 ask “what share” and “how often”: descriptive, so a sample of the list. Objective 4 asks “how do people react, and why”: exploratory, so groups. Neither design is causal; if Ana later wants to know whether in-store tastings raise sales, that needs an experiment (M08, B12). The list’s four kinds of contact (${STRATA.map((s, h) => `${s.toLowerCase()} ${f(SIZES[h])}`).join(', ')}) let the survey report each separately.`,
         `Check who does what. The ${GA.participants} subscribers in group A can be recruited from Lantern’s own list; the ${GB.participants} non-customers in group B can’t, so an agency finds them with a screener. The cost is $${f(COST.moderator)} for the moderator, $${f(COST.recruit)} for recruitment, $${f(COST.incentives)} in thank-you payments ($75 each for ${GA.participants + GB.participants} people), $${f(COST.rooms)} for two rooms, $${f(COST.transcripts)} for transcripts and $${f(COST.tool)} for the survey tool: $${f(cost)} in all, inside the budget and about a fifth of the $${f(cbEvpi)} ceiling worked out in the challenging example.`,
         'Check the ethics. Jun Park, Lantern’s analyst, suggests ending the questionnaire with a discounted pre-order link for Cold Brew to lift the response. That would turn research into selling, which the MRS code calls sugging and all three codes forbid. Ana drops it. The codes would allow a thank-you for taking part, but she decides against any incentive; a Cold Brew offer can go out later as an ordinary marketing e-mail to people who agreed to receive them.',
@@ -373,6 +376,8 @@ export default {
     { what: 'Incentive per participant', value: COST.incentives / (GA.participants + GB.participants), shown: 75 },
     { what: 'Recruitment per head', value: COST.recruit / GB.participants, shown: 150 },
     { what: 'Example action standard (%)', value: 30, shown: 30 },
+    { what: 'Lantern action standard: launch widely at or above (%)', value: AS.high, shown: 45 },
+    { what: 'Lantern action standard: hold back below (%)', value: AS.low, shown: 30 },
     { what: 'Example list shares that would not change the launch (%)', value: 20 + 60, shown: 80 },
     { what: 'ICC/ESOMAR child age limit', value: 12, shown: 12 },
     { what: 'ICC/ESOMAR young person ages', value: 13 + 17, shown: 30 },

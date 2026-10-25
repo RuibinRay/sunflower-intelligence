@@ -109,7 +109,7 @@ export default {
 
   theory: [
     { h: 'Recruiting the right people' },
-    { p: 'Qualitative participants are chosen on purpose, not at random: the study needs the kinds of people whose views matter to the decision. Lantern needs two kinds, its own subscribers and the much larger group of ready-to-drink buyers who have never heard of it, and puts each in its own group so that neither shapes the other’s discussion. Ana can invite subscribers from her list; the second group needs an agency, which finds people with a <g>screener</g>: a short questionnaire that decides whether a person qualifies for a study, and for which group, before they are invited.' },
+    { p: 'Qualitative participants are chosen on purpose, not at random: the study needs the kinds of people whose views matter to the decision. Lantern needs two kinds, its own subscribers and the much larger group of ready-to-drink buyers who have never bought from it, and puts each in its own group so that neither shapes the other’s discussion. Ana can invite subscribers from her list; the second group needs an agency, which finds people with a <g>screener</g>: a short questionnaire that decides whether a person qualifies for a study, and for which group, before they are invited.' },
     { p: 'The screener for group B (fictional) shows what a screener does:' },
     { ol: [
       'Age: 18 or over (adults only, so no parental consent is needed).',
@@ -149,7 +149,7 @@ export default {
         [T[5], 'Caffeine, sugar, milk, decaf and other health concerns', 'Wanting the label to show them (can and label)', `“${quote('A1', 5)}”`],
       ],
     } },
-    { p: 'The method most researchers follow is <g>thematic analysis</g>, set out by Braun and Clarke (2006) in six phases: familiarising yourself with the data, generating initial codes, searching for themes, reviewing themes, defining and naming themes, and producing the report. The phases loop: reviewing the themes often sends the analyst back to the transcripts, and the codebook changes as the analysis develops. A theme is a pattern of meaning across the data, not just a heading; “price” becomes a theme when the analyst can say what people mean by it, for example “a dollar more than the brand I buy needs a reason”.' },
+    { p: 'The method most researchers follow is <g>thematic analysis</g>, set out by Braun and Clarke (2006) in six phases: familiarising yourself with the data, generating initial codes, searching for themes, reviewing themes, defining and naming themes, and producing the report. The phases loop: reviewing the themes often sends the analyst back to the transcripts, and the codebook changes as the analysis develops. A theme is a pattern of meaning across the data, not just a heading; “price” becomes a theme when the analyst can say what people mean by it, for example that paying a dollar more than for the brand they buy now needs a reason.' },
 
     { h: 'Counting codes honestly' },
     { p: `Counting codes shows where the talk went. In Lantern’s ${nQ} coded quotations, ${ana[1]} are about price and ${ana[3]} about where to buy, and ${speakers(1)} different participants raised price. But counts describe the transcripts, not a population. The moderator’s guide decided how long each topic was discussed, talkative participants supply more quotations, and the ${GA.participants + GB.participants} participants were chosen, not sampled, so “${ana[1]} of ${nQ} quotations” is not “${(ana[1] / nQ * 100).toFixed(0)}% of buyers”.` },

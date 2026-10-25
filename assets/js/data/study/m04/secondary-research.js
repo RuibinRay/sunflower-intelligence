@@ -3,7 +3,7 @@
 // `checks` recompute them. The Harbour City Statistics Office, the Harbour City Grocers’ Association, the town of Kelstow
 // and every figure attached to them are fictional. Facts about real statistics offices and registers are from the pages
 // cited in `references`, checked on 24 October 2026.
-import { CATEGORY, CHANNELS, MAILING_LIST, SUBSCRIBER_SURVEY, CLIENT_INTERVIEWS, STRATA, SIZES } from './case.js?v=13';
+import { CATEGORY, CHANNELS, DEFAULT_PLAN, MAILING_LIST, SUBSCRIBER_SURVEY, CLIENT_INTERVIEWS, STRATA, SIZES } from './case.js?v=13';
 import { SHOP } from '../b01/case.js?v=13';
 import { ORDERS, ORDER_COLUMNS } from '../b03/case.js?v=13';
 import { HARBOURLINE } from '../f00/case.js?v=13';
@@ -73,7 +73,7 @@ export default {
         ['Official statistics', 'Population counts, business counts, household spending surveys', 'Large samples or full counts; published methods; often free', 'Definitions and areas chosen for government purposes; published months or years later'],
         ['Trade associations and the trade press', 'Industry sales estimates, members’ surveys, market reports', 'Specific to the industry; sometimes the only source for a niche', 'Members only; an interest in promoting the industry; methods often unpublished'],
         ['Syndicated and panel data', 'Retail sales measured at store checkouts; household purchase panels', 'Detailed by brand, store type and week', 'Costly; licence limits; stores and households not covered'],
-        ['Company filings and reports', 'Annual reports, regulatory filings', 'Audited figures for listed and registered companies', 'Totals across many products and places; little on private firms'],
+        ['Company filings and reports', 'Annual reports, regulatory filings', 'Figures filed with regulators; audited annual statements for listed companies', 'Totals across many products and places; little on private firms'],
         ['Competitors’ own material', 'Websites, price lists, catalogues, job advertisements', 'Current and free', 'Written to sell; the competitor-research lesson covers it'],
       ],
     } },
@@ -92,7 +92,7 @@ export default {
     { p: 'A <g>trade association</g> is an organisation that represents the businesses in an industry, and many publish sales estimates, members’ surveys and market reports. For a niche, such as chilled coffee drinks in one city, an association or a trade magazine may be the only source. Read three things before using one: whose sales it covers (usually its members’, not the whole market), how it got the figure (a census of members, a sample, or an estimate), and why it published it (associations exist to promote their industry, so they have a reason to report growth).' },
 
     { h: 'Syndicated and panel data' },
-    { p: 'OpenStax describes <g>syndicated data</g> as a type of external secondary data available through subscription services: a research firm collects the data once and sells it to many clients. Two kinds matter most for consumer goods. Retail measurement records sales at the checkouts of the stores that supply their scanner data, by brand, store type and week. A <g>consumer panel</g> is a sample of households or people who record everything they buy over months or years, so it shows who buys, how often, what else they buy and when they switch brands.' },
+    { p: 'OpenStax describes <g>syndicated data</g> as a type of external secondary data available through subscription services: a research firm collects the data once and sells it to many clients. Two kinds matter most for consumer goods. Retail measurement records sales at the checkouts of the stores that supply their scanner data, by brand, store type and week. A <g>consumer panel</g> is a sample of households or people who record what they buy over months or years, so it shows who buys, how often, what else they buy and when they switch brands.' },
     { p: 'Each has its own blind spot. Retail measurement misses stores that don’t share their data, and channels such as Lantern’s own online shop; panels depend on the households willing to record their shopping, which may differ from those who aren’t. A panel produces <g>panel data</g> in B01’s sense, the same units observed over time, which is why it can show switching that a single survey can’t. Syndicated data is often expensive, and its licence usually limits who may see it and what may be published.' },
 
     { h: 'Company filings' },
@@ -249,7 +249,7 @@ export default {
     { what: 'Mailing list (B04)', value: MAILING_LIST, shown: 6000 },
     { what: 'Subscribers on the list', value: SIZES[0], shown: 520 },
     { what: 'Newsletter-only contacts', value: SIZES[3], shown: 4330 },
-    { what: 'Cold Brew price (M02)', value: 3.49, shown: 3.49 },
+    { what: 'Cold Brew price (M02)', value: DEFAULT_PLAN.price, shown: 3.49 },
     { what: 'Planned channels’ share of cans (M02)', value: ch.supermarket + ch.natural + ch.direct, shown: 0.7 },
     // real sources (verified facts)
     { what: 'CBP reference pay period: 12 March', value: 12, shown: 12 },
