@@ -146,7 +146,7 @@ export const items = [
     check: () => Math.ceil((0.8 + 0.2 * ((30 * 30 + 18 * 17 + 12 * 13) / 3600)) * 60 - 1e-9),
     unit: 'cards', places: 0, tol: 0.5,
     wrong: [
-      { value: Math.round(KRULE * poolN), say: 'That is 80% of the cards, which treats kappa as the percent agreement (it is also the 48 they agree on now, κ ≈ 0.68). Some agreement is expected by chance, so κ = 0.80 needs p_o = 0.80 + 0.20 × p_e.' },
+      { value: Math.round(KRULE * poolN), say: `That is 80% of the cards, as if kappa were the percent agreement; it is also what they agree on now, with κ ≈ ${fx(poolK, 2)}. Some agreement is expected by chance, so κ = 0.80 needs p_o = 0.80 + 0.20 × p_e.` },
       { value: Math.floor(poolNeedRaw), say: `${Math.floor(poolNeedRaw)} cards give p_o = ${fx(Math.floor(poolNeedRaw) / poolN, 3)} and κ ≈ ${fx(kappaAt(Math.floor(poolNeedRaw)), 3)}, just short of 0.80: round up.` },
       { value: Math.ceil(KRULE * (1 - poolPe) * poolN - 1e-9), say: 'That solves for p_o − p_e, the agreement beyond chance. Add the chance agreement back: p_o = 0.80 × (1 − p_e) + p_e.' },
       { value: poolNeed - poolAgree, say: `That is how many more cards than the present ${poolAgree} they would need to agree on. The question asks for the total.` },
