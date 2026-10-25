@@ -338,7 +338,6 @@ export default {
     { what: 'Invited', value: DISPOSITIONS.all.invited, shown: 2004 },
     { what: 'Completes', value: N, shown: 516 },
     { what: 'Partials', value: DISPOSITIONS.all.P, shown: 56 },
-    { what: 'Partials answered 3 to 5 of 6 questions', value: 3 + 5 + 6, shown: 14 },
     { what: 'Suggested something', value: SUGG, shown: 331 },
     { what: 'Price % of all', value: (TH[1] / N) * 100, shown: 16.3, tol: 0.05 },
     { what: 'Price % of suggestions', value: (TH[1] / SUGG) * 100, shown: 25.4, tol: 0.05 },

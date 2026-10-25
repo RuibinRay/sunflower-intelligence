@@ -20,30 +20,32 @@ const pts = (v) => `${v < 0 ? '−' : '+'}${Math.abs(v * 100).toFixed(1)}`;
 
 // ---------------------------------------------------------------- widgets
 function words(v) {
-  const g = gap(v.p1 / 100, v.n1, v.p2 / 100, v.n2);
-  const lo = (g.low * 100).toFixed(1), hi = (g.high * 100).toFixed(1);
+  if (v.x1 > v.n1 || v.x2 > v.n2) return { error: 'A count can’t be larger than its base.' };
+  const p1 = v.x1 / v.n1, p2 = v.x2 / v.n2;
+  const g = gap(p1, v.n1, p2, v.n2);
+  const lo = pts(g.low), hi = pts(g.high);
   let say;
   if (v.n1 < 30 || v.n2 < 30) say = 'One base is below 30: don’t compare these groups. Report them together, or say there were too few answers to report them separately.';
-  else if (g.low > 0) say = `Group 1 is clearly higher, by between ${lo} and ${hi} points.`;
+  else if (g.low > 0) say = `Group 1 is clearly higher, by between ${(g.low * 100).toFixed(1)} and ${(g.high * 100).toFixed(1)} points.`;
   else if (g.high < 0) say = `Group 2 is clearly higher, by between ${(-g.high * 100).toFixed(1)} and ${(-g.low * 100).toFixed(1)} points.`;
-  else if (g.high - g.low <= 0.1) say = `Little or no difference: the gap lies between ${lo} and ${hi} points.`;
+  else if (g.high - g.low <= 0.1) say = `Little or no difference: the gap lies between ${lo} and ${hi} points, an interval no more than 10 points wide.`;
   else say = `Can’t be told apart on these data: the gap could be anywhere from ${lo} to ${hi} points.`;
   return {
     headline: { label: 'Gap, group 1 − group 2', value: `${pts(g.d)} points` },
-    rows: [['95% interval for the gap', `${lo} to ${hi} points`], ['Standard error of the gap', `${(g.se * 100).toFixed(2)} points`], ['Smaller base', String(Math.min(v.n1, v.n2))]],
+    rows: [['Shares', `${pct(p1)} and ${pct(p2)}`], ['95% interval for the gap', `${lo} to ${hi} points`], ['Standard error of the gap', `${(g.se * 100).toFixed(2)} points`], ['Smaller base', String(Math.min(v.n1, v.n2))]],
     note: say,
-    chart: { kind: 'bar', x: { label: 'Group', values: ['Group 1', 'Group 2'] }, series: [{ name: 'Share (%)', values: [v.p1, v.p2] }], y: { label: 'Share (%)', format: 'pct' } },
+    chart: { kind: 'bar', x: { label: 'Group', values: ['Group 1', 'Group 2'] }, series: [{ name: 'Share (%)', values: [p1, p2].map((p) => Math.round(p * 1000) / 10) }], y: { label: 'Share (%)', format: 'pct' } },
   };
 }
 
 export const widgets = {
   'ir-words': {
     type: 'formula', title: 'From an interval to words',
-    intro: 'Each group’s percentage and base. The interval is for the difference between two independent percentages (B04).',
+    intro: 'Each group’s count (here, answers in the top two boxes) and base. The interval is for the difference between two independent percentages (B04). An interval that includes zero counts as narrow here when it is no more than 10 points wide.',
     inputs: [
-      { id: 'p1', label: 'Group 1: share', min: 0, max: 100, step: 0.1, value: Math.round(share[0] * 1000) / 10, fmt: 'pct' },
+      { id: 'x1', label: 'Group 1: count', min: 0, max: 1000, step: 1, value: t2[0], fmt: 'int' },
       { id: 'n1', label: 'Group 1: base', min: 10, max: 1000, step: 1, value: nS[0], fmt: 'int' },
-      { id: 'p2', label: 'Group 2: share', min: 0, max: 100, step: 0.1, value: Math.round(share[1] * 1000) / 10, fmt: 'pct' },
+      { id: 'x2', label: 'Group 2: count', min: 0, max: 1000, step: 1, value: t2[1], fmt: 'int' },
       { id: 'n2', label: 'Group 2: base', min: 10, max: 1000, step: 1, value: nS[1], fmt: 'int' },
     ],
     compute: words,
@@ -63,18 +65,18 @@ export const guided = [
     id: 'm04-ir-g1', type: 'classify', kind: 'conceptual',
     prompt: 'Classify each line from the draft of Ana’s Cold Brew report.',
     items: [
-      `Weighted to the list’s segments, ${pct(WT)} say they would definitely or probably buy Cold Brew.`,
+      `Weighted, ${pct(WT)} of Lantern’s list say they would definitely or probably buy.`,
       'Ready-to-drink buyers who don’t know Lantern judge Cold Brew as one more can, so price and the chance to try it decide whether they buy.',
       `At ${money(PRICE)}, Cold Brew would cost ${money(PRICE - brandAvg[1])} more than Daily Grind RTD’s average shelf price.`,
       'Give free cans to shoppers in natural grocers during the first month, and count how many buy again.',
       'Subscribers expect Cold Brew to taste like the coffee they already trust, which is why their intent is so much higher than other groups’.',
-      'List Cold Brew in the remaining supermarkets only if the test stores average 10 cans a store a week.',
+      'List Cold Brew in the remaining supermarkets only if the test stores without free cans average 10 cans a store a week.',
     ],
     categories: ['Finding', 'Insight', 'Recommendation'],
     answer: [0, 1, 0, 2, 1, 2],
     hints: ['A finding is a fact from the data, with its figure.', 'An insight explains why something happens; a recommendation says what to do and how to check it.'],
     feedback: {
-      1: 'It explains why non-customers are cooler, and it rests on the survey, the focus groups and the audit together.',
+      1: 'It explains why non-customers are cooler: it rests on the focus groups and the audit, and fits the survey’s lower intent among newsletter-only contacts.',
       4: 'It explains the gap between segments rather than stating it, which makes it an insight; the focus-group quotations support it.',
       5: 'An action with a condition set in advance: a recommendation with its decision rule.',
     },
@@ -88,7 +90,7 @@ export const guided = [
       {
         id: 'm04-ir-g2-s1', type: 'mc',
         prompt: 'Which two sources bear most directly on whether people who don’t know Lantern hesitate at $3.49?',
-        options: ['Group B of the focus groups and the shelf-price audit', 'The survey’s subscribers and the subscribers’ focus group', 'The catering client interviews and the bottom-up sizing', 'The survey’s Net Promoter Score and the shelf-price audit'],
+        options: ['Group B of the focus groups and the March shelf-price audit', 'The survey’s subscribers and the subscribers’ focus group (group A)', 'The catering client interviews and the bottom-up sizing', 'The survey’s Net Promoter Score and the shelf-price audit'],
         answer: 0,
         feedback: {
           1: 'Both describe people who know Lantern well, so they share the same blind spot.',
@@ -143,7 +145,7 @@ export const guided = [
   {
     id: 'm04-ir-g4', type: 'fill', kind: 'conceptual',
     prompt: 'Choose the words Ana’s report should use.',
-    text: `Subscribers’ top-two-box share (${pct(share[0])}, base ${nS[0]}) and other shop customers’ (${pct(share[1])}, base ${nS[1]}) differ by ${(SUBSHOP.d * 100).toFixed(1)} points, with a 95% interval for the gap of ${(SUBSHOP.low * 100).toFixed(1)} to +${(SUBSHOP.high * 100).toFixed(1)} points, so the two segments [[0]]. Subscribers’ share is higher than newsletter-only contacts’ by between ${(SUBNEWS.low * 100).toFixed(1)} and ${(SUBNEWS.high * 100).toFixed(1)} points, so subscribers are [[1]]. The weighted top-two share is ${pct(WT)} with a margin of about ±${(WM * 100).toFixed(1)} points, so the report should give it as [[2]] of the list.`,
+    text: `Subscribers’ top-two-box share (${pct(share[0])}, base ${nS[0]}) and other shop customers’ (${pct(share[1])}, base ${nS[1]}) differ by ${(SUBSHOP.d * 100).toFixed(1)} points, with a 95% interval for the gap of ${pts(SUBSHOP.low)} to ${pts(SUBSHOP.high)} points, so the two segments [[0]]. Subscribers’ share is higher than newsletter-only contacts’ by between ${(SUBNEWS.low * 100).toFixed(1)} and ${(SUBNEWS.high * 100).toFixed(1)} points, so subscribers are [[1]]. The weighted top-two share is ${pct(WT)} with a margin of about ±${(WM * 100).toFixed(1)} points, so the report should give it as [[2]] of the list.`,
     blanks: [
       { options: ['can’t be told apart on these bases', 'are the same', 'differ significantly', 'differ by exactly 6.5 points'], answer: 0 },
       { options: ['clearly keener', 'possibly keener', 'no keener', 'as keen'], answer: 0 },
@@ -218,14 +220,14 @@ export const independent = [
       'States the decision rule or the test that will settle what the research can’t.',
       'Keeps findings and interpretation distinguishable, and identifies no respondent.',
     ],
-    model: `Recommendation: launch Cold Brew in stages. Weighted to Lantern’s mailing list, ${pct(WT)} say they would definitely or probably buy (about ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%; 516 completes), and subscribers are clearly keener than newsletter-only contacts (${Math.round(share[0] * 100)}% against ${Math.round(share[3] * 100)}%). In focus groups, people who don’t buy from Lantern compared $3.49 with cans costing about a dollar less and wanted to try first. Our bottom-up estimate is about 48,000 cans in year one, half the goal. We launch in our own channel and natural grocers, aim free cans at strangers, and test a few supermarkets: we list in the rest only if test stores average 10 cans a week. These are our own customers’ stated intentions, not sales.`,
+    model: `Recommendation: launch Cold Brew in stages. Weighted to Lantern’s mailing list, ${pct(WT)} say they would definitely or probably buy (about ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%; 516 completes), and subscribers are clearly keener than newsletter-only contacts (${Math.round(share[0] * 100)}% against ${Math.round(share[3] * 100)}%). In our focus group, ready-to-drink buyers who don’t know Lantern compared $3.49 with cans costing about a dollar less and wanted to try first. Our bottom-up estimate is about 48,000 cans in year one, half the goal, which this plan can’t reach. We launch in our own channel and natural grocers, planning on about 33,000 cans, aim free cans at strangers, and test a few supermarkets: we list in the rest only if test stores without free cans average 10 cans a week. These are our own customers’ stated intentions, not sales.`,
     solution: 'Compare your summary with the model and the rubric. The model leads with the recommendation, gives each figure with its base and range, explains the gap with the focus groups and the audit, states the limits and the decision rule, and names no one.',
   },
   {
     id: 'm04-ir-i6', type: 'classify', kind: 'conceptual',
     prompt: 'Where in Ana’s report does each item belong?',
     items: [
-      `${N} completes from ${D.survey.allocation.reduce((a, b) => a + b, 0).toLocaleString('en-US')} invitations (a response rate of ${(D.survey.rr.RR1 * 100).toFixed(1)}%), web questionnaire, 2–16 February 2027.`,
+      `${N} completes from ${D.survey.allocation.reduce((a, b) => a + b, 0).toLocaleString('en-US')} invitations (AAPOR RR1, ${(D.survey.rr.RR1 * 100).toFixed(1)}%), web questionnaire, 2–16 February 2027.`,
       `Subscribers’ top-two-box share was ${pct(share[0])}, against ${pct(share[3])} for newsletter-only contacts.`,
       'The mailing list covers Lantern’s own contacts, not the city’s ready-to-drink coffee buyers.',
       'Every cross-tab with its bases, and the code frame for the open answers.',
@@ -278,12 +280,12 @@ export const check = [
     id: 'm04-ir-k3', type: 'multi', kind: 'applied',
     prompt: 'Select all the statements Ana’s Cold Brew report can make on the evidence it has.',
     options: [
-      `Weighted to the list’s segments, ${pct(WT)} say they would definitely or probably buy Cold Brew.`,
+      `Weighted, ${pct(WT)} of Lantern’s list say they would definitely or probably buy.`,
       `${pct(WT)} of Harbour City’s coffee drinkers will buy Cold Brew in its first three months.`,
       'Subscribers are clearly keener on Cold Brew than newsletter-only contacts.',
-      'Becoming a Lantern subscriber makes people keener on Cold Brew.',
-      'In the focus groups, ready-to-drink buyers who mentioned price compared $3.49 with cheaper cans.',
-      'One buyer in five cares about price, since 4 of the 20 quotations were about it.',
+      'Becoming a Lantern subscriber makes people keener on Lantern’s new Cold Brew.',
+      'A ready-to-drink buyer in the focus groups compared $3.49 with their usual, cheaper can.',
+      '20% of ready-to-drink buyers worry about price, as 4 of 20 quotations were about it.',
     ],
     answer: [0, 2, 4],
     feedback: {
@@ -291,14 +293,14 @@ export const check = [
       3: 'The survey shows an association; loyal customers choose to subscribe, so loyalty may explain both.',
       5: 'Quotations illustrate themes; their counts aren’t shares of any population.',
     },
-    solution: 'Supported: the weighted finding with its population (the list), the clear gap between segments (interval 19 to 42 points), and a description of what focus-group participants said. Not supported: projecting intent onto the city as purchases, a causal reading of the association, and treating quotation counts as shares.',
+    solution: 'Supported: the weighted finding with its population (the list), the clear gap between segments (interval 19 to 42 points), and a description of what one focus-group participant said. Not supported: projecting intent onto the city as purchases, a causal reading of the association, and treating quotation counts as shares.',
   },
   {
     id: 'm04-ir-k4', type: 'mc', kind: 'applied',
-    prompt: `Ana wants to quote one of the ${CLIENT_INTERVIEWS.interviewed} catering clients interviewed in November 2026: “We switched because Brewline’s urns ran dry at our March board meeting”, attributed to “the operations manager of a 40-person law firm on the harbour”. What should she do?`,
+    prompt: `Suppose one of the ${CLIENT_INTERVIEWS.interviewed} catering clients interviewed in November 2026 had said: “We switched because Brewline’s urns ran dry at our March board meeting.” Ana wants to quote it, attributed to “the operations manager of a 40-person law firm on the harbour”. What should she do?`,
     options: [
-      'Attribute it to “a catering client” and cut identifying details, unless the client agrees to be named',
-      'Use it as written, since a job title and a firm’s size on their own don’t count as personal data',
+      'Attribute it to “a catering client” and cut identifying details, unless the client consents',
+      'Use it as written: a job title and a firm’s size aren’t personal data on their own',
       'Use it as written, because the client is a business, and anonymity rules protect only individuals',
       'Leave the quotation out and report only that some clients mentioned problems with Brewline’s urns',
     ],
@@ -331,9 +333,9 @@ export const check = [
   },
   {
     id: 'm04-ir-k6', type: 'mc', kind: 'applied',
-    prompt: 'Suppose that twelve weeks after launch Lantern’s test supermarkets have sold an average of 6 cans a store a week, against the decision rule of 10 set before launch. What does acting on the research mean then?',
+    prompt: 'Suppose that twelve weeks after launch the test supermarkets without free cans have sold an average of 6 cans a store a week, against the decision rule of 10 set before launch. What does acting on the research mean then?',
     options: [
-      'Hold the wider listing, as the rule says, and investigate the shortfall',
+      'Hold the wider listing, as the rule says, and look into why the sales fell short',
       'Keep the 100,000-can goal, because the survey found 38% of the list would buy',
       'Run a new survey to check whether customers still say they intend to buy Cold Brew',
       'Cut the price at once, because the focus groups talked about price more than taste',

@@ -1,10 +1,12 @@
 // insights-and-reporting.js — M04 · Insights and reporting. Content only; exercises are in insights-and-reporting.ex.js.
 // Draws on modules 1–3 only through case.js: the survey (DERIVED.coldbrew, nps, weights, survey), the focus groups
 // (FOCUS_GROUPS, DERIVED.focus), the price audit (PRICE_AUDIT) and the sizing (COLD_BREW_SIZING, DERIVED.sizing), plus
-// M02's plan (DEFAULT_PLAN) and M01's client interviews. Brackenmoor Folk Festival and Yarrowdale Dental are fictional.
+// M02's plan (DEFAULT_PLAN) and M01's client interviews. Hollowmere Folk Festival and Yarrowdale Dental are fictional.
 // Ana's recommendation and decision rule are this lesson's (fictional) additions. Every printed figure is in `checks`.
 import { RESPONDENTS, STRATA, FOCUS_GROUPS, PRICE_AUDIT, COLD_BREW_SIZING, DEFAULT_PLAN, CLIENT_INTERVIEWS, DERIVED as D } from './case.js?v=13';
+import { BUSINESS } from '../m01/case.js?v=13';
 import * as I from '../../../core/inference.js?v=13';
+import * as S from '../../../core/survey.js?v=13';
 
 // ---------------------------------------------------------------- the figures this lesson quotes
 const R = RESPONDENTS, N = R.length, Z = I.normInv(0.975);
@@ -14,6 +16,7 @@ const share = t2.map((x, h) => x / nS[h]);
 const marg = share.map((p, h) => Z * Math.sqrt((p * (1 - p)) / nS[h]));
 const WT = D.coldbrew.topTwoWeighted, NEFF = D.weights.kish.nEff;
 const WM = Z * Math.sqrt((WT * (1 - WT)) / NEFF);
+const STRAT = S.stratifiedProportion(byS.map((g, h) => ({ N: D.list.sizes[h], n: nS[h], x: t2[h] })));
 const SUBSHOP = I.propTest2(t2[0], nS[0], t2[1], nS[1]), SUBNEWS = I.propTest2(t2[0], nS[0], t2[3], nS[3]);
 const mean = (a) => a.reduce((s, x) => s + x, 0) / a.length;
 const brandAvg = PRICE_AUDIT.brands.map((_, j) => mean(PRICE_AUDIT.stores.map((s) => s.prices[j]).filter((p) => p != null)));
@@ -23,16 +26,21 @@ const SZ = D.sizing, CBS = COLD_BREW_SIZING;
 const buSuper = CBS.plan.supermarket.listed * CBS.plan.supermarket.cansPerWeek * 52;
 const buNatural = CBS.plan.natural.listed * CBS.plan.natural.cansPerWeek * 52;
 const buDirect = CBS.directPerMonth * 12;
+// the goal against the plan: what supermarkets would have to sell once the natural grocers and the direct channel are counted
+const goalSuper = CBS.goalCans - buNatural - buDirect;
+const goalPerStore = goalSuper / (CBS.plan.supermarket.listed * 52), goalStores = goalSuper / (CBS.plan.supermarket.cansPerWeek * 52);
 const Q = (who, theme) => FOCUS_GROUPS.quotes.find((q) => q.who === who && q.theme === theme).text;
 const FG = FOCUS_GROUPS, FGN = FG.groups.reduce((s, g) => s + g.participants, 0);
 // Yarrowdale Dental (fictional): stated against revealed demand for evening appointments
-const YD = { surveyed: 640, wouldUse: 333, slots: 120, booked: 46, weeks: 8 };
+const YD = { surveyed: 640, wouldUse: 333, slots: 120, booked: 46, weeks: 8, patients: 2400 };
+const ydPeople = (YD.wouldUse / YD.surveyed) * YD.patients, ydVisits = (ydPeople * YD.weeks) / 52;
 // a truncated axis: subscribers against other shop customers on an axis starting at 50%
 const AX0 = 50, sub = share[0] * 100, shop = share[1] * 100;
 
 // ---------------------------------------------------------------- figures
 const f1 = (x) => (Math.round(x * 10) / 10).toFixed(1);
 const pct = (v) => `${(v * 100).toFixed(1)}%`;
+const sgp = (v) => `${v < 0 ? '−' : '+'}${Math.abs(v).toFixed(1)}`;
 const money = (v) => `$${v.toFixed(2)}`;
 
 function ladderFigure() {
@@ -106,7 +114,7 @@ export default {
 
   concept: [
     { case: 'By the first week of April 2027 Ana has every result her research plan asked for: the February survey, two focus groups on 10 and 12 March, a shelf-price audit at ten stores on 15–19 March, and her top-down and bottom-up sizing of the cold brew market. M02’s launch plan for Lantern Cold Brew sells 250 ml cans at $3.49 through supermarkets, natural and specialty grocers and Lantern’s own channel, with a first-year goal of about 100,000 cans. Ana must now turn four sets of results into one decision, and write it up for the people who will carry it out.' },
-    { p: 'A stack of accurate figures doesn’t make a decision. That 38.2% of the list would definitely or probably buy, that Summit Brew averages $3.87 on the shelf and that a bottom-up estimate comes to 48,200 cans are all true, and none of them says what to do. This lesson is about the last step of research: turning findings into insights and recommendations, saying honestly what the research can’t show, and reporting it so that readers can check the work while respondents stay protected.' },
+    { p: 'A stack of accurate figures doesn’t make a decision. That, weighted, 38.2% of the list say they would definitely or probably buy, that Summit Brew averages $3.87 on the shelf and that a bottom-up estimate comes to 48,200 cans are all findings, and none of them says what to do. This lesson is about the last step of research: turning findings into insights and recommendations, saying honestly what the research can’t show, and reporting it so that readers can check the work while respondents stay protected.' },
 
     { h: 'Findings, insights and recommendations' },
     { p: 'A <g>finding</g> is a fact the research established, stated with its base and its uncertainty: weighted to the list’s segments, 38.2% say they would definitely or probably buy Cold Brew, with 61.8% of subscribers against 31.0% of newsletter-only contacts. An <g>insight</g> explains why a finding occurs, rests on more than one piece of evidence, and points to something to do that the findings alone don’t. A recommendation is the action itself, with the conditions under which it should be taken and how its result will be checked.' },
@@ -130,7 +138,7 @@ export default {
         ['Sizing (March)', `Bottom-up, ${SZ.bottomUpCans.toLocaleString('en-US')} cans in year one, ${(SZ.bottomUpShareOfSam * 100).toFixed(1)}% of the planned channels’ ${(SZ.samCans / 1e6).toFixed(2)} million; the goal of ${CBS.goalCans.toLocaleString('en-US')} is ${(SZ.goalShareOfSam * 100).toFixed(1)}%.`, 'Whether Ana’s listings and sales per store will happen.'],
       ],
     } },
-    { p: `The sources agree on the shape of the answer. The survey finds intent highest where people know Lantern; subscribers in the focus groups say “${Q('A3', 0)}” and “${Q('A3', 1)}”. People who don’t know Lantern are cooler in the survey and say, in the focus group, “${Q('B2', 1)}” and “${Q('B4', 0)}”; the audit confirms that the cheapest cans on the shelf, Daily Grind RTD’s, average ${money(PRICE - brandAvg[1])} less. And the bottom-up estimate, built from listings and sales per store rather than from intent, comes to about half the goal. That is the insight: Cold Brew’s first-year volume will come from Lantern’s own customers and from turning strangers into triers, and the second is the risk.` },
+    { p: `The sources agree on the shape of the answer. The survey finds intent highest where people know Lantern; subscribers in the focus groups say “${Q('A3', 0)}” and “${Q('A3', 1)}”. The people on the list who know Lantern least, the newsletter-only contacts, are cooler in the survey, and ready-to-drink buyers who have never bought from Lantern say, in the focus group, “${Q('B2', 1)}” and “${Q('B4', 0)}”; the audit confirms that the cheapest cans on the shelf, Daily Grind RTD’s, average ${money(PRICE - brandAvg[1])} less. And the bottom-up estimate, built from listings and sales per store rather than from intent, comes to about half the goal. That is the insight: Cold Brew’s first-year volume will come from Lantern’s own customers and from turning strangers into triers, and the second is the risk.` },
 
     { h: 'What research can and can’t show' },
     { p: 'A survey shows associations: subscribers are keener on Cold Brew. It can’t show that subscribing makes people keener, because loyalty to Lantern may lead people both to subscribe and to want its new product: a <g>confounding variable</g> of the kind B01 described. Nor can it show what people will do: intent is a <g>stated preference</g>, what people say they would choose, and <i>Survey error</i> showed that it overstates buying. A <g>revealed preference</g> is read from what people actually choose, in sales records or in a test.' },
@@ -152,13 +160,13 @@ export default {
 
     { h: 'Association, causation and experiments' },
     { p: 'A cross-tab or a chi-square test shows that two answers go together. To read it as a cause you would need to rule out every other explanation, which observational data rarely allow. B01’s comparison groups help, and so does a pattern that holds within subgroups, but the strongest design assigns the cause at random. The questions Ana’s report must leave open are causal ones: whether sampling raises repeat buying, and how much the price changes sales.' },
-    { p: 'A test market answers such questions with real purchases. A design for Cold Brew: list it in some of the planned supermarkets for twelve weeks, offer free cans in half of them chosen at random, and compare cans sold per store per week. Random assignment means the two halves differ only by chance and by the sampling, so a clear difference can be put down to the sampling. Experiments cost time and money, so run one when the decision is large and the answer uncertain, which is the value-of-research logic of <i>The research process</i>.' },
+    { p: 'A test market answers such questions with real purchases. A design for Cold Brew: list it in some of the planned supermarkets for twelve weeks, offer free cans in half of them chosen at random, and compare cans sold per store per week, in enough stores for a difference worth paying for to show (B12). Random assignment means the two halves differ only by chance and by the sampling, so a clear difference can be put down to the sampling. The stores without free cans show the <g>rate of sale</g> without sampling, which is what Ana’s planning figure assumes; the gap between the two halves shows what sampling adds. Experiments cost time and money, so run one when the decision is large and the answer uncertain, which is the value-of-research logic of <i>The research process</i>.' },
 
     { h: 'Stated and revealed preference' },
     { p: 'Stated preferences are cheap to collect and can cover products that don’t exist yet, but they are hypothetical: answering “probably” costs nothing, and people want to please a researcher, or a brand they like. Revealed preferences are what people did with their own money, but they exist only for choices people have actually faced. Use stated intent to compare groups, rank options and spot problems, and revealed behaviour, from sales data or a test, to forecast volume. When the two disagree, trust behaviour about how much and use the survey to understand who and why.' },
 
     { h: 'The research report' },
-    { p: 'A report is organised around the reader’s decision, not around the order in which the work was done. This course uses the structure below; some organisations put the limitations straight after the method, which is equally good, provided they are not left out.' },
+    { p: 'OpenStax’s <i>Principles of Marketing</i> makes preparing the report the last of its seven research steps, the point at which recommendations can be acted on. A report is organised around the reader’s decision, not around the order in which the work was done. This course uses the structure below; some organisations put the limitations straight after the method, which is equally good, provided they are not left out.' },
     { table: {
       caption: 'The parts of a research report',
       head: ['Part', 'What it does', 'In Ana’s Cold Brew report'],
@@ -173,7 +181,7 @@ export default {
         ['Appendix', 'The questionnaire, full tables, the code frame and technical details.', 'The six questions, every cross-tab, the weights.'],
       ],
     } },
-    { p: 'For a survey, the method section should cover what AAPOR’s Code of Professional Ethics and Practices (revised 2021) requires researchers to disclose when they release results: who sponsored and conducted the research, the exact question wording, the population studied, how the sample was drawn and recruited, the mode and dates of data collection, the sample sizes and the precision of the results, how the data were weighted and processed, and a general statement of the design’s limitations. For Ana’s survey that means 2,004 invitations from the mailing list, a proportional stratified sample, a web questionnaire from 2 to 16 February 2027, 516 completes (a response rate of 25.7%), weighting to segment sizes and the margins that go with it.' },
+    { p: 'For a survey, the method section should cover what AAPOR’s Code of Professional Ethics and Practices (revised 2021) requires researchers to disclose when they release results: who sponsored and conducted the research, the exact question wording, the population studied, how the sample was drawn and recruited, the mode and dates of data collection, the sample sizes and the precision of the results, how the data were weighted and processed, and a general statement of the design’s limitations. For Ana’s survey that means 2,004 invitations from the mailing list, a proportional stratified sample, a web questionnaire from 2 to 16 February 2027, 516 completes (AAPOR RR1, 25.7%), weighting to segment sizes and the margins that go with it.' },
     { p: 'The professional codes add a rule of presentation: findings, interpretation and recommendations must be told apart. The MRS Code of Conduct (2023) requires members to ensure that outputs “clearly distinguish between facts, opinion, and interpretation” (rule 60), and the ICC/ESOMAR International Code (2025 revision) asks researchers to distinguish findings from their interpretation and from any recommendations, and to give clients enough technical information to judge the results. A report that blends them leaves the reader unable to tell evidence from advocacy.' },
 
     { h: 'Honest charts and tables' },
@@ -182,12 +190,12 @@ export default {
       '<b>Show the base</b> under every bar or column, and say whether figures are weighted; give weighted figures with their unweighted base.',
       '<b>Show uncertainty</b>: intervals on bars, or margins in a note, so that readers don’t read differences smaller than the noise.',
       '<b>Start bars at zero.</b> A <g>truncated axis</g> exaggerates differences between shares. With the axis starting at 50%, subscribers’ 61.8% bar is 2.2 times the height of other shop customers’ 55.3% bar, although the true ratio is 1.12 and the two can’t be told apart.',
-      '<b>Leave out bases below your minimum</b>, or mark them clearly, rather than plotting them like the rest.',
+      '<b>Leave out bases below your minimum</b>, or mark them clearly, rather than plotting them like the rest. NCHS’s minimum of 30 (Parker et al., 2017) is one published standard.',
       '<b>Keep scales in their natural order</b> (definitely … definitely not), use the same axis for charts that will be compared, and label units: an NPS is in points, not per cent.',
     ] },
     { figure: {
       svg: honestFigure(),
-      caption: 'An honest chart of Cold Brew intent: bases under each bar, 95% intervals, a weighted overall figure labelled as such, a zero baseline, and the small segment left out with a note.',
+      caption: `An honest chart of Cold Brew intent: bases under each bar, 95% intervals, a weighted overall figure labelled as such, a zero baseline, and the small segment left out with a note. Kish’s n gives a slightly wider interval for the weighted figure than the stratified standard error of <i>Sampling methods</i> (${f1(STRAT.low * 100)}% to ${f1(STRAT.high * 100)}%).`,
       alt: `A bar chart of the share in the top two boxes for Cold Brew, with a vertical axis from 0% to 80%. Subscribers ${pct(share[0])} (base ${nS[0]}), interval about ${f1((share[0] - marg[0]) * 100)}% to ${f1((share[0] + marg[0]) * 100)}%. Other shop customers ${pct(share[1])} (base ${nS[1]}), interval ${f1((share[1] - marg[1]) * 100)}% to ${f1((share[1] + marg[1]) * 100)}%. Newsletter only ${pct(share[3])} (base ${nS[3]}), interval ${f1((share[3] - marg[3]) * 100)}% to ${f1((share[3] + marg[3]) * 100)}%. All, weighted ${pct(WT)} (base ${N}), interval ${f1((WT - WM) * 100)}% to ${f1((WT + WM) * 100)}%. Notes say the lines are 95% intervals, the weighted figure uses Kish’s effective n of 469, and workshop participants (base 27) are not shown because their base is below 30.`,
     } },
 
@@ -199,8 +207,8 @@ export default {
       align: ['l', 'l', 'l'],
       rows: [
         ['The whole interval is on one side of zero', '“higher”, “clearly higher”, “by between … and … points”', `Subscribers are clearly keener than newsletter-only contacts: by ${f1(SUBNEWS.low * 100)} to ${f1(SUBNEWS.high * 100)} points.`],
-        ['The interval includes zero and is wide', '“can’t be told apart on these data”, “we can’t say which is higher”', `Subscribers and other shop customers: the gap could be anywhere from ${f1(SUBSHOP.low * 100)} to +${f1(SUBSHOP.high * 100)} points.`],
-        ['The interval includes zero and is narrow', '“little or no difference”', 'Only when the data could have detected a difference that mattered.'],
+        ['The interval includes zero and is wide', '“can’t be told apart on these data”, “we can’t say which is higher”', `Subscribers and other shop customers: the gap could be anywhere from ${sgp(SUBSHOP.low * 100)} to ${sgp(SUBSHOP.high * 100)} points.`],
+        ['The interval includes zero and is narrow', '“little or no difference”', 'Only when the interval is narrow (the widget uses no more than 10 points wide), so the data could have detected a difference that mattered.'],
         ['The base is below the minimum', 'No figure: “too few answers to report separately”', 'Workshop participants (27).'],
       ],
     } },
@@ -208,7 +216,7 @@ export default {
 
     { h: 'Confidentiality and anonymity in reporting' },
     { p: 'People take part in research on a promise of <g>confidentiality</g>: the researcher may know who said what but won’t reveal it. Ana’s survey isn’t anonymous in the strict sense, since each answer is linked to a person on her list, so it is the reporting that must keep the promise. The MRS Code of Conduct (2023) requires members to preserve participants’ anonymity in what they share unless they have consented to be identified (rule 49), to take reasonable action to make anonymisation effective (rule 50), and to take particular care not to identify participants inadvertently, especially where samples are very small, as in business and employee projects (rule 51). The ICC/ESOMAR Code asks researchers to ensure that personal data can’t be traced by <g>deductive disclosure</g>: recognising someone by combining details that are harmless on their own.' },
-    { p: 'Three habits keep a report safe. Attribute quotations by role or group code (“participant A3, subscriber group”), never by name, and cut details that point to one person, such as an employer, a job title or a street. Suppress small cells: Ana’s 27 workshop participants include only 5 aged 55 or over, and crossing them with how they first heard of Lantern produces cells of two and three people whom the workshop leader could recognise. This <g>cell suppression</g> has a trap: if a table shows a total and every cell but one, the hidden cell can be worked out, so a second cell must be hidden too or the categories merged. And treat business-to-business work with extra care: Lantern’s 12 catering clients are few enough that a quotation about “a law firm’s board meeting” could identify one of them.' },
+    { p: 'Three habits keep a report safe. Attribute quotations by role or group code (“participant A3, subscriber group”), never by name, and cut details that point to one person, such as an employer, a job title or a street. Suppress small cells: Ana’s 27 workshop participants include only 5 aged 55 or over, and crossing them with how they first heard of Lantern produces cells of two and three people whom the workshop leader could recognise. This <g>cell suppression</g> has a trap: if a table shows a total and every cell but one, the hidden cell can be worked out, so a second cell must be hidden too or the categories merged. And treat business-to-business work with extra care: the 12 catering clients Lantern interviewed (of its 18) are few enough that a quotation about “a law firm’s board meeting” could identify one of them.' },
 
     { h: 'Acting on research' },
     { p: 'Research is worth what it changes. A recommendation should name who will do what by when, the condition under which the plan changes, and the measure that will be watched. The condition works best as an <g>action standard</g>, agreed before the results arrive so that nobody can move it to suit them. After the decision, compare what happened with what the research predicted: the gap is the best evidence on how far to trust the next survey.' },
@@ -218,7 +226,7 @@ export default {
 
   examples: [
     { level: 'simple', title: 'Sorting a festival’s research notes', fictional: true,
-      setup: 'Brackenmoor Folk Festival surveyed 1,200 ticket holders after its 2026 festival. Its marketing officer has five lines for the report: (a) “62% of first-time visitors rated the campsite poor or very poor, against 21% of returning visitors.” (b) “First-timers judge the campsite against hotels, because nobody told them what to bring; returners pack for it.” (c) “Send first-time buyers a what-to-bring guide with their tickets in 2027 and compare campsite ratings with 2026.” (d) “The campsite is unpopular.” (e) “Ratings of the music were high in every group.” Which line is the insight, and what is wrong with line (d)?',
+      setup: 'Hollowmere Folk Festival surveyed 1,200 ticket holders after its 2026 festival. Its marketing officer has five lines for the report: (a) “62% of first-time visitors rated the campsite poor or very poor, against 21% of returning visitors.” (b) “First-timers judge the campsite against hotels, because nobody told them what to bring; returners pack for it.” (c) “Send first-time buyers a what-to-bring guide with their tickets in 2027 and compare campsite ratings with 2026.” (d) “The campsite is unpopular.” (e) “Ratings of the music were high in every group.” Which line is the insight, and what is wrong with line (d)?',
       steps: [
         'Findings state what the data show, with groups and figures: (a) and (e) are findings, both checkable against the survey tables.',
         'An insight explains why and implies something to do: (b) explains the gap in (a), and it is supported by more than the ratings if the open answers mention not knowing what to bring. It is the insight.',
@@ -228,11 +236,12 @@ export default {
       answer: 'Line (b) is the insight; (a) and (e) are findings and (c) the recommendation. Line (d) should be replaced by the finding it summarises, (a), with its base.',
       interpretation: 'A report built only from lines like (d) gives readers nothing to act on. The comparison in (a) is what makes the insight possible, which is why the finding should keep its groups and figures. The guide is cheap to test, and the 2027 survey will show whether it worked, though a change in ratings could also come from the weather, so the officer should say so.' },
     { level: 'challenging', title: 'Evening appointments: what patients say and what they do', fictional: true,
-      setup: `Yarrowdale Dental runs four practices. In its patient survey, ${YD.wouldUse} of ${YD.surveyed} patients said they would use evening appointments (6 to 8 p.m.) “often” or “sometimes”. The group then opened evening sessions at one practice for ${YD.weeks} weeks, offering ${YD.slots} appointments; ${YD.booked} were booked. The manager wants to open evenings at all four practices. What should the research report say?`,
+      setup: `Yarrowdale Dental runs four practices. In its patient survey, ${YD.wouldUse} of ${YD.surveyed} patients said they would use evening appointments (6 to 8 p.m.) “often” or “sometimes”. The group then opened evening sessions at one practice, which has ${YD.patients.toLocaleString('en-US')} patients, for ${YD.weeks} weeks, offering ${YD.slots} appointments; ${YD.booked} were booked. The manager wants to open evenings at all four practices. What should the research report say?`,
       steps: [
         `Findings: ${pct(YD.wouldUse / YD.surveyed)} of surveyed patients say they would use evenings (a stated preference); ${pct(YD.booked / YD.slots)} of the evening slots offered were booked over ${YD.weeks} weeks (a revealed preference).`,
+        `Put them in the same units: ${pct(YD.wouldUse / YD.surveyed)} of the trial practice’s ${YD.patients.toLocaleString('en-US')} patients is about ${(Math.round(ydPeople / 50) * 50).toLocaleString('en-US')} people; even one evening visit each a year would put about ${Math.round(ydVisits / 10) * 10} in ${YD.weeks} weeks, against ${YD.booked} booked.`,
         'Triangulate: the two point the same way (there is some demand) but disagree on how much. Saying “sometimes” costs nothing, and the survey can’t show how often “sometimes” is; the bookings are what patients did. Trust the bookings for volume.',
-        'Ask what the trial can’t show: it ran at one practice, recently opened and perhaps not yet known to patients, and eight weeks may be too short for a habit to form. Bookings might grow; they might also have come from patients who would otherwise have booked daytime slots.',
+        'Ask what the trial can’t show: it ran at one practice, the evening sessions were new and perhaps not yet known to its patients, and eight weeks may be too short for a habit to form. Bookings might grow; they might also have come from patients who would otherwise have booked daytime slots.',
         'Recommend: keep evenings at the trial practice for another quarter, advertise them to its patients, and track both evening bookings and daytime bookings; extend to a second practice only if evening slots pass a fill rate set in advance, such as 60%.',
       ],
       answer: `The report should say that about half of patients say they would use evenings, but only ${pct(YD.booked / YD.slots)} of evening slots were booked in an ${YD.weeks}-week trial, so demand is real but much smaller than the survey suggests; extend evenings only if a longer trial reaches a fill rate set in advance.`,
@@ -240,14 +249,14 @@ export default {
     { level: 'applied', title: 'Ana’s recommendation on Cold Brew', fictional: true,
       setup: 'Using all four sources and their limits, write the recommendation section of Ana’s Cold Brew report: what to do, why, and what would change the plan.',
       steps: [
-        `State the findings with their bases: weighted, ${pct(WT)} of the list (unweighted base ${N}) in the top two boxes, roughly ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%; subscribers ${pct(share[0])} against newsletter-only ${pct(share[3])}; non-buyers in the focus groups compare ${money(PRICE)} with cans costing a dollar less; bottom-up volume ${SZ.bottomUpCans.toLocaleString('en-US')} cans against a goal of ${CBS.goalCans.toLocaleString('en-US')}.`,
-        `Draw the insight from where the sources agree: appeal rests on knowing Lantern; strangers decide on price and trial. The bottom-up estimate points the same way: natural grocers, whose shoppers pay more for quality and provenance (M02), and Lantern’s own channel supply ${buNatural.toLocaleString('en-US')} and ${buDirect.toLocaleString('en-US')} cans, more than two-thirds of it; supermarkets supply ${buSuper.toLocaleString('en-US')}.`,
-        `Recommend actions that match the evidence: launch in Lantern’s own channel and the natural grocers; plan year one on about 48,000 cans, not 100,000; aim the plan’s $${DEFAULT_PLAN.promotion.sampling.toLocaleString('en-US')} sampling budget at people who don’t know Lantern; and list in a few supermarkets first as a test market, with free cans in half of them chosen at random.`,
-        'Set the decision rule before launch: extend to the other planned supermarkets only if the test stores reach a <g>rate of sale</g> of at least 10 cans a store a week over 12 weeks, Ana’s own planning figure, and keep the sampling only if sampled stores sell clearly more.',
+        `State the findings with their bases: weighted, ${pct(WT)} of the list (unweighted base ${N}) in the top two boxes, roughly ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%; subscribers ${pct(share[0])} against newsletter-only ${pct(share[3])}; a ready-to-drink buyer in the focus group compared ${money(PRICE)} with the can they usually buy, about a dollar cheaper; bottom-up volume ${SZ.bottomUpCans.toLocaleString('en-US')} cans against a goal of ${CBS.goalCans.toLocaleString('en-US')}.`,
+        `Draw the insight from where the sources agree: appeal rests on knowing Lantern; strangers decide on price and trial. Ana’s bottom-up plan is consistent with it, though its store figures are her assumptions rather than evidence: natural grocers, whose shoppers pay more for quality and provenance (M02), and Lantern’s own channel supply ${buNatural.toLocaleString('en-US')} and ${buDirect.toLocaleString('en-US')} cans, more than two-thirds of it; supermarkets supply ${buSuper.toLocaleString('en-US')}.`,
+        `Recommend actions that match the evidence: launch in Lantern’s own channel and the natural grocers; plan year one on about ${(Math.round((buNatural + buDirect) / 1000) * 1000).toLocaleString('en-US')} cans from those two (25 × 14 × 52 + 1,200 × 12 = ${(buNatural + buDirect).toLocaleString('en-US')}), rising towards the bottom-up 48,000 if the supermarket test passes; aim the plan’s $${DEFAULT_PLAN.promotion.sampling.toLocaleString('en-US')} sampling budget at people who don’t know Lantern; and list in a few supermarkets first as a test market, with free cans in half of them chosen at random.`,
+        'Set the decision rule before launch: extend to the other planned supermarkets only if the test stores without free cans reach a rate of sale of at least 10 cans a store a week over 12 weeks, Ana’s own planning figure; the gap between the two halves shows what sampling adds, so keep the sampling only if it is clearly worth its cost.',
         'State the limits: the survey covers Lantern’s list, not the city’s ready-to-drink buyers; intent is stated, not behaviour; non-response probably flatters the results, since promoters answered more readily; the focus groups show reasons, not shares; the audit is one week; and the sizing rests on Ana’s assumptions about listings and sales per store.',
       ],
-      answer: 'Launch Cold Brew in stages: Lantern’s own channel and natural grocers first, sampling aimed at people who don’t know Lantern, and a randomised test in a few supermarkets with a decision rule of 10 cans a store a week; plan on about 48,000 cans in year one, with the 100,000-can goal treated as what success in the test would unlock.',
-      interpretation: 'The recommendation follows from the insight and is bounded by the limits: it doesn’t ask the survey to forecast volume, and it lets the test market answer the causal questions, sampling and supermarket demand, that no survey can. If the test stores sell well, the goal comes back into reach; if they don’t, Lantern has spent a fraction of a full supermarket launch to find out.' },
+      answer: 'Launch Cold Brew in stages: Lantern’s own channel and natural grocers first, sampling aimed at people who don’t know Lantern, and a randomised test in a few supermarkets with a decision rule of 10 cans a store a week in the stores without free cans. Plan year one on no more than Ana’s bottom-up 48,000 cans; the 100,000-can goal would need about 43 cans a store a week in the 30 planned supermarkets, or more supermarkets than Harbour City has at 10, so passing the test confirms the plan, not the goal.',
+      interpretation: `The recommendation follows from the insight and is bounded by the limits: it doesn’t ask the survey to forecast volume, and it lets the test market answer the causal questions, sampling and supermarket demand, that no survey can. The arithmetic behind the limit: after the natural grocers and Lantern’s own channel, the goal needs ${goalSuper.toLocaleString('en-US')} cans from supermarkets, ${goalPerStore.toFixed(1)} a store a week in 30 stores, or ${goalStores.toFixed(1)} stores at 10 cans a week, and Harbour City has ${CBS.stores.supermarket}. If the test stores sell well above the rule, Lantern can list more widely and raise its forecast; if they don’t, Lantern has spent a fraction of a full supermarket launch to find out.` },
   ],
 
   demo: [
@@ -265,10 +274,10 @@ export default {
   ],
 
   application: [
-    { case: `Ana’s executive summary, as she presents it to her team on 6 April 2027: “Recommendation: launch Lantern Cold Brew in stages. The people who know Lantern want it: weighted to our list, ${pct(WT)} say they would definitely or probably buy (roughly ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%; 516 completes), with subscribers far keener than newsletter-only contacts (${Math.round(share[0] * 100)}% against ${Math.round(share[3] * 100)}%). People who don’t know Lantern compare ${money(PRICE)} with cans that cost a dollar less and want to try before they buy. Our bottom-up estimate is about 48,000 cans in year one, half the goal. So we launch in our own channel and natural grocers, aim free cans at strangers, and test a few supermarkets before listing in the rest. These are stated intentions from our own customers, not forecasts of sales.”` },
+    { case: `Ana’s executive summary, as she presents it to her team on 6 April 2027: “Recommendation: launch Lantern Cold Brew in stages. The people who know Lantern want it: weighted to our list, ${pct(WT)} say they would definitely or probably buy (roughly ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%; 516 completes), with subscribers far keener than newsletter-only contacts (${Math.round(share[0] * 100)}% against ${Math.round(share[3] * 100)}%). In our focus group, ready-to-drink buyers who don’t know Lantern compared ${money(PRICE)} with cans that cost a dollar less and wanted to try before buying. Our bottom-up estimate is about 48,000 cans in year one, half the goal, which this plan can’t reach. So we launch in our own channel and natural grocers, planning on about 33,000 cans, aim free cans at strangers, and test a few supermarkets before listing in the rest. These are stated intentions from our own customers, not forecasts of sales.”` },
     { p: '<b>She answers the question behind the question.</b> Her team asks whether 38% means the goal is safe. Ana explains that the figure describes people on Lantern’s own list, who know the brand, and that intent overstates buying; the sizing, built from stores and sales per store, is the better guide to volume. She shows the chart with intervals and leaves the workshop participants out, saying why.' },
-    { p: '<b>She keeps the respondents out of it.</b> A team member asks who said the can should have a lantern on it. Ana quotes the remark by its code, A2, as in the report, and declines to say more: participants were promised anonymity. The catering interviews from November 2026 appear only as counts of reasons, because 12 clients are few enough to recognise.' },
-    { p: '<b>She writes down what would change her mind.</b> The decision log records the plan, the owner of each action, and the rule: if the test supermarkets average fewer than 10 cans a store a week over 12 weeks, Lantern stays out of the remaining supermarkets for 2027 and puts the money into its own channel. When the test ends she will compare its sales with the bottom-up assumptions, and the gap will tell her how far to trust the next round of research.' },
+    { p: '<b>She keeps the respondents out of it.</b> A team member asks who said the can should have a lantern on it. Ana quotes the remark by its code, A2, as in the report, and declines to say more: participants were promised confidentiality. The catering interviews from November 2026 appear as counts of reasons, and any quotation is attributed only to “a catering client”, with details that could point to the firm removed, because 12 clients are few enough to recognise.' },
+    { p: '<b>She writes down what would change her mind.</b> The decision log records the plan, the owner of each action, and the rule: if the test supermarkets without free cans average fewer than 10 cans a store a week over 12 weeks, Lantern stays out of the remaining supermarkets for 2027 and puts the money into its own channel. When the test ends she will compare its sales with the bottom-up assumptions, and the gap will tell her how far to trust the next round of research.' },
   ],
 
   summary: [
@@ -295,7 +304,7 @@ export default {
     { text: 'Gomez Albrecht, M., Green, M. &amp; Hoffman, L. (2023). <i>Principles of Marketing</i>, section 6.3, “Steps in a Successful Marketing Research Plan” (step 7, preparing the research report and recommendations). OpenStax.', url: 'https://openstax.org/books/principles-marketing/pages/6-3-steps-in-a-successful-marketing-research-plan', checked: '2026-10-24' },
     { text: 'American Association for Public Opinion Research (2021). <i>AAPOR Code of Professional Ethics and Practices</i>, section III.A, “Disclosure Standards”.', url: 'https://aapor.org/standards-and-ethics/disclosure-standards', checked: '2026-10-24' },
     { text: 'Market Research Society (2023). <i>MRS Code of Conduct</i>, effective 15 May 2023: rules 49–51 (participant anonymity) and 58–64 (reporting).', url: 'https://www.mrs.org.uk/pdf/MRS-code-of-conduct-2023.pdf', checked: '2026-10-24' },
-    { text: 'ICC and ESOMAR (2025). <i>ICC/ESOMAR International Code on Market, Opinion and Social Research and Data Analytics</i>, fifth edition: articles 6 (data protection, deductive disclosure), 7 (fit for purpose), 8 (transparency) and 9 (publishing findings).', url: 'https://community.esomar.org/uploads/public/knowledge-and-standards/codes-and-guidelines/ICCESOMAR-International-Code_English.pdf', checked: '2026-10-24' },
+    { text: 'ICC and ESOMAR (2025). <i>ICC/ESOMAR International Code on Market, Opinion and Social Research and Data Analytics</i> (2025 revision): articles 6 (data protection, deductive disclosure), 7 (fit for purpose), 8 (transparency) and 9 (publishing findings).', url: 'https://community.esomar.org/uploads/public/knowledge-and-standards/codes-and-guidelines/ICCESOMAR-International-Code_English.pdf', checked: '2026-10-24' },
     { text: 'Parker, J. D., Talih, M., Malec, D. J. et al. (2017). <i>National Center for Health Statistics Data Presentation Standards for Proportions</i>. Vital and Health Statistics, Series 2, No. 175.', url: 'https://stacks.cdc.gov/view/cdc/47786', checked: '2026-10-24' },
   ],
 
@@ -358,10 +367,10 @@ export default {
     // truncated axis
     { what: 'Apparent ratio with axis at 50%', value: (sub - AX0) / (shop - AX0), shown: 2.2, tol: 0.05 },
     { what: 'True ratio', value: sub / shop, shown: 1.12 },
-    // Brackenmoor
-    { what: 'Brackenmoor ticket holders', value: 1200, shown: 1200 },
-    { what: 'Brackenmoor first-timers poor %', value: 62, shown: 62 },
-    { what: 'Brackenmoor returners poor %', value: 21, shown: 21 },
+    // Hollowmere
+    { what: 'Hollowmere ticket holders', value: 1200, shown: 1200 },
+    { what: 'Hollowmere first-timers poor %', value: 62, shown: 62 },
+    { what: 'Hollowmere returners poor %', value: 21, shown: 21 },
     // Yarrowdale
     { what: 'Yarrowdale would use %', value: (YD.wouldUse / YD.surveyed) * 100, shown: 52.0, tol: 0.05 },
     { what: 'Yarrowdale about half', value: YD.wouldUse / YD.surveyed, shown: 0.5, tol: 0.03 },
@@ -369,6 +378,29 @@ export default {
     { what: 'Yarrowdale practices', value: 4, shown: 4 },
     { what: 'Yarrowdale fill-rate rule %', value: 60, shown: 60 },
     { what: 'Yarrowdale weeks', value: YD.weeks, shown: 8 },
+    { what: 'Yarrowdale trial-practice patients', value: YD.patients, shown: 2400 },
+    { what: 'Yarrowdale stated users at the trial practice (about)', value: ydPeople, shown: 1250, tol: 25 },
+    { what: 'Yarrowdale visits in 8 weeks at one a year (about)', value: ydVisits, shown: 190, tol: 5 },
+    { what: 'Yarrowdale booked', value: YD.booked, shown: 46 },
+    // the goal against the plan
+    { what: 'Supermarket cans the goal needs', value: goalSuper, shown: 67400 },
+    { what: 'Goal: cans a store a week in 30 supermarkets', value: goalPerStore, shown: 43.2, tol: 0.05 },
+    { what: 'Goal: about 43 cans a store a week', value: goalPerStore, shown: 43, tol: 0.5 },
+    { what: 'Goal: supermarkets needed at 10 a week', value: goalStores, shown: 129.6, tol: 0.05 },
+    { what: 'Harbour City supermarkets', value: CBS.stores.supermarket, shown: 120 },
+    { what: 'More supermarkets than the city has', value: Number(goalStores > CBS.stores.supermarket), shown: 1 },
+    { what: 'Planned supermarket listings', value: CBS.plan.supermarket.listed, shown: 30 },
+    { what: 'Own channel and natural grocers', value: buNatural + buDirect, shown: 32600 },
+    { what: 'About 33,000 cans', value: buNatural + buDirect, shown: 33000, tol: 500 },
+    { what: 'Natural listings × cans a week', value: CBS.plan.natural.listed * CBS.plan.natural.cansPerWeek, shown: 25 * 14 },
+    // stratified interval for the weighted top-two share
+    { what: 'Stratified low %', value: STRAT.low * 100, shown: 34.2, tol: 0.05 },
+    { what: 'Stratified high %', value: STRAT.high * 100, shown: 42.3, tol: 0.05 },
+    { what: 'Stratified estimate equals weighted share', value: STRAT.p, shown: WT, tol: 1e-12 },
+    { what: 'Kish interval wider than stratified', value: Number(WM > STRAT.margin), shown: 1 },
+    // M01
+    { what: 'Lantern catering clients (M01)', value: BUSINESS.catering.clients, shown: 18 },
+    { what: 'OpenStax research steps', value: 7, shown: 7 },
     // codes
     { what: 'MRS rule on facts and interpretation', value: 60, shown: 60 },
     { what: 'AAPOR code revision year', value: 2021, shown: 2021 },

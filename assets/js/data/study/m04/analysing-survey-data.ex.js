@@ -136,16 +136,18 @@ export const guided = [
           { formula: '=F2/F7', say: 'Without $ the base slides down as you fill: G3 divides by F8, an empty cell, and shows #DIV/0!. Lock it: $F$7.' },
           { formula: '=F2/516', say: 'Point at the base in F7 rather than typing 516, so the percentages stay right when the counts change.' },
           { formula: `=F2/${L}`, say: '517 is the last row of the data, not the number of respondents: row 1 holds the headings. Divide by the base in F7.' },
+          { formula: '=F2/$F$7*100', say: 'The cells are formatted as percentages, so Excel multiplies by 100 for you: leave out ×100.' },
+          { formula: `=F2/COUNTA($C$2:$C$${L})`, say: 'That recounts the base from the raw data; use the base already in F7 ($F$7), so the percentages divide by the same total the table shows.' },
         ],
         hints: ['A percentage of the base is the count divided by the base.', 'Lock the base so it doesn’t move: <x>=F2/$F$7</x>, formatted as a percentage.'],
       },
       {
         id: 'm04-as-g1-s3', type: 'mc',
         prompt: 'Which note belongs under the finished table?',
-        options: ['Base: all 516 completes, unweighted', 'Base: the 2,004 people invited to the survey', 'Base: the 572 who started the questionnaire', 'None: shares that add to 100% need no base'],
+        options: ['Base: all 516 completes (partials excluded), unweighted', 'Base: the 2,004 people invited to the survey in February', 'Base: the 572 completes and partials, all who answered', 'None: shares that add up to 100% need no base'],
         answer: 0,
         feedback: {
-          1: 'The 1,488 who didn’t complete gave no answer to Q2, so they can’t be in the base of these percentages.',
+          1: 'Most of the 1,488 who didn’t complete never answered Q2, and Ana’s rule leaves out the partials who did, so they can’t be in the base of these percentages.',
           2: 'Ana’s rule analyses completes only, so the 56 partials aren’t in the base.',
           3: 'Shares always add to about 100% whatever the base; the reader still needs to know 100% of whom, and of how many.',
         },
@@ -156,7 +158,7 @@ export const guided = [
   {
     id: 'm04-as-g2', type: 'steps', kind: 'applied',
     prompt: 'Cross Cold Brew intent (column C) with segment (column B) to see which segments are keenest.',
-    solution: `Counts: <x>=COUNTIFS($B$2:$B$517,$E2,$C$2:$C$517,F$1)</x> filled to J5. Row percentages: <x>=F2/$K2</x> filled to J11, so each segment’s row adds to 100%. Subscribers said “definitely” ${(CB.rowPct[0][0] * 100).toFixed(1)}% of the time, newsletter-only respondents ${(CB.rowPct[3][0] * 100).toFixed(1)}%: the row view answers “which segment is keener?”.`,
+    solution: `Counts: <x>=COUNTIFS($B$2:$B$517,$E2,$C$2:$C$517,F$1)</x> filled to J5. Row percentages: <x>=F2/$K2</x> in F9, filled to J12, so each segment’s row adds to 100%. Subscribers said “definitely” ${(CB.rowPct[0][0] * 100).toFixed(1)}% of the time, newsletter-only respondents ${(CB.rowPct[3][0] * 100).toFixed(1)}%: the row view answers “which segment is keener?”.`,
     steps: [
       {
         id: 'm04-as-g2-s1', type: 'formula',
@@ -186,6 +188,8 @@ export const guided = [
           { formula: '=F2/$K$2', say: '$K$2 fixes the row too, so every segment is divided by the subscribers’ base. Fix only the column: $K2.' },
           { formula: '=F2/$K$6', say: 'That divides by all 516 completes, a share of the grand total. Each segment’s row should add to 100%: divide by its own base, $K2.' },
           { formula: '=F2/K2', say: 'Without $ the base slides across as you fill: G9 divides by L2, which is empty. Fix the column: $K2.' },
+          { formula: '=F2/$K2*100', say: 'The cells are formatted as percentages, so Excel multiplies by 100 for you: leave out ×100.' },
+          { formula: `=F2/COUNTIF($B$2:$B$${L},$E2)`, say: 'That recounts the base from the raw data; use the base already in K2 ($K2), so each percentage divides by its own row’s total.' },
         ],
         hints: ['A row percentage divides each cell by its row’s total, the segment’s base.', 'The bases are in column K: lock the column but not the row, <x>=F2/$K2</x>.'],
       },
@@ -206,7 +210,7 @@ export const guided = [
   {
     id: 'm04-as-g3', type: 'formula', kind: 'applied',
     prompt: 'Column B holds each respondent’s segment and column C the 0–10 recommendation score. In F2, calculate the NPS of the segment in E2, as a number from −100 to +100, in a formula that can be filled down to F5.',
-    sheet: { cells: npsSheet },
+    sheet: { cells: npsSheet, fixed: [`C2:C${L}`], vary: { E2: ['Newsletter only', 'Workshop participant'] } },
     cell: 'F2', fill: 'F2:F5',
     answer: `=100*(COUNTIFS($B$2:$B$${L},E2,$C$2:$C$${L},">=9")-COUNTIFS($B$2:$B$${L},E2,$C$2:$C$${L},"<=6"))/COUNTIF($B$2:$B$${L},E2)`,
     alt: [
@@ -306,13 +310,13 @@ export const independent = [
       { formula: `=MEDIAN(C2:C${L})`, say: 'That is the median of everyone, non-buyers included; it happens to match here but not when F1 changes. Keep only the respondents who bought at least F1 cups.' },
       { formula: `=MEDIAN(IF(C2:C${L}>F1,C2:C${L}))`, say: '“>” leaves out the people who bought exactly F1 cups. “At least” is >=.' },
     ],
-    solution: `<x>=MEDIAN(IF(C2:C517>=F1,C2:C517))</x> (or <x>=MEDIAN(FILTER(C2:C517,C2:C517>=F1))</x>) gives ${median(R.filter((r) => r.cups >= 1).map((r) => r.cups))} cups among the ${R.filter((r) => r.cups >= 1).length} who bought at least one, against a mean of ${mean(R.filter((r) => r.cups >= 1).map((r) => r.cups)).toFixed(2)}. The median stays at ${median(R.filter((r) => r.cups >= 1).map((r) => r.cups))} when the ${N - R.filter((r) => r.cups >= 1).length} non-buyers are left out, because so many respondents bought 2, 3 or 4 cups; the mean rises from ${mean(R.map((r) => r.cups)).toFixed(2)}, because every zero had pulled it down. The same holds by segment: every segment’s median is ${median(cupsBy[0])}, while the means run from ${Math.min(...cupsBy.map(mean)).toFixed(2)} to ${Math.max(...cupsBy.map(mean)).toFixed(2)}.`,
+    solution: `<x>=MEDIAN(IF(C2:C517>=F1,C2:C517))</x> (or <x>=MEDIAN(FILTER(C2:C517,C2:C517>=F1))</x>) gives ${median(R.filter((r) => r.cups >= 1).map((r) => r.cups))} cups among the ${R.filter((r) => r.cups >= 1).length} who bought at least one, against a mean of ${mean(R.filter((r) => r.cups >= 1).map((r) => r.cups)).toFixed(1)}. The median stays at ${median(R.filter((r) => r.cups >= 1).map((r) => r.cups))} when the ${N - R.filter((r) => r.cups >= 1).length} non-buyers are left out, because so many respondents bought 2, 3 or 4 cups; the mean rises from ${mean(R.map((r) => r.cups)).toFixed(1)}, because every zero had pulled it down. The same holds by segment: every segment’s median is ${median(cupsBy[0])}, while the means run from ${Math.min(...cupsBy.map(mean)).toFixed(1)} to ${Math.max(...cupsBy.map(mean)).toFixed(1)}. In Excel 2019 and earlier, enter <x>=MEDIAN(IF(…))</x> with Ctrl+Shift+Enter; FILTER needs Excel 2021, Excel 2024 or Microsoft 365.`,
   },
   {
     id: 'm04-as-i3', type: 'mc', kind: 'conceptual',
     prompt: `A colleague’s draft says: “Newsletter-only contacts are Cold Brew’s best prospects: ${(CB.colPct[3][0] * 100).toFixed(1)}% of the people who would definitely buy are newsletter-only.” What is wrong with the conclusion?`,
     options: [
-      'It reads a column share as a rate; only 10.4% of newsletter-only people said “definitely”',
+      'It reads a column share as a rate: only 10.4% of newsletter-only respondents said “definitely”',
       'It should have used the weighted percentage, which would make the newsletter-only share larger still',
       'Nothing: the segment supplying the largest share of definite buyers is by definition the keenest',
       'The figure is right only if the four segments had the same number of completes in the survey',
@@ -355,7 +359,7 @@ export const independent = [
       { value: r2((OTB.score - OTA.score) / (OTA.se + OTB.se)), say: 'You added the standard errors. Variances add, so the standard error of the difference is √(SE₁² + SE₂²).' },
       { value: r2((OTB.score - OTA.score) / OTB.se), say: 'You used only the autumn standard error. Both scores are estimates, so both contribute: √(SE₁² + SE₂²).' },
     ],
-    solution: `SEs: spring 100 × √((0.420 + 0.220 − 0.200²) ÷ 450) ≈ ${OTA.se.toFixed(2)}; autumn ≈ ${OTB.se.toFixed(2)}. The change is ${(OTB.score - OTA.score).toFixed(1)} points with a standard error of √(${OTA.se.toFixed(2)}² + ${OTB.se.toFixed(2)}²) ≈ ${Math.hypot(OTA.se, OTB.se).toFixed(2)}, so z ≈ ${OTz.toFixed(2)} and the two-sided p-value is about ${(2 * (1 - normCdf(Math.abs(OTz)))).toFixed(2)}. A rise of nearly 7 points is within what two samples of about 400 produce by chance: the centre can’t say members became more likely to recommend it.`,
+    solution: `SEs: spring 100 × √((0.420 + 0.220 − 0.200²) ÷ 450) ≈ ${OTA.se.toFixed(2)}; autumn ≈ ${OTB.se.toFixed(2)}. The change is ${(OTB.score - OTA.score).toFixed(1)} points with a standard error of √(${OTA.se.toFixed(2)}² + ${OTB.se.toFixed(2)}²) ≈ ${Math.hypot(OTA.se, OTB.se).toFixed(2)}, so z ≈ ${OTz.toFixed(2)} and the two-sided p-value is about ${(2 * (1 - normCdf(Math.abs(OTz)))).toFixed(2)}. A rise of nearly 7 points is within what samples of 450 and 420 produce by chance: the centre can’t say members became more likely to recommend it.`,
   },
   {
     id: 'm04-as-i6', type: 'multi', kind: 'conceptual',
@@ -381,13 +385,16 @@ export const independent = [
 const kWeighted = { ...RC(['respondent', 'segment', 'nps']), D1: 'weight', ...col('D', 2, wts), F1: 'weighted NPS' };
 const kTop2 = { ...RC(['respondent', 'segment', 'cold_brew']), E2: 'segment', F2: 'Shop customer', E3: 'top-two-box share' };
 const KB = S.nps({ promoters: 124, passives: 118, detractors: 68 });
+// a hotel group (fictional): business against leisure guests
+const HB = S.nps({ promoters: 8, passives: 11, detractors: 5 }), HL = S.nps({ promoters: 200, passives: 154, detractors: 56 });
+const hDse = Math.hypot(HB.se, HL.se);
 
 export const check = [
   {
     id: 'm04-as-k1', type: 'mc', kind: 'conceptual',
     prompt: 'A cinema chain (fictional) reports a Net Promoter Score of +12 from 800 customers. Which statement is correct?',
     options: [
-      'Promoters exceed detractors by 12 percentage points of the 800',
+      'Promoters exceed detractors by 12 percentage points of the 800 customers',
       '12% of the 800 customers said they would recommend the cinema chain',
       'The average answer to the 0–10 question was 1.2 points above the midpoint',
       'The score rose by 12% compared with the previous survey of its customers',
@@ -415,7 +422,7 @@ export const check = [
   {
     id: 'm04-as-k3', type: 'formula', kind: 'applied',
     prompt: 'Column C holds each respondent’s 0–10 recommendation score and column D their weight (list size ÷ completes for their segment). In F2, calculate the weighted NPS for the whole mailing list, as a number from −100 to +100.',
-    sheet: { cells: kWeighted }, cell: 'F2',
+    sheet: { cells: kWeighted, fixed: [`C2:C${L}`] }, cell: 'F2',
     answer: `=100*(SUMIFS(D2:D${L},C2:C${L},">=9")-SUMIFS(D2:D${L},C2:C${L},"<=6"))/SUM(D2:D${L})`,
     alt: [
       `=100*(SUMPRODUCT(D2:D${L}*(C2:C${L}>=9))-SUMPRODUCT(D2:D${L}*(C2:C${L}<=6)))/SUM(D2:D${L})`,
@@ -448,29 +455,29 @@ export const check = [
   },
   {
     id: 'm04-as-k5', type: 'mc', kind: 'applied',
-    prompt: `Ana’s draft report says: “Workshop participants (NPS ${sg(WS.score)}) are less enthusiastic than subscribers (${sg(NPSS[0].score)}).” The workshop base is ${WS.n} and its margin of error ±${WS.margin.toFixed(1)} points. What should she do?`,
+    prompt: `A hotel group’s draft report (fictional) says: “Business guests (NPS ${sg(HB.score)}, base ${HB.n}) are less loyal than leisure guests (NPS ${sg(HL.score)}, base ${HL.n}).” The group’s minimum base for any figure is 30. What should the report do?`,
     options: [
-      'Cut the sentence: the base is below 30 and the two intervals overlap widely',
-      'Keep it, as a gap of 21 points is too large to have been produced by chance',
-      'Keep it, but round both scores to whole numbers to avoid false precision',
-      'Weight the workshop participants up to 150 so their base is big enough',
+      'Drop the comparison: 24 business guests is below the minimum base',
+      'Keep it: with 410 leisure guests behind it, the comparison is reliable',
+      `Keep it, as a gap of ${(HL.score - HB.score).toFixed(1)} points is too large to arise by chance alone`,
+      'Weight the 24 business guests up so their base reaches 30 or more',
     ],
     answer: 0,
     feedback: {
-      1: 'With margins of about ±30 and ±14 points, a 21-point gap is well within what chance produces; and the base is below the minimum anyway.',
-      2: 'Rounding hides the decimals, not the uncertainty: the comparison is still unsupported.',
-      3: 'Weighting doesn’t create information: the figure would still rest on 27 answers.',
+      1: `A comparison is only as precise as its smaller group: the business guests’ score has a margin of about ±${HB.margin.toFixed(0)} points.`,
+      2: `The gap’s standard error is about ${hDse.toFixed(0)} points (z ≈ ${((HL.score - HB.score) / hDse).toFixed(1)}): well within what chance produces, and the base is under the minimum anyway.`,
+      3: 'Weights change how much answers count, not how many there are: the score would still rest on 24 guests.',
     },
-    solution: `The workshop interval runs from about ${sg(WS.low)} to ${sg(WS.high)} and the subscribers’ from ${sg(NPSS[0].low)} to ${sg(NPSS[0].high)}: the data can’t tell the two apart, and 27 is below the minimum base of 30. The sentence goes; workshop participants still count in the all-respondent and weighted figures.`,
+    solution: `The business guests’ NPS rests on ${HB.n} answers (${HB.promoters} promoters, ${HB.passives} passives, ${HB.detractors} detractors), a margin of about ±${HB.margin.toFixed(1)} points; the leisure guests’ margin is about ±${HL.margin.toFixed(1)}. The gap of ${(HL.score - HB.score).toFixed(1)} points has a standard error of √(${HB.se.toFixed(1)}² + ${HL.se.toFixed(1)}²) ≈ ${hDse.toFixed(1)}, so z ≈ ${((HL.score - HB.score) / hDse).toFixed(2)}: not distinguishable from chance. With a base below the minimum, the report should drop the comparison and keep business guests in the all-guest figures only.`,
   },
   {
     id: 'm04-as-k6', type: 'mc', kind: 'conceptual',
     prompt: 'An energy supplier (fictional) asked 400 customers, “Will you switch supplier this year?”: 112 said yes, 228 no and 60 “don’t know”. Its report says “28% plan to switch.” Which base did it use, and what should the table show?',
     options: [
-      'All 400; show “don’t know” (15%) as its own row',
+      'All 400, “don’t know” included; show it (15%) as its own row',
       'The 340 who answered yes or no; leave “don’t know” out',
       'The 228 who said no; switchers are compared with stayers',
-      'The 112 who said yes; the base is the group being described',
+      'The 112 who said yes, since the base is the group being described',
     ],
     answer: 0,
     feedback: {

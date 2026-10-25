@@ -11,8 +11,7 @@ const Z = normInv(0.975);
 // Fenwold Buses (fictional): 40 riders' 0–10 ratings of their route, 99 = “don't know”
 const ROUTE = Array.from({ length: 40 }, (_, i) => (i % 2 === 0 ? 'Express' : 'Local'));
 const SCORE = [8, 7, 99, 9, 6, 10, 5, 8, 99, 7, 9, 4, 8, 6, 99, 10, 7, 3, 9, 8, 6, 99, 7, 9, 5, 8, 0, 2, 99, 7, 8, 6, 9, 7, 99, 8, 5, 9, 6, 7];
-const DK = SCORE.map((v, i) => (v === 99 ? `C${i + 2}` : null)).filter(Boolean);
-const busSheet = { cells: { A1: 'rider', B1: 'route type', C1: 'rating (0–10; 99 = don’t know)', ...col('A', 2, ROUTE.map((_, i) => i + 1)), ...col('B', 2, ROUTE), ...col('C', 2, SCORE), E1: 'route type', F1: 'Express', E2: 'mean rating' }, fixed: DK, vary: { F1: ['Local'] } };
+const busSheet = { cells: { A1: 'rider', B1: 'route type', C1: 'rating (0–10; 99 = don’t know)', ...col('A', 2, ROUTE.map((_, i) => i + 1)), ...col('B', 2, ROUTE), ...col('C', 2, SCORE), E1: 'route type', F1: 'Express', E2: 'mean rating' }, fixed: ['C2:C41'], vary: { F1: ['Local'], C2: [3, 9], C5: [2, 10] } };
 const express = SCORE.filter((v, i) => ROUTE[i] === 'Express');
 const mean = (a) => a.reduce((s, x) => s + x, 0) / a.length;
 const exMean = mean(express.filter((v) => v !== 99)), exWith99 = mean(express);
@@ -87,7 +86,7 @@ export const items = [
   },
   {
     id: 'm04-m4-5', lesson: 'analysing-survey-data', type: 'mc', kind: 'applied',
-    prompt: 'Glenmarrow Books (fictional) surveyed 350 customers about how many books they bought last year: the median is 6 and the mean 14.2, because two respondents who run reading groups bought over 300 each. The shop wants a figure for “a typical customer” and an estimate of the total books bought by its 9,000 customers. Which figures should it use?',
+    prompt: 'Glenmarrow Books (fictional) surveyed 350 customers about how many books they bought last year: the median is 6 and the mean 8.1, pulled up by two respondents who run reading groups and bought over 300 each. The shop wants a figure for “a typical customer” and an estimate of the total books bought by its 9,000 customers. Which figures should it use?',
     options: [
       'The median for a typical customer, and the mean, after checking the outliers, for the total',
       'The mean for both, since it uses every answer while the median ignores almost all of them',
@@ -96,11 +95,11 @@ export const items = [
     ],
     answer: 0,
     feedback: {
-      1: 'The mean describes no typical customer here: most bought far fewer than 14 books.',
+      1: 'The mean describes no typical customer here: most bought far fewer than 8 books.',
       2: 'A total is the mean times the number of customers; the median times 9,000 would leave out the heavy buyers entirely.',
       3: 'This swaps the two: the median describes the middle customer, the mean is what multiplies up to a total.',
     },
-    solution: 'For a right-skewed count the median (6) describes the typical customer. A total needs the mean, because mean × 9,000 = total books, but two answers of over 300 move it a lot: check they are genuine and whether reading groups are a separate kind of customer, and report the total with that caveat.',
+    solution: 'For a right-skewed count the median (6) describes the typical customer. A total needs the mean, because mean × 9,000 = total books, but two answers of over 300 add at least 1.7 books to it, some 15,000 books across 9,000 customers: check they are genuine and whether reading groups are a separate kind of customer, and report the total with that caveat.',
   },
 
   // ---------------------------------------------------------------- insights-and-reporting
@@ -127,7 +126,7 @@ export const items = [
     id: 'm04-m4-7', lesson: 'insights-and-reporting', type: 'mc', kind: 'applied',
     prompt: 'In a cinema chain’s member survey (fictional), 44% said they would come to 10 p.m. screenings at least once a month. Before scheduling late screenings at all 12 of its cinemas, what should the chain do?',
     options: [
-      'Try late screenings at a few randomly chosen cinemas and count tickets sold',
+      'Try late screenings at a few randomly chosen cinemas and count the tickets sold',
       'Schedule them at all 12 cinemas, since 44% of members is a large and reliable share',
       'Repeat the survey with a sample twice as large to narrow the margin of error first',
       'Hold focus groups with members to find out how many of them would really attend',

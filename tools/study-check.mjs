@@ -598,8 +598,12 @@ async function checkAssessments(course) {
  *  backlog stays visible without failing the run; a course in progress gets warnings. */
 async function cueChecks(course, r, { modules, diagnostic, final, project }) {
   const say = catalog.COURSE[course].status === 'complete' ? (m) => r.note(m) : (m) => r.warn(m);
-  const lessonEx = [];
-  const cue = (where, items) => { const [k, n] = longestKeys(items); if (n >= 3 && k > n / 3) say(`${where}: the keyed option is the longest in ${k} of ${n} multiple-choice items; aim for a third or fewer (make wrong options as specific as the key)`); };
+  const lessonEx = [], multiCounts = [];
+  const cue = (where, items) => {
+    const [k, n] = longestKeys(items); if (n >= 3 && k > n / 3) say(`${where}: the keyed option is the longest in ${k} of ${n} multiple-choice items; aim for a third or fewer (make wrong options as specific as the key)`);
+    // a fixed number of right answers in the select-all items is a cue too ("pick three"): collected for the module
+    multiCounts.push(...withSteps(items).filter((x) => x.type === 'multi' && Array.isArray(x.answer)).map((x) => [where, x.answer.length, x.options?.length]));
+  };
   for (const { slug } of lessonsOf(course)) {
     const X = await loadEx(course, slug);
     if (!X) continue;
@@ -616,6 +620,14 @@ async function cueChecks(course, r, { modules, diagnostic, final, project }) {
   const P = project?.default || project?.project;
   const pItems = (P?.stages || []).flatMap((s) => s.items || []);
   if (pItems.length) cue('project', pItems);
+  // per module (its lessons' exercises and its test) and for the whole course: the same number of right options in
+  // every select-all item of six or more lets a student learn to pick that many
+  const mods = catalog.COURSE[course].modules.map((m) => ({ name: `module ${m.n}`, files: new Set([...m.lessons.map((l) => `${l}.ex`), `assess-m${m.n}`]) }));
+  for (const m of [...mods, { name: 'the course', files: null }]) {
+    const xs = multiCounts.filter(([w]) => !m.files || m.files.has(w));
+    const shape = new Set(xs.map(([, k, o]) => `${k}/${o}`));
+    if (xs.length >= 6 && shape.size === 1) say(`${m.name}: all ${xs.length} select-all items have exactly ${xs[0][1]} right options out of ${xs[0][2]}; vary the number so students can’t learn to pick that many`);
+  }
   const near = (x, pool, what) => { let best = null; for (const y of pool) { const j = jaccard(x.sh, y.sh); if (j >= NEAR_COPY && (!best || j > best.j)) best = { j, y }; } if (best) say(`${x.where} is close to ${what} ${best.y.where} (similarity ${best.j.toFixed(2)}): a student could answer from memory of it; change the scenario and the method's angle, not only the numbers`); };
   for (const x of assess) near(x, lessonEx, 'lesson exercise');
   for (const x of assess.filter((a) => !a.module)) near(x, assess.filter((a) => a.module), 'module-test item');
