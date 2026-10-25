@@ -268,9 +268,9 @@ export const check = [
     prompt: 'Complete the sentences for a fictional shop’s monthly report.',
     text: 'The returning-customer share rose from 30% to 36%: up [[0]], a relative rise of [[1]]. Visits rose from 8,000 to 10,000, up [[2]].',
     blanks: [
-      { options: ['6 percentage points', '6%', '20 percentage points'], answer: 0 },
+      { options: ['6%', '6 percentage points', '20 percentage points'], answer: 1 },
       { options: ['20%', '6%', '16.7%'], answer: 0 },
-      { options: ['25%', '20%', '2,000 percentage points'], answer: 0 },
+      { options: ['20%', '2,000 percentage points', '25%'], answer: 2 },
     ],
     solution: 'The share changed by 36 − 30 = 6 percentage points, a relative rise of 6 ÷ 30 = 20%. Visits are a count, so their change is a plain percentage: 2,000 ÷ 8,000 = 25%.',
   },

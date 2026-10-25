@@ -170,10 +170,10 @@ export const guided = [
     prompt: 'Complete the reasoning for a business whose inventory and accounts payable both rose during the year.',
     text: 'Inventory rose, so the business [[0]] more than it sold, and the indirect method [[1]] the increase. Accounts payable also rose, so the business [[2]] for everything it bought, and the indirect method [[3]] that increase.',
     blanks: [
-      { options: ['bought', 'sold', 'collected'], answer: 0 },
+      { options: ['sold', 'bought', 'collected'], answer: 1 },
       { options: ['subtracts', 'adds', 'ignores'], answer: 0 },
-      { options: ['has not yet paid', 'has already paid', 'will never pay'], answer: 0 },
-      { options: ['adds', 'subtracts', 'ignores'], answer: 0 },
+      { options: ['has already paid', 'will never pay', 'has not yet paid'], answer: 2 },
+      { options: ['subtracts', 'adds', 'ignores'], answer: 1 },
     ],
     fixed: true,
     hints: ['Cost of goods sold covers only what was sold; the extra stock was bought with cash or on credit.', 'Unpaid bills are expenses or purchases without cash going out yet.'],

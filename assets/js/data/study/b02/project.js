@@ -254,7 +254,7 @@ export default {
           text: '46176 is [[0]]. 46186 is [[1]].',
           blanks: [
             { options: ['2026-06-02', '2026-06-03', '2026-06-04', '2026-05-03'], answer: 1 },
-            { options: ['2026-06-12', '2026-06-13', '2026-06-14', '2026-05-13'], answer: 1 },
+            { options: ['2026-06-13', '2026-06-12', '2026-06-14', '2026-05-13'], answer: 0 },
           ],
           solution: '46176 − 46082 = 94 days after 1 March. 1 April is 31 days after 1 March, 1 May 61 days and 1 June 92 days, so 94 days after 1 March is 3 June 2026 (2026-06-03). 46186 is 10 days later: 13 June 2026 (2026-06-13).',
         },

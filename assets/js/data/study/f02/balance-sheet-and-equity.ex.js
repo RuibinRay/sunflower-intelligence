@@ -239,10 +239,10 @@ export const independent = [
     prompt: 'Translate US terms into the names IFRS reporters (and UK companies) usually use.',
     text: 'The balance sheet is the [[0]]; common stock is [[1]]; additional paid-in capital is [[2]]; accounts receivable are [[3]].',
     blanks: [
-      { options: ['statement of financial position', 'statement of profit or loss', 'statement of changes in equity'], answer: 0 },
+      { options: ['statement of profit or loss', 'statement of financial position', 'statement of changes in equity'], answer: 1 },
       { options: ['share capital', 'share premium', 'reserves'], answer: 0 },
-      { options: ['share premium', 'share capital', 'retained profits'], answer: 0 },
-      { options: ['trade receivables', 'debentures', 'provisions'], answer: 0 },
+      { options: ['share capital', 'retained profits', 'share premium'], answer: 2 },
+      { options: ['debentures', 'trade receivables', 'provisions'], answer: 1 },
     ],
     solution: 'Statement of financial position; share capital; share premium; trade receivables.',
   },

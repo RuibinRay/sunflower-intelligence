@@ -252,10 +252,10 @@ export const independent = [
     prompt: 'Complete the statements about a continuous variable X.',
     text: 'For a continuous variable, a probability is an [[0]] under the density curve. So P(X = 1,000) is [[1]], and P(X < 1,000) is [[2]] P(X ≤ 1,000). For any normal distribution, exactly 95% of values lie within [[3]] standard deviations of the mean.',
     blanks: [
-      { options: ['area', 'height', 'slope'], answer: 0 },
+      { options: ['height', 'area', 'slope'], answer: 1 },
       { options: ['0', 'the height of the curve at 1,000', '0.5'], answer: 0 },
-      { options: ['equal to', 'smaller than', 'larger than'], answer: 0 },
-      { options: ['1.96', '2', '1.645', '2.576'], answer: 0 },
+      { options: ['smaller than', 'larger than', 'equal to'], answer: 2 },
+      { options: ['2', '1.96', '1.645', '2.576'], answer: 1 },
     ],
     solution: 'Probabilities are areas. A single value has no width, so its probability is 0, and including or excluding the end point doesn’t change an area: P(X < 1,000) = P(X ≤ 1,000). Exactly 95% lies within 1.96 standard deviations; “two” is the empirical rule’s rounding (95.45%).',
   },

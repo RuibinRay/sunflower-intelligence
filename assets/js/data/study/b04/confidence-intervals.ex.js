@@ -260,10 +260,10 @@ export const independent = [
     prompt: 'Complete Ana’s planning notes.',
     text: 'To cut the margin for the mean set-up time from ±3.5 to ±1.75 minutes at the same confidence, I would need about [[0]] times as many events. In <x>=CONFIDENCE.T(0.05,D5,D3)</x> the 0.05 is [[1]]. For a survey share with no idea of its value, the cautious planning value is p = [[2]], because it makes p(1 − p) [[3]].',
     blanks: [
-      { options: ['4', '2', '1.41'], answer: 0 },
+      { options: ['2', '4', '1.41'], answer: 1 },
       { options: ['alpha, 1 − the confidence level', 'the confidence level', 'the margin of error'], answer: 0 },
-      { options: ['0.5', '0.95', '0.05'], answer: 0 },
-      { options: ['as large as possible', 'as small as possible', 'equal to 1'], answer: 0 },
+      { options: ['0.95', '0.05', '0.5'], answer: 2 },
+      { options: ['as small as possible', 'as large as possible', 'equal to 1'], answer: 1 },
     ],
     solution: 'The margin falls with √n, so halving it needs four times the sample. CONFIDENCE.T takes alpha, 0.05 for 95%. p(1 − p) peaks at 0.25 when p = 0.5, so planning with 0.5 can only overestimate the sample needed.',
   },

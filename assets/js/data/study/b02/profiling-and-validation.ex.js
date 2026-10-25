@@ -101,10 +101,10 @@ export const guided = [
     prompt: 'Write Lantern’s cross-field rule R8 for order_total, using the definitions in the data dictionary.',
     text: 'R8: the absolute difference between order_total and ([[0]] × [[1]] − [[2]]) is at most $[[3]].',
     blanks: [
-      { options: ['quantity', 'size_g', 'rating'], answer: 0 },
+      { options: ['size_g', 'quantity', 'rating'], answer: 1 },
       { options: ['unit_price', 'order_total', 'discount'], answer: 0 },
-      { options: ['discount', 'quantity', 'unit_price'], answer: 0 },
-      { options: ['0.01', '1.00', '10.00'], answer: 0 },
+      { options: ['quantity', 'unit_price', 'discount'], answer: 2 },
+      { options: ['1.00', '0.01', '10.00'], answer: 1 },
     ],
     hints: ['The dictionary defines order_total as the price of the packs less the discount on the whole order.', 'Money is stored to the cent. Allow for rounding, but no more.'],
     solution: 'order_total should equal quantity × unit_price − discount. Writing the rule as an absolute difference of at most $0.01 allows for rounding to the cent; a tolerance of $1.00 or $10.00 would let real errors through.',

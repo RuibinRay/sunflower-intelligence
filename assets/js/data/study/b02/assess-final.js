@@ -27,10 +27,10 @@ export const items = [
     prompt: 'Complete the description of Lantern’s order export (fictional).',
     text: 'Each row of <code>lantern-orders</code> describes one [[0]]. <code>order_id</code> should be the [[1]]. <code>customer_id</code> repeats, because one customer can place several orders; it points to a row of the customer table, so in this table it is a [[2]]. <code>size_g</code> records the pack weight in grams (250, 480, 750 or 1000), so its level of measurement is [[3]].',
     blanks: [
-      { options: ['order', 'customer', 'product', 'day of trading'], answer: 0 },
+      { options: ['customer', 'order', 'product', 'day of trading'], answer: 1 },
       { options: ['primary key', 'foreign key', 'measure', 'composite key'], answer: 0 },
-      { options: ['foreign key', 'primary key', 'measure', 'derived variable'], answer: 0 },
-      { options: ['ratio', 'nominal', 'ordinal', 'interval'], answer: 0 },
+      { options: ['primary key', 'measure', 'foreign key', 'derived variable'], answer: 2 },
+      { options: ['nominal', 'ratio', 'ordinal', 'interval'], answer: 1 },
     ],
     solution: 'One row is one order, so order_id is the primary key: unique and never blank. customer_id links each order to the customer table and may repeat: a foreign key. Grams have a true zero and 1,000 g is four times 250 g, so size_g is on a ratio scale (even though only four pack sizes occur).',
   },

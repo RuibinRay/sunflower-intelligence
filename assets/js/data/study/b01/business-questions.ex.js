@@ -171,10 +171,10 @@ export const guided = [
     prompt: 'Complete an operational definition of a new customer for Lantern’s monthly report.',
     text: 'A new customer in a month is a customer whose [[0]] order with the online shop was placed in that month, identified by [[1]], counting [[2]] orders only, with each order dated in [[3]].',
     blanks: [
-      { options: ['first ever', 'largest', 'most recent'], answer: 0 },
+      { options: ['largest', 'first ever', 'most recent'], answer: 1 },
       { options: ['customer_id', 'e-mail address', 'delivery postcode'], answer: 0 },
-      { options: ['paid', 'all submitted', 'refunded'], answer: 0 },
-      { options: ['the shop’s own time zone, the same for every order', 'the customer’s local time zone', 'whatever time zone each export happens to use'], answer: 0 },
+      { options: ['all submitted', 'refunded', 'paid'], answer: 2 },
+      { options: ['the customer’s local time zone', 'the shop’s own time zone, the same for every order', 'whatever time zone each export happens to use'], answer: 1 },
     ],
     hints: [
       'A customer is new in the month of their first order ever, not their latest. Customers are best identified by the system’s stable identifier, because e-mail addresses change and can be shared.',
@@ -344,9 +344,9 @@ export const check = [
     prompt: 'Complete the checklist.',
     text: 'A SMART objective is Specific, Measurable, [[0]], Relevant and [[1]]. It is only as measurable as the [[2]] behind its measure.',
     blanks: [
-      { options: ['Achievable', 'Accurate', 'Automated'], answer: 0 },
+      { options: ['Accurate', 'Achievable', 'Automated'], answer: 1 },
       { options: ['Time-bound', 'Tested', 'Targeted'], answer: 0 },
-      { options: ['operational definition', 'dashboard', 'software'], answer: 0 },
+      { options: ['dashboard', 'software', 'operational definition'], answer: 2 },
     ],
     solution: 'Specific, Measurable, Achievable (some sources say Attainable), Relevant and Time-bound. “At least 3.0% conversion” is measurable only once visits and orders have operational definitions.',
   },

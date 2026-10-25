@@ -327,10 +327,10 @@ export const check = [
     prompt: 'Complete the finding for a fictional online bookshop that redesigned its desktop site on 2 March and rolled it back on 6 April.',
     text: 'Orders fell 12% in March while visits rose. The fall was confined to [[0]], which got the new design; [[1]], which kept the old one, was unchanged. Desktop conversion recovered after the [[2]]. Because this was not a [[3]], we can’t exclude another desktop-only cause, but the evidence [[4]] that the redesign was responsible.',
     blanks: [
-      { options: ['desktop', 'mobile', 'all devices'], answer: 0 },
+      { options: ['mobile', 'desktop', 'all devices'], answer: 1 },
       { options: ['mobile', 'desktop', 'the whole site'], answer: 0 },
-      { options: ['rollback on 6 April', 'launch on 2 March', 'start of the month'], answer: 0 },
-      { options: ['randomised experiment', 'monthly report', 'large sample'], answer: 0 },
+      { options: ['launch on 2 March', 'start of the month', 'rollback on 6 April'], answer: 2 },
+      { options: ['monthly report', 'randomised experiment', 'large sample'], answer: 1 },
       { options: ['strongly suggests', 'proves', 'cannot suggest'], answer: 0 },
     ],
     solution: 'The comparison group (mobile) and the reversal (the rollback) support a strong statement, but without randomisation “proves” overclaims. “Strongly suggests”, with the remaining doubt named, matches the evidence.',

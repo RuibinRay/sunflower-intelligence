@@ -108,7 +108,7 @@ export const guided = [
     prompt: 'Lantern’s web shop writes slash dates day first with a four-digit year, as in 04/03/2026 for 4 March 2026. Choose the explicit format for each tool.',
     text: 'pandas: pd.to_datetime(s, format=[[0]], errors=&#39;coerce&#39;)<br>PostgreSQL: to_date(order_date, [[1]])',
     blanks: [
-      { options: ['%d/%m/%Y', '%m/%d/%Y', '%d/%m/%y', '%Y-%m-%d'], answer: 0 },
+      { options: ['%m/%d/%Y', '%d/%m/%Y', '%d/%m/%y', '%Y-%m-%d'], answer: 1 },
       { options: ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'], answer: 0 },
     ],
     hints: [
