@@ -252,7 +252,7 @@ export const check = [
     prompt: 'Why is an annuity due worth more than an ordinary annuity with the same payment, rate and number of payments?',
     options: [
       'Every payment arrives one period sooner, so each is discounted one period less',
-      'An annuity due has one more payment',
+      'An annuity due has one more payment, made today on top of the n end-of-period payments',
       'An annuity due uses a higher interest rate',
       'It is not: the two are always worth the same',
     ],
@@ -320,7 +320,7 @@ export const check = [
       'The payment and the loan have the same sign; one must be negative, e.g. =RATE(36, -400, 12000)',
       'RATE needs the annual rate as an input',
       'The number of periods must be entered in years, 3',
-      'RATE can only find rates for annuities due, so the type argument must be 1',
+      'RATE works only for annuities due, so it needs a type argument of 1, as in =RATE(36, 400, 12000, 0, 1)',
     ],
     answer: 0,
     feedback: {

@@ -76,7 +76,7 @@ export const items = [
     prompt: 'A growing perpetuity has a first payment of $500. If the discount rate and the growth rate both rise by one percentage point, what happens to its value?',
     options: [
       'Nothing: the value depends only on r − g, which is unchanged',
-      'It falls, because the discount rate is higher',
+      'It falls, because a higher discount rate always lowers the present value of future payments',
       'It rises, because the growth rate is higher',
       'It cannot be known without the old rates',
     ],

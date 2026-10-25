@@ -169,7 +169,7 @@ export const independent = [
     options: [
       'Early payments go mostly to interest, because interest is charged on a balance that is still large',
       'The lender adds a penalty in the early years',
-      'The payment is smaller in the early years',
+      'The payment is smaller in the early years and rises later in the term, so less principal is repaid at first',
       'It is not true: exactly half is owed halfway through',
     ],
     answer: 0,
@@ -247,7 +247,7 @@ export const check = [
     prompt: 'Loan A and loan B charge the same rate, 7% a year compounded monthly, on the same amount. Loan A has a five-year term and loan B a three-year term, and loan A’s total interest is much larger. Neither loan charges any fees. What can you conclude?',
     options: [
       'Nothing about cost: loan A’s extra interest pays for keeping the money longer, at the same price',
-      'Loan A is more expensive and should be avoided',
+      'Loan A is the more expensive loan, because it charges much more interest in total, so it should be avoided',
       'Loan B has a lower APR',
       'Loan A must include hidden fees',
     ],
@@ -298,7 +298,7 @@ export const check = [
       'Keep the current loan: the savings are worth only about $105 today, less than the $300 fee',
       'Refinance: any lower rate is worth having',
       'Refinance, because the fee is recovered in under two years',
-      'Keep the loan, because refinancing always restarts the term',
+      'Keep the loan, because refinancing always restarts the term and so adds interest over a longer period',
     ],
     answer: 0,
     feedback: {

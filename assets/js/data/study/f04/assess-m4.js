@@ -10,7 +10,7 @@ export const items = [
       'Rents rose about 4.75% a year on average; dividing the 45% total by eight overstates the yearly rate',
       'The newspaper is right: 45% ÷ 8 ≈ 5.6% a year',
       'Rents rose 45% a year, because the index rose 45 points',
-      'The yearly rate cannot be found without each year’s index',
+      'The yearly rate cannot be found without each year’s index, because rents may have risen unevenly from year to year',
     ],
     answer: 0,
     feedback: {

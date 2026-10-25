@@ -204,7 +204,7 @@ export const independent = [
     prompt: `Ana writes one line on meetings in her 2027 price note. The 28 meetings’ invoice per guest-day has mean ${usd(mean(M))}, SD ${usd(sdS(M))}, median ${usd(MMED)} and quartiles ${usd(MQ1)} and ${usd(MQ3)} (IQR ${usd(MQ3 - MQ1)}); one 35-guest meeting charged ${usd(Math.max(...M))}. Which pair should the line use?`,
     options: [
       'The median and the quartiles, because one small, costly meeting pulls up the mean and the SD.',
-      'The mean and the standard deviation, because they make use of every meeting’s invoice.',
+      'The mean and the standard deviation, because unlike the median they make use of every meeting’s invoice.',
       'The mode and the range, because they show the most common price and both extremes.',
       'The mean and the CV, because dividing by the mean removes the effect of the outlier.',
     ],

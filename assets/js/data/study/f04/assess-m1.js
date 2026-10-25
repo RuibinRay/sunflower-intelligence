@@ -71,7 +71,7 @@ export const items = [
       'The actual/360 deposit pays more, because 120 days is a larger fraction of a 360-day year',
       'They pay exactly the same, because the quoted rate is the same',
       'The actual/365 deposit pays more, because it counts more days in the year',
-      'The actual/360 deposit pays less, because it ignores five days of interest',
+      'The actual/360 deposit pays less, because a 360-day year leaves out five days that a 365-day year pays interest for',
     ],
     answer: 0,
     feedback: {
@@ -94,13 +94,14 @@ export const items = [
   },
   {
     id: 'f04-m1-8', lesson: 'effective-annual-rates', type: 'num', kind: 'numerical',
-    prompt: 'How many years does $8,000 take to grow to $10,000 at 4.5% a year compounded continuously? Give two decimal places.',
-    answer: 4.96, check: () => Math.log(10000 / 8000) / 0.045, unit: 'years', places: 2, tol: 0.01,
+    prompt: 'A fictional rowing club’s reserve fund grew from $15,000 to $18,600 in four years, with nothing added or withdrawn, in an account that compounds interest continuously. What nominal annual rate, compounded continuously, did the account pay? Give a percentage to two decimal places.',
+    answer: 5.38, check: () => Math.log(18600 / 15000) / 4 * 100, unit: '%', places: 2, tol: 0.01,
     wrong: [
-      { value: 5.07, say: 'That is annual compounding (ln 1.25 ÷ ln 1.045). Continuously, e^(0.045t) = 1.25, so t = ln 1.25 ÷ 0.045.' },
-      { value: 5.56, say: 'That is simple interest (25% ÷ 4.5%). Compounding is faster.' },
+      { value: 5.53, say: 'That is 1.24^(1/4) − 1, the rate compounded annually (the account’s EAR). Continuously, e^(4 × APR) = 1.24, so APR = ln 1.24 ÷ 4.' },
+      { value: 6, say: 'That is the 24% growth divided by four years: simple interest. With compounding, a lower rate reaches the same balance.' },
+      { value: 21.51, say: 'That is ln 1.24, the continuously compounded rate for the whole four years. Divide by 4 for the rate a year.' },
     ],
-    solution: 'FV = PV × e^(APR × t), so e^(0.045t) = 10,000 ÷ 8,000 = 1.25. Taking natural logarithms: 0.045t = ln 1.25 ≈ 0.223144, so t ≈ 4.96 years.',
+    solution: 'FV = PV × e^(APR × t), so e^(4 × APR) = 18,600 ÷ 15,000 = 1.24. Taking natural logarithms: 4 × APR = ln 1.24 ≈ 0.215111, so APR ≈ 0.053778, or 5.38% a year. The same growth compounded annually needs 1.24^(1/4) − 1 ≈ 5.53%, the account’s EAR, and e^0.053778 − 1 gives the same 5.53%.',
   },
   {
     id: 'f04-m1-9', lesson: 'effective-annual-rates', type: 'mc', kind: 'applied',
