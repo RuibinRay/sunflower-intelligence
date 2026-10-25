@@ -236,7 +236,7 @@ const ALL = [
     topics: ['Formulas and functions', 'IF, SUMIF, COUNTIF, XLOOKUP', 'Tables', 'PivotTables', 'Charts', 'Conditional formatting', 'Descriptive statistics', 'Data cleaning workflows', 'What-if analysis', 'Goal Seek and Solver', 'Regression output', 'Dashboards'],
   }),
   C({
-    id: 'b04', school: 'analytics', code: 'B04', level: 'intermediate', status: 'reviewed', requires: ['b01', 'b03'], recommends: ['b02'],
+    id: 'b04', school: 'analytics', code: 'B04', level: 'intermediate', status: 'complete', requires: ['b01', 'b03'], recommends: ['b02'],
     title: 'Descriptive and Inferential Statistics',
     blurb: 'Describe data and chance, then reason from samples to populations with confidence intervals, tests for means and proportions, chi-square tests and ANOVA, by hand and in Excel.',
     case: 'lantern',
