@@ -44,6 +44,10 @@ const others = R.filter((_, i) => LAB[i] !== CL);
 const othersBroad = chain(broad, others)[5];
 const needsLine = (r) => r.needs[0] >= 6 && r.needs[6] >= 6;
 const needsIn = M.filter(needsLine).length, needsOut = others.filter(needsLine).length;
+const outShare = (f) => others.filter(f).length / others.length;
+const inc80Out = outShare((r) => r.income >= 2), cafeOut = outShare((r) => r.source === 0);
+const modalAlt = chain([(r) => r.age === 1, (r) => r.income === 2, (r) => r.source === 0, (r) => r.area === 4, (r) => r.household === 1])[5];
+const goSrc = S.crosstabs.source[GO].map((v) => v / n[GO]);
 const modalAge = LEVELS.age[2], ageCounts = LEVELS.age.map((_, l) => M.filter((r) => r.age === l).length);
 // Quarrystone Fitness (fictional): a budget brand beside premium clubs
 const QF = { Q: 3000, mNew: 14, mOld: 40, c: 0.2 };
@@ -61,74 +65,43 @@ const int = (v) => Math.round(v).toLocaleString('en-US');
 
 // ---------------------------------------------------------------- figures
 function strategiesFigure() {
+  const PW = 212, PH = 206;
   const panel = (x, y, title, sub, serve, kind) => {
-    let s = `<rect x="${x}" y="${y}" width="300" height="200" rx="8" style="fill:none;stroke:var(--rule-strong);stroke-width:1.5"/>`;
-    s += `<text x="${x + 150}" y="${y + 26}" text-anchor="middle" font-size="18" font-weight="700" fill="currentColor">${title}</text>`;
-    s += `<text x="${x + 150}" y="${y + 46}" text-anchor="middle" font-size="14" fill="var(--ink-3)">${sub}</text>`;
-    const cx = (k) => x + 40 + k * 55, cy = y + 160;
+    let s = `<rect x="${x}" y="${y}" width="${PW}" height="${PH}" rx="8" style="fill:none;stroke:var(--rule-strong);stroke-width:1.5"/>`;
+    s += `<text x="${x + PW / 2}" y="${y + 24}" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">${title}</text>`;
+    s += `<text x="${x + PW / 2}" y="${y + 42}" text-anchor="middle" font-size="12" fill="var(--ink-3)">${sub}</text>`;
+    const cx = (k) => x + 26 + k * 40, cy = y + 170;
     if (kind === 'micro') {
-      s += `<circle cx="${x + 150}" cy="${cy - 8}" r="34" style="fill:none;stroke:var(--series-2);stroke-width:1.5"/>`;
-      const dots = [[-18, -18], [0, -24], [18, -18], [-22, 0], [22, 0], [-14, 16], [6, 18], [20, 14]];
+      const mx = x + PW / 2, my = y + 152;
+      s += `<circle cx="${mx}" cy="${my}" r="32" style="fill:none;stroke:var(--series-2);stroke-width:1.5"/>`;
+      const dots = [[-17, -17], [0, -23], [17, -17], [-21, 0], [21, 0], [-13, 15], [5, 18], [19, 13]];
       dots.forEach(([dx, dy], i) => {
-        const px = x + 150 + dx, py = cy - 8 + dy, ox = x + 40 + i * 31, oy = y + 72;
-        s += `<line x1="${ox + 7}" y1="${oy + 14}" x2="${px}" y2="${py}" style="stroke:var(--ink-3);stroke-width:1"/>`;
-        s += `<rect x="${ox}" y="${oy}" width="14" height="14" rx="2" style="fill:var(--series-1);fill-opacity:0.35;stroke:var(--series-1);stroke-width:1"/>`;
+        const px = mx + dx, py = my + dy, ox = x + 13 + i * 24, oy = y + 62;
+        s += `<line x1="${ox + 6}" y1="${oy + 12}" x2="${px}" y2="${py}" style="stroke:var(--ink-3);stroke-width:1"/>`;
+        s += `<rect x="${ox}" y="${oy}" width="12" height="12" rx="2" style="fill:var(--series-1);fill-opacity:0.35;stroke:var(--series-1);stroke-width:1"/>`;
         s += `<circle cx="${px}" cy="${py}" r="3.5" style="fill:currentColor"/>`;
       });
-      s += `<text x="${x + 150}" y="${y + 194}" text-anchor="middle" font-size="13" fill="var(--ink-3)">one segment: an offer per place or person</text>`;
+      s += `<text x="${mx}" y="${y + PH - 8}" text-anchor="middle" font-size="12" fill="var(--ink-3)">an offer per place or person</text>`;
       return s;
     }
     for (let k = 0; k < 5; k++) {
       const on = serve.some((m) => m.to.includes(k));
-      s += `<circle cx="${cx(k)}" cy="${cy}" r="16" style="fill:${on ? 'var(--series-2)' : 'none'};fill-opacity:0.3;stroke:var(--series-2);stroke-width:1.5${on ? '' : ';stroke-dasharray:4 3'}"/>`;
-      s += `<text x="${cx(k)}" y="${cy + 5}" text-anchor="middle" font-size="15" fill="currentColor">${'ABCDE'[k]}</text>`;
+      s += `<circle cx="${cx(k)}" cy="${cy}" r="14" style="fill:${on ? 'var(--series-2)' : 'none'};fill-opacity:0.3;stroke:var(--series-2);stroke-width:1.5${on ? '' : ';stroke-dasharray:4 3'}"/>`;
+      s += `<text x="${cx(k)}" y="${cy + 5}" text-anchor="middle" font-size="13" fill="currentColor">${'ABCDE'[k]}</text>`;
     }
     serve.forEach((m) => {
-      const bx = m.x;
-      s += `<rect x="${bx}" y="${y + 62}" width="${m.w}" height="28" rx="5" style="fill:var(--series-1);fill-opacity:0.2;stroke:var(--series-1);stroke-width:1.5"/>`;
-      s += `<text x="${bx + m.w / 2}" y="${y + 82}" text-anchor="middle" font-size="15" fill="currentColor">${m.label}</text>`;
-      m.to.forEach((k) => { s += `<line x1="${bx + m.w / 2}" y1="${y + 90}" x2="${cx(k)}" y2="${cy - 16}" style="stroke:var(--ink-3);stroke-width:1"/>`; });
+      const bx = x + m.x;
+      s += `<rect x="${bx}" y="${y + 62}" width="${m.w}" height="26" rx="5" style="fill:var(--series-1);fill-opacity:0.2;stroke:var(--series-1);stroke-width:1.5"/>`;
+      s += `<text x="${bx + m.w / 2}" y="${y + 80}" text-anchor="middle" font-size="13" fill="currentColor">${m.label}</text>`;
+      m.to.forEach((k) => { s += `<line x1="${bx + m.w / 2}" y1="${y + 88}" x2="${cx(k)}" y2="${cy - 14}" style="stroke:var(--ink-3);stroke-width:1"/>`; });
     });
     return s;
   };
-  let s = '<svg viewBox="0 0 640 440" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="14">';
-  s += panel(10, 10, 'Undifferentiated (mass)', 'one mix for the whole market', [{ x: 110, w: 80, label: 'One mix', to: [0, 1, 2, 3, 4] }]);
-  s += panel(330, 10, 'Differentiated', 'a separate mix for each chosen segment', [{ x: 340, w: 70, label: 'Mix 1', to: [0] }, { x: 445, w: 70, label: 'Mix 2', to: [1] }, { x: 550, w: 70, label: 'Mix 3', to: [2] }]);
-  s += panel(10, 230, 'Concentrated (niche)', 'one mix for one segment', [{ x: 20, w: 80, label: 'One mix', to: [0] }]);
-  s += panel(330, 230, 'Micromarketing', 'local and individual marketing', [], 'micro');
-  return `${s}</svg>`;
-}
-
-function personaFigure() {
-  const L = 22, Rx = 338, line = (x, y, t, size = 14, fill = 'currentColor') => `<text x="${x}" y="${y}" font-size="${size}" fill="${fill}">${t}</text>`;
-  const head = (x, y, t) => `<text x="${x}" y="${y}" font-size="15" font-weight="700" fill="currentColor">${t}</text>`;
-  let s = '<svg viewBox="0 0 640 540" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="14">';
-  s += '<rect x="5" y="5" width="630" height="530" rx="10" style="fill:none;stroke:var(--rule-strong);stroke-width:1.5"/>';
-  s += `<text x="${L}" y="40" font-size="23" font-weight="700" fill="currentColor">Quinn, the neighbourhood regular</text>`;
-  s += line(L, 64, `Persona for Craft and local: ${nCL} of ${N} respondents (${p1(nCL / N)}), ${p1(S.sizes[CL].spendShare)} of the coffee spend`, 13, 'var(--ink-3)');
-  s += `<line x1="${L}" y1="80" x2="618" y2="80" style="stroke:var(--rule-strong);stroke-width:1"/>`;
-  // needs, as bars against the average (100)
-  s += head(L, 108, 'What matters (100 = average)');
-  const order = [6, 0, 7, 3, 2, 1], X0 = L + 164, BW = 110;
-  order.forEach((j, i) => {
-    const y = 134 + i * 25, w = (IX[j] / 170) * BW;
-    s += line(L, y + 5, NEED[j]);
-    s += `<rect x="${X0}" y="${y - 8}" width="${w.toFixed(1)}" height="16" style="fill:${IX[j] >= 100 ? 'var(--series-1)' : 'var(--series-3)'};fill-opacity:0.45"/>`;
-    s += line((X0 + 5 + w).toFixed(1), y + 5, String(IX[j]));
-  });
-  s += `<line x1="${(X0 + (BW * 100) / 170).toFixed(1)}" y1="120" x2="${(X0 + (BW * 100) / 170).toFixed(1)}" y2="${134 + 5 * 25 + 10}" style="stroke:var(--ink-3);stroke-width:1;stroke-dasharray:3 3"/>`;
-  // behaviour
-  s += head(Rx, 108, 'How they buy coffee');
-  [`${f1(cupsMean)} cups a week (median ${cupsMed})`, `$${f2(spendMean)} a month (median $${spendMed})`, `${p0(cafe)} buy mostly at a café`, `${p0(home)} mostly brew at home`].forEach((t, i) => { s += line(Rx, 139 + i * 25, t); });
-  // who
-  s += head(L, 318, 'Who they are (share of segment)');
-  [`${p0(age3059)} aged 30–59`, `${p0(inc80)} income over $80k a year`, `${p0(couple)} live as a couple`, `${p0(central)} live in Central`].forEach((t, i) => { s += line(L, 346 + i * 25, t); });
-  // Lantern
-  s += head(Rx, 318, 'Lantern and them');
-  [`${p0(awareCL)} know Lantern`, `${p0(boughtCL)} bought it last year`, `Local loyalty ${f2(loyalCL)} of 5 (all: ${f2(loyalAll)})`, `${p0(cbCL)} likely to buy Cold Brew`, `Nearest rival: ${BRANDS[D.map.nearestRival[CL].b]}`].forEach((t, i) => { s += line(Rx, 346 + i * 25, t); });
-  s += `<line x1="${L}" y1="470" x2="618" y2="470" style="stroke:var(--rule-strong);stroke-width:1"/>`;
-  s += line(L, 494, 'Quote: take one from a real interview (M04). Don’t write one.', 14);
-  s += line(L, 518, `Needs study, May 2027 (opt-in panel, age quotas). Averages and shares of the ${nCL}; the name is a label.`, 12, 'var(--ink-3)');
+  let s = '<svg viewBox="0 0 440 428" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="13">';
+  s += panel(6, 6, 'Undifferentiated (mass)', 'one mix for the whole market', [{ x: 66, w: 80, label: 'One mix', to: [0, 1, 2, 3, 4] }]);
+  s += panel(222, 6, 'Differentiated', 'a separate mix for each segment', [{ x: 8, w: 60, label: 'Mix 1', to: [0] }, { x: 76, w: 60, label: 'Mix 2', to: [1] }, { x: 144, w: 60, label: 'Mix 3', to: [2] }]);
+  s += panel(6, 216, 'Concentrated (niche)', 'one mix for one segment', [{ x: 8, w: 76, label: 'One mix', to: [0] }]);
+  s += panel(222, 216, 'Micromarketing', 'local and individual marketing', [], 'micro');
   return `${s}</svg>`;
 }
 
@@ -158,7 +131,7 @@ export default {
     { figure: {
       svg: strategiesFigure(),
       caption: 'Four targeting strategies. Circles are segments (filled = served); boxes are marketing mixes. Micromarketing works inside a segment, shaping the offer for small places or single customers.',
-      alt: 'Four panels. Undifferentiated (mass), one mix for the whole market: one box labelled One mix with lines to all five segment circles, A to E, all filled. Differentiated, a separate mix for each chosen segment: boxes Mix 1, Mix 2 and Mix 3, each with a line to one circle (A, B and C, filled); circles D and E are dashed and unserved. Concentrated (niche), one mix for one segment: one box with a line to circle A; the other four circles are dashed. Micromarketing, local and individual marketing: one large circle containing eight dots, each dot joined by a line to its own small box; the label beneath says one segment: an offer per place or person.',
+      alt: 'Four panels. Undifferentiated (mass), one mix for the whole market: one box labelled One mix with lines to all five segment circles, A to E, all filled. Differentiated, a separate mix for each segment: boxes Mix 1, Mix 2 and Mix 3, each with a line to one circle (A, B and C, filled); circles D and E are dashed and unserved. Concentrated (niche), one mix for one segment: one box with a line to circle A; the other four circles are dashed. Micromarketing, local and individual marketing: one large circle containing eight dots, each dot joined by a line to its own small box; the label beneath says an offer per place or person.',
     } },
 
     { h: 'Undifferentiated (mass) marketing' },
@@ -166,7 +139,7 @@ export default {
     { p: `For Lantern Cold Brew a mass approach would mean one can, one message and every channel for everyone. The average intent of ${p1(top2All / N)} hides a range from ${p1(top2[VR] / n[VR])} in Value routine to ${p1(top2[CL] / n[CL])} in Craft and local, and spending to persuade Value routine would be spending on the people least likely to buy.` },
 
     { h: 'Differentiated marketing' },
-    { p: '<g>Differentiated marketing</g> targets two or more segments with a separate offer or mix for each, often under separate brands. It can win more of the market than one offer can, and a company present in several segments is less exposed when one of them declines or a rival attacks it. The price is cost and complexity: every extra mix needs its own product version, channels, messages and management, and sales one offer wins may simply be taken from another. Serving more segments than the company can afford to treat differently is the targeting form of module 1’s <g>over-segmentation</g>.' },
+    { p: '<g>Differentiated marketing</g> targets two or more segments with a separate offer or mix for each, often under separate brands. It can win more of the market than one offer can, and a company present in several segments is less exposed when one of them declines or a rival attacks it. The price is cost and complexity: every extra mix needs its own product version, channels, messages and management, and sales one offer wins may be taken from another. Serving more segments than the company can afford to treat differently is the targeting form of module 1’s <g>over-segmentation</g>.' },
 
     { h: 'Concentrated (niche) marketing' },
     { p: '<g>Concentrated marketing</g> serves one segment with one mix and aims, in OpenStax’s description, to “own” it. A <g>niche</g> is a narrower group still, with distinctive needs that larger firms serve poorly: the small firm hopes to be a big fish in a small pond. Concentration suits companies whose resources would be stretched thin across several segments, and it builds deep knowledge of the customers it serves. Its risk, as the BCcampus textbook puts it, is having all the eggs in one basket: if the segment shrinks, or a large rival moves in, there is nothing to fall back on.' },
@@ -178,19 +151,19 @@ export default {
 
   theory: [
     { h: 'Choosing a strategy' },
-    { p: 'Kotler and Armstrong’s textbooks list five considerations for choosing among the strategies (as summarised in M. L. Ripley’s course notes on their <i>Marketing: An Introduction</i>): the company’s resources, how variable the product is, the product’s life-cycle stage, how variable the market is, and competitors’ strategies. None decides alone; together they usually point one way.' },
+    { p: 'Kotler and Armstrong’s textbooks list five considerations for choosing among the strategies: the company’s resources, how variable the product is, the product’s life-cycle stage, how variable the market is, and competitors’ strategies (the labels as listed in M. L. Ripley’s course notes on their <i>Marketing: An Introduction</i>). The notes give only the labels, so the middle column below is the usual reading of each, not a quotation. For the life-cycle stage it follows M02’s life-cycle lesson, where a new product starts with one basic version, and OpenStax’s chapter on the life cycle, where firms in maturity extend a product to new customers and alter it to fit them. None of the five decides alone.' },
     { table: {
       caption: 'Five considerations, what each points towards, and Lantern Cold Brew',
-      head: ['Consideration', 'Points towards', 'Lantern Cold Brew'],
+      head: ['Consideration', 'The usual reading', 'Lantern Cold Brew'],
       rows: [
         ['Company resources', 'Limited resources favour concentration', 'A small firm with one new product and a launch budget, not a national brand’s'],
         ['Product variability', 'Uniform products (salt, fuel) suit mass marketing; products that can vary suit segmenting', 'Coffee varies in taste, strength, format and provenance'],
-        ['Life-cycle stage', 'A new product usually launches in one version to one target', `Cold Brew is new and will start in its <g>introduction stage</g>; awareness of Lantern is ${p1(D.aware)}`],
+        ['Life-cycle stage', 'A new product often launches in one basic version, to everyone or to one segment; separate versions for separate segments become common in maturity', `Cold Brew is planned for later in 2027 and will start in its <g>introduction stage</g>; awareness of Lantern is ${p1(D.aware)}`],
         ['Market variability', 'Buyers who want the same things suit mass marketing; buyers who differ suit segmenting', 'Five segments whose Cold Brew intent ranges from about 10% to 46%'],
         ['Competitors’ strategies', 'Segmenting rivals make mass marketing risky; rivals who ignore a segment leave room in it', 'Summit Brew, Daily Grind RTD and Arcadia Coffee already sit at different points of the market'],
       ],
     } },
-    { p: 'For Lantern every consideration points away from mass marketing, and resources and the life-cycle stage point towards concentration, at least at launch. That still leaves the question of which segments the concentrated offer is for, and whether a second offer should follow.' },
+    { p: 'For Lantern, resources point to concentration; the life-cycle stage allows either one mix for everyone or one target; and product variability, market variability and competitors’ strategies point away from mass marketing. Together they favour one focused offer at launch. That still leaves the question of which segments the offer is for, and whether a second offer should follow.' },
 
     { h: 'Serving more than one segment' },
     { p: `Two segments can sometimes share one offer. Whether they can depends on how close their needs are. Module 2 summarised each segment by its <g>segment centre</g>, and the distance between two centres, in standardised units, says how different two segments’ needs are. Craft and local’s nearest neighbour is Explorers (${f2(cdist(CL, EX))}); On the go is far away (${f2(cdist(CL, GO))}), almost as far as Value routine (${f2(cdist(CL, VR))}).` },
@@ -200,13 +173,14 @@ export default {
       rows: [6, 0, 7, 3, 2, 4, 1].map((j) => [NEED[j], String(S.index[CL][j]), String(S.index[EX][j]), String(S.index[GO][j])]),
       align: ['l', 'r', 'r', 'r'],
     } },
-    { p: 'Craft and local and Explorers both care more than average about taste and novelty, so a craft cold brew with interesting single origins could speak to both with one product and one message. On the go wants the opposite of Craft and local on almost every line: convenience and a caffeine kick, not local provenance. Serving it would take a second mix, sold where it buys (convenience stores and office vending rather than cafés) and promoted on different benefits.' },
+    { p: `Craft and local and Explorers both care more than average about taste and novelty, so a craft cold brew with interesting single origins could speak to both with one product and one message. On the go wants the opposite of Craft and local on almost every line: convenience and a caffeine kick, not local provenance. Serving it well would take a second mix, available where it buys on the move and promoted on different benefits.` },
+    { p: `On the go buys mostly in supermarkets or ready-to-drink (${p0(goSrc[2])}), at the office or from vending machines (${p0(goSrc[3])}) and at cafés (${p0(goSrc[0])}). The survey doesn’t separate convenience stores from supermarkets, and the launch plan already puts the cans in supermarkets, so some of On the go will meet them there whatever Lantern targets.` },
     { p: 'A second mix carries a cost beyond money. One brand can’t easily stand for “craft, local and worth the walk” and “strong, everywhere, grab it and go” at once: each message weakens the other in customers’ minds. Companies that serve distant segments well often use separate brands for them, which costs more again. Module 4 shows how to read this on a perceptual map.' },
 
     { h: 'Cannibalisation' },
     { p: '<g>Cannibalisation</g> is the sales a new offer takes from the company’s own existing offers rather than from rivals or from people who would have bought nothing; M02’s product-decisions lesson met it in passing. The <g>cannibalisation rate</g> is the share of the new offer’s sales that come from the company’s existing offers. A new offer is worth adding only if its <g>incremental contribution</g>, its own contribution minus the contribution it takes from the old offers and minus any extra fixed costs, is positive.' },
     { p: 'Cannibalisation hurts most when the new offer is cheaper or earns a thinner margin than the one it replaces, as when a premium brand launches a budget version. It can still be the right move: a company that doesn’t cannibalise its own product may leave a rival to do it. Estimate the rate before launch by asking prospective buyers what they would have bought instead, and measure it after launch from the customers who switch, as M02’s idea of <g>incrementality</g> requires.' },
-    { p: `For Lantern the risk runs through its cafés. A Craft and local regular who would have bought a café cold brew and buys a can in a supermarket instead earns Lantern $${f2(perCan('supermarket'))} (M02’s figures: $${f2(price)} less the retailer’s ${p0(ch('supermarket').margin)} and the $${f2(cogs)} liquid), not the margin on a café drink. The study didn’t ask what Cold Brew would replace, so the rate is unknown; a question for Lantern’s next survey.` },
+    { p: `For Lantern the risk runs through its cafés. A Craft and local regular who would have bought a café cold brew and buys a can in a supermarket instead would earn Lantern $${f2(perCan('supermarket'))} (M02’s figures: $${f2(price)} less the retailer’s ${p0(ch('supermarket').margin)} and the $${f2(cogs)} liquid), not the margin on a café drink. The study didn’t ask what Cold Brew would replace, so the rate is unknown; a question for Lantern’s next survey.` },
 
     { h: 'Buyer personas' },
     { p: 'A segment is a table of averages, which is hard to keep in mind when designing a menu, writing an advertisement or training staff. A <g>buyer persona</g> turns the table into a short profile written as if about one person. OpenStax calls it a “semi-fictional representation of an ideal customer”. The software designer Alan Cooper popularised personas in his 1999 book <i>The Inmates Are Running the Asylum</i>, and John Pruitt and Jonathan Grudin (2003), describing their use at Microsoft, insisted that personas be built on data: early ones failed partly because they were designed by committee rather than from research.' },
@@ -219,15 +193,20 @@ export default {
       '<b>The company and them.</b> Awareness, past purchase, loyalty and intent: where the brand starts with this segment.',
       '<b>A name and a quote.</b> The name is a label to make the persona easy to discuss; the quote, if any, comes from a real interview. Neither is a finding.',
     ] },
-    { figure: {
-      svg: personaFigure(),
-      caption: 'A persona for Craft and local, built line by line from the needs study. Every figure is an average or a share of the segment’s 109 respondents.',
-      alt: `A persona card headed “Quinn, the neighbourhood regular”, persona for Craft and local: ${nCL} of ${N} respondents (${p1(nCL / N)}), ${p1(S.sizes[CL].spendShare)} of the study’s coffee spend. What matters (index, 100 = average), drawn as bars: local and independent ${IX[6]}, taste and quality ${IX[0]}, novelty ${IX[7]}, sustainability ${IX[3]}, convenience ${IX[2]}, price ${IX[1]}. How they buy coffee: ${f1(cupsMean)} cups a week on average (median ${cupsMed}); $${f2(spendMean)} a month on average (median $${spendMed}); ${p0(cafe)} buy mostly at a café; ${p0(home)} mostly brew at home. Who they are (share of the segment): ${p0(age3059)} aged 30–59; ${p0(inc80)} with household income over $80k; ${p0(couple)} live as a couple; ${p0(central)} live in Central Harbour City. Lantern and them: ${p0(awareCL)} know Lantern and ${p0(boughtCL)} bought it last year; local loyalty ${f2(loyalCL)} of 5 against ${f2(loyalAll)} for all respondents; ${p0(cbCL)} would definitely or probably buy Cold Brew; nearest rival Arcadia Coffee. Footer: take a quote from an interview with a member of the segment, don’t write one; source the needs study, May 2027, an opt-in panel with quotas on age band; every line is an average or a share of the ${nCL}, and the name is a label, not a finding.`,
-    } },
+    { p: 'The card below follows that order for Craft and local. Every figure is an average or a share of the segment’s 109 respondents.' },
+    { define: [
+      ['Persona', 'Quinn, the neighbourhood regular: a label for Craft and local, not a finding.'],
+      ['Stands for', `${nCL} of ${N} respondents (${p1(nCL / N)}) and ${p1(S.sizes[CL].spendShare)} of the study’s coffee spend. Needs study, May 2027 (opt-in panel with quotas on age band, so shares describe respondents).`],
+      ['What matters', `Index against the average respondent (100 = average): local and independent ${IX[6]}, taste and quality ${IX[0]}, novelty ${IX[7]}, sustainability ${IX[3]}. Less than average: convenience ${IX[2]}, price ${IX[1]}.`],
+      ['How they buy', `${f1(cupsMean)} cups a week on average (median ${cupsMed}); $${f2(spendMean)} a month on average (median $${spendMed}); ${p0(cafe)} buy mostly at a café, ${p0(home)} mostly brew at home.`],
+      ['Who they are', `Shares of the segment: ${p0(age3059)} aged 30–59; ${p0(inc80)} with household income over $80k; ${p0(couple)} live as a couple; ${p0(central)} live in Central Harbour City.`],
+      ['Lantern and them', `${p0(awareCL)} know Lantern and ${p0(boughtCL)} bought it last year; local loyalty ${f2(loyalCL)} of 5 (all respondents ${f2(loyalAll)}); ${p0(cbCL)} would definitely or probably buy Cold Brew; nearest rival ${BRANDS[D.map.nearestRival[CL].b]}.`],
+      ['Quote', 'Take one from a real interview with a member of the segment (M04). Don’t write one.'],
+    ] },
 
     { h: 'What a persona can’t do' },
-    { p: `A persona describes the segment’s averages and most common answers, and almost nobody is average on everything. Of the ${nCL} Craft and local respondents, only ${broadChain[5]} match these five of the card’s lines at once: aged 30–59, income over $80k, mostly buying at a café, living in Central and in a couple. Make each line the single most common answer instead (${modalAge}, $80k–120k, café, Central, couple) and ${modalChain[5]} of the ${nCL} matches. A persona drawn as one 52-year-old with a precise income describes almost no one in its own segment.` },
-    { p: `The needs lines behave very differently: ${needsIn} of the ${nCL} rate both taste and local provenance 6 or 7 out of 7, against ${needsOut} of the other ${N - nCL} respondents. The demographic lines barely tell the segment apart from everyone else: ${othersBroad} respondents outside it match all five of the broad lines, almost as many as the ${broadChain[5]} inside it. That is module 1’s caution about demographics in another form: they describe who, the needs describe why.` },
+    { p: `A persona describes the segment’s averages and most common answers, and almost nobody is average on everything. Of the ${nCL} Craft and local respondents, only ${broadChain[5]} match these five of the card’s lines at once: aged 30–59, income over $80k, mostly buying at a café, living in Central and in a couple. Make each line the single most common answer instead (four demographic lines and the main source: ${modalAge}, $80k–120k, café, Central, couple) and only ${modalChain[5]} of the ${nCL} matches; with the other, almost equally common age band (30–44, ${ageCounts[1]} members against ${ageCounts[2]}) it is ${modalAlt}. A persona drawn as one 52-year-old with a precise income describes almost no one in its own segment.` },
+    { p: `The demographic lines do lean the segment’s way: ${p0(inc80)} of members have household incomes over $80k against ${p0(inc80Out)} of other respondents, and ${p0(cafe)} against ${p0(cafeOut)} buy mostly at a café. Together, though, they describe almost no one: ${broadChain[5]} members match all five. The needs line covers most of the segment and few outside it: ${needsIn} of the ${nCL} rate both taste and local provenance 6 or 7 out of 7, against ${needsOut} of the other ${N - nCL} respondents. That is module 1’s caution about demographics in another form: they describe who, the needs describe why.` },
     { list: [
       '<b>Stereotypes.</b> A face, a gender and an age invite assumptions the data never made. Pruitt and Grudin note that personas need not be extreme or stereotyped; a neutral name and shares rather than a single age help.',
       '<b>No size.</b> A persona is one person; the segment is 109 respondents standing for a share of every coffee drinker in the city. Keep the base on the card.',
@@ -295,21 +274,21 @@ export default {
         `Needs, from the indexes: local and independent ${IX[6]}, taste and quality ${IX[0]}, novelty ${IX[7]}, sustainability ${IX[3]}; less interest than average in price (${IX[1]}) and convenience (${IX[2]}).`,
         `Behaviour: ${f1(cupsMean)} cups a week on average but a median of ${cupsMed}; $${f2(spendMean)} a month on average, median $${spendMed}; ${p0(cafe)} buy mostly at a café and ${p0(home)} brew at home.`,
         `Who they are, as shares: ${p0(age3059)} aged 30–59 (${ageCounts[1]} aged 30–44 and ${ageCounts[2]} aged 45–59, too close to name one band), ${p0(inc80)} with household income over $80k, ${p0(couple)} couples, ${p0(central)} in Central. Lantern: ${p0(awareCL)} know it, ${p0(boughtCL)} bought it last year, local loyalty ${f2(loyalCL)} against ${f2(loyalAll)}, Cold Brew intent ${p0(cbCL)}.`,
-        `Test it. A COUNTIFS over the ${nCL} members finds ${broadChain[5]} who match the four demographic lines and the café habit together, and ${modalChain[5]} who matches the most common answer on each of the five. The needs line, taste and local both rated 6 or 7, fits ${needsIn} of them (${p0(needsIn / nCL)}).`,
+        `Test it. A COUNTIFS over the ${nCL} members finds ${broadChain[5]} who match the four demographic lines and the café habit together, and ${modalChain[5]} to ${modalAlt} who match the most common answer on each of the five, depending on which age band is taken as most common. The needs line, taste and local both rated 6 or 7, fits ${needsIn} of them (${p0(needsIn / nCL)}).`,
       ],
-      answer: 'The persona card in this lesson: needs and behaviour that describe most of the segment, demographic lines given as shares, a label for a name and no invented details.',
-      interpretation: `Ana’s briefing should lead with the needs (what ${p0(needsIn / nCL)} of the segment share) and present the demographics as the shares they are. A brief that says “design for a couple in their fifties in Central, earning $80k–120k and drinking at cafés” would design for ${modalChain[5]} of the ${nCL}. The persona keeps the segment in view; the segment’s tables, with their bases, stay the evidence.` },
+      answer: 'The persona card above: needs and behaviour that describe most of the segment, demographic lines given as shares, a label for a name and no invented details.',
+      interpretation: `Ana’s briefing should lead with the needs (what ${p0(needsIn / nCL)} of the segment share) and present the demographics as the shares they are. A brief that says “design for a couple in their fifties in Central, earning $80k–120k and drinking at cafés” would design for ${modalChain[5]} of the ${nCL} (${modalAlt} with the other age band). The persona keeps the segment in view; the segment’s tables, with their bases, stay the evidence.` },
 
     { level: 'applied', title: 'Concentrate, or chase On the go with Cold Brew?', fictional: true,
-      setup: `Ana must choose Cold Brew’s targeting strategy for its launch. She has the scorecard (Craft and local first, Explorers second), the Cold Brew intent by segment, the segments’ needs and M02’s economics: at $${f2(price)} a can Lantern earns $${f2(perCan('supermarket'))} a can through supermarkets, $${f2(perCan('natural'))} through natural grocers, $${f2(perCan('convenience'))} through convenience stores and $${f2(perCan('direct'))} in its own cafés and online shop.`,
+      setup: `Ana must choose Cold Brew’s targeting strategy for its launch. She has the scorecard (Craft and local first, Explorers second), the Cold Brew intent by segment, the segments’ needs and M02’s economics: at $${f2(price)} a can Lantern would earn $${f2(perCan('supermarket'))} a can through supermarkets, $${f2(perCan('natural'))} through natural grocers, $${f2(perCan('convenience'))} through convenience stores and $${f2(perCan('direct'))} in its own cafés and online shop.`,
       steps: [
-        `Where the likely buyers are: ${top2[GO]} of the ${top2All} top-two-box answers come from On the go (${p0(top2[GO] / top2All)}), ${top2[CL]} from Craft and local (${p0(top2[CL] / top2All)}) and ${top2[EX]} from Explorers (${p0(top2[EX] / top2All)}). Craft and local and Explorers together hold ${p0((top2[CL] + top2[EX]) / top2All)}.`,
+        `Where the likely buyers are: ${top2[GO]} of the ${top2All} top-two-box answers come from On the go (${p0(top2[GO] / top2All)}), ${top2[CL]} from Craft and local (${p0(top2[CL] / top2All)}) and ${top2[EX]} from Explorers (${p0(top2[EX] / top2All)}). Mindful holds ${top2[MI]} (${p0(top2[MI] / top2All)}) and Value routine ${top2[VR]} (${p0(top2[VR] / top2All)}). Craft and local and Explorers together hold ${p0((top2[CL] + top2[EX]) / top2All)}.`,
         `Can one offer serve them? Craft and local and Explorers are neighbours (centres ${f2(cdist(CL, EX))} apart) and share a taste for quality and novelty. On the go is ${f2(cdist(CL, GO))} from Craft and local and wants convenience and energy, Lantern’s weak points.`,
         `What On the go would cost: a second mix in convenience stores and offices, where Lantern earns $${f2(perCan('convenience'))} a can against $${f2(perCan('supermarket'))} in supermarkets; a message about energy and availability that pulls against Lantern’s craft position; and Corner Cup already ${f2(D.map.nearestRival[GO].d)} from the segment’s ideal on the map.`,
-        'Resources and the life-cycle stage (a small firm, a new product, low awareness) favour one offer to one target at launch.',
+        'Resources (a small firm, a launch budget, low awareness) favour one focused offer at launch, and a new product in its introduction stage usually starts with one basic version.',
       ],
-      answer: 'Launch Cold Brew concentrated on the craft-minded pair, Craft and local with Explorers as a close neighbour, through Lantern’s cafés, natural grocers and supermarkets; treat On the go as a later, separate decision.',
-      interpretation: `The choice gives up, for now, the largest single group of likely buyers, and that is a real cost: ${p0(top2[GO] / top2All)} of the intenders. It buys a coherent launch that Lantern can afford and believe in. The decision should be revisited with evidence: sales by channel in the first months, and a test in a few convenience stores to see whether On the go buys a craft can at all. Positioning Cold Brew against Summit Brew, the brand nearest Explorers’ ideal, is the work of module 4.` },
+      answer: `Launch Cold Brew with one mix aimed at Craft and local and Explorers as one combined target, sold through Lantern’s cafés, natural grocers and supermarkets, and treat On the go as a later, separate decision. Strictly, this is neither concentrated marketing (one segment) nor differentiated marketing (a mix for each segment): two neighbouring segments share one offer, which works because their centres are only ${f2(cdist(CL, EX))} apart and both care about taste and novelty.`,
+      interpretation: `The launch is designed around ${p0((top2[CL] + top2[EX]) / top2All)} of the likely buyers; the other ${p0(1 - (top2[CL] + top2[EX]) / top2All)}, including On the go’s ${p0(top2[GO] / top2All)} (the largest single group) and Mindful’s ${p0(top2[MI] / top2All)}, are not its target, though some will buy in supermarkets. Top-two intent also overstates buying: it is a <g>stated preference</g>, and answering “probably” costs nothing (M04). In return Lantern gets a coherent launch it can afford, to be revisited with evidence: sales by channel in the first months, and a test in a few convenience stores to see whether On the go buys a craft can at all. Positioning Cold Brew against Summit Brew, the brand nearest Explorers’ ideal, is the work of module 4.` },
   ],
 
   demo: [
@@ -322,13 +301,13 @@ export default {
     { title: '“A niche is a safe place for a small firm.”', html: 'A niche protects a firm from broad competitors only while it stays too small or too specialised to attract them, and it puts all the eggs in one basket. Watch the niche’s size and the larger firms’ moves, and know what you would do if either changed.' },
     { title: '“The new segment’s sales are all extra.”', html: 'Some come from your own customers switching. Subtract the contribution they take with them (the cannibalisation rate times the old margin) and any new fixed costs before judging the offer.' },
     { title: '“A persona is a creative-writing exercise.”', html: 'A persona is a summary of data given a label. Every line should trace to a number about the segment; invented hobbies, jobs and quotes make it vivid and wrong.' },
-    { title: '“The persona is our typical customer.”', html: `Averages describe almost no one: only ${modalChain[5]} of Craft and local’s ${nCL} members matches the segment’s most common answer on five demographic lines. Write demographic lines as shares, lead with the needs that most members share, and keep the base on the card.` },
+    { title: '“The persona is our typical customer.”', html: `Averages describe almost no one: only ${modalChain[5]} to ${modalAlt} of Craft and local’s ${nCL} members match the segment’s most common answer on five lines (four demographic and the main source), depending on the age band. Write demographic lines as shares, lead with the needs that most members share, and keep the base on the card.` },
     { title: '“Micromarketing is just using more data.”', html: 'It uses personal data, which brings consent, purpose and privacy obligations, and it can exclude people as easily as it includes them. Collect what the offer needs, tell customers how it is used, and check who the targeting leaves out.' },
   ],
 
   application: [
     { p: 'Targeting decisions are rarely made once. A company launches with the strategy its resources allow, measures what happens, and widens or narrows its targets as evidence arrives. The professional habit is to write down, with the strategy, what would change it.' },
-    { case: `Ana’s plan for Cold Brew’s first year concentrates on Craft and local and Explorers, through Lantern’s cafés, natural grocers and supermarkets, with one craft message. The persona briefs the café managers and the agency, needs first. Her two triggers for revisiting the choice: if convenience stores near Central offices sell a test batch at a steady rate, On the go may be worth a separate mix; if Cold Brew sold in supermarkets takes visible sales from Lantern’s cafés (her next survey will ask café regulars what Cold Brew replaces), the channels need rethinking before anything is added. Both are fictional plans for this lesson.` },
+    { case: `Ana’s plan for Cold Brew’s first year aims one mix, with one craft message, at Craft and local and Explorers as a single combined target, through Lantern’s cafés, natural grocers and supermarkets. The persona briefs the café managers and the agency, needs first. Her two triggers for revisiting the choice: if convenience stores near Central offices sell a test batch at a steady rate, On the go may be worth a separate mix; if Cold Brew sold in supermarkets takes visible sales from Lantern’s cafés (her next survey will ask café regulars what Cold Brew replaces), the channels need rethinking before anything is added. Both are fictional plans for this lesson.` },
     { p: 'The same reasoning runs through very different businesses. A regional bank may concentrate on small manufacturers it understands, then add a separate offer for start-ups with its own staff and brand. A travel company may use local marketing, with different brochures for each departure city, inside a concentrated strategy aimed at retired couples. A software firm may personalise every customer’s onboarding (individual marketing) while selling one product to one industry.' },
     { p: 'In each case the strategy is judged by three questions this lesson has given you: can the company afford every offer it plans, does each new offer add more than it takes from the others, and does the team designing for the target know who the target really is, from data rather than imagination?' },
   ],
@@ -360,8 +339,9 @@ export default {
   references: [
     { text: 'Gomez Albrecht, M., Green, M. &amp; Hoffman, L. (2023). <i>Principles of Marketing</i>, section 5.5, “Selecting Target Markets”. OpenStax. Undifferentiated, differentiated and concentrated marketing, micromarketing, and buyer personas as a semi-fictional representation of an ideal customer.', url: 'https://openstax.org/books/principles-marketing/pages/5-5-selecting-target-markets', checked: '2026-10-25' },
     { text: '<i>Principles of Marketing – H5P Edition</i> (2022), section 5.3, “Selecting Target Markets and Target-Market Strategies”. BCcampus, CC BY-NC-SA 4.0. Mass, multisegment, concentrated and niche marketing, and microtargeting’s privacy concerns.', url: 'https://opentextbc.ca/principlesofmarketingh5p/chapter/selecting-target-markets-and-target-market-strategies/', checked: '2026-10-25' },
-    { text: 'Kotler, P. &amp; Armstrong, G. (2018). <i>Principles of Marketing</i>, 17th ed., chapter 7. Pearson. The book was not consulted; its sections on undifferentiated, differentiated and concentrated marketing, micromarketing (local and individual) and choosing a targeting strategy were confirmed from the publisher’s table of contents on O’Reilly Learning.', url: 'https://oreilly.com/library/view/principles-of-marketing/9780134492513', checked: '2026-10-25' },
-    { text: 'Ripley, M. L. Course notes on chapter 7 of Armstrong and Kotler, <i>Marketing: An Introduction</i>, “Factors to consider in choosing a target-marketing strategy”. York University. The source used for the five considerations.', url: 'https://www.yorku.ca/lripley/imUsegment.htm', checked: '2026-10-25' },
+    { text: 'Kotler, P. &amp; Armstrong, G. (2018). <i>Principles of Marketing</i>, 17th ed., chapter 7. Pearson. The book was not consulted; its sections on undifferentiated, differentiated and concentrated marketing, micromarketing (local and individual) and choosing a targeting strategy were confirmed from the book’s table of contents as listed on O’Reilly Learning.', url: 'https://oreilly.com/library/view/principles-of-marketing/9780134492513', checked: '2026-10-25' },
+    { text: 'Ripley, M. L. Course notes on chapter 7 of Armstrong and Kotler, <i>Marketing: An Introduction</i>, “Factors to consider in choosing a target-marketing strategy”. York University. The source for the five considerations’ labels; the notes list them without explanation.', url: 'https://www.yorku.ca/lripley/imUsegment.htm', checked: '2026-10-25' },
+    { text: 'Gomez Albrecht, M., Green, M. &amp; Hoffman, L. (2023). <i>Principles of Marketing</i>, section 9.4, “Marketing Strategies at Each Stage of the Product Life Cycle”. OpenStax. Maturity strategies of extending a product to new customers and altering it to fit the market.', url: 'https://openstax.org/books/principles-marketing/pages/9-4-marketing-strategies-at-each-stage-of-the-product-life-cycle', checked: '2026-10-25' },
     { text: 'Pruitt, J. &amp; Grudin, J. (2003). Personas: practice and theory. Proceedings of the 2003 Conference on Designing for User Experiences (DUX). Microsoft Research. Cooper’s 1999 book as the source that popularised personas; personas built on data; their risks.', url: 'https://www.microsoft.com/en-us/research/publication/personas-practice-theory/', checked: '2026-10-25' },
     { text: 'Gomez Albrecht, M., Green, M. &amp; Hoffman, L. (2023). <i>Principles of Marketing</i>, section 5.7, “Ethical Concerns and Target Marketing”. OpenStax. Exclusion through advertising platforms.', url: 'https://openstax.org/books/principles-marketing/pages/5-7-ethical-concerns-and-target-marketing', checked: '2026-10-25' },
   ],
@@ -425,7 +405,15 @@ export default {
     { what: 'Needs line inside', value: needsIn, shown: 84 },
     { what: 'Needs line outside', value: needsOut, shown: 4 },
     { what: 'Others', value: N - nCL, shown: 531 },
-    { what: 'Non-members matching five broad lines', value: othersBroad, shown: 3 },
+    { what: 'Income over $80k outside C&L %', value: inc80Out * 100, shown: 34, tol: 0.5 },
+    { what: 'Café outside C&L %', value: cafeOut * 100, shown: 26, tol: 0.5 },
+    { what: 'Modal lines with 30–44', value: modalAlt, shown: 3 },
+    { what: 'OtG supermarket or RTD %', value: goSrc[2] * 100, shown: 39, tol: 0.5 },
+    { what: 'OtG office or vending %', value: goSrc[3] * 100, shown: 30, tol: 0.5 },
+    { what: 'OtG café %', value: goSrc[0] * 100, shown: 21, tol: 0.5 },
+    { what: 'Share of intenders: Mindful %', value: (top2[MI] / top2All) * 100, shown: 18, tol: 0.5 },
+    { what: 'Share of intenders: VR %', value: (top2[VR] / top2All) * 100, shown: 9, tol: 0.5 },
+    { what: 'Share of intenders outside the pair %', value: (1 - (top2[CL] + top2[EX]) / top2All) * 100, shown: 57, tol: 0.5 },
     { what: 'Modal age band 45–59: a person of 52 lies in it', value: 52 >= 45 && 52 <= 59 ? 1 : 0, shown: 1 },
     { what: 'Needs line share of C&L %', value: (needsIn / nCL) * 100, shown: 77, tol: 0.5 },
     // Quarrystone

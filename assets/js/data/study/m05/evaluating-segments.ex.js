@@ -1,6 +1,6 @@
 // evaluating-segments.ex.js — M05 · Evaluating segments: widgets, practice and the knowledge check (answer keys live
 // here). Lantern's segments, measures and fit come from case.js (DERIVED); Ana's weights (4, 4, 2, 2, 4) are the
-// lesson's. Tarnwick Travel, Sorrelbank Software, Hollinmere Credit Union, Fernhollow Cycles and the other businesses
+// lesson's. Tarnwick Travel, Sorrelbank Software, Hollinmere Credit Union, Cobbleford Cycles and the other businesses
 // named here are fictional. Every num item's `check` recomputes its answer.
 import { DERIVED as D, BRANDS, MARGIN, LANTERN_STRENGTHS } from './case.js?v=14';
 import { weightedScore } from '../../../core/percmap.js?v=14';
@@ -51,7 +51,7 @@ function scorecard(v) {
 
 // the scorecard as a worksheet: measures in rows 2–6, scores in rows 9–13, weights in row 15
 const sheetCells = {
-  A1: 'Segment', B1: 'Share', C1: 'Spend/head ($)', D1: 'Growth (%/yr)', E1: 'Room', F1: 'Fit (z)',
+  A1: 'Segment', B1: 'Share', C1: 'Spend/head', D1: 'Growth %', E1: 'Room', F1: 'Fit (z)',
   ...col('A', 2, NAMES), ...col('B', 2, share), ...col('C', 2, head), ...col('D', 2, growth), ...col('E', 2, room), ...col('F', 2, fit),
   A8: 'Scores (0–100)', ...row('B', 8, ['Size', 'Spend', 'Growth', 'Room', 'Fit', 'Weighted']),
   ...col('A', 9, NAMES),
@@ -85,7 +85,7 @@ export const widgets = {
   'es-sheet': {
     type: 'sheet', title: 'Lantern’s segment scorecard in Excel',
     sheet: { cells: sheetCells }, view: 'A1:G17', editable: true, mark: ['G9:G13', 'B17'], maxHeight: '34rem',
-    formats: sheetFormats, widths: { A: 19, B: 9, C: 13, D: 12, E: 8, F: 8, G: 10 },
+    formats: sheetFormats, widths: { A: 18, B: 8, C: 11, D: 9, E: 8, F: 8, G: 10 },
     tools: ['formulas', 'datatable', 'reset'],
     datatable: { target: 'B17', input: 'D15', values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], format: '0.0' },
     note: 'B9 is <x>=100*B2/MAX(B$2:B$6)</x>, the ratio to the best segment, filled across to E and down to row 13; F9 is <x>=50+50*F2/MAX(ABS(F$2:F$6))</x>; G9 is <x>=SUMPRODUCT(B9:F9,$B$15:$F$15)/SUM($B$15:$F$15)</x>. Show Formulas to see them all. The data table recalculates B17 for growth weights from 0 to 10: the lead turns negative between 7 and 8.',
@@ -211,15 +211,15 @@ export const guided = [
         prompt: 'What should Tarnwick’s planner conclude?',
         options: [
           'Treat them as close: half a point more weight on size would tie them, so test those estimates',
-          'Choose adventure couples, because they lead on the weights the planner set and a scorecard has one answer',
+          'Lean towards adventure couples: they lead on the planner’s own weights, which is usually enough',
           'Choose family groups, because the segment that leads on size will usually win in the end',
-          'Abandon the scorecard, because results that move with the weights carry no information',
+          'Re-run it with equal weights and adopt whichever segment wins then, as the more neutral answer',
         ],
         answer: 0,
         feedback: {
-          1: 'A lead that a half-point change in one weight erases is too fragile to rest a decision on.',
+          1: 'A lead of 1.5 points that half a point more weight on size erases is too fragile to lean on.',
           2: 'Size is one factor; with these weights A leads. The point is how little it would take to change that.',
-          3: 'Sensitivity is information: it shows which judgement decides the choice and where to look for evidence.',
+          3: 'Equal weights are a judgement too (that size matters exactly as much as fit). Swapping one set of weights for another doesn’t test how fragile the lead is.',
         },
         hints: ['Compare the threshold with the weights themselves.', 'A rise of 0.5 on a weight of 3 is a small change of judgement.'],
       },
@@ -337,7 +337,7 @@ export const independent = [
 // Hollinmere Credit Union (fictional): one segment's scores and the weights
 const HC = { s: [80, 55, 100, 40, 70], w: [3, 4, 1, 2, 5] };
 const hcScore = sum(HC.s.map((s, k) => HC.w[k] * s)) / sum(HC.w);
-// Fernhollow Cycles (fictional) margin pools with a margin per segment
+// Cobbleford Cycles (fictional) margin pools with a margin per segment
 const FHP = { names: ['Commuters', 'Club riders', 'Families', 'Students', 'Retired riders'], people: [1800, 600, 2400, 900, 700], spend: [240, 900, 150, 120, 310], margin: [0.42, 0.28, 0.35, 0.40, 0.33] };
 const fhpCells = { A1: 'Segment', B1: 'Riders', C1: 'Spend per head ($ a year)', D1: 'Margin on what they buy', E1: 'Margin pool ($ a year)', ...col('A', 2, FHP.names), ...col('B', 2, FHP.people), ...col('C', 2, FHP.spend), ...col('D', 2, FHP.margin) };
 // a pet-food maker (fictional): distances from four segments' ideals to the nearest rival
@@ -350,13 +350,13 @@ export const check = [
     options: [
       'The segments’ sizes, spending and growth differ depending on which of the two firms measures them',
       'A segment’s attractiveness is the same for both, but its fit depends on each firm’s strengths',
-      'The larger firm must take the largest segment, and the smaller one is left with what remains',
+      'The larger firm can usually afford the largest segment, so the smaller firm generally does better elsewhere',
       'Each firm should choose the segment its nearest rival has not targeted, whatever its own strengths',
     ],
     answer: 1,
     feedback: {
       0: 'Size, spending and growth are facts about the segment; they don’t change with who measures them (though estimates can differ).',
-      2: 'Resources matter to fit, but nothing obliges a large firm to take the largest segment; its strengths may suit another.',
+      2: 'Resources matter to fit, but the size of the firm doesn’t decide the target: the chain’s strengths may suit a different segment, and the roaster’s may suit the largest one.',
       3: 'Room from rivals is one factor of attractiveness. A gap your strengths can’t fill is no target.',
     },
     solution: 'Attractiveness (size, growth, profitability, competition, accessibility) is a property of the segment. Fit is a relation between the segment and a firm: a chain with outlets everywhere fits convenience-seekers, a roaster fits drinkers who care about taste and provenance. Same data, different best targets.',
@@ -374,7 +374,7 @@ export const check = [
   },
   {
     id: 'm05-es-k3', type: 'formula', kind: 'applied',
-    prompt: 'Fernhollow Cycles (fictional) knows how many riders are in each segment (column B), what each spends a year (column C) and its margin on what that segment buys (column D, which differs because the segments buy different things). In E2, calculate the segment’s margin pool, in a formula that can be filled down to E6.',
+    prompt: 'Cobbleford Cycles (fictional) knows how many riders are in each segment (column B), what each spends a year (column C) and its margin on what that segment buys (column D, which differs because the segments buy different things). In E2, calculate the segment’s margin pool, in a formula that can be filled down to E6.',
     sheet: { cells: fhpCells }, cell: 'E2', fill: 'E2:E6', answer: '=B2*C2*D2',
     alt: ['=D2*B2*C2', '=PRODUCT(B2:D2)', '=B2*C2*D2/1'],
     view: 'A1:E6', formats: { B: '#,##0', C: '$#,##0', D: '0%', E: '$#,##0' }, widths: { A: 16, B: 9, C: 20, D: 20, E: 20 },
@@ -387,20 +387,20 @@ export const check = [
   },
   {
     id: 'm05-es-k4', type: 'mc', kind: 'applied',
-    prompt: `A colleague tells Ana: “Craft and local scored ${f1(weightedScore(FS, W_ANA)[CL])} and Explorers ${f1(weightedScore(FS, W_ANA)[EX])}, so the matter is closed.” Growth’s weight would have to rise from 2 to about 7.5 for Explorers to draw level, and lowering fit, room or spend per head can’t do it. What is the best reply?`,
+    prompt: `A colleague tells Ana: “Craft and local scored ${f1(weightedScore(FS, W_ANA)[CL])} and Explorers ${f1(weightedScore(FS, W_ANA)[EX])}, so the matter is closed.” Growth’s weight would have to rise from 2 to about 7.5 (or size’s from 4 to about 18) for Explorers to draw level, and lowering fit, room or spend per head can’t do it. What is the best reply?`,
     options: [
-      `Agreed: a ${f1(weightedScore(FS, W_ANA)[CL] - weightedScore(FS, W_ANA)[EX])}-point lead on a 100-point scale is decisive whatever weights anyone chooses`,
+      `Largely agreed: a ${f1(weightedScore(FS, W_ANA)[CL] - weightedScore(FS, W_ANA)[EX])}-point lead is wide, so no further work on it is needed`,
       'No: the two are effectively tied, because any lead that some change of weights can reverse is a tie',
-      'It leads unless growth matters nearly four times as much as Ana says; test her growth estimate',
-      'The scorecard can’t help: the weights are judgements, so the totals tell Ana nothing about the choice',
+      'Craft and local holds unless growth’s weight nearly quadruples, so test her growth estimate',
+      'The scorecard helps less than it seems: with weights this subjective, Ana should rely mostly on her own judgement',
     ],
     answer: 2,
     feedback: {
-      0: 'The lead does depend on the weights: a heavy enough weight on growth reverses it.',
-      1: 'Every lead can be reversed by some weights. What matters is how far they must move; here, a long way on growth and not at all on the others.',
-      3: 'Judgements in, but the sensitivity test turns them into a clear statement of what the decision rests on.',
+      0: 'Wide, but it rests on one uncertain judgement: a growth weight nearly four times Ana’s reverses it, and her growth rates are her own estimates. Name that and test it.',
+      1: 'Every lead can be reversed by some weights. What matters is how far they must move; here, a long way on growth, further still on size, and not at all by lowering the others.',
+      3: 'The judgements are there either way; the sensitivity test turns them into a clear statement of what the decision rests on.',
     },
-    solution: 'The lead is robust to every factor except growth, and growth’s weight would have to nearly quadruple. The useful reply names the judgement that could reverse it, Ana’s growth estimates, and the evidence that would test it.',
+    solution: 'Of the single-weight changes, only growth’s weight nearly quadrupling or size’s rising past about 18 reverses the lead, and lowering the others never does. The useful reply names the judgement most likely to move, Ana’s growth estimates, and the evidence that would test it.',
   },
   {
     id: 'm05-es-k5', type: 'num', kind: 'numerical',
@@ -420,12 +420,12 @@ export const check = [
       'A strong score on one factor can make up for a failure on a must-have, so must-haves are screened first.',
       'Including the margin pool alongside size and spend per head counts size twice.',
       'Weights are relative: doubling every weight leaves every weighted score unchanged.',
-      'A segment with the highest weighted score is the target, whatever the threshold weights show.',
+      'A segment that leads by several points can usually be chosen without checking the threshold weights.',
       'The weights should be chosen after scoring, once it is clear which segments are close.',
     ],
     answer: [0, 1, 2],
     feedback: {
-      3: 'A lead that a small change of weights reverses is effectively a tie; the thresholds show whether it is.',
+      3: 'Several points can vanish with a small change of weights, as Tarnwick’s lead did; only the thresholds show whether a lead is robust.',
       4: 'Weights set after seeing the scores tend to crown a favourite. Set them from the objectives first, then test them.',
     },
     solution: 'True: the scorecard is compensatory, so screen must-haves first; the margin pool is size × spend, so adding it double-counts size; and dividing by the total weight makes the weights relative. False: the top score is not decisive when the lead is fragile, and weights belong before the scores.',

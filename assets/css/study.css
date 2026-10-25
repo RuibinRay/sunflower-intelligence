@@ -956,6 +956,9 @@ input[type="file"]:focus-visible + .file-btn, .file-btn:focus-within { outline: 
 .pm-chart .pm-label, .pm-chart .pm-vec-label, .pm-chart .pm-ideal-label { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; }
 .pm-chart .pm-plan { fill: var(--paper); stroke: var(--series-1); stroke-width: 2.4; }
 .pm-chart .pm-move-line { stroke: var(--series-1); stroke-width: 1.6; stroke-dasharray: 4 3; }
+.pm-chart .pm-leader { stroke: var(--ink-3); stroke-width: 0.8; }
+.pm-dist thead th { white-space: normal; min-width: 4.5rem; vertical-align: bottom; }
+.pm-dist thead th:first-child { min-width: 7rem; }
 .pm-move { display: grid; gap: var(--s-2); border: 0; padding: 0; margin: 0; }
 .pm-slider { display: grid; grid-template-columns: minmax(7rem, 11rem) minmax(0, 1fr) 2.6rem; gap: var(--s-2); align-items: center; }
 .pm-slider output { text-align: right; }

@@ -1,9 +1,9 @@
 // evaluating-segments.js — M05 · Evaluating segments. Content only; exercises are in evaluating-segments.ex.js.
 // Lantern's five segments come from case.js (DERIVED.segments: sizes, spend per head, crosstabs; DERIVED.targeting.fit
 // and growth; DERIVED.map: nearest rivals and distances). Ana's weights (4, 4, 2, 2, 4) are this lesson's own fictional
-// choice. Fernhollow Cycles and Sorrelbank Software are fictional. Every printed figure is recomputed in `checks`.
+// choice. Cobbleford Cycles and Sorrelbank Software are fictional. Every printed figure is recomputed in `checks`.
 import { DERIVED as D, STUDY, BRANDS, LANTERN_STRENGTHS, MARGIN, NEEDS } from './case.js?v=14';
-import { weightedScore } from '../../../core/percmap.js?v=14';
+import { weightedScore, perceptualMap, idealDistances } from '../../../core/percmap.js?v=14';
 import { targetScores, needsFit } from '../../../core/market.js?v=14';
 import { CHANNELS } from '../m02/market.js?v=14';
 
@@ -48,7 +48,7 @@ const exFit = needsFit([S.centres[EX]], LANTERN_STRENGTHS)[0];
 const strong = NEEDS.filter((_, j) => LANTERN_STRENGTHS[j] === 1).map((x) => x.label.toLowerCase());
 const weak = NEEDS.filter((_, j) => LANTERN_STRENGTHS[j] === -1).map((x) => x.label.toLowerCase());
 
-// Fernhollow Cycles (fictional bike shop), the simple example
+// Cobbleford Cycles (fictional bike shop), the simple example
 const FH = { names: ['Commuters', 'Club riders', 'Families'], people: [1800, 600, 2400], spend: [240, 900, 150], fit: [80, 40, 60], w: [3, 2, 5] };
 const fhS = [ratio(FH.people), ratio(FH.spend), FH.fit];
 const fhT = weightedScore(fhS, FH.w);
@@ -57,36 +57,50 @@ const SB = { size: [100, 60], growth: [40, 100], room: [50, 90], fit: [90, 70], 
 const sbF = [SB.size, SB.growth, SB.room, SB.fit];
 const sbSum = (g) => sum(sbF.map((f, k) => SB.w[k] * f[g]));
 const sbT = weightedScore(sbF, SB.w);
+// robustness of room: distances to the nearest rival on all eight standardised attributes, not just the map's two
+const PMAP = perceptualMap(D.map.brandMeans);
+const room8 = idealDistances(PMAP, D.map.segIdeal, 8).map((row) => Math.min(...row.slice(1)));
+const FS8 = [SC.size, SC.head, SC.growth, ratio(room8), SC.fit];
+const T8 = weightedScore(FS8, W_ANA);
+const thr8 = W_ANA[2] + (sum(FS8.map((f, k) => W_ANA[k] * f[CL])) - sum(FS8.map((f, k) => W_ANA[k] * f[EX]))) / (FS8[2][EX] - FS8[2][CL]);
+// how much of each segment's ideal (squared distance from the map's centre, in standardised units) lies in the map's plane
+const inPlane = D.map.segIdeal.map((p) => { const z = p.map((v, a) => (v - PMAP.mu[a]) / PMAP.sd[a]); const q = PMAP.project(p); return (q[0] ** 2 + q[1] ** 2) / sum(z.map((v) => v * v)); });
+const goD = D.map.distances[GO];
+// each factor's spread of scores, and weight × spread
+const spread = FS.map((f) => mx(f) - mn(f));
+const pull = spread.map((r, k) => r * W_ANA[k]);
+// Value routine's main sources
+const vrSrc = S.crosstabs.source[VR].map((v) => v / n[VR]);
 
 // ---------------------------------------------------------------- formatting
-const p1 = (v) => `${(v * 100).toFixed(1)}%`;
+const p1 = (v) => `${(v * 100).toFixed(1)}%`, p0 = (v) => `${Math.round(v * 100)}%`;
 const f1 = (v) => v.toFixed(1), f2 = (v) => v.toFixed(2);
 const sg = (v) => `${v < 0 ? '−' : ''}${Math.abs(v).toFixed(2)}`;
 const money = (v, d = 0) => `$${v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 
 // ---------------------------------------------------------------- the attractiveness–fit chart
 function fitChart() {
-  const X = (a) => 90 + ((a - 40) / 60) * 500, Y = (f) => 330 - (f / 100) * 290;
+  const X = (a) => 56 + ((a - 40) / 60) * 344, Y = (f) => 318 - f * 2.8;
   const avgA = sum(T_ATTR) / K;
-  let s = '<svg viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="13">';
+  const t = (x, y, txt, { size = 12, anchor = 'start', fill = 'var(--ink-3)', bold = false } = {}) => `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" font-size="${size}"${bold ? ' font-weight="700"' : ''} fill="${fill}">${txt}</text>`;
+  let s = '<svg viewBox="0 0 440 392" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="13">';
   s += `<line x1="${X(40)}" y1="${Y(0)}" x2="${X(100)}" y2="${Y(0)}" style="stroke:var(--rule-strong);stroke-width:1.5"/>`;
   s += `<line x1="${X(40)}" y1="${Y(0)}" x2="${X(40)}" y2="${Y(100)}" style="stroke:var(--rule-strong);stroke-width:1.5"/>`;
-  [40, 50, 60, 70, 80, 90, 100].forEach((t) => { s += `<text x="${X(t)}" y="${Y(0) + 18}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${t}</text>`; });
-  [0, 25, 50, 75, 100].forEach((t) => { s += `<text x="${X(40) - 8}" y="${Y(t) + 4}" text-anchor="end" font-size="11" fill="var(--ink-3)">${t}</text>`; });
+  [40, 50, 60, 70, 80, 90, 100].forEach((v) => { s += t(X(v), Y(0) + 18, v, { anchor: 'middle' }); });
+  [0, 25, 50, 75, 100].forEach((v) => { s += t(X(40) - 7, Y(v) + 4, v, { anchor: 'end' }); });
   s += `<line x1="${X(40)}" y1="${Y(50)}" x2="${X(100)}" y2="${Y(50)}" style="stroke:var(--ink-3);stroke-width:1;stroke-dasharray:5 4"/>`;
-  s += `<line x1="${X(avgA)}" y1="${Y(0)}" x2="${X(avgA)}" y2="${Y(100)}" style="stroke:var(--ink-3);stroke-width:1;stroke-dasharray:5 4"/>`;
-  s += `<text x="${X(100) - 4}" y="${Y(50) - 6}" text-anchor="end" font-size="11" fill="var(--ink-3)">fit 50: no better than the average respondent</text>`;
-  s += `<text x="${X(avgA) + 6}" y="${Y(0) - 8}" font-size="11" fill="var(--ink-3)">average attractiveness (${f1(avgA)})</text>`;
-  const off = { [VR]: [-12, -4], [GO]: [12, -4], [EX]: [12, -4], [CL]: [-12, -4], [MI]: [-12, -4] };
-  const anchor = { [VR]: 'end', [GO]: 'start', [EX]: 'start', [CL]: 'end', [MI]: 'end' };
+  s += `<line x1="${X(avgA).toFixed(1)}" y1="${Y(0)}" x2="${X(avgA).toFixed(1)}" y2="${Y(100)}" style="stroke:var(--ink-3);stroke-width:1;stroke-dasharray:5 4"/>`;
+  s += t(X(100), Y(50) - 6, 'fit 50 = average', { anchor: 'end' });
+  s += t(X(avgA) + 6, Y(0) - 7, `average attractiveness ${f1(avgA)}`);
+  const pos = { [VR]: [-11, 'end'], [GO]: [11, 'start'], [EX]: [11, 'start'], [CL]: [11, 'start'], [MI]: [-11, 'end'] };
   NAMES.forEach((nm, g) => {
-    const x = X(T_ATTR[g]), y = Y(SC.fit[g]), lx = (x + off[g][0]).toFixed(1), ly = y + off[g][1];
+    const x = X(T_ATTR[g]), y = Y(SC.fit[g]), [dx, anchor] = pos[g];
     s += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(5 + 9 * share[g]).toFixed(1)}" style="fill:var(--series-1);fill-opacity:0.35;stroke:var(--series-1);stroke-width:1.5"/>`;
-    s += `<text x="${lx}" y="${ly.toFixed(1)}" text-anchor="${anchor[g]}" font-weight="600" fill="currentColor">${nm}</text>`;
-    s += `<text x="${lx}" y="${(ly + 15).toFixed(1)}" text-anchor="${anchor[g]}" font-size="12" fill="var(--ink-3)">${f1(T_ATTR[g])}, ${f1(SC.fit[g])}</text>`;
+    s += t(x + dx, y + (g === CL ? 6 : -2), nm, { size: 14, anchor, fill: 'currentColor', bold: true });
+    s += t(x + dx, y + (g === CL ? 21 : 13), `${f1(T_ATTR[g])}, ${f1(SC.fit[g])}`, { size: 12.5, anchor });
   });
-  s += `<text x="${(X(40) + X(100)) / 2}" y="${Y(0) + 40}" text-anchor="middle" fill="currentColor">Attractiveness: size, spend per head, growth and room (weights 4, 4, 2, 2)</text>`;
-  s += `<text transform="translate(26 ${(Y(0) + Y(100)) / 2}) rotate(-90)" text-anchor="middle" fill="currentColor">Fit with Lantern’s strengths (0–100)</text>`;
+  s += t((X(40) + X(100)) / 2, Y(0) + 42, 'Attractiveness (size, spend, growth, room: 4, 4, 2, 2)', { size: 13, anchor: 'middle', fill: 'currentColor' });
+  s += `<text transform="translate(16 ${((Y(0) + Y(100)) / 2).toFixed(1)}) rotate(-90)" text-anchor="middle" font-size="13" fill="currentColor">Fit with Lantern’s strengths (0–100)</text>`;
   return `${s}</svg>`;
 }
 
@@ -112,15 +126,15 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: `It is June 2027. Module 2 found five segments in Ana’s needs study of ${STUDY.n} Harbour City adults who drink coffee every week, and named them from their profiles: ${NAMES.map((nm, g) => `<b>${nm}</b> (${n[g]} respondents, ${p1(share[g])})`).join(', ')}. Ana now has to decide which of them Lantern’s cafés, beans and the new Cold Brew should be built around. Every segment could buy from Lantern; she can’t afford to design for all of them.` },
+    { case: `It is June 2027. Module 2 found five segments in Ana’s needs study of ${STUDY.n} Harbour City adults who drink coffee every week, and named them from their profiles: ${NAMES.map((nm, g) => `<b>${nm}</b> (${n[g]} respondents, ${p1(share[g])})`).join(', ')}. Ana now has to decide which of them Lantern’s cafés, beans and the planned Cold Brew should be built around. Every segment could buy from Lantern; she can’t afford to design for all of them.` },
     { p: 'In <g>STP</g>, segmentation describes a market; <b>targeting</b> chooses. Between the two sits an evaluation, which asks two different questions of every segment. Is it worth having? And can this company win it, and does it want to? A segment can be large, rich and growing and still be the wrong target for a firm that has nothing it wants.' },
 
     { h: 'Attractiveness and fit' },
     { p: '<g>Segment attractiveness</g> is what makes a segment worth serving for any firm that could serve it well. The open textbook <i>Principles of Marketing</i> (BCcampus edition) lists the features of an attractive market: it is large enough to be profitable given the costs of serving it, it is growing, it is not already swamped by competitors (or the firm has a way to stand out), and it can be reached. Those give five factors to measure.' },
     { list: [
-      '<b>Size:</b> how many customers there are, and how much they spend.',
+      '<b>Size:</b> how many customers there are.',
       '<b>Growth:</b> whether the segment is getting larger.',
-      '<b>Profitability:</b> what the spending would earn after the cost of serving it, at the firm’s margins.',
+      '<b>Profitability:</b> how much they spend, and what that spending would earn after the cost of serving it, at the firm’s margins.',
       '<b>Competition:</b> how well rivals already serve the segment’s needs.',
       '<b>Accessibility:</b> whether the firm can reach the segment through channels and media at a reasonable cost.',
     ] },
@@ -133,18 +147,19 @@ export default {
       head: ['Segment', 'Share of respondents', 'Spend per head ($ a month)', 'Growth (% a year)', 'Nearest rival (distance)', 'Fit with Lantern'],
       rows: NAMES.map((nm, g) => [nm, p1(share[g]), f2(head[g]), String(growth[g]), `${rival[g]} (${f2(room[g])})`, sg(fit[g])]),
       align: ['l', 'r', 'r', 'r', 'l', 'r'],
-      note: 'Spend is monthly coffee spend. Growth is Ana’s estimate for the next three years (fictional). The distance runs from the segment’s ideal point to the nearest rival brand on the perceptual map of module 4: the smaller it is, the better a rival already matches what the segment wants. Fit is Σ z·k ÷ Σ|k| from Ana’s marks for Lantern’s strengths (formula below): 0 means no better than the average respondent.',
+      note: 'Spend is monthly coffee spend. Growth is Ana’s estimate for the next three years (fictional). The distance runs from the segment’s ideal point to the nearest rival brand on the perceptual map of module 4: the smaller it is, the better a rival already matches what the segment wants, as far as the map can tell (see the caveats under Competition). Fit is Σ z·k ÷ Σ|k| from Ana’s marks for Lantern’s strengths (formula below): 0 means no better than the average respondent.',
     } },
     { p: `No segment leads on everything, which is why the evaluation needs a method. Value routine is the largest group but spends least, ${money(head[VR], 2)} a month a head. Craft and local is among the smallest, yet spends most per head (${money(head[CL], 2)}) and fits Lantern best. Explorers is expected to grow fastest. On the go and Mindful each have a rival sitting close to their ideal: Corner Cup and Arcadia Coffee.` },
+    { p: 'The scorecard later in this lesson uses one measure for each factor. Size is the share of respondents. Spend per head stands in for profitability: one margin applies to every segment, so spending ranks the segments exactly as margin would. Growth is Ana’s estimate, competition is the room left by the nearest rival, and fit is the last column; accessibility is used as a screen rather than scored, for reasons given below.' },
 
     { h: 'Size in money: the margin pool' },
-    { p: `Counting people is only half of size. A segment’s <g>margin pool</g> multiplies its people by their <g>spend per head</g> and by the firm’s margin: the gross margin the segment’s whole spending would earn if the firm won all of it. No firm wins all of it, so the pool is a ceiling, not a forecast; its use is comparing segments. Lantern’s <g>gross margin</g> on café and bean sales is ${(MARGIN * 100).toFixed(0)}% (Ana’s accounts, fictional).` },
-    { p: `Per 1,000 weekly coffee drinkers in the study’s mix, On the go spends enough each month to give a pool of ${money(pool[GO])} at that margin, Craft and local ${money(pool[CL])}, Explorers ${money(pool[EX])}, Mindful ${money(pool[MI])} and Value routine ${money(pool[VR])}. The largest segment by headcount has one of the two smallest pools. Grown for three years at Ana’s estimates, Craft and local’s pool becomes ${money(pool3[CL])} and Explorers’ ${money(pool3[EX])}: fast growth from a smaller base doesn’t catch up within her horizon.` },
+    { p: `Counting people is only half of size. A segment’s <g>margin pool</g> multiplies its people by their <g>spend per head</g> and by the firm’s margin: the gross margin the segment’s whole spending would earn if the firm won all of it. No firm wins all of it, so the pool is a ceiling, not a forecast; its use is comparing segments. (“Margin pool” is this lesson’s own label; the “profit pool” of strategy writing is a different idea.) Lantern’s <g>gross margin</g> on café and bean sales is ${(MARGIN * 100).toFixed(0)}% (Ana’s accounts, fictional).` },
+    { p: `Per 1,000 weekly coffee drinkers in the study’s mix, On the go spends enough each month to give a pool of ${money(pool[GO])} at that margin, Craft and local ${money(pool[CL])}, Explorers ${money(pool[EX])}, Mindful ${money(pool[MI])} and Value routine ${money(pool[VR])}. The largest segment by headcount has the smallest pool. Grown for three years at Ana’s estimates, Craft and local’s pool becomes ${money(pool3[CL])} and Explorers’ ${money(pool3[EX])}: fast growth from a smaller base doesn’t catch up within her horizon.` },
     { p: 'Keeping the two questions apart on a chart borrows an old idea from strategy. The GE–McKinsey nine-box matrix, which dates from the early 1970s, judges a business unit by two separate measures, the attractiveness of its industry and the unit’s competitive strength in it, rather than by one combined score. The chart below does the same for Lantern’s segments, scoring them as in the scorecard later in this lesson.' },
     { figure: {
       svg: fitChart(),
-      caption: 'Lantern’s segments by attractiveness and by fit, scored as in the scorecard below. A single total would hide the trade-off this shows: On the go is attractive but fits Lantern badly.',
-      alt: `A scatter chart. The horizontal axis is attractiveness from 40 to 100, combining size, spend per head, growth and room from the nearest rival with weights 4, 4, 2 and 2. The vertical axis is fit with Lantern’s strengths from 0 to 100, with a dashed line at 50 marking no better than the average respondent, and a dashed vertical line at the average attractiveness of ${f1(sum(T_ATTR) / K)}. Each segment is a circle sized by its share of respondents. ${NAMES.map((nm, g) => `${nm}: attractiveness ${f1(T_ATTR[g])}, fit ${f1(SC.fit[g])}`).join('. ')}. Craft and local is top right, Explorers just below it, Mindful high on fit but low on attractiveness, On the go attractive but low on fit, and Value routine low on both.`,
+      caption: 'Lantern’s segments by attractiveness and by fit, scored as in the scorecard below. A single total would hide what this shows: On the go has the largest money size but only average attractiveness once growth and room count, and it fits Lantern badly.',
+      alt: `A scatter chart. The horizontal axis is attractiveness from 40 to 100, combining size, spend per head, growth and room from the nearest rival with weights 4, 4, 2 and 2. The vertical axis is fit with Lantern’s strengths from 0 to 100, with a dashed line at 50 marking no better than the average respondent, and a dashed vertical line at the average attractiveness of ${f1(sum(T_ATTR) / K)}. Each segment is a circle sized by its share of respondents. ${NAMES.map((nm, g) => `${nm}: attractiveness ${f1(T_ATTR[g])}, fit ${f1(SC.fit[g])}`).join('. ')}. Craft and local is top right, Explorers just below it, Mindful high on fit but low on attractiveness, On the go about average on attractiveness but low on fit, and Value routine low on both.`,
     } },
     { callout: 'key', title: 'Two questions, kept apart', html: 'Attractiveness is a property of the segment; fit is a relation between the segment and your company. Score them separately before you combine them, so a big number on one can’t hide a weakness on the other.' },
   ],
@@ -154,8 +169,10 @@ export default {
     { p: `<b>Size.</b> Lantern’s sizes are shares of ${STUDY.n} people from an <g>opt-in panel</g> with quotas on age band only (a <g>quota sample</g>, M04). Within an age band, the panel’s members may drink more or less coffee than the city’s, so a segment’s share of respondents is an estimate of its share of the market with an unknown bias. Comparing segments is safer than quoting their sizes as market facts, and a size that decides the choice deserves a check against other evidence.` },
     { p: `<b>Profitability.</b> The margin pool uses one margin, ${(MARGIN * 100).toFixed(0)}%, for every segment, so its ranking is the same as the ranking of spending. A fuller analysis would use a margin for what each segment buys. M02 showed that a can sold through a supermarket loses 32% of its price to the retailer, while a café sale keeps it all; a segment that buys in supermarkets earns Lantern less per dollar it spends. The cost of serving a segment (delivery, staff time, discounts) belongs here too.` },
     { p: '<b>Growth.</b> Ana’s growth rates are her own judgements, not data. Use them to project size over the planning horizon with compound growth, and treat them as the first candidate for the sensitivity test below: the less certain a factor, the more it matters to know whether it decides the answer.' },
-    { p: `<b>Competition.</b> A segment is contested when a rival already offers what it wants. Module 4 builds a perceptual map of the six brands and places each segment’s ideal point on it; the distance from the ideal to the nearest rival is a measure of how much <b>room</b> is left. Room is small for Mindful (${f2(room[MI])}, Arcadia Coffee) and On the go (${f2(room[GO])}, Corner Cup) and largest for Craft and local (${f2(room[CL])}, Arcadia Coffee). The map shows customers’ perceptions on eight attributes, its two dimensions carry ${p1(D.map.cumulative[1])} of the variance, and each brand’s place rests on the people who rated it. Lantern itself sits ${f2(lanternD[CL])} from the Craft and local ideal, nearer than any rival, but on the ratings of only ${D.map.counts[0]} people who know it.` },
-    { p: `<b>Accessibility.</b> All five segments live in Harbour City and buy coffee every week, so none is out of reach. The useful question is the cost of reaching them. Lantern’s cafés already meet the people who mostly buy coffee at a café: ${p1(cafe[CL])} of Craft and local and ${p1(cafe[EX])} of Explorers, against ${p1(cafe[VR])} of Value routine, who mostly buy in supermarkets. When a factor is all or nothing (a licence you lack, customers you can’t legally serve), treat it as a screen before scoring, as with the must-haves in M01’s <g>weighted competitive-strength scorecard</g>.` },
+    { p: '<b>Competition.</b> A segment is contested when a rival already offers what it wants. Module 4’s lesson <a href="../perceptual-maps/">Perceptual maps</a> builds the tool used here. A perceptual map places brands by how customers rate them, so that brands seen as alike sit close together; a segment’s ideal point is its members’ ideal coffee placed on the same map; and the straight-line distance between an ideal point and a brand says how far the brand is from what the segment wants. The distance from a segment’s ideal to the nearest rival is a measure of how much <b>room</b> is left.' },
+    { p: `Room is small for Mindful (${f2(room[MI])}, Arcadia Coffee) and On the go (${f2(room[GO])}, Corner Cup) and largest for Craft and local (${f2(room[CL])}, Arcadia Coffee). Lantern itself sits ${f2(lanternD[CL])} from the Craft and local ideal, nearer than any rival, but on the ratings of only ${D.map.counts[0]} people who know it.` },
+    { p: `Treat room as a rough guide. The map’s two dimensions carry ${p1(D.map.cumulative[1])} of the differences between the brands, not of the ideal points: only ${p0(inPlane[EX])} of Explorers’ ideal (its squared distance from the map’s centre) lies in the map’s plane, against ${p0(Math.min(...inPlane.filter((_, g) => g !== EX)))} to ${p0(Math.max(...inPlane))} for the other segments. A brand’s position is everyone’s average rating of it, not the segment’s own view; the nearest rival ignores crowding (On the go also has Summit Brew at ${f2(goD[1])} and Daily Grind RTD at ${f2(goD[2])}); and a large distance can be a gap that is empty for a reason. As a check, room measured across all eight standardised attributes gives distances of ${room8.map(f2).join(', ')} and room scores of ${ratio(room8).map(f1).join(', ')}. With them Ana’s totals become ${T8.map(f1).join(', ')}: Craft and local still leads, and growth’s threshold weight (below) falls from about ${f1(thrGrowth)} to about ${f1(thr8)}.` },
+    { p: `<b>Accessibility.</b> All five segments live in Harbour City and buy coffee every week, so none is out of reach. The useful question is the cost of reaching them. Lantern’s cafés already meet the people who mostly buy coffee at a café: ${p1(cafe[CL])} of Craft and local and ${p1(cafe[EX])} of Explorers, against ${p1(cafe[VR])} of Value routine, who mostly brew at home (${p0(vrSrc[1])}) or buy in supermarkets (${p0(vrSrc[2])}). When a factor is all or nothing (a licence you lack, customers you can’t legally serve), treat it as a screen before scoring, as with the must-haves in M01’s <g>weighted competitive-strength scorecard</g>.` },
     { p: '<b>Fit.</b> The fit score compares a segment’s needs with what the company is good at. Each <g>segment centre</g> from module 2 gives the segment’s mean on each need in standardised units (z-scores: 0 is the average respondent). Ana marks each need +1 where Lantern is strong, −1 where it is weak and 0 otherwise; a segment’s fit is the sum of its z-scores times those marks, divided by the number of marked needs. A positive fit means the segment cares more than the average respondent about what Lantern does well, or less about what it does badly.' },
     { p: `The map gives a cross-check of Ana’s self-assessment: the distance from Lantern to each segment’s ideal. Lantern is nearest the Craft and local ideal (${f2(lanternD[CL])}) and Explorers’ (${f2(lanternD[EX])}), and farthest from Value routine’s (${f2(lanternD[VR])}), the same order as the fit scores at both ends. When a company’s view of its strengths and its customers’ view disagree, believe the customers and find out why.` },
 
@@ -167,6 +184,7 @@ export default {
     { h: 'Weights come from objectives' },
     { p: 'The weights say how much each factor matters to this decision. They should come from the company’s objectives and be set before the scores are seen; weights chosen afterwards tend to be the ones that crown the segment someone already wanted. Weights are relative: the total is divided by their sum, so 4, 4, 2, 2, 4 gives the same result as 2, 2, 1, 1, 2. It is the arithmetic of the <g>weighted-attribute model</g> from M01, applied by the seller to segments.' },
     { p: 'Ana wants Lantern to grow its sales without becoming a different business, so she gives size, spend per head and fit 4 each. Growth and room get 2 each: they matter to her, but less than the money Lantern can earn in the next few years and the strengths it can build on. These weights are this lesson’s example, and the choice is hers to defend.' },
+    { p: `A weight is not the whole story: a factor’s pull on the totals is its weight times the spread of its scores. Lantern’s size scores run only from ${f1(mn(SC.size))} to 100, a range of ${f1(spread[0])}, while fit runs from ${f1(mn(SC.fit))} to 100, a range of ${f1(spread[4])}. Weight × range is ${FACTORS.map((f, k) => `${['size', 'spend per head', 'growth', 'room', 'fit'][k]} ${Math.round(pull[k])}`).join(', ')}: size and fit both weigh 4, but fit can move a segment’s total about ${['', 'one', 'two', 'three', 'four'][Math.round(pull[4] / pull[0])]} times as far. When you ask what drives a ranking, look at these products, not only at the weights.` },
     { table: {
       caption: 'Lantern’s segment scorecard: factor scores (0–100) and weighted scores with Ana’s weights',
       head: ['Factor (weight)', ...NAMES],
@@ -179,14 +197,14 @@ export default {
 
     { h: 'How sensitive is the winner?' },
     { p: 'A scorecard’s total looks precise, but it is built from judgements: the weights, the growth estimates, the fit marks. <g>Sensitivity analysis</g> (B03) asks how far each judgement would have to move to change the answer. For a weighted scorecard there is a neat way to find out. Take the leader A and a challenger B, and a factor on which B scores higher. Raising that factor’s weight by Δ changes A’s weighted sum minus B’s by Δ times the difference in their scores on it, so the two tie when Δ equals the gap in weighted sums divided by B’s advantage on that factor: the <g>threshold weight</g>.' },
-    { p: `For Lantern, Craft and local’s weighted sum beats Explorers’ by ${f1(gapCE)} points (before dividing by the total weight of 16), and Explorers scores ${f1(SC.growth[EX] - SC.growth[CL])} points higher on growth. Growth’s weight would have to rise by ${f1(gapCE)} ÷ ${f1(SC.growth[EX] - SC.growth[CL])} ≈ ${f2(thrGrowth - W_ANA[2])}, from 2 to about ${f1(thrGrowth)}, for Explorers to draw level: at 7 Craft and local still leads (${f1(TG7[CL])} against ${f1(TG7[EX])}), at 8 Explorers does (${f1(TG8[EX])} against ${f1(TG8[CL])}). On size, the only other factor where Explorers is ahead, the weight would have to reach about ${f1(thrSize)}. Lowering fit, room or spend per head, even to zero, never puts Explorers in front.` },
+    { p: `For Lantern, Craft and local’s weighted sum beats Explorers’ by ${f1(gapCE)} points (before dividing by the total weight of 16), and Explorers scores ${f1(SC.growth[EX] - SC.growth[CL])} points higher on growth. Growth’s weight would have to rise by ${f1(gapCE)} ÷ ${f1(SC.growth[EX] - SC.growth[CL])} ≈ ${f1(thrGrowth - W_ANA[2])}, from 2 to about ${f1(thrGrowth)}, for Explorers to draw level: at 7 Craft and local still leads (${f1(TG7[CL])} against ${f1(TG7[EX])}), at 8 Explorers does (${f1(TG8[EX])} against ${f1(TG8[CL])}). On size, the only other factor where Explorers is ahead, the weight would have to reach about ${f1(thrSize)}. Lowering fit, room or spend per head, even to zero, never puts Explorers in front.` },
     { p: `Other judgements can be tested the same way. A firm that cared only about money size, size and spend per head weighted equally, would put On the go narrowly first (${f1(T_MONEY[GO])} against ${f1(T_MONEY[CL])}). A firm that ignored fit and weighted size heavily (10, 4, 2, 2, 0) would choose Explorers (${f1(T_NOFIT[EX])} against ${f1(T_NOFIT[CL])}). Under min–max scaling with Ana’s weights, Craft and local still leads (${f1(T_MM[CL])} against ${f1(T_MM[EX])}). In Excel, a <g>data table</g> with the growth weight as its input cell shows the whole curve at once.` },
-    { p: 'The conclusion is not “Craft and local scored 88.8”. It is: Craft and local leads unless growth matters nearly four times as much to Ana as she now says, or unless fit is set aside. That statement tells her which judgement to examine (her growth estimates) and what evidence would change her mind.' },
+    { p: 'The conclusion is not “Craft and local scored 88.8”. It is: Craft and local leads unless growth matters nearly four times as much to Ana as she now says, or unless she both drops fit and weights size far above the rest. That statement tells her which judgement to examine (her growth estimates) and what evidence would change her mind.' },
 
     { h: 'What a scorecard can’t do' },
     { list: [
       '<b>It is compensatory.</b> A high score on one factor makes up for a low one. Screen out segments that fail an absolute requirement (legal, ethical, or beyond the company’s reach) before scoring.',
-      '<b>It can count one thing twice.</b> The margin pool is size times spend, so a scorecard with size, spend per head and the pool gives size two votes. Fit and the share already buying at Lantern’s kind of outlet overlap in the same way.',
+      '<b>It can count one thing twice.</b> The margin pool is size times spend, so a scorecard with size, spend per head and the pool gives size two votes. Strongly correlated measures, such as fit and the share already buying at a café, do something similar: they reward the same difference twice.',
       '<b>Its precision is false.</b> Scores built from estimates and judgements can’t separate segments a few points apart. Treat a lead that a reasonable change of weights reverses as a tie, and decide it on other grounds.',
       '<b>It can’t supply the objectives.</b> The weights carry the company’s strategy. A scorecard makes a choice explicit and testable; it doesn’t make the choice.',
     ] },
@@ -270,13 +288,13 @@ export default {
         [String.raw`d(\text{ideal}_j, b)`, 'Straight-line distance between the ideal point and brand b on the map’s two dimensions', 'map units'],
         ['b', 'Each brand on the map other than the company’s own', ''],
       ],
-      assumptions: 'The map’s two dimensions capture most of how customers see the brands, and each brand’s position rests on enough ratings.',
-      note: 'Score room with the ratio to the best: 100 × r_j ÷ the largest r. Module 4 builds the map and its distances. Room measures perceived competition only; a rival’s capacity, prices and plans still need a competitor analysis.' },
+      assumptions: 'The map’s two dimensions capture most of how customers see the brands and the ideal points, and each brand’s position rests on enough ratings. A brand’s position is everyone’s average view of it, not the segment’s own.',
+      note: 'Score room with the ratio to the best: 100 × r_j ÷ the largest r. Module 4 builds the map and its distances. The nearest rival ignores crowding (a second rival close behind), and a large distance may be a gap that is empty for a reason; measuring the distance on all the attributes is a useful check. Room measures perceived competition only; a rival’s capacity, prices and plans still need a competitor analysis.' },
   ],
 
   examples: [
     { level: 'simple', title: 'Which riders should a bike shop build around?', fictional: true,
-      setup: `Fernhollow Cycles, a bike shop in a market town, has three segments of local riders. Commuters: about ${FH.people[0].toLocaleString('en-US')} people, spending $${FH.spend[0]} a year each on bikes, parts and repairs. Club riders: ${FH.people[1]} people, $${FH.spend[1]}. Families: ${FH.people[2].toLocaleString('en-US')} people, $${FH.spend[2]}. The owner scores fit with the shop’s strengths (fast repairs, a small showroom) at ${FH.fit.join(', ')} out of 100. Her weights: size ${FH.w[0]}, spend ${FH.w[1]}, fit ${FH.w[2]}. Score the segments.`,
+      setup: `Cobbleford Cycles, a bike shop in a market town, has three segments of local riders. Commuters: about ${FH.people[0].toLocaleString('en-US')} people, spending $${FH.spend[0]} a year each on bikes, parts and repairs. Club riders: ${FH.people[1]} people, $${FH.spend[1]}. Families: ${FH.people[2].toLocaleString('en-US')} people, $${FH.spend[2]}. The owner scores fit with the shop’s strengths (fast repairs, a small showroom) at ${FH.fit.join(', ')} out of 100. Her weights: size ${FH.w[0]}, spend ${FH.w[1]}, fit ${FH.w[2]}. Score the segments.`,
       steps: [
         String.raw`Score size as a ratio to the largest segment (the ratio-to-best formula), Families with ${FH.people[2].toLocaleString('en-US')}: Commuters <m>100 \times 1{,}800 \div 2{,}400 = 75</m>, Club riders <m>100 \times 600 \div 2{,}400 = 25</m>, Families 100.`,
         String.raw`Score spend the same way against the club riders’ $900: Commuters <m>100 \times 240 \div 900 \approx 26.7</m>, Club riders 100, Families <m>100 \times 150 \div 900 \approx 16.7</m>. Fit is already on 0–100.`,
@@ -300,13 +318,13 @@ export default {
     { level: 'applied', title: 'Lantern’s scorecard and the judgement that decides it', fictional: true,
       setup: 'Ana has the five segments’ measures (the first table in this lesson) and her weights: size 4, spend per head 4, growth 2, room 2, fit 4. Score the segments, find the leader, and find what would make the runner-up overtake it.',
       steps: [
-        `Score each factor (ratio to the best for size, spend per head, growth and room; centred for fit). For Craft and local: size 100 × ${p1(share[CL])} ÷ ${p1(share[VR])} ≈ ${f1(SC.size[CL])}; spend per head 100 (the best); growth 100 × 6 ÷ 9 ≈ ${f1(SC.growth[CL])}; room 100 (the most room); fit 100 (the best fit). The other segments’ scores are in the scorecard table.`,
+        `Score each factor (ratio to the best for size, spend per head, growth and room; centred for fit). For Craft and local: size 100 × ${n[CL]} ÷ ${n[VR]} ≈ ${f1(SC.size[CL])}; spend per head 100 (the best); growth 100 × 6 ÷ 9 ≈ ${f1(SC.growth[CL])}; room 100 (the most room); fit 100 (the best fit). The other segments’ scores are in the scorecard table.`,
         `Weighted scores (Σ w s ÷ 16): Craft and local ${f1(T_ANA[CL])}, Explorers ${f1(T_ANA[EX])}, Mindful ${f1(T_ANA[MI])}, On the go ${f1(T_ANA[GO])}, Value routine ${f1(T_ANA[VR])}.`,
-        `Threshold for the runner-up. The weighted sums differ by ${f1(gapCE)}; Explorers leads on growth by ${f1(SC.growth[EX] - SC.growth[CL])} and on size by ${f1(SC.size[EX] - SC.size[CL])}. Growth’s weight would have to rise by about ${f2(thrGrowth - W_ANA[2])} (to ${f1(thrGrowth)}), size’s by about ${f1(thrSize - W_ANA[0])} (to ${f1(thrSize)}).`,
+        `Threshold for the runner-up. The weighted sums differ by ${f1(gapCE)}; Explorers leads on growth by ${f1(SC.growth[EX] - SC.growth[CL])} and on size by ${f1(SC.size[EX] - SC.size[CL])}. Growth’s weight would have to rise by about ${f1(thrGrowth - W_ANA[2])} (to ${f1(thrGrowth)}), size’s by about ${f1(thrSize - W_ANA[0])} (to ${f1(thrSize)}).`,
         `Check attractiveness and fit separately (the chart in this lesson). Craft and local is first on both. Explorers is second on attractiveness (${f1(T_ATTR[EX])}) and third on fit (${f1(SC.fit[EX])}); On the go is third on attractiveness (${f1(T_ATTR[GO])}) but fourth of five on fit (${f1(SC.fit[GO])}).`,
       ],
-      answer: `Craft and local leads with ${f1(T_ANA[CL])}; Explorers (${f1(T_ANA[EX])}) would overtake only if growth’s weight rose above about ${f1(thrGrowth)}, nearly four times Ana’s 2.`,
-      interpretation: 'The choice of Craft and local as Lantern’s first target is robust to everything but a much heavier weight on growth, which is itself built on Ana’s estimates. Explorers is a strong second and shares Craft and local’s interest in taste and novelty, which the next lesson uses when it asks whether to serve one segment or two. On the go’s weakness is fit, not size: it would suit a firm with Corner Cup’s outlets better than Lantern.' },
+      answer: `Craft and local leads with ${f1(T_ANA[CL])}. Of the single-weight changes, Explorers (${f1(T_ANA[EX])}) would overtake only if growth’s weight rose above about ${f1(thrGrowth)}, nearly four times Ana’s 2, or size’s above about ${f1(thrSize)}.`,
+      interpretation: 'The choice of Craft and local as Lantern’s first target is robust: of the single changes, only a much heavier weight on growth (itself built on Ana’s estimates) or a far heavier one on size reverses it, and dropping fit reverses it only if size is also weighted far above the rest. Explorers is a strong second and shares Craft and local’s interest in taste and novelty, which the next lesson uses when it asks whether to serve one segment or two. On the go’s weakness is fit, not size: it would suit a firm with Corner Cup’s outlets better than Lantern.' },
   ],
 
   demo: [
@@ -315,17 +333,17 @@ export default {
   ],
 
   mistakes: [
-    { title: '“The biggest segment is the best target.”', html: 'Size is one factor of five. Value routine is Lantern’s largest segment, yet it has one of the two smallest margin pools and the worst fit. Size in people, size in money and fit can point in different directions; score them separately.' },
+    { title: '“The biggest segment is the best target.”', html: 'Size is one factor of five. Value routine is Lantern’s largest segment, yet it has the smallest margin pool and the worst fit. Size in people, size in money and fit can point in different directions; score them separately.' },
     { title: '“The scorecard’s total is the answer.”', html: 'The total depends on weights and estimates that are judgements. Report the leader together with the threshold weights that would change it; a lead that a small, reasonable change reverses is a tie.' },
     { title: '“Set the weights once you see which segment you like.”', html: 'Weights chosen after the scores tend to confirm a favourite. Set them from the objectives before scoring, write down why, and then test them.' },
-    { title: '“Add every measure you have.”', html: 'Measures that overlap count the same thing twice: the margin pool already contains size and spend per head, and fit overlaps with the share already buying at Lantern’s kind of outlet. Choose one measure per factor.' },
+    { title: '“Add every measure you have.”', html: 'Measures that overlap count the same thing twice: the margin pool already contains size and spend per head. Strongly correlated measures, such as fit and the share already buying at a café, reward the same difference twice too. Choose one measure per factor.' },
     { title: '“Min–max scaling is the neutral choice.”', html: 'It makes the worst segment 0 and the best 100 however close they are, which exaggerates small differences. The ratio to the best keeps proportions. Neither is neutral; pick one before scoring and say which.' },
     { title: '“If the people are adults and the product is legal, any target is fine.”', html: 'Ethical concern rises with the harm a product can do and with the vulnerability of the people targeted. Screen segments for both before scoring, and remember that how you target (the claims, the channels, who else the message reaches) matters as much as whom.' },
   ],
 
   application: [
     { p: 'In a company, the output of this lesson is a recommendation a manager can challenge: the leading segment, the runner-up, the threshold weights that separate them, and the evidence that would move them. A good targeting memo puts the sensitivity in the first paragraph, not an appendix, because it tells the reader which disagreement matters.' },
-    { case: `Ana’s summary for Lantern reads like this. Craft and local leads with ${f1(T_ANA[CL])} out of 100, ahead of Explorers (${f1(T_ANA[EX])}); it has the highest spend per head, the most room from rivals and the best fit, and ${p1(cafe[CL])} of it buys coffee mostly at a café, the channel Lantern already runs. Explorers would lead only if growth counted for nearly four times what she has given it, so the next thing to test is her growth estimate for Explorers, perhaps with the panel company’s data from earlier years. On the go is large, and its money size is the largest, but it fits Lantern poorly and Corner Cup is already close to what it wants; Value routine and Mindful trail. Whether Lantern should serve one segment or more, and with which offers, is the targeting strategy of the next lesson.` },
+    { case: `Ana’s summary for Lantern reads like this. Craft and local leads with ${f1(T_ANA[CL])} out of 100, ahead of Explorers (${f1(T_ANA[EX])}); it has the highest spend per head, the most room from rivals and the best fit, and ${p1(cafe[CL])} of it buys coffee mostly at a café, the channel Lantern already runs. Of the single-weight changes, only a growth weight nearly four times hers, or a size weight about ${f1(thrSize / W_ANA[0])} times hers, would put Explorers ahead (dropping fit does so only if size is also weighted far above the rest), so the next thing to test is her growth estimate for Explorers. On the go has the largest money size but fits Lantern poorly, and Corner Cup is already close to what it wants; Mindful comes third (${f1(T_ANA[MI])}) and Value routine last. Whether Lantern should serve one segment or more, and with which offers, is the targeting strategy of the next lesson.` },
     { p: `Two habits make the method trustworthy. First, separate the measured factors from the judged ones: size and spend per head come from the survey, growth and fit marks from Ana, room from a map on which Lantern’s own position rests on only ${D.map.counts[0]} ratings. Second, test the judged ones hardest. If the decision survives every reasonable change to them, it is robust; if it doesn’t, the scorecard has told you where to spend the next research budget.` },
     { p: 'The same scorecard serves very different firms. A bank choosing between small-business segments might weight the cost to serve and the risk of default; a travel company might add seasonality. A software firm like Sorrelbank, in a fast-moving market, might put growth first. The factors change with the industry, and the weights with the company’s objectives; the discipline of scoring attractiveness and fit separately, screening first and testing the weights does not.' },
   ],
@@ -335,7 +353,7 @@ export default {
     'The margin pool, people × spend per head × margin, measures size in money; it is a ceiling for comparing segments, not a forecast.',
     'Put each factor on a 0–100 scale (the ratio to the best keeps proportions; fit is centred on 50), weight the scores from the objectives and divide by the total weight.',
     'A threshold weight, the gap in weighted sums divided by the challenger’s advantage on a factor, shows how far a judgement must move to change the winner.',
-    'Competition can be read from a perceptual map as the distance from a segment’s ideal to the nearest rival, with the map’s limits.',
+    'Competition can be read, roughly, from a perceptual map as the distance from a segment’s ideal to the nearest rival; check it against the map’s limits and on all the attributes.',
     'Scorecards are compensatory and falsely precise: screen must-haves first, don’t count a measure twice, and treat fragile leads as ties.',
     'Targeting is unethical when it exploits vulnerability: concern rises with product harm and consumer vulnerability, and with how the targeting is done.',
   ],
@@ -396,7 +414,7 @@ export default {
     { what: 'Gap in weighted sums C&L − Explorers', value: gapCE, shown: 183.8, tol: 0.05 },
     { what: 'Growth score gap', value: SC.growth[EX] - SC.growth[CL], shown: 33.3, tol: 0.05 },
     { what: 'Size score gap', value: SC.size[EX] - SC.size[CL], shown: 13.2, tol: 0.05 },
-    { what: 'Growth weight rise', value: thrGrowth - W_ANA[2], shown: 5.51, tol: 0.005 },
+    { what: 'Growth weight rise', value: thrGrowth - W_ANA[2], shown: 5.5, tol: 0.05 },
     { what: 'Growth threshold', value: thrGrowth, shown: 7.5, tol: 0.05 },
     { what: 'Size threshold', value: thrSize, shown: 18.0, tol: 0.05 },
     { what: 'Size weight rise', value: thrSize - W_ANA[0], shown: 14.0, tol: 0.05 },
@@ -414,6 +432,25 @@ export default {
     { what: 'Min–max (Ana): C&L', value: T_MM[CL], shown: 72.9, tol: 0.05 },
     { what: 'Min–max (Ana): Explorers', value: T_MM[EX], shown: 62.6, tol: 0.05 },
     { what: 'Explorers fit by hand', value: exFit, shown: 0.38, tol: 0.005 },
+    { what: 'VR mostly home-brewed %', value: vrSrc[1] * 100, shown: 50, tol: 0.5 },
+    { what: 'VR mostly supermarket or RTD %', value: vrSrc[2] * 100, shown: 35, tol: 0.5 },
+    { what: 'VR has the smallest margin pool', value: pool.indexOf(mn(pool)) === VR ? 1 : 0, shown: 1 },
+    { what: 'Explorers ideal in the map plane %', value: inPlane[EX] * 100, shown: 42, tol: 0.5 },
+    { what: 'Other segments in plane: lowest %', value: Math.min(...inPlane.filter((_, g) => g !== EX)) * 100, shown: 67, tol: 0.5 },
+    { what: 'Other segments in plane: highest %', value: Math.max(...inPlane) * 100, shown: 98, tol: 0.5 },
+    { what: 'On the go: Summit Brew distance', value: goD[1], shown: 1.50 },
+    { what: 'On the go: Daily Grind RTD distance', value: goD[2], shown: 1.59 },
+    ...NAMES.map((nm, g) => ({ what: `Room on 8 attributes: ${nm}`, value: room8[g], shown: [1.44, 1.37, 2.28, 2.97, 1.25][g] })),
+    ...NAMES.map((nm, g) => ({ what: `Room score on 8 attributes: ${nm}`, value: ratio(room8)[g], shown: [48.4, 46.3, 76.8, 100, 42.3][g], tol: 0.05 })),
+    ...NAMES.map((nm, g) => ({ what: `Totals with 8-attribute room: ${nm}`, value: T8[g], shown: [43.3, 60.0, 78.4, 88.8, 63.7][g], tol: 0.05 })),
+    { what: 'Growth threshold with 8-attribute room', value: thr8, shown: 7.0, tol: 0.05 },
+    { what: 'Lowest size score', value: mn(SC.size), shown: 68.4, tol: 0.05 },
+    { what: 'Lowest fit score', value: mn(SC.fit), shown: 8.1, tol: 0.05 },
+    ...FACTORS.map((f, k) => ({ what: `Spread of scores: ${f}`, value: spread[k], shown: [31.6, 64.7, 88.9, 68.3, 91.9][k], tol: 0.05 })),
+    ...FACTORS.map((f, k) => ({ what: `Weight × spread: ${f}`, value: pull[k], shown: [126, 259, 178, 137, 368][k], tol: 0.5 })),
+    { what: 'Fit pull over size pull ≈ 3', value: Math.round(pull[4] / pull[0]), shown: 3 },
+    { what: 'Size threshold as a multiple of Ana’s size weight', value: thrSize / W_ANA[0], shown: 4.5, tol: 0.05 },
+    { what: 'Mindful third', value: [...T_ANA].sort((a, b) => b - a).indexOf(T_ANA[MI]), shown: 2 },
     // Fernhollow
     { what: 'FH size score commuters', value: fhS[0][0], shown: 75 },
     { what: 'FH size score club', value: fhS[0][1], shown: 25 },
