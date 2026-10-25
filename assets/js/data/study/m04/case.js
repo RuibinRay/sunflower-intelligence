@@ -84,7 +84,10 @@ export const RESPONDENTS = idx((i) => PEOPLE.status[i] === 2).map((i) => ({
 export const RESPONDENT_COLUMNS = ['respondent', 'segment', 'nps', 'cold_brew', 'age', 'first_heard', 'cups_last_week', 'improve'];
 export const RESPONDENT_ROWS = RESPONDENTS.map((r) => [r.id, SEGMENT[r.stratum], r.nps, LEVELS.coldbrew[r.coldbrew - 1], LEVELS.age[r.age], LEVELS.heard[r.heard], r.cups, LEVELS.theme[r.theme]]);
 const dispo = (h) => { const st = idx((i) => (h == null || stratum[i] === h) && PEOPLE.status[i] > 0).map((i) => PEOPLE.status[i]); const c = (k) => st.filter((x) => x === k).length; return { invited: st.length, I: c(2), P: c(3), R: c(4), NC: c(5), U: c(1) }; };
-/** AAPOR dispositions by stratum: I complete, P partial, R refused, NC bounced (not contacted), U no reply. */
+/** AAPOR dispositions by stratum: I complete, P partial, R refused, NC bounced (not contacted), U no reply. Everyone on
+ *  the list is eligible, so under AAPOR's Standard Definitions (10th edition, section 1) the no-replies are eligible
+ *  non-respondents, not cases of unknown eligibility; the field keeps the name U, and RR1 = RR3 and RR2 = RR4 because
+ *  every case is in the denominator either way. */
 export const DISPOSITIONS = { all: dispo(null), byStratum: STRATA.map((_, h) => dispo(h)) };
 
 // ---------------------------------------------------------------- March 2027: qualitative work on Lantern Cold Brew
@@ -141,8 +144,9 @@ export const PRICE_AUDIT = {
 };
 
 /** Ana's cold brew sizing inputs (March 2027). Store counts are Harbour City's (fictional); the listings and the cans a
- *  store sells a week are Ana's planning assumptions after talking to two store buyers. Direct: cans a month through
- *  Lantern's own channel, from the survey's subscribers. */
+ *  store sells a week are Ana's planning assumptions after talking to two store buyers. Direct: Ana's estimate of the
+ *  cans a month Lantern's own channel (shop and subscriptions) would sell, a judgement informed by what subscribers said
+ *  in the February survey, not a calculation from it. */
 export const COLD_BREW_SIZING = {
   stores: { supermarket: 120, convenience: 260, natural: 45 },
   plan: { supermarket: { listed: 30, cansPerWeek: 10 }, natural: { listed: 25, cansPerWeek: 14 } },
@@ -192,8 +196,8 @@ export const OFFICE_INTERVIEWS = [
   { who: 'OM6', size: '200 staff', theme: 2, text: 'A barista visit now and then would be a nice thing for the team, but it isn’t why we’d buy.' },
   { who: 'OM5', size: '25 staff', theme: 5, text: 'I do the ordering on top of my real job, so less admin is the whole point.' },
 ];
-/** Office-coffee offers in the district (March 2027; prices from the suppliers' published price lists and one quote;
- *  fictional). Price per member of staff a month; minimum contract in months. */
+/** Office-coffee offers in the district (March 2027; prices from the suppliers' published price lists and a quote an
+ *  office manager shared with Ana; fictional). Price per member of staff a month; minimum contract in months. */
 export const OFFICE_COMPETITORS = [
   { name: 'Brewline Office', what: 'Pod machines with monthly pod restock', pricePerStaffMonth: 11, contractMonths: 24, service: 'next working day' },
   { name: 'Daystar Vending', what: 'Coin-free vending machine; cups charged at $0.40 each to the office', pricePerStaffMonth: null, perCup: 0.40, contractMonths: 36, service: 'within 3 working days' },

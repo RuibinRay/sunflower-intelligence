@@ -112,6 +112,18 @@ function checkExercise(x, where, r, { course, chart, needHints = false, inSteps 
         if (b.options) { if (!Number.isInteger(b.answer) || b.answer < 0 || b.answer >= b.options.length) r.err(`${w}: blank ${i} answer must index its options`); }
         else if (!Array.isArray(b.accept) || !b.accept.length) r.err(`${w}: blank ${i} needs options+answer or accept`);
       });
+      // drop-down lists that aren't a shared word bank keep their authored order on the page (exercises.js), so if every
+      // blank's answer sits in the same position, picking that position everywhere scores full marks
+      {
+        const ob = (x.blanks || []).filter((b) => b.options);
+        const lists = ob.map((b) => JSON.stringify(b.options));
+        const isNumOpt = (o) => /^\s*[−-]?[$£]?[\d,.]+%?\s*$/.test(String(o).replace(/<[^>]*>/g, ''));
+        const bank = !x.fixed && ob.length >= 2 && ob.length === (x.blanks || []).length && lists.every((l) => l === lists[0]) && !ob[0].options.every(isNumOpt);
+        if (!bank && ob.length >= 2 && new Set(ob.map((b) => b.answer)).size === 1) {
+          const msg = `${w}: every drop-down's answer is option ${ob[0].answer + 1}, and these lists keep their order on the page; vary the answers' positions`;
+          if (catalog.COURSE[course]?.status === 'complete') r.note(msg); else r.warn(msg);
+        }
+      }
       break;
     }
     case 'classify': {
@@ -189,9 +201,35 @@ function checkSheetSpec(spec, w, r, { allowErrors = [] } = {}) {
   }
   return sh;
 }
+// The marking copies move whole numbers from 36,526 to 55,153 (dates from 2000 to 2050) by whole months instead of
+// scaling them (sheet.js perturbSpec), so a count or an amount in that range (48,200 cans, say) changes by an odd amount
+// on the copies. Flag such cells unless they are fixed, varied, formatted as dates, or sit under a date-like header.
+const DATE_HEAD = /date|day|month|week|year|when|time|period|start|end|due|deadline|opened|closed/i;
+function dateLikeCheck(x, w, r) {
+  const cells = x.sheet?.cells || {};
+  const fixed = new Set();
+  for (const f of x.sheet?.fixed || []) { const rg = SH.parseRange(f) || (SH.parseAddr(f) && { r0: SH.parseAddr(f).r, r1: SH.parseAddr(f).r, c0: SH.parseAddr(f).c, c1: SH.parseAddr(f).c }); if (rg) for (let i = rg.r0; i <= rg.r1; i++) for (let j = rg.c0; j <= rg.c1; j++) fixed.add(`${i},${j}`); }
+  const vary = new Set(Object.keys(x.sheet?.vary || {}).map((k) => k.replace(/\$/g, '').toUpperCase()));
+  const fmts = { ...(x.sheet?.formats || {}), ...(x.formats || {}) };
+  const isDateFmt = (f) => typeof f === 'string' && (f === 'date' || /[dmy]{2,}/i.test(f) && !/[#0]/.test(f));
+  const odd = [];
+  for (const [k, v] of Object.entries(cells)) {
+    if (!(Number.isInteger(v) && v >= 36526 && v <= 55153)) continue;
+    const a = SH.parseAddr(k); if (!a) continue;
+    const key = k.replace(/\$/g, '').toUpperCase(), col = key.replace(/\d+$/, '');
+    if (fixed.has(`${a.r},${a.c}`) || vary.has(key) || isDateFmt(fmts[key]) || isDateFmt(fmts[col])) continue;
+    let head = '';
+    for (let i = a.r - 1; i >= 0 && !head; i--) { const u = cells[`${col}${i + 1}`]; if (typeof u === 'string' && !u.startsWith('=')) head = u; }
+    const left = Object.entries(cells).find(([kk, u]) => typeof u === 'string' && !u.startsWith('=') && SH.parseAddr(kk)?.r === a.r && SH.parseAddr(kk)?.c < a.c)?.[1] || '';
+    if (DATE_HEAD.test(head) || DATE_HEAD.test(left)) continue;
+    odd.push(`${key} (${v})`);
+  }
+  if (odd.length) r.warn(`${w}: ${odd.slice(0, 4).join(', ')}${odd.length > 4 ? ` and ${odd.length - 4} more` : ''} ${odd.length > 1 ? 'are whole numbers' : 'is a whole number'} in the range the marking copies treat as dates (36,526–55,153), so ${odd.length > 1 ? 'they move' : 'it moves'} by months rather than scaling; if not a date, list it in fixed or vary, or change the value`);
+}
 function checkFormulaItem(x, w, r) {
   const sh = checkSheetSpec(x.sheet, `${w}.sheet`, r, { allowErrors: x.allowErrors || [] });
   if (!sh) return;
+  dateLikeCheck(x, w, r);
   const at = SH.parseAddr(x.cell || '');
   if (!at) { r.err(`${w}: cell must be an address like F2`); return; }
   if (x.fill) { const rg = SH.parseRange(x.fill); if (!rg || rg.r0 !== at.r || rg.c0 !== at.c) r.err(`${w}: fill ${x.fill} must start at the cell ${x.cell}`); }
@@ -598,8 +636,12 @@ async function checkAssessments(course) {
  *  backlog stays visible without failing the run; a course in progress gets warnings. */
 async function cueChecks(course, r, { modules, diagnostic, final, project }) {
   const say = catalog.COURSE[course].status === 'complete' ? (m) => r.note(m) : (m) => r.warn(m);
-  const lessonEx = [];
-  const cue = (where, items) => { const [k, n] = longestKeys(items); if (n >= 3 && k > n / 3) say(`${where}: the keyed option is the longest in ${k} of ${n} multiple-choice items; aim for a third or fewer (make wrong options as specific as the key)`); };
+  const lessonEx = [], multiCounts = [];
+  const cue = (where, items) => {
+    const [k, n] = longestKeys(items); if (n >= 3 && k > n / 3) say(`${where}: the keyed option is the longest in ${k} of ${n} multiple-choice items; aim for a third or fewer (make wrong options as specific as the key)`);
+    // a fixed number of right answers in the select-all items is a cue too ("pick three"): collected for the module
+    multiCounts.push(...withSteps(items).filter((x) => x.type === 'multi' && Array.isArray(x.answer)).map((x) => [where, x.answer.length, x.options?.length]));
+  };
   for (const { slug } of lessonsOf(course)) {
     const X = await loadEx(course, slug);
     if (!X) continue;
@@ -616,6 +658,14 @@ async function cueChecks(course, r, { modules, diagnostic, final, project }) {
   const P = project?.default || project?.project;
   const pItems = (P?.stages || []).flatMap((s) => s.items || []);
   if (pItems.length) cue('project', pItems);
+  // per module (its lessons' exercises and its test) and for the whole course: the same number of right options in
+  // every select-all item of six or more lets a student learn to pick that many
+  const mods = catalog.COURSE[course].modules.map((m) => ({ name: `module ${m.n}`, files: new Set([...m.lessons.map((l) => `${l}.ex`), `assess-m${m.n}`]) }));
+  for (const m of [...mods, { name: 'the course', files: null }]) {
+    const xs = multiCounts.filter(([w]) => !m.files || m.files.has(w));
+    const shape = new Set(xs.map(([, k, o]) => `${k}/${o}`));
+    if (xs.length >= 6 && shape.size === 1) say(`${m.name}: all ${xs.length} select-all items have exactly ${xs[0][1]} right options out of ${xs[0][2]}; vary the number so students can’t learn to pick that many`);
+  }
   const near = (x, pool, what) => { let best = null; for (const y of pool) { const j = jaccard(x.sh, y.sh); if (j >= NEAR_COPY && (!best || j > best.j)) best = { j, y }; } if (best) say(`${x.where} is close to ${what} ${best.y.where} (similarity ${best.j.toFixed(2)}): a student could answer from memory of it; change the scenario and the method's angle, not only the numbers`); };
   for (const x of assess) near(x, lessonEx, 'lesson exercise');
   for (const x of assess.filter((a) => !a.module)) near(x, assess.filter((a) => a.module), 'module-test item');

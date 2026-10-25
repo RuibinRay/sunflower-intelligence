@@ -86,6 +86,11 @@ const near = (what, a, b, tol) => ok(what, Math.abs(a - b) <= tol, `got ${a}, ex
   const r = S.nps({ promoters: 300, passives: 150, detractors: 150 });
   near('NPS score', r.score, 25, 1e-12);
   near('NPS SE formula', r.se, 100 * Math.sqrt((0.5 + 0.25 - 0.25 ** 2) / 600), 1e-12);
+  // Rocks (2016) AW(3,T) on M04's workshop participants (16 promoters, 6 passives, 5 detractors): +8.6 to +64.7
+  const ws = S.nps({ promoters: 16, passives: 6, detractors: 5 });
+  near('Wald interval, workshop', ws.low, 11.2, 0.05); near('Wald upper, workshop', ws.high, 70.2, 0.05);
+  near('adjusted Wald (Rocks) lower', ws.adjusted.low, 8.6, 0.05); near('adjusted Wald (Rocks) upper', ws.adjusted.high, 64.7, 0.05);
+  ok('adjusted interval is pulled towards zero (its centre moves in)', Math.abs(ws.adjusted.score) < Math.abs(ws.score));
   const fromScores = S.nps([10, 9, 8, 7, 6, 0, 9]);
   ok('NPS from 0–10 scores', fromScores.promoters === 3 && fromScores.passives === 2 && fromScores.detractors === 2);
   const rand = mulberry32(7), reps = 20000, nn = 400, pP = 0.45, pD = 0.2, vals = [];

@@ -527,7 +527,8 @@ T.formula = (item, c) => {
       if (!res.ok) {
         // the named slips whose results match; when several do, prefer the one typed exactly (spaces and case aside),
         // then the one using the same functions as the student's formula
-        const same = wrongs.filter((w) => X.gradeFormula(spec, { cell: item.cell, fill: item.fill, formula: r, answer: w.formula, variants: item.variants ?? 3 }).ok);
+        const hits = wrongs.length ? X.matchFormulas(spec, { cell: item.cell, fill: item.fill, formula: r, candidates: wrongs.map((w) => w.formula), variants: item.variants ?? 3 }) : [];
+        const same = wrongs.filter((_, i) => hits[i]);
         const norm = (f) => String(f).replace(/\s+/g, '').toUpperCase(), fns = (f) => [...X.functionsUsed(f)].sort().join();
         const slip = same.find((w) => norm(w.formula) === norm(r)) || same.find((w) => fns(w.formula) === fns(r)) || same[0];
         notes.push(slip ? slip.say : res.message.replace(/&/g, '&amp;').replace(/</g, '&lt;'));
@@ -703,7 +704,7 @@ export function practiceCard(item, opts) {
     const units = [];
     item.steps.forEach((st, k) => {
       const li = h('li', { class: `ex-step${k ? ' is-locked' : ''}`, 'data-step': st.id });
-      li.append(promptEl(st));
+      li.append(...[promptEl(st), dataEl(st)].filter(Boolean));
       ol.append(li);
       const next = () => { li.classList.add('is-right'); const nx = ol.children[k + 1]; if (nx && nx.classList.contains('is-locked')) { nx.classList.remove('is-locked'); nx.querySelector('select, input, textarea, button')?.focus({ preventScroll: false }); } finish(); };
       units.push(unit(st, {
@@ -774,7 +775,7 @@ export async function renderQuiz(container, items, opts) {
     const units = [];
     if (item.type === 'steps') {
       const ol = h('ol', { class: 'ex-steps', role: 'list' });
-      item.steps.forEach((st) => { const li = h('li', { class: 'ex-step' }, promptEl(st)); const t = buildType(st, { charts, nonce }); const fb = h('div', { class: 'ex-feedback' }); li.append(t.body, fb); ol.append(li); units.push({ x: st, t, fb, li }); });
+      item.steps.forEach((st) => { const li = h('li', { class: 'ex-step' }, ...[promptEl(st), dataEl(st)].filter(Boolean)); const t = buildType(st, { charts, nonce }); const fb = h('div', { class: 'ex-feedback' }); li.append(t.body, fb); ol.append(li); units.push({ x: st, t, fb, li }); });
       card.append(ol);
     } else {
       const t = buildType(item, { charts, nonce }); const fb = h('div', { class: 'ex-feedback' });

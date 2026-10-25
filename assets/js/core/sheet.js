@@ -1471,7 +1471,7 @@ const LIFT = {
   'CHISQ.DIST': [0, 1, 2], 'CHISQ.DIST.RT': [0, 1], 'CHISQ.INV': [0, 1], 'CHISQ.INV.RT': [0, 1],
   'F.DIST': [0, 1, 2, 3], 'F.DIST.RT': [0, 1, 2], 'F.INV': [0, 1, 2], 'F.INV.RT': [0, 1, 2],
   'CONFIDENCE.NORM': [0, 1, 2], 'CONFIDENCE.T': [0, 1, 2], COMBIN: [0, 1], PERMUT: [0, 1], FACT: [0],
-  LARGE: [1], SMALL: [1], 'PERCENTRANK.INC': [1, 2], 'PERCENTRANK.EXC': [1, 2],
+  LARGE: [1], SMALL: [1], 'PERCENTRANK.INC': [1, 2], 'PERCENTRANK.EXC': [1, 2], EXACT: [0, 1],
 };
 for (const [name, pos] of Object.entries(LIFT)) {
   const base = FN[name];
@@ -1545,6 +1545,33 @@ export function gradeFormula(sheetSpec, { cell, formula, answer, fill = null, va
   else if (firstWrong) message = isArr(firstWrong.got) || isArr(firstWrong.want) ? spillMessage(firstWrong) : `${firstWrong.cell} shows ${display(firstWrong.got)}; it should show ${display(firstWrong.want)}.`;
   else message = 'Your formula gives the right answer for this data, but not when the numbers change: it must calculate the result from the cells, not contain it.';
   return { ok, results, message };
+}
+/** Which of `candidates` (formulas, such as an exercise's named slips) give the same results as `formula` on the sheet
+ *  and on the same test copies gradeFormula uses. The sheet and its copies are built once and the student's formula is
+ *  evaluated once per copy, so naming several slips on a large sheet costs one grading, not one per slip. */
+export function matchFormulas(sheetSpec, { cell, fill = null, formula, candidates, variants = 3, tol = 1e-9, seed = 7, perturb = null }) {
+  const f = String(formula || '').trim();
+  try { if (!f.startsWith('=')) return candidates.map(() => false); parse(f); } catch { return candidates.map(() => false); }
+  if ([...functionsUsed(f)].some((n) => !FN[n])) return candidates.map(() => false);
+  const targets = [], at = parseAddr(cell);
+  if (fill) { const rg = parseRange(fill); for (let r = rg.r0; r <= rg.r1; r++) for (let c = rg.c0; c <= rg.c1; c++) targets.push({ cell: addr(r, c), dr: r - at.r, dc: c - at.c }); }
+  else targets.push({ cell, dr: 0, dc: 0 });
+  const rand = mulberry(seed);
+  const sheets = [new Sheet(sheetSpec)];
+  for (let k = 0; k < variants; k++) sheets.push(new Sheet(perturb ? perturb(sheetSpec, k, rand) : perturbSpec(sheetSpec, rand)));
+  const match = candidates.map(() => true);
+  for (const base of sheets) {
+    const mine = base.clone();
+    for (const t of targets) mine.set(t.cell, shiftFormula(f, t.dr, t.dc));
+    const got = targets.map((t) => fullValue(mine, t.cell));
+    candidates.forEach((cf, ci) => {
+      if (!match[ci]) return;
+      const other = base.clone();
+      for (const t of targets) other.set(t.cell, shiftFormula(cf, t.dr, t.dc));
+      if (targets.some((t, ti) => !sameValue(got[ti], fullValue(other, t.cell), tol))) match[ci] = false;
+    });
+  }
+  return match;
 }
 /** The answer's value in `cell` on the sheet and on each test copy (for the checker: copies whose results are all 0 or 1,
  *  or all the same, can't tell a typed-in input from a reference). */
