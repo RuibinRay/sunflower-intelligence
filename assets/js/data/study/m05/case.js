@@ -94,8 +94,12 @@ export const RESPONDENT_ROWS = RESPONDENTS.map((r) => [r.id, LEVELS.area[r.area]
 const needMeans = needsCols.map(mean), needSds = needsCols.map(sd);
 const Z = standardise(needsCols).rows;                       // respondents × 8, each need to mean 0, sd 1
 const KS = [2, 3, 4, 5, 6, 7, 8];
-const fits = KS.map((k) => { const km = kmeans(Z, k, { restarts: 20 }); return { k, km, inertia: km.inertia, silhouette: silhouette(Z, km.labels) }; });
-const K = 5, chosen = fits.find((f) => f.k === K).km;
+// Heavy results that only some pages read (every k's fit, Ward's tree, the hold-out, the project's whole analysis) are
+// computed on first use, so a lesson page that doesn't need them loads quickly. `memo` runs a function once.
+const memo = (fn) => { let done = false, v; return () => { if (!done) { v = fn(); done = true; } return v; }; };
+const lazy = (obj, key, fn) => Object.defineProperty(obj, key, { get: memo(fn), enumerable: true, configurable: true });
+const K = 5, chosen = kmeans(Z, K, { restarts: 20 });   // the same call (and seed) as k = 5 in the elbow below
+const fits = memo(() => KS.map((k) => { const km = k === K ? chosen : kmeans(Z, k, { restarts: 20 }); return { k, km, inertia: km.inertia, silhouette: silhouette(Z, km.labels) }; }));
 const labels = chosen.labels;
 const members = (g) => labels.map((l, i) => (l === g ? i : -1)).filter((i) => i >= 0);
 
@@ -112,7 +116,7 @@ const segMeans = Array.from({ length: K }, (_, g) => needsCols.map((c) => mean(m
 const crosstab = (attr, levels) => Array.from({ length: K }, (_, g) => levels.map((_, l) => members(g).filter((i) => attr[i] === l).length));
 const ct = { age: crosstab(age, LEVELS.age), source: crosstab(source, LEVELS.source), income: crosstab(income, LEVELS.income), area: crosstab(area, LEVELS.area), household: crosstab(household, LEVELS.household) };
 const chi = Object.fromEntries(Object.entries(ct).map(([k, t]) => [k, chisqIndependence(t)]));
-const wardLink = ward(Z), wardLabels = cutTree(wardLink, K).labels;
+const wardLabels = memo(() => cutTree(ward(Z), K).labels);
 const anova = NEEDS.map((_, j) => anova1(Array.from({ length: K }, (_, g) => members(g).map((i) => needsCols[j][i]))));
 
 // the typing tool: assign a new respondent to the nearest segment centre, from all eight needs or from a short set
@@ -122,12 +126,14 @@ const shortCentres = chosen.centres.map((c) => SHORT.map((j) => c[j]));
 const typedShort = PM.nearestCentroid(shortCentres, Z.map((r) => SHORT.map((j) => r[j])));
 // hold-out check: segment the first 480 respondents, then type the other 160 with those centres
 const TRAIN = 480;
-const kmTrain = kmeans(Z.slice(0, TRAIN), K, { restarts: 20 });
-const typedHold = PM.nearestCentroid(kmTrain.centres, Z.slice(TRAIN));
 const perms = (n) => (n === 1 ? [[0]] : perms(n - 1).flatMap((p) => Array.from({ length: n }, (_, i) => [...p.slice(0, i), n - 1, ...p.slice(i)])));
 const bestMatch = (a, b, k) => perms(k).reduce((best, p) => { const acc = PM.agreement(a.map((v) => p[v]), b); return acc > best.acc ? { acc, p } : best; }, { acc: -1, p: null });
-const holdMatch = bestMatch(typedHold, labels.slice(TRAIN), K);
-const holdTruth = bestMatch(typedHold, trueType.slice(TRAIN), K);   // against the planted kinds: what Ana couldn't check
+const holdOut = memo(() => {
+  const kmTrain = kmeans(Z.slice(0, TRAIN), K, { restarts: 20 });
+  const typedHold = PM.nearestCentroid(kmTrain.centres, Z.slice(TRAIN));
+  return { train: TRAIN, test: S.n - TRAIN, agreement: bestMatch(typedHold, labels.slice(TRAIN), K).acc,
+    againstTruth: bestMatch(typedHold, trueType.slice(TRAIN), K).acc };   // against the planted kinds: what Ana couldn't check
+});
 
 // the local-loyalty scale: Cronbach's alpha (sample variances), and each segment's mean scale score
 const loyalTotal = RESPONDENTS.map((r) => sum(r.loyal));
@@ -158,17 +164,16 @@ const top2 = (is) => is.filter((i) => coldbrew[i] <= 2).length / is.length;
 
 export const DERIVED = {
   needs: { means: needMeans, sds: needSds },
-  elbow: fits.map(({ k, inertia, silhouette: s, km }) => ({ k, inertia, silhouette: s, sizes: km.sizes })),
   segments: {
     k: K, labels, names: SEGMENT_NAMES, centres: chosen.centres, means: segMeans, index,
     sizes: sizes.map((s) => ({ ...s })), cups: Array.from({ length: K }, (_, g) => mean(members(g).map((i) => cups[i]))),
     crosstabs: ct, chi, anova: anova.map((a) => ({ F: a.F, p: a.p })),
-    wardAgreement: adjustedRand(labels, wardLabels), trueAgreement: adjustedRand(labels, trueType),
+    trueAgreement: adjustedRand(labels, trueType),
     loyalty: Array.from({ length: K }, (_, g) => mean(members(g).map((i) => loyalTotal[i] / 3))),
     aware: Array.from({ length: K }, (_, g) => mean(members(g).map((i) => aware[i]))),
     coldbrewTop2: Array.from({ length: K }, (_, g) => top2(members(g))),
   },
-  typing: { short: SHORT, shortAgreement: PM.agreement(typedShort, labels), holdOut: { train: TRAIN, test: S.n - TRAIN, agreement: holdMatch.acc, againstTruth: holdTruth.acc } },
+  typing: { short: SHORT, shortAgreement: PM.agreement(typedShort, labels) },
   loyalty: { alpha: alphaLoyal, mean: mean(loyalTotal) / 3 },
   coldbrewTop2: top2(RESPONDENTS.map((_, i) => i)),
   aware: mean(aware),
@@ -179,6 +184,9 @@ export const DERIVED = {
     segIdeal, distances: dist, nearestRival,
   },
 };
+lazy(DERIVED, 'elbow', () => fits().map(({ k, inertia, silhouette: sil, km }) => ({ k, inertia, silhouette: sil, sizes: km.sizes })));
+lazy(DERIVED.segments, 'wardAgreement', () => adjustedRand(labels, wardLabels()));
+lazy(DERIVED.typing, 'holdOut', holdOut);
 
 // ---------------------------------------------------------------- the project (lessons and module tests must not use these)
 const W = DATA.workshops;
@@ -206,39 +214,44 @@ export const WORKSHOP_RESPONDENTS = Array.from({ length: W.n }, (_, i) => ({
 }));
 export const WORKSHOP_TRUE_TYPE = dec(W.seg);   // what Ana can't see: home enthusiasts, gift buyers, aspiring baristas, social groups
 
-// the project's own analysis (project.js reads these; lessons must not)
-const wCols = WORKSHOP_NEEDS.map((_, j) => WORKSHOP_RESPONDENTS.map((r) => r.needs[j]));
-const wZ = standardise(wCols).rows;
-const W_KS = [2, 3, 4, 5, 6];
-const wFits = W_KS.map((k) => { const km = kmeans(wZ, k, { restarts: 20 }); return { k, km, inertia: km.inertia, silhouette: silhouette(wZ, km.labels) }; });
-const WK = 4, wKm = wFits.find((f) => f.k === WK).km;
-const wMembers = (g) => wKm.labels.map((l, i) => (l === g ? i : -1)).filter((i) => i >= 0);
-const wTrue = dec(W.seg);
-const W_TYPE_NAMES = ['Home enthusiasts', 'Gift buyers', 'Aspiring baristas', 'Social groups'];
-const wName = (g) => { const c = new Array(4).fill(0); wMembers(g).forEach((i) => c[wTrue[i]]++); return W_TYPE_NAMES[c.indexOf(Math.max(...c))]; };
+// the project's own analysis (project.js reads these; lessons must not). Computed on first use: lesson pages never pay
+// for it.
 /** Ana's view of her workshops' strengths on the six needs (+1 strong, −1 weak): hands-on, fun, giftable; no
  *  certificate, $125 is far above CremaClass's $39, and only on Saturdays. */
 export const WORKSHOP_STRENGTHS = [1, 1, 1, -1, -1, -1];
-const wMeans = WORKSHOP_PROVIDERS.map((_, b) => WORKSHOP_NEEDS.map((_, j) => mean(WORKSHOP_RESPONDENTS.map((r) => r.ratings[b][j]))));
-const wMap = PM.perceptualMap(wMeans);
-const wIdealSeg = Array.from({ length: WK }, (_, g) => WORKSHOP_NEEDS.map((_, j) => mean(wMembers(g).map((i) => WORKSHOP_RESPONDENTS[i].ideal[j]))));
-export const WORKSHOP_DERIVED = {
-  elbow: wFits.map(({ k, inertia, silhouette: sil, km }) => ({ k, inertia, silhouette: sil, sizes: km.sizes })),
-  k: WK, labels: wKm.labels, centres: wKm.centres, names: Array.from({ length: WK }, (_, g) => wName(g)),
-  index: indexVsAverage(wCols, wKm.labels, WK),
-  sizes: Array.from({ length: WK }, (_, g) => wMembers(g).length),
-  wtp: Array.from({ length: WK }, (_, g) => mean(wMembers(g).map((i) => WORKSHOP_RESPONDENTS[i].wtp))),
-  past: Array.from({ length: WK }, (_, g) => mean(wMembers(g).map((i) => WORKSHOP_RESPONDENTS[i].past))),
-  age: Array.from({ length: WK }, (_, g) => WORKSHOP_LEVELS.age.map((_, a) => wMembers(g).filter((i) => WORKSHOP_RESPONDENTS[i].age === a).length)),
-  fit: needsFit(wKm.centres, WORKSHOP_STRENGTHS),
-  trueAgreement: adjustedRand(wKm.labels, wTrue),
-  map: { means: wMeans, ratio: wMap.ratio, cumulative: wMap.cumulative, scores: wMap.scores, loadings: wMap.loadings, ideal: wIdealSeg, idealPts: wIdealSeg.map((p) => wMap.project(p)), distances: PM.idealDistances(wMap, wIdealSeg) },
-  project: (profile) => wMap.project(profile),
-};
+const workshop = memo(() => {
+  const wCols = WORKSHOP_NEEDS.map((_, j) => WORKSHOP_RESPONDENTS.map((r) => r.needs[j]));
+  const wZ = standardise(wCols).rows;
+  const W_KS = [2, 3, 4, 5, 6];
+  const wFits = W_KS.map((k) => { const km = kmeans(wZ, k, { restarts: 20 }); return { k, km, inertia: km.inertia, silhouette: silhouette(wZ, km.labels) }; });
+  const WK = 4, wKm = wFits.find((f) => f.k === WK).km;
+  const wMembers = (g) => wKm.labels.map((l, i) => (l === g ? i : -1)).filter((i) => i >= 0);
+  const wTrue = dec(W.seg);
+  const W_TYPE_NAMES = ['Home enthusiasts', 'Gift buyers', 'Aspiring baristas', 'Social groups'];
+  const wName = (g) => { const c = new Array(4).fill(0); wMembers(g).forEach((i) => c[wTrue[i]]++); return W_TYPE_NAMES[c.indexOf(Math.max(...c))]; };
+  const wMeans = WORKSHOP_PROVIDERS.map((_, b) => WORKSHOP_NEEDS.map((_, j) => mean(WORKSHOP_RESPONDENTS.map((r) => r.ratings[b][j]))));
+  const wMap = PM.perceptualMap(wMeans);
+  const wIdealSeg = Array.from({ length: WK }, (_, g) => WORKSHOP_NEEDS.map((_, j) => mean(wMembers(g).map((i) => WORKSHOP_RESPONDENTS[i].ideal[j]))));
+  return {
+    elbow: wFits.map(({ k, inertia, silhouette: sil, km }) => ({ k, inertia, silhouette: sil, sizes: km.sizes })),
+    k: WK, labels: wKm.labels, centres: wKm.centres, names: Array.from({ length: WK }, (_, g) => wName(g)),
+    index: indexVsAverage(wCols, wKm.labels, WK),
+    sizes: Array.from({ length: WK }, (_, g) => wMembers(g).length),
+    wtp: Array.from({ length: WK }, (_, g) => mean(wMembers(g).map((i) => WORKSHOP_RESPONDENTS[i].wtp))),
+    past: Array.from({ length: WK }, (_, g) => mean(wMembers(g).map((i) => WORKSHOP_RESPONDENTS[i].past))),
+    age: Array.from({ length: WK }, (_, g) => WORKSHOP_LEVELS.age.map((_, a) => wMembers(g).filter((i) => WORKSHOP_RESPONDENTS[i].age === a).length)),
+    fit: needsFit(wKm.centres, WORKSHOP_STRENGTHS),
+    trueAgreement: adjustedRand(wKm.labels, wTrue),
+    map: { means: wMeans, ratio: wMap.ratio, cumulative: wMap.cumulative, scores: wMap.scores, loadings: wMap.loadings, ideal: wIdealSeg, idealPts: wIdealSeg.map((p) => wMap.project(p)), distances: PM.idealDistances(wMap, wIdealSeg) },
+    project: (profile) => wMap.project(profile),
+  };
+});
+export const WORKSHOP_DERIVED = {};
+for (const key of ['elbow', 'k', 'labels', 'centres', 'names', 'index', 'sizes', 'wtp', 'past', 'age', 'fit', 'trueAgreement', 'map', 'project']) lazy(WORKSHOP_DERIVED, key, () => workshop()[key]);
 
 // ---------------------------------------------------------------- identities (the checker runs these)
 const close = (a, b, tol = 1e-9) => Math.abs(a - b) <= tol;
-export const IDENTITIES = [
+const identities = () => [
   ['segment sizes add to the sample', sum(sizes.map((s) => s.n)) === S.n],
   ['each need’s indexes average to 100 when weighted by segment size', NEEDS.every((_, j) => close(sum(sizes.map((s, g) => s.share * indexVsAverage(needsCols, labels, K)[g][j])), 100, 1e-6))],
   ['each segment’s name matches its two highest indexes', SEGMENT_NAMES.every((nm, g) => {
@@ -246,8 +259,8 @@ export const IDENTITIES = [
     const want = { 'Craft and local': ['taste', 'local'], 'Value routine': ['price', 'convenience'], 'On the go': ['energy', 'convenience'], 'Mindful': ['health', 'sustainability'], 'Explorers': ['novelty', 'taste'] }[nm];
     return want.some((k) => top.includes(k)) && top.includes(want[0]);
   })],
-  ['the elbow bends at five: the drop from four to five is over three times the drop from five to six', (() => { const I = (k) => fits.find((f) => f.k === k).inertia; return I(4) - I(5) > 3 * (I(5) - I(6)); })()],
-  ['silhouette: five beats four and six (a local peak), though two is higher still', (() => { const s = (k) => fits.find((f) => f.k === k).silhouette; return s(5) > s(4) && s(5) > s(6) && s(2) > s(5); })()],
+  ['the elbow bends at five: the drop from four to five is over three times the drop from five to six', (() => { const I = (k) => fits().find((f) => f.k === k).inertia; return I(4) - I(5) > 3 * (I(5) - I(6)); })()],
+  ['silhouette: five beats four and six (a local peak), though two is higher still', (() => { const s = (k) => fits().find((f) => f.k === k).silhouette; return s(5) > s(4) && s(5) > s(6) && s(2) > s(5); })()],
   ['k-means recovers the planted kinds well (adjusted Rand above 0.85)', adjustedRand(labels, trueType) > 0.85],
   ['the map’s first two dimensions explain over 80% of the variance in brand ratings', map.cumulative[1] > 0.8],
   ['every brand mean lies on the 1–7 scale', brandMeansM.every((r) => r.every((v) => v >= 1 && v <= 7))],
@@ -259,3 +272,5 @@ export const IDENTITIES = [
   ['the workshop survey’s k = 4 has the highest silhouette of k = 2 to 6', WORKSHOP_DERIVED.elbow.every((e) => e.silhouette <= WORKSHOP_DERIVED.elbow.find((x) => x.k === 4).silhouette)],
   ['every provider mean in the workshop survey lies on the 1–7 scale', WORKSHOP_DERIVED.map.means.every((r) => r.every((v) => v >= 1 && v <= 7))],
 ];
+/** The identities, as an iterable the checker reads with for…of: evaluated only then, so pages never compute them. */
+export const IDENTITIES = { [Symbol.iterator]: () => identities()[Symbol.iterator]() };
