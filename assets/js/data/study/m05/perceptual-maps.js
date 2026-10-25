@@ -11,6 +11,9 @@ import { tTest2, tInv } from '../../../core/inference.js?v=14';
 // ---------------------------------------------------------------- Lantern's map (case.js)
 const M = D.map.brandMeans, MAP = perceptualMap(M);
 const SEG = D.segments.names, SIZE = D.segments.sizes, IDEAL = D.map.ideal.segments, DIST = D.map.distances;
+// each segment's nearest brand and its distance, and the segment furthest from any brand
+const NEARD = (g) => Math.min(...DIST[g]), NEAR = (g) => DIST[g].indexOf(NEARD(g));
+const FAR = SEG.map((_, g) => g).sort((a, b) => NEARD(b) - NEARD(a))[0];
 const g = (name) => SEG.indexOf(name);
 const VR = g('Value routine'), OG = g('On the go'), EX = g('Explorers'), CL = g('Craft and local'), MI = g('Mindful');
 const B = (name) => BRANDS.indexOf(name);
@@ -184,7 +187,7 @@ export default {
 
     { h: 'Gaps on the map' },
     { p: 'A gap is a region of the map with no brand in it. OpenStax notes that a map can reveal holes or gaps that may signal an opportunity, and the word “may” matters. A gap is worth acting on only when three things hold: people want what would sit there, shown by the ideal point of a large enough segment nearby; the firm can deliver it credibly, at a cost its price covers; and nothing explains the emptiness except that nobody has tried.' },
-    { p: 'On the two-attribute map the tasty and cheap corner is empty for a reason: better coffee costs more to buy and make, so a brand that sat there would struggle to cover its costs, and customers might not believe it. On the full map the space around the Explorers’ ideal, between Lantern and Summit Brew, is more interesting. The Explorers’ nearest brand is Summit Brew at 1.03, a longer distance than three other segments have to travel to theirs, so that segment is served less closely than most. That makes it worth investigating, not yet worth acting on.' },
+    { p: `On the two-attribute map the tasty and cheap corner is empty for a reason: better coffee costs more to buy and make, so a brand that sat there would struggle to cover its costs, and customers might not believe it. On the full map the space around the Explorers’ ideal, between Lantern and Summit Brew, is more interesting. The Explorers’ nearest brand is ${BRANDS[NEAR(EX)]} at ${NEARD(EX).toFixed(2)}, a longer distance than ${['no', 'one', 'two', 'three', 'four'][SEG.filter((_, g) => NEARD(g) < NEARD(EX)).length]} other segments have to travel to theirs; only ${SEG[FAR]} is further from its nearest brand (${BRANDS[NEAR(FAR)]}, ${NEARD(FAR).toFixed(2)}), and that segment fits Lantern badly. That makes the Explorers’ space worth investigating, not yet worth acting on.` },
     { callout: 'key', title: 'Perceptions, on the attributes asked, for the people asked', html: 'A perceptual map shows how the people surveyed see the brands they know, on the attributes the questionnaire asked about, averaged over everyone who rated each brand, and only as much of the differences as two dimensions can carry. Each of those limits can change a conclusion, so state them beside the map.' },
   ],
 
