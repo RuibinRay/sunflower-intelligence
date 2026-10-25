@@ -248,7 +248,7 @@ export const check = [
     id: 'f00-fae-k1', type: 'mc', kind: 'conceptual',
     prompt: 'A financial analyst reads a company’s financial statements for last year. What does she mainly use them for?',
     options: [
-      'As the starting point for forecasting the company’s future cash flows, after any adjustments',
+      'As the starting point for forecasting the company’s future cash flows, adjusted where needed',
       'To check that the company followed US GAAP in preparing them, which is the analyst’s main job',
       'As an exact prediction of next year’s results, since a company’s results tend to repeat from one year to the next',
       'She does not use them: finance looks only forward, so past figures are irrelevant to her work',
@@ -295,7 +295,7 @@ export const check = [
     id: 'f00-fae-k4', type: 'mc', kind: 'applied',
     prompt: 'A fictional van-hire firm shows net income of $15,000, after $20,000 of depreciation on its vans. Its customers pay on the day and it pays its bills as they arrive. The owner says, “We only made $15,000, so we only generated $15,000 of cash.” What should a finance analyst reply?',
     options: [
-      'Operating cash flow was about $35,000, because depreciation is an expense that used no cash this year.',
+      'Operating cash flow was about $35,000, because depreciation is an expense that uses no cash.',
       'Operating cash flow was about −$5,000, because depreciation must be paid in cash on top of the other expenses.',
       'The owner is right: profit and cash are always equal for a firm whose customers pay on the day.',
       'Cash flow cannot be estimated without first knowing what the vans would sell for on the second-hand market today.',

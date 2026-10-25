@@ -269,7 +269,7 @@ export const check = [
       'A 1% price rise cuts the quantity bought by about 0.4%: demand is inelastic, so a small rise lifts revenue.',
       'A 1% price rise reduces the quantity bought by about 40%, so demand is highly elastic and revenue would fall.',
       'A $1 price rise reduces the quantity bought by 0.4 units, whatever the starting price.',
-      'Demand is elastic, because the elasticity is negative, so any rise in the price will reduce the revenue it earns.',
+      'Demand is elastic, because the elasticity is negative, so any rise in the price will reduce the seller’s revenue.',
     ],
     answer: 0,
     feedback: {

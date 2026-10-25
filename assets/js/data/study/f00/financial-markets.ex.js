@@ -150,7 +150,7 @@ export const independent = [
   {
     id: 'f00-fm-i1', type: 'mc', kind: 'applied',
     prompt: 'A wheat farmer wants to fix today the price at which she will sell her harvest in five months, without selling the wheat now. Which market is she most likely to use?',
-    options: ['The derivatives market, by selling wheat futures', 'The equity market, by buying shares in a flour mill', 'The money market, by buying short-term Treasury bills', 'The primary bond market, by issuing a bond'],
+    options: ['The derivatives market, by selling wheat futures', 'The equity market, by buying shares in a flour mill', 'The money market, by buying six-month Treasury bills', 'The primary bond market, by issuing a bond'],
     answer: 0,
     feedback: {
       1: 'Shares in a mill might rise or fall for many reasons; they do not fix the price of her wheat.',

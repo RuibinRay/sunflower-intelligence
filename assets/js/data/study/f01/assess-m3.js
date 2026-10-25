@@ -9,7 +9,7 @@ export const items = [
     prompt: 'A fictional theatre sells $30,000 of tickets in October for a play performed on 12 December. Its financial year ends on 31 December. When does it recognise the $30,000 as revenue?',
     options: [
       'In December, when the performance takes place',
-      'In October, when the cash is received',
+      'In October, when the cash from the ticket sales is received',
       'In October, when each ticket is sold and the contract exists',
       'Spread evenly over October, November and December',
     ],

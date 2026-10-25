@@ -202,7 +202,7 @@ export const check = [
     options: [
       'Sales growth has slowed or stopped, competition is intense and share gains come mostly from rivals.',
       'Sales are rising fast, new competitors are entering and the product is reaching more buyers each year.',
-      'Few people know the product yet, distribution is still patchy and the firm is still losing money on it.',
+      'Few people know the product yet, distribution is patchy so far and the firm is still losing money on it.',
       'Sales are falling because buyers are switching to a substitute, and some rivals are leaving.',
     ],
     answer: 0,

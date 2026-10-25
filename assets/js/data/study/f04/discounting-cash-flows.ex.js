@@ -352,7 +352,7 @@ export const check = [
       'The true NPV divided by 1.08: every cash flow, today’s cost included, is discounted one period too many',
       'Exactly right, because NPV() includes the first value at time 0',
       'Too high by the amount of today’s cost, because NPV() skips the first value in the range and starts at A2',
-      'The true NPV multiplied by 1.08, because NPV() compounds each cash flow one period forward instead of discounting it',
+      'The true NPV multiplied by 1.08, because NPV() treats every cash flow as arriving one period earlier than it does',
     ],
     answer: 0,
     feedback: {

@@ -172,7 +172,7 @@ export const independent = [
       'A weekly report for Ana showing the profit on each catering event',
       'Lantern’s March financial statements, prepared under US GAAP and sent to Coastline Bank',
       'Lantern’s corporate income tax return for the year, filed with the IRS',
-      'An auditor’s opinion on Lantern’s annual financial statements',
+      'An independent auditor’s opinion on Lantern’s annual financial statements',
     ],
     answer: 0,
     feedback: {
