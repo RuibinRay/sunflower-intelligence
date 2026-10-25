@@ -230,6 +230,10 @@ eq('criterion ~* no wildcard', X.criterion('~*')('a'), false);
   ok('Z.TEST(A2:A11,4) = 0.090574 (Microsoft)', Math.abs(zv('=Z.TEST(A2:A11,4)') - 0.090574) < 5e-7);
   ok('two-tailed Z.TEST = 0.181148 (Microsoft)', Math.abs(zv('=2*MIN(Z.TEST(A2:A11,4),1-Z.TEST(A2:A11,4))') - 0.181148) < 5e-7);
   ok('Z.TEST(A2:A11,6) = 0.863043 (Microsoft)', Math.abs(zv('=Z.TEST(A2:A11,6)') - 0.863043) < 5e-7);
+  // RANK over an array first argument returns one rank per value, as Excel does inside SUMPRODUCT
+  ok('RANK(A2:A11,A2:A11) ranks every value (ties share a rank)', zv('=SUMPRODUCT(--(RANK(A2:A11,A2:A11)=4))') === 2 && zv('=SUMPRODUCT(RANK(A2:A11,A2:A11))') === 54);
+  ok('share of the top five by RANK = by LARGE', Math.abs(zv('=SUMPRODUCT((RANK(A2:A11,A2:A11)<=5)*A2:A11)/SUM(A2:A11)') - zv('=SUMIF(A2:A11,">="&LARGE(A2:A11,5))/SUM(A2:A11)')) < 1e-12);
+  ok('RANK.EQ with a single value still works', zv('=RANK.EQ(A3,A2:A11)') === 4 && zv('=RANK(A3,A2:A11,1)') === 6);
   ok('T.DIST(60,1,TRUE) = 0.99469533 (Microsoft)', Math.abs(ms('=T.DIST(60,1,TRUE)') - 0.99469533) < 5e-9);
   ok('T.DIST(8,3,FALSE) = 0.00073691 (Microsoft)', Math.abs(ms('=T.DIST(8,3,FALSE)') - 0.00073691) < 5e-9);
   const pr = (f) => ms(f.replace('DATA', '{13,12,11,8,4,3,2,1,1,1}'));
