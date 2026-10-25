@@ -1,6 +1,6 @@
 // assess-final.js — M04 final assessment: 24 questions across all four modules and all eight of the course’s outcomes,
 // two or three per lesson (six for module 1, eight for module 2, five for module 3 and five for module 4). 70% passes.
-// Mixed conceptual, numerical and applied items; five are formula items (one of them a step) on worksheets, with the
+// Mixed conceptual, numerical and applied items; five are formula items (two of them steps) on worksheets, with the
 // inputs a formula should read varied or scaled on the marking copies so that typed results fail. Many combine what
 // several lessons teach: what research could be worth, then which study passes both tests (m04-fn-1); a growth rate
 // across a change of method (m04-fn-3); coding interviews with a codebook, then what the codes can’t show (m04-fn-5); a

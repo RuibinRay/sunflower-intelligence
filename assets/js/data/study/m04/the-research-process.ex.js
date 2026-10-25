@@ -1,6 +1,6 @@
 // the-research-process.ex.js — M04 · The research process: widgets, practice and the knowledge check (answer keys live
 // here). Ana's Cold Brew planning figures are the lesson's (fictional); Wrenfold Fitness, Tansey Hill Folk Festival,
-// Pellam Software and the other businesses are fictional. Every number is recomputed by `check` (see ../AUTHORING.md).
+// Quarlton Software and the other businesses are fictional. Every number is recomputed by `check` (see ../AUTHORING.md).
 
 const money = (v) => `${v < 0 ? '−' : ''}$${Math.abs(Math.round(v)).toLocaleString('en-US')}`;
 const ev2 = (p, good, bad) => p * good + (1 - p) * bad;
@@ -24,7 +24,7 @@ export const widgets = {
     title: 'What could research be worth? Ana’s three Cold Brew options',
     intro: 'Set the chance of strong demand and each option’s first-year result. Waiting a year is worth $0 either way. The explorer finds the best option without research, the best with perfect information, and the ceiling on what research can be worth.',
     inputs: [
-      { id: 'p', label: 'Chance of strong demand', min: 0, max: 100, step: 5, value: 50, fmt: 'pct' },
+      { id: 'p', label: 'Chance of strong demand', min: 0, max: 100, step: 1, value: 50, fmt: 'pct' },
       { id: 'gL', label: 'Launch widely: result if demand is strong', min: 0, max: 200000, step: 5000, value: 90000, fmt: 'money' },
       { id: 'lL', label: 'Launch widely: loss if demand is weak', min: 0, max: 200000, step: 5000, value: 70000, fmt: 'money' },
       { id: 'gO', label: 'Own channel only: result if demand is strong', min: 0, max: 100000, step: 1000, value: 20000, fmt: 'money' },
@@ -182,7 +182,7 @@ export const guided = [
 export const independent = [
   {
     id: 'm04-rp-i1', type: 'classify', kind: 'conceptual',
-    prompt: 'Pellam Software (fictional) is commissioning research on a new pricing plan. Which document does each item belong in?',
+    prompt: 'Quarlton Software (fictional) is commissioning research on a new pricing plan. Which document does each item belong in?',
     items: [
       'The decision the results will feed, and the date it must be taken',
       'The sample design and the number of interviews in each group of customers',
@@ -343,7 +343,7 @@ export const check = [
       'Should we move the Thursday matinee to Saturday morning next season?',
       'How many of our regular audience could come on a Saturday morning, and which of them?',
       'Estimate, to within ±5 points, the share of last season’s matinee bookers who would book a Saturday-morning show',
-      'Find out what stops families with young children from coming to matinees',
+      'Identify, through depth interviews with about 12 families who came once and never returned, what stops families with young children coming to matinees',
     ],
     categories: ['Decision problem', 'Research problem', 'Research objective'],
     answer: [0, 1, 2, 2],
@@ -359,10 +359,10 @@ export const check = [
     prompt: 'Complete the statements.',
     text: 'The client describes the decision, the budget and the timing in a research [[0]]. Research is worth doing only if a result could [[1]], and it is worth at most the [[2]]. Contacting people as if for research in order to sell to them is called [[3]].',
     blanks: [
-      { options: ['brief', 'proposal', 'report'], answer: 0 },
-      { options: ['change the decision', 'confirm what the client believes', 'reach a large sample'], answer: 0 },
+      { options: ['proposal', 'report', 'brief'], answer: 2 },
+      { options: ['confirm what the client believes', 'change the decision', 'reach a large sample'], answer: 1 },
       { options: ['expected value of perfect information', 'cost of the fieldwork', 'expected value of the best option'], answer: 0 },
-      { options: ['sugging', 'sampling', 'screening'], answer: 0 },
+      { options: ['sampling', 'screening', 'sugging'], answer: 2 },
     ],
     solution: 'The client writes the brief; the researcher answers with a proposal. Research adds value only through a decision it could change, and never more than the expected value of perfect information. Selling under the guise of research is sugging, which the codes forbid.',
   },

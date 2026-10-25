@@ -704,7 +704,7 @@ export function practiceCard(item, opts) {
     const units = [];
     item.steps.forEach((st, k) => {
       const li = h('li', { class: `ex-step${k ? ' is-locked' : ''}`, 'data-step': st.id });
-      li.append(promptEl(st));
+      li.append(...[promptEl(st), dataEl(st)].filter(Boolean));
       ol.append(li);
       const next = () => { li.classList.add('is-right'); const nx = ol.children[k + 1]; if (nx && nx.classList.contains('is-locked')) { nx.classList.remove('is-locked'); nx.querySelector('select, input, textarea, button')?.focus({ preventScroll: false }); } finish(); };
       units.push(unit(st, {
@@ -775,7 +775,7 @@ export async function renderQuiz(container, items, opts) {
     const units = [];
     if (item.type === 'steps') {
       const ol = h('ol', { class: 'ex-steps', role: 'list' });
-      item.steps.forEach((st) => { const li = h('li', { class: 'ex-step' }, promptEl(st)); const t = buildType(st, { charts, nonce }); const fb = h('div', { class: 'ex-feedback' }); li.append(t.body, fb); ol.append(li); units.push({ x: st, t, fb, li }); });
+      item.steps.forEach((st) => { const li = h('li', { class: 'ex-step' }, ...[promptEl(st), dataEl(st)].filter(Boolean)); const t = buildType(st, { charts, nonce }); const fb = h('div', { class: 'ex-feedback' }); li.append(t.body, fb); ol.append(li); units.push({ x: st, t, fb, li }); });
       card.append(ol);
     } else {
       const t = buildType(item, { charts, nonce }); const fb = h('div', { class: 'ex-feedback' });

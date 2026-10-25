@@ -24,6 +24,8 @@ const COST = { moderator: 2600, recruit: 150 * GB.participants, incentives: 75 *
 const cost = Object.values(COST).reduce((a, b) => a + b, 0);
 // the brief's action standard for objective 1 (weighted top-two-box share of the list, %): fictional, set before fieldwork
 const AS = { high: 45, low: 30 };
+// where the explorer's EVPI peaks with the default figures, on its 1% grid
+const evpiPeak = Array.from({ length: 101 }, (_, i) => i / 100).map((p) => ({ p, evpi: p * CB.launch[0] - Math.max(ev(CB.launch, p), ev(CB.own, p), 0) })).reduce((a, b) => (b.evpi > a.evpi ? b : a));
 
 const box = (x, y, title, sub, lesson) => `<rect x="${x}" y="${y}" width="168" height="80" rx="8" style="fill:none;stroke:var(--series-1);stroke-width:2"/>`
   + `<text x="${x + 84}" y="${y + 25}" text-anchor="middle" font-weight="700" fill="currentColor">${title}</text>`
@@ -84,7 +86,7 @@ export default {
         ['Causal', 'Testing whether a change causes an effect', 'Experiments: A/B tests, test markets', 'The size of the effect, apart from chance', 'Not planned yet; M08 and B12 teach experiments'],
       ],
     } },
-    { p: '<g>Exploratory research</g> helps you understand a problem and generate hypotheses, with flexible, small-scale methods. <g>Descriptive research</g> measures the characteristics of a population or market, usually with a survey of a planned sample. <g>Causal research</g> tests whether changing one thing causes a change in another, by making the change for a randomly chosen group and comparing the outcome with a <g>control group</g>, as in B01’s <g>A/B test</g>.' },
+    { p: '<g>Exploratory research</g> helps you understand a problem and generate hypotheses, with flexible, small-scale methods such as depth interviews (one-to-one conversations following a guide) and focus groups (moderated discussions in a small group), which the qualitative-research lesson teaches. <g>Descriptive research</g> measures the characteristics of a population or market, usually with a survey of a planned sample. <g>Causal research</g> tests whether changing one thing causes a change in another, by making the change for a randomly chosen group and comparing the outcome with a <g>control group</g>, as in B01’s <g>A/B test</g>.' },
     { p: 'Projects often run the three in sequence: explore to learn what to ask, describe to measure how common each answer is, and test cause only for the few changes worth an experiment. Ana’s plan runs partly the other way. The survey goes out first because B04 planned it and the list is ready, and the focus groups follow to explore what the survey can’t: why people would or wouldn’t buy. Either order works if each design is used for what it can do.' },
     { callout: 'key', title: 'Research is for decisions', html: 'Before anything is collected, write down the decision, the options and the result that would favour each. If no plausible result would change what you do, the research isn’t worth doing, however interesting it sounds.' },
   ],
@@ -182,7 +184,7 @@ export default {
         [String.raw`V(a, s)`, 'Payoff of option a in state s', '$'],
       ],
       assumptions: 'The first term chooses the best option after learning the state; the second chooses the best option on expected value without knowing it. The payoffs and probabilities are estimates.',
-      note: 'EVPI is never negative. Real research is imperfect and is worth less; a study that costs more than the EVPI can’t pay for itself.' },
+      note: 'EVPI is never negative. Real research is imperfect and is worth no more than perfect information, and usually less; a study that costs more than the EVPI can’t pay for itself.' },
   ],
 
   examples: [
@@ -196,7 +198,7 @@ export default {
         'Judge the cheap study. A survey of regulars reaches people already in the shop, part of the market but not all of it (B01’s survivorship warning). It is worth running if it asks about the behaviour that matters, such as how often regulars would stay to eat, and if the owner decides beforehand which answer would stop the build.',
       ],
       answer: 'Building now has an expected value of $6,000; with perfect information it would be $18,000, so information about demand is worth at most $12,000. The $14,000 agency study fails the test; the $1,500 survey passes it, and its result could change the decision.',
-      interpretation: 'The ceiling doesn’t promise that the survey will return $10,500: real research is imperfect and worth less than perfect information. It shows what the decision can afford, and it rules the expensive study out before anyone argues about its quality.' },
+      interpretation: 'The ceiling doesn’t promise that the survey will return $10,500: real research is imperfect and worth no more than perfect information, and usually less. It shows what the decision can afford, and it rules the expensive study out before anyone argues about its quality.' },
 
     { level: 'challenging', title: 'What could research be worth to the Cold Brew decision?', fictional: true,
       setup: `Before commissioning anything, Ana writes down rough planning figures for the Cold Brew decision (fictional, for this lesson). She sees three options and two states of demand: strong (the launch reaches her first-year sales goal) or weak (it falls well short), and she puts the chance of strong demand at ${CB.p * 100}%. The table gives each option’s first-year result. The February survey and the March focus groups together would cost $${f(cost)}. Find the best option without research and the most that research could be worth, and judge whether the plan is justified.`,
@@ -226,20 +228,20 @@ export default {
         caption: 'Lantern’s research brief, January 2027 (fictional)',
         head: ['Section', 'What the brief says'],
         rows: [
-          ['Decisions', 'Cold Brew: launch in all three planned channels this summer, sell only through Lantern’s own channel, or wait; decide by 30 April. Marketing for 2027: which customers to focus on and what to fix first.'],
+          ['Decisions', 'Cold Brew: launch in all three planned channels this summer, make a limited launch with a test, sell only through Lantern’s own channel, or wait; decide by 30 April. Marketing for 2027: which customers to focus on and what to fix first.'],
           ['What is known', `M02’s launch plan; the December survey of subscribers (${SUBSCRIBER_SURVEY.responded} of ${SUBSCRIBER_SURVEY.invited} replied); ${CLIENT_INTERVIEWS.interviewed} catering-client interviews (M01); the online shop’s records (B01).`],
           ['Objectives', `(1) Estimate, to within about ±${SURVEY_PLAN.margin * 100} points, the share of the list who would definitely or probably buy Cold Brew at $${DEFAULT_PLAN.price.toFixed(2)} in the next three months. (2) Estimate how likely list members are to recommend Lantern. (3) Describe how often they buy coffee away from home, how they first heard of Lantern and what they think it should do better. (4) Explore how subscribers, and ready-to-drink buyers who have never bought from Lantern, react to the can, the price and where it would be sold.`],
           ['Design', `Descriptive: a web questionnaire to ${f(SURVEY_2027.invited)} people sampled from the ${f(MAILING_LIST)} on the list (B04’s plan: ${PLAN.n} replies at a ${SURVEY_PLAN.responseRate * 100}% response rate). Exploratory: two 90-minute focus groups in March, one of subscribers and one of ready-to-drink buyers who have never bought from Lantern.`],
           ['Use of results', `Action standard for objective 1, agreed with Jun Park before fieldwork: launch in all three channels only if at least ${AS.high}% of the list, weighted to its four groups, are in the top two boxes (definitely or probably would buy); below ${AS.low}%, sell only through Lantern’s own channel or wait; in between, a limited launch with a test.`],
-          ['Who does what', 'The survey in-house; a hired moderator for the groups; a recruitment agency, with a screener, for the group of non-customers.'],
+          ['Who does what', 'The survey in-house; a hired moderator for the groups; a recruitment agency, with a screener (a short qualifying questionnaire), for the group of non-customers.'],
           ['Timing and budget', `Survey sent ${SURVEY_2027.sent}, closing ${SURVEY_2027.closed}; groups on ${GA.date} and ${GB.date}; report by mid-April; $${f(cost)}.`],
           ['Ethics', 'Invitations say who is asking and why, that taking part is voluntary and answers are confidential, and that people can stop at any time; no offers in the questionnaire; groups recorded only with consent; adults only.'],
         ],
       },
       steps: [
-        'Start from the decisions. The brief names two, with their options and a deadline. The Cold Brew decision is the one with money at stake, so objectives 1 and 4 serve it; objectives 2 and 3 serve the 2027 marketing (which customers are keenest, and where new ones come from).',
-        `Test each objective against an action. The action standard turns objective 1 into a rule written before any answers arrive: ${AS.high}% or more supports launching widely, under ${AS.low}% points to the own channel or to waiting, and anything between calls for a smaller first step. Objective 4 can explain a disappointing share, for instance a price or a taste problem that could be fixed. An objective that no answer would act on would be cut.`,
-        `Match the designs. Objectives 1 to 3 ask “what share” and “how often”: descriptive, so a sample of the list. Objective 4 asks “how do people react, and why”: exploratory, so groups. Neither design is causal; if Ana later wants to know whether in-store tastings raise sales, that needs an experiment (M08, B12). The list’s four kinds of contact (${STRATA.map((s, h) => `${s.toLowerCase()} ${f(SIZES[h])}`).join(', ')}) let the survey report each separately.`,
+        'Start from the decisions. The brief names two, with their options and a deadline; compared with Ana’s rough figures it adds a fourth Cold Brew option, a limited launch with a test, for a result that is neither clearly strong nor clearly weak. The Cold Brew decision is the one with money at stake, so objectives 1 and 4 serve it; objectives 2 and 3 serve the 2027 marketing (which customers are keenest, and where new ones come from).',
+        `Test each objective against an action. The action standard turns objective 1 into a rule written before any answers arrive: ${AS.high}% or more supports launching widely, under ${AS.low}% points to the own channel or to waiting, and anything between calls for a smaller first step. The standard is judged on the weighted estimate, and a result whose 95% interval straddles a threshold counts as in between. It is set on Lantern’s list, whose members know Lantern, so even ${AS.high}% wouldn’t show that supermarket shoppers would buy: hence the test in the middle band, and objective 4. Objective 4 can explain a disappointing share, for instance a price or a taste problem that could be fixed. An objective that no answer would act on would be cut.`,
+        `Match the designs. Objectives 1 to 3 ask “what share” and “how often”: descriptive, so a sample of the list. Objective 4 asks “how do people react, and why”: exploratory, so groups. Neither design is causal; if Ana later wants to know whether in-store tastings raise sales, that needs an experiment (M08, B12). The list’s four kinds of contact (${STRATA.map((s, h) => `${s.toLowerCase()} ${f(SIZES[h])}`).join(', ')}) are sampled separately, so the survey can report the larger groups on their own; the ${f(SIZES[2])} workshop participants, with only ${SURVEY_2027.allocation[2]} invitations, will give too few replies to read alone.`,
         `Check who does what. The ${GA.participants} subscribers in group A can be recruited from Lantern’s own list; the ${GB.participants} non-customers in group B can’t, so an agency finds them with a screener. The cost is $${f(COST.moderator)} for the moderator, $${f(COST.recruit)} for recruitment, $${f(COST.incentives)} in thank-you payments ($75 each for ${GA.participants + GB.participants} people), $${f(COST.rooms)} for two rooms, $${f(COST.transcripts)} for transcripts and $${f(COST.tool)} for the survey tool: $${f(cost)} in all, inside the budget and about a fifth of the $${f(cbEvpi)} ceiling worked out in the challenging example.`,
         'Check the ethics. Jun Park, Lantern’s analyst, suggests ending the questionnaire with a discounted pre-order link for Cold Brew to lift the response. That would turn research into selling, which the MRS code calls sugging and all three codes forbid. Ana drops it. The codes would allow a thank-you for taking part, but she decides against any incentive; a Cold Brew offer can go out later as an ordinary marketing e-mail to people who agreed to receive them.',
       ],
@@ -248,7 +250,7 @@ export default {
   ],
 
   demo: [
-    { widget: 'rp-value', intro: 'Ana’s three Cold Brew options with her rough figures. Lower the chance of strong demand from 50% to 40% and watch the best choice without research switch to the own-channel option. Then find the chance at which the EVPI is largest, and raise the research cost above the ceiling to see the verdict change.' },
+    { widget: 'rp-value', intro: 'Ana’s three Cold Brew options with her rough figures. Lower the chance of strong demand from 50% to 40% and watch the best choice without research switch to the own-channel option. Then move the chance in steps of 1% to find where the EVPI is largest (at 48%, about $36,200), and compare the expected values of the two best options there: they are almost level. Finally, raise the research cost above the ceiling to see the verdict change.' },
   ],
 
   mistakes: [
@@ -265,7 +267,7 @@ export default {
     { p: '<b>She reframes the brief.</b> Research can’t be commissioned to prove a conclusion, and an application built on a study designed to agree would break the codes’ rules on honest reporting. She rewrites the decision problem as a choice: whether to bid for the grant, and if so for what service (every 30 or every 60 minutes, at what fare). The research problem is how many trips a day the service would carry at each frequency and fare, and which travellers would use it.' },
     { p: '<b>She orders the designs.</b> Secondary data comes first: the airport’s published passenger numbers, the council’s travel survey and the company’s own ticket records. Exploratory interviews with airport staff, frequent flyers and taxi drivers follow, to find out how people travel to the airport now and what would make them switch. A descriptive survey of travellers at the airport, sampled by day and time, then measures how many would use each option. A causal question, whether a lower fare would raise use, can only be answered by a trial, so she proposes testing two fares in the first months of service if the grant is won.' },
     { p: '<b>She puts a ceiling on the cost.</b> The commercial director’s rough figures are a $400,000 profit over the grant period if demand is high, a $250,000 loss if it is low, and a 50% chance of each. Bidding has an expected value of $75,000 against $0 for not bidding; with perfect information the company would bid only if demand were high, for $200,000. The EVPI is $125,000, so the $38,000 agency quote for the airport survey passes the ceiling test. They agree an action standard before fieldwork: bid for the 30-minute service if the survey’s estimate implies at least 900 trips a day at the planned fare.' },
-    { p: '<b>She splits the work.</b> The desk research and the interviews are done in-house; the airport survey goes to an agency, because interviewing in a terminal needs the airport’s permission, trained interviewers and a sampling plan by flight time. <b>And she checks the ethics.</b> Marketing wanted the survey to collect e-mail addresses for fare offers: she moves that to a separate, optional sign-up after the interview. School pupils travel on the airport road, so interviewers screen out anyone under 18 rather than seek a parent’s consent at a bus stop; and the grant application will quote the survey’s estimate with its base and margin of error, whatever it turns out to be.' },
+    { p: '<b>She splits the work.</b> The desk research and the interviews are done in-house; the airport survey goes to an agency, because interviewing in a terminal needs the airport’s permission, trained interviewers and a sampling plan by flight time. <b>And she checks the ethics.</b> Marketing wanted the survey to collect e-mail addresses for fare offers: she moves that to a separate, optional sign-up after the interview. School pupils travel on the airport road, so interviewers screen out anyone under 18 rather than seek a parent’s consent in a terminal; and the grant application will quote the survey’s estimate with its base and margin of error, whatever it turns out to be.' },
     { p: 'The same habits apply to a two-person café and to a national brand: start from the decision, choose the design from the verb in each objective, spend no more than a better decision could gain, and treat the people who answer as the reason research is possible at all.' },
   ],
 
@@ -383,5 +385,10 @@ export default {
     { what: 'ICC/ESOMAR young person ages', value: 13 + 17, shown: 30 },
     { what: 'MRS child: under', value: 16, shown: 16 },
     { what: 'Explorer: chance at which own channel becomes best (%)', value: 40, shown: 40 },
+    { what: 'Explorer: EVPI peak on a 1% grid (%)', value: evpiPeak.p * 100, shown: 48 },
+    { what: 'Explorer: EVPI at the peak', value: evpiPeak.evpi, shown: 36200 },
+    { what: 'Explorer: launch and own channel nearly level at the peak', value: Math.abs(ev(CB.launch, 0.48) - ev(CB.own, 0.48)), shown: 200 },
+    { what: 'Workshop invitations (case.js)', value: SURVEY_2027.allocation[2], shown: 50 },
+    { what: 'Workshop participants on the list', value: SIZES[2], shown: 150 },
   ],
 };

@@ -8,7 +8,11 @@ const evOf = (v) => PUB.p.reduce((a, p, i) => a + p * v[i], 0);
 const pubPerfect = PUB.p.reduce((a, p, i) => a + p * Math.max(PUB.large[i], PUB.small[i]), 0);
 const pubEvpi = pubPerfect - Math.max(evOf(PUB.large), evOf(PUB.small));
 // three-code kappa (item 7)
-const K3 = { po: 0.82, c1: [0.5, 0.3, 0.2], c2: [0.45, 0.35, 0.2] };
+const K3 = { table: [[42, 5, 3], [1, 26, 3], [2, 4, 14]] };
+const k3n = K3.table.flat().reduce((a, b) => a + b, 0);
+K3.po = K3.table.reduce((a, r, i) => a + r[i], 0) / k3n;
+K3.c1 = K3.table.map((r) => r.reduce((a, b) => a + b, 0) / k3n);
+K3.c2 = K3.table[0].map((_, j) => K3.table.reduce((a, r) => a + r[j], 0) / k3n);
 const k3pe = K3.c1.reduce((a, q, i) => a + q * K3.c2[i], 0);
 const k3k = (K3.po - k3pe) / (1 - k3pe);
 // a theatre's post-show interviews (item 8): participant, kind of theatregoer, theme
@@ -71,13 +75,13 @@ export const items = [
       'Obtain and verify a responsible adult’s permission for the child to take part',
       'Nothing extra: the ICC/ESOMAR code calls 13- to 17-year-olds young persons, not children',
       'Ask each 14-year-old to tick a box confirming that they are 16 or over',
-      'Get one head teacher’s consent on behalf of every pupil interviewed at the school',
+      'Have the toy company’s product manager give permission on behalf of every child taking part',
     ],
     answer: 0,
     feedback: {
       1: 'The ICC/ESOMAR code does draw its line at 12, but the MRS code, which the agency follows, defines a child as under 16; and the ICC/ESOMAR code too asks for special care with young persons.',
       2: 'Asking a child to claim an age they aren’t is dishonest and leaves the rule broken.',
-      3: 'The MRS code asks for the permission of a responsible adult for each child, obtained and verified; a head teacher can’t give it wholesale for every pupil.',
+      3: 'A responsible adult has personal accountability for the child’s wellbeing (the MRS code lists a parent, guardian, carer or teacher); the client paying for the research has none.',
     },
     solution: 'Under the MRS Code of Conduct a child is anyone under 16, and a responsible adult’s permission must be obtained and verified before a child takes part. The codes differ (ICC/ESOMAR draws the line at 12), so the agency follows the code it belongs to and the law where the children live.',
   },
@@ -130,13 +134,15 @@ export const items = [
   },
   {
     id: 'm04-m1-7', lesson: 'qualitative-research', type: 'num', kind: 'numerical',
-    prompt: 'Two coders sorted 100 open answers from a fictional broadband provider’s survey into three themes (speed, price, service). They agreed on 82. Coder 1 put 50% of the answers in speed, 30% in price and 20% in service; coder 2 put 45%, 35% and 20%. What is Cohen’s kappa? Give two decimal places.',
-    answer: k3k, check: () => (0.82 - (0.5 * 0.45 + 0.3 * 0.35 + 0.2 * 0.2)) / (1 - (0.5 * 0.45 + 0.3 * 0.35 + 0.2 * 0.2)), tol: 0.005, unit: '', places: 2,
+    prompt: 'Two coders sorted 100 open answers from a fictional broadband provider’s survey into three themes. The table shows how their codes crossed: each row is coder 1’s theme, each column coder 2’s. What is Cohen’s kappa? Give two decimal places.',
+    data: { table: { head: ['Coder 1’s theme', 'Coder 2: speed', 'Coder 2: price', 'Coder 2: service'], rows: K3.table.map((r, i) => [['Speed', 'Price', 'Service'][i], ...r.map(String)]) } },
+    answer: k3k, check: () => ((42 + 26 + 14) / 100 - (0.5 * 0.45 + 0.3 * 0.35 + 0.2 * 0.2)) / (1 - (0.5 * 0.45 + 0.3 * 0.35 + 0.2 * 0.2)), tol: 0.005, unit: '', places: 2,
     wrong: [
       { value: K3.po - k3pe, say: 'That is the agreement beyond chance, p_o − p_e. Divide it by 1 − p_e to get kappa.' },
       { value: (K3.po - 0.5 * 0.45) / (1 - 0.5 * 0.45), say: 'Chance agreement sums the products for all three themes: 0.225 + 0.105 + 0.04 = 0.37, not the speed theme alone.' },
+      { value: K3.po, say: 'That is the observed agreement, the diagonal (42 + 26 + 14) ÷ 100. Kappa removes the agreement expected by chance from the row and column totals.' },
     ],
-    solution: 'p_e = 0.50 × 0.45 + 0.30 × 0.35 + 0.20 × 0.20 = 0.225 + 0.105 + 0.040 = 0.37. κ = (0.82 − 0.37) ÷ (1 − 0.37) = 0.45 ÷ 0.63 ≈ 0.71: agreement well beyond chance, though the 18 disagreements should still be read to tighten the codebook.',
+    solution: 'Observed agreement is the diagonal: (42 + 26 + 14) ÷ 100 = 0.82. Coder 1’s shares are the row totals (50, 30, 20 of 100) and coder 2’s the column totals (45, 35, 20). p_e = 0.50 × 0.45 + 0.30 × 0.35 + 0.20 × 0.20 = 0.225 + 0.105 + 0.040 = 0.37. κ = (0.82 − 0.37) ÷ (1 − 0.37) = 0.45 ÷ 0.63 ≈ 0.71: agreement well beyond chance, though the 18 disagreements should still be read to tighten the codebook.',
   },
   {
     id: 'm04-m1-8', lesson: 'qualitative-research', type: 'formula', kind: 'applied',
@@ -188,7 +194,7 @@ export const items = [
     answer: 0,
     feedback: {
       1: 'Guest and colleagues found saturation within twelve interviews for one fairly similar group, and warned that more varied groups need more. Two very different groups need saturation in each.',
-      2: 'Hennink and Kaiser’s 4 to 8 refers to focus group discussions, not interviews; for interviews their range was 9 to 17, for each kind of participant.',
+      2: 'Hennink and Kaiser’s 4 to 8 refers to focus group discussions, not interviews; for interviews their range was 9 to 17.',
       3: 'Saturation depends on how varied the participants are, so who takes part matters; the screener decides it.',
     },
     solution: 'Saturation is reached within each kind of participant. For two very different groups, plan enough interviews for each (studies suggest somewhere in the 9 to 17 range for fairly similar participants), track how many new codes each interview adds, and stop in each group when a run of interviews adds nothing.',

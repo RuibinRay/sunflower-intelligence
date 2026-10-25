@@ -201,9 +201,35 @@ function checkSheetSpec(spec, w, r, { allowErrors = [] } = {}) {
   }
   return sh;
 }
+// The marking copies move whole numbers from 36,526 to 55,153 (dates from 2000 to 2050) by whole months instead of
+// scaling them (sheet.js perturbSpec), so a count or an amount in that range (48,200 cans, say) changes by an odd amount
+// on the copies. Flag such cells unless they are fixed, varied, formatted as dates, or sit under a date-like header.
+const DATE_HEAD = /date|day|month|week|year|when|time|period|start|end|due|deadline|opened|closed/i;
+function dateLikeCheck(x, w, r) {
+  const cells = x.sheet?.cells || {};
+  const fixed = new Set();
+  for (const f of x.sheet?.fixed || []) { const rg = SH.parseRange(f) || (SH.parseAddr(f) && { r0: SH.parseAddr(f).r, r1: SH.parseAddr(f).r, c0: SH.parseAddr(f).c, c1: SH.parseAddr(f).c }); if (rg) for (let i = rg.r0; i <= rg.r1; i++) for (let j = rg.c0; j <= rg.c1; j++) fixed.add(`${i},${j}`); }
+  const vary = new Set(Object.keys(x.sheet?.vary || {}).map((k) => k.replace(/\$/g, '').toUpperCase()));
+  const fmts = { ...(x.sheet?.formats || {}), ...(x.formats || {}) };
+  const isDateFmt = (f) => typeof f === 'string' && (f === 'date' || /[dmy]{2,}/i.test(f) && !/[#0]/.test(f));
+  const odd = [];
+  for (const [k, v] of Object.entries(cells)) {
+    if (!(Number.isInteger(v) && v >= 36526 && v <= 55153)) continue;
+    const a = SH.parseAddr(k); if (!a) continue;
+    const key = k.replace(/\$/g, '').toUpperCase(), col = key.replace(/\d+$/, '');
+    if (fixed.has(`${a.r},${a.c}`) || vary.has(key) || isDateFmt(fmts[key]) || isDateFmt(fmts[col])) continue;
+    let head = '';
+    for (let i = a.r - 1; i >= 0 && !head; i--) { const u = cells[`${col}${i + 1}`]; if (typeof u === 'string' && !u.startsWith('=')) head = u; }
+    const left = Object.entries(cells).find(([kk, u]) => typeof u === 'string' && !u.startsWith('=') && SH.parseAddr(kk)?.r === a.r && SH.parseAddr(kk)?.c < a.c)?.[1] || '';
+    if (DATE_HEAD.test(head) || DATE_HEAD.test(left)) continue;
+    odd.push(`${key} (${v})`);
+  }
+  if (odd.length) r.warn(`${w}: ${odd.slice(0, 4).join(', ')}${odd.length > 4 ? ` and ${odd.length - 4} more` : ''} ${odd.length > 1 ? 'are whole numbers' : 'is a whole number'} in the range the marking copies treat as dates (36,526–55,153), so ${odd.length > 1 ? 'they move' : 'it moves'} by months rather than scaling; if not a date, list it in fixed or vary, or change the value`);
+}
 function checkFormulaItem(x, w, r) {
   const sh = checkSheetSpec(x.sheet, `${w}.sheet`, r, { allowErrors: x.allowErrors || [] });
   if (!sh) return;
+  dateLikeCheck(x, w, r);
   const at = SH.parseAddr(x.cell || '');
   if (!at) { r.err(`${w}: cell must be an address like F2`); return; }
   if (x.fill) { const rg = SH.parseRange(x.fill); if (!rg || rg.r0 !== at.r || rg.c0 !== at.c) r.err(`${w}: fill ${x.fill} must start at the cell ${x.cell}`); }

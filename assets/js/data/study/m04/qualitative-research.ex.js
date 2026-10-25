@@ -46,12 +46,12 @@ export const widgets = {
     note: 'Columns: A number, B group (A subscribers, B non-customers), C participant, D quotation, E Ana’s theme, F the second coder’s theme. Build the table in H1:K7 with COUNTIFS (I1 and J1 hold the group letters) and the percent agreement in I9, for example with SUMPRODUCT. The second coder’s codes differ from Ana’s for quotations 3 and 15 (rows 4 and 16).',
   },
   'qr-saturation': {
-    type: 'chart', kind: 'line',
+    type: 'chart', kind: 'bar',
     title: 'Codes found in 16 depth interviews (a fictional language-learning app)',
-    x: { label: 'Interview', values: NEW.map((_, i) => i + 1) },
+    x: { label: 'Interview', values: NEW.map((_, i) => String(i + 1)) },
     series: [{ name: 'Distinct codes found so far', values: CUM }, { name: 'New codes in this interview', values: NEW }],
     y: { label: 'Codes', format: 'int' },
-    note: `The first interview gave ${NEW[0]} codes and the first four ${CUM[3]}. After the seventh, the remaining nine interviews added only ${CUM[15] - CUM[6]} codes between them, and the last three none. Saturation is a judgement: here a team would probably have stopped after about twelve, with a run of interviews adding nothing.`,
+    note: `The first interview gave ${NEW[0]} codes and the first four ${CUM[3]}. After the seventh, the remaining nine interviews added only ${CUM[15] - CUM[6]} codes between them, and the last three none. Saturation is a judgement: here a team would probably have stopped after about twelve, with a run of interviews adding nothing, and would have missed the one code interview 13 found. So report where you stopped and why.`,
   },
 };
 
@@ -216,7 +216,7 @@ export const independent = [
       4: 'Naming and praising the brand reveals the sponsor and invites people to say what they think the client wants to hear.',
       5: 'People who follow Aldermoor’s page are self-selected fans of the brand, the opposite of the people the group needs.',
     },
-    solution: 'Disguise the sponsor in a list of brands; exclude people from the industry and those who take part too often; tell recruits about recording and observation when they are recruited, as the MRS code requires. Don’t lead with the brand, and don’t recruit from its own followers.',
+    solution: 'Disguise the sponsor in a list of brands; exclude people from the industry and those who take part too often; tell recruits about recording and observation when they are recruited, and again at the start, as the MRS code requires. Don’t lead with the brand, and don’t recruit from its own followers.',
   },
   {
     id: 'm04-qr-i4', type: 'num', kind: 'numerical',
@@ -290,7 +290,7 @@ export const check = [
     widths: { A: 11, B: 18, C: 18, E: 18, F: 9 },
     formats: { F1: '0%' },
     answer: `=SUMPRODUCT(--(B2:B${R}=C2:C${R}))/COUNTA(B2:B${R})`,
-    alt: [`=SUMPRODUCT((B2:B${R}=C2:C${R})*1)/ROWS(B2:B${R})`, `=SUMPRODUCT(--(B2:B${R}=C2:C${R}))/20`],
+    alt: [`=SUMPRODUCT((B2:B${R}=C2:C${R})*1)/ROWS(B2:B${R})`, `=SUMPRODUCT(--(B2:B${R}=C2:C${R}))/20`, `=SUMPRODUCT(--EXACT(B2:B${R},C2:C${R}))/20`, `=SUMPRODUCT(--EXACT(B2:B${R},C2:C${R}))/COUNTA(B2:B${R})`],
     wrong: [
       { formula: `=SUMPRODUCT(--(B2:B${R}=C2:C${R}))`, say: 'That is the number of quotations they agreed on. Divide by the number coded, COUNTA(B2:B21), to get the share.' },
       { formula: `=SUMPRODUCT(--(B2:B${R}=C2:C${R}))/COUNTA(B1:B${R})`, say: 'COUNTA(B1:B21) counts the header too, so it divides by 21. Count the quotations only: B2:B21.' },
@@ -303,7 +303,7 @@ export const check = [
     options: [
       'Every theme in the codebook came up in both groups',
       'Two groups, one of each kind, are too few to show saturation',
-      'Some non-customers expect to buy it in places outside the planned channels',
+      'One non-customer expects to buy it at a petrol station, outside the planned channels',
       'Price matters to about 20% of Harbour City’s ready-to-drink buyers',
       'Subscribers will buy Cold Brew, since they praised Lantern’s coffee',
       'The non-customers’ views stand for all non-customers in the city',
@@ -314,7 +314,7 @@ export const check = [
       4: 'Praise in a group is a reason a subscriber might buy, not a measure of how many will; the survey estimates that, with its own limits.',
       5: 'Seven recruited people can’t stand for every non-customer; their views are possibilities to test.',
     },
-    solution: 'The coding shows every theme in both groups; one group per kind can’t show saturation; and two non-customers named a petrol station and a health food shop, outside the planned channels. Shares, forecasts of buying and claims about all non-customers need descriptive research.',
+    solution: 'The coding shows every theme in both groups; one group per kind can’t show saturation; and one non-customer buys at a petrol station, outside the planned channels. Shares, forecasts of buying and claims about all non-customers need descriptive research.',
   },
   {
     id: 'm04-qr-k5', type: 'mc', kind: 'applied',
@@ -338,10 +338,10 @@ export const check = [
     prompt: 'Complete the statements.',
     text: 'A short questionnaire that decides who may take part is a [[0]]. A neutral follow-up such as “What makes you say that?” is a [[1]]. The point at which new interviews add no new themes is [[2]], and a measure of coders’ agreement that corrects for chance is [[3]].',
     blanks: [
-      { options: ['screener', 'codebook', 'discussion guide'], answer: 0 },
-      { options: ['probe', 'leading question', 'closed question'], answer: 0 },
+      { options: ['codebook', 'screener', 'discussion guide'], answer: 1 },
+      { options: ['leading question', 'closed question', 'probe'], answer: 2 },
       { options: ['saturation', 'triangulation', 'thematic analysis'], answer: 0 },
-      { options: ['Cohen’s kappa', 'percent agreement', 'the response rate'], answer: 0 },
+      { options: ['percent agreement', 'Cohen’s kappa', 'the response rate'], answer: 1 },
     ],
     solution: 'Screeners decide eligibility; probes ask for more without leading; saturation is reached when new interviews add nothing new; Cohen’s kappa corrects percent agreement for chance.',
   },

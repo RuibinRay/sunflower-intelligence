@@ -379,7 +379,7 @@ export default {
       { what: 'Orrinsby Ent fpc', value: 1 - 100 / 400, shown: 0.75, tol: 1e-9 },
       { what: 'Orrinsby Ent share of sample (%)', value: 100 / 500 * 100, shown: 20 },
       { what: 'Orrinsby Ent share of customers (%)', value: 400 / 10000 * 100, shown: 4 },
-      { what: 'Enterprise reply stands for a quarter as many as a Free reply', value: (400 / 100) / (8000 / 200), shown: 0.1, tol: 1e-9 },
+      { what: 'Enterprise reply stands for a tenth as many customers as a Free reply', value: (400 / 100) / (8000 / 200), shown: 0.1, tol: 1e-9 },
       { what: 'Orrinsby SRS SE', value: ORSRS, shown: 0.0165, tol: 0.00005 },
       { what: 'SRS of 500: about 20 Enterprise', value: 500 * 400 / 10000, shown: 20 },
       { what: 'Enterprise margin points', value: OR_ENT * 100, shown: 8.3, tol: 0.05 },

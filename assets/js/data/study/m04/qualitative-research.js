@@ -75,7 +75,7 @@ export default {
 
   concept: [
     { case: `By March 2027 the February survey has closed, and Ana can count how many people on her list say they would buy Cold Brew. The numbers can’t tell her why. Do subscribers like the idea because they like Lantern’s coffee, or because a can is convenient? Would someone who buys ready-to-drink coffee on the way to work notice a new brand at all? For these questions she plans two 90-minute focus groups with a hired moderator: ${GA.participants} subscribers on ${GA.date}, and ${GB.participants} people who buy ready-to-drink coffee at least once a month but have never bought from Lantern on ${GB.date}.` },
-    { p: '<g>Qualitative research</g> collects words, actions and images from a small number of deliberately chosen people, to understand what they think, how they talk about it and why. Its output is themes, explanations and the language customers use. <g>Quantitative research</g>, such as a survey of a planned sample or an analysis of sales records, measures how many, how much and how often, and can estimate a population’s figures with a margin of error. The two answer different questions, and good projects use both.' },
+    { p: '<g>Qualitative research</g> collects words, actions and images from a small number of deliberately chosen people, to understand what they think, how they talk about it and why. Its output is themes, explanations and the language customers use. <g>Quantitative research</g>, such as a survey of a planned sample or an analysis of sales records, measures how many, how much and how often, and, from a probability sample, can estimate a population’s figures with a margin of error. The two answer different questions, and good projects use both.' },
 
     { h: 'When qualitative research fits' },
     { list: [
@@ -83,7 +83,7 @@ export default {
       '<b>Explaining a result</b>: why a survey score is low, why customers left, why a launch disappointed.',
       '<b>Generating hypotheses</b> for a survey or an experiment to test, and the words to use in its questions.',
       '<b>Testing early reactions</b> to a concept, a name, a pack or an advertisement before money is spent on it.',
-      '<b>Understanding a process</b>, such as how a household chooses a supplier or how an office orders its coffee.',
+      '<b>Understanding a process</b>, such as how a household chooses a supplier or how a school chooses a caterer.',
     ] },
     { p: 'It doesn’t fit questions about how many. Fifteen people chosen to hold particular views can’t say what share of a city’s shoppers would buy a can, however vivid their answers. When the objective says “estimate”, the design is descriptive; qualitative work can only prepare for it or explain its result.' },
     { callout: 'key', title: 'Themes, not shares', html: 'Qualitative findings say what views exist, how people express them and why they hold them. They don’t say how common those views are. “Several participants said the price was high” is a finding; “40% think the price is too high” from a focus group is not.' },
@@ -101,10 +101,10 @@ export default {
         ['Practicalities', 'Easy to schedule, and works well by phone or video', 'Everyone at one time and place; the client can watch'],
       ],
     } },
-    { p: 'The group is a focus group’s strength and its risk. One person’s remark reminds another of something; disagreement sharpens reasons. But OpenStax warns that a group can be overwhelmed by one or two aggressive personalities, quieter members may go along with what has been said, and people tend to give the answers that make them look good in front of strangers, a tendency the questionnaire-design lesson meets again as a response style. A skilled moderator asks everyone for a first reaction on paper before the discussion, goes round the room, and invites the quiet participants by name.' },
+    { p: 'The group is a focus group’s strength and its risk. One person’s remark reminds another of something; disagreement sharpens reasons. But OpenStax warns that a group can be overwhelmed by one or two aggressive personalities and that the format can discourage reserved people from speaking up. Two further risks are well known: quieter members may go along with what has been said, and people tend to give the answers that make them look good in front of strangers, a tendency the questionnaire-design lesson meets again as a response style. A skilled moderator asks everyone for a first reaction on paper before the discussion, goes round the room, and invites the quiet participants by name.' },
 
     { h: 'Observation, ethnography and online communities' },
-    { p: 'People can’t always say what they do, so sometimes it is better to watch. OpenStax defines observational research as collecting data based on the actions of those observed: shoppers at a chilled-drinks shelf, say, timed as they look, pick up and read cans, with the store’s permission. <g>Ethnography</g> goes further: the researcher spends time in people’s own settings, such as a commuter’s morning or an office kitchen, to understand behaviour in its context. Online research communities, in which a recruited group of customers takes part in discussions, diaries and small tasks over weeks or months, carry the same ideas onto a private website.' },
+    { p: 'People can’t always say what they do, so sometimes it is better to watch. OpenStax defines observational research as collecting data based on the actions of those observed: shoppers at a chilled-drinks shelf, say, timed as they look, pick up and read cans, with the store’s permission. <g>Ethnography</g> goes further: the researcher spends time in people’s own settings, such as a commuter’s morning or a family’s breakfast, to understand behaviour in its context. Online research communities, in which a recruited group of customers takes part in discussions, diaries and small tasks over weeks or months, carry the same ideas onto a private website.' },
   ],
 
   theory: [
@@ -119,7 +119,7 @@ export default {
       'Took part in a group discussion or paid interview in the past six months: excluded, to avoid people who take part for a living.',
       'Where they usually buy ready-to-drink coffee (supermarket, convenience store or petrol station, specialty grocer): the agency recruits a mix.',
     ] },
-    { p: 'Recruits are told at recruitment, not on the day, that the session will be recorded and that Lantern’s team may watch; the MRS Code of Conduct requires participants to be informed about any recording, monitoring or observation when they are recruited. They are paid a thank-you for their time, and the agency recruits one or two more than needed, because some people won’t come.' },
+    { p: 'Recruits are told at recruitment, and again at the start of the session, that it will be recorded and that Lantern’s team may watch; the MRS Code of Conduct (rule 29) requires participants to be informed about any recording, monitoring or observation at recruitment and at the beginning of data collection. They are paid a thank-you for their time, and the agency recruits one or two more than needed, because some people won’t come.' },
 
     { h: 'The discussion guide' },
     { p: 'A <g>discussion guide</g> is the moderator’s plan for an interview or group: the topics in order, the main questions, any tasks, and the time for each. Most guides follow a funnel, from the general to the specific, so that participants describe their own habits and words before they see anything the client has made. In Lantern’s guide the can appears only after 40 minutes, once everyone has described how and where they buy coffee and which canned brands they know.' },
@@ -152,7 +152,7 @@ export default {
     { p: 'The method most researchers follow is <g>thematic analysis</g>, set out by Braun and Clarke (2006) in six phases: familiarising yourself with the data, generating initial codes, searching for themes, reviewing themes, defining and naming themes, and producing the report. The phases loop: reviewing the themes often sends the analyst back to the transcripts, and the codebook changes as the analysis develops. A theme is a pattern of meaning across the data, not just a heading; “price” becomes a theme when the analyst can say what people mean by it, for example that paying a dollar more than for the brand they buy now needs a reason.' },
 
     { h: 'Counting codes honestly' },
-    { p: `Counting codes shows where the talk went. In Lantern’s ${nQ} coded quotations, ${ana[1]} are about price and ${ana[3]} about where to buy, and ${speakers(1)} different participants raised price. But counts describe the transcripts, not a population. The moderator’s guide decided how long each topic was discussed, talkative participants supply more quotations, and the ${GA.participants + GB.participants} participants were chosen, not sampled, so “${ana[1]} of ${nQ} quotations” is not “${(ana[1] / nQ * 100).toFixed(0)}% of buyers”.` },
+    { p: `Counting codes shows where the talk went. In Lantern’s ${nQ} coded quotations, ${ana[1]} are about price and ${ana[3]} about where to buy, and ${speakers(1)} different participants raised price. But the ${nQ} are passages Ana selected and coded from three hours of talk, so counts describe her selection, not a population. The moderator’s guide decided how long each topic was discussed, talkative participants supply more quotations, and the ${GA.participants + GB.participants} participants were chosen, not sampled, so “${ana[1]} of ${nQ} quotations” is not “${(ana[1] / nQ * 100).toFixed(0)}% of buyers”.` },
     { p: 'Report counts, if at all, as what they are (“price came up in both groups, raised by four participants”), and keep percentages for descriptive research. The interesting differences are often between groups: in Lantern’s, subscribers talked about matching Lantern’s coffee and its compostable bags, while the non-customers talked about noticing an unknown brand on a shelf and paying more than they pay now.' },
 
     { h: 'Do two coders agree?' },
@@ -230,17 +230,17 @@ export default {
       steps: [
         `Check the coding first. The coders agreed on ${agreed} of ${nQ} quotations (${(po * 100).toFixed(0)}%), and with the second coder’s two different codes Cohen’s kappa is about ${kappa.toFixed(2)}: good enough to use the themes, after the codebook was clarified for the two disagreements.`,
         `Read the themes across the groups. Every theme came up in both groups. Subscribers framed Cold Brew through Lantern: “${quote('A3', 0)}”, and “${quote('A7', 4)}” Non-customers framed it as an unknown brand on a crowded shelf: “${quote('B1', 2)}”, and “${quote('B4', 0)}”`,
-        `Look for hypotheses to test, not conclusions. On price, a non-customer anchored on the brand they buy now: “${quote('B2', 1)}” On where to buy, two non-customers named a petrol station and a health food shop; the launch plan’s channels are ${plannedText}. Each is a question for the survey analysis, the price audit and the sizing (Modules 3 and 4), not a finding to act on.`,
+        `Look for hypotheses to test, not conclusions. On price, a non-customer anchored on the brand they buy now: “${quote('B2', 1)}” On where to buy, one non-customer buys at a petrol station, a convenience outlet outside the launch plan’s channels (${plannedText}), and another would look in a health food shop, which the natural and specialty grocers cover. Each is a question for the survey analysis, the price audit and the sizing (Modules 3 and 4), not a finding to act on.`,
         `Say what the groups can’t show. ${GA.participants + GB.participants} chosen people in two groups can’t say how many shoppers share these views, and one group of each kind is too few for saturation. “${ana[1]} of ${nQ} quotations were about price” describes the transcripts, not the market.`,
         'Report honestly: quotations attributed by code (A3, B2), the design and its limits stated next to the findings, and the dissenting views included, such as the subscriber who would pay more for a brand they know, alongside the non-customer who wants a reason to pay a dollar more.',
       ],
-      answer: `The six themes are reliable enough to use (90% agreement, kappa about ${kappa.toFixed(2)}). The groups suggest that subscribers judge Cold Brew by Lantern’s coffee and values, while non-customers need a reason to notice it and to pay more than their usual brand, and that some expect to find it in shops outside the planned channels. These are hypotheses for the survey analysis and the sizing to test, not shares of the market.`,
+      answer: `The six themes are reliable enough to use (90% agreement, kappa about ${kappa.toFixed(2)}). The groups suggest that subscribers judge Cold Brew by Lantern’s coffee and values, while non-customers need a reason to notice it and to pay more than their usual brand, and that some expect to find it where they already buy, in one case a petrol station outside the planned channels. These are hypotheses for the survey analysis and the sizing to test, not shares of the market.`,
       interpretation: 'The groups did what exploratory research does: they produced explanations, hypotheses and customers’ own words. Turning them into a decision needs the quantitative evidence, which the rest of the course brings together.' },
   ],
 
   demo: [
     { widget: 'qr-codebook', intro: 'The 20 coded quotations, with Ana’s theme and the second coder’s side by side. Build the table of codes by theme and group in H1:K7 with COUNTIFS, then calculate the percent agreement in I9. Change one of the second coder’s codes and watch the agreement move.' },
-    { widget: 'qr-saturation', intro: 'Sixteen depth interviews from a fictional study of people who stopped paying for a language-learning app. Each bar shows how many new codes an interview added; the line shows how many distinct codes had been found so far. Where would you have stopped?' },
+    { widget: 'qr-saturation', intro: 'Sixteen depth interviews from a fictional study of people who stopped paying for a language-learning app. For each interview, one bar shows how many new codes it added and the other how many distinct codes had been found so far. Where would you have stopped?' },
   ],
 
   mistakes: [
@@ -272,7 +272,7 @@ export default {
 
   glossary: [
     { term: 'Qualitative research', def: 'Research that collects words, actions and images from a small number of deliberately chosen people, to understand what they think, how they talk about it and why. Its output is themes and explanations, not estimates for a population.' },
-    { term: 'Quantitative research', def: 'Research that measures how many, how much and how often, such as a survey of a planned sample or an analysis of records, and can estimate a population’s figures with a margin of error.' },
+    { term: 'Quantitative research', def: 'Research that measures how many, how much and how often, such as a survey of a planned sample or an analysis of records, and, from a probability sample, can estimate a population’s figures with a margin of error.' },
     { term: 'Depth interview', def: 'A one-to-one research conversation, often 30 to 90 minutes long, in which the interviewer follows a guide but is free to follow the participant’s answers.' },
     { term: 'Focus group', def: 'A discussion of a topic by a small group of people who meet a study’s requirements, led by a moderator who follows a discussion guide.' },
     { term: 'Ethnography', def: 'Research in which the researcher spends time in people’s own settings, observing and talking with them, to understand behaviour in its context.' },
@@ -302,6 +302,7 @@ export default {
     { what: 'Group B participants', value: GB.participants, shown: 7 },
     { what: 'Participants in all', value: GA.participants + GB.participants, shown: 15 },
     { what: 'Group length (minutes, case.js)', value: 90, shown: 90 },
+    { what: 'Hours of talk in two groups', value: 2 * 90 / 60, shown: 3 },
     { what: 'Quotations coded', value: nQ, shown: 20 },
     { what: 'Coders agreed (case.js)', value: FG.coderAgreement.agreed, shown: 18 },
     { what: 'Agreement recomputed from the codes', value: agreed, shown: FG.coderAgreement.agreed },

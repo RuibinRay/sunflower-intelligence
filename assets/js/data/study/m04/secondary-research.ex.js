@@ -77,7 +77,7 @@ export const guided = [
   {
     id: 'm04-sr-g2', type: 'steps', kind: 'applied',
     prompt: 'A fictional e-bike shop wants to know how many e-bikes are sold a year in its region. A regional cycle traders’ association reports that its members sold 18,000 bicycles in 2026, and that members make about 75% of the region’s bicycle sales.',
-    solution: 'Gross up for coverage: 18,000 ÷ 0.75 = 24,000 bicycles. The association counts all bicycles, children’s and road bikes included, so this is a ceiling for e-bikes, not an estimate. Applying the 22% e-bike share from the national survey gives 24,000 × 0.22 = 5,280 e-bikes, as long as the region’s mix is like the nation’s; the shop should check that against its own suppliers’ figures.',
+    solution: 'Gross up for coverage: 18,000 ÷ 0.75 = 24,000 bicycles. The association counts all bicycles, children’s and road bikes included, so this is a ceiling for e-bikes, not an estimate. Applying the 22% e-bike share from the (fictional) national survey gives 24,000 × 0.22 = 5,280 e-bikes, as long as the region’s mix is like the nation’s; the shop should check that against its own suppliers’ figures.',
     steps: [
       { id: 'm04-sr-g2-s1', type: 'num',
         prompt: 'Gross up the members’ sales for coverage. How many bicycles were sold in the region? Give a whole number.',
@@ -85,7 +85,7 @@ export const guided = [
         hints: ['Members sell 75% of the bicycles, so the whole market is bigger than their 18,000.', 'T = T_c ÷ c = 18,000 ÷ 0.75.'],
         wrong: [
           { value: 13500, say: 'That multiplies by 0.75, which shrinks the figure. Members are only part of the market, so divide by their share.' },
-          { value: 4500, say: 'That is the uncovered quarter alone (24,000 − 18,000 would be 6,000; 18,000 × 0.25 is 4,500). The total is 18,000 ÷ 0.75.' },
+          { value: 22500, say: 'That adds 25% to the members’ sales. Their 18,000 is 75% of the market, so the market is 18,000 ÷ 0.75 = 24,000.' },
         ] },
       { id: 'm04-sr-g2-s2', type: 'mc',
         prompt: 'What does the grossed-up figure tell the e-bike shop?',
@@ -103,7 +103,7 @@ export const guided = [
           3: 'Grossing up has already corrected for coverage. The remaining problem is the definition, which makes the figure too high, not too low.',
         } },
       { id: 'm04-sr-g2-s3', type: 'num',
-        prompt: 'A national survey finds that 22% of bicycles sold are e-bikes. If the region is like the nation, how many e-bikes were sold there in 2026?',
+        prompt: 'A (fictional) national survey finds that 22% of bicycles sold are e-bikes. If the region is like the nation, how many e-bikes were sold there in 2026?',
         answer: 5280, check: () => 18000 / 0.75 * 0.22, tol: 0.5, unit: 'e-bikes', places: 0,
         hints: ['Apply the e-bike share to the whole region’s bicycles, not to the members’ sales.', '24,000 × 0.22.'],
         wrong: [{ value: 3960, say: 'That applies the share to the members’ 18,000. The share belongs to the whole market of 24,000.' }] },
@@ -111,21 +111,21 @@ export const guided = [
   },
   {
     id: 'm04-sr-g3', type: 'mc', kind: 'conceptual',
-    prompt: 'A fictional pharmacy chain in the US wants the number of people aged 65 and over in a town of about 30,000 people, from the American Community Survey. Which estimate should it use?',
+    prompt: 'A fictional pharmacy chain in the US wants the number of people aged 65 and over in a town of about 12,000 people, from the American Community Survey. Which estimate should it use?',
     options: [
-      'The 5-year estimates: 1-year ones exist only for areas of 65,000 or more',
+      'The 5-year estimates: no 1-year figures are published for a town this small',
       'The 1-year estimates, because they are the most current and the most reliable',
       'The 1-year estimates for the county, divided by the county’s number of towns',
       'Either one, because the two always give the same figure for a town',
     ],
     answer: 0,
-    hints: ['Check whether a 1-year estimate exists for a town of 30,000.', 'The Census Bureau’s threshold for 1-year estimates is 65,000 people.'],
+    hints: ['Check whether any 1-year estimate exists for a town of 12,000.', 'The full 1-year tables need 65,000 people and the supplemental 1-year tables 20,000.'],
     feedback: {
-      1: 'The 1-year estimates are the most current, but the 5-year estimates are the most reliable, and for a town of 30,000 only the 5-year estimates are published.',
+      1: 'The 1-year estimates are the most current, but the 5-year estimates are the most reliable; and a town of 12,000 is below both 1-year thresholds (65,000 for the full tables, 20,000 for the supplemental ones), so only the 5-year estimates are published.',
       2: 'Dividing a county total equally among its towns assumes they are all the same; it invents a figure the survey never measured.',
       3: 'The two describe different periods and rest on different sample sizes, so they generally differ.',
     },
-    solution: 'The town is below the 65,000 threshold for 1-year estimates, so the 5-year estimates (60 months of data) are the ones available. They are less current but rest on the largest sample; quote the figure with its margin of error.',
+    solution: 'The town is below both 1-year thresholds (65,000 people for the full tables, 20,000 for the simplified supplemental tables), so the 5-year estimates (60 months of data) are the ones available. They are less current but rest on the largest sample; quote the figure with its margin of error.',
   },
   {
     id: 'm04-sr-g4', type: 'multi', kind: 'applied',
@@ -157,18 +157,18 @@ export const independent = [
       'The tourism board’s visitor count is the latest available, but it describes 2022',
       'The figure comes from a booking platform’s press release about its own growth',
       'A consultancy’s report quotes “industry sources” and doesn’t say how its estimate was made',
-      'The visitor survey counts day trippers as well as overnight guests',
+      'The tourism figure counts visits, not visitors: a guest who comes three times a year counts three times',
       'The airport survey asks only passengers arriving on international flights',
       'The city’s hotel-night count jumped by a third in the year its method changed',
     ],
     categories: ['Who made it, and why?', 'How was it made?', 'What exactly was counted?', 'Who and what does it cover?', 'When?', 'Does it agree?'],
     answer: [4, 0, 1, 2, 3, 5],
     feedback: {
-      3: 'Day trippers don’t stay in hotels: the problem is what the source counts as a visitor, its definition.',
+      3: 'The unit counted is wrong for the question: visits, not people. That is a matter of what exactly was counted.',
       4: 'Leaving out domestic arrivals is a coverage problem: part of the population isn’t in the source at all.',
       5: 'A break in a series when the method changes is a consistency problem: the before and after figures don’t measure the same thing.',
     },
-    solution: 'Timeliness: the 2022 visitor count. Who and why: a platform’s press release about itself. Method: “industry sources” with no method. Definition: day trippers counted as visitors. Coverage: international arrivals only. Consistency: the jump when the method changed.',
+    solution: 'Timeliness: the 2022 visitor count. Who and why: a platform’s press release about itself. Method: “industry sources” with no method. Definition: visits counted, not visitors. Coverage: international arrivals only. Consistency: the jump when the method changed.',
   },
   {
     id: 'm04-sr-i2', type: 'num', kind: 'numerical',
@@ -224,7 +224,7 @@ export const independent = [
       { value: (1.6 - 1.36) / 1.6 * 100, say: 'That divides by the household figure. “Above the retail figure” makes the retail figure the base: (1.6 − 1.36) ÷ 1.36.' },
       { value: 0.24, say: 'That is the gap in millions of litres. Divide it by the retail figure to express it as a percentage.' },
     ],
-    solution: '(1.6 − 1.36) ÷ 1.36 × 100 = 17.6%. A gap like this needs explaining before either figure is used: the retail report may miss stores that don’t share their data, and the household survey may count cafés’ purchases no differently from homes’ or carry sampling error.',
+    solution: '(1.6 − 1.36) ÷ 1.36 × 100 = 17.6%. A gap like this needs explaining before either figure is used: the retail report may miss stores that don’t share their data, and the household survey covers purchases from outlets the retail service misses, and carries sampling and reporting error.',
   },
 ];
 
@@ -286,7 +286,7 @@ export const check = [
     ],
     answer: 0,
     feedback: {
-      1: 'Companies House says it makes only basic checks on accounts and can’t take responsibility for errors in them.',
+      1: 'Companies House says it makes only basic checks on accounts and cannot take responsibility for the consequences of errors or omissions in the register’s data.',
       2: 'The register holds what companies file, not their customer-by-customer sales.',
       3: 'Searching the register is free, and no registration is needed to view company information.',
     },
@@ -316,10 +316,10 @@ export const check = [
     prompt: 'Complete the statements.',
     text: 'A business’s own sales records are [[0]] secondary data. In County Business Patterns, a single physical location at which business is conducted is an [[1]], and businesses with no paid employees are [[2]]. Checking an estimate against other sources and methods is called [[3]].',
     blanks: [
-      { options: ['internal', 'external', 'primary'], answer: 0 },
-      { options: ['establishment', 'enterprise', 'industry'], answer: 0 },
+      { options: ['external', 'primary', 'internal'], answer: 2 },
+      { options: ['enterprise', 'establishment', 'industry'], answer: 1 },
       { options: ['left out', 'counted twice', 'counted as one'], answer: 0 },
-      { options: ['triangulation', 'grossing up', 'syndication'], answer: 0 },
+      { options: ['grossing up', 'syndication', 'triangulation'], answer: 2 },
     ],
     solution: 'Sales records are internal secondary data. County Business Patterns counts establishments (locations, not companies) with paid employees, leaving out non-employers, which have their own Census Bureau product. Checking an estimate against independent evidence is triangulation.',
   },
