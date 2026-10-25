@@ -3,10 +3,10 @@
 // (KG_BAGS, KILNWORTH_1KG; DERIVED.kg.ci) and B01's September survey (SURVEY; DERIVED.survey). Sample sizes are planned
 // for set-up times and for a fictional gym survey, not for the 2027 customer survey, which is the project's. Tests, and
 // the link between a two-sided test and an interval, are Module 3's. Every figure printed is recomputed in `checks`.
-import { SETUP_MINUTES, KG_BAGS, KILNWORTH_1KG as K, SURVEY, ORDER_VALUES, DERIVED as D } from './case.js?v=13';
-import * as I from '../../../core/inference.js?v=13';
-import { mean, median, skewness } from '../../../core/stats.js?v=13';
-import { mulberry32 } from '../../../core/rng.js?v=13';
+import { SETUP_MINUTES, KG_BAGS, KILNWORTH_1KG as K, SURVEY, ORDER_VALUES, DERIVED as D } from './case.js?v=14';
+import * as I from '../../../core/inference.js?v=14';
+import { mean, median, skewness } from '../../../core/stats.js?v=14';
+import { mulberry32 } from '../../../core/rng.js?v=14';
 
 // ---------------------------------------------------------------- the figures the lesson quotes
 const S = D.setup;                                    // t interval for the set-up times

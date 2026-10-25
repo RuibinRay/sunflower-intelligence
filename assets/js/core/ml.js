@@ -1,9 +1,9 @@
 // ml.js — machine learning for the analytics room: CART decision trees, k-nearest neighbours, random forests,
 // stratified k-fold cross-validation, permutation importance, Ward hierarchical clustering and principal components.
 // Checked against scikit-learn, SciPy and NumPy in tests/ml.test.mjs. Outcomes are binary (0/1) throughout.
-import { mulberry32 } from './rng.js?v=13';
-import { logit, roc } from './classify.js?v=13';
-import { mean, sd } from './stats.js?v=13';
+import { mulberry32 } from './rng.js?v=14';
+import { logit, roc } from './classify.js?v=14';
+import { mean, sd } from './stats.js?v=14';
 
 // ================================================================ helpers
 export const transpose = (rows) => rows[0].map((_, j) => rows.map((r) => r[j]));

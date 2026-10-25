@@ -15,9 +15,9 @@
 // not copies of lesson exercises, module tests, the final or the project, and nothing from the project’s scenario or
 // data. No hints; solutions are shown on review. Every num item’s `check` recomputes its answer, and the formula item is
 // marked by its results on the sheet and on changed copies.
-import { RESPONDENT_COLUMNS, RESPONDENT_ROWS, RESPONDENTS, LEVELS, SIZES, tableCells, DERIVED } from './case.js?v=13';
-import * as S from '../../../core/survey.js?v=13';
-import * as I from '../../../core/inference.js?v=13';
+import { RESPONDENT_COLUMNS, RESPONDENT_ROWS, RESPONDENTS, LEVELS, SIZES, tableCells, DERIVED } from './case.js?v=14';
+import * as S from '../../../core/survey.js?v=14';
+import * as I from '../../../core/inference.js?v=14';
 
 const r = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });

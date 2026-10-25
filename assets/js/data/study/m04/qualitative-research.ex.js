@@ -2,7 +2,7 @@
 // here). The quotations, groups and Ana's codes come from ./case.js (fictional); the second coder's two different codes
 // are the lesson's assumption. Every other business and figure is fictional. Formula items are marked by their results on
 // the sheet and on copies; `vary` changes some of the second coder's codes on the copies so that typed-in results fail.
-import { FOCUS_GROUPS } from './case.js?v=13';
+import { FOCUS_GROUPS } from './case.js?v=14';
 
 const FG = FOCUS_GROUPS, T = FG.themes, Q = FG.quotes, N = Q.length, R = N + 1;
 const DISAGREE = { 2: 1, 14: 2 };

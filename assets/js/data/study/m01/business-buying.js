@@ -2,8 +2,8 @@
 // Lantern and Harbor Tech facts come from ./case.js and f01/case.js (fictional). The lesson teaches the buying-centre
 // roles with Harbor Tech's people but leaves the full role map, and the approval question, to the course project.
 // Every other business, person and number is fictional unless a source is cited. `checks` recompute every printed number.
-import { BUSINESS, HARBOR_TECH } from './case.js?v=13';
-import { SHOP } from '../b01/case.js?v=13';
+import { BUSINESS, HARBOR_TECH } from './case.js?v=14';
+import { SHOP } from '../b01/case.js?v=14';
 
 const H = HARBOR_TECH;
 const person = Object.fromEntries(H.people.map((p) => [p.name, p]));

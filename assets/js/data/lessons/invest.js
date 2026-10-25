@@ -1,7 +1,7 @@
 // Lesson: investment decisions (NPV, IRR, payback, profitability index).
 // `checks` recompute every number printed in the worked example; tests/lessons.test.mjs compares them.
-import * as F from '../../core/format.js?v=13';
-import { npv, appraise, crossover, irrAll } from '../../core/invest.js?v=13';
+import * as F from '../../core/format.js?v=14';
+import { npv, appraise, crossover, irrAll } from '../../core/invest.js?v=14';
 
 const A = [-1000, 100, 350, 1000], B = [-1000, 900, 250, 100], RATE = 0.1;
 const pv = (cf, t) => cf / (1 + RATE) ** t;

@@ -1,7 +1,7 @@
 // linking-the-statements.ex.js — F02 · Linking the statements: widgets, practice and the knowledge check.
 // Answer keys live here, not in the page's HTML. Lantern’s figures are built from case.js; every `check` recomputes.
 // Error-location and roll-forward items practise this lesson’s own skills; the indirect method’s mechanics are in f02/indirect-method.
-import { CHART, FACTS as F, YEAR, ADJUSTMENTS, LEDGER, DERIVED as D } from './case.js?v=13';
+import { CHART, FACTS as F, YEAR, ADJUSTMENTS, LEDGER, DERIVED as D } from './case.js?v=14';
 
 const bal = (n) => LEDGER[n]?.balance || 0;
 const tx = (id) => [...YEAR, ...ADJUSTMENTS].find((e) => e.id === id);

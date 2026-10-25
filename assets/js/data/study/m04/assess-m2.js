@@ -3,7 +3,7 @@
 // lessons don't drill: rewriting a loaded question, naming effects from evidence, Neyman allocation in Excel, inferring an
 // intraclass correlation, the margin a fixed budget buys, RR2 with ineligible cases in Excel, and comparing biases.
 // No hints; solutions are shown when the student reviews the test. Every num item's `check` recomputes its answer.
-import * as I from '../../../core/inference.js?v=13';
+import * as I from '../../../core/inference.js?v=14';
 
 const Z = I.normInv(0.975);
 // Corvane Bike Share (fictional): riders by plan, planning SDs of trip length (minutes)

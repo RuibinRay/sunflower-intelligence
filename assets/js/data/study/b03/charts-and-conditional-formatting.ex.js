@@ -1,7 +1,7 @@
 // charts-and-conditional-formatting.ex.js — B03 · Charts and conditional formatting: widgets, practice and the
 // knowledge check (answer keys live here). Lantern's data come from case.js; every other business and number is
 // fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num items recompute in `check`.
-import { ORDERS, ORDER_COLUMNS, EVENTS, EVENT_COLUMNS, DERIVED as D, tableCells } from './case.js?v=13';
+import { ORDERS, ORDER_COLUMNS, EVENTS, EVENT_COLUMNS, DERIVED as D, tableCells } from './case.js?v=14';
 
 const R = D.byRegion.value;
 // Pedalworks' parts sheet (fictional), used by the lesson's applied example and the cc-parts widget:
