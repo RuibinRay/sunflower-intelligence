@@ -535,7 +535,7 @@ export const items = [
     feedback: {
       1: 'Subscribers already reply most readily. More replies from them add to the imbalance, and a higher rate helps only if it brings in people unlike those already responding.',
       2: 'More invitations give more completes and the right mix of segments, which weighting already provides. If keen people reply more readily within the segment, the extra completes carry the same tilt.',
-      3: 'A discount on the client’s own product turns the survey into promotion: MRS’s rules on incentives (2015) don’t allow price discounts, or the client’s goods, as research incentives. It would also draw in Lantern’s keenest customers most.',
+      3: 'A discount on the client’s own product turns the survey into promotion: MRS’s regulations on incentives don’t allow price discounts, or the client’s goods, as research incentives. It would also draw in Lantern’s keenest customers most.',
     },
     solution: 'The bias weighting can’t fix lies within the segments, so the useful evidence comes from the people who don’t reply. A follow-up of a random sample of them, by another mode, measures the gap directly, and the bias formula turns it into a correction. Comparing respondents’ and non-respondents’ order histories, from Lantern’s own records, is a cheaper check to run as well.',
   },
