@@ -155,7 +155,7 @@ export const items = [
     id: 'm05-dg-5', lesson: 'cluster-analysis', type: 'mc', kind: 'conceptual',
     prompt: `A fictional mobile-phone network’s analyst segmented ${int(NET.n)} customers twice, with k-means at five segments and with Ward’s method cut at five. The two put ${int(NET.same)} of the ${int(NET.n)} customers (${pc(NET.same / NET.n, 0)}) in matching groups, an adjusted Rand index of ${fx(NET.ari)}. A colleague says this proves that the five segments exist in the market. What is the best reading?`,
     options: [
-      'Two methods agree closely, evidence that the segments are reproducible rather than proof that they are natural; check a split half and what they mean',
+      'Close agreement between two methods shows reproducible segments, not natural ones; check a split half and what they mean',
       'The colleague is right: when two different methods find the same five groups, the groups are natural segments of the market',
       `An adjusted Rand index of ${fx(NET.ari)} means that ${pc(NET.ari, 0)} of the customers have been put in their true segment`,
       `The methods disagree on ${int(NET.n - NET.same)} customers, so the analyst should drop to four segments, where agreement would be higher`,
@@ -218,7 +218,7 @@ export const items = [
     id: 'm05-dg-9', lesson: 'targeting-strategies', type: 'mc', kind: 'applied',
     prompt: `A fictional craft-supplies shop builds a persona for its ${CRAFT.n}-member “gift makers” segment by taking the most common answer on each of five lines: ${CRAFT.lines.map(([l, s]) => `${l} (${pc(s, 0)} of the segment)`).join(', ')}. What can it say about how many members match the persona on all five lines?`,
     options: [
-      `At most ${pc(craftMin, 0)} of them, and probably very few: each line leaves out much of the segment, and the lines needn’t overlap`,
+      `At most ${pc(craftMin, 0)}, and probably very few: each line leaves out part of the segment`,
       'Most of them, because every line on the persona is the segment’s most common answer to that question',
       `About ${pc(craftMax, 0)}, the share on the most common of the five lines, since the persona is built around it`,
       `About ${pc(craftAvg, 0)}, the average of the five lines’ shares, since each line describes part of the persona`,
