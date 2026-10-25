@@ -21,8 +21,8 @@ const EM = { N: 900, inv: 500, r: 0.35 };
 const emN = EM.inv * EM.r, emMoe = Z * Math.sqrt(0.25 / emN) * Math.sqrt((EM.N - emN) / (EM.N - 1));
 // Tessaly Theatre (fictional): dispositions
 const TT = { I: 410, P: 62, R: 38, NC: 74, U: 1376, NE: 40 };
-const ttCells = { A1: 'Disposition', B1: 'Cases', A2: 'Complete', B2: TT.I, A3: 'Partial', B3: TT.P, A4: 'Refusal or break-off', B4: TT.R, A5: 'Non-contact (bounced)', B5: TT.NC, A6: 'No reply', B6: TT.U, A7: 'Not eligible', B7: TT.NE, A9: 'RR2' };
-const ttRR2 = (TT.I + TT.P) / (TT.I + TT.P + TT.R + TT.NC + TT.U);
+const ttCells = { A1: 'Disposition', B1: 'Cases', A2: 'Complete', B2: TT.I, A3: 'Partial', B3: TT.P, A4: 'Refusal or break-off', B4: TT.R, A5: 'Non-contact (bounced)', B5: TT.NC, A6: 'No reply', B6: TT.U, A7: 'Not eligible', B7: TT.NE, A9: 'Target RR1', B9: 0.3, A10: 'Extra completes needed' };
+const ttEl = TT.I + TT.P + TT.R + TT.NC + TT.U, ttExtra = 0.3 * ttEl - TT.I;
 
 export const items = [
   // ---------------------------------------------------------------- questionnaire-design
@@ -112,7 +112,7 @@ export const items = [
     id: 'm04-m2-6', lesson: 'sampling-methods', type: 'mc', kind: 'conceptual',
     prompt: 'Corvane Bike Share (fictional) has a list of its 300 docking stations but no list of the people who ride (many pay by card without an account). Which design gives it a probability sample of riders?',
     options: [
-      'Choose stations at random, then approach riders at randomly chosen times at each chosen station.',
+      'Choose stations at random, then at randomly chosen times interview every rider (or every kth) who docks at each chosen station.',
       'Draw a simple random sample of riders, then contact each of them through the rental app.',
       'Fill quotas of riders by age and sex at the twenty busiest stations during the morning rush hour.',
       'Put an open link on every station’s screen inviting any rider to take part in the survey.',
@@ -123,7 +123,7 @@ export const items = [
       2: 'Quotas filled by interviewers at chosen stations are a non-probability sample; the busiest stations and the rush hour aren’t chosen at random either.',
       3: 'An open link is self-selected: who answers depends on who chooses to.',
     },
-    solution: 'With a list of stations but not of riders, a multistage design selects stations at random, then times at random within each, and samples riders passing at those times. Every rider’s chance can be worked out from the stages, so it is a probability sample, though clustered.',
+    solution: 'With a list of stations but not of riders, a multistage design selects stations at random, then times at random within each, and takes every rider (or every kth) who docks at those times. That is a probability sample of trips; frequent riders have more chances, so each interview is weighted by how often that rider uses the stations. It is also clustered, so less precise than a simple random sample of the same size.',
   },
   {
     id: 'm04-m2-7', lesson: 'sampling-methods', type: 'num', kind: 'applied',
@@ -166,24 +166,24 @@ export const items = [
   },
   {
     id: 'm04-m2-9', lesson: 'survey-error', type: 'formula', kind: 'numerical',
-    prompt: 'Tessaly Theatre (fictional) e-mailed a survey to past ticket buyers. B2:B7 hold the final dispositions; the cases in B7 turned out not to be in the population. In B9, calculate AAPOR’s RR2.',
-    sheet: { cells: ttCells },
-    cell: 'B9', answer: '=(B2+B3)/SUM(B2:B6)',
-    alt: ['=(B2+B3)/(SUM(B2:B7)-B7)', '=SUM(B2:B3)/SUM(B2:B6)', '=(B2+B3)/(B2+B3+B4+B5+B6)'],
-    view: 'A1:B9', formats: { B9: '0.0%', B: '#,##0' }, widths: { A: 22, B: 9 },
+    prompt: 'Tessaly Theatre (fictional) e-mailed a survey to past ticket buyers. B2:B7 hold the final dispositions (the cases in B7 turned out not to be in the population) and B9 the RR1 the theatre had hoped for. In B10, calculate how many more completes would have lifted RR1 to that target, assuming the extra completes would have come from cases now counted as refusals, non-contacts or no reply, so that the number of eligible cases stays the same.',
+    sheet: { cells: ttCells, vary: { B9: [0.25, 0.35] } },
+    cell: 'B10', answer: '=B9*SUM(B2:B6)-B2',
+    alt: ['=SUM(B2:B6)*B9-B2', '=B9*(SUM(B2:B7)-B7)-B2', '=B9*(B2+B3+B4+B5+B6)-B2'],
+    view: 'A1:B10', formats: { B9: '0%', B10: '#,##0', B: '#,##0' }, widths: { A: 22, B: 9 },
     wrong: [
-      { formula: '=(B2+B3)/SUM(B2:B7)', say: 'Cases that turn out not to be eligible are left out of the denominator.' },
-      { formula: '=B2/SUM(B2:B6)', say: 'That is RR1, completes only. RR2 counts partials as responses too.' },
-      { formula: '=(B2+B3)/(SUM(B2:B6)-B5)', say: 'Non-contacts stay in the denominator: they are eligible people the survey failed to reach.' },
+      { formula: '=B9*SUM(B2:B7)-B2', say: 'Cases that turn out not to be eligible are left out of RR1’s denominator: sum B2:B6 only.' },
+      { formula: '=B9*SUM(B2:B6)', say: 'That is the total number of completes the target needs. Subtract the completes already in B2.' },
+      { formula: '=B9*SUM(B2:B6)-B2-B3', say: 'Partials don’t count towards RR1, which has completes alone in its numerator; they would count towards RR2.' },
     ],
-    solution: `<x>=(B2+B3)/SUM(B2:B6)</x>: (410 + 62) ÷ ${(TT.I + TT.P + TT.R + TT.NC + TT.U).toLocaleString('en-US')} = ${(ttRR2 * 100).toFixed(1)}%. The 40 ineligible cases are excluded; bounced and unanswered invitations stay in.`,
+    solution: `<x>=B9*SUM(B2:B6)-B2</x>: eligible cases ${ttEl.toLocaleString('en-US')} (the ${TT.NE} ineligible excluded); 30% of them is ${(0.3 * ttEl).toLocaleString('en-US')} completes, against ${TT.I} achieved, so ${ttExtra.toFixed(0)} more. The current RR1 is ${TT.I} ÷ ${ttEl.toLocaleString('en-US')} = ${(TT.I / ttEl * 100).toFixed(1)}%.`,
   },
   {
     id: 'm04-m2-10', lesson: 'survey-error', type: 'mc', kind: 'conceptual',
     prompt: 'Survey A had a 70% response rate, and a follow-up found its non-respondents 30 points less satisfied than its respondents. Survey B had a 25% response rate, and its non-respondents were 4 points less satisfied. Which respondent figure is more biased, and by how much?',
     options: [
       'A’s, by about 9 points against B’s 3: bias is the non-response rate times the gap.',
-      'B’s, by about 18 points against A’s 9: a lower response rate always means a larger bias.',
+      'B’s, because a 25% response rate always produces more bias than a 70% one.',
       'Neither: with a follow-up of non-respondents, both figures are free of non-response bias.',
       'A’s, by about 21 points against B’s 1: bias is the response rate times the respondent gap.',
     ],

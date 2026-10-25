@@ -147,9 +147,9 @@ export const guided = [
     prompt: 'Choose the words Ana’s report should use.',
     text: `Subscribers’ top-two-box share (${pct(share[0])}, base ${nS[0]}) and other shop customers’ (${pct(share[1])}, base ${nS[1]}) differ by ${(SUBSHOP.d * 100).toFixed(1)} points, with a 95% interval for the gap of ${pts(SUBSHOP.low)} to ${pts(SUBSHOP.high)} points, so the two segments [[0]]. Subscribers’ share is higher than newsletter-only contacts’ by between ${(SUBNEWS.low * 100).toFixed(1)} and ${(SUBNEWS.high * 100).toFixed(1)} points, so subscribers are [[1]]. The weighted top-two share is ${pct(WT)} with a margin of about ±${(WM * 100).toFixed(1)} points, so the report should give it as [[2]] of the list.`,
     blanks: [
-      { options: ['can’t be told apart on these bases', 'are the same', 'differ significantly', 'differ by exactly 6.5 points'], answer: 0 },
-      { options: ['clearly keener', 'possibly keener', 'no keener', 'as keen'], answer: 0 },
-      { options: ['between about 34% and 43%', 'exactly 38.2%', 'between 38% and 39%', 'at least 42%'], answer: 0 },
+      { options: ['are the same', 'differ significantly', 'can’t be told apart on these bases', 'differ by exactly 6.5 points'], answer: 2 },
+      { options: ['possibly keener', 'clearly keener', 'no keener', 'as keen'], answer: 1 },
+      { options: ['exactly 38.2%', 'between 38% and 39%', 'at least 42%', 'between about 34% and 43%'], answer: 3 },
     ],
     hints: ['If the interval includes zero, the data can’t say which is higher.', 'A margin of ±4.4 points turns 38.2% into a range.'],
     solution: `The first interval includes zero and is wide, so the segments can’t be told apart (not “the same”). The second lies wholly above zero, so subscribers are clearly keener. The weighted share is best given as a range, about ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%, with the base and the weighting in a note.`,

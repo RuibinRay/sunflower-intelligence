@@ -250,6 +250,7 @@ export default {
       setup: 'Using all four sources and their limits, write the recommendation section of Ana’s Cold Brew report: what to do, why, and what would change the plan.',
       steps: [
         `State the findings with their bases: weighted, ${pct(WT)} of the list (unweighted base ${N}) in the top two boxes, roughly ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%; subscribers ${pct(share[0])} against newsletter-only ${pct(share[3])}; a ready-to-drink buyer in the focus group compared ${money(PRICE)} with the can they usually buy, about a dollar cheaper; bottom-up volume ${SZ.bottomUpCans.toLocaleString('en-US')} cans against a goal of ${CBS.goalCans.toLocaleString('en-US')}.`,
+        `Apply the brief’s <g>action standard</g> from <i>The research process</i> (launch widely at 45% or more, hold back below 30%): weighted, ${pct(WT)} (about ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%) falls in the brief’s middle band, so the brief itself calls for a limited launch with a test.`,
         `Draw the insight from where the sources agree: appeal rests on knowing Lantern; strangers decide on price and trial. Ana’s bottom-up plan is consistent with it, though its store figures are her assumptions rather than evidence: natural grocers, whose shoppers pay more for quality and provenance (M02), and Lantern’s own channel supply ${buNatural.toLocaleString('en-US')} and ${buDirect.toLocaleString('en-US')} cans, more than two-thirds of it; supermarkets supply ${buSuper.toLocaleString('en-US')}.`,
         `Recommend actions that match the evidence: launch in Lantern’s own channel and the natural grocers; plan year one on about ${(Math.round((buNatural + buDirect) / 1000) * 1000).toLocaleString('en-US')} cans from those two (25 × 14 × 52 + 1,200 × 12 = ${(buNatural + buDirect).toLocaleString('en-US')}), rising towards the bottom-up 48,000 if the supermarket test passes; aim the plan’s $${DEFAULT_PLAN.promotion.sampling.toLocaleString('en-US')} sampling budget at people who don’t know Lantern; and list in a few supermarkets first as a test market, with free cans in half of them chosen at random.`,
         'Set the decision rule before launch: extend to the other planned supermarkets only if the test stores without free cans reach a rate of sale of at least 10 cans a store a week over 12 weeks, Ana’s own planning figure; the gap between the two halves shows what sampling adds, so keep the sampling only if it is clearly worth its cost.',
@@ -382,6 +383,11 @@ export default {
     { what: 'Yarrowdale stated users at the trial practice (about)', value: ydPeople, shown: 1250, tol: 25 },
     { what: 'Yarrowdale visits in 8 weeks at one a year (about)', value: ydVisits, shown: 190, tol: 5 },
     { what: 'Yarrowdale booked', value: YD.booked, shown: 46 },
+    // the brief's action standard (the-research-process): 45% and 30%
+    { what: 'Action standard: launch widely at (%)', value: 45, shown: 45 },
+    { what: 'Action standard: hold back below (%)', value: 30, shown: 30 },
+    { what: 'Whole Kish interval inside the middle band', value: Number(WT - WM > 0.30 && WT + WM < 0.45), shown: 1 },
+    { what: 'Whole stratified interval inside the middle band', value: Number(STRAT.low > 0.30 && STRAT.high < 0.45), shown: 1 },
     // the goal against the plan
     { what: 'Supermarket cans the goal needs', value: goalSuper, shown: 67400 },
     { what: 'Goal: cans a store a week in 30 supermarkets', value: goalPerStore, shown: 43.2, tol: 0.05 },

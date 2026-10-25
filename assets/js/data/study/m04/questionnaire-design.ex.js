@@ -46,7 +46,7 @@ export const widgets = {
     formats: { F: '0.00', G: '0.00' },
     widths: { A: 7, B: 11, C: 11, D: 11, E: 8, F: 7, G: 9, H: 9 },
     tools: ['formulas', 'reset'],
-    note: 'Codes run from 1 (strongly disagree) to 5 (strongly agree); D is the reverse-worded item, “The site felt overcrowded”. F reverse-codes it with 6 − D; G averages the raw codes. G pulls every score towards the middle: it flatters people who felt crowded (a high D) and undersells those who didn’t; F does neither. Column H flags anyone who agrees both that the site was easy to get around and that it felt overcrowded (4 or 5 on both): a sign of acquiescence or of not reading the items.',
+    note: 'Codes run from 1 (strongly disagree) to 5 (strongly agree); D is the reverse-worded item, “The site felt overcrowded”. F reverse-codes it with 6 − D; G averages the raw codes. G pulls the scores of people who answered consistently towards the middle, flattering those who felt crowded (a high D) and underselling those who didn’t; F does neither. Column H flags anyone who agrees both that the site was easy to get around and that it felt overcrowded (4 or 5 on both): a sign of acquiescence or of not reading the items.',
   },
 };
 
@@ -100,7 +100,7 @@ export const guided = [
       },
       {
         id: 'm04-qd-g1-s3', type: 'mc',
-        prompt: 'Which question from Ana’s first draft fails the earn-its-place test outright?',
+        prompt: 'Which of these questions fails the earn-its-place test outright?',
         options: [
           '“What is your annual household income?”',
           '“How did you first hear of Lantern?”',
@@ -114,7 +114,7 @@ export const guided = [
           2: 'This serves objective 3, what people think Lantern could do better; the answers are coded and counted.',
           3: 'This serves objective 1, the heart of the Cold Brew decision.',
         },
-        solution: 'Income serves none of the survey’s objectives and no table in the analysis plan uses it. It is also sensitive personal data, so collecting it without a purpose breaks data minimisation. Ana dropped it.',
+        solution: 'Income serves none of the survey’s objectives and no table in the analysis plan uses it. Many people also prefer not to give it, and collecting personal information without a purpose breaks data minimisation. Ana dropped it.',
       },
     ],
   },
@@ -234,10 +234,10 @@ export const independent = [
     prompt: 'Complete the description of the Net Promoter question.',
     text: 'Reichheld’s question asks how likely someone is to recommend a company on a scale from [[0]] to 10. Answers of 9 or 10 are [[1]], 7 or 8 are passives, and answers of [[2]] are detractors. The score is the percentage of promoters minus the percentage of detractors, so it can run from [[3]] to +100.',
     blanks: [
-      { options: ['0', '1', '5'], answer: 0 },
-      { options: ['promoters', 'passives', 'detractors'], answer: 0 },
+      { options: ['1', '0', '5'], answer: 1 },
+      { options: ['passives', 'detractors', 'promoters'], answer: 2 },
       { options: ['0 to 6', '0 to 4', '1 to 5'], answer: 0 },
-      { options: ['−100', '0', '−10'], answer: 0 },
+      { options: ['0', '−10', '−100'], answer: 2 },
     ],
     fixed: true,
     solution: 'The scale runs from 0 to 10. Promoters answer 9 or 10, passives 7 or 8 and detractors 0 to 6. If everyone is a detractor the score is 0% − 100% = −100; if everyone is a promoter it is +100.',
@@ -349,16 +349,16 @@ export const check = [
       'In a telephone interview, options read out last tend to be chosen more often.',
       'A question tracked from year to year should keep its place in the questionnaire.',
       'The points of a satisfaction scale should be shuffled into a random order for each respondent.',
-      'Order effects disappear when a survey moves from the telephone to the web.',
+      'Order effects change form rather than disappear when a survey moves from the telephone to the web.',
       'Asking demographic questions first reduces fatigue and so removes order effects.',
     ],
-    answer: [0, 1, 2],
+    answer: [0, 1, 2, 4],
     feedback: {
       3: 'Shuffling an ordered scale makes it unreadable. Keep it in order, and reverse it for half the sample to spread any primacy or recency.',
-      4: 'They change form rather than disappear: on screen, options read first gain (primacy).',
+      4: 'Correct too: on screen, the options read first gain (primacy), where on the phone those heard last did.',
       5: 'Demographics usually go last; opening with them is dull and can feel intrusive, and it does nothing to stop earlier questions colouring later ones.',
     },
-    solution: 'Earlier questions colour later ones (so general before specific, and tracked questions stay put); heard lists favour the last options (recency), read lists the first (primacy). Ordered scales stay in order, order effects don’t vanish online, and demographics belong near the end.',
+    solution: 'Earlier questions colour later ones (so general before specific, and tracked questions stay put); heard lists favour the last options (recency), read lists the first (primacy). Moving to the web turns recency into primacy rather than removing order effects. Ordered scales stay in order, and demographics belong near the end.',
   },
   {
     id: 'm04-qd-k6', type: 'mc', kind: 'conceptual',
@@ -375,6 +375,6 @@ export const check = [
       2: 'A 23-point gap between two large random samples is far beyond chance, and 43% of the open answers named issues the list didn’t include.',
       3: 'Nothing suggests a coding error; the same pattern appears whenever a list prompts some answers and omits others.',
     },
-    solution: 'Closed lists prompt the options they show and hide the rest: only 8% of the closed group gave an answer outside the list, against 43% of the open group. Pew’s advice is to pilot an open version first and build the closed list from what people actually say.',
+    solution: 'Closed lists prompt the options they show and hide the rest: only 8% of the closed group gave an answer outside the list, against 43% of the open group. Pew notes that researchers sometimes pilot an open version and build the closed list from the commonest answers.',
   },
 ];

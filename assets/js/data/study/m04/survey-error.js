@@ -16,6 +16,7 @@ const W = D.weights.perStratum, K = D.weights.kish;
 const NPSU = D.nps.unweighted, NPSW = D.nps.weighted, NPSS = D.nps.byStratum;
 const SEST = D.nps.stratified;                                   // stratified (= weighted) promoter share and its SE
 const seKish = Math.sqrt(NPSW.pP * (1 - NPSW.pP) / K.nEff);
+const seNoF = Math.sqrt(SEST.strata.reduce((a, h) => a + h.W ** 2 * h.p * (1 - h.p) / (h.n - 1), 0));   // the same SE without the FPC
 const CB = D.coldbrew;
 
 // What Ana couldn't see: the invited sample's known answers
@@ -38,6 +39,7 @@ const TGK = S.kish(TGall), TGE = S.stratifiedProportion(TG.N.map((k, i) => ({ N:
 const TGU = TG.x.reduce((a, b) => a + b, 0) / TG.n.reduce((a, b) => a + b, 0);
 
 const fmt = (v) => v.toLocaleString('en-US');
+const tf = (v) => fmt(v).replace(/,/g, '{,}');                     // thousands separators inside TeX
 const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
 const sgn = (v, d = 1) => `${v < 0 ? '−' : '+'}${Math.abs(v).toFixed(d)}`;
 
@@ -94,15 +96,15 @@ export default {
 
     { h: 'Response rates by the book' },
     { p: 'The American Association for Public Opinion Research (AAPOR) publishes <i>Standard Definitions</i>, now in its tenth edition (2023), so that response rates mean the same thing from one survey to the next. Every case drawn into the sample is given a <g>final disposition</g> in one of four groups: interviews (complete, or partial); eligible cases that weren’t interviewed (refusals and break-offs, non-contacts and others); cases of unknown eligibility; and cases that turn out not to be eligible, which are left out of the rates altogether.' },
-    { p: 'Researchers must define in advance what counts as complete and partial. AAPOR gives examples rather than one rule: in one, more than 80% of the questions answered is a complete and 50% to 80% a partial. Ana set her rule before fieldwork (fictional): all six questions answered is a complete; three to five, a partial; fewer than three, a <g>break-off</g>, counted with refusals.' },
+    { p: 'Researchers must define in advance what counts as complete and partial. AAPOR gives examples rather than one rule: in one, more than 80% of the questions answered is a complete and 50% to 80% a partial. Ana set her rule before fieldwork (fictional): all five closed questions (Q1 to Q5) answered is a complete, whether or not the open Q6 was filled in; three or four, a partial; fewer than three, a <g>break-off</g>, counted with refusals.' },
     { table: {
       caption: 'Lantern’s February 2027 survey: final dispositions by stratum',
-      head: ['Stratum', 'Invited', 'Complete (I)', 'Partial (P)', 'Refused or broke off (R)', 'Bounced (NC)', 'No reply'],
+      head: ['Stratum', 'Invited', 'Complete (I)', 'Partial (P)', 'Refused or broke off (R)', 'Bounced (NC)', 'No reply (eligible)'],
       rows: [...STRATA.map((nm, h) => { const d = DS.byStratum[h]; return [nm, fmt(d.invited), d.I, d.P, d.R, d.NC, fmt(d.U)]; })],
       foot: [['All', fmt(ALL.invited), ALL.I, ALL.P, ALL.R, ALL.NC, fmt(ALL.U)]],
       align: ['l', 'r', 'r', 'r', 'r', 'r', 'r'],
     } },
-    { p: String.raw`<g>RR1</g>, AAPOR’s strictest response rate, counts only completes: <m>\text{RR1} = I \div (I + P + R + NC + O + U)</m>, ${n} ÷ ${fmt(INV)} = ${pc(RR.RR1)}. <g>RR2</g> counts partials as responses too: <m>(${n} + ${ALL.P}) \div ${fmt(INV)}</m> = ${pc(RR.RR2)}. Everyone on Lantern’s list belongs to the population it was drawn for, so no case is ineligible, and every bounced or unanswered invitation stays in the denominator.` },
+    { p: String.raw`<g>RR1</g>, AAPOR’s strictest response rate, counts only completes: <m>\text{RR1} = I \div (I + P + R + NC + O + U)</m>, ${n} ÷ ${fmt(INV)} = ${pc(RR.RR1)}. <g>RR2</g> counts partials as responses too: <m>(${n} + ${ALL.P}) \div ${tf(INV)}</m> = ${pc(RR.RR2)}. Everyone on Lantern’s list belongs to the population it was drawn for, so no case is ineligible, and every bounced or unanswered invitation stays in the denominator.` },
     { p: String.raw`AAPOR’s RR3 and RR4 allow an estimated share of the unknown-eligibility cases to be removed from the denominator, which matters for samples such as random phone numbers, where many may not belong to anyone eligible. Always say which rate you report. By stratum, RR1 was ${RRS.map((r) => pc(r.RR1)).join(', ').replace(/, ([^,]*)$/, ' and $1')} for subscribers, shop customers, workshop participants and newsletter-only readers, and RR2 ${RRS.map((r) => pc(r.RR2)).join(', ').replace(/, ([^,]*)$/, ' and $1')}.` },
     { p: `Fewer completes than planned means a wider margin: with ${n} instead of ${nPlan}, ±${(D.survey.marginAchieved * 100).toFixed(2)} points instead of ±${(D.survey.marginPlanned * 100).toFixed(2)}. That loss is visible and modest. The serious question is about the ${fmt(INV - n)} people who didn’t complete.` },
 
@@ -126,7 +128,7 @@ export default {
 
     { h: 'What weighting costs' },
     { p: String.raw`Unequal weights make an estimate less precise, because a few heavily weighted respondents move it more. Kish’s rule of thumb measures the loss: the <g>effective sample size</g> is <m>(\sum w_i)^2 \div \sum w_i^2</m>, and the <g>design effect</g> of the weights is <m>n \div n_{\text{eff}} = 1 + \text{CV}^2(w)</m>, one plus the squared coefficient of variation of the weights. For Lantern’s ${n} completes, <m>n_{\text{eff}} = ${K.nEff.toFixed(1)}</m> and the design effect ${K.deff.toFixed(3)}: the weighting costs about ${Math.round(n - K.nEff)} completes’ worth of precision.` },
-    { p: `Zipf and Valliant’s guide to design effects warns that Kish’s formula rests on restrictive assumptions (equal variances in every stratum) and can mislead when strata differ, or when response rates differ across groups. Both hold here. Computed directly with the stratified standard error from Sampling methods, the weighted share of promoters has a standard error of ${(SEST.se * 100).toFixed(2)} points, against ${(seKish * 100).toFixed(2)} from Kish’s effective sample size: the gain from stratifying offsets most of the cost of weighting. Use n_eff as a quick warning; use the design’s own standard error when it matters.` },
+    { p: `Zipf and Valliant’s guide to design effects warns that Kish’s formula rests on restrictive assumptions (equal variances in every stratum) and can mislead when strata differ, or when response rates differ across groups. Both hold here. Computed directly with the stratified standard error from Sampling methods, the weighted share of promoters has a standard error of ${(seNoF * 100).toFixed(2)} points before the finite population correction (${(SEST.se * 100).toFixed(2)} with it), against ${(seKish * 100).toFixed(2)} from Kish’s effective sample size: because the segments differ so much in their share of promoters, stratifying wins back most of what the unequal weights cost. Use n_eff as a quick warning; use the design’s own standard error when it matters.` },
 
     { h: 'What weighting can’t fix' },
     { p: 'Post-stratification makes the respondents match the population on the weighting variable, and nothing else. It removes bias only to the extent that, within each weighting group, respondents answer like the non-respondents in that group: in B02’s terms, that the missing answers are <g>MAR</g> given the stratum. If, within every stratum, the people who liked Lantern were keener to reply, weighting by stratum reproduces their enthusiasm at the right scale.' },
@@ -144,13 +146,13 @@ export default {
     { p: `Lantern’s Q2 is about a new, non-durable product, asked with a three-month horizon and a named brand: two conditions that weaken the link and two that help. The weighted ${pc(CB.topTwoWeighted)} who say they would definitely or probably buy Cold Brew is a measure of interest among Lantern’s contacts, not a forecast of buyers. Module 3’s market sizing turns intent into an estimate of purchases only with an explicit conversion assumption, and tests how much the answer depends on it.` },
 
     { h: 'Processing error' },
-    { p: 'Errors also enter after the answers arrive. A partial is counted as a complete; a stratum code is attached to the wrong respondent when the list is merged with the survey export; a scale is keyed in reverse; weights are applied to the wrong rows; an open answer is coded by one person differently from another. None of these is random in a way that averages out. The defences are routine and dull: a written data plan, checks that weighted totals reproduce the frame’s, a second coder for open answers with <g>inter-coder agreement</g> checked, and keeping the raw export untouched alongside every edited version.' },
+    { p: 'Errors also enter after the answers arrive. A partial is counted as a complete; a stratum code is attached to the wrong respondent when the list is merged with the survey export; a scale is keyed in reverse; weights are applied to the wrong rows; an open answer is coded by one person differently from another. Most of these are systematic: they push estimates one way rather than averaging out. The defences are routine and dull: a written data plan, checks that weighted totals reproduce the frame’s, a second coder for open answers with <g>inter-coder agreement</g> checked, and keeping the raw export untouched alongside every edited version.' },
   ],
 
   formulas: [
     { id: 'se-rr', name: 'AAPOR response rates RR1 and RR2',
       tex: String.raw`\text{RR1} = \dfrac{I}{(I + P) + (R + NC + O) + U} \qquad \text{RR2} = \dfrac{I + P}{(I + P) + (R + NC + O) + U}`,
-      where: [[String.raw`I`, 'Complete interviews', 'cases'], [String.raw`P`, 'Partial interviews', 'cases'], [String.raw`R`, 'Refusals and break-offs', 'cases'], [String.raw`NC`, 'Non-contacts (for an e-mail survey, invitations that bounced)', 'cases'], [String.raw`O`, 'Other eligible non-interviews', 'cases'], [String.raw`U`, 'Cases of unknown eligibility (and, on an all-eligible list, the unanswered)', 'cases']],
+      where: [[String.raw`I`, 'Complete interviews', 'cases'], [String.raw`P`, 'Partial interviews', 'cases'], [String.raw`R`, 'Refusals and break-offs', 'cases'], [String.raw`NC`, 'Non-contacts (for an e-mail survey, invitations that bounced)', 'cases'], [String.raw`O`, 'Other eligible non-interviews', 'cases'], [String.raw`U`, 'Cases of unknown eligibility. On a list where everyone is known to be eligible there are none: AAPOR (10th edition, section 1) counts unanswered invitations as eligible non-respondents, in the denominator either way', 'cases']],
       assumptions: 'Cases found to be ineligible are excluded from the denominator. The definitions of complete and partial are set before fieldwork.',
       note: 'RR3 and RR4 replace U with e × U, where e is the estimated share of unknown cases that are eligible (AAPOR, Standard Definitions, 10th edition, 2023).' },
     { id: 'se-nrbias', name: 'Non-response bias of a respondent mean or share',
@@ -164,7 +166,7 @@ export default {
       assumptions: 'Population counts N_h are known. The estimate is unbiased only if respondents answer like non-respondents within each group.' },
     { id: 'se-kish', name: 'Kish effective sample size and the design effect of weighting',
       tex: String.raw`n_{\text{eff}} = \dfrac{\left(\sum_i w_i\right)^2}{\sum_i w_i^2}, \qquad \text{deff}_w = \dfrac{n}{n_{\text{eff}}} = 1 + \text{CV}^2(w)`,
-      where: [[String.raw`w_i`, 'Respondent i’s weight', ''], [String.raw`n`, 'The number of respondents', 'people'], [String.raw`n_{\text{eff}}`, 'The effective sample size', 'people'], [String.raw`\text{CV}(w)`, 'The coefficient of variation of the weights (their SD ÷ their mean)', ''], [String.raw`\text{deff}_w`, 'The design effect of the unequal weights', '']],
+      where: [[String.raw`w_i`, 'Respondent i’s weight', ''], [String.raw`n`, 'The number of respondents', 'people'], [String.raw`n_{\text{eff}}`, 'The effective sample size', 'people'], [String.raw`\text{CV}(w)`, 'The coefficient of variation of the weights (their standard deviation, dividing by n, ÷ their mean)', ''], [String.raw`\text{deff}_w`, 'The design effect of the unequal weights', '']],
       assumptions: 'A rule of thumb: it assumes equal variances across weighting groups and ignores any gain from stratification (Zipf and Valliant).',
       note: 'With one weight per stratum: n_eff = (Σ n_h w_h)² ÷ Σ n_h w_h², in Excel <x>=SUMPRODUCT(C2:C5,D2:D5)^2/SUMPRODUCT(C2:C5,D2:D5^2)</x>.' },
     { id: 'se-mse', name: 'Mean squared error',
@@ -178,8 +180,8 @@ export default {
       setup: `Saltreed Festival (fictional) e-mailed its post-event survey to ${fmt(SF_INV)} ticket buyers. Final dispositions: ${SF.I} completes, ${SF.P} partials, ${SF.R} refusals and break-offs, ${SF.NC} bounced invitations, ${fmt(SF.U)} with no reply, and ${SF.NE} addresses that turned out to belong to the festival’s own staff, who are not in the population. Calculate RR1 and RR2.`,
       steps: [
         `Remove the ineligible cases: ${fmt(SF_INV)} − ${SF.NE} = ${fmt(SF_EL)} eligible cases. Ticket buyers who didn’t reply or whose e-mail bounced stay in: they are in the population, just not reached or not willing.`,
-        String.raw`RR1 counts completes only: <m>${SF.I} \div ${fmt(SF_EL)} = ${SFR.RR1.toFixed(4)}</m>, ${pc(SFR.RR1)}.`,
-        String.raw`RR2 counts partials too: <m>(${SF.I} + ${SF.P}) \div ${fmt(SF_EL)} = ${SFR.RR2.toFixed(4)}</m>, ${pc(SFR.RR2)}.`,
+        String.raw`RR1 counts completes only: <m>${SF.I} \div ${tf(SF_EL)} = ${SFR.RR1.toFixed(4)}</m>, ${pc(SFR.RR1)}.`,
+        String.raw`RR2 counts partials too: <m>(${SF.I} + ${SF.P}) \div ${tf(SF_EL)} = ${SFR.RR2.toFixed(4)}</m>, ${pc(SFR.RR2)}.`,
         `Check what the rates don’t say: whether the ${fmt(SF_EL - SF.I)} non-completers differ from the ${SF.I} who completed in what the survey asked.`,
       ],
       answer: `RR1 = ${pc(SFR.RR1)}; RR2 = ${pc(SFR.RR2)}.`,
@@ -239,7 +241,7 @@ export default {
     'Non-response bias = (1 − RR) × (respondents − non-respondents). A low rate allows bias; it doesn’t prove it, and a high rate doesn’t prevent it. Bias differs from question to question.',
     'Post-stratification weights w_h = N_h ÷ n_h make the respondents match the population on the weighting variables; the weighted estimate equals the stratified estimate.',
     'Weighting costs precision: Kish’s n_eff = (Σw)² ÷ Σw², deff = 1 + CV²(w), a rule of thumb. It can’t fix differences between respondents and non-respondents within a weighting group.',
-    'Stated purchase intentions overstate buying, most for new products, non-durables and long horizons. Treat them as interest, not forecasts.',
+    'Stated purchase intentions tend to overstate buying, especially for new products, and relate less closely to purchases for new products, non-durables, long horizons and whole categories. Treat them as interest, not forecasts.',
     'Processing errors (coding, merging, keying, weighting the wrong rows) are prevented by a data plan, checks against the frame and second coders.',
   ],
 
@@ -367,7 +369,8 @@ export default {
       { what: 'Sun & Morwitz bought %', value: 5.7, shown: 5.7 },
       { what: 'AAPOR example complete above 80%', value: 80, shown: 80 },
       { what: 'AAPOR example partial from 50%', value: 50, shown: 50 },
-      { what: 'Lantern rule: partial 3 to 5 of 6', value: 3 / 6 * 100, shown: 50 },
+      { what: 'Lantern rule: five closed questions (Q1 to Q5)', value: 5, shown: 5 },
+      { what: 'Stratified SE before the FPC (points)', value: seNoF * 100, shown: 2.15, tol: 0.005 },
       // Saltreed
       { what: 'Saltreed invited', value: SF_INV, shown: 2500 },
       { what: 'Saltreed eligible', value: SF_EL, shown: 2490 },

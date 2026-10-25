@@ -39,13 +39,13 @@ const hrDeff = 1 + (HR.per - 1) * HR.rho, hrN = HR.hours * HR.per;
 const allocCells = { A1: 'Stratum', B1: 'On the list', C1: 'Share', D1: 'Invited', E1: 'Completes', F1: 'Margin (±)', A6: 'Total', B6: '=SUM(B2:B5)', C6: '=SUM(C2:C5)', D6: '=SUM(D2:D5)', E6: '=SUM(E2:E5)', F6: '=1.96*SQRT(0.25/E6)*SQRT((B6-E6)/(B6-1))', A8: 'Invitations', B8: SURVEY_2027.invited, A9: 'Expected response rate', B9: RR };
 STRATA.forEach((nm, h) => { const r = h + 2; Object.assign(allocCells, { [`A${r}`]: nm, [`B${r}`]: SIZES[h], [`C${r}`]: `=B${r}/$B$6`, [`D${r}`]: `=ROUND($B$8*B${r}/$B$6,0)`, [`E${r}`]: `=D${r}*$B$9`, [`F${r}`]: `=1.96*SQRT(0.25/E${r})*SQRT((B${r}-E${r})/(B${r}-1))` }); });
 // the k6 sheet: Lantern's strata and expected completes
-const margCells = { A1: 'Stratum', B1: 'On the list (N)', C1: 'Expected completes (n)', D1: 'Margin (±)' };
-STRATA.forEach((nm, h) => Object.assign(margCells, { [`A${h + 2}`]: nm, [`B${h + 2}`]: SIZES[h], [`C${h + 2}`]: Math.round(A[h] * RR * 10) / 10 }));
-const margF = (n, N) => Z * Math.sqrt(0.25 / n) * Math.sqrt((N - n) / (N - 1));
+const needCells = { A1: 'Stratum', B1: 'On the list (N)', C1: 'Expected completes', D1: 'Completes needed', A7: 'n₀ for ±10 points', B7: 96.04 };
+STRATA.forEach((nm, h) => Object.assign(needCells, { [`A${h + 2}`]: nm, [`B${h + 2}`]: SIZES[h], [`C${h + 2}`]: Math.round(A[h] * RR * 10) / 10 }));
+const needF = (n0, N) => n0 / (1 + (n0 - 1) / N);
 
 export const widgets = {
   'sm-sampler': {
-    type: 'sampler', title: 'Five designs on Lantern’s mailing list: the share of promoters',
+    type: 'sampler', title: 'Four designs on Lantern’s mailing list: the share of promoters',
     strata: PEOPLE.stratum, strataNames: STRATA, value: PEOPLE.group.map((g) => (g === 2 ? 1 : 0)), valueLabel: 'promoters',
     propensity: PEOPLE.propensity, cluster: PEOPLE.batch, clusterLabel: 'sign-up batches',
     methods: ['srs', 'stratified', 'cluster', 'optin'], method: 'srs', sizes: [100, 300, 600], n: 300, nonresponse: false, weight: false, seed: 4,
@@ -75,7 +75,7 @@ export const guided = [
           'A newsletter reader who signed up at a market stall and has never bought',
           'An online customer who unsubscribed from Lantern’s e-mails last year',
           'A workshop participant who has never ordered online',
-          'A catering client’s office manager who books events by phone and never joined the list',
+          'A catering client’s events organiser who books events by phone and never joined the list',
         ],
         categories: ['In the target population and on the frame', 'Undercoverage: a customer missing from the frame', 'Overcoverage: on the frame but not a customer'],
         answer: [0, 2, 1, 0, 1],
@@ -139,7 +139,7 @@ export const guided = [
     prompt: `Marrowby Buses (fictional) has ${MB.N.map((v) => v.toLocaleString('en-US')).join(', ').replace(/, ([^,]*)$/, ' and $1')} adult, concession and student smartcards. It surveys ${MB.n.join(', ').replace(/, ([^,]*)$/, ' and $1')} randomly chosen cardholders in the three groups (all reply), and ${MB.x.join(', ').replace(/, ([^,]*)$/, ' and $1')} would pay for on-board Wi-Fi. Estimate the share of all cardholders who would pay. Give a percentage to one decimal place.`,
     answer: Math.round(MB_EST.p * 1000) / 10, check: () => (18000 * (60 / 300) + 6000 * (30 / 300) + 1000 * (110 / 200)) / 25000 * 100, unit: '%', places: 1, tol: 0.06,
     wrong: [
-      { value: 200 / 800 * 100, say: 'That pools the 800 replies. Students were sampled at 20% and adults at under 2%, so pooling lets the keen students count ten times over. Weight each group’s share by its size.' },
+      { value: 200 / 800 * 100, say: 'That pools the 800 replies. Students were sampled at 20% and adults at under 2%, so pooling lets the keen students count twelve times over. Weight each group’s share by its size.' },
       { value: Math.round((0.2 + 0.1 + 0.55) / 3 * 1000) / 10, say: 'That averages the three groups’ shares as if they were equally large. Weight each by its share of the 25,000 cardholders.' },
     ],
     hints: ['Find each group’s share (60 ÷ 300 and so on), then weight it by N_h ÷ N.', '(18,000 × 0.20 + 6,000 × 0.10 + 1,000 × 0.55) ÷ 25,000'],
@@ -174,7 +174,7 @@ export const independent = [
       'Pick a random start from 1 to 20, then take every 20th name on the alphabetical list.',
       'Split the members by tier and draw a random sample within each tier.',
       'Choose 12 of the chain’s 60 stores at random and survey every customer in them on one Saturday.',
-      'Choose 10 towns at random, then 3 stores in each chosen town, then customers at random times in each store.',
+      'Choose 10 towns at random, then 3 stores in each chosen town, then every 10th customer passing at randomly chosen times in each store.',
       'Interviewers stop shoppers until they have 40 people under 35 and 40 aged 35 or over.',
       'Each owner of a vintage scooter who is interviewed passes the survey on to other owners they know.',
       'A banner on a recipe website invites visitors to take a five-minute survey for a prize draw.',
@@ -248,18 +248,19 @@ export const independent = [
     options: [
       'Members of an opt-in panel chose to join it, so the chance that any given person is in a sample from it is unknown.',
       'A river sample recruits respondents through invitations placed on websites.',
-      'Non-probability samples can be useful for pretesting a questionnaire.',
+      'A snowball sample gives every member of a hard-to-reach group the same chance of selection.',
       'An opt-in panel sample of 5,000 has a margin of error of about ±1.4 points, like a random sample.',
       'Weighting an opt-in sample to the population’s age and sex makes it into a probability sample.',
       'A quota sample matches the population on every characteristic, not just the quota characteristics.',
     ],
-    answer: [0, 1, 2],
+    answer: [0, 1],
     feedback: {
-      3: 'The margin-of-error formula assumes known selection chances. AAPOR warns that treating non-probability samples as simple random samples invalidates the standard errors.',
+      2: 'A snowball sample reaches people through contacts, so people with many contacts, or close to the starting participants, are far likelier to be included.',
+      3: 'The margin-of-error formula assumes known selection chances. Treating such a sample as a simple random sample assumes, in the AAPOR task force’s word, that how people came to be in it is ‘ignorable’.',
       4: 'Weighting can bring the sample’s age and sex into line, but selection chances stay unknown; any bias in other characteristics remains.',
       5: 'Quotas match only the quota traits. Within each quota, whoever the interviewer found fills it.',
     },
-    solution: 'Opt-in panels are self-selected and river samples recruit through website invitations; both, like other non-probability samples, are useful for pretests and exploration. None supports a margin of error as it stands, weighting doesn’t make them probability samples, and quotas match only the traits they set.',
+    solution: 'Opt-in panels are self-selected and river samples recruit through website invitations. Snowball samples favour well-connected people, no non-probability sample supports a margin of error as it stands, weighting doesn’t make one a probability sample, and quotas match only the traits they set.',
   },
 ];
 
@@ -284,12 +285,12 @@ export const check = [
   {
     id: 'm04-sm-k2', type: 'num', kind: 'numerical',
     prompt: 'Saltreed Festival (fictional) sold 9,000 weekend and 3,000 day tickets. It surveys 300 weekend and 200 day ticket holders at random (all reply); 240 and 110 say they will come back next year. Estimate the share of all ticket holders who will come back. Give a percentage to one decimal place.',
-    answer: Math.round(TIX_EST.p * 1000) / 10, check: () => (9000 * (240 / 300) + 3000 * (110 / 200)) / 12000 * 100, unit: '%', places: 1, tol: 0.06,
+    answer: TIX_EST.p * 100, check: () => (9000 * (240 / 300) + 3000 * (110 / 200)) / 12000 * 100, unit: '%', places: 1, tol: 0.06,
     wrong: [
       { value: tixPool * 100, say: 'That pools the 500 replies. Day tickets were sampled at a higher rate (6.7% against 3.3%), so pooling overweights them. Weight each group by its share of the 12,000 tickets.' },
       { value: (0.8 + 0.55) / 2 * 100, say: 'That averages the two groups as if they were the same size. Weekend tickets are three-quarters of the total.' },
     ],
-    solution: `Weekend 240 ÷ 300 = 0.80; day 110 ÷ 200 = 0.55. Weights 9,000 ÷ 12,000 = 0.75 and 0.25. Estimate 0.75 × 0.80 + 0.25 × 0.55 = 0.6 + 0.1375 = ${TIX_EST.p.toFixed(4)}, so ${pc(TIX_EST.p)}.`,
+    solution: `Weekend 240 ÷ 300 = 0.80; day 110 ÷ 200 = 0.55. Weights 9,000 ÷ 12,000 = 0.75 and 0.25. Estimate 0.75 × 0.80 + 0.25 × 0.55 = 0.6 + 0.1375 = ${TIX_EST.p.toFixed(4)}, so 73.75% (73.8% to one decimal place).`,
   },
   {
     id: 'm04-sm-k3', type: 'num', kind: 'numerical',
@@ -341,16 +342,16 @@ export const check = [
   },
   {
     id: 'm04-sm-k6', type: 'formula', kind: 'applied',
-    prompt: 'B2:B5 hold the size of each of Lantern’s four strata and C2:C5 the completes expected at a 30% response. In D2, calculate the 95% margin of error for a proportion near 50% read within that stratum alone, using 1.96 × √(0.25 ÷ n) × √((N − n) ÷ (N − 1)), so that it can be filled down to D5.',
-    sheet: { cells: margCells },
-    cell: 'D2', fill: 'D2:D5', answer: '=1.96*SQRT(0.25/C2)*SQRT((B2-C2)/(B2-1))',
-    alt: ['=1.96*SQRT(0.25/C2*(B2-C2)/(B2-1))', '=1.96*SQRT((0.5*0.5)/C2)*SQRT((B2-C2)/(B2-1))', '=1.96*0.5/SQRT(C2)*SQRT((B2-C2)/(B2-1))'],
-    view: 'A1:D5', formats: { D: '0.0%', B: '#,##0', C: '0.0' }, widths: { A: 22, B: 14, C: 20, D: 11 },
+    prompt: 'B2:B5 hold the size of each of Lantern’s four strata, C2:C5 the completes expected at a 30% response, and B7 the completes n₀ that a large population would need for a margin of ±10 points at 95%. In D2, calculate the completes the subscriber stratum needs for that margin with the finite population correction, n = n₀ ÷ (1 + (n₀ − 1) ÷ N), so that the formula can be filled down to D5.',
+    sheet: { cells: needCells, vary: { B7: [150.06, 384.16] } },
+    cell: 'D2', fill: 'D2:D5', answer: '=$B$7/(1+($B$7-1)/B2)',
+    alt: ['=$B$7*B2/(B2+$B$7-1)', '=1/(1/$B$7+($B$7-1)/($B$7*B2))'],
+    view: 'A1:D7', formats: { D: '0.0', B: '#,##0', C: '0.0', B7: '0.00' }, widths: { A: 20, B: 13, C: 17, D: 16 },
     wrong: [
-      { formula: '=1.96*SQRT(0.25/C2)', say: 'That leaves out the finite population correction. For the workshop stratum, 15 completes of 150 people is a tenth of the group, and the correction narrows the margin from ±25 to ±24 points.' },
-      { formula: '=1.96*SQRT(0.25/B2)*SQRT((B2-C2)/(B2-1))', say: 'The margin depends on the number of completes, n in C, not on the size of the stratum.' },
-      { formula: '=1.96*SQRT(0.25/C2)*SQRT(1-C2/B2)', say: 'Close: 1 − n ÷ N is a common approximation, but this course uses B04’s correction √((N − n) ÷ (N − 1)), as the prompt gives it.' },
+      { formula: '=$B$7', say: 'That leaves out the finite population correction, which matters most in the small strata: the workshop stratum has only 150 people.' },
+      { formula: '=$B$7/(1+$B$7/B2)', say: 'The correction divides by 1 + (n₀ − 1) ÷ N, not 1 + n₀ ÷ N.' },
+      { formula: '=B7/(1+(B7-1)/B2)', say: 'Right in D2, but B7 moves when the formula is filled down. Fix it with $ signs: $B$7.' },
     ],
-    solution: `<x>=1.96*SQRT(0.25/C2)*SQRT((B2-C2)/(B2-1))</x>: ${STRATA.map((nm, h) => `${nm.toLowerCase()} ±${(margF(Math.round(A[h] * RR * 10) / 10, SIZES[h]) * 100).toFixed(1)}`).join(', ')} points. Only the newsletter-only stratum can be read with any precision on its own.`,
+    solution: `<x>=$B$7/(1+($B$7-1)/B2)</x>: ${STRATA.map((nm, h) => `${nm.toLowerCase()} ${needF(96.04, SIZES[h]).toFixed(1)}`).join(', ')}, so ${STRATA.map((nm, h) => Math.ceil(needF(96.04, SIZES[h]) - 1e-9)).join(', ')} completes after rounding up. Against the expected ${STRATA.map((nm, h) => (Math.round(A[h] * RR * 10) / 10).toFixed(1)).join(', ')}, only the shop-customer and newsletter-only strata reach ±10 points; the workshop stratum would need more completes than a 30% response from all 150 could give.`,
   },
 ];
