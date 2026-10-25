@@ -223,7 +223,8 @@ const workshop = memo(() => {
   const wCols = WORKSHOP_NEEDS.map((_, j) => WORKSHOP_RESPONDENTS.map((r) => r.needs[j]));
   const wZ = standardise(wCols).rows;
   const W_KS = [2, 3, 4, 5, 6];
-  const wFits = W_KS.map((k) => { const km = kmeans(wZ, k, { restarts: 20 }); return { k, km, inertia: km.inertia, silhouette: silhouette(wZ, km.labels) }; });
+  const wFits = W_KS.map((k) => { const km = kmeans(wZ, k, { restarts: 12 });   // the cluster widget's settings, so the project's text and the widget agree
+    return { k, km, inertia: km.inertia, silhouette: silhouette(wZ, km.labels) }; });
   const WK = 4, wKm = wFits.find((f) => f.k === WK).km;
   const wMembers = (g) => wKm.labels.map((l, i) => (l === g ? i : -1)).filter((i) => i >= 0);
   const wTrue = dec(W.seg);
