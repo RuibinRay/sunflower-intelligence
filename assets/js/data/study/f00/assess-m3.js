@@ -7,10 +7,10 @@ export const items = [
     id: 'f00-m3-1', lesson: 'financial-markets', type: 'mc', kind: 'conceptual',
     prompt: 'Harbourline Roasters receives no money when its existing shares change hands on a stock exchange. Why does the company still care how easily and at what price its shares trade there?',
     options: [
-      'Because investors accept a lower return on securities they can sell easily, and secondary-market prices set the terms of Harbourline’s next share issue',
-      'Because Harbourline receives a small commission on every secondary-market trade',
-      'Because secondary-market prices fix the interest rate on Harbourline’s bank loans by law',
-      'It does not: only the primary market matters to an issuer',
+      'Because investors accept a lower return on securities they can sell easily, and secondary-market prices set the terms of its next share issue',
+      'Because Harbourline receives a small commission from the exchange on every secondary-market trade in its shares',
+      'Because secondary-market prices fix the interest rate on Harbourline’s bank loans by law, so every fall in the price raises its borrowing costs',
+      'It does not: only the primary market matters to an issuer, because that is the only place it raises money',
     ],
     answer: 0,
     feedback: {
@@ -65,8 +65,8 @@ export const items = [
     prompt: 'A firm finds a seller for your order of 500 shares on an exchange, never owns the shares itself, and charges you a $5 fee. Which role is it playing, and which body is the frontline regulator of firms like it?',
     options: [
       'Broker, acting as your agent; FINRA, under SEC oversight',
-      'Dealer, acting as a principal; the FDIC',
-      'Market maker; the Federal Reserve',
+      'Dealer, trading from its own inventory as a principal; the FDIC',
+      'Market maker, quoting a bid and an ask; the Federal Reserve',
       'Underwriter; the CFTC',
     ],
     answer: 0,
@@ -93,8 +93,8 @@ export const items = [
     options: [
       'A hedge fund that allows withdrawals only once a quarter after a one-year lock-up',
       'An FDIC-insured savings account',
-      'Treasury bills maturing in four weeks',
-      'A money market deposit account at an insured bank',
+      'Treasury bills maturing in four weeks, which can also be sold before then',
+      'A money market deposit account at an insured bank that pays a variable rate of interest',
     ],
     answer: 0,
     feedback: {
@@ -118,10 +118,10 @@ export const items = [
     id: 'f00-m3-9', lesson: 'governance-and-agency', type: 'mc', kind: 'conceptual',
     prompt: 'Why do lenders write covenants into loan agreements?',
     options: [
-      'Because once a loan is made, shareholders can gain at the lender’s expense, for example through riskier projects, large dividends or extra borrowing, and covenants restrict those actions',
-      'Because covenants guarantee the borrower will make a profit',
-      'Because covenants transfer ownership of the company to the lender',
-      'Because the law requires every loan to include a minimum current ratio',
+      'Because once a loan is made, shareholders can gain at the lender’s expense through riskier projects, large dividends or more borrowing, which covenants restrict',
+      'Because covenants guarantee that the borrower will make enough profit each year to cover the interest it owes',
+      'Because covenants transfer ownership of the company to the lender until the loan has been repaid in full',
+      'Because the law requires every loan to include a minimum current ratio and a limit on the dividends the borrower pays',
     ],
     answer: 0,
     feedback: {
@@ -135,10 +135,10 @@ export const items = [
     id: 'f00-m3-10', lesson: 'governance-and-agency', type: 'mc', kind: 'applied',
     prompt: 'A board finds that its chief executive, paid a bonus on one year’s net income, delayed maintenance to hit the target. Which change to her pay best addresses the problem?',
     options: [
-      'Pay more of it in shares that vest over four years, with targets measured over three years and on several measures',
-      'Double the one-year profit bonus so she has an even stronger reason to perform',
-      'Replace the bonus with stock options that pay only if the share price rises within six months',
-      'Pay a fixed salary with no link to results at all',
+      'Pay more of it in shares vesting over four years, with targets set over three years and on several measures',
+      'Double the one-year profit bonus so that she has an even stronger reason to perform well every year',
+      'Replace the bonus with stock options that pay out only if the share price rises at some point within the next six months',
+      'Pay a fixed salary with no link to results at all, so that she has no reason to manipulate profit',
     ],
     answer: 0,
     feedback: {

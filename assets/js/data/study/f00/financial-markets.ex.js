@@ -128,8 +128,8 @@ export const guided = [
     prompt: 'A manufacturer wants to protect itself against a rise in the euro over the next 90 days by fixing an exchange rate with its bank, for an amount and date that match one particular invoice. Where is this contract most likely to be agreed, and why?',
     options: [
       'Over the counter with its bank, because the amount and date are tailored to one invoice',
-      'On a stock exchange, because exchanges list currencies like shares',
-      'In the primary market, because the manufacturer is raising new money',
+      'On a stock exchange, because stock exchanges list currencies in the same way as they list shares',
+      'In the primary market, because the manufacturer is raising new money from its bank for the invoice',
       'In the money market, because the contract is shorter than one year',
     ],
     answer: 0,
@@ -218,10 +218,10 @@ export const check = [
     id: 'f00-fm-k1', type: 'mc', kind: 'conceptual',
     prompt: 'What distinguishes indirect finance from direct finance?',
     options: [
-      'In indirect finance the saver holds a claim on an intermediary, which in turn holds the claim on the borrower',
-      'In indirect finance the saver never earns interest',
-      'Indirect finance takes place only in the money market',
-      'In indirect finance the borrower sells its own securities to savers through an exchange',
+      'In indirect finance the saver holds a claim on an intermediary, which holds the claim on the borrower',
+      'In indirect finance the saver never earns interest, because the intermediary keeps all of it',
+      'Indirect finance takes place only in the money market, through loans that last less than a year',
+      'In indirect finance the borrower sells its own shares and bonds to savers, usually through a stock exchange',
     ],
     answer: 0,
     feedback: {
@@ -247,7 +247,7 @@ export const check = [
     prompt: 'A university’s treasurer has $5 million that will be needed in seven weeks to pay salaries. Which choice fits best?',
     options: [
       'Treasury bills maturing before the salaries are due',
-      'Shares in a stock-market index fund',
+      'Shares in a stock-market index fund, which can be sold on any trading day',
       'A ten-year corporate bond',
       'Coffee futures',
     ],

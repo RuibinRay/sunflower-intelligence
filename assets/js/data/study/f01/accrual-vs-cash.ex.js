@@ -284,9 +284,9 @@ export const check = [
     prompt: 'Under ASC 606 and IFRS 15, when does a business recognise revenue?',
     options: [
       'When, or as, it satisfies a performance obligation by transferring control of a promised good or service to the customer',
-      'When the customer pays',
-      'When the contract is signed',
-      'When the invoice is sent',
+      'When the customer pays, whether before or after the good or service has been delivered',
+      'When the contract is signed, because that is when both sides become committed to it',
+      'When the invoice is sent, because that is when the business formally asks the customer to pay for the promised good or service',
     ],
     answer: 0,
     feedback: {
@@ -342,9 +342,9 @@ export const check = [
     prompt: 'Ana notices that Lantern’s March cash-basis profit ($950) and accrual net income ($990) are almost the same and suggests tracking only cash from now on. What is the best response?',
     options: [
       'The near-match is a coincidence: item-by-item gaps of up to $1,650 offset each other in March, and several of them reverse in April.',
-      'She is right: the gaps between the two bases always cancel within a month.',
-      'Lantern must use the accrual basis because the cash basis is illegal for corporations.',
-      'Cash-basis profit is always lower, so it is the safer figure to plan with.',
+      'She is right: the gaps between the two bases always cancel within a month, so tracking cash alone will give the same profit from now on.',
+      'Lantern must use the accrual basis, because the cash basis is illegal for every corporation, whatever its size or industry.',
+      'Cash-basis profit is always lower than accrual net income, so it is the safer figure to plan with.',
     ],
     answer: 0,
     feedback: {

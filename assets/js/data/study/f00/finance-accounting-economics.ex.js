@@ -138,10 +138,10 @@ export const guided = [
     id: 'f00-fae-g4', type: 'mc', kind: 'applied',
     prompt: 'A fictional bakery owner borrowed heavily at a variable interest rate to open a second shop, because her accounts showed a strong profit for the last three years. A year later the central bank raised interest rates sharply, her loan payments jumped and the shop struggled to pay them. Which perspective did her decision most clearly leave out?',
     options: [
-      'Macroeconomics: she made no assumption about where interest rates might go, though her loan rate moved with them.',
-      'Accounting: she should have checked her past profits more carefully.',
-      'Microeconomics: she did not study how one customer chooses between two loaves.',
-      'None: interest rate changes cannot be anticipated, so nothing could have been done.',
+      'Macroeconomics: she made no allowance for interest rates rising, though her loan rate moved with them.',
+      'Accounting: she should have checked her last three years of profits more carefully before borrowing.',
+      'Microeconomics: she did not study how her customers choose between her loaves and a rival bakery’s.',
+      'None: interest rate changes cannot be anticipated at all, so no forecast could have prepared her for them.',
     ],
     answer: 0,
     hints: [
@@ -162,10 +162,10 @@ export const independent = [
     id: 'f00-fae-i1', type: 'mc', kind: 'conceptual',
     prompt: 'Which statement best describes how finance and accounting differ?',
     options: [
-      'Accounting aims at a faithful, verifiable record of what happened; finance aims at good decisions about the future, using that record as one input.',
-      'Accounting deals with businesses; finance deals only with stock markets.',
-      'Accounting uses numbers; finance uses only judgement.',
-      'Finance follows US GAAP or IFRS; accounting has no rules.',
+      'Accounting aims at a faithful record of what happened; finance aims at good decisions about the future, using that record as one input.',
+      'Accounting deals with the day-to-day records of businesses; finance deals only with stock markets and the prices of the shares traded on them.',
+      'Accounting uses numbers and rules; finance uses only judgement and experience, without calculations.',
+      'Finance follows reporting standards such as US GAAP or IFRS; accounting has no fixed rules and relies on each firm’s own choices.',
     ],
     answer: 0,
     feedback: {
@@ -217,10 +217,10 @@ export const independent = [
     id: 'f00-fae-i5', type: 'mc', kind: 'conceptual',
     prompt: 'In the United States, which statement about professional roles is accurate?',
     options: [
-      'The independent auditors whose reports accompany companies’ financial statements filed with the SEC must be licensed CPAs, and CPAs are licensed by state boards of accountancy.',
-      'Financial analysts must be licensed CPAs before they can value a company.',
-      'Economists set the accounting rules that companies follow.',
-      'A company’s CFO is responsible only for preparing its tax returns.',
+      'Independent auditors of financial statements filed with the SEC must be licensed CPAs, and state boards of accountancy license CPAs.',
+      'Financial analysts must hold a CPA licence from a state board of accountancy before they are allowed to value a company or its shares.',
+      'Economists at the central bank set the accounting rules that companies follow when they prepare their financial statements.',
+      'A company’s CFO is responsible only for preparing its tax returns; investment and financing decisions belong to the board.',
     ],
     answer: 0,
     feedback: {
@@ -248,10 +248,10 @@ export const check = [
     id: 'f00-fae-k1', type: 'mc', kind: 'conceptual',
     prompt: 'A financial analyst reads a company’s financial statements for last year. What does she mainly use them for?',
     options: [
-      'As the starting point for forecasts of the company’s future cash flows, after adjusting the figures where needed',
-      'To check that the company followed US GAAP, which is the analyst’s main job',
-      'As an exact prediction of next year’s results',
-      'She does not use them: finance looks only forward, so past figures are irrelevant',
+      'As the starting point for forecasting the company’s future cash flows, adjusting the figures where needed',
+      'To check that the company followed US GAAP in preparing them, which is the analyst’s main job',
+      'As an exact prediction of next year’s results, since a company’s results tend to repeat from one year to the next',
+      'She does not use them: finance looks only forward, so past figures are irrelevant to her work',
     ],
     answer: 0,
     feedback: {
@@ -296,8 +296,8 @@ export const check = [
     prompt: 'A fictional van-hire firm shows net income of $15,000, after $20,000 of depreciation on its vans. Its customers pay on the day and it pays its bills as they arrive. The owner says, “We only made $15,000, so we only generated $15,000 of cash.” What should a finance analyst reply?',
     options: [
       'Operating cash flow was about $35,000, because depreciation is an expense that used no cash this year.',
-      'Operating cash flow was about −$5,000, because depreciation must be paid in cash.',
-      'The owner is right: profit and cash are always equal.',
+      'Operating cash flow was about −$5,000, because depreciation must be paid in cash on top of the other expenses.',
+      'The owner is right: profit and cash are always equal for a firm whose customers pay on the day.',
       'Cash flow cannot be estimated without knowing the vans’ market value.',
     ],
     answer: 0,
@@ -323,9 +323,9 @@ export const check = [
     prompt: 'Why is “accounting looks back, finance looks forward” only an approximation?',
     options: [
       'Managerial accounting prepares budgets and forecasts, and financial accounting relies on estimates about the future, while finance studies the past as evidence.',
-      'Because accounting and finance are really the same discipline.',
-      'Because finance is not allowed to use past data.',
-      'Because financial statements report only on the future.',
+      'Because accounting and finance are really the same discipline, with the same purpose and different job titles.',
+      'Because finance is not allowed to use past data, so it relies on forecasts that accountants prepare.',
+      'Because financial statements report only on the future, so accounting looks further ahead than finance.',
     ],
     answer: 0,
     feedback: {

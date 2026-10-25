@@ -84,10 +84,10 @@ export const guided = [
       { id: 'f01-cl-g2-s4', type: 'mc',
         prompt: 'Which figure in Lantern’s March statements should equal this balance?',
         options: [
-          'Retained earnings on the balance sheet, which is also the closing balance on the statement of changes in equity',
-          'Net income on the income statement',
-          'Cash on the balance sheet',
-          'Total equity on the balance sheet',
+          'Retained earnings on the balance sheet, also the closing balance on the statement of changes in equity',
+          'Net income on the income statement, because entry 3 closed the whole of Income Summary into this account',
+          'Cash on the balance sheet, because retained earnings are profits kept in the bank',
+          'Total equity on the balance sheet, because closing transfers each period’s result into equity',
         ],
         answer: 0,
         hints: ['Closing exists to make the ledger agree with one particular statement line.'],
@@ -168,9 +168,9 @@ export const independent = [
     prompt: 'A company’s post-closing trial balance balances at $84,350 but still lists Advertising Expense with a debit of $1,800. What does this tell you?',
     options: [
       'Advertising Expense was left out of the closing entries, so Retained Earnings is $1,800 too high.',
-      'Nothing is wrong, because the trial balance balances.',
-      'Retained Earnings is $1,800 too low.',
-      'The advertising must be prepaid, so it is right to carry it forward.',
+      'Nothing is wrong, because the post-closing trial balance still balances at $84,350.',
+      'Advertising Expense was left out of the closing entries, so Retained Earnings is $1,800 too low.',
+      'The advertising must have been paid in advance, so it is right to carry the $1,800 forward to next period.',
     ],
     answer: 0,
     feedback: {
@@ -252,10 +252,10 @@ export const check = [
     id: 'f01-cl-k5', type: 'mc', kind: 'applied',
     prompt: 'Suppose Lantern’s accountant leaves Interest Expense ($50) out of the second closing entry but posts the other closing entries correctly, using the balance of Income Summary for entry 3. Which statement describes the result?',
     options: [
-      'Retained Earnings is $740 instead of $690, Interest Expense still shows $50, and the post-closing trial balance balances at $42,750.',
-      'The post-closing trial balance doesn’t balance, which reveals the error.',
-      'Retained Earnings is $640 instead of $690.',
-      'Net income on March’s income statement becomes $1,040.',
+      'Retained Earnings is $740, not $690; Interest Expense still shows $50; the post-closing trial balance balances at $42,750.',
+      'The post-closing trial balance doesn’t balance: its debits exceed its credits by $50, which reveals the error as soon as it is prepared.',
+      'Retained Earnings is $640 instead of $690, because Income Summary is $50 smaller than it should be.',
+      'Net income on March’s income statement becomes $1,040, because Income Summary now holds $1,040.',
     ],
     answer: 0,
     feedback: {

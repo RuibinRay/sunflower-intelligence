@@ -175,9 +175,9 @@ export const independent = [
     prompt: 'Lantern’s online shop starts selling 12-packs at a price that works out at $2.99 a can, while supermarkets sell single cans at $3.49. A supermarket buyer tells Lantern that the can will move to the bottom shelf. What is this?',
     options: [
       'Vertical channel conflict: a dispute between members at different levels of the channel.',
-      'Horizontal channel conflict: a dispute between members at the same level.',
+      'Horizontal channel conflict: a dispute between two members at the same level of the channel.',
       'Not a channel conflict: Lantern is free to set its own online prices.',
-      'A logistics problem, because the online shop delivers to customers’ homes.',
+      'A logistics problem, because the online shop delivers the 12-packs straight to customers’ homes.',
     ],
     answer: 0,
     feedback: {
@@ -227,10 +227,10 @@ export const check = [
     id: 'm02-dch-k1', type: 'mc', kind: 'conceptual',
     prompt: 'A founder says: “If we cut out the distributor and deliver to stores ourselves, we keep the distributor’s share of the price.” What is the main flaw in this reasoning?',
     options: [
-      'The distributor’s work (holding stock, delivering, selling to stores, extending credit, collecting payments) still has to be done and paid for, now by the founder’s business.',
-      'Distributors’ margins are set by law, so they can’t be removed.',
-      'Stores never buy directly from producers.',
-      'There is no flaw: removing an intermediary always raises the producer’s profit.',
+      'The distributor’s work (stocking, delivering, selling to stores, giving credit) must still be done and paid for, now by the founder.',
+      'Distributors’ margins are set by law, so the founder can’t remove them by delivering to stores directly.',
+      'Stores never buy directly from producers, so the founder would lose every shop that stocks the product.',
+      'There is no flaw: cutting out an intermediary always raises the producer’s profit by the whole of its margin.',
     ],
     answer: 0,
     feedback: {
@@ -264,10 +264,10 @@ export const check = [
     id: 'm02-dch-k4', type: 'mc', kind: 'applied',
     prompt: 'Lantern is planning the organic single-origin can at $3.99 with a premium, provenance-led positioning and a small launch budget. Which channel strategy fits best?',
     options: [
-      'Start selectively in natural and specialty grocers and Lantern’s own cafés and online shop, and add supermarkets once the can is selling well.',
-      'Go intensive from day one: every supermarket, convenience store and natural grocer, plus the online shop.',
-      'Sell only through convenience stores, where shoppers compare prices less.',
-      'Sell only through supermarkets, because they have the most shoppers.',
+      'Start selectively in natural grocers and Lantern’s own cafés and online shop, adding supermarkets once the can sells well.',
+      'Go intensive from day one: every supermarket, convenience store and natural grocer, plus the online shop, to build reach fast.',
+      'Sell only through convenience stores, where shoppers compare prices less and pay more for a chilled can.',
+      'Sell only through supermarkets, because they have the most shoppers and sell 45% of the category’s cans.',
     ],
     answer: 0,
     feedback: {

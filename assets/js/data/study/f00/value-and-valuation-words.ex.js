@@ -120,10 +120,10 @@ export const guided = [
     id: 'f00-vw-g3', type: 'mc', kind: 'conceptual',
     prompt: 'Why does enterprise value add a company’s debt to its market capitalisation?',
     options: [
-      'Because someone buying the whole business takes on the debt as well as buying the shares, so the debt is part of what the business really costs',
-      'Because debt is an asset of the company',
-      'Because lenders own part of the shares',
-      'Because debt increases the company’s profit',
+      'Because a buyer of the whole business takes on its debt as well as buying the shares, so the debt is part of what it costs',
+      'Because debt is an asset of the company, so it adds to what the business is worth to a buyer',
+      'Because lenders own part of the company’s shares, so their stake is counted alongside the other shareholders’',
+      'Because borrowing lets the company invest more, which increases its profit and so the price a buyer should pay',
     ],
     answer: 0,
     hints: ['Picture buying a house with a mortgage you must take over.', 'What does a buyer of every share still have to pay, after paying the shareholders?'],
@@ -191,9 +191,9 @@ export const independent = [
     prompt: 'Two companies have identical operations and the same EV/EBITDA, but one is financed largely with debt and the other has none. Which statement is most likely true?',
     options: [
       'Their P/E ratios differ, because interest reduces the indebted company’s net income and its shares are riskier',
-      'Their P/E ratios must be identical, because the businesses are the same',
-      'Their enterprise values must differ, because one has debt',
-      'Their market capitalisations must be identical',
+      'Their P/E ratios must be identical, because the businesses and their operating profits are the same',
+      'Their enterprise values must differ, because the indebted company adds a large amount of debt to its market capitalisation',
+      'Their market capitalisations must be identical, because the market values the two businesses equally',
     ],
     answer: 0,
     feedback: {
@@ -217,10 +217,10 @@ export const independent = [
     id: 'f00-vw-i6', type: 'mc', kind: 'applied',
     prompt: 'A fictional fitness-club chain for sale reports “adjusted EBITDA” of $25 million, after adding back $4 million of “one-off” marketing costs. Its marketing campaigns have cost about $4 million in each of the last five years. A buyer is paying 8 times EBITDA. What should the buyer do?',
     options: [
-      'Use EBITDA of about $21 million, because a cost that recurs every year is not one-off; that lowers the price by about $32 million',
-      'Accept the $25 million, because adjusted EBITDA is the standard measure',
+      'Use about $21 million: a cost that recurs every year is not one-off, and the price falls by about $32 million',
+      'Accept the $25 million, because adjusted EBITDA is a standard measure that every company must calculate in the same way',
       'Ignore EBITDA and pay the book value of equity instead',
-      'Use $29 million, because marketing creates future sales and should be added back twice',
+      'Use $29 million, because marketing builds future sales, so its $4 million cost should be added back a second time',
     ],
     answer: 0,
     feedback: {
@@ -238,7 +238,7 @@ export const check = [
     prompt: 'What does a company’s market capitalisation measure?',
     options: [
       'The market value of its equity: share price times shares outstanding',
-      'The total value of its operations, including debt',
+      'The total value of its operations, including the debt owed to its lenders',
       'Its shareholders’ equity as recorded in the balance sheet',
       'Its annual revenue',
     ],
@@ -276,8 +276,8 @@ export const check = [
     prompt: 'An analyst must compare two fictional coffee roasters: one has borrowed heavily to build new plants, the other has no debt. Which multiple gives the fairer first comparison of how the market values their businesses?',
     options: [
       'EV/EBITDA, because neither enterprise value nor EBITDA depends on how the business is financed',
-      'P/E, because it is the most widely quoted multiple',
-      'Market capitalisation divided by EBITDA, because it uses the share price',
+      'P/E, because it is the most widely quoted multiple and uses each company’s net income',
+      'Market capitalisation divided by EBITDA, because it combines the share price with earnings before interest',
       'Market-to-book, because book values are objective',
     ],
     answer: 0,
@@ -309,10 +309,10 @@ export const check = [
     id: 'f00-vw-k6', type: 'mc', kind: 'applied',
     prompt: 'A report says: “Using comparable companies, Harbourline is worth exactly $47.20 per share, so the shares at $42.50 are undervalued.” What is the most important weakness of this conclusion?',
     options: [
-      'The value depends on which comparables and multiples were chosen; a different, reasonable choice could give a value below $42.50, so the report should state its assumptions and show a range',
-      'Comparable-company valuation is never used by professionals',
-      'Values per share cannot be calculated from multiples',
-      'The calculation must be wrong, because market price is always the true value',
+      'The value depends on which comparables and multiples were chosen; another reasonable choice could give less than $42.50, so the report should state its assumptions and give a range',
+      'Comparable-company valuation is never used by professional analysts, who rely only on discounted cash flow models',
+      'Values per share cannot be calculated from multiples, which give only a value for the whole enterprise',
+      'The calculation must be wrong, because a share’s market price is always its true value, so Harbourline is worth exactly $42.50',
     ],
     answer: 0,
     feedback: {

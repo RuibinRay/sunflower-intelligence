@@ -70,10 +70,10 @@ export const guided = [
     id: 'm02-mm-g3', type: 'mc', kind: 'conceptual',
     prompt: 'A commuter usually buys a $5.20 cold brew at a café two streets from her station (a hypothetical price). Lantern puts chilled cans in the station’s convenience store at $3.49. How could this raise customer value for her?',
     options: [
-      'It lowers both the money and the time she gives up, so it raises value if she judges the can’s taste close enough to the café’s.',
-      'It raises value because $3.49 is less than $5.20; nothing else matters.',
-      'It can’t raise value, because a can is a lower-quality product than a café drink.',
-      'It raises value only if Lantern also advertises at the station.',
+      'It saves her money and time, so it raises value if she judges the can’s taste close enough to the café’s.',
+      'It must raise value, because the can is $1.71 cheaper and the price is what decides value.',
+      'It can’t raise value, because a can is always a lower-quality product than a drink made fresh in a café.',
+      'It raises value only if Lantern also advertises at the station, because advertising adds to what the can is worth.',
     ],
     answer: 0,
     hints: ['Customer value compares benefits with total cost: money, time, effort and risk.', 'What does she give up at the café that she doesn’t give up at the station, and what might she lose in benefits?'],
@@ -153,8 +153,8 @@ export const independent = [
     prompt: 'In Lauterborn’s 4Cs, “convenience to buy” replaces which of the 4Ps, and what question does it make a marketer ask?',
     options: [
       'Place: how easy is it for the customer to get the product when and where they want it?',
-      'Price: how much money can the business save by using cheaper channels?',
-      'Promotion: how convenient is it for the business to reach customers with advertising?',
+      'Price: how much money can the business save by using cheaper channels to sell the product?',
+      'Promotion: how convenient is it for the business to reach its customers with advertising?',
       'Product: how easy is the product to manufacture?',
     ],
     answer: 0,
@@ -187,9 +187,9 @@ export const independent = [
     id: 'm02-mm-i6', type: 'mc', kind: 'conceptual',
     prompt: 'Which statement about where the 4Ps came from is accurate?',
     options: [
-      'McCarthy grouped the marketing mix under four headings in 1960, simplifying the longer list of elements Borden had used.',
-      'The 4Ps were shown in experiments to be the four factors that determine sales.',
-      'Borden introduced the 4Ps in 1964 as a scientific law of marketing.',
+      'McCarthy grouped the mix under four headings in 1960, simplifying the longer list Borden had used.',
+      'The 4Ps were shown in controlled experiments to be the four factors that together determine a product’s sales.',
+      'Borden introduced the 4Ps in his 1964 article and presented them as a scientific law of marketing.',
       'The 4Ps were designed for services, and the 7Ps later adapted them for physical goods.',
     ],
     answer: 0,
@@ -208,9 +208,9 @@ export const check = [
     prompt: 'Which is the best description of customer value?',
     options: [
       'The customer’s judgement of an offer’s benefits relative to its total cost, compared with the alternatives.',
-      'The price the customer pays for the product.',
-      'The profit the business makes from each customer.',
-      'What the product costs the business to make.',
+      'The price the customer pays, because the price is the amount the customer has agreed the product is worth to them.',
+      'The profit the business makes from each customer over all the years they keep buying.',
+      'What the product costs the business to make, since that sets the lowest price it can charge.',
     ],
     answer: 0,
     feedback: {
@@ -254,10 +254,10 @@ export const check = [
     id: 'm02-mm-k4', type: 'mc', kind: 'applied',
     prompt: 'A spa hotel (fictional) is positioned as a quiet luxury retreat. It wants to fill more rooms in winter. Which proposal best keeps its marketing mix consistent with its positioning?',
     options: [
-      'A winter package that adds a free treatment and late checkout at the usual room rate, offered to past guests by email.',
-      'Half-price rooms advertised on discount voucher websites.',
-      'Party weekends with DJs to attract groups.',
-      'Fewer spa staff in winter to save costs, at the same room rate.',
+      'A winter package adding a free treatment and late checkout at the usual rate, offered to past guests by email.',
+      'Half-price winter rooms advertised on discount voucher websites, to reach as many new guests as possible.',
+      'Party weekends with DJs and a late bar, to attract groups who book several rooms at once.',
+      'Fewer spa staff in winter to save costs, keeping the same room rate so the hotel still looks like a luxury retreat.',
     ],
     answer: 0,
     feedback: {
@@ -273,9 +273,9 @@ export const check = [
     prompt: 'What was Lauterborn’s main criticism of the 4Ps when he proposed the 4Cs in 1990?',
     options: [
       'They describe marketing from the seller’s point of view; the 4Cs restate each decision from the buyer’s.',
-      'They leave out the people, process and physical evidence that services depend on.',
+      'They leave out the people, process and physical evidence that services depend on, so three more Ps are needed.',
       'They encourage short-term transactions instead of long-term customer relationships.',
-      'They have too few elements to describe a manufacturer’s marketing.',
+      'They have too few elements to describe a manufacturer’s marketing, so the 4Cs add more decision areas.',
     ],
     answer: 0,
     feedback: {

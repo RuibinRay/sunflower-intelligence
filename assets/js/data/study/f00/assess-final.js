@@ -22,7 +22,7 @@ export const items = [
     id: 'f00-fn-2', lesson: 'finance-time-and-risk', type: 'mc', kind: 'conceptual',
     prompt: 'A fictional fund manager says: “Next year Fund A will return somewhere between +5% and +25%. It can’t lose money, so it is riskless.” In the sense finance uses the word, is she right?',
     options: [
-      'No: risk is any chance that the outcome differs from what is expected, so a range from 5% to 25% is risk',
+      'No: risk is any chance that the outcome differs from what is expected, so a 5% to 25% range is risk',
       'Yes: in finance, risk means the chance of losing money, and this fund’s worst outcome is still a gain',
       'Yes: an investment whose expected return is well above zero cannot sensibly be called risky',
       'No: an investment is risky only when its expected return is below the risk-free rate, as it may be here',
@@ -41,7 +41,7 @@ export const items = [
     id: 'f00-fn-3', lesson: 'finance-accounting-economics', type: 'mc', kind: 'conceptual',
     prompt: 'A fictional dental practice reports an accounting profit of $95,000 for the year, yet a financial adviser tells the dentist who owns it that the practice made an economic loss. Which statement must then be true?',
     options: [
-      'The salary and investment return the dentist gives up to run the practice are worth more than $95,000 a year',
+      'The salary and investment return the dentist gives up to run the practice exceed $95,000 a year',
       'The accounts must contain an error, because one year’s results cannot show both a profit and a loss',
       'The practice’s operating cash flow must have been negative, since economic profit is measured in cash',
       'The practice’s depreciation must have exceeded $95,000, since economic profit deducts it a second time',
@@ -85,7 +85,7 @@ export const items = [
     id: 'f00-fn-6', lesson: 'decision-principles', type: 'mc', kind: 'conceptual',
     prompt: 'Why do investors expect a risk premium for bearing systematic risk but not for bearing unsystematic risk?',
     options: [
-      'Unsystematic risk can be removed cheaply by diversifying, so no one has to be paid to bear it; systematic risk cannot',
+      'Unsystematic risk can be diversified away cheaply, so no one needs paying to bear it; systematic risk cannot',
       'Unsystematic risk does not move a company’s share price, so investors who hold it bear no real risk',
       'Systematic risk can be removed by holding enough shares, and investors are paid for the effort of doing so',
       'Regulators require companies to pay investors a premium for market-wide risk but not for company-specific risk',
@@ -128,10 +128,10 @@ export const items = [
     id: 'f00-fn-9', lesson: 'capital-and-liquidity', type: 'mc', kind: 'conceptual',
     prompt: 'Two analysts work from the same balance sheet of a fictional company: interest-bearing debt of $240 million, other liabilities of $180 million and shareholders’ equity of $300 million. One reports a debt-to-equity ratio of 0.8, the other 1.4. Which explanation is right?',
     options: [
-      'The first divides interest-bearing debt by equity, the second total liabilities by equity; both versions are used',
+      'The first divides interest-bearing debt by equity, the second total liabilities by equity; both are used',
       'One of them has made an arithmetic error, since the debt-to-equity ratio has a single agreed definition',
       'The second used the market value of the equity rather than its book value from the balance sheet',
-      'The first divided equity by debt, turning the ratio upside down, while the second divided debt by equity',
+      'The first divided equity by debt, turning the ratio upside down, while the second divided debt by equity as it should',
     ],
     answer: 0,
     feedback: {
@@ -268,7 +268,7 @@ export const items = [
     id: 'f00-fn-18', lesson: 'financial-markets', type: 'mc', kind: 'conceptual',
     prompt: 'Why can a bank whose loans are all sound still fail if many depositors ask for their money on the same day?',
     options: [
-      'It funds long-term loans with deposits that can be withdrawn any day, and loans cannot be turned into cash quickly',
+      'It funds long-term loans with deposits that can be withdrawn any day, and loans are slow to turn into cash',
       'A run reveals that its loans were bad all along, so the bank was already insolvent before the run began',
       'Depositors are repaid only after the bank’s shareholders, so a run quickly wipes out what depositors are owed',
       'The central bank is not allowed to lend to banks that are short of cash, so nobody can bridge the gap',

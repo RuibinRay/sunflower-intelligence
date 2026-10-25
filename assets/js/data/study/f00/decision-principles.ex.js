@@ -131,9 +131,9 @@ export const guided = [
     prompt: 'An investor holds shares in one airline. Which addition would reduce the risk of her portfolio most?',
     options: [
       'Shares in an oil company, whose results tend to improve when fuel prices rise',
-      'Shares in a second airline',
-      'More shares in the same airline',
-      'Shares in an aircraft-leasing company that depends on airlines’ business',
+      'Shares in a second airline, which flies different routes from the first',
+      'More shares in the same airline, bought at today’s lower price',
+      'Shares in an aircraft-leasing company, whose income depends on airlines renting its planes',
     ],
     answer: 0,
     hints: [
@@ -186,10 +186,10 @@ export const independent = [
     id: 'f00-dp-i3', type: 'mc', kind: 'conceptual',
     prompt: 'Which of these is an arbitrage in the strict sense?',
     options: [
-      'Buying a bond for $970 and, at the same moment, selling an identical bond for $985, with no other costs',
-      'Buying shares you expect to rise after good news',
-      'Buying a house in a neighbourhood where prices have been rising, to sell it next year',
-      'Lending money at 6% that you borrowed at 4% to a business that might fail',
+      'Buying a bond for $970 and at the same moment selling an identical bond for $985, with no other costs',
+      'Buying shares you expect to rise after the company announces good results next week',
+      'Buying a house in a neighbourhood where prices have risen every year, to sell it next year at a higher price',
+      'Borrowing at 4% and lending the money at 6% to a business that might fail, keeping the 2-point spread',
     ],
     answer: 0,
     feedback: {
@@ -213,10 +213,10 @@ export const independent = [
     id: 'f00-dp-i5', type: 'mc', kind: 'applied',
     prompt: 'A stranger offers Ana a “guaranteed” return of 15% a year with “no risk at all”, while insured bank deposits pay well under 5%. What does the principle of risk and return suggest?',
     options: [
-      'Be very suspicious: a high return with no risk contradicts how markets price risk, and is a common sign of fraud or of risks not disclosed.',
-      'Accept: a guaranteed 15% is clearly better than a bank deposit.',
-      'Accept, but only with half of her savings, to diversify.',
-      'It makes no difference, because returns and risk are unrelated.',
+      'Be very suspicious: a high return with no risk contradicts how markets price risk, and often signals fraud or hidden risk.',
+      'Accept: a guaranteed 15% is clearly better than a bank deposit paying under 5%, so she should move all of her savings into it.',
+      'Accept, but only with half of her savings, so that diversification protects her if the offer goes wrong.',
+      'It makes no difference, because returns and risk are unrelated: a high return says nothing about the risk.',
     ],
     answer: 0,
     feedback: {
@@ -233,10 +233,10 @@ export const check = [
     id: 'f00-dp-k1', type: 'mc', kind: 'conceptual',
     prompt: 'A company has spent $2 million developing a product that now looks unlikely to sell. A manager argues: “We must launch it, or the $2 million will have been wasted.” What is wrong with the argument?',
     options: [
-      'The $2 million is sunk: it is spent whether or not the product launches, so the decision should depend only on future cash flows from launching versus not launching.',
-      'Nothing: past spending should be recovered before a project is dropped.',
-      'The $2 million should be discounted to present value before deciding.',
-      'The $2 million is an opportunity cost, so it should be added to the launch costs.',
+      'The $2 million is sunk: it is spent whatever happens, so the decision should rest only on future cash flows from launching or not.',
+      'Nothing: past spending should be recovered before a project is dropped, so the product must launch to earn the $2 million back first.',
+      'The $2 million should first be discounted to present value, then compared with the launch’s expected future cash flows.',
+      'The $2 million is an opportunity cost of launching, so it should be added to the launch costs before deciding.',
     ],
     answer: 0,
     feedback: {

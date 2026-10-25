@@ -9,7 +9,7 @@ export const items = [
     id: 'm02-dg-1', lesson: 'marketing-mix', type: 'mc', kind: 'applied',
     prompt: 'A fictional bakery positions its sourdough as an artisan loaf, baked slowly by hand, at $7.50. To grow quickly it starts selling through discount supermarkets, where the loaf is on a “half price” deal every other week. What is wrong with this mix?',
     options: [
-      'Place and promotion contradict the product and price: discount outlets and constant half-price deals tell shoppers the loaf is ordinary, so the artisan positioning stops being believable.',
+      'Place and promotion contradict the product and price: discount outlets and constant deals tell shoppers the loaf is ordinary.',
       'Nothing: wider availability and frequent deals win trial, and trial is what a growing bakery needs most.',
       'Only the price is wrong: an artisan loaf should cost less than $7.50 to sell in supermarkets.',
       'Only the promotion is wrong: replace the half-price deals with advertising about the baking, and keep the discount supermarkets for reach.',
@@ -152,10 +152,10 @@ export const items = [
     id: 'm02-dg-11', lesson: 'measuring-the-mix', type: 'mc', kind: 'conceptual',
     prompt: 'A campaign report says “ROAS 3.0”. What does that tell you?',
     options: [
-      '$3 of revenue was attributed to the campaign for every $1 spent; it doesn’t say whether the campaign made a profit or caused those sales.',
-      'The campaign returned three times its cost in profit.',
-      'The campaign’s return on investment was 300%.',
-      'The campaign caused $3 of extra sales for every $1 spent.',
+      '$3 of revenue was attributed to each $1 spent; it says nothing about profit or about what the campaign caused.',
+      'The campaign returned three times its cost in profit, so it more than paid for itself.',
+      'The campaign’s return on investment was 300%, the same measure expressed as a percentage.',
+      'The campaign caused $3 of extra sales for every $1 spent, compared with what would have sold with no campaign at all.',
     ],
     answer: 0,
     feedback: {

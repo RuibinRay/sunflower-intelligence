@@ -118,13 +118,14 @@ export const items = [
   },
   {
     id: 'f00-m2-9', lesson: 'interest-and-inflation', type: 'num', kind: 'numerical',
-    prompt: 'You deposit $4,000 for two years at 6% a year compounded monthly. What is the balance at the end? Give dollars and cents.',
-    answer: 4508.64, check: () => 4000 * (1 + 0.06 / 12) ** (12 * 2), unit: '$', places: 2, tol: 0.01,
+    prompt: 'A fictional furniture workshop borrows $4,000 for 18 months at 6% a year compounded monthly. It makes no payments until the end, when it repays the loan and all the interest at once. How much interest does it pay in total? Give dollars and cents.',
+    answer: 375.72, check: () => 4000 * (1 + 0.06 / 12) ** 18 - 4000, unit: '$', places: 2, tol: 0.01,
     wrong: [
-      { value: 4494.4, say: 'That is annual compounding. Use the monthly rate (0.5%) for 24 months.' },
-      { value: 4480, say: 'That is simple interest. Interest is added to the balance every month.' },
+      { value: 360, say: 'That is simple interest (4,000 × 6% × 1.5). Unpaid interest is added to the debt each month and is charged interest itself.' },
+      { value: 4375.72, say: 'That is the whole amount repaid at the end. Subtract the $4,000 borrowed to leave the interest.' },
+      { value: 246.71, say: 'That covers only 12 months. The loan runs for 18 months, so use 18 monthly periods.' },
     ],
-    solution: 'Monthly rate = 6% ÷ 12 = 0.5%; months = 24. Balance = 4,000 × 1.005²⁴ ≈ $4,508.64.',
+    solution: 'Monthly rate = 6% ÷ 12 = 0.5%; periods = 18. Amount owed at the end = 4,000 × 1.005¹⁸ ≈ $4,375.72, so the interest is 4,375.72 − 4,000 = $375.72. Simple interest would be 4,000 × 0.06 × 1.5 = $360: compounding adds $15.72 because each month’s unpaid interest is charged interest too.',
   },
   {
     id: 'f00-m2-10', lesson: 'interest-and-inflation', type: 'num', kind: 'applied',
