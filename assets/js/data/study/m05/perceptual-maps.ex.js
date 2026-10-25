@@ -340,7 +340,7 @@ export const check = [
     id: 'm05-pm-k5', type: 'multi', kind: 'conceptual',
     prompt: 'Select all the statements about reading a principal-components biplot that are true.',
     options: [
-      'A brand far along an attribute’s arrow is roughly rated high on that attribute compared with the other brands.',
+      'A brand far along an attribute’s arrow is, roughly, rated higher on that attribute than the other brands.',
       'An arrow’s squared length is the share of that attribute’s differences the map shows.',
       'Arrows at right angles belong to attributes that are unrelated across the brands.',
       'The longest arrow belongs to the attribute customers care about most.',

@@ -2,7 +2,7 @@
 // Lantern's five needs segments from case.js: names, indexes, means, centres, sizes and spend, cups, cross-tabs with
 // their chi-square tests, ANOVA per need, loyalty, awareness and Cold Brew intent (DERIVED.segments), and the typing
 // tool (DERIVED.typing). The golden-question table, the no-structure benchmark's F tests and the worked typing example
-// are recomputed below with the same engines. TRUE_TYPE appears only in the "What Ana couldn't see" note. Tamberlyn
+// are recomputed below with the same engines. TRUE_TYPE appears only in the "What Ana couldn't see" note. Pennacott
 // Fitness, Vantley Outdoor and Kestrow Bank (with Eilidh Bisset) are fictional. Every printed figure is in `checks`.
 import { NEEDS, LEVELS, RESPONDENTS, STUDY, DERIVED as D } from './case.js?v=14';
 import { standardise, kmeans } from '../../../core/classify.js?v=14';
@@ -32,7 +32,7 @@ const CT = S.crosstabs, CHI = S.chi;
 const colTot = (t) => t[0].map((_, l) => sum(t.map((row) => row[l])));
 const share = (t, g, l) => t[g][l] / sum(t[g]);
 const allShare = (t, l) => colTot(t)[l] / N;
-const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
+const pc = (v, d = 1) => `${(Math.round(v * 10 ** (d + 2) * (1 + 1e-12)) / 10 ** d).toFixed(d)}%`;   // half up, consistently
 const p0 = (v) => `${Math.round(v * 100)}%`;
 const exUnder30 = share(CT.age, EX, 0), allUnder30 = allShare(CT.age, 0), exOfUnder30 = CT.age[EX][0] / colTot(CT.age)[0];
 const clRich = (CT.income[CL][2] + CT.income[CL][3]) / SZ[CL].n, allRich = (colTot(CT.income)[2] + colTot(CT.income)[3]) / N;
@@ -76,9 +76,36 @@ const perms = (n) => (n === 1 ? [[0]] : perms(n - 1).flatMap((p) => Array.from({
 const MAP = perms(K).reduce((b, p) => { const a = agreement(KMT.labels.map((v) => p[v]), LAB.slice(0, HO.train)); return a > b.a ? { a, p } : b; }, { a: -1, p: null }).p;
 const hold8 = agreement(nearestCentroid(KMT.centres, Z.slice(HO.train)).map((v) => MAP[v]), LAB.slice(HO.train));
 const hold4 = agreement(nearestCentroid(KMT.centres.map((c) => SHORT.map((j) => c[j])), Z.slice(HO.train).map((r) => SHORT.map((j) => r[j]))).map((v) => MAP[v]), LAB.slice(HO.train));
+// the same hold-out without leaks: standardise, segment and rank the needs on the training rows alone, then type the test rows
+function leakFree(train, test) {
+  const st = standardise(COLS.map((c) => train.map((i) => c[i])));
+  const zOf = (i) => COLS.map((c, j) => (c[i] - st.mu[j]) / st.s[j]);
+  const km = kmeans(st.rows, K, { restarts: 20 });
+  const gold = NEEDS.map((_, j) => ({ j, F: anova1(Array.from({ length: K }, (_, g) => train.filter((_, q) => km.labels[q] === g).map((i) => COLS[j][i]))).F }))
+    .sort((a, b) => b.F - a.F).slice(0, 4).map((x) => x.j).sort((a, b) => a - b);
+  const map = perms(K).reduce((b, p) => { const a = agreement(km.labels.map((v) => p[v]), train.map((i) => LAB[i])); return a > b.a ? { a, p } : b; }, { a: -1, p: null }).p;
+  const typed = nearestCentroid(km.centres.map((c) => gold.map((j) => c[j])), test.map((i) => { const z = zOf(i); return gold.map((j) => z[j]); })).map((v) => map[v]);
+  return { acc: agreement(typed, test.map((i) => LAB[i])), gold };
+}
+const IDX = Array.from({ length: N }, (_, i) => i);
+const LF = leakFree(IDX.slice(0, HO.train), IDX.slice(HO.train));
+const holdMoe = 1.96 * Math.sqrt((LF.acc * (1 - LF.acc)) / HO.test);
+// which 160 are held back matters: 40 random 480/160 splits (seeded), done the same leak-free way
+const rsp = mulberry32(480160);
+const shuffleIdx = (a) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(rsp() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+const SPLITS = Array.from({ length: 40 }, () => { const sh = shuffleIdx(IDX); return leakFree(sh.slice(0, HO.train).sort((a, b) => a - b), sh.slice(HO.train).sort((a, b) => a - b)).acc; });
+const splitMean = mean(SPLITS), splitSd = Math.sqrt(sum(SPLITS.map((v) => (v - splitMean) ** 2)) / (SPLITS.length - 1));
+const atOrBelow = SPLITS.filter((v) => v <= LF.acc + 1e-12).length;
+// the in-sample tool (all 640) on the same 160 held-back respondents
+const full160 = agreement(nearestCentroid(CENTRES.map((c) => SHORT.map((j) => c[j])), Z.slice(HO.train).map((r) => SHORT.map((j) => r[j]))), LAB.slice(HO.train));
+// every set of four needs, in sample: the F ranking is a heuristic
+const SETS = []; for (let a = 0; a < P; a++) for (let b = a + 1; b < P; b++) for (let c = b + 1; c < P; c++) for (let d = c + 1; d < P; d++) SETS.push([a, b, c, d]);
+const SETACC = SETS.map((js) => ({ js, acc: agreement(typeWith(js), LAB) })).sort((x, y) => y.acc - x.acc);
+const topFRank = SETACC.findIndex((x) => x.js.join() === golden(4).join()) + 1;
+const BEST4 = SETACC[0];
 
 // ---------------------------------------------------------------- examples (fictional)
-// Tamberlyn Fitness: one of four member segments, on four of its six needs
+// Pennacott Fitness: one of four member segments, on four of its six needs
 const TF = { members: 500, seg: 128, needs: ['Class variety', 'Opening hours', 'Price', 'Personal training'], overall: [4.2, 4.8, 4.5, 3.4], segMean: [6.1, 4.6, 3.2, 3.6] };
 const tfIx = TF.overall.map((m, j) => (TF.segMean[j] / m) * 100);
 // Vantley Outdoor: a typing tool with three golden questions
@@ -145,7 +172,7 @@ export default {
     { p: `Names go wrong when they claim more than the needs show. “Young explorers” would bake in an age that ${pc(1 - exUnder30, 0)} of the segment don’t have. “Lantern loyalists” for Craft and local would be false: only ${pc(S.aware[CL], 1)} of them know Lantern. Names that judge (“coffee snobs”, “cheapskates”) colour every later decision about a group of customers. And no name should suggest a segment is a different kind of person rather than a group whose answers are similar, with edges that overlap.` },
 
     { h: 'Who they are and what they do' },
-    { p: `Cross-tabulating segment by each descriptor, and percentaging within each segment as <i>Analysing survey data</i> taught, turns the needs segments into groups Lantern can find. Explorers are young: ${pc(exUnder30)} are aged 18–29, against ${pc(allUnder30)} of all respondents. Craft and local are the café-goers (${pc(clCafe)} mostly buy from a café, against ${pc(allCafe)}) and the best-off (${pc(clRich)} have household incomes over $80,000, against ${pc(allRich)}). Value routine mostly brew at home (${pc(vrHome)}, against ${pc(allHome)}). On the go buy from supermarkets and ready-to-drink cans (${pc(ogRtd)}) or at the office (${pc(ogOffice)}, against ${pc(allOffice)}), and Mindful are more often families with children (${pc(miFamily)}, against ${pc(allFamily)}).` },
+    { p: `Cross-tabulating segment by each descriptor, and percentaging within each segment as <i>Analysing survey data</i> taught, turns the needs segments into groups Lantern can find. Explorers are young: ${pc(exUnder30)} are aged 18–29, against ${pc(allUnder30)} of all respondents. Craft and local are the café-goers (${pc(clCafe)} mostly buy from a café, against ${pc(allCafe)}) and the best-off (${pc(clRich)} have household incomes over $80,000, against ${pc(allRich)}). Half of Value routine (${pc(vrHome)}, against ${pc(allHome)}) mostly brew at home. On the go buy from supermarkets and ready-to-drink cans (${pc(ogRtd)}, against ${pc(allRtd)}) or at the office (${pc(ogOffice)}, against ${pc(allOffice)}), and Mindful are more often families with children (${pc(miFamily)}, against ${pc(allFamily)}).` },
     { table: {
       caption: `What the segments do: means and percentages within each segment. Base: ${N} respondents (all), unweighted.`,
       head: ['Measure (all)', ...SEG_ORDER.map((g) => NAMES[g])],
@@ -161,7 +188,7 @@ export default {
     { p: `The behaviour fits the needs, which is a sign the segments are real enough to use: the convenience-driven drink the most cups, the price-driven spend the least, and the segment that values local businesses scores highest on the local-loyalty scale and knows Lantern best. It also holds a tension for later lessons. Cold Brew’s strongest intent is in Craft and local (${pc(S.coldbrewTop2[CL])}), Lantern’s natural customers, and On the go (${pc(S.coldbrewTop2[OG])}), who want convenience Lantern is weak on.` },
 
     { h: 'How big: people and spend' },
-    { p: `A segment has two sizes: its share of the respondents and its share of what they spend. The <g>share of spend</g> is the segment’s total monthly spend divided by everyone’s; <g>spend per head</g> is the segment’s total divided by its respondents. Craft and local are ${pc(SZ[CL].share)} of respondents but account for ${pc(SZ[CL].spendShare)} of their spend, at ${money(SZ[CL].perHead)} a head against ${money(HEAD_ALL)} for everyone; Value routine are ${pc(SZ[VR].share)} of respondents and ${pc(SZ[VR].spendShare)} of spend.` },
+    { p: `A segment has two sizes: its share of the respondents and its share of what they spend. The <g>share of spend</g> is the segment’s total monthly spend divided by everyone’s; <g>spend per head</g> is the segment’s total divided by its respondents. Craft and local are ${pc(SZ[CL].share)} of respondents but account for ${pc(SZ[CL].spendShare)} of their spend, at ${money(SZ[CL].perHead)} a head against ${money(HEAD_ALL)} for everyone; Value routine are ${pc(SZ[VR].share)} of respondents and ${pc(SZ[VR].spendShare)} of spend. Sizing tests whether a segment is substantial, one of the ADAMS criteria in OpenStax’s list (accessible, differentiable, actionable, measurable and substantial) that module 1 applied; the profiles and descriptors test the others.` },
     { table: {
       caption: `Segment sizes in people and in monthly coffee spend (respondents’ own estimates). Base: ${N} respondents, $${SPEND_ALL.toLocaleString('en-US')} a month in all.`,
       head: ['Segment', 'Respondents', 'Share of respondents', 'Share of spend', 'Spend a head', 'Spend share ÷ respondent share'],
@@ -179,31 +206,31 @@ export default {
 
     { h: 'Profiling is not testing' },
     { p: `It is tempting to run a one-way ANOVA (B04) on each need and report that the segments “differ significantly”. They do: the F statistics run from ${f1(Fmin)} to ${f1(Fmax)}. But k-means chose the segments to make these very means differ, so the test’s assumption, that the groups were fixed before the data were seen, fails, and the p-values mean nothing. The proof is the no-structure benchmark from <i>Cluster analysis</i>: on ${N} made-up respondents with random ratings, k-means’ five segments give F statistics from ${f1(nFmin)} to ${f1(nFmax)} on the random ratings, every one with p below 0.000001.` },
-    { p: `The F statistics are still useful as a ranking of which needs separate the segments most: novelty (${f1(FS[0].F)}), local (${f1(FS[1].F)}), sustainability (${f1(FS[2].F)}) and price (${f1(FS[3].F)}) lead, and taste (${f1(S.anova[0].F)}) separates them least. That ranking chooses the golden questions below.` },
+    { p: `The F statistics are still useful as a ranking of which needs separate the segments most: novelty (${f1(FS[0].F)}), local (${f1(FS[1].F)}), sustainability (${f1(FS[2].F)}) and price (${f1(FS[3].F)}) lead, and taste (${f1(S.anova[0].F)}) separates them least. That ranking is a quick way to choose the golden questions, with a limit shown below.` },
 
     { h: 'Testing descriptors' },
-    { p: `Tests on descriptor variables are legitimate, because the segments were not formed from them. The <g>test of independence</g> of B04 on each cross-tab of segment by a descriptor gives p below 0.001 for all five here, and <g>Cramér’s V</g> measures how strong each link is: ${f2(VS.source)} for main source, ${f2(VS.age)} for age, ${f2(VS.income)} for income, ${f2(VS.household)} for household and ${f2(VS.area)} for region. These are moderate associations, not rules.` },
+    { p: `Tests on descriptor variables are legitimate, because the segments were not formed from them. The <g>test of independence</g> of B04 on each cross-tab of segment by a descriptor gives p below 0.001 for all five here, and <g>Cramér’s V</g> measures how strong each link is: ${f2(VS.source)} for main source, ${f2(VS.age)} for age, ${f2(VS.income)} for income, ${f2(VS.household)} for household and ${f2(VS.area)} for region. They run from weak (region, below module 1’s rough guide of about 0.2, a cut-off that depends on the table’s size) to moderate (main source): associations, not rules.` },
     { p: `Three cautions apply. The sample is not a probability sample, so a p-value says the pattern is unlikely to be chance among people like these respondents, not that it holds in Harbour City. Testing many descriptors invites false positives, as B04’s multiple-testing warning explained, so choose the few that matter before looking. And a strong link still leaves a segment mixed: ${pc(exUnder30, 0)} of Explorers are under 30, but Explorers are only ${pc(exOfUnder30, 0)} of the under-30s, so marketing to under-30s would mostly reach other segments. Demographics describe and help reach a needs segment; they rarely define it, which is why module 1 found needs harder to reach.` },
 
     { h: 'Sizing in people and in spend' },
-    { p: `The share of spend and spend per head come from the same totals: a segment’s share of spend divided by its share of respondents equals its spend per head divided by the average (${f2(valueRatio(CL))} for Craft and local, ${f2(valueRatio(VR))} for Value routine). Spend here is each respondent’s estimate of their monthly coffee spend, a recall question with the measurement error <i>Survey error</i> described, so the shares are better than the dollar totals. Per head, Craft and local spend ${money(SZ[CL].perHead)} a month, nearly three times Value routine’s ${money(SZ[VR].perHead)}, though Value routine drink more cups (${f1(S.cups[VR])} a week against ${f1(S.cups[CL])}), most of them brewed at home.` },
+    { p: `The share of spend and spend per head come from the same totals: a segment’s share of spend divided by its share of respondents equals its spend per head divided by the average (${f2(valueRatio(CL))} for Craft and local, ${f2(valueRatio(VR))} for Value routine). Spend here is each respondent’s estimate of their monthly coffee spend, a recall question with the measurement error <i>Survey error</i> described, so the shares are better than the dollar totals. Per head, Craft and local spend ${money(SZ[CL].perHead)} a month, nearly three times Value routine’s ${money(SZ[VR].perHead)}, though Value routine drink more cups (${f1(S.cups[VR])} a week against ${f1(S.cups[CL])}).` },
 
     { h: 'Is the sample representative?' },
     { p: `The ${N} respondents came from an <g>opt-in panel</g>, filled to <g>quota sample</g> targets on age band. The quotas make the age mix match Ana’s targets; they do nothing for income, region or the needs themselves, and within each age band the people are those who joined a panel and chose to answer. The AAPOR task force on online panels advised researchers to avoid non-probability online panels when one of the objectives is to estimate population values accurately (Baker et al., 2010). A panel’s members may, for example, be keener on novelty than the city as a whole, which would overstate the Explorers.` },
     { p: `So Ana can say “about a fifth of the coffee drinkers in our study were Explorers”, not “a fifth of Harbour City’s coffee drinkers are Explorers”. She can check the sizes against other evidence (Lantern’s own sales by café, income figures for Harbour City), weight to known population totals as <i>Survey error</i> showed, knowing that weighting can’t fix self-selection within a weighting cell, and treat any market size built from the shares, with <i>Market sizing</i>’s methods, as a planning range. The profiles are more robust than the sizes: what Explorers want is less likely to be distorted by the panel than how many there are.` },
 
     { h: 'The typing tool' },
-    { p: String.raw`A segmentation is only useful if new customers can be placed in it. A <g>typing tool</g> assigns a new respondent to a segment: standardise their answers with the study’s means and standard deviations (never their own), compute the squared Euclidean distance to every segment centre, and choose the nearest. Asking all eight needs in a café or a sign-up form is too long, so analysts use a few <g>golden questions</g>, chosen because they separate the segments best. Bock describes choosing them empirically, with a classification method such as discriminant analysis, and notes the trade-off: fewer questions, lower accuracy. Here the F ranking does the choosing.` },
+    { p: String.raw`A segmentation is only useful if new customers can be placed in it. A <g>typing tool</g> assigns a new respondent to a segment: transform their answers exactly as the study did, which for Ana means standardising with the study’s means and standard deviations, compute the squared Euclidean distance to every segment centre, and choose the nearest. Asking all eight needs in a café or a sign-up form is too long, so analysts use a few <g>golden questions</g>, chosen because they separate the segments best. Bock describes choosing them empirically, with a classification method such as discriminant analysis, and notes the trade-off: fewer questions, lower accuracy. Here the F ranking does the choosing, as a quick first cut.` },
     { table: {
       caption: `How many golden questions? Share of the ${N} respondents the nearest-centre typing tool puts in the same segment as all eight needs do, using the needs with the highest F statistics.`,
       head: ['Golden questions', 'Needs used', 'Same segment as all eight'],
       align: ['r', 'l', 'r'],
       rows: [1, 2, 3, 4, 5, 6, 7, 8].map((m) => [String(m), golden(m).map((j) => NEEDS[j].label).join(', '), pc(ACC[m])]),
     } },
-    { p: `Four questions (price, sustainability, local and novelty) place ${pc(ACC[4])} of respondents, ${Math.round(ACC[4] * N)} of ${N}, in the same segment as all eight. Choosing well matters: the four needs with the lowest F statistics place only ${pc(accLow4)}. Ana adopts the four.` },
-    { p: `The ${pc(ACC[4])} was measured on the respondents who formed the segments, which flatters the tool. Accuracy belongs on people the segmentation never saw, a <g>test set</g> in B02’s language. Ana’s analyst segmented the first ${HO.train} respondents (the <g>training set</g>) and typed the other ${HO.test} with those centres: on all eight needs, all ${HO.test} landed in the same segment as in the segmentation of all ${N}, so the centres are stable; with the four golden questions, ${Math.round(hold4 * HO.test)} of ${HO.test} did (${pc(hold4)}). That is the figure to report for the tool.` },
-    { p: 'Both figures measure agreement with the full segmentation, not with any truth, and one research agency reports that typing tools’ accuracy ranges widely, from about 40% to 90% (Horn, 2023). New customers answering at a till may also answer differently from panel members at home, so Ana will check the tool again on real customers.' },
-    { callout: 'note', title: 'What Ana couldn’t see', html: `Against the five planted kinds of coffee drinker in the case, the hold-out typing places ${pc(HO.againstTruth)} of the ${HO.test} held-back respondents (${Math.round(HO.againstTruth * HO.test)} of ${HO.test}) in the kind they were generated from. No real study has that answer key.` },
+    { p: `Four questions (price, sustainability, local and novelty) place ${pc(ACC[4])} of respondents, ${Math.round(ACC[4] * N)} of ${N}, in the same segment as all eight; the four needs with the lowest F statistics place only ${pc(accLow4)}. But ranking needs one at a time by F ignores how the needs overlap, and price, health and energy have nearly equal F statistics (${f1(S.anova[1].F)}, ${f1(S.anova[5].F)} and ${f1(S.anova[4].F)}). Of all ${SETS.length} sets of four needs, the top-F four rank ${['', 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth'][topFRank]}; ${BEST4.js.map((j) => NEEDS[j].key).join(', ').replace(/, ([^,]+)$/, ' and $1')} do best (${pc(BEST4.acc)}). That is why Bock recommends a classification method that judges the questions together. Ana keeps the top-F four, close to the best and easy to explain.` },
+    { p: `Accuracy belongs on people the segmentation never saw, a <g>test set</g> in B02’s language, and nothing fitted to the tool may use them: not the segments, the means and standard deviations, or the choice of questions. Ana’s analyst segmented the first ${HO.train} respondents (the <g>training set</g>), standardised and ranked the needs on them alone (the same four questions came out on top) and typed the other ${HO.test}: ${Math.round(LF.acc * HO.test)} of ${HO.test} (${pc(LF.acc)}) landed in the same segment as in the segmentation of all ${N}. Standardising with all ${N} and taking the four questions from the full analysis would have given ${Math.round(hold4 * HO.test)} (${pc(hold4)}), so the leak hardly matters here, and on all eight needs every one of the ${HO.test} matched: the centres themselves are stable. The figure to report for the tool is ${pc(LF.acc)}.` },
+    { p: `Keep it in proportion. A hold-out of ${HO.test} is uncertain by about ±${f1(holdMoe * 100)} points, and which ${HO.test} are held back matters: across ${SPLITS.length} random splits of ${HO.train} and ${HO.test}, done the same way, the hold-out figure averaged ${pc(splitMean)} (standard deviation ${f1(splitSd * 100)} points, from ${pc(Math.min(...SPLITS))} to ${pc(Math.max(...SPLITS))}), so Ana’s split is typical. The in-sample ${pc(ACC[4])} flatters the tool, but only slightly here: on the same ${HO.test} respondents, the tool built from all ${N} places ${Math.round(full160 * HO.test)} (${pc(full160)}). All these figures measure agreement with the full segmentation, not with any truth, and one research agency reports that typing tools’ accuracy ranges widely, from about 40% to 90% (Horn, n.d.). New customers answering at a till may also answer differently from panel members at home, so Ana will check the tool again on real customers.` },
+    { callout: 'note', title: 'What Ana couldn’t see', html: `Against the five planted kinds of coffee drinker in the case, typing the ${HO.test} held-back respondents on all eight needs with the first ${HO.train}’s centres places ${pc(HO.againstTruth)} of them (${Math.round(HO.againstTruth * HO.test)} of ${HO.test}) in the kind they were generated from. No real study has that answer key.` },
 
     { h: 'The segment report' },
     { p: 'The usual deliverable is a one- or two-page report for each segment, built so that someone who never saw the analysis can use it. Dolnicar, Grün and Leisch stress that statistics are no substitute for the judgement of the people who will use the segments, and the report is what they judge from. Each report should give:' },
@@ -252,9 +279,9 @@ export default {
 
   examples: [
     { level: 'simple', title: 'Profiling and naming a gym segment', fictional: true,
-      setup: `Tamberlyn Fitness segmented ${TF.members} members into four segments. Segment C has ${TF.seg} members. The table gives its mean rating on four of the six needs and every member’s mean. Work out the indexes and choose a name.`,
+      setup: `Pennacott Fitness segmented ${TF.members} members into four segments. Segment C has ${TF.seg} members. The table gives its mean rating on four of the six needs and every member’s mean. Work out the indexes and choose a name.`,
       table: {
-        caption: 'Tamberlyn Fitness: segment C against all members (ratings 1–7, fictional)',
+        caption: 'Pennacott Fitness: segment C against all members (ratings 1–7, fictional)',
         head: ['Need', 'Segment C mean', 'All members’ mean'],
         align: ['l', 'r', 'r'],
         rows: TF.needs.map((n, j) => [n, f1(TF.segMean[j]), f1(TF.overall[j])]),
@@ -279,7 +306,7 @@ export default {
         `Standardise each answer with the study’s mean and standard deviation: (6 − 4.8) ÷ 1.5 = ${f2(voZ[0])}, (5 − 3.9) ÷ 1.6 = ${f2(voZ[1])} and (3 − 4.2) ÷ 1.4 = ${f2(voZ[2])}.`,
         `Squared distance to Technical: (${f2(voZ[0])} − 1.1)² + (${f2(voZ[1])} + 0.6)² + (${f2(voZ[2])} + 0.5)² = ${f2(voD[0])}. To Style: ${f2(voD[1])}. To Value: ${f2(voD[2])}.`,
         `The nearest centre is ${VO.names[voBest]} (${f2(voD[voBest])}), but Style (${f2(voD[1])}) is almost as near: she likes performance and fashion, and sits between the two segments.`,
-        `A common slip is to centre her answers on her own average (${voOwn.map((v) => f2(v)).join(', ')}), which throws away how high or low her ratings are compared with other customers. The tool must store and use the study’s means and standard deviations.`,
+        `The tool must transform her answers exactly as the study transformed its respondents’: here, standardised with the study’s stored means and standard deviations and nothing else. Centring her answers on her own average instead (${voOwn.map((v) => f2(v)).join(', ')}) would put them on a different footing from the centres, throwing away how high or low her ratings are compared with other customers.`,
       ],
       answer: `Technical, by a narrow margin (${f2(voD[0])} against ${f2(voD[1])} for Style).`,
       interpretation: 'Customers near a boundary are where typing tools go wrong, and with three questions there are many of them. Vantley could store the margin between the nearest and second-nearest centre and treat close calls as uncertain, for example by asking one more golden question or by not personalising offers for them until their purchases say more.' },
@@ -305,8 +332,8 @@ export default {
     { title: '“An index of 168 means the segment cares 68% more.”', html: `On a 1–7 rating scale with no true zero, an index exaggerates differences on needs with low averages. It means the segment’s mean rating is 1.68 times the overall mean; read it beside the means (${f2(MEANS[MI][5])} against ${f2(MU[5])} for Mindful on health) or the centres.` },
     { title: '“Name the segment after its typical member.”', html: `A segment is a group with similar needs, not a type of person. Names that add an age, an income or a loyalty the needs didn’t measure (“Young explorers”, “Lantern loyalists”) mislead: ${pc(1 - exUnder30, 0)} of Explorers are 30 or older, and ${pc(1 - S.aware[CL], 0)} of Craft and local don’t know Lantern.` },
     { title: '“A fifth of the city are Explorers.”', html: 'The shares come from an opt-in panel with age quotas: they are shares of the study’s respondents. Quotas fix age, nothing else. State the base, cross-check with other evidence, and treat population sizes built on them as ranges.' },
-    { title: '“The typing tool is 92.5% accurate.”', html: `${pc(ACC[4])} is how often four golden questions agree with all eight needs on the study’s own respondents. On a hold-out the segmentation never saw it is ${pc(hold4)}, and even that measures agreement with the full segmentation rather than truth; customers answering at a till may answer differently again.` },
-    { title: '“Standardise a new customer’s answers against her own average.”', html: 'Centring on her own answers throws away whether her ratings are high or low compared with everyone else. Store the study’s means and standard deviations with the tool and standardise every new respondent with them.' },
+    { title: '“The typing tool is 92.5% accurate.”', html: `${pc(ACC[4])} is how often four golden questions agree with all eight needs on the study’s own respondents. On a hold-out that nothing in the tool was fitted to, it is ${pc(LF.acc)}, uncertain by about ±${f1(holdMoe * 100)} points, and even that measures agreement with the full segmentation rather than truth; customers answering at a till may answer differently again.` },
+    { title: '“A new customer’s answers can be prepared however is convenient.”', html: 'The tool must transform new answers exactly as the study did, or they won’t be comparable with the centres. For Ana that means standardising with the study’s stored means and standard deviations; centring a customer on her own average, or standardising against the day’s other customers, puts her on a different footing and can move her to the wrong segment.' },
   ],
 
   application: [
@@ -329,7 +356,7 @@ export default {
 
   glossary: [
     { term: 'Profiling', def: 'Describing segments on the segmentation variables that formed them, for example as indexes against the average, to see what each segment wants.' },
-    { term: 'Descriptor variable', def: 'A variable used to describe segments after they are formed, such as age, income, spend or where people buy, as distinct from the segmentation variables that formed them.' },
+    { term: 'Descriptor variable', def: 'A variable used to describe segments after they are formed, such as age, income, spend or where people buy, as distinct from the segmentation variables that formed them; also called a descriptor.' },
     { term: 'Index', def: 'A segment’s mean on a variable divided by the overall mean, times 100: 100 is average, above 100 the segment is higher than average. Also called an index against the average.' },
     { term: 'Share of spend', def: 'A segment’s total spend divided by the total spend of everyone in the base; compared with its share of people, it shows whether the segment spends more or less than average a head.' },
     { term: 'Spend per head', def: 'A group’s total spend divided by the number of people in it: the mean spend.' },
@@ -342,7 +369,7 @@ export default {
     { text: 'Gomez Albrecht, M., Green, M. &amp; Hoffman, L. (2023). <i>Principles of Marketing</i>, chapter 5 key terms (ADAMS: accessible, differentiable, actionable, measurable and substantial segments; needs-based segmentation). OpenStax.', url: 'https://openstax.org/books/principles-marketing/pages/5-key-terms', checked: '2026-10-25' },
     { text: 'Baker, R., Blumberg, S. J., Brick, J. M. et al. (2010). AAPOR report on online panels. <i>Public Opinion Quarterly</i>, 74(4), 711–781. doi:10.1093/poq/nfq048.', url: 'https://aapor.org/wp-content/uploads/2022/11/nfq048.pdf', checked: '2026-10-25' },
     { text: 'Bock, T. How to write golden questions for market segmentation. Q Research Software (undated web article).', url: 'https://www.qresearchsoftware.com/how-to-write-golden-questions-for-market-segmentation', checked: '2026-10-25' },
-    { text: 'Horn, E. (2023). The type is right: segmentation typing tools. Decision Analyst.', url: 'https://decisionanalyst.com/blog/segmentationtypingtools/', checked: '2026-10-25' },
+    { text: 'Horn, E. (n.d.). The Type Is Right: Maximizing the Impact of Segmentation Typing Tools. Decision Analyst (undated web article; the page carries a 2023 copyright notice).', url: 'https://decisionanalyst.com/blog/segmentationtypingtools/', checked: '2026-10-25' },
   ],
 
   checks: [
@@ -460,6 +487,29 @@ export default {
     { what: 'Hold-out four golden questions %', value: hold4 * 100, shown: 88.1, tol: 0.05 },
     { what: 'Hold-out four golden questions count', value: Math.round(hold4 * HO.test), shown: 141 },
     { what: 'Hold-out four below in-sample four', value: Number(hold4 < ACC[4]), shown: 1 },
+    { what: 'Leak-free hold-out %', value: LF.acc * 100, shown: 87.5, tol: 0.05 },
+    { what: 'Leak-free hold-out count', value: Math.round(LF.acc * HO.test), shown: 140 },
+    { what: 'Leak-free picks the same four', value: Number(LF.gold.join() === SHORT.join()), shown: 1 },
+    { what: 'Hold-out margin, points', value: holdMoe * 100, shown: 5.1, tol: 0.05 },
+    { what: 'Hold-out margin about 5', value: holdMoe * 100, shown: 5, tol: 0.5 },
+    { what: 'Random splits', value: SPLITS.length, shown: 40 },
+    { what: 'Random splits mean %', value: splitMean * 100, shown: 88.8, tol: 0.05 },
+    { what: 'Random splits SD, points', value: splitSd * 100, shown: 4.4, tol: 0.05 },
+    { what: 'Random splits lowest %', value: Math.min(...SPLITS) * 100, shown: 79.4, tol: 0.05 },
+    { what: 'Random splits highest %', value: Math.max(...SPLITS) * 100, shown: 94.4, tol: 0.05 },
+    { what: 'Ana’s split is typical (within one SD of the mean)', value: Number(Math.abs(LF.acc - splitMean) < splitSd && atOrBelow > 5 && atOrBelow < 35), shown: 1 },
+    { what: 'Full-sample tool on the same 160 %', value: full160 * 100, shown: 89.4, tol: 0.05 },
+    { what: 'Full-sample tool on the same 160 count', value: Math.round(full160 * HO.test), shown: 143 },
+    { what: 'Sets of four needs', value: SETS.length, shown: 70 },
+    { what: 'Top-F four rank', value: topFRank, shown: 7 },
+    { what: 'Best set of four %', value: BEST4.acc * 100, shown: 94.1, tol: 0.05 },
+    { what: 'Best set is energy, health, local, novelty', value: Number(BEST4.js.map((j) => NEEDS[j].key).join() === 'energy,health,local,novelty'), shown: 1 },
+    { what: 'F price', value: S.anova[1].F, shown: 286.5, tol: 0.05 },
+    { what: 'F health', value: S.anova[5].F, shown: 277.3, tol: 0.05 },
+    { what: 'F energy', value: S.anova[4].F, shown: 274.0, tol: 0.05 },
+    { what: 'All supermarket or RTD %', value: allRtd * 100, shown: 27.5, tol: 0.05 },
+    { what: 'Module 1 rough guide for weak V', value: 0.2, shown: 0.2 },
+    { what: 'Region V below 0.2', value: Number(VS.area < 0.2), shown: 1 },
     { what: 'Hold-out against truth %', value: HO.againstTruth * 100, shown: 98.1, tol: 0.05 },
     { what: 'Hold-out against truth count', value: HO.againstTruth * HO.test, shown: 157, tol: 1e-9 },
     { what: 'Agency range low', value: 40, shown: 40 },
@@ -479,13 +529,13 @@ export default {
     { what: 'Local SD', value: SD[6], shown: 1.61, tol: 0.005 },
     { what: 'Novelty mean', value: MU[7], shown: 4.00, tol: 0.005 },
     { what: 'Novelty SD', value: SD[7], shown: 1.67, tol: 0.005 },
-    // Tamberlyn
-    { what: 'Tamberlyn members', value: TF.members, shown: 500 },
-    { what: 'Tamberlyn segment C', value: TF.seg, shown: 128 },
-    { what: 'Tamberlyn segment share %', value: (TF.seg / TF.members) * 100, shown: 25.6, tol: 0.05 },
-    ...tfIx.map((v, j) => ({ what: `Tamberlyn index ${j}`, value: v, shown: [145, 96, 71, 106][j], tol: 0.5 })),
-    { what: 'Tamberlyn segments', value: 4, shown: 4 },
-    { what: 'Tamberlyn needs in all', value: 6, shown: 6 },
+    // Pennacott
+    { what: 'Pennacott members', value: TF.members, shown: 500 },
+    { what: 'Pennacott segment C', value: TF.seg, shown: 128 },
+    { what: 'Pennacott segment share %', value: (TF.seg / TF.members) * 100, shown: 25.6, tol: 0.05 },
+    ...tfIx.map((v, j) => ({ what: `Pennacott index ${j}`, value: v, shown: [145, 96, 71, 106][j], tol: 0.5 })),
+    { what: 'Pennacott segments', value: 4, shown: 4 },
+    { what: 'Pennacott needs in all', value: 6, shown: 6 },
     // Vantley
     ...voZ.map((v, j) => ({ what: `Vantley z ${j}`, value: v, shown: [0.80, 0.69, -0.86][j], tol: 0.005 })),
     ...voD.map((v, g) => ({ what: `Vantley distance ${g}`, value: v, shown: [1.88, 2.01, 5.96][g], tol: 0.005 })),

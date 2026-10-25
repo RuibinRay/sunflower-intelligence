@@ -149,7 +149,7 @@ export const items = [
   },
   {
     id: 'm05-dg-5', lesson: 'cluster-analysis', type: 'mc', kind: 'applied',
-    prompt: `A fictional travel insurer ran k-means on ${int(INS.n)} customers’ ${INS.p} standardised needs, with 30 restarts for each k; with one segment the within-cluster sum of squares is ${int(insT)}. Two segments split the customers into price-first and cover-first; at four, each of those divides into groups that want different policies; at five, one of the four splits into two groups that want the same cover, one more strongly than the other. The split-half check segmented each half of the sample separately and compared the two assignments. Which number of segments does the evidence support best?`,
+    prompt: `A fictional travel insurer ran k-means on ${int(INS.n)} customers’ standardised ratings of six needs, with 30 restarts for each k; with one segment the within-cluster sum of squares is ${int(insT)}. Two segments split the customers into price-first and cover-first; at four, each of those divides into groups that want different policies; at five, one of the four splits into two groups that want the same cover, one more strongly than the other. The split-half check segmented each half of the sample separately and compared the two assignments. Which number of segments does the evidence support best?`,
     data: { table: { head: ['k', 'Within-cluster sum of squares', 'Fall from k − 1', 'Mean silhouette', 'Split-half adjusted Rand index'], rows: INS.ks.map((k, i) => [String(k), int(INS.wcss[i]), int(insFall[i]), fx(INS.sil[i]), fx(INS.ari[i])]), align: ['r', 'r', 'r', 'r', 'r'] } },
     options: [
       'Four: the falls shrink after four, its silhouette is a local peak, its halves agree and each segment needs its own policy',

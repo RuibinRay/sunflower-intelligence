@@ -36,7 +36,7 @@ const pc = (v, d = 1) => `${fx(v * 100, d)}%`;
 const sgn = (v, d = 2) => `${v < 0 ? '−' : '+'}${fx(Math.abs(v), d)}`;
 const m1 = (v) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), 1)}`;      // one decimal, with a real minus sign
 const sum = (a) => a.reduce((s, x) => s + x, 0);
-const r0 = (x) => Math.round(x), r1 = (x) => Math.round(x * 10) / 10, r2 = (x) => Math.round(x * 100) / 100;
+const r1 = (x) => Math.round(x * 10) / 10, r2 = (x) => Math.round(x * 100) / 100;
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
 const dist = (a, b) => Math.sqrt(sum(a.map((v, j) => (v - b[j]) ** 2)));
 const Z = normInv(0.975);
@@ -152,7 +152,7 @@ const scoreWith = (rm) => weightedScore([ratio(share), ratio(head), ratio(growth
 const ARC = 0.70;                                                     // Arcadia's new distance from the Craft and local ideal
 const roomNew = room.map((d, g) => (g === CL ? ARC : d));
 const T0 = scoreWith(room), T1 = scoreWith(roomNew);
-const roomScoreOld = ratio(room), roomScoreNew = ratio(roomNew);
+const roomScoreNew = ratio(roomNew);
 const clRest = [ratio(share)[CL], ratio(head)[CL], ratio(growth)[CL], fitS[CL]];
 const clWith = (roomScore) => (W_ANA[0] * clRest[0] + W_ANA[1] * clRest[1] + W_ANA[2] * clRest[2] + W_ANA[3] * roomScore + W_ANA[4] * clRest[3]) / sum(W_ANA);
 const bestRoomNew = Math.max(...roomNew), bestRoomSeg = roomNew.indexOf(bestRoomNew);

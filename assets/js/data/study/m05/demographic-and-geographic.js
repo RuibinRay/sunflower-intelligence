@@ -26,6 +26,8 @@ const A_CUPS_AGE = I.anova1(AGE.map((g) => g.map((r) => r.cups)));
 const A_CUPS_HH = I.anova1(HH.map((g) => g.map((r) => r.cups)));
 const A_LOCAL_INC = I.anova1(INC.map((g) => g.map((r) => r.needs[J.local])));
 const A_NOV_AGE = I.anova1(AGE.map((g) => g.map((r) => r.needs[J.novelty])));
+const A_TASTE_INC = I.anova1(INC.map((g) => g.map((r) => r.needs[J.taste])));
+const etaBy = (G) => NEEDS.map((_, j) => I.anova1(G.map((g) => g.map((r) => r.needs[j]))).eta2);
 const spendInc = INC.map((g) => mean(g.map((r) => r.spend)));
 const localInc = INC.map((g) => mean(g.map((r) => r.needs[J.local])));
 const top = INC[3], topHiLocal = top.filter((r) => r.needs[J.local] >= 6).length, topLoLocal = top.filter((r) => r.needs[J.local] <= 3).length;
@@ -54,27 +56,27 @@ const pv = (p) => (p < 0.001 ? 'p &lt; 0.001' : `p = ${p.toFixed(3)}`);
 
 function sourceFigure() {
   const rows = [...LEVELS.age.map((a, i) => [a, T_AGE[i]]), ['All respondents', ALL]];
-  const Lx = 150, BW = 420, T0 = 56, H = 28, G = 14;
-  const height = T0 + rows.length * (H + G) + 22;
+  const X0 = 6, BW = 368, T0 = 70, H = 26, G = 44;
+  const height = T0 + rows.length * G + 30;
   const fills = [['var(--series-1)', 0.6], ['var(--series-2)', 0.45], ['var(--series-3)', 0.5], ['var(--ink-3)', 0.25]];
-  let s = `<svg viewBox="0 0 640 ${height}" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="12" fill="currentColor">`;
+  let s = `<svg viewBox="0 0 380 ${height}" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="12" fill="currentColor">`;
   SRC.forEach((label, k) => {
-    const x = 20 + k * 155;
-    s += `<rect x="${x}" y="12" width="14" height="14" style="fill:${fills[k][0]};fill-opacity:${fills[k][1]};stroke:var(--ink);stroke-width:0.6"/>`;
-    s += `<text x="${x + 20}" y="23" font-size="11">${label}</text>`;
+    const x = X0 + (k % 2) * 190, y = 6 + Math.floor(k / 2) * 22;
+    s += `<rect x="${x}" y="${y}" width="14" height="14" style="fill:${fills[k][0]};fill-opacity:${fills[k][1]};stroke:var(--ink);stroke-width:0.6"/>`;
+    s += `<text x="${x + 20}" y="${y + 12}">${label}</text>`;
   });
   rows.forEach(([name, row], i) => {
-    const y = T0 + i * (H + G), n = sum(row);
-    let x = Lx;
-    s += `<text x="${Lx - 10}" y="${y + 18}" text-anchor="end"${i === rows.length - 1 ? ' font-weight="600"' : ''}>${name} (${n})</text>`;
+    const y = T0 + i * G, n = sum(row);
+    let x = X0;
+    s += `<text x="${X0}" y="${y - 4}"${i === rows.length - 1 ? ' font-weight="600"' : ''}>${name} (${n})</text>`;
     row.forEach((v, k) => {
       const w = (v / n) * BW;
       s += `<rect x="${x.toFixed(1)}" y="${y}" width="${w.toFixed(1)}" height="${H}" style="fill:${fills[k][0]};fill-opacity:${fills[k][1]};stroke:var(--ink);stroke-width:0.6"/>`;
-      if (w > 26) s += `<text x="${(x + w / 2).toFixed(1)}" y="${y + 18}" text-anchor="middle" font-size="11">${Math.round((v / n) * 100)}%</text>`;
+      if (w > 24) s += `<text x="${(x + w / 2).toFixed(1)}" y="${y + 17}" text-anchor="middle" font-size="11.5">${Math.round((v / n) * 100)}%</text>`;
       x += w;
     });
   });
-  s += `<text x="${Lx}" y="${height - 4}" font-size="11" fill="var(--ink-3)">Share of each age band by where they mostly get their coffee; base in brackets. Unweighted.</text>`;
+  s += `<text x="${X0}" y="${height - 8}" font-size="11" fill="var(--ink-3)">Base in brackets. Unweighted.</text>`;
   return `${s}</svg>`;
 }
 
@@ -119,11 +121,11 @@ export default {
     { p: `The figure crosses age with where respondents mostly get their coffee, percentaged within each age band, as M04 taught: the band is the explanatory variable. There are real differences. Respondents aged 60 or over home-brew most (${p1(share(T_AGE[3], 1))}, against ${p1(share(T_AGE[0], 1))} of 18–29s), and 18–29s buy most often from supermarkets or as ready-to-drink cans (${p1(share(T_AGE[0], 2))}). By region, Central respondents use cafés most (${p1(share(T_AREA[4], 0))}, against ${p1(ALL[0] / N)} overall).` },
     { figure: {
       svg: sourceFigure(),
-      caption: `Main source of coffee by age band, ${N} respondents. Each bar adds to 100%.`,
+      caption: `Main source of coffee by age band, ${N} respondents: the share of each band by where they mostly get their coffee. Each bar adds to 100%.`,
       alt: `Five horizontal bars, one per age band and one for all respondents, each divided into four parts for café, home-brewed, supermarket or ready-to-drink, and office or vending. 18–29 (${AGE[0].length}): ${T_AGE[0].map((v) => Math.round((v / AGE[0].length) * 100)).join('%, ')}%. 30–44 (${AGE[1].length}): ${T_AGE[1].map((v) => Math.round((v / AGE[1].length) * 100)).join('%, ')}%. 45–59 (${AGE[2].length}): ${T_AGE[2].map((v) => Math.round((v / AGE[2].length) * 100)).join('%, ')}%. 60 and over (${AGE[3].length}): ${T_AGE[3].map((v) => Math.round((v / AGE[3].length) * 100)).join('%, ')}%. All respondents (${N}): ${ALL.map((v) => Math.round((v / N) * 100)).join('%, ')}%. The home-brewed share rises with age; the bars otherwise look broadly similar.`,
     } },
-    { p: `Are the differences larger than chance? B04’s chi-square test of independence says yes for age (χ² = ${f1(C_AGE.stat)}, ${C_AGE.df} degrees of freedom, ${pv(C_AGE.p)}) and for region (χ² = ${f1(C_AREA.stat)}, ${C_AREA.df} df, ${pv(C_AREA.p)}). But <g>Cramér’s V</g>, which measures the strength of the association on a scale from 0 to 1, is only ${f2(C_AGE.cramersV)} for age and ${f2(C_AREA.cramersV)} for region: real but weak. Every age band and every region contains plenty of café buyers, home-brewers and can buyers. Household type shows no association with source at all (${pv(C_HH.p)}).` },
-    { p: `Spending and drinking tell the same story. Mean monthly spend rises with income band, from ${money(spendInc[0])} under $40k to ${money(spendInc[2])} at $80k–120k, a clear difference (F = ${f1(A_SPEND_INC.F)}, ${pv(A_SPEND_INC.p)}); yet income accounts for only ${p1(A_SPEND_INC.eta2)} of the variation in spend between respondents (η², the share of the total sum of squares between the bands). How many cups people drink doesn’t differ by age band (${pv(A_CUPS_AGE.p)}) or by household (${pv(A_CUPS_HH.p)}) at all.` },
+    { p: `Are the differences larger than chance? B04’s chi-square test of independence says yes for age (χ² = ${f1(C_AGE.stat)}, ${C_AGE.df} degrees of freedom, ${pv(C_AGE.p)}) and for region (χ² = ${f1(C_AREA.stat)}, ${C_AREA.df} df, ${pv(C_AREA.p)}). But <g>Cramér’s V</g>, which measures the strength of the association on a scale from 0 to 1, is only ${f2(C_AGE.cramersV)} for age and ${f2(C_AREA.cramersV)} for region: real but modest. Every age band and every region contains plenty of café buyers, home-brewers and can buyers. Household type shows no detectable association with source (${pv(C_HH.p)}).` },
+    { p: `Spending and drinking tell the same story. Mean monthly spend is higher in the upper income bands: ${money(spendInc[0])} under $40k, ${money(spendInc[1])} at $40k–80k, ${money(spendInc[2])} at $80k–120k and ${money(spendInc[3])} over $120k, a clear difference (F = ${f1(A_SPEND_INC.F)}, ${pv(A_SPEND_INC.p)}); yet income accounts for only ${p1(A_SPEND_INC.eta2)} of the variation in spend between respondents (η², the share of the total sum of squares between the bands). The study finds no evidence that cups a week differ by age band (${pv(A_CUPS_AGE.p)}) or by household (${pv(A_CUPS_HH.p)}).` },
     { callout: 'key', title: 'Demographics describe who, rarely why', html: 'Age, income and region are associated with Lantern’s coffee drinkers’ behaviour, but weakly: within every demographic group there are coffee drinkers of every kind. Demographic groups make poor segments when needs differ inside them. They make excellent descriptors, the variables that help find and reach segments formed on something closer to why people buy.' },
   ],
 
@@ -145,7 +147,7 @@ export default {
 
     { h: 'Testing a demographic: cross-tabs, chi-square and Cramér’s V' },
     { p: 'The test of a demographic basis is whether the groups differ in something that matters: needs, behaviour or response. For a categorical outcome such as main source, build a <g>cross-tabulation</g> percentaged within each demographic group (M04) and test it with B04’s chi-square test of independence, checking that every expected count is at least 5. For a numerical outcome such as spend, compare the groups’ means with one-way ANOVA (B04) and report η², the share of the variation that lies between the groups.' },
-    { p: `Then judge the strength, not only the p-value. With ${N} respondents, small associations are statistically significant: Lantern’s age-by-source table gives ${pv(C_AGE.p)} with V = ${f2(C_AGE.cramersV)}. A rough guide is that V below about 0.2 is weak, but the practical question is better: would the difference change what Lantern offers or where it advertises? A band where ${p1(share(T_AGE[3], 1))} home-brew, against ${p1(ALL[1] / N)} overall, may justify a beans promotion in media that older readers use; it doesn’t make age a segmentation of coffee drinkers. And testing every demographic against every outcome will produce some “significant” results by chance, B04’s multiple-testing problem, so decide the comparisons that matter first.` },
+    { p: `Then judge the strength, not only the p-value. With ${N} respondents, small associations are statistically significant: Lantern’s age-by-source table gives ${pv(C_AGE.p)} with V = ${f2(C_AGE.cramersV)}. V has no universal thresholds: B04 gives none, and conventional benchmarks depend on the size of the table (the smaller of r − 1 and c − 1). The practical question is better: would the difference change what Lantern offers or where it advertises? A band where ${p1(share(T_AGE[3], 1))} home-brew, against ${p1(ALL[1] / N)} overall, may justify a beans promotion in media that older readers use; it doesn’t make age a segmentation of coffee drinkers. And testing every demographic against every outcome will produce some “significant” results by chance, B04’s multiple-testing problem, so decide the comparisons that matter first.` },
     { p: `Finally, remember where the data came from. Ana’s study is an opt-in panel with quotas on age band, so its age mix (${p1(ageShare[0])} aged 18–29, ${p1(ageShare[3])} aged 60 or over) was set by the quotas, not measured, and its regional mix (${p1(areaShare[4])} Central) needn’t match Harbour City’s. Comparisons between groups inside the sample are more trustworthy than its shares, but even they assume that panel members in each group resemble the coffee drinkers they stand for, which M04’s <i>Sampling methods</i> warned is an assumption, not a fact.` },
   ],
 
@@ -175,10 +177,10 @@ export default {
         `Percentage within each age band, the explanatory variable: 18–34s ${kfRow[0].map(p1).join(', ')}; 35–54s ${kfRow[1].map(p1).join(', ')}; members 55 and over ${kfRow[2].map(p1).join(', ')} (early morning, lunchtime, evening).`,
         `Read across: two-thirds of 18–34s want an evening class, while members 55 and over split between early morning (${p1(kfRow[2][0])}) and evening (${p1(kfRow[2][2])}).`,
         `Test: every expected count is at least ${f1(KFC.minExpected)}, so the chi-square test applies. χ² = ${f1(KFC.stat)} with ${KFC.df} degrees of freedom, ${pv(KFC.p)}.`,
-        `Strength: Cramér’s V = √(${f1(KFC.stat)} ÷ (${sum(KF.t.flat())} × 2)) = ${f2(KFC.cramersV)}, a moderate association.`,
+        `Strength: Cramér’s V = √(${f1(KFC.stat)} ÷ (${sum(KF.t.flat())} × 2)) = ${f2(KFC.cramersV)}, clearly stronger than Lantern’s age-by-source association (${f2(C_AGE.cramersV)}).`,
       ],
-      answer: `Preferred time clearly differs by age (χ² = ${f1(KFC.stat)}, ${pv(KFC.p)}, V = ${f2(KFC.cramersV)}): evening dominates for 18–34s, while older members are more evenly split.`,
-      interpretation: 'Age is a useful a priori basis here because the decision, when to timetable a class, is one that age bands do separate. An early-morning class marketed to members 55 and over, and an evening class to younger members, follows from the table. The association is moderate, so plenty of members in every band still prefer other times.' },
+      answer: `Preferred time differs by age beyond chance (χ² = ${f1(KFC.stat)}, ${pv(KFC.p)}, V = ${f2(KFC.cramersV)}): evening dominates for 18–34s, while older members are more evenly split.`,
+      interpretation: 'Age is a useful a priori basis here because the decision, when to timetable a class, is one that age bands do separate. An early-morning class marketed to members 55 and over, and an evening class to younger members, follows from the table. Even so, plenty of members in every band prefer other times.' },
     { level: 'challenging', title: 'Where to deliver a bookshop’s leaflets', fictional: true,
       setup: `Copperwick Books has matched its ${int(sum(CB.cust))} loyalty-card customers’ postcodes to a data supplier’s classification of its catchment into five neighbourhood types (both fictional). It can afford ${int(CB.leaflets)} leaflets, one per household, to win new customers. Which neighbourhood types should get them?`,
       table: {
@@ -200,8 +202,8 @@ export default {
       setup: `Use the needs study (${N} respondents) to judge the agency’s proposal: are age and region good bases for segmenting Lantern’s market, or only useful descriptors?`,
       steps: [
         `Source by age: χ² = ${f1(C_AGE.stat)} (${C_AGE.df} df, ${pv(C_AGE.p)}), V = ${f2(C_AGE.cramersV)}. By region: χ² = ${f1(C_AREA.stat)} (${C_AREA.df} df, ${pv(C_AREA.p)}), V = ${f2(C_AREA.cramersV)}. By income: V = ${f2(C_INC.cramersV)} (${pv(C_INC.p)}). By household: ${pv(C_HH.p)}, no evidence of an association. All the significant associations are weak.`,
-        `Spend and cups: income explains ${p1(A_SPEND_INC.eta2)} of the variation in monthly spend; age and household explain no detectable share of cups a week (${pv(A_CUPS_AGE.p)} and ${pv(A_CUPS_HH.p)}).`,
-        `Needs: the strongest demographic link is income with the importance of local (η² = ${f3(A_LOCAL_INC.eta2)}), then age with novelty (${f3(A_NOV_AGE.eta2)}): 18–29s rate new flavours highest. Even these leave nearly nine-tenths of the variation within the groups.`,
+        `Spend and cups: income explains ${p1(A_SPEND_INC.eta2)} of the variation in monthly spend; the study finds no evidence that cups a week differ by age or household (${pv(A_CUPS_AGE.p)} and ${pv(A_CUPS_HH.p)}).`,
+        `Needs: the strongest demographic link is income with the importance of local (η² = ${f3(A_LOCAL_INC.eta2)}), followed by income with taste (${f3(A_TASTE_INC.eta2)}); age’s strongest link is with novelty (${f3(A_NOV_AGE.eta2)}): 18–29s rate new flavours highest. Even the strongest leaves nearly nine-tenths of the variation within the groups.`,
         'Apply the five tests: age and region are measurable and accessible, but the groups barely differ in behaviour, so they fail differentiable as segments of coffee drinkers.',
       ],
       answer: 'Age and region are weak bases for Lantern: they are associated with where people buy and what they spend, but every age band and region mixes all kinds of coffee drinkers. Use them as descriptors to reach segments formed on needs, not as the segments themselves.',
@@ -293,6 +295,11 @@ export default {
     { what: 'Local by income η² %', value: A_LOCAL_INC.eta2 * 100, shown: 11.0, tol: 0.05 },
     { what: 'Local by income η²', value: A_LOCAL_INC.eta2, shown: 0.110, tol: 0.0005 },
     { what: 'Novelty by age η²', value: A_NOV_AGE.eta2, shown: 0.062, tol: 0.0005 },
+    { what: 'Taste by income η²', value: A_TASTE_INC.eta2, shown: 0.096, tol: 0.0005 },
+    { what: 'Taste is second for income', value: [...etaBy(INC)].sort((a, b) => b - a)[1] === A_TASTE_INC.eta2 ? 1 : 0, shown: 1 },
+    { what: 'Novelty is age’s strongest need', value: Math.max(...etaBy(AGE)) === A_NOV_AGE.eta2 ? 1 : 0, shown: 1 },
+    { what: 'Spend $40k–80k', value: spendInc[1], shown: 45.42 },
+    { what: 'Spend over $120k', value: spendInc[3], shown: 56.45 },
     { what: 'Local η² is the largest for income', value: NEEDS.every((_, j) => I.anova1(INC.map((g) => g.map((r) => r.needs[j]))).eta2 <= A_LOCAL_INC.eta2) ? 1 : 0, shown: 1 },
     { what: 'Novelty highest among 18–29s', value: AGE.every((g) => mean(g.map((r) => r.needs[J.novelty])) <= mean(AGE[0].map((r) => r.needs[J.novelty]))) ? 1 : 0, shown: 1 },
     { what: 'Top income band n', value: top.length, shown: 97 },

@@ -1,17 +1,20 @@
 // assess-m1.js — M05 module 1 test: Segmentation bases (why-segment, demographic-and-geographic,
 // psychographic-and-behavioural). New businesses and new angles: the gain from segmenting when tailored offers also change
 // the margin, sorting activities into the stages of STP, a first segmentation from records alone, why the nested B2B
-// approach works from the outside in, penetration in Excel, Cramér's V for a two-row table, age against cohort effects, a
-// non-significant Lantern cross-tab, the share of visits from heavy users given band averages, Kotler's behavioural
-// variables, a psychographic system misapplied to a business market, and sound and unsound uses of geodemographics.
+// approach works from the outside in, penetration in Excel, Cramér's V for a two-row table, age against cohort effects,
+// significance against strength in a very large sample, the share of visits from heavy users given band averages,
+// Kotler's behavioural variables, a psychographic system misapplied to a business market, and sound and unsound uses of geodemographics.
 // Tamsworth Language School, Fellbrook Animal Rescue, Thistlebay Florists, Corrin Wines, Ravensmere Cinemas, Brightlock
 // Adhesives and the other businesses are fictional. No hints; solutions show when the student reviews the test. Every num
 // item's `check` recomputes its answer.
-import { RESPONDENTS, LEVELS } from './case.js?v=14';
 import * as I from '../../../core/inference.js?v=14';
 
-const R = RESPONDENTS;
-const HH = I.chisqIndependence(LEVELS.household.map((_, l) => LEVELS.source.map((__, s) => R.filter((r) => r.household === l && r.source === s).length)));
+// an online bookseller: region (5) by favourite genre (6)
+const BK = { n: 48000, chi: 307, df: (5 - 1) * (6 - 1) };
+const bkV = Math.sqrt(BK.chi / (BK.n * Math.min(5 - 1, 6 - 1)));
+const bkP = I.chi2Sf(BK.chi, BK.df);
+const int = (v) => Math.round(v).toLocaleString('en-US');
+if (!(bkP < 0.001) || Math.abs(bkV - 0.04) > 0.005) throw new Error('assess-m1: bookseller figures no longer match the text');
 // Tamsworth Language School: one course or two, with different margins
 const TL = { N: [1500, 4000], one: [0.04, 0.03], m1: 200, two: [0.07, 0.04], m2: [320, 180], F: 20000 };
 const tlOne = (TL.N[0] * TL.one[0] + TL.N[1] * TL.one[1]) * TL.m1;
@@ -69,8 +72,8 @@ export const items = [
     prompt: 'Fellbrook Animal Rescue (fictional) wants to segment its 12,000 donors for an autumn appeal that must be planned within a month. It holds each donor’s gift amounts, how often they give and how they first gave, and it has no budget for a survey. Which approach fits best?',
     options: [
       'An a priori segmentation from its own records, such as regular against one-off donors and gift size, refined with research later',
-      'A post hoc needs-based segmentation, because segments formed by clustering needs always explain giving better than records of gifts do',
-      'One appeal for every donor, because the donors of an animal charity all share the same motive',
+      'A post hoc needs-based segmentation, because segments formed by clustering needs explain giving better than records of past gifts do',
+      'One appeal for every donor, because the donors of an animal charity share much the same motive',
       'Waiting until it can afford a survey, since segments built from records are not real segments',
     ],
     answer: 0,
@@ -130,34 +133,34 @@ export const items = [
     prompt: 'A 2027 survey for Corrin Wines (fictional) finds that adults under 30 drink wine far less often than adults over 50. Its planner concludes: “Wine drinking will fall as today’s under-30s replace today’s over-50s.” What is the main problem with the conclusion?',
     options: [
       'One survey can’t separate an age effect from a cohort effect: under-30s may drink more wine as they age',
-      'Age should be recorded in exact years rather than in bands, or comparisons between age groups mean nothing at all',
-      'Income bands should have been used, since income always explains wine drinking better than age does in surveys',
-      'Differences between age bands are never statistically significant in a single survey',
+      'Age should be recorded in exact years, not bands, or comparisons between age groups are unreliable',
+      'Income bands should have been used, since income explains wine drinking better than age',
+      'Differences between age bands in one survey are rarely statistically significant',
     ],
     answer: 0,
     feedback: {
       1: 'Bands are the usual way to record age and support comparisons well; the issue is what an age difference in one survey can and can’t reveal.',
-      2: 'Income may matter too, but no base “always” explains better; the conclusion’s flaw is about age and cohort.',
-      3: 'Age differences can be highly significant; significance doesn’t say whether the young will keep their habits.',
+      2: 'Income may matter too, but that doesn’t repair the conclusion; its flaw is about age and cohort.',
+      3: 'Age differences are often highly significant; and significance wouldn’t say whether the young will keep their habits.',
     },
     solution: 'The planner reads an age difference as a cohort effect (the young will keep drinking less). It could equally be an age effect (people drink more wine as they get older), or a mix. One cross-sectional survey can’t tell them apart; repeated surveys of the same cohorts can.',
   },
   {
     id: 'm05-m1-8', lesson: 'demographic-and-geographic', type: 'mc', kind: 'applied',
-    prompt: `In Lantern’s needs study, crossing household type (single, couple, family with children, sharing) with main source of coffee gives χ² = ${HH.stat.toFixed(1)} with ${HH.df} degrees of freedom, p = ${HH.p.toFixed(2)}, and Cramér’s V = ${HH.cramersV.toFixed(2)}. What should Ana conclude?`,
+    prompt: `An online bookseller (fictional) crossed its ${int(BK.n)} customers’ region (five regions) with their favourite genre (six genres): χ² = ${BK.chi}, ${BK.df} degrees of freedom, p < 0.001, Cramér’s V = ${bkV.toFixed(2)}. The regional managers want a separate catalogue for each region. What should the analyst advise?`,
     options: [
-      'The study gives no evidence that household type is associated with where people get their coffee, so it is a poor base for that decision',
-      'Household type has a strong effect on where people buy, but 640 respondents are too few to detect it',
-      'Every household type buys its coffee in exactly the same places, so household can be ignored in all decisions',
-      'Household type is a useful base, since a p-value of 0.26 is close to being significant',
+      'The link is real but tiny, so one catalogue serves every region about as well',
+      'Make five regional catalogues, since p < 0.001 shows region strongly shapes what customers read',
+      'Disregard the result, since a chi-square test on so many customers gives unreliable answers',
+      'Region matters for some genres, but rerun the test on a smaller sample before deciding',
     ],
     answer: 0,
     feedback: {
-      1: 'Nothing suggests a strong effect: V is close to zero. Absence of evidence is not proof of no effect, but it is no reason to segment on household.',
-      2: 'A non-significant test doesn’t prove the groups are identical, and household may matter for other decisions, such as pack sizes.',
-      3: 'A p-value of 0.26 means differences this large arise often by chance; “close to significant” is not evidence.',
+      1: 'The p-value shows the association is unlikely to be chance; with so many customers even a tiny association is significant. V of 0.04 says region barely changes what people read.',
+      2: 'Large samples are a strength: they estimate the association precisely. The issue is its size, not its reliability.',
+      3: 'A smaller sample would only make the estimate less precise; it can’t make a tiny association larger.',
     },
-    solution: `p = ${HH.p.toFixed(2)} and V = ${HH.cramersV.toFixed(2)}: the differences between household types in where they get coffee are no larger than chance would often produce. That doesn’t prove there are none, but it gives Lantern no reason to use household as a base for decisions about where to sell.`,
+    solution: `With ${int(BK.n)} customers, χ² = ${BK.chi} is far beyond chance, but V = √(${BK.chi} ÷ (${int(BK.n)} × 4)) ≈ ${bkV.toFixed(2)}: region hardly changes genre preferences. Separate catalogues would add cost for almost no difference in what each region is offered; the analyst should judge the strength and the decision, not the p-value.`,
   },
   {
     id: 'm05-m1-12', lesson: 'demographic-and-geographic', type: 'multi', kind: 'applied',
@@ -165,17 +168,17 @@ export const items = [
     options: [
       'Profiling its loyalty-card customers’ postcodes to see which neighbourhood types they come from.',
       'Choosing which neighbourhoods get a leaflet drop, then measuring the response by type.',
-      'Refusing in-store credit to anyone whose postcode is classified as a low-income type.',
+      'Reporting that 30% of its customers are young parents because 30% of their postcodes are classified as “young families”.',
       'Writing personalised letters that assume every household in a “young families” postcode has children.',
       'Finding areas whose profile matches its best stores’ catchments when choosing a site for a new store.',
       'Estimating the number of households of each type within reach of a planned store.',
     ],
     answer: [0, 1, 4, 5],
     feedback: {
-      2: 'A postcode’s type describes the area, not each applicant: this is the ecological fallacy, and an unfair one. Judge individuals on their own information.',
+      2: 'A postcode’s type describes the area, not each household in it: many customers in “young families” postcodes have no young children. This is the ecological fallacy.',
       3: 'The same fallacy: many households in a “young families” postcode have no children, and letters that assume they do will misfire.',
     },
-    solution: 'Sound: profiling customers’ postcodes, choosing where to concentrate a leaflet drop and measuring the response, matching sites to successful catchments, and counting households by type. Unsound: refusing credit or personalising letters on the assumption that each household matches its area’s type, the ecological fallacy.',
+    solution: 'Sound: profiling customers’ postcodes, choosing where to concentrate a leaflet drop and measuring the response, matching sites to successful catchments, and counting households by type. Unsound: counting customers as young parents, or personalising letters, on the assumption that each household matches its area’s type, the ecological fallacy.',
   },
   // ---------------------------------------------------------------- psychographic-and-behavioural
   {
@@ -217,16 +220,16 @@ export const items = [
     prompt: 'Brightlock Adhesives (fictional) sells industrial glues to furniture factories. An agency proposes segmenting its customers by VALS type. What is the main weakness of the proposal?',
     options: [
       'VALS types people by their motivations, not firms by their needs',
-      'VALS types can’t be trusted because people answer a questionnaire to be assigned to one',
+      'VALS types are too broad to use, because each type mixes people of every income and age',
       'VALS has only five types, too few to cover the many kinds of industrial buyer',
-      'VALS applies only to Innovators and Achievers, the types with the most resources to spend',
+      'VALS is meant for luxury goods bought by Innovators and Achievers, the types with most resources',
     ],
     answer: 0,
     feedback: {
-      1: 'A questionnaire is how most psychographic and needs data are gathered; that isn’t the weakness here.',
+      1: 'OpenStax describes the types as differing in resources, so they are not a random mix; and breadth isn’t the main problem for a business market.',
       2: 'VALS has eight US types, and the number isn’t the problem: the unit is.',
-      3: 'VALS classifies all adults, from Innovators to Survivors; that isn’t the weakness here.',
+      3: 'VALS covers all adults, from Innovators to Survivors, not only the well-off; that isn’t the weakness here.',
     },
-    solution: 'VALS is a consumer psychographic system: it classifies individual adults by resources and motivation. Brightlock’s customers are factories whose buying centres decide on technical and commercial grounds, so firmographic, needs-based and value-based bases fit; the buyers’ personal characteristics are only the innermost ring of the nested approach.',
+    solution: 'VALS is a consumer psychographic system: it describes types of individual consumer, which differ in resources and in what drives them. Brightlock’s customers are factories whose buying centres decide on technical and commercial grounds, so firmographic, needs-based and value-based bases fit; the buyers’ personal characteristics are only the innermost ring of the nested approach.',
   },
 ];

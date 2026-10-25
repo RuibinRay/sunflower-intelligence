@@ -16,6 +16,8 @@ const curve = (key) => {
   const s = [...R].sort((a, b) => b[key] - a[key]), tot = sum(R.map((r) => r[key]));
   return [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((q) => Math.round((sum(s.slice(0, Math.round((N * q) / 100)).map((r) => r[key])) / tot) * 1000) / 10);
 };
+const HEAVY = R.filter((r) => r.cups >= 16), BIG = R.filter((r) => r.spend >= 70);
+const overlap = HEAVY.filter((r) => r.spend >= 70).length;
 const sheetCells = (() => {
   const cells = { A1: 'respondent', B1: 'cups_week', C1: 'spend_month', D1: 'main_source', E1: 'loyal_1', F1: 'loyal_2', G1: 'loyal_3', H1: 'loyalty score', I1: 'heavy cut-off (cups)', J1: 16, I2: 'share of cups from heavy users', I3: 'share of respondents who are heavy', I4: 'share of spend from heavy users', I6: 'loyalty cut-off', J6: 11 / 3, I7: 'highly loyal respondents', I8: 'of whom mainly café' };
   R.forEach((r, i) => { const k = i + 2; Object.assign(cells, { [`A${k}`]: r.id, [`B${k}`]: r.cups, [`C${k}`]: r.spend, [`D${k}`]: SRC[r.source], [`E${k}`]: r.loyal[0], [`F${k}`]: r.loyal[1], [`G${k}`]: r.loyal[2] }); });
@@ -32,7 +34,7 @@ export const widgets = {
       { name: 'Equal shares', values: [10, 20, 30, 40, 50] },
     ],
     y: { label: 'Cumulative share (%)', format: 'pct' },
-    note: `The top 20% of respondents by cups drink ${curve('cups')[2]}% of the cups, and the top 20% by spend account for ${curve('spend')[2]}% of spending, against 80% under the 80/20 rule. Each series ranks respondents by its own measure, so the heaviest fifth by cups and the top fifth by spend are different people. If everyone drank or spent the same, each bar would equal its share of respondents.`,
+    note: `The top 20% of respondents by cups drink ${curve('cups')[2]}% of the cups, and the top 20% by spend account for ${curve('spend')[2]}% of spending, against 80% under the 80/20 rule. Each series ranks respondents by its own measure, and the two top groups are mostly different people: only ${overlap} of the ${HEAVY.length} who drink 16 or more cups a week are among the ${BIG.length} who spend $70 or more a month. If everyone drank or spent the same, each bar would equal its share of respondents.`,
   },
   'pb-sheet': {
     type: 'sheet', title: 'Lantern’s needs study: usage, spend and local loyalty (640 respondents)',
@@ -100,14 +102,14 @@ export const guided = [
         prompt: `With the cut-off at 16 cups, ${p1(heavy(16).length / N)} of respondents drink ${p1(heavyCupShare(16))} of the cups. What follows?`,
         options: [
           'Usage is concentrated, but far from 80/20: lighter drinkers still drink over half the cups',
-          'The data confirm the 80/20 rule, since about a fifth of drinkers are heavy users',
+          'Usage is far from concentrated, but heavy users still matter, since they drink a fifth of the cups',
           'Heavy drinkers are Lantern’s most valuable customers, since they drink almost half the coffee',
           'The cut-off is wrong: it should be moved until heavy users drink 80% of the cups',
         ],
         answer: 0,
         feedback: {
-          1: 'The rule is about the share of volume, not the share of people: a fifth of drinkers here account for under half the cups, not 80%.',
-          2: 'Volume isn’t value: in the study heavy drinkers spend no more per head than light drinkers. The next lesson’s profiles, and spend, decide value.',
+          1: 'A fifth of drinkers drink 45.7% of the cups, more than twice their share of people: usage is concentrated, though far less than 80/20.',
+          2: 'Volume isn’t value: in the study heavy drinkers spend about the same per head as light drinkers ($50.34 against $49.25 a month). Spend, and module 2’s profiles, decide value.',
           3: 'Moving the cut-off until the data fit the rule tests nothing. Fix the definition first, then read the share.',
         },
         hints: ['Compare 45.7% with the 80% the rule predicts.', 'What share of cups comes from everyone else?'],
@@ -284,10 +286,10 @@ export const check = [
     id: 'm05-pb-k1', type: 'mc', kind: 'conceptual',
     prompt: 'What was the central argument of Russell Haley’s benefit segmentation?',
     options: [
-      'The benefits people seek from a product cause their buying, so segment on benefits first and describe the segments afterwards',
+      'Benefits sought cause buying: segment on them first, describe the segments afterwards',
       'Most of a brand’s sales come from a small group of heavy users, so segment by how much people buy',
       'Personality traits determine brand choice, so segment by personality measured with standard tests',
-      'Segments should be formed by neighbourhood, because people in the same area buy alike',
+      'Segment by neighbourhood, because people in the same area buy alike',
     ],
     answer: 0,
     feedback: {
@@ -305,20 +307,20 @@ export const check = [
       { value: Math.round((SN.heavyPacks / SN.buyers) * 1000) / 10, say: 'That divides packs by buyers. The share divides the heavy buyers’ packs by all packs, 104,000.' },
       { value: Math.round(((SN.packs - SN.heavyPacks) / SN.packs) * 1000) / 10, say: 'That is the share bought by the other 80% of buyers.' },
     ],
-    solution: `S = 61,000 ÷ 104,000 × 100 ≈ ${((SN.heavyPacks / SN.packs) * 100).toFixed(1)}%: close to the 60/20 pattern Ehrenberg-Bass researchers report for consumer brands over a year, and well short of 80/20.`,
+    solution: `S = 61,000 ÷ 104,000 × 100 ≈ ${((SN.heavyPacks / SN.packs) * 100).toFixed(1)}%: close to the 60/20 pattern Sharp, Romaniuk and Graham report for consumer brands (59% on average in the analysis they cite; lower over shorter periods), and well short of 80/20.`,
   },
   {
     id: 'm05-pb-k3', type: 'mc', kind: 'applied',
-    prompt: 'In Lantern’s study the heaviest fifth of respondents by cups drink 44.6% of the cups but account for only 19.9% of monthly coffee spending. What does this imply for a café business choosing its best prospects?',
+    prompt: 'In Lantern’s study the 20.8% of respondents who drink 16 or more cups a week drink 45.7% of the cups but account for only 20.8% of monthly coffee spending. What does this imply for a café business choosing its best prospects?',
     options: [
       'Rank prospects by what they spend in the category, because heavy users by volume buy mostly cheap cups',
-      'Target the heaviest fifth by cups, since they drink almost half of all the coffee drunk in Harbour City',
+      'Target the heaviest drinkers by cups, since they drink almost half of all the coffee drunk in Harbour City',
       'Ignore usage altogether, because the two rankings disagree and so neither can be trusted',
       'Use cups and spend interchangeably, since both measure how much coffee people buy',
     ],
     answer: 0,
     feedback: {
-      1: 'Volume isn’t value: heavy drinkers spend no more per head than light drinkers, because their cups come from home, supermarkets and offices.',
+      1: 'Volume isn’t value: heavy drinkers spend about the same per head as light drinkers ($50.34 against $49.25), because their cups come from home, supermarkets and offices.',
       2: 'Both rankings are accurate; they measure different things. Choose the one that matches the decision.',
       3: 'They rank customers very differently (the correlation between cups and spend is about zero), so the choice matters.',
     },
@@ -335,7 +337,7 @@ export const check = [
       '“Family should always come first.”',
       '“I get nervous meeting new people.”',
     ],
-    categories: ['Lifestyle (activities, interests, opinions)', 'Values', 'Personality'],
+    categories: ['Lifestyle (activities and interests)', 'Values', 'Personality'],
     answer: [0, 1, 2, 0, 1, 2],
     feedback: {
       0: 'An activity: lifestyle.',
@@ -351,7 +353,7 @@ export const check = [
     id: 'm05-pb-k5', type: 'mc', kind: 'conceptual',
     prompt: 'Which statement about VALS is accurate?',
     options: [
-      'It types consumers into eight groups from a questionnaire, by their resources and motivations, and is offered today by Strategic Business Insights',
+      'It is a psychographic system of eight US consumer types, from SRI',
       'It classifies every UK postcode into categories, groups and types built from census data',
       'It ranks consumers by how much they bought of a product over the last year',
       'It measures how far each consumer has moved from being unaware of a brand to intending to buy it',
@@ -362,7 +364,7 @@ export const check = [
       2: 'That is usage-rate segmentation, a behavioural base.',
       3: 'That is the buyer-readiness stage, a behavioural base.',
     },
-    solution: 'VALS, launched by SRI International in 1978 and renewed in 1989, is a psychographic system: a questionnaire places people in one of eight US types (Innovators to Survivors) by their resources and what motivates them. It is now offered by Strategic Business Insights.',
+    solution: 'VALS, launched by SRI International in 1978 and renewed in 1989, is a psychographic system with eight US types, from Innovators to Survivors, which differ in their resources and in what drives them. It is now offered by Strategic Business Insights, an SRI spin-off.',
   },
   {
     id: 'm05-pb-k6', type: 'multi', kind: 'applied',

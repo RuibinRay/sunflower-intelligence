@@ -76,7 +76,7 @@ export const items = [
   },
   {
     id: 'm05-m2-4', lesson: 'cluster-analysis', type: 'num', kind: 'applied',
-    prompt: `Partway through Ward’s method on Skelby Cinemas’ members, three groups remain close together, in standardised units: A has ${WA.n} members with centre (${WA.c.join(', ')}), B has ${WB.n} with centre (${WB.c.join(', ')}), and C is a single member at (${WC.c.join(', ').replace('-', '−')}). B’s centre is nearer A’s than C is. Ward’s method makes whichever of the three possible merges adds least to the within-cluster sum of squares. How much does that merge add? Give two decimal places.`,
+    prompt: `Partway through Ward’s method on Skelby Cinemas’ members, three groups remain close together, in standardised units: A has ${WA.n} members with centre (${WA.c.join(', ')}), B has ${WB.n} with centre (${WB.c.join(', ')}), and C is a single member at (${WC.c.join(', ').replace('-', '−')}). B’s centre is nearer A’s than C is. Ward’s method makes whichever of the three possible merges of these three groups adds least to the within-cluster sum of squares. How much does that merge add? Give two decimal places.`,
     answer: r2(Math.min(AB, AC, BC)), check: () => Math.min((4 * 12) / 16 * (0.8 ** 2 + 0.6 ** 2), (4 * 1) / 5 * (1.2 ** 2 + 0.9 ** 2), (12 * 1) / 13 * (2.0 ** 2 + 0.3 ** 2)), unit: '', places: 2, tol: 0.005,
     wrong: [
       { value: r2(AB), say: 'That is A with B. Their centres are nearest, but merging two large groups is costly: 4 × 12 ÷ 16 = 3 times the squared distance. Compare all three merges.' },
@@ -131,17 +131,17 @@ export const items = [
   },
   {
     id: 'm05-m2-8', lesson: 'profiling-segments', type: 'mc', kind: 'conceptual',
-    prompt: 'Amberlyn Ski Resort’s analyst reports that its four segments of season-pass holders “differ significantly on all six needs used to form them (every p < 0.001), which validates the segmentation”. Which result would actually support that the segments are useful?',
+    prompt: 'Amberlyn Ski Resort’s analyst reports that its three segments of season-pass holders “differ significantly on all six needs used to form them (every p < 0.001), which validates the segmentation”. Which result would actually support that the segments are useful?',
     options: [
       'Every one of the six needs has an F statistic above 100, not only a p-value below 0.001',
-      'The mean silhouette rises when the analyst adds a fifth and a sixth segment to the four',
+      'The mean silhouette rises when the analyst adds a fourth and a fifth segment to the three',
       'The segments differ in pass renewal, which wasn’t used to form them',
-      'Each of the four segments now has a distinct name agreed with the resort’s marketing team',
+      'Each of the three segments now has a distinct name agreed with the resort’s marketing team',
     ],
     answer: 2,
     feedback: {
       0: 'Larger F statistics on the segmentation variables are still circular: k-means made the segments differ on those needs, and even random ratings give large F values.',
-      1: 'A silhouette for a different number of segments says nothing about whether these four are useful; with more segments it usually falls anyway.',
+      1: 'A silhouette for a different number of segments says nothing about whether these three are useful; with more segments it often falls anyway.',
       3: 'Names make segments easier to talk about; they don’t show that the segments differ in anything the resort cares about.',
     },
     solution: 'Tests on the segmentation variables are circular. A difference in a variable not used to form the segments, such as renewal, spend or where people book, shows the segments say something beyond the needs that made them; stability and a typing tool that works on a hold-out add to the case.',
@@ -175,6 +175,6 @@ export const items = [
       2: 'The full segmentation is the reference the tool is compared with; on its own respondents it defines the segments.',
       3: 'The in-sample figure is informative but optimistic; it isn’t meaningless. Report the hold-out figure for the tool.',
     },
-    solution: 'The segment centres were estimated from the same respondents, so they fit those respondents’ quirks; new people, whose answers the centres never saw, sit near boundaries more often. That is why accuracy is reported on a hold-out, as B02’s training and test sets taught.',
+    solution: 'The segment centres (and usually the standardisation and the choice of questions) were estimated from the same respondents, so they fit those respondents’ quirks; new people, whose answers the tool never saw, sit near boundaries more often. That is why accuracy is reported on a hold-out, as B02’s training and test sets taught. With a small hold-out, part of a gap like 93% against 86% is also chance: a few hundred people give a margin of several points, and a different hold-out would give a different figure.',
   },
 ];

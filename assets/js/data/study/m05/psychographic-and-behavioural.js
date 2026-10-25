@@ -18,15 +18,15 @@ const cups = R.map((r) => r.cups), spend = R.map((r) => r.spend);
 const totC = sum(cups), totS = sum(spend);
 const byCups = [...R].sort((a, b) => b.cups - a.cups), bySpend = [...R].sort((a, b) => b.spend - a.spend);
 const FIFTH = Math.round(N / 5);
-const topC = byCups.slice(0, FIFTH), topS = bySpend.slice(0, FIFTH);
-const topCupShare = sum(topC.map((r) => r.cups)) / totC, topCupSpendShare = sum(topC.map((r) => r.spend)) / totS;
+const topS = bySpend.slice(0, FIFTH);
 const topSpendShare = sum(topS.map((r) => r.spend)) / totS;
-const minTopCups = Math.min(...topC.map((r) => r.cups));
+const minTopSpend = Math.min(...topS.map((r) => r.spend));
 const BANDS = [['Light (1–4 cups)', 1, 4], ['Medium (5–15 cups)', 5, 15], ['Heavy (16 or more)', 16, 99]];
 const band = BANDS.map(([name, lo, hi]) => { const g = R.filter((r) => r.cups >= lo && r.cups <= hi); return { name, g, n: g.length, cupShare: sum(g.map((r) => r.cups)) / totC, spendShare: sum(g.map((r) => r.spend)) / totS, perHead: mean(g.map((r) => r.spend)), cafe: g.filter((r) => r.source === 0).length / g.length }; });
 const [LT, , HV] = band;
 const needMean = (g, k) => mean(g.map((r) => r.needs[J[k]]));
 const tHL = I.tTest2(HV.g.map((r) => r.spend), LT.g.map((r) => r.spend));
+const HV_SHARE = HV.n / N;
 const rCupsSpend = corr(cups, spend);
 // the local-loyalty scale: three Likert items, 1–5
 const score = R.map((r) => sum(r.loyal) / 3);
@@ -62,25 +62,27 @@ const f1 = (v) => v.toFixed(1), f2 = (v) => v.toFixed(2);
 const int = (v) => Math.round(v).toLocaleString('en-US');
 const money = (v) => `$${v.toFixed(2)}`;
 const pv = (p) => (p < 0.001 ? 'p &lt; 0.001' : `p = ${p.toFixed(2)}`);
+const r2 = (v) => `${v < 0 ? '−' : ''}${Math.abs(v).toFixed(2)}`;
 
 const BASES = (() => {
-  const dot = (x, y, colr, l1, l2, anchor = 'start', dx = 12) => `<circle cx="${x}" cy="${y}" r="8" style="fill:var(--series-${colr});fill-opacity:0.6;stroke:var(--ink);stroke-width:0.8"/>`
-    + `<text x="${x + (anchor === 'end' ? -dx : dx)}" y="${y - 2}" text-anchor="${anchor}" font-weight="600" fill="currentColor">${l1}</text>`
-    + `<text x="${x + (anchor === 'end' ? -dx : dx)}" y="${y + 14}" text-anchor="${anchor}" font-size="11" fill="var(--ink-3)">${l2}</text>`;
-  return '<svg viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="13">'
+  const items = [
+    ['Geographic', 'region, postcode, climate', 1], ['Demographic', 'age, life stage, income', 1],
+    ['Usage rate and loyalty status', 'from purchase records', 2], ['Occasions and readiness', 'when they buy, how far along they are', 2],
+    ['Lifestyle, values, personality', 'psychographics, from surveys', 3], ['Benefits sought (needs)', 'from importance ratings', 3],
+  ];
+  let s = '<svg viewBox="0 0 380 372" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="12.5">'
     + '<defs><marker id="pb-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink-3)"/></marker></defs>'
-    + '<line x1="70" y1="300" x2="610" y2="300" style="stroke:var(--ink-3);stroke-width:1.5" marker-end="url(#pb-a)"/>'
-    + '<line x1="70" y1="300" x2="70" y2="24" style="stroke:var(--ink-3);stroke-width:1.5" marker-end="url(#pb-a)"/>'
-    + '<text x="340" y="328" text-anchor="middle" fill="currentColor">Closer to the reasons people choose</text>'
-    + '<text transform="translate(40 162) rotate(-90)" text-anchor="middle" fill="currentColor">Easier to measure and reach</text>'
-    + dot(110, 60, 1, 'Geographic', 'region, postcode, climate')
-    + dot(170, 104, 1, 'Demographic', 'age, life stage, income')
-    + dot(300, 120, 2, 'Usage rate and loyalty status', 'from purchase records')
-    + dot(360, 176, 2, 'Occasions and readiness', 'when and how far along they are')
-    + dot(450, 230, 3, 'Lifestyle, values, personality', 'psychographics, from surveys', 'end')
-    + dot(560, 268, 3, 'Benefits sought (needs)', 'from importance ratings', 'end')
-    + '<text x="340" y="350" text-anchor="middle" font-size="11" fill="var(--ink-3)">A judgement, not a measurement: purchase records make behaviour easy to observe for a firm’s own customers.</text>'
-    + '</svg>';
+    + '<line x1="14" y1="330" x2="14" y2="30" style="stroke:var(--ink-3);stroke-width:1.5" marker-end="url(#pb-a)"/>'
+    + '<text x="4" y="18" font-size="11.5" fill="var(--ink-3)">Easier to measure and reach</text>'
+    + '<line x1="366" y1="30" x2="366" y2="330" style="stroke:var(--ink-3);stroke-width:1.5" marker-end="url(#pb-a)"/>'
+    + '<text x="376" y="352" text-anchor="end" font-size="11.5" fill="var(--ink-3)">Closer to the reasons people choose</text>';
+  items.forEach(([t, sub, colr], i) => {
+    const y = 52 + i * 50, x = 34 + i * 14;
+    s += `<circle cx="${x}" cy="${y}" r="7" style="fill:var(--series-${colr});fill-opacity:0.6;stroke:var(--ink);stroke-width:0.8"/>`
+      + `<text x="${x + 14}" y="${y + 1}" font-weight="600" fill="currentColor">${t}</text>`
+      + `<text x="${x + 14}" y="${y + 17}" font-size="11.5" fill="var(--ink-3)">${sub}</text>`;
+  });
+  return `${s}</svg>`;
 })();
 
 export default {
@@ -110,14 +112,15 @@ export default {
 
     { h: 'Psychographics: how people live and what they value' },
     { p: 'Two people with the same age and income can lead very different lives: one cycles to work, cooks from scratch and reads labels; the other works shifts and grabs whatever is quickest. Psychographics captures that difference. It is measured with statements people rate, such as “I try new foods whenever I can” (an interest) or “Protecting the environment matters more to me than convenience” (a value), combined into scales as M04’s <i>Questionnaire design</i> taught and checked for reliability with Cronbach’s alpha.' },
-    { p: 'The best-known commercial psychographic system is VALS, launched by SRI International in 1978, relaunched in a new version in 1989 and offered today by Strategic Business Insights, an SRI spin-off. SRI describes the current VALS as using psychology to describe the motivations behind consumers’ choices. OpenStax lists its eight US types: Innovators, Thinkers, Achievers, Experiencers, Believers, Strivers, Makers and Survivors. People are typed from their answers to a questionnaire, and OpenStax’s descriptions place the types by the resources they have, from Innovators with the most to Survivors with the fewest, and by what motivates them: knowledge for Thinkers, excelling at work and in the family for Achievers, being different for Experiencers.' },
+    { p: 'A long-established commercial psychographic system is VALS, launched by SRI International in 1978, relaunched in a new version in 1989 and offered today by Strategic Business Insights, an SRI spin-off. In SRI’s words, VALS “uses psychology to describe the dynamics underlying consumer preferences and choices”. OpenStax lists its eight US types: Innovators, Thinkers, Achievers, Experiencers, Believers, Strivers, Makers and Survivors. OpenStax’s descriptions place the types by the resources they have, from Innovators with the most to Survivors with the fewest, and by what drives them: knowledge for Thinkers, excelling at work and in the family for Achievers, being different for Experiencers.' },
 
     { h: 'Behaviour: what people seek and do' },
     { p: 'Behavioural bases come closest to the purchase itself. The most influential is <g>benefit segmentation</g>, named by Russell Haley in 1968: divide buyers by the benefits they seek from the product, because those benefits are the reasons a segment exists. Haley’s illustration was toothpaste, where he described a sensory segment (flavour and appearance), sociables (bright, white teeth), worriers (preventing decay) and an independent, price-led segment. Measuring how important a list of needs is to each buyer and clustering them, as Ana’s study does with eight coffee needs, is the modern form: <g>needs-based segmentation</g>.' },
-    { p: 'Other behavioural bases describe the buying itself. <g>Usage rate</g> separates non-users from light, medium and heavy users. Occasions divide buying by when and why it happens: the commuter’s morning cup, the weekend treat, the office meeting. <g>User status</g> separates non-users, former users, first-time users and regular users; <g>loyalty status</g> how firmly customers stick to one brand. The <g>buyer-readiness stage</g> places people from unaware, through aware and interested, to intending to buy. And attitude, how people feel about the product or the brand, can be a basis too.' },
+    { p: 'Other behavioural bases describe the buying itself. <g>Usage rate</g> separates non-users from light, medium and heavy users. Occasions divide buying by when and why it happens: the commuter’s morning cup, the weekend treat, the office meeting.' },
+    { p: '<g>User status</g> separates non-users, former users, first-time users and regular users; <g>loyalty status</g> how firmly customers stick to one brand. The <g>buyer-readiness stage</g> places people from unaware, through aware and interested, to intending to buy. And attitude, how people feel about the product or the brand, can be a basis too.' },
 
     { h: 'Heavy and light coffee drinkers: does 80/20 hold?' },
-    { p: `A rule of thumb says that 80% of a business’s revenue comes from the top 20% of its customers; OpenStax states it as the Pareto principle. In Ana’s study, the heaviest fifth of respondents (the ${FIFTH} who drink most, each at least ${minTopCups} cups a week) account for ${p1(topCupShare)} of all the cups the ${N} drink. Ranked by monthly spend instead, the top fifth account for ${p1(topSpendShare)} of spending. Concentrated, yes; 80/20, no. Treat the rule as a pattern to check against data, not as a law.` },
+    { p: `A rule of thumb says that 80% of a business’s revenue comes from the top 20% of its customers; OpenStax states it as the Pareto principle. In Ana’s study, the ${HV.n} respondents who drink 16 or more cups a week, ${p1(HV_SHARE)} of them, account for ${p1(HV.cupShare)} of all the cups the ${N} drink. Ranked by monthly spend instead, the top fifth (the ${FIFTH} who spend most, each at least $${minTopSpend} a month) account for ${p1(topSpendShare)} of spending. Concentrated, yes; 80/20, no. Treat the rule as a pattern to check against data, not as a law.` },
     { table: {
       caption: `Light, medium and heavy coffee drinkers: ${N} respondents, May 2027. Unweighted.`,
       head: ['Usage band (cups a week)', 'Respondents', 'Share of respondents', 'Share of cups', 'Share of spend', 'Spend per head (month)'],
@@ -126,18 +129,19 @@ export default {
       foot: [['All', String(N), '100%', '100%', '100%', money(mean(spend))]],
       note: 'Percentages are rounded, so they may not add to exactly 100.',
     } },
-    { p: `The table holds a surprise. Heavy drinkers account for ${p1(HV.cupShare)} of the cups but only ${p1(HV.spendShare)} of the spending, the same as their share of respondents: they spend ${money(HV.perHead)} a month each, no more than light drinkers’ ${money(LT.perHead)} (a two-sample t test gives t = ${f2(tHL.t)}, ${pv(tHL.p)}). Across all respondents, cups and spend are uncorrelated (r = ${f2(rCupsSpend)}). Heavy drinkers get many cheap cups at home, from supermarkets and from office machines; light drinkers buy fewer, dearer cups, ${p1(LT.cafe)} of them mainly at cafés against ${p1(HV.cafe)} of heavy drinkers. Whether “heavy” means volume or value changes who the best customers are.` },
+    { p: `The table holds a surprise. Heavy drinkers account for ${p1(HV.cupShare)} of the cups but only ${p1(HV.spendShare)} of the spending, the same as their share of respondents: they spend about the same per head as light drinkers (${money(HV.perHead)} against ${money(LT.perHead)} a month; a two-sample t test gives t = ${f2(tHL.t)}, ${pv(tHL.p)}). Across all respondents, cups and spend are uncorrelated (r = ${r2(rCupsSpend)}). Heavy drinkers get many cheap cups at home, from supermarkets and from office machines; light drinkers buy fewer, dearer cups, ${p1(LT.cafe)} of them mainly at cafés against ${p1(HV.cafe)} of heavy drinkers. Whether “heavy” means volume or value changes who the best customers are.` },
     { callout: 'key', title: 'Behavioural bases explain more, and are harder to reach', html: 'Benefits, needs and usage are closer to why and how people buy than age or postcode, so segments built on them differ more in what they want and how they respond. But nobody sells advertising to “people who value sustainability”: such segments must be profiled with variables that can be reached, as module 2’s profiling lesson shows. A business’s own customers are the exception, because their purchases are in its records.' },
   ],
 
   theory: [
     { h: 'Measuring psychographics' },
     { p: 'Lifestyle is commonly measured with “AIO” statements about activities, interests and opinions, as OpenStax describes. For segmentation the items work best when they are few and targeted at the category: for coffee, attitudes to independent shops, interest in new flavours, concern about sugar. Each scale should hold several items that measure one idea, reach an acceptable Cronbach’s alpha and relate to the behaviour it is meant to explain. Segments are then formed either a priori, by cutting a scale (high, middle and low), or post hoc, by clustering several scales together.' },
-    { p: 'Psychographics has two known weaknesses. Labels such as “free spirits” are vivid but can promise more than the data show, a risk module 2 returns to when naming segments. And broad personality traits are weak predictors of what people buy: Lastovicka and Joachimsthaler (1988) note that reviews have generally found weak evidence for the belief that consumers choose products to fit their personalities, and argue that part of the reason is unreliable measures of behaviour. Values and category-specific attitudes usually do better than general traits.' },
+    { p: 'Values are not the same as the opinions in an AIO battery. An opinion is a view on a particular topic, such as “organic coffee is overpriced”; a value is a lasting belief about what matters in life, such as “protecting the environment comes first”, which shapes many opinions and choices at once. Questionnaires usually keep the two in separate scales.' },
+    { p: 'Psychographics has two known weaknesses. Labels such as “free spirits” are vivid but can promise more than the data show, a risk module 2 returns to when naming segments. And broad personality traits are weak predictors of what people buy: Lastovicka and Joachimsthaler (1988) note that reviews have generally found weak evidence for the belief that consumers choose products to fit their personalities, and argue that part of the reason is unreliable measures of behaviour. Category-specific attitudes and values sit closer to the purchase than general traits, which makes them a more promising place to start.' },
     { p: 'VALS illustrates both the appeal and the limits. Its types are memorable and come with descriptions of how each group shops and what it reads, which helps creative teams. But a VALS type is a classification of a person’s general motivations, not of their needs in a particular category: two Experiencers may want different coffee. Like any psychographic system, it is most useful when the types are shown, with data, to differ in the category being marketed.' },
 
     { h: 'The behavioural bases in more detail' },
-    { p: 'Kotler’s <i>Principles of Marketing</i> lists the behavioural variables with their usual breakdowns, and the table follows it, with a coffee example for each.' },
+    { p: 'Kotler’s <i>Principles of Marketing</i> (3rd ed., 1986) listed the behavioural variables with their usual breakdowns, and the table follows it, with a coffee example for each.' },
     { table: {
       caption: 'Behavioural segmentation variables (after Kotler’s list) with coffee examples',
       head: ['Variable', 'Typical breakdown', 'Coffee example'],
@@ -151,16 +155,16 @@ export default {
         ['Attitude toward the product', 'Enthusiastic, positive, indifferent, negative, hostile', 'Loves canned coffee; would never drink it'],
       ],
     } },
-    { p: `Readiness stage matters because each stage needs a different job from marketing. Of Ana’s ${N} respondents, ${unaware.length} (${p1(unaware.length / N)}) were unaware of Lantern, ${awareOnly.length} knew it but hadn’t bought it in the past year, and ${bought.length} had bought it. Intent to buy Cold Brew (the top two boxes) was ${p1(cb2(unaware))} among the unaware against ${p1(cb2(awareOnly))} and ${p1(cb2(bought))} among the other two groups: awareness first, then trial, is the obvious order of tasks, though the people who know Lantern may also differ in other ways.` },
-    { p: 'Usage rate is the base where the 80/20 claim lives, and it deserves scepticism. Sharp, Romaniuk and Graham of the Ehrenberg-Bass Institute report that a consumer brand’s heaviest 20% of buyers generally contribute not much more than half its sales: in their earlier analysis the average across categories was 59%, ranging from 44% for hair conditioner to 68% for dog food. The share also depends on the period: over a longer window more light buyers are counted and the heaviest buyers’ share looks larger. The practical lesson is that light buyers usually matter more than the rule suggests, so check the concentration in your own data before deciding to market only to heavy users.' },
-    { p: 'Usage also depends on what is counted. Lantern’s heavy drinkers by cups are not heavy by spend, because a cup at home costs a fraction of a café cup. For a café chain, spend is the measure that matters; for a bean supplier, volume might be. Module 6 (M06 Customer Analytics) builds this idea into RFM scores and customer lifetime value, which combine how recently, how often and how much customers buy.' },
+    { p: `Readiness stage matters because each stage needs a different job from marketing. Of Ana’s ${N} respondents, ${unaware.length} (${p1(unaware.length / N)}) were at the first stage, unaware of Lantern. Of the ${awareOnly.length + bought.length} who knew it, ${awareOnly.length} hadn’t bought it in the past year and ${bought.length} had, a split by user status rather than readiness. Intent to buy Cold Brew (the top two boxes) was ${p1(cb2(unaware))} among the unaware against ${p1(cb2(awareOnly))} among aware non-buyers and ${p1(cb2(bought))} among recent buyers: awareness first, then trial, is the obvious order of tasks, though the people who know Lantern may also differ in other ways.` },
+    { p: 'Usage rate is the base where the 80/20 claim lives, and it deserves scepticism. Sharp, Romaniuk and Graham (2019), researchers at the Ehrenberg-Bass Institute and London South Bank University, report that a consumer brand’s heaviest 20% of buyers generally contribute not much more than half its sales: in an earlier analysis they cite, the average across categories was 59%, ranging from 44% for hair conditioner to 68% for dog food. The share also depends on the period: in one European panel study it was about 40% over a quarter, 50% over a year and 60% over five years, because a longer window counts more light buyers. The practical lesson is that light buyers usually matter more than the rule suggests, so check the concentration in your own data before deciding to market only to heavy users.' },
+    { p: 'Usage also depends on what is counted. Lantern’s heavy drinkers by cups are not heavy by spend, because a cup at home costs a fraction of a café cup. For a café chain, spend is the measure that matters; for a bean supplier, volume might be. The course M06 Customer Analytics and RFM builds this idea into RFM scores and customer lifetime value, which combine how recently, how often and how much customers buy.' },
 
     { h: 'Why needs explain more, and why they are harder to reach' },
     { p: 'Benefits sought and needs are close to the reason for choice: someone who rates a low price 7 and local 2 will choose differently from someone who rates them the other way round, whatever their age. Haley’s argument was exactly this: segment first on what causes buying, then describe the segments. The cost is that needs are invisible. They exist only in survey answers, so a needs-based segment can’t be found in a census, bought as a media audience or recognised in a shop.' },
     { figure: {
       svg: BASES,
-      caption: 'The trade-off between segmentation bases: the closer a base is to why people choose, the harder it usually is to measure and reach. The positions are a judgement, not measurements.',
-      alt: 'A chart with two arrows as axes: horizontally, closer to the reasons people choose; vertically, easier to measure and reach. Six bases are placed in a band falling from the top left to the bottom right. Top left: geographic (region, postcode, climate), then demographic (age, life stage, income). In the middle: usage rate and loyalty status (from purchase records), then occasions and readiness. Lower right: lifestyle, values and personality (psychographics, from surveys), and at the bottom right benefits sought or needs (from importance ratings). A note says the positions are a judgement and that purchase records make behaviour easy to observe for a firm’s own customers.',
+      caption: 'The trade-off between segmentation bases: the closer a base is to why people choose, the harder it usually is to measure and reach. The order is a judgement, not a measurement, and purchase records make behaviour easy to observe for a firm’s own customers.',
+      alt: 'Six segmentation bases listed from top to bottom, each a little further to the right, between two arrows: one on the left pointing up, labelled easier to measure and reach, and one on the right pointing down, labelled closer to the reasons people choose. From the top: geographic (region, postcode, climate); demographic (age, life stage, income); usage rate and loyalty status (from purchase records); occasions and readiness (when they buy, how far along they are); lifestyle, values and personality (psychographics, from surveys); and benefits sought, or needs (from importance ratings).',
     } },
     { p: 'Two routes bridge the gap. The first is profiling: once needs-based segments are formed, describe them with variables that can be reached (age, region, where they buy, which media they use) and target through those, accepting some waste. The second is a typing tool, a few survey questions that assign a new customer to a segment, which module 2 builds for Lantern. For a business’s own customers there is a third: behaviour in purchase records (usage, occasions, loyalty) is both close to why and directly reachable, which is why loyalty-card and online data have made behavioural segmentation so common.' },
 
@@ -195,7 +199,7 @@ export default {
         `Compare: the heaviest fifth buy ${f1((CB.groups[0][1] / cbTot) * 100)}% of loaves, not 80%; the lightest half buy ${f1((CB.groups[2][1] / cbTot) * 100)}%.`,
       ],
       answer: `The heaviest 20% of card holders bought ${f1((CB.groups[0][1] / cbTot) * 100)}% of the loaves: concentrated, but far from 80/20.`,
-      interpretation: 'This is close to the pattern the Ehrenberg-Bass researchers report for consumer brands, about half from the heaviest fifth. A bakery that marketed only to its heaviest buyers would ignore customers who bring over half its sales, and light buyers are also where most growth in customer numbers comes from.' },
+      interpretation: 'This is close to the pattern Sharp, Romaniuk and Graham report for consumer brands, about half from the heaviest fifth over a year. A bakery that marketed only to its heaviest buyers would ignore customers who bring over half its sales.' },
     { level: 'challenging', title: 'Benefits or age? Who wants a social swim club', fictional: true,
       setup: `Pinemoor Leisure surveyed ${int(sum(PL.ben.flat()))} members about a new evening social swim club. Members gave the main benefit they seek from membership and their age band, and said whether they would join. Which base, benefit sought or age, separates likely joiners better, and how should Pinemoor reach them?`,
       table: {
@@ -206,8 +210,8 @@ export default {
         foot: [['All members', String(sum(PL.ben.map((r) => r[0]))), String(sum(PL.ben.map((r) => r[1]))), String(sum(PL.ben.flat())), p1(sum(PL.ben.map((r) => r[0])) / sum(PL.ben.flat()))]],
       },
       steps: [
-        `By benefit: the share who would join runs from ${p1(plRate(PL.ben[3]))} (family activities) and ${p1(plRate(PL.ben[0]))} (fitness) to ${p1(plRate(PL.ben[2]))} (meeting people). χ² = ${f1(PLB.stat)}, ${PLB.df} df, ${pv(PLB.p)}, Cramér’s V = ${f2(PLB.cramersV)}: a strong association.`,
-        `By age (${PL.ages.map((a, i) => `${a}: ${p1(plRate(PL.age[i]))} of ${sum(PL.age[i])}`).join('; ')}): χ² = ${f1(PLA.stat)}, ${PLA.df} df, ${pv(PLA.p)}, V = ${f2(PLA.cramersV)}. Age tells Pinemoor almost nothing about who would join.`,
+        `By benefit: the share who would join runs from ${p1(plRate(PL.ben[3]))} (family activities) and ${p1(plRate(PL.ben[0]))} (fitness) to ${p1(plRate(PL.ben[2]))} (meeting people). χ² = ${f1(PLB.stat)}, ${PLB.df} df, ${pv(PLB.p)}, Cramér’s V = ${f2(PLB.cramersV)}.`,
+        `By age (${PL.ages.map((a, i) => `${a}: ${p1(plRate(PL.age[i]))} of ${sum(PL.age[i])}`).join('; ')}): χ² = ${f1(PLA.stat)}, ${PLA.df} df, ${pv(PLA.p)}, V = ${f2(PLA.cramersV)}. Benefit sought is far more strongly associated with joining than age is, and age tells Pinemoor almost nothing.`,
         `Size the segment: the “meeting people” members are ${sum(PL.ben[2])} of ${sum(PL.ben.flat())}, but they supply ${PL.ben[2][0]} of the ${sum(PL.ben.map((r) => r[0]))} likely joiners (${p1(PL.ben[2][0] / sum(PL.ben.map((r) => r[0])))}).`,
         'Reach: a benefit can’t be seen on a membership card, and the social seekers are spread across ages, so age-based promotion would waste most of its reach. But they are members: Pinemoor can ask the benefit question at renewal, or use behaviour it already records, such as attendance at group classes, as a descriptor.',
       ],
@@ -216,7 +220,7 @@ export default {
     { level: 'applied', title: 'Are Lantern’s best prospects heavy, loyal coffee drinkers?', fictional: true,
       setup: 'Test the head barista’s theory that Lantern’s customers “drink a lot, care where it comes from and want to support places like ours”, using cups a week, spend and the local-loyalty scale.',
       steps: [
-        `Heavy drinkers: the heaviest fifth drink ${p1(topCupShare)} of the cups but account for only ${p1(topCupSpendShare)} of spending, and heavy drinkers spend no more per head than light ones (${money(HV.perHead)} against ${money(LT.perHead)}, ${pv(tHL.p)}).`,
+        `Heavy drinkers: the ${p1(HV_SHARE)} who drink 16 or more cups a week drink ${p1(HV.cupShare)} of the cups but account for only ${p1(HV.spendShare)} of spending, and spend about the same per head as light drinkers (${money(HV.perHead)} against ${money(LT.perHead)}; t = ${f2(tHL.t)}, ${pv(tHL.p)}).`,
         `What heavy drinkers want: they rate convenience (${f2(needMean(HV.g, 'convenience'))} against ${f2(needMean(LT.g, 'convenience'))} for light drinkers) and a caffeine kick (${f2(needMean(HV.g, 'energy'))} against ${f2(needMean(LT.g, 'energy'))}) higher, and local lower (${f2(needMean(HV.g, 'local'))} against ${f2(needMean(LT.g, 'local'))}). That is not a craft café’s customer.`,
         `Loyal locals: the highly loyal (${int(hiBand.length)} respondents) use cafés more (${p1(cafeHi)} against ${p1(cafeLo)}) and spend more (${money(spendHi)} against ${money(spendLo)}) than the least loyal.`,
         `But for Cold Brew the attitude barely matters: top-two intent is ${p1(cbHi)} among the highly loyal and ${p1(cbLo)} among the least loyal (${pv(loyalCB.p)}).`,
@@ -231,8 +235,8 @@ export default {
   ],
 
   mistakes: [
-    { title: '“80% of our sales come from 20% of our customers.”', html: `Check it. In Lantern’s study the heaviest fifth account for ${p1(topCupShare)} of cups and the top fifth by spend for ${p1(topSpendShare)} of spending; Ehrenberg-Bass researchers find that a consumer brand’s heaviest 20% of buyers usually give not much more than half its sales. The share also grows with the length of the period measured.` },
-    { title: '“Heavy users are our most valuable customers.”', html: `Only if “heavy” is measured in what matters to the business. Lantern’s heaviest drinkers by cups spend no more per head than light drinkers (${money(HV.perHead)} against ${money(LT.perHead)}), because their cups are cheap ones. Rank by spend or margin when value is the question.` },
+    { title: '“80% of our sales come from 20% of our customers.”', html: `Check it. In Lantern’s study the ${p1(HV_SHARE)} who drink 16 or more cups a week account for ${p1(HV.cupShare)} of cups, and the top fifth by spend for ${p1(topSpendShare)} of spending; Sharp, Romaniuk and Graham find that a consumer brand’s heaviest 20% of buyers usually give not much more than half its sales. The share also grows with the length of the period measured.` },
+    { title: '“Heavy users are our most valuable customers.”', html: `Only if “heavy” is measured in what matters to the business. Lantern’s heaviest drinkers by cups spend about the same per head as light drinkers (${money(HV.perHead)} against ${money(LT.perHead)}; t = ${f2(tHL.t)}, ${pv(tHL.p)}), because their cups are cheap ones. Rank by spend or margin when value is the question.` },
     { title: '“A psychographic type tells us what people want from our product.”', html: 'Systems such as VALS classify general motivations and lifestyles, not needs in a category. Show with data that the types differ in your category before building segments on them, and be wary of vivid labels that promise more than the data show.' },
     { title: '“Customers with the right attitude will buy our new product.”', html: `Attitudes predict the behaviours that express them. Lantern’s local-loyalty scale predicts café use and spend, but Cold Brew intent barely differs between its high and low scorers (${p1(cbHi)} against ${p1(cbLo)}). Test the attitude against the behaviour you care about.` },
     { title: '“Needs-based segments are better, so we don’t need demographics.”', html: 'Needs explain choice better, but they can’t be seen or bought as media. Needs-based segments still need demographic, geographic and behavioural descriptors, or a typing tool, before anyone can reach their members.' },
@@ -247,11 +251,11 @@ export default {
   ],
 
   summary: [
-    'Psychographic segmentation uses lifestyle (activities, interests, opinions), values and personality, measured with rating scales; VALS, from SRI and now Strategic Business Insights, types people into eight groups by their resources and motivations.',
+    'Psychographic segmentation uses lifestyle (activities, interests, opinions), values and personality, measured with rating scales; VALS, from SRI and now Strategic Business Insights, describes eight US types that differ in resources and in what drives them.',
     'Behavioural segmentation uses benefits sought, usage rate, occasions, user status, loyalty status, readiness stage and attitude toward the product.',
     'Benefit segmentation (Haley, 1968) groups buyers by the benefits they seek, the reasons segments exist; needs-based segmentation is its modern, survey-and-cluster form.',
-    'S_q = the heaviest q of buyers’ purchases ÷ all purchases. Check 80/20 against data: in Lantern’s study the heaviest fifth drink 44.6% of cups, and consumer brands typically get about half their sales from their heaviest 20%.',
-    'Volume and value can rank customers differently: Lantern’s heavy drinkers by cups spend no more per head than light drinkers.',
+    'S_q = the heaviest q of buyers’ purchases ÷ all purchases. Check 80/20 against data: in Lantern’s study the 20.8% who drink 16 or more cups a week drink 45.7% of cups, and consumer brands typically get about half their sales from their heaviest 20%.',
+    'Volume and value can rank customers differently: Lantern’s heavy drinkers by cups spend about the same per head as light drinkers ($50.34 against $49.25 a month).',
     'Needs and benefits explain choice better than demographics but are harder to reach; profiling with reachable descriptors, typing tools and customers’ own purchase records bridge the gap.',
     'An attitude base predicts the behaviours that express it: Lantern’s local-loyalty scale (alpha 0.86) predicts café use and spend, not Cold Brew intent.',
     'Business markets add needs-based, value-based (tiering) and behavioural bases inside the firmographic rings.',
@@ -274,9 +278,9 @@ export default {
     { text: 'Gomez Albrecht, M., Green, M. &amp; Hoffman, L. (2023). <i>Principles of Marketing</i>, section 5.1, “Market Segmentation and Consumer Markets” (psychographic and behavioural segmentation, VALS, usage rate and the Pareto principle). OpenStax.', url: 'https://openstax.org/books/principles-marketing/pages/5-1-market-segmentation-and-consumer-markets', checked: '2026-10-25' },
     { text: 'SRI International. “VALS™ market research” (history: launched 1978, new VALS 1989, now offered by Strategic Business Insights).', url: 'https://www.sri.com/hoi/vals-market-research/', checked: '2026-10-25' },
     { text: 'Haley, R. I. (1968). Benefit segmentation: a decision-oriented research tool. <i>Journal of Marketing</i>, 32(3). doi:10.1177/002224296803200306. Haley’s toothpaste segments as summarised in Weiss, A., “How to Segment Markets”, MarketingProfs.', url: 'https://www.marketingprofs.com/Tutorials/Segmentation1.asp', checked: '2026-10-25' },
-    { text: 'Sharp, B., Romaniuk, J. &amp; Graham, C. (2019). <i>Marketing’s 60/20 Pareto Law</i>. Ehrenberg-Bass Institute technical report, SSRN. doi:10.2139/ssrn.3498097.', url: 'https://openresearch.lsbu.ac.uk/item/88vw1', checked: '2026-10-25' },
-    { text: 'Kotler, P. <i>Principles of Marketing</i>, 3rd ed., Table 10-1, “Major segmentation variables for consumer markets”, as reproduced in a University of Washington course handout.', url: 'https://faculty.washington.edu/harryb/courses/INFO%20Course/segmentation.htm', checked: '2026-10-25' },
-    { text: 'Lastovicka, J. L. &amp; Joachimsthaler, E. A. (1988). Improving the detection of personality-behavior relationships in consumer research. <i>Journal of Consumer Research</i> (March 1988). doi:10.1086/209138.', url: 'https://synapsesocial.com/papers/W2004905969', checked: '2026-10-25' },
+    { text: 'Sharp, B., Romaniuk, J. &amp; Graham, C. (2019). <i>Marketing’s 60/20 Pareto Law</i>. Technical report, SSRN (Ehrenberg-Bass Institute and London South Bank University). doi:10.2139/ssrn.3498097.', url: 'https://openresearch.lsbu.ac.uk/item/88vw1', checked: '2026-10-25' },
+    { text: 'Kotler, P. (1986). <i>Principles of Marketing</i>, 3rd ed., Table 10-1, “Major segmentation variables for consumer markets”, as reproduced in a University of Washington course handout.', url: 'https://faculty.washington.edu/harryb/courses/INFO%20Course/segmentation.htm', checked: '2026-10-25' },
+    { text: 'Lastovicka, J. L. &amp; Joachimsthaler, E. A. (1988). Improving the detection of personality-behavior relationships in consumer research. <i>Journal of Consumer Research</i> (March 1988). doi:10.1086/209138 (abstract checked in the Synapse index).', url: 'https://doi.org/10.1086/209138', checked: '2026-10-25' },
     { text: 'Gomez Albrecht, M., Green, M. &amp; Hoffman, L. (2023). <i>Principles of Marketing</i>, section 5.2, “Segmentation of B2B Markets”. OpenStax.', url: 'https://openstax.org/books/principles-marketing/pages/5-2-segmentation-of-b2b-markets', checked: '2026-10-25' },
   ],
 
@@ -284,10 +288,8 @@ export default {
     { what: 'Respondents', value: N, shown: 640 },
     // concentration
     { what: 'Top fifth size', value: FIFTH, shown: 128 },
-    { what: 'Top fifth min cups', value: minTopCups, shown: 16 },
-    { what: 'Top fifth share of cups %', value: topCupShare * 100, shown: 44.6, tol: 0.05 },
+    { what: 'Top fifth by spend min spend', value: minTopSpend, shown: 70 },
     { what: 'Top fifth by spend share %', value: topSpendShare * 100, shown: 38.6, tol: 0.05 },
-    { what: 'Top fifth by cups share of spend %', value: topCupSpendShare * 100, shown: 19.9, tol: 0.05 },
     // bands
     { what: 'Light n', value: band[0].n, shown: 151 },
     { what: 'Medium n', value: band[1].n, shown: 356 },
@@ -308,6 +310,12 @@ export default {
     { what: 'Heavy spend share equals respondent share', value: Math.abs(HV.spendShare - HV.n / N) < 0.001 ? 1 : 0, shown: 1 },
     { what: 't heavy vs light', value: tHL.t, shown: 0.31 },
     { what: 'p heavy vs light', value: tHL.p, shown: 0.76 },
+    { what: 'Summary: heavy per head', value: HV.perHead, shown: 50.34 },
+    { what: 'Summary: light per head', value: LT.perHead, shown: 49.25 },
+    { what: 'Summary: heavy share of people %', value: HV_SHARE * 100, shown: 20.8, tol: 0.05 },
+    { what: 'Summary: heavy share of cups %', value: HV.cupShare * 100, shown: 45.7, tol: 0.05 },
+    { what: 'Aware', value: awareOnly.length + bought.length, shown: 89 },
+    { what: 'Panel shares by period (40, 50, 60)', value: 40 + 50 + 60, shown: 150 },
     { what: 'r cups spend', value: rCupsSpend, shown: -0.01 },
     { what: 'Light café %', value: LT.cafe * 100, shown: 39.1, tol: 0.05 },
     { what: 'Heavy café %', value: HV.cafe * 100, shown: 20.3, tol: 0.05 },

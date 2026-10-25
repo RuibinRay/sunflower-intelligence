@@ -1,7 +1,7 @@
 // cluster-analysis.ex.js — M05 · Cluster analysis: widgets, practice and the knowledge check (answer keys live here).
 // The two cluster widgets use all 640 respondents of Lantern's needs study (case.js RESPONDENTS); the distance worksheet
 // uses the first 12 respondents' standardised needs and segment D's centre (DERIVED.segments.centres). Thistlewick Books,
-// Tamberlyn Fitness, Wyncombe Travel and Saltmere Energy are fictional. Every num item's `check` recomputes its answer.
+// Pennacott Fitness, Wyncombe Travel and Saltmere Energy are fictional. Every num item's `check` recomputes its answer.
 import { NEEDS, RESPONDENTS, DERIVED as D } from './case.js?v=14';
 import { standardise } from '../../../core/classify.js?v=14';
 
@@ -21,7 +21,7 @@ export const widgets = {
   'ca-spend': {
     type: 'cluster', title: 'The same respondents with monthly spend added as a ninth variable',
     rows: RS.map((r) => [...r.needs, r.spend]), vars: [...NEEDS.map((n) => n.label), 'Monthly spend ($)'], k: 5, ks: [2, 3, 4, 5, 6, 7, 8],
-    choose: true, raw: true, spend: RS.map((r) => r.spend),
+    choose: true, raw: true, spend: RS.map((r) => r.spend), noun: ['variable', 'variables'],
     note: 'Monthly spend runs from $6 to $215, the needs from 1 to 7. Without standardising, a $10 difference in spend counts as much in the distances as a 10-point difference on a need, which no rating can reach.',
   },
 };
@@ -45,8 +45,8 @@ const CD = D.segments.centres[3].map(r2);
 CD.forEach((v, j) => { distCells[`${COLS[j]}16`] = v; });
 const dist1 = COLS.reduce((a, _, j) => a + (r2(Z[0][j]) - CD[j]) ** 2, 0);
 const nearestOf12 = Z.slice(0, 12).map((row) => row.reduce((a, v, j) => a + (r2(v) - CD[j]) ** 2, 0));
-// Tamberlyn Fitness (fictional): a member's silhouette and the elbow table
-const TF = { a: 1.8, b2: 3.0, b3: 4.5 };
+// Pennacott Fitness (fictional): a member's silhouette and the elbow table
+const TF = { a: 1.8, b2: 3.0, b3: 4.5, b4: 3.6 };
 const TFK = [[2, 2180, 0.24], [3, 1760, 0.26], [4, 1410, 0.29], [5, 1330, 0.25], [6, 1262, 0.23], [7, 1201, 0.22]];
 const TF_N = 500, TF_P = 6, TF_T = (TF_N - 1) * TF_P;
 
@@ -123,19 +123,19 @@ export const guided = [
   },
   {
     id: 'm05-ca-g3', type: 'steps', kind: 'numerical',
-    prompt: `Tamberlyn Fitness (fictional) segmented its members into three segments. One member’s average distance to the other members of her own segment is ${TF.a}; her average distances to the members of the other two segments are ${TF.b2.toFixed(1)} and ${TF.b3}.`,
+    prompt: `Pennacott Fitness (fictional) segmented its members into four segments. One member’s average distance to the other members of her own segment is ${TF.a}; her average distances to the members of the other three segments are ${TF.b2.toFixed(1)}, ${TF.b3} and ${TF.b4}.`,
     solution: `b is the nearer of the other segments: ${TF.b2.toFixed(1)}. s = (${TF.b2.toFixed(1)} − ${TF.a}) ÷ max(${TF.a}, ${TF.b2.toFixed(1)}) = 1.2 ÷ 3.0 = ${((TF.b2 - TF.a) / TF.b2).toFixed(2)}: she sits fairly well inside her segment. A negative silhouette means a member is on average closer to another segment than to her own.`,
     steps: [
       {
         id: 'm05-ca-g3-s1', type: 'num',
         prompt: 'What is b, the value the silhouette compares with her own segment?',
-        answer: TF.b2, check: () => Math.min(TF.b2, TF.b3), unit: '', places: 1, tol: 0.01,
+        answer: TF.b2, check: () => Math.min(TF.b2, TF.b3, TF.b4), unit: '', places: 1, tol: 0.01,
         wrong: [
           { value: TF.b3, say: 'b is the nearest other segment, not the farthest: the question is how far she is from the segment she would most plausibly belong to instead.' },
-          { value: (TF.b2 + TF.b3) / 2, say: 'b doesn’t average the other segments. It is the lowest of their average distances.' },
+          { value: r1((TF.b2 + TF.b3 + TF.b4) / 3), say: 'b doesn’t average the other segments. It is the lowest of their average distances.' },
           { value: TF.a, say: 'That is a, the distance within her own segment.' },
         ],
-        hints: ['b is the average distance to the members of the nearest other segment.', 'The lower of 3.0 and 4.5.'],
+        hints: ['b is the average distance to the members of the nearest other segment.', 'The lowest of 3.0, 4.5 and 3.6.'],
       },
       {
         id: 'm05-ca-g3-s2', type: 'num',
@@ -150,7 +150,7 @@ export const guided = [
       },
       {
         id: 'm05-ca-g3-s3', type: 'mc',
-        prompt: 'Another member’s silhouette is −0.20. What does that tell Tamberlyn?',
+        prompt: 'Another member’s silhouette is −0.20. What does that tell Pennacott?',
         options: [
           'He is nearer, on average, to another segment’s members than to his own',
           'He is a poor prospect for the gym and should be left out of the segmentation entirely',
@@ -169,9 +169,9 @@ export const guided = [
   },
   {
     id: 'm05-ca-g4', type: 'steps', kind: 'applied',
-    prompt: `Tamberlyn Fitness surveyed ${TF_N} members on six needs (class variety, opening hours, price, personal training, quiet space, social events), standardised them and ran k-means for k = 2 to 7.`,
+    prompt: `Pennacott Fitness surveyed ${TF_N} members on six needs (class variety, opening hours, price, personal training, quiet space, social events), standardised them and ran k-means for k = 2 to 7.`,
     data: { table: { head: ['k', 'Within-cluster sum of squares', 'Mean silhouette'], align: ['r', 'r', 'r'], rows: TFK.map(([k, w, s]) => [String(k), w.toLocaleString('en-US'), s.toFixed(2)]) } },
-    solution: `With six standardised needs the total sum of squares is (500 − 1) × 6 = ${TF_T.toLocaleString('en-US')}, so four segments leave 1 − 1,410 ÷ 2,994 = ${(100 * (1 - 1410 / TF_T)).toFixed(1)}% of the variation between segments. The falls are 420, 350, then 80, 68 and 61: the elbow is at four, where the silhouette also peaks. Before adopting four, Tamberlyn should read the four profiles (do they call for different offers?) and check stability (restarts, Ward’s method, a split-half test).`,
+    solution: `With six standardised needs the total sum of squares is (500 − 1) × 6 = ${TF_T.toLocaleString('en-US')}, so four segments leave 1 − 1,410 ÷ 2,994 = ${(100 * (1 - 1410 / TF_T)).toFixed(1)}% of the variation between segments. The falls are 420, 350, then 80, 68 and 61: the elbow is at four, where the silhouette also peaks. Before adopting four, Pennacott should read the four profiles (do they call for different offers?) and check stability (restarts, Ward’s method, a split-half test).`,
     steps: [
       {
         id: 'm05-ca-g4-s1', type: 'num',
@@ -198,7 +198,7 @@ export const guided = [
       },
       {
         id: 'm05-ca-g4-s3', type: 'mc',
-        prompt: 'The silhouette also peaks at four. What should Tamberlyn do before adopting four segments?',
+        prompt: 'The silhouette also peaks at four. What should Pennacott do before adopting four segments?',
         options: [
           'Check that the four profiles call for different offers and that restarts, Ward and a split half agree',
           'Nothing: when the elbow and the silhouette agree, the number of segments in the market is proven beyond doubt',
@@ -207,7 +207,7 @@ export const guided = [
         ],
         answer: 0,
         feedback: {
-          1: 'Agreement between two statistics narrows the choice; it doesn’t prove the market has four segments, and a silhouette of 0.29 is weak structure.',
+          1: 'Agreement between two statistics narrows the choice; it doesn’t prove the market has four segments, and a silhouette of 0.29 is weak structure on Kaufman and Rousseeuw’s rough scale.',
           2: 'Demographics describe segments afterwards; mixed into the clustering they make the segments part need, part demographic.',
           3: 'The WCSS keeps falling at any k; with falls of 61–80 already, more segments buy little.',
         },
@@ -296,19 +296,19 @@ export const independent = [
       'Importance of culture and history (1–7)',
       'Importance of adventure and activity (1–7)',
       'Importance of a low price (1–7)',
-      'Importance of good value for money (1–7), asked straight after the low-price item',
+      'Importance of a low price (1–7), asked again at the end of the survey as a consistency check',
       'Customer’s age',
       'Amount spent with Wyncombe last year ($)',
       'Region of the country the customer lives in',
     ],
     answer: [0, 1, 2, 3],
     feedback: {
-      4: 'Good value for money asks nearly the same thing as a low price, so the price need would count twice in every distance. Keep one.',
+      4: 'That repeats the low-price item, so the price need would count twice in every distance. Use the check to clean the data, not as a second variable.',
       5: 'Age describes who is in each segment afterwards; mixed in, it makes segments part need, part demographic.',
       6: 'Spend is behaviour, a descriptor. In dollars and unstandardised it would also dominate the distances.',
       7: 'Region describes and helps reach the segments; it isn’t a need.',
     },
-    solution: 'The four distinct needs form the segments: four variables, so 900 customers are well above the guideline of about 100 per variable. The near-duplicate value item, age, spend and region are kept for profiling and describing the segments.',
+    solution: 'The four distinct needs form the segments: four variables, so 900 customers are well above the guideline of about 100 per variable. The repeated price item serves only to check the answers; age, spend and region are kept for profiling and describing the segments.',
   },
   {
     id: 'm05-ca-i6', type: 'formula', kind: 'numerical',
@@ -413,9 +413,9 @@ export const check = [
   {
     id: 'm05-ca-k6', type: 'fill', kind: 'conceptual',
     prompt: 'Complete the statements about k-means and the silhouette.',
-    text: 'k-means always returns [[0]] groups, whatever the data. Each assign move and each update move can only [[1]] the within-cluster sum of squares. A respondent with a silhouette near 0 sits [[2]], and a mean silhouette can be compared only between solutions on [[3]].',
+    text: 'k-means always returns [[0]], whatever the data. Each assign move and each update move can only [[1]] the within-cluster sum of squares. A respondent with a silhouette near 0 sits [[2]], and a mean silhouette can be compared only between solutions on [[3]].',
     blanks: [
-      { options: ['the number of segments the market contains', 'as many as there are needs', 'the k groups you asked for'], answer: 2 },
+      { options: ['the number of segments the market contains', 'as many groups as there are needs', 'the k groups you asked for'], answer: 2 },
       { options: ['lower it or leave it unchanged', 'raise it or leave it unchanged', 'halve it'], answer: 0 },
       { options: ['well inside their segment', 'between two segments', 'in the wrong segment'], answer: 1 },
       { options: ['the same number of segments', 'the same sample size', 'the same variables and scaling'], answer: 2 },

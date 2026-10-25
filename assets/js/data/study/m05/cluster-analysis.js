@@ -154,8 +154,8 @@ function pathFigure() {
   s += `<text x="${X(4)}" y="372" text-anchor="middle" font-size="13">Low price matters (1–7)</text>`;
   s += `<text transform="translate(16 ${Y(4)}) rotate(-90)" text-anchor="middle" font-size="13">Expert advice matters (1–7)</text>`;
   // label positions [dx, dy, anchor], chosen so that no label sits on a point, a path or another label
-  const CUST = [[14, 5, 'start'], [0, 22, 'middle'], [-13, 5, 'end'], [0, -13, 'middle'], [14, 5, 'start'], [14, 5, 'start'], [0, 26, 'middle'], [-14, 5, 'end']];
-  const STEP = [[[-12, 5, 'end'], [12, 26, 'start']], [[-10, 20, 'end'], [14, 5, 'start']]];
+  const CUST = [[0, 25, 'middle'], [0, 22, 'middle'], [-13, 5, 'end'], [0, -13, 'middle'], [14, 5, 'start'], [14, 5, 'start'], [0, 26, 'middle'], [-14, 5, 'end']];
+  const STEP = [[[-12, 5, 'end'], [12, 5, 'start']], [[-10, 20, 'end'], [14, 5, 'start']]];
   const paths = [[C0[0], C1[0], C2[0]], [C0[1], C1[1], C2[1]]];
   // a centre that sits exactly on a customer is drawn just beside it (up and to the right), so both stay visible
   const onCustomer = (c) => PTS.some((p) => p[0] === c[0] && p[1] === c[1]);
@@ -300,7 +300,7 @@ export default {
     { p: String.raw`<g>Ward’s method</g> builds segments from the bottom up. It starts with every respondent as a group of one and, at each step, merges the two groups whose merger increases the within-cluster sum of squares least, until one group remains (Ward, 1963, proposed merging to lose least by an objective the investigator chooses; the error sum of squares is the usual one). Merging groups A and B adds <m>\frac{n_A n_B}{n_A + n_B}</m> times the squared distance between their centres to the WCSS, so small groups with close centres merge first. The record of merges is drawn as a <g>dendrogram</g>, a tree whose branches join at the height of each merge; cutting it at any height gives that many segments.` },
     { figure: {
       svg: dendroFigure(),
-      caption: `Ward’s method on Pellmark Cycles’ eight customers (fictional). Each pair joins at the merge height SciPy and the site’s engine use for Ward’s method, √(2 × the merge’s cost): A and C, whose merge costs ${f2(wardAC)} by the card below, join at height ${f0(PWARD.merges[0].height)}, and the last merge, at ${f2(PWARD.merges[6].height)}, costs ${f2(PWARD.merges[6].height)}² ÷ 2 = ${f2(mergeCost[6])}, exactly the fall from one segment to two in the example table. It costs far more than any merge before it, which is why a cut below it gives two segments.`,
+      caption: `Ward’s method on Pellmark Cycles’ eight customers (fictional). Each pair joins at the merge height SciPy and the site’s engine use for Ward’s method, √(2 × the merge’s cost): A and C, whose merge costs ${f2(wardAC)} by the card below, join at height ${f0(PWARD.merges[0].height)}, and the last merge, at ${f2(PWARD.merges[6].height)}, costs ${f2(PWARD.merges[6].height)}² ÷ 2 = ${f2(mergeCost[6])}, exactly the fall from one segment to two in the worked example “Two segments or three?”. It costs far more than any merge before it, which is why a cut below it gives two segments.`,
       alt: `A dendrogram with the eight customers along the bottom in the order B, D, A, C, F, G, E, H. A and C join first at height 1, as do E and H. D joins A and C, and G joins E and H, at about 1.3. B joins the A, C, D group at about 2.3 and F joins the E, G, H group at about 2.6. The two groups of four join at about 11.0. A dashed horizontal line at height 6, below the last merge, cuts the tree into the price-first group B, D, A, C and the advice-first group F, G, E, H.`,
     } },
     { p: `Ward’s method needs no k in advance and shows every number of segments at once, but it never undoes a merge, so an early merge that later looks wrong stays, and it compares every pair of groups, which grows slow for tens of thousands of respondents. k-means needs k and a good start but can move respondents freely. The two are often used together: Ward’s tree to see which values of k look natural, k-means to refine the groups. On Ana’s data, Ward’s five groups and the k-means segments agree closely: ${f0(N - wardDiffer)} of ${N} respondents, ${pc(wardSame)}, are in matching groups, and ${wardDiffer} differ.` },
@@ -427,7 +427,7 @@ export default {
   mistakes: [
     { title: '“The clusters are the segments that exist in the market.”', html: `k-means returns k groups from any data: ${N} made-up respondents with random ratings still gave five segments. Clusters are a model you choose and check. Report how clear the structure is (the silhouette against a benchmark) and how stable it is, and call the segments what they are: groups of people with similar answers, with overlapping edges.` },
     { title: '“Choose the k with the lowest within-cluster sum of squares.”', html: 'The WCSS falls every time k rises and reaches 0 when every respondent is a segment of one. Look for where the falls shrink (the elbow), not for the lowest value.' },
-    { title: '“The highest silhouette decides the number of segments.”', html: `The silhouette tends to favour a few large groups: Ana’s peaks at two, a split too coarse to plan offers around. It can’t be compared across different variables or scalings either (raw spend bands score ${f2(nsRawSil)}). Use it with the elbow, stability and what the segments mean.` },
+    { title: '“The highest silhouette decides the number of segments.”', html: `The silhouette often peaks at a small k when one split dominates the data: Ana’s peaks at two, a split too coarse to plan offers around. It can’t be compared across different variables or scalings either (raw spend bands score ${f2(nsRawSil)}). Use it with the elbow, stability and what the segments mean.` },
     { title: '“One run of k-means gives the answer.”', html: `k-means stops at a local optimum that depends on its start: ${100 - reachBest} of 100 single starts on Ana’s data stopped at worse solutions. Use k-means++ starts, run many restarts, keep the lowest WCSS and report how many you ran.` },
     { title: '“Put every variable in the survey into the clustering.”', html: 'Demographics and behaviour mixed with needs give segments that are part need, part demographic, and hard to interpret. Duplicated items double-count a need, and every extra variable needs more respondents (about 100 each, by Dolnicar, Grün and Leisch’s guideline). Segment on the needs; describe with the rest.' },
     { title: '“Standardising is a formality.”', html: `It decides what the distances measure. On Ana’s 1–7 ratings it changes little, but add spend in dollars unstandardised and spend is ${pc(spendShare, 0)} of the variance: the segments become spend bands that agree with the needs segments only ${f2(nsRawAri)}.` },
@@ -541,7 +541,27 @@ export default {
     { what: 'Benchmark k = 5 largest', value: Math.max(...NF[5].sizes), shown: 138 },
     { what: 'Benchmark silhouette k = 5', value: NF[5].sil, shown: 0.095, tol: 0.0005 },
     { what: 'About three times the benchmark', value: SIL(5) / NF[5].sil, shown: 3, tol: 0.5 },
-    ...noiseDrops.map((v, i) => ({ what: `Benchmark drop ${i + 3}`, value: v, shown: [338, 248, 222, 198, 163, 119][i], tol: 0.5 })),
+    ...noiseDrops.map((v, i) => ({ what: `Benchmark drop ${i + 3}`, value: v, shown: [345, 251, 211, 198, 163, 144][i], tol: 0.5 })),
+    { what: 'Benchmark restarts', value: 100, shown: 100 },
+    { what: 'Shuffled benchmark silhouette', value: shufSil, shown: 0.10 },
+    { what: 'Correlated benchmark low', value: corrLo, shown: 0.14 },
+    { what: 'Correlated benchmark high', value: corrHi, shown: 0.15 },
+    { what: 'Correlated draws', value: corrSil.length, shown: 3 },
+    { what: 'About twice the correlated benchmark', value: SIL(5) / ((corrLo + corrHi) / 2), shown: 2, tol: 0.2 },
+    { what: 'K&R strong from', value: KR[0][0], shown: 0.71 },
+    { what: 'K&R reasonable from', value: KR[1][0], shown: 0.51 },
+    { what: 'K&R reasonable to', value: 0.70, shown: 0.70 },
+    { what: 'K&R weak from', value: KR[2][0], shown: 0.26 },
+    { what: 'K&R weak to', value: 0.50, shown: 0.50 },
+    { what: 'K&R none up to', value: 0.25, shown: 0.25 },
+    { what: 'Ana’s 0.305 falls in the weak band', value: Number(SIL(5) >= 0.26 && SIL(5) <= 0.50), shown: 1 },
+    { what: 'Kaufman & Rousseeuw year', value: 1990, shown: 1990 },
+    { what: 'Ward caption: A–C cost', value: wardAC, shown: 0.50 },
+    { what: 'Ward caption: A–C height', value: PWARD.merges[0].height, shown: 1 },
+    { what: 'Ward caption: last height', value: PWARD.merges[6].height, shown: 10.97, tol: 0.005 },
+    { what: 'Ward caption: last cost', value: mergeCost[6], shown: 60.13, tol: 0.005 },
+    { what: 'Ward caption: last cost = first fall in the table', value: mergeCost[6], shown: PMK[1].w - PMK[2].w, tol: 1e-9 },
+    { what: 'k = 6 restarts', value: 200, shown: 200 },
     // sample size
     { what: '100 per variable', value: NEED100, shown: 800 },
     { what: '70 per variable', value: NEED70, shown: 560 },
@@ -557,12 +577,12 @@ export default {
     { what: 'k = 4 merged group', value: merged.reduce((a, b) => a + b, 0), shown: 229 },
     { what: 'k = 4 merged group holds most of C', value: merged[2], shown: 125 },
     { what: 'k = 4 merged group holds most of D', value: merged[3], shown: 104 },
-    { what: 'k = 6 bigger part of C', value: six(cSplit[0].j), shown: 74 },
-    { what: 'k = 6 bigger part: from C', value: cSplit[0].v, shown: 72 },
+    { what: 'k = 6 bigger part of C', value: six(cSplit[0].j), shown: 76 },
+    { what: 'k = 6 bigger part: from C', value: cSplit[0].v, shown: 74 },
     { what: 'k = 6 bigger part: from D', value: c56[3][cSplit[0].j], shown: 2 },
     { what: 'k = 6 bigger part: C plus D is all of it', value: six(cSplit[0].j) - cSplit[0].v - c56[3][cSplit[0].j], shown: 0 },
-    { what: 'k = 6 smaller part of C', value: six(cSplit[1].j), shown: 57 },
-    { what: 'k = 6 novelty index, bigger part', value: ix6[cSplit[0].j][7], shown: 166 },
+    { what: 'k = 6 smaller part of C', value: six(cSplit[1].j), shown: 55 },
+    { what: 'k = 6 novelty index, bigger part', value: ix6[cSplit[0].j][7], shown: 165 },
     { what: 'k = 6 novelty index, smaller part', value: ix6[cSplit[1].j][7], shown: 148 },
     { what: 'k = 6 bigger part: taste and local above 100', value: Number(ix6[cSplit[0].j][0] > 100 && ix6[cSplit[0].j][6] > 100), shown: 1 },
     { what: 'k = 6 smaller part: every other need below 100', value: Number(ix6[cSplit[1].j].every((v, j) => j === 7 || v < 100)), shown: 1 },

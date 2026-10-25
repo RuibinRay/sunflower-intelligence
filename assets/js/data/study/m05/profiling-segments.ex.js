@@ -120,7 +120,7 @@ export const guided = [
   {
     id: 'm05-ps-g2', type: 'steps', kind: 'numerical',
     prompt: 'Column B holds each respondent’s segment and column C their monthly coffee spend in dollars. F2 names a segment. Size it in spend.',
-    solution: `Share of spend: <x>=SUMIFS(C2:C641,B2:B641,F2)/SUM(C2:C641)</x>, ${(S.sizes[CL].spendShare * 100).toFixed(1)}% for Craft and local. Spend a head: <x>=AVERAGEIFS(C2:C641,B2:B641,F2)</x>, $${S.sizes[CL].perHead.toFixed(2)}. Craft and local are ${(S.sizes[CL].share * 100).toFixed(1)}% of respondents but ${(S.sizes[CL].spendShare * 100).toFixed(1)}% of spend, because each spends ${(S.sizes[CL].perHead / (SPEND_ALL / N)).toFixed(2)} times the average.`,
+    solution: `Share of spend: <x>=SUMIFS(C2:C641,B2:B641,F2)/SUM(C2:C641)</x>, ${(S.sizes[CL].spendShare * 100).toFixed(1)}% for Craft and local. Spend a head: <x>=AVERAGEIFS(C2:C641,B2:B641,F2)</x>, $${S.sizes[CL].perHead.toFixed(2)}. Craft and local are ${(S.sizes[CL].share * 100).toFixed(1)}% of respondents but ${(S.sizes[CL].spendShare * 100).toFixed(1)}% of spend, because on average they spend ${(S.sizes[CL].perHead / (SPEND_ALL / N)).toFixed(2)} times as much a head as the average respondent.`,
     steps: [
       {
         id: 'm05-ps-g2-s1', type: 'formula',
@@ -153,10 +153,10 @@ export const guided = [
         id: 'm05-ps-g2-s3', type: 'mc',
         prompt: `Craft and local are ${(S.sizes[CL].share * 100).toFixed(1)}% of respondents and ${(S.sizes[CL].spendShare * 100).toFixed(1)}% of spend. What follows?`,
         options: [
-          'Each Craft and local respondent spends about one and a half times the average a head',
-          'Craft and local are the largest segment in Harbour City, measured in people rather than dollars',
+          'On average, Craft and local respondents spend about one and a half times as much a head as the average respondent',
+          'Craft and local are the largest segment in Harbour City when it is measured in people rather than in dollars of spend',
           'Craft and local respondents drink more cups a week than any other segment',
-          'The two shares contradict each other, so one of them must be a mistake in the data or the formula',
+          'The two shares contradict each other, so one of them must be a mistake somewhere in the data or in the formulas used',
         ],
         answer: 0,
         feedback: {
@@ -181,7 +181,7 @@ export const guided = [
         wrong: [
           { value: r2(6 - MU[1]), say: 'That is the difference from the mean in rating points. Divide by the standard deviation to put it in standard deviations.' },
           { value: r2((6 - 4) / SD[1]), say: 'Subtract the study’s mean (4.44), not the middle of the scale (4).' },
-          { value: r2((6 - mean(TY)) / SD[1]), say: 'Centre on the study’s mean, not on her own average answer: her own average hides whether her ratings are high or low compared with everyone else.' },
+          { value: r2((6 - mean(TY)) / SD[1]), say: 'The study standardised with its own mean and standard deviation, so the tool must too. Centring on her own average answer would put her on a different footing from the centres.' },
         ],
         hints: ['z = (answer − study mean) ÷ study standard deviation.', `(6 − ${MU[1].toFixed(2)}) ÷ ${SD[1].toFixed(2)}.`],
       },
@@ -425,7 +425,7 @@ export const check = [
     options: [
       'A new customer’s answers are standardised with the original study’s means and standard deviations.',
       'Its accuracy should be measured on respondents the segmentation never saw.',
-      'The best golden questions are the needs that separate the segments most.',
+      'Golden questions are chosen by how well they separate the segments together.',
       'Customers whose two nearest centres are almost equally close are the most likely to be misassigned.',
       'Agreeing with the full segmentation on a hold-out shows it assigns customers to their true segment.',
       'Adding more golden questions lowers its accuracy, because each question adds noise.',
@@ -437,6 +437,6 @@ export const check = [
       5: 'The opposite: fewer questions usually means lower accuracy (Lantern: one question 54%, four 92.5%, eight 100% in-sample).',
       6: 'Standardise with the stored study values; a day’s customers are a different, arbitrary reference group.',
     },
-    solution: 'True: stored means and SDs, hold-out accuracy, golden questions chosen by how well they separate the segments, close calls as the weak point. A hold-out can’t show truth, more questions help, and the reference values never change between customers.',
+    solution: 'True: stored means and SDs, hold-out accuracy, golden questions chosen by how well they separate the segments as a set (ranking needs one at a time by F is only a first cut), close calls as the weak point. A hold-out can’t show truth, more questions help, and the reference values never change between customers.',
   },
 ];

@@ -391,7 +391,7 @@ export const check = [
     id: 'm05-ws-k5', type: 'mc', kind: 'applied',
     prompt: 'A regional energy supplier (fictional) has split its 90,000 household customers into 40 segments by tariff, region, home type and payment method, each to get its own mailing. Response rates differ little between most of the segments. What is the best advice?',
     options: [
-      'Merge the segments that respond alike, keeping apart only those that repay a mailing',
+      'Merge the segments that respond alike, keeping apart only those large and different enough to repay a mailing of their own',
       'Keep all 40, since smaller segments are more alike inside and so tend to repay tailored mailings better',
       'Replace the 40 segments with one mailing for all 90,000 customers, because segmenting has failed here',
       'Add more variables, such as age and income, so the segments become different enough to justify 40 mailings',

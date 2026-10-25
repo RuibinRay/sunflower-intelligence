@@ -87,7 +87,7 @@ export const guided = [
           'Region is associated with where people buy coffee, but weakly: every region mixes all kinds of buyer',
           'Region strongly determines where people buy coffee, so each of the five regions needs a different marketing plan',
           'There is no association: a V of 0.14 is too small to differ from zero',
-          'Central’s café buyers make it a segment of its own, to be targeted with café offers',
+          'Region matters little overall, but Central’s café buyers form a segment of their own, to target with café offers',
         ],
         answer: 0,
         feedback: {
@@ -118,7 +118,7 @@ export const guided = [
       2: 'A postcode classified into a neighbourhood type combines place and demographics: geodemographic.',
       3: 'Household composition, the life stage, is demographic.',
       4: 'Density describes the place: geographic.',
-      5: 'An attitude is a psychographic base, the subject of the next lesson.',
+      5: 'A general attitude like this is psychographic; attitude toward a particular product is listed among the behavioural bases in the next lesson.',
     },
     hints: ['Demographic: about the person or household. Geographic: about the place.', 'Geodemographic: a type assigned to an area from data about the people who live there.'],
     solution: 'Demographic: income band and children under 5 (life stage). Geographic: climate zone and population density. Geodemographic: the postcode’s neighbourhood type. The preference for independent shops is an attitude, a psychographic base.',
@@ -148,7 +148,7 @@ export const guided = [
     feedback: {
       1: 'Rounding doesn’t help: the share was set by the panel company’s quotas, not measured in the population.',
       2: 'The band width isn’t the issue; any age share in a quota sample reflects the quotas.',
-      3: 'We don’t know the direction of any error; with quotas the sample’s age mix simply tells us nothing about the population’s.',
+      3: 'We don’t know the direction of any error; with quotas the sample’s age mix reflects the quota targets, not a measurement of the population.',
     },
     hints: ['What did the quotas control?', 'Where would a population share of age come from instead?'],
     solution: 'In a quota sample the numbers in each age band are set by the quotas, so the sample’s age shares describe the design, not the population. Take population shares from census data or a probability sample, and use the panel to compare groups.',
@@ -219,7 +219,7 @@ export const independent = [
     options: [
       'The bands differ in mean spend, but most of the variation lies within each band',
       'Income explains most of what people spend on coffee, so Lantern should segment its market by income band',
-      'Higher-income respondents each spend about $19 a month more on coffee than lower-income respondents do',
+      'Income explains little overall, but each higher-income respondent spends about $19 a month more than each lower-income one',
       'The F test shows that spend has no relationship with income, because η² is close to zero',
     ],
     answer: 0,
@@ -233,7 +233,7 @@ export const independent = [
   {
     id: 'm05-dg-i5', type: 'fill', kind: 'conceptual',
     prompt: 'Choose the term that completes each sentence.',
-    text: 'Whether someone lives alone, with a partner or with young children describes their [[0]]. People born in the same span of years form a [[1]]. If 18–29s rate novelty highest because people seek variety while young and settle as they age, that is an [[2]]; if they keep the taste for novelty as they grow older, it is a [[3]].',
+    text: 'Whether someone lives alone, with a partner or with young children describes their [[0]]. People born in the same span of years form a [[1]]. If 18–29s rate novelty highest because people seek variety while young and settle as they age, the difference is due to the [[2]]; if they keep the taste for novelty as they grow older, it is due to the [[3]].',
     blanks: [
       { options: ['generation', 'life stage', 'social class', 'subculture'], answer: 1 },
       { options: ['life stage', 'subculture', 'generation', 'segment'], answer: 2 },
@@ -330,7 +330,7 @@ export const check = [
     id: 'm05-dg-k6', type: 'mc', kind: 'applied',
     prompt: 'An ice-cream maker (fictional) finds that sales per 1,000 households are twice as high in coastal towns as inland. Its sales director proposes cutting inland advertising entirely. What is the best response?',
     options: [
-      'Prioritise coastal towns but test inland first: penetration reflects past effort',
+      'Make coastal towns the priority but test inland before cutting it: low penetration may reflect past effort',
       'Agree: penetration shows inland households don’t want ice cream, so advertising there is wasted',
       'Disagree: penetration rates can’t be compared between areas with different numbers of households',
       'Agree, but only after weighting the coastal figures down to the inland population size',
@@ -341,6 +341,6 @@ export const check = [
       2: 'Penetration is per 1,000 households precisely so that areas of different sizes can be compared.',
       3: 'Weighting doesn’t change the logic: a rate per 1,000 is already comparable across areas.',
     },
-    solution: 'Penetration compares areas fairly because it is a rate, and a doubled rate makes coastal towns a sensible priority. But it records past results, which depend on distribution and marketing as well as demand; a test in some inland towns would show whether demand there is low or simply unserved.',
+    solution: 'Penetration compares areas fairly because it is a rate, and a doubled rate makes coastal towns a sensible priority. But it records past results, which depend on distribution and marketing as well as demand; a test in some inland towns would show whether demand there is low or just unserved.',
   },
 ];
