@@ -1517,7 +1517,7 @@ export function gradeFormula(sheetSpec, { cell, formula, answer, fill = null, va
   try { parse(f); } catch (e) { return { ok: false, results: [], message: `Excel couldn’t read that formula: ${e.message}.` }; }
   const used = functionsUsed(f);
   const unknown = [...used].filter((n) => !FN[n]);
-  if (unknown.length) return { ok: false, results: [], message: `${unknown[0]} isn’t a function this sheet knows. Check the spelling.` };
+  if (unknown.length) return { ok: false, results: [], message: `${unknown[0]} isn’t available in this worksheet. Check the spelling; if it is an Excel function this worksheet lacks, get the result another way.` };
   const missing = require.filter((n) => !used.has(n.toUpperCase()));
   const targets = [];
   const at = parseAddr(cell);

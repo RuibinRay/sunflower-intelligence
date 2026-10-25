@@ -228,7 +228,7 @@ export const independent = [
   },
   {
     id: 'm04-sr-i6', type: 'multi', kind: 'applied',
-    prompt: 'A fictional city’s e-scooter hire scheme has 85,000 registered riders. A social-listening tool found 12,400 public posts mentioning the scheme in March; it classed 64% of them as negative, and the number of posts tripled in the week after a local news story about scooters left on pavements. Which conclusions can these data support? Select all that apply.',
+    prompt: 'A fictional city’s e-scooter hire scheme has 85,000 registered riders. A social-listening tool found 12,400 public posts mentioning the scheme in March; it classed 64% of them as negative, its commonest topic was scooters left on pavements, and the number of posts tripled in the week after a local news story about the problem. Which conclusions can these data support? Select all that apply.',
     options: [
       'Scooters left on pavements are a common theme in public posts about the scheme',
       'The number of posts rose sharply in the week after the news story',

@@ -70,7 +70,7 @@ const thirdZero = (xs) => { let k = 0; for (let i = 0; i < xs.length; i++) if (x
 const PRE_METHODS = ['Cognitive interview', 'Behaviour coding', 'Respondent debriefing', 'Expert review', 'Pilot (small field test)'];
 const PRE = [
   ['Thinking aloud as she answered, a passenger said “harbour tour” could mean the one-hour trip or the day cruise', 0],
-  ['Asked to put Q4 in his own words, a passenger described a question about the café, not about the crew', 0],
+  ['In a one-to-one session on the draft, asked to put Q4 in his own words, a passenger described a question about the café, not about the crew', 0],
   ['Recordings of the quayside field interviews showed interviewers rewording Q6 in most of them, because it was too long to read out', 1],
   ['Recordings of the same interviews showed passengers asking for Q9 to be read again in most of them', 1],
   ['Asked after the field test what they had counted as “a trip”, most passengers said they had included the free shuttle ferry', 2],
@@ -452,7 +452,7 @@ export const items = [
   },
   {
     id: 'm04-fn-11', lesson: 'sampling-methods', type: 'mc', kind: 'applied',
-    prompt: `Each person on Lantern’s mailing list sits in one stratum only, and anyone who has ordered online counts as a subscriber or a shop customer even if they also took a workshop: the ${SIZES[2]} people in the workshop stratum are participants who never ordered online. M01’s 14 workshops in 2026 sold about 168 places. Ana wants to know what everyone who took a Lantern workshop in 2026 thought of it, and proposes to survey all ${SIZES[2]} people in the workshop stratum. What is the main problem with that frame?`,
+    prompt: `Each person on Lantern’s mailing list sits in one stratum only, and anyone who has ordered online counts as a subscriber or a shop customer even if they also took a workshop: the ${SIZES[2]} people in the workshop stratum are participants who never ordered online. M01’s 14 workshops in 2026 sold about 168 places. Lantern ran no workshops in January 2027. Ana wants to know what everyone who took a Lantern workshop in 2026 thought of it, and proposes to survey all ${SIZES[2]} people in the workshop stratum. What is the main problem with that frame?`,
     options: [
       'Undercoverage: participants who also order online sit in other strata, so they can never be chosen',
       'Overcoverage: some of the 150 may never have bought from Lantern, so they must be screened out first',
@@ -461,7 +461,7 @@ export const items = [
     ],
     answer: 0,
     feedback: {
-      1: 'Everyone in the workshop stratum paid for a Lantern workshop, and Lantern’s workshops all ran in 2026 (M01), so all 150 are in the target population. The frame’s problem is the participants it leaves out.',
+      1: 'Everyone in the workshop stratum paid for a Lantern workshop, and Lantern ran none in January 2027, so all 150 took theirs in 2026 and are in the target population. The frame’s problem is the participants it leaves out.',
       2: 'Inviting all 150 is a census of the frame, so it has no sampling error; and the ±8 points ignores the finite population correction. The problem is who the frame misses, which no margin shows.',
       3: 'Their 54% was the highest response rate of the four strata, and a response rate shows room for bias, not bias. The bigger problem is fixed before anyone is invited.',
     },
@@ -644,7 +644,7 @@ export const items = [
   },
   {
     id: 'm04-fn-18', lesson: 'competitor-research', type: 'formula', kind: 'numerical',
-    prompt: `Ana’s March shelf-price audit, one row per store: the channel in column B, then each rival can’s shelf price beside a column saying whether it was on promotion (${BR[0]} in C and D, ${BR[1]} in E and F, ${BR[2]} in G and H; blanks mean the store doesn’t stock it). K1 names a channel and K2 holds Lantern Cold Brew’s planned price. In K3, calculate Lantern’s premium over the average of all the regular (not promoted) prices recorded in that channel, every brand and store together, as a proportion: negative if Lantern is cheaper.`,
+    prompt: `Ana’s March shelf-price audit, one row per store: the channel in column B, then each rival can’s shelf price beside a column saying whether it was on promotion (${BR[0]} in C and D, ${BR[1]} in E and F, ${BR[2]} in G and H; blanks mean the store doesn’t stock it). K1 names a channel and K2 holds Lantern Cold Brew’s planned price. In K3, calculate Lantern’s premium over the average of all the regular (not promoted) prices recorded in that channel, every brand and store together, as a proportion (negative if Lantern is cheaper), in a formula that still works if K1 names another channel.`,
     sheet: { cells: audWide, vary: { K1: [CH.convenience, CH.natural] } },
     cell: 'K3', view: 'A1:K11', formats: { C: '$0.00', E: '$0.00', G: '$0.00', K2: '$0.00', K3: '0.0%' }, widths: { A: 6, B: 14, C: 11, D: 12, E: 13, F: 12, G: 13, H: 12, J: 34, K: 13 },
     answer: '=K2/((SUMIFS(C2:C11,B2:B11,K1,D2:D11,"No")+SUMIFS(E2:E11,B2:B11,K1,F2:F11,"No")+SUMIFS(G2:G11,B2:B11,K1,H2:H11,"No"))/(COUNTIFS(B2:B11,K1,D2:D11,"No")+COUNTIFS(B2:B11,K1,F2:F11,"No")+COUNTIFS(B2:B11,K1,H2:H11,"No")))-1',
@@ -656,7 +656,8 @@ export const items = [
     wrong: [
       { formula: '=K2/AVERAGEIFS(C2:C11,B2:B11,K1,D2:D11,"No")-1', say: `That compares Lantern with ${BR[0]} alone. The question asks for the average of every regular price recorded in the channel, all three brands together.` },
       { formula: '=K2/((SUMIFS(C2:C11,B2:B11,K1)+SUMIFS(E2:E11,B2:B11,K1)+SUMIFS(G2:G11,B2:B11,K1))/(COUNTIFS(B2:B11,K1,D2:D11,"<>")+COUNTIFS(B2:B11,K1,F2:F11,"<>")+COUNTIFS(B2:B11,K1,H2:H11,"<>")))-1', say: 'That includes the two promoted prices at S2. Count only the prices whose promotion flag is “No”, in the sums and in the counts.' },
-      { formula: '=K2/AVERAGE(AVERAGEIFS(C2:C11,B2:B11,K1,D2:D11,"No"),AVERAGEIFS(E2:E11,B2:B11,K1,F2:F11,"No"),AVERAGEIFS(G2:G11,B2:B11,K1,H2:H11,"No"))-1', say: 'That averages the three brands’ averages, which gives a brand stocked in two stores the same say as one stocked in four, and fails where a brand isn’t stocked at all. Divide the sum of all the regular prices by how many there are.' },
+      { formula: '=K2/AVERAGE(AVERAGEIFS(C2:C11,B2:B11,K1,D2:D11,"No"),AVERAGEIFS(E2:E11,B2:B11,K1,F2:F11,"No"),AVERAGEIFS(G2:G11,B2:B11,K1,H2:H11,"No"))-1', say: `That averages the three brands’ averages, which gives each brand the same say however many regular prices it has (three each for ${BR[0]} and ${BR[1]} in supermarkets, four for ${BR[2]}), and fails where a brand isn’t stocked at all. Divide the sum of all the regular prices by how many there are.` },
+      { formula: '=K2/AVERAGE(FILTER(C2:C11,(B2:B11=K1)*(D2:D11="No")),FILTER(E2:E11,(B2:B11=K1)*(F2:F11="No")),FILTER(G2:G11,(B2:B11=K1)*(H2:H11="No")))-1', say: `Right for supermarkets, but FILTER returns #CALC! where a channel stocks none of a brand (convenience stores carry no ${BR[2]}, natural grocers no ${BR[1]}), and AVERAGE then fails. Add the sums and the counts with SUMIFS and COUNTIFS, which give 0 for a missing brand.` },
       { formula: '=K2/((SUMIFS(C2:C11,D2:D11,"No")+SUMIFS(E2:E11,F2:F11,"No")+SUMIFS(G2:G11,H2:H11,"No"))/(COUNTIFS(D2:D11,"No")+COUNTIFS(F2:F11,"No")+COUNTIFS(H2:H11,"No")))-1', say: 'That averages the regular prices in every channel. Channels price differently, so keep the condition on the channel in K1.' },
       { formula: '=K2/((SUMIFS(C2:C11,B2:B11,K1,D2:D11,"<>Yes")+SUMIFS(E2:E11,B2:B11,K1,F2:F11,"<>Yes")+SUMIFS(G2:G11,B2:B11,K1,H2:H11,"<>Yes"))/(COUNTIFS(B2:B11,K1,D2:D11,"<>Yes")+COUNTIFS(B2:B11,K1,F2:F11,"<>Yes")+COUNTIFS(B2:B11,K1,H2:H11,"<>Yes")))-1', say: '“<>Yes” also matches the blank flags beside brands a store doesn’t stock, so COUNTIFS counts prices that aren’t there. Match “No”.' },
     ],
@@ -783,16 +784,16 @@ export const items = [
         options: [
           'Test adult-only courses: offer them to a random half of the adults e-mailed, mixed ones to the rest, and compare bookings',
           'Cut the price to $75 to match the cheaper rival, since price is the likeliest reason that so few adults booked',
-          'Plan next season’s courses for 36% of adult visitors to book, since the survey is the largest random sample of the four sources',
-          'Hold more depth interviews before changing anything, since six are too few to show why adults don’t book',
+          'Run adult-only courses next season and judge them by whether they fill more of their places than the trial did',
+          'Offer adult-only courses to the adults who said in the survey they would book, mixed ones to the rest, and compare bookings',
         ],
         answer: 0,
         feedback: {
           1: 'Nothing in the evidence points to price: the interviews pointed to a fear of falling in front of strangers, and two rivals’ prices don’t show what this rink’s adults would pay. A price could be tested too, but it isn’t the change the evidence suggests.',
-          2: 'Stated intent overstates behaviour, as the trial’s bookings show: plan volume on what people did, not on what they said they would do.',
-          3: 'Interviews are exploratory: they have already suggested why adults hold back. Whether adult-only courses would raise bookings is a causal question, and only an experiment answers it.',
+          2: 'That compares next season with this one, so everything else that changes between them (the time of year, the e-mail, the rink’s other events) is mixed in with the offer; and a fill rate depends on how many places are offered. Compare bookings between groups offered different courses at the same time.',
+          3: 'Those two groups differ in what they said they would do, not only in the offer, so a difference in bookings could come from either. Assign the offer at random, so the groups differ only in what they were offered.',
         },
-        solution: 'The interviews suggest a change; whether it works is a causal question. Offering the two kinds of course to randomly chosen halves of the list and comparing bookings answers it, because the halves differ only in the offer. The evidence gives no reason to cut the price, the survey’s 36% would overstate demand, and more interviews can’t show what a change would do.',
+        solution: 'The interviews suggest a change; whether it works is a causal question. Offering the two kinds of course to randomly chosen halves of the list at the same time and comparing bookings answers it, because the halves differ only in the offer. A before-and-after comparison mixes the offer with everything else that changed, groups chosen by their survey answers differ in intent as well as in the offer, and the evidence gives no reason to cut the price.',
       },
     ],
     solution: `The survey (stated preference) and the trial (revealed preference) disagree by a factor of nearly 50 once they are put on the same base: ${pc(RINK.booked / RINK.emailed, 2)} of adults e-mailed booked, against ${Math.round(RINK.intent * 100)}% who said they would. The interviews suggest why, and the insight leads to a test, adult-only courses offered to a random half of the list, rather than to a forecast. Plan volume on bookings, and use the survey and interviews for who wants lessons and what would help them book.`,

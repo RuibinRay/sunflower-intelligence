@@ -85,6 +85,23 @@ export const items = [
   },
   // ---------------------------------------------------------------- sampling-methods
   {
+    id: 'm04-m2-12', lesson: 'questionnaire-design', type: 'mc', kind: 'conceptual',
+    prompt: 'A fictional bank piloted a six-item “trust in our advice” scale with 400 customers. Cronbach’s alpha is 0.96, but the scores barely relate to whether the same customers took the bank’s advice over the next three months. What should the researchers conclude?',
+    options: [
+      'The items are consistent, maybe redundant, but the weak link with what customers did counts against predictive validity',
+      'The scale is valid as well as reliable: an alpha above 0.90 shows that the six items measure trust in the advice and nothing else',
+      'The scale is unreliable after all, since a measure that fails to predict what customers later do can’t be giving consistent answers',
+      'The scale is too consistent to be trusted, so the researchers should add more items until alpha falls below the 0.90 ceiling',
+    ],
+    answer: 0,
+    feedback: {
+      1: 'Alpha measures internal consistency, not validity: six items can agree closely and all measure the wrong thing. Validity needs other evidence, such as how scores relate to behaviour.',
+      2: 'Reliability and validity are separate: a measure can give consistent answers and still fail to predict behaviour. Reliability is needed for validity, but it isn’t enough.',
+      3: 'Adding items raises alpha. When alpha is very high, look for items that ask the same thing in other words and consider dropping some; the validity problem remains either way.',
+    },
+    solution: 'An alpha of 0.96 says the six items move together, so closely that some may repeat each other (Tavakol and Dennick note that a maximum of 0.90 has been recommended). It says nothing about whether the scale measures what matters for behaviour: scores that barely relate to whether customers took the advice are evidence against its predictive validity. A measure must be reliable to be valid, but reliability alone isn’t enough.',
+  },
+  {
     id: 'm04-m2-4', lesson: 'sampling-methods', type: 'formula', kind: 'numerical',
     prompt: 'Corvane Bike Share (fictional) will survey riders about trip length, stratified by plan. B2:B5 hold the riders on each plan, C2:C5 a planning standard deviation of trip length for each plan, and B8 the total sample size. In D2, calculate the annual plan’s Neyman allocation (unrounded), so that the formula can be filled down to D5.',
     sheet: { cells: cvCells, vary: { B8: [400, 800] } },

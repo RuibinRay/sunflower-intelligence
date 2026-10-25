@@ -330,7 +330,7 @@ export const check = [
       'Three experienced teachers check that the items cover speaking to strangers, on the phone, in groups and in class.',
       'Scores correlate 0.70 with an established speaking-confidence questionnaire and 0.05 with how much learners enjoy grammar exercises.',
       'Learners’ scores in September predict how often teachers count them speaking up in class in December.',
-      'Scores agree closely with teachers’ ratings of the same learners’ confidence, made in the same week.',
+      'Learners’ scores agree closely with the marks examiners gave them in an oral exam held the same week.',
     ],
     categories: ['Test–retest reliability', 'Internal consistency', 'Content validity', 'Construct validity', 'Criterion validity'],
     answer: [0, 1, 2, 3, 4, 4],

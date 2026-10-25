@@ -497,7 +497,7 @@ T.formula = (item, c) => {
     if (!f.startsWith('=')) return 'Start the formula with an equals sign (=).';
     try { X.parse(f); } catch (e) { return `Excel couldn’t read that formula: ${e.message}.`; }
     const unknown = [...X.functionsUsed(f)].filter((n) => !X.FUNCTIONS.includes(n));
-    return unknown.length ? `${unknown[0]} isn’t a function this sheet knows. Check the spelling.` : '';
+    return unknown.length ? `${unknown[0]} isn’t available in this worksheet. Check the spelling; if it is an Excel function this worksheet lacks, get the result another way.` : '';
   };
   let timer = 0;
   function show() {
