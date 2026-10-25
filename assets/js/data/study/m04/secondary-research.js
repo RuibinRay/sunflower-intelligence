@@ -28,11 +28,11 @@ const kgCi = ciProp(KG.active, KG.sampled, 0.95, 'wilson');
 export default {
   slug: 'secondary-research',
   title: 'Secondary research',
-  blurb: 'Before collecting anything new, find out what is already known. Learn to search a business’s own records and outside sources (official statistics, trade associations, syndicated and panel data, company filings), judge each source by who made it and why, its method, definitions, coverage, timeliness and consistency, and combine sources so that each checks the others.',
+  blurb: 'Before collecting anything new, find out what is already known. Learn to search a business’s own records and outside sources (official statistics, trade associations, syndicated and panel data, company filings, digital traces), judge each source by who made it and why, its method, definitions, coverage, timeliness and consistency, and combine sources so that each checks the others.',
   status: 'reviewed',
   objectives: [
     'Distinguish internal from external secondary data, and identify the internal records that can answer a marketing question.',
-    'Describe what official statistics, trade associations, syndicated and panel data and company filings offer, and what each leaves out.',
+    'Describe what official statistics, trade associations, syndicated and panel data, company filings and digital-trace data offer, and what each leaves out.',
     'Evaluate a secondary source by who made it and why, its method, definitions, coverage, timeliness and consistency.',
     'Calculate a population total from a survey rate, and gross up a figure for incomplete coverage.',
     'Combine sources to check one against another (triangulation) and report a range that states what each source covers.',
@@ -74,6 +74,7 @@ export default {
         ['Trade associations and the trade press', 'Industry sales estimates, members’ surveys, market reports', 'Specific to the industry; sometimes the only source for a niche', 'Members only; an interest in promoting the industry; methods often unpublished'],
         ['Syndicated and panel data', 'Retail sales measured at store checkouts; household purchase panels', 'Detailed by brand, store type and week', 'Costly; licence limits; stores and households not covered'],
         ['Company filings and reports', 'Annual reports, regulatory filings', 'Figures filed with regulators; audited annual statements for listed companies', 'Totals across many products and places; little on private firms'],
+        ['Digital traces and big data', 'Web and app analytics, loyalty-card records, search trends, social posts and reviews', 'Huge, fast and close to behaviour', 'Self-selected, not representative; definitions change; privacy limits'],
         ['Competitors’ own material', 'Websites, price lists, catalogues, job advertisements', 'Current and free', 'Written to sell; the competitor-research lesson covers it'],
       ],
     } },
@@ -98,6 +99,13 @@ export default {
     { h: 'Company filings' },
     { p: 'Companies that report to a securities regulator publish detailed filings, a free source on competitors and customers. In the US, the SEC’s EDGAR database gives free public access to them. The annual report on Form 10-K contains audited annual financial statements, a discussion of the material risk factors facing the company and management’s discussion and analysis of its results; Form 10-Q gives unaudited quarterly statements, and Form 8-K reports material events between them.' },
     { p: `F00’s fictional Harbourline Roasters Inc., a listed roaster with $${HARBOURLINE.revenue} million of revenue, would file a 10-K whose risk factors and management’s discussion might say which product lines are growing; its revenue, though, would cover every product and every region together. In the UK, the Companies House register can be searched free of charge, without registering, for a company’s filing history, its officers and the dates of its accounts. Companies House checks that filings are complete and valid, but it says it makes only basic checks on accounts and cannot take responsibility for the consequences of errors or omissions in the register’s data.` },
+
+    { h: 'Big data and digital traces' },
+    { p: 'OpenStax’s <i>Principles of Marketing</i> describes <g>big data</g> as “the countless number of records that continues in an increasing capacity and at a faster rate”, and characterises it by three Vs: volume (how much there is), velocity (how fast it grows) and variety (how many kinds of data and contributors). For a marketer the main sources are digital traces of behaviour: web and app analytics (sessions, pages viewed, abandoned baskets, the web data of B01), transaction and loyalty-card records (<g>transactional data</g> linked to a customer), search trends (how interest in a term rises and falls) and <g>social listening</g>, which tracks what people say in public posts, reviews and forums.' },
+    { p: 'OpenStax places such data in a <g>marketing information system</g>, which a business uses to collect, analyse and report findings from its internal and external data; it calls the system an ever-changing database that is useful only when marketers act on what it holds, and among the names for that information it lists marketing intelligence, M01’s <g>market intelligence</g>. It also names the main difficulty: because the data keep changing, it is hard to settle on an approach to analysing them. Nearly all of these records are secondary data, created by running a website, a till or a social network rather than to answer a research question, so the six questions in the next section apply to them in full.' },
+    { p: '<b>Volume isn’t representativeness.</b> A million posts come from the people who chose to post, often the keenest and the angriest, plus bots, duplicate accounts and paid reviewers. However large it is, a social-listening count is a <g>self-selected sample</g> of opinion: it can show what is being said and how the conversation changes, not what share of customers think it. Loyalty-card data covers only card holders, and web analytics only the visits it records.' },
+    { p: '<b>Definitions and platforms change without notice.</b> A change in an analytics tool’s session settings, in how a platform ranks or filters posts, or in which reviews it shows can move a series overnight, the digital version of a series that jumps when its method changes. Record the settings, the query and the date with every extract, and check for changes before reading a trend.' },
+    { p: '<b>Privacy limits use.</b> Records that can be linked to a person are <g>personal data</g>, so using them for research needs a legal basis under the rules B01 outlined, and customers may not expect their purchases or posts to be studied. A public post is not consent to be profiled: analyse themes and counts, and never quote or report anyone in a way that identifies them.' },
 
     { h: 'Evaluating a source' },
     { p: 'Six questions cover almost every problem with a secondary source. The first two are about the source, the other four about how well its numbers fit your question.' },
@@ -210,6 +218,7 @@ export default {
     'Trade associations usually report members only; syndicated retail data misses stores and channels that don’t share data; consumer panels depend on who agrees to record; filings cover listed or registered companies and add up many products.',
     'Judge every source by six questions: who made it and why, how, what exactly was counted, what it covers, when, and whether it agrees with itself and with others.',
     'Scale a survey rate to a total with T = N × r × k, and gross up for coverage with T = T_c ÷ c; a wider definition makes the result a ceiling.',
+    'Big data and digital traces (analytics, loyalty cards, search trends, social listening) are large but not representative: say who is missing, record settings and dates, and respect privacy limits.',
     'Triangulate: put sources on one definition, adjust for coverage, compare, explain each gap, and report a range with what each end covers.',
   ],
 
@@ -222,11 +231,14 @@ export default {
     { term: 'Trade association', def: 'An organisation that represents the businesses in an industry; many publish members’ sales estimates and market reports.' },
     { term: 'Syndicated data', def: 'Data collected by a research firm once and sold by subscription to many clients, such as retail sales measured at store checkouts or household purchase panels.' },
     { term: 'Consumer panel', def: 'A sample of households or people who record what they buy over months or years, so that their purchases can be followed over time.' },
+    { term: 'Big data', def: 'Very large, fast-growing and varied collections of records, such as transactions, web logs and social media posts; OpenStax describes it by three Vs: volume, velocity and variety.' },
+    { term: 'Marketing information system', def: 'The means by which a business collects, analyses and reports marketing information from its internal and external data, so that it is ready for decisions.' },
+    { term: 'Social listening', def: 'Tracking what people say in public online posts, reviews and forums about a brand, product or topic, usually with software that counts mentions and classifies their tone.' },
     { term: 'Triangulation', def: 'Checking a finding or an estimate against evidence from other sources or methods. Agreement raises confidence; disagreement points to differences in definitions, coverage, timing or method that must be explained.' },
   ],
 
   references: [
-    { text: 'Gomez Albrecht, M., Green, M. &amp; Hoffman, L. (2023). <i>Principles of Marketing</i>, sections 6.2 “Sources of Marketing Information” and 6.3 “Steps in a Successful Marketing Research Plan” (internal and external data; primary and secondary data; syndicated data). OpenStax.', url: 'https://openstax.org/books/principles-marketing/pages/6-2-sources-of-marketing-information', checked: '2026-10-24' },
+    { text: 'Gomez Albrecht, M., Green, M. &amp; Hoffman, L. (2023). <i>Principles of Marketing</i>, sections 6.1 “Marketing Research and Big Data” (big data and its three Vs; the marketing information system), 6.2 “Sources of Marketing Information” and 6.3 “Steps in a Successful Marketing Research Plan” (internal and external data; primary and secondary data; syndicated data). OpenStax.', url: 'https://openstax.org/books/principles-marketing/pages/6-1-marketing-research-and-big-data', checked: '2026-10-24' },
     { text: 'U.S. Census Bureau. “About County Business Patterns (CBP)”.', url: 'https://www.census.gov/programs-surveys/cbp/about.html', checked: '2026-10-24' },
     { text: 'U.S. Census Bureau. “County Business Patterns (CBP) Glossary” (establishment; paid employment; nonemployers).', url: 'https://www.census.gov/programs-surveys/cbp/about/glossary.html', checked: '2026-10-24' },
     { text: 'U.S. Census Bureau. “Using 1-Year or 5-Year American Community Survey Data”. ACS guidance for data users (1-year, 1-year supplemental and 5-year estimates).', url: 'https://www.census.gov/programs-surveys/acs/guidance/estimates.html', checked: '2026-10-24' },
@@ -267,6 +279,8 @@ export default {
     { what: 'Bookshop: town population', value: 15000, shown: 15000 },
     { what: 'Bookshop: town below both 1-year thresholds', value: Number(15000 < 20000 && 15000 < 65000), shown: 1 },
     { what: 'ACS supplemental 1-year threshold', value: 20000, shown: 20000 },
+    { what: 'OpenStax big-data Vs', value: 3, shown: 3 },
+    { what: 'A million posts (illustration)', value: 1e6, shown: 1000000 },
     { what: 'ACS published margins: confidence level %', value: 90, shown: 90 },
     { what: 'B04 confidence level %', value: 95, shown: 95 },
     { what: 'Kelstow: counts older than directory (years)', value: 2027 - 2025, shown: 2 },

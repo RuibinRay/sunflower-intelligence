@@ -177,7 +177,7 @@ export const OFFICE_DRAFT = [
   { q: 'How many cups of coffee did your office drink last year?', flaw: 'Unanswerable from memory' },
   { q: 'How many staff work at your office? 1–10 / 10–50 / 50–250 / 250 or more', flaw: 'Overlapping options' },
   { q: 'Would you sign up for Lantern’s premium artisan bean-to-cup service?', flaw: 'Loaded wording, and no price' },
-  { q: 'Which supplier do you use now? Brewline / Daystar / Grindhouse', flaw: 'Options not exhaustive' },
+  { q: 'Which supplier do you use now? Brewline / Daystar / Tidemark', flaw: 'Options not exhaustive' },
 ];
 export const OFFICE_FLAWS = ['Leading', 'Double-barrelled', 'Unanswerable from memory', 'Overlapping options', 'Loaded wording, and no price', 'Options not exhaustive'];
 /** Eight interviews with office managers in March 2027 (anonymised; fictional), each remark coded to one theme. */
@@ -199,13 +199,14 @@ export const OFFICE_INTERVIEWS = [
 /** Office-coffee offers in the district (March 2027; prices from the suppliers' published price lists and a quote an
  *  office manager shared with Ana; fictional). Price per member of staff a month; minimum contract in months. */
 export const OFFICE_COMPETITORS = [
-  { name: 'Brewline Office', what: 'Pod machines with monthly pod restock', pricePerStaffMonth: 11, contractMonths: 24, service: 'next working day' },
-  { name: 'Daystar Vending', what: 'Coin-free vending machine; cups charged at $0.40 each to the office', pricePerStaffMonth: null, perCup: 0.40, contractMonths: 36, service: 'within 3 working days' },
-  { name: 'Grindhouse Office', what: 'Bean-to-cup machine, beans and milk delivered', pricePerStaffMonth: 15, contractMonths: 36, service: 'same day' },
-  { name: 'Lantern (proposed)', what: 'Bean-to-cup machine, beans delivered weekly, a barista visit each quarter', pricePerStaffMonth: OFFICE_OFFER.pricePerStaffMonth, contractMonths: 12, service: 'next working day' },
+  { name: 'Brewline Office', what: 'Pod machines; pods restocked monthly', pricePerStaffMonth: 11, contractMonths: 24, service: 'next working day' },
+  { name: 'Daystar Vending', what: 'Vending machine; each cup billed to the office', pricePerStaffMonth: null, perCup: 0.40, contractMonths: 36, service: 'within 3 working days' },
+  { name: 'Tidemark Office', what: 'Bean-to-cup machine; beans and milk delivered', pricePerStaffMonth: 15, contractMonths: 36, service: 'same day' },
+  { name: 'Lantern (proposed)', what: 'Bean-to-cup machine; weekly beans; quarterly barista visit', pricePerStaffMonth: OFFICE_OFFER.pricePerStaffMonth, contractMonths: 12, service: 'next working day' },
 ];
 /** Secondary data for the top-down size (fictional): the Harbour City Statistics Office's 2026 business register says
- *  38,500 people work in workplaces of 10 or more staff in Lantern's district; Ana's planning assumptions for turning
+ *  38,500 people work in offices of 10 or more staff in Lantern's district (its count of office-based workplaces, a
+ *  year older than Ana's directory); Ana's planning assumptions for turning
  *  stated interest into sign-ups (half of "definitely", a sixth of "probably", none of the rest) and the most offices she
  *  can install and serve in the first year (one van, one technician). */
 export const OFFICE_SIZING = { districtStaff10plus: 38_500, conversion: [0.5, 1 / 6, 0, 0, 0], maxInstallsYear1: 35, cupsPerStaffDay: 1.4, workdaysMonth: 21 };

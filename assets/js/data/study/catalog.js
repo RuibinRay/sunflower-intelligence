@@ -367,7 +367,7 @@ const ALL = [
     topics: ['Product, price, place, promotion for services', 'People', 'Process', 'Physical evidence', 'Service quality', 'Customer experience', 'Service recovery', '4Ps and 7Ps compared in retail, hospitality, banking and professional services'],
   }),
   C({
-    id: 'm04', school: 'marketing', code: 'M04', level: 'intermediate', status: 'in-progress', requires: ['m01'], recommends: ['b01', 'b04'],
+    id: 'm04', school: 'marketing', code: 'M04', level: 'intermediate', status: 'in-progress', requires: ['m01', 'b04'], recommends: ['m02'],
     title: 'Market Research',
     blurb: 'Plan research around a decision, use secondary sources and qualitative work, design questionnaires and samples, size markets, research competitors, and turn survey data into honest insight.',
     case: 'lantern',

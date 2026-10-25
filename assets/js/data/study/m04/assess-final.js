@@ -3,14 +3,15 @@
 // Mixed conceptual, numerical and applied items; five are formula items (two of them steps) on worksheets, with the
 // inputs a formula should read varied or scaled on the marking copies so that typed results fail. Many combine what
 // several lessons teach: what research could be worth, then which study passes both tests (m04-fn-1); a growth rate
-// across a change of method (m04-fn-3); coding interviews with a codebook, then what the codes can’t show (m04-fn-5); a
-// discussion guide’s funnel, then saturation by group (m04-fn-6); a Neyman allocation, then a stratified estimate from
-// uneven replies, then what weighting corrects (m04-fn-9); the stratified standard error in Excel (m04-fn-10); response
-// rates by stratum, then non-response bias from a follow-up, then what a rate can’t say (m04-fn-12); a bottom-up model,
-// then the assumption that moves it most, then what would have to be true (m04-fn-15); stated intent weighted to two
-// groups and converted (m04-fn-17); a premium over a rival’s regular price in one channel from Lantern’s audit
-// (m04-fn-18); two segments’ NPS compared, and whether weights matter (m04-fn-21); a survey and a trial that seem to
-// agree (m04-fn-23). Lantern’s data appear from new angles (the workshop stratum as a frame, the audit as a premium, the
+// across a change of definition (m04-fn-3); coding interviews with a codebook, then what the codes can’t show
+// (m04-fn-5); a discussion guide’s funnel, then saturation by group (m04-fn-6); which pretest method finds which problem
+// (m04-fn-7); a Neyman allocation, then a stratified estimate from uneven replies, then what weighting corrects
+// (m04-fn-9); the stratified standard error in Excel (m04-fn-10); response rates by stratum, then an estimate corrected
+// with a follow-up, then what a rate can’t say (m04-fn-12); a bottom-up model, then the assumption that moves it most,
+// then the year at its low value (m04-fn-15); how far pooling two groups’ stated intent overstates demand (m04-fn-17);
+// Lantern’s premium over a channel’s whole shelf from the audit (m04-fn-18); the interval for two segments’ NPS gap, and
+// whether weights matter (m04-fn-21); a survey and a trial on different bases, then the design that tests the insight
+// (m04-fn-23). Lantern’s data appear from new angles (the workshop stratum as a frame, the audit as a shelf average, the
 // completes’ weighted mean cups, NPS by first-heard route, subscribers against shop customers); the other businesses are
 // fictional and used nowhere else on the site, and nothing comes from the project’s scenario or data. No hints;
 // solutions are shown on review. Every num item’s `check` recomputes its answer, and every formula item is marked by its
@@ -38,7 +39,7 @@ const escBest = Math.max(escEv(ESC.full), escEv(ESC.pop), escEv(ESC.wait));
 const escPerfectWith = (opts) => sum(ESC.p.map((p, i) => p * Math.max(...opts.map((o) => o[i]))));
 const escPerfect = escPerfectWith([ESC.full, ESC.pop, ESC.wait]);
 const escEvpi = escPerfect - escBest;
-// a regional tourism board (fictional): a change of method in 2025
+// a regional sports council (fictional): adults who run, with a change of definition in 2025
 const TOUR = { y2023: 1.20, y2024: 1.26, y2025old: 1.31, y2025new: 1.62 };
 const growth = (a, b) => (b / a - 1) * 100;
 // a city library (fictional): the codebook and seven quotations from interviews with lapsed members
@@ -65,6 +66,17 @@ const firstZero = (xs) => xs.indexOf(0) + 1;
 const thirdZero = (xs) => { let k = 0; for (let i = 0; i < xs.length; i++) if (xs[i] === 0 && ++k === 3) return i + 1; return xs.length; };
 
 // ---------------------------------------------------------------- module 2: surveys and samples
+// a boat-trip operator's pretests (fictional): which method found each problem
+const PRE_METHODS = ['Cognitive interview', 'Behaviour coding', 'Respondent debriefing', 'Expert review', 'Pilot (small field test)'];
+const PRE = [
+  ['Thinking aloud as she answered, a passenger said “harbour tour” could mean the one-hour trip or the day cruise', 0],
+  ['Asked to put Q4 in his own words, a passenger described a question about the café, not about the crew', 0],
+  ['In most of the quayside interviews, interviewers reworded Q6 because it was too long to read out', 1],
+  ['In most of the quayside interviews, passengers asked for Q9 to be read again', 1],
+  ['Asked after the field test what they had counted as “a trip”, most passengers said they had included the free shuttle ferry', 2],
+  ['A survey methodologist reading the draft noticed that Q5’s answer scale has three positive labels and only one negative', 3],
+  ['In a small field test the median passenger took 14 minutes, against the 8 promised in the invitation', 4],
+];
 // Winsett Sinfonia (fictional): Neyman allocation of 500 invitations, then the replies
 const SIN = { groups: ['Season subscribers', 'Regular single-ticket buyers', 'Occasional buyers'], N: [1200, 4000, 10800], p: [0.8, 0.5, 0.2], n: 500, done: [28, 96, 151], yes: [22, 52, 41] };
 const sinS = SIN.p.map((p) => Math.sqrt(p * (1 - p)));
@@ -94,10 +106,11 @@ const zooRR = ZOO.map(([I, P, R, NC, U]) => S.responseRates({ I, P, R, NC, U }))
 const zooInv = ZOO.map(sum);
 const ZF = { resp: 61, non: 38 };                                         // the individual members' follow-up
 const zooBias = (rate) => (1 - rate) * (ZF.resp - ZF.non);
+const zooAll = (rate) => rate * ZF.resp + (1 - rate) * ZF.non;          // completers and the rest, each by its share
 
 // ---------------------------------------------------------------- module 3: markets and competitors
 // a frozen-dumpling maker (fictional): its year-one model and Ana-style ranges
-const DUMP = { channels: [['Supermarkets', 40, 8], ['Asian grocers', 25, 12], ['Delicatessens', 15, 6]], weeks: 52, web: 900, goal: 60000 };
+const DUMP = { channels: [['Supermarkets', 40, 8], ['Asian grocers', 25, 12], ['Delicatessens', 15, 6]], weeks: 52, web: 900 };
 const dumpWeekly = sum(DUMP.channels.map(([, l, v]) => l * v));
 const dumpYear = dumpWeekly * DUMP.weeks + DUMP.web * 12;
 const dumpCells = {
@@ -112,17 +125,19 @@ const dumpSwing = {
   asianRate: (DR.asianRate[1] - DR.asianRate[0]) * DUMP.channels[1][1] * DUMP.weeks,
   web: (DR.web[1] - DR.web[0]) * 12,
 };
-const dumpOtherShops = (DUMP.channels[1][1] * DUMP.channels[1][2] + DUMP.channels[2][1] * DUMP.channels[2][2]) * DUMP.weeks;
-const dumpNeed = (DUMP.goal - dumpOtherShops - DUMP.web * 12) / (DUMP.channels[0][1] * DUMP.weeks);
+const dumpAtRate = (rate) => dumpYear + (rate - DUMP.channels[0][2]) * DUMP.channels[0][1] * DUMP.weeks;   // supermarkets' rate moved
+const dumpLow = dumpAtRate(DR.supRate[0]), dumpHigh = dumpAtRate(DR.supRate[1]);
 // a canned-soup category (fictional): a volume-weighted price
 const SOUP = { cans: 3.0e6, brands: [['A', 0.5, 2.50], ['B', 0.3, 1.60], ['C', 0.2, 3.20]], supermarkets: 0.6 };
 const soupPrice = sum(SOUP.brands.map(([, s, p]) => s * p)), soupSimple = avg(SOUP.brands.map(([, , p]) => p));
 const soupSam = SOUP.cans * SOUP.supermarkets;
 // a leisure-centre operator's class pass (fictional): intent weighted to two groups, then converted
-const PASS = { N: [2000, 8000], n: [300, 200], def: [0.24, 0.06], prob: [0.30, 0.15], c: [0.4, 0.1] };
+const PASS = { N: [2000, 8000], n: [300, 200], def: [0.24, 0.06], prob: [0.30, 0.15], c: [0.35, 0.08] };
 const passBuyers = (N, def, prob, c = PASS.c) => sum(N.map((k, i) => k * (c[0] * def[i] + c[1] * prob[i])));
 const passPool = (k) => sum(PASS.n.map((n, i) => n * k[i])) / sum(PASS.n);
-// Lantern's audit, one row per store (wide), for Summit Brew's regular price by channel
+const passPooled = (c = PASS.c) => sum(PASS.N) * (c[0] * passPool(PASS.def) + c[1] * passPool(PASS.prob));
+const passRight = passBuyers(PASS.N, PASS.def, PASS.prob), passOver = passPooled() - passRight;
+// Lantern's audit, one row per store (wide), for the average regular price of every rival can in a channel
 const CH = { supermarket: 'Supermarket', convenience: 'Convenience', natural: 'Natural grocer' };
 const BR = PRICE_AUDIT.brands;
 const audWide = {
@@ -132,11 +147,15 @@ const audWide = {
     s.prices.forEach((p, j) => { if (p != null) out.push([`${'CEG'[j]}${row}`, p], [`${'DFH'[j]}${row}`, s.promo && s.promo[j] ? 'Yes' : 'No']); });
     return out;
   })),
-  J1: 'channel', K1: CH.supermarket, J2: 'Lantern Cold Brew', K2: DEFAULT_PLAN.price, J3: `premium over ${BR[0]}’s regular price`,
+  J1: 'channel', K1: CH.supermarket, J2: 'Lantern Cold Brew', K2: DEFAULT_PLAN.price, J3: 'premium over the channel’s regular shelf',
 };
-const summitReg = (ch) => avg(PRICE_AUDIT.stores.filter((s) => s.channel === ch && !(s.promo && s.promo[0])).map((s) => s.prices[0]));
-const summitAll = (ch) => avg(PRICE_AUDIT.stores.filter((s) => s.channel === ch).map((s) => s.prices[0]));
 const LP = DEFAULT_PLAN.price;
+// every regular (not promoted) price recorded in a channel, all brands; and the slips' versions
+const shelf = (ch, { promos = false } = {}) => PRICE_AUDIT.stores.filter((s) => ch == null || s.channel === ch)
+  .flatMap((s) => s.prices.filter((p, j) => p != null && (promos || !(s.promo && s.promo[j]))));
+const shelfAvg = (ch, o) => avg(shelf(ch, o));
+const summitReg = (ch) => avg(PRICE_AUDIT.stores.filter((s) => s.channel === ch && !(s.promo && s.promo[0])).map((s) => s.prices[0]));
+const premium = (base) => (LP / base - 1) * 100;
 
 // ---------------------------------------------------------------- module 4: from data to insight
 const W = DERIVED.weights.perStratum;
@@ -150,6 +169,7 @@ const cupsW = sum(RESPONDENTS.map((x, i) => wts[i] * x.cups)) / sum(wts);
 const cupsMeans = STRATA.map((_, h) => avg(RESPONDENTS.filter((x) => x.stratum === h).map((x) => x.cups)));
 const [NSUB, NSHOP] = DERIVED.nps.byStratum;
 const npsZ = (a, b) => (a.score - b.score) / Math.hypot(a.se, b.se);
+const gapLow = (a, b, se = Math.hypot(a.se, b.se), z = Z) => a.score - b.score - z * se;
 const ROUTE = LEVELS.heard.map((h, k) => ({ route: h, ...S.nps(RESPONDENTS.filter((x) => x.heard === k).map((x) => x.nps)) }));
 const zFriendEvent = npsZ(ROUTE[0], ROUTE[1]), zWorkSocial = npsZ(ROUTE[2], ROUTE[3]);
 // an ice rink's adult courses (fictional)
@@ -215,18 +235,18 @@ export const items = [
   },
   {
     id: 'm04-fn-3', lesson: 'secondary-research', type: 'num', kind: 'numerical',
-    prompt: 'A fictional regional tourism board publishes a yearly count of visitors. In 2025 it changed its method to include day visitors who stay less than four hours, and its 2025 report gives that year’s count on both methods (table). A hotel group planning a new hotel wants the growth in visitor numbers from 2024 to 2025. What is it? Give a percentage to one decimal place.',
-    data: { table: { head: ['Year', 'Visitors (millions)', 'Method'], rows: [['2023', fx(TOUR.y2023), 'Old'], ['2024', fx(TOUR.y2024), 'Old'], ['2025', fx(TOUR.y2025old), 'Old'], ['2025', fx(TOUR.y2025new), 'New (day visitors included)']] } },
+    prompt: 'A fictional regional sports council publishes a yearly estimate of the adults who run regularly. In 2025 it began counting anyone who had run at least once that year, not at least once a month, and its 2025 report gives that year’s estimate on both definitions (table). A running-shoe retailer planning a new store wants the growth in regular runners from 2024 to 2025. What is it? Give a percentage to one decimal place.',
+    data: { table: { head: ['Year', 'Adults who run (millions)', 'Counted if they ran'], rows: [['2023', fx(TOUR.y2023), 'At least once a month'], ['2024', fx(TOUR.y2024), 'At least once a month'], ['2025', fx(TOUR.y2025old), 'At least once a month'], ['2025', fx(TOUR.y2025new), 'At least once in the year']] } },
     answer: r(growth(TOUR.y2024, TOUR.y2025old), 1),
     check: () => (1.31 / 1.26 - 1) * 100,
     unit: '%', places: 1, tol: 0.06,
     wrong: [
-      { value: r(growth(TOUR.y2024, TOUR.y2025new), 1), say: 'That compares a 2025 count on the new method with a 2024 count on the old one. Most of the jump is the change of method: compare like with like, the old method in both years.' },
-      { value: r(growth(TOUR.y2025old, TOUR.y2025new), 1), say: 'That is the difference between the two methods in 2025, not a change over time.' },
+      { value: r(growth(TOUR.y2024, TOUR.y2025new), 1), say: 'That compares a 2025 estimate on the new definition with a 2024 estimate on the old one. Most of the jump is the change of definition: compare like with like, the monthly runners in both years.' },
+      { value: r(growth(TOUR.y2025old, TOUR.y2025new), 1), say: 'That is the difference between the two definitions in 2025, not a change over time.' },
       { value: r(growth(TOUR.y2023, TOUR.y2025old), 1), say: 'That is the growth over two years, from 2023. The question asks for 2024 to 2025.' },
       { value: r(growth(TOUR.y2023, TOUR.y2024), 1), say: 'That is the previous year’s growth, from 2023 to 2024.' },
     ],
-    solution: `On one method throughout: ${fx(TOUR.y2025old)} ÷ ${fx(TOUR.y2024)} − 1 = ${fx(growth(TOUR.y2024, TOUR.y2025old), 1)}%. The new method’s ${fx(TOUR.y2025new)} million is ${fx(growth(TOUR.y2024, TOUR.y2025new), 1)}% above 2024 only because it counts short day visits, which a hotel won’t see. This is the “does it agree?” question for a secondary source: a jump in the year the method changed is a break in the series, not growth. From 2026 the group should use the new method’s day-visit and overnight figures separately, if the board publishes them.`,
+    solution: `On one definition throughout: ${fx(TOUR.y2025old)} ÷ ${fx(TOUR.y2024)} − 1 = ${fx(growth(TOUR.y2024, TOUR.y2025old), 1)}%. The new definition’s ${fx(TOUR.y2025new)} million is ${fx(growth(TOUR.y2024, TOUR.y2025new), 1)}% above 2024 only because it counts occasional runners, who buy few running shoes. This is the “does it agree?” question for a secondary source: a jump in the year a definition changed is a break in the series, not growth. From 2026 the retailer should keep following the monthly runners, if the council goes on publishing them.`,
   },
   {
     id: 'm04-fn-4', lesson: 'secondary-research', type: 'multi', kind: 'conceptual',
@@ -260,6 +280,7 @@ export const items = [
         answer: LIB_QUOTES.map(([, k]) => k),
         feedback: {
           1: 'The complaint is about which e-books it had. The codebook puts e-books under Stock, and Digital services is “not for” them.',
+          4: 'It is about the website’s information, which the codebook puts under Digital services; Stock is what there is to borrow.',
           5: 'Seating is Space, even next to the new books: the remark is about having nowhere to sit, not about what there is to borrow.',
           6: 'The complaint is about which audiobooks were available, which is Stock; the app is only where the participant looked.',
         },
@@ -267,23 +288,23 @@ export const items = [
       },
       {
         id: 'm04-fn-5-s2', type: 'multi',
-        prompt: 'Noise came up in six of the ten interviews, usually linked to the new café. Select all the statements the report can make.',
+        prompt: 'Noise came up in seven of the ten interviews, usually linked to the new café, and all four participants over 60 raised it. Two coders agreed on every passage coded to noise. Select all the statements the report can make.',
         options: [
-          'Noise was raised in six of the ten interviews, most often linked to the café',
+          'Noise was raised in seven of the ten interviews, most often linked to the café',
           'Phrases such as “too noisy to read” could be used to word a survey question',
           'Current members are likely to be just as bothered by the noise as lapsed ones',
-          'Sixty per cent of lapsed members left the library because of the noise',
-          'Noise is the main reason members lapse, as it was the most frequent code',
+          'Because the two coders agreed on every noise passage, the finding holds for lapsed members in general',
+          'Participants over 60 raised noise most often, so older members are the ones the noise drives away',
           'Closing the café would bring most of the lapsed members back to the library',
         ],
         answer: [0, 1],
         feedback: {
           2: 'Only lapsed members were interviewed, so the interviews say nothing about current members, who stayed and may mind the noise less.',
-          3: 'Ten recruited participants can’t give a share of all lapsed members; six of ten describes the interviews.',
-          4: 'How often a code appears reflects the guide and who talked most, not which reason matters most to members.',
+          3: 'Agreement between coders shows that the codebook was applied consistently, not that ten recruited participants stand for every lapsed member.',
+          4: 'Four of four in a group of ten interviews is a count within a small, chosen group, not a share; and noticing noise isn’t the same as leaving because of it. A survey of a planned sample could check whether older lapsed members mention it more.',
           5: 'That is a prediction about behaviour and its cause, which interviews can’t test. A trial of quieter hours would.',
         },
-        solution: 'The report can say how often a theme came up in the interviews, if it says that is all the count means, and it can pass on participants’ own words for a survey. How common the complaint is, among lapsed or current members, which reason matters most and what would bring members back need a survey of a planned sample, or a test.',
+        solution: 'The report can say how often a theme came up in the interviews, if it says that is all the count means, and it can pass on participants’ own words for a survey. Coders’ agreement makes the coding reliable, not the sample representative. How common the complaint is, among lapsed or current members or within an age group, and what would bring members back need a survey of a planned sample, or a test.',
       },
     ],
     solution: 'Codebook rules settle the hard cases (e-books and audiobooks are Stock, seating is Space), which is what makes two coders’ work comparable. The interviews then show what lapsed members say and in what words; they can’t show how many lapsed members feel each way or what would bring them back. Those need descriptive research, and a test for the cause.',
@@ -326,26 +347,18 @@ export const items = [
   // ================================================================ Module 2: surveys and samples
   {
     id: 'm04-fn-7', lesson: 'questionnaire-design', type: 'classify', kind: 'conceptual',
-    prompt: 'A fictional boat-trip operator’s draft passenger survey has these problems. Name the main fault in each.',
-    items: [
-      '“How much did you enjoy our award-winning harbour tour?”',
-      '“How many boat trips have you taken in the last five years?”',
-      '“Do you disagree that we shouldn’t run trips in winter?”',
-      '“How old are you? 18–30 / 30–50 / 50–70 / 70 or over”',
-      '“How did you book? On our website / On our app”',
-      '“How would you rate the guide’s commentary and the café on board?”',
-      'The question on overall satisfaction with the trip comes last, after eight questions about the café, the seats and the toilets',
-    ],
-    categories: ['Loaded', 'Recall period too long', 'Double negative', 'Overlapping options', 'Options not exhaustive', 'Double-barrelled', 'Order effect'],
-    answer: [0, 1, 2, 3, 4, 5, 6],
+    prompt: 'A fictional boat-trip operator tested its draft passenger survey in several ways before fieldwork. Which method found each problem?',
+    items: PRE.map(([t]) => t),
+    categories: PRE_METHODS,
+    answer: PRE.map(([, k]) => k),
     feedback: {
-      0: 'It assumes the passenger enjoyed the tour and adds an emotive claim; someone who didn’t enjoy it can’t answer honestly. Ask how good or poor the tour was, on a balanced scale.',
-      1: 'Few people can count five years of boat trips. Ask about a period they can remember, such as the last 12 months.',
-      3: 'Passengers aged 30, 50 or 70 fit two boxes. Make the bands meet without overlapping: 18–29, 30–49 and so on.',
-      4: 'Anyone who booked by phone, at the kiosk or through an agent has no box. Build the list from what passengers actually do, and pilot it.',
-      6: 'The specific questions come first and colour the overall judgement. Ask the general question first, then the specific ones, and keep the order fixed if it is tracked.',
+      1: 'Asking someone to put a question in their own words is a cognitive-interview probe, done one to one on the draft.',
+      3: 'Behaviour coding records, question by question, where interviewers and respondents run into trouble in real interviews, such as a question that has to be repeated.',
+      4: 'Follow-up questions put to people who have just taken part in a field test are respondent debriefing.',
+      5: 'A review by an expert involves no respondent. The Census Bureau counts it as useful but not, in general, as a pretest.',
+      6: 'A small field test checks the whole process, the timing included; nobody has to be asked anything to find the median time.',
     },
-    solution: 'Loaded: “award-winning” and “how much did you enjoy”. Recall: five years. Double negative: disagree that we shouldn’t. Overlapping: 30, 50 and 70 in two bands. Not exhaustive: no phone, kiosk or agent. Double-barrelled: the guide and the café. Order effect: overall satisfaction asked after the specific questions instead of before them.',
+    solution: 'Cognitive interviews: thinking aloud about “harbour tour” and putting Q4 in his own words. Behaviour coding: the reworded Q6 and the repeated Q9, seen in real interviews. Respondent debriefing: what the field-test passengers counted as a trip. Expert review: the unbalanced scale, found without any respondent. Pilot: the timing. The Census Bureau’s standard asks for at least one method in which real respondents take part, so the expert review alone wouldn’t do.',
   },
   {
     id: 'm04-fn-8', lesson: 'questionnaire-design', type: 'multi', kind: 'conceptual',
@@ -360,7 +373,7 @@ export const items = [
     ],
     answer: [0, 1, 2],
     feedback: {
-      3: 'More statements in the same format give the tendency to agree more chances, not fewer; it doesn’t cancel out, because it pushes every item the same way.',
+      3: 'More statements worded the same way give the tendency to agree more chances, not fewer, because it pushes every answer the same way. Only statements worded in the opposite direction, reverse-coded, stop it pushing a scale score one way, and even then each answer still carries it.',
       4: 'Krosnick and Presser’s review finds that “don’t know” filters don’t improve the measurement of opinions, and they do nothing about agreeing with whatever is read out.',
       5: 'Krosnick and Presser report that answers are more reliable when every point has a word label. Bare middle points make the task harder and invite short cuts.',
     },
@@ -448,7 +461,7 @@ export const items = [
     ],
     answer: 0,
     feedback: {
-      1: 'Everyone in the workshop stratum paid for a workshop, so they are customers and in the target population. The frame’s problem is the participants it leaves out.',
+      1: 'Everyone in the workshop stratum paid for a Lantern workshop, and Lantern’s workshops all ran in 2026 (M01), so all 150 are in the target population. The frame’s problem is the participants it leaves out.',
       2: 'Inviting all 150 is a census of the frame, so it has no sampling error; and the ±8 points ignores the finite population correction. The problem is who the frame misses, which no margin shows.',
       3: 'Their 54% was the highest response rate of the four strata, and a response rate shows room for bias, not bias. The bigger problem is fixed before anyone is invited.',
     },
@@ -475,18 +488,19 @@ export const items = [
       },
       {
         id: 'm04-fn-12-s2', type: 'num',
-        prompt: `A telephone follow-up of a random sample of the eligible individual members who didn’t complete found that ${ZF.non}% plan to renew, against ${ZF.resp}% of the individual members who completed. By how many percentage points does the completers’ ${ZF.resp}% overstate the share among all eligible individual members? Give one decimal place.`,
-        answer: r(zooBias(zooRR[1].RR1), 1),
-        check: () => (1 - 140 / (700 - 40)) * (61 - 38),
-        unit: 'points', places: 1, tol: 0.06,
+        prompt: `A telephone follow-up of a random sample of the eligible individual members who didn’t complete found that ${ZF.non}% plan to renew, against ${ZF.resp}% of the individual members who completed. Estimate the share of all eligible individual members who plan to renew. Give a percentage to one decimal place.`,
+        answer: r(zooAll(zooRR[1].RR1), 1),
+        check: () => (140 / (700 - 40)) * 61 + (1 - 140 / (700 - 40)) * 38,
+        unit: '%', places: 1, tol: 0.06,
         wrong: [
-          { value: r(zooRR[1].RR1 * (ZF.resp - ZF.non), 1), say: 'Multiply the gap by the share who didn’t complete, 1 − RR1, not by the response rate.' },
-          { value: ZF.resp - ZF.non, say: 'That is the gap between completers and non-completers. The bias is that gap times the share who didn’t complete.' },
-          { value: r((1 - ZOO[1][0] / zooInv[1]) * (ZF.resp - ZF.non), 1), say: 'That uses a response rate with the 40 lapsed memberships left in the denominator. They aren’t eligible: RR1 = 140 ÷ 660.' },
-          { value: r((1 - zooRR[1].RR2) * (ZF.resp - ZF.non), 1), say: 'That uses RR2, which counts the 20 partials as respondents, but the 61% comes from the completes. Use RR1.' },
-          { value: r(ZF.resp - zooBias(zooRR[1].RR1), 1), say: 'That is the corrected estimate for all eligible individual members. The question asks for the overstatement: 61 minus it.' },
+          { value: r(zooAll(ZOO[1][0] / zooInv[1]), 1), say: 'That uses a response rate with the 40 lapsed memberships left in the denominator. They aren’t eligible: RR1 = 140 ÷ 660.' },
+          { value: r(zooAll(zooRR[1].RR2), 1), say: 'That weights by RR2, which counts the 20 partials as respondents, but the 61% comes from the completes. Weight by RR1.' },
+          { value: (ZF.resp + ZF.non) / 2, say: 'That averages the two figures as if the two groups were the same size. Weight each by its share of the eligible members: RR1 for the completers, 1 − RR1 for the rest.' },
+          { value: r(zooAll(1 - zooRR[1].RR1), 1), say: 'That swaps the weights: the completers are the 21% (RR1), and the 79% who didn’t complete are the ones the 38% describes.' },
+          { value: ZF.resp, say: 'That is the completers’ share, which stands only for the 21% who completed.' },
+          { value: r(zooBias(zooRR[1].RR1), 1), say: 'That is how far the completers’ 61% overstates the share. The question asks for the share itself.' },
         ],
-        solution: `RR1 for individual members = 140 ÷ 660 = ${pc(zooRR[1].RR1)}. Bias = (1 − ${fx(zooRR[1].RR1, 4)}) × (${ZF.resp} − ${ZF.non}) = ${fx(1 - zooRR[1].RR1, 4)} × ${ZF.resp - ZF.non} ≈ ${fx(zooBias(zooRR[1].RR1), 1)} points: among all eligible individual members the share planning to renew is about ${fx(ZF.resp - zooBias(zooRR[1].RR1), 1)}%.`,
+        solution: `RR1 for individual members = 140 ÷ 660 = ${pc(zooRR[1].RR1)}. Weight each group by its share of the eligible members: ${fx(zooRR[1].RR1, 4)} × ${ZF.resp} + ${fx(1 - zooRR[1].RR1, 4)} × ${ZF.non} ≈ ${fx(zooAll(zooRR[1].RR1), 1)}%, about ${fx(zooBias(zooRR[1].RR1), 1)} points below the completers’ ${ZF.resp}%. The follow-up is a sample too, so the corrected figure has its own margin of error.`,
       },
       {
         id: 'm04-fn-12-s3', type: 'mc',
@@ -506,7 +520,7 @@ export const items = [
         solution: 'A response rate is room for bias, not a measure of it: the bias of each estimate depends on how different the non-respondents are on that question. The follow-up measured one such gap; weighting can’t remove it, but combining the follow-up with the completes can.',
       },
     ],
-    solution: `RR1: ${ZOO_TYPES.map((t, i) => `${t.toLowerCase()} ${pc(zooRR[i].RR1)}`).join(', ')}, with lapsed memberships left out and bounced invitations kept in. For individual members the follow-up shows the completers’ ${ZF.resp}% overstating the renewal share by about ${fx(zooBias(zooRR[1].RR1), 1)} points. No response rate, high or low, says how large such a gap is: only evidence about the non-respondents does.`,
+    solution: `RR1: ${ZOO_TYPES.map((t, i) => `${t.toLowerCase()} ${pc(zooRR[i].RR1)}`).join(', ')}, with lapsed memberships left out and bounced invitations kept in. For individual members the follow-up puts the renewal share at about ${fx(zooAll(zooRR[1].RR1), 1)}%, against the completers’ ${ZF.resp}%. No response rate, high or low, says how large such a gap is: only evidence about the non-respondents does.`,
   },
   {
     id: 'm04-fn-13', lesson: 'survey-error', type: 'mc', kind: 'applied',
@@ -521,7 +535,7 @@ export const items = [
     feedback: {
       1: 'Subscribers already reply most readily. More replies from them add to the imbalance, and a higher rate helps only if it brings in people unlike those already responding.',
       2: 'More invitations give more completes and the right mix of segments, which weighting already provides. If keen people reply more readily within the segment, the extra completes carry the same tilt.',
-      3: 'A sales offer inside a survey is selling under the guise of research, which the codes forbid; and a discount on Lantern’s own product would draw in its keenest customers most.',
+      3: 'A discount on the client’s own product turns the survey into promotion: MRS’s rules on incentives (2015) don’t allow price discounts, or the client’s goods, as research incentives. It would also draw in Lantern’s keenest customers most.',
     },
     solution: 'The bias weighting can’t fix lies within the segments, so the useful evidence comes from the people who don’t reply. A follow-up of a random sample of them, by another mode, measures the gap directly, and the bias formula turns it into a correction. Comparing respondents’ and non-respondents’ order histories, from Lantern’s own records, is a cheaper check to run as well.',
   },
@@ -579,26 +593,26 @@ export const items = [
         answer: 0,
         feedback: {
           1: `The website’s range is the widest in relative terms, but it moves the year by ${int(dumpSwing.web)} packs, against ${int(dumpSwing.supRate)} for the supermarkets’ rate of sale, which applies to 40 stores for 52 weeks.`,
-          2: `20 more or fewer listings at 8 packs a week move the year by ${int(dumpSwing.supListed)} packs, about half the swing of the supermarkets’ rate of sale.`,
+          2: `20 more or fewer listings at 8 packs a week move the year by ${int(dumpSwing.supListed)} packs, a little over half the swing of the supermarkets’ rate of sale.`,
           3: `A range of 8 to 14 packs over 25 grocers moves the year by ${int(dumpSwing.asianRate)} packs, the smallest swing of the four.`,
         },
         solution: `Swings, each with the others as planned: supermarkets’ rate (12 − 5) × 40 × 52 = ${int(dumpSwing.supRate)}; website (1,500 − 600) × 12 = ${int(dumpSwing.web)}; supermarket listings (50 − 30) × 8 × 52 = ${int(dumpSwing.supListed)}; Asian grocers’ rate (14 − 8) × 25 × 52 = ${int(dumpSwing.asianRate)}. The supermarkets’ rate of sale moves the estimate most, so a trial in a few supermarkets is the research to fund first.`,
       },
       {
         id: 'm04-fn-15-s3', type: 'num',
-        prompt: `With every other assumption as planned, how many packs a store a week would the supermarkets have to sell for year one to reach ${int(DUMP.goal)} packs? Give one decimal place.`,
-        answer: r(dumpNeed, 1),
-        check: () => (60000 - (25 * 12 + 15 * 6) * 52 - 900 * 12) / (40 * 52),
-        unit: 'packs a store a week', places: 1, tol: 0.06,
+        prompt: `With the supermarkets’ rate of sale at its low value, ${DR.supRate[0]} packs a store a week, and every other assumption as planned, how many packs would year one bring? Give a whole number.`,
+        answer: dumpLow,
+        check: () => (40 * 5 + 25 * 12 + 15 * 6) * 52 + 900 * 12,
+        unit: 'packs', places: 0, tol: 0.5,
         wrong: [
-          { value: r((DUMP.goal - dumpOtherShops) / (DUMP.channels[0][1] * DUMP.weeks), 1), say: 'That leaves out the website: subtract its 900 × 12 packs as well as the other shops’ sales.' },
-          { value: r((DUMP.goal - dumpYear) / (DUMP.channels[0][1] * DUMP.weeks), 1), say: 'That is how many more packs each supermarket would have to sell a week, on top of the planned 8. The question asks for the whole rate.' },
-          { value: r((DUMP.goal - dumpOtherShops - DUMP.web * 12) / DUMP.channels[0][1], 1), say: 'That is packs a store a year. Divide by the 52 weeks as well.' },
+          { value: dumpYear - dumpSwing.supRate, say: 'That subtracts the whole swing, from 5 to 12 packs. The low value is 3 packs below the planned 8, not 7.' },
+          { value: dumpLow - DUMP.web * 12, say: 'That leaves out the website’s 900 packs a month for 12 months.' },
+          { value: dumpYear - (DUMP.channels[0][2] - DR.supRate[0]) * DUMP.channels[0][1], say: 'That takes off the 120 fewer packs a week once. They are lost every week: multiply by the 52 weeks.' },
         ],
-        solution: `Other routes: (25 × 12 + 15 × 6) × 52 + 900 × 12 = ${int(dumpOtherShops + DUMP.web * 12)} packs. The supermarkets must sell ${int(DUMP.goal - dumpOtherShops - DUMP.web * 12)} packs: ÷ (40 × 52) ≈ ${fx(dumpNeed, 1)} packs a store a week, above even the maker’s high value of 12.`,
+        solution: `(40 × 5 + 25 × 12 + 15 × 6) × 52 + 900 × 12 = ${int((DUMP.channels[0][1] * DR.supRate[0] + DUMP.channels[1][1] * DUMP.channels[1][2] + DUMP.channels[2][1] * DUMP.channels[2][2]))} × 52 + ${int(DUMP.web * 12)} = ${int(dumpLow)} packs, ${int(dumpYear - dumpLow)} below the central ${int(dumpYear)}. At the high value of 12 the year would bring ${int(dumpHigh)}.`,
       },
     ],
-    solution: `The bottom-up model gives ${int(dumpYear)} packs. The supermarkets’ rate of sale is the assumption that moves it most, and reaching ${int(DUMP.goal)} packs would need ${fx(dumpNeed, 1)} packs a store a week there, beyond the maker’s own high value. Report about ${int(Math.round(dumpYear / 1000) * 1000)} packs with that range, and test the supermarkets’ rate of sale before planning on more.`,
+    solution: `The bottom-up model gives ${int(dumpYear)} packs. The supermarkets’ rate of sale is the assumption that moves it most: at its low value year one brings ${int(dumpLow)} packs, at its high value ${int(dumpHigh)}. Report the central estimate with that range, and test the supermarkets’ rate of sale, with a trial in a few stores, before planning on more.`,
   },
   {
     id: 'm04-fn-16', lesson: 'market-sizing', type: 'num', kind: 'numerical',
@@ -616,37 +630,37 @@ export const items = [
   },
   {
     id: 'm04-fn-17', lesson: 'market-sizing', type: 'num', kind: 'applied',
-    prompt: `A fictional leisure-centre operator plans a monthly class pass. It surveyed a random sample of its ${int(PASS.N[0])} members and of the ${int(PASS.N[1])} non-members on its newsletter list. Of the ${PASS.n[0]} members who replied, ${Math.round(PASS.def[0] * 100)}% said they would definitely buy the pass and ${Math.round(PASS.prob[0] * 100)}% probably; of the ${PASS.n[1]} newsletter readers who replied, ${Math.round(PASS.def[1] * 100)}% definitely and ${Math.round(PASS.prob[1] * 100)}% probably. From a pass it launched at another centre it assumes that ${Math.round(PASS.c[0] * 100)}% of “definitely” answers and ${Math.round(PASS.c[1] * 100)}% of “probably” answers become buyers, and none of the others. How many buyers should it plan for? Give a whole number.`,
-    answer: Math.round(passBuyers(PASS.N, PASS.def, PASS.prob)),
-    check: () => 2000 * (0.4 * 0.24 + 0.1 * 0.30) + 8000 * (0.4 * 0.06 + 0.1 * 0.15),
+    prompt: `A fictional leisure-centre operator plans a monthly class pass. It surveyed a random sample of its ${int(PASS.N[0])} members and of the ${int(PASS.N[1])} non-members on its newsletter list. Of the ${PASS.n[0]} members who replied, ${Math.round(PASS.def[0] * 100)}% said they would definitely buy the pass and ${Math.round(PASS.prob[0] * 100)}% probably; of the ${PASS.n[1]} newsletter readers who replied, ${Math.round(PASS.def[1] * 100)}% definitely and ${Math.round(PASS.prob[1] * 100)}% probably. From a pass it launched at another centre it assumes that ${Math.round(PASS.c[0] * 100)}% of “definitely” answers and ${Math.round(PASS.c[1] * 100)}% of “probably” answers become buyers, and none of the others. A colleague pooled the ${sum(PASS.n)} replies as if they were one random sample of all ${int(sum(PASS.N))} people. By how many buyers does the colleague’s figure overstate the number to plan for? Give a whole number.`,
+    answer: Math.round(passOver),
+    check: () => 10000 * (0.35 * ((300 * 0.24 + 200 * 0.06) / 500) + 0.08 * ((300 * 0.30 + 200 * 0.15) / 500)) - (2000 * (0.35 * 0.24 + 0.08 * 0.30) + 8000 * (0.35 * 0.06 + 0.08 * 0.15)),
     unit: 'buyers', places: 0, tol: 0.5,
     wrong: [
-      { value: Math.round(sum(PASS.N) * (PASS.c[0] * passPool(PASS.def) + PASS.c[1] * passPool(PASS.prob))), say: 'That pools the 500 replies, in which members are 60% although they are a fifth of the 10,000 people. Apply each group’s shares to its own size.' },
-      { value: Math.round(sum(PASS.N.map((k, i) => k * (PASS.def[i] + PASS.prob[i])))), say: 'That counts every “definitely” and “probably” answer as a buyer. Stated intent overstates buying: apply the conversion rates.' },
-      { value: Math.round(sum(PASS.N.map((k, i) => k * PASS.c[0] * PASS.def[i]))), say: 'That converts the “definitely” answers only. Add 10% of the “probably” answers too.' },
-      { value: Math.round(sum(PASS.n.map((k, i) => k * (PASS.c[0] * PASS.def[i] + PASS.c[1] * PASS.prob[i])))), say: 'That counts buyers among the 500 who replied. The shares estimate each whole group: apply them to the 2,000 members and the 8,000 newsletter readers.' },
+      { value: Math.round(passPooled()), say: 'That is the colleague’s pooled figure itself. The question asks how far it is above the right one, which applies each group’s shares to its own size.' },
+      { value: Math.round(passRight), say: 'That is the number to plan for. The question asks how far the pooled figure is above it.' },
+      { value: Math.round(passPooled([1, 1]) - passBuyers(PASS.N, PASS.def, PASS.prob, [1, 1])), say: 'That compares the two figures before the conversion rates. Stated intent overstates buying: convert the answers in both.' },
+      { value: Math.round(passPooled([PASS.c[0], 0]) - passBuyers(PASS.N, PASS.def, PASS.prob, [PASS.c[0], 0])), say: 'That converts the “definitely” answers only. Add 8% of the “probably” answers in both figures.' },
     ],
-    solution: `Members: 2,000 × (0.40 × 0.24 + 0.10 × 0.30) = ${int(PASS.N[0] * (0.4 * 0.24 + 0.1 * 0.3))}. Newsletter readers: 8,000 × (0.40 × 0.06 + 0.10 × 0.15) = ${int(PASS.N[1] * (0.4 * 0.06 + 0.1 * 0.15))}. Plan for about ${int(passBuyers(PASS.N, PASS.def, PASS.prob))} buyers, and show the result at lower and higher conversion rates: the rates come from one earlier launch, and a question about buying says nothing about how long buyers keep the pass.`,
+    solution: `Right: members ${int(PASS.N[0])} × (0.35 × 0.24 + 0.08 × 0.30) = ${int(PASS.N[0] * (PASS.c[0] * PASS.def[0] + PASS.c[1] * PASS.prob[0]))}; newsletter readers ${int(PASS.N[1])} × (0.35 × 0.06 + 0.08 × 0.15) = ${int(PASS.N[1] * (PASS.c[0] * PASS.def[1] + PASS.c[1] * PASS.prob[1]))}; ${int(passRight)} buyers. Pooled: the ${sum(PASS.n)} replies give ${pc(passPool(PASS.def))} “definitely” and ${pc(passPool(PASS.prob), 0)} “probably”, but members are ${Math.round((PASS.n[0] / sum(PASS.n)) * 100)}% of the replies and only a fifth of the ${int(sum(PASS.N))} people: ${int(sum(PASS.N))} × (0.35 × ${fx(passPool(PASS.def), 3)} + 0.08 × ${fx(passPool(PASS.prob), 2)}) = ${int(passPooled())}. Pooling overstates the plan by ${int(passOver)} buyers. The conversion rates come from one earlier launch, so show the plan at lower and higher rates too.`,
   },
   {
     id: 'm04-fn-18', lesson: 'competitor-research', type: 'formula', kind: 'numerical',
-    prompt: `Ana’s March shelf-price audit, one row per store: the channel in column B, ${BR[0]}’s shelf price in C and whether it was on promotion in D (the other two brands follow; a blank means not stocked). K1 names a channel and K2 holds Lantern Cold Brew’s planned price. In K3, calculate Lantern’s price premium over ${BR[0]}’s average regular (not promoted) shelf price in that channel, as a proportion: negative if Lantern is cheaper.`,
+    prompt: `Ana’s March shelf-price audit, one row per store: the channel in column B, then each rival can’s shelf price beside a column saying whether it was on promotion (${BR[0]} in C and D, ${BR[1]} in E and F, ${BR[2]} in G and H; blanks mean the store doesn’t stock it). K1 names a channel and K2 holds Lantern Cold Brew’s planned price. In K3, calculate Lantern’s premium over the average of all the regular (not promoted) prices recorded in that channel, every brand and store together, as a proportion: negative if Lantern is cheaper.`,
     sheet: { cells: audWide, vary: { K1: [CH.convenience, CH.natural] } },
-    cell: 'K3', view: 'A1:K11', formats: { C: '$0.00', E: '$0.00', G: '$0.00', K2: '$0.00', K3: '0.0%' }, widths: { A: 6, B: 14, C: 11, D: 12, E: 13, F: 12, G: 13, H: 12, J: 30, K: 13 },
-    answer: '=K2/AVERAGEIFS(C2:C11,B2:B11,K1,D2:D11,"No")-1',
+    cell: 'K3', view: 'A1:K11', formats: { C: '$0.00', E: '$0.00', G: '$0.00', K2: '$0.00', K3: '0.0%' }, widths: { A: 6, B: 14, C: 11, D: 12, E: 13, F: 12, G: 13, H: 12, J: 34, K: 13 },
+    answer: '=K2/((SUMIFS(C2:C11,B2:B11,K1,D2:D11,"No")+SUMIFS(E2:E11,B2:B11,K1,F2:F11,"No")+SUMIFS(G2:G11,B2:B11,K1,H2:H11,"No"))/(COUNTIFS(B2:B11,K1,D2:D11,"No")+COUNTIFS(B2:B11,K1,F2:F11,"No")+COUNTIFS(B2:B11,K1,H2:H11,"No")))-1',
     alt: [
-      '=(K2-AVERAGEIFS(C2:C11,B2:B11,K1,D2:D11,"No"))/AVERAGEIFS(C2:C11,B2:B11,K1,D2:D11,"No")',
-      '=K2/AVERAGEIFS(C2:C11,D2:D11,"No",B2:B11,K1)-1',
-      '=K2/AVERAGEIFS(C2:C11,B2:B11,K1,D2:D11,"<>Yes")-1',
+      '=K2*(COUNTIFS(B2:B11,K1,D2:D11,"No")+COUNTIFS(B2:B11,K1,F2:F11,"No")+COUNTIFS(B2:B11,K1,H2:H11,"No"))/(SUMIFS(C2:C11,B2:B11,K1,D2:D11,"No")+SUMIFS(E2:E11,B2:B11,K1,F2:F11,"No")+SUMIFS(G2:G11,B2:B11,K1,H2:H11,"No"))-1',
+      '=K2/((SUMIFS(C2:C11,D2:D11,"No",B2:B11,K1)+SUMIFS(E2:E11,F2:F11,"No",B2:B11,K1)+SUMIFS(G2:G11,H2:H11,"No",B2:B11,K1))/(COUNTIFS(D2:D11,"No",B2:B11,K1)+COUNTIFS(F2:F11,"No",B2:B11,K1)+COUNTIFS(H2:H11,"No",B2:B11,K1)))-1',
+      '=(K2-(SUMIFS(C2:C11,B2:B11,K1,D2:D11,"No")+SUMIFS(E2:E11,B2:B11,K1,F2:F11,"No")+SUMIFS(G2:G11,B2:B11,K1,H2:H11,"No"))/(COUNTIFS(B2:B11,K1,D2:D11,"No")+COUNTIFS(B2:B11,K1,F2:F11,"No")+COUNTIFS(B2:B11,K1,H2:H11,"No")))/((SUMIFS(C2:C11,B2:B11,K1,D2:D11,"No")+SUMIFS(E2:E11,B2:B11,K1,F2:F11,"No")+SUMIFS(G2:G11,B2:B11,K1,H2:H11,"No"))/(COUNTIFS(B2:B11,K1,D2:D11,"No")+COUNTIFS(B2:B11,K1,F2:F11,"No")+COUNTIFS(B2:B11,K1,H2:H11,"No")))',
     ],
     wrong: [
-      { formula: '=K2/AVERAGEIFS(C2:C11,B2:B11,K1)-1', say: 'That includes the promoted price at S2. The comparison is with Summit Brew’s regular price: add the criterion that column D is “No”.' },
-      { formula: '=K2/AVERAGEIFS(C2:C11,D2:D11,"No")-1', say: 'That averages Summit Brew’s regular prices in every channel. Channels price differently, so compare within the channel named in K1.' },
-      { formula: '=(K2-AVERAGEIFS(C2:C11,B2:B11,K1,D2:D11,"No"))/K2', say: 'That measures the gap against Lantern’s own price. A premium over a rival is measured against the rival’s price.' },
-      { formula: '=AVERAGEIFS(C2:C11,B2:B11,K1,D2:D11,"No")/K2-1', say: 'That is Summit Brew’s premium over Lantern, the other way round. Divide Lantern’s price by Summit’s average.' },
-      { formula: '=3.49/AVERAGEIFS(C2:C11,B2:B11,K1,D2:D11,"No")-1', say: 'With the price typed in, the formula ignores K2 and goes wrong when the planned price changes. Refer to K2.' },
+      { formula: '=K2/AVERAGEIFS(C2:C11,B2:B11,K1,D2:D11,"No")-1', say: `That compares Lantern with ${BR[0]} alone. The question asks for the average of every regular price recorded in the channel, all three brands together.` },
+      { formula: '=K2/((SUMIFS(C2:C11,B2:B11,K1)+SUMIFS(E2:E11,B2:B11,K1)+SUMIFS(G2:G11,B2:B11,K1))/(COUNTIFS(B2:B11,K1,D2:D11,"<>")+COUNTIFS(B2:B11,K1,F2:F11,"<>")+COUNTIFS(B2:B11,K1,H2:H11,"<>")))-1', say: 'That includes the two promoted prices at S2. Count only the prices whose promotion flag is “No”, in the sums and in the counts.' },
+      { formula: '=K2/AVERAGE(AVERAGEIFS(C2:C11,B2:B11,K1,D2:D11,"No"),AVERAGEIFS(E2:E11,B2:B11,K1,F2:F11,"No"),AVERAGEIFS(G2:G11,B2:B11,K1,H2:H11,"No"))-1', say: 'That averages the three brands’ averages, which gives a brand stocked in two stores the same say as one stocked in four, and fails where a brand isn’t stocked at all. Divide the sum of all the regular prices by how many there are.' },
+      { formula: '=K2/((SUMIFS(C2:C11,D2:D11,"No")+SUMIFS(E2:E11,F2:F11,"No")+SUMIFS(G2:G11,H2:H11,"No"))/(COUNTIFS(D2:D11,"No")+COUNTIFS(F2:F11,"No")+COUNTIFS(H2:H11,"No")))-1', say: 'That averages the regular prices in every channel. Channels price differently, so keep the condition on the channel in K1.' },
+      { formula: '=K2/((SUMIFS(C2:C11,B2:B11,K1,D2:D11,"<>Yes")+SUMIFS(E2:E11,B2:B11,K1,F2:F11,"<>Yes")+SUMIFS(G2:G11,B2:B11,K1,H2:H11,"<>Yes"))/(COUNTIFS(B2:B11,K1,D2:D11,"<>Yes")+COUNTIFS(B2:B11,K1,F2:F11,"<>Yes")+COUNTIFS(B2:B11,K1,H2:H11,"<>Yes")))-1', say: '“<>Yes” also matches the blank flags beside brands a store doesn’t stock, so COUNTIFS counts prices that aren’t there. Match “No”.' },
     ],
-    solution: `<x>=K2/AVERAGEIFS(C2:C11,B2:B11,K1,D2:D11,"No")-1</x>. In supermarkets ${BR[0]}’s regular average is $${fx(summitReg('supermarket'), 3)} (S2’s promotion left out), so Lantern’s $${fx(LP)} is ${pc(-(LP / summitReg('supermarket') - 1))} below it, a premium of ${sgn((LP / summitReg('supermarket') - 1) * 100)}%; with the promotion included it would be ${sgn((LP / summitAll('supermarket') - 1) * 100)}%. In convenience stores the gap is ${sgn((LP / summitReg('convenience') - 1) * 100)}% and in natural grocers ${sgn((LP / summitReg('natural') - 1) * 100)}%. These describe the ten stores audited that week, not every shelf in Harbour City.`,
+    solution: `<x>=K2/((SUMIFS(C2:C11,B2:B11,K1,D2:D11,"No")+SUMIFS(E2:E11,B2:B11,K1,F2:F11,"No")+SUMIFS(G2:G11,B2:B11,K1,H2:H11,"No"))/(COUNTIFS(B2:B11,K1,D2:D11,"No")+COUNTIFS(B2:B11,K1,F2:F11,"No")+COUNTIFS(B2:B11,K1,H2:H11,"No")))-1</x>: the regular prices’ sum over their count, because one AVERAGEIFS can’t span three price columns. In supermarkets the ${shelf('supermarket').length} regular prices sum to $${fx(sum(shelf('supermarket')))}, an average of $${fx(shelfAvg('supermarket'), 3)}, so Lantern’s $${fx(LP)} is ${sgn(premium(shelfAvg('supermarket')))}% above that shelf; in convenience stores the premium is ${sgn(premium(shelfAvg('convenience')))}% and in natural grocers ${sgn(premium(shelfAvg('natural')))}%. A shelf average mixes a premium brand with an economy one and depends on which brands each channel stocks (natural grocers carry no ${BR[1]}), so it shows where Lantern sits on the shelf as a whole; the brand-by-brand comparisons are the like-for-like ones (against ${BR[0]}’s regular supermarket price Lantern is ${sgn(premium(summitReg('supermarket')))}%). These are ten stores in one week, not every shelf in Harbour City.`,
   },
   {
     id: 'm04-fn-19', lesson: 'competitor-research', type: 'multi', kind: 'applied',
@@ -685,36 +699,26 @@ export const items = [
   },
   {
     id: 'm04-fn-21', lesson: 'analysing-survey-data', type: 'steps', kind: 'numerical',
-    prompt: `In February, Lantern’s ${NSUB.n} subscribers gave ${NSUB.promoters} promoters, ${NSUB.passives} passives and ${NSUB.detractors} detractors (NPS ${sgn(NSUB.score)}, standard error ${fx(NSUB.se, 2)} points). Its ${NSHOP.n} other shop customers gave ${NSHOP.promoters} promoters, ${NSHOP.passives} passives and ${NSHOP.detractors} detractors (NPS ${sgn(NSHOP.score)}).`,
+    prompt: `In February, the ${NSUB.n} subscribers who completed Ana’s survey gave ${NSUB.promoters} promoters, ${NSUB.passives} passives and ${NSUB.detractors} detractors: an NPS of ${sgn(NSUB.score)} with a standard error of ${fx(NSUB.se, 2)} points. The ${NSHOP.n} other shop customers who completed it gave ${NSHOP.promoters} promoters, ${NSHOP.passives} passives and ${NSHOP.detractors} detractors: ${sgn(NSHOP.score)}, with a standard error of ${fx(NSHOP.se, 2)} points.`,
     steps: [
       {
         id: 'm04-fn-21-s1', type: 'num',
-        prompt: 'What is the standard error of the shop customers’ NPS, in points? Give two decimal places.',
-        answer: r(NSHOP.se, 2),
-        check: () => 100 * Math.sqrt((64 / 103 + 9 / 103 - ((64 - 9) / 103) ** 2) / 103),
-        unit: 'points', places: 2, tol: 0.012,
+        prompt: 'What is the lower end of the 95% interval for subscribers’ NPS minus shop customers’ NPS, in points? Give one decimal place.',
+        answer: r(gapLow(NSUB, NSHOP), 1),
+        check: () => ((65 - 10) / 89 - (64 - 9) / 103) * 100 - 1.959964 * Math.hypot(7.1955, 6.4130),
+        unit: 'points', places: 1, tol: 0.06,
         wrong: [
-          { value: r(100 * Math.sqrt((NSHOP.pP * (1 - NSHOP.pP)) / NSHOP.n), 2), say: 'That is the standard error of the promoters’ share alone. The NPS is a difference of two shares: its variance is p_P + p_D − (p_P − p_D)².' },
-          { value: r(100 * Math.sqrt((NSHOP.pP + NSHOP.pD) / NSHOP.n), 2), say: 'You left out the squared term: the variance is p_P + p_D − (p_P − p_D)².' },
-          { value: r(NSHOP.margin, 2), say: 'That is the 95% margin of error, 1.96 times the standard error.' },
+          { value: r(gapLow(NSUB, NSHOP, NSUB.se + NSHOP.se), 1), say: 'You added the standard errors. Variances add, so the standard error of the gap is √(SE₁² + SE₂²).' },
+          { value: r(gapLow(NSUB, NSHOP, NSUB.se), 1), say: 'Both scores are estimates, so both standard errors count: use √(SE₁² + SE₂²), not the subscribers’ alone.' },
+          { value: r(gapLow(NSUB, NSHOP, NSHOP.se), 1), say: 'Both scores are estimates, so both standard errors count: use √(SE₁² + SE₂²), not the shop customers’ alone.' },
+          { value: r(gapLow(NSUB, NSHOP, Math.hypot(NSUB.se, NSHOP.se), 1), 1), say: 'That takes one standard error off the gap. A 95% interval goes 1.96 standard errors either side.' },
+          { value: r(gapLow(NSUB, NSHOP, Math.hypot(NSUB.se, NSHOP.se), I.normInv(0.95)), 1), say: '1.645 gives a 90% interval. For 95% use 1.96.' },
+          { value: r(NSUB.score - NSHOP.score + Z * Math.hypot(NSUB.se, NSHOP.se), 1), say: 'That is the upper end. The lower end subtracts 1.96 standard errors from the gap.' },
         ],
-        solution: `p_P = 64 ÷ 103 = ${fx(NSHOP.pP, 4)}, p_D = 9 ÷ 103 = ${fx(NSHOP.pD, 4)}. SE = 100 × √((${fx(NSHOP.pP, 4)} + ${fx(NSHOP.pD, 4)} − ${fx(NSHOP.pP - NSHOP.pD, 4)}²) ÷ 103) ≈ ${fx(NSHOP.se, 2)} points.`,
+        solution: `Gap ${sgn(NSUB.score)} − ${sgn(NSHOP.score)} = ${fx(NSUB.score - NSHOP.score, 1)} points. Variances add, so the gap’s standard error is √(${fx(NSUB.se, 2)}² + ${fx(NSHOP.se, 2)}²) ≈ ${fx(Math.hypot(NSUB.se, NSHOP.se), 2)}. Lower end: ${fx(NSUB.score - NSHOP.score, 1)} − 1.96 × ${fx(Math.hypot(NSUB.se, NSHOP.se), 2)} ≈ ${sgn(gapLow(NSUB, NSHOP))}; the upper end is about ${sgn(NSUB.score - NSHOP.score + Z * Math.hypot(NSUB.se, NSHOP.se))}.`,
       },
       {
-        id: 'm04-fn-21-s2', type: 'num',
-        prompt: 'What is the z statistic for subscribers’ NPS minus shop customers’ NPS? Give two decimal places.',
-        answer: r(npsZ(NSUB, NSHOP), 2),
-        check: () => (65 / 89 * 100 - 10 / 89 * 100 - (64 / 103 * 100 - 9 / 103 * 100)) / Math.hypot(7.1955, 6.4130),
-        unit: '', places: 2, tol: 0.006,
-        wrong: [
-          { value: r((NSUB.score - NSHOP.score) / (NSUB.se + NSHOP.se), 2), say: 'You added the standard errors. Variances add, so the standard error of the difference is √(SE₁² + SE₂²).' },
-          { value: r((NSUB.score - NSHOP.score) / NSUB.se, 2), say: 'Both scores are estimates, so both standard errors count: divide by √(SE₁² + SE₂²), not by the subscribers’ alone.' },
-          { value: r((NSUB.score - NSHOP.score) / NSHOP.se, 2), say: 'Both scores are estimates, so both standard errors count: divide by √(SE₁² + SE₂²), not by the shop customers’ alone.' },
-        ],
-        solution: `Difference ${fx(NSUB.score - NSHOP.score, 1)} points; SE_diff = √(${fx(NSUB.se, 2)}² + ${fx(NSHOP.se, 2)}²) ≈ ${fx(Math.hypot(NSUB.se, NSHOP.se), 2)}; z ≈ ${fx(npsZ(NSUB, NSHOP), 2)}, a two-sided p-value of about ${fx(2 * (1 - I.normCdf(npsZ(NSUB, NSHOP))), 2)}.`,
-      },
-      {
-        id: 'm04-fn-21-s3', type: 'mc',
+        id: 'm04-fn-21-s2', type: 'mc',
         prompt: 'Should this comparison between the two segments use the survey weights?',
         options: [
           'No: within each segment every respondent has the same weight, so each segment’s score is the same weighted or not',
@@ -731,7 +735,7 @@ export const items = [
         solution: 'Each segment’s respondents all carry the weight N_h ÷ n_h, so a weighted segment score equals the unweighted one, and comparisons between segments need no weights.',
       },
     ],
-    solution: `Subscribers ${sgn(NSUB.score)} against shop customers ${sgn(NSHOP.score)}: a gap of ${fx(NSUB.score - NSHOP.score, 1)} points with a standard error of ${fx(Math.hypot(NSUB.se, NSHOP.se), 2)}, z ≈ ${fx(npsZ(NSUB, NSHOP), 2)}. On these bases the two segments can’t be told apart, and the comparison needs no weights. Both scores also come from people who chose to reply, so neither is the segment’s true score.`,
+    solution: `Subscribers ${sgn(NSUB.score)} against shop customers ${sgn(NSHOP.score)}: a gap of ${fx(NSUB.score - NSHOP.score, 1)} points with a 95% interval from about ${sgn(gapLow(NSUB, NSHOP))} to ${sgn(NSUB.score - NSHOP.score + Z * Math.hypot(NSUB.se, NSHOP.se))}. The interval includes zero and is wide, so on these bases the two segments can’t be told apart, and the comparison needs no weights. Both scores also come from people who chose to reply, so neither is the segment’s true score.`,
   },
   {
     id: 'm04-fn-22', lesson: 'analysing-survey-data', type: 'multi', kind: 'conceptual',
@@ -757,25 +761,7 @@ export const items = [
     prompt: `A fictional ice rink is deciding whether to run six-week adult skating courses at $90. Its evidence: a survey of ${RINK.surveyed} adult visitors drawn at random from its booking records, in which ${Math.round(RINK.intent * 100)}% said they would definitely or probably book a course; six depth interviews with adults who skate, several of whom said they were afraid of falling in front of strangers and would prefer adult-only sessions; a trial course advertised by e-mail to ${int(RINK.emailed)} adult visitors, which took ${RINK.booked} bookings for its ${RINK.places} places in a month; and a check showing two nearby rinks charging $75 and $80 for similar courses.`,
     steps: [
       {
-        id: 'm04-fn-23-s1', type: 'classify',
-        prompt: 'Classify each line from the draft report.',
-        items: [
-          `${RINK.booked} people booked the trial course in its first month.`,
-          'Adults who don’t book may fear falling in front of strangers, so adult-only sessions could turn interest into bookings.',
-          'Run the next course as an adult-only session and compare its bookings with the trial’s.',
-          `${Math.round(RINK.intent * 100)}% of the adult visitors surveyed said they would definitely or probably book a course.`,
-          'Two nearby rinks charge $75 and $80 for similar courses.',
-        ],
-        categories: ['Finding', 'Insight', 'Recommendation'],
-        answer: [0, 1, 2, 0, 0],
-        feedback: {
-          1: 'It explains the gap between interest and bookings and implies an action, and it rests on the interviews and the trial together: an insight, to be tested.',
-          2: 'An action with a way to check it: a recommendation.',
-        },
-        solution: 'Findings: the bookings, the survey share and the price check. Insight: the fear of falling in front of strangers, which explains why interest doesn’t become bookings. Recommendation: the adult-only course with its comparison.',
-      },
-      {
-        id: 'm04-fn-23-s2', type: 'mc',
+        id: 'm04-fn-23-s1', type: 'mc',
         prompt: `A colleague says the survey and the trial agree: ${Math.round(RINK.intent * 100)}% said they would book, and the trial filled ${Math.round((RINK.booked / RINK.places) * 100)}% of its places. What is wrong with that?`,
         options: [
           `They measure different things: ${RINK.booked} bookings from ${int(RINK.emailed)} adults e-mailed is under 1%, far below the ${Math.round(RINK.intent * 100)}% who said they would`,
@@ -791,8 +777,25 @@ export const items = [
         },
         solution: `${RINK.booked} ÷ ${int(RINK.emailed)} = ${pc(RINK.booked / RINK.emailed, 2)} of the adults offered the course booked, against ${Math.round(RINK.intent * 100)}% who said they would. The ${Math.round((RINK.booked / RINK.places) * 100)}% is a fill rate, which would change if the rink offered more or fewer places.`,
       },
+      {
+        id: 'm04-fn-23-s2', type: 'mc',
+        prompt: 'Which recommendation does the evidence support best?',
+        options: [
+          'Test adult-only courses: offer them to a random half of the adults e-mailed, mixed ones to the rest, and compare bookings',
+          'Cut the price to $75 to match the cheaper rival, since price is the likeliest reason that so few adults booked',
+          'Plan next season’s courses for 36% of adult visitors to book, since the survey is the largest random sample of the four sources',
+          'Hold more depth interviews before changing anything, since six are too few to show why adults don’t book',
+        ],
+        answer: 0,
+        feedback: {
+          1: 'Nothing in the evidence points to price: the interviews pointed to a fear of falling in front of strangers, and two rivals’ prices don’t show what this rink’s adults would pay. A price could be tested too, but it isn’t the change the evidence suggests.',
+          2: 'Stated intent overstates behaviour, as the trial’s bookings show: plan volume on what people did, not on what they said they would do.',
+          3: 'Interviews are exploratory: they have already suggested why adults hold back. Whether adult-only courses would raise bookings is a causal question, and only an experiment answers it.',
+        },
+        solution: 'The interviews suggest a change; whether it works is a causal question. Offering the two kinds of course to randomly chosen halves of the list and comparing bookings answers it, because the halves differ only in the offer. The evidence gives no reason to cut the price, the survey’s 36% would overstate demand, and more interviews can’t show what a change would do.',
+      },
     ],
-    solution: `The survey (stated preference) and the trial (revealed preference) disagree by a factor of nearly 50 once they are put on the same base: ${pc(RINK.booked / RINK.emailed, 2)} of adults e-mailed booked, against ${Math.round(RINK.intent * 100)}% who said they would. The interviews suggest why, and the insight leads to a test, an adult-only course compared with the trial, rather than to a forecast. Plan volume on bookings, and use the survey and interviews for who wants lessons and what would help them book.`,
+    solution: `The survey (stated preference) and the trial (revealed preference) disagree by a factor of nearly 50 once they are put on the same base: ${pc(RINK.booked / RINK.emailed, 2)} of adults e-mailed booked, against ${Math.round(RINK.intent * 100)}% who said they would. The interviews suggest why, and the insight leads to a test, adult-only courses offered to a random half of the list, rather than to a forecast. Plan volume on bookings, and use the survey and interviews for who wants lessons and what would help them book.`,
   },
   {
     id: 'm04-fn-24', lesson: 'insights-and-reporting', type: 'classify', kind: 'conceptual',
@@ -803,7 +806,7 @@ export const items = [
       'A staff-survey table that hides one small team’s cell but shows every other team and the total',
       'A Net Promoter Score of +18 plotted on an axis labelled “% of customers”',
       'A quotation attributed to “participant B4, non-customer group”',
-      'A quotation attributed to “the IT manager of a 12-person accountancy firm in the old town”',
+      'A cross-tab of NPS by branch and age group in which the over-65s at the smallest branch are a cell of two people',
       'Bars with their 95% intervals drawn on them and the base printed under each one',
       '“Proves that customers prefer the new pack”, about a gap whose 95% interval includes zero',
     ],
@@ -813,9 +816,9 @@ export const items = [
       0: 'A truncated axis makes the gap between two shares look several times larger than it is. Start bars for shares at zero.',
       2: 'With the total and every other cell shown, the hidden cell can be worked out by subtraction. Hide a second cell too, or merge the team with another.',
       3: 'An NPS is in points, from −100 to +100, not a percentage of customers.',
-      5: 'A role, a firm’s size and its location together point to one person: deductive disclosure. Attribute it to “a business client” and cut the details.',
+      5: 'Anyone who knows the branch could recognise two people. Suppress the cell (and a second one if totals would reveal it), or merge age groups.',
       7: '“Proves” claims far more than a sample can, and an interval that includes zero means the data can’t say which pack is preferred.',
     },
-    solution: 'Keep: the labelled weighted figure, the coded attribution, and bars with intervals and bases. Change as misleading: the truncated axis, the NPS shown as a percentage, and “proves” for a gap that isn’t clear. Change as unsafe: the table whose hidden cell can be worked out, and the quotation that identifies its speaker.',
+    solution: 'Keep: the labelled weighted figure, the coded attribution, and bars with intervals and bases. Change as misleading: the truncated axis, the NPS shown as a percentage, and “proves” for a gap that isn’t clear. Change as unsafe: the table whose hidden cell can be worked out by subtraction, and the cell of two people.',
   },
 ];

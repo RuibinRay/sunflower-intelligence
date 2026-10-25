@@ -3,7 +3,8 @@
 // survey wording basics), so that a student who knows only those courses misses module 1’s items and one who already has
 // a module’s methods gets its items right.
 // Module 1: the most research could be worth to a decision (the expected value of perfect information), a pitch’s
-// market figure judged against a floor and a grossed-up, wider-defined ceiling, Cohen’s kappa from a three-theme table.
+// market figure judged against a floor and a grossed-up, wider-defined ceiling, and the agreement two coders would need
+// for Cohen’s kappa to reach a rule’s 0.80, from a three-theme table.
 // Module 2: a Likert score reverse-coded on a 0–4 coding, the cluster slots that match a simple random sample’s
 // precision, Kish’s design effect of three weights. Module 3: which figure is the serviceable obtainable market,
 // producers’ value with channel-weighted trade margins, a like-for-like price premium (per 100 g, one channel, regular
@@ -33,9 +34,9 @@ const ev = (o) => CID.p * o[0] + (1 - CID.p) * o[1];
 const cidBest = Math.max(ev(CID.large), ev(CID.small), ev(CID.none));
 const cidPerfect = CID.p * Math.max(CID.large[0], CID.small[0], 0) + (1 - CID.p) * Math.max(CID.large[1], CID.small[1], 0);
 const cidEvpi = cidPerfect - cidBest;
-// an oat-drink start-up's city (fictional): household diaries (a floor) and a trade association (a wider ceiling)
-const OAT = { households: 150000, perMonth: 0.8, members: 2.1e6, coverage: 0.7, claim: 3.5e6 };
-const oatFloor = OAT.households * OAT.perMonth * 12, oatCeiling = OAT.members / OAT.coverage;
+// a frozen-berry brand's city (fictional): household diaries (a floor) and a trade association (a wider ceiling)
+const BER = { households: 150000, perMonth: 0.4, members: 1.05e6, coverage: 0.7, claim: 1.75e6 };
+const berFloor = BER.households * BER.perMonth * 12, berCeiling = BER.members / BER.coverage;
 const mn = (v, d = 2) => `${fx(v / 1e6, d)} million`;
 // a swimming pool's comment cards (fictional): rows coder 1, columns coder 2
 const POOL_THEMES = ['Service', 'Price', 'Facilities'];
@@ -45,6 +46,11 @@ const poolRow = POOL.map(sum), poolCol = POOL_THEMES.map((_, j) => sum(POOL.map(
 const poolPo = sum(POOL.map((row, i) => row[i])) / poolN;
 const poolPe = sum(poolRow.map((x, i) => x * poolCol[i])) / poolN ** 2;
 const poolK = (poolPo - poolPe) / (1 - poolPe);
+const poolAgree = sum(POOL.map((row, i) => row[i]));                    // 48 cards now
+const KRULE = 0.8;                                                      // the pool's rule for using a codebook
+const poolNeedRaw = (KRULE + (1 - KRULE) * poolPe) * poolN;             // p_o = κ + (1 − κ) p_e, in cards
+const poolNeed = Math.ceil(poolNeedRaw - 1e-9);
+const kappaAt = (cards) => (cards / poolN - poolPe) / (1 - poolPe);
 
 // ---------------------------------------------------------------- module 2
 // a library's 'welcoming space' scale (fictional): codes 0–4, items 2 and 4 reverse-worded
@@ -117,35 +123,35 @@ export const items = [
   },
   {
     id: 'm04-dg-2', lesson: 'secondary-research', type: 'mc', kind: 'conceptual',
-    prompt: `A fictional oat-drink start-up’s pitch says that its city buys ${mn(OAT.claim, 1)} litres of plant-based milk a year. The city’s statistics office estimates ${OAT.households.toLocaleString('en-US')} households, and its household spending diaries found an average of ${OAT.perMonth} litres of plant-based milk a household a month. A trade association says its members sold ${mn(OAT.members, 1)} litres of “plant-based drinks” (milks, smoothies and protein shakes) last year, and that its members make about ${Math.round(OAT.coverage * 100)}% of the city’s grocery sales. What should an investor conclude about the pitch’s figure?`,
+    prompt: `A fictional frozen-berry brand’s pitch says that its city’s shops sell ${mn(BER.claim)} kg of frozen berries a year. The city’s statistics office estimates ${BER.households.toLocaleString('en-US')} households, and its household spending diaries found an average of ${BER.perMonth} kg of frozen berries bought a household a month. A trade association says its members sold ${mn(BER.members)} kg of “frozen fruit” (berries, mango, smoothie packs and fruit-and-vegetable mixes) last year, and that its members make about ${Math.round(BER.coverage * 100)}% of the city’s grocery sales. What should an investor conclude about the pitch’s figure?`,
     options: [
-      `Too high: even the association’s wider category, grossed up for the sales its members miss, comes to only ${mn(oatCeiling, 1)} litres.`,
-      `Plausible: it is well above the households’ own ${mn(oatFloor)} litres a year, and that figure is only a floor for the whole market.`,
-      `Slightly high but plausible: the association’s grossed-up ${mn(oatCeiling, 1)} litres estimates the market, and the pitch is only a sixth above it.`,
+      `Too high: even the association’s wider category, grossed up for the sales its members miss, comes to only ${mn(berCeiling, 1)} kg.`,
+      `Plausible: it is well above the households’ own ${mn(berFloor)} kg a year, and that figure is only a floor for the whole market.`,
+      `Slightly high but plausible: the association’s grossed-up ${mn(berCeiling, 1)} kg estimates the market, and the pitch is only a sixth above it.`,
       'Impossible to judge: the two sources count different products and different buyers, so neither of them can be compared with the pitch.',
     ],
     answer: 0,
     feedback: {
       1: 'Being above the floor is necessary, not enough. The association’s figure, grossed up, is a ceiling, and the pitch is above it too.',
-      2: 'The association counts smoothies and protein shakes as well as milks, so its grossed-up figure is a ceiling for plant-based milk, not an estimate of it.',
+      2: 'The association counts mango, smoothie packs and mixes as well as berries, so its grossed-up figure is a ceiling for frozen berries, not an estimate of them.',
       3: 'Different definitions don’t make sources useless: they make one a floor and the other a ceiling, which is enough to test the claim.',
     },
-    solution: `Scale the diary rate to the city: ${OAT.households.toLocaleString('en-US')} × ${OAT.perMonth} × 12 = ${Math.round(oatFloor).toLocaleString('en-US')} litres, a floor, since it counts households only and diaries tend to under-report. Gross up the association’s figure for coverage: ${mn(OAT.members, 1)} ÷ ${OAT.coverage} = ${mn(oatCeiling, 1)} litres, but its definition is wider than plant-based milk, so that is a ceiling. The pitch’s ${mn(OAT.claim, 1)} is above the ceiling: some assumption behind it is wrong, and the start-up should be asked where it came from.`,
+    solution: `Scale the diary rate to the city: ${BER.households.toLocaleString('en-US')} × ${BER.perMonth} × 12 = ${Math.round(berFloor).toLocaleString('en-US')} kg, a floor, since it counts households only and diaries tend to under-report. Gross up the association’s figure for coverage: ${mn(BER.members)} ÷ ${BER.coverage} = ${mn(berCeiling, 1)} kg, but its definition is wider than frozen berries, so that is a ceiling. The pitch’s ${mn(BER.claim)} kg is above the ceiling: some assumption behind it is wrong, and the brand should be asked where it came from.`,
   },
   {
     id: 'm04-dg-3', lesson: 'qualitative-research', type: 'num', kind: 'numerical',
-    prompt: `Two staff at a fictional swimming pool independently coded ${poolN} comment cards into three themes. The table counts the cards by the theme each coder chose: rows for coder 1, columns for coder 2. What is Cohen’s kappa for their agreement? Give two decimal places.`,
+    prompt: `Two staff at a fictional swimming pool independently coded ${poolN} comment cards into three themes. The table counts the cards by the theme each coder chose: rows for coder 1, columns for coder 2. The pool uses a codebook only once Cohen’s kappa reaches at least ${fx(KRULE)}. After sharpening the codebook’s rules the two recode the cards. If each coder’s totals for the three themes stayed as they are, on how many of the ${poolN} cards would they need to agree for kappa to reach ${fx(KRULE)}? Give a whole number.`,
     data: { table: { head: ['Coder 1 ↓ / coder 2 →', ...POOL_THEMES, 'Total'], rows: [...POOL.map((row, i) => [POOL_THEMES[i], ...row.map(String), String(poolRow[i])]), ['Total', ...poolCol.map(String), String(poolN)]] } },
-    answer: r(poolK, 2),
-    check: () => { const po = (26 + 13 + 9) / 60, pe = (30 * 30 + 18 * 17 + 12 * 13) / 3600; return (po - pe) / (1 - pe); },
-    unit: '', places: 2, tol: 0.005,
+    answer: poolNeed,
+    check: () => Math.ceil((0.8 + 0.2 * ((30 * 30 + 18 * 17 + 12 * 13) / 3600)) * 60 - 1e-9),
+    unit: 'cards', places: 0, tol: 0.5,
     wrong: [
-      { value: r(poolPo, 2), say: 'That is the percent agreement, p_o. Kappa removes the agreement expected by chance: (p_o − p_e) ÷ (1 − p_e).' },
-      { value: r(poolPo - poolPe, 2), say: 'That is the agreement beyond chance, p_o − p_e. Divide it by 1 − p_e, the most agreement beyond chance there could be.' },
-      { value: r((poolPo - 1 / 3) / (2 / 3), 2), say: 'That takes chance agreement as 1/3, as if each coder used the three themes equally. Use the coders’ own shares: p_e = Σ (row total × column total) ÷ 60².' },
-      { value: r((poolPo - poolPe) / poolPe, 2), say: 'Divide by 1 − p_e, not by p_e: kappa is a share of the agreement possible beyond chance.' },
+      { value: Math.round(KRULE * poolN), say: 'That is 80% of the cards, which treats kappa as the percent agreement (it is also the 48 they agree on now, κ ≈ 0.68). Some agreement is expected by chance, so κ = 0.80 needs p_o = 0.80 + 0.20 × p_e.' },
+      { value: Math.floor(poolNeedRaw), say: `${Math.floor(poolNeedRaw)} cards give p_o = ${fx(Math.floor(poolNeedRaw) / poolN, 3)} and κ ≈ ${fx(kappaAt(Math.floor(poolNeedRaw)), 3)}, just short of 0.80: round up.` },
+      { value: Math.ceil(KRULE * (1 - poolPe) * poolN - 1e-9), say: 'That solves for p_o − p_e, the agreement beyond chance. Add the chance agreement back: p_o = 0.80 × (1 − p_e) + p_e.' },
+      { value: poolNeed - poolAgree, say: `That is how many more cards than the present ${poolAgree} they would need to agree on. The question asks for the total.` },
     ],
-    solution: `Observed agreement is the diagonal: p_o = (26 + 13 + 9) ÷ 60 = ${fx(poolPo, 3)}. Chance agreement uses each coder’s totals: p_e = (30 × 30 + 18 × 17 + 12 × 13) ÷ 60² = 1,362 ÷ 3,600 = ${fx(poolPe, 4)}. κ = (${fx(poolPo, 3)} − ${fx(poolPe, 4)}) ÷ (1 − ${fx(poolPe, 4)}) ≈ ${fx(poolK, 2)}: above the 0.60 below which McHugh (2012) calls agreement inadequate, but worth improving: the ${poolN - Math.round(poolPo * poolN)} disagreements show which rules in the codebook need sharpening.`,
+    solution: `With the coders’ totals unchanged, chance agreement stays p_e = (30 × 30 + 18 × 17 + 12 × 13) ÷ 60² = 1,362 ÷ 3,600 = ${fx(poolPe, 4)}. Kappa reaches 0.80 when (p_o − p_e) ÷ (1 − p_e) = 0.80, that is p_o = 0.80 + 0.20 × ${fx(poolPe, 4)} = ${fx(poolNeedRaw / poolN, 4)}, or ${fx(poolNeedRaw, 1)} of the 60 cards: at least ${poolNeed}, ${poolNeed - poolAgree} more than the ${poolAgree} they agree on now (κ ≈ ${fx(poolK, 2)}). Recoding usually shifts the totals too, so recompute kappa from the new table, and read the disagreements to see which rules still need work.`,
   },
 
   // ================================================================ Module 2: surveys and samples
@@ -176,7 +182,7 @@ export const items = [
       { value: Math.ceil(MKT.srs / mktDeff / MKT.per - 1e-9), say: 'Dividing by the design effect gives the effective size of 400 clustered shoppers. To match 400 independent ones, the sample must be larger: multiply.' },
       { value: Math.round(MKT.srs * mktDeff), say: 'That is the number of shoppers needed. The question asks for slots of about 12 shoppers each.' },
     ],
-    solution: `deff ≈ 1 + (12 − 1) × 0.05 = ${fx(mktDeff, 2)}, so the clustered sample needs ${MKT.srs} × ${fx(mktDeff, 2)} = ${Math.round(MKT.srs * mktDeff)} shoppers to carry the precision of ${MKT.srs} independent ones (n_eff = n ÷ deff). At 12 a slot that is ${fx((MKT.srs * mktDeff) / MKT.per, 2)}, rounded up to ${mktSlots(mktDeff)} slots. The design is still a probability sample, because the slots are chosen at random; it is cheaper per interview and less precise per shopper.`,
+    solution: `deff ≈ 1 + (12 − 1) × 0.05 = ${fx(mktDeff, 2)}, so the clustered sample needs ${MKT.srs} × ${fx(mktDeff, 2)} = ${Math.round(MKT.srs * mktDeff)} shoppers to carry the precision of ${MKT.srs} independent ones (n_eff = n ÷ deff). At 12 a slot that is ${fx((MKT.srs * mktDeff) / MKT.per, 2)}, rounded up to ${mktSlots(mktDeff)} slots. The slots are chosen at random, so this is a probability sample of visits rather than of shoppers: someone who comes every week has more chances of being chosen than someone who comes once a month. It is cheaper per interview and less precise per shopper.`,
   },
   {
     id: 'm04-dg-6', lesson: 'survey-error', type: 'num', kind: 'numerical',
@@ -212,7 +218,7 @@ export const items = [
   },
   {
     id: 'm04-dg-8', lesson: 'market-sizing', type: 'num', kind: 'numerical',
-    prompt: `A fictional region’s chilled-soup category sells ${fx(SOUP.pots / 1e6, 1)} million pots a year at an average shelf price of $${fx(SOUP.price)} a pot (weighted by volume). Of the pots, ${SOUP.channels.map(([c, v, m], i) => `${i === SOUP.channels.length - 1 ? 'and ' : ''}${Math.round(v * 100)}% are sold through ${c}, which keep ${Math.round(m * 100)}% of the shelf price`).join('; ')}. What are the category’s sales worth a year to the producers? Give millions of dollars to two decimal places.`,
+    prompt: `A fictional region’s chilled-soup category sells ${fx(SOUP.pots / 1e6, 1)} million pots a year at an average shelf price of $${fx(SOUP.price)} a pot, about the same in every channel. Of the pots, ${SOUP.channels.map(([c, v, m], i) => `${i === SOUP.channels.length - 1 ? 'and ' : ''}${Math.round(v * 100)}% are sold through ${c}, which keep ${Math.round(m * 100)}% of the shelf price`).join('; ')}. What are the category’s sales worth a year to the producers? Give millions of dollars to two decimal places.`,
     answer: r((soupShelf * (1 - soupTrade)) / 1e6, 2),
     check: () => 2.4 * 3 * (1 - (0.55 * 0.3 + 0.3 * 0.4 + 0.15 * 0.25)),
     unit: '$ millions', places: 2, tol: 0.005,

@@ -18,7 +18,9 @@ FEST.forEach((r, i) => {
   Object.assign(festCells, { [`A${k}`]: i + 1, [`B${k}`]: r[0], [`C${k}`]: r[1], [`D${k}`]: r[2], [`E${k}`]: r[3],
     [`F${k}`]: `=AVERAGE(B${k},C${k},6-D${k},E${k})`, [`G${k}`]: `=AVERAGE(B${k}:E${k})`, [`H${k}`]: `=IF(AND(B${k}>=4,D${k}>=4),"Check","")` });
 });
-Object.assign(festCells, { A10: 'Average', F10: '=AVERAGE(F2:F9)', G10: '=AVERAGE(G2:G9)' });
+Object.assign(festCells, { A10: 'Average', F10: '=AVERAGE(F2:F9)', G10: '=AVERAGE(G2:G9)',
+  A11: 'Variance', B11: '=VAR.S(B2:B9)', C11: '=VAR.S(C2:C9)', D11: '=VAR.S(D2:D9)', E11: '=VAR.S(E2:E9)',
+  A12: 'Alpha (F)', B12: '=4/3*(1-SUM(B11:E11)/(16*VAR.S(F2:F9)))', A13: 'Alpha (G)', B13: '=4/3*(1-SUM(B11:E11)/(16*VAR.S(G2:G9)))' });
 
 // Tamberlake Gyms (fictional): four items on a 1–7 scale about staff; item 2 ("Staff were hard to find") reverse-worded
 const GYM = [[6, 2, 6, 5], [7, 1, 6, 7], [3, 5, 4, 3], [5, 3, 5, 6], [2, 6, 3, 2], [6, 3, 7, 6], [4, 4, 4, 5], [7, 2, 6, 6]];
@@ -28,6 +30,9 @@ const gymScore = (r) => avg([r[0], 8 - r[1], r[2], r[3]]);
 
 // knowledge check: one respondent, five-point items, item 2 reverse-worded
 const K2 = [4, 2, 5, 4];
+// Ostlake Hotels (fictional): a four-item scale's sample standard deviations and the SD of the total score
+const OST = { sd: [0.95, 1.05, 0.9, 1.1], totalSd: 3.0 };
+const ostAlpha = (4 / 3) * (1 - OST.sd.reduce((a, x) => a + x * x, 0) / OST.totalSd ** 2);
 
 export const widgets = {
   'qd-openclosed': {
@@ -42,11 +47,11 @@ export const widgets = {
   },
   'qd-likert': {
     type: 'sheet', title: 'Saltreed Festival (fictional): a four-item Likert scale with one reverse-worded item',
-    sheet: { cells: festCells }, view: 'A1:H10', editable: 'B2:E9',
-    formats: { F: '0.00', G: '0.00' },
-    widths: { A: 7, B: 11, C: 11, D: 11, E: 8, F: 7, G: 9, H: 9 },
+    sheet: { cells: festCells }, view: 'A1:H13', editable: 'B2:E9',
+    formats: { F: '0.00', G: '0.00', B11: '0.00', C11: '0.00', D11: '0.00', E11: '0.00', B12: '0.00', B13: '0.00' },
+    widths: { A: 9, B: 11, C: 11, D: 11, E: 8, F: 7, G: 9, H: 9 },
     tools: ['formulas', 'reset'],
-    note: 'Codes run from 1 (strongly disagree) to 5 (strongly agree); D is the reverse-worded item, “The site felt overcrowded”. F reverse-codes it with 6 − D; G averages the raw codes. G pulls the scores of people who answered consistently towards the middle, flattering those who felt crowded (a high D) and underselling those who didn’t; F does neither. Column H flags anyone who agrees both that the site was easy to get around and that it felt overcrowded (4 or 5 on both): a sign of acquiescence or of not reading the items.',
+    note: 'Codes run from 1 (strongly disagree) to 5 (strongly agree); D is the reverse-worded item, “The site felt overcrowded”. F reverse-codes it with 6 − D; G averages the raw codes. G pulls the scores of people who answered consistently towards the middle, flattering those who felt crowded (a high D) and underselling those who didn’t; F does neither. Column H flags anyone who agrees both that the site was easy to get around and that it felt overcrowded (4 or 5 on both): a sign of acquiescence or of not reading the items. Rows 11 to 13 compute Cronbach’s alpha from the sample variances (VAR.S): the variance of a reversed item equals the original’s, and the total of four items is four times the average, so its variance is 16 times the average’s. Alpha is 0.96 for F’s properly coded scale and negative for G’s, because the unreversed item pulls against the others.',
   },
 };
 
@@ -180,21 +185,15 @@ export const guided = [
 
 export const independent = [
   {
-    id: 'm04-qd-i1', type: 'mc', kind: 'conceptual',
-    prompt: 'Saltreed Festival (fictional) used to ask “What was the main reason you came this year?” in telephone interviews, with eight reasons read aloud in a fixed order. This year the question moves to a web form, with the reasons in the same fixed order. What should the organisers expect, and do?',
-    options: [
-      'Reasons near the top of the list will now be picked more often; show them in a random order for each person.',
-      'More people will now pick the reasons read last; move the reasons the organisers care most about to the end.',
-      'Order effects apply only to rating scales, so a list of reasons can stay in a fixed order on the web form.',
-      'People will now favour reasons in the middle of the list; put the two most popular reasons at the two ends.',
+    id: 'm04-qd-i7', type: 'num', kind: 'numerical',
+    prompt: `Ostlake Hotels (fictional) piloted a four-item “room comfort” scale with 30 guests. The items’ sample standard deviations are ${OST.sd.join(', ')}, and the standard deviation of guests’ total scores is ${OST.totalSd.toFixed(1)}. What is Cronbach’s alpha? Give two decimal places.`,
+    answer: Math.round(ostAlpha * 100) / 100, check: () => (4 / 3) * (1 - (0.95 ** 2 + 1.05 ** 2 + 0.9 ** 2 + 1.1 ** 2) / 3 ** 2), unit: '', places: 2, tol: 0.006,
+    wrong: [
+      { value: Math.round((1 - OST.sd.reduce((a, x) => a + x * x, 0) / OST.totalSd ** 2) * 100) / 100, say: 'That leaves out k ÷ (k − 1) = 4 ÷ 3. Without it, alpha is understated, most of all for short scales.' },
+      { value: Math.round((4 / 3) * (1 - OST.sd.reduce((a, b) => a + b, 0) / OST.totalSd) * 100) / 100, say: 'Alpha uses variances, the squares of the standard deviations: 0.95² = 0.9025 and so on, and 3.0² = 9.0 for the total.' },
+      { value: Math.round((3 / 4) * (1 - OST.sd.reduce((a, x) => a + x * x, 0) / OST.totalSd ** 2) * 100) / 100, say: 'The factor is k ÷ (k − 1) = 4 ÷ 3, not (k − 1) ÷ k.' },
     ],
-    answer: 0,
-    feedback: {
-      1: 'Recency belongs to lists heard aloud, as on the telephone. On a screen people read the list, and the first options gain (primacy). Moving favoured options to the end would also bias the results deliberately.',
-      2: 'Order effects apply to unordered lists too: Pew finds primacy in self-administered surveys and randomises such lists.',
-      3: 'Neither Pew nor Krosnick and Presser report a middle-of-the-list effect; the evidence is for primacy (read) and recency (heard).',
-    },
-    solution: 'On the telephone, options heard last tend to gain (recency); on a screen, those read first gain (primacy). The cure for an unordered list is to randomise its order, so no reason is always first. The change of mode also means this year’s figures can’t be compared directly with last year’s.',
+    solution: `Item variances: 0.95² + 1.05² + 0.90² + 1.10² = 0.9025 + 1.1025 + 0.81 + 1.21 = ${OST.sd.reduce((a, x) => a + x * x, 0).toFixed(3)}. Total variance: 3.0² = 9. α = 4 ÷ 3 × (1 − ${OST.sd.reduce((a, x) => a + x * x, 0).toFixed(3)} ÷ 9) = 1.3333 × ${(1 - OST.sd.reduce((a, x) => a + x * x, 0) / 9).toFixed(4)} = ${ostAlpha.toFixed(3)}, about ${ostAlpha.toFixed(2)}: within the usual 0.70 to 0.90.`,
   },
   {
     id: 'm04-qd-i2', type: 'order', kind: 'conceptual',
@@ -323,23 +322,25 @@ export const check = [
     solution: 'Agree/disagree statements invite acquiescence, especially among less engaged respondents, so an agreement scale would inflate apparent interest. Lantern’s Q2 asks directly how likely people are to buy a described product at a stated price, on balanced verbal points.',
   },
   {
-    id: 'm04-qd-k4', type: 'classify', kind: 'conceptual',
-    prompt: 'Saltreed Festival (fictional) plans these questions. Classify each answer by its level of measurement.',
+    id: 'm04-qd-k7', type: 'classify', kind: 'conceptual',
+    prompt: 'Fellmark Language School (fictional) has built a six-item scale of learners’ confidence in speaking. Name the kind of evidence each finding gives.',
     items: [
-      'Which stage did you spend most time at? (a list of five stage names)',
-      'How many nights did you camp at the festival?',
-      'How would you rate the food? Very poor / Poor / Fair / Good / Very good',
-      'In which year did you first come to Saltreed?',
-      'Which age group are you in? (under 25, 25–39, 40–59, 60 or over)',
+      'The same 40 learners complete the scale twice, a fortnight apart, and their two scores correlate at 0.85.',
+      'Cronbach’s alpha across the scale’s six items is 0.82.',
+      'Three experienced teachers check that the items cover speaking to strangers, on the phone, in groups and in class.',
+      'Scores correlate 0.70 with an established speaking-confidence questionnaire and 0.05 with how much learners enjoy grammar exercises.',
+      'Learners’ scores in September predict how often teachers count them speaking up in class in December.',
+      'Scores agree closely with teachers’ ratings of the same learners’ confidence, made in the same week.',
     ],
-    categories: ['Nominal', 'Ordinal', 'Interval', 'Ratio'],
-    answer: [0, 3, 1, 2, 1],
+    categories: ['Test–retest reliability', 'Internal consistency', 'Content validity', 'Construct validity', 'Criterion validity'],
+    answer: [0, 1, 2, 3, 4, 4],
     feedback: {
-      1: 'Nights camped is a count with a true zero: ratio. Someone who camped four nights camped twice as long as someone who camped two.',
-      3: 'Calendar years have meaningful differences (attended for 6 years) but an arbitrary zero: interval, as B01 classes dates.',
-      4: 'Bands of age are ordered categories: ordinal, even though age itself is ratio.',
+      2: 'Comparing the items with what the idea covers is content validity: no scores are involved.',
+      3: 'Strong agreement with a measure of the same idea (convergent) and almost none with a different idea (discriminant): construct validity.',
+      4: 'An outcome measured later that the scale should predict: criterion validity (predictive).',
+      5: 'An outcome measured at the same time: criterion validity (concurrent).',
     },
-    solution: 'Stage: nominal. Nights: ratio. Food rating: ordinal. First year attended: interval (dates). Age band: ordinal.',
+    solution: 'Two administrations agreeing: test–retest reliability. Items moving together: internal consistency. Items covering the idea: content validity. The right pattern of correlations with other measures: construct validity. Agreement with an outcome, now (concurrent) or later (predictive): criterion validity.',
   },
   {
     id: 'm04-qd-k5', type: 'multi', kind: 'conceptual',
