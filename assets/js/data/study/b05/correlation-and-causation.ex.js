@@ -22,7 +22,11 @@ const month = (mo) => hDate.map((_, i) => i).filter((i) => hDate[i].slice(5, 7) 
 const sheetOf = (I) => ({ A1: 'Day', B1: 'Loyalty members (total)', C1: 'High (°F)', ...col('A', 2, I.map((i) => lab(hDate[i]))), ...col('B', 2, I.map((i) => hMem[i])), ...col('C', 2, I.map((i) => hHigh[i])) });
 const OCT = month('10'), APR = month('04');
 const oM = OCT.map((i) => hMem[i]), oH = OCT.map((i) => hHigh[i]);
-const oLevels = C.pearson(oM, oH).r, oNew = oM.slice(1).map((v, k) => v - oM[k]), oSign = C.pearson(oNew, oH.slice(1)).r;
+const oLevels = C.pearson(oM, oH).r, oNew = oM.slice(1).map((v, k) => v - oM[k]), oSign = C.pearson(oNew, oH.slice(1)).r, oP = C.pearson(oNew, oH.slice(1)).p;
+// Harbourside, March–July: members against sales
+const SPR = hDate.map((_, i) => i).filter((i) => hDate[i] < '2027-08-01');
+const hSales = column('sales', H);
+const memSales = C.pearson(SPR.map((i) => hMem[i]), SPR.map((i) => hSales[i])).r;
 const aM = APR.map((i) => hMem[i]), aH = APR.map((i) => hHigh[i]);
 const aSign = C.pearson(aM.slice(1).map((v, k) => v - aM[k]), aH.slice(1)).r, aLevels = C.pearson(aM, aH).r;
 
@@ -60,7 +64,7 @@ export const guided = [
   {
     id: 'b05-cause-g1', type: 'steps', kind: 'applied',
     prompt: 'The worksheet holds Harbourside’s 31 days in October 2027: the running total of loyalty-app members (B) and the day’s high (C). Over the month the two correlate negatively. Find out whether that is a trend or a daily link.',
-    solution: `The levels correlate at ${neg(oLevels, 3)}: members rise through October as the weather cools. The day’s new members against the day’s high correlate at ${neg(oSign, 3)}. The negative link was the trend; day by day, warmer October days brought slightly more sign-ups, in line with the whole year’s +0.37.`,
+    solution: `The levels correlate at ${neg(oLevels, 3)}: members rise through October as the weather cools. The day’s new members against the day’s high correlate at ${neg(oSign, 3)}. The negative link was the trend; day by day, warmer October days went with slightly more sign-ups (r = ${fx(oSign)}, p = ${fx(oP, 2)}, not significant on 30 days alone), in line with the year’s +0.37.`,
     steps: [
       {
         id: 'b05-cause-g1-s1', type: 'formula',
@@ -150,7 +154,7 @@ export const guided = [
   },
   {
     id: 'b05-cause-g4', type: 'num', kind: 'numerical',
-    prompt: 'A retailer slices its loyalty data into 25 customer segments and tests in each whether a new app feature goes with higher spend, at α = 0.05. If the feature had no link with spend in any segment, how many segments would show a significant result on average?',
+    prompt: 'A retailer slices its loyalty data into 25 customer segments and tests in each whether a new app feature goes with a higher basket value, at α = 0.05. If the feature had no link with basket value in any segment, how many segments would show a significant result on average?',
     answer: 1.25, check: () => 25 * 0.05, unit: 'segments', places: 2, tol: 0.005,
     wrong: [
       { value: 0.72, say: 'That is the chance of at least one false alarm, 1 − 0.95²⁵. The question asks for the average number.' },
@@ -198,32 +202,32 @@ export const independent = [
   },
   {
     id: 'b05-cause-i3', type: 'short', kind: 'applied',
-    prompt: 'Rewrite this sentence from a draft report so that it says only what the evidence supports: “Our data prove that loyalty-app members drive sales: the two correlate at 0.87 from March to July.” (Members and sales are both running higher through the spring at Harbourside.)',
+    prompt: `Rewrite this sentence from a draft report so that it says only what the evidence supports: “Our data prove that loyalty-app members drive sales: the two correlate at ${fx(memSales)} from March to July.” (Members, a running total, and daily sales both rise through the spring at Harbourside.)`,
     rubric: [
       'Describes an association, not a cause (no “prove”, “drive”).',
       'Names the shared trend over the spring as an explanation that hasn’t been ruled out.',
       'Gives the size of the correlation and the period it covers.',
       'Says what analysis or study would test a causal link (changes rather than levels, or a trial).',
     ],
-    model: 'From March to July, Harbourside’s loyalty-app members and its sales rose together (r = 0.87), but both were growing over the period, so the correlation mostly reflects the shared trend. Comparing weekly changes, or offering the app to randomly chosen customers, would show whether members add to sales.',
+    model: `From March to July, Harbourside’s loyalty-app members and its daily sales rose together (r = ${fx(memSales)}), but both were growing over the period, so the correlation mostly reflects the shared trend. Comparing weekly changes, or offering the app to randomly chosen customers, would show whether members add to sales.`,
     solution: 'A good rewrite replaces “prove” and “drive” with the language of association, gives r and the period, names the shared spring trend, and says what would test the causal claim.',
   },
   {
     id: 'b05-cause-i4', type: 'mc', kind: 'conceptual',
-    prompt: 'Which of these is a natural experiment for the question “do fewer customers mean lower sales at Harbourside?”',
+    prompt: 'Which of these is a natural experiment for the question “does rain lower Harbourside’s weekday sales?”',
     options: [
       'Comparing dry and heavily rainy weekdays, since nobody at the café decides when it rains.',
       'Comparing days the manager rostered fewer baristas with days she rostered more of them.',
-      'Comparing festival days at Harbourside with the ordinary weekends just before them.',
+      'Comparing Harbourside’s festival days with the ordinary days just before them.',
       'Comparing the café’s first month of sales with its last month of the year.',
     ],
     answer: 0,
     feedback: {
       1: 'The roster is chosen by the manager from expected trade, so it is confounded with the outcome.',
-      2: 'Festivals bring crowds but also change who comes and what they buy, and they are planned; a weaker comparison.',
+      2: 'Festivals don’t vary the rain, and there are only five of them, on weekends and holidays, so they say nothing about rainy weekdays.',
       3: 'That mixes in the café’s growth and the season: a before–after comparison with a trend.',
     },
-    solution: 'Rain lowers footfall for reasons unrelated to how the café is run, so wet and dry weekdays differ in customers without anyone choosing which days are which: a natural experiment. Harbourside’s wet weekdays averaged about $90 less in sales.',
+    solution: 'Nobody at the café chooses when it rains, so comparing weekdays with heavy rain and dry weekdays is a natural experiment, provided the wet days are otherwise like the dry ones (check that they fall across the seasons). Harbourside’s weekdays with a quarter-inch of rain or more averaged about $90 less in sales.',
   },
   {
     id: 'b05-cause-i5', type: 'order', kind: 'applied',

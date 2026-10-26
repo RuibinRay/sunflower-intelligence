@@ -178,7 +178,7 @@ export const items = [
     id: 'b05-m2-11', lesson: 'testing-correlation', type: 'classify', kind: 'conceptual',
     prompt: 'Could the Fisher-z test for two independent correlations be used as it stands to compare each pair of correlations below?',
     items: [
-      'Sales and temperature at a café in 2026, against the same café in 2027.',
+      'Sales and temperature at a long-established café one year, against the same café the next year.',
       'Sales and temperature at two cafés on the same days of 2027.',
       'Satisfaction and price among one hotel’s guests, against satisfaction and value-for-money among the same guests.',
       'Training hours and output at 40 factories in one country, against 55 factories in another.',
@@ -191,6 +191,6 @@ export const items = [
       2: 'The same guests supply both correlations, which share the satisfaction variable: a test for dependent correlations is needed.',
       3: 'Different factories in different countries: independent samples.',
     },
-    solution: 'The formula assumes the two correlations come from unconnected samples. Different years at one café or different factories qualify. The same days at two cafés, or two correlations from the same guests sharing a variable, are linked, and the simple formula gives only an approximation.',
+    solution: 'The formula assumes the two correlations come from unconnected samples. Different years at one café or different factories qualify. The same days at two cafés, or two correlations from the same guests sharing a variable, are linked: they need a test for dependent correlations (such as Steiger’s), not the simple formula.',
   },
 ];

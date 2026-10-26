@@ -1,6 +1,6 @@
 // nonlinear-and-restricted.ex.js — B05 · Curves, thresholds and restricted ranges: widgets, practice and the
 // knowledge check (answer keys live here). Café data from case.js (corrected log); the hotel, the towns, Copperline
-// Gym, Fenwick Logistics and the reliability figures are fictional. Formula items are marked by their results
+// Gym, Velmont Logistics and the reliability figures are fictional. Formula items are marked by their results
 // (core/sheet.js gradeFormula); num items recompute their answers in `check`.
 import { column, CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=20';
 import * as C from '../../../core/correlation.js?v=20';
@@ -75,7 +75,7 @@ export const widgets = {
   },
   'nl-hotel': {
     type: 'scatter',
-    title: 'Larkspur Hotel (fictional): thermostat setting and complaints about room temperature',
+    title: 'Hollyford Hotel (fictional): thermostat setting and complaints about room temperature',
     x: { name: 'Thermostat setting', values: HX, unit: '°C' },
     y: { name: 'Complaints per 100 guests', values: HY },
     labels: HX.map((x, i) => `Week ${i + 1} (${x} °C)`),
@@ -119,7 +119,7 @@ export const guided = [
   {
     id: 'b05-nonlin-g1', type: 'steps', kind: 'numerical',
     prompt: 'Millbrook, June 2027: B2:B31 hold each day’s peak load (peak transactions per barista hour) and C2:C31 the average peak wait. Compare r for the raw load with r for a hinge at a load of 7.',
-    solution: `CORREL of load and wait is ${fx(junR)}. The squared hinge, =MAX(0,B2−7)^2, is zero on the ${junBelow} days with a load of 7 or less and grows ever faster above it; its correlation with the wait is ${fx(junHinge)}. The wait follows a threshold, so r on the raw load understates how closely load and wait are linked. The threshold of 7 was read from the full log, not from these 30 days, which keeps the June figure honest.`,
+    solution: `CORREL of load and wait is ${fx(junR)}. The squared hinge, =MAX(0,B2−7)^2, is zero on the ${junBelow} days with a load of 7 or less and grows ever faster above it; its correlation with the wait is ${fx(junHinge)}. The wait follows a threshold, so r on the raw load understates how closely load and wait are linked. The threshold of 7 was read from the full log rather than chosen to fit these 30 days, though June is part of the log the threshold came from, so this is not an independent check.`,
     steps: [
       {
         id: 'b05-nonlin-g1-s1', type: 'formula',
@@ -169,7 +169,7 @@ export const guided = [
           'Waits are flat up to a load of about 7 and rise ever faster above it; r on the raw load understates the link.',
           'The squared hinge is a better variable to roster by, so managers should be told to staff to it in future.',
           'Load and wait are only moderately related, since the raw r is under 0.9 and the hinge r is just a refinement.',
-          'Squaring always raises a correlation, so the higher value from the hinge carries no extra information here.',
+          'Squaring a variable tends to raise a correlation, so the higher value from the hinge carries little extra information.',
         ],
         answer: 0,
         hints: ['What shape does the hinge describe, and how close is it to the data?'],
@@ -234,7 +234,7 @@ export const independent = [
     prompt: 'Twelve fictional towns: B2:B13 hold the population (thousands) and C2:C13 the number of cafés. F1 gives r for the values. In F2, calculate r for the natural logs of both columns.',
     sheet: { cells: townCells },
     cell: 'F2', answer: '=CORREL(LN(B2:B13),LN(C2:C13))',
-    alt: ['=CORREL(LOG10(B2:B13),LOG10(C2:C13))', '=PEARSON(LN(B2:B13),LN(C2:C13))', '=CORREL(LN(C2:C13),LN(B2:B13))'],
+    alt: ['=CORREL(LOG10(B2:B13),LOG10(C2:C13))', '=CORREL(LOG(B2:B13),LOG(C2:C13))', '=PEARSON(LN(B2:B13),LN(C2:C13))', '=CORREL(LN(C2:C13),LN(B2:B13))'],
     view: 'A1:F13',
     formats: { F1: '0.000', F2: '0.000' }, widths: { B: 20, E: 14 },
     wrong: [
@@ -245,11 +245,11 @@ export const independent = [
   },
   {
     id: 'b05-nonlin-i2', type: 'num', kind: 'numerical',
-    prompt: 'Fenwick Logistics (fictional) finds r = 0.50 between a driver aptitude score and on-time deliveries, among drivers it hired. The scores of hired drivers have half the standard deviation of all applicants’ scores. Assuming a straight-line relationship with even scatter, estimate r across all applicants with the range-restriction formula. Give two decimal places.',
+    prompt: 'Velmont Logistics (fictional) finds r = 0.50 between a driver aptitude score and on-time deliveries, among drivers it hired. The scores of hired drivers have half the standard deviation of all applicants’ scores. Assuming a straight-line relationship with even scatter, estimate r across all applicants with the range-restriction formula. Give two decimal places.',
     answer: 0.76, check: () => { const k = 2, r = 0.5; return k * r / Math.sqrt(1 - r * r + k * k * r * r); }, unit: '', places: 2, tol: 0.005,
     wrong: [
       { value: 1, say: 'Doubling r assumes it scales with the spread, which it doesn’t: r is bounded by 1. Use k r ÷ √(1 − r² + k² r²).' },
-      { value: 0.25, say: 'k = S ÷ s is 2 (applicants spread twice as widely), not 0.5.' },
+      { value: 0.28, say: 'That uses k = 0.5. Here k = S ÷ s = 2, because all applicants spread twice as widely as the hired drivers.' },
     ],
     solution: 'k = S ÷ s = 2. r_u = 2 × 0.50 ÷ √(1 − 0.25 + 4 × 0.25) = 1.00 ÷ √1.75 ≈ 0.76. The hired drivers’ r of 0.50 is accurate for them; across all applicants the score would track deliveries far more closely, if the assumptions hold.',
   },
@@ -260,7 +260,7 @@ export const independent = [
       'A relationship can be strong and have r close to 0.',
       'A high r shows that a straight line describes the relationship well.',
       'Taking logs of both variables can change Pearson’s r but not Spearman’s ρ.',
-      'Restricting the data to part of the range of x always lowers r.',
+      'Restricting the data to part of the range of x lowers r wherever the restriction falls.',
       'Random measurement error in either variable tends to weaken an observed correlation.',
       'If r is low among summer days, temperature affects iced sales less in summer.',
     ],
@@ -278,12 +278,11 @@ export const independent = [
     items: [
       'Among staff who passed probation, the interview score barely correlates with later performance.',
       'Errors at a packing station are flat until about 120 parcels an hour, then climb fast; r across all hours is 0.6.',
-      'Sales of hot soup are high on cold days and on very wet warm days, low otherwise; r with temperature is about 0.',
+      'A garden-centre café sells most drinks on cold days and on very hot days and fewest on mild ones; r with temperature is about 0.',
       'Customer satisfaction, measured with a single noisy question, correlates only 0.3 with repeat visits.',
     ],
     categories: ['Restricted range', 'A threshold', 'A U-shape or turning point', 'Attenuation by measurement error'],
     answer: [0, 1, 2, 3],
-    fixed: true,
     feedback: {
       0: 'Only those who passed are in the data, so the range of scores (and of performance) is narrow.',
       1: 'Flat, then steep: r averages the two stretches and understates the link above the threshold.',
@@ -294,12 +293,12 @@ export const independent = [
   },
   {
     id: 'b05-nonlin-i5', type: 'mc', kind: 'applied',
-    prompt: 'Fenwick Logistics (fictional) hires only applicants who score above 70 on its aptitude test. Among hired drivers, the score and on-time deliveries correlate r = 0.15. HR proposes dropping the test because “it barely predicts performance”. What is the strongest objection?',
+    prompt: 'Velmont Logistics (fictional) hires only applicants who score above 70 on its aptitude test. Among hired drivers, the score and on-time deliveries correlate r = 0.15. HR proposes dropping the test because “it barely predicts performance”. What is the strongest objection?',
     options: [
       'Hired drivers cover only the top of the score range, which shrinks r; the test may separate good and poor drivers well across all applicants.',
-      'An r of 0.15 is statistically significant once enough drivers are included, so the test must be kept for that reason alone, whatever HR thinks.',
+      'An r of 0.15 is statistically significant once enough drivers are included, which is reason enough to keep the test whatever HR thinks.',
       'The correlation should be computed with Spearman’s ρ, which would show that the test predicts much better.',
-      'Performance is caused by many factors, so no single test could ever be expected to correlate with it.',
+      'Performance depends on many factors, so a single test can only be expected to correlate weakly with it.',
     ],
     answer: 0,
     feedback: {
@@ -307,7 +306,7 @@ export const independent = [
       2: 'Ranks don’t restore the missing low scorers; ρ suffers from range restriction too.',
       3: 'That is true but doesn’t answer the question; the test might still separate applicants well.',
     },
-    solution: 'The hired drivers are a selected group with a narrow range of scores, so r among them understates how well the test separates all applicants. To judge the test, Fenwick would need performance data from a wider range of scores, for example by hiring some applicants below the cut-off in a trial, or by applying the range-restriction formula as a rough guide.',
+    solution: 'The hired drivers are a selected group with a narrow range of scores, so r among them understates how well the test separates all applicants. To judge the test, Velmont would need performance data from a wider range of scores, for example by hiring some applicants below the cut-off in a trial, or by applying the range-restriction formula as a rough guide.',
   },
 ];
 
@@ -357,8 +356,8 @@ export const check = [
     id: 'b05-nonlin-k4', type: 'mc', kind: 'applied',
     prompt: 'Across 2027 the day’s high and the iced share have r = 0.94; in July alone r = 0.66. The summer manager concludes that temperature hardly matters for July’s iced stock. What is the best response?',
     options: [
-      'July’s narrow range of temperatures, on the flat top of the S, shrinks r; temperature still matters, but less per degree near the top.',
-      'He is right: a correlation of 0.66 is weak, so July’s iced stock should ignore the weather forecast completely.',
+      'July’s narrow range of hot days, near the flat top of the S, shrinks r; temperature still matters there, less per degree.',
+      'He is right: with r = 0.66 in July, iced stock for that month can safely be planned without looking at the weather forecast.',
       'He is wrong, because the yearly r of 0.94 is the true correlation and July’s lower value is just a sampling error.',
       'The July figure is unreliable because 62 café-days are too few for a correlation, so the yearly figure should be used.',
     ],
@@ -393,7 +392,7 @@ export const check = [
     options: [
       'Only Pearson’s r: logs change the distances between values but keep their order.',
       'Only Spearman’s ρ: logs change the ranks of the values but keep the straight-line pattern.',
-      'Both, because any transformation of the data changes every correlation computed from it.',
+      'Both, because taking logs changes the values and so changes each correlation computed from them.',
       'Neither, because logs are a monotonic transformation of both variables.',
     ],
     answer: 0,

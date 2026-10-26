@@ -1,6 +1,6 @@
 // nonlinear-and-restricted.js — B05 · Curves, thresholds and restricted ranges. Content only; exercises are in
 // nonlinear-and-restricted.ex.js. Uses the corrected café log (case.js): the iced-share S curve, the peak-wait
-// threshold near a load of seven transactions per barista hour, summer-only days and Millbrook's weekdays. The Larkspur
+// threshold near a load of seven transactions per barista hour, summer-only days and Millbrook's weekdays. The Hollyford
 // Hotel, the twelve towns and the reliability figures are fictional. Fitting curves and residual plots are B06's.
 // Every figure printed is recomputed in `checks`.
 import { column, DERIVED as D } from './case.js?v=20';
@@ -31,7 +31,7 @@ const mSt = column('peak_staff_hours', M), mSa = column('sales', M), mWk = colum
 const rMAll = C.pearson(mSt, mSa).r, rMWk = C.pearson(pick(mSt, mWk), pick(mSa, mWk)).r;
 const kM = sd(mSt) / sd(pick(mSt, mWk));
 
-// ---------------------------------------------------------------- Larkspur Hotel (fictional): a U shape
+// ---------------------------------------------------------------- Hollyford Hotel (fictional): a U shape
 const HX = [17, 17.5, 18, 18.5, 19, 19.5, 20, 20.5, 21, 21.5, 22];
 const HY = [9.6, 7.1, 5.0, 3.6, 2.4, 2.0, 2.5, 3.4, 4.9, 7.0, 9.8];
 const hR = C.pearson(HX, HY).r, hRho = C.spearman(HX, HY).rho;
@@ -49,28 +49,29 @@ const rObs = AT.rTrue * Math.sqrt(AT.relX * AT.relY);
 // ---------------------------------------------------------------- figure: a U and a threshold
 const f1 = (x) => Math.round(x * 10) / 10;
 function curvesFigure() {
-  let svg = '<svg viewBox="0 0 660 270" xmlns="http://www.w3.org/2000/svg" font-size="11" fill="currentColor">';
+  // drawn large in viewBox units so the text stays legible when the figure shrinks to a phone's width
+  let svg = '<svg viewBox="0 0 660 380" xmlns="http://www.w3.org/2000/svg" font-size="20" fill="currentColor">';
   // left: the hotel
-  const X1 = (v) => 60 + (v - 16.5) * 46, Y1 = (v) => 220 - v * 17;
-  svg += '<line x1="55" x2="300" y1="220" y2="220" stroke="var(--ink-3)"/><line x1="55" x2="55" y1="30" y2="220" stroke="var(--ink-3)"/>';
-  [0, 5, 10].forEach((v) => { svg += `<text x="50" y="${f1(Y1(v)) + 4}" text-anchor="end" font-size="10" fill="var(--ink-3)">${v}</text>`; });
-  [17, 18, 19, 20, 21, 22].forEach((v) => { svg += `<text x="${f1(X1(v))}" y="235" text-anchor="middle" font-size="10" fill="var(--ink-3)">${v}</text>`; });
-  HX.forEach((x, i) => { svg += `<circle cx="${f1(X1(x))}" cy="${f1(Y1(HY[i]))}" r="4" fill="var(--series-1)"/>`; });
-  svg += '<text x="178" y="252" text-anchor="middle" font-size="10" fill="var(--ink-3)">Thermostat setting (°C)</text>';
-  svg += '<text x="178" y="18" text-anchor="middle">Larkspur Hotel (fictional): r = 0.00</text>';
-  svg += '<text x="20" y="125" text-anchor="middle" font-size="10" fill="var(--ink-3)" transform="rotate(-90 20 125)">Complaints per 100 guests</text>';
+  const X1 = (v) => 75 + (v - 16.8) * 42, Y1 = (v) => 300 - v * 20;
+  svg += '<line x1="62" x2="305" y1="300" y2="300" stroke="var(--ink-3)" stroke-width="1.2"/><line x1="62" x2="62" y1="80" y2="300" stroke="var(--ink-3)" stroke-width="1.2"/>';
+  [0, 5, 10].forEach((v) => { svg += `<text x="55" y="${f1(Y1(v)) + 6}" text-anchor="end" font-size="18" fill="var(--ink-3)">${v}</text>`; });
+  [17, 19, 21].forEach((v) => { svg += `<text x="${f1(X1(v))}" y="324" text-anchor="middle" font-size="18" fill="var(--ink-3)">${v}</text>`; });
+  HX.forEach((x, i) => { svg += `<circle cx="${f1(X1(x))}" cy="${f1(Y1(HY[i]))}" r="5.5" fill="var(--series-1)"/>`; });
+  svg += '<text x="185" y="356" text-anchor="middle" font-size="18" fill="var(--ink-3)">Thermostat (°C)</text>';
+  svg += '<text x="185" y="30" text-anchor="middle">Hotel (fictional)</text><text x="185" y="56" text-anchor="middle">r = 0.00</text>';
+  svg += '<text x="18" y="190" text-anchor="middle" font-size="18" fill="var(--ink-3)" transform="rotate(-90 18 190)">Complaints per 100</text>';
   // right: mean peak wait by load band
-  const labels = ['under 7', '7–8', '8–9', '9–10', '10 or more'];
-  const X2 = (k) => 400 + k * 52, Y2 = (v) => 220 - v * 26;
-  svg += '<line x1="375" x2="650" y1="220" y2="220" stroke="var(--ink-3)"/><line x1="375" x2="375" y1="30" y2="220" stroke="var(--ink-3)"/>';
-  [0, 2, 4, 6].forEach((v) => { svg += `<text x="370" y="${f1(Y2(v)) + 4}" text-anchor="end" font-size="10" fill="var(--ink-3)">${v}</text>`; });
+  const labels = ['<7', '7–8', '8–9', '9–10', '10+'];
+  const X2 = (k) => 392 + k * 58, Y2 = (v) => 300 - v * 30;
+  svg += '<line x1="355" x2="650" y1="300" y2="300" stroke="var(--ink-3)" stroke-width="1.2"/><line x1="355" x2="355" y1="80" y2="300" stroke="var(--ink-3)" stroke-width="1.2"/>';
+  [0, 2, 4, 6].forEach((v) => { svg += `<text x="349" y="${f1(Y2(v)) + 6}" text-anchor="end" font-size="18" fill="var(--ink-3)">${v}</text>`; });
   LB.forEach((b, k) => {
-    svg += `<rect x="${X2(k) - 17}" y="${f1(Y2(b.m))}" width="34" height="${f1(220 - Y2(b.m))}" fill="var(--series-2)" opacity="0.85"/>`;
-    svg += `<text x="${X2(k)}" y="${f1(Y2(b.m)) - 5}" text-anchor="middle" font-size="10">${b.m.toFixed(1)}</text>`;
-    svg += `<text x="${X2(k)}" y="235" text-anchor="middle" font-size="10" fill="var(--ink-3)">${labels[k]}</text>`;
+    svg += `<rect x="${X2(k) - 20}" y="${f1(Y2(b.m))}" width="40" height="${f1(300 - Y2(b.m))}" fill="var(--series-2)" opacity="0.85"/>`;
+    svg += `<text x="${X2(k)}" y="${f1(Y2(b.m)) - 7}" text-anchor="middle" font-size="18">${b.m.toFixed(1)}</text>`;
+    svg += `<text x="${X2(k)}" y="324" text-anchor="middle" font-size="18" fill="var(--ink-3)">${labels[k].replace('<', '&lt;')}</text>`;
   });
-  svg += '<text x="508" y="252" text-anchor="middle" font-size="10" fill="var(--ink-3)">Peak transactions per barista hour</text>';
-  svg += '<text x="508" y="18" text-anchor="middle">Lantern: mean peak wait (minutes)</text>';
+  svg += '<text x="508" y="356" text-anchor="middle" font-size="18" fill="var(--ink-3)">Peak load</text>';
+  svg += '<text x="508" y="30" text-anchor="middle">Lantern: mean peak</text><text x="508" y="56" text-anchor="middle">wait (minutes)</text>';
   return `${svg}</svg>`;
 }
 
@@ -100,10 +101,10 @@ export default {
     { h: 'r measures closeness to a line' },
     { p: 'Pearson’s r answers one precise question: how closely do the points cluster around a straight line? It does not measure how strongly y depends on x in general. When the relationship is a straight line with even scatter, the two ideas coincide. When it is curved, has a threshold, or rises and then falls, r can mislead in either direction: it can be high while hiding the shape, or close to zero while the link is strong.' },
     { p: 'The iced-drink share is a curve. On cold days it barely moves: 7.2% of drinks are iced on days below 50°F and 10.4% between 50 and 55°F. Between about 60 and 75°F it climbs fast, by 13 to 16 percentage points for every 5°F. Above 80°F it levels off again near 80%, because some customers want hot coffee whatever the weather. The shape is an S. Because the curve rises all the way, it is a monotonic relationship, and a straight line still fits it fairly well: r = 0.940, and Spearman’s ρ, which needs only a consistent direction, is a little higher at 0.957.' },
-    { p: 'The number hides what matters for stock planning: the same 5°F rise changes the iced share by about 3 percentage points on a cold day and by 13 to 16 on a mild one. A single r can’t say that. A scatterplot, or a table of the iced share by temperature band like the one in the In depth section, can.' },
+    { p: 'The number hides what matters for stock planning: the same 5°F rise changes the iced share by about 3 percentage points on the coldest days and by 13 to 16 on mild ones. A single r can’t say that. A scatterplot, or a table of the iced share by temperature band like the one in the In depth section, can.' },
 
     { h: 'Thresholds: when r understates the link' },
-    { p: 'The morning peak tells a sharper story. Ana divides the number of peak transactions by the barista hours rostered for the peak, giving the peak load: the transactions each barista hour has to serve. Load and the average peak wait have r = 0.830. But the plot is not a cloud around a line. It is a <g>threshold effect</g>: flat at about 1.6 minutes for loads up to 7, then rising ever more steeply, to an average of 5.8 minutes when the load passes 10.' },
+    { p: 'The morning peak tells a sharper story. Ana divides the number of peak transactions by the barista hours rostered for the peak, giving the peak load: the transactions each barista hour has to serve. Load and the average peak wait have r = 0.830. But the plot is not a cloud around a line. It is a <g>threshold effect</g>: flat at about 1.6 to 1.8 minutes for loads up to 7, then rising ever more steeply, to an average of 5.8 minutes when the load passes 10.' },
     { figure: {
       svg: curvesFigure(),
       caption: 'Left: a fictional hotel’s complaints about room temperature against its thermostat setting, a U shape with r = 0.00. Right: Lantern’s mean peak wait for each band of peak load: flat up to a load of 7, then rising steeply.',
@@ -152,11 +153,11 @@ export default {
     { p: String.raw`<g>Range restriction</g> means the data cover only part of the values the variable takes. If the relationship is a straight line with even scatter, and the restriction is on x alone, then shrinking the standard deviation of x from S to s changes r in a predictable way. With <m>k = S \div s</m>, the correlation over the full range would be <m>r_u = k r_r \div \sqrt{1 - r_r^2 + k^2 r_r^2}</m>, where <m>r_r</m> is the correlation in the restricted data. The formula card gives the details.` },
     { p: 'For the summer days, k = 15.0 ÷ 6.4 ≈ 2.3 and the formula turns the summer r of 0.841 into 0.964, against 0.940 actually observed. It overshoots because the relationship is an S, not a line, and the scatter is not even. The formula is a guide to how much restriction matters, not a way to recover the “true” r.' },
     { p: 'Range restriction is everywhere in business data. Customers who were approved for credit, staff who were hired, products that stayed on the menu, stores that survived: each is a selected group with a narrower range than the population it came from, and correlations inside it are usually weaker than across everyone. The weaker correlation is accurate for the group; it is wrong only if read as a statement about the whole population.' },
-    { p: 'Restriction does not always weaken r. If you select the part of a curve where it is steepest, r can rise: for loads above 7, r = 0.93, more than 0.83 for all days, and for days between 60 and 74°F the iced share has r = 0.906. The general rule is that r depends on the range you look at, so always say what range it describes.' },
+    { p: 'Restriction does not always weaken r. If you select the part of a curve where it is steepest, r can rise: for loads above 7, r = 0.93, more than 0.83 for all days. And restricting to the steep part of a curve shrinks r far less than restricting to a flat part: days between 60 and 74°F still give 0.906 for the iced share, against 0.657 for July. The general rule is that r depends on the range you look at, so always say what range it describes.' },
 
     { h: 'Unreliable measurements attenuate r' },
     { p: String.raw`Every measurement has some error. The door counter misses people in a crowd; a manager timing the queue with a stopwatch on five customers gets a noisy average. Random error adds scatter that has nothing to do with the relationship, so the observed correlation is weaker than the correlation between the true values. Spearman (1904) called this <g>attenuation</g> and gave a correction: if the reliability of each measure is known (the share of its variance that is true variation, often estimated by measuring the same thing twice and correlating the two sets of results), then <m>r_{\text{obs}} \approx r_{\text{true}}\sqrt{\text{rel}_x \, \text{rel}_y}</m>.` },
-    { p: 'For example, with fictional figures: if the true correlation is 0.80, the load is measured with reliability 0.90 and the stopwatch waits with reliability 0.60, the observed r would be about 0.80 × √(0.90 × 0.60) = 0.59. Dividing an observed r by √(rel_x × rel_y) estimates the true one, but only as well as the reliabilities are known, and it can produce values above 1 when they are underestimated. Use the correction to judge whether a weak correlation might come from noisy measurement; better still, measure more reliably.' },
+    { p: 'For example, with fictional figures: if the true correlation is 0.80, the load is measured with reliability 0.90 and the stopwatch waits with reliability 0.60, the observed r would be about 0.80 × √(0.90 × 0.60) = 0.59. Dividing an observed r by √(rel_x × rel_y) estimates the true one, but only as well as the reliabilities are known, and it can produce values above 1 when they are underestimated or when sampling error in r is large. Use the correction to judge whether a weak correlation might come from noisy measurement; better still, measure more reliably.' },
   ],
 
   formulas: [
@@ -169,17 +170,17 @@ export default {
       tex: String.raw`r_u = \dfrac{k\, r_r}{\sqrt{1 - r_r^2 + k^2 r_r^2}}, \qquad k = \dfrac{S}{s}`,
       where: [[String.raw`r_u`, 'Estimated correlation over the full range', ''], [String.raw`r_r`, 'Correlation in the restricted data', ''], [String.raw`S`, 'Standard deviation of x over the full range', 'units of x'], [String.raw`s`, 'Standard deviation of x in the restricted data', 'units of x'], [String.raw`k`, 'How many times wider the full range is', '']],
       assumptions: 'A straight-line relationship with even scatter, and selection on x alone.',
-      note: 'Rearranged, it shows the reverse: restricting x shrinks r. With a curve or uneven scatter it is only a rough guide.' },
+      note: 'With k = s ÷ S (below 1) the same formula goes from the full range to a restricted one, and shows that restricting x shrinks r. With a curve or uneven scatter it is only a rough guide.' },
     { id: 'nl-atten', name: 'Attenuation by unreliable measurement',
       tex: String.raw`r_{\text{obs}} \approx r_{\text{true}}\sqrt{\text{rel}_x\,\text{rel}_y}, \qquad r_{\text{true}} \approx \dfrac{r_{\text{obs}}}{\sqrt{\text{rel}_x\,\text{rel}_y}}`,
       where: [[String.raw`r_{\text{obs}}`, 'Correlation between the measured values', ''], [String.raw`r_{\text{true}}`, 'Correlation between the true values', ''], [String.raw`\text{rel}_x, \text{rel}_y`, 'Reliability of each measure: the share of its variance that is true variation, for example a test–retest correlation', '']],
       assumptions: 'Random, independent measurement errors; reliabilities known.',
-      note: 'Spearman’s (1904) correction for attenuation. A corrected value above 1 means the reliabilities are underestimated.' },
+      note: 'Spearman’s (1904) correction for attenuation. A corrected value above 1 suggests the reliabilities are underestimated (or that sampling error in r is large).' },
   ],
 
   examples: [
     { level: 'simple', title: 'A U-shape: room temperature and complaints', fictional: true,
-      setup: 'The Larkspur Hotel changed its rooms’ default thermostat setting each week for eleven weeks, from 17°C to 22°C in steps of 0.5°C, and counted complaints about room temperature per 100 guests: 9.6, 7.1, 5.0, 3.6, 2.4, 2.0, 2.5, 3.4, 4.9, 7.0 and 9.8. The general manager runs CORREL, gets 0.00, and concludes that the setting doesn’t matter. Is she right?',
+      setup: 'The Hollyford Hotel changed its rooms’ default thermostat setting each week for eleven weeks, from 17°C to 22°C in steps of 0.5°C, and counted complaints about room temperature per 100 guests: 9.6, 7.1, 5.0, 3.6, 2.4, 2.0, 2.5, 3.4, 4.9, 7.0 and 9.8. The general manager runs CORREL, gets 0.00, and concludes that the setting doesn’t matter. Is she right?',
       steps: [
         'Plot first: complaints fall from 9.6 to a minimum of 2.0 at 19.5°C and rise again to 9.8 at 22°C, a symmetrical U.',
         'Explain r: on the cold side (17 to 19.5°C) r = −0.97; on the warm side (19.5 to 22°C) r = 0.96. Over the whole range the two cancel, so r = 0.00, and Spearman’s ρ (−0.03) fails for the same reason.',
@@ -190,7 +191,7 @@ export default {
     { level: 'challenging', title: 'Where waiting starts: the peak-load threshold', fictional: true,
       setup: 'Across the 612 café-days, the peak load (peak transactions per barista hour) and the average peak wait have r = 0.830. Ana wants to know whether to read this as a strong but loose link, and what it means for the roster.',
       steps: [
-        'Band the loads: the mean wait is about 1.6 minutes in every band up to a load of 7, then 1.73 minutes for 7–8, 2.17 for 8–9, 3.06 for 9–10 and 5.85 for 10 or more. Flat, then steep: a threshold.',
+        'Band the loads: the mean wait is between about 1.6 and 1.8 minutes in every band up to a load of 7, then 1.73 minutes for 7–8, 2.17 for 8–9, 3.06 for 9–10 and 5.85 for 10 or more. Flat, then steep: a threshold.',
         'Correlate within ranges: up to a load of 7 (169 café-days) r = −0.10; above 7 (443 café-days) r = 0.93. Below the threshold the load doesn’t go with the wait at all; above it, closely.',
         String.raw`Measure against the shape: with the hinge <m>h = \max(0, \text{load} - 7)</m>, r = 0.917; with <m>h^2</m>, r = 0.980. Spearman’s ρ for load and wait is 0.867.`,
         'Read it with care: the threshold of 7 was read from these data, so 0.98 flatters the fit a little. The bands and the within-range correlations do not depend on fitting anything and tell the same story.',
@@ -225,7 +226,7 @@ export default {
   ],
 
   application: [
-    { case: 'Ana’s note for the summer stock plan: “Iced share rises with temperature in an S: about 3 points per 5°F on cold days, 13 to 16 points per 5°F between 60 and 75°F, and levelling off near 80% above 80°F (2027 log, both cafés). In July the share averages about 75%, so July orders should follow footfall more than temperature. The lower correlation in summer (0.84, against 0.94 for the year) reflects the narrower range of summer temperatures, not a weaker link.”' },
+    { case: 'Ana’s note for the summer stock plan: “Iced share rises with temperature in an S: about 3 points per 5°F on the coldest days, 13 to 16 points per 5°F between 60 and 75°F, and levelling off near 80% above 80°F (2027 log, both cafés). In July the share averages about 75%, so July orders should follow footfall more than temperature. The lower correlation in summer (0.84, against 0.94 for the year) reflects the narrower range of summer temperatures, not a weaker link.”' },
     { p: 'Her note follows the habits of analysts who deal well with curves. She describes the shape in the units of the decision (percentage points per 5°F) instead of reporting a single coefficient, says over what range each statement holds, and explains a lower correlation before anyone can misread it. The same habits apply wherever relationships bend: price and demand near a competitor’s price, workload and errors near capacity, discounts and orders near a threshold for free delivery.' },
     { p: 'Thresholds deserve special attention in operations because they are where decisions bite. A service desk, a call centre or a café counter works well until utilisation passes a point, beyond which queues tend to lengthen quickly. A correlation across all days blends the calm days and the overloaded ones; a table of averages by band, or correlations within ranges, shows where the threshold is, and that is what a manager needs in order to plan capacity.' },
     { p: 'When comparing correlations across teams, sites or periods, check the ranges first. A branch with very similar days will show weaker correlations than one with very varied days, even if the two behave the same way. Report the range each correlation covers, and prefer comparisons of band averages or slopes, which B06 develops.' },
@@ -286,7 +287,10 @@ export default {
     { what: 'r load–wait (2 dp)', value: D.loadWait.r, shown: 0.83 },
     { what: 'ρ load–wait', value: D.loadWaitRho.rho, shown: 0.867, tol: 0.0005 },
     { what: 'Low-load mean wait about 1.6', value: LB[0].m, shown: 1.6, tol: 0.05 },
-    { what: 'Low-load mean wait (bands below 7 all about 1.6)', value: Math.max(...[[0, 4], [4, 5], [5, 6], [6, 7]].map(([a, b]) => band(L, W, a, b).m)), shown: 1.77, tol: 0.2 },
+    { what: 'Bands below 7: highest mean about 1.8', value: Math.max(...[[0, 4], [4, 5], [5, 6], [6, 7]].map(([a, b]) => band(L, W, a, b).m)), shown: 1.8, tol: 0.05 },
+    { what: 'Bands below 7: lowest mean about 1.6', value: Math.min(...[[0, 4], [4, 5], [5, 6], [6, 7]].map(([a, b]) => band(L, W, a, b).m)), shown: 1.6, tol: 0.05 },
+    { what: '7–8 band within 1.6–1.8 too', value: LB[1].m, shown: 1.7, tol: 0.1 },
+    { what: 'Coldest-days step (below 50 to 50–54)', value: (TB[1].m - TB[0].m) * 100, shown: 3, tol: 0.5 },
     { what: '7–8 mean', value: LB[1].m, shown: 1.73, tol: 0.005 },
     { what: '8–9 mean', value: LB[2].m, shown: 2.17, tol: 0.005 },
     { what: '9–10 mean', value: LB[3].m, shown: 3.06, tol: 0.005 },

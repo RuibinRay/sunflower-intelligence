@@ -32,25 +32,25 @@ const kaP = C.partialFromR(KA.xy, KA.xz, KA.yz), kaDf = KA.n - 3, kaT = kaP * Ma
 
 // ---------------------------------------------------------------- figure: confounder, mediator, collider
 function dagFigure() {
-  const node = (x, y, t) => `<rect x="${x - 52}" y="${y - 16}" width="104" height="32" rx="6" fill="none" stroke="var(--ink)" stroke-width="1.2"/><text x="${x}" y="${y + 4}" text-anchor="middle" font-size="12">${t}</text>`;
+  // two diagrams on the first row, one centred below, so the text stays legible on a phone (viewBox 440 wide)
+  const node = (x, y, t) => `<rect x="${x - 50}" y="${y - 17}" width="100" height="34" rx="6" fill="none" stroke="var(--ink)" stroke-width="1.2"/><text x="${x}" y="${y + 5}" text-anchor="middle" font-size="15">${t}</text>`;
   const arrow = (x1, y1, x2, y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--ink)" stroke-width="1.4" marker-end="url(#pc-arr)"/>`;
-  let svg = '<svg viewBox="0 0 660 230" xmlns="http://www.w3.org/2000/svg" font-size="12" fill="currentColor">';
+  const title = (x, y, t) => `<text x="${x}" y="${y}" text-anchor="middle" font-size="15" font-weight="bold">${t}</text>`;
+  const note = (x, y, lines) => lines.map((l, i) => `<text x="${x}" y="${y + i * 18}" text-anchor="middle" font-size="14" fill="var(--ink-3)">${l}</text>`).join('');
+  let svg = '<svg viewBox="0 0 440 480" xmlns="http://www.w3.org/2000/svg" font-size="15" fill="currentColor">';
   svg += '<defs><marker id="pc-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker></defs>';
-  // confounder
-  svg += '<text x="110" y="20" text-anchor="middle" font-weight="bold">Confounder</text>';
-  svg += node(110, 60, 'Busy day') + node(50, 170, 'Baristas') + node(170, 170, 'Wait');
-  svg += arrow(95, 77, 62, 152) + arrow(125, 77, 158, 152);
-  svg += '<text x="110" y="215" text-anchor="middle" font-size="11" fill="var(--ink-3)">Hold it fixed</text>';
-  // mediator
-  svg += '<text x="330" y="20" text-anchor="middle" font-weight="bold">Mediator</text>';
-  svg += node(270, 170, 'Warm day') + node(330, 60, 'Footfall') + node(390, 170, 'Sales');
-  svg += arrow(282, 152, 317, 78) + arrow(343, 78, 378, 152);
-  svg += '<text x="330" y="215" text-anchor="middle" font-size="11" fill="var(--ink-3)">Don’t hold it fixed for the total link</text>';
-  // collider
-  svg += '<text x="550" y="20" text-anchor="middle" font-weight="bold">Collider</text>';
-  svg += node(490, 60, 'Warm day') + node(610, 60, 'Rain') + node(550, 170, 'Footfall');
-  svg += arrow(502, 78, 537, 152) + arrow(598, 78, 563, 152);
-  svg += '<text x="550" y="215" text-anchor="middle" font-size="11" fill="var(--ink-3)">Holding it fixed creates a link</text>';
+  // confounder (left, top row)
+  svg += title(110, 20, 'Confounder') + node(110, 60, 'Busy day') + node(55, 165, 'Baristas') + node(165, 165, 'Wait');
+  svg += arrow(96, 78, 66, 147) + arrow(124, 78, 154, 147);
+  svg += note(110, 207, ['Hold it fixed']);
+  // mediator (right, top row)
+  svg += title(330, 20, 'Mediator') + node(275, 165, 'Warm day') + node(330, 60, 'Footfall') + node(385, 165, 'Sales');
+  svg += arrow(286, 147, 316, 78) + arrow(344, 78, 374, 147);
+  svg += note(330, 207, ['Don’t hold it fixed', 'for the total link']);
+  // collider (centred, second row)
+  svg += title(220, 270, 'Collider') + node(160, 310, 'Warm day') + node(280, 310, 'Rain') + node(220, 415, 'Footfall');
+  svg += arrow(172, 328, 206, 397) + arrow(268, 328, 234, 397);
+  svg += note(220, 457, ['Holding it fixed creates a link']);
   return `${svg}</svg>`;
 }
 
@@ -106,7 +106,7 @@ export default {
     { p: 'Ana can hold the café fixed as well as transactions, as a 0/1 variable (1 for Millbrook). The second-order partial correlation is −0.719, almost unchanged from −0.725, so the difference between the cafés was not what made the simple correlation positive. Inside each café separately, with transactions held fixed, it is −0.54 at Harbourside and −0.83 at Millbrook: the direction agrees, the strength differs.' },
 
     { h: 'Testing a partial correlation' },
-    { p: String.raw`To test <m>H_0: \rho_{xy\cdot z} = 0</m>, use the testing-correlation lesson’s t statistic with k fewer degrees of freedom, one for each variable held fixed: <m>t = r\sqrt{(n - 2 - k) / (1 - r^2)}</m> on <m>n - 2 - k</m> df (Penn State’s STAT 505 notes give the same rule). For the 612 days, <m>t = -0.725\sqrt{609 / (1 - 0.725^2)} \approx -25.9</m> on 609 df, and the two-sided p-value is below 0.001. In Excel, <x>=T.DIST.2T(ABS(t),n-2-k)</x>. The interval and power ideas of the testing-correlation lesson carry over the same way.` },
+    { p: String.raw`To test <m>H_0: \rho_{xy\cdot z} = 0</m>, use the testing-correlation lesson’s t statistic with k fewer degrees of freedom, one for each variable held fixed: <m>t = r\sqrt{(n - 2 - k) / (1 - r^2)}</m> on <m>n - 2 - k</m> df (Penn State’s STAT 505 notes, section 6.3, give the same rule). For the 612 days, <m>r = -0.7246</m> and <m>t = -0.7246\sqrt{609 / (1 - 0.7246^2)} \approx -25.9</m> on 609 df, and the two-sided p-value is below 0.001. In Excel, <x>=T.DIST.2T(ABS(t),n-2-k)</x>. The interval and power ideas of the testing-correlation lesson carry over the same way.` },
 
     { h: 'Partial correlation in Excel' },
     { p: 'There is no PARTIAL function. Two routes give the same answer for one control. The formula route: three CORREL cells and the first-order formula, <x>=(B1-B2*B3)/SQRT((1-B2^2)*(1-B3^2))</x> with r_xy, r_xz and r_yz in B1:B3. The residual route: a column of residuals for each variable, <x>=C2-(INTERCEPT(C$2:C$32,$D$2:$D$32)+SLOPE(C$2:C$32,$D$2:$D$32)*$D2)</x> with the control in column D, filled down and across, then CORREL of the two residual columns. The residual route shows each day’s residual, so you can plot them and spot the days that drive the result, and it extends to several controls with LINEST.' },
@@ -114,7 +114,7 @@ export default {
     { h: 'What a partial correlation can’t do' },
     { list: [
       '<b>It removes only the straight-line part of the control.</b> Waits rise along a curve as trade grows (a <g>threshold effect</g>), and the bands show the link between baristas and waits is weak on quiet days and strong on busy ones. The single partial correlation, −0.72, averages over that. Partial correlation on ranks (−0.47 here) or a comparison within bands can show what the straight line misses.',
-      '<b>It can’t hold fixed what wasn’t measured.</b> If something else drives both variables, such as a school holiday that brings both a crowd and extra staff, holding transactions fixed doesn’t remove it.',
+      '<b>It can’t hold fixed what wasn’t measured.</b> Anything that affects waits apart from the number of transactions, and also goes with the roster, is still in the comparison. A large catering order that ties up a barista at the peak, or an espresso machine that breaks down, lengthens waits without adding transactions; if managers tend to roster extra help on those mornings, holding transactions fixed doesn’t remove it.',
       '<b>A control measured with error controls only partly.</b> If the door counter misses some customers, holding footfall fixed leaves some of the busy-day effect in, a problem called <g>residual confounding</g>.',
       '<b>It is still a correlation.</b> A partial correlation says how two variables go together at given values of a third; whether one causes the other needs the evidence of the next lesson.',
     ] },
@@ -123,8 +123,8 @@ export default {
     { p: 'The arithmetic will hold anything fixed. Whether it should depends on how the variables are connected, which the data alone can’t tell you; it comes from knowing how the business works and the order in which things happen. Three cases matter.' },
     { figure: {
       svg: dagFigure(),
-      caption: 'Three ways a third variable can be connected. Arrows show what affects what. Hold a confounder fixed; don’t hold a mediator fixed if you want the whole link; never hold a collider fixed.',
-      alt: 'Three small diagrams of boxes and arrows. Left, labelled Confounder: an arrow from Busy day to Baristas and an arrow from Busy day to Wait; caption “Hold it fixed”. Middle, labelled Mediator: an arrow from Warm day to Footfall and from Footfall to Sales; caption “Don’t hold it fixed for the total link”. Right, labelled Collider: arrows from Warm day and from Rain both pointing into Footfall; caption “Holding it fixed creates a link”.',
+      caption: 'Three ways a third variable can be connected: a confounder and a mediator on the first row, a collider below. Arrows show what affects what. Hold a confounder fixed; don’t hold a mediator fixed if you want the whole link; never hold a collider fixed.',
+      alt: 'Three small diagrams of boxes and arrows, two side by side and one below. Top left, labelled Confounder: an arrow from Busy day to Baristas and an arrow from Busy day to Wait; caption “Hold it fixed”. Top right, labelled Mediator: an arrow from Warm day to Footfall and from Footfall to Sales; caption “Don’t hold it fixed for the total link”. Below, labelled Collider: arrows from Warm day and from Rain both pointing into Footfall; caption “Holding it fixed creates a link”.',
     } },
     { p: String.raw`A <g>confounding variable</g> affects both variables, as a busy day drives both the roster and the queue. Holding it fixed removes the link it creates, which is what Ana did with transactions.` },
     { p: String.raw`A <g>mediator</g> lies on the path from one variable to the other: x affects m, and m affects y. Holding a mediator fixed removes the part of the link that runs through it, so the partial correlation measures only what is left, not the whole effect. At Harbourside warm days bring more people to the waterfront (the case’s generator makes footfall rise with the temperature there), and more people buy more. The high temperature and sales correlate at 0.40; holding footfall fixed gives −0.19. The 0.40 answers “do warm days go with higher sales?”; the −0.19 answers a narrower question, “at a given footfall, do warm days go with higher sales?”, and the answer may reflect something else, such as cheaper iced drinks. Within the case the peak load is the starkest example: it is transactions per barista hour, the route through which baristas shorten waits, and holding it fixed leaves barista hours and waits correlating at +0.07, as if baristas didn’t matter.` },
@@ -196,12 +196,12 @@ export default {
     { title: '“I held everything fixed to be safe.”', html: 'Holding a mediator fixed removes the effect you want to measure (holding the peak load fixed makes baristas look useless); holding a collider fixed creates a link that doesn’t exist (temperature and rain, once footfall is fixed). Choose each control from what you know about the process.' },
     { title: '“Holding transactions fixed means the busy-day effect is gone completely.”', html: 'A partial correlation removes only the straight-line part of the control’s link, and only for the control as measured. The baristas–wait link is weak on quiet days and strong on busy ones, and anything unmeasured that drives both is still there. Look at bands or ranks, and list what you couldn’t hold fixed.' },
     { title: '“I used n − 2 degrees of freedom for the partial correlation.”', html: 'Each variable held fixed uses up one more degree of freedom: test with n − 2 − k. With 612 rows it hardly matters; with 30 rows and three controls it does.' },
-    { title: '“A negative partial correlation proves that baristas shorten waits.”', html: 'It shows that, at a given level of trade, the two went together that way. A manager who rosters extra baristas on days she expects a rush that doesn’t come would produce the same pattern without any effect of the baristas. Causal claims need the evidence of the next lesson.' },
+    { title: '“A negative partial correlation proves that baristas shorten waits.”', html: 'It shows that, at a given level of trade, the two went together that way. An unmeasured confounder could produce the same pattern without any effect of the extra hours: if the manager put her most experienced baristas on the mornings she rostered extra hours, their speed, not the hours, could shorten the waits. Causal claims need the evidence of the next lesson.' },
   ],
 
   application: [
     { p: 'Partial correlation is how analysts ask whether a link survives once an obvious common driver is accounted for. A retailer finds that stores with more staff have more shrinkage, and holds store size fixed. A hospital finds that wards with more nurses have more incidents, and holds the number and severity of patients fixed. A marketing team finds that customers who open more emails spend more, and holds their past spending fixed. In each case the simple correlation mixes the effect of interest with the effect of size or busyness, and the partial correlation compares like with like.' },
-    { case: 'Ana’s note to her operations manager reads: “Over the 612 café-days, more peak barista hours went with longer waits (r = +0.53), because both rise on busy days. Holding the day’s transactions fixed, the link reverses: on days with the same trade, more barista hours went with shorter waits (partial r = −0.72, p below 0.001), in both cafés, and most clearly on days with more than 100 transactions. I did not hold the load per barista fixed, because it is how baristas shorten queues. This is observational, so before changing the roster I would like to trial it.”' },
+    { case: 'Ana’s note to her operations manager reads: “Over the 612 café-days, more peak barista hours went with longer waits (r = +0.53), because both rise on busy days. Holding the day’s transactions fixed, the link reverses: on days with the same trade, more barista hours went with shorter waits (partial r = −0.72, p below 0.001), in both cafés, and most clearly on days with more than 100 transactions. I did not hold the load per barista fixed, because it is the route by which baristas would shorten queues. This is observational, so before changing the roster I would like to trial it.”' },
     { p: 'Her note does what a good partial-correlation report does. It gives the simple and the partial correlation side by side, so the reader sees what holding transactions fixed changed. It names the control and explains why it is a confounder, and names the variable deliberately not held fixed and why. It shows where the link is strong and where it is weak rather than relying on one number. And it stops short of a causal claim, which the last lesson of the module takes up.' },
     { p: 'In regression (B06) the same idea appears as a coefficient: the slope on barista hours in a model that also contains transactions measures the change in waits per extra barista hour at a given level of trade. Partial correlation gives the strength of that link on the −1 to 1 scale; regression gives its size in minutes per hour. Both depend on the same choice of controls.' },
   ],

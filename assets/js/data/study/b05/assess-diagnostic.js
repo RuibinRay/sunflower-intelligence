@@ -9,7 +9,7 @@
 // line raising r (outliers-and-influence); the range-restriction formula from a restricted to the full range
 // (nonlinear-and-restricted); which correlation answers a within-group question when pooling reverses the sign
 // (groups-and-simpsons-paradox). Module 4: counting Holm rejections (correlation-matrices); the first-order partial
-// correlation from three café correlations (partial-correlation); which design shows cause (correlation-and-causation).
+// correlation of barista hours and waits from three café correlations (partial-correlation); which design shows cause (correlation-and-causation).
 // Modules 1–3 use only mc, num and formula items, which score 0 or 1, so that the route can’t be passed on part marks;
 // module 4 is not used for routing. New questions, not copies of lesson exercises, module tests, the final or the
 // project, and nothing from the project’s data or question. Café figures come from case.js (the corrected log);
@@ -62,7 +62,7 @@ const twoSidedZ = (z) => 2 * normCdf(-Math.abs(z));
 const PB = { n: 25, rho: 0.2 };
 const pbPower = C.power(PB.rho, PB.n), pbN = C.sampleSize(PB.rho);
 
-// Sedgemoor Garden Centre (fictional): leaflets delivered (thousands) and weekend visitors (hundreds), nine weekends,
+// Sedgemoor Garden Centre (fictional): coach parties booked and weekend visitors (hundreds), nine weekends,
 // then a tenth weekend far to the right, on the nine weekends’ least-squares line
 const LEAF = [3, 4, 5, 6, 7, 8, 9, 10, 11], VIS = [14, 9, 15, 11, 17, 12, 18, 16, 13];
 const lm = (a) => a.reduce((s, v) => s + v, 0) / a.length;
@@ -79,9 +79,11 @@ const BL = [0.001, 0.004, 0.0065, 0.009, 0.03, 0.041, 0.2, 0.62];
 const nBelow = (a, q = 0.05) => a.filter((p) => p < q).length;
 const blHolm = nBelow(C.adjust(BL, 'holm')), blBonf = nBelow(C.adjust(BL, 'bonferroni')), blBH = nBelow(C.adjust(BL, 'fdr_bh')), blRaw = nBelow(BL);
 
-// café correlations for the partial (612 days)
-const R3 = { hs: rnd(DERIVED.staffSales.r, 3), ht: rnd(C.pearson(column('peak_staff_hours'), T).r, 3), ts: rnd(DERIVED.transSales.r, 3) };
-const hsGivenT = C.partialFromR(R3.hs, R3.ht, R3.ts);
+// Millbrook’s 306 days: peak barista hours, the peak wait and transactions
+const MB = { cafe: 'Millbrook' };
+const mbH = column('peak_staff_hours', MB), mbW = column('peak_wait_min', MB), mbT = column('transactions', MB);
+const R3 = { hw: rnd(C.pearson(mbH, mbW).r, 3), ht: rnd(C.pearson(mbH, mbT).r, 3), tw: rnd(C.pearson(mbT, mbW).r, 3) };
+const hwGivenT = C.partialFromR(R3.hw, R3.ht, R3.tw);
 
 export const items = [
   // ================================================================ Module 1: seeing relationships
@@ -188,10 +190,10 @@ export const items = [
   // ================================================================ Module 3: when correlations mislead
   {
     id: 'b05-dg-7', lesson: 'outliers-and-influence', type: 'mc', kind: 'conceptual',
-    prompt: `Sedgemoor Garden Centre (fictional) delivered between 3,000 and 11,000 leaflets before each of nine weekends; leaflets and weekend visitors correlate at r = ${fx(r9)}. Before a tenth weekend it delivers 30,000, and the visitors land exactly on the straight line that the nine weekends suggest. What happens to r when the tenth weekend is added?`,
+    prompt: `Sedgemoor Garden Centre (fictional) had between 3 and 11 coach parties booked on each of nine weekends; coach parties and weekend visitors correlate at r = ${fx(r9)}. A flower show on the tenth weekend brings 30 coach parties, and the visitors land exactly on the straight line that the nine weekends suggest. What happens to r when the tenth weekend is added?`,
     options: [
       `It rises to about ${fx(r10)}: far out and on the line, the point adds a large positive product of z-scores.`,
-      'It falls, because the tenth weekend is an outlier in leaflets, and an outlier on either variable always weakens a correlation.',
+      'It falls, because the tenth weekend is an outlier in coach parties, and an outlier on either variable always weakens a correlation.',
       'It barely changes, because one weekend out of ten contributes only about a tenth of the products that make up r.',
       'It rises to exactly 1: a point placed exactly on the nine weekends’ line pulls the whole fit onto that line.',
     ],
@@ -201,7 +203,7 @@ export const items = [
       2: 'Points don’t carry equal weight in r: one far from the means contributes a product of z-scores many times the others’.',
       3: 'The other nine points still scatter around the line, so r stays below 1; the new point only makes that scatter look small against the stretched range.',
     },
-    solution: `Before: r = ${fx(r9, 3)}. The tenth weekend (30 thousand leaflets, ${fx(vis10 * 100, 0)} visitors, on the nine weekends’ least-squares line) has z-scores of about ${fx((30 - lm([...LEAF, 30])) / sd([...LEAF, 30]))} and ${fx((vis10 - lm([...VIS, vis10])) / sd([...VIS, vis10]))}, so it adds a large positive product, and r becomes ${fx(r10, 3)}. One point now decides most of r: report r with and without it, and note that a link seen across 3,000–11,000 leaflets is being extended to 30,000 on the strength of one weekend.`,
+    solution: `Before: r = ${fx(r9, 3)}. The tenth weekend (30 coach parties, ${fx(vis10 * 100, 0)} visitors, on the nine weekends’ least-squares line) has z-scores of about ${fx((30 - lm([...LEAF, 30])) / sd([...LEAF, 30]))} and ${fx((vis10 - lm([...VIS, vis10])) / sd([...VIS, vis10]))}, so it adds a large positive product, and r becomes ${fx(r10, 3)}. One point now decides most of r: report r with and without it, and note that a link seen across 3–11 coach parties is being extended to 30 on the strength of one weekend.`,
   },
   {
     id: 'b05-dg-8', lesson: 'nonlinear-and-restricted', type: 'num', kind: 'numerical',
@@ -250,16 +252,16 @@ export const items = [
   },
   {
     id: 'b05-dg-11', lesson: 'partial-correlation', type: 'num', kind: 'numerical',
-    prompt: `Across the 612 café-days, peak barista hours and sales correlate at ${fx(R3.hs, 3)}, peak barista hours and transactions at ${fx(R3.ht, 3)}, and transactions and sales at ${fx(R3.ts, 3)}. What is the correlation between peak barista hours and sales holding transactions fixed? Give two decimal places.`,
-    answer: rnd(hsGivenT, 2),
-    check: () => (R3.hs - R3.ht * R3.ts) / Math.sqrt((1 - R3.ht ** 2) * (1 - R3.ts ** 2)),
+    prompt: `Over Millbrook’s 306 days, peak barista hours and the peak wait correlate at ${fx(R3.hw, 3)}, peak barista hours and transactions at ${fx(R3.ht, 3)}, and transactions and the peak wait at ${fx(R3.tw, 3)}. What is the correlation between peak barista hours and the peak wait holding transactions fixed? Give two decimal places.`,
+    answer: rnd(hwGivenT, 2),
+    check: () => (R3.hw - R3.ht * R3.tw) / Math.sqrt((1 - R3.ht ** 2) * (1 - R3.tw ** 2)),
     unit: '', places: 2, tol: 0.006,
     wrong: [
-      { value: rnd(R3.hs - R3.ht * R3.ts, 2), say: 'That is the numerator. Divide by √((1 − r_hT²)(1 − r_TS²)).' },
-      { value: rnd((R3.hs - R3.ht * R3.ts) / ((1 - R3.ht ** 2) * (1 - R3.ts ** 2)), 2), say: 'The denominator is the square root of (1 − r_hT²)(1 − r_TS²).' },
-      { value: R3.hs, say: `${fx(R3.hs, 3)} is the simple correlation. Holding transactions fixed removes the part of it that comes from busy days having both more baristas and more sales.` },
+      { value: rnd(R3.hw - R3.ht * R3.tw, 2), say: 'That is the numerator. Divide by √((1 − r_hT²)(1 − r_TW²)).' },
+      { value: rnd((R3.hw - R3.ht * R3.tw) / ((1 - R3.ht ** 2) * (1 - R3.tw ** 2)), 2), say: 'The denominator is the square root of (1 − r_hT²)(1 − r_TW²).' },
+      { value: R3.hw, say: `${fx(R3.hw, 3)} is the simple correlation. Holding transactions fixed compares days with the same trade.` },
     ],
-    solution: `(r_hS − r_hT r_TS) ÷ √((1 − r_hT²)(1 − r_TS²)) = (${fx(R3.hs, 3)} − ${fx(R3.ht, 3)} × ${fx(R3.ts, 3)}) ÷ √((1 − ${fx(R3.ht ** 2, 4)})(1 − ${fx(R3.ts ** 2, 4)})) = ${fx(R3.hs - R3.ht * R3.ts, 4)} ÷ ${fx(Math.sqrt((1 - R3.ht ** 2) * (1 - R3.ts ** 2)), 4)} ≈ ${fx(hsGivenT, 2)}. On days with the same number of transactions, more barista hours went with slightly lower sales, not higher: the ${fx(R3.hs, 2)} came from the manager rostering more baristas on busy days. (Pooling the cafés is fine for this description; the case’s planted relationship is that busy days bring both.)`,
+    solution: `(r_hW − r_hT r_TW) ÷ √((1 − r_hT²)(1 − r_TW²)) = (${fx(R3.hw, 3)} − ${fx(R3.ht, 3)} × ${fx(R3.tw, 3)}) ÷ √((1 − ${fx(R3.ht ** 2, 4)})(1 − ${fx(R3.tw ** 2, 4)})) = ${fx(R3.hw - R3.ht * R3.tw, 4)} ÷ ${fx(Math.sqrt((1 - R3.ht ** 2) * (1 - R3.tw ** 2)), 4)} ≈ ${fx(hwGivenT, 2)}. The simple correlation is positive because busy days bring both more baristas and longer waits; on days with the same number of transactions, more baristas went with shorter waits.`,
   },
   {
     id: 'b05-dg-12', lesson: 'correlation-and-causation', type: 'mc', kind: 'applied',

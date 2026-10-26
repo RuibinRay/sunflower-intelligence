@@ -1,5 +1,5 @@
 // outliers-and-influence.ex.js — B05 · Outliers and influence: widgets, practice and the knowledge check (answer keys
-// live here). Café data from case.js (the raw log keeps the footfall slip); Brightwater Bakery and the other small
+// live here). Café data from case.js (the raw log keeps the footfall slip); Mossbank Bakery and the other small
 // datasets are fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num items recompute
 // their answers in `check`.
 import { column, CAFE_ROWS, CAFE_COLUMNS, SLIP } from './case.js?v=20';
@@ -43,7 +43,7 @@ const FR = column('footfall', { raw: true }), TR = column('transactions'), CAFE 
 const H = { cafe: 'Harbourside' };
 const hF = column('footfall', H), hW = column('peak_wait_min', H), hFest = column('festival', H), hDate = column('date', H);
 
-// ---------------------------------------------------------------- Brightwater Bakery (fictional): ten days
+// ---------------------------------------------------------------- Mossbank Bakery (fictional): ten days
 const BAKE = [
   ['Mon', 212, 118], ['Tue', 198, 104], ['Wed', 225, 131], ['Thu', 1840, 126], ['Fri', 260, 151],
   ['Sat', 341, 187], ['Sun', 302, 166], ['Mon', 205, 239], ['Tue', 191, 99], ['Wed', 219, 122],
@@ -129,7 +129,7 @@ export const guided = [
         options: [
           'Correct it to 256, log the fix and its source, and recompute r.',
           'Delete the 14 September row, since a point that lowers r this much can’t be trusted.',
-          'Keep 2,566 and report r as it is, because changing data after seeing a result is never allowed.',
+          'Keep 2,566 and report r as it is, since changing a value after seeing the result could look like tuning the data.',
           'Switch to Spearman’s ρ, which is robust to outliers, and leave the footfall as typed.',
         ],
         answer: 0,
@@ -153,7 +153,6 @@ export const guided = [
     ],
     categories: ['Far out in x and y, on the trend', 'Far out in x, off the trend', 'Far out in y only', 'Ordinary on each variable, unusual together'],
     answer: [0, 1, 2, 3],
-    fixed: true,
     hints: ['Compare each value with the usual range of its own variable first, then ask whether the pair follows the “about half buy” pattern.', 'Footfall above 500 is extreme; transactions near 290 are extreme. 300 visitors and 30 transactions are each ordinary.'],
     feedback: {
       0: 'Both values are extreme, but 293 of 620 is about half: the point continues the pattern and raises r.',
@@ -185,7 +184,7 @@ export const guided = [
     prompt: 'Across Harbourside’s 306 days, footfall and the peak wait have r = 0.67; without the five festival days, which are confirmed by the till and rostered separately, r = 0.48. Ana is writing the rule for ordinary days’ rosters. Which report is best?',
     options: [
       'Use 0.48 for the ordinary-day rule and give 0.67 for all days beside it, saying the festivals account for the difference.',
-      'Use 0.67 alone, because the festival days are genuine, and genuine data must never be set aside or reported separately for any purpose.',
+      'Use 0.67 alone, because the festival days are genuine days of trading and setting them aside would understate how busy the café can get.',
       'Use 0.48 and leave the festival days out of the report, since they would only confuse readers of the rule.',
       'Use the average of the two, 0.58, which balances the festival days against the ordinary ones.',
     ],
@@ -215,7 +214,7 @@ export const independent = [
       { formula: '=CORREL(RANK.AVG(B2:B21,B2:B21),RANK.AVG(C2:C21,C2:C21,1))', say: 'One column is ranked in descending order and the other ascending, which flips the sign. Rank both the same way.' },
       { formula: '=CORREL(B2:B21,C2:C21)', say: 'That is Pearson’s r of the values. Rank both columns first.' },
     ],
-    solution: `<x>=CORREL(RANK.AVG(B2:B21,B2:B21),RANK.AVG(C2:C21,C2:C21))</x> = ${fx(sepRho)}, against Pearson’s ${fx(sepRaw)}. The slip becomes the top rank instead of a value nine times too large, so ρ suffers far less; but in only 20 days it still falls from ${fx(sepRhoClean)} (corrected) to ${fx(sepRho)}. Ranks are a check, not a substitute for correcting the error.`,
+    solution: `<x>=CORREL(RANK.AVG(B2:B21,B2:B21),RANK.AVG(C2:C21,C2:C21))</x> = ${fx(sepRho)}, against Pearson’s ${fx(sepRaw)}. The slip becomes the top rank instead of a value ten times too large, so ρ suffers far less; but in only 20 days it still falls from ${fx(sepRhoClean)} (corrected) to ${fx(sepRho)}. Ranks are a check, not a substitute for correcting the error.`,
   },
   {
     id: 'b05-out-i2', type: 'num', kind: 'numerical',
@@ -251,7 +250,7 @@ export const independent = [
     prompt: 'Ten fictional points rise together with r = 0.96. An eleventh point is added far to the right of the others, at exactly the height the pattern would lead you to expect. What happens to r?',
     options: [
       'It rises, because the new point adds a large positive product of z-scores and stretches the pattern.',
-      'It falls, because any outlier inflates a standard deviation, and that always weakens the correlation.',
+      'It falls, because the new point inflates the standard deviation of x, which weakens the correlation.',
       'It stays the same, because a point lying exactly on the pattern of the other ten points adds nothing new.',
       'It becomes negative, because the point is more than three standard deviations from the mean.',
     ],
@@ -265,7 +264,7 @@ export const independent = [
   },
   {
     id: 'b05-out-i5', type: 'rows', kind: 'applied',
-    prompt: 'Brightwater Bakery (fictional) logs its visitors and transactions. Select every row that fails a plausibility check and should be checked against the source before any correlation is computed.',
+    prompt: 'Mossbank Bakery (fictional) logs its visitors and transactions. Select every row that fails a plausibility check and should be checked against the source before any correlation is computed.',
     data: { table: { head: ['Day', 'Visitors', 'Transactions'], rows: BAKE.map((r) => [r[0], r[1].toLocaleString('en-US'), String(r[2])]), index: 1 } },
     answer: [3, 7],
     solution: 'Row 4 (Thursday) has 1,840 visitors but only 126 transactions, a conversion of about 7% when the other days convert about 52–58%: probably a mistyped 184. Row 8 (Monday) has 239 transactions from 205 visitors, more sales than people, which is impossible unless people bought twice: probably a mistyped 139 or similar. Saturday’s 341 visitors and 187 transactions is the busiest day but converts like the others, so it is genuine-looking and stays.',
@@ -274,7 +273,7 @@ export const independent = [
     id: 'b05-out-i6', type: 'mc', kind: 'applied',
     prompt: 'A regional manager proposes a rule for the cafés’ monthly reports: “Before computing any correlation, automatically delete every row with |z| > 3 on either variable.” What is the main problem with the rule?',
     options: [
-      'It deletes genuine extremes such as festival days, misses errors that are ordinary on each variable, and can’t flag anything in small samples.',
+      'It deletes genuine extremes, misses errors that are unusual only in combination, and flags nothing in small samples.',
       'It is too lenient: the threshold should be |z| > 2, so that more of the unusual rows are caught before each report.',
       'It is fine for errors but should also delete rows where the two variables move against the overall pattern.',
       'It changes the number of rows, so the correlations will no longer be comparable from month to month.',
@@ -336,7 +335,7 @@ export const check = [
     prompt: 'Choose the right action for each unusual value in a café log.',
     items: [
       'Footfall typed as 2,566; the door counter’s export for that day says 256.',
-      'A festival day with four times the usual footfall, confirmed by the till and the roster.',
+      'A festival day with about four times an ordinary day’s footfall, confirmed by the till and the roster.',
       'A wait of −3.0 minutes; the manager’s stopwatch notes for that morning were thrown away.',
       'A genuine quiet day whose removal would make the correlation Ana hoped for look stronger.',
     ],
@@ -371,15 +370,15 @@ export const check = [
     prompt: 'A leave-one-out analysis of Harbourside’s footfall and peak waits shows that removing 29 May (Harbour Days, 620 visitors, a 15.3-minute wait) changes r from 0.673 to 0.595, more than any other day. A colleague says: “Then 29 May must be a recording error; drop it.” How should Ana respond?',
     options: [
       'Influence isn’t error: check 29 May against the till and roster, and if it is genuine keep it and report r both ways.',
-      'Agree, since the most influential point in a leave-one-out analysis is by definition a recording error that should be removed.',
+      'Agree, since a single day that moves r by almost 0.08 is more likely to be a recording slip than a real day.',
       'Agree only if r without 29 May is closer to the value she expected before looking at the data.',
-      'Disagree, because points should never be removed from a dataset under any circumstances whatsoever.',
+      'Disagree, and report r = 0.673 as the only figure, because a genuine day belongs in the analysis.',
     ],
     answer: 0,
     feedback: {
       1: 'Influence measures how much a point matters. Genuine extremes are often the most influential points.',
       2: 'That is choosing the data to fit an expectation.',
-      3: 'Errors with a known correct value should be corrected, and impossible values with no source can be set to missing. Some changes are right; the point is to base them on evidence.',
+      3: 'Keeping the day is right, but giving only 0.673 hides how much one day moves the result. Report both figures and say why they differ.',
     },
     solution: 'A large leave-one-out change says 29 May matters, not that it is wrong. Ana checks it at the source: Harbour Days really brought 620 people, so the day stays. Because it moves r noticeably, she reports r with all days (0.67) and with the festival days set aside (0.48), saying why.',
   },

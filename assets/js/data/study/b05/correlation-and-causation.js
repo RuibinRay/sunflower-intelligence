@@ -5,23 +5,24 @@
 import { DERIVED as D, column } from './case.js?v=20';
 import * as C from '../../../core/correlation.js?v=20';
 import { mean } from '../../../core/stats.js?v=20';
+import { tTest2 } from '../../../core/inference.js?v=20';
 
 // ---------------------------------------------------------------- two trends at Harbourside
 const H = { cafe: 'Harbourside' };
-const hDate = column('date', H), hMem = column('loyalty_members', H), hHigh = column('high_f', H), hDay = column('day', H);
+const hTrans = column('transactions', H), hDate = column('date', H), hMem = column('loyalty_members', H), hHigh = column('high_f', H), hDay = column('day', H);
 const win = (a, b) => hDate.map((_, i) => i).filter((i) => hDate[i] >= a && hDate[i] <= b);
 const SPR = win('2027-03-01', '2027-07-31'), AUT = win('2027-08-01', '2027-12-31'), ALL = hDate.map((_, i) => i);
 const pick = (arr, I) => I.map((i) => arr[i]);
 const trend = (I) => {
   const m = pick(hMem, I), t = pick(hHigh, I), d = pick(hDay, I);
   const su = m.slice(1).map((v, k) => v - m[k]);
-  return { r: C.pearson(m, t).r, mDay: C.pearson(m, d).r, tDay: C.pearson(t, d).r, part: C.partial(m, t, [d]), signups: C.pearson(su, t.slice(1)) };
+  const tr = pick(hTrans, I).slice(1);
+  return { r: C.pearson(m, t).r, mDay: C.pearson(m, d).r, tDay: C.pearson(t, d).r, part: C.partial(m, t, [d]), signups: C.pearson(su, t.slice(1)), suDay: C.partial(su, t.slice(1), [d.slice(1)]), suTrans: C.partial(su, t.slice(1), [tr]) };
 };
 const TS = trend(SPR), TA = trend(AUT), TY = trend(ALL);
 
 // ---------------------------------------------------------------- staffing and sales; waiting-time gradient
 const S = column('peak_staff_hours'), SA = column('sales'), T = column('transactions'), LOAD = column('peak_load'), W = column('peak_wait_min');
-const staffSalesGivenT = C.partial(S, SA, [T]);
 const GRAD = [[0, 7], [7, 8], [8, 9], [9, 10], [10, 11], [11, 12], [12, 100]].map(([a, b]) => { const i = LOAD.map((_, k) => k).filter((k) => LOAD[k] >= a && LOAD[k] < b); return { a, b, n: i.length, wait: mean(i.map((k) => W[k])) }; });
 
 // ---------------------------------------------------------------- rain at Harbourside, wet and dry days
@@ -29,12 +30,19 @@ const hRain = column('rain_in', H), hSales = column('sales', H), hWk = column('w
 const salesWhere = (we, wet) => mean(hSales.filter((_, i) => hWk[i] === we && (wet ? hRain[i] >= 0.25 : hRain[i] === 0)));
 const nWhere = (we, wet) => hSales.filter((_, i) => hWk[i] === we && (wet ? hRain[i] >= 0.25 : hRain[i] === 0)).length;
 const RAIN = { wdDry: salesWhere(false, false), wdWet: salesWhere(false, true), nWdDry: nWhere(false, false), nWdWet: nWhere(false, true) };
+const wetI = hSales.map((_, i) => i).filter((i) => !hWk[i] && hRain[i] >= 0.25), dryI = hSales.map((_, i) => i).filter((i) => !hWk[i] && hRain[i] === 0);
+const RT = tTest2(dryI.map((i) => hSales[i]), wetI.map((i) => hSales[i]));
+const RB = { months: new Set(wetI.map((i) => hDate[i].slice(5, 7))).size, highWet: mean(wetI.map((i) => hHigh[i])), highDry: mean(dryI.map((i) => hHigh[i])) };
+// consistency: partial r of barista hours and waits, holding transactions fixed, in each month (both cafés)
+const ALLD = column('date');
+const MONTHLY = ['03', '04', '05', '06', '07', '08', '09', '10', '11', '12'].map((mo) => { const ix = ALLD.map((_, i) => i).filter((i) => ALLD[i].slice(5, 7) === mo); return C.partial(ix.map((i) => S[i]), ix.map((i) => W[i]), [ix.map((i) => T[i])]).r; });
 
 // ---------------------------------------------------------------- June at Harbourside: 28 tests (from the correlation-matrices lesson)
 const JI = column('date').map((d, i) => i).filter((i) => column('date')[i].slice(5, 7) === '06' && column('cafe')[i] === 'Harbourside');
 const JCOLS = ['high_f', 'rain_in', 'footfall', 'transactions', 'sales', 'iced_share', 'peak_staff_hours', 'peak_wait_min'];
 const jsig = (m) => { const X = C.matrix(Object.fromEntries(JCOLS.map((n) => [n, JI.map((i) => column(n)[i])])), { adjustMethod: m }); const Q = X.pAdj || X.p; let k = 0; for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) if (Q[i][j] < 0.05) k++; return k; };
 const JUNE = { none: jsig(null), bonferroni: jsig('bonferroni'), bh: jsig('fdr_bh') };
+const JH = C.matrix(Object.fromEntries(JCOLS.map((n) => [n, JI.map((i) => column(n)[i])])), { adjustMethod: 'holm' });
 const monthMean = (mo) => mean(hHigh.filter((_, i) => hDate[i].slice(5, 7) === mo));
 
 // ---------------------------------------------------------------- chance: 40 metrics
@@ -43,7 +51,7 @@ const m40 = 40 * 0.05, p40 = 1 - 0.95 ** 40;
 // ---------------------------------------------------------------- figure: members and the high temperature through the year
 const f1 = (x) => Math.round(x * 10) / 10;
 function trendFigure() {
-  const Wd = 640, Ht = 260, L = 50, R = 60, Tp = 20, Bt = 40, n = hMem.length;
+  const Wd = 640, Ht = 310, L = 50, R = 60, Tp = 70, Bt = 40, n = hMem.length;
   const X = (i) => L + (i / (n - 1)) * (Wd - L - R);
   const Yt = (v) => Tp + (1 - (v - 20) / 80) * (Ht - Tp - Bt), Ym = (v) => Tp + (1 - v / 1000) * (Ht - Tp - Bt);
   const smooth = hHigh.map((_, i) => mean(hHigh.slice(Math.max(0, i - 3), Math.min(n, i + 4))));
@@ -56,8 +64,9 @@ function trendFigure() {
   svg += `<line x1="${f1(X(split))}" x2="${f1(X(split))}" y1="${Tp}" y2="${Ht - Bt}" stroke="var(--ink-3)" stroke-width="1"/>`;
   svg += `<text x="${f1(X(SPR.length / 2))}" y="${Ht - Bt + 18}" text-anchor="middle" font-size="11" fill="var(--ink-3)">March–July: both rise</text>`;
   svg += `<text x="${f1(X(SPR.length + AUT.length / 2))}" y="${Ht - Bt + 18}" text-anchor="middle" font-size="11" fill="var(--ink-3)">August–December: members rise, temperature falls</text>`;
-  svg += `<text x="${f1(X(60))}" y="${f1(Yt(smooth[60])) - 10}" font-size="11">High temperature (7-day average, left axis)</text>`;
-  svg += `<text x="${f1(X(205))}" y="${f1(Ym(hMem[205])) - 10}" font-size="11">Loyalty members (dashed, right axis)</text>`;
+  // legend above the plot, clear of both lines
+  svg += `<line x1="${L}" x2="${L + 40}" y1="20" y2="20" stroke="var(--series-2)" stroke-width="2"/><text x="${L + 48}" y="24" font-size="13">High temperature, 7-day average (left axis, °F)</text>`;
+  svg += `<line x1="${L}" x2="${L + 40}" y1="44" y2="44" stroke="var(--series-1)" stroke-width="2.5" stroke-dasharray="7 3"/><text x="${L + 48}" y="48" font-size="13">Loyalty members, running total (right axis)</text>`;
   return `${svg}</svg>`;
 }
 
@@ -82,16 +91,16 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: 'Ana has three questions from her matrix and her partial correlations, and a new one from her marketing assistant: Harbourside’s loyalty-app members and the day’s high temperature correlate at +0.87 from March to July. “Warm weather gets people to sign up,” the assistant says, “so we should push the app hardest in summer.” In August–December the same two numbers correlate at −0.90. Ana wants to know which of her correlations she can act on.' },
+    { case: 'Ana has three questions from her matrix and her partial correlations, and a new one from her assistant: Harbourside’s loyalty-app members and the day’s high temperature correlate at +0.87 from March to July. “Warm weather gets people to sign up,” the assistant says, “so we should push the app hardest in summer.” In August–December the same two numbers correlate at −0.90. Ana wants to know which of her correlations she can act on.' },
 
     { h: 'Why correlation is not causation' },
     { p: 'To say that x causes y is to say that changing x would change y: if Ana rostered one more barista on a given morning, the wait that morning would be shorter than it would otherwise have been. That “otherwise” can never be observed on the same morning, so causal claims are always inferences. A correlation shows only that x and y moved together in the data. OpenStax’s business statistics text puts it plainly: “Strong correlation does not suggest that X1 causes X2 or X2 causes X1.” Six other explanations can produce a correlation, and a causal claim has to rule them out.' },
 
     { h: 'Six explanations other than cause' },
     { ol: [
-      '<b>Chance.</b> With few rows, sizeable correlations arise from noise; with many tests, some cells are “significant” by luck. The correlation-matrices lesson showed 18 of 28 June cells at Harbourside passing an unadjusted test, and only 10 to 16 surviving adjustment.',
-      '<b>Confounding.</b> A third variable drives both. Busy days bring both more baristas and longer waits (r = +0.53), so the simple correlation said the opposite of the truth until transactions were held fixed (−0.72).',
-      '<b>Reverse causation.</b> y drives x, not x drives y. Peak barista hours correlate with sales at 0.75, but the managers roster for the trade they expect, so expected sales set the roster. Holding the day’s transactions fixed, barista hours and sales correlate at −0.13: baristas don’t bring customers in.',
+      '<b>Chance.</b> With few rows, sizeable correlations arise from noise; with many tests, some cells are “significant” by luck. The correlation-matrices lesson showed 18 of 28 June cells at Harbourside passing an unadjusted test, and only 10 to 16 surviving adjustment. Adjustment changes what can be <i>claimed</i>, not what is true: some cells that fail it, such as the high temperature and footfall, are links the case planted, real but too weak to establish on 30 days.',
+      '<b>Confounding.</b> A third variable drives both. Busy days bring both more baristas and longer waits (r = +0.53), so the simple correlation said the opposite of the truth until transactions were held fixed (−0.72). Peak barista hours also correlate with sales at 0.75, because the managers roster for the trade they expect: anticipated trade drives both the roster and the till. The case was built so that baristas don’t bring customers in.',
+      '<b>Reverse causation.</b> y drives x, not x drives y. Across a chain’s stores, price cuts go with falling sales, because the stores whose sales slipped are the ones told to cut prices. Read the other way, the correlation would say that cutting prices loses sales.',
       '<b>Common trends.</b> Two series that both drift over time correlate whatever their connection. Loyalty members only ever rise; temperature rises to July and falls after. Together they correlate at +0.87 in spring and −0.90 in autumn.',
       '<b>Selection.</b> The rows were chosen in a way connected to both variables. Studying only the cafés that survived, the customers who answered a survey, or the days someone complained creates links that the full population doesn’t have (the collider of the partial-correlation lesson).',
       '<b>Pooled groups.</b> Two groups with different levels, pooled, can show a correlation that neither has inside it, or the reverse: footfall and average ticket are −0.32 pooled but positive inside each café.',
@@ -102,30 +111,30 @@ export default {
     { figure: {
       svg: trendFigure(),
       caption: 'Harbourside, March–December 2027: the day’s high temperature (7-day average) and the cumulative number of loyalty-app members. Members rise all year; the temperature peaks in July. Their correlation is +0.87 before August and −0.90 after.',
-      alt: 'A line chart over the ten months from March to December. A solid line, the high temperature, rises from a March average of about 53°F to a July average of about 84°F and falls to about 43°F in December. A dashed line, loyalty members, climbs from near zero in March to 877 at the end of December, fastest in the summer months. A vertical line at the start of August splits the chart; the left part is labelled “March–July: both rise” and the right part “August–December: members rise, temperature falls”.',
+      alt: 'A line chart over the ten months from March to December. A solid line, the high temperature, rises from a March average of about 53°F to a July average of about 84°F and falls to about 43°F in December. A legend above the chart names the two lines. A dashed line, loyalty members, climbs from near zero in March to 877 at the end of December, fastest in the summer months. A vertical line at the start of August splits the chart; the left part is labelled “March–July: both rise” and the right part “August–December: members rise, temperature falls”.',
     } },
     { p: 'The assistant’s +0.87 comes entirely from time. Members are a running total, so they rise every day whatever the weather; in spring the temperature also rises, so the two correlate positively; in autumn it falls, so they correlate negatively. Over the whole year the two trends partly cancel (−0.13). A number that flips sign when the calendar moves is telling you about the calendar.' },
-    { p: 'The fix is to ask the question of the right quantity. Ana’s question is whether warm days bring sign-ups, so compare each day’s new members (today’s total minus yesterday’s) with the day’s high. That correlation is +0.35 in spring and +0.39 in autumn: modest, positive and the same in both halves. Warm days do go with more sign-ups at Harbourside, probably because they bring more customers, and about 4% of transactions sign up. The trend made the link look stronger than it is in spring and reversed it in autumn.' },
+    { p: 'The fix is to ask the question of the right quantity. Ana’s question is whether warm days bring sign-ups, so compare each day’s new members (today’s total minus yesterday’s) with the day’s high. That correlation is +0.35 in spring and +0.39 in autumn: modest and positive in both halves, though not equal. Treat it as an upper figure. Daily sign-ups still drift with the season (holding the day number fixed, the correlation falls to 0.26 in spring and 0.11 in autumn), and the route the case planted runs from warm days to more customers to more sign-ups, about 4% of transactions: holding the day’s transactions fixed leaves only 0.09 in spring and 0.12 in autumn. Warm days go with somewhat more sign-ups at Harbourside because they bring customers. The running-total trend made the link look far stronger than it is in spring and reversed it in autumn.' },
 
     { h: 'What would show causation' },
-    { p: 'The strongest evidence comes from changing x on purpose. In a <g>randomised experiment</g> the analyst decides which units get the change by chance, a coin or a random number for each, so that nothing else (busy days, weather, the manager’s judgement) can line up with it. OpenStax’s introductory text describes how random assignment spreads lurking variables evenly across the groups. B04’s A/B tests are randomised experiments. Ana could flip a coin each weekday morning to decide whether to add a barista hour at the peak, and after eight weeks compare waits on extra-barista days with the rest.' },
+    { p: 'The strongest evidence comes from changing x on purpose. In a <g>randomised experiment</g> the analyst decides which units get the change by chance, a coin or a random number for each, so that nothing else (busy days, weather, the manager’s judgement) can line up with it. OpenStax’s introductory text describes how random assignment spreads lurking variables evenly across the groups. B04’s A/B tests are randomised experiments. Ana could flip a coin for each weekday, before the roster is drawn up, to decide whether to add a barista hour at the peak, and after eight weeks compare waits on extra-barista days with the rest.' },
     { p: 'When an experiment is impossible or too costly, other kinds of evidence each rule out some of the six explanations:' },
     { list: [
-      '<b>A <g>natural experiment</g>:</b> something outside anyone’s choice changes x for some units and not others. Rain is not chosen by the cafés, and on Harbourside weekdays with at least a quarter-inch of rain, sales averaged $206 against $296 on dry weekdays. The managers didn’t plan the rain, so the gap isn’t their roster or their promotions.',
+      '<b>A <g>natural experiment</g>:</b> something outside anyone’s choice changes x for some units and not others. Rain is not chosen by the cafés. On the 30 Harbourside weekdays with a quarter-inch of rain or more, sales averaged $206, against $296 on the 148 dry weekdays: a difference of $90 (95% interval $57 to $123, Welch’s t test). The comparison is fair only if wet days are otherwise like dry ones. Real rain clusters by season, so check: here the wet weekdays fall in every month, and their mean high, 66.6°F, is close to the dry weekdays’ 63.7°F.',
       '<b>A <g>dose–response relationship</g>:</b> more of x goes with more of y, step by step. Peak waits average about 1.6 minutes at loads under seven transactions per barista hour, 3.1 at nine to ten, and 9.4 at twelve or more. A gradient is harder for chance to produce than a single difference, though a confounder can produce one too.',
       '<b>Timing:</b> the cause comes first. A day’s weather is fixed before its sales, so sales can’t cause the weather; the roster is set before the day, from the expected trade, which is why the roster can follow expected sales rather than cause them.',
-      '<b>Consistency:</b> the same link in different places, periods and data. The negative partial correlation of barista hours and waits holds in both cafés, in every band of trade and in single months.',
+      '<b>Consistency:</b> the same link in different places, periods and data. The negative partial correlation of barista hours and waits holds in both cafés, in every band of trade and in every month with both cafés together (−0.54 to −0.84).',
       '<b>Mechanism:</b> a plausible route from x to y. More baristas serve more customers per minute, so queues clear faster; that is how queues work. A correlation with no conceivable mechanism, such as members and temperature, deserves extra suspicion.',
     ] },
 
     { h: 'What Ana can act on' },
-    { p: 'Not every decision needs causation. To <i>predict</i>, a stable correlation is enough: warm days go with a high iced share (r = 0.94), so stocking ice and cups by the forecast works whether or not anyone understands why. To <i>intervene</i>, changing x to change y, the correlation must reflect cause. Rostering more baristas to shorten waits is an intervention, supported by the partial correlation, the gradient and the mechanism, and best confirmed by a trial. Pushing the loyalty app in summer “because warm weather drives sign-ups” rests on a trend, though daily sign-ups do follow warm, busy days modestly.' },
+    { p: 'Not every decision needs causation. To <i>predict</i>, a stable correlation is enough: warm days go with a high iced share (r = 0.94), so stocking ice and cups by the forecast works whether or not anyone understands why. To <i>intervene</i>, changing x to change y, the correlation must reflect cause. Rostering more baristas to shorten waits is an intervention, supported by the partial correlation, the gradient and the mechanism, and best confirmed by a trial. Pushing the loyalty app in summer “because warm weather drives sign-ups” rests on a trend, though daily sign-ups do rise modestly on warm, busy days.' },
   ],
 
   theory: [
     { h: 'Confounding and reverse causation in more detail' },
     { p: 'A <g>confounding variable</g> is a common cause; the partial-correlation lesson held one fixed. Holding a confounder fixed works only if it is measured, measured well and controlled in the right shape, and only for the confounders you thought of. That is why observational studies, however careful, leave room for doubt, and why random assignment, which balances unmeasured confounders too, is the stronger design.' },
-    { p: '<g>Reverse causation</g> is common wherever decisions respond to expectations. Managers staff up for expected crowds, advertisers spend more in the season they expect to sell most, and doctors treat the sickest patients most intensively, so in each case the “treatment” correlates with the outcome it was chosen to meet. Timing helps (what was decided before what), and so does asking how x was set: if it was set from a forecast of y, the correlation of x with y is at least partly y’s doing.' },
+    { p: '<g>Reverse causation</g> means that y affects x. It is common where a decision responds to the outcome itself: stores whose sales slip are told to cut prices, and a firm whose complaints rise hires more support staff. A close relative is a decision made from a forecast of y. Airlines add flights on routes they expect to fill, councils grit roads when they forecast ice, and Lantern’s managers roster for the trade they expect. There the conditions behind the forecast drive both x and y, which is confounding by anticipated demand; in medicine, where the sickest patients get the most intensive treatment, it is called confounding by indication. In every case the “treatment” correlates with the outcome it was chosen to meet. Timing helps (what was decided before what), and so does asking how x was set.' },
 
     { h: 'Trends and other time patterns' },
     { p: String.raw`Any two series that trend over the same period correlate, as the members show: −0.13 over the year, +0.87 and −0.90 within the halves. Three remedies are common. Correlate changes (today minus yesterday, this week minus last) rather than levels, as with daily sign-ups. Hold time fixed with a partial correlation, as long as the trend is close to a straight line: within spring, members and temperature correlate at 0.20 holding the day number fixed, and within autumn at −0.03. Or compare like periods (each Monday with the previous Monday, this June with last June). Seasonal patterns that are not straight lines, like a year of temperature, defeat a straight-line control for time: over the whole year, holding the day fixed leaves 0.61, which is still mostly season. Time-series methods that model trend and season properly belong to a forecasting course.` },
@@ -137,14 +146,13 @@ export default {
     { p: 'A randomised experiment answers a causal question for the units, period and version of the change that were tried. Ana’s eight-week barista trial would tell her what an extra peak hour did to waits in those weeks, at those cafés; whether the effect holds in the December rush is a further question. Experiments also need enough units to detect the effect (the power ideas of B04 and of the testing-correlation lesson), a measure fixed in advance, and a plan to run the change as assigned. Where randomising is unfair or impractical, a comparison group and <g>difference-in-differences</g> (the change in the treated group minus the change in a comparison group) can stand in, at the cost of an assumption that the two would otherwise have moved in parallel.' },
 
     { h: 'Bradford Hill’s considerations' },
-    { p: 'In a 1965 lecture on how to judge whether an environmental exposure causes a disease, the epidemiologist Austin Bradford Hill listed nine aspects of an association to weigh before deciding: strength, consistency, specificity, temporality, biological gradient, plausibility, coherence, experiment and analogy. They are widely quoted as “criteria”, but Hill was explicit that they were not a checklist:' },
-    { quote: { text: '“None of my nine viewpoints can bring indisputable evidence for or against the cause-and-effect hypothesis and none can be required as a sine qua non.”', cite: 'Austin Bradford Hill (1965)' } },
+    { p: 'In a 1965 lecture on how to judge whether an environmental exposure causes a disease, the epidemiologist Austin Bradford Hill listed nine aspects of an association to weigh before deciding: strength, consistency, specificity, temporality, biological gradient, plausibility, coherence, experiment and analogy. They are widely quoted as “criteria”, but Hill was explicit that they were not a checklist: in his words they were viewpoints, none of which could on its own prove or disprove a cause, and none of which was a necessary condition.' },
     { table: {
       caption: 'Hill’s considerations applied to “more peak baristas shorten the peak wait”',
       head: ['Consideration', 'What it asks', 'Ana’s evidence'],
       rows: [
         ['Strength', 'Is the association large?', 'Partial r = −0.72 at a given level of trade.'],
-        ['Consistency', 'Is it seen repeatedly, in different settings?', 'Both cafés, every band of trade, single months.'],
+        ['Consistency', 'Is it seen repeatedly, in different settings?', 'Both cafés, every band of trade, every month (cafés together).'],
         ['Specificity', 'Is it tied to one outcome?', 'Weak here: busy days affect many measures at once.'],
         ['Temporality', 'Does the cause come first?', 'The roster is set before the queue forms.'],
         ['Gradient', 'Does more of the cause go with more effect?', 'Waits rise step by step with transactions per barista hour.'],
@@ -154,7 +162,7 @@ export default {
         ['Analogy', 'Are there similar known effects?', 'Extra checkout staff shorten supermarket queues.'],
       ],
     } },
-    { p: 'Hill also warned against letting a significance test settle the question, observing that such tests say how much chance could produce but not whether a link is causal. Statistical significance answers the first of the six explanations and none of the other five.' },
+    { p: 'Hill also cautioned against letting tests of significance decide the question. A significance test answers the first of the six explanations, chance, and none of the other five.' },
 
     { h: 'Writing a finding without overclaiming' },
     { p: 'The words in a finding should match the evidence. Before a causal claim is earned, describe the association: “goes with”, “is associated with”, “was higher on days when”. Give its size, its interval or p-value, the rows it covers and what was held fixed. Name the explanations you could not rule out. Then, if the evidence supports it, say how strongly it points to cause and what would settle it.' },
@@ -199,17 +207,17 @@ export default {
       steps: [
         'Diagnose: members are a running total, correlated with the day number at 0.99 in both halves. The high temperature correlates with the day number at 0.87 in spring and −0.90 in autumn. The members–temperature correlation simply copies the temperature’s trend.',
         'Hold time fixed: within spring, the partial correlation of members and temperature holding the day number fixed is 0.20; within autumn, −0.03. Most of each half’s correlation disappears.',
-        'Ask about changes: the day’s new members (today’s total minus yesterday’s) against the day’s high correlate at +0.35 in spring and +0.39 in autumn, and +0.37 over the year.',
-        'Interpret: the change-based correlation is moderate, positive and stable across the halves, unlike the levels’ flip. A mechanism is easy to see: warm days bring more customers to the waterfront, and a share of customers sign up.',
+        'Ask about changes: the day’s new members (today’s total minus yesterday’s) against the day’s high correlate at +0.35 in spring and +0.39 in autumn, and +0.37 over the year. Holding the day number fixed within each half lowers them to 0.26 and 0.11: some seasonal drift remains.',
+        'Interpret: the change-based correlation is positive in both halves, unlike the levels’ flip, but 0.37 is an upper figure. The route the case planted runs from warm days to more customers to more sign-ups: holding the day’s transactions fixed leaves only 0.09 in spring and 0.12 in autumn, so warmth adds little beyond the customers it brings.',
       ],
-      answer: 'The ±0.9 correlations are trends. Warm days do go with more sign-ups, but modestly: r ≈ 0.37 between the day’s new members and its high temperature.',
+      answer: 'The ±0.9 correlations are trends. Warm days go with somewhat more sign-ups, at most r ≈ 0.37 between the day’s new members and its high, and mainly because they bring more customers.',
       interpretation: 'The assistant’s plan rests on the trend, not on the daily link. A better reading is that sign-ups follow customers, and customers follow warm weather at the waterfront. To grow the app, Ana should ask what share of customers sign up and whether a promotion raises that share, which is something she can test by running it on randomly chosen days.' },
 
     { level: 'applied', title: 'Designing the barista trial', fictional: true,
       setup: 'The log says that, at a given level of trade, more peak barista hours go with shorter waits (partial r = −0.72). Ana wants to know how many minutes an extra barista hour saves before she changes the roster at both cafés. Design a study that answers that causally, and say what she can claim before it runs.',
       steps: [
-        'State why the log can’t settle it: the managers chose the roster from the trade they expected (reverse causation and confounding), and anything that made them add staff, such as a planned event, may also affect waits.',
-        'Randomise: for eight weeks, on each weekday morning at each café, a random draw decides whether the roster gets one extra barista hour at the 7–11 a.m. peak. The managers can’t pick the days, so expected trade, weather and events are spread evenly across extra and normal days.',
+        'State why the log can’t settle it: the managers chose the roster from the trade they expected (confounding by anticipated trade), and anything that made them add staff, such as a planned event, may also affect waits.',
+        'Randomise: for eight weeks, for each weekday at each café, a random draw made before the roster is set decides whether the roster gets one extra barista hour at the 7–11 a.m. peak. The managers can’t pick the days, so expected trade, weather and events are spread evenly across extra and normal days.',
         'Fix the measure and the analysis in advance: the peak wait as the log records it; compare mean waits on extra-hour and normal days with Welch’s t test (B04), within each café, and report the difference with its 95% interval.',
         'Plan the size: with about 40 weekdays per café, roughly 20 extra-hour days each, check with B04’s power tools that the trial can detect the smallest saving worth the wage cost.',
         'Write the interim finding in the language of association: “At the same level of trade, mornings with more barista hours had shorter waits (partial r = −0.72 over 612 café-days). Waits rise steeply above about seven transactions per barista hour. We are running a randomised trial to measure the effect of an extra hour.”',
@@ -220,7 +228,7 @@ export default {
 
   demo: [
     { widget: 'cause-trend', intro: 'Harbourside’s loyalty members against the day’s high, all ten months: r ≈ −0.13. Colour by half of the year to see the two trends, +0.87 and −0.90.' },
-    { widget: 'cause-signups', intro: 'The same café, but the day’s new members against the day’s high. The trend is gone and a modest positive link, r ≈ 0.37, remains. Colour by half of the year: the two halves now agree.' },
+    { widget: 'cause-signups', intro: 'The same café, but the day’s new members against the day’s high. The running-total trend is gone and a modest positive link, r ≈ 0.37, remains. Colour by half of the year: the two halves now point the same way.' },
     { widget: 'cause-gradient', intro: 'The waiting-time gradient: each day’s peak wait against its load, transactions per barista hour at the peak. Turn on ranks to see Spearman’s ρ, and look for the point near seven where waits start to climb.' },
   ],
 
@@ -228,21 +236,21 @@ export default {
     { title: '“The correlation is significant, so the effect is real.”', html: 'A significance test addresses chance, the first of the six explanations. It says nothing about confounding, reverse causation, trends, selection or pooling. A tiny p-value on 612 days can belong to an entirely spurious correlation, such as members and temperature in spring.' },
     { title: '“We can’t prove cause without an experiment, so correlations are useless.”', html: 'Correlations are enough for prediction (stock ice for hot days) and are how good causal questions are found. Natural experiments, gradients, timing, consistency and mechanism can make a causal reading strong even without a trial. The skill is matching the claim to the evidence, not refusing to claim anything.' },
     { title: '“Both series went up this year, so one must be driving the other.”', html: 'Any two trending series correlate. Correlate the changes, compare like periods, or hold time fixed; if the link vanishes, it was the trend. Members and temperature flip from +0.87 to −0.90 when the calendar moves.' },
-    { title: '“More barista hours go with higher sales, so baristas sell coffee.”', html: 'The roster is set from the trade managers expect: sales drive the roster, not the other way round. Holding the day’s transactions fixed, barista hours and sales correlate at −0.13. Always ask how x was set.' },
+    { title: '“More barista hours go with higher sales, so baristas sell coffee.”', html: 'The roster is set from the trade the managers expect, so anticipated trade drives both barista hours and sales (r = 0.75): confounding. In the case, baristas don’t bring customers in; the generator makes the roster follow expected trade. Always ask how x was set.' },
     { title: '“I’ll write that X drives Y, since everyone knows what I mean.”', html: 'Readers act on words. “Drives”, “leads to” and “causes” tell a manager that changing X will change Y. If the evidence is a correlation, write “goes with” or “is associated with”, give the size, and say what would settle the causal question.' },
   ],
 
   application: [
-    { p: 'Every analyst who reports correlations to managers faces the same pressure: the manager wants to know what to change, and a correlation seems to say. Marketing teams see spend and sales rise together in December, operations teams see staffing and incidents rise together on busy shifts, product teams see that users of a feature are more loyal. In each case the professional habit is the same: name the alternative explanations, check the ones the data can check, say clearly which remain, and propose the test that would settle the question when the decision is large enough to justify one.' },
-    { case: 'Ana’s year-end summary for her managers reads: “1. Warm days go with a higher share of iced drinks (r = 0.94); we will stock by the forecast. 2. At the same level of trade, mornings with more barista hours had shorter waits (r = −0.72); waits climb steeply above about seven transactions per barista hour. We are testing an extra peak hour on randomly chosen weekdays from February. 3. Members and temperature are two trends; daily sign-ups follow busy, warm days only modestly (r = 0.37), so we won’t time app promotions by the weather. 4. Rainy weekdays at Harbourside took about $90 less than dry ones; plan staffing for wet forecasts.”' },
+    { p: 'Every analyst who reports correlations to managers faces the same pressure: the manager wants to know what to change, and a correlation seems to say. Airlines see the most flights on the routes that carry the most passengers, operations teams see staffing and incidents rise together on busy shifts, product teams see that users of a feature are more loyal. In each case the professional habit is the same: name the alternative explanations, check the ones the data can check, say clearly which remain, and propose the test that would settle the question when the decision is large enough to justify one.' },
+    { case: 'Ana’s year-end summary for her managers reads: “1. Warm days go with a higher share of iced drinks (r = 0.94); we will stock by the forecast. 2. At the same level of trade, mornings with more barista hours had shorter waits (r = −0.72); waits climb steeply above about seven transactions per barista hour. We are testing an extra peak hour on randomly chosen weekdays from February. 3. Members and temperature are two trends; daily sign-ups rise only modestly on warm, busy days (r = 0.37 at most), so we won’t time app promotions by the weather. 4. Harbourside weekdays with a quarter-inch of rain or more took about $90 less than dry ones; plan staffing for wet forecasts.”' },
     { p: 'Her summary uses the distinction this lesson rests on. The first and fourth items are predictions: she will act on them without needing to know the cause, and the fourth rests on a natural experiment, since nobody chose the rain. The second is a probable cause, stated as an association with the evidence that supports a causal reading, and she has planned the experiment that will measure it. The third is a correlation she has explained away. None of the items uses “drives” where the evidence is a correlation.' },
-    { p: 'The same reasoning scales up. Large organisations run thousands of randomised experiments a year precisely because correlations in their data are so often confounded by who chooses what; regulators ask for trials before approving medicines for the same reason. When a trial is impossible, the considerations in this lesson are how analysts, economists and epidemiologists argue from observational data, and how readers should judge their arguments.' },
+    { p: 'The same reasoning scales up. Many large organisations run randomised experiments routinely precisely because correlations in their data are so often confounded by who chooses what; regulators ask for trials before approving medicines for the same reason. When a trial is impossible, the considerations in this lesson are how analysts, economists and epidemiologists argue from observational data, and how readers should judge their arguments.' },
   ],
 
   summary: [
     'Causation means that changing x would change y; a correlation only shows that x and y moved together.',
     'Six explanations other than cause produce correlations: chance (including many tests), confounding, reverse causation, common trends, selection and pooled groups. Check each before reading a correlation causally.',
-    'Trends: correlate changes, compare like periods or hold time fixed. Harbourside’s members and temperature flip from +0.87 to −0.90 with the season, while daily sign-ups and temperature correlate at about +0.37 in both halves.',
+    'Trends: correlate changes, compare like periods or hold time fixed. Harbourside’s members and temperature flip from +0.87 to −0.90 with the season, while daily sign-ups and temperature correlate at about +0.35 to +0.39 in the two halves, an upper figure for a link that runs mainly through the customers warm days bring.',
     'Randomised experiments are the strongest evidence; natural experiments, dose–response gradients, timing, consistency and mechanism each rule out some alternatives. Hill’s nine considerations help weigh the evidence but are not a checklist.',
     'Prediction needs only a stable correlation; intervention needs cause. Ana can stock by the weather forecast, should trial extra barista hours, and shouldn’t time promotions by temperature.',
     'Write findings in the language of association, with size, interval, rows and controls, name what wasn’t ruled out, and say what would settle the causal question.',
@@ -250,7 +258,7 @@ export default {
 
   glossary: [
     { term: 'Spurious correlation', def: 'A correlation between two variables that arises from something other than one affecting the other, such as a confounder, a shared trend, selection or chance.' },
-    { term: 'Reverse causation', def: 'A correlation in which the supposed effect actually causes the supposed cause, such as expected sales determining how many staff are rostered.' },
+    { term: 'Reverse causation', def: 'A correlation in which the supposed effect actually causes the supposed cause, such as stores whose sales have fallen being the ones that cut their prices.' },
     { term: 'Randomised experiment', def: 'A study in which the analyst assigns the change to units by chance, so that nothing else can systematically line up with it and a difference in outcomes can be attributed to the change.' },
     { term: 'Natural experiment', def: 'A situation in which something outside the control of the people being studied, such as the weather or a rule change, alters a possible cause for some units and not others, allowing a comparison close to an experiment.' },
     { term: 'Dose–response relationship', def: 'A pattern in which larger amounts of a possible cause go with steadily larger effects, considered evidence (though not proof) of a causal link.' },
@@ -287,6 +295,7 @@ export default {
     { what: 'June unadjusted', value: JUNE.none, shown: 18 },
     { what: 'June after Bonferroni', value: JUNE.bonferroni, shown: 10 },
     { what: 'June after BH', value: JUNE.bh, shown: 16 },
+    { what: 'June high–footfall fails Holm (planted link)', value: Number(JH.pAdj[0][2] > 0.05 && JH.p[0][2] < 0.05), shown: 1 },
     { what: 'Pairs', value: 8 * 7 / 2, shown: 28 },
     { what: 'July mean high about 84', value: monthMean('07'), shown: 84, tol: 0.5 },
     { what: 'December mean high about 43', value: monthMean('12'), shown: 43, tol: 0.5 },
@@ -294,7 +303,6 @@ export default {
     { what: 'Staff–wait simple', value: D.staffWait.r, shown: 0.53 },
     { what: 'Staff–wait partial', value: D.staffWaitGivenTrans.r, shown: -0.72 },
     { what: 'Staff–sales', value: D.staffSales.r, shown: 0.75 },
-    { what: 'Staff–sales | transactions', value: staffSalesGivenT.r, shown: -0.13 },
     { what: 'Footfall–ticket pooled', value: D.footTicket.r, shown: -0.32 },
     { what: 'Footfall–ticket positive in each café', value: Number(D.footTicketH.r > 0 && D.footTicketM.r > 0), shown: 1 },
     { what: 'Iced share–temperature', value: D.tempIced.r, shown: 0.94 },
@@ -303,6 +311,19 @@ export default {
     { what: 'Dry weekday mean sales', value: RAIN.wdDry, shown: 296, tol: 0.5 },
     { what: 'About $90 less', value: RAIN.wdDry - RAIN.wdWet, shown: 90, tol: 1 },
     { what: 'Wet weekdays (at least 0.25 in)', value: RAIN.nWdWet, shown: 30 },
+    { what: 'Dry weekdays', value: RAIN.nWdDry, shown: 148 },
+    { what: 'Rain difference interval low', value: RT.low, shown: 57, tol: 0.5 },
+    { what: 'Rain difference interval high', value: RT.high, shown: 123, tol: 0.5 },
+    { what: 'Welch difference matches', value: RT.diff, shown: RAIN.wdDry - RAIN.wdWet, tol: 1e-9 },
+    { what: 'Wet weekdays in every month (10)', value: RB.months, shown: 10 },
+    { what: 'Mean high, wet weekdays', value: RB.highWet, shown: 66.6, tol: 0.05 },
+    { what: 'Mean high, dry weekdays', value: RB.highDry, shown: 63.7, tol: 0.05 },
+    { what: 'Monthly partial, least negative', value: Math.max(...MONTHLY), shown: -0.54 },
+    { what: 'Monthly partial, most negative', value: Math.min(...MONTHLY), shown: -0.84 },
+    { what: 'Sign-ups | day, spring', value: TS.suDay.r, shown: 0.26 },
+    { what: 'Sign-ups | day, autumn', value: TA.suDay.r, shown: 0.11 },
+    { what: 'Sign-ups | transactions, spring', value: TS.suTrans.r, shown: 0.09 },
+    { what: 'Sign-ups | transactions, autumn', value: TA.suTrans.r, shown: 0.12 },
     // gradient
     { what: 'Load under 7: mean wait', value: GRAD[0].wait, shown: 1.6, tol: 0.05 },
     { what: 'Load 9–10: mean wait', value: GRAD[3].wait, shown: 3.1, tol: 0.05 },

@@ -1,6 +1,6 @@
 // outliers-and-influence.js — B05 · Outliers and influence. Content only; exercises are in outliers-and-influence.ex.js.
 // Uses the raw café log (CAFE_ROWS, with the footfall slip on 14 September at Millbrook) and the corrected log
-// (CLEAN_ROWS) from case.js, and Harbourside's five festival days. Kestrel Bike Hire and the ten-point figure are
+// (CLEAN_ROWS) from case.js, and Harbourside's five festival days. Gorsefield Bike Hire and the ten-point figure are
 // fictional. Testing a correlation is module 2's; curves and restricted ranges are nonlinear-and-restricted's; groups
 // are groups-and-simpsons-paradox's. Every figure printed is recomputed in `checks`.
 import { column, DERIVED as D, SLIP, CAFE_ROWS, CAFE_COLUMNS } from './case.js?v=20';
@@ -43,7 +43,7 @@ const festF = hF.filter((_, i) => hFest[i]), festW = hW.filter((_, i) => hFest[i
 const festZ = C.zScores(hF).filter((_, i) => hFest[i]);
 const may1Load = hTr[may1] * 0.55 / hSt[may1];
 
-// ---------------------------------------------------------------- Kestrel Bike Hire (fictional)
+// ---------------------------------------------------------------- Gorsefield Bike Hire (fictional)
 const KX = [2, 3, 4, 4, 5, 6, 6, 7, 8, 9];
 const KY_TRUE = [14, 18, 17, 22, 21, 26, 23, 27, 30, 31];
 const KY = KY_TRUE.map((v, i) => (i === 6 ? 230 : v));
@@ -55,25 +55,26 @@ const kWithout = C.influence(KX, KY).without[6];
 // ---------------------------------------------------------------- figure: three kinds of unusual point (fictional)
 const BX = [2, 3, 4, 4, 5, 6, 6, 7, 8, 9], BY = [14, 18, 17, 22, 21, 26, 23, 27, 30, 31];
 const PANELS = [
-  { title: 'A: far out in x, on the trend', p: [16, 52] },
-  { title: 'B: far out in y only', p: [5, 44] },
-  { title: 'C: far out in x, off the trend', p: [16, 15] },
+  { title: ['A: far out in x,', 'on the trend'], p: [16, 52] },
+  { title: ['B: far out in y', 'only'], p: [5, 44] },
+  { title: ['C: far out in x,', 'off the trend'], p: [16, 15] },
 ];
 PANELS.forEach((q) => { q.r = C.pearson([...BX, q.p[0]], [...BY, q.p[1]]).r; });
 const baseR = C.pearson(BX, BY).r;
 const f1 = (x) => Math.round(x * 10) / 10;
 const f3 = (x) => (x < 0 ? '−' : '') + Math.abs(x).toFixed(3);
 function threeKinds() {
-  let svg = '<svg viewBox="0 0 660 250" xmlns="http://www.w3.org/2000/svg" font-size="11" fill="currentColor">';
+  // drawn large in viewBox units so the text stays legible when the figure shrinks to a phone's width
+  let svg = '<svg viewBox="0 0 660 340" xmlns="http://www.w3.org/2000/svg" font-size="20" fill="currentColor">';
   PANELS.forEach((q, k) => {
-    const ox = 30 + k * 215, X = (v) => ox + 10 + v * 10.5, Y = (v) => 205 - v * 3;
-    svg += `<line x1="${ox}" x2="${ox + 190}" y1="205" y2="205" stroke="var(--ink-3)" stroke-width="1"/><line x1="${ox}" x2="${ox}" y1="25" y2="205" stroke="var(--ink-3)" stroke-width="1"/>`;
-    [0, 20, 40, 60].forEach((v) => { svg += `<text x="${ox - 4}" y="${f1(Y(v)) + 4}" text-anchor="end" font-size="9" fill="var(--ink-3)">${v}</text>`; });
-    [0, 5, 10, 15].forEach((v) => { svg += `<text x="${f1(X(v))}" y="218" text-anchor="middle" font-size="9" fill="var(--ink-3)">${v}</text>`; });
-    BX.forEach((x, i) => { svg += `<circle cx="${f1(X(x))}" cy="${f1(Y(BY[i]))}" r="3.5" fill="var(--series-1)"/>`; });
-    svg += `<circle cx="${f1(X(q.p[0]))}" cy="${f1(Y(q.p[1]))}" r="5" fill="none" stroke="var(--series-2)" stroke-width="2.2"/>`;
-    svg += `<text x="${ox + 95}" y="14" text-anchor="middle" font-size="11">${q.title}</text>`;
-    svg += `<text x="${ox + 95}" y="240" text-anchor="middle" font-size="11">r = ${f3(baseR)} → ${f3(q.r)}</text>`;
+    const ox = 40 + k * 215, X = (v) => ox + 8 + v * 10.2, Y = (v) => 270 - v * 3.2;
+    svg += `<line x1="${ox}" x2="${ox + 185}" y1="270" y2="270" stroke="var(--ink-3)" stroke-width="1.2"/><line x1="${ox}" x2="${ox}" y1="78" y2="270" stroke="var(--ink-3)" stroke-width="1.2"/>`;
+    if (k === 0) [0, 30, 60].forEach((v) => { svg += `<text x="${ox - 6}" y="${f1(Y(v)) + 6}" text-anchor="end" font-size="17" fill="var(--ink-3)">${v}</text>`; });
+    [0, 8, 16].forEach((v) => { svg += `<text x="${f1(X(v))}" y="292" text-anchor="middle" font-size="17" fill="var(--ink-3)">${v}</text>`; });
+    BX.forEach((x, i) => { svg += `<circle cx="${f1(X(x))}" cy="${f1(Y(BY[i]))}" r="4.5" fill="var(--series-1)"/>`; });
+    svg += `<circle cx="${f1(X(q.p[0]))}" cy="${f1(Y(q.p[1]))}" r="7" fill="none" stroke="var(--series-2)" stroke-width="3"/>`;
+    svg += `<text x="${ox + 92}" y="24" text-anchor="middle">${q.title[0]}</text><text x="${ox + 92}" y="48" text-anchor="middle">${q.title[1]}</text>`;
+    svg += `<text x="${ox + 92}" y="326" text-anchor="middle">r: ${f3(baseR)} → ${f3(q.r)}</text>`;
   });
   return `${svg}</svg>`;
 }
@@ -113,9 +114,9 @@ export default {
       alt: 'Three small scatterplots side by side, each with x from 0 to 17 and y from 0 to 60. Each shows the same ten points rising from about (2, 14) to (9, 31). Panel A adds a circled point at (16, 52), far right and continuing the upward line; r rises from 0.964 to 0.989. Panel B adds a circled point at (5, 44), at an ordinary x but well above the others; r falls to 0.575. Panel C adds a circled point at (16, 15), far right but low, against the trend; r falls to 0.144.',
     } },
     { list: [
-      '<b>Far out in x and in y, on the trend (A).</b> The point stretches the pattern. It adds a large positive product of z-scores and makes the cloud look more like a line, so r rises, sometimes a lot. Harbourside’s festival days, with about four times the usual footfall and long waits to match, are of this kind.',
+      '<b>Far out in x and in y, on the trend (A).</b> The point stretches the pattern. It adds a large positive product of z-scores and makes the cloud look more like a line, so r rises, sometimes a lot. Harbourside’s festival days, with about four times the footfall of an ordinary day (three times that of an ordinary weekend day, and every festival fell on a weekend) and long waits to match, are of this kind.',
       '<b>Far out in y only (B).</b> At an ordinary x the point’s z-score in x is small, so its own product contributes little; but it inflates the spread of y, which shrinks every other point’s contribution. r falls.',
-      '<b>Far out in x, off the trend (C).</b> The most damaging kind. It inflates the spread of x and contributes nothing in return, because its y is ordinary. Millbrook’s slip is exactly this point: a footfall nine times too large with an ordinary number of transactions.',
+      '<b>Far out in x, off the trend (C).</b> The most damaging kind. It inflates the spread of x and contributes nothing in return, because its y is ordinary. Millbrook’s slip is exactly this point: a footfall ten times too large with an ordinary number of transactions.',
     ] },
     { callout: 'key', title: 'Look before you compute', html: 'A correlation summarises a cloud of points in one number, and one point can write most of that number. Plot the data first, find the points that sit apart, and ask of each one: is it real, and does the conclusion depend on it?' },
 
@@ -187,7 +188,7 @@ export default {
 
   examples: [
     { level: 'simple', title: 'A typing error at a bike-hire stand', fictional: true,
-      setup: 'Kestrel Bike Hire records the hours of sunshine and the number of hires on ten days. Sunshine: 2, 3, 4, 4, 5, 6, 6, 7, 8 and 9 hours; hires: 14, 18, 17, 22, 21, 26, 230, 27, 30 and 31. CORREL gives r = 0.177. Is sunshine only weakly related to hires?',
+      setup: 'Gorsefield Bike Hire records the hours of sunshine and the number of hires on ten days. Sunshine: 2, 3, 4, 4, 5, 6, 6, 7, 8 and 9 hours; hires: 14, 18, 17, 22, 21, 26, 230, 27, 30 and 31. CORREL gives r = 0.177. Is sunshine only weakly related to hires?',
       steps: [
         'Plot or scan the data: nine days have between 14 and 31 hires, and day 7 has 230 at 6 hours of sunshine, an ordinary x. It is an outlier in y only, and far off the pattern of the others.',
         'Screen with z-scores: 230 has z = 2.84, which a rule of |z| > 3 would not flag. With n = 10 no z-score can exceed (10 − 1) ÷ √10 = 2.85, so the rule is useless here. The plot and common sense (the stand has never had more than 40 hires in a day) are the checks that work.',
@@ -202,7 +203,7 @@ export default {
         String.raw`The raw footfall has mean 186.8 and standard deviation 129.9; transactions have mean 94.9 and standard deviation 49.7. The slip’s z-scores are <m>z_x = (2566 - 186.8) \div 129.9 = 18.3</m> and <m>z_y = (130 - 94.9) \div 49.7 = 0.71</m>.`,
         String.raw`Its own term in <m>r = \sum z_x z_y \div (n - 1)</m> is <m>18.3 \times 0.71 \div 611 = 0.021</m>: small and positive. The other 611 terms add up to 0.658, and 0.658 + 0.021 = 0.679.`,
         'Why are the other terms so small? Without the slip the footfall standard deviation is 87.1, not 129.9. The slip inflates it by a factor of about 1.49, so every other day’s footfall z-score is about a third smaller than it should be, and their sum falls in proportion: 0.981 × 87.1 ÷ 129.9 ≈ 0.66.',
-        'Corrected to 256, the day converts 51% of its visitors, like any other Millbrook day, and r = 0.981. Spearman’s ρ barely changes (0.970 with the slip, 0.971 without), because in ranks the slip is simply Millbrook’s busiest day rather than a day nine times busier.',
+        'Corrected to 256, the day converts 51% of its visitors, like any other Millbrook day, and r = 0.981. Spearman’s ρ barely changes (0.970 with the slip, 0.971 without), because in ranks the slip is simply Millbrook’s busiest day rather than a day ten times busier.',
       ],
       answer: 'The slip lowers r from 0.981 to 0.679 mainly by inflating the standard deviation of footfall from 87.1 to 129.9, which shrinks every other day’s contribution; its own contribution is only +0.021.',
       interpretation: 'An outlier in x that breaks the pattern does most of its damage through the spread, not through its own product. That is why a single error can hide a near-perfect relationship, and why the rank correlation, which ignores the size of the spread, hardly notices it.' },
@@ -220,7 +221,7 @@ export default {
 
   demo: [
     { widget: 'out-slip', intro: 'The raw log: footfall against transactions for all 612 café-days. Find the point far to the right, then use the buttons to leave out the points that move r most. Leaving out the first one (the slip) moves r from 0.679 to 0.981; the next buttons barely move it. Tick “Plot ranks” to see why Spearman’s ρ hardly noticed.' },
-    { widget: 'out-festival', intro: 'Harbourside’s 306 days: footfall against the peak wait. Colour the points by festival day and look at the five far to the right. Leave them out one at a time and watch r fall from 0.673 towards 0.476. Which ordinary day is the most influential, and why might it have had such a long wait?' },
+    { widget: 'out-festival', intro: 'Harbourside’s 306 days: footfall against the peak wait. Colour the points by festival day and look at the five far to the right. Leave them out one at a time and watch r fall from 0.673 to about 0.48 (0.476 with exactly the five festival days left out). Which ordinary day is the most influential, and why might it have had such a long wait?' },
     { widget: 'out-sheet', intro: 'Twenty Millbrook days, 1–20 September, as they were typed. F1 is Pearson’s r, F2 Spearman’s ρ (Pearson’s r of the ranks) and column D the conversion rate. Find the row whose conversion is impossible, type the door counter’s value, 256, into B15, and watch both correlations move.' },
   ],
 
@@ -330,7 +331,10 @@ export default {
     { what: 'Festival z low', value: Math.min(...festZ), shown: 5.2, tol: 0.05 },
     { what: 'Festival z high', value: Math.max(...festZ), shown: 6.9, tol: 0.05 },
     { what: 'Highest non-festival footfall', value: Math.max(...keep(hF)), shown: 282 },
-    { what: 'Festival footfall about four times the usual', value: mean(festF) / mean(keep(hF)), shown: 4, tol: 0.2 },
+    { what: 'Festival footfall about four times an ordinary day', value: mean(festF) / mean(keep(hF)), shown: 4, tol: 0.2 },
+    { what: 'Festival footfall about three times an ordinary weekend day', value: mean(festF) / mean(keep(hF).filter((_, i) => ['Sat', 'Sun'].includes(column('weekday', HB).filter((_, j) => !hFest[j])[i]))), shown: 3, tol: 0.1 },
+    { what: 'Every festival day fell on a weekend', value: column('weekday', HB).filter((_, i) => hFest[i]).every((d) => d === 'Sat' || d === 'Sun') ? 1 : 0, shown: 1 },
+    { what: 'The slip is ten times the true footfall', value: SLIP.recorded / SLIP.actual, shown: 10, tol: 0.05 },
     { what: 'Festival wait low', value: Math.min(...festW), shown: 4.7 },
     { what: 'Festival wait high', value: Math.max(...festW), shown: 15.3 },
     { what: 'Typical wait about 2 minutes', value: mean(keep(hW)), shown: 2, tol: 0.2 },
@@ -338,17 +342,17 @@ export default {
     { what: 'Temp–footfall r, no festivals', value: tfNo.r, shown: 0.508, tol: 0.0005 },
     { what: '1 May: most influential ordinary day for waits', value: Number(fwInf.without.map((r, i) => [i, Math.abs(r - fwInf.r)]).filter(([i]) => !hFest[i]).sort((a, b) => b[1] - a[1])[0][0] === may1), shown: 1 },
     { what: '1 May load (for the widget hint)', value: may1Load, shown: 12.7, tol: 0.05 },
-    // Kestrel (fictional)
-    { what: 'Kestrel r with the error', value: kRaw, shown: 0.177, tol: 0.0005 },
-    { what: 'Kestrel z of 230', value: kZ, shown: 2.84, tol: 0.005 },
-    { what: 'Kestrel max z', value: kMaxZ, shown: 2.85, tol: 0.005 },
-    { what: 'Kestrel r without day 7', value: kWithout, shown: 0.968, tol: 0.0005 },
-    { what: 'Kestrel other leave-one-outs low', value: Math.min(...C.influence(KX, KY).without.filter((_, i) => i !== 6)), shown: 0.110, tol: 0.0005 },
-    { what: 'Kestrel other leave-one-outs high', value: Math.max(...C.influence(KX, KY).without.filter((_, i) => i !== 6)), shown: 0.263, tol: 0.0005 },
-    { what: 'Kestrel corrected r', value: kFix, shown: 0.964, tol: 0.0005 },
-    { what: 'Kestrel corrected ρ', value: kRhoFix, shown: 0.957, tol: 0.0005 },
-    { what: 'Kestrel ρ with error', value: kRhoRaw, shown: 0.866, tol: 0.0005 },
-    { what: 'Kestrel hires otherwise 14 to 31', value: Number(Math.min(...KY_TRUE) === 14 && Math.max(...KY_TRUE) === 31), shown: 1 },
+    // Gorsefield (fictional)
+    { what: 'Gorsefield r with the error', value: kRaw, shown: 0.177, tol: 0.0005 },
+    { what: 'Gorsefield z of 230', value: kZ, shown: 2.84, tol: 0.005 },
+    { what: 'Gorsefield max z', value: kMaxZ, shown: 2.85, tol: 0.005 },
+    { what: 'Gorsefield r without day 7', value: kWithout, shown: 0.968, tol: 0.0005 },
+    { what: 'Gorsefield other leave-one-outs low', value: Math.min(...C.influence(KX, KY).without.filter((_, i) => i !== 6)), shown: 0.110, tol: 0.0005 },
+    { what: 'Gorsefield other leave-one-outs high', value: Math.max(...C.influence(KX, KY).without.filter((_, i) => i !== 6)), shown: 0.263, tol: 0.0005 },
+    { what: 'Gorsefield corrected r', value: kFix, shown: 0.964, tol: 0.0005 },
+    { what: 'Gorsefield corrected ρ', value: kRhoFix, shown: 0.957, tol: 0.0005 },
+    { what: 'Gorsefield ρ with error', value: kRhoRaw, shown: 0.866, tol: 0.0005 },
+    { what: 'Gorsefield hires otherwise 14 to 31', value: Number(Math.min(...KY_TRUE) === 14 && Math.max(...KY_TRUE) === 31), shown: 1 },
     // max z formula
     { what: 'Max z n = 20', value: 19 / Math.sqrt(20), shown: 4.25, tol: 0.005 },
   ],
