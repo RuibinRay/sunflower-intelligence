@@ -17,7 +17,7 @@ export const widgets = {
     periods: [{ label: '2026 (10 months)', data: P26 }, { label: '2027', data: P27 }],
     peers: [
       { label: 'Starbucks FY2024 ($m)', data: { months: 12, totalAssets: 31339.3, totalLiabilities: 38780.9, equity: -7441.6, debt: 15568.4, cash: 3286.2, shortTermInvestments: 257.0, ebit: 5408.8, da: 1592.4, interestExpense: 562.0 },
-        note: 'Debt is long-term debt and its current portion; cash excludes short-term investments in net debt here. Its lease liabilities (10,234.7) are left out because the lease cost needed to adjust its earnings is not in our verified figures, so the lease box doesn’t change it.' },
+        note: 'Debt is long-term debt and its current portion; net debt subtracts cash and short-term investments. Its lease liabilities (10,234.7) are left out because the lease cost needed to adjust its earnings is not in our verified figures, so the lease box doesn’t change it.' },
       { label: 'Harbourline ($m, fictional)', data: { months: 12, totalAssets: HBD.totalAssets, totalLiabilities: HBD.totalAssets - HBD.bookEquity, equity: HBD.bookEquity, debt: HB.debt, leaseLiabilities: 0, cash: HB.cash, ebit: HB.ebit, da: HB.da, interestExpense: HBD.interest } },
     ],
     ratios: ['debtRatio', 'liabilitiesToEquity', 'debtToEquity', 'debtToCapital', 'equityMultiplier', 'interestCoverage', 'netDebtToEbitda'],
@@ -30,10 +30,10 @@ export const widgets = {
     title: 'Leverage ratios as equity shrinks',
     intro: 'Starting values: Lantern at 31 December 2027. Equity is whatever is left: total assets minus all three kinds of liability.',
     inputs: [
-      { id: 'ta', label: 'Total assets', min: 50000, max: 600000, step: 1000, value: P27.totalAssets, fmt: 'money' },
-      { id: 'debt', label: 'Interest-bearing debt', min: 0, max: 300000, step: 1000, value: P27.debt, fmt: 'money' },
-      { id: 'lease', label: 'Lease liabilities', min: 0, max: 300000, step: 1000, value: P27.leaseLiabilities, fmt: 'money' },
-      { id: 'other', label: 'Operating liabilities (payables, accruals, unearned revenue)', min: 0, max: 100000, step: 500, value: P27.totalLiabilities - P27.debt - P27.leaseLiabilities, fmt: 'money' },
+      { id: 'ta', label: 'Total assets', min: 50000, max: 600000, step: 1, value: P27.totalAssets, fmt: 'money' },
+      { id: 'debt', label: 'Interest-bearing debt', min: 0, max: 300000, step: 1, value: P27.debt, fmt: 'money' },
+      { id: 'lease', label: 'Lease liabilities', min: 0, max: 300000, step: 1, value: P27.leaseLiabilities, fmt: 'money' },
+      { id: 'other', label: 'Operating liabilities (payables, accruals, unearned revenue)', min: 0, max: 100000, step: 1, value: P27.totalLiabilities - P27.debt - P27.leaseLiabilities, fmt: 'money' },
     ],
     compute: (v) => {
       const tl = v.debt + v.lease + v.other, eq = v.ta - tl;

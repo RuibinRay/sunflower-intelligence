@@ -16,12 +16,12 @@ export const widgets = {
     title: 'Asset and fixed-asset turnover',
     intro: 'Starting values: Lantern’s 2027. Set the months to 10 and the opening balances to zero to reproduce 2026 (revenue $193,320; closing total assets $93,676; closing property and equipment $37,200).',
     inputs: [
-      { id: 'rev', label: 'Revenue for the period', min: 10000, max: 1000000, step: 1000, value: P27.revenue, fmt: 'money' },
+      { id: 'rev', label: 'Revenue for the period', min: 10000, max: 1000000, step: 1, value: P27.revenue, fmt: 'money' },
       { id: 'months', label: 'Months in the period', min: 1, max: 12, step: 1, value: 12, fmt: 'int', unit: 'months' },
-      { id: 'ta0', label: 'Total assets, opening (0 if none)', min: 0, max: 600000, step: 1000, value: P26.totalAssets, fmt: 'money' },
-      { id: 'ta1', label: 'Total assets, closing', min: 10000, max: 600000, step: 1000, value: P27.totalAssets, fmt: 'money' },
-      { id: 'pp0', label: 'Property and equipment (net), opening (0 if none)', min: 0, max: 300000, step: 500, value: P26.ppeNet, fmt: 'money' },
-      { id: 'pp1', label: 'Property and equipment (net), closing', min: 1000, max: 300000, step: 500, value: P27.ppeNet, fmt: 'money' },
+      { id: 'ta0', label: 'Total assets, opening (0 if none)', min: 0, max: 600000, step: 1, value: P26.totalAssets, fmt: 'money' },
+      { id: 'ta1', label: 'Total assets, closing', min: 10000, max: 600000, step: 1, value: P27.totalAssets, fmt: 'money' },
+      { id: 'pp0', label: 'Property and equipment (net), opening (0 if none)', min: 0, max: 300000, step: 1, value: P26.ppeNet, fmt: 'money' },
+      { id: 'pp1', label: 'Property and equipment (net), closing', min: 1000, max: 300000, step: 1, value: P27.ppeNet, fmt: 'money' },
     ],
     compute: (v) => {
       const ann = v.rev * 12 / v.months;
@@ -58,12 +58,12 @@ export const widgets = {
     title: 'Working capital tied up, and the cash growth needs',
     intro: 'Starting values: Lantern’s 2027 invoiced catering, cost of goods sold, purchases on account and days.',
     inputs: [
-      { id: 'sales', label: 'Credit sales a year', min: 0, max: 500000, step: 1000, value: D27.creditSales, fmt: 'money' },
-      { id: 'cogs', label: 'Cost of goods sold a year', min: 0, max: 500000, step: 1000, value: D27.cogsGoods, fmt: 'money' },
-      { id: 'pur', label: 'Purchases on account a year', min: 0, max: 500000, step: 1000, value: D27.purchases, fmt: 'money' },
-      { id: 'dso', label: 'Receivables days (DSO)', min: 0, max: 120, step: 0.5, value: Math.round(E27.dso * 2) / 2, fmt: 'num', unit: 'days' },
-      { id: 'dio', label: 'Inventory days (DIO)', min: 0, max: 120, step: 0.5, value: Math.round(E27.dio * 2) / 2, fmt: 'num', unit: 'days' },
-      { id: 'dpo', label: 'Payables days (DPO)', min: 0, max: 120, step: 0.5, value: 18, fmt: 'num', unit: 'days' },
+      { id: 'sales', label: 'Credit sales a year', min: 0, max: 500000, step: 1, value: D27.creditSales, fmt: 'money' },
+      { id: 'cogs', label: 'Cost of goods sold a year', min: 0, max: 500000, step: 1, value: D27.cogsGoods, fmt: 'money' },
+      { id: 'pur', label: 'Purchases on account a year', min: 0, max: 500000, step: 1, value: D27.purchases, fmt: 'money' },
+      { id: 'dso', label: 'Receivables days (DSO)', min: 0, max: 120, step: 0.1, value: Math.round(E27.dso * 10) / 10, fmt: 'num', unit: 'days' },
+      { id: 'dio', label: 'Inventory days (DIO)', min: 0, max: 120, step: 0.1, value: Math.round(E27.dio * 10) / 10, fmt: 'num', unit: 'days' },
+      { id: 'dpo', label: 'Payables days (DPO)', min: 0, max: 120, step: 0.1, value: Math.round(E27.dpo * 10) / 10, fmt: 'num', unit: 'days' },
       { id: 'g', label: 'Growth in sales and costs next year', min: 0, max: 100, step: 5, value: 20, fmt: 'pct' },
     ],
     compute: (v) => {

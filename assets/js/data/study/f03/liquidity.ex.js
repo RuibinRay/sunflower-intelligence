@@ -36,8 +36,8 @@ export const widgets = {
     title: 'Window dressing: paying or borrowing at the year end',
     intro: 'Starting values: Lantern at 31 December 2027. A positive amount pays current liabilities with cash; a negative amount borrows short-term and holds the cash. Set current assets above current liabilities to see the opposite effect.',
     inputs: [
-      { id: 'ca', label: 'Current assets before', min: 0, max: 200000, step: 100, value: P27.currentAssets, fmt: 'money' },
-      { id: 'cl', label: 'Current liabilities before', min: 1000, max: 200000, step: 100, value: P27.currentLiabilities, fmt: 'money' },
+      { id: 'ca', label: 'Current assets before', min: 0, max: 200000, step: 1, value: P27.currentAssets, fmt: 'money' },
+      { id: 'cl', label: 'Current liabilities before', min: 1000, max: 200000, step: 1, value: P27.currentLiabilities, fmt: 'money' },
       { id: 'x', label: 'Liabilities paid with cash (negative: borrowed and held)', min: -30000, max: 30000, step: 500, value: 6000, fmt: 'money' },
     ],
     compute: (v) => {
@@ -263,7 +263,7 @@ export const check = [
       4: 'Lantern made a profit of $22,431 in 2027, which added to working capital.',
       5: 'Lantern issued no shares in 2027, and new shares for cash would have raised the ratio.',
     },
-    solution: 'The fit-out and machines turned $54,000 of cash into noncurrent assets; the leases put $37,010 of 2028 payments into current liabilities; and the Coastline note became current. The contract asset raised current assets, profit added to working capital, and there were no new shares.',
+    solution: 'The fit-out and machines turned $54,000 of cash into noncurrent assets; the leases put $37,010 of lease liability falling due in 2028 into current liabilities; and the Coastline note became current. The contract asset raised current assets, profit added to working capital, and there were no new shares.',
   },
   {
     id: 'f03-liq-k6', type: 'classify', kind: 'conceptual',

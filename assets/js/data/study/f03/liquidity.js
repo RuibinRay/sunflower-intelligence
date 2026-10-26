@@ -57,32 +57,33 @@ const SBL = R.liquidity({ currentAssets: SB.ca, currentLiabilities: SB.cl, cash:
 // Harbourline (fictional, F00), $ millions
 const HBL = R.liquidity({ currentAssets: HB.currentAssets, currentLiabilities: HB.currentLiabilities, cash: HB.cash, receivables: HBD.receivables });
 
-// The bridge from 2026’s working capital to 2027’s, as a horizontal waterfall.
+// The bridge from 2026’s working capital to 2027’s, as a waterfall: each label sits above its bar so the chart can use
+// the full width and stay legible on a phone (the table above it is the accessible version).
 const bridgeSVG = (() => {
   const rows = [['Working capital, 31 Dec 2026', P26.currentAssets - P26.currentLiabilities, 't'],
     ['Profit kept (net income − dividends)', BR.retained, 'f'],
     ['Cafés’ fit-out, machines and brewer, net', BR.ppe, 'f'],
-    ['Lease payments due in 2028', BR.lease, 'f'],
+    ['Lease liability falling due in 2028', BR.lease, 'f'],
     ['Long-term debt falling due in 2028', BR.debt, 'f'],
     ['Working capital, 31 Dec 2027', L27.workingCapital, 't']];
-  const x0 = 470, scale = 300 / 100000, rowH = 28, top = 10;
+  const lo0 = -60000, hi0 = 55000, left = 8, width = 300, scale = width / (hi0 - lo0);
+  const X = (v) => left + (v - lo0) * scale, rowH = 50, top = 6;
   let run = 0, out = '';
   rows.forEach(([label, v, kind], i) => {
     const y = top + i * rowH;
     const from = kind === 't' ? 0 : run, to = kind === 't' ? v : run + v;
     const lo = Math.min(from, to), hi = Math.max(from, to);
     const fill = kind === 't' ? 'var(--series-3)' : v >= 0 ? 'var(--series-1)' : 'var(--series-2)';
-    out += `<text x="240" y="${y + 17}" text-anchor="end" fill="currentColor">${label}</text>`;
-    out += `<rect x="${(x0 + lo * scale).toFixed(1)}" y="${y + 5}" width="${Math.max(1, (hi - lo) * scale).toFixed(1)}" height="16" fill="${fill}"/>`;
+    out += `<text x="${left}" y="${y + 16}" fill="currentColor">${label}</text>`;
+    out += `<rect x="${X(lo).toFixed(1)}" y="${y + 24}" width="${Math.max(1, (hi - lo) * scale).toFixed(1)}" height="18" fill="${fill}"/>`;
     const amt = `${v < 0 ? '−' : kind === 't' ? '' : '+'}$${Math.abs(v).toLocaleString('en-US')}`;
-    out += v >= 0 ? `<text x="${(x0 + hi * scale + 6).toFixed(1)}" y="${y + 18}" fill="currentColor">${amt}</text>`
-      : `<text x="${(x0 + lo * scale - 6).toFixed(1)}" y="${y + 18}" text-anchor="end" fill="currentColor">${amt}</text>`;
+    out += `<text x="${(X(hi) + 6).toFixed(1)}" y="${y + 39}" fill="currentColor">${amt}</text>`;
     run = to;
   });
-  const h = top + rows.length * rowH + 8;
-  return `<svg viewBox="0 0 640 ${h}" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="12"><line x1="${x0}" y1="${top}" x2="${x0}" y2="${h - 4}" stroke="var(--rule-strong)"/>${out}</svg>`;
+  const h = top + rows.length * rowH + 4;
+  return `<svg viewBox="0 0 440 ${h}" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="15"><line x1="${X(0).toFixed(1)}" y1="${top + 20}" x2="${X(0).toFixed(1)}" y2="${h - 2}" stroke="var(--rule-strong)"/>${out}</svg>`;
 })();
-const bridgeAlt = 'Horizontal waterfall chart from Lantern’s working capital at 31 December 2026 to 31 December 2027. It starts at $30,187. Profit kept in the business adds $20,431. The cafés’ fit-out, machines and the brewer, net of the year’s depreciation, subtract $58,200. The lease payments due in 2028 subtract $37,010. Long-term debt falling due in 2028, net of new long-term borrowing, subtracts $10,841. Working capital ends at −$55,433, below zero.';
+const bridgeAlt = 'Horizontal waterfall chart from Lantern’s working capital at 31 December 2026 to 31 December 2027. It starts at $30,187. Profit kept in the business adds $20,431. The cafés’ fit-out, machines and the brewer, net of the year’s depreciation, subtract $58,200. The lease liability falling due in 2028 subtracts $37,010. Long-term debt falling due in 2028, net of new long-term borrowing, subtracts $10,841. Working capital ends at −$55,433, below zero.';
 
 export default {
   slug: 'liquidity',
@@ -164,7 +165,7 @@ export default {
       ],
     } },
     { p: 'The liabilities need the same care. <b>Accounts payable, wages, interest and income taxes payable</b> are paid in cash, mostly within weeks. <b>Unearned revenue</b> ($9,060 of deposits, workshop places and subscriptions) is different: the cash has already been received, and the obligation is settled by delivering the events, workshops and coffee. It needs cash only if customers ask for refunds, or for the costs of delivering. The <b>current portion of long-term debt</b> ($27,091) is principal Lantern must repay in 2028: the Coastline note ($10,000, due 1 March 2028), the van note’s instalment ($5,000) and the brewer plan’s 2028 principal ($12,091). The <b><g>line of credit</g></b> ($24,000 drawn) is shown as current. The <b>current portion of operating lease liabilities</b> ($37,010) is the part of the cafés’ lease liability that the 2028 rent payments will reduce.' },
-    { callout: 'standards', title: 'Leases in current liabilities', html: 'Under ASC 842, which public companies in the US have applied for periods beginning after 15 December 2018 and other entities for periods beginning after 15 December 2021, a lessee recognises a right-of-use asset and a lease liability for an operating lease. The liability is split between current and noncurrent like a loan, but the right-of-use asset is noncurrent. Every new lease therefore lowers working capital and the current ratio. Before ASC 842 the cafés’ rent would have appeared only as an expense; the payments would still have been due. IFRS 16 has required the same for annual periods beginning on or after 1 January 2019. Leases as debt are taken up in the next lesson, <i>Solvency and leverage</i>.' },
+    { callout: 'standards', title: 'Leases in current liabilities', html: 'Under ASC 842, which public companies in the US have applied for periods beginning after 15 December 2018 and other entities for periods beginning after 15 December 2021, a lessee recognises a right-of-use asset and a lease liability for an operating lease. In a classified balance sheet the liability is split into current and noncurrent parts like any other financial liability, the current part being what is expected to be paid within a year; the right-of-use asset is not split, and Lantern, like most companies, shows it with its noncurrent assets. Every new lease therefore lowers working capital and the current ratio. Before ASC 842 the cafés’ rent would have appeared only as an expense; the payments would still have been due. IFRS 16 has required the same for annual periods beginning on or after 1 January 2019. Leases as debt are taken up in the next lesson, <i>Solvency and leverage</i>.' },
 
     { h: 'Why Lantern’s ratios fell' },
     { p: 'The quickest way to explain a change in working capital uses the accounting equation. Split each side into current and noncurrent parts: current assets + noncurrent assets = current liabilities + noncurrent liabilities + equity. Rearranged:' },
@@ -177,14 +178,14 @@ export default {
       rows: [
         ['Profit kept in the business', '+20,431', 'Net income $22,431 less the $2,000 dividend'],
         ['Cafés’ fit-out and machines, and the brewer, net of depreciation', '−58,200', 'Property and equipment, net, up from $37,200 to $95,400'],
-        ['Lease payments due in 2028', '−37,010', 'Right-of-use asset $173,379 (noncurrent) against noncurrent lease liabilities of $136,369'],
+        ['Lease liability falling due in 2028', '−37,010', 'Right-of-use asset $173,379 (noncurrent) against noncurrent lease liabilities of $136,369'],
         ['Long-term debt falling due in 2028, net of new long-term debt', '−10,841', 'Noncurrent debt down from $25,000 to $14,159'],
       ],
       foot: [['Change in working capital', '−85,620', '']],
     } },
     { figure: { svg: bridgeSVG, caption: 'Lantern’s working capital, 2026 to 2027 (fictional figures in dollars).', alt: bridgeAlt } },
     { p: 'The biggest cause is the cafés. Lantern paid $36,000 for the fit-out and $18,000 for the machines in cash: long-lived assets bought with money that had been working capital. The statement of cash flows tells the same story from the other side. Operations brought in $8,341; buying the fit-out and machines took $54,000; repaying the van note and the brewer plan took $12,750 and the dividend $2,000. The $24,000 drawn on the line of credit filled part of the gap, and cash fell by $36,409. In effect Lantern paid for five-year assets with cash and with a loan due within a year, which is why its working capital went below zero.' },
-    { p: 'The next two causes are not new spending but the passage of time. The leases put $37,010 of 2028 payments into current liabilities. The Coastline note, borrowed in 2026 for two years, is now due on 1 March 2028, and the brewer plan’s 2028 instalments are current. Look at Lantern’s current liabilities by kind and the point is plain: the trade items (payables, wages, interest, unearned revenue and tax) total $26,436, almost exactly the whole of 2026’s current liabilities ($26,289). All of the increase is debt ($51,091) and leases ($37,010).' },
+    { p: 'The next two causes are not new spending but the passage of time. The leases put $37,010 of lease liability into current liabilities: the principal part of 2028’s $48,000 of rent. The Coastline note, borrowed in 2026 for two years, is now due on 1 March 2028, and the brewer plan’s 2028 instalments are current. Look at Lantern’s current liabilities by kind and the point is plain: the trade items (payables, wages, interest, unearned revenue and tax) rose only from $21,289 to $26,436. Of the $88,248 increase in current liabilities, debt and leases account for $83,101: current debt up $46,091 (to $51,091) and the current lease liability of $37,010.' },
     { p: 'The contract asset hides a further weakness. Without it the current ratio would be 0.25, not 0.52. It will turn into cash, $41,120 if the CPI estimate holds, on 31 March 2028, a month after the Coastline note’s $10,000 falls due. Liquidity is a calendar question as much as a ratio question, and the next cash-flow lessons return to what the contract asset means for the quality of 2027’s profit.' },
 
     { h: 'What the balance sheet does not show' },
@@ -305,7 +306,7 @@ export default {
         String.raw`Debt: noncurrent debt fell from $25,000 to <m>10{,}000 + 4{,}159 = 14{,}159</m>, a change of −10,841. The Coastline note ($10,000) and the van’s 2028 instalment ($5,000) moved into current liabilities, and of the brewer plan’s $16,250 only $4,159 is due after 2028.`,
         String.raw`Total: <m>20{,}431 - 58{,}200 - 37{,}010 - 10{,}841 = -85{,}620</m>.`,
       ],
-      answer: 'Profit kept added $20,431; the new long-lived assets took $58,200; the leases’ 2028 payments $37,010; and debt falling due, net, $10,841. Working capital fell by $85,620.',
+      answer: 'Profit kept added $20,431; the new long-lived assets took $58,200; the lease liability falling due in 2028 $37,010; and debt falling due, net, $10,841. Working capital fell by $85,620.',
       interpretation: 'The cafés explain most of the fall: their fit-out and machines were paid for in cash, and their leases bring a year’s rent into current liabilities. Profit was not the problem. A business that funds long-lived assets from working capital and short-term borrowing will see these ratios fall, however well it trades.' },
     { level: 'applied', title: 'Could Lantern meet a 1.2 covenant?',
       fictional: true,
@@ -345,7 +346,7 @@ export default {
     'Liquidity is the ability to pay obligations as they fall due; it is different from profitability and from solvency.',
     'The ladder of measures: current ratio (all current assets), quick ratio (cash, short-term investments and net receivables), cash ratio (cash and short-term investments) and the operating cash flow ratio (a period’s cash from operations against year-end current liabilities).',
     'Classify with care: a contract asset, inventory and prepayments are current but not quick; unearned revenue is settled by delivering; current lease liabilities and current portions of debt are contractual cash payments.',
-    'Lantern’s current ratio fell from 2.15 to 0.52 because it paid for the cafés’ fit-out and machines in cash, took on leases whose 2028 payments are current, saw the Coastline note and the brewer’s instalments fall due within the year, and borrowed $24,000 short-term; its trade liabilities hardly changed.',
+    'Lantern’s current ratio fell from 2.15 to 0.52 because it paid for the cafés’ fit-out and machines in cash, took on leases whose liability falling due in 2028 is current, saw the Coastline note and the brewer’s instalments fall due within the year, and borrowed $24,000 short-term; its trade liabilities rose only modestly.',
     'Working capital equals equity plus noncurrent liabilities minus noncurrent assets, which explains any change by cause.',
     'A ratio below 1 is normal for businesses paid at the till with steady cash flow, such as Starbucks (0.75 in FY2024, with an operating cash flow ratio of 0.67); Lantern’s 0.07 operating cash flow ratio is the real concern.',
     'Window dressing can move a ratio either way: paying liabilities with cash raises a ratio above 1 and lowers one below 1.',
@@ -364,6 +365,7 @@ export default {
     { text: 'U.S. Securities and Exchange Commission (2007). <i>Beginners’ Guide to Financial Statements</i>.', url: 'https://www.sec.gov/reportspubs/investor-publications/investorpubsbegfinstmtguide', checked: '2026-10-26' },
     { text: 'Starbucks Corporation (2024). Form 10-K for the fiscal year ended 29 September 2024: consolidated balance sheets (SEC EDGAR financial report R7).', url: 'https://www.sec.gov/Archives/edgar/data/829224/000082922424000057/R7.htm', checked: '2026-10-26' },
     { text: 'Starbucks Corporation (2024). Form 10-K for the fiscal year ended 29 September 2024: consolidated statements of cash flows (SEC EDGAR financial report R5).', url: 'https://www.sec.gov/Archives/edgar/data/829224/000082922424000057/R5.htm', checked: '2026-10-26' },
+    { text: 'Deloitte. <i>Roadmap: Leases</i>, section 14.2, “Lessee” (presentation: ASC 842-20-45-1, 45-4 and 45-5). DART.', url: 'https://dart.deloitte.com/USDART/home/codification/broad-transactions/asc842-10/roadmap-leasing/chapter-14-presentation/14-2-lessee', checked: '2026-10-26' },
     { text: 'IFRS Foundation. <i>IFRS 16 Leases</i> (standard summary page).', url: 'https://www.ifrs.org/issued-standards/list-of-standards/ifrs-16-leases/', checked: '2026-10-26' },
     { text: 'Deloitte. <i>Roadmap: Leases</i>, section 1.2, “Overview” (ASU 2016-02, ASC 842, effective dates). DART.', url: 'https://dart.deloitte.com/USDART/home/codification/broad-transactions/asc842-10/roadmap-leasing/chapter-1-overview/1-2-overview', checked: '2026-10-26' },
   ],
@@ -407,6 +409,12 @@ export default {
     // current liabilities by kind
     { what: 'Trade current liabilities 2027', value: CL.trade27, shown: 26436 },
     { what: 'Debt in current liabilities 2027', value: CL.debt27, shown: 51091 },
+    { what: 'Trade items 2026', value: P26.currentLiabilities - 5000, shown: 21289 },
+    { what: 'Current debt 2026', value: COMPARATIVE.balance.find((r) => r[0] === 'Current Portion of Long-Term Debt')[1] + COMPARATIVE.balance.find((r) => r[0] === 'Line of Credit')[1], shown: 5000 },
+    { what: 'CL increase', value: P27.currentLiabilities - P26.currentLiabilities, shown: 88248 },
+    { what: 'Debt and leases part of the increase', value: CL.debt27 - 5000 + CL.lease27, shown: 83101 },
+    { what: 'Current debt increase', value: CL.debt27 - 5000, shown: 46091 },
+    { what: '2028 rent', value: 12 * 2 * FACTS.cafes.lease.monthlyEach, shown: 48000 },
     // the bridge
     { what: 'Bridge: retained profit', value: BR.retained, shown: 20431 },
     { what: 'Net income 2027', value: P27.netIncome, shown: 22431 },

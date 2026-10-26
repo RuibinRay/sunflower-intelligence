@@ -1,7 +1,7 @@
 // solvency-and-leverage.js — F03 · Solvency and leverage. Content only; exercises are in solvency-and-leverage.ex.js.
 // Lantern’s figures come from case.js (PERIODS, COMPARATIVE, LEASE, BREWER, FACTS) and the ratios from core/ratios.js.
 // Starbucks FY2024 figures are from its Form 10-K (EDGAR’s XBRL rendering: R7 balance sheet, R3 earnings, R5 cash flows);
-// Harbourline Roasters is F00’s fictional roaster ($ millions). Tidewater Bank (applied example) is fictional.
+// Harbourline Roasters is F00’s fictional roaster ($ millions). Pembury Bank (applied example) is fictional.
 // Lease-adjusted ratios are made consistent here by moving the lease cost’s interest part below EBIT and its
 // amortisation part into D&A, so that debt and EBITDA are adjusted together.
 import { PERIODS, COMPARATIVE, LEASE, BREWER, FACTS } from './case.js?v=18';
@@ -41,7 +41,7 @@ const SBpay = { div: 2263.3 + 2431.8 + 2585.0, buy: 4013.0 + 984.4 + 1266.7, ni:
 // Harbourline (fictional, F00), $ millions
 const HBR = R.solvency({ totalAssets: HBD.totalAssets, totalLiabilities: HBD.totalAssets - HBD.bookEquity, equity: HBD.bookEquity, debt: HB.debt, cash: HB.cash, ebit: HB.ebit, da: HB.da, interestExpense: HBD.interest });
 
-// Tidewater Bank (fictional): maximum net debt ÷ EBITDA of 3.0
+// Pembury Bank (fictional): maximum net debt ÷ EBITDA of 3.0
 const MAX = 3.0, LOAN = 60_000;
 const head = { plain: MAX * ebitda27 - S27.netDebt, leases: MAX * ebitdaAdj - SA.netDebt };
 const pro = { plain: (S27.netDebt + LOAN) / ebitda27, leases: (SA.netDebt + LOAN) / ebitdaAdj, mixed: (S27L.netDebt + LOAN) / ebitda27 };
@@ -88,7 +88,7 @@ export default {
       note: 'Balances at 31 December; 2026’s earnings cover ten months. Debt is interest-bearing debt only; leases are added in the In depth section.',
     } },
     { p: 'Every leverage measure rose and every coverage measure fell. Liabilities went from 54.8% to 80.8% of total assets, and for every dollar of equity Lantern now has $4.22 of liabilities rather than $1.21. Interest coverage fell from 31.43 to 11.39 times. Lantern held more cash than debt at the end of 2026 (negative net debt); a year later its debt exceeded its cash by $58,719.' },
-    { p: 'Two different stories sit inside those numbers. Interest-bearing debt only doubled, from $30,000 to $65,250, and debt to equity rose modestly, from 0.71 to 1.04. Total liabilities rose more than fivefold, from $51,289 to $265,065, and almost two-thirds of the 2027 total is one item: the cafés’ lease liabilities. Whether leases are debt is therefore the most important judgement in Lantern’s solvency analysis, and this lesson takes it slowly.' },
+    { p: 'Two different stories sit inside those numbers. Interest-bearing debt a little more than doubled, from $30,000 to $65,250, and debt to equity rose modestly, from 0.71 to 1.04. Total liabilities rose more than fivefold, from $51,289 to $265,065, and almost two-thirds of the 2027 total is one item: the cafés’ lease liabilities. Whether leases are debt is therefore the most important judgement in Lantern’s solvency analysis, and this lesson takes it slowly.' },
     { callout: 'key', title: 'Say which “debt” you mean', html: 'Analysts use “debt” for at least three things: total liabilities, interest-bearing debt, and interest-bearing debt plus lease liabilities. Lantern’s 2027 “debt to equity” is 4.22, 1.04 or 3.80 depending on the choice. None is wrong; mixing them is. This course uses interest-bearing debt unless it says otherwise, and calls the first ratio liabilities to equity.' },
   ],
 
@@ -117,12 +117,12 @@ export default {
 
     { h: 'Coverage: can earnings carry the debt?' },
     { p: '<b>Interest coverage</b> (times interest earned) divides EBIT by interest expense. EBIT is used because interest is paid out of earnings before tax; for Lantern, which has no income outside its operations, EBIT is operating income. Lantern’s fell from <m>37{,}716 \\div 1{,}200 = 31.43</m> to <m>32{,}787 \\div 2{,}879 = 11.39</m>. <b>EBITDA coverage</b> adds back depreciation and amortisation, which use no cash in the year, and fell less steeply, from 35.43 to 18.27. Because both earnings and interest are flows over the same period, coverage ratios are not distorted by 2026’s ten months.' },
-    { p: 'Two cautions. First, 2026’s EBIT was earned before Ana took any salary; the $48,000 she was paid in 2027 alone is larger than 2027’s EBIT, so 2026’s 31.43 flatters the business. Second, coverage counts interest, not principal. Lantern must repay $51,091 of debt principal in 2028, more than the $42,231 its 2027 EBITDA would leave after interest and tax. A lender looking at repayments as well uses a debt-service measure, comparing cash flow with interest plus scheduled principal.' },
+    { p: 'Two cautions. First, 2026’s EBIT was earned before Ana took any salary; the $48,000 she was paid in 2027 alone is larger than 2027’s EBIT, so 2026’s 31.43 flatters the business. Second, coverage counts interest, not principal. $51,091 of Lantern’s debt principal falls due in 2028 (the $24,000 line may be renewed, but the bank need not renew it), more than the $42,231 its 2027 EBITDA would leave after interest and tax. A lender looking at repayments as well uses a debt-service measure, comparing cash flow with interest plus scheduled principal.' },
     { p: '<b>Net debt to EBITDA</b> asks how many years of EBITDA would repay the debt, net of cash. <g>Net debt</g> is debt minus cash; Lantern’s was −$12,940 at the end of 2026 (more cash than debt) and $58,719 at the end of 2027, or 1.12 times EBITDA. Because it divides a balance by a flow, a part-year needs annualising: 2026’s ten-month EBITDA of $42,516 is $51,019 a year, giving −0.25 rather than −0.30. Lenders often set a maximum for this ratio in loan agreements, and define both sides carefully.' },
 
     { h: 'Leases as debt' },
-    { p: 'An operating lease commits the lessee to fixed payments for years, like a loan used to buy the asset. Since ASC 842 (effective for public companies for periods beginning after 15 December 2018, and for other entities three years later), lessees record that commitment: a <g>right-of-use asset</g> and a <g>lease liability</g> at the present value of the payments. Lantern’s cafés added $202,255 of each on 1 March 2027, discounted at 7.2%; by the year end the liability was $173,379. The liability is on the balance sheet, so it is already in the debt ratio and liabilities to equity. Whether it also belongs in “debt” is the analyst’s choice.' },
-    { callout: 'standards', title: 'Operating leases in the statements under ASC 842 and IFRS 16', html: 'Under US GAAP an operating lease’s cost is one straight-line expense in operating income (Lantern’s Operating Lease Cost, $40,000 for ten months). The interest on the liability is inside that cost, so it is not in interest expense, EBIT is after it, and the payments are operating cash outflows. IFRS 16, effective for annual periods beginning on or after 1 January 2019, has a single lessee model: apart from leases of 12 months or less and of low-value assets, every lease is accounted for like a purchase on credit, with depreciation of the right-of-use asset and interest on the liability. The same café would therefore show higher EBIT and EBITDA, and more interest, under IFRS than under US GAAP. Compare across the two frameworks only after adjusting.' },
+    { p: 'An operating lease commits the lessee to fixed payments for years, like a loan used to buy the asset. Since ASC 842 (effective for public companies for periods beginning after 15 December 2018, and for other entities three years later), lessees record that commitment: a <g>right-of-use asset</g> and a <g>lease liability</g> at the present value of the payments. Lantern’s cafés added $202,255 of each on 1 March 2027, discounted at 7.2%; by the year end the liability was $173,379. The liability is on the balance sheet, so it is already in the debt ratio and liabilities to equity. Whether it also belongs in “debt” is the analyst’s choice: ASC 842 itself characterises operating lease liabilities as operating liabilities rather than debt, so adding them to debt is an adjustment the analyst makes, and states, to see the business’s fixed commitments in full.' },
+    { callout: 'standards', title: 'Operating leases in the statements under ASC 842 and IFRS 16', html: 'Under US GAAP an operating lease’s cost is a single lease expense within income from continuing operations (Lantern’s Operating Lease Cost, $4,000 a month, $40,000 for ten months). The interest on the liability is inside that cost, so it is not in interest expense, EBIT is after it, and the payments are operating cash outflows. IFRS 16, effective for annual periods beginning on or after 1 January 2019, has a single lessee model: apart from leases of 12 months or less and of low-value assets, every lease is accounted for like a purchase on credit, with depreciation of the right-of-use asset and interest on the liability. The same café would therefore show higher EBIT and EBITDA, and more interest, under IFRS than under US GAAP. Compare across the two frameworks only after adjusting.' },
     { p: 'If the lease liability is counted as debt, the income statement must be adjusted to match, or the ratios mix two bases. Treat the lease as a loan throughout: split the $40,000 lease cost into its interest part, $11,124 (the accretion on the liability), and its amortisation part, $28,876. Move the interest below EBIT into interest expense, and add the amortisation to depreciation and amortisation.' },
     { table: {
       caption: 'Lantern 2027, with and without the leases as debt',
@@ -140,7 +140,8 @@ export default {
       ],
       note: 'Adjusted EBITDA adds back the whole lease cost, since the lease is now treated as financing. Adding the lease liability to debt but keeping EBITDA after the lease cost gives net debt ÷ EBITDA of 4.41: debt on one basis, earnings on another.',
     } },
-    { p: 'The adjustment changes the picture more than any other in Lantern’s analysis. Interest coverage falls from 11.39 to 3.14: once the cafés’ rent is treated as financing, nearly a third of Lantern’s earnings before financing costs go to its lenders and landlords. Net debt to EBITDA rises from 1.12 to 2.51. The unadjusted figures are not wrong, but they describe a business that rents its cafés as if it owned them outright.' },
+    { p: 'The adjustment changes the picture more than any other in Lantern’s analysis. Interest coverage falls from 11.39 to 3.14: once the cafés’ rent is treated as financing, nearly a third of Lantern’s earnings before financing costs go to its lenders and landlords. Net debt to EBITDA rises from 1.12 to 2.51. The unadjusted figures are not wrong, but they leave out a five-year commitment that is as fixed as a loan’s.' },
+    { p: 'One detail of the adjustment matters for comparisons. It keeps ASC 842’s amortisation figure ($28,876), which early in a lease is below straight-line depreciation of the right-of-use asset, because the liability’s interest is highest at the start. Under IFRS 16 the same café would depreciate the asset straight-line, <m>202{,}255 \\div 60 \\times 10 = 33{,}709</m> for ten months, so its EBIT would be about $39,078 and its interest coverage 2.79 rather than 3.14. EBITDA, $92,587, is the same either way, because both depreciation and interest are added back.' },
 
     { h: 'When equity is negative' },
     { p: 'Equity is a residual: assets minus liabilities. When a company pays its owners more, over the years, than it earns, or makes large losses, equity can fall below zero, and the company reports a <g>shareholders’ deficit</g>. Starbucks is the best-known example among large companies.' },
@@ -160,8 +161,8 @@ export default {
       ],
       note: 'EBITDA uses the cash-flow statement’s total depreciation and amortisation, 1,592.4, rather than the income statement line, 1,512.6, which excludes amounts recorded within other cost lines. Starbucks’ operating income includes 301.2 of income from equity investees. Source: Form 10-K for the fiscal year ended 29 September 2024.',
     } },
-    { p: 'A debt-to-equity ratio of −2.09 does not mean Starbucks has negative leverage; it means the ratio has stopped working. As equity approaches zero, debt ÷ equity and the equity multiplier rise without limit; when equity crosses zero they flip sign and any comparison breaks. Return on equity fails the same way. With negative equity, use measures that don’t divide by it: debt ratio, debt to EBITDA and coverage. By those, Starbucks covers its interest 9.62 times and its net debt is 1.72 times EBITDA: a company with heavy obligations that its earnings carry comfortably.' },
-    { p: 'Where the deficit came from matters too. In its fiscal years 2022 to 2024 Starbucks paid $7,280.1 million in dividends and $6,264.1 million to repurchase its own shares, $13,544.2 million in all, against net earnings attributable to Starbucks of $11,167.0 million. Paying out more than it earned, financed partly by borrowing, is a choice about capital structure, not a sign of losses. A small business with negative equity from accumulated losses is a very different case, and the debt ratio alone won’t tell them apart: read the statement of changes in equity.' },
+    { p: 'A debt-to-equity ratio of −2.09 does not mean Starbucks has negative leverage; it means the ratio has stopped working. As equity approaches zero, debt ÷ equity and the equity multiplier rise without limit, and debt to capital climbs past 100% (Starbucks’ is 191.6%); when equity crosses zero the first two flip sign and any comparison breaks. Return on equity fails the same way. With negative equity, use measures that don’t divide by it: debt ratio, debt to EBITDA and coverage. By those, Starbucks covers its interest 9.62 times and its net debt is 1.72 times EBITDA: a company with heavy obligations that its earnings carry comfortably.' },
+    { p: 'Where the deficit came from matters too. Starbucks already had a shareholders’ deficit of $5,314.5 million at the start of fiscal 2022. Over fiscal 2022 to 2024 it paid $7,280.1 million in dividends and $6,264.1 million to repurchase its own shares, $13,544.2 million in all, against net earnings attributable to Starbucks of $11,167.0 million: $2,377.2 million more than it earned. Paying out more than it earned, financed partly by borrowing, is a choice about capital structure, not a sign of losses. A small business with negative equity from accumulated losses is a very different case, and the debt ratio alone won’t tell them apart: read the statement of changes in equity.' },
     { p: 'For comparison, Harbourline Roasters, the fictional roaster from F00, has a debt ratio of 54.5%, debt to equity of 0.70, interest coverage of 5.55 and net debt of 1.77 times EBITDA, close to Lantern’s 2026 leverage but with much weaker coverage.' },
   ],
 
@@ -232,12 +233,12 @@ export default {
       interpretation: 'Treated as financing, the cafés make Lantern a heavily leveraged business whose earnings cover its financing costs about three times. That is the comparison a lender would make with a café owner who borrowed to buy its premises.' },
     { level: 'applied', title: 'How much more can Lantern borrow?',
       fictional: true,
-      setup: 'Before accepting Coastline’s 2028 offer, Ana asks Tidewater Bank, a fictional lender, for a quote on a $60,000 five-year loan for the second kitchen. Tidewater’s term sheet allows net debt of at most 3.0 times EBITDA and defines debt to include lease liabilities. Using 2027’s figures, how much headroom does Lantern have, and would the loan fit? Assume the loan is spent on the kitchen, so cash does not rise.',
+      setup: 'Before accepting Coastline’s 2028 offer, Ana asks Pembury Bank, a fictional lender, for a quote on a $60,000 five-year loan for the 2028 expansion. Pembury’s term sheet allows net debt of at most 3.0 times EBITDA and defines debt to include lease liabilities. Using 2027’s figures, how much headroom does Lantern have, and would the loan fit? Assume the loan is spent on the kitchen, so cash does not rise.',
       steps: [
         String.raw`Without leases (for comparison): maximum net debt <m>3.0 \times 52{,}587 = 157{,}761</m>; headroom <m>157{,}761 - 58{,}719 = 99{,}042</m>. After the loan: <m>(58{,}719 + 60{,}000) \div 52{,}587 = 2.26</m>. It fits.`,
         String.raw`With leases, and EBITDA before the lease cost: maximum <m>3.0 \times 92{,}587 = 277{,}761</m>; headroom <m>277{,}761 - 232{,}098 = 45{,}663</m>. After the loan: <m>292{,}098 \div 92{,}587 = 3.15</m>. It doesn’t fit.`,
         String.raw`With leases in debt but EBITDA after the lease cost, Lantern would already be at 4.41 and the loan would take it to <m>292{,}098 \div 52{,}587 = 5.55</m>.`,
-        'Judgement: under Tidewater’s definition the loan is about $14,000 too large on 2027’s earnings. Ana could borrow about $45,000, wait for a year of full café earnings (2027 had only ten months of them), or ask that the definition match debt with EBITDA before lease costs, which the term sheet must state explicitly.',
+        'Judgement: under Pembury’s definition the loan is about $14,000 too large on 2027’s earnings. Ana could borrow about $45,000, wait for a year of full café earnings (2027 had only ten months of them), or ask that the definition match debt with EBITDA before lease costs, which the term sheet must state explicitly.',
       ],
       answer: 'Headroom is $45,663 under a lease-inclusive definition with matching EBITDA, so a $60,000 loan would take Lantern to 3.15, over the 3.0 limit; without leases it would be 2.26 and fit easily.',
       interpretation: 'The same business passes or fails depending on how the agreement defines debt and EBITDA. Read the definitions before the numbers, and test a loan on the figures after the borrowing, not before it.' },
@@ -254,7 +255,7 @@ export default {
     { title: '“Add the leases to debt and keep EBITDA as reported.”', html: 'That puts the leases in the numerator and their cost in the denominator too: Lantern’s net debt to EBITDA comes out at 4.41 instead of 2.51. If the lease is debt, its cost is financing: add the lease cost back to EBITDA, and move its interest part into interest expense for coverage.' },
     { title: 'Using net income for interest coverage', html: 'Net income is after interest and tax, so it understates what is available to pay interest: <m>22{,}431 \\div 2{,}879 = 7.79</m> instead of 11.39 for Lantern. Use EBIT, the earnings before the interest you are testing.' },
     { title: '“Negative debt to equity means low leverage.”', html: 'Starbucks’ −2.09 comes from negative equity, a shareholders’ deficit, not from negative debt. When equity is negative or tiny, debt to equity, the equity multiplier and return on equity are not meaningful; use the debt ratio, debt to EBITDA and coverage instead.' },
-    { title: '“High interest coverage means the debt is safe.”', html: 'Coverage ignores principal. Lantern covers its 2027 interest 11.39 times but must repay $51,091 of principal in 2028, and its lease payments as well. Look at the repayment schedule and the cash flow that will meet it.' },
+    { title: '“High interest coverage means the debt is safe.”', html: 'Coverage ignores principal. Lantern covers its 2027 interest 11.39 times but $51,091 of its debt principal falls due in 2028, and its lease payments as well. Look at the repayment schedule and the cash flow that will meet it.' },
   ],
 
   application: [
@@ -287,6 +288,8 @@ export default {
   references: [
     { text: 'Dahlquist, J. &amp; Knight, R. (2022). <i>Principles of Finance</i>, section 6.4, “Solvency Ratios”. OpenStax.', url: 'https://openstax.org/books/principles-finance/pages/6-4-solvency-ratios', checked: '2026-10-26' },
     { text: 'Deloitte. <i>Roadmap: Leases</i>, section 1.2, “Overview” (ASU 2016-02, ASC 842, effective dates). DART.', url: 'https://dart.deloitte.com/USDART/home/codification/broad-transactions/asc842-10/roadmap-leasing/chapter-1-overview/1-2-overview', checked: '2026-10-26' },
+    { text: 'Deloitte. <i>Roadmap: Leases</i>, section 8.1, “Overview” (lessee accounting). DART.', url: 'https://dart.deloitte.com/USDART/home/codification/broad-transactions/asc842-10/roadmap-leasing/chapter-8-lessee-accounting/8-1-overview', checked: '2026-10-26' },
+    { text: 'Deloitte. <i>Roadmap: Leases</i>, section 14.2, “Lessee” (presentation: ASC 842-20-45-1, 45-4 and 45-5). DART.', url: 'https://dart.deloitte.com/USDART/home/codification/broad-transactions/asc842-10/roadmap-leasing/chapter-14-presentation/14-2-lessee', checked: '2026-10-26' },
     { text: 'IFRS Foundation. <i>IFRS 16 Leases</i> (standard summary page).', url: 'https://www.ifrs.org/issued-standards/list-of-standards/ifrs-16-leases/', checked: '2026-10-26' },
     { text: 'Starbucks Corporation (2024). Form 10-K for the fiscal year ended 29 September 2024: consolidated balance sheets (SEC EDGAR financial report R7).', url: 'https://www.sec.gov/Archives/edgar/data/829224/000082922424000057/R7.htm', checked: '2026-10-26' },
     { text: 'Starbucks Corporation (2024). Form 10-K for the fiscal year ended 29 September 2024: consolidated statements of earnings (SEC EDGAR financial report R3).', url: 'https://www.sec.gov/Archives/edgar/data/829224/000082922424000057/R3.htm', checked: '2026-10-26' },
@@ -392,6 +395,14 @@ export default {
     { what: 'Starbucks leases about two-thirds of debt', value: SB.leases / SB.debt, shown: 0.66, tol: 0.01 },
     { what: 'Starbucks dividends FY22–24', value: SBpay.div, shown: 7280.1, tol: 0.05 },
     { what: 'Starbucks buybacks FY22–24', value: SBpay.buy, shown: 6264.1, tol: 0.05 },
+    { what: 'Starbucks deficit at start of FY2022', value: -5314.5, shown: -5314.5 },
+    { what: 'Starbucks paid out more than earned', value: SBpay.div + SBpay.buy - SBpay.ni, shown: 2377.2, tol: 0.05 },
+    { what: 'Starbucks debt to capital', value: SBR.debtToCapital * 100, shown: 191.6, tol: 0.05 },
+    { what: 'IFRS straight-line depreciation (10 months)', value: LEASE.initial / 60 * 10, shown: 33709, tol: 0.5 },
+    { what: 'IFRS EBIT', value: P27.ebit + LEASE.cost2027 - LEASE.initial / 60 * 10, shown: 39078, tol: 0.5 },
+    { what: 'IFRS coverage', value: (P27.ebit + LEASE.cost2027 - LEASE.initial / 60 * 10) / SA.interest, shown: 2.79 },
+    { what: 'IFRS EBITDA', value: (P27.ebit + LEASE.cost2027 - LEASE.initial / 60 * 10) + P27.da + LEASE.initial / 60 * 10, shown: 92587, tol: 0.5 },
+    { what: 'Lantern debt more than doubled', value: P27.debt / P26.debt, shown: 2.18 },
     { what: 'Starbucks payouts FY22–24', value: SBpay.div + SBpay.buy, shown: 13544.2, tol: 0.05 },
     { what: 'Starbucks net earnings FY22–24', value: SBpay.ni, shown: 11167.0, tol: 0.05 },
     // Harbourline
@@ -399,7 +410,7 @@ export default {
     { what: 'Harbourline D/E', value: HBR.debtToEquity, shown: 0.70 },
     { what: 'Harbourline coverage', value: HBR.interestCoverage, shown: 5.55 },
     { what: 'Harbourline ND/EBITDA', value: HBR.netDebtToEbitda, shown: 1.77 },
-    // Tidewater
+    // Pembury
     { what: 'Max net debt without leases', value: MAX * ebitda27, shown: 157761 },
     { what: 'Headroom without leases', value: head.plain, shown: 99042 },
     { what: 'Pro forma without leases', value: pro.plain, shown: 2.26 },
