@@ -297,7 +297,7 @@ export const independent = [
     prompt: 'Fenwick Logistics (fictional) hires only applicants who score above 70 on its aptitude test. Among hired drivers, the score and on-time deliveries correlate r = 0.15. HR proposes dropping the test because “it barely predicts performance”. What is the strongest objection?',
     options: [
       'Hired drivers cover only the top of the score range, which shrinks r; the test may separate good and poor drivers well across all applicants.',
-      'An r of 0.15 is statistically significant with enough drivers, so the test must be kept for that reason alone.',
+      'An r of 0.15 is statistically significant once enough drivers are included, so the test must be kept for that reason alone, whatever HR thinks.',
       'The correlation should be computed with Spearman’s ρ, which would show that the test predicts much better.',
       'Performance is caused by many factors, so no single test could ever be expected to correlate with it.',
     ],
@@ -316,7 +316,7 @@ export const check = [
     id: 'b05-nonlin-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Which statement best describes what Pearson’s r measures?',
     options: [
-      'How closely the points cluster around a single straight line.',
+      'How closely the points hug a straight line.',
       'How strongly y depends on x, whatever the shape of the link.',
       'How steeply y rises or falls as x increases by one unit.',
       'Whether the points follow any consistent increasing pattern.',
@@ -374,7 +374,7 @@ export const check = [
     id: 'b05-nonlin-k5', type: 'mc', kind: 'conceptual',
     prompt: 'Peak load and peak wait have r = 0.83 across 612 café-days, r = −0.10 for loads of 7 or less and r = 0.93 above 7. What does the overall r of 0.83 fail to show?',
     options: [
-      'That waits barely change below a load of about 7 and rise steeply above it.',
+      'That waits are flat below a load of about 7 and steep above it.',
       'That waits and load are positively related across the year as a whole.',
       'That a straight line misses many of the points by a sizeable amount.',
       'That the busiest café-days tend to have the longest waits on average.',
@@ -392,8 +392,8 @@ export const check = [
     prompt: 'An analyst replaces both variables by their logs. Which of Pearson’s r and Spearman’s ρ can change?',
     options: [
       'Only Pearson’s r: logs change the distances between values but keep their order.',
-      'Only Spearman’s ρ: logs change the ranks but keep the straight-line pattern.',
-      'Both, because any transformation of the data changes every correlation.',
+      'Only Spearman’s ρ: logs change the ranks of the values but keep the straight-line pattern.',
+      'Both, because any transformation of the data changes every correlation computed from it.',
       'Neither, because logs are a monotonic transformation of both variables.',
     ],
     answer: 0,

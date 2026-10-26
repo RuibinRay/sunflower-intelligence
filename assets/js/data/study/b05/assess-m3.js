@@ -41,7 +41,7 @@ export const items = [
     prompt: 'Across 300 days, a shop’s daily high temperature and its sales have r = 0.45. One extra day is added: an ordinary temperature, but record sales from a private event. What happens to r, and why?',
     options: [
       'It falls, because the new day sits far above the pattern at an ordinary temperature and inflates the spread of sales.',
-      'It rises, because a record value adds a large positive product of z-scores, whatever the temperature that day.',
+      'It rises, because a record value adds a large positive product of z-scores, whatever the temperature happened to be that day.',
       'It barely changes, because one day among 301 has a weight of only about a third of one per cent in r.',
       'It becomes negative, because the new day lies more than three standard deviations from the mean of sales.',
     ],
@@ -72,8 +72,8 @@ export const items = [
     prompt: 'Pinecrest Clinics (fictional) correlates weekly appointment numbers with patient waiting times across 52 weeks: r = 0.38. One week, during a system outage that is fully documented, waiting times were four times their usual level; without it r = 0.61. Which write-up is best?',
     options: [
       'r = 0.61 across 51 normal weeks; including the documented outage week, r = 0.38. The outage, not the appointment numbers, explains that week’s waits.',
-      'r = 0.61 across the year; the outage week was removed from the data because it was an outlier that weakened the correlation.',
-      'r = 0.38 across all 52 weeks, since removing a week is never acceptable and the outage is part of the clinic’s real experience.',
+      'r = 0.61 across the year; the outage week was removed from the data before the analysis, because it was an outlier that clearly weakened the correlation.',
+      'r = 0.38 across all 52 weeks, since removing any week is never acceptable and the outage week is part of the clinic’s real experience of waiting times.',
       'r = 0.50, the average of the two correlations, which balances the outage week against the 51 normal weeks of the year.',
     ],
     answer: 0,
@@ -134,7 +134,7 @@ export const items = [
     id: 'b05-m3-7', lesson: 'groups-and-simpsons-paradox', type: 'mc', kind: 'conceptual',
     prompt: 'Northway Couriers (fictional) has a city depot and a rural depot. Inside each depot, days with more parcels per driver have higher on-time rates (drivers’ routes are denser). Pooled across both depots, more parcels per driver go with lower on-time rates. Which fact about the depots would explain the reversal?',
     options: [
-      'The city depot handles many more parcels per driver and has lower on-time rates than the rural depot overall.',
+      'The city depot carries more parcels per driver and is less punctual overall.',
       'The city depot has more drivers than the rural depot, so it contributes more days to the pooled data.',
       'Both depots have the same average on-time rate, but the city depot’s rates vary more from day to day.',
       'The rural depot’s parcels per driver vary more from day to day than the city depot’s parcels do.',

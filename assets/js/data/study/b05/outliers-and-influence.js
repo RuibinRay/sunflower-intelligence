@@ -120,7 +120,7 @@ export default {
     { callout: 'key', title: 'Look before you compute', html: 'A correlation summarises a cloud of points in one number, and one point can write most of that number. Plot the data first, find the points that sit apart, and ask of each one: is it real, and does the conclusion depend on it?' },
 
     { h: 'Errors and genuine extremes' },
-    { p: 'The slip and the festival days are both outliers, but they call for opposite treatment. The slip is an error with a known correct value: fix it, note the fix in the <g>cleaning log</g>, and carry on with the corrected log. The festival days are real: Harbour Days and the Fourth of July really did bring 500 to 620 people through Harbourside’s door. Deleting them would describe a café that never had a festival. Keeping them without comment would let five days speak for 306. The honest course is to report the correlation both ways and say what the difference means.' },
+    { p: 'The slip and the festival days are both outliers, but they call for opposite treatment. The slip is an error with a known correct value: fix it, note the fix in the <g>cleaning log</g>, and carry on with the corrected log. The festival days are real: Harbour Days, the Fourth of July weekend and the Regatta really did bring 500 to 620 people through Harbourside’s door. Deleting them would describe a café that never had a festival. Keeping them without comment would let five days speak for 306. The honest course is to report the correlation both ways and say what the difference means.' },
   ],
 
   theory: [
@@ -211,7 +211,7 @@ export default {
       steps: [
         'Check the festival days at the source: the door counter, the till and the roster all confirm them. They are genuine, so they stay in the log.',
         'Measure their influence: without the five days r = 0.476 (301 days); leaving out 29 May alone gives 0.595. Spearman’s ρ is 0.420 with them and 0.391 without, so in ranks the festivals matter much less.',
-        'Ask what the question is about. The roster rule is for ordinary days, and festival days are planned separately, with extra staff booked weeks ahead. For ordinary days the relevant figure is 0.48; the 0.67 is largely five days of crowds.',
+        'Ask what the question is about. The roster rule is for ordinary days, and festival days are planned separately, with extra staff rostered for each one. For ordinary days the relevant figure is 0.48; the 0.67 is largely five days of crowds.',
         'Write both down: “Across all 306 days footfall and the peak wait have r = 0.67; without the five festival days, which are rostered separately, r = 0.48. On ordinary days busier mornings go with longer waits, but footfall alone leaves most of the variation in waits unexplained.”',
       ],
       answer: 'Report r = 0.48 for ordinary days as the figure for the roster rule, with r = 0.67 for all days beside it and the reason for the difference.',

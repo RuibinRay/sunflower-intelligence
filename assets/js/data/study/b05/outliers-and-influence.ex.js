@@ -127,7 +127,7 @@ export const guided = [
         id: 'b05-out-g1-s3', type: 'mc',
         prompt: `14 September converts 5.1% of its visitors; every other day converts between ${convLo}% and ${convHi}%. The door counter’s own export for 14 September says 256. What should Ana do?`,
         options: [
-          'Replace 2,566 with 256, record the correction and its source in the cleaning log, and recompute r.',
+          'Correct it to 256, log the fix and its source, and recompute r.',
           'Delete the 14 September row, since a point that lowers r this much can’t be trusted.',
           'Keep 2,566 and report r as it is, because changing data after seeing a result is never allowed.',
           'Switch to Spearman’s ρ, which is robust to outliers, and leave the footfall as typed.',
@@ -185,7 +185,7 @@ export const guided = [
     prompt: 'Across Harbourside’s 306 days, footfall and the peak wait have r = 0.67; without the five festival days, which are confirmed by the till and rostered separately, r = 0.48. Ana is writing the rule for ordinary days’ rosters. Which report is best?',
     options: [
       'Use 0.48 for the ordinary-day rule and give 0.67 for all days beside it, saying the festivals account for the difference.',
-      'Use 0.67, because the festival days are genuine and genuine data must never be set aside for any purpose.',
+      'Use 0.67 alone, because the festival days are genuine, and genuine data must never be set aside or reported separately for any purpose.',
       'Use 0.48 and leave the festival days out of the report, since they would only confuse readers of the rule.',
       'Use the average of the two, 0.58, which balances the festival days against the ordinary ones.',
     ],
@@ -251,8 +251,8 @@ export const independent = [
     prompt: 'Ten fictional points rise together with r = 0.96. An eleventh point is added far to the right of the others, at exactly the height the pattern would lead you to expect. What happens to r?',
     options: [
       'It rises, because the new point adds a large positive product of z-scores and stretches the pattern.',
-      'It falls, because any outlier inflates a standard deviation and so weakens the correlation.',
-      'It stays the same, because the point lies exactly on the pattern of the other ten points.',
+      'It falls, because any outlier inflates a standard deviation, and that always weakens the correlation.',
+      'It stays the same, because a point lying exactly on the pattern of the other ten points adds nothing new.',
       'It becomes negative, because the point is more than three standard deviations from the mean.',
     ],
     answer: 0,
@@ -294,7 +294,7 @@ export const check = [
     id: 'b05-out-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Millbrook’s mistyped footfall (2,566 for 256) lowered r for footfall and transactions across 612 café-days from 0.981 to 0.679. Its own term in Σ z_x z_y ÷ (n − 1) was only +0.021. How did it lower r so much?',
     options: [
-      'It inflated the standard deviation of footfall, which shrank every other day’s footfall z-score.',
+      'It inflated the SD of footfall, shrinking every other day’s footfall z-score.',
       'It added a large negative product of z-scores, which cancelled most of the other days’ terms.',
       'It reduced the number of pairs, because CORREL skips values that are far from the mean.',
       'It changed the sign of the covariance between footfall and the number of transactions.',
@@ -371,7 +371,7 @@ export const check = [
     prompt: 'A leave-one-out analysis of Harbourside’s footfall and peak waits shows that removing 29 May (Harbour Days, 620 visitors, a 15.3-minute wait) changes r from 0.673 to 0.595, more than any other day. A colleague says: “Then 29 May must be a recording error; drop it.” How should Ana respond?',
     options: [
       'Influence isn’t error: check 29 May against the till and roster, and if it is genuine keep it and report r both ways.',
-      'Agree, since the most influential point in a leave-one-out analysis is by definition an error that should be removed.',
+      'Agree, since the most influential point in a leave-one-out analysis is by definition a recording error that should be removed.',
       'Agree only if r without 29 May is closer to the value she expected before looking at the data.',
       'Disagree, because points should never be removed from a dataset under any circumstances whatsoever.',
     ],

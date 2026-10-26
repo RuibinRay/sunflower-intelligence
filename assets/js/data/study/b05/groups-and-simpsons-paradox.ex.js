@@ -145,7 +145,7 @@ export const guided = [
         prompt: 'Pooled r is negative, Harbourside’s r is positive (and Millbrook’s is too), and Millbrook’s mean footfall is far higher. What explains the negative pooled r?',
         options: [
           'Millbrook is busier and has smaller tickets, so the gap between the cafés outweighs the positive link inside each.',
-          'Twelve days per café are too few for a correlation, so the pooled figure, from 24 days, is the more reliable one.',
+          'Twelve days per café are too few for a correlation, so the pooled figure, from 24 days, is the more reliable of the three.',
           'The two cafés’ tickets are measured differently, so pooling them mixes two incompatible measures.',
           'Busy days at Millbrook lower the ticket at Harbourside, because customers move between the cafés.',
         ],
@@ -277,7 +277,7 @@ export const check = [
     id: 'b05-simp-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Footfall and average ticket have r = 0.735 at Harbourside and 0.517 at Millbrook, but −0.324 for both cafés pooled. Which condition is needed for such a reversal?',
     options: [
-      'The cafés differ in both mean footfall and mean ticket, in the direction opposite to the link inside them.',
+      'The cafés differ in both means, in the direction opposite to the link inside each café.',
       'One café has many more days of data than the other, so its relationship dominates the pooled figure.',
       'The relationship inside each café is weak, so that a few unusual days can change the pooled sign.',
       'Footfall and ticket are measured on different scales, so their pooled correlation has no meaning.',
@@ -319,9 +319,9 @@ export const check = [
     prompt: 'Halden Foods (fictional) runs 40 stores. Across stores, larger stores have lower profit margins (r = −0.6). Inside every store, weeks with more customers have higher margins. The finance director wants to cap customer numbers in busy weeks “to protect margins”. What should the analyst say?',
     options: [
       'The store-level figure compares stores; inside each store busy weeks have higher margins, so capping would cut margins.',
-      'The director is right, because the store-level figure uses all 40 stores and is therefore the more reliable result.',
+      'The director is right, because the store-level figure uses all 40 stores and is therefore the more reliable of the two results.',
       'Both figures are valid, so the chain should cap customers at large stores and encourage them at small stores.',
-      'Neither figure can be used, because Simpson’s paradox shows that correlations in grouped data are meaningless.',
+      'Neither figure can be used, because Simpson’s paradox shows that correlations computed from grouped data are always meaningless.',
     ],
     answer: 0,
     feedback: {
@@ -355,7 +355,7 @@ export const check = [
       'Plot the data coloured by branch and compute the correlation within each branch as well as pooled.',
       'Test the pooled correlation for significance, and report it if the p-value is below 0.05.',
       'Switch to Spearman’s ρ, which removes the influence of differences between branches.',
-      'Average overtime and complaints by branch and correlate the averages, which is less noisy.',
+      'Average overtime and complaints by branch and correlate the averages, which is less noisy than the daily data.',
     ],
     answer: 0,
     feedback: {
