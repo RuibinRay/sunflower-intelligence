@@ -20,7 +20,7 @@ export const widgets = {
     adjust: [{
       id: 'no-contract', period: 1,
       label: '2027 without the law firm’s unbilled revenue ($30,840) and the tax on it',
-      delta: { revenue: -contract, creditSales: -contract, grossProfit: -contract, operatingIncome: -contract, ebit: -contract, pretax: -contract,
+      delta: { revenue: -contract, grossProfit: -contract, operatingIncome: -contract, ebit: -contract, pretax: -contract,
         tax: -taxOnContract, netIncome: -(contract - taxOnContract), contractAsset: -contract, currentAssets: -contract, totalAssets: -contract,
         currentLiabilities: -taxOnContract, totalLiabilities: -taxOnContract, equity: -(contract - taxOnContract), retainedEarnings: -(contract - taxOnContract) },
     }],

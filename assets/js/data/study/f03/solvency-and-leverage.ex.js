@@ -6,7 +6,6 @@ import { HARBOURLINE as HB, HARBOURLINE_DETAIL as HBD } from '../f00/case.js?v=1
 import * as R from '../../../core/ratios.js?v=18';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
-const leaseInt = LEASE.interest2027, leaseAmort = LEASE.cost2027 - LEASE.interest2027;
 const x2 = (v) => (Number.isFinite(v) ? v.toFixed(2) : 'not meaningful');
 const pct = (v) => `${(v * 100).toFixed(1)}%`;
 const money = (v) => `${v < 0 ? '−' : ''}$${Math.abs(Math.round(v)).toLocaleString('en-US')}`;
@@ -23,10 +22,6 @@ export const widgets = {
     ],
     ratios: ['debtRatio', 'liabilitiesToEquity', 'debtToEquity', 'debtToCapital', 'equityMultiplier', 'interestCoverage', 'netDebtToEbitda'],
     toggles: ['leases', 'annualise'],
-    adjust: [
-      { id: 'leasecost', label: '2027: treat the lease cost as financing in the income statement (interest $11,124 below EBIT; amortisation $28,876 into D&A)', period: 1,
-        delta: { ebit: leaseInt, interestExpense: leaseInt, da: leaseAmort } },
-    ],
     select: 'debtToEquity',
     note: 'The consistent lease-adjusted view needs both boxes: leases in debt and the lease cost treated as financing. With only the first, net debt ÷ EBITDA mixes two bases (4.41 for Lantern in 2027). Annualising matters only for 2026’s net debt ÷ EBITDA; coverage divides two flows of the same period.',
   },

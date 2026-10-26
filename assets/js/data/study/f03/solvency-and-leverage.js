@@ -9,7 +9,7 @@ import { HARBOURLINE as HB, HARBOURLINE_DETAIL as HBD } from '../f00/case.js?v=1
 import * as R from '../../../core/ratios.js?v=18';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
-const S26 = R.solvency(P26), S27 = R.solvency(P27), S27L = R.solvency(P27, { withLeases: true });
+const S26 = R.solvency(P26), S27 = R.solvency(P27), SA = R.solvency(P27, { withLeases: true });   // SA: leases as debt, earnings adjusted
 const b27 = (label) => COMPARATIVE.balance.find((r) => r[0] === label)[2];
 const pct = (v) => `${(v * 100).toFixed(1)}%`;
 const x2 = (v) => v.toFixed(2);
@@ -18,9 +18,10 @@ const ebitda26 = P26.ebit + P26.da, ebitda27 = P27.ebit + P27.da;
 const ebitda26a = R.annualise(ebitda26, 10);
 // leases treated like loans in the income statement too
 const leaseInt = LEASE.interest2027, leaseAmort = LEASE.cost2027 - LEASE.interest2027;      // 11,124 and 28,876
-const ADJ = { ...P27, ebit: P27.ebit + leaseInt, interestExpense: P27.interestExpense + leaseInt, da: P27.da + leaseAmort };
-const SA = R.solvency(ADJ, { withLeases: true });
-const ebitdaAdj = ADJ.ebit + ADJ.da;                                                          // 92,587
+const ADJ = { ebit: SA.ebit, interestExpense: SA.interest };                                  // 43,911 and 14,003
+const ebitdaAdj = SA.ebitda;                                                                  // 92,587
+// the classic slip: leases in debt, EBITDA left after the lease cost (computed by hand)
+const S27L = { debt: SA.debt, netDebt: SA.netDebt, netDebtToEbitda: SA.netDebt / ebitda27 };   // 4.41
 // the composition of 2027’s liabilities
 const opLiab27 = P27.totalLiabilities - P27.debt - P27.leaseLiabilities;                     // 26,436
 // the van note: $20,000 at 6%, $5,000 a year from 1 June 2027
@@ -369,6 +370,7 @@ export default {
     { what: 'Lease-adjusted EBIT', value: ADJ.ebit, shown: 43911 },
     { what: 'Lease-adjusted interest', value: ADJ.interestExpense, shown: 14003 },
     { what: 'Lease-adjusted EBITDA', value: ebitdaAdj, shown: 92587 },
+    { what: 'Lease-adjusted EBITDA by parts', value: SA.ebit + P27.da + leaseAmort, shown: 92587 },
     { what: 'Lease-adjusted EBITDA = EBITDA + lease cost', value: ebitda27 + LEASE.cost2027, shown: 92587 },
     { what: 'Lease-adjusted D/E', value: SA.debtToEquity, shown: 3.80 },
     { what: 'Lease-adjusted D/C', value: SA.debtToCapital * 100, shown: 79.2, tol: 0.05 },
