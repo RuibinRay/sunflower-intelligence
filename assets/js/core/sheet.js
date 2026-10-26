@@ -824,6 +824,14 @@ FN['RANK.EQ'] = (args, ctx) => {
   return 1 + xs.filter((v) => (asc ? v < x : v > x)).length;
 };
 FN.RANK = FN['RANK.EQ'];
+FN['RANK.AVG'] = (args, ctx) => {
+  const x = numArg(args[0], ctx); if (isErr(x)) return x;
+  const xs = numbersOf([args[1]], ctx); if (isErr(xs)) return xs;
+  const asc = args[2] && numArg(args[2], ctx, 0) !== 0;
+  const ties = xs.filter((v) => p15(v) === p15(x)).length;
+  if (!ties) return ERR.NA;
+  return 1 + xs.filter((v) => (asc ? v < x : v > x)).length + (ties - 1) / 2;
+};
 FN.CORREL = (args, ctx) => { const p = pairs(args[0], args[1], ctx); if (isErr(p)) return p; if (p.xs.length < 2) return ERR.DIV0; const f = linfit(p.xs, p.ys); return Number.isFinite(f.r) ? f.r : ERR.DIV0; };
 FN.PEARSON = FN.CORREL;
 FN.RSQ = (args, ctx) => { const r = FN.CORREL(args, ctx); return isErr(r) ? r : r * r; };
@@ -1193,6 +1201,10 @@ FN.INT = num1(Math.floor);
 FN.SQRT = num1((n) => (n < 0 ? ERR.NUM : Math.sqrt(n)));
 FN.EXP = num1(Math.exp);
 FN.LN = num1((n) => (n <= 0 ? ERR.NUM : Math.log(n)));
+FN.FISHER = num1((n) => (n <= -1 || n >= 1 ? ERR.NUM : Math.atanh(n)));
+FN.FISHERINV = num1(Math.tanh);
+FN.TANH = num1(Math.tanh);
+FN.ATANH = num1((n) => (n <= -1 || n >= 1 ? ERR.NUM : Math.atanh(n)));
 FN.LOG10 = num1((n) => (n <= 0 ? ERR.NUM : Math.log10(n)));
 FN.SIGN = num1(Math.sign);
 FN.POWER = (args, ctx) => binop('^', scalar(args[0], ctx), scalar(args[1], ctx));
@@ -1472,7 +1484,7 @@ const LIFT = {
   'F.DIST': [0, 1, 2, 3], 'F.DIST.RT': [0, 1, 2], 'F.INV': [0, 1, 2], 'F.INV.RT': [0, 1, 2],
   'CONFIDENCE.NORM': [0, 1, 2], 'CONFIDENCE.T': [0, 1, 2], COMBIN: [0, 1], PERMUT: [0, 1], FACT: [0],
   LARGE: [1], SMALL: [1], 'PERCENTRANK.INC': [1, 2], 'PERCENTRANK.EXC': [1, 2], EXACT: [0, 1],
-  'RANK.EQ': [0, 2], RANK: [0, 2],
+  'RANK.EQ': [0, 2], RANK: [0, 2], 'RANK.AVG': [0, 2],
 };
 for (const [name, pos] of Object.entries(LIFT)) {
   const base = FN[name];
