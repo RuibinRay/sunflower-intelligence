@@ -370,7 +370,7 @@ export const check = [
     prompt: 'A leave-one-out analysis of Harbourside’s footfall and peak waits shows that removing 29 May (Harbour Days, 620 visitors, a 15.3-minute wait) changes r from 0.673 to 0.595, more than any other day. A colleague says: “Then 29 May must be a recording error; drop it.” How should Ana respond?',
     options: [
       'Influence isn’t error: check 29 May against the till and roster, and if it is genuine keep it and report r both ways.',
-      'Agree, since a single day that moves r by almost 0.08 is more likely to be a recording slip than a real day.',
+      'Agree, since a single day that moves r by almost 0.08 is more likely to be a recording slip than a real day of trade.',
       'Agree only if r without 29 May is closer to the value she expected before looking at the data.',
       'Disagree, and report r = 0.673 as the only figure, because a genuine day belongs in the analysis.',
     ],
