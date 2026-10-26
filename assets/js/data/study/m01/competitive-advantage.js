@@ -1,7 +1,7 @@
 // competitive-advantage.js — M01 · Competitive advantage. Content only; exercises are in competitive-advantage.ex.js.
 // Lantern and Brewline facts come from ./case.js (fictional); `checks` recompute them from that file. Every other
 // business is fictional. The lesson discusses Lantern's options but leaves the choice of strategy to the course project.
-import { BUSINESS, CLIENT_INTERVIEWS, COMPETITOR } from './case.js?v=17';
+import { BUSINESS, CLIENT_INTERVIEWS, COMPETITOR } from './case.js?v=18';
 
 const c = BUSINESS.catering;
 const R = CLIENT_INTERVIEWS.reasons;

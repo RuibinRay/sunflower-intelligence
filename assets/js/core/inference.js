@@ -6,7 +6,7 @@
 // numbers or a summary { n, mean, sd }; variances and standard deviations are sample ones (n − 1) unless named
 // otherwise; every p-value is computed from the tail it names, never as 1 − (a value near 1), so small p-values keep
 // their precision.
-import { lnGamma, betaInc, gammaP, tQuantile, normQuantile, mean as meanOf, variance as varOf, sum as sumOf } from './stats.js?v=17';
+import { lnGamma, betaInc, gammaP, tQuantile, normQuantile, mean as meanOf, variance as varOf, sum as sumOf } from './stats.js?v=18';
 
 // ---------------------------------------------------------------- special functions with accurate upper tails
 /** Regularized upper incomplete gamma Q(a, x) = 1 − P(a, x), computed directly in the upper tail. */

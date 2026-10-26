@@ -1,7 +1,7 @@
 // price-response.js — M02 · Price, demand and pricing tactics. Content only; exercises are in price-response.ex.js.
 // Lantern figures come from ./market.js (fictional). The Lantern price test is hypothetical, invented for teaching.
 // The simulator figures quoted in the application and the Explore section are recomputed with the engine (mixsim.js).
-import { simulate, elasticity, DEFAULT_PLAN } from '../../../core/mixsim.js?v=17';
+import { simulate, elasticity, DEFAULT_PLAN } from '../../../core/mixsim.js?v=18';
 
 const simAt = (price) => simulate({ ...DEFAULT_PLAN, price }).year;
 const qNeeded = 400 * (3.49 * 0.68 - 0.74) / (3.14 * 0.68 - 0.74); // cans per store that keep contribution unchanged

@@ -1,7 +1,7 @@
 // Lesson: the cost of capital (CAPM and WACC).
 // `checks` recompute every number printed in the worked example; tests/lessons.test.mjs compares them.
-import * as F from '../../core/format.js?v=17';
-import { wacc } from '../../core/fin.js?v=17';
+import * as F from '../../core/format.js?v=18';
+import { wacc } from '../../core/fin.js?v=18';
 
 const EX = { rf: 0.045, beta: 0.9, erp: 0.055, kd: 0.07, tax: 0.21, equity: 750, debt: 250 };
 

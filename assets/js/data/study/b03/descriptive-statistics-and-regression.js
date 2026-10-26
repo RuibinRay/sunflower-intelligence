@@ -3,8 +3,8 @@
 // withoutBulk, bulk) and the 2026 catering events (EVENTS; DERIVED.regression.simple for the 75 one-day events and
 // DERIVED.regression.allEvents with the two-day conference). The multiple regression and the baristas variable are left
 // to the project. M01's "about $9 a head" is the case's rule of thumb. Every figure printed is recomputed in `checks`.
-import { ORDERS, ORDER_COLUMNS, EVENTS, EVENT_COLUMNS, DERIVED as D } from './case.js?v=17';
-import { tQuantile } from '../../../core/stats.js?v=17';
+import { ORDERS, ORDER_COLUMNS, EVENTS, EVENT_COLUMNS, DERIVED as D } from './case.js?v=18';
+import { tQuantile } from '../../../core/stats.js?v=18';
 
 // ---------------------------------------------------------------- statistics, written out as Excel defines them
 const sum = (a) => a.reduce((s, x) => s + x, 0);

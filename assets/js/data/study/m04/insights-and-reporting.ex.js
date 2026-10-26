@@ -1,8 +1,8 @@
 // insights-and-reporting.ex.js — M04 · Insights and reporting: widgets, practice and the knowledge check (answer keys live
 // here). Lantern's figures come from case.js (the survey, focus groups, price audit and sizing); the bookshop, bakery
 // chain, bus company and catering example are fictional. Every num item's `check` recomputes its answer.
-import { RESPONDENTS, STRATA, PRICE_AUDIT, DEFAULT_PLAN, COLD_BREW_SIZING, CLIENT_INTERVIEWS, DERIVED as D } from './case.js?v=17';
-import { normInv } from '../../../core/inference.js?v=17';
+import { RESPONDENTS, STRATA, PRICE_AUDIT, DEFAULT_PLAN, COLD_BREW_SIZING, CLIENT_INTERVIEWS, DERIVED as D } from './case.js?v=18';
+import { normInv } from '../../../core/inference.js?v=18';
 
 const R = RESPONDENTS, N = R.length, Z = normInv(0.975);
 const byS = STRATA.map((_, h) => R.filter((r) => r.stratum === h));

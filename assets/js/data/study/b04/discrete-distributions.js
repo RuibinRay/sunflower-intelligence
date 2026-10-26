@@ -4,10 +4,10 @@
 // (PRODUCTS) for the stock decision. The Christmas market stall, Ana's demand probabilities and the January markdown are
 // fictional and labelled. The formal goodness-of-fit test of the Poisson model is module 4's. Every printed figure is
 // recomputed in `checks`.
-import { ORDERS_PER_DAY, CHANNEL_SUBSCRIPTION as CS, DERIVED as D } from './case.js?v=17';
-import { PRODUCTS } from '../b03/case.js?v=17';
-import { binomPmf, binomCdf, binomSf, binomInv, poissonPmf, poissonCdf, poissonSf, exponCdf, combin } from '../../../core/inference.js?v=17';
-import { mean, variance } from '../../../core/stats.js?v=17';
+import { ORDERS_PER_DAY, CHANNEL_SUBSCRIPTION as CS, DERIVED as D } from './case.js?v=18';
+import { PRODUCTS } from '../b03/case.js?v=18';
+import { binomPmf, binomCdf, binomSf, binomInv, poissonPmf, poissonCdf, poissonSf, exponCdf, combin } from '../../../core/inference.js?v=18';
+import { mean, variance } from '../../../core/stats.js?v=18';
 
 const f = (v, d = 3) => v.toFixed(d);
 const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;

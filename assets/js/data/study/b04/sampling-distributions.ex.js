@@ -2,8 +2,8 @@
 // live here). Lantern's orders, subscription flags and channel counts come from case.js; Tollgate Bike Hire, Westcliff
 // Gym, Cragside Events, Sedgefield Dairy, Ambleside Hotel and the Whitlow Trust are fictional. Formula items are marked
 // by their results on the sheet and on copies with the numbers changed; num items recompute their answers in `check`.
-import { ORDER_VALUES, SUBSCRIPTION_FLAGS, CHANNEL_SUBSCRIPTION, DERIVED as D } from './case.js?v=17';
-import * as I from '../../../core/inference.js?v=17';
+import { ORDER_VALUES, SUBSCRIPTION_FLAGS, CHANNEL_SUBSCRIPTION, DERIVED as D } from './case.js?v=18';
+import * as I from '../../../core/inference.js?v=18';
 
 const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
 const usd = (v, d = 2) => `$${v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;

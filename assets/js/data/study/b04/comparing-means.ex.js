@@ -2,9 +2,9 @@
 // here). The workshop scores and the spring orders come from case.js; Moreno Hardware, Beacon Fitness, Fairweather
 // Bikes, Clearwater Contact Centre and Kinfolk Trust are fictional. Formula items are marked by their results
 // (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { LATTE_PRE as PRE, LATTE_POST as POST, ORDERS, ORDER_COLUMNS } from './case.js?v=17';
-import * as I from '../../../core/inference.js?v=17';
-import { mean, sd } from '../../../core/stats.js?v=17';
+import { LATTE_PRE as PRE, LATTE_POST as POST, ORDERS, ORDER_COLUMNS } from './case.js?v=18';
+import * as I from '../../../core/inference.js?v=18';
+import { mean, sd } from '../../../core/stats.js?v=18';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const neg = (v, d = 2) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), d)}`;

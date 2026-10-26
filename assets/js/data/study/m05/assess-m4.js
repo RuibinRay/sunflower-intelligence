@@ -5,7 +5,7 @@
 // don't drill: the share of an attribute left off a map, choosing the nearest of several ideals, reasons a gap can be
 // empty, how the frame decides parity, sizing a concept cell, a move from two rating changes at once and sizing a tracking wave. No hints; solutions
 // are shown when the student reviews the test. Every num item's `check` recomputes its answer.
-import { normInv, sampleSizeForPower } from '../../../core/inference.js?v=17';
+import { normInv, sampleSizeForPower } from '../../../core/inference.js?v=18';
 
 // a sailing school (fictional): its position and three segments' ideal points
 const HV = { at: [1.2, -0.4], ideals: { racers: [2.0, 0.3], families: [0.6, -1.5], beginners: [-1.8, 0.9] } };

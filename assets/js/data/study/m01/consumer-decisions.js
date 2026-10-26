@@ -1,7 +1,7 @@
 // consumer-decisions.js — M01 · How consumers make buying decisions. Content only; exercises are in consumer-decisions.ex.js.
 // Lantern facts come from ./case.js (fictional); every other business, person and number here is invented and labelled.
 // `checks` recompute every printed number.
-import { BUSINESS, DERIVED } from './case.js?v=17';
+import { BUSINESS, DERIVED } from './case.js?v=18';
 
 const W = BUSINESS.workshops;
 const score = (w, s) => w.reduce((t, wi, i) => t + wi * s[i], 0);

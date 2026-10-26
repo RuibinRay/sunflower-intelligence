@@ -8,7 +8,7 @@
 // Tamsworth Language School, Fellbrook Animal Rescue, Thistlebay Florists, Corrin Wines, Ravensmere Cinemas, Brightlock
 // Adhesives and the other businesses are fictional. No hints; solutions show when the student reviews the test. Every num
 // item's `check` recomputes its answer.
-import * as I from '../../../core/inference.js?v=17';
+import * as I from '../../../core/inference.js?v=18';
 
 // an online bookseller: region (5) by favourite genre (6)
 const BK = { n: 48000, chi: 307, df: (5 - 1) * (6 - 1) };

@@ -4,12 +4,12 @@
 //         rules: ['iqr', 'z', 'mad'], prepare: [cleaning steps applied to the dataset first] (optional),
 //         closed: 'right' (bins include their upper edge, as Excel counts), edges: [upper edges] (Excel's bin range,
 //         used when no transformation is applied)
-import { h, s, onResize } from '../../core/dom.js?v=17';
-import * as F from '../../core/format.js?v=17';
-import * as S from '../../core/stats.js?v=17';
-import * as C from '../../core/cleaning.js?v=17';
-import { tableTwin } from '../../core/charts.js?v=17';
-import { loadDataset, ensureStyles } from '../labs/cleaning-ui.js?v=17';
+import { h, s, onResize } from '../../core/dom.js?v=18';
+import * as F from '../../core/format.js?v=18';
+import * as S from '../../core/stats.js?v=18';
+import * as C from '../../core/cleaning.js?v=18';
+import { tableTwin } from '../../core/charts.js?v=18';
+import { loadDataset, ensureStyles } from '../labs/cleaning-ui.js?v=18';
 
 const TF = {
   none: { label: 'None', name: 'no transformation', f: (x) => x, inv: (y) => y, ok: () => true },

@@ -1,7 +1,7 @@
 // what-is-marketing.js — M01 · What marketing is. Content only; exercises are in what-is-marketing.ex.js.
 // Lantern facts come from ./case.js (fictional); `checks` recompute them. Workshop willingness-to-pay figures and the
 // $70 cost of a place are this lesson's own assumptions, labelled in the text.
-import { BUSINESS, HARBOR_TECH, CLIENT_INTERVIEWS } from './case.js?v=17';
+import { BUSINESS, HARBOR_TECH, CLIENT_INTERVIEWS } from './case.js?v=18';
 
 const W = BUSINESS.workshops;
 const ENQ = [200, 190, 180, 175, 160, 150, 150, 140, 135, 130, 130, 125, 110, 95, 80]; // the 15 enquirers (assumed)

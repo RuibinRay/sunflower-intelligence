@@ -1,7 +1,7 @@
 // journal.js — F01 widget: the transaction-analysis drill (the core of the Accounting Lab, cut to a lesson's size).
 // config: { type: 'journal', transactions: ['m1', …] | [inline], ask: ['accounts', 'direction', 'side', 'amount', 'equation', 'statements'] }
 // `ask` chooses the questions (default: all). When 'accounts' is left out, the accounts are given in chart order.
-import * as U from '../labs/accounting-ui.js?v=17';
+import * as U from '../labs/accounting-ui.js?v=18';
 
 export async function mount(el, config = {}, ctx = {}) {
   U.ensureStyles();

@@ -353,5 +353,35 @@ eq('operating gain: operating income includes the gain', MS2.operatingIncome, 95
 eq('operating gain: net income unchanged', MS2.netIncome, 7450);
 eq('operating gain: not in revenue', MS2.revenue, 49000);
 
+// ---------------------------------------------------------------- operating leases in the indirect method (indirectGroup)
+{
+  const LC = [
+    { name: 'Cash', type: 'asset', group: 'current' }, { name: 'Common Stock', type: 'equity' }, { name: 'Retained Earnings', type: 'equity' },
+    { name: 'Right-of-Use Asset', type: 'asset', group: 'noncurrent', indirectGroup: 'lease balances' },
+    { name: 'Lease Liability, Current', type: 'liability', group: 'current', cashClass: 'operating', indirectGroup: 'lease balances' },
+    { name: 'Lease Liability', type: 'liability', group: 'noncurrent', cashClass: 'operating', indirectGroup: 'lease balances' },
+    { name: 'Sales Revenue', type: 'revenue' }, { name: 'Lease Cost', type: 'expense' },
+  ];
+  const es = [
+    { id: 'l1', lines: [{ acct: 'Cash', dr: 10_000 }, { acct: 'Common Stock', cr: 10_000 }], cash: 'financing' },
+    { id: 'l2', lines: [{ acct: 'Right-of-Use Asset', dr: 5_000 }, { acct: 'Lease Liability', cr: 5_000 }] },
+    { id: 'l3', lines: [{ acct: 'Lease Liability', dr: 1_200 }, { acct: 'Cash', cr: 1_200 }] },
+    { id: 'l4', lines: [{ acct: 'Lease Cost', dr: 1_200 }, { acct: 'Lease Liability', cr: 300 }, { acct: 'Right-of-Use Asset', cr: 900 }] },
+    { id: 'l5', lines: [{ acct: 'Lease Liability', dr: 1_000 }, { acct: 'Lease Liability, Current', cr: 1_000 }] },
+    { id: 'l6', lines: [{ acct: 'Cash', dr: 3_000 }, { acct: 'Sales Revenue', cr: 3_000 }] },
+  ];
+  const LL = A.post(es, LC);
+  const CFL = A.cashFlows(es, LC), INDL = A.indirectOperating(LL, LC);
+  eq('lease: direct operating', CFL.operating, 1_800);
+  eq('lease: indirect = direct when the asset equals the liability', INDL.operating, CFL.operating);
+  ok('lease: no working-capital line when they move together', INDL.workingCapital.length === 0, JSON.stringify(INDL.workingCapital));
+  ok('lease: recognition is a noncash investing and financing activity', CFL.noncash.length === 1, JSON.stringify(CFL.noncash));
+  // a payment made in advance of the cost leaves a difference, which the netted line picks up
+  const es2 = [...es, { id: 'l7', lines: [{ acct: 'Lease Liability', dr: 100 }, { acct: 'Cash', cr: 100 }] }];
+  const IND2 = A.indirectOperating(A.post(es2, LC), LC);
+  eq('lease: a prepayment shows in one netted line', IND2.workingCapital[0][1], -100);
+  eq('lease: indirect still equals direct', IND2.operating, A.cashFlows(es2, LC).operating);
+}
+
 console.log(`${checks - fails} of ${checks} checks passed`);
 if (fails) { console.log(`${fails} failed`); process.exit(1); }

@@ -4,8 +4,8 @@
 // (ORDERS_PER_DAY, DERIVED.perDay; the test is DERIVED.perDay.gof, with a "5 or more" category and one df lost for λ), and the channel,
 // rating and region tables (DERIVED.channelSubscription, ratingByChannel, regionSubscription). The bakery and the hotel
 // are fictional. Every printed figure is recomputed in `checks`.
-import { CONVERSION, SHOP, WEEKDAYS, CHANNEL_SUBSCRIPTION, RATING_BY_CHANNEL, REGION_SUBSCRIPTION, MONTHS, DERIVED as D } from './case.js?v=17';
-import * as I from '../../../core/inference.js?v=17';
+import { CONVERSION, SHOP, WEEKDAYS, CHANNEL_SUBSCRIPTION, RATING_BY_CHANNEL, REGION_SUBSCRIPTION, MONTHS, DERIVED as D } from './case.js?v=18';
+import * as I from '../../../core/inference.js?v=18';
 
 // ---------------------------------------------------------------- the figures this lesson quotes
 const CT = D.conversion.test;                                     // August against September, web

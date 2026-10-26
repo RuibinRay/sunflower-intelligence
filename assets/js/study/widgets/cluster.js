@@ -6,12 +6,12 @@
 //     choose: true (let the student pick which needs to use), raw: true (offer clustering without standardising),
 //     spend: [per respondent] (adds spend per head and share of spend), seed: 1888,
 //     noun: ['variable', 'variables'] (what the columns are called when they aren't all needs; default need/needs), note }
-import { h, s, onResize } from '../../core/dom.js?v=17';
-import { xl } from '../xl.js?v=17';
-import { frame, lin, niceTicks, axisX, axisY, tableTwin } from '../../core/charts.js?v=17';
-import { standardise, kmeans, silhouette } from '../../core/classify.js?v=17';
-import { pca } from '../../core/ml.js?v=17';
-import { segmented } from '../dist-draw.js?v=17';
+import { h, s, onResize } from '../../core/dom.js?v=18';
+import { xl } from '../xl.js?v=18';
+import { frame, lin, niceTicks, axisX, axisY, tableTwin } from '../../core/charts.js?v=18';
+import { standardise, kmeans, silhouette } from '../../core/classify.js?v=18';
+import { pca } from '../../core/ml.js?v=18';
+import { segmented } from '../dist-draw.js?v=18';
 
 const LETTERS = 'ABCDEFGH';
 const fmt = (v, d = 0) => (Number.isFinite(v) ? v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }) : '—');

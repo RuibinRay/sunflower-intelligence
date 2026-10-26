@@ -6,10 +6,10 @@
 //   { type: 'percmap', title, brands: ['Lantern', …], means: [[…] per brand], attributes: ['Taste', …],
 //     ideals: [{ name, profile: [...] }], highlight: 'Lantern', move: true (sliders for the highlighted brand),
 //     vectors: true, noun: ['option', 'options'] (what the points are called; default brand/brands), note }
-import { h, s, onResize } from '../../core/dom.js?v=17';
-import { xl } from '../xl.js?v=17';
-import { frame, lin, axisX, axisY, tableTwin } from '../../core/charts.js?v=17';
-import { perceptualMap, distance } from '../../core/percmap.js?v=17';
+import { h, s, onResize } from '../../core/dom.js?v=18';
+import { xl } from '../xl.js?v=18';
+import { frame, lin, axisX, axisY, tableTwin } from '../../core/charts.js?v=18';
+import { perceptualMap, distance } from '../../core/percmap.js?v=18';
 
 const f2 = (v) => (Number.isFinite(v) ? v.toFixed(2).replace('-', '−') : '—');
 const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];

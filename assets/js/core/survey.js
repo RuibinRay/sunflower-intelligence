@@ -7,7 +7,7 @@
 // { N, n, mean, sd } for a mean (sd = the sample standard deviation, n − 1 in the denominator). Sampling within each
 // stratum is simple random sampling without replacement, so each stratum's variance carries the finite population
 // correction 1 − n/N. Proportions are 0–1; scores (NPS) are reported on the usual −100 to +100 scale.
-import { normInv } from './inference.js?v=17';
+import { normInv } from './inference.js?v=18';
 
 const sum = (xs) => xs.reduce((a, b) => a + b, 0);
 const z = (conf) => normInv(1 - (1 - conf) / 2);

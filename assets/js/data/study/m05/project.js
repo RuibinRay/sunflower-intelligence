@@ -5,10 +5,10 @@
 // student segments them, sizes and profiles the segments, scores them, builds a persona, reads the map, checks a planned
 // change beyond the map, writes the positioning and recommends what to change. Every figure comes from case.js
 // (WORKSHOP_* exports); `verify` recomputes them, including the worksheet formula through the spreadsheet engine.
-import { WORKSHOP_OFFER as OFFER, WORKSHOP_NEEDS as NEEDS, WORKSHOP_PROVIDERS as PROVIDERS, WORKSHOP_LEVELS as LEVELS, WORKSHOP_RESPONDENTS as RESP, WORKSHOP_DERIVED as WD, WORKSHOP_STRENGTHS, tableCells } from './case.js?v=17';
-import { weightedScore, distance, perceptualMap, idealDistances } from '../../../core/percmap.js?v=17';
-import { mulberry32 } from '../../../core/rng.js?v=17';
-import { Sheet } from '../../../core/sheet.js?v=17';
+import { WORKSHOP_OFFER as OFFER, WORKSHOP_NEEDS as NEEDS, WORKSHOP_PROVIDERS as PROVIDERS, WORKSHOP_LEVELS as LEVELS, WORKSHOP_RESPONDENTS as RESP, WORKSHOP_DERIVED as WD, WORKSHOP_STRENGTHS, tableCells } from './case.js?v=18';
+import { weightedScore, distance, perceptualMap, idealDistances } from '../../../core/percmap.js?v=18';
+import { mulberry32 } from '../../../core/rng.js?v=18';
+import { Sheet } from '../../../core/sheet.js?v=18';
 
 const num = (id, prompt, answer, check, solution, wrong, { unit = '', places = 2, tol = 0.005, kind = 'numerical' } = {}) =>
   ({ id, type: 'num', kind, unit, places, prompt, answer, check, tol, solution, ...(wrong ? { wrong } : {}) });

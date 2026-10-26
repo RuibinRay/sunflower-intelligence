@@ -1,7 +1,7 @@
 // market-orientation.ex.js — M01 · Market orientation: widgets, practice and the knowledge check.
 // Answer keys live here, not in the page's HTML. Lantern figures come from ./case.js (fictional); every number is
 // recomputed by `check` (see ../AUTHORING.md). Every other business and figure is fictional.
-import { CLIENT_INTERVIEWS } from './case.js?v=17';
+import { CLIENT_INTERVIEWS } from './case.js?v=18';
 
 const clv = (m, r, d) => m / (1 + d - r);
 const money = (v, dp = 0) => {

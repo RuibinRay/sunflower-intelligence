@@ -1,8 +1,8 @@
 // project.js — F01 applied project: one month at Brightwater Bike Repair (fictional), the whole accounting cycle.
 // The business, its chart and every entry are in brightwater.js. Every figure a question uses is recomputed from
 // those entries: by `check` functions (simple sums written out here) and by `verify` (the accounting engine).
-import { CHART, JULY, JULY_FACTS, JULY_ADJUSTMENTS, JULY_RESULTS as R } from './brightwater.js?v=17';
-import * as A from '../../../core/accounting.js?v=17';
+import { CHART, JULY, JULY_FACTS, JULY_ADJUSTMENTS, JULY_RESULTS as R } from './brightwater.js?v=18';
+import * as A from '../../../core/accounting.js?v=18';
 
 const TYPE = Object.fromEntries(CHART.map((a) => [a.name, a.type]));
 const DEBIT_NORMAL = new Set(['asset', 'expense', 'dividends']);

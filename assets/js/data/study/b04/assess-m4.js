@@ -2,7 +2,7 @@
 // businesses, not copies of lesson exercises. No hints; solutions are shown when the student reviews the test. Every
 // business, person and number is fictional. Formula items are marked by their results; every num item's `check`
 // recomputes its answer.
-import * as I from '../../../core/inference.js?v=17';
+import * as I from '../../../core/inference.js?v=18';
 
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
 

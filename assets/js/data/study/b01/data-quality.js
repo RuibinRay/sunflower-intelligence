@@ -1,7 +1,7 @@
 // data-quality.js — B01 · Data quality: is the data fit for the question? Content only; exercises are in data-quality.ex.js.
 // Uses SHOP and DERIVED from case.js. The inspect-only look at lantern-orders is qualitative on purpose: B02 counts and fixes.
 // Every other business, person and number is fictional unless a source is cited.
-import { SHOP, DERIVED, UTC_OFFSET_HOURS } from './case.js?v=17';
+import { SHOP, DERIVED, UTC_OFFSET_HOURS } from './case.js?v=18';
 
 const NOV = 4;                       // index of Nov 2026 in case.js arrays
 const EXPORT_ROWS = 448;             // fictional: rows in the November export Ana downloads on 1 December

@@ -1,7 +1,7 @@
 // receivables-and-payables.js — F02 · Receivables and payables. Content only; exercises are in receivables-and-payables.ex.js.
 // Uses FACTS (catering invoices, collections, the Quayline write-off, payables), AGING, ADJUSTMENTS (e6) and DERIVED from
 // case.js. Every Lantern figure in `checks` is recomputed from those imports. Other businesses here are fictional.
-import { FACTS, AGING, DERIVED, LEDGER, YEAR, ADJUSTMENTS } from './case.js?v=17';
+import { FACTS, AGING, DERIVED, LEDGER, YEAR, ADJUSTMENTS } from './case.js?v=18';
 
 const F = FACTS;
 const cat = F.catering;
