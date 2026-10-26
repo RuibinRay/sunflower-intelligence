@@ -4,9 +4,9 @@
 // matter to it. Starbucks FY2024 figures are from its Form 10-K (EDGAR’s XBRL rendering: R7 is the balance sheet, R5 the
 // cash flows); Harbourline Roasters is F00’s fictional roaster. The 2028 covenant of 1.2 is F00’s hypothetical
 // (governance-and-agency). Solvency, the Z-score and the credit decision belong to later lessons.
-import { PERIODS, COMPARATIVE, FACTS } from './case.js?v=19';
-import { HARBOURLINE as HB, HARBOURLINE_DETAIL as HBD } from '../f00/case.js?v=19';
-import * as R from '../../../core/ratios.js?v=19';
+import { PERIODS, COMPARATIVE, FACTS } from './case.js?v=20';
+import { HARBOURLINE as HB, HARBOURLINE_DETAIL as HBD } from '../f00/case.js?v=20';
+import * as R from '../../../core/ratios.js?v=20';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const L26 = R.liquidity(P26), L27 = R.liquidity(P27);

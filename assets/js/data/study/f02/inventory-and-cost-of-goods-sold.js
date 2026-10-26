@@ -1,7 +1,7 @@
 // inventory-and-cost-of-goods-sold.js — F02 · Inventory and cost of goods sold. Content only; exercises are in
 // inventory-and-cost-of-goods-sold.ex.js. Lantern’s figures come from case.js (FACTS.inventory, YEAR y15–y17,
 // ADJUSTMENTS e7, HOUSE_BLEND_Q4, COSTING, DERIVED); the other businesses are fictional and live only here.
-import { FACTS, YEAR, ADJUSTMENTS, HOUSE_BLEND_Q4 as HB, COSTING as C, DERIVED as D } from './case.js?v=19';
+import { FACTS, YEAR, ADJUSTMENTS, HOUSE_BLEND_Q4 as HB, COSTING as C, DERIVED as D } from './case.js?v=20';
 
 const inv = FACTS.inventory, rate = FACTS.tax.rate;
 const find = (id) => [...YEAR, ...ADJUSTMENTS].find((t) => t.id === id);

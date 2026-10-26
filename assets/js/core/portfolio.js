@@ -2,7 +2,7 @@
 // The frontier is solved exactly: for every subset of assets the equality-constrained problem has a closed form,
 // and the best subset whose weights are all non-negative is the long-only optimum (the problem is convex).
 // Checked against NumPy, statsmodels and SciPy's SLSQP optimiser (tests/make_fixtures.py).
-import { mean, sd, skewness, kurtosis, ols } from './stats.js?v=19';
+import { mean, sd, skewness, kurtosis, ols } from './stats.js?v=20';
 
 /** Simple returns P[t] / P[t−1] − 1. */
 export function returns(prices) {

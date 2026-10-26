@@ -1,7 +1,7 @@
 // cash-flow-and-earnings-quality.ex.js — F03 · Cash flow and earnings quality: widgets, practice and the knowledge
 // check. Answer keys live here. Lantern’s figures come from case.js; every other business is fictional.
-import { PERIODS, COMPARATIVE, FACTS, LEASE } from './case.js?v=19';
-import * as R from '../../../core/ratios.js?v=19';
+import { PERIODS, COMPARATIVE, FACTS, LEASE } from './case.js?v=20';
+import * as R from '../../../core/ratios.js?v=20';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const contract = P27.contractAsset;

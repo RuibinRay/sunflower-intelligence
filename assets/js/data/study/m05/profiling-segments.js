@@ -4,12 +4,12 @@
 // tool (DERIVED.typing). The golden-question table, the no-structure benchmark's F tests and the worked typing example
 // are recomputed below with the same engines. TRUE_TYPE appears only in the "What Ana couldn't see" note. Pennacott
 // Fitness, Vantley Outdoor and Kestrow Bank (with Eilidh Bisset) are fictional. Every printed figure is in `checks`.
-import { NEEDS, LEVELS, RESPONDENTS, STUDY, DERIVED as D } from './case.js?v=19';
-import { standardise, kmeans } from '../../../core/classify.js?v=19';
-import { indexVsAverage } from '../../../core/market.js?v=19';
-import { nearestCentroid, agreement } from '../../../core/percmap.js?v=19';
-import { anova1 } from '../../../core/inference.js?v=19';
-import { mulberry32 } from '../../../core/rng.js?v=19';
+import { NEEDS, LEVELS, RESPONDENTS, STUDY, DERIVED as D } from './case.js?v=20';
+import { standardise, kmeans } from '../../../core/classify.js?v=20';
+import { indexVsAverage } from '../../../core/market.js?v=20';
+import { nearestCentroid, agreement } from '../../../core/percmap.js?v=20';
+import { anova1 } from '../../../core/inference.js?v=20';
+import { mulberry32 } from '../../../core/rng.js?v=20';
 
 // ---------------------------------------------------------------- the five segments
 const RS = RESPONDENTS, N = RS.length, P = NEEDS.length, K = D.segments.k;

@@ -14,8 +14,8 @@
 // Brightwater's accountant puts the mechanics' wages and the parts used in cost of sales (F02), unlike Lantern.
 // The workshop is rented on a lease of 12 months or less, so ASC 842's short-term exemption applies: rent is an expense
 // and there is no lease liability.
-import * as R from '../../../core/ratios.js?v=19';
-import { RESULTS as B27, OPENING as B26_BS, AGING } from '../f02/brightwater.js?v=19';
+import * as R from '../../../core/ratios.js?v=20';
+import { RESULTS as B27, OPENING as B26_BS, AGING } from '../f02/brightwater.js?v=20';
 
 /** July–December 2026, in summary (fictional, consistent with F01 and F02). */
 export const INCOME_2026 = {

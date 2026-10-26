@@ -3,8 +3,8 @@
 // Lantern’s figures come from case.js (PERIODS, LEASE, BREWER, FACTS); ratios from core/ratios.js. The peer file of nine
 // coffee businesses is fictional (no published industry data was verified for this lesson). Starbucks’ FY2024 figures
 // are from REAL-FIGURES.md and the 10-K pages cited.
-import { PERIODS, LEASE, BREWER, FACTS } from './case.js?v=19';
-import * as R from '../../../core/ratios.js?v=19';
+import { PERIODS, LEASE, BREWER, FACTS } from './case.js?v=20';
+import * as R from '../../../core/ratios.js?v=20';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const L = { current: R.liquidity(P27).current, opMargin: R.profitability(P27, P26).operatingMargin, z: R.altman(P27, 'zdouble').score,

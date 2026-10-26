@@ -1,7 +1,7 @@
 // Lesson: return, risk, beta and diversification.
 // `checks` recompute every number printed in the worked example; tests/lessons.test.mjs compares them.
-import * as F from '../../core/format.js?v=19';
-import { portRet, portVar, maxSharpe } from '../../core/portfolio.js?v=19';
+import * as F from '../../core/format.js?v=20';
+import { portRet, portVar, maxSharpe } from '../../core/portfolio.js?v=20';
 
 const covOf = (sa, sb, rho) => [[sa * sa, rho * sa * sb], [rho * sa * sb, sb * sb]];
 const MU = [0.10, 0.06], COV = covOf(0.20, 0.12, 0.2), RF = 0.04;

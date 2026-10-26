@@ -1,7 +1,7 @@
 // revenue-recognition.ex.js — F02 · Revenue recognition: widgets, practice and the knowledge check.
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // Lantern's figures come from case.js; the January 2027 entries are hypothetical (“Suppose…”); other businesses are fictional.
-import { CHART, FACTS, YEAR, DERIVED as D } from './case.js?v=19';
+import { CHART, FACTS, YEAR, DERIVED as D } from './case.js?v=20';
 
 const money = (x) => `$${x.toLocaleString('en-US', { minimumFractionDigits: Math.abs(x - Math.round(x)) > 1e-9 ? 2 : 0, maximumFractionDigits: 2 })}`;
 const pick = (...ids) => ids.map((id) => YEAR.find((t) => t.id === id));

@@ -1,8 +1,8 @@
 // market.js — the arithmetic behind Market segmentation and the Market map: needs-based segment profiles,
 // targeting scores, market-attractiveness scores, great-circle distances and growth rates.
 // Every function here is checked against pandas/NumPy/scikit-learn in tests/mkt.test.mjs.
-import * as S from './stats.js?v=19';
-import { mulberry32, normalGen } from './rng.js?v=19';
+import * as S from './stats.js?v=20';
+import { mulberry32, normalGen } from './rng.js?v=20';
 
 // ================================================================ geography
 export const EARTH_KM = 6371.0088;                  // mean Earth radius (IUGG)

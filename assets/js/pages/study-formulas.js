@@ -1,7 +1,7 @@
 // study-formulas.js — filter the formula library by words and, with ?course=f01, by course.
-import { initSite } from '../core/site.js?v=19';
-import { $, $$, debounce } from '../core/dom.js?v=19';
-import { scrollersFocusable } from '../study/common.js?v=19';
+import { initSite } from '../core/site.js?v=20';
+import { $, $$, debounce } from '../core/dom.js?v=20';
+import { scrollersFocusable } from '../study/common.js?v=20';
 
 initSite();
 scrollersFocusable();

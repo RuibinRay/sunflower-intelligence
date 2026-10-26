@@ -3,7 +3,7 @@
 // PivotTable and the formula items; the typing items use the study's means and SDs and the segment centres on the four
 // golden questions (DERIVED.typing.short). Text columns don't change on the marker's copies, so items that pick a segment
 // `vary` the label cell. Glenhallow Hotels and Wyncombe Travel are fictional. Every num item's `check` recomputes it.
-import { NEEDS, LEVELS, RESPONDENTS, tableCells, DERIVED as D } from './case.js?v=19';
+import { NEEDS, LEVELS, RESPONDENTS, tableCells, DERIVED as D } from './case.js?v=20';
 
 const RS = RESPONDENTS, N = RS.length, L = N + 1;                   // data rows 2..641
 const S = D.segments, NAMES = S.names, LAB = S.labels;

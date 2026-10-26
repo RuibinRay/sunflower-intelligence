@@ -32,8 +32,8 @@
 // payments, discounted at Lantern's incremental borrowing rate; a single straight-line lease cost).
 //
 // Amounts are whole dollars, except where a schedule is rounded to the cent first and the year's total to the dollar.
-import * as A from '../../../core/accounting.js?v=19';
-import * as F02 from '../f02/case.js?v=19';
+import * as A from '../../../core/accounting.js?v=20';
+import * as F02 from '../f02/case.js?v=20';
 
 /** F02's chart plus the accounts 2027 needs. */
 export const CHART = [

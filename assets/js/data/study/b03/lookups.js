@@ -1,7 +1,7 @@
 // lookups.js — B03 · Lookups: VLOOKUP, INDEX and MATCH, XLOOKUP. Content only; exercises are in lookups.ex.js.
 // Every business, person and number is fictional (Lantern Coffee Co. from case.js; Spokewise Cycles invented here).
 // Excel behaviour checked on Microsoft's pages on 23 October 2026 (see references).
-import { PRODUCTS, PRODUCT_COLUMNS, ORDERS, ORDER_COLUMNS, EVENTS, DELIVERY_BANDS, SIZE_BANDS, DERIVED as D } from './case.js?v=19';
+import { PRODUCTS, PRODUCT_COLUMNS, ORDERS, ORDER_COLUMNS, EVENTS, DELIVERY_BANDS, SIZE_BANDS, DERIVED as D } from './case.js?v=20';
 
 const money = (x) => `$${x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const col = (name) => ORDER_COLUMNS.indexOf(name);

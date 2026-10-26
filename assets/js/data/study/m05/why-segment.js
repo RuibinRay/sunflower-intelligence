@@ -2,7 +2,7 @@
 // Lantern's May 2027 needs study comes from case.js (RESPONDENTS, NEEDS, STUDY, BRAND_NOTES): this lesson uses only the
 // spread of the eight needs, never the k-means segments, which module 2 builds. Glenarrow Cycles, Duncairn Software and
 // Tollmere Bank (with Nadia Osei) are fictional. Every printed figure is recomputed in `checks`.
-import { RESPONDENTS, NEEDS, STUDY, BRAND_NOTES, M02_LANTERN, DERIVED as D } from './case.js?v=19';
+import { RESPONDENTS, NEEDS, STUDY, BRAND_NOTES, M02_LANTERN, DERIVED as D } from './case.js?v=20';
 
 // ---------------------------------------------------------------- the figures this lesson quotes
 const R = RESPONDENTS, N = R.length;

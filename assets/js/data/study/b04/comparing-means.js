@@ -2,9 +2,9 @@
 // latte-art workshop (LATTE_PRE, LATTE_POST; DERIVED.latte) for the paired test and B03's spring orders (ORDERS) for
 // web against app order values. Fairweather Bikes and Clearwater Contact Centre are fictional. Two-proportion tests,
 // chi-square and ANOVA are module 4's. Every figure printed is recomputed in `checks`.
-import { LATTE_PRE as PRE, LATTE_POST as POST, ORDERS, ORDER_COLUMNS, CHANNEL_SUBSCRIPTION, DERIVED as D } from './case.js?v=19';
-import * as I from '../../../core/inference.js?v=19';
-import { mean, sd, variance, median } from '../../../core/stats.js?v=19';
+import { LATTE_PRE as PRE, LATTE_POST as POST, ORDERS, ORDER_COLUMNS, CHANNEL_SUBSCRIPTION, DERIVED as D } from './case.js?v=20';
+import * as I from '../../../core/inference.js?v=20';
+import { mean, sd, variance, median } from '../../../core/stats.js?v=20';
 
 // ---------------------------------------------------------------- the workshop
 const L = D.latte, P = L.paired, U = L.unpaired, DIFF = L.diffs, n = PRE.length;

@@ -85,7 +85,7 @@ const ALL = [
     topics: ['Income statements: gross profit, EBIT, EBITDA and net income', 'Balance sheets', 'Cash flow statements (direct and indirect methods)', 'Statements of changes in equity', 'Revenue recognition basics', 'Cost of goods sold', 'Operating expenses', 'Depreciation and amortisation', 'Inventory accounting', 'Accounts receivable and payable', 'Working capital', 'Retained earnings', 'How the four statements connect', 'US GAAP versus IFRS'],
   }),
   C({
-    id: 'f03', school: 'finance', code: 'F03', level: 'intermediate', status: 'reviewed', requires: ['f02'], recommends: ['f04'],
+    id: 'f03', school: 'finance', code: 'F03', level: 'intermediate', status: 'complete', requires: ['f02'], recommends: ['f04'],
     title: 'Financial Statement Analysis',
     blurb: 'Read a company through its statements: trends, common-size statements, ratios, DuPont analysis and distress scores.',
     topics: ['Horizontal analysis and trends', 'Vertical analysis', 'Common-size statements', 'Growth and margin ratios', 'Liquidity ratios: current and quick', 'Solvency and leverage ratios', 'Efficiency ratios: asset and inventory turnover', 'Return on assets and return on equity', 'DuPont analysis', 'Financial health analysis', 'Altman Z-score and its limits', 'Industry benchmarking', 'Reading footnotes and MD&A', 'Cases: growth with cash burn, reinvestment over reported profit, aggressive accounting'],

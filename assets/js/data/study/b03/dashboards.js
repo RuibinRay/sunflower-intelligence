@@ -2,9 +2,9 @@
 // The worked dashboard is Lantern's 2026 catering business, built from EVENTS (case.js); Ana's monthly revenue plan
 // (PLAN in dashboards.ex.js) and her 50% ceiling on the top-four client share are fictional and introduced here.
 // F02's catering revenue is used as a reconciliation total. The shop dashboard is the project's and is not used.
-import { EVENTS, EVENT_COLUMNS, DERIVED as D } from './case.js?v=19';
-import { FACTS as F02 } from '../f02/case.js?v=19';
-import { MONTHS, PLAN, BY_MONTH } from './dashboards.ex.js?v=19';
+import { EVENTS, EVENT_COLUMNS, DERIVED as D } from './case.js?v=20';
+import { FACTS as F02 } from '../f02/case.js?v=20';
+import { MONTHS, PLAN, BY_MONTH } from './dashboards.ex.js?v=20';
 
 const col = (n) => EVENTS.map((r) => r[EVENT_COLUMNS.indexOf(n)]);
 const inv = col('invoice'), types = col('event_type'), clients = col('client'), dates = col('event_date');

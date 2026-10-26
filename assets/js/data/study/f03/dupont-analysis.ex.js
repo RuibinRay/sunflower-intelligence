@@ -2,9 +2,9 @@
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // Lantern’s figures come from case.js and core/ratios.js; Harbourline from f00/case.js (fictional, $ millions);
 // Starbucks from its FY2024 Form 10-K, as cited in the lesson; every other business is fictional.
-import { PERIODS, FACTS, LEASE } from './case.js?v=19';
-import * as R from '../../../core/ratios.js?v=19';
-import { HARBOURLINE as HL, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=19';
+import { PERIODS, FACTS, LEASE } from './case.js?v=20';
+import * as R from '../../../core/ratios.js?v=20';
+import { HARBOURLINE as HL, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=20';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const d26 = R.dupont(P26), d27 = R.dupont(P27, P26);

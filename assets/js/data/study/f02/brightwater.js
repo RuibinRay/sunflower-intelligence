@@ -7,8 +7,8 @@
 // one-year note at 6% with the interest ($300) paid on repayment, 1 July 2027 ($25 a month accrued); equipment $4,800
 // bought on 2 July 2026, five years, no residual value, straight line, a full month in the month of purchase ($80 a
 // month); a 12-month liability insurance policy from 1 July 2026 for $720 ($60 a month).
-import * as A from '../../../core/accounting.js?v=19';
-import { CHART as F02_CHART } from './case.js?v=19';
+import * as A from '../../../core/accounting.js?v=20';
+import { CHART as F02_CHART } from './case.js?v=20';
 
 const extra = [
   { no: 245, name: 'Short-Term Notes Payable', type: 'liability', group: 'current' },   // the one-year note (F01's Notes Payable)

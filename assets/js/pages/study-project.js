@@ -9,12 +9,12 @@
 // A stage's `items` are questions (any exercise type; `short` for writing). A stage is done when its tool's goal
 // is met (if it has one) and every question has been answered. The project is finished when every stage is done
 // and the student has marked it against the rubric. Projects never change mastery.
-import { initSite } from '../core/site.js?v=19';
-import { $, h, debounce } from '../core/dom.js?v=19';
-import * as P from '../study/progress.js?v=19';
-import { practiceCard, loadCharts } from '../study/exercises.js?v=19';
-import { xl } from '../study/xl.js?v=19';
-import { initOutline, paintOutline, storageWarning, scrollersFocusable } from '../study/common.js?v=19';
+import { initSite } from '../core/site.js?v=20';
+import { $, h, debounce } from '../core/dom.js?v=20';
+import * as P from '../study/progress.js?v=20';
+import { practiceCard, loadCharts } from '../study/exercises.js?v=20';
+import { xl } from '../study/xl.js?v=20';
+import { initOutline, paintOutline, storageWarning, scrollersFocusable } from '../study/common.js?v=20';
 
 initSite();
 initOutline();
@@ -23,7 +23,7 @@ paintOutline(course);
 const box = $('#project-root');
 
 let mod;
-try { mod = await import(`../data/study/${course}/project.js?v=19`); } catch (e) { console.error(e); }
+try { mod = await import(`../data/study/${course}/project.js?v=20`); } catch (e) { console.error(e); }
 const PJ = mod?.default || mod?.project;
 if (!PJ) {
   box.replaceChildren(h('p', { class: 'note' }, 'The project didn’t load. Reload the page to try again.'));
@@ -97,22 +97,22 @@ function summarise(results) {
 async function mountTool(el, tool, cb) {
   try {
     if (tool.kind === 'recorder') {
-      const { mountRecorder } = await import('../study/labs/accounting-ui.js?v=19');
+      const { mountRecorder } = await import('../study/labs/accounting-ui.js?v=20');
       el.replaceChildren();
       mountRecorder(el, tool.scenario, { onProgress: ({ done, total }) => { if (total && done >= total) cb.done(); }, store: { load: () => { try { return JSON.parse(localStorage.getItem(cb.key) || 'null'); } catch { return null; } }, save: (v) => { try { localStorage.setItem(cb.key, JSON.stringify(v)); } catch { /* not kept */ } } } });
     } else if (tool.kind === 'cleaning') {
-      const { mountLab } = await import('../study/labs/cleaning-ui.js?v=19');
+      const { mountLab } = await import('../study/labs/cleaning-ui.js?v=20');
       el.replaceChildren();
       const { kind, ...opts } = tool;
       mountLab(el, { ...opts, storageKey: cb.key, onProgress: (met, total) => { if (total && met >= total) cb.done(); } });
     } else if (tool.kind === 'mix') {
-      const { mountSimulator } = await import('../study/labs/mix-ui.js?v=19');
+      const { mountSimulator } = await import('../study/labs/mix-ui.js?v=20');
       el.replaceChildren();
       const { kind, ...opts } = tool;
       const keep = debounce((plan, results) => cb.plan(plan, results), 600);   // saving on every slider step would be wasteful
       mountSimulator(el, { ...opts, onChange: (plan, results) => keep(plan, results) });
     } else if (tool.kind === 'widget' && /^[a-z][a-z-]*$/.test(tool.widget?.type || '')) {
-      const mod = await import(`../study/widgets/${tool.widget.type}.js?v=19`);
+      const mod = await import(`../study/widgets/${tool.widget.type}.js?v=20`);
       el.replaceChildren();
       await mod.mount(el, tool.widget, { id: cb.key.replace(/[^a-z0-9-]/gi, '-'), report: () => {} });
     } else throw new Error(`unknown tool ${tool.kind}`);

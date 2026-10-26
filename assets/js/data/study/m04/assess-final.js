@@ -16,9 +16,9 @@
 // fictional and used nowhere else on the site, and nothing comes from the project’s scenario or data. No hints;
 // solutions are shown on review. Every num item’s `check` recomputes its answer, and every formula item is marked by its
 // results on the sheet and on changed copies.
-import { RESPONDENT_COLUMNS, RESPONDENT_ROWS, RESPONDENTS, LEVELS, SIZES, STRATA, PRICE_AUDIT, DEFAULT_PLAN, DISPOSITIONS, tableCells, DERIVED } from './case.js?v=19';
-import * as S from '../../../core/survey.js?v=19';
-import * as I from '../../../core/inference.js?v=19';
+import { RESPONDENT_COLUMNS, RESPONDENT_ROWS, RESPONDENTS, LEVELS, SIZES, STRATA, PRICE_AUDIT, DEFAULT_PLAN, DISPOSITIONS, tableCells, DERIVED } from './case.js?v=20';
+import * as S from '../../../core/survey.js?v=20';
+import * as I from '../../../core/inference.js?v=20';
 
 const r = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });

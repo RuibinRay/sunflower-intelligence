@@ -2,7 +2,7 @@
 // Lantern facts come from ./case.js (fictional); `checks` recompute them from that file. The workshop goal in the
 // applied example and every other business are fictional, invented for this lesson. Lantern's 2027 catering numbers are
 // left to the course project.
-import { BUSINESS, GOALS, DERIVED } from './case.js?v=19';
+import { BUSINESS, GOALS, DERIVED } from './case.js?v=20';
 
 const c = BUSINESS.catering;
 const w = BUSINESS.workshops;

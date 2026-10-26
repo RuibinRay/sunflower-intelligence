@@ -2,7 +2,7 @@
 // simple-and-compound-interest.ex.js. Uses COASTLINE_NOTE (Lantern's $10,000 note at 6%, $150 a quarter) and BREWER
 // (the $24,000 cold-brew system and its 7.2% loan) from case.js. Every other business and figure is fictional and
 // labelled. Deliberately does not use ANA_PLAN: the F04 project solves those numbers.
-import { COASTLINE_NOTE as N, BREWER as B } from './case.js?v=19';
+import { COASTLINE_NOTE as N, BREWER as B } from './case.js?v=20';
 
 const days = (a, b) => Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 864e5);
 const d360 = (y1, m1, d1, y2, m2, d2) => 360 * (y2 - y1) + 30 * (m2 - m1) + (Math.min(d2, 30) - Math.min(d1, 30));

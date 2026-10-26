@@ -1,7 +1,7 @@
 // pivot-tables.js — B03 · PivotTables. Content only; exercises are in pivot-tables.ex.js. Lantern's orders and catering
 // events come from case.js (no margin figures here: margin by line and region belongs to the course project).
 // Excel behaviour checked on Microsoft's pages on 23 October 2026 (see references).
-import { ORDERS, ORDER_COLUMNS, EVENTS, EVENT_COLUMNS, DERIVED as D } from './case.js?v=19';
+import { ORDERS, ORDER_COLUMNS, EVENTS, EVENT_COLUMNS, DERIVED as D } from './case.js?v=20';
 
 const money = (x) => `$${x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const pct = (x, d = 1) => `${(x * 100).toFixed(d)}%`;

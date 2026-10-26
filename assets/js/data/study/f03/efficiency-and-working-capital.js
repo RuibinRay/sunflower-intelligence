@@ -6,8 +6,8 @@
 // revenue appear only as the classic slips for DSO; cost of sales including services as the slip for DIO.
 // 2026 uses closing balances and 304.17 days; 2027 average balances and 365 days. Amazon 2013–2014 figures are from
 // its 10-Ks (EDGAR XBRL R pages).
-import { PERIODS, COMPARATIVE, FACTS } from './case.js?v=19';
-import * as R from '../../../core/ratios.js?v=19';
+import { PERIODS, COMPARATIVE, FACTS } from './case.js?v=20';
+import * as R from '../../../core/ratios.js?v=20';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const inc = (label) => COMPARATIVE.income.find((r) => r[0] === label);

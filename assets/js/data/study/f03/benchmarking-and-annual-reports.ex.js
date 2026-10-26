@@ -1,8 +1,8 @@
 // benchmarking-and-annual-reports.ex.js — F03 · Benchmarking and annual reports: widgets, practice and the knowledge
 // check (answer keys live here). Lantern’s figures come from case.js; the peer file is fictional and repeated from the lesson file
 // (which this browser-loaded file must not import); Starbucks’ FY2024 figures are from its 10-K.
-import { PERIODS, LEASE, BREWER } from './case.js?v=19';
-import { HARBOURLINE as H, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=19';
+import { PERIODS, LEASE, BREWER } from './case.js?v=20';
+import { HARBOURLINE as H, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=20';
 
 const P27 = PERIODS[2027];
 const PEERS = {

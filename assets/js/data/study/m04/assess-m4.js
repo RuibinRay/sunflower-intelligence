@@ -3,7 +3,7 @@
 // a weighted mean, mean against median, findings and insights, stated against revealed preference, method disclosure,
 // confidentiality in a small team and a truncated axis. Fenwold Buses, Glenmarrow Books and the other businesses are
 // fictional. No hints; solutions show when the student reviews the test. Every num item's `check` recomputes its answer.
-import { normInv } from '../../../core/inference.js?v=19';
+import { normInv } from '../../../core/inference.js?v=20';
 
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
 const Z = normInv(0.975);

@@ -1,6 +1,6 @@
 // situation-analysis.js — M01 · Situation analysis. Content only; exercises are in situation-analysis.ex.js.
 // Lantern facts come from ./case.js (fictional); `checks` recompute them from that file. Every other business is fictional.
-import { BUSINESS, CLIENT_INTERVIEWS, COMPETITOR, GOALS } from './case.js?v=19';
+import { BUSINESS, CLIENT_INTERVIEWS, COMPETITOR, GOALS } from './case.js?v=20';
 
 const c = BUSINESS.catering;
 const R = CLIENT_INTERVIEWS.reasons;
