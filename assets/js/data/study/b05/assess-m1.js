@@ -18,10 +18,10 @@ const round = (x, d) => Math.round(x * 10 ** d) / 10 ** d;
 const BAKED = [140, 120, 160, 150, 130, 180, 145, 125, 170, 155, 135, 165];
 const SOLD = [131, 112, 149, 143, 118, 171, 1360, 117, 158, 146, 129, 154];
 const BAKE_DAYS = ['Mon 4', 'Tue 5', 'Wed 6', 'Thu 7', 'Fri 8', 'Sat 9', 'Mon 11', 'Tue 12', 'Wed 13', 'Thu 14', 'Fri 15', 'Sat 16'];
-// Harbourside, 1–20 November: the day’s high and hot drinks
-const NOV = CLEAN_ROWS.filter((r) => r[at('cafe')] === 'Harbourside' && r[at('date')] >= '2027-11-01' && r[at('date')] <= '2027-11-20');
-const nx = NOV.map((r) => r[at('high_f')]), ny = NOV.map((r) => r[at('hot_drinks')]);
-const novSheet = { cells: { A1: 'Date', B1: 'High (°F)', C1: 'Hot drinks', ...col('A', 2, NOV.map((r) => dayLabel(r[at('date')]))), ...col('B', 2, nx), ...col('C', 2, ny), E1: 'r' } };
+// Harbourside, 1–20 October: the day’s high and hot drinks
+const OCT = CLEAN_ROWS.filter((r) => r[at('cafe')] === 'Harbourside' && r[at('date')] >= '2027-10-01' && r[at('date')] <= '2027-10-20');
+const nx = OCT.map((r) => r[at('high_f')]), ny = OCT.map((r) => r[at('hot_drinks')]);
+const novSheet = { cells: { A1: 'Date', B1: 'High (°F)', C1: 'Hot drinks', ...col('A', 2, OCT.map((r) => dayLabel(r[at('date')]))), ...col('B', 2, nx), ...col('C', 2, ny), E1: 'r' } };
 // Kingfisher Airways: route length (km) and fare ($)
 const KA = { cov: 23040, sx: 450, sy: 64 };
 // Thornbury Dairy: litres of milk delivered and revenue ($)
@@ -57,7 +57,7 @@ export const items = [
   },
   {
     id: 'b05-m1-3', lesson: 'scatterplots', type: 'multi', kind: 'applied',
-    prompt: 'Wayfarer Couriers (fictional) plots fuel used (litres, to 0.1) against distance (recorded in whole miles) for 2,000 van trips. Most trips are 5 to 40 miles, so the points form dense vertical stripes. Select all the steps that make the plot honest and readable.',
+    prompt: 'Wayfarer Couriers (fictional) plots fuel used (litres, to 0.1) against distance (recorded in whole miles) for 2,000 van trips. Most trips are 5 to 40 miles, so the points form dense vertical stripes. The fleet has electric and diesel vans. Select all the steps that make the plot honest and readable.',
     options: [
       'Nudge each point left or right by up to 0.3 miles when drawing it.',
       'Draw the markers partly transparent.',
@@ -111,7 +111,7 @@ export const items = [
   // ---------------------------------------------------------------- covariance-and-pearson
   {
     id: 'b05-m1-6', lesson: 'covariance-and-pearson', type: 'formula', kind: 'numerical',
-    prompt: 'Harbourside’s day’s high (B2:B21) and hot drinks made (C2:C21), 1–20 November. In F1, calculate r from the population covariance, COVARIANCE.P, and the matching standard deviations.',
+    prompt: 'Harbourside’s day’s high (B2:B21) and hot drinks made (C2:C21), 1–20 October. In F1, calculate r from the population covariance, COVARIANCE.P, and the matching standard deviations.',
     sheet: novSheet, cell: 'F1', answer: '=COVARIANCE.P(B2:B21,C2:C21)/(STDEV.P(B2:B21)*STDEV.P(C2:C21))',
     alt: ['=COVARIANCE.P(B2:B21,C2:C21)/STDEV.P(B2:B21)/STDEV.P(C2:C21)', '=COVARIANCE.P(C2:C21,B2:B21)/(STDEV.P(B2:B21)*STDEV.P(C2:C21))'],
     require: ['COVARIANCE.P'],
@@ -120,7 +120,7 @@ export const items = [
       { formula: '=COVARIANCE.P(B2:B21,C2:C21)/(STDEV.S(B2:B21)*STDEV.S(C2:C21))', say: 'COVARIANCE.P divides by n; STDEV.S by n − 1. Mixed, they give r × 19 ÷ 20. Pair the population covariance with STDEV.P.' },
       { formula: '=COVARIANCE.P(B2:B21,C2:C21)', say: 'That is the covariance, in °F × drinks. Divide it by both standard deviations.' },
     ],
-    solution: `<x>=COVARIANCE.P(B2:B21,C2:C21)/(STDEV.P(B2:B21)*STDEV.P(C2:C21))</x> = ${sg(C.pearson(nx, ny).r, 4)}, the same as CORREL: dividing by n in all three places cancels just as n − 1 does. Warmer November days went with fewer hot drinks.`,
+    solution: `<x>=COVARIANCE.P(B2:B21,C2:C21)/(STDEV.P(B2:B21)*STDEV.P(C2:C21))</x> = ${sg(C.pearson(nx, ny).r, 4)}, the same as CORREL: dividing by n in all three places cancels just as n − 1 does. Over these 20 days warmer October days went with fewer hot drinks.`,
   },
   {
     id: 'b05-m1-7', lesson: 'covariance-and-pearson', type: 'num', kind: 'numerical',

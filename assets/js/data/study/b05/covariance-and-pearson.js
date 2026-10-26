@@ -30,7 +30,7 @@ const rF = C.pearson(HF, IS).r, rCel = C.pearson(HC, IS).r;
 const covPop = C.covariance(HF, IS, { population: true }), nM = HF.length;
 const mixed = covPop / (sd(HF) * sd(IS));
 const rNeg = C.pearson(HF.map((v) => 100 - v), IS).r;
-const rLog = C.pearson(HF, IS.map((v) => Math.log(v + 0.01))).r;
+const rLog = C.pearson(HF.map((v) => Math.log(v)), IS).r;   // the high is always above 0°F, so its log exists
 
 // ---------------------------------------------------------------- the chain
 const chain = [['footfall', 'transactions'], ['transactions', 'sales'], ['footfall', 'sales']].map(([a, b]) => ({ a, b, all: pr(a, b), h: pr(a, b, H), m: pr(a, b, M) }));
@@ -133,7 +133,7 @@ export default {
     { h: 'Changes of units leave r alone' },
     { p: String.raw`A <g>linear transformation</g> changes a variable to <m>a + bx</m>: adding a constant shifts it, multiplying by a constant rescales it. Converting °F to °C, <m>(F - 32) \times 5/9</m>, is one; so is counting in hundreds, or in dollars instead of cents. Shifting changes every deviation by nothing; rescaling multiplies every deviation, and the standard deviation, by the same factor, so the factors cancel in r.` },
     { math: String.raw`r(a + b\,x,\; c + d\,y) = \operatorname{sign}(b\,d)\; r(x, y)` },
-    { p: `At Millbrook the day’s high and the iced share have a covariance of ${fx(covF, 3)} (°F × share) and r = ${fx(rF, 3)}. In °C the covariance becomes ${fx(covCel, 3)}, five-ninths as large, and r is still ${fx(rCel, 3)}. Express the share as a percentage instead and the covariance becomes ${fx(covPct, 1)}, a hundred times larger; r doesn’t move. Multiply by a negative number, as when a thermometer reading is replaced by “degrees below 100°F”, and r keeps its size but flips its sign (${sg(rNeg, 3)}). Only a nonlinear change, such as taking logs, can change r’s size: log of the iced share gives r = ${fx(rLog, 3)} with the high.` },
+    { p: `At Millbrook the day’s high and the iced share have a covariance of ${fx(covF, 3)} (°F × share) and r = ${fx(rF, 3)}. In °C the covariance becomes ${fx(covCel, 3)}, five-ninths as large, and r is still ${fx(rCel, 3)}. Express the share as a percentage instead and the covariance becomes ${fx(covPct, 1)}, a hundred times larger; r doesn’t move. Multiply by a negative number, as when a thermometer reading is replaced by “degrees below 100°F”, and r keeps its size but flips its sign (${sg(rNeg, 3)}). Only a nonlinear change, such as taking logs, can change r’s size: the log of the high (always above 0°F here) gives r = ${fx(rLog, 3)} with the iced share.` },
 
     { h: 'r measures straight-line association only' },
     { p: String.raw`r answers one question: how closely do the points follow a straight line? A strong relationship of another shape can have a modest r, or none. Take seven points on the U-shape <m>y = x^2</m>, for x from −3 to 3: y is completely determined by x, yet r = ${fx(Math.abs(uR) < 1e-12 ? 0 : uR, 0)}, because the falling half cancels the rising half exactly. The iced share’s S-curve has r = 0.94, but Spearman’s rank correlation, which asks only whether the points always rise, is 0.96; the rank-correlation lesson explains the difference. Peak waits climb slowly with the load per barista and then steeply, a hockey stick whose strength r understates; the nonlinear-and-restricted lesson deals with it.` },
@@ -151,7 +151,7 @@ export default {
     { h: 'Samples, populations and missing values' },
     { p: String.raw`The covariance with n − 1, COVARIANCE.S, is the sample covariance, the right choice when the data are a sample from a larger process, as 306 days are from the cafés’ trading. COVARIANCE.P divides by n and describes the data as a complete population. The r you get is the same either way, as long as the standard deviations match: COVARIANCE.S with STDEV.S, or COVARIANCE.P with STDEV.P. Mixing them multiplies r by (n − 1) ÷ n: for Millbrook’s 306 days, ${fx(covPop, 4)} ÷ (${fx(sd(HF), 3)} × ${fx(sd(IS), 4)}) = ${fx(mixed, 4)} instead of ${fx(rF, 4)}, a small slip with 306 rows and a larger one with 12.` },
     { p: String.raw`The r of a sample estimates the <g>population correlation</g>, written <m>\rho</m> (rho): the correlation over all the days the cafés could have traded under the same conditions. The testing-correlation lesson asks how far r can stray from <m>\rho</m> by chance. Note that <m>\rho</m> also names Spearman’s rank correlation, so this course writes “Spearman’s ρ” or <m>r_s</m> for that.` },
-    { p: 'When a value is missing, CORREL, COVARIANCE.S and the course’s engine use every row that has both values and skip the rest: <g>Pairwise deletion</g>. Each pair’s r may then come from slightly different rows, which matters when you compare several correlations; say how many pairs each one uses.' },
+    { p: 'When a value is missing, the course’s engine and this site’s worksheets use every row that has both values and skip the rest: <g>Pairwise deletion</g>. Microsoft’s documentation says only that CORREL and COVARIANCE.S ignore text, logical values and empty cells, so in Excel clear or filter out incomplete rows first, and count the pairs used. Each pair’s r may then come from slightly different rows, which matters when you compare several correlations; say how many pairs each one uses.' },
 
     { h: 'The Excel functions' },
     { table: {
@@ -187,14 +187,14 @@ export default {
     { id: 'pear-z', name: 'r as the average product of z-scores',
       tex: String.raw`r = \dfrac{1}{n - 1} \sum_{i=1}^{n} \left(\dfrac{x_i - \bar{x}}{s_x}\right) \left(\dfrac{y_i - \bar{y}}{s_y}\right)`,
       where: [[String.raw`r`, 'Pearson’s correlation coefficient', ''], [String.raw`n`, 'Number of pairs', ''], [String.raw`x_i, y_i`, 'The paired values', 'their units'], [String.raw`\bar{x}, \bar{y}`, 'The means', 'their units'], [String.raw`s_x, s_y`, 'Sample standard deviations', 'their units']],
-      note: 'Excel: =SUMPRODUCT(STANDARDIZE(x,AVERAGE(x),STDEV.S(x)),STANDARDIZE(y,AVERAGE(y),STDEV.S(y)))/(COUNT(x)-1).' },
+      note: 'In Excel: turn each column into z-scores with STANDARDIZE (using AVERAGE and STDEV.S), add up the products of the paired z-scores with SUMPRODUCT, and divide by COUNT minus 1.' },
     { id: 'pear-linear', name: 'r under a change of units',
       tex: String.raw`r(a + b\,x,\; c + d\,y) = \operatorname{sign}(b\,d)\; r(x, y)`,
       where: [[String.raw`r(x, y)`, 'Pearson’s correlation of x and y', ''], [String.raw`x, y`, 'The original variables', 'their units'], [String.raw`a, c`, 'Constants added to x and y (shifts)', 'units of x, y'], [String.raw`b, d`, 'Constants multiplying x and y (rescaling), not zero', ''], [String.raw`\operatorname{sign}(b\,d)`, '+1 if b and d have the same sign, −1 if not', '']],
       note: 'The covariance becomes b × d × s_xy: it changes with the units, r doesn’t. A nonlinear change (logs, squares) can change r.' },
     { id: 'pear-r2', name: 'Coefficient of determination for one x',
-      tex: String.raw`r^2 = 1 - \dfrac{\text{variance of y left around the least-squares line}}{\text{variance of y}}`,
-      where: [[String.raw`r^2`, 'Share of the variance of y that the least-squares line on x accounts for, from 0 to 1', ''], [String.raw`\text{variance of y}`, 'Sum of squared deviations of y from its mean', 'units of y squared'], [String.raw`\text{variance of y left around the least-squares line}`, 'Sum of squared residuals from the line', 'units of y squared']],
+      tex: String.raw`r^2 = 1 - \dfrac{\text{SS}_\text{res}}{\text{SS}_\text{tot}}`,
+      where: [[String.raw`r^2`, 'Share of the variance of y that the least-squares line on x accounts for, from 0 to 1', ''], [String.raw`\text{SS}_\text{res}`, 'Sum of squared residuals from the least-squares line', 'units of y squared'], [String.raw`\text{SS}_\text{tot}`, 'Sum of squared deviations of y from its mean', 'units of y squared']],
       note: 'Excel: RSQ(y, x). Symmetric in x and y; a share of variance, not a measure of prediction accuracy (B06).' },
   ],
 
@@ -253,7 +253,7 @@ export default {
 
   mistakes: [
     { title: '“Millbrook’s covariance is bigger, so its relationship is stronger.”', html: `Covariance grows with the spread of each variable. Millbrook’s ${fx(covFTm, 0)} beats Harbourside’s ${fx(covFTh, 0)} because Millbrook’s days vary more, but both cafés’ r is 0.985. Compare correlations, not covariances.` },
-    { title: '“r = 0.5 means a relationship halfway to perfect.”', html: 'r² = 0.25: a line accounts for a quarter of the variance, and three quarters is left over. Square r before deciding how much it explains.' },
+    { title: '“r = 0.5 means a relationship halfway to perfect.”', html: 'r² = 0.25: a line accounts for a quarter of the variance, and three quarters is left over. Square r before deciding how much of the variance a line accounts for.' },
     { title: '“r² = 0.96, so footfall causes 96% of transactions.”', html: 'r² is a share of variance that two variables have in common, and it is symmetric. It says nothing about which way influence runs, and nothing about a percentage of the transactions themselves.' },
     { title: 'Converting units and expecting r to change', html: 'Any linear change of units (°F to °C, dollars to thousands, a share to a percentage) leaves r alone; only the sign can flip, when one variable is multiplied by a negative number. If converting units changed your r, there is a mistake in the conversion.' },
     { title: 'Mixing sample and population formulas', html: 'COVARIANCE.P ÷ (STDEV.S × STDEV.S) is r × (n − 1) ÷ n, too small. Use COVARIANCE.S with STDEV.S, COVARIANCE.P with STDEV.P, or just CORREL.' },
@@ -283,7 +283,7 @@ export default {
     { term: 'Covariance', def: 'The average product of two variables’ deviations from their means (dividing by n − 1 for a sample, by n for a population): positive when they tend to move together, negative when they move in opposite directions. Its units are the product of the two variables’ units.' },
     { term: 'Pearson’s r', def: 'The correlation coefficient for straight-line association: the covariance of two variables divided by the product of their standard deviations, from −1 to +1. Also called the Pearson product-moment correlation.' },
     { term: 'Population correlation', def: 'The correlation of two variables over a whole population or process, written ρ (rho), which a sample’s r estimates.' },
-    { term: 'Linear transformation', def: 'A change of a variable to a + b × x, such as a change of units; it shifts and rescales the values without changing their order or the shape of their relationships.' },
+    { term: 'Linear transformation', def: 'A change of a variable to a + b × x, such as a change of units; it shifts and rescales the values, keeping their order when b is positive and reversing it when b is negative, and leaves the shape of their relationships straight.' },
   ],
 
   references: [

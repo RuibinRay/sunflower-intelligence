@@ -63,6 +63,8 @@ const zs = (a) => a.map((v) => (v - mean(a)) / sd(a));
 const LZX = zs(LX), LZY = zs(LY);
 // a 12-day mix-up of COVARIANCE.P with STDEV.S
 const MIX = { r: 0.971, n: 12 };
+// Harbourside: footfall and sales over the year
+const HFS = C.pearson(column('footfall', { cafe: 'Harbourside' }), column('sales', { cafe: 'Harbourside' }));
 // Elmstead Hotel (fictional)
 const EH = { cov: 1512, sx: 24, sy: 70 };
 
@@ -141,7 +143,7 @@ export const guided = [
         require: ['STDEV.S'],
         view: 'A1:F13', formats: { F1: '#,##0.00', F2: '0.0000' }, widths: { A: 9, E: 12 },
         wrong: [
-          { formula: '=F1/(STDEV.P(B2:B13)*STDEV.P(C2:C13))', say: 'F1 is a sample covariance (n − 1). Pair it with sample standard deviations, STDEV.S; mixing them gives r × 12 ÷ 11, here above the true r.' },
+          { formula: '=F1/(STDEV.P(B2:B13)*STDEV.P(C2:C13))', say: 'F1 is a sample covariance (n − 1). Pair it with sample standard deviations, STDEV.S; mixing them gives r × 12 ÷ 11, here above 1, which no r can be.' },
           { formula: '=F1/STDEV.S(B2:B13)*STDEV.S(C2:C13)', say: 'Without brackets Excel divides by the first SD and then multiplies by the second. Put both SDs in brackets: F1/(… * …).' },
           { formula: '=F1/(VAR.S(B2:B13)*VAR.S(C2:C13))', say: 'Divide by the standard deviations, not the variances: the units must cancel.' },
         ],
@@ -345,20 +347,20 @@ export const check = [
   },
   {
     id: 'b05-pear-k4', type: 'mc', kind: 'applied',
-    prompt: `At Harbourside, footfall and sales have r = ${fx(C.pearson(column('footfall', { cafe: 'Harbourside' }), column('sales', { cafe: 'Harbourside' })).r, 3)}. Which sentence should go in Ana’s report?`,
+    prompt: `At Harbourside, footfall and sales have r = ${fx(HFS.r, 3)}. The manager asks how much of the day-to-day variance in sales a straight line in footfall leaves unaccounted for. What should Ana answer?`,
     options: [
-      `At Harbourside, a line in footfall accounts for about ${Math.round(C.pearson(column('footfall', { cafe: 'Harbourside' }), column('sales', { cafe: 'Harbourside' })).r2 * 100)}% of the daily variance in sales.`,
-      `At Harbourside, footfall explains ${Math.round(C.pearson(column('footfall', { cafe: 'Harbourside' }), column('sales', { cafe: 'Harbourside' })).r * 100)}% of sales, so more visitors will raise sales by that share.`,
-      `At Harbourside, ${Math.round(C.pearson(column('footfall', { cafe: 'Harbourside' }), column('sales', { cafe: 'Harbourside' })).r2 * 100)}% of the visitors through the door go on to buy something at the till.`,
-      'At Harbourside, footfall and sales are perfectly related, so sales can be predicted without error.',
+      `About ${Math.round((1 - HFS.r2) * 100)}%: that is 1 − r², what the line leaves over.`,
+      `About ${Math.round((1 - HFS.r) * 100)}%: that is 1 − r, the distance of r from a perfect 1.`,
+      `About ${Math.round(HFS.r2 * 100)}%: that is r², the share the line leaves over.`,
+      'None of it: with r this close to 1, the line accounts for all the variance.',
     ],
     answer: 0,
     feedback: {
-      1: 'r isn’t a percentage of sales, and a correlation doesn’t say what changing footfall would do.',
-      2: 'That is a conversion rate (transactions ÷ footfall), a different quantity from r².',
-      3: 'r is close to 1 but not 1; and even a high r² doesn’t make predictions error-free.',
+      1: 'r is not a share of variance; r² is. The share left over is 1 − r².',
+      2: 'r² is the share a line accounts for, not the share it leaves over.',
+      3: 'Only r = ±1 accounts for all the variance; r² here is a little below 1.',
     },
-    solution: 'r² is the share of the variance of sales that a straight line in footfall accounts for. Say “accounts for … of the variance”, not “explains … of sales”, and don’t imply that raising footfall would raise sales by a set amount: that is a causal claim.',
+    solution: `r² = ${fx(HFS.r2, 3)} (r = ${fx(HFS.r, 3)}, squared), so a line in footfall accounts for about ${Math.round(HFS.r2 * 100)}% of the variance in daily sales and leaves 1 − r² = ${fx(1 - HFS.r2, 3)}, about ${Math.round((1 - HFS.r2) * 100)}%, unaccounted for: days with more or less sales than footfall alone would suggest.`,
   },
   {
     id: 'b05-pear-k5', type: 'multi', kind: 'conceptual',
@@ -386,6 +388,6 @@ export const check = [
     wrong: [
       { value: round(EH.cov / (EH.sx * EH.sy) * 100, 1), say: 'That is r as a percentage. The share of variance is r².' },
     ],
-    solution: `r = ${EH.cov.toLocaleString('en-US')} ÷ (${EH.sx} × ${EH.sy}) = ${fx(EH.cov / (EH.sx * EH.sy), 2)}, so r² = ${fx((EH.cov / (EH.sx * EH.sy)) ** 2, 2)}: about ${Math.round((EH.cov / (EH.sx * EH.sy)) ** 2 * 100)}% of the variance. The other ${100 - Math.round((EH.cov / (EH.sx * EH.sy)) ** 2 * 100)}% comes from things occupancy doesn’t capture, such as how many guests are on room-only rates.`,
+    solution: `r = ${EH.cov.toLocaleString('en-US')} ÷ (${EH.sx} × ${EH.sy}) = ${fx(EH.cov / (EH.sx * EH.sy), 2)}, so r² = ${fx((EH.cov / (EH.sx * EH.sy)) ** 2, 2)}: about ${Math.round((EH.cov / (EH.sx * EH.sy)) ** 2 * 100)}% of the variance. The other ${100 - Math.round((EH.cov / (EH.sx * EH.sy)) ** 2 * 100)}% is variation a straight line in occupancy leaves unaccounted for.`,
   },
 ];

@@ -1,7 +1,7 @@
 // scatterplots.js — B05 · Scatterplots. Content only; exercises are in scatterplots.ex.js. Uses the cafés' daily log
 // (case.js: column, CLEAN_ROWS, CAFE_ROWS, SLIP, DERIVED) for direction, form, strength and unusual points, the
-// overplotting and time-order problems of 612 points, and Ana's iced-drink planning. Anscombe's quartet uses the values
-// in R's datasets package (anscombe). Pemberton Cinema is fictional. Every figure printed is recomputed in `checks`.
+// overplotting and time-order problems of 612 points, and Ana's iced-drink planning. Anscombe's quartet uses Anscombe's
+// (1973) values as Wikipedia prints them (the same data ship as R's datasets::anscombe). Pemberton Cinema is fictional. Every figure printed is recomputed in `checks`.
 import { column, CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, DERIVED as D } from './case.js?v=20';
 import * as C from '../../../core/correlation.js?v=20';
 import { mean, variance } from '../../../core/stats.js?v=20';
@@ -32,7 +32,7 @@ const mSlipR = C.pearson(mFootRaw, mTrans).r, mCleanR = r('footfall', 'transacti
 // symmetry: r of y on x equals r of x on y
 const symm = C.pearson(column('transactions'), column('footfall')).r;
 
-// ---------------------------------------------------------------- Anscombe's quartet (R datasets::anscombe)
+// ---------------------------------------------------------------- Anscombe's quartet (Anscombe 1973; Wikipedia's table)
 const AX = [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5], AX4 = [8, 8, 8, 8, 8, 8, 8, 19, 8, 8, 8];
 const AY = [
   [8.04, 6.95, 7.58, 8.81, 8.33, 9.96, 7.24, 4.26, 10.84, 4.82, 5.68],
@@ -56,19 +56,20 @@ const cinR = C.pearson(BOOK, ADMIT).r, cinR9 = C.pearson(BOOK.slice(0, 9), ADMIT
 // ---------------------------------------------------------------- figure
 const f1 = (x) => Math.round(x * 10) / 10;
 function anscombeFigure() {
-  const W = 300, Hh = 210, pad = { l: 40, r: 12, t: 26, b: 34 };
-  let svg = '<svg viewBox="0 0 640 470" xmlns="http://www.w3.org/2000/svg" font-size="11" fill="currentColor">';
+  // 2 × 2 panels in a 640-wide viewBox; text is 20–22 units so it stays near 11 px or more when the figure is 350 px wide
+  const W = 320, Hh = 290, pad = { l: 46, r: 14, t: 34, b: 40 };
+  let svg = '<svg viewBox="0 0 640 580" xmlns="http://www.w3.org/2000/svg" font-size="20" fill="currentColor">';
   AY.forEach((y, k) => {
-    const ox = (k % 2) * 320 + 10, oy = Math.floor(k / 2) * 230 + 6;
+    const ox = (k % 2) * 320, oy = Math.floor(k / 2) * 290;
     const X = (v) => ox + pad.l + ((v - 2) / 18) * (W - pad.l - pad.r);
     const Y = (v) => oy + Hh - pad.b - ((v - 2) / 12) * (Hh - pad.t - pad.b);
-    svg += `<text x="${ox + W / 2}" y="${oy + 14}" text-anchor="middle" font-size="12">Set ${k + 1}</text>`;
-    svg += `<line x1="${X(2)}" x2="${X(20)}" y1="${Y(2)}" y2="${Y(2)}" stroke="var(--ink)"/><line x1="${X(2)}" x2="${X(2)}" y1="${Y(2)}" y2="${Y(14)}" stroke="var(--ink)"/>`;
-    [5, 10, 15, 20].forEach((v) => { svg += `<text x="${f1(X(v))}" y="${f1(Y(2) + 14)}" text-anchor="middle" fill="var(--ink-3)">${v}</text>`; });
-    [4, 8, 12].forEach((v) => { svg += `<text x="${f1(X(2) - 6)}" y="${f1(Y(v) + 4)}" text-anchor="end" fill="var(--ink-3)">${v}</text>`; });
-    svg += `<line x1="${f1(X(3))}" x2="${f1(X(19.5))}" y1="${f1(Y(3 + 0.5 * 3))}" y2="${f1(Y(3 + 0.5 * 19.5))}" stroke="var(--series-2)" stroke-width="1.5" stroke-dasharray="5 4"/>`;
-    y.forEach((v, i) => { svg += `<circle cx="${f1(X(AXS[k][i]))}" cy="${f1(Y(v))}" r="4" fill="var(--series-1)"/>`; });
-    svg += `<text x="${f1(X(20))}" y="${f1(Y(13.2))}" text-anchor="end" fill="var(--ink-3)">r = 0.82</text>`;
+    svg += `<text x="${f1(ox + pad.l + 4)}" y="${oy + 24}" font-size="22">Set ${k + 1}</text>`;
+    svg += `<text x="${f1(X(20))}" y="${oy + 24}" text-anchor="end" fill="var(--ink-3)">r = 0.82</text>`;
+    svg += `<line x1="${f1(X(2))}" x2="${f1(X(20))}" y1="${f1(Y(2))}" y2="${f1(Y(2))}" stroke="var(--ink)"/><line x1="${f1(X(2))}" x2="${f1(X(2))}" y1="${f1(Y(2))}" y2="${f1(Y(14))}" stroke="var(--ink)"/>`;
+    [5, 10, 15].forEach((v) => { svg += `<text x="${f1(X(v))}" y="${f1(Y(2) + 24)}" text-anchor="middle" fill="var(--ink-3)">${v}</text>`; });
+    [4, 8, 12].forEach((v) => { svg += `<text x="${f1(X(2) - 8)}" y="${f1(Y(v) + 7)}" text-anchor="end" fill="var(--ink-3)">${v}</text>`; });
+    svg += `<line x1="${f1(X(3))}" x2="${f1(X(19.5))}" y1="${f1(Y(3 + 0.5 * 3))}" y2="${f1(Y(3 + 0.5 * 19.5))}" stroke="var(--series-2)" stroke-width="2" stroke-dasharray="7 5"/>`;
+    y.forEach((v, i) => { svg += `<circle cx="${f1(X(AXS[k][i]))}" cy="${f1(Y(v))}" r="6" fill="var(--series-1)"/>`; });
   });
   return `${svg}</svg>`;
 }
@@ -107,7 +108,7 @@ export default {
       '<b>Strength.</b> How tightly do the points hug that form? A thin band is strong; a fat cloud is weak.',
       '<b>Unusual points.</b> Are there points far from the rest, and do they lie on the pattern or break it?',
     ] },
-    { p: 'The log has an example of each. Plot the share of drinks that are iced against the day’s high temperature and the points rise steeply: a positive association. Plot hot drinks against the high and they fall: a negative one. Footfall and transactions form a thin straight band, with a correlation of 0.98; rain and footfall form a loose cloud with a correlation of −0.14. Five days at Harbourside sit far to the right of everything else, and one day at Millbrook sits off on its own: the In depth section explains both.' },
+    { p: 'The log has an example of each. Plot the share of drinks that are iced against the day’s high temperature and the points rise steeply: a positive association. Plot hot drinks against the high and they fall: a negative one. Footfall and transactions form a thin straight band, with a correlation of 0.98; rain and footfall form a loose cloud with a correlation of −0.14. Five days at Harbourside sit far to the right of everything else, and in the log as the manager typed it, one day at Millbrook sits off on its own: the In depth section explains both.' },
     { callout: 'key', title: 'Describe it in a sentence', html: 'A good description names the variables, the direction, the form, the strength and anything unusual, in that order: “On warmer days a larger share of drinks is iced. The rise is strong but not straight: almost flat in the cold, steep between about 60°F and 80°F, and levelling off in the heat.” A correlation can follow the sentence; it can’t replace it.' },
 
     { h: 'Which variable goes where' },
@@ -127,13 +128,13 @@ export default {
 
     { h: 'Unusual points' },
     { p: 'A point can be unusual in x, in y, or in both, and what matters is whether it breaks the pattern. On Harbourside’s five harbour-festival days footfall ran from 502 to 620, far above any other day, and transactions were far higher too. Those points are extreme in both variables but lie on the same band as the rest: they are real days that stretch the range, and they strengthen the straight-line pattern rather than distort it.' },
-    { p: String.raw`Millbrook’s footfall on 14 September is recorded as ${SLIP.recorded.toLocaleString('en-US')}, more than six times the busiest day it ever had, while its transactions, 130, were ordinary. The point sits far to the right with an ordinary height: it breaks the pattern. The true count was ${SLIP.actual}; someone typed an extra digit. That one point drops Millbrook’s correlation between footfall and transactions from 0.99 to 0.52, and the two cafés’ pooled correlation from 0.98 to 0.68. A scatterplot shows a slip like this at a glance; a correlation coefficient hides it inside a number that merely looks disappointing. Checking, correcting and reporting such points is the outliers-and-influence lesson’s subject; this course’s lessons use the corrected log unless they say otherwise.` },
+    { p: String.raw`Millbrook’s footfall on 14 September is recorded as ${SLIP.recorded.toLocaleString('en-US')}, more than six times the busiest day it ever had, while its transactions, 130, were ordinary. The point sits far to the right with an ordinary height: it breaks the pattern. The true count was ${SLIP.actual}; someone typed an extra digit. That one point drops Millbrook’s correlation between footfall and transactions from 0.985 to 0.519, and the two cafés’ pooled correlation from 0.98 to 0.68. A scatterplot shows a slip like this at a glance; a correlation coefficient hides it inside a number that merely looks disappointing. Checking, correcting and reporting such points is the outliers-and-influence lesson’s subject; this course’s lessons use the corrected log unless they say otherwise.` },
 
     { h: 'Too many points: overplotting' },
     { p: `With 612 points, many land on top of one another and the plot hides how many there are: this is <g>overplotting</g>. It is worst when values are recorded in steps. The day’s high is a whole number of degrees, and both cafés share it, so only ${highLevels} different temperatures appear across 612 rows. Peak barista hours are rostered in half-hours, ${staffLevels} different values in all. Plot transactions against peak barista hours and ${stacked} of the 612 points sit exactly on top of at least one other point: a column of dots can stand for one day or for nine.` },
     { list: [
       '<b>Transparency.</b> Draw each point partly see-through, so that places where many points overlap look darker. In Excel, the marker fill of a data series has a transparency setting.',
-      '<b>Jitter.</b> <g>Jittering</g> adds a small random nudge to each point’s position, smaller than the step between recorded values (less than a quarter of an hour for barista hours), so stacked points spread into a visible clump. Jitter is for drawing only: calculate every statistic from the recorded values.',
+      '<b>Jitter.</b> <g>Jittering</g> adds a small random nudge to each point’s position, less than half the step between recorded values either way (under a quarter of an hour either way for half-hourly barista hours), so stacked points spread into a visible clump. Jitter is for drawing only: calculate every statistic from the recorded values.',
       '<b>One group at a time.</b> Plot each café on its own panel, with the same axes, or colour the points by café. Side-by-side panels on common axes are called <g>small multiples</g>.',
       '<b>Smaller or hollow markers.</b> They overlap less, and the eye can still count them.',
       '<b>Bins.</b> With many thousands of points, count the points in small squares or hexagons of the plot and shade each by its count. With 612 points this is rarely needed.',
@@ -144,10 +145,10 @@ export default {
     { p: 'To see time order, colour the points by month, or join them with a line in date order (a connected scatterplot). Whenever both variables are <g>Time-series data</g>, ask whether each simply trends with the calendar. Two series that both trend can correlate strongly without having anything to do with each other; the correlation-and-causation lesson returns to Harbourside’s members. Days that follow one another also tend to be alike, so 306 days carry less independent information than 306 unrelated observations would; the testing-correlation lesson says when that matters.' },
 
     { h: 'Anscombe’s quartet' },
-    { p: String.raw`In 1973 the statistician Francis Anscombe published four small datasets to make the case for plotting. Each has 11 pairs of x and y. In all four the mean of x is 9, the variance of x is 11, the mean of y is 7.50, the variance of y is about 4.12, the correlation is 0.82, and the least-squares line is <m>\hat{y} = 3.00 + 0.500x</m>. By every number in a standard summary they are the same dataset.` },
+    { p: String.raw`In 1973 the statistician Francis Anscombe published four small datasets to make the case for plotting. Each has 11 pairs of x and y. In all four the mean of x is 9, the variance of x is 11, the mean of y is 7.50, the variance of y is about 4.12–4.13, the correlation is 0.82 (0.8162 to 0.8165), and the least-squares line is <m>\hat{y} = 3.00 + 0.500x</m>. To two or three decimal places, every number in a standard summary is the same.` },
     { figure: {
       svg: anscombeFigure(),
-      caption: 'Anscombe’s quartet (values from R’s datasets package). Each panel has the same means, variances, correlation (0.82) and least-squares line, the dashed line ŷ = 3.00 + 0.500x, but tells a different story.',
+      caption: 'Anscombe’s quartet (values from Anscombe, 1973). Each panel has, to two or three decimal places, the same means, variances, correlation (0.82) and least-squares line, the dashed line ŷ = 3.00 + 0.500x, but tells a different story.',
       alt: 'Four scatterplots in a two-by-two grid, each with x from about 4 to 19 and y from about 3 to 13, and the same dashed straight line rising from lower left to upper right. Set 1: eleven points scattered evenly around the line. Set 2: the points lie on a smooth arch that rises, peaks around x = 11 and falls. Set 3: ten points lie exactly on a shallower straight line and one point at x = 13 lies far above it. Set 4: ten points stand in a vertical column at x = 8 and one point lies far to the right at x = 19, high up. Each panel is labelled r = 0.82.',
     } },
     { table: {
@@ -185,21 +186,21 @@ export default {
         'Direction: on nine of the ten evenings, more bookings go with more admissions: a positive association.',
         'Form and strength: those nine points lie close to a straight band rising by roughly two to three admissions per extra booking, a strong linear pattern.',
         'Unusual points: evening 10 had the fewest bookings (20) and the most admissions (210). It sits far above the band at the left: unusual in y for its x, and it breaks the pattern. The manager checks the diary: it was a private hire, sold to a club by phone, so it never appeared in online bookings.',
-        String.raw`Number, read with the plot: with evening 10, <x>=CORREL(B2:B11,C2:C11)</x> is ${cinR.toFixed(2)}; without it, ${cinR9.toFixed(3)}. The one point changes the summary from “moderate” to “nearly perfect”.`,
+        String.raw`Number, read with the plot: with evening 10, <x>=CORREL(B2:B11,C2:C11)</x> is ${cinR.toFixed(2)}; without it, ${cinR9.toFixed(3)}. The one point changes r from about 0.4 to almost 1.`,
       ],
       answer: `A strong, positive, linear relationship on ordinary evenings (r = ${cinR9.toFixed(3)} without evening 10), with one point that breaks the pattern: a private hire. With it included, r is only ${cinR.toFixed(2)}.`,
       interpretation: 'Noon bookings are a good early guide for public screenings, and private hires need their own line in the plan. Neither number alone tells that story: the plot shows why they differ. Leaving the point out is justified here only because there is a documented reason it belongs to a different kind of evening; the outliers-and-influence lesson sets out when removing a point is honest.' },
     { level: 'challenging', title: 'Anscombe’s quartet: one summary, four stories', fictional: false,
-      setup: 'Anscombe’s four datasets each have 11 pairs, the same means (x̄ = 9, ȳ = 7.50), the same variances, r = 0.82 and the same least-squares line. Using the figure in In depth, say for each set whether r = 0.82 is a fair summary, and what you would report instead when it is not.',
+      setup: 'Anscombe’s four datasets each have 11 pairs and, to two or three decimal places, the same means (x̄ = 9, ȳ = 7.50), the same variances, r = 0.82 and the same least-squares line. Using the figure in In depth, say for each set whether r = 0.82 is a fair summary, and what you would report instead when it is not.',
       steps: [
         'Set 1: the points scatter evenly around a straight line with no unusual points. r = 0.82 is a fair summary of a moderately strong linear relationship.',
         'Set 2: the points lie on a smooth curve that rises then falls. The relationship is perfect, but not linear; r measures how close the points are to a straight line, so it understates the link. Report the curve (and in B06 fit it), not r.',
         `Set 3: ten points lie exactly on one line and a single point at x = 13 lies far above it. Without that point r is ${a3Without.toFixed(3)}. Check the point: if it is an error, correct it; if it is real, report the relationship with and without it.`,
         'Set 4: ten points share x = 8, so x varies only because of the single point at x = 19. That one point creates the whole correlation. Report that x barely varies and that one observation creates the number; collect data across a range of x before claiming anything.',
-        'Common lesson: the summary statistics are identical, so only the plot separates a fair summary (set 1) from a curve (2), an outlier (3) and a single influential point (4).',
+        'Common lesson: the summary statistics agree to two or three decimal places, so only the plot separates a fair summary (set 1) from a curve (2), an outlier (3) and a single influential point (4).',
       ],
       answer: 'r = 0.82 is a fair summary only for set 1. Set 2 is a perfect curve, set 3 a perfect line spoiled by one point, and set 4 has no relationship apart from one point.',
-      interpretation: 'Anscombe built the quartet so that the numbers agree exactly while the pictures disagree completely. In business data the same thing happens less tidily: a data-entry slip (set 3), a curve such as the iced-drink share (set 2), or one big event that stretches the range (set 4). Plot first, and let the plot decide which number to report.' },
+      interpretation: 'Anscombe built the quartet so that the numbers agree to two or three decimal places while the pictures disagree completely. In business data the same thing happens less tidily: a data-entry slip (set 3), a curve such as the iced-drink share (set 2), or one big event that stretches the range (set 4). Plot first, and let the plot decide which number to report.' },
     { level: 'applied', title: 'Planning iced drinks from the weather forecast', fictional: true,
       setup: 'Ana wants her baristas to prepare cold-brew concentrate and ice in line with the day’s forecast high. She plots the share of drinks served iced against the high for all 612 café-days and groups the days into temperature bands. What should the plan say?',
       table: { head: ['High (°F)', 'Café-days', 'Average iced share'], rows: BANDS.map((b) => [`${b.lo}–${b.hi - 1}`, String(b.n), `${(b.share * 100).toFixed(0)}%`]), align: ['l', 'r', 'r'] },
@@ -218,13 +219,13 @@ export default {
     { widget: 'sct-iced', intro: 'The iced share against the day’s high for all 612 café-days. Turn on the least-squares line and see where a straight line misses the S-shaped band: below the points on the coldest days, above them in the 50s and 60s, below them in the 70s and 80s. Colour by café: the two cafés follow the same curve.' },
     { widget: 'sct-sales', intro: 'Sales against transactions, both cafés. Colour by café to see the two bands: each café’s r is close to 1, the pooled r is 0.83.' },
     { widget: 'sct-slip', intro: 'Millbrook’s footfall against transactions as the manager typed it, with the slip on 14 September. Leave out the most influential point and watch r jump back up; the rank correlation hardly moved in the first place.' },
-    { widget: 'sct-jitter', intro: 'Transactions against peak barista hours, drawn with jitter: each point is nudged up to 0.2 hours left or right so that stacked days separate. The statistics underneath use the recorded hours.' },
+    { widget: 'sct-jitter', intro: 'Transactions against peak barista hours, drawn with jitter: each point is drawn up to 0.2 hours either side of its rostered hours so that stacked days separate (the markers are opaque, so jitter does the work transparency would). The statistics underneath use the recorded hours.' },
   ],
 
   mistakes: [
     { title: '“r is 0.94, so the relationship is a straight line.”', html: 'A high r says the points are close to some rising pattern that a line approximates well; it doesn’t say the pattern is straight. The iced share is an S-curve with r = 0.94. Look at the plot, and at whether the points sit on one side of a straight line in some ranges and on the other side elsewhere.' },
     { title: '“r is close to 0, so there is no relationship.”', html: 'r measures only straight-line association. Anscombe’s set 2 is a perfect curve; a U-shape can give r = 0 with a perfect link. A correlation near 0 means no linear trend, which the plot must confirm.' },
-    { title: 'Reporting the correlation without plotting', html: 'One slipped digit at Millbrook turns r = 0.99 into 0.52, and nothing in the number says why. The plot shows the stray point immediately. Plot every pair you report, and keep the plot with the number.' },
+    { title: 'Reporting the correlation without plotting', html: 'One slipped digit at Millbrook turns r = 0.985 into 0.519, and nothing in the number says why. The plot shows the stray point immediately. Plot every pair you report, and keep the plot with the number.' },
     { title: 'Treating every extreme point as an error', html: 'The festival days are far from the rest but real, and they lie on the pattern. Only a point that is impossible or contradicts other records (2,566 people and an ordinary 130 transactions) is a candidate error. Unusual is a reason to check, not to delete.' },
     { title: 'Computing statistics on jittered values', html: 'Jitter is a drawing aid. Calculate r and everything else from the recorded values; the jittered ones contain made-up noise.' },
     { title: 'Ignoring which café, or which month, a point belongs to', html: 'Pooled data can show clusters (sales against transactions) or hairpins (members against temperature) that come from mixing groups or periods. Colour by group and by time before trusting the overall pattern.' },
@@ -242,7 +243,7 @@ export default {
     'Plot every pair before you calculate: a correlation summarises the cloud, and only the plot shows whether the summary is fair.',
     'Read direction (positive or negative), form (linear, curved, clusters), strength (how tightly the points hug the form) and unusual points, and describe them in the units of the question.',
     'Put the explanatory variable on x and the response on y; correlation is symmetric, so the choice changes the reading, not r.',
-    'Extreme points that lie on the pattern (the festival days) are different from points that break it (the footfall slip, which takes Millbrook’s r from 0.99 to 0.52).',
+    'Extreme points that lie on the pattern (the festival days) are different from points that break it (the footfall slip, which takes Millbrook’s r from 0.985 to 0.519).',
     'With many points, use transparency, jitter (for drawing only), smaller markers and one group at a time.',
     'A scatterplot hides time order and groups: colour by month or group, or connect the points in date order.',
     'Anscombe’s quartet: four datasets with r = 0.82 and the same line, and only one of them is a straight-line relationship.',
@@ -256,7 +257,7 @@ export default {
     { term: 'Explanatory variable', def: 'In a pair of variables, the one thought to help explain or predict the other; plotted on the x-axis. Also called the independent or predictor variable.' },
     { term: 'Response variable', def: 'In a pair of variables, the one whose variation you want to understand or predict; plotted on the y-axis. Also called the dependent or outcome variable.' },
     { term: 'Overplotting', def: 'Points of a chart drawn on top of one another, so that the chart hides how many observations lie in each place.' },
-    { term: 'Jittering', def: 'Adding a small random nudge to the plotted position of each point, smaller than the step between recorded values, so that overlapping points become visible. Used for drawing only.' },
+    { term: 'Jittering', def: 'Adding a small random nudge to the plotted position of each point, less than half the step between recorded values either way, so that overlapping points become visible. Used for drawing only.' },
     { term: 'Small multiples', def: 'A set of small charts of the same kind, one per group or period, drawn on the same axes so that they can be compared at a glance.' },
     { term: 'Scatterplot matrix', def: 'A grid of scatterplots showing every pair of a set of variables, one small plot per pair.' },
     { term: 'Anscombe’s quartet', def: 'Four small datasets published by Francis Anscombe in 1973 that share their means, variances, correlation and least-squares line but look completely different when plotted.' },
@@ -265,7 +266,8 @@ export default {
   references: [
     { text: 'Illowsky, B. &amp; Dean, S. (2023). <i>Introductory Statistics 2e</i>, sections 12.2, “Scatter Plots”, and 12.3, “The Regression Equation”. OpenStax.', url: 'https://openstax.org/books/introductory-statistics-2e/pages/12-2-scatter-plots', checked: '2026-10-26' },
     { text: 'NIST/SEMATECH. <i>e-Handbook of Statistical Methods</i>, section 1.3.3.26, “Scatter Plot”.', url: 'https://itl.nist.gov/div898/handbook/eda/section3/scatterp.htm', checked: '2026-10-26' },
-    { text: 'R Core Team. “anscombe: Anscombe’s Quartet of ‘Identical’ Simple Linear Regressions”, R documentation for the datasets package (citing Anscombe, F. J. (1973), “Graphs in statistical analysis”, <i>The American Statistician</i>, 27(1), 17–21).', url: 'https://search.r-project.org/R/refmans/datasets/html/anscombe.html', checked: '2026-10-26' },
+    { text: 'Anscombe, F. J. (1973). “Graphs in statistical analysis”. <i>The American Statistician</i>, 27(1), 17–21.', url: 'https://doi.org/10.1080/00031305.1973.10478966', checked: null },
+    { text: 'Wikipedia. “Anscombe’s quartet” (prints the four datasets and their summary statistics; the same data ship with R as datasets::anscombe).', url: 'https://en.wikipedia.org/wiki/Anscombe%27s_quartet', checked: '2026-10-26' },
     { text: 'Microsoft Support. “CORREL function”.', url: 'https://support.microsoft.com/en-US/excel/functions/correl-function', checked: '2026-10-26' },
   ],
 
@@ -332,8 +334,8 @@ export default {
     { what: 'Slip more than six times Millbrook’s busiest day', value: Number(SLIP.recorded / Math.max(...column('footfall', M)) > 6), shown: 1 },
     { what: 'Slip is ten times the true count', value: SLIP.recorded / SLIP.actual, shown: 10, tol: 0.05 },
     { what: 'Slip-day transactions', value: CAFE_ROWS.find((row) => row[at('date')] === SLIP.date && row[at('cafe')] === SLIP.cafe)[at('transactions')], shown: 130 },
-    { what: 'Millbrook r with slip', value: mSlipR, shown: 0.52 },
-    { what: 'Millbrook r corrected', value: mCleanR, shown: 0.99 },
+    { what: 'Millbrook r with slip', value: mSlipR, shown: 0.519, tol: 0.0005 },
+    { what: 'Millbrook r corrected', value: mCleanR, shown: 0.985, tol: 0.0005 },
     { what: 'Pooled r with slip', value: D.footTransRaw.r, shown: 0.68 },
     { what: 'Rho with slip barely moves', value: D.footTransRhoRaw.rho, shown: 0.97 },
     // overplotting
@@ -352,7 +354,8 @@ export default {
       { what: `Anscombe ${k + 1} mean x`, value: s.mx, shown: 9 },
       { what: `Anscombe ${k + 1} var x`, value: s.vx, shown: 11 },
       { what: `Anscombe ${k + 1} mean y`, value: s.my, shown: 7.50 },
-      { what: `Anscombe ${k + 1} var y about 4.12`, value: s.vy, shown: 4.12, tol: 0.01 },
+      { what: `Anscombe ${k + 1} var y 4.12–4.13`, value: Number(s.vy >= 4.12 && s.vy <= 4.13), shown: 1 },
+      { what: `Anscombe ${k + 1} r 0.8162–0.8165`, value: Number(s.r >= 0.81615 && s.r < 0.81655), shown: 1 },
       { what: `Anscombe ${k + 1} slope`, value: s.b, shown: 0.500, tol: 0.0005 },
       { what: `Anscombe ${k + 1} intercept`, value: s.a, shown: 3.00 },
     ]),

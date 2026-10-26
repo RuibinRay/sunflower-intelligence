@@ -19,12 +19,8 @@ const r3 = (x) => Math.round(x * 1000) / 1000;
 // ---------------------------------------------------------------- widgets' data
 const CAFE = column('cafe'), LABEL = CLEAN_ROWS.map((r) => `${dayLabel(r[at('date')])}, ${r[at('cafe')]}`);
 const mRaw = CAFE_ROWS.filter((r) => r[at('cafe')] === 'Millbrook');
-// deterministic jitter (a small linear congruential generator) so the page is the same on every visit
-let seed = 20270301;
-const rand = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
 const STAFF = column('peak_staff_hours'), TRANS = column('transactions');
-const STAFF_J = STAFF.map((v) => Math.round((v + (rand() - 0.5) * 0.4) * 1000) / 1000);
-const staffR = C.pearson(STAFF, TRANS).r, staffJR = C.pearson(STAFF_J, TRANS).r;
+const staffR = C.pearson(STAFF, TRANS).r;
 const POS = {}; STAFF.forEach((s, i) => { const k = `${s}|${TRANS[i]}`; POS[k] = (POS[k] || 0) + 1; });
 const STACKED = Object.values(POS).filter((c) => c > 1).reduce((s, c) => s + c, 0);
 
@@ -91,12 +87,12 @@ export const widgets = {
   },
   'sct-jitter': {
     type: 'scatter',
-    title: 'Transactions against peak barista hours, both cafés (hours jittered for drawing)',
-    x: { name: 'Peak barista hours, jittered', values: STAFF_J, unit: 'hours' },
+    title: 'Transactions against peak barista hours, both cafés (drawn with jitter)',
+    x: { name: 'Peak barista hours', values: STAFF, unit: 'hours' }, jitter: { x: 0.2 },
     y: { name: 'Transactions', values: TRANS },
     group: { name: 'Café', values: CAFE }, labels: CLEAN_ROWS.map((r, i) => `${LABEL[i]}: ${STAFF[i]} hours rostered`),
     show: ['pearson'], toggles: ['group'],
-    note: `Hours are rostered in half-hour steps, so without jitter the points stand in ${new Set(STAFF).size} columns. Each point here is moved by up to 0.2 hours. The r shown, ${fx(staffJR, 3)}, is computed from the jittered positions, so it differs slightly from the true r on the recorded hours, ${fx(staffR, 3)}: report the true one. More hours go with more transactions because the manager rosters more baristas on days she expects to be busy.`,
+    note: `Hours are rostered in half-hour steps, so without jitter the points would stand in ${new Set(STAFF).size} columns. Each point is drawn up to 0.2 hours either side of its rostered hours; the markers are opaque, so the jitter, not transparency, is what separates stacked days. r = ${fx(staffR, 3)} is computed from the recorded hours. More hours go with more transactions because the manager rosters more baristas on days she expects to be busy.`,
   },
 };
 
@@ -178,7 +174,7 @@ export const guided = [
       'Round transactions to the nearest ten so that the columns line up neatly into a grid of tidy squares.',
     ],
     answer: 0,
-    hints: ['The aim is to see how many points are in each place without changing any statistic.', 'A nudge must be smaller than the gap between recorded values.'],
+    hints: ['The aim is to see how many points are in each place without changing any statistic.', 'A nudge must be less than half the gap between recorded values, either way.'],
     feedback: {
       1: 'A nudge as big as the step blurs real differences between rostered hours, and statistics must use the recorded values, never the jittered ones.',
       2: 'Dropping duplicates hides exactly what overplotting already hides: how many days share a position.',
