@@ -75,7 +75,8 @@ export const FACTS = {
   },
   brewer: { price: 24_000, delivered: '2027-04-01', instalment: 1_050, payments: 24, life: 5, monthsUsed: 9, paidIn2027: 8 },
   lawFirm: { start: '2027-04-01', baseFee: 40_000, expectedInflation: 0.028, months2027: 9, paidAt: '2028-03-31' },
-  catering: { events: 104, average: 880, invoiced: 85_880, collected: 80_650, writtenOff: 1_150,
+  catering: { invoiced: 85_880,      // the other events, invoiced (no event count is given for 2027)
+              collected: 80_650, writtenOff: 1_150,
               depositsReceived: 2_640, depositsEarned: 1_640 },                 // deposits: January 2027's (earned) and 2028's
   training: { workshops: 24, participants: 12, price: 125, paidForJanuary: 1_500, paidFor2028: 3_000 },
   shop: { sales: 189_400, refunds: 1_900, prepaidSubscriptions: 3_420, subscriptionsShipped: 2_960, cardFees: 6_820 },

@@ -140,7 +140,7 @@ export const independent = [
     answer: 2.86, check: () => zOrig(R.ALTMAN.z.w), tol: 0.01, unit: '', places: 2,
     wrong: [
       { value: 1.12, say: 'You used the 1968 weights for percentages (0.012, 0.014, 0.033, 0.006, 0.999) with ratios as decimals.' },
-      { value: 2.19, say: 'X₄ uses total liabilities as the denominator, not total assets: 600 ÷ 400 = 1.5.' },
+      { value: 2.32, say: 'X₄ uses total liabilities as the denominator, not total assets: 600 ÷ 400 = 1.5.' },
     ],
     solution: 'X₁ 0.12, X₂ 0.30, X₃ 0.09, X₄ 600 ÷ 400 = 1.5, X₅ 1.10. Z = 1.2(0.12) + 1.4(0.30) + 3.3(0.09) + 0.6(1.5) + 1.0(1.10) = 0.144 + 0.420 + 0.297 + 0.900 + 1.100 = 2.86: the grey zone (1.81–2.99).',
   },
@@ -160,12 +160,12 @@ export const independent = [
   {
     id: 'f03-z-i3', type: 'num', kind: 'numerical',
     prompt: 'Ferncliff Consulting, a fictional private firm ($ thousands): current assets 840; current liabilities 610; total assets 1,500; total liabilities 900; retained earnings 380; EBIT 150. Calculate its Z″ to two decimal places.',
-    answer: 3.26, check: () => fcZ.score, tol: 0.01, unit: '', places: 2,
+    answer: 3.20, check: () => fcZ.score, tol: 0.01, unit: '', places: 2,
     wrong: [
-      { value: 2.65, say: 'X₄ is equity ÷ total liabilities: (1,500 − 900) ÷ 900 = 0.667, not equity ÷ total assets.' },
-      { value: 6.13, say: 'Working capital is current assets minus current liabilities (230), not current assets.' },
+      { value: 2.92, say: 'X₄ is equity ÷ total liabilities: (1,500 − 900) ÷ 900 = 0.667, not equity ÷ total assets.' },
+      { value: 5.87, say: 'Working capital is current assets minus current liabilities (230), not current assets.' },
     ],
-    solution: 'X₁ = 230 ÷ 1,500 = 0.153; X₂ = 380 ÷ 1,500 = 0.253; X₃ = 150 ÷ 1,500 = 0.100; X₄ = 600 ÷ 900 = 0.667. Z″ = 1.01 + 0.83 + 0.67 + 0.70 = 3.20 with the rounded terms; 3.26 from unrounded ratios. Safe (above 2.60).',
+    solution: 'X₁ = 230 ÷ 1,500 = 0.153; X₂ = 380 ÷ 1,500 = 0.253; X₃ = 150 ÷ 1,500 = 0.100; X₄ = 600 ÷ 900 = 0.667. Z″ = 1.01 + 0.83 + 0.67 + 0.70 = 3.20. Safe (above 2.60).',
   },
   {
     id: 'f03-z-i4', type: 'mc', kind: 'conceptual',
@@ -238,12 +238,12 @@ export const check = [
   {
     id: 'f03-z-k4', type: 'num', kind: 'numerical',
     prompt: 'A fictional private printing company (a manufacturer): working capital $45,000; retained earnings $90,000; EBIT $38,000; book equity $150,000; total liabilities $250,000; sales $520,000; total assets $400,000. Calculate its Z′ to two decimal places.',
-    answer: 2.08, check: () => 0.717 * 45000 / 400000 + 0.847 * 90000 / 400000 + 3.107 * 38000 / 400000 + 0.42 * 150000 / 250000 + 0.998 * 520000 / 400000, tol: 0.01, unit: '', places: 2,
+    answer: 2.12, check: () => 0.717 * 45000 / 400000 + 0.847 * 90000 / 400000 + 3.107 * 38000 / 400000 + 0.42 * 150000 / 250000 + 0.998 * 520000 / 400000, tol: 0.01, unit: '', places: 2,
     wrong: [
-      { value: 1.79, say: 'X₄ divides equity by total liabilities (250,000), not total assets.' },
-      { value: 0.78, say: 'You left out the fifth term, 0.998 × sales ÷ total assets.' },
+      { value: 2.02, say: 'X₄ divides equity by total liabilities (250,000), not total assets.' },
+      { value: 0.82, say: 'You left out the fifth term, 0.998 × sales ÷ total assets.' },
     ],
-    solution: 'X₁ 0.1125, X₂ 0.225, X₃ 0.095, X₄ 0.6, X₅ 1.3. Z′ = 0.081 + 0.191 + 0.295 + 0.252 + 1.297 = 2.12 with rounded terms… working unrounded: 0.717 × 0.1125 + 0.847 × 0.225 + 3.107 × 0.095 + 0.420 × 0.6 + 0.998 × 1.3 = 2.08 (see the note). Grey zone (1.23–2.90).',
+    solution: 'X₁ 0.1125, X₂ 0.225, X₃ 0.095, X₄ 0.6, X₅ 1.3. Z′ = 0.081 + 0.191 + 0.295 + 0.252 + 1.297 = 2.12: the grey zone (1.23–2.90). Asset turnover supplies more than half of it.',
   },
   {
     id: 'f03-z-k5', type: 'mc', kind: 'applied',
