@@ -77,7 +77,7 @@ export const widgets = {
     labels: column('date', H).map(short),
     show: ['pearson', 'spearman', 'kendall'],
     toggles: ['ranks', 'line'],
-    note: 'In values the points bend: few iced drinks in cold weather, a steep climb through the 60s, a levelling off on hot days. In ranks the same points lie along a band, and the least-squares line fits them far better. Pearson’s r of the ranks equals Spearman’s ρ, 0.924.',
+    note: 'In values the points bend: few iced drinks below 55°F, a steady climb through the 60s, a jump in the mid-70s and slower growth above. In ranks the same points lie along a band, and the least-squares line fits them far better. Pearson’s r of the ranks equals Spearman’s ρ, 0.924.',
   },
   'rank-slip': {
     type: 'scatter',
@@ -99,7 +99,7 @@ export const widgets = {
     formats: { C: '0.0', D: '0.0', E: '0.0', F: '0.0', G: '0.00', J1: '0.000', J2: '0.000', J3: '0.000' },
     widths: { A: 11, I: 30 },
     tools: ['formulas', 'reset'],
-    note: 'J1 is the definition (CORREL of the RANK.AVG columns) and J2 the shortcut; with no ties they agree at 0.976. Type 57.3 in C8 so that 7 and 8 June tie: both get rank 4.5, J1 stays a correct Spearman’s ρ, and J2 no longer equals it. Type a temperature of 100 in B7: r in J3 changes, the ranks don’t.',
+    note: 'J1 is the definition (CORREL of the RANK.AVG columns) and J2 the shortcut; with no ties they agree at 0.976. Type 57.3 in C8 so that 7 and 8 June tie: they occupy positions 5 and 6, so both get rank 5.5, J1 stays a correct Spearman’s ρ, and J2 no longer equals it. Type a temperature of 100 in B7: r in J3 changes, the ranks don’t.',
   },
 };
 
@@ -238,13 +238,14 @@ export const independent = [
   },
   {
     id: 'b05-rank-i3', type: 'num', kind: 'numerical',
-    prompt: 'A survey of 10 shoppers (fictional) records two 1–5 ratings each. Of the 45 pairs of shoppers, 25 are concordant and 8 discordant; 7 pairs are tied on the first rating and 4 on the second (and 1 on both, counted in each). Calculate Kendall’s τ-b to three decimal places.',
-    answer: r3((25 - 8) / Math.sqrt((45 - 7) * (45 - 4))), check: () => (25 - 8) / Math.sqrt((45 - 7) * (45 - 4)), unit: '', places: 3, tol: 0.0005,
+    prompt: 'A survey of 10 shoppers (fictional) records two 1–5 ratings each. Of the 45 pairs of shoppers, 25 are concordant and 8 discordant; 7 pairs are tied on the first rating and 6 on the second (1 pair is tied on both, and is counted in each). Calculate Kendall’s τ-b to three decimal places.',
+    answer: r3((25 - 8) / Math.sqrt((45 - 7) * (45 - 6))), check: () => (25 - 8) / Math.sqrt((45 - 7) * (45 - 6)), unit: '', places: 3, tol: 0.0005,
     wrong: [
-      { value: r3((25 - 8) / 45), say: 'That is τ-a, which divides by all 45 pairs. τ-b removes the tied pairs of each variable from the denominator: √((45 − 7)(45 − 4)).' },
+      { value: r3((25 - 8) / 45), say: 'That is τ-a, which divides by all 45 pairs. τ-b removes the tied pairs of each variable from the denominator: √((45 − 7)(45 − 6)).' },
       { value: r3((25 - 8) / (25 + 8)), say: 'Dividing by concordant plus discordant pairs ignores the ties entirely. τ-b uses √((n₀ − n₁)(n₀ − n₂)).' },
+      { value: r3((25 - 8) / Math.sqrt((45 - 6) * (45 - 5))), say: 'The pair tied on both ratings is counted in each variable’s ties: n₁ = 7 and n₂ = 6, as given.' },
     ],
-    solution: `τ-b = (25 − 8) ÷ √((45 − 7)(45 − 4)) = 17 ÷ √(38 × 41) = 17 ÷ ${Math.sqrt(38 * 41).toFixed(2)} = ${fx((25 - 8) / Math.sqrt(38 * 41))}. τ-a would be 17 ÷ 45 = ${fx(17 / 45)}, pulled towards 0 because tied pairs can be neither concordant nor discordant.`,
+    solution: `The counts add up: 25 + 8 + 7 + 6 − 1 = 45 pairs. τ-b = (25 − 8) ÷ √((45 − 7)(45 − 6)) = 17 ÷ √(38 × 39) = 17 ÷ ${Math.sqrt(38 * 39).toFixed(2)} = ${fx((25 - 8) / Math.sqrt(38 * 39))}. τ-a would be 17 ÷ 45 = ${fx(17 / 45)}, pulled towards 0 because tied pairs can be neither concordant nor discordant.`,
   },
   {
     id: 'b05-rank-i4', type: 'classify', kind: 'applied',

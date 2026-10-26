@@ -54,17 +54,17 @@ const SHAPES = [XS.map((x) => 3 + 0.8 * x), XS.map((x) => 2 ** (x / 1.5)), XS.ma
 const shapeStats = SHAPES.map((y) => ({ r: C.pearson(XS, y).r, rho: C.spearman(XS, y).rho }));
 
 function shapesFigure() {
-  const W = 200, top = 40, B = 170, gap = 20;
-  let svg = '<svg viewBox="0 0 660 230" xmlns="http://www.w3.org/2000/svg" font-size="12" fill="currentColor">';
-  const titles = ['Linear', 'Monotonic, curved', 'Not monotonic'];
-  const notes = ['r = 1.00, ρ = 1.00', 'r = 0.88, ρ = 1.00', 'r = 0.00, ρ = 0.00'];
+  const W = 160, gap = 12, top = 46, B = 190;
+  let svg = '<svg viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg" font-size="18" fill="currentColor">';
+  const titles = ['Linear', 'Curved', 'U shape'];
+  const notes = ['r = 1, ρ = 1', 'r = 0.88, ρ = 1', 'r = 0, ρ = 0'];
   SHAPES.forEach((y, k) => {
-    const L = 15 + k * (W + gap), lo = Math.min(...y), hi = Math.max(...y);
-    const X = (v) => L + 10 + ((v - 1) / 9) * (W - 20), Y = (v) => B - ((v - lo) / (hi - lo)) * (B - top - 10);
-    svg += `<line x1="${L}" x2="${L + W}" y1="${B + 6}" y2="${B + 6}" stroke="var(--ink)" stroke-width="1"/><line x1="${L}" x2="${L}" y1="${top - 4}" y2="${B + 6}" stroke="var(--ink)" stroke-width="1"/>`;
-    XS.forEach((x, i) => { svg += `<circle cx="${X(x).toFixed(1)}" cy="${Y(y[i]).toFixed(1)}" r="4.5" fill="var(--series-${k + 1})"/>`; });
-    svg += `<text x="${L + W / 2}" y="${top - 14}" text-anchor="middle">${titles[k]}</text>`;
-    svg += `<text x="${L + W / 2}" y="${B + 30}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${notes[k]}</text>`;
+    const L = 10 + k * (W + gap), lo = Math.min(...y), hi = Math.max(...y);
+    const X = (v) => L + 12 + ((v - 1) / 9) * (W - 24), Y = (v) => B - ((v - lo) / (hi - lo)) * (B - top - 10);
+    svg += `<line x1="${L}" x2="${L + W}" y1="${B + 8}" y2="${B + 8}" stroke="var(--ink)" stroke-width="1.2"/><line x1="${L}" x2="${L}" y1="${top - 6}" y2="${B + 8}" stroke="var(--ink)" stroke-width="1.2"/>`;
+    XS.forEach((x, i) => { svg += `<circle cx="${X(x).toFixed(1)}" cy="${Y(y[i]).toFixed(1)}" r="6" fill="var(--series-${k + 1})"/>`; });
+    svg += `<text x="${L + W / 2}" y="${top - 18}" text-anchor="middle" font-weight="bold">${titles[k]}</text>`;
+    svg += `<text x="${L + W / 2}" y="${B + 36}" text-anchor="middle" fill="var(--ink-3)">${notes[k]}</text>`;
   });
   return `${svg}</svg>`;
 }
@@ -89,7 +89,7 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: 'At the end of 2027 Ana runs Pearson’s r on every pair of columns in the cafés’ log. Two results puzzle her. Footfall and transactions, which ought to move almost in step, give r = 0.68 across the 612 days; the covariance lesson found 0.98 once the log was checked. And at Harbourside the day’s high temperature and the number of iced drinks sold give r = 0.73, although the scatterplot shows iced drinks rising on almost every warmer day. In both cases r is answering a narrower question than the one she is asking.' },
+    { case: 'At the end of 2027 Ana runs Pearson’s r on every pair of columns in the cafés’ log. Two results puzzle her. Footfall and transactions, which ought to move almost in step, give r = 0.68 across the 612 café-days; the covariance lesson found 0.98 once the log was checked. And at Harbourside the day’s high temperature and the number of iced drinks sold give r = 0.73, although the scatterplot shows iced drinks rising on almost every warmer day. In both cases r is answering a narrower question than the one she is asking.' },
 
     { h: 'From values to ranks' },
     { p: 'Pearson’s r measures how closely the points follow a straight line. Ana’s question is often simpler: when one variable is higher, is the other higher too? To answer that, throw away the distances between values and keep only their order. The <g>rank</g> of a value is its position when the values are sorted: the smallest gets rank 1, the next rank 2, and so on up to n.' },
@@ -108,10 +108,10 @@ export default {
     { p: 'A <g>monotonic relationship</g> is one in which y never moves against x: as x rises, y rises (or stays level), or y falls throughout. A straight line is monotonic, but so is a curve that climbs steeply and then flattens. Spearman’s ρ is 1 whenever y rises every time x rises, curved or not; Pearson’s r is 1 only for a perfect straight line.' },
     { figure: {
       svg: shapesFigure(),
-      caption: 'Three sets of ten points. A straight line: r and Spearman’s ρ are both 1. A curve that keeps rising: ρ is still 1, because the order is perfect, but r is 0.88. A U shape that falls then rises: both are 0, although y depends exactly on x.',
-      alt: 'Three small scatterplots side by side. The first, labelled Linear, shows ten points on a rising straight line, with r = 1.00 and ρ = 1.00. The second, labelled Monotonic, curved, shows ten points that rise slowly and then steeply, with r = 0.88 and ρ = 1.00. The third, labelled Not monotonic, shows ten points forming a U shape, high at both ends and low in the middle, with r = 0.00 and ρ = 0.00.',
+      caption: 'Three sets of ten points. Linear: a straight line, so r and Spearman’s ρ are both 1. Curved: a curve that keeps rising, so ρ is still 1, because the order is perfect, but r is 0.88. U shape: y falls then rises, and both are 0, although y depends exactly on x.',
+      alt: 'Three small scatterplots side by side. The first, labelled Linear, shows ten points on a rising straight line, with r = 1 and ρ = 1. The second, labelled Curved, shows ten points that rise slowly and then steeply, with r = 0.88 and ρ = 1. The third, labelled U shape, shows ten points high at both ends and low in the middle, with r = 0 and ρ = 0.',
     } },
-    { p: 'Harbourside’s iced drinks are a curve of the second kind. On days below 55°F the café sold fewer than ten iced drinks on average, whatever the temperature; through the 60s sales climbed steeply, and from the mid-70s they levelled off at around 75 a day. Across the café’s 306 days, r = 0.73 but Spearman’s ρ = 0.92. Nothing is wrong with r: the link really is far from straight. But if Ana’s question is “do warmer days go with more iced drinks?”, ρ answers it and r understates it. The third panel is a warning in the other direction: ranks don’t rescue a relationship that turns back on itself, which the nonlinear-and-restricted lesson takes up.' },
+    { p: 'Harbourside’s iced drinks are a curve of the second kind. On days below 55°F the café sold about five iced drinks on average; through the 60s sales climbed steadily, from about 18 a day at 60–64°F to about 28 at 65–69°F; in the mid-70s they jumped, from about 42 a day at 72–74°F to about 68 at 75–77°F; above that they grew more slowly, to about 83 on days of 84°F or more. Across the café’s 306 days, r = 0.73 but Spearman’s ρ = 0.92. Nothing is wrong with r: the link really is far from straight. But if Ana’s question is “do warmer days go with more iced drinks?”, ρ answers it and r understates it. The third panel is a warning in the other direction: ranks don’t rescue a relationship that turns back on itself, which the nonlinear-and-restricted lesson takes up.' },
 
     { h: 'Kendall’s τ: counting agreeing pairs' },
     { p: 'A second rank measure looks at pairs of days. Take any two of the eight June days. If the hotter of the two also had the larger iced share, the pair is a <g>concordant pair</g>; if the hotter day had the smaller share, it is a <g>discordant pair</g>. Eight days make 8 × 7 ÷ 2 = 28 pairs. Only one is discordant: 4 June and 9 June, where the hotter day (70°F against 69°F) had the smaller share. The other 27 are concordant.' },
@@ -126,13 +126,13 @@ export default {
   theory: [
     { h: 'Ranking, and what to do with ties' },
     { p: 'Two values that are equal must share a rank. The standard rule gives each the <g>average rank</g> of the positions they occupy. If the third, fourth and fifth smallest values are all 2, each gets (3 + 4 + 5) ÷ 3 = 4, and the next value gets rank 6. The ranks still add up to n(n + 1) ÷ 2, as they would without ties.' },
-    { p: 'Excel’s RANK.AVG(number, ref, order) does exactly this. Its third argument matters: left out or 0, it ranks from largest to smallest (the largest value gets rank 1); any non-zero value, such as 1, ranks from smallest to largest. For a correlation either direction works, provided both variables are ranked the same way: ranking one up and the other down flips the sign. RANK.EQ, and the older RANK, give tied values the top rank of the group instead of the average, which shifts the ranks and changes ρ when there are ties: use RANK.AVG.' },
+    { p: 'Excel’s RANK.AVG(number, ref, order) does exactly this. A single-cell Spearman formula such as <x>=CORREL(RANK.AVG(A2:A9,A2:A9,1),RANK.AVG(B2:B9,B2:B9,1))</x> works in Excel 365 and Excel 2021, which evaluate RANK.AVG for every value in the range; in older versions it must be entered as an array formula with Ctrl+Shift+Enter, or you can rank into helper columns and take CORREL of those. Its third argument matters: left out or 0, it ranks from largest to smallest (the largest value gets rank 1); any non-zero value, such as 1, ranks from smallest to largest. For a correlation either direction works, provided both variables are ranked the same way: ranking one up and the other down flips the sign. RANK.EQ, and the older RANK, give tied values the top rank of the group instead of the average, which shifts the ranks and changes ρ when there are ties: use RANK.AVG.' },
     { p: 'Rain is the extreme case in the cafés’ log. Rain fell on only 97 of the 306 days, so at Harbourside 209 days are tied at 0 inches and share the average rank (1 + 209) ÷ 2 = 105. Spearman’s ρ for rain and footfall at Harbourside is then largely a comparison of dry days with wet ones, refined by the order of the 97 wet days. It comes out at −0.23, the same as r (−0.23); τ-b is −0.17. With the cafés pooled, ρ is −0.12.' },
 
     { h: 'Spearman’s ρ and the d² shortcut' },
     { p: String.raw`The definition is the one in the concept section: rank x, rank y, and take Pearson’s r of the ranks. When there are no ties, the ranks of each variable are exactly 1 to n, their means and standard deviations are known in advance, and the formula collapses to a shortcut in the differences <m>d_i</m> between each observation’s two ranks:` },
     { math: String.raw`r_s = 1 - \dfrac{6\sum d_i^2}{n(n^2 - 1)}` },
-    { p: String.raw`For the June days, <m>\sum d_i^2 = 1 + 1 = 2</m>, so <m>r_s = 1 - 6 \times 2 \div (8 \times 63) = 1 - 12 \div 504 = 0.976</m>, the same as Pearson’s r of the ranks. The shortcut is exact only without ties. With ties it gives a different, wrong answer, and many textbooks still print it without the warning. The challenging example shows a week of rain in which the shortcut gives −0.32 and the true Spearman’s ρ is −0.45. Software always uses the definition; by hand, use the shortcut only when every value in each column is different.` },
+    { p: String.raw`For the June days, <m>\sum d_i^2 = 1 + 1 = 2</m>, so <m>r_s = 1 - 6 \times 2 \div (8 \times 63) = 1 - 12 \div 504 = 0.976</m>, the same as Pearson’s r of the ranks. The shortcut is exact only without ties. With ties it gives a different, wrong answer. (Tie-corrected versions of the formula exist, but taking r of the average ranks is simpler and always right.) The challenging example shows a week of rain in which the shortcut gives −0.32 and the true Spearman’s ρ is −0.45. Software always uses the definition; by hand, use the shortcut only when every value in each column is different.` },
 
     { h: 'Kendall’s τ-a and τ-b' },
     { p: String.raw`Write <m>n_c</m> and <m>n_d</m> for the numbers of concordant and discordant pairs and <m>n_0 = n(n-1)/2</m> for all pairs. Kendall’s original coefficient, τ-a, is <m>(n_c - n_d) \div n_0</m>. A pair tied on x or on y is neither concordant nor discordant, so with many ties τ-a cannot reach ±1 even for a perfect ordering. τ-b corrects the denominator for the ties:` },
@@ -182,7 +182,7 @@ export default {
       tex: String.raw`r_s = \text{Pearson’s } r \text{ of } \big(\text{rank}(x_i),\ \text{rank}(y_i)\big)`,
       where: [[String.raw`r_s`, 'Spearman’s rank correlation, also written Spearman’s ρ', ''], [String.raw`\text{rank}(x_i)`, 'The rank of observation i’s x value among all the x values, ties given their average rank', ''], [String.raw`\text{rank}(y_i)`, 'The rank of observation i’s y value among all the y values, ranked in the same direction', '']],
       assumptions: 'Paired observations of two variables that can be put in order.',
-      note: 'Excel: <x>=CORREL(RANK.AVG(A2:A9,A2:A9,1),RANK.AVG(B2:B9,B2:B9,1))</x>, or rank each column with RANK.AVG and take CORREL of the rank columns.' },
+      note: 'Excel 365 or 2021: <x>=CORREL(RANK.AVG(A2:A9,A2:A9,1),RANK.AVG(B2:B9,B2:B9,1))</x> (older versions: Ctrl+Shift+Enter); or rank each column with RANK.AVG in helper columns and take CORREL of those.' },
     { id: 'rank-d2', name: 'Spearman’s ρ from rank differences (no ties only)',
       tex: String.raw`r_s = 1 - \dfrac{6\sum d_i^2}{n(n^2 - 1)}`,
       where: [[String.raw`d_i`, 'Observation i’s rank on x minus its rank on y', ''], [String.raw`n`, 'Number of paired observations', ''], [String.raw`r_s`, 'Spearman’s rank correlation', '']],
@@ -238,7 +238,7 @@ export default {
   demo: [
     { widget: 'rank-iced', intro: 'Harbourside’s 306 days: the day’s high against iced drinks sold. Pearson’s r is 0.734, Spearman’s ρ 0.924. Tick “Plot ranks instead of values”: the curve straightens into a band, and Pearson’s r of the ranks is Spearman’s ρ. Add the least-squares line in each view to see how much better a line fits the ranks.' },
     { widget: 'rank-slip', intro: 'Millbrook’s log as typed, with the 14 September slip. Note r and ρ, then leave out the most influential point: r jumps from 0.519 to 0.985 while ρ hardly changes. Plot the ranks to see why: in ranks the slip is just the top-ranked day.' },
-    { widget: 'rank-sheet', intro: 'The eight June days with their ranks, d and d², and both routes to Spearman’s ρ. Change one iced share so that it equals another (type 57.3 in C7, say): RANK.AVG gives the pair an average rank, Pearson’s r of the ranks stays correct, and the d² shortcut drifts away from it.' },
+    { widget: 'rank-sheet', intro: 'The eight June days with their ranks, d and d², and both routes to Spearman’s ρ. Change one iced share so that it equals another (type 57.3 in C8, say): RANK.AVG gives the pair an average rank, Pearson’s r of the ranks stays correct, and the d² shortcut drifts away from it.' },
   ],
 
   mistakes: [
@@ -427,9 +427,14 @@ export default {
     { what: 'Application: rain r pooled', value: D.rainFootfall.r, shown: -0.14 },
     { what: 'Application: rain rho pooled', value: rainPooled.rho, shown: -0.12 },
     // the iced-drinks curve, by temperature band (Harbourside)
-    { what: 'Mean iced drinks below 55°F under ten', value: Number(bandMean(0, 55) < 10), shown: 1 },
-    { what: 'Mean iced drinks 75°F and above about 75', value: bandMean(75, 200), shown: 75, tol: 3 },
-    { what: 'Climb in the 60s is the steepest band step', value: Number(bandMean(65, 70) - bandMean(60, 65) > bandMean(75, 80) - bandMean(70, 75) || bandMean(70, 75) - bandMean(60, 65) > 20), shown: 1 },
+    { what: 'Mean iced drinks below 55°F (about five)', value: bandMean(0, 55), shown: 5, tol: 0.5 },
+    { what: 'Mean iced drinks 60–64°F (about 18)', value: bandMean(60, 65), shown: 18, tol: 0.5 },
+    { what: 'Mean iced drinks 65–69°F (about 28)', value: bandMean(65, 70), shown: 28, tol: 0.5 },
+    { what: 'Mean iced drinks 72–74°F (about 42)', value: bandMean(72, 75), shown: 42, tol: 0.5 },
+    { what: 'Mean iced drinks 75–77°F (about 68)', value: bandMean(75, 78), shown: 68, tol: 0.5 },
+    { what: 'Mean iced drinks 84°F and above (about 83)', value: bandMean(84, 200), shown: 83, tol: 0.5 },
+    { what: 'Mid-70s jump is the largest step between neighbouring bands', value: Number(bandMean(75, 78) - bandMean(72, 75) > Math.max(bandMean(65, 70) - bandMean(60, 65), bandMean(72, 75) - bandMean(65, 70), bandMean(84, 200) - bandMean(75, 78))), shown: 1 },
+    { what: 'Growth above the mid-70s slower than the jump', value: Number(bandMean(84, 200) - bandMean(75, 78) < bandMean(75, 78) - bandMean(72, 75)), shown: 1 },
     { what: 'Note threshold', value: 0.1, shown: 0.1 },
   ],
 };
