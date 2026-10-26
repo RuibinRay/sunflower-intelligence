@@ -22,7 +22,7 @@ const june = Object.fromEntries(MATRIX_COLUMNS.map((n) => [n, JUNE_IDX.map((i) =
 const JM = C.matrix(june);
 const JPAIRS = [];
 for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) JPAIRS.push({ a: NAMES[i], b: NAMES[j], r: JM.r[i][j], p: JM.p[i][j] });
-JPAIRS.sort((x, y) => x.p - y.p);
+JPAIRS.sort((x, y) => x.p - y.p || Math.abs(y.r) - Math.abs(x.r));   // ties at p = 0 go to the larger |r|
 const JP = JPAIRS.map((x) => x.p);
 const JB = C.adjust(JP, 'bonferroni'), JH = C.adjust(JP, 'holm'), JF = C.adjust(JP, 'fdr_bh');
 const JUNE = { none: JP.filter((p) => p < 0.05).length, bonferroni: JB.filter((p) => p < 0.05).length, holm: JH.filter((p) => p < 0.05).length, bh: JF.filter((p) => p < 0.05).length };
@@ -108,7 +108,7 @@ export default {
     { p: 'Peak barista hours correlate with footfall at 0.92 and with transactions at 0.93. That is not because baristas bring customers in: the case’s managers roster more baristas for the peak on days they expect to be busy, so the roster follows the expected crowd. In regression (B06) measures this closely related cause a problem called multicollinearity: their separate effects can’t be estimated well. Here it is enough to notice that the matrix’s strongest cells often reflect how a business is run rather than how one measure affects another.' },
 
     { h: 'A heatmap' },
-    { p: 'A <g>heatmap</g> colours each cell by its value, usually with one colour for positive correlations, another for negative ones, and pale cells near 0. It makes blocks visible at a glance: the busy block shows as a dark square in the middle of the Explore widget’s map. Good heatmaps print the numbers too, because colour alone is hard to read precisely and impossible for some readers, and they put related variables next to each other so that blocks are not broken up by an arbitrary order.' },
+    { p: 'A <g>heatmap</g> colours each cell by its value, usually with one colour for positive correlations, another for negative ones, and pale cells near 0. It makes blocks visible at a glance, but only if related variables sit next to each other: the Explore widget puts the iced share beside the high temperature, so the busy block shows as a dark square in the lower right of its map, where the table above, in the log’s column order, splits it. Good heatmaps make the numbers available too, because colour alone is hard to read precisely and impossible for some readers; the widget gives them in a data table beneath the map.' },
     { callout: 'key', title: 'Choose a cell, look at its scatterplot', html: 'Every cell is a single number summarising a scatterplot. Before you report a cell, look at its plot: an r of 0.08 (high temperature and peak wait) can hide nothing at all or a curve that a straight line misses, and the scatterplots lesson’s warning about 612 overlapping points applies to every cell. The Explore widget draws the scatterplot of any cell you choose.' },
 
     { h: 'One table, many tests' },
@@ -129,7 +129,7 @@ export default {
     { p: 'A matrix also holds only linear association (or monotonic association, for Spearman). Peak waits rise steeply once the load passes about seven transactions per barista hour, and rain is zero on 209 of the 306 days; a single number in a cell can’t show either shape. A near-zero cell means “no straight-line link”, not “no link”.' },
 
     { h: 'Building one in Excel' },
-    { p: 'The Analysis ToolPak’s <b>Correlation</b> tool (Data &gt; Data Analysis &gt; Correlation) takes a block of columns with labels and writes the lower triangle of Pearson correlations, with 1s on the diagonal. Microsoft notes that it returns CORREL’s value for each pair. Its output is values, not formulas, so rerun it when the data change, and it gives no p-values. The Covariance tool beside it fills the same layout with population covariances, COVARIANCE.P.' },
+    { p: 'The Analysis ToolPak’s <b>Correlation</b> tool (Data &gt; Data Analysis &gt; Correlation) takes a block of columns with labels and returns a correlation matrix; Microsoft’s page describes each entry as CORREL’s value for that pair, and the Covariance tool beside it as doing the same with COVARIANCE.P. In use, the tool fills the lower triangle with 1s on the diagonal, writes values rather than formulas (so rerun it when the data change) and gives no p-values.' },
     { p: 'With formulas, each cell is a CORREL. With the data in B2:E31 and the variable names along the top of a grid, the cell for row variable B and column variable C is <x>=CORREL($B$2:$B$31,C$2:C$31)</x>: the dollar signs fix the row variable’s range while the column variable’s range moves as you fill right. One more column of tests is <x>=T.DIST.2T(ABS(r)*SQRT(n-2)/SQRT(1-r^2),n-2)</x> with r and n replaced by their cells, the p-value of the testing-correlation lesson’s t test. Excel has no function for the adjustments below, but each is one or two columns of formulas.' },
 
     { h: 'Controlling the family-wise error rate: Bonferroni and Holm' },
@@ -138,7 +138,7 @@ export default {
 
     { h: 'Controlling the false discovery rate: Benjamini–Hochberg' },
     { p: String.raw`When a matrix is used to screen for leads rather than to confirm findings, guarding against even one false alarm is often too strict. Benjamini and Hochberg (1995) proposed controlling a different quantity, the <g>false discovery rate</g>: the expected proportion of false alarms among the hypotheses rejected (0 if none is rejected). At q = 0.05, about one in twenty of the pairs you report as discoveries may be false, on average.` },
-    { p: String.raw`The <g>Benjamini–Hochberg procedure</g> sorts the p-values in the same way and compares the k-th smallest with <m>k\,q/m</m>, a threshold that rises in a straight line. Find the largest k whose p-value is at or below its threshold, and reject that hypothesis and every one with a smaller p-value, even if some of those were above their own thresholds. It works from the largest p-value down, so it is called a step-up procedure; Holm’s works from the smallest up and is a step-down. Benjamini and Hochberg proved the control for independent tests. The statsmodels documentation, whose procedures this course’s engine follows, notes that most of these procedures are robust when tests are positively correlated, which is the usual situation in a matrix; with strong negative dependence the guarantee can fail.` },
+    { p: String.raw`The <g>Benjamini–Hochberg procedure</g> sorts the p-values in the same way and compares the k-th smallest with <m>k\,q/m</m>, a threshold that rises in a straight line. Find the largest k whose p-value is at or below its threshold, and reject that hypothesis and every one with a smaller p-value, even if some of those were above their own thresholds. It works from the largest p-value down, so it is called a step-up procedure; Holm’s works from the smallest up and is a step-down. Benjamini and Hochberg proved the control for independent tests. The statsmodels documentation, whose procedures this course’s engine follows, notes that most of these procedures are also robust when the tests are positively correlated. Tests in a matrix need not all be, since they share variables in both directions, so when a guarantee matters Holm’s method (or the more conservative Benjamini–Yekutieli variant, which statsmodels also offers) is the safe choice.` },
     { figure: {
       svg: thresholdFigure(),
       caption: 'Harbourside, June 2027: the 20 smallest of the 28 p-values in rank order, against each procedure’s threshold. Bonferroni’s threshold is flat at 0.05 ÷ 28; Holm’s rises slowly from it; Benjamini–Hochberg’s rises in a straight line to 0.05 at rank 28. Points above 0.06 are drawn at the top edge.',
@@ -193,11 +193,11 @@ export default {
       steps: [
         'No adjustment: seven p-values are below 0.05 (all up to 0.041).',
         String.raw`Bonferroni: with <m>m = 10</m> each test uses <m>0.05 \div 10 = 0.005</m>. Three p-values (0.0004, 0.0021 and 0.0049) are below it.`,
-        String.raw`Holm: the thresholds are <m>0.05/10, 0.05/9, 0.05/8, 0.05/7, 0.05/6, \dots</m> 0.0004 &lt; 0.0050, 0.0021 &lt; 0.0056, 0.0049 &lt; 0.0063 and 0.0068 &lt; 0.0071 are rejected; 0.012 is not below 0.0083, so the procedure stops there and the six largest stand.`,
+        String.raw`Holm: the thresholds are 0.05 ÷ 10, then 0.05 ÷ 9, then 0.05 ÷ 8, and so on. 0.0004 &lt; 0.0050, 0.0021 &lt; 0.0056, 0.0049 &lt; 0.0063 and 0.0068 &lt; 0.0071 are rejected; 0.012 is not below 0.0083, so the procedure stops there and the six largest stand.`,
         String.raw`Benjamini–Hochberg: the thresholds are <m>k \times 0.005</m>. Working down from the largest rank, the first p-value at or below its threshold is rank 6, 0.028 against 0.030 (rank 7’s 0.041 is above 0.035). Reject ranks 1 to 6.`,
       ],
       answer: 'Seven pairs with no adjustment, three with Bonferroni, four with Holm and six with Benjamini–Hochberg.',
-      interpretation: 'The four counts answer different questions. If the hotel will act on each pair as a finding, it should use Holm’s four, with at most a 5% chance that any of them is a false alarm. If the matrix is a screen for leads to check next season, Benjamini–Hochberg’s six are reasonable, expecting that about one in twenty such leads, on average, will turn out false.' },
+      interpretation: 'The four counts answer different questions. If the hotel will act on each pair as a finding, it should use Holm’s four, with at most a 5% chance that any of them is a false alarm. If the matrix is a screen for leads to check next season, Benjamini–Hochberg’s six are reasonable, expecting that, on average, at most about one in twenty such leads will turn out false.' },
 
     { level: 'challenging', title: 'Twenty-eight tests on thirty days', fictional: true,
       setup: 'Ana computes the eight-measure matrix for Harbourside in June 2027 alone: 30 days, 28 pairs. Which correlations survive each adjustment at 0.05, and what explains the differences? The table shows ranks 9 to 19 of the 28 p-values, where the decisions change.',
@@ -208,7 +208,7 @@ export default {
         rows: JPAIRS.slice(8, 19).map((x, i) => [String(i + 9), `${LABEL[x.a]} – ${LABEL[x.b]}`, f2(x.r), x.p.toFixed(4), (0.05 / (28 - (i + 8))).toFixed(4), ((i + 9) * 0.05 / 28).toFixed(4)]),
       },
       steps: [
-        String.raw`With n = 30 a correlation needs a size of at least 0.36 to be significant at 5% (the testing-correlation lesson’s critical r, <m>t^{*}/\sqrt{n - 2 + t^{*2}}</m> with 28 df). Eighteen of the 28 cells reach it, from footfall–transactions (0.98) down to footfall–iced share (0.37, p = 0.044).`,
+        String.raw`With n = 30 a correlation needs a size of at least 0.36 to be significant at 5% (the testing-correlation lesson’s critical r, <m>t^{*}/\sqrt{n - 2 + t^{*2}}</m> with 28 df). Eighteen of the 28 cells reach it, from transactions–sales (0.99) down to footfall–iced share (0.37, p = 0.044).`,
         String.raw`Bonferroni tests each at <m>0.05 \div 28 = 0.00179</m>. Ten pairs pass. Rank 11, rain–transactions, has p = 0.0018 (r = −0.55) and misses by a hair: at n = 30 Bonferroni needs a correlation of about 0.55 in size.`,
         'Holm compares rank 11 with 0.05 ÷ 18 = 0.0028 and rejects it; rank 12 (0.0024 against 0.0029) and rank 13 (0.0030 against 0.0031) are rejected too; rank 14, rain–footfall, has 0.0038 against 0.0033 and stops the procedure. Thirteen pairs survive.',
         'Benjamini–Hochberg looks for the largest rank whose p-value is at or below k × 0.05 ÷ 28. Rank 16, high–footfall, has 0.022 against 0.029; ranks 17 and above are all above their thresholds (0.033 against 0.030 at rank 17). Sixteen pairs are discoveries.',
@@ -344,8 +344,9 @@ export default {
     { what: 'Hotel BH rank 7', value: (7 * 0.05) / 10, shown: 0.035, tol: 0.00005 },
     // June detail
     { what: 'Critical r at n = 30', value: C.criticalR(30), shown: 0.36 },
-    { what: 'June top pair footfall–transactions', value: Number(JPAIRS[0].a === 'footfall' && JPAIRS[0].b === 'transactions'), shown: 1 },
-    { what: 'June footfall–transactions r', value: JPAIRS[0].r, shown: 0.98 },
+    { what: 'June top pair transactions–sales', value: Number(JPAIRS[0].a === 'transactions' && JPAIRS[0].b === 'sales'), shown: 1 },
+    { what: 'June transactions–sales r', value: JPAIRS[0].r, shown: 0.99 },
+    { what: 'Largest June |r| is the top pair', value: Math.max(...JPAIRS.map((x) => Math.abs(x.r))), shown: JPAIRS[0].r, tol: 1e-12 },
     { what: 'June rank 18 is footfall–iced share', value: Number(JPAIRS[17].a === 'footfall' && JPAIRS[17].b === 'iced_share'), shown: 1 },
     { what: 'June rank 18 r', value: JPAIRS[17].r, shown: 0.37 },
     { what: 'June rank 18 p', value: JPAIRS[17].p, shown: 0.044, tol: 0.0005 },

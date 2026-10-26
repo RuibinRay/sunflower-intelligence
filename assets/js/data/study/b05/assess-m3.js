@@ -1,6 +1,6 @@
 // assess-m3.js — B05 module 3 test: When correlations mislead (outliers-and-influence, nonlinear-and-restricted,
 // groups-and-simpsons-paradox). New questions, not copies of lesson exercises. No hints; solutions are shown when the
-// student reviews the test. Café data come from case.js; Pinecrest Clinics, Northway Couriers, Marlow Insurance, the
+// student reviews the test. Café data come from case.js; Lindquist Garden Centre, Ferrowby Couriers, Quarrydale Insurance, the
 // city survey and the other small datasets are fictional. Formula items are marked by their results (core/sheet.js
 // gradeFormula); every num item's `check` recomputes its answer.
 import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=20';
@@ -20,12 +20,14 @@ const aprNo = C.pearson(aprF.filter((_, i) => aprD[i] !== '1 May'), aprW.filter(
 const aprInf = C.influence(aprF, aprW);
 const aprRest = aprF.filter((_, i) => aprD[i] !== '1 May');
 const may1 = APR.find((r) => r[at('date')] === '2027-05-01');
+const aprRank = 1 + aprF.filter((f) => f > may1[at('footfall')]).length;
 
-// Millbrook, July: peak load and wait
-const JUL = CLEAN_ROWS.filter((r) => r[at('cafe')] === 'Millbrook' && r[at('date')] >= '2027-07-01' && r[at('date')] <= '2027-07-30');
+// Harbourside, 12 October – 10 November: peak load and wait
+const JUL = CLEAN_ROWS.filter((r) => r[at('cafe')] === 'Harbourside' && r[at('date')] >= '2027-10-12' && r[at('date')] <= '2027-11-10');
 const julL = JUL.map((r) => Math.round(r[at('transactions')] * 0.55 / r[at('peak_staff_hours')] * 100) / 100), julW = JUL.map((r) => r[at('peak_wait_min')]);
 const julAll = C.pearson(julL, julW).r, julHigh = C.pearson(julL.filter((l) => l > 7), julW.filter((_, i) => julL[i] > 7)).r;
 const julNHigh = julL.filter((l) => l > 7).length;
+const julLow = C.pearson(julL.filter((l) => l <= 7), julW.filter((_, i) => julL[i] <= 7)).r, julNLow = julL.filter((l) => l <= 7).length;
 
 // both cafés, 4–17 October, interleaved by date (so a fixed block of rows is not one café)
 const OCT = CLEAN_ROWS.filter((r) => r[at('date')] >= '2027-10-04' && r[at('date')] <= '2027-10-17');
@@ -65,40 +67,40 @@ export const items = [
       { formula: `=CORREL(FILTER(B2:B${APR.length + 1},A2:A${APR.length + 1}="1 May"),FILTER(C2:C${APR.length + 1},A2:A${APR.length + 1}="1 May"))`, say: 'That keeps only 1 May. Use <> (not equal to) to keep every other day.' },
       { formula: `=CORREL(B2:B${APR.length + 1},C2:C${APR.length + 1})`, say: 'That is every day, as in E1.' },
     ],
-    solution: `<x>=CORREL(FILTER(B2:B15,A2:A15<>"1 May"),FILTER(C2:C15,A2:A15<>"1 May"))</x> = ${fx(aprNo)}, against ${fx(aprAll)} with 1 May. In this fortnight 1 May (a Saturday with ${may1[at('footfall')]} visitors, when no other day had more than ${Math.max(...aprRest)}) is far out on both variables and in the direction of the trend, so it raises r; leaving it out lowers r by ${fx(aprAll - aprNo, 2)}. Over the whole year the same day pulls r the other way. Its roster had only ${may1[at('peak_staff_hours')]} barista hours: a genuine day, to be kept and reported both ways.`,
+    solution: `<x>=CORREL(FILTER(B2:B15,A2:A15<>"1 May"),FILTER(C2:C15,A2:A15<>"1 May"))</x> = ${fx(aprNo)}, against ${fx(aprAll)} with 1 May. In this fortnight 1 May (a Saturday with ${may1[at('footfall')]} visitors, the ${aprRank === 1 ? 'busiest' : 'second-busiest'} day of the fortnight, and a ${may1[at('peak_wait_min')]}-minute wait, when no other day’s wait passed ${Math.max(...aprW.filter((_, i) => aprD[i] !== '1 May'))} minutes) has above-average footfall and a huge wait, so its z_x × z_y is large and positive and it raises r. Over the whole year, where ${may1[at('footfall')]} visitors is only moderately above Harbourside’s average, the same day lowers r instead. Its roster had only ${may1[at('peak_staff_hours')]} barista hours: a genuine day, to be kept and reported both ways.`,
   },
   {
     id: 'b05-m3-3', lesson: 'outliers-and-influence', type: 'mc', kind: 'applied',
-    prompt: 'Pinecrest Clinics (fictional) correlates weekly appointment numbers with patient waiting times across 52 weeks: r = 0.38. One week, during a system outage that is fully documented, waiting times were four times their usual level; without it r = 0.61. Which write-up is best?',
+    prompt: 'Lindquist Garden Centre (fictional) correlates weekly visitors with weekly sales over 52 weeks: r = 0.71. In one week a snowstorm closed the centre for four days, and visitors and sales both fell to about a fifth of a normal week. Without that week, r = 0.55. What explains the difference, and what should the report say?',
     options: [
-      'r = 0.61 across 51 normal weeks; including the documented outage week, r = 0.38. The outage, not the appointment numbers, explains that week’s waits.',
-      'r = 0.61 across the year; the outage week was removed from the data before the analysis, because it was an outlier that clearly weakened the correlation.',
-      'r = 0.38 across all 52 weeks, since removing any week is never acceptable and the outage week is part of the clinic’s real experience of waiting times.',
-      'r = 0.50, the average of the two correlations, which balances the outage week against the 51 normal weeks of the year.',
+      'The storm week sits far below average on both variables, in line with the pattern, so it raises r; give r both ways and name the storm.',
+      'The storm week adds scatter, as extreme weeks tend to, so 0.55 is the better estimate and should be reported in place of 0.71.',
+      'The storm week has little effect, since visitors and sales fell together; either figure can be reported without comment.',
+      'The storm week looks like a data-entry error, since a garden centre rarely loses most of a week’s trade, so it should be replaced by a typical week.',
     ],
     answer: 0,
     feedback: {
-      1: 'Removing it silently, and for the reason that it weakened r, is choosing the answer. Say why it differs and report both.',
-      2: 'Keeping it is fine, but the reader needs to know that one documented week moves r from 0.61 to 0.38.',
-      3: 'An average of two correlations answers neither question.',
+      1: 'Far out on both variables and in line with the trend, the week adds a large positive product of z-scores: it raises r rather than adding scatter. Report both figures.',
+      2: 'Falling together is exactly why it matters: it moves r from 0.55 to 0.71, so a reader needs to know about it.',
+      3: 'The storm is documented, so the week is genuine. Replacing it with an invented typical week would misstate the year.',
     },
-    solution: 'The outage week is genuine but caused by something other than the number of appointments. Report the correlation for normal weeks, which answers the question about appointments, beside the figure with every week, and say what the outage week was.',
+    solution: 'The storm week is genuine and lies far below average on both visitors and sales, in the direction of the pattern, so its z_x × z_y is large and positive and it raises r from 0.55 to 0.71. Report r for all 52 weeks and for the 51 weeks without the storm, and say what happened that week.',
   },
 
   // ---------------------------------------------------------------- nonlinear-and-restricted
   {
     id: 'b05-m3-4', lesson: 'nonlinear-and-restricted', type: 'num', kind: 'numerical',
-    prompt: 'Across all applicants, Marlow Insurance (fictional) expects an aptitude score and first-year sales to correlate r = 0.80 (straight line, even scatter). It will hire only top scorers, whose scores will have one third of the applicants’ standard deviation. Use the range-restriction formula with k = s ÷ S = 1/3 to estimate r among the hired staff. Give two decimal places.',
+    prompt: 'Across all applicants, Quarrydale Insurance (fictional) expects an aptitude score and first-year sales to correlate r = 0.80 (straight line, even scatter). It will hire only top scorers, whose scores will have one third of the applicants’ standard deviation. Use the range-restriction formula with k = s ÷ S = 1/3 to estimate r among the hired staff. Give two decimal places.',
     answer: 0.41, check: () => { const k = 1 / 3, r = 0.8; return k * r / Math.sqrt(1 - r * r + k * k * r * r); }, unit: '', places: 2, tol: 0.005,
     wrong: [
       { value: 0.27, say: 'r doesn’t shrink in proportion to the spread. Put k = 1/3 into k r ÷ √(1 − r² + k² r²).' },
-      { value: 0.96, say: 'That uses k = 3, which goes from a restricted to a full range. Here you go from full to restricted: k = 1/3.' },
+      { value: 0.97, say: 'That uses k = 3, which goes from a restricted to a full range. Here you go from full to restricted: k = 1/3.' },
     ],
-    solution: 'r_r = (1/3)(0.80) ÷ √(1 − 0.64 + (1/9)(0.64)) = 0.2667 ÷ √0.4311 = 0.2667 ÷ 0.6566 ≈ 0.41. The same formula works in both directions. Among hired staff the score will look like a weak predictor even though it separates applicants well, so Marlow should judge the test on all applicants, not on its hires.',
+    solution: 'r_r = (1/3)(0.80) ÷ √(1 − 0.64 + (1/9)(0.64)) = 0.2667 ÷ √0.4311 = 0.2667 ÷ 0.6566 ≈ 0.41. The same formula works in both directions. Among hired staff the score will look like a weak predictor even though it separates applicants well, so Quarrydale should judge the test on all applicants, not on its hires.',
   },
   {
     id: 'b05-m3-5', lesson: 'nonlinear-and-restricted', type: 'formula', kind: 'numerical',
-    prompt: `Millbrook, July 2027: B2:B31 hold the peak load (transactions per barista hour) and C2:C31 the average peak wait. E1 shows r for all 30 days. In E2, calculate r for the days with a load above 7 only.`,
+    prompt: `Harbourside, 12 October – 10 November 2027 (30 days): B2:B31 hold the peak load (transactions per barista hour) and C2:C31 the average peak wait. E1 shows r for all 30 days. In E2, calculate r for the days with a load above 7 only.`,
     sheet: { cells: { A1: 'Day', B1: 'Peak load', C1: 'Peak wait (min)', ...col('A', 2, JUL.map((r) => dayLabel(r[at('date')]))), ...col('B', 2, julL), ...col('C', 2, julW), D1: 'r, all days', E1: '=CORREL(B2:B31,C2:C31)', D2: 'r, load above 7' } },
     cell: 'E2', answer: '=CORREL(FILTER(B2:B31,B2:B31>7),FILTER(C2:C31,B2:B31>7))',
     alt: ['=PEARSON(FILTER(B2:B31,B2:B31>7),FILTER(C2:C31,B2:B31>7))', '=CORREL(FILTER(C2:C31,B2:B31>7),FILTER(B2:B31,B2:B31>7))'],
@@ -107,13 +109,13 @@ export const items = [
     wrong: [
       { formula: '=CORREL(FILTER(B2:B31,B2:B31>7),C2:C31)', say: 'Filter both columns with the same condition, or the pairs no longer line up.' },
     ],
-    solution: `<x>=CORREL(FILTER(B2:B31,B2:B31>7),FILTER(C2:C31,B2:B31>7))</x> = ${fx(julHigh)} for the ${julNHigh} days above 7, against ${fx(julAll)} for all 30. Restricting the range raised r here, because the days kept are the steep part of a threshold: above a load of 7 the wait follows the load closely.`,
+    solution: `<x>=CORREL(FILTER(B2:B31,B2:B31>7),FILTER(C2:C31,B2:B31>7))</x> = ${fx(julHigh)} for the ${julNHigh} days above 7, against ${fx(julAll)} for all 30 (and ${fx(julLow)} for the ${julNLow} days at or below 7). Restricting the range raised r here, because the days kept are the steep part of a threshold: above a load of 7 the wait follows the load closely.`,
   },
   {
     id: 'b05-m3-6', lesson: 'nonlinear-and-restricted', type: 'classify', kind: 'conceptual',
     prompt: 'For each finding, choose the best description of what the correlation is doing.',
     items: [
-      'Northway Couriers (fictional): delivery errors are flat until about 40 parcels per driver per day, then climb; r over all days is 0.55.',
+      'Ferrowby Couriers (fictional): delivery errors are flat until about 40 parcels per driver per day, then climb; r over all days is 0.55.',
       'A taste panel scores coffee by brewing temperature: scores peak in the middle of the range and fall at both ends; r is 0.02.',
       'Across fourteen fictional cities, sales rise with population ever more slowly; r is 0.91 on the values and 0.99 on the logs.',
       'Satisfaction measured by one noisy question correlates 0.30 with repeat purchases; with a reliable ten-item scale, 0.45.',
@@ -132,7 +134,7 @@ export const items = [
   // ---------------------------------------------------------------- groups-and-simpsons-paradox
   {
     id: 'b05-m3-7', lesson: 'groups-and-simpsons-paradox', type: 'mc', kind: 'conceptual',
-    prompt: 'Northway Couriers (fictional) has a city depot and a rural depot. Inside each depot, days with more parcels per driver have higher on-time rates (drivers’ routes are denser). Pooled across both depots, more parcels per driver go with lower on-time rates. Which fact about the depots would explain the reversal?',
+    prompt: 'Ferrowby Couriers (fictional) has a city depot and a rural depot. Inside each depot, days with more parcels per driver have higher on-time rates (drivers’ routes are denser). Pooled across both depots, more parcels per driver go with lower on-time rates. Which fact about the depots would explain the reversal?',
     options: [
       'The city depot carries more parcels per driver and is less punctual overall.',
       'The city depot has more drivers than the rural depot, so it contributes more days to the pooled data.',
@@ -175,10 +177,10 @@ export const items = [
     id: 'b05-m3-10', lesson: 'groups-and-simpsons-paradox', type: 'mc', kind: 'applied',
     prompt: 'A fictional city survey reports that across its 25 neighbourhoods, those with a higher average household income have a higher average spend in cafés (r = 0.82). A café chain wants to target its loyalty offers at its higher-income customers in every neighbourhood. What does the survey support?',
     options: [
-      'It supports opening in higher-income neighbourhoods, but says nothing reliable about which customers within a neighbourhood spend more.',
+      'It supports choosing higher-income neighbourhoods, not judging which customers within one spend more.',
       'It shows that within every neighbourhood the higher-income households spend more in cafés than the lower-income ones.',
       'It supports both decisions equally well, because a correlation of 0.82 across 25 neighbourhoods is very strong.',
-      'It supports neither decision, because correlations between averages are always weaker than individual correlations.',
+      'It supports neither decision, because correlations between averages tend to be weaker than those between households.',
     ],
     answer: 0,
     feedback: {

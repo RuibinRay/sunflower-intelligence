@@ -33,7 +33,7 @@ const augP = A.p, augT = augP.r * Math.sqrt(28 / (1 - augP.r ** 2));
 // ---------------------------------------------------------------- fictional r’s
 const RL = { xy: 0.45, xz: 0.80, yz: 0.70 };           // Riverside Library: staff, queue, visitors
 const CS = { xy: 0.52, xz: 0.90, yz: 0.62 };           // Corner Stores: staff, shrinkage, floor area
-const HP = { xy: 0.30, xz: 0.20, yz: -0.50 };          // Hilltop Physio: sessions, recovery, initial severity
+const HP = { xy: 0.30, xz: 0.20, yz: -0.50 };          // Hilltop Physio: appointments, recovery, initial severity
 const pf = (o) => C.partialFromR(o.xy, o.xz, o.yz);
 
 export const widgets = {
@@ -199,9 +199,9 @@ export const independent = [
   },
   {
     id: 'b05-part-i3', type: 'mc', kind: 'applied',
-    prompt: 'A chain of gyms finds that members who attend more personal-training sessions lose more weight (r = 0.35). An analyst holds fixed the number of calories each member burns per week, which the sessions raise, and the partial correlation falls to 0.05. She reports that personal training doesn’t help. What is wrong with her analysis?',
+    prompt: 'A chain of gyms finds that members who attend more personal-training classes lose more weight (r = 0.35). An analyst holds fixed the number of calories each member burns per week, which the classes raise, and the partial correlation falls to 0.05. She reports that personal training doesn’t help. What is wrong with her analysis?',
     options: [
-      'Calories burned lie on the path from sessions to weight loss, so holding them fixed removes the effect she wants.',
+      'Calories burned lie on the path from classes to weight loss, so holding them fixed removes the effect she wants.',
       'She should have used Spearman’s ρ, because weight loss is measured in kilograms rather than in ranks.',
       'A partial correlation of 0.05 is significant with enough members, so she should report it as a real effect.',
       'She should have held fixed the weight lost, because it is the outcome and so must always be controlled for.',
@@ -212,7 +212,7 @@ export const independent = [
       2: 'Significance is not the problem: the choice of control is. Holding a mediator fixed answers a different question.',
       3: 'The outcome can’t be held fixed in its own correlation. The issue is holding a mediator fixed.',
     },
-    solution: 'Sessions raise the calories burned, and burning calories causes weight loss: calories are a mediator. Holding them fixed asks whether sessions help apart from burning calories, which is not the question. The simple correlation, or a partial correlation holding fixed confounders such as starting weight, is the one to report.',
+    solution: 'Classes raise the calories burned, and burning calories causes weight loss: calories are a mediator. Holding them fixed asks whether classes help apart from burning calories, which is not the question. The simple correlation, or a partial correlation holding fixed confounders such as starting weight, is the one to report.',
   },
   {
     id: 'b05-part-i4', type: 'mc', kind: 'conceptual',
@@ -282,13 +282,13 @@ export const check = [
   },
   {
     id: 'b05-part-k2', type: 'num', kind: 'numerical',
-    prompt: 'Hilltop Physio (fictional) finds that the number of sessions a patient attends and their improvement score correlate at 0.30. Sessions correlate with the patient’s initial severity at 0.20 and improvement with initial severity at −0.50. Calculate the partial correlation of sessions and improvement holding initial severity fixed. Give three decimal places.',
+    prompt: 'Hilltop Physio (fictional) finds that the number of appointments a patient attends and their improvement score correlate at 0.30. Appointments correlate with the patient’s initial severity at 0.20 and improvement with initial severity at −0.50. Calculate the partial correlation of appointments and improvement holding initial severity fixed. Give three decimal places.',
     answer: Math.round(pf(HP) * 1000) / 1000, check: () => (0.3 - 0.2 * -0.5) / Math.sqrt((1 - 0.04) * (1 - 0.25)), unit: '', places: 3, tol: 0.0015,
     wrong: [
       { value: Math.round(((0.3 - 0.1) / Math.sqrt(0.96 * 0.75)) * 1000) / 1000, say: 'Watch the sign: 0.20 × (−0.50) = −0.10, and subtracting it adds 0.10 to the numerator.' },
       { value: 0.4, say: 'That is the numerator, 0.30 + 0.10. Divide by √((1 − 0.04)(1 − 0.25)).' },
     ],
-    solution: `(0.30 − 0.20 × (−0.50)) ÷ √(0.96 × 0.75) = 0.40 ÷ ${fx(Math.sqrt(0.72), 4)} ≈ ${fx(pf(HP), 3)}. Holding severity fixed strengthens the link: severe cases attend a little more but improve less, which hid part of the sessions’ association with improvement.`,
+    solution: `(0.30 − 0.20 × (−0.50)) ÷ √(0.96 × 0.75) = 0.40 ÷ ${fx(Math.sqrt(0.72), 4)} ≈ ${fx(pf(HP), 3)}. Holding severity fixed strengthens the link: severe cases attend a little more but improve less, which hid part of the appointments’ association with improvement.`,
   },
   {
     id: 'b05-part-k3', type: 'formula', kind: 'numerical',
@@ -307,20 +307,20 @@ export const check = [
   },
   {
     id: 'b05-part-k4', type: 'mc', kind: 'applied',
-    prompt: 'Ana wants to know whether warm weather goes with higher sales at Harbourside. The simple correlation is 0.40; holding footfall fixed it is −0.19. Warm days bring more people to the waterfront. Which number answers her question, and why?',
+    prompt: 'Ana wants to know whether warm weather goes with higher sales at Harbourside. Over its 301 days without a festival, the simple correlation is 0.49; holding footfall fixed it is −0.02. Warm days bring more people to the waterfront. Which number answers her question, and why?',
     options: [
-      'The 0.40, because footfall is how warm weather reaches the till, and holding it fixed removes that route.',
-      'The −0.19, because holding a third variable fixed always gives the more accurate correlation.',
-      'Neither, because the two correlations have opposite signs and so cancel each other out.',
-      'The −0.19, because footfall is a confounder that makes both the temperature readings and the sales figures rise together.',
+      'The 0.49, because footfall is how warm weather reaches the till, and holding it fixed removes that route.',
+      'The −0.02, because holding a third variable fixed always gives the more accurate correlation.',
+      'Neither, because the partial correlation shows the weather has no link with sales at all.',
+      'The −0.02, because footfall is a confounder that makes both the temperature readings and the sales figures rise together.',
     ],
     answer: 0,
     feedback: {
       1: 'Holding a variable fixed changes the question; it isn’t automatically more accurate. Here it removes the main route of the link.',
-      2: 'They answer different questions, so they don’t cancel. The total link is 0.40.',
+      2: 'The −0.02 says only that, at a given footfall, warm days sell no more. The total link, through footfall, is 0.49.',
       3: 'Footfall doesn’t raise the temperature: the weather comes first. It is a mediator, not a confounder.',
     },
-    solution: 'Warm weather → more footfall → more sales: footfall is a mediator. The question “do warm days go with higher sales?” is about the whole link, 0.40. The partial correlation, −0.19, asks whether warm days sell more at a given footfall, which is a different and narrower question.',
+    solution: 'Warm weather → more footfall → more sales: footfall is a mediator. The question “do warm days go with higher sales?” is about the whole link, 0.49. The partial correlation, −0.02, asks whether warm days sell more at a given footfall, and finds they don’t: the weather’s link runs through the customers it brings.',
   },
   {
     id: 'b05-part-k5', type: 'classify', kind: 'applied',

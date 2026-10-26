@@ -14,12 +14,12 @@ const larkPairs = ['Occupancy – room rate', 'Occupancy – review score', 'Occ
 const larkB = C.adjust(LARK, 'bonferroni'), larkH = C.adjust(LARK, 'holm'), larkF = C.adjust(LARK, 'fdr_bh');
 const nSig = (a) => a.filter((p) => p < 0.05).length;
 
-// Oakridge Garden Centre: 18 months of visitors and the running total of newsletter subscribers
+// Oakridge Garden Centre: 18 months of visitors and the running total of loyalty-card holders
 const VISITORS = [3200, 3500, 4800, 6200, 7400, 6900, 6100, 5200, 4300, 3600, 3300, 3900, 3400, 3700, 5100, 6600, 7800, 7200];
 const ADDED = [60, 72, 95, 118, 150, 131, 125, 98, 90, 70, 64, 85, 66, 80, 99, 130, 161, 140];
 const TOTAL = ADDED.reduce((acc, a) => [...acc, (acc.at(-1) ?? 1140) + a], []);
 const oakLevels = C.pearson(TOTAL, VISITORS).r, oakChanges = C.pearson(TOTAL.slice(1).map((v, i) => v - TOTAL[i]), VISITORS.slice(1)).r;
-const oakSheet = { cells: { A1: 'Month', B1: 'Subscribers (total)', C1: 'Visitors', ...col('A', 2, VISITORS.map((_, i) => `M${i + 1}`)), ...col('B', 2, TOTAL), ...col('C', 2, VISITORS), E1: 'r (levels)', F1: '=CORREL(B2:B19,C2:C19)', E2: 'r (monthly additions, visitors)' } };
+const oakSheet = { cells: { A1: 'Month', B1: 'Card holders (total)', C1: 'Visitors', ...col('A', 2, VISITORS.map((_, i) => `M${i + 1}`)), ...col('B', 2, TOTAL), ...col('C', 2, VISITORS), E1: 'r (levels)', F1: '=CORREL(B2:B19,C2:C19)', E2: 'r (monthly additions, visitors)' } };
 
 // Mallory Freight: drivers on shift, late deliveries and parcels, 45 days
 const MF = { xy: 0.48, xz: 0.88, yz: 0.66, n: 45 };
@@ -71,7 +71,7 @@ export const items = [
   },
   {
     id: 'b05-m4-4', lesson: 'correlation-matrices', type: 'mc', kind: 'applied',
-    prompt: 'A two-branch bakery’s matrix over both branches shows loaves baked and loaves sold correlating at 0.62. Inside each branch they correlate at 0.95. The city-centre branch bakes and sells about twice as many loaves as the suburban one, but throws more away. What should the manager take from the pooled 0.62?',
+    prompt: 'A two-branch bakery’s matrix over both branches shows loaves baked and loaves sold correlating at 0.62. Inside each branch they correlate at 0.95. The city-centre branch bakes about 40% more loaves than the suburban one but sells about the same number, throwing the rest away. What should the manager take from the pooled 0.62?',
     options: [
       'Little: it mixes two branches with different waste rates; the within-branch values say more.',
       'That about 62% of the variation in sales is explained by the number of loaves baked across the two branches.',
@@ -81,10 +81,10 @@ export const items = [
     answer: 0,
     feedback: {
       1: 'r² would be 0.38, not 0.62, and the pooled value mixes two branches in any case.',
-      2: 'Inside each branch the link is very close (0.95). The pooled value is lower because the branches sit on different lines.',
+      2: 'Inside each branch the link is very close (0.95). The pooled value is lower because the city branch bakes far more without selling more, so the branches sit on different lines.',
       3: 'More rows don’t make a pooled correlation more meaningful when the groups differ in level.',
     },
-    solution: 'Pooling two branches whose points lie on different lines (the city branch wastes more for a given bake) blurs two tight relationships into one looser cloud. Read the matrix within each branch, and use the pooled value only as a warning that the branches differ.',
+    solution: 'The city branch’s points sit to the right of the suburban branch’s (more baked) but at the same height (the same sold), so the two tight lines lie side by side. Pooled, the big difference in loaves baked between branches goes with almost no difference in loaves sold, which blurs two tight relationships into one looser cloud. Read the matrix within each branch, and use the pooled value only as a warning that the branches differ.',
   },
   // ---------------------------------------------------------------- partial-correlation
   {
@@ -134,7 +134,7 @@ export const items = [
   // ---------------------------------------------------------------- correlation-and-causation
   {
     id: 'b05-m4-8', lesson: 'correlation-and-causation', type: 'formula', kind: 'numerical',
-    prompt: 'Oakridge Garden Centre (fictional) has 18 months of data: the running total of newsletter subscribers (B) and the month’s visitors (C). F1 shows the correlation of the totals with visitors. In F2, calculate in one formula the correlation between each month’s addition to the subscriber total (from month 2) and that month’s visitors.',
+    prompt: 'Oakridge Garden Centre (fictional) has 18 months of data: the running total of loyalty-card holders (B) and the month’s visitors (C). F1 shows the correlation of the totals with visitors. In F2, calculate in one formula the correlation between each month’s addition to the card-holder total (from month 2) and that month’s visitors.',
     sheet: oakSheet,
     cell: 'F2', answer: '=CORREL(B3:B19-B2:B18,C3:C19)',
     alt: ['=CORREL(C3:C19,B3:B19-B2:B18)'],

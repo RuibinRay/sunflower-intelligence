@@ -10,7 +10,9 @@ const neg = (v, d = 2) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), d)}`;
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
 
 const LABEL = { high_f: 'High (°F)', rain_in: 'Rain (in)', footfall: 'Footfall', transactions: 'Transactions', sales: 'Sales ($)', iced_share: 'Iced share', peak_staff_hours: 'Peak barista hours', peak_wait_min: 'Peak wait (min)' };
-const named = (idx) => Object.fromEntries(MATRIX_COLUMNS.map((n) => [LABEL[n], idx ? idx.map((i) => column(n)[i]) : column(n)]));
+// heatmap order: the iced share beside the high temperature, so the busy measures form one block
+const ORDER = ['high_f', 'iced_share', 'rain_in', 'footfall', 'transactions', 'sales', 'peak_staff_hours', 'peak_wait_min'];
+const named = (idx) => Object.fromEntries(ORDER.map((n) => [LABEL[n], idx ? idx.map((i) => column(n)[i]) : column(n)]));
 
 // ---------------------------------------------------------------- Harbourside, June 2027 (30 days)
 const DATES = column('date'), CAFES = column('cafe');
@@ -289,7 +291,7 @@ export const check = [
       { formula: '=RANK.EQ(B2,$B$2:$B$29)*$E$1/COUNT($B$2:$B$29)', say: 'Without the third argument RANK.EQ ranks the largest p-value first. Benjamini–Hochberg ranks from the smallest: add ,1.' },
       { formula: '=$E$1/(COUNT($B$2:$B$29)-RANK.EQ(B2,$B$2:$B$29,1)+1)', say: 'That is Holm’s threshold, α ÷ (m − k + 1). Benjamini–Hochberg’s rises in a straight line: k × q ÷ m.' },
     ],
-    solution: '<x>=RANK.EQ(B2,$B$2:$B$29,1)*$E$1/COUNT($B$2:$B$29)</x>. Sorted by rank, the thresholds rise by 0.05 ÷ 28 ≈ 0.0018 per step. The largest rank whose p-value is at or below its threshold is 16, so 16 pairs are discoveries, including some (none here, as it happens) that sit above their own threshold but below a larger rank that passes.',
+    solution: '<x>=RANK.EQ(B2,$B$2:$B$29,1)*$E$1/COUNT($B$2:$B$29)</x>. Sorted by rank, the thresholds rise by 0.05 ÷ 28 ≈ 0.0018 per step. The largest rank whose p-value is at or below its threshold is 16, so 16 pairs are discoveries, including any that sit above their own threshold but below a larger rank that passes.',
   },
   {
     id: 'b05-mat-k4', type: 'mc', kind: 'applied',
@@ -339,7 +341,7 @@ export const check = [
     feedback: {
       1: 'They are redundant: their correlations with sales are nearly the same piece of evidence counted twice.',
       2: 'High correlation between two measures of the same activity is expected, not a sign of error (though a sudden drop in it can flag one, as the slip in September did).',
-      3: 'Neither measure is always more accurate; the door counter recorded the September slip. Choose the one closer to the question and keep the other as a check.',
+      3: 'Neither measure is always more accurate: the September slip was a data-entry error in the footfall column, an extra digit typed into the log. Choose the one closer to the question and keep the other as a check.',
     },
     solution: 'Redundant measures carry nearly the same information. Keep the one closer to the decision (transactions, for sales and staffing questions) and use the other as a data-quality check: a day on which the two disagree, like 14 September at Millbrook, is worth looking at.',
   },

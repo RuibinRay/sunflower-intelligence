@@ -1,5 +1,5 @@
 // groups-and-simpsons-paradox.ex.js — B05 · Groups and Simpson’s paradox: widgets, practice and the knowledge check
-// (answer keys live here). Café data from case.js (corrected log); Tidewater Books, Brookline Fitness, Halden Foods
+// (answer keys live here). Café data from case.js (corrected log); Tidewater Books, Cindervale Foods
 // and the regional figures are fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num
 // items recompute their answers in `check`.
 import { column, CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=20';
@@ -181,7 +181,6 @@ export const guided = [
     ],
     categories: ['Millbrook’s own r', 'The cafés’ means (with only two cafés, a comparison, not a correlation)', 'The pooled within-café r', 'The pooled r, reported beside the others'],
     answer: [0, 1, 2, 3],
-    fixed: true,
     hints: ['Is the question about days inside a café, about cafés, or about the log as a whole?'],
     feedback: {
       1: 'A question about cafés is answered with cafés’ figures; with two cafés that is a comparison of two means.',
@@ -211,8 +210,8 @@ export const independent = [
     id: 'b05-simp-i2', type: 'mc', kind: 'applied',
     prompt: 'A fictional retailer’s data show that, across its 30 regions, regions where a larger share of customers use the app have a higher average spend per customer (r = 0.71). The marketing team proposes moving every customer to the app “because app users spend more”. What is the main flaw?',
     options: [
-      'The correlation is between regional averages; it doesn’t show that app users themselves spend more than other customers in the same region.',
-      'Thirty regions are too few for a correlation of 0.71 to be statistically significant at the 5% level.',
+      'It correlates regional averages, so it can’t show that app users spend more than other customers in their own region.',
+      'Thirty regions are too few for a correlation of 0.71 to be statistically significant at the 5% level, so it may be chance.',
       'The correlation should have been calculated with Spearman’s ρ, because spend per customer is skewed.',
       'A correlation of 0.71 means that only half of the variation in spend can be explained by app use.',
     ],
@@ -231,7 +230,7 @@ export const independent = [
       'Pooling groups can reverse the sign of a correlation found inside every group.',
       'Pooling groups can create a correlation where there is none inside any group.',
       'If the groups have the same mean of x, the pooled sum of products has no between-group part.',
-      'The pooled correlation always lies between the smallest and the largest within-group correlation.',
+      'The pooled correlation lies between the smallest and the largest within-group correlation.',
       'A correlation of group averages is usually weaker than the correlation of the individuals.',
       'Simpson’s paradox applies to proportions but not to correlations between numeric variables.',
     ],
@@ -239,7 +238,7 @@ export const independent = [
     feedback: {
       3: 'Lantern’s pooled r (−0.324) lies outside the cafés’ range (0.517 to 0.735); so does Millbrook’s weekday-plus-weekend r (0.517 from 0.247 and 0.128).',
       4: 'Usually stronger, because averaging removes the variation inside groups (−0.797 for café-months against −0.324 for days).',
-      5: 'It applies to any measure of association, including correlations.',
+      5: 'It applies to correlations too, as Lantern’s cafés show.',
     },
     solution: 'True: pooling can reverse or create a correlation, and if the group means of x (or of y) are equal, every between-group term n_g(x̄_g − x̄)(ȳ_g − ȳ) is zero. False: the pooled r can fall outside the within-group range; ecological correlations are usually stronger, not weaker; and the paradox applies to correlations too.',
   },
@@ -248,13 +247,13 @@ export const independent = [
     prompt: 'At Millbrook, footfall and the average ticket have r = 0.247 on weekdays and 0.128 at weekends, but 0.517 across all of Millbrook’s days. Weekdays average 272 visitors and a $3.35 ticket; weekends 110 visitors and $3.05. Why is the combined r larger than either?',
     options: [
       'Weekdays are both busier and have larger tickets, so the gap between them adds a positive between-group part.',
-      'Combining doubles the number of days, and a larger sample always produces a larger correlation coefficient.',
+      'Combining doubles the number of days, and the larger sample measures the relationship with less noise, so r rises.',
       'The weekend correlation is too small to count, so the combined figure reflects the weekday correlation only.',
-      'Weekend days are outliers in footfall, and outliers in both variables always raise a correlation coefficient.',
+      'Weekend days are outliers in footfall, and outliers far out on both variables along the trend raise r.',
     ],
     answer: 0,
     feedback: {
-      1: 'Sample size changes how precisely r is estimated, not its size.',
+      1: 'Sample size changes how precisely r is estimated, not which way it moves.',
       2: 'The combined r (0.517) is larger than the weekday r (0.247), so it can’t simply reflect weekdays.',
       3: 'Weekends are a group of 86 ordinary days, not a few outliers; the effect comes from where the two groups’ means sit.',
     },
@@ -292,13 +291,13 @@ export const check = [
   },
   {
     id: 'b05-simp-k2', type: 'num', kind: 'numerical',
-    prompt: 'A fictional chain has two stores. Store 1: 120 days, mean 80 deliveries and mean delivery time 30 minutes. Store 2: 80 days, mean 30 deliveries and mean delivery time 45 minutes. Calculate the between-group part of the sum of products of deliveries and delivery time, Σ n_g (x̄_g − x̄)(ȳ_g − ȳ).',
+    prompt: 'A fictional chain has two stores. Store 1: 120 days, mean 80 orders a day and mean packing time 30 seconds an order. Store 2: 80 days, mean 30 orders and mean packing time 45 seconds. Calculate the between-group part of the sum of products of orders and packing time, Σ n_g (x̄_g − x̄)(ȳ_g − ȳ).',
     answer: between(K2), check: () => { const xb = (120 * 80 + 80 * 30) / 200, yb = (120 * 30 + 80 * 45) / 200; return 120 * (80 - xb) * (30 - yb) + 80 * (30 - xb) * (45 - yb); }, unit: '', places: 0, tol: 1,
     wrong: [
       { value: -37500, say: 'You used the simple average of the store means (55 and 37.5). With unequal days, the overall means weight each store by its days: 60 and 36.' },
-      { value: -360, say: 'Multiply each store’s product of deviations by its number of days.' },
+      { value: -390, say: 'Multiply each store’s product of deviations by its number of days.' },
     ],
-    solution: 'Overall means, weighted by days: x̄ = (120 × 80 + 80 × 30) ÷ 200 = 60; ȳ = (120 × 30 + 80 × 45) ÷ 200 = 36. Store 1: 120 × 20 × (−6) = −14,400; store 2: 80 × (−30) × 9 = −21,600. Between-group part = −36,000: the busier store is faster, so pooling pushes the correlation of deliveries and delivery time negative, whatever happens inside each store.',
+    solution: 'Overall means, weighted by days: x̄ = (120 × 80 + 80 × 30) ÷ 200 = 60; ȳ = (120 × 30 + 80 × 45) ÷ 200 = 36. Store 1: 120 × 20 × (−6) = −14,400; store 2: 80 × (−30) × 9 = −21,600. Between-group part = −36,000: the busier store packs faster, so pooling pushes the correlation of orders and packing time negative, whatever happens inside each store.',
   },
   {
     id: 'b05-simp-k3', type: 'formula', kind: 'applied',
@@ -316,12 +315,12 @@ export const check = [
   },
   {
     id: 'b05-simp-k4', type: 'mc', kind: 'applied',
-    prompt: 'Halden Foods (fictional) runs 40 stores. Across stores, larger stores have lower profit margins (r = −0.6). Inside every store, weeks with more customers have higher margins. The finance director wants to cap customer numbers in busy weeks “to protect margins”. What should the analyst say?',
+    prompt: 'Cindervale Foods (fictional) runs 40 stores. Across stores, larger stores have lower profit margins (r = −0.6). Inside every store, weeks with more customers have higher margins. The finance director wants to cap customer numbers in busy weeks “to protect margins”. What should the analyst say?',
     options: [
       'The store-level figure compares stores; inside each store busy weeks have higher margins, so capping would cut margins.',
       'The director is right, because the store-level figure uses all 40 stores and is therefore the more reliable of the two results.',
       'Both figures are valid, so the chain should cap customers at large stores and encourage them at small stores.',
-      'Neither figure can be used, because Simpson’s paradox shows that correlations computed from grouped data are always meaningless.',
+      'Neither figure can be used until the stores are matched on size, because the paradox makes grouped correlations unreliable.',
     ],
     answer: 0,
     feedback: {

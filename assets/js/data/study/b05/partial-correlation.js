@@ -23,7 +23,8 @@ const PSS = C.partial(S, column('sales'), [T]);
 
 // ---------------------------------------------------------------- Harbourside: weather, footfall, sales (mediator) and weather, rain (collider)
 const hHigh = column('high_f', H), hSales = column('sales', H), hFoot = column('footfall', H), hRain = column('rain_in', H);
-const MED = { r: C.pearson(hHigh, hSales).r, p: C.partial(hHigh, hSales, [hFoot]).r, foot: C.pearson(hHigh, hFoot).r };
+const hFest = column('festival', H), NF = hHigh.map((_, i) => i).filter((i) => !hFest[i]), nf = (a) => NF.map((i) => a[i]);
+const MED = { r: C.pearson(nf(hHigh), nf(hSales)).r, p: C.partial(nf(hHigh), nf(hSales), [nf(hFoot)]).r, foot: C.pearson(hHigh, hFoot).r, n: NF.length, all: C.partial(hHigh, hSales, [hFoot]).r, sq: C.partial(hHigh, hSales, [hFoot, hFoot.map((v) => v * v)]).r };
 const COL = { r: C.pearson(hHigh, hRain).r, part: C.partial(hHigh, hRain, [hFoot]), rainFoot: C.pearson(hRain, hFoot).r };
 
 // ---------------------------------------------------------------- Swiftwing Air (fictional): crew, complaints, passengers on 50 flights
@@ -127,7 +128,7 @@ export default {
       alt: 'Three small diagrams of boxes and arrows, two side by side and one below. Top left, labelled Confounder: an arrow from Busy day to Baristas and an arrow from Busy day to Wait; caption “Hold it fixed”. Top right, labelled Mediator: an arrow from Warm day to Footfall and from Footfall to Sales; caption “Don’t hold it fixed for the total link”. Below, labelled Collider: arrows from Warm day and from Rain both pointing into Footfall; caption “Holding it fixed creates a link”.',
     } },
     { p: String.raw`A <g>confounding variable</g> affects both variables, as a busy day drives both the roster and the queue. Holding it fixed removes the link it creates, which is what Ana did with transactions.` },
-    { p: String.raw`A <g>mediator</g> lies on the path from one variable to the other: x affects m, and m affects y. Holding a mediator fixed removes the part of the link that runs through it, so the partial correlation measures only what is left, not the whole effect. At Harbourside warm days bring more people to the waterfront (the case’s generator makes footfall rise with the temperature there), and more people buy more. The high temperature and sales correlate at 0.40; holding footfall fixed gives −0.19. The 0.40 answers “do warm days go with higher sales?”; the −0.19 answers a narrower question, “at a given footfall, do warm days go with higher sales?”, and the answer may reflect something else, such as cheaper iced drinks. Within the case the peak load is the starkest example: it is transactions per barista hour, the route through which baristas shorten waits, and holding it fixed leaves barista hours and waits correlating at +0.07, as if baristas didn’t matter.` },
+    { p: String.raw`A <g>mediator</g> lies on the path from one variable to the other: x affects m, and m affects y. Holding a mediator fixed removes the part of the link that runs through it, so the partial correlation measures only what is left, not the whole effect. At Harbourside warm days bring more people to the waterfront, and more people buy more; the case’s generator lets the temperature reach sales only through footfall. Leaving out the five festival days, whose crowds have nothing to do with the weather, the high temperature and sales correlate at 0.49 over the other 301 days; holding footfall fixed gives −0.02. The 0.49 answers “do warm days go with higher sales?”, and the answer is yes. The −0.02 answers a narrower question, “at a given footfall, do warm days sell more?”, and the answer is no, which is what a mediator predicts: once footfall is fixed, the route is closed. (With the festival days in, the partial correlation is −0.19, because sales rise along a curve in footfall and the festivals sit at its far end; a straight-line control can’t remove that, which is the first limit listed above.) Within the case the peak load is the starkest example: it is transactions per barista hour, the route through which baristas shorten waits, and holding it fixed leaves barista hours and waits correlating at +0.07, as if baristas didn’t matter.` },
     { p: String.raw`A <g>collider</g> is affected by both variables. Holding a collider fixed creates a link between its causes even if they are unrelated, because among days with the same value of the collider, a high value of one cause must be offset by the other (Cole and colleagues, 2010, give clear examples). At Harbourside the high temperature and rain are almost unrelated (r = 0.05), but warm days raise footfall and rain lowers it. Holding footfall fixed gives a partial correlation of 0.17 (p = 0.004): among days with the same footfall, the warmer ones were more often wet, because a warm, dry day would have drawn more people. The link is created by the analysis, not by the weather.` },
     { callout: 'warn', title: 'More controls are not always better', html: 'It is tempting to hold fixed every variable in the dataset “to be safe”. That removes confounding but can also remove the effect you care about (a mediator) or create a false link (a collider). Choose controls from what you know about the order and mechanism of the process, and say which you held fixed and why.' },
   ],
@@ -200,7 +201,7 @@ export default {
   ],
 
   application: [
-    { p: 'Partial correlation is how analysts ask whether a link survives once an obvious common driver is accounted for. A retailer finds that stores with more staff have more shrinkage, and holds store size fixed. A hospital finds that wards with more nurses have more incidents, and holds the number and severity of patients fixed. A marketing team finds that customers who open more emails spend more, and holds their past spending fixed. In each case the simple correlation mixes the effect of interest with the effect of size or busyness, and the partial correlation compares like with like.' },
+    { p: 'Partial correlation is how analysts ask whether a link survives once an obvious common driver is accounted for. A retailer finds that stores with more staff have more shrinkage, and holds store size fixed. A hospital finds that wards with more nurses have more incidents, and holds the number and severity of patients fixed. A bank finds that customers who use its mobile app more often hold larger balances, and holds their income fixed. In each case the simple correlation mixes the link of interest with the effect of size, busyness or means, and the partial correlation compares like with like.' },
     { case: 'Ana’s note to her operations manager reads: “Over the 612 café-days, more peak barista hours went with longer waits (r = +0.53), because both rise on busy days. Holding the day’s transactions fixed, the link reverses: on days with the same trade, more barista hours went with shorter waits (partial r = −0.72, p below 0.001), in both cafés, and most clearly on days with more than 100 transactions. I did not hold the load per barista fixed, because it is the route by which baristas would shorten queues. This is observational, so before changing the roster I would like to trial it.”' },
     { p: 'Her note does what a good partial-correlation report does. It gives the simple and the partial correlation side by side, so the reader sees what holding transactions fixed changed. It names the control and explains why it is a confounder, and names the variable deliberately not held fixed and why. It shows where the link is strong and where it is weak rather than relying on one number. And it stops short of a causal claim, which the last lesson of the module takes up.' },
     { p: 'In regression (B06) the same idea appears as a coefficient: the slope on barista hours in a model that also contains transactions measures the change in waits per extra barista hour at a given level of trade. Partial correlation gives the strength of that link on the −1 to 1 scale; regression gives its size in minutes per hour. Both depend on the same choice of controls.' },
@@ -223,7 +224,7 @@ export default {
   ],
 
   references: [
-    { text: 'Penn State Eberly College of Science. <i>STAT 505: Applied Multivariate Statistical Analysis</i>, Lesson 6, “Multivariate Conditional Distribution and Partial Correlation” (sections 6.1–6.3).', url: 'https://online.stat.psu.edu/stat505/lesson/6', checked: '2026-10-26' },
+    { text: 'Penn State Eberly College of Science. <i>STAT 505: Applied Multivariate Statistical Analysis</i>, Lesson 6, “Multivariate Conditional Distribution and Partial Correlation” (sections 6.1–6.3).', url: 'https://online.stat.psu.edu/stat505/book/export/html/638', checked: '2026-10-26' },
     { text: 'Cole, S. R., Platt, R. W., Schisterman, E. F., Chu, H., Westreich, D., Richardson, D. &amp; Poole, C. (2010). “Illustrating bias due to conditioning on a collider”. <i>International Journal of Epidemiology</i>, 39(2), 417–420.', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC2846442', checked: '2026-10-26' },
     { text: 'Illowsky, B. &amp; Dean, S. <i>Introductory Statistics 2e</i>, section 12.4, “Testing the Significance of the Correlation Coefficient”. OpenStax.', url: 'https://openstax.org/books/introductory-statistics/pages/12-4-testing-the-significance-of-the-correlation-coefficient', checked: '2026-10-26' },
     { text: 'Microsoft Support. “CORREL function”.', url: 'https://support.microsoft.com/en-us/excel/correl-function', checked: '2026-10-26' },
@@ -258,7 +259,8 @@ export default {
     { what: 'df', value: PT.df, shown: 609 },
     { what: 't', value: PT.t, shown: -25.9, tol: 0.05 },
     { what: 'p below 0.001', value: Number(PT.p < 0.001), shown: 1 },
-    { what: 't by the lesson formula', value: -0.725 * Math.sqrt(609 / (1 - 0.725 ** 2)), shown: -25.9, tol: 0.1 },
+    { what: 't by the lesson formula', value: -0.7246 * Math.sqrt(609 / (1 - 0.7246 ** 2)), shown: -25.9, tol: 0.05 },
+    { what: 'Partial r to 4 dp', value: PT.r, shown: -0.7246, tol: 0.00005 },
     // café and ranks
     { what: 'Second-order (transactions and café)', value: PTC.r, shown: -0.719, tol: 0.0005 },
     { what: 'Harbourside partial', value: cafeP(H), shown: -0.54 },
@@ -267,8 +269,12 @@ export default {
     { what: 'Partial given load', value: PL.r, shown: 0.07 },
     { what: 'Partial given load p', value: PL.p, shown: 0.10, tol: 0.005 },
     // mediator, collider
-    { what: 'Harbourside high–sales', value: MED.r, shown: 0.40 },
-    { what: 'Harbourside high–sales | footfall', value: MED.p, shown: -0.19 },
+    { what: 'Harbourside high–sales, non-festival days', value: MED.r, shown: 0.49 },
+    { what: 'Harbourside high–sales | footfall, non-festival days', value: MED.p, shown: -0.02 },
+    { what: 'Non-festival days', value: MED.n, shown: 301 },
+    { what: 'Festival days', value: 306 - MED.n, shown: 5 },
+    { what: 'Harbourside high–sales | footfall, all days', value: MED.all, shown: -0.19 },
+    { what: 'With footfall² too, near zero (the curve)', value: Number(Math.abs(MED.sq) < 0.01), shown: 1 },
     { what: 'Harbourside high–footfall positive', value: Number(MED.foot > 0), shown: 1 },
     { what: 'Harbourside high–rain', value: COL.r, shown: 0.05 },
     { what: 'Harbourside high–rain | footfall', value: COL.part.r, shown: 0.17 },

@@ -50,20 +50,21 @@ const tCity = C.pearson(CX, CY).r, tAir = C.pearson(AX, AY).r, tPool = C.pearson
 // ---------------------------------------------------------------- figure: the cafés’ monthly averages
 const f1 = (x) => Math.round(x * 10) / 10;
 function monthlyFigure() {
-  const X = (v) => 70 + (v - 80) * 2.6, Y = (v) => 250 - (v - 2.8) * 64;
-  let svg = '<svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" font-size="11" fill="currentColor">';
-  svg += '<line x1="60" x2="620" y1="255" y2="255" stroke="var(--ink-3)"/><line x1="60" x2="60" y1="20" y2="255" stroke="var(--ink-3)"/>';
-  [100, 150, 200, 250].forEach((v) => { svg += `<text x="${f1(X(v))}" y="270" text-anchor="middle" font-size="10" fill="var(--ink-3)">${v}</text>`; });
-  [3, 4, 5, 6].forEach((v) => { svg += `<text x="54" y="${f1(Y(v)) + 4}" text-anchor="end" font-size="10" fill="var(--ink-3)">$${v}.00</text>`; });
+  // drawn large in viewBox units so the text stays legible when the figure shrinks to a phone's width
+  const X = (v) => 80 + (v - 80) * 2.6, Y = (v) => 290 - (v - 2.8) * 70;
+  let svg = '<svg viewBox="0 0 640 370" xmlns="http://www.w3.org/2000/svg" font-size="20" fill="currentColor">';
+  svg += '<line x1="72" x2="625" y1="300" y2="300" stroke="var(--ink-3)" stroke-width="1.2"/><line x1="72" x2="72" y1="40" y2="300" stroke="var(--ink-3)" stroke-width="1.2"/>';
+  [100, 150, 200, 250].forEach((v) => { svg += `<text x="${f1(X(v))}" y="324" text-anchor="middle" font-size="18" fill="var(--ink-3)">${v}</text>`; });
+  [3, 4, 5, 6].forEach((v) => { svg += `<text x="64" y="${f1(Y(v)) + 6}" text-anchor="end" font-size="18" fill="var(--ink-3)">$${v}</text>`; });
   MEANS.forEach((p) => {
-    if (p.cafe === 'Harbourside') svg += `<circle cx="${f1(X(p.f))}" cy="${f1(Y(p.a))}" r="5" fill="var(--series-1)"/>`;
-    else svg += `<rect x="${f1(X(p.f)) - 4.5}" y="${f1(Y(p.a)) - 4.5}" width="9" height="9" fill="var(--series-2)"/>`;
+    if (p.cafe === 'Harbourside') svg += `<circle cx="${f1(X(p.f))}" cy="${f1(Y(p.a))}" r="7" fill="var(--series-1)"/>`;
+    else svg += `<rect x="${f1(X(p.f)) - 6}" y="${f1(Y(p.a)) - 6}" width="12" height="12" fill="var(--series-2)"/>`;
   });
-  svg += `<text x="${f1(X(150))}" y="${f1(Y(5.85))}" text-anchor="middle">Harbourside (circles): r = ${ecoH.toFixed(2)}</text>`;
-  svg += `<text x="${f1(X(215))}" y="${f1(Y(3.62))}" text-anchor="middle">Millbrook (squares): r = ${ecoM.toFixed(2)}</text>`;
-  svg += `<text x="${f1(X(200))}" y="${f1(Y(4.55))}" text-anchor="middle" fill="var(--ink-3)">All 20 points together: r = −${Math.abs(ecoR).toFixed(2)}</text>`;
-  svg += `<text x="${f1(X(175))}" y="292" text-anchor="middle" font-size="10" fill="var(--ink-3)">Mean daily footfall in the month</text>`;
-  svg += '<text x="16" y="138" text-anchor="middle" font-size="10" fill="var(--ink-3)" transform="rotate(-90 16 138)">Mean average ticket</text>';
+  svg += `<text x="${f1(X(150))}" y="${f1(Y(5.95))}" text-anchor="middle">Harbourside (circles): r = ${ecoH.toFixed(2)}</text>`;
+  svg += `<text x="${f1(X(215))}" y="${f1(Y(3.75))}" text-anchor="middle">Millbrook (squares): r = ${ecoM.toFixed(2)}</text>`;
+  svg += `<text x="${f1(X(200))}" y="${f1(Y(4.6))}" text-anchor="middle" fill="var(--ink-3)">All 20 together: r = −${Math.abs(ecoR).toFixed(2)}</text>`;
+  svg += `<text x="${f1(X(175))}" y="356" text-anchor="middle" font-size="18" fill="var(--ink-3)">Mean daily footfall in the month</text>`;
+  svg += '<text x="18" y="170" text-anchor="middle" font-size="18" fill="var(--ink-3)" transform="rotate(-90 18 170)">Mean ticket</text>';
   return `${svg}</svg>`;
 }
 
@@ -103,7 +104,7 @@ export default {
       ],
     } },
     { p: 'Millbrook, in the office district, has far more people through the door, and most of them buy a coffee on the way to work. Harbourside, on the waterfront, has fewer visitors who more often sit down with food. Every one of Millbrook’s 306 days has a smaller average ticket than every one of Harbourside’s. Pool the two, and the comparison that dominates is café against café, many visitors and small tickets against few visitors and large ones, which points downwards. Inside each café, busier days go with larger tickets (the case builds this in: busy days bring more groups and more add-ons).' },
-    { p: 'This is <g>Simpson’s paradox</g>: a relationship that holds within each of several groups disappears or reverses when the groups are combined. B01 met it with proportions; here it appears in a correlation. It is not a trick of arithmetic or an error in the data. It arises whenever a third variable, here the café, differs between groups in both x and y.' },
+    { p: 'This is <g>Simpson’s paradox</g>: a relationship that holds within each of several groups disappears or reverses when the groups are combined. B01 met it with proportions; here it appears in a correlation. It is not a trick of arithmetic or an error in the data. It can arise when a third variable, here the café, differs between groups in both x and y.' },
     { callout: 'key', title: 'Plot by group before you pool', html: 'When the data come from groups that might differ (cafés, stores, regions, customer types, years), colour the scatterplot by group and compute r within each group as well as overall. If the group means sit in a different pattern from the points inside each group, the pooled correlation is mostly about the groups.' },
 
     { h: 'Averages are not individuals' },
@@ -111,7 +112,7 @@ export default {
     { figure: {
       svg: monthlyFigure(),
       caption: 'Each café’s ten monthly averages of footfall and average ticket. Within each café, busier months have larger tickets; across the two cafés, the busier café has the smaller tickets, so the 20 points together run downwards.',
-      alt: 'A scatterplot of 20 points with mean daily footfall in the month from about 90 to 260 on the horizontal axis and the mean average ticket from $3.00 to $6.00 on the vertical axis. Ten circles for Harbourside lie between footfalls of about 92 and 187 and tickets of $5.15 to $5.55, rising gently to the right (r = 0.95). Ten squares for Millbrook lie between footfalls of about 179 and 257 and tickets of $3.17 to $3.35, also rising gently (r = 0.74). Because the squares sit to the right of and well below the circles, all 20 points together run downwards (r = −0.80).',
+      alt: 'A scatterplot of 20 points with mean daily footfall in the month from about 90 to 260 on the horizontal axis and the mean average ticket from $3 to $6 on the vertical axis. Ten circles for Harbourside lie between footfalls of about 92 and 187 and tickets of $5.15 to $5.55, rising gently to the right (r = 0.95). Ten squares for Millbrook lie between footfalls of about 179 and 257 and tickets of $3.17 to $3.35, also rising gently (r = 0.74). Because the squares sit to the right of and well below the circles, all 20 points together run downwards (r = −0.80).',
     } },
     { p: 'A correlation computed between group averages is an <g>ecological correlation</g>. It answers a question about groups (do busier café-months have smaller tickets?), and it can differ from the correlation between individuals in size and even in sign. Reading an ecological correlation as if it described each individual is the <g>ecological fallacy</g>.' },
   ],
@@ -126,11 +127,11 @@ export default {
 
     { h: 'It works in both directions' },
     { p: 'Pooling can strengthen a correlation as well as reverse it. Inside Millbrook, footfall and the average ticket have r = 0.247 on weekdays and 0.128 at weekends. Together, Millbrook’s 306 days give 0.517, stronger than either. Weekdays are both busier (272 visitors on average against 110) and have slightly larger tickets ($3.35 against $3.05), so the gap between weekdays and weekends lines up with the relationship inside them and adds to it. Each weekday and weekend group also spans a narrower range of footfall, which shrinks its own r, as the previous lesson showed.' },
-    { p: 'Pooling can also create a correlation where there is none inside any group, whenever groups differ in both variables. And splitting can go on: weekday and weekend inside each café, or month inside each of those. There is no “true” level of splitting; the right level is set by the question being asked.' },
+    { p: 'Pooling can also create a correlation where there is none inside any group, when groups differ in both variables. And splitting can go on: weekday and weekend inside each café, or month inside each of those. There is no “true” level of splitting; the right level is set by the question being asked.' },
 
     { h: 'Ecological correlations' },
     { p: 'Averaging within groups removes the variation inside them, so an ecological correlation usually looks stronger than the correlation of the individuals behind it: the 20 café-month averages give −0.797 against −0.324 for the 612 days. Temperature and iced share show the same effect without any reversal: 0.940 across café-days, 0.986 across café-month averages. A strong ecological correlation is accurate about groups and says much less about the individuals in them.' },
-    { p: 'The classic warning is Robinson’s (1950) analysis of the 1930 US census, as reported by Subramanian and colleagues (2009). Across individuals, being born abroad and being unable to read had a small positive correlation (r = 0.12); across states, the share of residents born abroad and the share unable to read had a negative correlation (r = −0.53). States differed in many ways besides the share of residents born abroad, and inferring individual behaviour from the state figures would have got the sign wrong.' },
+    { p: 'The classic warning is Robinson’s (1950) analysis of the 1930 US census, as reported by Subramanian and colleagues (2009). Across individuals, being born abroad and being illiterate (unable to read and write; aged 10 and over) had a small positive correlation (r = 0.12); across states, the share of residents born abroad and the share illiterate (unable to read and write; aged 10 and over) had a negative correlation (r = −0.53). States differed in many ways besides the share of residents born abroad, and inferring individual behaviour from the state figures would have got the sign wrong.' },
     { p: 'Ecological correlations are not useless. They are the right tool for questions about groups (should Lantern open its next café in an office district or on the waterfront?) and often the only data available. The error is in moving from groups to individuals without saying so.' },
 
     { h: 'Finding the groups' },
@@ -199,14 +200,14 @@ export default {
   demo: [
     { widget: 'simp-scatter', intro: 'Footfall against average ticket for all 612 café-days, pooled: r = −0.324. Colour by café and read each café’s own r (0.735 and 0.517). Then turn on the least-squares line: it runs downwards from one café’s cloud to the other’s, across two clouds that each rise.' },
     { widget: 'simp-monthly', intro: 'The cafés’ monthly averages, as head office sees them: 20 points with r = −0.797. Colour by café to see each café’s ten months rise together, and notice that averaging has made every relationship look tighter than the daily one.' },
-    { widget: 'simp-sheet', intro: 'Two weeks of both cafés, 3–16 May. G1 gives the pooled r, G2 and G3 each café’s own, and G5:H6 each café’s means. Change one café’s tickets (say, add $2 to every Millbrook ticket in D16:D29) and watch the pooled r change sign while the cafés’ own correlations stay where they were.' },
+    { widget: 'simp-sheet', intro: 'Two weeks of both cafés, 3–16 May. G1 gives the pooled r, G2 and G3 each café’s own, and G5:H6 each café’s means. Type 2 in G8, which adds $2 to every Millbrook ticket in D16:D29, and watch the pooled r change sign while the cafés’ own correlations stay where they were.' },
   ],
 
   mistakes: [
     { title: '“The correlation across all our data is the real one; splitting is cherry-picking.”', html: 'Pooled data mix the relationship inside groups with the difference between them. When groups differ in both variables, the pooled r can reverse the relationship inside every group. Report both and say which answers the question; splitting by a variable chosen before looking at the results is good practice, not cherry-picking.' },
     { title: '“Busier cafés have smaller tickets, so busy days lower the ticket.”', html: 'That moves from groups to individuals: the ecological fallacy. Across the cafés the busier one has smaller tickets; inside each café, busier days have larger ones. Answer questions about days with day-level data inside each café.' },
     { title: '“With 20 monthly points, r = −0.80 is strong evidence.”', html: 'An ecological correlation is usually stronger than the individual-level one because averaging removes the variation inside groups, and here it is driven by two cafés. Twenty averages from two cafés are closer to two points than to twenty independent observations.' },
-    { title: '“Simpson’s paradox only happens with percentages.”', html: 'It happens with any measure of association: proportions, means, correlations, slopes. Whenever a third variable differs between groups in both x and y, pooling can reverse, create or inflate a correlation.' },
+    { title: '“Simpson’s paradox only happens with percentages.”', html: 'It happens with correlations too, as Lantern’s cafés show: footfall and the average ticket rise together inside each café and run the other way when the cafés are pooled. When a third variable differs between groups in both x and y, pooling can reverse, create or inflate a correlation.' },
     { title: '“If I split by enough variables, I will find the true correlation.”', html: 'Every split answers a different question, and splitting by many variables in search of a pattern is a multiple-testing problem (module 4). Choose the grouping from the question and from what is known about the business, before computing.' },
   ],
 
