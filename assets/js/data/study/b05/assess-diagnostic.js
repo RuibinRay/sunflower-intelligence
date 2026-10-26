@@ -4,12 +4,12 @@
 // Module 1: reading clusters in a scatterplot that r = 0.98 hides (scatterplots); r = cov ÷ (s_x s_y) with one standard
 // deviation in other units, which only works once the units match (covariance-and-pearson); judging strength by r, not
 // by the size of a covariance (covariance-and-pearson). Module 2: Spearman’s ρ as Pearson’s r of average ranks, in one
-// formula, on tied data (rank-correlation); Fisher’s z test of H₀: ρ = 0.6 (testing-correlation); the power of a
-// correlation test, and the pairs needed, behind a non-significant r (testing-correlation). Module 3: a far point on the
-// line raising r (outliers-and-influence); the range-restriction formula from a restricted to the full range
-// (nonlinear-and-restricted); which correlation answers a within-group question when pooling reverses the sign
+// formula, on tied data (rank-correlation); Fisher’s z test of H₀: ρ = 0.6 (testing-correlation); the pairs needed for
+// 80% power by Fisher’s z (testing-correlation). Module 3: a far point on the
+// line raising r (outliers-and-influence); the range-restriction formula solved for the spread at which r falls to a
+// given value (nonlinear-and-restricted); which correlation answers a within-group question when pooling reverses the sign
 // (groups-and-simpsons-paradox). Module 4: counting Holm rejections (correlation-matrices); the first-order partial
-// correlation of barista hours and waits from three café correlations (partial-correlation); which design shows cause (correlation-and-causation).
+// correlation of barista hours and waits from three café correlations (partial-correlation); two trends, seen through first differences (correlation-and-causation).
 // Modules 1–3 use only mc, num and formula items, which score 0 or 1, so that the route can’t be passed on part marks;
 // module 4 is not used for routing. New questions, not copies of lesson exercises, module tests, the final or the
 // project, and nothing from the project’s data or question. Café figures come from case.js (the corrected log);
@@ -61,6 +61,8 @@ const twoSidedZ = (z) => 2 * normCdf(-Math.abs(z));
 // Pelling Bakeries (fictional): 25 branches, r = 0.20
 const PB = { n: 25, rho: 0.2 };
 const pbPower = C.power(PB.rho, PB.n), pbN = C.sampleSize(PB.rho);
+const pairsFor = (rho, zPow) => Math.ceil(((normQ(0.975) + zPow) / Math.atanh(rho)) ** 2 + 3);
+function normQ(p) { let lo = -10, hi = 10; for (let i = 0; i < 200; i++) { const m = (lo + hi) / 2; if (normCdf(m) < p) lo = m; else hi = m; } return (lo + hi) / 2; }
 
 // Sedgemoor Garden Centre (fictional): coach parties booked and weekend visitors (hundreds), nine weekends,
 // then a tenth weekend far to the right, on the nine weekends’ least-squares line
@@ -70,9 +72,11 @@ const slope9 = C.covariance(LEAF, VIS) / C.covariance(LEAF, LEAF);
 const vis10 = rnd(lm(VIS) + slope9 * (30 - lm(LEAF)), 1);
 const r9 = C.pearson(LEAF, VIS).r, r10 = C.pearson([...LEAF, 30], [...VIS, vis10]).r;
 
-// Tollbridge Insurance (fictional): restricted SD 6, full SD 15, r among hires 0.28
-const TI = { s: 6, S: 15, r: 0.28 };
-const rangeUp = (r, k) => (k * r) / Math.sqrt(1 - r * r + k * k * r * r);
+// Tollbridge Insurance (fictional): full-range SD 15 and r = 0.6; the hired SD at which r falls to 0.3
+const TI = { S: 15, r: 0.6, want: 0.3 };
+// the ratio s ÷ S at which a full-range r shrinks to the wanted restricted r (the range formula solved for k)
+const kFor = (r, rr) => (rr * Math.sqrt(1 - r * r)) / (r * Math.sqrt(1 - rr * rr));
+const rangeDown = (r, k) => (k * r) / Math.sqrt(1 - r * r + k * k * r * r);
 
 // Halsway Leisure (fictional): 8 p-values from a matrix screen
 const BL = [0.001, 0.004, 0.0065, 0.009, 0.03, 0.041, 0.2, 0.62];
@@ -152,13 +156,14 @@ export const items = [
     wrong: [
       { formula: `=CORREL(B2:B${oLast},C2:C${oLast})`, say: 'That is Pearson’s r of the values. Spearman’s ρ is Pearson’s r of the ranks: rank each column with RANK.AVG inside CORREL.' },
       { formula: `=CORREL(RANK.EQ(B2:B${oLast},B2:B${oLast}),RANK.EQ(C2:C${oLast},C2:C${oLast}))`, say: 'RANK.EQ gives every tied day the top rank of its group. Spearman’s ρ gives tied values the average of the ranks they share: RANK.AVG.' },
+      { formula: `=1-6*SUMSQ(RANK.AVG(B2:B${oLast},B2:B${oLast})-RANK.AVG(C2:C${oLast},C2:C${oLast}))/(COUNT(B2:B${oLast})*(COUNT(B2:B${oLast})^2-1))`, say: 'The d² shortcut, 1 − 6Σd² ÷ (n(n² − 1)), is exact only without ties, and the half-hour rosters tie on many days. Take Pearson’s r of the average ranks: CORREL of two RANK.AVG columns.' },
       { formula: `=CORREL(RANK.AVG(B2:B${oLast},B2:B${oLast}),RANK.AVG(C2:C${oLast},C2:C${oLast},1))`, say: 'One column is ranked largest first and the other smallest first, which flips the sign. Rank both the same way.' },
     ],
     solution: `<x>=CORREL(RANK.AVG(B2:B15,B2:B15),RANK.AVG(C2:C15,C2:C15))</x> = ${fx(oRho, 3)}. RANK.AVG gives each group of tied hours the average of the ranks it spans, and Pearson’s r of the two rank columns is Spearman’s ρ (the d² shortcut is wrong here, because of the ties). Pearson’s r on the values is ${fx(oR, 3)}: the four weekend days, with few hours and little trade, sit far from the weekdays and lift r, while ρ counts them only by their order.`,
   },
   {
     id: 'b05-dg-5', lesson: 'testing-correlation', type: 'num', kind: 'numerical',
-    prompt: `Gorseway Hotels (fictional) uses a booking-intent score that its supplier says correlates ${fx(GH.rho0)} with whether a guest returns within a year. Across ${GH.n} guests chosen at random, Gorseway finds r = ${fx(GH.r)}. Test H₀: ρ = ${fx(GH.rho0)} against a two-sided alternative. What is the p-value? Give three decimal places.`,
+    prompt: `Gorseway Hotels (fictional) uses a booking-intent score that its supplier says correlates ${fx(GH.rho0)} with what a guest spends at its hotels in the following year. Across ${GH.n} guests chosen at random, Gorseway finds r = ${fx(GH.r)}. Test H₀: ρ = ${fx(GH.rho0)} against a two-sided alternative. What is the p-value? Give three decimal places.`,
     answer: rnd(ghTest.p, 3),
     check: () => { const z = (Math.atanh(0.41) - Math.atanh(0.6)) * Math.sqrt(60 - 3); return twoSidedZ(z); },
     unit: '', places: 3, tol: 0.0015,
@@ -170,24 +175,19 @@ export const items = [
     solution: `Fisher’s z test of H₀: ρ = ρ₀: z = (atanh ${fx(GH.r)} − atanh ${fx(GH.rho0)}) × √(${GH.n} − 3) = (${fx(Math.atanh(GH.r), 4)} − ${fx(Math.atanh(GH.rho0), 4)}) × ${fx(Math.sqrt(GH.n - 3), 3)} = ${fx(ghTest.z, 3)}, two-sided p = ${fx(ghTest.p, 3)}. At α = 0.05 the data don’t quite contradict the supplier’s 0.60, though they point lower; the 95% interval for ρ, ${fx(C.fisherCI(GH.r, GH.n)[0])} to ${fx(C.fisherCI(GH.r, GH.n)[1])}, shows how loosely 60 guests pin it down. The t test of ρ = 0 answers a different question.`,
   },
   {
-    id: 'b05-dg-6', lesson: 'testing-correlation', type: 'mc', kind: 'applied',
-    prompt: `Pelling Bakeries (fictional) correlated staff turnover with customer complaints across its ${PB.n} branches: r = ${fx(PB.rho)}, two-sided p = ${fx(C.rTest(PB.rho, PB.n).p)}. The area manager writes: “No relationship: turnover and complaints are unrelated.” Which reply is right?`,
-    options: [
-      `The test can’t say: with ${PB.n} branches it had only about a ${pc(pbPower)} chance of detecting a true ρ of 0.2, and about ${pbN} branches would give 80% power.`,
-      `The manager is right: p = ${fx(C.rTest(PB.rho, PB.n).p)} means a ${pc(1 - C.rTest(PB.rho, PB.n).p)} chance that turnover and complaints are unrelated.`,
-      `The test can’t say, but only because it was two-sided: a one-sided test gives p = ${fx(C.rTest(PB.rho, PB.n).p / 2)}, which would settle the question in favour of turnover raising complaints.`,
-      'The manager is right to treat r = 0.20 as zero, since by the usual verbal scale any correlation below 0.3 counts as negligible.',
+    id: 'b05-dg-6', lesson: 'testing-correlation', type: 'num', kind: 'numerical',
+    prompt: `Pelling Bakeries (fictional) found r = ${fx(PB.rho)} between staff turnover and customer complaints across its ${PB.n} branches (two-sided p = ${fx(C.rTest(PB.rho, PB.n).p)}). Its parent group, with several hundred branches, will repeat the study. How many branches does it need for 80% power to detect a true correlation of ${fx(PB.rho, 1)} with a two-sided test at α = 0.05, by Fisher’s z? Give a whole number, rounded up.`,
+    answer: pbN,
+    check: () => pairsFor(0.2, normQ(0.8)),
+    unit: 'branches', places: 0, tol: 0.5,
+    wrong: [
+      { value: Math.ceil(((normQ(0.975) + normQ(0.8)) / Math.atanh(PB.rho)) ** 2), say: 'Fisher’s z has standard error 1 ÷ √(n − 3): add 3 to (z sum ÷ atanh ρ)².' },
+      { value: C.sampleSize(PB.rho, { power: 0.9 }), say: 'That uses 1.282, the value for 90% power. For 80% power, z₁₋β = 0.842.' },
+      { value: Math.ceil((normQ(0.975) / Math.atanh(PB.rho)) ** 2 + 3), say: 'That leaves out the power term, which gives only about 50% power. Add z₁₋β = 0.842 to 1.960 before dividing.' },
+      { value: Math.ceil(((normQ(0.975) + normQ(0.8)) / PB.rho) ** 2 + 3), say: 'Divide by Fisher’s z of ρ, atanh 0.2 = 0.2027, not by ρ itself.' },
     ],
-    answer: 0,
-    feedback: {
-      1: 'A p-value is not the probability that H₀ is true. It is the chance of an r this far from 0 if ρ were 0, and here such an r is common.',
-      2: 'A one-sided test must be chosen before seeing the data, and 0.17 would not reject H₀ anyway. Nor could any correlation show that turnover raises complaints.',
-      3: 'Verbal labels for r are conventions that vary between textbooks, and a correlation of 0.2 can matter. The problem is that 25 branches can’t detect it.',
-    },
-    solution: `Not rejecting H₀ is not evidence of no relationship when the test had little power. The power of a two-sided test at α = 0.05 for ρ = 0.2 with 25 pairs, by Fisher’s z, is Φ(atanh 0.2 × √22 − 1.96) ≈ ${fx(pbPower, 2)}; the pairs needed for 80% power are ((1.960 + 0.842) ÷ atanh 0.2)² + 3, rounded up: ${pbN}. Pelling has 25. The honest summary: r = 0.20 (95% interval ${fx(C.fisherCI(PB.rho, PB.n)[0])} to ${fx(C.fisherCI(PB.rho, PB.n)[1])}), compatible with no link and with a moderate one.`,
+    solution: `n = ((z₁₋α/₂ + z₁₋β) ÷ atanh ρ)² + 3 = ((1.960 + 0.842) ÷ ${fx(Math.atanh(PB.rho), 4)})² + 3 = ${fx(((normQ(0.975) + normQ(0.8)) / Math.atanh(PB.rho)) ** 2 + 3, 1)}, so ${pbN} branches. Pelling’s 25 branches gave the test only about a ${pc(pbPower)} chance of detecting ρ = 0.2, which is why its non-significant r says little either way.`,
   },
-
-  // ================================================================ Module 3: when correlations mislead
   {
     id: 'b05-dg-7', lesson: 'outliers-and-influence', type: 'mc', kind: 'conceptual',
     prompt: `Sedgemoor Garden Centre (fictional) had between 3 and 11 coach parties booked on each of nine weekends; coach parties and weekend visitors correlate at r = ${fx(r9)}. A flower show on the tenth weekend brings 30 coach parties, and the visitors land exactly on the straight line that the nine weekends suggest. What happens to r when the tenth weekend is added?`,
@@ -207,20 +207,20 @@ export const items = [
   },
   {
     id: 'b05-dg-8', lesson: 'nonlinear-and-restricted', type: 'num', kind: 'numerical',
-    prompt: `Tollbridge Insurance (fictional) hires claims handlers on a typing-accuracy score. The standard deviation of the score is ${TI.S} points among all applicants but only ${TI.s} among those hired. Among the hired, the score and claims settled per week correlate at r = ${fx(TI.r)}. Assuming a straight-line relationship with even scatter and selection on the score alone, estimate the correlation among all applicants. Give two decimal places.`,
-    answer: rnd(rangeUp(TI.r, TI.S / TI.s), 2),
-    check: () => { const k = 15 / 6, r = 0.28; return (k * r) / Math.sqrt(1 - r ** 2 + k ** 2 * r ** 2); },
-    unit: '', places: 2, tol: 0.006,
+    prompt: `Tollbridge Insurance (fictional) hires claims handlers on a typing-accuracy score. Across all applicants the score has a standard deviation of ${TI.S} points and correlates r = ${fx(TI.r)} with claims settled per week (a straight line, even scatter). If it hires only high scorers, how small could the standard deviation of the hired staff’s scores be before the correlation among them is expected to fall to ${fx(TI.want)}? Give points to one decimal place.`,
+    answer: rnd(TI.S * kFor(TI.r, TI.want), 1),
+    check: () => { let lo = 0.01, hi = 15; for (let i = 0; i < 100; i++) { const m = (lo + hi) / 2; if (rangeDown(0.6, m / 15) < 0.3) lo = m; else hi = m; } return (lo + hi) / 2; },
+    unit: 'points', places: 1, tol: 0.06,
     wrong: [
-      { value: rnd(TI.r * TI.S / TI.s, 2), say: 'r doesn’t grow in proportion to the spread; multiplying by k ignores the scatter around the line. Use k r ÷ √(1 − r² + k² r²).' },
-      { value: rnd(rangeUp(TI.r, TI.s / TI.S), 2), say: 'With k = 6 ÷ 15 the formula goes the other way, from the full range to a restricted one. Here k = S ÷ s = 15 ÷ 6.' },
-      { value: TI.r, say: 'Restricting the range shrinks r, so the correlation among all applicants is larger than among the hired.' },
+      { value: rnd(TI.S * TI.want / TI.r, 1), say: 'r doesn’t shrink in proportion to the spread: halving r needs the spread cut by more than half. Use the range-restriction formula, r_r = k r ÷ √(1 − r² + k² r²) with k = s ÷ S, and solve for k.' },
+      { value: rnd(TI.S / kFor(TI.r, TI.want), 1), say: 'Restricting the range makes the spread smaller than 15, not larger: s = k × S with k below 1.' },
+      { value: rnd(TI.S * kFor(TI.r, TI.want) ** 2, 1), say: 'k is the ratio of standard deviations, s ÷ S, not of variances: s = k × 15.' },
     ],
-    solution: `k = S ÷ s = ${TI.S} ÷ ${TI.s} = ${fx(TI.S / TI.s, 1)}. r_u = k r ÷ √(1 − r² + k² r²) = ${fx(TI.S / TI.s * TI.r, 2)} ÷ √(1 − ${fx(TI.r ** 2, 4)} + ${fx((TI.S / TI.s) ** 2 * TI.r ** 2, 4)}) = ${fx(rangeUp(TI.r, TI.S / TI.s), 3)}. Among hires the score looks weak because they all scored high; across applicants it separates them much better. The estimate is only as good as the straight-line, even-scatter assumption.`,
+    solution: `Solving r_r = k r ÷ √(1 − r² + k² r²) for k gives k = r_r √(1 − r²) ÷ (r √(1 − r_r²)) = ${fx(TI.want)} × ${fx(Math.sqrt(1 - TI.r ** 2), 3)} ÷ (${fx(TI.r)} × ${fx(Math.sqrt(1 - TI.want ** 2), 4)}) = ${fx(kFor(TI.r, TI.want), 4)}, so s = ${fx(kFor(TI.r, TI.want), 4)} × ${TI.S} = ${fx(TI.S * kFor(TI.r, TI.want), 2)} points. A hired group with less than about 40% of the applicants’ spread would show the score as a weak predictor, though it separates applicants well; judge the test on all applicants.`,
   },
   {
     id: 'b05-dg-9', lesson: 'groups-and-simpsons-paradox', type: 'mc', kind: 'applied',
-    prompt: 'Cordwain Hotels (fictional) has a city hotel and a resort. Over a year, nights with higher occupancy had lower guest ratings at the city hotel (r = −0.35) and at the resort (r = −0.28). With both hotels’ nights pooled, r = +0.30: the resort is both fuller and better rated. The manager asks: “At our hotels, do busier nights go with lower ratings?” Which figures answer her?',
+    prompt: 'Cordwain Hotels (fictional) has a city hotel and a resort. Over a year, nights with higher occupancy had lower guest ratings at the city hotel (r = −0.35) and at the resort (r = −0.28). With both hotels’ nights pooled, r = +0.30. The manager asks: “At our hotels, do busier nights go with lower ratings?” Which figures answer her?',
     options: [
       'The two hotels’ own correlations, −0.35 and −0.28: within each hotel, busier nights went with lower ratings.',
       'The pooled r = +0.30, because it uses every night at both hotels together and so rests on twice as much data as either hotel.',
@@ -265,20 +265,20 @@ export const items = [
   },
   {
     id: 'b05-dg-12', lesson: 'correlation-and-causation', type: 'mc', kind: 'applied',
-    prompt: 'Orlebar Bakeries (fictional) finds that its branches which play music have higher sales per customer (r = 0.38 across 60 branches). Which further evidence would most directly show that music raises sales per customer?',
+    prompt: 'Orlebar Bakeries (fictional) notices that over three years its monthly sales and the number of electric cars registered in its town both rose almost every month: r = 0.93. The correlation between the month-to-month changes in the two series is 0.04. What best explains the 0.93?',
     options: [
-      'In each branch, play music on days chosen by lot and compare sales per customer on music and silent days.',
-      'Collect a year’s data from 600 branches, so that the correlation of 0.38 is estimated much more precisely.',
-      'Hold branch size fixed in a partial correlation; if the link survives, music must be what raises the spend.',
-      'Show that the correlation is far stronger than 0.38 in the branches whose managers chose the loudest music.',
+      'Two upward trends: each series grew over the three years for its own reasons, and the changes show no month-by-month link.',
+      'Reverse causation: the bakery’s growing trade has brought more prosperous, car-buying residents into the town.',
+      'A real effect of the cars, which the changes understate because a month is too short for drivers to change habits.',
+      'Chance: a correlation of 0.93 over 36 months could easily come about by luck when nothing links the two.',
     ],
     answer: 0,
     feedback: {
-      1: 'More branches make the estimate more precise, but every confounder (location, décor, the kind of customer) is still there.',
-      2: 'Holding one variable fixed removes one alternative. Others (the managers who choose music may also run better branches) remain.',
-      3: 'Managers chose the volume, so the loudest branches may differ in other ways too; a gradient helps but can’t rule out confounding.',
+      1: 'Nothing suggests the arrow runs that way, and if it did, months of faster bakery growth would go with faster car registrations: the changes would correlate.',
+      2: 'A link that never shows in the changes is a weak basis for an effect. Any two series that both grow correlate strongly in levels.',
+      3: 'If the months were independent, 0.93 over 36 would almost never be chance; the problem is that trending months are not independent.',
     },
-    solution: 'Assigning music by lot, day by day within each branch, means nothing else differs systematically between music and silent days, so a difference in sales per customer can be put down to the music (or chance, which a test handles). Larger samples, partial correlations and gradients in observational data strengthen a case but leave confounders standing.',
+    solution: 'Two series that both trend upwards correlate strongly in their levels whether or not they are linked. Correlating the month-to-month changes (first differences) removes the shared trend, and here it leaves nothing (0.04). Treat the 0.93 as two trends, not as evidence about cars and bread.',
   },
 ];
 

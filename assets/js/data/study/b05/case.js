@@ -93,6 +93,8 @@ export const IDENTITIES = [
   ['the slip adds a digit to the true value', String(SLIP.recorded).length === String(SLIP.actual).length + 1],
   ['iced + hot drinks are at least the transactions on most days', column('transactions').filter((t, i) => column('iced_drinks')[i] + column('hot_drinks')[i] >= t * 0.9).length > 600],
   ['the project’s 52 weeks total F03’s $189,400 of online sales', Math.round(SHOP_WEEKS.reduce((s, w) => s + w[shopAt('order_value')], 0) * 100) === F03.shop.sales * 100],
+  ['the project’s paid-social spend is a small part of F03’s $11,500 of 2027 advertising (mostly the cafés’ opening)', SHOP_WEEKS.reduce((s, w) => s + w[shopAt('social_spend')], 0) < F03.advertising / 3],
+  ['the project’s orders at B03’s $5.20 a parcel come within 1% of F03’s $20,300 of 2027 shipping', Math.abs(SHOP_WEEKS.reduce((s, w) => s + w[shopAt('orders')], 0) * 5.20 / F03.shipping - 1) < 0.01],
   ['the project covers 1 January – 31 December 2027', SHOP_WEEKS[0][shopAt('starts')] === '2027-01-01' && SHOP_WEEKS.reduce((s, w) => s + w[shopAt('days')], 0) === 365],
   ['planted: Simpson’s reversal (pooled negative, both cafés positive)', DERIVED.footTicket.r < 0 && DERIVED.footTicketH.r > 0 && DERIVED.footTicketM.r > 0],
   ['planted: staffing goes with longer waits, but shortens them at a given number of transactions', DERIVED.staffWait.r > 0 && DERIVED.staffWaitGivenTrans.r < 0],

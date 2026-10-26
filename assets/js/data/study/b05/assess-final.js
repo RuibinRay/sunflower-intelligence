@@ -1,34 +1,34 @@
 // assess-final.js — B05 final assessment: 24 questions across all four modules and all six of the course’s outcomes, two
 // or three per lesson (five for module 1, five for module 2, seven for module 3 and seven for module 4). 70% passes.
 // Mixed conceptual, numerical and applied items. Four are formula items on worksheets sliced from the café log (two of
-// them steps): r from its definition (b05-fn-3), Spearman’s ρ beside r on a slice with the footfall slip (b05-fn-6), a
-// Fisher-z confidence limit with the confidence level varied on the marking copies (b05-fn-8) and a first-order partial
-// correlation built from CORREL (b05-fn-20); the café values are scaled on the copies, so typed results fail.
-// Many items combine lessons: the rain–footfall scatter read for form, then why a rank correlation helps (b05-fn-1:
-// scatterplots, rank-correlation); covariance turned into new units through r (b05-fn-4: covariance-and-pearson,
-// scatterplots’ units); r and ρ on a slice with a slip, then what to report (b05-fn-6: rank-correlation,
-// outliers-and-influence); two cafés’ correlations compared on the same days (b05-fn-9: testing-correlation,
-// groups-and-simpsons-paradox); the power left after a Bonferroni adjustment over 28 pairs (b05-fn-10:
-// testing-correlation, correlation-matrices); leave-one-out influence against the most unusual-looking point (b05-fn-11:
-// outliers-and-influence, scatterplots); handling the slip and the festival days honestly (b05-fn-12:
+// them steps): r from its definition with SUMPRODUCT (b05-fn-3), Spearman’s ρ beside r on a slice with the footfall
+// slip (b05-fn-6), the days needed for a Fisher-z interval to clear a wanted lower limit, with the level and the limit
+// varied on the marking copies (b05-fn-8), and a first-order partial correlation built from CORREL (b05-fn-20); the café
+// values are scaled on the copies, so typed results fail.
+// Items that combine lessons: rain and footfall read from the plot, then judged for practical rather than statistical
+// significance (b05-fn-1: scatterplots, testing-correlation, rank-correlation); r and ρ on a slice with a slip, then what
+// to report (b05-fn-6: rank-correlation, outliers-and-influence); a sample size for an interval, from a month’s r
+// (b05-fn-8: testing-correlation); the power left after a Bonferroni adjustment over 28 pairs (b05-fn-10:
+// testing-correlation, correlation-matrices); handling the slip and the festival days honestly (b05-fn-12:
 // outliers-and-influence, rank-correlation); restricted range against a change in the relationship (b05-fn-13:
 // nonlinear-and-restricted, covariance-and-pearson); a threshold turned into a staffing rule (b05-fn-15:
-// nonlinear-and-restricted, correlation-and-causation); the pooled r rebuilt from the cafés’ means (b05-fn-16); monthly
-// averages as an ecological correlation that reverses the cafés’ own (b05-fn-17: groups-and-simpsons-paradox,
-// correlation-matrices’ pooling); a month’s matrix read, adjusted with Holm, then what partial correlation adds
-// (b05-fn-18: correlation-matrices, testing-correlation, partial-correlation); the bound on a third correlation and
-// redundancy (b05-fn-19); rain and sales holding footfall (a mediator) fixed, then what it answers (b05-fn-20:
-// partial-correlation, correlation-and-causation); the test of a partial correlation with two controls (b05-fn-21:
-// partial-correlation, testing-correlation); a finding written without overclaiming across groups (b05-fn-22:
-// correlation-and-causation, groups-and-simpsons-paradox); a lone significant pair among 28 as chance (b05-fn-24:
-// correlation-and-causation, correlation-matrices).
-// Outcomes: 1 (fn-1, 2, 11), 2 (fn-3–7), 3 (fn-8–10, 18, 21), 4 (fn-11–17), 5 (fn-18–21), 6 (fn-15, 20, 22–24).
+// nonlinear-and-restricted, correlation-and-causation); monthly averages as an ecological correlation that reverses the
+// cafés’ own (b05-fn-17); a month’s matrix read, adjusted with Holm, then what partial correlation adds (b05-fn-18:
+// correlation-matrices, testing-correlation, partial-correlation); rain and sales holding footfall (a mediator) fixed,
+// then what it answers (b05-fn-20: partial-correlation, correlation-and-causation); the t statistic of a partial
+// correlation with two controls (b05-fn-21: partial-correlation, testing-correlation); a finding written without
+// overclaiming across groups (b05-fn-22: correlation-and-causation, groups-and-simpsons-paradox); Hill’s considerations
+// for the staffing evidence (b05-fn-23: correlation-and-causation, partial-correlation); a lone significant pair among 28
+// read as chance (b05-fn-24: correlation-and-causation, correlation-matrices). Single-lesson items: fn-2, 3, 4, 5, 7, 9,
+// 11, 14, 16, 19.
+// Outcomes: 1 (fn-1, 2, 11), 2 (fn-3–7), 3 (fn-1, 8–10, 18, 19, 21; sample size in fn-8, power in fn-10), 4 (fn-11–17),
+// 5 (fn-18–21), 6 (fn-15, 20, 22–24).
 // New questions, not copies of lesson exercises, module tests, the diagnostic or the project, and nothing from the
 // project’s data or question. Café figures come from case.js (the corrected log, or the raw log where the slip is the
-// point); Skelling Kayaks, Kelderby Plant Nursery and the survey in b05-fn-14 are fictional. Daily café series follow
-// the season, so their p-values are approximate (too small), and the two cafés share their days: items that test say so.
-// No hints; solutions are shown on review. Every num item’s `check` recomputes its answer, and every formula item is
-// marked by its results on the sheet and on changed copies.
+// point); Skelling Kayaks, Kelderby Plant Nursery and the hotel group in b05-fn-14 are fictional. Daily café series
+// follow the season, so their p-values are approximate (too small), and the two cafés share their days: items that test
+// say so. No hints; solutions are shown on review. Every num item’s `check` recomputes its answer, and every formula
+// item is marked by its results on the sheet and on changed copies.
 import { CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, column, DERIVED, MATRIX } from './case.js?v=20';
 import * as C from '../../../core/correlation.js?v=20';
 import { mean, sd } from '../../../core/stats.js?v=20';
@@ -38,7 +38,7 @@ const at = (n) => CAFE_COLUMNS.indexOf(n);
 const fx = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const rnd = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
 const pc = (v, d = 0) => `${fx(v * 100, d)}%`;
-const int = (v) => Math.round(v).toLocaleString('en-US');
+const int = (v) => `${v < 0 ? '−' : ''}${Math.abs(Math.round(v)).toLocaleString('en-US')}`;
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const dayLabel = (iso) => `${Number(iso.slice(8))} ${MON[Number(iso.slice(5, 7)) - 1]}`;
@@ -46,13 +46,16 @@ const slice = (cafe, from, to, rows = CLEAN_ROWS) => rows.filter((r) => r[at('ca
 const get = (rows, name) => rows.map((r) => (name === 'avg_ticket' ? r[at('sales')] / r[at('transactions')] : name === 'iced_share' ? r[at('iced_drinks')] / (r[at('iced_drinks')] + r[at('hot_drinks')]) : r[at(name)]));
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };
 const p3 = (p) => (p < 0.001 ? 'below 0.001' : fx(p, 3));
-const sig3 = (p) => (p < 0.0001 ? 'below 0.0001' : p.toPrecision(3));
+const sig3 = (p) => (p < 0.0001 ? '< 0.0001' : p.toPrecision(3));
 
 // ---------------------------------------------------------------- module 1
 // Harbourside’s rain and footfall
-const hRain = column('rain_in', H), hFoot = column('footfall', H);
+// Harbourside, June–September: rain and footfall
+const SUMMER = slice('Harbourside', '2027-06-01', '2027-09-30');
+const hRain = get(SUMMER, 'rain_in'), hFoot = get(SUMMER, 'footfall');
 const dryDays = hRain.filter((v) => v === 0).length, wetDays = hRain.length - dryDays;
-const rainR = DERIVED.rainFootfallH.r, rainRho = C.spearman(hRain, hFoot).rho;
+const rainP = C.pearson(hRain, hFoot), rainR = rainP.r, rainRho = C.spearman(hRain, hFoot).rho;
+const dryMean = mean(hFoot.filter((_, i) => hRain[i] === 0)), wetMean = mean(hFoot.filter((_, i) => hRain[i] > 0));
 // Millbrook, 3–22 May: peak barista hours and transactions
 const MAY = slice('Millbrook', '2027-05-03', '2027-05-22');
 const mayH = get(MAY, 'peak_staff_hours'), mayT = get(MAY, 'transactions'), mayN = MAY.length + 1;
@@ -80,7 +83,9 @@ const shPairs = (SEPH.length * (SEPH.length - 1)) / 2;
 // Harbourside, November: footfall and the average ticket (to the cent, as the sheet shows it)
 const NOV = slice('Harbourside', '2027-11-01', '2027-11-30');
 const novF = get(NOV, 'footfall'), novT = get(NOV, 'avg_ticket').map((v) => rnd(v, 2)), novN = NOV.length + 1;
-const novR = C.pearson(novF, novT).r, novCI = C.fisherCI(novR, NOV.length, 0.95), novCI90 = C.fisherCI(novR, NOV.length, 0.9);
+const novR = C.pearson(novF, novT).r, novCI = C.fisherCI(novR, NOV.length, 0.95);
+const daysFor = (r, conf, floor) => Math.ceil((qNorm(1 - (1 - conf) / 2) / (Math.atanh(r) - Math.atanh(floor))) ** 2 + 3);
+const NEED = { conf: 0.95, floor: 0.3 };
 // the two cafés’ footfall–ticket correlations on the same 306 days
 const cmpFT = C.compareIndependent(DERIVED.footTicketH.r, 306, DERIVED.footTicketM.r, 306);
 const footCafes = C.pearson(column('footfall', H), column('footfall', M)).r;
@@ -102,7 +107,8 @@ const wkF = mFoot.filter((_, i) => mWk[i]), wkT = mTrans.filter((_, i) => mWk[i]
 const mAllR = C.pearson(mFoot, mTrans).r, mWkR = C.pearson(wkF, wkT).r;
 const convAll = mean(mTrans.map((t, i) => t / mFoot[i])), convWk = mean(wkT.map((t, i) => t / wkF[i]));
 // the most an observed r can be with two unreliable measures
-const REL = { x: 0.64, y: 0.81 };
+const REL = { x: 0.64, rTrue: 0.6, want: 0.45 };
+const relNeeded = (want, rTrue, relX) => (want / rTrue) ** 2 / relX;
 // peak load and the wait (both cafés)
 const LOAD = column('peak_load'), WAIT = column('peak_wait_min');
 const lowI = LOAD.map((_, i) => i).filter((i) => LOAD[i] <= 7), highI = LOAD.map((_, i) => i).filter((i) => LOAD[i] > 7);
@@ -129,17 +135,26 @@ const ecoM = C.pearson(CM.filter((p) => p.cafe === 'Millbrook').map((p) => p.f),
 // ---------------------------------------------------------------- module 4
 // Harbourside, September: the eight-measure matrix
 const NAMES = { high_f: 'High', rain_in: 'Rain', footfall: 'Footfall', transactions: 'Transactions', sales: 'Sales', iced_share: 'Iced share', peak_staff_hours: 'Peak barista hours', peak_wait_min: 'Peak wait' };
+const SHORT = { high_f: 'High', rain_in: 'Rain', footfall: 'Foot', transactions: 'Trans', sales: 'Sales', iced_share: 'Iced', peak_staff_hours: 'Hours', peak_wait_min: 'Wait' };
 const SEPM = C.matrix(Object.fromEntries(Object.keys(NAMES).map((n) => [n, get(SEPH, n)])), { adjustMethod: 'holm' });
 const sepPairs = [];
-for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) sepPairs.push({ a: NAMES[SEPM.names[i]], b: NAMES[SEPM.names[j]], r: SEPM.r[i][j], p: SEPM.p[i][j], adj: SEPM.pAdj[i][j] });
+for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) sepPairs.push({ a: SHORT[SEPM.names[i]], b: SHORT[SEPM.names[j]], r: SEPM.r[i][j], p: SEPM.p[i][j], adj: SEPM.pAdj[i][j] });
 sepPairs.sort((x, y) => x.p - y.p);
 const sepSig = sepPairs.filter((x) => x.p < 0.05), sepHolm = sepPairs.filter((x) => x.adj < 0.05).length;
+const sepOff = (() => { const s = sepPairs.map((x) => x.p); let k = 0; while (k < s.length && s[k] <= 0.05 / (s.length - k - 1 || 1)) k++; return k; })();
+const sepTW = sepPairs.find((x) => x.a === 'Trans' && x.b === 'Wait');
 const sepBH = C.adjust(sepPairs.map((x) => x.p), 'fdr_bh').filter((p) => p < 0.05).length;
 const sepHW = C.pearson(get(SEPH, 'peak_staff_hours'), get(SEPH, 'peak_wait_min'));
 const sepHWp = C.partial(get(SEPH, 'peak_staff_hours'), get(SEPH, 'peak_wait_min'), [get(SEPH, 'transactions')]);
 // the bound on a third correlation (612 days)
-const BND = { ft: rnd(DERIVED.footTrans.r, 3), th: rnd(MATRIX.r[3][6], 3) };
-const lowBound = (a, b) => a * b - Math.sqrt((1 - a * a) * (1 - b * b));
+// Harbourside, June: the eight-measure matrix, its 12 smallest p-values, and Holm’s adjusted p for rain–sales
+const JUNM = C.matrix(Object.fromEntries(Object.keys(NAMES).map((n) => [n, get(slice('Harbourside', '2027-06-01', '2027-06-30'), n)])), { adjustMethod: 'holm' });
+const junPairs = [];
+for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) junPairs.push({ a: SHORT[JUNM.names[i]], b: SHORT[JUNM.names[j]], r: JUNM.r[i][j], p: JUNM.p[i][j], adj: JUNM.pAdj[i][j] });
+junPairs.sort((x, y) => x.p - y.p);
+const junTop = junPairs.slice(0, 12), junKey = junTop.find((x) => x.a === 'Rain' && x.b === 'Sales'), junK = junTop.indexOf(junKey) + 1;
+const shownP = (x) => (x.p < 0.0001 ? 0.0001 : Number(x.p.toPrecision(3)));
+const holmAdj = (ps, k) => Math.max(...ps.slice(0, k).map((p, j) => (28 - j) * p));
 // Harbourside, March: rain, footfall and sales (no festival days); June: hours and waits with two controls
 const MAR = slice('Harbourside', '2027-03-01', '2027-03-31');
 const marR = get(MAR, 'rain_in'), marF = get(MAR, 'footfall'), marS = get(MAR, 'sales'), marN = MAR.length + 1;
@@ -148,28 +163,32 @@ const JUN = slice('Harbourside', '2027-06-01', '2027-06-30');
 const junHi = get(JUN, 'high_f');
 const junP2 = C.partial(get(JUN, 'peak_staff_hours'), get(JUN, 'peak_wait_min'), [get(JUN, 'transactions'), junHi]);
 const P2 = { r: rnd(junP2.r, 3), n: JUN.length, k: 2 };
-const partialP = (r, n, k) => { const df = n - 2 - k, t = r * Math.sqrt(df / (1 - r * r)); return 2 * (1 - tCdf(Math.abs(t), df)); };
+const partialT = (r, n, k) => { const df = n - 2 - k; return r * Math.sqrt(df / (1 - r * r)); };
+// the staffing partial (hours and waits, holding transactions fixed) month by month: both cafés together, and each café
+const MONTH_PARTIALS = MONTHS.map((m) => [null, 'Harbourside', 'Millbrook'].map((cafe) => { const R = CLEAN_ROWS.filter((r) => (!cafe || r[at('cafe')] === cafe) && r[at('date')].slice(5, 7) === m); return C.partial(get(R, 'peak_staff_hours'), get(R, 'peak_wait_min'), [get(R, 'transactions')]).r; }));
+const negBoth = MONTH_PARTIALS.filter((x) => x[0] < 0).length, negH = MONTH_PARTIALS.filter((x) => x[1] < 0).length, negM = MONTH_PARTIALS.filter((x) => x[2] < 0).length;
+if (negBoth !== 10 || negM !== 10 || negH < 6) throw new Error('b05 final fn-23: the monthly staffing partials no longer match the item’s wording');
 // September’s rain and iced share at Harbourside (from the matrix above)
-const rainIced = sepPairs.find((x) => x.a === 'Rain' && x.b === 'Iced share');
+const rainIced = sepPairs.find((x) => x.a === 'Rain' && x.b === 'Iced');
 
 export const items = [
   // ================================================================ Module 1: seeing relationships
   {
-    id: 'b05-fn-1', lesson: 'scatterplots', type: 'mc', kind: 'conceptual',
-    prompt: `Harbourside’s rain and footfall correlate at r = ${fx(rainR)} over its 306 days. Rain was recorded on ${wetDays} of those days; on the other ${dryDays} it was zero. What does the scatterplot of footfall (y) against rain (x) look like, and what follows for summarising it?`,
+    id: 'b05-fn-1', lesson: 'scatterplots', type: 'mc', kind: 'applied',
+    prompt: `Over Harbourside’s ${SUMMER.length} days from June to September, rain and footfall correlate at r = ${fx(rainR)} (two-sided p = ${fx(rainP.p, 3)}). Rain fell on ${wetDays} of the days; on the other ${dryDays} it was zero. Ana wants one finding about rain for the managers. What should she show?`,
     options: [
-      'A dense column at zero rain holding most days, with the wet days strung thinly to its right and drifting down; one r summarises that poorly, so add a rank correlation.',
-      `An evenly scattered band sloping gently down from left to right, which is what an r of ${fx(rainR)} always looks like, so r on its own is a fair summary of how rain and footfall relate.`,
-      'Two clusters, dry days and wet days, so the correlation should be calculated for the wet days only and the dry days left out of the analysis.',
-      'A U-shape, with drizzle drawing people in and heavy rain keeping them away, which is why r is so close to zero.',
+      `The scatterplot, and the average footfall on dry and on wet days (${fx(dryMean, 0)} against ${fx(wetMean, 0)}): a gap the managers can plan with, which r and its p-value don’t give them.`,
+      `r = ${fx(rainR)} with its p-value: the correlation is significant, which shows that rain has a large effect on how many people come to the waterfront.`,
+      `Spearman’s ρ = ${fx(rainRho)} instead of r, since ranks deal with the skew in rain and so give the true size of rain’s effect on footfall.`,
+      'The correlation over the wet days only, since on dry days rain can’t affect footfall and those days only dilute the link.',
     ],
     answer: 0,
     feedback: {
-      1: `With ${dryDays} days stacked at x = 0, the points can’t form an even band. A modest r can come from very different pictures: plot first.`,
-      2: 'Dry days are part of the question “does rain go with fewer visitors?”; dropping them restricts the range and answers a different question.',
-      3: 'Nothing in the data suggests a turning point; the wet days drift down. And r here is −0.23, not near zero.',
+      1: 'A p-value says the link is unlikely to be chance (here only roughly, as summer days follow the season). It says nothing about whether the effect is large; r² is under 5%.',
+      2: `With ${dryDays} days tied at zero, ρ is largely a comparison of wet with dry days, so it says little that the two averages don’t say more plainly. At most it is an extra check.`,
+      3: 'Dry days are half of the comparison: “does rain go with fewer visitors?” Dropping them restricts the range and answers a different question.',
     },
-    solution: `Rain is zero on ${dryDays} of the 306 days, so the scatterplot has a dense column at x = 0 and a thin, right-skewed spread of wet days. A single r = ${fx(rainR, 3)} summarises that shape poorly. Report the number of dry days, show the plot, and give Spearman’s ρ (${fx(rainRho, 3)}), which uses only the order; it handles the skew, though the ${dryDays} tied zeros share one average rank.`,
+    solution: `Rain is zero on ${dryDays} of the ${SUMMER.length} days, so the plot is a dense column at zero with a thin, skewed spread of wet days, and one r = ${fx(rainR, 3)} summarises it poorly. The useful finding is the comparison: dry days averaged ${fx(dryMean, 1)} visitors and wet days ${fx(wetMean, 1)}, about ${fx(dryMean - wetMean, 0)} fewer (${pc((dryMean - wetMean) / dryMean)}). That is the practical size; the p-value of ${fx(rainP.p, 3)} (too small, as neighbouring summer days are alike) only says the link is unlikely to be chance. Spearman’s ρ (${fx(rainRho, 3)}) can be added as a check.`,
   },
   {
     id: 'b05-fn-2', lesson: 'scatterplots', type: 'classify', kind: 'applied',
@@ -194,7 +213,7 @@ export const items = [
   },
   {
     id: 'b05-fn-3', lesson: 'covariance-and-pearson', type: 'formula', kind: 'numerical',
-    prompt: 'Millbrook, 3–22 May 2027: peak barista hours in B2:B21 and transactions in C2:C21. In F1, calculate Pearson’s r from its definition, without CORREL, PEARSON or the covariance functions: the sum of the products of the two columns’ deviations from their means, divided by the square root of the product of their sums of squared deviations.',
+    prompt: 'Millbrook, 3–22 May 2027: peak barista hours in B2:B21 and transactions in C2:C21. In F1, calculate Pearson’s r from its definition with SUMPRODUCT, without CORREL, PEARSON or the covariance functions: the sum of the products of the two columns’ deviations from their means, divided by the square root of the product of their sums of squared deviations.',
     sheet: { cells: { A1: 'Day', B1: 'Peak barista hours', C1: 'Transactions', E1: 'Pearson’s r', ...col('A', 2, MAY.map((r) => dayLabel(r[at('date')]))), ...col('B', 2, mayH), ...col('C', 2, mayT) } },
     cell: 'F1', view: `A1:F${mayN}`, formats: { B: '0.0', F1: '0.0000' }, widths: { B: 18, C: 13, E: 12 },
     answer: `=SUMPRODUCT(B2:B${mayN}-AVERAGE(B2:B${mayN}),C2:C${mayN}-AVERAGE(C2:C${mayN}))/SQRT(DEVSQ(B2:B${mayN})*DEVSQ(C2:C${mayN}))`,
@@ -257,6 +276,8 @@ export const items = [
         wrong: [
           { formula: `=CORREL(B2:B${sepN},C2:C${sepN})`, say: 'That is Pearson’s r, already in F1. Spearman’s ρ is Pearson’s r of the ranks: wrap each range in RANK.AVG.' },
           { formula: `=CORREL(RANK.AVG(B2:B${sepN},B2:B${sepN}),RANK.AVG(C2:C${sepN},C2:C${sepN},1))`, say: 'Rank both columns in the same direction; mixing largest-first and smallest-first flips the sign.' },
+          { formula: `=CORREL(RANK.EQ(B2:B${sepN},B2:B${sepN}),RANK.EQ(C2:C${sepN},C2:C${sepN}))`, say: 'RANK.EQ matches here only because no two of these days tie. With ties it gives each tied value the top rank of its group; Spearman’s ρ needs the average rank, RANK.AVG.' },
+          { formula: `=CORREL(RANK(B2:B${sepN},B2:B${sepN}),RANK(C2:C${sepN},C2:C${sepN}))`, say: 'RANK (like RANK.EQ) matches here only because no two of these days tie. With ties it gives each tied value the top rank of its group; Spearman’s ρ needs the average rank, RANK.AVG.' },
         ],
         solution: `<x>=CORREL(RANK.AVG(B2:B15,B2:B15),RANK.AVG(C2:C15,C2:C15))</x> = ${fx(sepRho, 3)}, against r = ${fx(sepR, 3)} in F1. RANK.AVG gives tied values their average rank, as Spearman’s ρ requires.`,
       },
@@ -298,24 +319,25 @@ export const items = [
     solution: `τ-b compares every pair of days: (concordant − discordant) over the ${shPairs} pairs, with the denominator adjusted for tied pairs: (${shTau.concordant} − ${shTau.discordant}) → ${fx(shTau.tau, 3)}. In words: picking two September days at random, the warmer one had the higher iced share far more often than not. ρ is Pearson’s r on ranks. For the same data |τ| is typically around two-thirds of |ρ|, so compare τ with τ and ρ with ρ, and say which you report.`,
   },
   {
-    id: 'b05-fn-8', lesson: 'testing-correlation', type: 'formula', kind: 'numerical',
-    prompt: 'Harbourside, 1–30 November 2027: footfall in B2:B31 and the average ticket in C2:C31. F1 holds a confidence level. In F2, calculate the lower limit of the confidence interval for ρ at that level, by Fisher’s z, in one formula from the data.',
-    sheet: { cells: { A1: 'Day', B1: 'Footfall', C1: 'Avg ticket ($)', E1: 'Confidence level', F1: 0.95, E2: 'Lower limit for ρ', ...col('A', 2, NOV.map((r) => dayLabel(r[at('date')]))), ...col('B', 2, novF), ...col('C', 2, novT) }, vary: { F1: [0.9, 0.99, 0.8] } },
-    cell: 'F2', view: `A1:F${novN}`, maxHeight: '22rem', formats: { C: '$0.00', F1: '0%', F2: '0.000' }, widths: { C: 13, E: 17 },
-    answer: `=FISHERINV(FISHER(CORREL(B2:B${novN},C2:C${novN}))-NORM.S.INV(1-(1-F1)/2)/SQRT(COUNT(B2:B${novN})-3))`,
+    id: 'b05-fn-8', lesson: 'testing-correlation', type: 'formula', kind: 'applied',
+    prompt: 'Harbourside, 1–30 November 2027: footfall in B2:B31 and the average ticket in C2:C31. Ana wants a future study whose confidence interval for ρ, at the level in F1, has its lower limit at the value in F2. Assuming the correlation stays at this month’s r, in F3 calculate the number of days she would need by Fisher’s z, rounded up to a whole day, in one formula from the data.',
+    sheet: { cells: { A1: 'Day', B1: 'Footfall', C1: 'Avg ticket ($)', E1: 'Confidence level', F1: NEED.conf, E2: 'Lower limit wanted', F2: NEED.floor, E3: 'Days needed', ...col('A', 2, NOV.map((r) => dayLabel(r[at('date')]))), ...col('B', 2, novF), ...col('C', 2, novT) }, vary: { F1: [0.9, 0.99, 0.8], F2: [0.2, 0.25, 0.35] } },
+    cell: 'F3', view: `A1:F${novN}`, maxHeight: '22rem', formats: { C: '$0.00', F1: '0%', F2: '0.00', F3: '0' }, widths: { C: 13, E: 18 },
+    answer: `=ROUNDUP((NORM.S.INV(1-(1-F1)/2)/(FISHER(CORREL(B2:B${novN},C2:C${novN}))-FISHER(F2)))^2+3,0)`,
     alt: [
-      `=TANH(ATANH(CORREL(B2:B${novN},C2:C${novN}))-NORM.S.INV(1-(1-F1)/2)/SQRT(COUNT(B2:B${novN})-3))`,
-      `=FISHERINV(FISHER(CORREL(B2:B${novN},C2:C${novN}))-NORM.S.INV((1+F1)/2)/SQRT(COUNT(B2:B${novN})-3))`,
-      `=FISHERINV(FISHER(CORREL(B2:B${novN},C2:C${novN}))+NORM.S.INV((1-F1)/2)/SQRT(COUNT(B2:B${novN})-3))`,
-      `=FISHERINV(FISHER(PEARSON(B2:B${novN},C2:C${novN}))-NORM.S.INV(1-(1-F1)/2)/SQRT(ROWS(B2:B${novN})-3))`,
+      `=ROUNDUP((NORM.S.INV((1+F1)/2)/(FISHER(CORREL(B2:B${novN},C2:C${novN}))-FISHER(F2)))^2+3,0)`,
+      `=ROUNDUP((NORM.S.INV(1-(1-F1)/2)/(ATANH(CORREL(B2:B${novN},C2:C${novN}))-ATANH(F2)))^2+3,0)`,
+      `=CEILING((NORM.S.INV(1-(1-F1)/2)/(FISHER(CORREL(B2:B${novN},C2:C${novN}))-FISHER(F2)))^2+3,1)`,
+      `=ROUNDUP((NORM.S.INV(1-(1-F1)/2)/(FISHER(PEARSON(B2:B${novN},C2:C${novN}))-FISHER(F2)))^2+3,0)`,
+      `=ROUNDUP(3+(NORM.S.INV(1-(1-F1)/2)/(FISHER(CORREL(B2:B${novN},C2:C${novN}))-FISHER(F2)))^2,0)`,
     ],
     wrong: [
-      { formula: `=CORREL(B2:B${novN},C2:C${novN})-NORM.S.INV(1-(1-F1)/2)/SQRT(COUNT(B2:B${novN})-3)`, say: 'The standard error 1 ÷ √(n − 3) belongs to Fisher’s z, not to r. Transform r with FISHER, subtract the margin, then turn back with FISHERINV.' },
-      { formula: `=FISHER(CORREL(B2:B${novN},C2:C${novN}))-NORM.S.INV(1-(1-F1)/2)/SQRT(COUNT(B2:B${novN})-3)`, say: 'That is the lower limit on the z scale. Turn it back into a correlation with FISHERINV.' },
-      { formula: `=FISHERINV(FISHER(CORREL(B2:B${novN},C2:C${novN}))-NORM.S.INV(F1)/SQRT(COUNT(B2:B${novN})-3))`, say: 'NORM.S.INV(F1) leaves all of 1 − F1 in one tail. A two-sided interval puts half in each: NORM.S.INV(1 − (1 − F1) ÷ 2).' },
-      { formula: `=FISHERINV(FISHER(CORREL(B2:B${novN},C2:C${novN}))-NORM.S.INV(1-(1-F1)/2)/SQRT(COUNT(B2:B${novN})-2))`, say: 'Fisher’s z has standard error 1 ÷ √(n − 3); n − 2 is the t test’s degrees of freedom.' },
+      { formula: `=ROUNDUP((NORM.S.INV(1-(1-F1)/2)/(CORREL(B2:B${novN},C2:C${novN})-F2))^2+3,0)`, say: 'The standard error 1 ÷ √(n − 3) is on Fisher’s z scale: transform both r and the wanted limit with FISHER before taking the gap.' },
+      { formula: `=ROUNDUP((NORM.S.INV(1-(1-F1)/2)/(FISHER(CORREL(B2:B${novN},C2:C${novN}))-FISHER(F2)))^2,0)`, say: 'SE = 1 ÷ √(n − 3), so solving for n gives (z ÷ gap)² + 3: add the 3.' },
+      { formula: `=ROUNDUP((NORM.S.INV(F1)/(FISHER(CORREL(B2:B${novN},C2:C${novN}))-FISHER(F2)))^2+3,0)`, say: 'NORM.S.INV(F1) puts all of 1 − F1 in one tail. A two-sided interval leaves half in each: NORM.S.INV(1 − (1 − F1) ÷ 2).' },
+      { formula: `=ROUNDUP(NORM.S.INV(1-(1-F1)/2)/(FISHER(CORREL(B2:B${novN},C2:C${novN}))-FISHER(F2))+3,0)`, say: 'The gap equals z ÷ √(n − 3), so n − 3 is the square of z ÷ gap.' },
     ],
-    solution: `<x>=FISHERINV(FISHER(CORREL(B2:B31,C2:C31))-NORM.S.INV(1-(1-F1)/2)/SQRT(COUNT(B2:B31)-3))</x>. r = ${fx(novR, 3)} with n = ${NOV.length}; z = atanh r = ${fx(Math.atanh(novR), 4)}, SE = 1 ÷ √${NOV.length - 3} = ${fx(1 / Math.sqrt(NOV.length - 3), 4)}; at 95% the interval is ${fx(novCI[0], 3)} to ${fx(novCI[1], 3)} (at 90%, ${fx(novCI90[0], 3)} to ${fx(novCI90[1], 3)}). It is lopsided around r, as Fisher intervals are. Busier November days went with bigger tickets; but neighbouring days resemble each other, so the interval is somewhat too narrow.`,
+    solution: `The lower limit is tanh(atanh r − z ÷ √(n − 3)). Setting it equal to the wanted limit L gives n = (z ÷ (atanh r − atanh L))² + 3: <x>=ROUNDUP((NORM.S.INV(1-(1-F1)/2)/(FISHER(CORREL(B2:B31,C2:C31))-FISHER(F2)))^2+3,0)</x>. With r = ${fx(novR, 3)}, 95% and L = ${fx(NEED.floor)}: (1.960 ÷ (${fx(Math.atanh(novR), 4)} − ${fx(Math.atanh(NEED.floor), 4)}))² + 3 → ${daysFor(novR, NEED.conf, NEED.floor)} days. November’s ${NOV.length} days give ${fx(novCI[0], 3)} to ${fx(novCI[1], 3)}. The plan assumes r doesn’t change, and neighbouring days carry less information than independent ones, so Ana should allow more.`,
   },
   {
     id: 'b05-fn-9', lesson: 'testing-correlation', type: 'mc', kind: 'conceptual',
@@ -399,16 +421,17 @@ export const items = [
     solution: `Weekend footfall at Millbrook is low and steady (SD ${fx(sd(wkF), 1)} visitors against ${fx(sd(mFoot), 1)}), so the same scatter around the line is a larger share of a smaller spread, and r falls to ${fx(mWkR, 3)}. The relationship itself hasn’t changed: weekend visitors convert at ${pc(convWk, 1)}, all visitors at ${pc(convAll, 1)}. To compare how footfall relates to transactions across subsets with different ranges, compare the rates (or slopes, in B06), not r.`,
   },
   {
-    id: 'b05-fn-14', lesson: 'nonlinear-and-restricted', type: 'num', kind: 'numerical',
-    prompt: `A hotel group (fictional) measures guest satisfaction with a short scale whose reliability is ${fx(REL.x)} and intention to return with one whose reliability is ${fx(REL.y)}. Even if the true satisfaction and the true intention were perfectly correlated, what is the largest correlation it could expect to observe between the two scores? Give two decimal places.`,
-    answer: rnd(Math.sqrt(REL.x * REL.y), 2),
-    check: () => 1 * Math.sqrt(0.64 * 0.81),
+    id: 'b05-fn-14', lesson: 'nonlinear-and-restricted', type: 'num', kind: 'applied',
+    prompt: `A hotel group (fictional) measures guest satisfaction with a scale whose reliability is ${fx(REL.x)}. It expects the true correlation between satisfaction and intention to return to be about ${fx(REL.rTrue)}, and wants its measured correlation to come out at ${fx(REL.want)} or more. What reliability must its intention-to-return measure have, at least? Give two decimal places.`,
+    answer: rnd(relNeeded(REL.want, REL.rTrue, REL.x), 2),
+    check: () => (0.45 / 0.6) ** 2 / 0.64,
     unit: '', places: 2, tol: 0.006,
     wrong: [
-      { value: rnd(REL.x * REL.y, 2), say: 'The attenuation factor is the square root of the product of the reliabilities: √(0.64 × 0.81).' },
-      { value: 1, say: 'Measurement error adds random scatter to both scores, so even a perfect true correlation shows up weaker: r_obs ≈ r_true × √(rel_x rel_y).' },
+      { value: rnd(REL.want / REL.rTrue / REL.x, 2), say: 'The reliabilities enter under a square root: r_obs = r_true √(rel_x rel_y), so square the ratio 0.45 ÷ 0.60 before dividing by 0.64.' },
+      { value: rnd((REL.want / REL.rTrue) ** 2, 2), say: 'That is the product rel_x × rel_y needed. Divide by the satisfaction scale’s 0.64 to get the second reliability.' },
+      { value: rnd(REL.want / REL.rTrue / Math.sqrt(REL.x), 2), say: 'That is the square root of the reliability needed. Square it: rel_y = (r_obs ÷ r_true)² ÷ rel_x.' },
     ],
-    solution: `r_obs ≈ r_true × √(rel_x rel_y) = 1 × √(${fx(REL.x)} × ${fx(REL.y)}) = √${fx(REL.x * REL.y, 4)} = ${fx(Math.sqrt(REL.x * REL.y), 2)}. With these scales an observed correlation of 0.5 is far from weak: it is ${pc(0.5 / Math.sqrt(REL.x * REL.y))} of the most the scales allow. Better measures, not more guests, would raise it.`,
+    solution: `r_obs ≈ r_true √(rel_x rel_y), so rel_y = (r_obs ÷ r_true)² ÷ rel_x = (${fx(REL.want)} ÷ ${fx(REL.rTrue)})² ÷ ${fx(REL.x)} = ${fx((REL.want / REL.rTrue) ** 2, 4)} ÷ ${fx(REL.x)} = ${fx(relNeeded(REL.want, REL.rTrue, REL.x), 3)}. A single question rarely reaches that; a short multi-item scale might. With a weaker measure, an observed r below 0.45 would say more about the measures than about guests.`,
   },
   {
     id: 'b05-fn-15', lesson: 'nonlinear-and-restricted', type: 'mc', kind: 'applied',
@@ -461,7 +484,7 @@ export const items = [
   {
     id: 'b05-fn-18', lesson: 'correlation-matrices', type: 'steps', kind: 'applied',
     prompt: `Ana builds a correlation matrix of eight daily measures for Harbourside’s ${SEPH.length} September days: 28 pairs. The table lists the ${sepSig.length} pairs with p below 0.05 (two-sided t tests), sorted; the other ${28 - sepSig.length} pairs have p above 0.05. Days in a month resemble their neighbours, so the p-values are approximate.`,
-    data: { table: { head: ['Pair', 'r', 'p'], rows: sepSig.map((x) => [`${x.a} – ${x.b}`, fx(x.r, 3), sig3(x.p)]), align: ['l', 'r', 'r'] } },
+    data: { table: { head: ['Pair', 'r', 'p'], rows: sepSig.map((x) => [`${x.a}–${x.b}`, fx(x.r, 2), sig3(x.p)]), align: ['l', 'r', 'r'], note: 'Foot = footfall, Trans = transactions, Iced = iced share, Hours = peak barista hours, Wait = peak wait.' } },
     steps: [
       {
         id: 'b05-fn-18-s1', type: 'num',
@@ -471,6 +494,7 @@ export const items = [
         unit: 'pairs', places: 0, tol: 0.5,
         wrong: [
           { value: sepSig.length, say: 'That counts p below 0.05 with no adjustment; with 28 tests, about 1.4 false alarms are expected even if nothing is related.' },
+          { value: sepOff, say: 'That compares the k-th smallest p with 0.05 ÷ (28 − k), one step too generous: Holm’s first threshold is 0.05 ÷ 28 and the k-th is 0.05 ÷ (28 − k + 1), so the eighth is 0.05 ÷ 21.' },
           { value: sepBH, say: 'That is Benjamini–Hochberg, which controls the false discovery rate. Holm controls the chance of any false rejection: the k-th smallest p against 0.05 ÷ (28 − k + 1).' },
         ],
         solution: `Holm compares the k-th smallest p with 0.05 ÷ (29 − k): 0.05 ÷ 28 = 0.00179 for the first, rising to 0.05 ÷ 21 = 0.00238 for the eighth. The first ${sepHolm} are below their thresholds; the ${sepHolm + 1}th (${sepPairs[sepHolm].a} – ${sepPairs[sepHolm].b}, p = ${sig3(sepPairs[sepHolm].p)}) is above 0.05 ÷ ${29 - (sepHolm + 1)} = ${(0.05 / (29 - (sepHolm + 1))).toPrecision(3)}, so the procedure stops: ${sepHolm} pairs.`,
@@ -493,20 +517,21 @@ export const items = [
         solution: `Holding transactions fixed, September’s partial correlation of hours and waits is ${fx(sepHWp.r, 2)} (t test on ${sepHWp.df} df, p ${p3(sepHWp.p)}): on days with the same trade, more baristas went with shorter waits. The near-zero simple r combined two opposing links. A matrix is a map for questions; this cell’s question needs the third variable.`,
       },
     ],
-    solution: `Of the ${sepSig.length} pairs below 0.05, ${sepHolm} survive Holm (the footfall–transactions–sales chain, the high and the iced share, and staffing with trade); the rest, including rain’s links, could easily be among the false alarms expected from 28 tests. The near-zero r for staffing and waits (${fx(sepHW.r, 2)}) becomes ${fx(sepHWp.r, 2)} holding transactions fixed: the matrix pointed to the wrong conclusion until the third variable was brought in.`,
+    solution: `Of the ${sepSig.length} pairs below 0.05, ${sepHolm} survive Holm (the footfall–transactions–sales chain, the high and the iced share, and staffing with trade); Holm narrowly can’t confirm transactions–wait (adjusted p ${fx(sepTW.adj, 3)}), a link the case plants, and rain’s links could easily be among the false alarms expected from 28 tests. The near-zero r for staffing and waits (${fx(sepHW.r, 2)}) becomes ${fx(sepHWp.r, 2)} holding transactions fixed: the matrix pointed to the wrong conclusion until the third variable was brought in.`,
   },
   {
     id: 'b05-fn-19', lesson: 'correlation-matrices', type: 'num', kind: 'numerical',
-    prompt: `Ana’s 612-day matrix gives r = ${fx(BND.ft, 3)} for footfall and transactions and r = ${fx(BND.th, 3)} for transactions and peak barista hours. Before looking, what is the smallest value the correlation of footfall with peak barista hours could take? Give three decimal places.`,
-    answer: rnd(lowBound(BND.ft, BND.th), 3),
-    check: () => 0.981 * BND.th - Math.sqrt((1 - 0.981 ** 2) * (1 - BND.th ** 2)) + (BND.ft - 0.981) * BND.th,
+    prompt: `Harbourside’s June matrix of eight daily measures has 28 pairs. The table lists the ${junTop.length} smallest p-values, sorted. What is the Holm-adjusted p-value for rain and sales (rank ${junK})? Give three decimal places.`,
+    data: { table: { head: ['Rank', 'Pair', 'p'], rows: junTop.map((x, i) => [String(i + 1), `${x.a}–${x.b}`, sig3(x.p)]), align: ['r', 'l', 'r'], note: 'Foot = footfall, Trans = transactions, Iced = iced share, Hours = peak barista hours, Wait = peak wait.' } },
+    answer: rnd(holmAdj(junTop.map(shownP), junK), 3),
+    check: () => { const ps = junTop.map(shownP); let run = 0; for (let k = 0; k < junK; k++) run = Math.max(run, (28 - k) * ps[k]); return run; },
     unit: '', places: 3, tol: 0.0015,
     wrong: [
-      { value: rnd(BND.ft * BND.th, 3), say: 'The product is the centre of the possible range, not its lower end. Subtract √((1 − r₁²)(1 − r₂²)).' },
-      { value: rnd(BND.ft * BND.th + Math.sqrt((1 - BND.ft ** 2) * (1 - BND.th ** 2)), 3), say: 'That is the upper end of the range. The smallest value subtracts the square root.' },
-      { value: rnd(Math.min(BND.ft, BND.th), 3), say: 'Correlations aren’t bounded by the smaller of the other two. The range is r₁ r₂ ± √((1 − r₁²)(1 − r₂²)).' },
+      { value: rnd(28 * shownP(junKey), 3), say: 'That is the Bonferroni adjustment, p × 28. Holm multiplies the k-th smallest p by 28 − k + 1.' },
+      { value: rnd((28 - junK) * shownP(junKey), 3), say: 'One step off: the k-th smallest p is multiplied by 28 − k + 1, here 17.' },
+      { value: rnd(shownP(junKey), 3), say: 'That is the unadjusted p-value.' },
     ],
-    solution: `The third correlation must lie in r₁r₂ ± √((1 − r₁²)(1 − r₂²)) = ${fx(BND.ft * BND.th, 4)} ± ${fx(Math.sqrt((1 - BND.ft ** 2) * (1 - BND.th ** 2)), 4)}, so at least ${fx(lowBound(BND.ft, BND.th), 3)}. The matrix shows ${fx(MATRIX.r[2][6], 3)}. Footfall and transactions are nearly redundant (r = ${fx(BND.ft, 3)}): whatever goes with one must go with the other, so a dashboard needs only one of them.`,
+    solution: `Holm’s adjusted p for the k-th smallest p-value is the largest of (28 − j + 1) p₍ⱼ₎ over j ≤ k, so that adjusted values never fall as p rises. For rank ${junK}: ${28 - junK + 1} × ${sig3(junKey.p)} = ${fx((28 - junK + 1) * shownP(junKey), 4)}, larger than any earlier rank’s value, so the adjusted p is ${fx(holmAdj(junTop.map(shownP), junK), 3)} (the engine, from unrounded p-values, gives ${fx(junKey.adj, 3)}). Below 0.05, rain–sales survives Holm in June; it is one month, and neighbouring days are alike, so treat it as approximate.`,
   },
   {
     id: 'b05-fn-20', lesson: 'partial-correlation', type: 'steps', kind: 'applied',
@@ -522,7 +547,6 @@ export const items = [
           `=(CORREL(D2:D${marN},B2:B${marN})-CORREL(C2:C${marN},B2:B${marN})*CORREL(D2:D${marN},C2:C${marN}))/SQRT((1-RSQ(B2:B${marN},C2:C${marN}))*(1-RSQ(C2:C${marN},D2:D${marN})))`,
           `=(CORREL(B2:B${marN},D2:D${marN})-CORREL(B2:B${marN},C2:C${marN})*CORREL(C2:C${marN},D2:D${marN}))/SQRT(1-CORREL(B2:B${marN},C2:C${marN})^2)/SQRT(1-CORREL(C2:C${marN},D2:D${marN})^2)`,
         ],
-        require: ['CORREL'],
         wrong: [
           { formula: `=CORREL(B2:B${marN},D2:D${marN})-CORREL(B2:B${marN},C2:C${marN})*CORREL(C2:C${marN},D2:D${marN})`, say: 'That is the numerator. Divide by √((1 − r_RF²)(1 − r_FS²)).' },
           { formula: `=(CORREL(B2:B${marN},D2:D${marN})-CORREL(B2:B${marN},C2:C${marN})*CORREL(C2:C${marN},D2:D${marN}))/SQRT((1-CORREL(B2:B${marN},D2:D${marN})^2)*(1-CORREL(C2:C${marN},D2:D${marN})^2))`, say: 'The denominator uses the two correlations with the variable held fixed (footfall): r_RF and r_FS, not r_RS.' },
@@ -552,16 +576,16 @@ export const items = [
   },
   {
     id: 'b05-fn-21', lesson: 'partial-correlation', type: 'num', kind: 'numerical',
-    prompt: `Over Harbourside’s ${P2.n} June days, the partial correlation of peak barista hours and the peak wait, holding both transactions and the day’s high fixed, is ${fx(P2.r, 3)}. What is the two-sided p-value for the test that the population partial correlation is zero? Give three decimal places.`,
-    answer: rnd(partialP(P2.r, P2.n, P2.k), 3),
-    check: () => { const df = 30 - 2 - 2; const t = P2.r * Math.sqrt(df) / Math.sqrt(1 - P2.r ** 2); return 2 * tCdf(-Math.abs(t), df); },
-    unit: '', places: 3, tol: 0.0015,
+    prompt: `Over Harbourside’s ${P2.n} June days, the partial correlation of peak barista hours and the peak wait, holding both transactions and the day’s high fixed, is ${fx(P2.r, 3)}. What is the t statistic for the test that the population partial correlation is zero? Give two decimal places.`,
+    answer: rnd(partialT(P2.r, P2.n, P2.k), 2),
+    check: () => { const df = 30 - 2 - 2; return P2.r * Math.sqrt(df) / Math.sqrt(1 - P2.r ** 2); },
+    unit: '', places: 2, tol: 0.006,
     wrong: [
-      { value: rnd(partialP(P2.r, P2.n, 0), 3), say: 'That uses n − 2 degrees of freedom, as for a simple correlation. Each variable held fixed costs one more: n − 2 − k = 26.' },
-      { value: rnd(partialP(P2.r, P2.n, 1), 3), say: 'Two variables are held fixed (transactions and the high), so df = 30 − 2 − 2 = 26, not 27.' },
-      { value: rnd(partialP(P2.r, P2.n, P2.k) / 2, 3), say: 'That is one tail; the test asked for is two-sided.' },
+      { value: rnd(partialT(P2.r, P2.n, 0), 2), say: 'That uses n − 2 degrees of freedom, as for a simple correlation. Each variable held fixed costs one more: n − 2 − k = 26.' },
+      { value: rnd(partialT(P2.r, P2.n, 1), 2), say: 'Two variables are held fixed (transactions and the high), so df = 30 − 2 − 2 = 26, not 27.' },
+      { value: rnd(P2.r * Math.sqrt(P2.n - 4), 2), say: 'Divide by √(1 − r²) as well: t = r √df ÷ √(1 − r²).' },
     ],
-    solution: `df = n − 2 − k = ${P2.n} − 2 − 2 = ${P2.n - 4}. t = r √df ÷ √(1 − r²) = ${fx(P2.r, 3)} × √${P2.n - 4} ÷ √(1 − ${fx(P2.r ** 2, 4)}) = ${fx(P2.r * Math.sqrt(P2.n - 4) / Math.sqrt(1 - P2.r ** 2), 3)}; <x>=T.DIST.2T(${fx(Math.abs(P2.r * Math.sqrt(P2.n - 4) / Math.sqrt(1 - P2.r ** 2)), 3)},26)</x> = ${fx(partialP(P2.r, P2.n, P2.k), 3)}. At a given trade and temperature, June days with more baristas had shorter waits. Neighbouring days are alike, so treat the p-value as approximate.`,
+    solution: `df = n − 2 − k = ${P2.n} − 2 − 2 = ${P2.n - 4}. t = r √df ÷ √(1 − r²) = ${fx(P2.r, 3)} × √${P2.n - 4} ÷ √(1 − ${fx(P2.r ** 2, 4)}) = ${fx(partialT(P2.r, P2.n, P2.k), 3)}; <x>=T.DIST.2T(${fx(Math.abs(partialT(P2.r, P2.n, P2.k)), 3)},26)</x> = ${fx(2 * (1 - tCdf(Math.abs(partialT(P2.r, P2.n, P2.k)), P2.n - 4)), 3)}. At a given trade and temperature, June days with more baristas had shorter waits. Neighbouring days are alike, so treat the p-value as approximate.`,
   },
   {
     id: 'b05-fn-22', lesson: 'correlation-and-causation', type: 'mc', kind: 'applied',
@@ -584,22 +608,22 @@ export const items = [
     id: 'b05-fn-23', lesson: 'correlation-and-causation', type: 'classify', kind: 'conceptual',
     prompt: 'Ana is weighing whether extra peak baristas shorten waits. Classify each piece of evidence by the consideration (from Bradford Hill’s list) it bears on.',
     items: [
-      'At a given number of transactions, more baristas went with shorter waits at both cafés and in every month of the year.',
+      `At a given number of transactions, more baristas went with shorter waits with both cafés’ days together in every month, at Millbrook in every month and at Harbourside in ${negH} of the ${MONTHS.length} months.`,
       'The further the load per barista hour climbed above seven, the longer the wait became.',
-      'On Tuesdays chosen by lot, Millbrook rostered an extra barista; waits on those Tuesdays were shorter than on the others.',
+      'If the trial planned for February, an extra barista on weekdays chosen by lot, shows shorter waits on those days than on the others.',
       'A barista makes a drink in about a minute, so a queue clears faster when there are two of them working.',
       'The roster is fixed a week ahead, so the hours are set before the day’s waits happen.',
     ],
     categories: ['Consistency', 'Dose–response (gradient)', 'Experiment', 'Plausibility (mechanism)', 'Temporality (timing)'],
     answer: [0, 1, 2, 3, 4],
     feedback: {
-      0: 'The same association in different places and times.',
+      0: `The same association in different places and times (partial correlations from ${fx(Math.min(...MONTH_PARTIALS.map((x) => x[0])), 2)} to ${fx(Math.max(...MONTH_PARTIALS.map((x) => x[0])), 2)} month by month with both cafés together). It is not perfectly consistent café by café: Harbourside’s is ${fx(Math.max(...MONTH_PARTIALS.map((x) => x[1])), 2)} in its weakest month.`,
       1: 'More of the exposure, more of the effect, step by step.',
       2: 'Assignment by lot, so nothing else differs systematically.',
       3: 'A believable mechanism.',
       4: 'The cause comes before the effect.',
     },
-    solution: 'Hill’s considerations are things to weigh, not a checklist: consistency (both cafés, every month), a gradient (waits rise with load), an experiment (the Tuesday trial, the strongest), plausibility (how a queue clears) and timing (the roster is set first). Together they make a much stronger case than any correlation alone.',
+    solution: 'Hill’s considerations are things to weigh, not a checklist: consistency (both cafés, every month), a gradient (waits rise with load), an experiment (the planned trial, the strongest evidence once it has run), plausibility (how a queue clears) and timing (the roster is set first). Together they make a much stronger case than any correlation alone.',
   },
   {
     id: 'b05-fn-24', lesson: 'correlation-and-causation', type: 'mc', kind: 'conceptual',

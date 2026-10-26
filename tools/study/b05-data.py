@@ -151,12 +151,13 @@ for k, m in {5: 1.15, 6: 1.2, 17: 1.25, 18: 1.35, 23: 1.15, 45: 1.3, 46: 1.5, 47
 summer_dip = np.array([0.85 if 26 <= k <= 33 else 1.0 for k in range(W)])
 trend = 1 + 0.25 * np.arange(W) / (W - 1)
 # Ana raises paid-social spend before the seasons she expects (her own plan), with a small learned bump
-spend = np.round((420 * season ** 1.6 * (0.9 + 0.2 * r2.random(W))) / 10) * 10
+spend = np.round(42 * season ** 1.6 * (0.9 + 0.2 * r2.random(W)))   # whole dollars; the year totals about $2,650 of F03's $11,500 advertising
 emails = r2.choice([1, 1, 2, 2, 2, 3], W) + (season > 1.2)
-sessions = np.rint(2600 * season * summer_dip * trend * (1 + 0.00012 * (spend - 400)) * np.exp(r2.normal(0, 0.06, W)) * wk_days / 7).astype(int)
-conv = 0.028 * (1 + 0.04 * (emails - 2)) * np.exp(r2.normal(0, 0.05, W))
+sessions = np.rint(2600 * season * summer_dip * trend * (1 + 0.0012 * (spend - 40)) * np.exp(r2.normal(0, 0.06, W)) * wk_days / 7).astype(int)
+# about 3,900 orders: at B03's $5.20 a parcel, F03's $20,300 of 2027 shipping
+conv = 0.0222 * (1 + 0.04 * (emails - 2)) * np.exp(r2.normal(0, 0.05, W))
 orders = np.rint(sessions * conv).astype(int)
-outage = 32                                                    # week 33 (9-15 August): checkout down for four days
+outage = 32                                                    # week 33 (13-19 August): checkout down for four days
 orders[outage] = int(orders[outage] * 0.38)
 aov = 40 + 6 * (season - 1) + r2.normal(0, 1.2, W)
 value = orders * aov
