@@ -2,9 +2,9 @@
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // Lantern’s figures come from case.js, Harbourline’s from f00/case.js, Starbucks’ from its FY2024 Form 10-K;
 // every other business is fictional.
-import { PERIODS, COMPARATIVE, FACTS as F } from './case.js?v=18';
-import { HARBOURLINE as H, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=18';
-import * as R from '../../../core/ratios.js?v=18';
+import { PERIODS, COMPARATIVE, FACTS as F } from './case.js?v=19';
+import { HARBOURLINE as H, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=19';
+import * as R from '../../../core/ratios.js?v=19';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const IS = Object.fromEntries(COMPARATIVE.income.map(([n, a, b]) => [n, [a, b]]));

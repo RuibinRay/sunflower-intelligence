@@ -1,7 +1,7 @@
 // capital-and-liquidity.js — F00 · Capital and liquidity. Content only; exercises are in capital-and-liquidity.ex.js.
 // Harbourline figures come from case.js (HARBOURLINE, HARBOURLINE_DETAIL, HARBOURLINE_DERIVED): the breakdown of its
 // current assets and the rest of its balance sheet are in HARBOURLINE_DETAIL; all $210m of debt is long-term.
-import { HARBOURLINE as H, HARBOURLINE_DETAIL as D } from './case.js?v=18';
+import { HARBOURLINE as H, HARBOURLINE_DETAIL as D } from './case.js?v=19';
 
 export default {
   slug: 'capital-and-liquidity',

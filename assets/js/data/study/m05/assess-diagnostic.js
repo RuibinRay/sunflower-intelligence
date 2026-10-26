@@ -23,8 +23,8 @@
 // lesson exercises, module tests, the final or the project, and nothing from the project’s scenario or data. No hints;
 // solutions are shown on review. Every num item’s `check` recomputes its answer, and every figure a prompt states is
 // computed below from its inputs (Lantern’s persona figures from case.js).
-import { RESPONDENTS, DERIVED, LEVELS } from './case.js?v=18';
-import { fSf } from '../../../core/inference.js?v=18';
+import { RESPONDENTS, DERIVED, LEVELS } from './case.js?v=19';
+import { fSf } from '../../../core/inference.js?v=19';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const int = (v) => Math.round(v).toLocaleString('en-US');

@@ -1,7 +1,7 @@
 // Lesson: validating models — held-out data, overfitting, k-fold cross-validation, the one-standard-error rule and leakage.
 // `checks` recompute every number printed in the worked example; tests/lessons.test.mjs compares them.
-import * as F from '../../core/format.js?v=18';
-import { mean, sd } from '../../core/stats.js?v=18';
+import * as F from '../../core/format.js?v=19';
+import { mean, sd } from '../../core/stats.js?v=19';
 
 // Invented five-fold cross-validation errors (RMSE) for polynomial degrees 1–5.
 const FOLDS = { 1: [2.10, 2.30, 1.95, 2.25, 2.15], 2: [1.15, 1.40, 1.05, 1.35, 1.25], 3: [1.05, 1.40, 0.95, 1.30, 1.20], 4: [1.00, 1.42, 0.92, 1.33, 1.18], 5: [1.10, 1.60, 0.98, 1.45, 1.27] };

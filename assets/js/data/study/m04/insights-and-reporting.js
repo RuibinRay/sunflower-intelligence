@@ -3,10 +3,10 @@
 // (FOCUS_GROUPS, DERIVED.focus), the price audit (PRICE_AUDIT) and the sizing (COLD_BREW_SIZING, DERIVED.sizing), plus
 // M02's plan (DEFAULT_PLAN) and M01's client interviews. Hollowmere Folk Festival and Yarrowdale Dental are fictional.
 // Ana's recommendation and decision rule are this lesson's (fictional) additions. Every printed figure is in `checks`.
-import { RESPONDENTS, STRATA, FOCUS_GROUPS, PRICE_AUDIT, COLD_BREW_SIZING, DEFAULT_PLAN, CLIENT_INTERVIEWS, DERIVED as D } from './case.js?v=18';
-import { BUSINESS } from '../m01/case.js?v=18';
-import * as I from '../../../core/inference.js?v=18';
-import * as S from '../../../core/survey.js?v=18';
+import { RESPONDENTS, STRATA, FOCUS_GROUPS, PRICE_AUDIT, COLD_BREW_SIZING, DEFAULT_PLAN, CLIENT_INTERVIEWS, DERIVED as D } from './case.js?v=19';
+import { BUSINESS } from '../m01/case.js?v=19';
+import * as I from '../../../core/inference.js?v=19';
+import * as S from '../../../core/survey.js?v=19';
 
 // ---------------------------------------------------------------- the figures this lesson quotes
 const R = RESPONDENTS, N = R.length, Z = I.normInv(0.975);

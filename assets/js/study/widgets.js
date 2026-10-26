@@ -1,9 +1,9 @@
 // widgets.js — mounts a lesson's interactives. Each `.widget[data-widget]` placeholder names a widget in the
 // lesson's .ex.js `widgets`; its `type` picks the module in ./widgets/<type>.js, which exports mount(el, config, ctx).
 // Widgets load when they come near the viewport, so a long lesson doesn't pay for interactives it hasn't reached.
-import { h } from '../core/dom.js?v=18';
-import { whenNear } from '../core/ui.js?v=18';
-import { syncRanges } from '../core/site.js?v=18';
+import { h } from '../core/dom.js?v=19';
+import { whenNear } from '../core/ui.js?v=19';
+import { syncRanges } from '../core/site.js?v=19';
 
 export function mountWidgets(scope, configs, { report } = {}) {
   scope.querySelectorAll('.widget[data-widget]').forEach((el) => {
@@ -15,7 +15,7 @@ export function mountWidgets(scope, configs, { report } = {}) {
     }
     whenNear(el, async () => {
       try {
-        const mod = await import(`./widgets/${cfg.type}.js?v=18`);
+        const mod = await import(`./widgets/${cfg.type}.js?v=19`);
         el.replaceChildren();
         await mod.mount(el, cfg, { id, report: (event, detail) => report?.(id, event, detail) });
         syncRanges(el);

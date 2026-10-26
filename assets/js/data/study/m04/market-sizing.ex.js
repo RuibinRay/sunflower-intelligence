@@ -3,7 +3,7 @@
 // sensitivity chart are the lesson's fictional assumptions. Pennock Kombucha, Wrexley Garden Centre, Pellinore Software,
 // Ormsgill Cinemas and Quillfield Juice are fictional, as are the energy-drink brand and the meal-kit start-up. Formula
 // items are marked by their results on the sheet and on copies with the numbers changed; num items recompute their answers.
-import { CATEGORY, CHANNELS, COLD_BREW_SIZING as SZ, DERIVED as D } from './case.js?v=18';
+import { CATEGORY, CHANNELS, COLD_BREW_SIZING as SZ, DERIVED as D } from './case.js?v=19';
 
 const CH = Object.fromEntries(CHANNELS.map((c) => [c.id, c]));
 const P = SZ.plan;

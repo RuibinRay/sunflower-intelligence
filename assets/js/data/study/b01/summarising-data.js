@@ -4,7 +4,7 @@
 // for the six months are left to the project. New fictional facts, labelled: the breakdown of July's 118 ratings by
 // stars (72, 31, 8, 3, 4: mean 4.39, consistent with the case's 4.4) and a sample of eleven December orders.
 // Every other business and figure is fictional and labelled.
-import { SHOP as S, DERIVED as D } from './case.js?v=18';
+import { SHOP as S, DERIVED as D } from './case.js?v=19';
 
 const sum = (a) => a.reduce((x, y) => x + y, 0);
 const mean = (a) => sum(a) / a.length;

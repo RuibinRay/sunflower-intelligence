@@ -3,7 +3,7 @@
 // AOV against target, revenue) is left to the project. New fictional facts introduced here, all labelled: Lantern's
 // KPI dictionary (definitions, owners, the rating guardrail of 4.3) and an illustrative 8,650 distinct July visitors.
 // Every other business and figure is fictional and labelled.
-import { SHOP as S, TARGETS as T, DERIVED as D } from './case.js?v=18';
+import { SHOP as S, TARGETS as T, DERIVED as D } from './case.js?v=19';
 
 const J = 0;                                   // July 2026, the month used as the worked example
 const julOrders = D.orders[J];                 // 294

@@ -4,9 +4,9 @@
 // matter to it. Starbucks FY2024 figures are from its Form 10-K (EDGAR’s XBRL rendering: R7 is the balance sheet, R5 the
 // cash flows); Harbourline Roasters is F00’s fictional roaster. The 2028 covenant of 1.2 is F00’s hypothetical
 // (governance-and-agency). Solvency, the Z-score and the credit decision belong to later lessons.
-import { PERIODS, COMPARATIVE, FACTS } from './case.js?v=18';
-import { HARBOURLINE as HB, HARBOURLINE_DETAIL as HBD } from '../f00/case.js?v=18';
-import * as R from '../../../core/ratios.js?v=18';
+import { PERIODS, COMPARATIVE, FACTS } from './case.js?v=19';
+import { HARBOURLINE as HB, HARBOURLINE_DETAIL as HBD } from '../f00/case.js?v=19';
+import * as R from '../../../core/ratios.js?v=19';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const L26 = R.liquidity(P26), L27 = R.liquidity(P27);
@@ -89,7 +89,7 @@ export default {
   slug: 'liquidity',
   title: 'Liquidity',
   blurb: 'Measure whether a business can pay what falls due in the next year: working capital and the current, quick, cash and operating cash flow ratios, what belongs in each and why, and how to explain a fall like Lantern’s from 2.15 to 0.52.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate working capital and the current, quick, cash and operating cash flow ratios from a classified balance sheet and a statement of cash flows.',
     'Classify current assets and liabilities by how close they are to cash, including a contract asset, prepayments, unearned revenue, current lease liabilities and a drawn line of credit.',

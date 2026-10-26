@@ -1,9 +1,9 @@
 // distress-scores.ex.js — F03 · Distress scores: widgets, practice and the knowledge check (answer keys live here).
 // Lantern’s figures come from case.js and the scores from core/ratios.js. Harbourline is F00’s fictional roaster, with the
 // retained-earnings split assumed in the lesson; Starbucks’ FY2024 figures are from its 10-K. Every other business is fictional.
-import { PERIODS, LEASE } from './case.js?v=18';
-import { HARBOURLINE as H, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=18';
-import * as R from '../../../core/ratios.js?v=18';
+import { PERIODS, LEASE } from './case.js?v=19';
+import { HARBOURLINE as H, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=19';
+import * as R from '../../../core/ratios.js?v=19';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const zdd = (p) => R.altman(p, 'zdouble').score;

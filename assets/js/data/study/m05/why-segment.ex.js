@@ -2,7 +2,7 @@
 // Lantern's needs study comes from case.js (RESPONDENTS, NEEDS): all 640 respondents in the worksheets. Nettlefield Ski
 // Hire, Halberd Theatre, Wyndle Ferries, Marrowgate Garden Supplies and the other businesses named here are fictional.
 // Every num item's `check` recomputes its answer.
-import { RESPONDENTS, NEEDS } from './case.js?v=18';
+import { RESPONDENTS, NEEDS } from './case.js?v=19';
 
 const R = RESPONDENTS, N = R.length, L = N + 1;                 // data rows 2..641
 const sum = (a) => a.reduce((s, x) => s + x, 0);

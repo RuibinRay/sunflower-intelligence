@@ -3,8 +3,8 @@
 // from core/ratios.js; checks recompute every printed number. Other businesses are fictional: Saltmarsh Hotel (simple
 // example), Kestrel Battery Installations (challenging). Starbucks’ figures are from its FY2024 Form 10-K (SEC EDGAR).
 // DuPont analysis is the next lesson; the law firm’s unbilled revenue belongs to cash-flow-and-earnings-quality.
-import { PERIODS, FACTS, LEASE } from './case.js?v=18';
-import * as R from '../../../core/ratios.js?v=18';
+import { PERIODS, FACTS, LEASE } from './case.js?v=19';
+import * as R from '../../../core/ratios.js?v=19';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const pr26 = R.profitability(P26), pr27 = R.profitability(P27, P26);
@@ -39,7 +39,7 @@ export default {
   slug: 'return-on-assets-and-equity',
   title: 'Return on assets and equity',
   blurb: 'Measure how much profit a business earns on the resources it uses and on the owners’ capital, on averages stated openly, and judge when a high return on equity reflects good business and when it reflects borrowing, an unpaid owner or tiny equity.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate return on assets and return on equity on average balances, and state which basis you used.',
     'Explain why a first period, a part year or an unpaid owner-manager distorts returns, and adjust for each.',

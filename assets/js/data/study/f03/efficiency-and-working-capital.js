@@ -6,8 +6,8 @@
 // revenue appear only as the classic slips for DSO; cost of sales including services as the slip for DIO.
 // 2026 uses closing balances and 304.17 days; 2027 average balances and 365 days. Amazon 2013–2014 figures are from
 // its 10-Ks (EDGAR XBRL R pages).
-import { PERIODS, COMPARATIVE, FACTS } from './case.js?v=18';
-import * as R from '../../../core/ratios.js?v=18';
+import { PERIODS, COMPARATIVE, FACTS } from './case.js?v=19';
+import * as R from '../../../core/ratios.js?v=19';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const inc = (label) => COMPARATIVE.income.find((r) => r[0] === label);
@@ -55,7 +55,7 @@ export default {
   slug: 'efficiency-and-working-capital',
   title: 'Efficiency and working capital',
   blurb: 'Measure how hard a business makes its assets work and how long its cash is tied up: asset turnover, receivables, inventory and payables days, the operating and cash conversion cycles, the contract asset as revenue waiting to be billed, and why growth eats cash.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate asset turnover and fixed-asset turnover, on average balances, and adjust a part-year for comparison.',
     'Calculate receivables, inventory and payables turnover and their days, choosing the flow that matches each balance (credit sales billed, cost of goods sold, purchases).',

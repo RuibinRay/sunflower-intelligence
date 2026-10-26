@@ -3,8 +3,8 @@
 // Lantern’s figures come from case.js (PERIODS, COMPARATIVE, FACTS, LEASE) and core/ratios.js (cashQuality). Real
 // figures (Amazon 2012–2014, Enron’s 2001 restatement and the Powers Report) are from REAL-FIGURES.md and the filings
 // cited. Rowan & Pike Outfitters is fictional.
-import { PERIODS, COMPARATIVE, FACTS, LEASE, OPENING } from './case.js?v=18';
-import * as R from '../../../core/ratios.js?v=18';
+import { PERIODS, COMPARATIVE, FACTS, LEASE, OPENING } from './case.js?v=19';
+import * as R from '../../../core/ratios.js?v=19';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const Q26 = R.cashQuality(P26), Q27 = R.cashQuality(P27, P26);
@@ -42,7 +42,7 @@ export default {
   slug: 'cash-flow-and-earnings-quality',
   title: 'Cash flow and earnings quality',
   blurb: 'Test how much of a profit has arrived as cash: compare cash from operations with net income, measure accruals and free cash flow, find the estimates inside earnings, and recognise the warning signs of aggressive accounting.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate the ratio of cash from operations to net income, total accruals, the accruals ratio and free cash flow, stating the balances used.',
     'Explain, line by line from the indirect method, why Lantern’s 2027 profit of $22,431 produced only $8,341 of operating cash.',

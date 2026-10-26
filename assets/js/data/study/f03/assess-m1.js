@@ -2,8 +2,8 @@
 // New questions, not copies of lesson exercises: Amazon’s 2012–2014 statements (Form 10-K for 2014; 2012 balance from
 // the 2013 10-K), a garden centre’s part-year, Lantern without its cafés, a bakery chain whose margin rose as sales fell,
 // and other fictional businesses. No hints; solutions show in review.
-import { PERIODS, COMPARATIVE } from './case.js?v=18';
-import * as R from '../../../core/ratios.js?v=18';
+import { PERIODS, COMPARATIVE } from './case.js?v=19';
+import * as R from '../../../core/ratios.js?v=19';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const cafe = COMPARATIVE.income.find(([n]) => n === 'Café Sales Revenue')[2];

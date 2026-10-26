@@ -2,10 +2,10 @@
 // Lantern’s figures come from case.js (COMPARATIVE, PERIODS, FACTS) and F02’s case (the 2026 shop’s order values);
 // checks recompute every printed number with core/ratios.js. Real figures (Starbucks FY2022–FY2024) are from its FY2024
 // Form 10-K. Other businesses are fictional: Fernhill Books (simple example), Voltreach Storage (challenging example).
-import { COMPARATIVE, PERIODS, FACTS as F } from './case.js?v=18';
-import { FACTS as F26 } from '../f02/case.js?v=18';
-import { DERIVED as B01 } from '../b01/case.js?v=18';
-import * as R from '../../../core/ratios.js?v=18';
+import { COMPARATIVE, PERIODS, FACTS as F } from './case.js?v=19';
+import { FACTS as F26 } from '../f02/case.js?v=19';
+import { DERIVED as B01 } from '../b01/case.js?v=19';
+import * as R from '../../../core/ratios.js?v=19';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const IS = Object.fromEntries(COMPARATIVE.income.map(([n, a, b]) => [n, [a, b]]));
@@ -91,7 +91,7 @@ export default {
   slug: 'horizontal-analysis',
   title: 'Horizontal analysis',
   blurb: 'Put two or more years of statements side by side, measure what changed in dollars, percentages, index numbers and compound growth rates, and decide which changes are real, which are produced by the calendar or by a new kind of business, and which matter.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Identify the questions an owner, a lender and an investor bring to a set of statements, and the figures each looks at first.',
     'Calculate dollar and percentage changes, base-year index numbers and compound annual growth rates from comparative statements.',

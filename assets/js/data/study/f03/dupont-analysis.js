@@ -3,9 +3,9 @@
 // product equals ROE exactly; checks recompute every printed number. Harbourline Roasters is F00’s fictional listed
 // roaster (f00/case.js, $ millions, one year, closing balances). Starbucks’ figures are from its FY2024 Form 10-K.
 // Other businesses are fictional: Ridgeline Outdoor (simple example).
-import { PERIODS, FACTS, LEASE } from './case.js?v=18';
-import * as R from '../../../core/ratios.js?v=18';
-import { HARBOURLINE as HL, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=18';
+import { PERIODS, FACTS, LEASE } from './case.js?v=19';
+import * as R from '../../../core/ratios.js?v=19';
+import { HARBOURLINE as HL, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=19';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const d26 = R.dupont(P26), d27 = R.dupont(P27, P26);
@@ -40,7 +40,7 @@ export default {
   slug: 'dupont-analysis',
   title: 'DuPont analysis',
   blurb: 'Split return on equity into margin, asset turnover and leverage, in three steps and in five, so that you can say why returns moved, compare businesses built in different ways, and see what the decomposition hides.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate the three-step DuPont decomposition on average balances so that the product equals return on equity exactly.',
     'Calculate the five-step decomposition and explain what the tax burden and interest burden measure.',

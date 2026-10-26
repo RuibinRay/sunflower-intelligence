@@ -4,8 +4,8 @@
 // Lantern, computed here from the respondents (never the k-means segments, which module 2 builds). Cairnhaven Bakery,
 // Pinemoor Leisure and Bellwick Grocers (with Freya Lindgren) are fictional; VALS, Haley's toothpaste study and the
 // Ehrenberg-Bass figures are real and described only from the sources cited. Every printed figure is recomputed in `checks`.
-import { RESPONDENTS, LEVELS, NEEDS, DERIVED as D } from './case.js?v=18';
-import * as I from '../../../core/inference.js?v=18';
+import { RESPONDENTS, LEVELS, NEEDS, DERIVED as D } from './case.js?v=19';
+import * as I from '../../../core/inference.js?v=19';
 
 // ---------------------------------------------------------------- the figures this lesson quotes
 const R = RESPONDENTS, N = R.length;

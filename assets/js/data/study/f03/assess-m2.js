@@ -2,7 +2,7 @@
 // efficiency-and-working-capital). New questions, not copies of lesson exercises: other fictional businesses, other
 // angles (a transaction that lowers the ratio it seems to help, a loan’s effect on coverage, US GAAP against IFRS 16,
 // a nine-month period, the cash value of supplier terms). Lantern’s figures come from case.js. No hints.
-import { PERIODS, COMPARATIVE } from './case.js?v=18';
+import { PERIODS, COMPARATIVE } from './case.js?v=19';
 
 const P27 = PERIODS[2027];
 const b27 = (label) => COMPARATIVE.balance.find((r) => r[0] === label)[2];

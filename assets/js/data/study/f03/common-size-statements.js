@@ -2,9 +2,9 @@
 // Lantern’s figures come from case.js (COMPARATIVE, PERIODS, FACTS); Harbourline Roasters (fictional peer) from
 // f00/case.js; Starbucks FY2024 from its Form 10-K. Other businesses are fictional: Larch & Loom (simple example),
 // Copperleaf Bakeries and Juniper Street Bakery (challenging example). checks recompute every printed number.
-import { COMPARATIVE, PERIODS, FACTS as F } from './case.js?v=18';
-import { HARBOURLINE as H, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=18';
-import * as R from '../../../core/ratios.js?v=18';
+import { COMPARATIVE, PERIODS, FACTS as F } from './case.js?v=19';
+import { HARBOURLINE as H, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=19';
+import * as R from '../../../core/ratios.js?v=19';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const IS = Object.fromEntries(COMPARATIVE.income.map(([n, a, b]) => [n, [a, b]]));
@@ -79,7 +79,7 @@ export default {
   slug: 'common-size-statements',
   title: 'Common-size statements',
   blurb: 'Express every line of the income statement as a share of revenue and every line of the balance sheet as a share of total assets, read the margins that result, and compare a small business with one thousands of times its size without being misled by how each one classifies its costs.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Prepare a common-size income statement (as a percentage of net revenue) and a common-size balance sheet (as a percentage of total assets).',
     'Calculate and interpret the gross, operating, EBITDA and net margins.',

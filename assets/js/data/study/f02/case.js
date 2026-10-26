@@ -26,7 +26,7 @@
 // wages, catering supplies, workshop materials) into Cost of Services, so the income statement can show gross profit.
 //
 // Amounts are whole dollars: the shop's sales are rounded to the nearest dollar; everything else is exact.
-import * as A from '../../../core/accounting.js?v=18';
+import * as A from '../../../core/accounting.js?v=19';
 
 /** Account fields beyond F01's: section (multi-step income statement), da / noncash (depreciation), cashClass.
  *  Gains and losses on selling equipment are operating: ASC 360-10-45-5 requires them inside operating income when

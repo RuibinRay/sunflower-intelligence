@@ -2,7 +2,7 @@
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // The weighted-average widget starts from Lantern's July web and app counts (case.js); every other business and figure
 // is fictional.
-import { SHOP as S } from './case.js?v=18';
+import { SHOP as S } from './case.js?v=19';
 
 const pct = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toFixed(d)}%`;
 const signed = (v, d = 2) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(d)}`;

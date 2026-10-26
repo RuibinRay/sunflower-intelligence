@@ -3,8 +3,8 @@
 // Lantern’s figures come from case.js (PERIODS, LEASE, BREWER, FACTS); ratios from core/ratios.js. The peer file of nine
 // coffee businesses is fictional (no published industry data was verified for this lesson). Starbucks’ FY2024 figures
 // are from REAL-FIGURES.md and the 10-K pages cited.
-import { PERIODS, LEASE, BREWER, FACTS } from './case.js?v=18';
-import * as R from '../../../core/ratios.js?v=18';
+import { PERIODS, LEASE, BREWER, FACTS } from './case.js?v=19';
+import * as R from '../../../core/ratios.js?v=19';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const L = { current: R.liquidity(P27).current, opMargin: R.profitability(P27, P26).operatingMargin, z: R.altman(P27, 'zdouble').score,
@@ -51,7 +51,7 @@ export default {
   slug: 'benchmarking-and-annual-reports',
   title: 'Benchmarking and annual reports',
   blurb: 'Judge a company’s ratios against the right peers, read an annual report for what the ratios can’t show (the MD&A, the auditor’s report and the notes on revenue, leases and debt), and write an analysis that ends in a conclusion someone can act on.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Choose a peer group and justify it by business model, size, ownership and accounting basis.',
     'Calculate a peer median and quartiles and place a company within them, stating the method used.',

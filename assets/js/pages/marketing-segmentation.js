@@ -1,15 +1,15 @@
 // marketing-segmentation.js — market segmentation (survey-based) and RFM customer value.
-import { initSite, syncRanges } from '../core/site.js?v=18';
-import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=18';
-import * as F from '../core/format.js?v=18';
-import * as S from '../core/stats.js?v=18';
-import { parseTable, isNumeric } from '../core/csv.js?v=18';
-import { barChart, tableTwin, Tooltip, divergingColor } from '../core/charts.js?v=18';
-import { customerOrders } from '../core/rng.js?v=18';
-import { chips, checkedIn, verdict, splitRows, whenNear, afterPaint } from '../core/ui.js?v=18';
-import { dataSource } from '../core/datasource.js?v=18';
-import { kmeans, silhouette, standardise } from '../core/classify.js?v=18';
-import { shopperSurvey, indexVsAverage, segmentSizes, nameSegments, needsFit, targetScores } from '../core/market.js?v=18';
+import { initSite, syncRanges } from '../core/site.js?v=19';
+import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=19';
+import * as F from '../core/format.js?v=19';
+import * as S from '../core/stats.js?v=19';
+import { parseTable, isNumeric } from '../core/csv.js?v=19';
+import { barChart, tableTwin, Tooltip, divergingColor } from '../core/charts.js?v=19';
+import { customerOrders } from '../core/rng.js?v=19';
+import { chips, checkedIn, verdict, splitRows, whenNear, afterPaint } from '../core/ui.js?v=19';
+import { dataSource } from '../core/datasource.js?v=19';
+import { kmeans, silhouette, standardise } from '../core/classify.js?v=19';
+import { shopperSurvey, indexVsAverage, segmentSizes, nameSegments, needsFit, targetScores } from '../core/market.js?v=19';
 initSite();
 
 // ================================================================ needs-based segmentation

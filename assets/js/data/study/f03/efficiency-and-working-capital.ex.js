@@ -1,8 +1,8 @@
 // efficiency-and-working-capital.ex.js — F03 · Efficiency and working capital: widgets, practice and the knowledge check.
 // Lantern’s figures come from case.js PERIODS, whose creditSales (invoiced catering), cogsGoods and purchases are the
 // matched flows; the ratios from core/ratios.js. Amazon 2013–2014 is from its 10-Ks; every other business is fictional.
-import { PERIODS } from './case.js?v=18';
-import * as R from '../../../core/ratios.js?v=18';
+import { PERIODS } from './case.js?v=19';
+import * as R from '../../../core/ratios.js?v=19';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const D26 = P26, D27 = P27;   // PERIODS carries creditSales (invoiced catering), cogsGoods and purchases

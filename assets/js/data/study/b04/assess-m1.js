@@ -3,7 +3,7 @@
 // shown when the student reviews the test. Sunnyfold Gym, Glenholt Hotel, Mossgate Clinic, Fairway Contact Centre and
 // all their numbers are fictional. Formula items are marked by their results; every num item's `check` recomputes its
 // answer.
-import { binomPmf, binomSf, poissonSf, normCdf } from '../../../core/inference.js?v=18';
+import { binomPmf, binomSf, poissonSf, normCdf } from '../../../core/inference.js?v=19';
 
 const sum = (a) => a.reduce((s, x) => s + x, 0);
 const mean = (a) => sum(a) / a.length;

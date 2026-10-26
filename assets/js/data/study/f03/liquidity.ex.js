@@ -1,9 +1,9 @@
 // liquidity.ex.js — F03 · Liquidity: widgets, practice and the knowledge check (answer keys live here).
 // Lantern’s figures come from case.js and the ratios from core/ratios.js; Starbucks FY2024 is from its Form 10-K;
 // Harbourline is F00’s fictional roaster; every other business is fictional and invented for the exercise.
-import { PERIODS, COMPARATIVE } from './case.js?v=18';
-import { HARBOURLINE as HB, HARBOURLINE_DETAIL as HBD } from '../f00/case.js?v=18';
-import * as R from '../../../core/ratios.js?v=18';
+import { PERIODS, COMPARATIVE } from './case.js?v=19';
+import { HARBOURLINE as HB, HARBOURLINE_DETAIL as HBD } from '../f00/case.js?v=19';
+import * as R from '../../../core/ratios.js?v=19';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const b27 = (label) => COMPARATIVE.balance.find((r) => r[0] === label)[2];

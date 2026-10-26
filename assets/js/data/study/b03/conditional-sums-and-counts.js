@@ -2,7 +2,7 @@
 // conditional-sums-and-counts.ex.js. Every Lantern figure is computed from case.js (ORDERS, DERIVED). Quillbrook Food
 // Share is fictional. No product costs or margins appear here (those are the course project), and no count of orders at
 // or below the $35 delivery threshold. Excel's behaviour is cited in `references`.
-import { ORDERS, ORDER_COLUMNS, DERIVED as D } from './case.js?v=18';
+import { ORDERS, ORDER_COLUMNS, DERIVED as D } from './case.js?v=19';
 
 const col = (name) => ORDER_COLUMNS.indexOf(name);
 const rows = ORDERS.map((r) => Object.fromEntries(ORDER_COLUMNS.map((c, i) => [c, r[i]])));

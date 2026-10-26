@@ -3,8 +3,8 @@
 // change on the marker's test copies, so formula items that count text labels `vary` a label cell. Rookhaven Pet
 // Supplies, the hotel group, the insurer, the ice-cream maker and the other businesses named here are fictional. Every num
 // item's `check` recomputes its answer.
-import { RESPONDENTS, LEVELS } from './case.js?v=18';
-import * as I from '../../../core/inference.js?v=18';
+import { RESPONDENTS, LEVELS } from './case.js?v=19';
+import * as I from '../../../core/inference.js?v=19';
 
 const R = RESPONDENTS, N = R.length, L = N + 1;                 // data rows 2..641
 const sum = (a) => a.reduce((s, x) => s + x, 0);

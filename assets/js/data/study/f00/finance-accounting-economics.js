@@ -1,5 +1,5 @@
 // finance-accounting-economics.js — F00 · Finance, accounting and economics. Content only; exercises are in finance-accounting-economics.ex.js.
-import { ANA, SAVINGS_CHOICES } from './case.js?v=18';
+import { ANA, SAVINGS_CHOICES } from './case.js?v=19';
 
 export default {
   slug: 'finance-accounting-economics',

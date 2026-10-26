@@ -1,6 +1,6 @@
 // project.js — B01 applied project: a review of Lantern Coffee's online shop, July–December 2026.
 // Every fact comes from case.js (SHOP, SURVEY, TARGETS); every number is computed here and checked by `verify`.
-import { MONTHS, SHOP as S, SURVEY as Q, TARGETS as T, DERIVED as D } from './case.js?v=18';
+import { MONTHS, SHOP as S, SURVEY as Q, TARGETS as T, DERIVED as D } from './case.js?v=19';
 
 const r1 = (x) => Math.round(x * 10) / 10, r2 = (x) => Math.round(x * 100) / 100;
 const money = (x) => `$${x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

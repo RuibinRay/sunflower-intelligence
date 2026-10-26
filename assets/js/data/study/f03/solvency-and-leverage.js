@@ -4,9 +4,9 @@
 // Harbourline Roasters is F00’s fictional roaster ($ millions). Pembury Bank (applied example) is fictional.
 // Lease-adjusted ratios are made consistent here by moving the lease cost’s interest part below EBIT and its
 // amortisation part into D&A, so that debt and EBITDA are adjusted together.
-import { PERIODS, COMPARATIVE, LEASE, BREWER, FACTS } from './case.js?v=18';
-import { HARBOURLINE as HB, HARBOURLINE_DETAIL as HBD } from '../f00/case.js?v=18';
-import * as R from '../../../core/ratios.js?v=18';
+import { PERIODS, COMPARATIVE, LEASE, BREWER, FACTS } from './case.js?v=19';
+import { HARBOURLINE as HB, HARBOURLINE_DETAIL as HBD } from '../f00/case.js?v=19';
+import * as R from '../../../core/ratios.js?v=19';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const S26 = R.solvency(P26), S27 = R.solvency(P27), SA = R.solvency(P27, { withLeases: true });   // SA: leases as debt, earnings adjusted
@@ -50,7 +50,7 @@ export default {
   slug: 'solvency-and-leverage',
   title: 'Solvency and leverage',
   blurb: 'Measure how far a business is financed by borrowing and how easily it carries the cost: debt and leverage ratios, interest and EBITDA coverage, net debt to EBITDA, leases and vendor finance as debt, and what to do when equity turns negative.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate the debt ratio, liabilities to equity, debt to equity, debt to capital and the equity multiplier, and explain how they relate.',
     'Calculate interest coverage, EBITDA coverage and net debt to EBITDA, and interpret them for a lender.',

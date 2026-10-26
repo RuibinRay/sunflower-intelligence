@@ -4,8 +4,8 @@
 // segments, which module 2 builds). Kestrelton Fitness, Copperwick Books, its supplier's neighbourhood types and Fernhollow
 // Travel (with Owen Pryce) are fictional; CACI's Acorn is real and described only from CACI's own pages. Every printed figure
 // is recomputed in `checks`.
-import { RESPONDENTS, LEVELS, NEEDS, STUDY } from './case.js?v=18';
-import * as I from '../../../core/inference.js?v=18';
+import { RESPONDENTS, LEVELS, NEEDS, STUDY } from './case.js?v=19';
+import * as I from '../../../core/inference.js?v=19';
 
 // ---------------------------------------------------------------- the figures this lesson quotes
 const R = RESPONDENTS, N = R.length;

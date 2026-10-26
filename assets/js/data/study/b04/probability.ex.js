@@ -2,8 +2,8 @@
 // tables come from case.js; Tillwise's screen, the café early-warning flag, the spam filter and Gorse Lane Cycle Hire
 // are fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num items recompute their
 // answers in `check`.
-import { CHANNEL_SUBSCRIPTION as CS, REGION_SUBSCRIPTION as RS, EVENTS, EVENT_COLUMNS } from './case.js?v=18';
-import { combin, permut } from '../../../core/inference.js?v=18';
+import { CHANNEL_SUBSCRIPTION as CS, REGION_SUBSCRIPTION as RS, EVENTS, EVENT_COLUMNS } from './case.js?v=19';
+import { combin, permut } from '../../../core/inference.js?v=19';
 
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
 const f = (v, d = 3) => v.toFixed(d);

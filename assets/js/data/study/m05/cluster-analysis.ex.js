@@ -2,8 +2,8 @@
 // The two cluster widgets use all 640 respondents of Lantern's needs study (case.js RESPONDENTS); the distance worksheet
 // uses the first 12 respondents' standardised needs and segment D's centre (DERIVED.segments.centres). Thistlewick Books,
 // Pennacott Fitness, Wyncombe Travel and Saltmere Energy are fictional. Every num item's `check` recomputes its answer.
-import { NEEDS, RESPONDENTS, DERIVED as D } from './case.js?v=18';
-import { standardise } from '../../../core/classify.js?v=18';
+import { NEEDS, RESPONDENTS, DERIVED as D } from './case.js?v=19';
+import { standardise } from '../../../core/classify.js?v=19';
 
 const RS = RESPONDENTS, N = RS.length, P = NEEDS.length;
 const r2 = (x) => Math.round(x * 100) / 100, r1 = (x) => Math.round(x * 10) / 10;
