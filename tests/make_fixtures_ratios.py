@@ -33,7 +33,7 @@ for k in range(12):
         debtRatio=cur['totalLiabilities']/cur['totalAssets'], de=cur['debt']/cur['equity'], deL=debtL/cur['equity'],
         dcap=cur['debt']/(cur['debt']+cur['equity']), em=cur['totalAssets']/cur['equity'],
         cover=cur['ebit']/cur['interestExpense'], ebitdaCover=ebitda/cur['interestExpense'],
-        netDebtEbitda=(cur['debt']-cur['cash'])/ebitda,
+        netDebtEbitda=(cur['debt']-cur['cash']-cur['shortTermInvestments'])/ebitda,
         assetTurnover=cur['revenue']/av('totalAssets'), dso=d/rt, dio=d/it, dpo=d/pt, ccc=d/rt+d/it-d/pt,
         grossMargin=(cur['revenue']-cur['cogs'])/cur['revenue'], netMargin=cur['netIncome']/cur['revenue'],
         roa=cur['netIncome']/av('totalAssets'), roe=cur['netIncome']/av('equity'),
@@ -50,5 +50,5 @@ for k in range(12):
         growthAnnualised=(cur['revenue'] - prev['revenue']*12/prev['months'])/(prev['revenue']*12/prev['months']),
     )
     cases.append(dict(cur=cur, prev=prev, exp=exp))
-json.dump(dict(cases=cases), open('fixtures-ratios.json', 'w'))
+json.dump(dict(cases=cases), open(__import__('os').path.join(__import__('os').path.dirname(__file__), 'fixtures-ratios.json'), 'w'))
 print(len(cases), 'cases')

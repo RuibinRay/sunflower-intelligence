@@ -53,6 +53,7 @@ truth('unknown Altman variant throws', (() => { try { R.altman(p, 'zzz'); return
   const a = R.solvency(q, { withLeases: true }), b = R.solvency(q);
   truth('lease-adjusted coverage', Math.abs(a.interestCoverage - 115 / 25) < 1e-12 && Math.abs(b.interestCoverage - 10) < 1e-12);
   truth('lease-adjusted net debt / EBITDA', Math.abs(a.netDebtToEbitda - 480 / 210) < 1e-12 && Math.abs(b.netDebtToEbitda - 180 / 150) < 1e-12);
+  truth('net debt subtracts short-term investments too', R.solvency({ ...q, shortTermInvestments: 30 }).netDebt === 150);
   truth('leases as debt without lease cost leaves earnings as reported', Math.abs(R.solvency({ ...q, leaseCost: undefined, leaseInterest: undefined }, { withLeases: true }).netDebtToEbitda - 480 / 150) < 1e-12);
   truth('inventory days on the cost of goods sold when given', Math.abs(R.efficiency({ cogs: 300, cogsGoods: 100, inventory: 10 }).dio - 36.5) < 1e-12);
 }

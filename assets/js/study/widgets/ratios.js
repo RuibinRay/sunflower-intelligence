@@ -99,6 +99,9 @@ export function compute(data, prevData, o = {}) {
   return c;
 }
 
+/** Ratios that divide by equity (or by debt plus equity) mean nothing when equity is zero or negative. */
+const BY_EQUITY = new Set(['liabilitiesToEquity', 'debtToEquity', 'debtToCapital', 'equityMultiplier', 'roe', 'dupontMultiplier', 'dupontRoe']);
+const nm = (k, c) => BY_EQUITY.has(k) && typeof c.p.equity === 'number' && (c.p.equity <= 0 || (k.startsWith('dupont') || k === 'roe' ? (c.avg('equity') ?? 1) <= 0 : false));
 const applyDelta = (data, delta) => { const out = { ...data }; for (const [k, v] of Object.entries(delta || {})) out[k] = (out[k] || 0) + v; return out; };
 
 export function mount(el, cfg, ctx) {
@@ -143,15 +146,15 @@ export function mount(el, cfg, ctx) {
       const pick = h('button', { type: 'button', class: 'ra-pick', 'aria-pressed': String(st.sel === k) }, r.label);
       pick.addEventListener('click', () => { st.sel = k; render(); });
       rows.push(h('tr', { class: st.sel === k ? 'is-selected' : '' }, h('th', { scope: 'row' }, pick),
-        ...cols.map((c) => { const v = r.f(c.c); return h('td', { class: 'num' }, v == null || !Number.isFinite(v) ? '—' : FMT[r.fmt](v)); })));
+        ...cols.map((c) => { const v = r.f(c.c); return h('td', { class: 'num' }, nm(k, c.c) ? 'n/m' : v == null || !Number.isFinite(v) ? '—' : FMT[r.fmt](v)); })));
     }
     const notes = [...st.on].map((j) => cfg.adjust[j]).filter((a) => a.note);
     adjNotes.replaceChildren(...notes.map((a) => { const p = h('p', { class: 'fx-note' }); p.innerHTML = xl(`<b>${a.label}.</b> ${a.note}`); return p; }));
-    table.replaceChildren(h('table', { class: 'data-table ra-table' }, h('caption', { class: 'fx-cap' }, 'Pick a ratio to see how it is worked out.'), thead, h('tbody', {}, ...rows)));
+    table.replaceChildren(h('table', { class: 'data-table ra-table' }, h('caption', { class: 'fx-cap' }, 'Pick a ratio to see how it is worked out. On a narrow screen, scroll the table sideways for every column.'), thead, h('tbody', {}, ...rows)));
     const r = RATIOS[st.sel];
     how.replaceChildren(h('p', { class: 'fx-note' }, h('b', {}, r.label)), h('ul', {}, ...cols.map((c) => {
       const v = r.f(c.c);
-      const text = v == null || !Number.isFinite(v) ? 'not defined: an input is missing or a divisor is zero' : `${r.how(c.c)} = ${FMT[r.fmt](v)}${r.fmt === 'days' ? ' days' : ''}`.replace(/(^|[\s(×÷=+])-(?=\d)/g, '$1−');
+      const text = nm(st.sel, c.c) ? 'not meaningful: equity is negative (a deficit), so a ratio that divides by it, or by debt plus it, has no useful reading' : v == null || !Number.isFinite(v) ? 'not defined: an input is missing or a divisor is zero' : `${r.how(c.c)} = ${FMT[r.fmt](v)}${r.fmt === 'days' ? ' days' : ''}`.replace(/(^|[\s(×÷=+])-(?=\d)/g, '$1−');
       return h('li', {}, h('b', {}, `${c.label}: `), text);
     })));
   }

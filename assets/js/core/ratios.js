@@ -85,8 +85,8 @@ export function solvency(p, { withLeases = false } = {}) {
     equityMultiplier: div(p.totalAssets, p.equity),
     interestCoverage: div(ebit, interest),
     ebitdaCoverage: div(ebitda, interest),
-    netDebt: sub(debt, p.cash),
-    netDebtToEbitda: div(sub(debt, p.cash), ebitda),
+    netDebt: sub(debt, add(p.cash ?? null, p.shortTermInvestments ?? 0)),                 // less cash and short-term investments
+    netDebtToEbitda: div(sub(debt, add(p.cash ?? null, p.shortTermInvestments ?? 0)), ebitda),
   };
 }
 
