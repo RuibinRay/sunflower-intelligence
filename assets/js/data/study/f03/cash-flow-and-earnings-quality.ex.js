@@ -6,6 +6,9 @@ import * as R from '../../../core/ratios.js?v=18';
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const contract = P27.contractAsset;
 const taxOnContract = contract * FACTS.tax.rate;
+// the lower tax first clears income taxes payable; the rest becomes a tax receivable (a current asset)
+const taxPayable = COMPARATIVE.balance.find((r) => r[0] === 'Income Taxes Payable')[2];   // 2,977 at 31 December 2027
+const taxReceivable = taxOnContract - taxPayable;
 const money = (v) => `${v < 0 ? '−' : ''}$${Math.abs(Math.round(v)).toLocaleString('en-US')}`;
 const ind = Object.fromEntries(COMPARATIVE.indirect2027);
 const wcAbsorbed = -COMPARATIVE.indirect2027.slice(2, -1).reduce((s, r) => s + r[1], 0);   // 33,890
@@ -21,11 +24,11 @@ export const widgets = {
       id: 'no-contract', period: 1,
       label: '2027 without the law firm’s unbilled revenue ($30,840) and the tax on it',
       delta: { revenue: -contract, grossProfit: -contract, operatingIncome: -contract, ebit: -contract, pretax: -contract,
-        tax: -taxOnContract, netIncome: -(contract - taxOnContract), contractAsset: -contract, currentAssets: -contract, totalAssets: -contract,
-        currentLiabilities: -taxOnContract, totalLiabilities: -taxOnContract, equity: -(contract - taxOnContract), retainedEarnings: -(contract - taxOnContract) },
+        tax: -taxOnContract, netIncome: -(contract - taxOnContract), contractAsset: -contract, currentAssets: -contract + taxReceivable, totalAssets: -contract + taxReceivable,
+        currentLiabilities: -taxPayable, totalLiabilities: -taxPayable, equity: -(contract - taxOnContract), retainedEarnings: -(contract - taxOnContract) },
     }],
     select: 'cfoToNetIncome',
-    note: 'Fictional figures. 2026 has no opening balance sheet, so its ratios use closing total assets; 2027’s use the average of the two year ends while “Use average balances” is ticked. Removing the contract asset leaves operating cash and free cash flow unchanged: the revenue was never cash.',
+    note: 'Fictional figures. 2026 has no opening balance sheet, so its ratios use closing total assets; 2027’s use the average of the two year ends while “Use average balances” is ticked. Removing the contract asset leaves operating cash and free cash flow unchanged: the revenue was never cash. With it removed, net income is negative and CFO ÷ net income shows n/m (not meaningful): compare the dollar amounts instead. The lower tax first clears the $2,977 of income taxes payable; the rest is shown as a tax receivable.',
   },
   'cfq-explorer': {
     type: 'formula',
@@ -117,15 +120,15 @@ export const guided = [
   },
   {
     id: 'f03-cfq-g4', type: 'num', kind: 'applied',
-    prompt: 'Lantern reports under US GAAP, so its $40,000 of café lease payments in 2027 are operating cash outflows. $11,124 of that is the interest on the lease liability. An analyst wants to compare Lantern with a café group that reports under IFRS 16 and classifies interest paid as operating. What would Lantern’s 2027 net cash from operating activities be on that IFRS basis? Its US GAAP figure is $8,341.',
-    answer: 37217, check: () => P27.cfo + (LEASE.paid2027 - LEASE.interest2027), tol: 0.5, unit: '$', places: 0,
-    hints: ['Under IFRS 16 the principal part of each lease payment is a financing outflow.', 'Principal = 40,000 − 11,124 = 28,876; add it back to operating cash.'],
+    prompt: 'Lantern reports under US GAAP, so its $40,000 of café lease payments in 2027 are operating cash outflows. $11,124 of that is the interest on the lease liability. An analyst wants to compare Lantern with a café group that reports under IFRS for 2027, applying IFRS 16 and IAS 7 as amended by IFRS 18; lending and investing are not its main business. What would Lantern’s 2027 net cash from operating activities be on that IFRS basis? Its US GAAP figure is $8,341.',
+    answer: 48341, check: () => P27.cfo + LEASE.paid2027, tol: 0.5, unit: '$', places: 0,
+    hints: ['Under IFRS 16 the principal part of each lease payment is a financing outflow. Where does IFRS 18 put interest paid?', 'Principal 28,876 and interest 11,124 both leave operating activities: add 40,000 back.'],
     wrong: [
-      { value: 48341, say: 'Only the principal moves to financing; this IFRS reporter keeps interest paid in operating activities.' },
-      { value: -20535, say: 'Moving an outflow out of operating activities raises operating cash; add the principal back.' },
-      { value: 19465, say: 'That adds back only the interest. It is the principal, $28,876, that IFRS 16 puts in financing.' },
+      { value: 37217, say: 'That moves only the principal. Keeping interest paid in operating activities was IAS 7’s option before IFRS 18; from 2027 a company like this must classify it as financing.' },
+      { value: -31659, say: 'Moving an outflow out of operating activities raises operating cash; add the payments back.' },
+      { value: 19465, say: 'That adds back only the interest. The principal, $28,876, is a financing outflow under IFRS 16 as well.' },
     ],
-    solution: 'Principal portion = 40,000 − 11,124 = 28,876. IFRS-basis operating cash = 8,341 + 28,876 = $37,217. Free cash flow would rise by the same amount, to −$16,783, with nothing about the cafés changed.',
+    solution: 'Under IFRS 16 the principal portion (40,000 − 11,124 = 28,876) is financing; under IAS 7 as amended by IFRS 18 the interest portion (11,124) is financing too, for a company whose main business is not lending or investing. IFRS-basis operating cash = 8,341 + 40,000 = $48,341. Free cash flow would rise by the same amount, to −$5,659, with nothing about the cafés changed.',
   },
 ];
 
@@ -179,7 +182,7 @@ export const independent = [
     prompt: 'A fictional software reseller’s annual report shows the following. Select all that apply: which are red flags for earnings quality?',
     options: [
       'Revenue rose 12% while receivables rose 48%',
-      'It started capitalising sales commissions that it used to expense',
+      'It started capitalising advertising costs that it used to expense',
       'Operating cash has exceeded net income in each of the last three years',
       'Operating income includes a $2 million gain on selling its head office',
       'Its capital expenditure is about equal to its depreciation',
@@ -206,7 +209,7 @@ export const independent = [
     id: 'f03-cfq-i6', type: 'mc', kind: 'conceptual',
     prompt: 'In 2014 Amazon reported a net loss of $241 million but net cash from operating activities of $6,842 million. Which explanation fits its 10-K?',
     options: [
-      'Large noncash depreciation and amortisation, and suppliers who were owed more than Amazon’s inventories and receivables together',
+      'Large noncash charges (depreciation, amortisation and stock-based compensation), and payables growing faster than inventories and receivables',
       'A one-off gain on selling warehouses and data centres, which was included in full in net cash from operating activities that year',
       'Operating lease payments that were classified as financing activities under IFRS 16',
       'A restatement that moved losses from earlier years into 2014',
@@ -215,9 +218,9 @@ export const independent = [
     feedback: {
       1: 'Gains on asset sales are subtracted in the operating section; their cash is investing.',
       2: 'Amazon reports under US GAAP, and IFRS 16 did not exist in 2014.',
-      3: 'Nothing in the filing points to a restatement; the gap is depreciation and working capital.',
+      3: 'Nothing in the filing points to a restatement; the gap is noncash charges and working capital.',
     },
-    solution: 'Depreciation and amortisation of $4,746 million reduced profit without using cash, and accounts payable of $16,459 million exceeded inventories ($8,299 million) plus receivables ($5,612 million), so growth released cash.',
+    solution: 'Of the $7,083 million gap, depreciation and amortisation ($4,746 million) and stock-based compensation ($1,497 million) reduced profit without using cash, and working capital released $974 million because payables grew faster than inventories plus receivables.',
   },
 ];
 
@@ -271,7 +274,7 @@ export const check = [
       2: 'The 8-K’s restatement is about consolidation of off-balance-sheet entities, not a percentage adjustment to trading revenue.',
       3: 'Lease classification is not what the 8-K restated.',
     },
-    solution: 'Chewco did not meet the criteria for an unconsolidated special-purpose entity, so JEDI did not either, and an LJM1 subsidiary was inadequately capitalised. Consolidating them cut net income by $96–$250 million a year and added $561–$711 million of debt.',
+    solution: 'Chewco did not meet the criteria for an unconsolidated special-purpose entity, so JEDI did not either, and an LJM1 subsidiary was inadequately capitalised. The restatement (mainly that consolidation, plus earlier proposed audit adjustments) cut net income by $96–$250 million a year, and consolidating JEDI and Chewco added $561–$711 million of debt.',
   },
   {
     id: 'f03-cfq-k5', type: 'mc', kind: 'applied',

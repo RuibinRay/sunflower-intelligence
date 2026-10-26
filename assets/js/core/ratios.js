@@ -8,7 +8,8 @@
 //   payables, currentLiabilities, totalLiabilities, debt (interest-bearing, current + noncurrent),
 //   leaseLiabilities (operating, current + noncurrent), equity, retainedEarnings, marketEquity,
 //   cfo, capex (a positive number: cash spent), dividends, purchases, months (length of the period, default 12),
-//   creditSales (sales on credit, for receivables days), cogsGoods (cost of the goods sold, for inventory days, when cost
+//   creditSales (sales on credit: receivables turnover and days use `revenue`, so pass { ...p, revenue: p.creditSales }
+//   for days on credit sales, as the ratios widget's credit-sales toggle does), cogsGoods (cost of the goods sold, for inventory days, when cost
 //   of sales also holds services), leaseInterest and leaseCost (operating leases: the interest inside the lease cost, and
 //   the whole cost), used when leases are counted as debt
 // Ratios that divide a flow by a stock use the average of the opening and closing stock when the prior period is

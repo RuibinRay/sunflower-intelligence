@@ -17,7 +17,7 @@
 // No hints; solutions are shown on review. Every num item’s `check` recomputes its answer from the inputs below.
 import * as R from '../../../core/ratios.js?v=18';
 
-const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+const fx = (v, d = 2) => `${v < 0 && Math.abs(v) >= 0.5 * 10 ** -d ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const usd = (v) => `${v < 0 ? '−' : ''}$${Math.abs(Math.round(v)).toLocaleString('en-US')}`;
 const pc = (v, d = 1) => `${v < 0 ? '−' : ''}${fx(Math.abs(v) * 100, d)}%`;
 
@@ -200,7 +200,7 @@ export const items = [
       { value: 7.4, say: 'That divides by closing total assets. Use the average of opening and closing.' },
       { value: 36.4, say: 'That is operating cash ÷ net income. The accruals ratio scales the gap by average total assets.' },
     ],
-    solution: `Accruals = net income − CFO = ${fx(UF.netIncome)} − ${fx(UF.cfo)} = ${fx(UF.netIncome - UF.cfo)}. Average total assets = (${fx(UF.taOpen, 1)} + ${fx(UF.taClose, 1)}) ÷ 2 = ${fx((UF.taOpen + UF.taClose) / 2, 1)}. Accruals ratio = ${fx(UF.netIncome - UF.cfo)} ÷ ${fx((UF.taOpen + UF.taClose) / 2, 1)} = ${pc(ufRatio)}: well over half of the profit has not yet arrived as cash, so look for where it sits (receivables, inventory, capitalised costs).`,
+    solution: `Accruals = net income − CFO = ${fx(UF.netIncome)} − ${fx(UF.cfo)} = ${fx(UF.netIncome - UF.cfo)}. Average total assets = (${fx(UF.taOpen, 1)} + ${fx(UF.taClose, 1)}) ÷ 2 = ${fx((UF.taOpen + UF.taClose) / 2, 1)}. Accruals ratio = ${fx(UF.netIncome - UF.cfo)} ÷ ${fx((UF.taOpen + UF.taClose) / 2, 1)} = ${pc(ufRatio)}: almost two-thirds of the profit has not yet arrived as cash, so look for where it sits (receivables, inventory, capitalised costs).`,
   },
   {
     id: 'f03-dg-11', lesson: 'distress-scores', type: 'num', kind: 'numerical',

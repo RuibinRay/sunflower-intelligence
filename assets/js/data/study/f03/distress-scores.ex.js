@@ -65,7 +65,7 @@ export const widgets = {
           ...a.x.map((x, i) => [`${names[i]}: ${f2(x * 100 / 100)} × ${R.ALTMAN.zdouble.w[i]}`, f2(a.terms[i])]),
           ['With the +3.25 constant (EM score)', f2(a.score + 3.25)],
         ],
-        note: `${a.zone === 'safe' ? 'Above 2.60: the safe zone.' : a.zone === 'grey' ? `In the grey zone; ${f2(toSafe)} more points would reach the safe zone.` : `In the distress zone; ${f2(toGrey)} more points would reach the grey zone.`} The largest positive term is ${biggest[0][0].toLowerCase()}${biggest[3][1] < 0 ? `; ${biggest[3][0].toLowerCase()} pulls the score down` : ''}. Equity is ${v.ta - v.tl < 0 ? 'negative' : `$${(v.ta - v.tl).toLocaleString('en-US')}`}.`,
+        note: `${a.zone === 'safe' ? 'Above 2.60: the safe zone.' : a.zone === 'grey' ? `In the grey zone; ${f2(toSafe)} more points would reach the safe zone.` : `In the distress zone; ${f2(toGrey)} more points would reach the grey zone.`} The largest positive term is ${biggest[0][0]}${biggest[3][1] < 0 ? `; ${biggest[3][0]} pulls the score down` : ''}. Equity is ${v.ta - v.tl < 0 ? 'negative' : `$${(v.ta - v.tl).toLocaleString('en-US')}`}.`,
         chart: { kind: 'bar', x: { label: 'Term', values: ['X₁ term', 'X₂ term', 'X₃ term', 'X₄ term', 'Z″'] }, series: [{ name: 'Points', values: [...a.terms, a.score] }], y: { label: 'Points' } },
       };
     },
@@ -85,7 +85,7 @@ export const guided = [
       { id: 'f03-z-g1b', type: 'num', kind: 'numerical', prompt: 'Z″, to two decimal places.',
         answer: 6.47, check: () => zdd(P26), tol: 0.01, unit: '', places: 2,
         hints: ['X₂ = 22,387 ÷ 93,676; X₃ = 37,716 ÷ 93,676; X₄ = 42,387 ÷ 51,289.', '6.56 × 0.322 + 3.26 × 0.239 + 6.72 × 0.403 + 1.05 × 0.826.'],
-        wrong: [{ value: 3.22, say: 'You may have used the Z weights (1.2, 1.4, 3.3, 0.6). Z″ uses 6.56, 3.26, 6.72 and 1.05.' }],
+        wrong: [{ value: 2.55, say: 'You used the original Z weights (1.2, 1.4, 3.3, 0.6) on the four ratios. Z″ uses 6.56, 3.26, 6.72 and 1.05.' }],
         solution: 'X₂ = 0.239, X₃ = 0.403, X₄ = 0.826. Z″ = 2.11 + 0.78 + 2.71 + 0.87 = 6.47.' },
       { id: 'f03-z-g1c', type: 'mc', kind: 'conceptual', prompt: 'Which zone is that, and what is the main caution about it?',
         options: ['Safe, though ten months’ EBIT understates it a little', 'Grey: between the two cut-offs, so the model cannot call it', 'Safe; and annualising would push it into the grey zone', 'Distress; the score is below 2.60'],
@@ -127,7 +127,7 @@ export const guided = [
     hints: ['Working capital rises by $24,000 to −$31,433; equity ÷ liabilities = 86,818 ÷ 241,065.', '6.56 × (−0.096) + 3.26 × 0.131 + 6.72 × 0.100 + 1.05 × 0.360.'],
     wrong: [
       { value: 0.24, say: 'That is the actual 2027 score. Repaying a current liability with new equity raises working capital and equity ÷ liabilities.' },
-      { value: 0.89, say: 'Check X₂: retained earnings don’t change when new shares are issued; only total equity does.' },
+      { value: 1.09, say: 'Check X₂: retained earnings don’t change when new shares are issued; only total equity does.' },
     ],
     solution: 'X₁ = (59,104 − 90,537) ÷ 327,883 = −0.096; X₂ = 0.131; X₃ = 0.100; X₄ = 86,818 ÷ 241,065 = 0.360. Z″ = −0.63 + 0.43 + 0.67 + 0.38 = 0.85: still in the distress zone. A $24,000 injection would not by itself move Lantern out of it.',
   },

@@ -26,9 +26,11 @@ const signed = (v) => `${v < 0 ? '−' : '+'}${Math.abs(v).toLocaleString('en-US
 
 // Amazon (REAL-FIGURES.md §2, 2014 Form 10-K), $ millions
 const AMZN = { years: [2012, 2013, 2014], ni: [-39, 274, -241], cfo: [4180, 5475, 6842], capex: [3785, 3444, 4893], fcf: [395, 2031, 1949],
-  da: [2159, 3253, 4746], ap2014: 16459, inv2014: 8299, ar2014: 5612 };
+  da: [2159, 3253, 4746], ap2014: 16459, inv2014: 8299, ar2014: 5612, ca2014: 31327, cl2014: 28089,
+  sbc2014: 1497, wc2014: [-1193, -1039, 1759, 706, 4433, -3692] };   // 2014 cash-flow statement (R2): stock-based compensation and working-capital lines
 // Enron (REAL-FIGURES.md §3, Form 8-K of 8 November 2001, Table 1), $ millions
 const ENRON = { reported: [105, 703, 893, 979], restated: [9, 590, 643, 847], debtUp: [711, 561, 685, 628],
+  jedi: [45, 107, 153, 91], ljm: [0, 0, 95, 8], audit: [51, 6, 2, 33],
   rev: [40112, 100789], ta: [33381, 65503], debt: [8152, 10229] };   // 1999 and 2000, Form 10-K for 2000, Item 6
 const enronCut = ENRON.reported.map((v, i) => v - ENRON.restated[i]);          // 96, 113, 250, 132
 
@@ -87,7 +89,7 @@ export default {
       note: 'Fictional figures. Depreciation is added back because it used no cash this year; every other line is a change in an operating current asset or liability.',
     } },
     { p: `Depreciation of $19,800 lifts operating cash above profit, as it did in 2026. The working-capital lines pull the other way, by $33,890 in total, and one line dominates them: the increase of $30,840 in the <g>contract asset</g>. That is the law firm’s catering. Lantern has served the firm’s events since 1 April and recognised nine months of an estimated $41,120 annual fee as revenue, but the contract says the fee is paid at the end of each contract year, on 31 March 2028. The revenue is real under ASC 606, and it is in net income, but not a cent of it is in cash.` },
-    { callout: 'key', title: 'Take out the unbilled revenue and the profit disappears', html: `Lantern’s income before tax was $29,908. Without the $30,840 of unbilled law-firm revenue it would have been <m>29{,}908 - 30{,}840 = -932</m>, a loss; after tax at 25% the loss is $699. Everything else Lantern did in 2027 (two new cafés, the shop, workshops and its other catering) roughly broke even. That doesn’t make the profit false. It means 2027’s profit is a claim on one client’s payment in March 2028, and its quality depends on that client and on the estimate of the fee.` },
+    { callout: 'key', title: 'Take out the unbilled revenue and the profit disappears', html: `Lantern’s income before tax was $29,908. Without the $30,840 of unbilled law-firm revenue it would have been <m>29{,}908 - 30{,}840 = -932</m>, a loss before tax. After a 25% tax benefit of $233 (a loss carried forward, if Lantern can use it) the net loss would be $699; with no benefit, $932. Without that revenue, and still bearing the cost of the events, Lantern would have made a loss. That doesn’t make the profit false. It means 2027’s profit is a claim on one client’s payment in March 2028, and its quality depends on that client and on the estimate of the fee.` },
     { h: 'Free cash flow' },
     { p: '<g>Free cash flow</g> (FCF) takes the analysis one step further. Operating cash has to pay for the equipment, fit-outs and other long-lived assets that keep the business running and growing, called <g>capital expenditure</g> (capex). What is left is free for lenders and owners: to repay debt, pay dividends or build up cash. The usual definition, and Amazon’s published one, is CFO minus capital expenditure.' },
     { p: `Lantern’s 2027 free cash flow was <m>8{,}341 - 54{,}000 = -45{,}659</m>. The $54,000 was the cafés’ fit-out ($36,000) and machines ($18,000), all paid in cash. The shortfall was met by running down cash by $36,409 and by net financing of $9,250: $24,000 drawn on the line of credit, less $12,750 of loan repayments and a $2,000 dividend. Check: <m>-45{,}659 + 9{,}250 = -36{,}409</m>.` },
@@ -103,7 +105,7 @@ export default {
       '<b>Accruals ratio</b> = (net income − CFO) ÷ average total assets. Scaling by assets lets you compare years and companies of different sizes. For 2027 the average is of the opening and closing balance sheets; for 2026 there is no opening balance sheet (Lantern started on 1 March 2026 with nothing), so 2026 uses closing total assets.',
       '<b>Free cash flow</b> = CFO − capital expenditure, and the <b>FCF margin</b> = FCF ÷ revenue. Some analysts also subtract dividends, or only the capex needed to maintain the existing assets; OpenStax’s accounting text shows both versions. State the definition you use.',
     ] },
-    { p: `Lantern’s accruals ratio was <m>-12{,}553 \\div 93{,}676 = -13.4\\%</m> in 2026 (closing total assets) and <m>14{,}090 \\div 210{,}779.5 = 6.7\\%</m> in 2027, where 210,779.5 is the average of $93,676 and $327,883. The 2027 figure is flattered by the size of the balance sheet: $173,379 of it is the cafés’ right-of-use asset, which ASC 842 brought onto the balance sheet in March. Large positive accruals, relative to assets, have long been studied as a sign that profits will be lower in later years; treat the ratio as a prompt to look for the reason, not as a verdict.` },
+    { p: `Lantern’s accruals ratio was <m>-12{,}553 \\div 93{,}676 = -13.4\\%</m> in 2026 (closing total assets) and <m>14{,}090 \\div 210{,}779.5 = 6.7\\%</m> in 2027, where 210,779.5 is the average of $93,676 and $327,883. The 2027 figure is flattered by the size of the balance sheet: $173,379 of it is the cafés’ right-of-use asset, which ASC 842 brought onto the balance sheet in March. Treat a large positive accruals ratio as a prompt to look for the reason, not as a verdict.` },
     { p: 'A fifth measure looks at investment: <b>capex ÷ depreciation</b>. A business that spends about as much as its depreciation is maintaining its assets; one that spends much more is growing them. Lantern’s 2027 ratio was <m>54{,}000 \\div 19{,}800 = 2.73</m>, a growth year. A ratio well below 1 year after year can mean assets are wearing out without replacement, which flatters free cash flow for a while.' },
     { h: 'Estimates inside earnings' },
     { p: 'Every profit contains estimates. The analyst’s job is to find the large ones and ask how much they could move. Lantern’s 2027 statements have four.' },
@@ -115,8 +117,8 @@ export default {
     ] },
     { p: 'Notice what the list shows: estimates change profit, never cash. That is why comparing profit with cash is the most reliable single test of earnings quality. Cash from operations can be shifted between years too, by delaying payments to suppliers or selling receivables, but it is much harder to create from nothing.' },
     { h: 'Leases and comparing operating cash flows' },
-    { p: `Under US GAAP (ASC 842) the payments on an operating lease are operating cash outflows: Lantern’s $40,000 of café rent is inside its CFO. Under IFRS 16 there is no operating lease category for lessees, and the principal part of each lease payment is a financing outflow. On IFRS, Lantern’s operating cash flow would be higher by at least the principal repaid, <m>40{,}000 - 11{,}124 = 28{,}876</m> dollars, and by the $11,124 of interest as well if its policy put interest paid in financing. Free cash flow would rise by the same amount, though nothing about the cafés’ economics changed.` },
-    { callout: 'standards', title: 'US GAAP and IFRS: lease payments in the cash-flow statement', html: 'US GAAP: operating lease payments are operating activities; for a finance lease, the principal is financing and the interest is classified like other interest paid (operating). IFRS 16: the principal portion of lease payments is financing; the interest portion follows the company’s IAS 7 policy for interest paid; short-term, low-value and variable lease payments are operating. Before comparing the CFO or free cash flow of a US and an IFRS company that lease heavily, put them on the same basis.' },
+    { p: `Under US GAAP (ASC 842) the payments on an operating lease are operating cash outflows: Lantern’s $40,000 of café rent is inside its CFO. Under IFRS 16 there is no operating lease category for lessees, and the principal part of each lease payment is a financing outflow. And since IAS 7 was amended by IFRS 18, for periods beginning on or after 1 January 2027, a company whose main business is not lending or investing must classify interest paid as financing too; the old choice between operating and financing is gone. On IFRS, then, Lantern’s 2027 operating cash flow would be $40,000 higher: the principal of <m>40{,}000 - 11{,}124 = 28{,}876</m> dollars and the $11,124 of interest would both be financing outflows. Free cash flow would rise by the same amount, though nothing about the cafés’ economics changed.` },
+    { callout: 'standards', title: 'US GAAP and IFRS: lease payments in the cash-flow statement', html: 'US GAAP: operating lease payments are operating activities; for a finance lease, the principal is financing and the interest is classified like other interest paid (operating). IFRS 16: the principal portion of lease payments is financing; the interest portion is classified like other interest paid, which under IAS 7 as amended by IFRS 18 (periods beginning on or after 1 January 2027) is financing for a company whose main business is not lending or investing (before IFRS 18 it could choose operating); short-term, low-value and variable lease payments are operating. Before comparing the CFO or free cash flow of a US and an IFRS company that lease heavily, put them on the same basis.' },
     { h: 'Reinvestment over reported profit: Amazon, 2012–2014' },
     { p: 'The opposite pattern to Lantern’s is a business whose reported profit looks poor while its operations produce a great deal of cash. Amazon’s filings for 2012–2014 are a well-known example.' },
     { table: {
@@ -132,11 +134,11 @@ export default {
       ],
       note: 'Source: Amazon.com, Inc., Form 10-K for 2014: statements of operations and cash flows, and Item 6 (free cash flow, footnote 2). The 2014 10-K defines free cash flow as net cash from operating activities less those purchases.',
     } },
-    { p: 'In 2014 Amazon reported a net loss of $241 million and operating cash of $6,842 million. Two things explain most of the gap. Depreciation and amortisation of $4,746 million was charged against profit without using cash in the year; it reflected years of heavy investment in warehouses and computing. And Amazon’s working capital was negative: at the end of 2014 it owed suppliers $16,459 million, more than its inventories ($8,299 million) and receivables ($5,612 million) together. Customers paid before Amazon paid its suppliers, so growth released cash instead of absorbing it. Free cash flow stayed positive while profit was close to zero, because Amazon chose to reinvest rather than report earnings.' },
+    { p: 'In 2014 Amazon reported a net loss of $241 million and operating cash of $6,842 million. The gap was $7,083 million. Depreciation and amortisation ($4,746 million) and stock-based compensation ($1,497 million), both noncash, explain most of it; working capital released a further $974 million, because payables grew faster than inventories plus receivables. Amazon’s operating working capital (receivables plus inventories minus payables) was negative: at the end of 2014 it owed suppliers $16,459 million, more than its inventories ($8,299 million) and receivables ($5,612 million) together, a net −$2,548 million. Customers paid before Amazon paid its suppliers, so growth released cash instead of absorbing it. (Its total working capital, all current assets less all current liabilities, was positive: $31,327 million against $28,089 million.) Free cash flow stayed positive while profit was close to zero.' },
     { p: 'The lesson cuts both ways. Low profit with strong cash flow can be a sign of conservative or investment-heavy accounting, not weakness. But Amazon’s model depends on suppliers’ terms; a business with Lantern’s structure, where a large client pays a year after the first event, sits on the other side of that trade.' },
     { h: 'Aggressive accounting: Enron’s restatement' },
-    { p: `On 8 November 2001 Enron filed a Form 8-K saying it would restate its financial statements for 1997 to 2001. Entities it had kept off its balance sheet should have been consolidated: Chewco and JEDI from November 1997, and a subsidiary of LJM1, a related-party partnership, from 1999. The filing’s table shows what consolidation did: net income fell by $96 million (1997), $113 million (1998), $250 million (1999) and $132 million (2000), and debt rose by $711, $561, $685 and $628 million in those years. For 2000, reported net income of $979 million became $847 million.` },
-    { p: 'The Board’s special investigative committee reported in February 2002 (the Powers Report). Its summary found that many of the most significant transactions were designed to produce favourable financial-statement results rather than real economic objectives or a transfer of risk, and that transactions with the related-party entities led Enron to report earnings from the third quarter of 2000 to the third quarter of 2001 that were almost $1 billion higher than should have been reported.' },
+    { p: `On 8 November 2001 Enron filed a Form 8-K saying it would restate its financial statements for 1997 to 2001. Entities it had kept off its balance sheet should have been consolidated: Chewco and JEDI from November 1997, and a subsidiary of LJM1, a related-party partnership, from 1999. The filing’s Table 1 shows the effect. The restatement (mainly consolidation, plus earlier proposed audit adjustments and reclassifications) cut net income by $96 million (1997), $113 million (1998), $250 million (1999) and $132 million (2000); consolidation alone accounted for $45, $107, $248 and $99 million of that. Consolidating JEDI and Chewco raised debt by $711, $561, $685 and $628 million in those years. For 2000, reported net income of $979 million became $847 million.` },
+    { p: 'The Board’s special investigative committee reported in February 2002 (the Powers Report). Its summary found that many of the most significant transactions were designed to produce favourable financial-statement results rather than real economic objectives or a transfer of risk, and that the hedging transactions with those entities led Enron to report earnings from the third quarter of 2000 to the third quarter of 2001 that were almost $1 billion higher than should have been reported.' },
     { quote: { text: 'Many of the most significant transactions apparently were designed to accomplish favorable financial statement results, not to achieve bona fide economic objectives or to transfer risk.', cite: 'Report of Investigation by the Special Investigative Committee of the Board of Directors of Enron Corp. (Powers Report), 1 February 2002, p. 4.' } },
     { p: `What could an analyst have seen beforehand? Not the restated figures. The 2000 10-K showed revenues up from $${ENRON.rev[0].toLocaleString('en-US')} million to $${ENRON.rev[1].toLocaleString('en-US')} million in a year, total assets nearly doubled from $${ENRON.ta[0].toLocaleString('en-US')} million to $${ENRON.ta[1].toLocaleString('en-US')} million and debt up from $${ENRON.debt[0].toLocaleString('en-US')} million to $${ENRON.debt[1].toLocaleString('en-US')} million. Rapid growth is not a red flag in itself; growth financed by debt, with earnings that depend on transactions with related parties, is the pattern the list below is built to catch.` },
     { h: 'Red flags' },
@@ -144,7 +146,7 @@ export default {
     { list: [
       '<b>Receivables or contract assets growing faster than sales.</b> Revenue is being recognised before customers pay, or customers are paying more slowly.',
       '<b>Operating cash persistently below net income</b>, year after year, without an investment or growth story that explains it.',
-      '<b>Costs capitalised that peers expense</b>, such as software development, customer acquisition or start-up costs. Capitalising moves the cash outflow into investing and the expense into later years.',
+      '<b>Costs capitalised that peers expense</b>, such as start-up, advertising or routine maintenance costs, or useful lives longer than peers use. Capitalising moves the cash outflow into investing and the expense into later years.',
       '<b>One-off gains inside operating income</b>: sales of property, insurance settlements, the release of provisions.',
       '<b>Related-party transactions</b> and entities kept off the balance sheet, especially when the related party is an officer of the company.',
       '<b>Changes in estimates or policies</b>, such as longer useful lives, lower bad-debt rates or a new revenue policy, that raise profit in the year they are made.',
@@ -194,12 +196,12 @@ export default {
     { level: 'challenging', title: 'How much of the profit rests on one estimate?', fictional: true,
       setup: `Lantern recognised $30,840 of revenue on the law firm’s contract: nine months of a first-year fee estimated at $40,000 × 1.028. Its 2027 income before tax was $29,908 and its tax rate is 25%. (a) What would net income have been without that revenue? (b) What would it have been had Lantern estimated 2.0% inflation instead of 2.8%? (c) What do the answers say about the quality of the profit?`,
       steps: [
-        'Without the revenue: income before tax <m>29{,}908 - 30{,}840 = -932</m>; tax at 25% is <m>-233</m>; net income <m>-932 + 233 = -699</m>. Equivalently, <m>22{,}431 - 30{,}840 \\times 0.75 = -699</m>.',
+        'Without the revenue: income before tax <m>29{,}908 - 30{,}840 = -932</m>. At 25% the tax effect is a benefit of 233 (a loss carried forward, if Lantern can use it later), so net income is <m>-932 + 233 = -699</m>; equivalently <m>22{,}431 - 30{,}840 \\times 0.75 = -699</m>. With no tax benefit the loss is 932.',
         'At 2.0% inflation the revenue is <m>40{,}000 \\times 1.020 \\times 9/12 = 30{,}600</m>, $240 less. After tax, net income falls by <m>240 \\times 0.75 = 180</m>, to <m>22{,}431 - 180 = 22{,}251</m>.',
         'Operating cash is $8,341 in every case: the contract asset is unbilled, so neither the revenue nor the inflation estimate touched cash in 2027 (the tax effect would show only in a later year’s payments).',
         'So the estimate barely matters, but the contract does: the whole of 2027’s profit depends on one client paying about $41,120 on 31 March 2028.',
       ],
-      answer: '(a) A net loss of $699. (b) Net income of $22,251, $180 lower. (c) The profit is sensitive to the existence and collection of the contract asset, not to the inflation estimate.',
+      answer: '(a) A net loss of $699 after a $233 tax benefit ($932 if no benefit can be recognised). (b) Net income of $22,251, $180 lower. (c) The profit is sensitive to the existence and collection of the contract asset, not to the inflation estimate.',
       interpretation: 'Without the law-firm revenue, the rest of Lantern produced $8,341 of operating cash against a small loss: the cash flow of the cafés, shop and catering is better than their profit. Coastline’s analyst should therefore check the law firm’s creditworthiness and the contract terms, not argue about the CPI forecast.' },
     { level: 'applied', title: 'A lender screens an outdoor retailer for red flags', fictional: true,
       setup: 'Rowan & Pike Outfitters, a fictional outdoor-clothing wholesaler, asks its bank to raise its overdraft limit. Its figures, in thousands of dollars, for the last two years: revenue $4,200 and $4,620; receivables at the year end $520 and $810; net income $310 and $420; cash from operations $360 and $120. The notes to year 2 add that $150 of product-design costs were capitalised for the first time (expensed in year 1) and that operating income includes a $90 gain on selling a warehouse (treat it as after tax). Screen the figures for red flags and say what the bank should ask.',
@@ -223,7 +225,7 @@ export default {
     { title: '“Negative free cash flow means the business is failing.”', html: 'Free cash flow is negative whenever investment exceeds operating cash, which is normal in a year of expansion. Ask what the capex bought, whether it will produce cash, and how it was financed. Lantern’s −$45,659 is the cafés; the concern is that it used up the cash buffer and most of the credit line.' },
     { title: '“Depreciation is added back, so more depreciation means more cash.”', html: 'Depreciation is a noncash expense; the add-back only undoes it. Changing useful lives changes profit and accruals, never operating cash (apart from tax). That is exactly why comparing profit with cash exposes estimates.' },
     { title: '“A ratio of CFO to net income of 3.5 is excellent.”', html: 'Not when net income is tiny or negative: the ratio explodes or changes sign. Amazon’s 2014 ratio would be negative (CFO $6,842 million against a $241 million loss). Compare the amounts in dollars and use the accruals ratio, which divides by assets instead.' },
-    { title: '“Lease-heavy companies under IFRS and US GAAP have comparable operating cash flows.”', html: 'Under IFRS 16 the principal part of lease payments is financing; under ASC 842 operating lease payments are operating. An IFRS reporter with Lantern’s cafés would show at least $28,876 more operating cash and free cash flow. Adjust before you compare.' },
+    { title: '“Lease-heavy companies under IFRS and US GAAP have comparable operating cash flows.”', html: 'Under IFRS 16 the principal part of lease payments is financing; under ASC 842 operating lease payments are operating. An IFRS reporter with Lantern’s cafés would show $40,000 more operating cash and free cash flow in 2027 (principal and, under IFRS 18, interest both in financing). Adjust before you compare.' },
   ],
 
   application: [
@@ -235,10 +237,10 @@ export default {
   summary: [
     'Earnings quality asks whether profit has arrived as cash, whether it will recur and how much it rests on estimates.',
     'Compare cash from operations with net income: Lantern’s ratio fell from 1.46 (2026) to 0.37 (2027), and accruals swung from −$12,553 to $14,090.',
-    'The indirect method shows why: in 2027 the $30,840 law-firm contract asset, unbilled until 31 March 2028, absorbed almost all of the profit; without it Lantern made a loss of $699.',
+    'The indirect method shows why: in 2027 the $30,840 law-firm contract asset, unbilled until 31 March 2028, absorbed almost all of the profit; without it Lantern would have made a loss ($699 after a tax benefit, $932 before tax).',
     'Free cash flow = CFO − capital expenditure. Lantern’s −$45,659 reflects the cafés’ fit-out and machines, paid for from cash reserves and the line of credit.',
     'Estimates (useful lives, allowances, inflation forecasts) move profit but not cash; lease classification moves cash between activities (IFRS 16 versus ASC 842), so adjust before comparing.',
-    'Amazon (2012–2014) shows low profit with strong cash flow from depreciation and negative working capital; Enron’s 2001 restatement shows how off-balance-sheet, related-party structures inflated earnings.',
+    'Amazon (2012–2014) shows low profit with strong cash flow from noncash charges and negative operating working capital (payables above inventories plus receivables); Enron’s 2001 restatement shows how off-balance-sheet, related-party structures inflated earnings.',
     'Red flags: receivables growing faster than sales, CFO persistently below net income, capitalised costs, one-off gains, related parties, changed estimates, payouts funded by debt.',
   ],
 
@@ -252,9 +254,13 @@ export default {
 
   references: [
     { text: 'Franklin, M., Graybeal, P. &amp; Cooper, D. (2019). <i>Principles of Accounting, Volume 1: Financial Accounting</i>, section 16.5, “Use Information from the Statement of Cash Flows to Prepare Ratios to Assess Liquidity and Solvency”. OpenStax.', url: 'https://openstax.org/books/principles-financial-accounting/pages/16-5-use-information-from-the-statement-of-cash-flows-to-prepare-ratios-to-assess-liquidity-and-solvency', checked: '2026-10-26' },
-    { text: 'Amazon.com, Inc. (2015). Form 10-K for the fiscal year ended 31 December 2014: Item 6, Selected Consolidated Financial Data (free cash flow and its definition), and the consolidated statements. SEC EDGAR.', url: 'https://www.sec.gov/Archives/edgar/data/0001018724/000101872415000006/amzn-20141231x10k.htm', checked: '2026-10-26' },
+    { text: 'Amazon.com, Inc. (2015). Form 10-K for the fiscal year ended 31 December 2014: Item 6, Selected Consolidated Financial Data (free cash flow and its definition), and the consolidated statements, including the statements of cash flows (R2). SEC EDGAR.', url: 'https://www.sec.gov/Archives/edgar/data/0001018724/000101872415000006/amzn-20141231x10k.htm', checked: '2026-10-26' },
     { text: 'Enron Corp. (2001). Form 8-K, 8 November 2001, Exhibit 99.1: “Enron Provides Additional Information About Related Party and Off-Balance Sheet Transactions; Company to Restate Earnings for 1997–2001”. SEC EDGAR.', url: 'https://www.sec.gov/Archives/edgar/data/0001024401/000095012901503835/h91831ex99-1.txt', checked: '2026-10-26' },
     { text: 'Powers, W. C., Troubh, R. S. &amp; Winokur, H. S. (2002). <i>Report of Investigation by the Special Investigative Committee of the Board of Directors of Enron Corp.</i>, 1 February 2002 (filed with Enron’s Form 8-K). SEC EDGAR.', url: 'https://www.sec.gov/Archives/edgar/data/0001024401/000090951802000089/big.txt', checked: '2026-10-26' },
+    { text: 'Enron Corp. (2001). Form 8-K, 8 November 2001, Item 5 and Table 1 (net income, debt and equity as reported and restated). SEC EDGAR.', url: 'https://www.sec.gov/Archives/edgar/data/0001024401/000095012901503835/h91831e8-k.txt', checked: '2026-10-26' },
+    { text: 'Enron Corp. (2001). Form 10-K for 2000, Item 6, Selected Financial Data. SEC EDGAR.', url: 'https://www.sec.gov/Archives/edgar/data/1024401/000102440101500010/ene10-k.txt', checked: '2026-10-26' },
+    { text: 'Amazon.com, Inc. (2024). Exhibit 99.2, “Reconciliation of Non-GAAP Financial Measures” (free cash flow defined with purchases of property and equipment net of proceeds from sales and incentives). SEC EDGAR.', url: 'https://www.sec.gov/Archives/edgar/data/1018724/000110465924045915/tm246113d3_ex99-2.htm', checked: '2026-10-26' },
+    { text: 'Boissou, V. &amp; Ahuja, K. (2026). “IFRS 18 changes the statement of cash flows”. KPMG, 1 June 2026.', url: 'https://kpmg.com/us/en/articles/2026/ifrs-18-changes-statement-cash-flows.html', checked: '2026-10-26' },
     { text: 'KPMG Australia (2019). “AASB 16 Check: How to classify lease payments on lessees’ cash flow statements”, 31 May 2019 (AASB 16 is the Australian equivalent of IFRS 16).', url: 'https://kpmg.com/au/en/insights/financial-reporting/leases/aasb-16-check-cash-flow-statement-lessee-impact.html', checked: '2026-10-26' },
   ],
 
@@ -332,6 +338,22 @@ export default {
     { what: 'Amazon inventories 2014', value: AMZN.inv2014, shown: 8299 },
     { what: 'Amazon receivables 2014', value: AMZN.ar2014, shown: 5612 },
     { what: 'Amazon AP exceeds inv + AR', value: AMZN.ap2014 > AMZN.inv2014 + AMZN.ar2014 ? 1 : 0, shown: 1 },
+    // Enron and Amazon additions
+    { what: 'Amazon gap 2014', value: AMZN.cfo[2] - AMZN.ni[2], shown: 7083 },
+    { what: 'Amazon SBC 2014', value: AMZN.sbc2014, shown: 1497 },
+    { what: 'Amazon WC released 2014', value: AMZN.wc2014.reduce((a, b) => a + b, 0), shown: 974 },
+    { what: 'Amazon operating WC 2014', value: AMZN.ar2014 + AMZN.inv2014 - AMZN.ap2014, shown: -2548 },
+    { what: 'Amazon current assets 2014', value: AMZN.ca2014, shown: 31327 },
+    { what: 'Amazon current liabilities 2014', value: AMZN.cl2014, shown: 28089 },
+    { what: 'Amazon total WC positive', value: AMZN.ca2014 - AMZN.cl2014, shown: 3238 },
+    { what: 'Enron consolidation 1997', value: ENRON.jedi[0] + ENRON.ljm[0], shown: 45 },
+    { what: 'Enron consolidation 1998', value: ENRON.jedi[1] + ENRON.ljm[1], shown: 107 },
+    { what: 'Enron consolidation 1999', value: ENRON.jedi[2] + ENRON.ljm[2], shown: 248 },
+    { what: 'Enron consolidation 2000', value: ENRON.jedi[3] + ENRON.ljm[3], shown: 99 },
+    { what: 'Enron restatement ties', value: ENRON.jedi.reduce((s, v, i) => s + v + ENRON.ljm[i] + ENRON.audit[i], 0), shown: 96 + 113 + 250 + 132 },
+    { what: 'IFRS 18 CFO uplift', value: LEASE.paid2027, shown: 40000 },
+    { what: 'No-benefit loss', value: -noCA.pretax, shown: 932 },
+    { what: 'Tax benefit', value: -noCA.pretax * taxRate, shown: 233 },
     // Enron
     { what: 'Enron NI cut 1997', value: enronCut[0], shown: 96 },
     { what: 'Enron NI cut 1998', value: enronCut[1], shown: 113 },
@@ -363,7 +385,6 @@ export default {
     { what: 'After-tax difference', value: (contract - cpi2) * (1 - taxRate), shown: 180 },
     { what: 'Net income at 2.0%', value: P27.netIncome - (contract - cpi2) * (1 - taxRate), shown: 22251 },
     // mistakes
-    { what: 'IFRS CFO uplift at least', value: leasePrincipal, shown: 28876 },
     { what: 'Undrawn credit', value: FACTS.lineOfCredit.limit - 24000, shown: 6000 },
     { what: 'Coastline note due 1 March 2028', value: 10000, shown: 10000 },
     { what: 'Cents of each dollar', value: Q27.cfoToNetIncome * 100, shown: 37, tol: 0.5 },

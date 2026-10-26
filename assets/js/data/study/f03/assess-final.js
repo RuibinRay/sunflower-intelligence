@@ -25,7 +25,7 @@
 import { PERIODS, COMPARATIVE, FACTS } from './case.js?v=18';
 import * as R from '../../../core/ratios.js?v=18';
 
-const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+const fx = (v, d = 2) => `${v < 0 && Math.abs(v) >= 0.5 * 10 ** -d ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const usd = (v) => `${v < 0 ? '−' : ''}$${Math.abs(Math.round(v)).toLocaleString('en-US')}`;
 const pc = (v, d = 1) => `${v < 0 ? '−' : ''}${fx(Math.abs(v) * 100, d)}%`;
 const m1 = (v) => `${v < 0 ? '−' : ''}$${fx(Math.abs(v), 1)} million`;
@@ -188,14 +188,14 @@ export const items = [
       { formula: '=C3/(B3*$B$2/$C$2)-1', say: 'That scales 2026 down by 9 ÷ 12. To annualise nine months, multiply by 12 ÷ 9.' },
       { formula: '=(C3-B3)/C3', say: 'A change is measured on the earlier period, and the nine months must be annualised first.' },
     ],
-    solution: `<x>=(C3/C$2)/(B3/B$2)-1</x>: each period’s monthly average, then the change (or <x>=C3/(B3*12/9)-1</x>). Revenue grew ${pc(hcwG(hcwRev[0], hcwRev[1]))} and operating income ${pc(hcwG(hcwOi[0], hcwOi[1]))} on annualised figures, against ${pc(hcwRev[1] / hcwRev[0] - 1)} and ${pc(hcwOi[1] / hcwOi[0] - 1)} unadjusted. Rent shows ${pc(hcwG(hcwRow(4)[0], hcwRow(4)[1]))}: the same monthly rent in both years, which the unadjusted ${pc(hcwRow(4)[1] / hcwRow(4)[0] - 1)} would hide. Annualising assumes the missing months are typical. Indoor climbing is busiest in winter, and January to March are missing from 2026, so the annualised base is probably too low and the true growth below these figures.`,
+    solution: `<x>=(C3/C$2)/(B3/B$2)-1</x>: each period’s monthly average, then the change (or <x>=C3/(B3*12/9)-1</x>). Revenue grew ${pc(hcwG(hcwRev[0], hcwRev[1]))} and operating income ${pc(hcwG(hcwOi[0], hcwOi[1]))} on annualised figures, against ${pc(hcwRev[1] / hcwRev[0] - 1)} and ${pc(hcwOi[1] / hcwOi[0] - 1)} unadjusted. Rent shows ${pc(hcwG(hcwRow(4)[0], hcwRow(4)[1]))}: the same monthly rent in both years, which the unadjusted ${pc(hcwRow(4)[1] / hcwRow(4)[0] - 1)} would hide. Annualising assumes the missing months are typical. Halvergate’s busiest months are January to March, which 2026 lacks, so the annualised base is probably too low and the true growth below these figures.`,
   },
   {
     id: 'f03-fn-2', lesson: 'horizontal-analysis', type: 'mc', kind: 'applied',
     prompt: `Starbucks’ total net revenues rose ${pc(sbRevGrowth)} from fiscal 2023 to fiscal 2024, and revenue from company-operated stores ${pc(sbCoRevGrowth)}. Item 1 of its fiscal 2024 Form 10-K shows ${SB.coStores23.toLocaleString('en-US')} company-operated stores at 1 October 2023 and ${SB.coStores24.toLocaleString('en-US')} at 29 September 2024 (${pc(sbCoStoreGrowth)} more), and ${SB.stores24.toLocaleString('en-US')} stores in all (${pc(sbStoreGrowth)} more). What does this horizontal analysis support?`,
     options: [
       `Revenue per company-operated store fell, so the next step is to separate sales in existing stores from the timing of new openings`,
-      'Revenue kept pace with the store estate, because most of the new stores were licensed ones that pay royalties rather than sales',
+      'Revenue kept pace with the store estate, because most of the new stores were licensed ones that pay Starbucks royalties rather than sales',
       'The store openings destroyed value, because revenue grew far more slowly than the number of stores',
       'Nothing: store counts come from Item 1, not the audited statements, so they can’t be set against revenue',
     ],
@@ -205,7 +205,7 @@ export const items = [
       2: 'Horizontal analysis shows that sales per store fell; it doesn’t show why, or whether the new stores will pay back. Stores opened late in the year traded for only part of it.',
       3: 'Item 1’s operating data are exactly what an analyst sets against the statements; the point is to state where each figure comes from.',
     },
-    solution: `Revenue per company-operated store: $${fx(sbPerStore(SB.cosRev23, SB.coStores23), 3)} million in fiscal 2023 and $${fx(sbPerStore(SB.cosRev24, SB.coStores24), 3)} million in fiscal 2024 (${pc(sbPerStoreGrowth)}), using year-end counts. Year-end counts overstate the stores open on average, since new stores trade for part of the year, so the fall is partly timing. The next question is how sales in stores open in both years changed, which the MD&A discusses.`,
+    solution: `Revenue per company-operated store: $${fx(sbPerStore(SB.cosRev23, SB.coStores23), 3)} million in fiscal 2023 and $${fx(sbPerStore(SB.cosRev24, SB.coStores24), 3)} million in fiscal 2024 (${pc(sbPerStoreGrowth)}), using year-end counts. Year-end counts overstate the stores open on average, since new stores trade for part of the year, so the fall is partly timing. The next question is how sales changed in stores open in both years: look for comparable-store sales in the MD&A.`,
   },
   {
     id: 'f03-fn-3', lesson: 'horizontal-analysis', type: 'num', kind: 'numerical',
@@ -247,7 +247,7 @@ export const items = [
       {
         id: 'f03-fn-4-s3', type: 'mc',
         prompt: 'Which line did most to change the operating margin?',
-        options: ['Marketing and booking fees', 'Cost of rentals', 'Staff', 'Rent and other'],
+        options: ['Marketing and booking fees', 'Cost of rentals (bikes, repairs and mechanics)', 'Staff (front desk and tour guides)', 'Rent and other'],
         answer: 0,
         feedback: {
           1: `Cost of rentals fell from ${pc(bbhShare('rentals', 0))} to ${pc(bbhShare('rentals', 1))} of revenue: it lifted the margin.`,
@@ -261,7 +261,7 @@ export const items = [
     id: 'f03-fn-5', lesson: 'common-size-statements', type: 'mc', kind: 'conceptual',
     prompt: `Starbucks prints no gross profit line. An analyst takes its fiscal 2024 total net revenues less “product and distribution costs”, ${pc(sbQuasiGross)} of revenues, and sets it beside Lantern’s 2027 gross margin of ${pc(PR27.grossMargin)}, concluding that Starbucks keeps far more of each sale. What is the main problem?`,
     options: [
-      'The two lines hold different costs: Starbucks reports the cost of running its stores separately, while Lantern’s cost of sales includes its event staff’s wages',
+      'The two cost lines hold different costs, so the margins are not measured on the same classification',
       'Starbucks is more than sixty thousand times Lantern’s size, so percentages of revenue can’t be compared',
       'Starbucks’ margin should be measured on company-operated store revenues only, since licensed stores have no product costs',
       'Lantern’s 2027 margin is flattered by the law firm’s unbilled fee, which has no cost of sales attached',
@@ -333,8 +333,8 @@ export const items = [
     id: 'f03-fn-9', lesson: 'solvency-and-leverage', type: 'mc', kind: 'conceptual',
     prompt: `Lantern’s net debt ÷ EBITDA was ${fx(S26.netDebtToEbitda)} for 2026 (net debt ${usd(S26.netDebt)}, EBITDA ${usd(S26.ebitda)} for ten months) and ${fx(S27.netDebtToEbitda)} for 2027, before counting leases. What does the 2026 figure tell you?`,
     options: [
-      'Lantern held more cash than interest-bearing debt at the end of 2026, so it could have repaid all its borrowing',
-      'Lantern’s EBITDA was negative in 2026, which turned the ratio negative',
+      'It held more cash than interest-bearing debt: it had net cash, not net debt',
+      'Lantern’s EBITDA was negative in 2026, which turned the whole ratio negative',
       'The ratio is negative, so 2026 was the more indebted year and the business has since deleveraged',
       'A negative ratio has no meaning and should be reported as n/m, like a percentage change on a negative base',
     ],
@@ -375,7 +375,7 @@ export const items = [
         prompt: `How should Lantern’s adviser read the result against the ${fx(LEV_CAP)} cap?`,
         options: [
           'Lantern would fail it narrowly from the start, so the level or the definition must be negotiated before signing',
-          'Lantern meets it comfortably, because its ratio without leases is less than half the cap',
+          'Lantern meets it comfortably, because its ratio without leases, the figure most banks quote, is less than half the cap',
           'The test can’t apply to Lantern, because operating leases are not debt under US GAAP',
           'Lantern meets it, because its interest coverage of more than ten times shows it can service any debt',
         ],
@@ -478,7 +478,7 @@ export const items = [
         id: 'f03-fn-15-s3', type: 'mc',
         prompt: 'What does the comparison tell an analyst about Bramblegate’s return on equity?',
         options: [
-          'Much of the leverage that lifts its ROE is rented premises, so compare it with peers whose leases are on the balance sheet in the same way',
+          'Much of its leverage is rented premises: compare it with peers that report their leases the same way',
           'Its leases make it less risky than its multiplier suggests, so the multiplier should be ignored in the analysis',
           'Its ROE would be higher without the leases, because the equity multiplier would fall',
           'The leases change only the balance sheet, so they have no effect on any DuPont factor',
@@ -486,7 +486,7 @@ export const items = [
         answer: 0,
         feedback: {
           1: 'Lease payments are fixed obligations, much like debt service; the multiplier is right to count them. The point is to compare like with like.',
-          2: 'A lower multiplier lowers ROE, other things equal; and removing the leases would not change net income.',
+          2: 'ROE is net income ÷ equity, and removing the leases changes neither: the lower multiplier is offset by a higher asset turnover.',
           3: 'The right-of-use assets lower asset turnover and raise the equity multiplier, two of the three factors.',
         },
       },
@@ -494,7 +494,7 @@ export const items = [
   },
   {
     id: 'f03-fn-16', lesson: 'dupont-analysis', type: 'num', kind: 'applied',
-    prompt: `On average balances, Lantern’s 2027 net margin was ${pc(D27.netMargin, 2)}, its asset turnover ${fx(D27.assetTurnover)} and its equity multiplier ${fx(D27.equityMultiplier)} (ROE ${pc(D27.roe)}). Its 2026 equity multiplier, on closing balances, was ${fx(D26.equityMultiplier)}. With 2027’s margin and turnover but 2026’s leverage, what would its 2027 return on equity have been? Enter a percentage to one decimal place.`,
+    prompt: `Lantern’s 2027 three-step DuPont factors, on average balances, were a net margin of ${pc(D27.netMargin, 2)}, an asset turnover of ${fx(D27.assetTurnover)} and an equity multiplier of ${fx(D27.equityMultiplier)} (ROE ${pc(D27.roe)}). Its 2026 equity multiplier, on closing balances, was ${fx(D26.equityMultiplier)}. With 2027’s margin and turnover but 2026’s leverage, what would its 2027 return on equity have been? Enter a percentage to one decimal place.`,
     answer: r1(roeOn26Leverage * 100), check: () => roeOn26Leverage * 100, unit: '%', places: 1, tol: 0.1,
     wrong: [
       { value: r1(D27.roe * 100), say: 'That is the actual 2027 ROE. Replace the 2027 equity multiplier with 2026’s.' },
@@ -560,7 +560,7 @@ export const items = [
         id: 'f03-fn-19-s3', type: 'mc',
         prompt: 'How should a lender combine the two results?',
         options: [
-          'Treat the score as a ceiling: it is built from the same accrual-heavy profit, so test the receivables before relying on it',
+          'Treat the score as a ceiling: it rests on the same accrual-heavy profit',
           'Rely on the score, since a balance-sheet model is not affected by the accruals that weaken the cash flow',
           'Recompute Z″ with operating cash flow in place of EBIT and use that as the true score',
           'Set both aside: when two measures disagree, neither can tell the lender anything about the business',
@@ -627,7 +627,7 @@ export const items = [
     id: 'f03-fn-24', lesson: 'benchmarking-and-annual-reports', type: 'mc', kind: 'applied',
     prompt: `Amazon’s 2014 Form 10-K reports free cash flow of $${AMZN.fcf14.toLocaleString('en-US')} million, which it defines as net cash provided by operating activities less purchases of property and equipment (${AMZN.cfo14.toLocaleString('en-US')} − ${AMZN.capex14.toLocaleString('en-US')}). For a 2014–2023 comparison, a colleague takes the same two lines from the 2023 cash-flow statement and gets $${(AMZN.cfo23 - AMZN.capex23).toLocaleString('en-US')} million. What should the analyst do before using the comparison?`,
     options: [
-      'Read the 2023 filing’s own definition, which also takes account of proceeds from property sales and incentives, and compare both years on one stated definition',
+      'Find how the 2023 filing defines free cash flow, since each company sets its own definition and may change it, and use one for both years',
       'Use it as it stands, because free cash flow is defined by US GAAP and every filing computes it the same way',
       'Replace both figures with net income, which is audited and so comparable from one year to another',
       'Check the auditor’s report, which confirms each non-GAAP measure that management reports in the 10-K',
@@ -638,6 +638,6 @@ export const items = [
       2: 'Net income answers a different question; the point of free cash flow is the cash left after investment.',
       3: 'The audit opinion covers the financial statements; non-GAAP measures in the MD&A or Item 6 are management’s and are not covered by it.',
     },
-    solution: `A non-GAAP measure must be reconciled to the nearest GAAP figure, but the company chooses its definition. Amazon’s later definition also takes account of the proceeds from property and equipment sales and incentives, so $${(AMZN.cfo23 - AMZN.capex23).toLocaleString('en-US')} million is the course’s definition applied to 2023, not Amazon’s reported figure. State the definition used, apply it to both years, and cite where each figure comes from.`,
+    solution: `A non-GAAP measure must be reconciled to the nearest GAAP figure, but the company chooses its definition and can change it. Until the 2023 10-K’s own definition has been read, $${(AMZN.cfo23 - AMZN.capex23).toLocaleString('en-US')} million is the 2014 definition applied to 2023, not a figure Amazon reported. State the definition used, apply it to both years, and cite where each figure comes from.`,
   },
 ];
