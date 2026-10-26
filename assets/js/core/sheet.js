@@ -1221,7 +1221,7 @@ FN.PI = () => Math.PI;
 FN['CEILING.MATH'] = (args, ctx) => { const n = numArg(args[0], ctx), sg = Math.abs(numArg(args[1], ctx, 1)), md = numArg(args[2], ctx, 0); if (isErr(n)) return n; if (isErr(sg)) return sg; if (sg === 0) return 0; const q = p15(n / sg); return (n < 0 && md ? Math.floor(q) : Math.ceil(q)) * sg || 0; };
 FN['FLOOR.MATH'] = (args, ctx) => { const n = numArg(args[0], ctx), sg = Math.abs(numArg(args[1], ctx, 1)), md = numArg(args[2], ctx, 0); if (isErr(n)) return n; if (isErr(sg)) return sg; if (sg === 0) return 0; const q = p15(n / sg); return (n < 0 && md ? Math.ceil(q) : Math.floor(q)) * sg || 0; };
 FN.MROUND = (args, ctx) => { const n = numArg(args[0], ctx), m = numArg(args[1], ctx); if (isErr(n)) return n; if (isErr(m)) return m; if (m === 0) return 0; if (Math.sign(n) * Math.sign(m) < 0) return ERR.NUM; return round(n / m, 0) * m; };
-FN.LOG = (args, ctx) => { const n = numArg(args[0], ctx), b = numArg(args[1], ctx, 10); if (isErr(n)) return n; if (isErr(b)) return b; return n <= 0 || b <= 0 || b === 1 ? ERR.NUM : Math.log(n) / Math.log(b); };
+FN.LOG = (args, ctx) => { const b = numArg(args[1], ctx, 10); if (isErr(b)) return b; return lift(args[0], ctx, (v) => { const n = toNum(v); if (isErr(n)) return n; return n <= 0 || b <= 0 || b === 1 ? ERR.NUM : Math.log(n) / Math.log(b); }); };
 
 // finance (the F04 formulas, Excel's sign convention: money paid out is negative)
 FN.PMT = (args, ctx) => { const r = numArg(args[0], ctx), n = numArg(args[1], ctx), pv = numArg(args[2], ctx), fv = numArg(args[3], ctx, 0), t = numArg(args[4], ctx, 0); for (const x of [r, n, pv, fv, t]) if (isErr(x)) return x; if (r === 0) return -(pv + fv) / n; const f = (1 + r) ** n; return -(r * (pv * f + fv)) / ((1 + r * (t ? 1 : 0)) * (f - 1)); };
