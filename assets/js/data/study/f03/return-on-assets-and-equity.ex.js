@@ -29,10 +29,10 @@ export const widgets = {
   'roe-leverage': {
     type: 'formula',
     title: 'Leverage and return on equity',
-    intro: 'ROE = ROIC + (ROIC − r(1 − t)) × D ÷ E. The starting values are Kestrel Battery Installations’ good year under Plan B.',
+    intro: 'ROE = ROIC + (ROIC − r(1 − t)) × D ÷ E. The starting values: ROIC 12%, debt at 8% before tax, a 25% tax rate and $1.50 of debt per dollar of equity.',
     inputs: [
-      { id: 'roic', label: 'Return on invested capital, ROIC', min: -10, max: 30, step: 0.25, value: 11.25, fmt: 'pct' },
-      { id: 'r', label: 'Interest rate on debt, r', min: 0, max: 15, step: 0.25, value: 8, fmt: 'pct' },
+      { id: 'roic', label: 'Return on invested capital, ROIC', min: -10, max: 30, step: 0.5, value: 12, fmt: 'pct' },
+      { id: 'r', label: 'Interest rate on debt, r', min: 0, max: 15, step: 0.5, value: 8, fmt: 'pct' },
       { id: 't', label: 'Tax rate, t', min: 0, max: 40, step: 1, value: 25, fmt: 'pct' },
       { id: 'de', label: 'Debt to equity, D ÷ E', min: 0, max: 5, step: 0.1, value: 1.5, fmt: 'num' },
     ],
@@ -43,18 +43,18 @@ export const widgets = {
       const xs = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
       const r2 = (x) => Math.round(x * 100) / 100;
       const note = v.de === 0
-        ? `With no debt, ROE equals ROIC, ${pct(v.roic, 2)}. Add debt to see the spread at work.`
+        ? `With no debt, ROE equals ROIC, ${pct(v.roic, 1)}. Add debt to see the spread at work.`
         : spread > 0
-          ? `The business earns ${pct(v.roic, 2)} on its capital and pays ${pct(after, 2)} after tax for debt, a spread of ${pct(spread, 2)}. Each dollar of debt per dollar of equity adds that spread to ROE: debt raises ROE from ${pct(v.roic, 2)} to ${pct(roe, 2)}.`
+          ? `The business earns ${pct(v.roic, 1)} on its capital and pays ${pct(after, 1)} after tax for debt, a spread of ${pct(spread, 1)}. Each dollar of debt per dollar of equity adds that spread to ROE: debt raises ROE from ${pct(v.roic, 1)} to ${pct(roe, 1)}.`
           : spread < 0
-            ? `The business earns ${pct(v.roic, 2)} on its capital but debt costs ${pct(after, 2)} after tax: a negative spread of ${pct(spread, 2)}. Debt drags ROE down from ${pct(v.roic, 2)} to ${pct(roe, 2)}, and the more debt, the worse.`
-            : `ROIC equals the after-tax cost of debt, so debt neither helps nor hurts: ROE is ${pct(roe, 2)} at any D ÷ E.`;
+            ? `The business earns ${pct(v.roic, 1)} on its capital but debt costs ${pct(after, 1)} after tax: a negative spread of ${pct(spread, 1)}. Debt drags ROE down from ${pct(v.roic, 1)} to ${pct(roe, 1)}, and the more debt, the worse.`
+            : `ROIC equals the after-tax cost of debt, so debt neither helps nor hurts: ROE is ${pct(roe, 1)} at any D ÷ E.`;
       return {
-        headline: { label: 'Return on equity', value: pct(roe, 2) },
+        headline: { label: 'Return on equity', value: pct(roe, 1) },
         rows: [
-          ['After-tax cost of debt, r(1 − t)', pct(after, 2)],
-          ['Spread, ROIC − r(1 − t)', pct(spread, 2)],
-          ['Added (or taken away) by leverage', pct(spread * v.de, 2)],
+          ['After-tax cost of debt, r(1 − t)', pct(after, 1)],
+          ['Spread, ROIC − r(1 − t)', pct(spread, 1)],
+          ['Added (or taken away) by leverage', pct(spread * v.de, 1)],
         ],
         note,
         chart: { kind: 'line', x: { label: 'Debt to equity', values: xs },
@@ -74,7 +74,7 @@ export const guided = [
       ['Total equity', n(P26.equity), n(P27.equity)],
       ['Net income for 2027', '', n(P27.netIncome)],
     ] } },
-    solution: 'Average total assets (93,676 + 327,883) ÷ 2 = 210,779.5; ROA = 22,431 ÷ 210,779.5 = 10.6%. Average equity (42,387 + 62,818) ÷ 2 = 52,602.5; ROE = 22,431 ÷ 52,602.5 = 42.6%. Assets per dollar of equity 210,779.5 ÷ 52,602.5 = 4.01, and 10.6% × 4.01 = 42.6%.',
+    solution: 'Average total assets (93,676 + 327,883) ÷ 2 = 210,779.5; ROA = 22,431 ÷ 210,779.5 = 10.6%. Average equity (42,387 + 62,818) ÷ 2 = 52,602.5; ROE = 22,431 ÷ 52,602.5 = 42.6%. Assets per dollar of equity 210,779.5 ÷ 52,602.5 = 4.01; with the factors unrounded, 10.64% × 4.007 = 42.6%.',
     steps: [
       { id: 'f03-roe-g1-s1', type: 'num', prompt: 'Return on assets, on average total assets (%)',
         answer: 10.6, check: () => R.profitability(P27, P26).roa * 100, unit: '%', places: 1, tol: 0.06,
