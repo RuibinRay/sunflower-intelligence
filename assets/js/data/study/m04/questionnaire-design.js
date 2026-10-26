@@ -3,7 +3,7 @@
 // business here (Tamberlake Gyms, Marrowby Buses) are fictional. Pew Research Center, Krosnick & Presser (2010), the
 // U.S. Census Bureau, OpenStax and Reichheld (2003) are cited for real findings; their figures are checked below.
 // Analysing the answers (frequencies, top box, the Net Promoter Score and its standard error) is module 4's.
-import { SURVEY_2027 } from './case.js?v=15';
+import { SURVEY_2027 } from './case.js?v=19';
 
 const Q = SURVEY_2027.questions;
 const DRAFT = 12, AFTER_REVIEW = 7, FINAL = Q.length;        // Ana's draft, after her review, after the pretest

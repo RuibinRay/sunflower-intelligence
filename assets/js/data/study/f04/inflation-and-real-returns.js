@@ -3,7 +3,7 @@
 // re-teaching. Case facts: Ana's 2.8% inflation assumption (ANA_PLAN.inflation, as in F00) and Lantern in March 2027. New fictional facts used
 // here and only here: the law firm's three-year catering offer ($42,000 fixed or $40,000 indexed) and Lantern's 10%
 // required return. Deliberately does not use ANA_PLAN's home, saving, mortgage or salary figures: the project uses those.
-import { ANA_PLAN } from './case.js?v=15';
+import { ANA_PLAN } from './case.js?v=19';
 
 const INF = ANA_PLAN.inflation / 100;                            // 2.8% a year, Ana's working assumption
 const idx = [100, 103.2, 109.7, 116.4, 119.6, 122.9];          // fictional index, Year 0 = 100
@@ -32,7 +32,7 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: 'March 2027. Lantern Coffee Co. is a year old, and a law firm in the city (fictional, like everything in the case) wants Lantern to run its office coffee service for three years. It offers two ways to pay, each fee paid at the end of each contract year: a fixed $42,000 a year, or $40,000 a year in March 2027 dollars, raised every year in line with the Consumer Price Index. Ana still assumes, as she did in F00, that prices will rise by about 2.8% a year, and she wants Lantern’s contracts to earn 10% a year, the return she judges fair for the risk of the business. The indexed fee starts lower but grows. Which is worth more today? Answering means comparing dollars paid in different years when each year’s dollar buys a little less than the last.' },
+    { case: 'March 2027. Lantern Coffee Co. is a year old, and a law firm in the city (fictional, like everything in the case) wants Lantern to cater its staff events and client meetings for three years. It offers two ways to pay, each fee paid at the end of each contract year: a fixed $42,000 a year, or $40,000 a year in March 2027 dollars, raised every year in line with the Consumer Price Index. Ana still assumes, as she did in F00, that prices will rise by about 2.8% a year, and she wants Lantern’s contracts to earn 10% a year, the return she judges fair for the risk of the business. The indexed fee starts lower but grows. Which is worth more today? Answering means comparing dollars paid in different years when each year’s dollar buys a little less than the last.' },
 
     { h: 'Two kinds of dollars' },
     { p: 'In F00 you met <g>inflation</g> as a sustained rise in prices and saw that it reduces the <g>purchasing power</g> of money. Over one year that was a single division. Over several years, and with cash flowing in and out at different dates, it pays to be explicit about which kind of dollar each number is measured in.' },

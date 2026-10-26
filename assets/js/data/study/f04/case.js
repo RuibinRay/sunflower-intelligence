@@ -17,7 +17,8 @@ export const COASTLINE_NOTE = {
   marketRateMarch2027: 8,                                // % a year compounded quarterly: what a similar loan costs in March 2027 (fictional)
 };
 
-/** March 2027: Lantern wants a cold-brew brewing system for $24,000 and has two ways to pay for it. */
+/** March 2027: Lantern wants a cold-brew brewing system for $24,000 (cold brew on tap and in bottles for its cafés and
+ *  catering; the canned Cold Brew is made by a co-packer, M02) and has two ways to pay for it. */
 export const BREWER = {
   price: 24_000,
   loan: { lender: 'Coastline Bank', amount: 24_000, apr: 7.2, months: 48, compounding: 'monthly' },

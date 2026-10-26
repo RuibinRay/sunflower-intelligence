@@ -15,9 +15,9 @@
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}try{if(localStorage.getItem('si:outline')==='closed')document.documentElement.classList.add('outline-closed')}catch(e){}</script>
   <link rel="preload" href="../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/css/base.css?v=15">
-  <link rel="stylesheet" href="../assets/css/rooms.css?v=15">
-  <link rel="stylesheet" href="../assets/css/study.css?v=15">
+  <link rel="stylesheet" href="../assets/css/base.css?v=19">
+  <link rel="stylesheet" href="../assets/css/rooms.css?v=19">
+  <link rel="stylesheet" href="../assets/css/study.css?v=19">
 </head>
 <body class="room room--learn room--sub room--study page--home" data-root="../">
   <a class="skip-link" href="#ledger">Skip to the courses</a>
@@ -78,11 +78,11 @@
     <div class="ledger" id="ledger">
       <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../">The painting</a></li><li aria-current="page">Learn</li></ol></nav>
       <div class="ledger-intro home-intro">
-        <p class="lead">Free courses in finance and accounting, business analytics and marketing, written to a university standard. Each lesson teaches from first principles, works examples step by step and gives you practice with feedback; each course has labs, tests and a project. Twelve courses are complete. The other 21 are planned, and marked as such.</p>
+        <p class="lead">Free courses in finance and accounting, business analytics and marketing, written to a university standard. Each lesson teaches from first principles, works examples step by step and gives you practice with feedback; each course has labs, tests and a project. Twelve courses are complete. One course is written and independently reviewed, with final testing under way. The other 20 are planned, and marked as such.</p>
         <form class="study-search" role="search" id="study-search" action="#" onsubmit="return false">
           <label class="field-label" for="search-input">Search lessons, terms and formulas</label>
           <div class="search-row"><input class="input" id="search-input" type="search" autocomplete="off" placeholder="e.g. accrual, outliers, break-even" aria-describedby="search-hint" aria-controls="search-results"><span class="search-count" id="search-count" aria-live="polite"></span></div>
-          <p class="field-hint" id="search-hint">118 lessons, 1249 glossary terms and 463 formulas, plus every course in the catalogue.</p>
+          <p class="field-hint" id="search-hint">128 lessons, 1295 glossary terms and 515 formulas, plus every course in the catalogue.</p>
           <ul class="search-results" id="search-results" role="list" hidden></ul>
         </form>
       </div>
@@ -101,8 +101,8 @@
         <ul class="school-cards" role="list"><li class="school-card school-card--finance">
             <a class="sc-link" href="finance/"><img src="../assets/img/flower-finance-160.webp" alt="" width="80" height="80" loading="lazy" decoding="async"><span class="sc-name">Finance & Accounting</span></a>
             <p class="sc-blurb">Record transactions, prepare and read financial statements, value money over time, and make investment and financing decisions.</p>
-            <p class="sc-count">4 of 9 courses open</p>
-            <ul class="sc-ready" role="list"><li><a href="finance/f00/"><b>F00</b> Foundations of Finance</a></li><li><a href="finance/f01/"><b>F01</b> Introduction to Financial Accounting</a></li><li><a href="finance/f02/"><b>F02</b> Financial Statement Preparation</a></li><li><a href="finance/f04/"><b>F04</b> Mathematics of Finance</a></li></ul>
+            <p class="sc-count">5 of 9 courses open</p>
+            <ul class="sc-ready" role="list"><li><a href="finance/f00/"><b>F00</b> Foundations of Finance</a></li><li><a href="finance/f01/"><b>F01</b> Introduction to Financial Accounting</a></li><li><a href="finance/f02/"><b>F02</b> Financial Statement Preparation</a></li><li><a href="finance/f04/"><b>F04</b> Mathematics of Finance</a></li><li><a href="finance/f03/"><b>F03</b> Financial Statement Analysis</a></li></ul>
           </li><li class="school-card school-card--analytics">
             <a class="sc-link" href="analytics/"><img src="../assets/img/flower-analytics-160.webp" alt="" width="80" height="80" loading="lazy" decoding="async"><span class="sc-name">Business Analytics & Data Science</span></a>
             <p class="sc-blurb">Prepare data you can trust, describe it, test ideas with statistics, and build models that predict and explain.</p>
@@ -127,7 +127,7 @@
           </div>
           <div class="path-panel" id="path-intermediate" data-path="intermediate" role="tabpanel" aria-labelledby="path-tab-intermediate" hidden>
             <p class="path-blurb">You know the basics of accounting, spreadsheets and marketing. Build analysis and decision skills. Start with step 1, <a href="finance/f02/">F02 Financial Statement Preparation</a>: it is open.</p>
-            <ol class="path-list" role="list"><li class="is-ready is-start" data-course="f02"><span class="pl-n" aria-hidden="true">1</span><a href="finance/f02/"><b>F02</b> Financial Statement Preparation</a> <span class="start-tag">Start here</span> <span class="pl-status"></span></li><li class="is-ready" data-course="f04"><span class="pl-n" aria-hidden="true">2</span><a href="finance/f04/"><b>F04</b> Mathematics of Finance</a> <span class="pl-status"></span></li><li class="is-planned" data-course="f03"><span class="pl-n" aria-hidden="true">3</span><span><b>F03</b> Financial Statement Analysis</span> <span class="status-chip is-planned">Planned</span></li><li class="is-ready" data-course="b02"><span class="pl-n" aria-hidden="true">4</span><a href="analytics/b02/"><b>B02</b> Data Cleaning and Preparation</a> <span class="pl-status"></span></li><li class="is-ready" data-course="b04"><span class="pl-n" aria-hidden="true">5</span><a href="analytics/b04/"><b>B04</b> Descriptive and Inferential Statistics</a> <span class="pl-status"></span></li><li class="is-planned" data-course="b05"><span class="pl-n" aria-hidden="true">6</span><span><b>B05</b> Correlation Analysis</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="b06"><span class="pl-n" aria-hidden="true">7</span><span><b>B06</b> Regression Analysis</span> <span class="status-chip is-planned">Planned</span></li><li class="is-ready" data-course="m02"><span class="pl-n" aria-hidden="true">8</span><a href="marketing/m02/"><b>M02</b> The 4Ps Marketing Mix</a> <span class="pl-status"></span></li><li class="is-ready" data-course="m04"><span class="pl-n" aria-hidden="true">9</span><a href="marketing/m04/"><b>M04</b> Market Research</a> <span class="pl-status"></span></li><li class="is-ready" data-course="m05"><span class="pl-n" aria-hidden="true">10</span><a href="marketing/m05/"><b>M05</b> Market Segmentation and Positioning</a> <span class="pl-status"></span></li><li class="is-planned" data-course="m06"><span class="pl-n" aria-hidden="true">11</span><span><b>M06</b> Customer Analytics and RFM</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="f05"><span class="pl-n" aria-hidden="true">12</span><span><b>F05</b> Corporate Finance</span> <span class="status-chip is-planned">Planned</span></li></ol>
+            <ol class="path-list" role="list"><li class="is-ready is-start" data-course="f02"><span class="pl-n" aria-hidden="true">1</span><a href="finance/f02/"><b>F02</b> Financial Statement Preparation</a> <span class="start-tag">Start here</span> <span class="pl-status"></span></li><li class="is-ready" data-course="f04"><span class="pl-n" aria-hidden="true">2</span><a href="finance/f04/"><b>F04</b> Mathematics of Finance</a> <span class="pl-status"></span></li><li class="is-ready" data-course="f03"><span class="pl-n" aria-hidden="true">3</span><a href="finance/f03/"><b>F03</b> Financial Statement Analysis</a> <span class="pl-status"></span></li><li class="is-ready" data-course="b02"><span class="pl-n" aria-hidden="true">4</span><a href="analytics/b02/"><b>B02</b> Data Cleaning and Preparation</a> <span class="pl-status"></span></li><li class="is-ready" data-course="b04"><span class="pl-n" aria-hidden="true">5</span><a href="analytics/b04/"><b>B04</b> Descriptive and Inferential Statistics</a> <span class="pl-status"></span></li><li class="is-planned" data-course="b05"><span class="pl-n" aria-hidden="true">6</span><span><b>B05</b> Correlation Analysis</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="b06"><span class="pl-n" aria-hidden="true">7</span><span><b>B06</b> Regression Analysis</span> <span class="status-chip is-planned">Planned</span></li><li class="is-ready" data-course="m02"><span class="pl-n" aria-hidden="true">8</span><a href="marketing/m02/"><b>M02</b> The 4Ps Marketing Mix</a> <span class="pl-status"></span></li><li class="is-ready" data-course="m04"><span class="pl-n" aria-hidden="true">9</span><a href="marketing/m04/"><b>M04</b> Market Research</a> <span class="pl-status"></span></li><li class="is-ready" data-course="m05"><span class="pl-n" aria-hidden="true">10</span><a href="marketing/m05/"><b>M05</b> Market Segmentation and Positioning</a> <span class="pl-status"></span></li><li class="is-planned" data-course="m06"><span class="pl-n" aria-hidden="true">11</span><span><b>M06</b> Customer Analytics and RFM</span> <span class="status-chip is-planned">Planned</span></li><li class="is-planned" data-course="f05"><span class="pl-n" aria-hidden="true">12</span><span><b>F05</b> Corporate Finance</span> <span class="status-chip is-planned">Planned</span></li></ol>
           </div>
           <div class="path-panel" id="path-advanced" data-path="advanced" role="tabpanel" aria-labelledby="path-tab-advanced" hidden>
             <p class="path-blurb">Comfortable with statistics and corporate finance. Go on to investments, modelling, machine learning and strategy. Start with step 4, <a href="analytics/b02/">B02 Data Cleaning and Preparation</a>: it is open, and it teaches what it needs from the planned steps before it.</p>
@@ -149,8 +149,8 @@
       <section class="home-section" id="toolkit" aria-labelledby="toolkit-h">
         <h2 id="toolkit-h">Your toolkit</h2>
         <ul class="toolkit" role="list">
-          <li><a href="glossary/"><b>Glossary</b><span>1249 terms, searchable, each linked to the lesson that teaches it.</span></a></li>
-          <li><a href="formulas/"><b>Formulas</b><span>463 formulas with every symbol and unit defined.</span></a></li>
+          <li><a href="glossary/"><b>Glossary</b><span>1295 terms, searchable, each linked to the lesson that teaches it.</span></a></li>
+          <li><a href="formulas/"><b>Formulas</b><span>515 formulas with every symbol and unit defined.</span></a></li>
           <li><a href="review/"><b>Review</b><span class="tk-review">Flashcards and the questions you missed, brought back when they’re due.</span></a></li>
           <li><a href="notebook/"><b>Notebook</b><span>Your notes and bookmarks, and moving your progress to another browser.</span></a></li>
           <li><a href="lessons/"><b>Plates</b><span>Nineteen short lessons on the ideas behind the site’s tools.</span></a></li>
@@ -201,6 +201,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../assets/js/pages/study-home.js?v=15"></script>
+  <script type="module" src="../assets/js/pages/study-home.js?v=19"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 // annuities.js — F04 · Annuities. Content only; exercises are in annuities.ex.js.
 // Uses BREWER.vendor and DERIVED.vendorPVat72 from case.js (the supplier’s 24 × $1,050 plan, valued at Coastline’s 7.2%).
 // Deliberately does not compute Ana’s monthly saving for her home deposit: the F04 project does that.
-import { BREWER, DERIVED } from './case.js?v=15';
+import { BREWER, DERIVED } from './case.js?v=19';
 
 const a = (n, r) => (1 - (1 + r) ** -n) / r;            // present value of $1 a period for n periods
 const s = (n, r) => ((1 + r) ** n - 1) / r;             // future value of $1 a period for n periods

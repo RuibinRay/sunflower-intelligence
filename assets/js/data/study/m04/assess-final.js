@@ -16,9 +16,9 @@
 // fictional and used nowhere else on the site, and nothing comes from the project’s scenario or data. No hints;
 // solutions are shown on review. Every num item’s `check` recomputes its answer, and every formula item is marked by its
 // results on the sheet and on changed copies.
-import { RESPONDENT_COLUMNS, RESPONDENT_ROWS, RESPONDENTS, LEVELS, SIZES, STRATA, PRICE_AUDIT, DEFAULT_PLAN, DISPOSITIONS, tableCells, DERIVED } from './case.js?v=15';
-import * as S from '../../../core/survey.js?v=15';
-import * as I from '../../../core/inference.js?v=15';
+import { RESPONDENT_COLUMNS, RESPONDENT_ROWS, RESPONDENTS, LEVELS, SIZES, STRATA, PRICE_AUDIT, DEFAULT_PLAN, DISPOSITIONS, tableCells, DERIVED } from './case.js?v=19';
+import * as S from '../../../core/survey.js?v=19';
+import * as I from '../../../core/inference.js?v=19';
 
 const r = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -452,7 +452,7 @@ export const items = [
   },
   {
     id: 'm04-fn-11', lesson: 'sampling-methods', type: 'mc', kind: 'applied',
-    prompt: `Each person on Lantern’s mailing list sits in one stratum only, and anyone who has ordered online counts as a subscriber or a shop customer even if they also took a workshop: the ${SIZES[2]} people in the workshop stratum are participants who never ordered online. M01’s 14 workshops in 2026 sold about 168 places. Lantern ran no workshops in January 2027. Ana wants to know what everyone who took a Lantern workshop in 2026 thought of it, and proposes to survey all ${SIZES[2]} people in the workshop stratum. What is the main problem with that frame?`,
+    prompt: `Each person on Lantern’s mailing list sits in one stratum only, and anyone who has ordered online counts as a subscriber or a shop customer even if they also took a workshop: the ${SIZES[2]} people in the workshop stratum are participants who never ordered online. M01’s 14 workshops in 2026 sold about 168 places, and January 2027’s workshop about 12 more. Ana wants to know what everyone who took a Lantern workshop in 2026 thought of it, and proposes to survey all ${SIZES[2]} people in the workshop stratum. What is the main problem with that frame?`,
     options: [
       'Undercoverage: participants who also order online sit in other strata, so they can never be chosen',
       'Overcoverage: some of the 150 may never have bought from Lantern, so they must be screened out first',
@@ -461,7 +461,7 @@ export const items = [
     ],
     answer: 0,
     feedback: {
-      1: 'Everyone in the workshop stratum paid for a Lantern workshop, and Lantern ran none in January 2027, so all 150 took theirs in 2026 and are in the target population. The frame’s problem is the participants it leaves out.',
+      1: 'Everyone in the workshop stratum paid for a Lantern workshop, so all 150 took theirs in 2026 or January 2027 and are in the target population. The frame’s problem is the participants it leaves out.',
       2: 'Inviting all 150 is a census of the frame, so it has no sampling error; and the ±8 points ignores the finite population correction. The problem is who the frame misses, which no margin shows.',
       3: 'Their 54% was the highest response rate of the four strata, and a response rate shows room for bias, not bias. The bigger problem is fixed before anyone is invited.',
     },

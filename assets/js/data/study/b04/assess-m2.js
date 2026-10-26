@@ -3,8 +3,8 @@
 // (the star ratings); not copies of lesson exercises. No hints; solutions are shown when the student reviews the test.
 // Marsden Mills, Wyvern Ferries, Fairlop Bookshop, Loopline Cycles and Aldergrove Clinic are fictional. Formula items
 // are marked by their results; every num item's `check` recomputes its answer.
-import { RATINGS } from './case.js?v=15';
-import * as I from '../../../core/inference.js?v=15';
+import { RATINGS } from './case.js?v=19';
+import * as I from '../../../core/inference.js?v=19';
 
 const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));

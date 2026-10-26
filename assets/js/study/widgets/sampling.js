@@ -6,12 +6,12 @@
 //     stat: 'mean' | 'proportion', sizes: [5, 10, 30, 60], n: 30, mode: 'means' | 'intervals', conf: 0.95,
 //     replace: true (sample with replacement; false draws without, and the standard error uses the finite population
 //     correction), seed: 1, places, note }
-import { h, s, onResize } from '../../core/dom.js?v=15';
-import { xl } from '../xl.js?v=15';
-import { frame, lin, niceTicks, axisX } from '../../core/charts.js?v=15';
-import { mulberry32 } from '../../core/rng.js?v=15';
-import * as I from '../../core/inference.js?v=15';
-import { segmented, fmtX } from '../dist-draw.js?v=15';
+import { h, s, onResize } from '../../core/dom.js?v=19';
+import { xl } from '../xl.js?v=19';
+import { frame, lin, niceTicks, axisX } from '../../core/charts.js?v=19';
+import { mulberry32 } from '../../core/rng.js?v=19';
+import * as I from '../../core/inference.js?v=19';
+import { segmented, fmtX } from '../dist-draw.js?v=19';
 
 export function mount(el, cfg, ctx) {
   const base = `sm-${ctx.id}`;

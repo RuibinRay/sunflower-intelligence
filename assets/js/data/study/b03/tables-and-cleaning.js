@@ -1,7 +1,7 @@
 // tables-and-cleaning.js — B03 · Excel tables and cleaning data. Content only; exercises are in tables-and-cleaning.ex.js.
 // Lantern's orders and raw export come from case.js; Spokewise Cycles' workshop jobs are invented here. Excel behaviour
 // checked on Microsoft's pages on 23 October 2026 (see references).
-import { ORDERS, ORDER_COLUMNS, RAW, RAW_COLUMNS, DERIVED as D } from './case.js?v=15';
+import { ORDERS, ORDER_COLUMNS, RAW, RAW_COLUMNS, DERIVED as D } from './case.js?v=19';
 
 const money = (x) => `$${x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const oc = (name) => ORDER_COLUMNS.indexOf(name);

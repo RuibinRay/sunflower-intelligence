@@ -3,9 +3,9 @@
 // and hours (EVENTS). Welch's ANOVA, the Kruskal–Wallis test and the pairwise Welch t tests are worked here from the
 // data with core/inference.js (anovaWelch, kruskal, tTest2), tested against SciPy; the engine has no Tukey HSD. The bike-share
 // scheme and the helpline are fictional. Every printed figure is recomputed in `checks`.
-import { PER_GUEST_BY_TYPE, EVENT_TYPES, EVENTS, EVENT_COLUMNS, DERIVED as D } from './case.js?v=15';
-import * as I from '../../../core/inference.js?v=15';
-import { mean, variance } from '../../../core/stats.js?v=15';
+import { PER_GUEST_BY_TYPE, EVENT_TYPES, EVENTS, EVENT_COLUMNS, DERIVED as D } from './case.js?v=19';
+import * as I from '../../../core/inference.js?v=19';
+import { mean, variance } from '../../../core/stats.js?v=19';
 
 // ---------------------------------------------------------------- Lantern's event types
 const AN = D.eventTypes.anova;

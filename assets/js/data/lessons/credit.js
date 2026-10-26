@@ -2,7 +2,7 @@
 // `checks` recompute every number printed in the worked example; tests/lessons.test.mjs compares them.
 // The coefficients and cut-offs repeat Z_MODELS in assets/js/pages/finance-risk.js (a page module, so it
 // can't be imported here); keep the two in step.
-import * as F from '../../core/format.js?v=15';
+import * as F from '../../core/format.js?v=19';
 
 const Z = { coef: [1.2, 1.4, 3.3, 0.6, 1.0], cut: [1.81, 2.99] };
 const ZPP = { coef: [6.56, 3.26, 6.72, 1.05], cut: [1.1, 2.6] };

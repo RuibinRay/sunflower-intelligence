@@ -2,19 +2,25 @@
 // the headline result, the working, a plain-language note and an optional chart update as they change.
 //   { type: 'formula', title, intro, inputs: [{ id, label, min, max, step, value, fmt: 'money'|'pct'|'int'|'num', unit, digits }],
 //     compute: (v) => ({ headline: { label, value }, rows: [[label, value]], note, chart?, error? }) }
-import { h } from '../../core/dom.js?v=15';
-import * as F from '../../core/format.js?v=15';
-import { fillRange } from '../../core/site.js?v=15';
-import { onResize } from '../../core/dom.js?v=15';
-import { drawChart } from './chart.js?v=15';
+import { h } from '../../core/dom.js?v=19';
+import * as F from '../../core/format.js?v=19';
+import { fillRange } from '../../core/site.js?v=19';
+import { onResize } from '../../core/dom.js?v=19';
+import { drawChart } from './chart.js?v=19';
 
 function digitsOf(inp) { return inp.digits ?? (inp.step < 1 ? Math.min(3, Math.ceil(-Math.log10(inp.step) - 1e-9)) : 0); }
+/** The unit, singular when the value is exactly 1 ("1 year", not "1 years"); `unitOne` overrides the singular. */
+function unitFor(inp, v) {
+  if (!inp.unit) return '';
+  const one = Math.abs(v) === 1 ? (inp.unitOne ?? (/^(years|months|days|weeks|units|periods|times)$/.test(inp.unit) ? inp.unit.slice(0, -1) : inp.unit)) : inp.unit;
+  return ` ${one}`;
+}
 function show(inp, v) {
   const d = digitsOf(inp);
   if (inp.fmt === 'pct') return `${F.num(v, d)}%`;
-  if (inp.fmt === 'money') return `${F.money(v, { digits: d })}${inp.unit ? ` ${inp.unit}` : ''}`;
-  if (inp.fmt === 'int') return `${F.int(v)}${inp.unit ? ` ${inp.unit}` : ''}`;
-  return `${F.num(v, d)}${inp.unit ? ` ${inp.unit}` : ''}`;
+  if (inp.fmt === 'money') return `${F.money(v, { digits: d })}${unitFor(inp, v)}`;
+  if (inp.fmt === 'int') return `${F.int(v)}${unitFor(inp, v)}`;
+  return `${F.num(v, d)}${unitFor(inp, v)}`;
 }
 
 export function mount(el, cfg, ctx) {

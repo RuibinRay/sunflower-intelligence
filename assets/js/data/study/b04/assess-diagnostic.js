@@ -11,7 +11,7 @@
 // lesson exercises, module tests, the final or the project. No hints; solutions are shown on review. Every business,
 // record and number is fictional; every num item’s `check` recomputes its answer, and every formula item is marked by
 // its results on the sheet and on changed copies.
-import * as I from '../../../core/inference.js?v=15';
+import * as I from '../../../core/inference.js?v=19';
 
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
 const r = (x, p) => Math.round(x * 10 ** p) / 10 ** p;

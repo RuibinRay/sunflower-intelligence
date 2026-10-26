@@ -1,6 +1,6 @@
 // data-types.js — B01 · Types of data. Content only; exercises are in data-types.ex.js.
 // Uses MONTHS, SHOP and SURVEY from case.js. Every other business, person and number is fictional unless a source is cited.
-import { MONTHS, SHOP, SURVEY } from './case.js?v=15';
+import { MONTHS, SHOP, SURVEY } from './case.js?v=19';
 
 const fmt = (x) => x.toLocaleString('en-US');
 

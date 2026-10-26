@@ -1,5 +1,5 @@
 // four-kinds-of-analytics.js — B01 · The four kinds of analytics. Content only; exercises are in four-kinds-of-analytics.ex.js.
-import { SHOP } from './case.js?v=15';
+import { SHOP } from './case.js?v=19';
 
 const STAIRS = '<svg viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="14"><defs><marker id="fka-ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>'
   + '<line x1="50" y1="280" x2="50" y2="28" style="stroke:currentColor;stroke-width:1.5" marker-end="url(#fka-ar)"/><line x1="50" y1="280" x2="624" y2="280" style="stroke:currentColor;stroke-width:1.5" marker-end="url(#fka-ar)"/>'

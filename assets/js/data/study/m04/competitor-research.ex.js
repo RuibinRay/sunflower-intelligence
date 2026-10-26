@@ -2,7 +2,7 @@
 // here). Ana's shelf-price audit (PRICE_AUDIT) and Brewline's catering facts come from case.js (Brewline via M01); the
 // rival juice brand is fictional. Formula items are marked by their results on the sheet and on copies with the numbers
 // changed; num items recompute their answers. Not the office market or its competitors (the project's).
-import { PRICE_AUDIT, COMPETITORS, tableCells } from './case.js?v=15';
+import { PRICE_AUDIT, COMPETITORS, tableCells } from './case.js?v=19';
 
 const BRANDS = PRICE_AUDIT.brands;
 const CH_LABEL = { supermarket: 'Supermarket', convenience: 'Convenience', natural: 'Natural grocer' };

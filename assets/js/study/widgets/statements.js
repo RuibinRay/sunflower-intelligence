@@ -3,9 +3,9 @@
 //          period?: { start: '2026-03-01', end: '2026-12-31', phrase: 'For the ten months ended' } }
 // The student places each account on its statement, works out net income, ending retained earnings and total
 // assets (for the statements in `build`), checks, reads the feedback, then sees the statements in full.
-import { h } from '../../core/dom.js?v=15';
-import { verdict } from '../../core/ui.js?v=15';
-import * as U from '../labs/accounting-ui.js?v=15';
+import { h } from '../../core/dom.js?v=19';
+import { verdict } from '../../core/ui.js?v=19';
+import * as U from '../labs/accounting-ui.js?v=19';
 
 const { A } = U;
 const PLACES = [['income', 'Income statement'], ['equity', 'Statement of changes in equity'], ['balance', 'Balance sheet']];

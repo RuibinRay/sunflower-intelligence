@@ -28,10 +28,10 @@
 // comes from the project’s scenario, data or angles. No hints; solutions are shown on review. Every num item’s `check`
 // recomputes its answer, every figure a prompt states is computed below from its inputs, and every formula item is
 // marked by its results on the sheet and on changed copies.
-import { RESPONDENTS, DERIVED, BRANDS, NEEDS } from './case.js?v=15';
-import { CHANNELS, DEFAULT_PLAN, TIERS, CATEGORY } from '../m02/market.js?v=15';
-import { weightedScore } from '../../../core/percmap.js?v=15';
-import { fSf, chi2Sf } from '../../../core/inference.js?v=15';
+import { RESPONDENTS, DERIVED, BRANDS, NEEDS } from './case.js?v=19';
+import { CHANNELS, DEFAULT_PLAN, TIERS, CATEGORY } from '../m02/market.js?v=19';
+import { weightedScore } from '../../../core/percmap.js?v=19';
+import { fSf, chi2Sf } from '../../../core/inference.js?v=19';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const usd = (v, d = 0) => `${v < 0 ? '−' : ''}$${fx(Math.abs(v), d)}`;

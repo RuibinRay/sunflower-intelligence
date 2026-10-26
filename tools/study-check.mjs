@@ -8,6 +8,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import * as SH from '../assets/js/core/sheet.js';
 import * as PM from '../assets/js/core/percmap.js';
+import * as RW from '../assets/js/study/widgets/ratios.js';
 import { ols } from '../assets/js/core/stats.js';
 import {
   catalog, BUILT, DATA, chartFor, chartSync, caseFor, lessonsOf, loadLesson, loadEx, loadModuleFile, blocks, blockWords,
@@ -17,7 +18,7 @@ import {
 const VERBS = /^(Explain|Describe|Define|Identify|Distinguish|Classify|Calculate|Compute|Record|Prepare|Analyse|Apply|Interpret|Evaluate|Compare|Choose|Decide|Use|Recognise|State|Construct|Build|Post|Journalise|Find|Detect|Diagnose|Handle|Transform|Scale|Encode|Write|Document|Justify|Recommend|Estimate|Assess|Plan|Design|Set|Measure|Select|Determine|Correct|Locate|Read|Summarise|Reshape|Combine|Profile|Validate|Clean|Convert|Standardise|Normalise|Map|Draft|Price|Forecast|Test|Name|List|Contrast|Close|Adjust|Trace|Reconcile)\b/;
 const KINDS = ['conceptual', 'numerical', 'applied'];
 const TYPES = ['mc', 'multi', 'num', 'fill', 'classify', 'order', 'journal', 'equation', 'rows', 'short', 'formula', 'steps'];
-const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak', 'sampler', 'cluster', 'percmap'];
+const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak', 'sampler', 'cluster', 'percmap', 'ratios'];
 const DATASETS = ['lantern-orders', 'harborview-bookings', 'northfield-students'];
 const CLEAN_OPS = ['dedupe', 'dedupe-key', 'trim', 'case', 'map', 'to-number', 'to-date', 'fill', 'drop-missing', 'flag-missing', 'validate', 'outliers', 'transform', 'scale', 'encode', 'derive', 'rename', 'drop-column'];
 const near = (a, b, tol) => Math.abs(a - b) <= tol + 1e-9;
@@ -447,6 +448,25 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
     if (wd.highlight && !B0.includes(wd.highlight)) r.err(`${w}: highlight must name one of the brands`);
     if (wd.noun && !(Array.isArray(wd.noun) && wd.noun.length === 2 && wd.noun.every((x) => typeof x === 'string' && x))) r.err(`${w}: noun must be [singular, plural]`);
     (wd.ideals || []).forEach((d, i) => { if (!d.name || !Array.isArray(d.profile) || d.profile.length !== A0.length) r.err(`${w}: ideal ${i} needs a name and a profile with one value per attribute`); });
+  } else if (wd.type === 'ratios') {
+    const per = wd.periods || [];
+    if (!per.length || !per.every((p) => p && typeof p.label === 'string' && p.data && typeof p.data === 'object')) r.err(`${w}: ratios needs periods [{ label, data }]`);
+    const all = [...per, ...(wd.peers || [])];
+    all.forEach((p, i) => { for (const [k, v] of Object.entries(p.data || {})) if (typeof v !== 'number' || !Number.isFinite(v)) r.err(`${w}: period ${i}'s ${k} must be a finite number`); });
+    const keys = wd.ratios || Object.keys(RW.RATIOS).filter((k) => !RW.RATIOS[k].optIn && (wd.groups || ['liquidity', 'solvency', 'efficiency', 'profitability']).includes(RW.RATIOS[k].group));
+    for (const k of wd.ratios || []) if (!RW.RATIOS[k]) r.err(`${w}: unknown ratio ${k} (one of ${Object.keys(RW.RATIOS).join(', ')})`);
+    for (const g of wd.groups || []) if (!RW.GROUPS[g]) r.err(`${w}: unknown group ${g}`);
+    for (const t of wd.toggles || []) if (!['average', 'leases', 'annualise', 'creditSales'].includes(t)) r.err(`${w}: unknown toggle ${t}`);
+    if (wd.select && !keys.includes(wd.select)) r.err(`${w}: select must be one of the ratios shown`);
+    (wd.adjust || []).forEach((a, i) => {
+      if (!a.label || !a.delta || !Object.values(a.delta).every(Number.isFinite)) r.err(`${w}: adjustment ${i} needs a label and numeric deltas`);
+      if (a.period != null && !(a.period >= 0 && a.period < per.length)) r.err(`${w}: adjustment ${i}'s period is out of range`);
+    });
+    // every ratio shown must be computable (not '—') for at least one column under the defaults
+    for (const k of keys) {
+      const vals = per.map((p, i) => RW.RATIOS[k]?.f(RW.compute(p.data, i > 0 ? per[i - 1].data : null, { average: true, ...(wd.defaults || {}) })));
+      if (RW.RATIOS[k] && !vals.some((v) => v != null && Number.isFinite(v))) r.warn(`${w}: ${k} can't be computed for any period (missing inputs?)`);
+    }
   } else if (wd.type === 'toolpak') {
     const T = ['ttest-paired', 'ttest-equal', 'ttest-unequal', 'anova'];
     const list = wd.tools || [wd.tool];

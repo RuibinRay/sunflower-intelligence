@@ -85,10 +85,26 @@ const ALL = [
     topics: ['Income statements: gross profit, EBIT, EBITDA and net income', 'Balance sheets', 'Cash flow statements (direct and indirect methods)', 'Statements of changes in equity', 'Revenue recognition basics', 'Cost of goods sold', 'Operating expenses', 'Depreciation and amortisation', 'Inventory accounting', 'Accounts receivable and payable', 'Working capital', 'Retained earnings', 'How the four statements connect', 'US GAAP versus IFRS'],
   }),
   C({
-    id: 'f03', school: 'finance', code: 'F03', level: 'intermediate', requires: ['f02'],
+    id: 'f03', school: 'finance', code: 'F03', level: 'intermediate', status: 'reviewed', requires: ['f02'], recommends: ['f04'],
     title: 'Financial Statement Analysis',
     blurb: 'Read a company through its statements: trends, common-size statements, ratios, DuPont analysis and distress scores.',
     topics: ['Horizontal analysis and trends', 'Vertical analysis', 'Common-size statements', 'Growth and margin ratios', 'Liquidity ratios: current and quick', 'Solvency and leverage ratios', 'Efficiency ratios: asset and inventory turnover', 'Return on assets and return on equity', 'DuPont analysis', 'Financial health analysis', 'Altman Z-score and its limits', 'Industry benchmarking', 'Reading footnotes and MD&A', 'Cases: growth with cash burn, reinvestment over reported profit, aggressive accounting'],
+    case: 'lantern',
+    outcomes: [
+      'Compare two years of statements by horizontal and vertical analysis, with growth rates, common-size statements and margins, and adjust for periods of different length and changes in the business.',
+      'Measure liquidity, solvency and efficiency with the standard ratios, choose and state the conventions behind each (averages, credit sales, leases as debt), and explain what each one can and cannot show.',
+      'Calculate return on assets and return on equity and break return on equity into its drivers with the three- and five-step DuPont analysis.',
+      'Judge the quality of earnings from the cash-flow statement and the notes: cash from operations against net income, accruals, free cash flow and the red flags of aggressive accounting.',
+      'Calculate Altman’s Z-scores, place a business in its zone, and explain the limits of the model for small, private and lease-heavy businesses.',
+      'Benchmark a business against peers and published filings, read the MD&A and the notes of an annual report, and write an analysis that reaches a conclusion a lender or owner can act on.',
+    ],
+    modules: [
+      { n: 1, title: 'Comparing statements', lessons: ['horizontal-analysis', 'common-size-statements'] },
+      { n: 2, title: 'Liquidity, solvency and efficiency', lessons: ['liquidity', 'solvency-and-leverage', 'efficiency-and-working-capital'] },
+      { n: 3, title: 'Returns', lessons: ['return-on-assets-and-equity', 'dupont-analysis'] },
+      { n: 4, title: 'Judging financial health', lessons: ['cash-flow-and-earnings-quality', 'distress-scores', 'benchmarking-and-annual-reports'] },
+    ],
+    project: { title: 'A credit review of Brightwater Bike Repair', blurb: 'Analyse the two years of statements you prepared in F02 for Harbour Credit Union: trends, ratios, DuPont, cash flow and a distress score, benchmarked against similar shops, and recommend whether to lend and on what terms.' },
     related: [{ plate: 'credit' }, { tool: 'finance/risk/#altman', label: 'Altman Z-scores' }],
   }),
   C({

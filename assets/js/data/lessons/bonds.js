@@ -1,7 +1,7 @@
 // Lesson: bond prices, yields, duration and convexity.
 // `checks` recompute every number printed in the worked example; tests/lessons.test.mjs compares them.
-import * as F from '../../core/format.js?v=15';
-import { bondAtYield } from '../../core/fin.js?v=15';
+import * as F from '../../core/format.js?v=19';
+import { bondAtYield } from '../../core/fin.js?v=19';
 
 const SPEC = { face: 1000, couponRate: 0.06, years: 5, freq: 1 };
 

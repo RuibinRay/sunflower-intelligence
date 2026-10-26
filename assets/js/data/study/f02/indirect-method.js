@@ -3,7 +3,7 @@
 // balances. The later-year example is Blackthorn Print Works (fictional, 2027, with 2026 opening balances, a press sold at
 // a gain, a seller-financed press and a current portion of debt); Harrowgate Bakery and Tallowmere Candle Co. are
 // fictional too. Why profit and cash differ in general, and the four statements together, are linking-the-statements’.
-import { FACTS as F, DERIVED as D, STATEMENTS as S, RESULTS as R, LEDGER } from './case.js?v=15';
+import { FACTS as F, DERIVED as D, STATEMENTS as S, RESULTS as R, LEDGER } from './case.js?v=19';
 
 const bal = (n) => LEDGER[n]?.balance || 0;
 const IND = R.indirect;

@@ -963,3 +963,13 @@ input[type="file"]:focus-visible + .file-btn, .file-btn:focus-within { outline: 
 .pm-slider { display: grid; grid-template-columns: minmax(7rem, 11rem) minmax(0, 1fr) 2.6rem; gap: var(--s-2); align-items: center; }
 .pm-slider output { text-align: right; }
 @media (max-width: 560px) { .pm-chart .pm-label { font-size: var(--t-xs); } .pm-chart .pm-vec-label, .pm-chart .pm-ideal-label { font-size: 0.72rem; } }
+
+/* F03 ratios widget */
+.ra-table th[scope="row"] { padding-left: 4px; }
+.ra-table td.num, .ra-table th.num { text-align: right; }
+.ra-pick { background: none; border: 0; padding: 2px 4px; font: inherit; color: var(--ink); text-align: left; cursor: pointer; border-radius: 4px; text-decoration: underline; text-decoration-color: var(--rule-strong); text-underline-offset: 3px; white-space: normal; }
+.ra-pick:hover { text-decoration-color: currentColor; }
+.ra-pick[aria-pressed="true"] { font-weight: 700; text-decoration: none; }
+.ra-table tr.is-selected th, .ra-table tr.is-selected td { background: color-mix(in srgb, var(--series-1) 9%, transparent); }
+.ra-table tr.ra-group th { font-size: var(--t-xs); text-transform: uppercase; letter-spacing: .04em; color: var(--ink-3); padding-top: 14px; }
+.ra-table th[scope="row"] { min-width: 11rem; white-space: normal; }

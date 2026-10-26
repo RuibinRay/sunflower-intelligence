@@ -2,7 +2,7 @@
 // Uses BREWER (the $24,000 cold-brew system: Coastline's 7.2% APR monthly loan and the supplier's 24 × $1,050 plan)
 // and COASTLINE_NOTE.marketRateMarch2027 (8% compounded quarterly) from case.js. The vendor plan's implied rate is
 // left to the annuities lesson. Every other business and figure is fictional and labelled. ANA_PLAN is not used.
-import { BREWER as B, COASTLINE_NOTE as N } from './case.js?v=15';
+import { BREWER as B, COASTLINE_NOTE as N } from './case.js?v=19';
 
 const ear = (apr, m) => (1 + apr / m) ** m - 1;
 const rB = B.loan.apr / 100;                    // 0.072

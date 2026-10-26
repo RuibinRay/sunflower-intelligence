@@ -9,7 +9,7 @@
 // { acct, dr } or { acct, cr }. `cash` optionally classifies the cash movement for the statement of cash flows:
 // 'operating' | 'investing' | 'financing', or { operating, investing, financing } in signed dollars for a split.
 // `cashLabel` optionally names the line on a direct-method statement of cash flows (e.g. 'Cash paid to employees').
-import { mulberry32 } from './rng.js?v=15';
+import { mulberry32 } from './rng.js?v=19';
 
 // ---------------------------------------------------------------- account types
 
@@ -763,6 +763,22 @@ export function indirectOperating(ledger, chart, opening = {}) {
   }
   const open = (name) => C(opening?.[name] || 0);
   const handled = new Set();
+  // Accounts sharing an `indirectGroup` (an operating lease's right-of-use asset and its liabilities) are netted into one
+  // line, whatever their group: recognising a lease and its noncash amortisation move them together, so only the
+  // difference (lease cost charged but not yet paid, or paid in advance) is a cash effect.
+  const groupsSeen = new Map();
+  for (const a of ch.list) {
+    if (!a.indirectGroup || !['asset', 'contra-asset', 'liability'].includes(a.type)) continue;
+    const change = bal(ledger, a.name) - open(a.name);
+    const effect = a.type === 'liability' ? change : -change;
+    groupsSeen.set(a.indirectGroup, (groupsSeen.get(a.indirectGroup) || 0) + effect);
+    handled.add(a.name);
+  }
+  for (const [label, effect] of groupsSeen) {
+    if (!effect) continue;
+    workingCapital.push([`Change in ${lower(label)}`, D(effect)]);
+    total += effect;
+  }
   for (const a of ch.list) {
     if (handled.has(a.name) || isCash(a)) continue;
     if (!['asset', 'contra-asset', 'liability'].includes(a.type) || a.group !== 'current' || counterClass(a) !== 'operating') continue;
