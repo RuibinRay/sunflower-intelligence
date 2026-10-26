@@ -455,6 +455,7 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
     if (wd.group && (!wd.group.name || !Array.isArray(wd.group.values) || wd.group.values.length !== (X || []).length)) r.err(`${w}: group needs a name and one value per point`);
     if (wd.labels && wd.labels.length !== (X || []).length) r.err(`${w}: labels needs one label per point`);
     for (const t of wd.toggles || []) if (!['ranks', 'logX', 'logY', 'group', 'line'].includes(t)) r.err(`${w}: unknown toggle ${t}`);
+    if (wd.jitter && !Object.entries(wd.jitter).every(([k, v]) => ['x', 'y'].includes(k) && Number.isFinite(v) && v >= 0)) r.err(`${w}: jitter must be { x, y } with non-negative amounts`);
     for (const t of wd.show || []) if (!['pearson', 'spearman', 'kendall', 'ci', 'r2', 'p'].includes(t)) r.err(`${w}: unknown statistic ${t}`);
     if ((wd.toggles || []).includes('logX') && X && X.some((v) => Number.isFinite(v) && v <= 0)) r.warn(`${w}: some x values are 0 or negative, so log x drops them (the widget says how many)`);
   } else if (wd.type === 'corrmatrix') {

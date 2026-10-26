@@ -6,7 +6,9 @@
 //     x: { name, values, unit? }, y: { name, values, unit? },
 //     group?: { name, values: ['Harbourside', …] }, labels?: ['1 Mar', …] (one per point, for the tooltip),
 //     show: ['pearson', 'spearman', 'kendall', 'ci', 'r2', 'p'], toggles: ['ranks', 'logX', 'logY', 'group', 'line'],
-//     defaults: { group: false, line: false }, exclude: 3 (offer the 3 most influential points to leave out), note }
+//     defaults: { group: false, line: false }, exclude: 3 (offer the 3 most influential points to leave out),
+//     jitter: { x: 0.25, y: 0 } (draw points nudged by up to this much, seeded, so whole numbers don't hide each other;
+//     every statistic uses the true values), note }
 import { h, onResize } from '../../core/dom.js?v=20';
 import { xl } from '../xl.js?v=20';
 import { scatter as drawScatter, tableTwin } from '../../core/charts.js?v=20';
@@ -63,7 +65,8 @@ export function mount(el, cfg, ctx) {
     const px = st.ranks ? ranks(xs) : xs, py = st.ranks ? ranks(ys) : ys;
     const name = (axis, log) => `${st.ranks ? 'Rank of ' : log ? 'log₁₀ ' : ''}${cfg[axis].name}${!st.ranks && !log && cfg[axis].unit ? ` (${cfg[axis].unit})` : ''}`;
     const gIdx = (i) => groups.indexOf(cfg.group.values[i]);
-    const points = idx.map((i, k) => ({ x: px[k], y: py[k], cls: st.group ? CLS[gIdx(i) % 3] : 'm-s1', title: cfg.labels ? cfg.labels[i] : '' }));
+    const jit = (axis, k) => { const a = st.ranks ? 0 : cfg.jitter?.[axis] || 0; if (!a) return 0; const t = Math.sin((idx[k] + 1) * (axis === 'x' ? 12.9898 : 78.233)) * 43758.5453; return (t - Math.floor(t) - 0.5) * 2 * a; };
+    const points = idx.map((i, k) => ({ x: px[k] + jit('x', k), y: py[k] + jit('y', k), cls: st.group ? CLS[gIdx(i) % 3] : 'm-s1', title: cfg.labels ? cfg.labels[i] : '' }));
     const curves = [];
     if (st.line && px.length > 2) {
       const mx = px.reduce((s, v) => s + v, 0) / px.length, my = py.reduce((s, v) => s + v, 0) / py.length;
