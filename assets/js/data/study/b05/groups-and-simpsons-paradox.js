@@ -75,7 +75,7 @@ export default {
   objectives: [
     'Calculate a correlation for pooled data and within each group, and recognise Simpson’s paradox when the two disagree in sign.',
     'Explain a reversal by a third variable whose groups differ in both x and y, using group means and a scatterplot coloured by group.',
-    'Decompose a sum of products into within-group and between-group parts, and calculate a pooled within-group correlation.',
+    'Calculate the within-group and between-group parts of a sum of products, and the pooled within-group correlation.',
     'Distinguish an ecological correlation between group averages from a correlation between individuals, and recognise the ecological fallacy.',
     'Decide which correlation answers a given question and write up grouped data with both the within-group and pooled results.',
   ],
@@ -133,6 +133,10 @@ export default {
     { p: 'The classic warning is Robinson’s (1950) analysis of the 1930 US census, as reported by Subramanian and colleagues (2009). Across individuals, being born abroad and being unable to read had a small positive correlation (r = 0.12); across states, the share of residents born abroad and the share unable to read had a negative correlation (r = −0.53), because immigrants had settled mostly in states where literacy was high. Inferring individual behaviour from the state figures would have got the sign wrong.' },
     { p: 'Ecological correlations are not useless. They are the right tool for questions about groups (should Lantern open its next café in an office district or on the waterfront?) and often the only data available. The error is in moving from groups to individuals without saying so.' },
 
+    { h: 'Finding the groups' },
+    { p: 'Groups are not always labelled in the data you are handed. Three places to look: categorical columns that are already there (café, region, channel, customer type, weekday or weekend); time (months, seasons, before and after a price change, which can act like groups); and the scatterplot itself, where separate clouds, or a cloud with a gap in it, often mean a grouping that nobody recorded. In Lantern’s log the café column is there, but a pooled scatterplot of footfall against ticket would show two clouds even without it.' },
+    { p: 'When you find a grouping, compare three things: the group means of x and y, the correlation inside each group, and the pooled correlation. If the group means line up with the within-group pattern, pooling strengthens it; if they run against it, pooling weakens or reverses it; if they differ on only one variable, pooling dilutes it. The decomposition in the formula card turns that comparison into numbers.' },
+    { p: 'Choose the grouping before you compute, from what you know about the business, not by trying splits until one gives an interesting answer. Splitting the log by café is obvious to anyone who knows Lantern has two very different cafés; splitting it by the day of the month would be a search for patterns, with the many-tests problem that module 4 deals with.' },
     { h: 'Which correlation answers the question?' },
     { list: [
       '<b>A question about days, customers or transactions inside a unit</b> (“on a busy morning at a given café, does the ticket go up?”): use the within-group correlations, each café’s own or the pooled within-group r.',
@@ -174,7 +178,7 @@ export default {
       steps: [
         'Means: overall footfall 183.0 and ticket $4.31; Harbourside 139.7 and $5.34; Millbrook 226.3 and $3.27.',
         String.raw`Between cafés: <m>306 \times (139.7 - 183.0) \times (5.34 - 4.31) + 306 \times (226.3 - 183.0) \times (3.27 - 4.31)</m> with unrounded means is −27,529.9. Each café contributes about half: one is below average on footfall and above on ticket, the other the reverse, so both products are negative.`,
-        'Within cafés: the sums of products of deviations from each café’s own means are +6,911 at Harbourside and +1,934 at Millbrook, +8,845.3 in all.',
+        'Within cafés: the sums of products of deviations from each café’s own means are +5,240.6 at Harbourside and +3,604.8 at Millbrook, +8,845.3 in all.',
         'Total: 8,845.3 − 27,529.9 = −18,684.6, the sum of products for all 612 days around the overall means. The between part is about three times the within part, and opposite in sign.',
         String.raw`Within-café correlation: the within-café sums of squares are 3,491,519 for footfall and 58.73 for the ticket, so <m>r_W = 8{,}845.3 \div \sqrt{3{,}491{,}519 \times 58.73} = 0.618</m>.`,
       ],
@@ -186,7 +190,7 @@ export default {
         'Identify the level: the dashboard’s 20 points are café-month averages, so −0.80 is an ecological correlation, about groups of days.',
         'Look inside the groups: within each café the monthly averages have r = 0.95 (Harbourside) and 0.74 (Millbrook), and the daily data r = 0.735 and 0.517. Busier months and busier days go with larger tickets inside each café.',
         'Find the third variable: the café. Millbrook’s customers buy smaller tickets and come in larger numbers; the negative figure compares the cafés.',
-        'Write it down: “Inside each café, busier days go with larger average tickets (r = 0.74 at Harbourside, 0.52 at Millbrook, 2027). Across cafés, Millbrook is busier and has smaller tickets, which is why the combined monthly figures run the other way (r = −0.80).”',
+        'Write it down: “Inside each café, busier days go with larger average tickets (r = 0.73 at Harbourside, 0.52 at Millbrook, 2027). Across cafés, Millbrook is busier and has smaller tickets, which is why the combined monthly figures run the other way (r = −0.80).”',
       ],
       answer: 'The consultant has committed the ecological fallacy. Inside each café, busy days go with larger tickets, not smaller ones; the −0.80 compares Millbrook with Harbourside.',
       interpretation: 'There is no evidence that crowds lower the ticket on a given day, so a busy-day pastry push can’t be justified by this figure. A sensible next step is to test a pastry offer on a few days at each café and compare tickets, which the correlation-and-causation lesson discusses. And dashboards that mix cafés should show each café separately, or at least label which comparison a figure makes.' },
@@ -207,7 +211,7 @@ export default {
   ],
 
   application: [
-    { case: 'Ana’s note to her managers: “Inside each café, busier days go with larger average tickets: r = 0.74 at Harbourside and 0.52 at Millbrook across 2027. Millbrook is busier and has smaller tickets, so the two cafés together show the opposite (r = −0.32). Please don’t read the combined monthly dashboard as a statement about busy days; from next month it shows each café on its own line.”' },
+    { case: 'Ana’s note to her managers: “Inside each café, busier days go with larger average tickets: r = 0.73 at Harbourside and 0.52 at Millbrook across 2027. Millbrook is busier and has smaller tickets, so the two cafés together show the opposite (r = −0.32). Please don’t read the combined monthly dashboard as a statement about busy days; from next month it shows each café on its own line.”' },
     { p: 'Her note shows the habits that keep grouped data honest. She leads with the correlation that answers the managers’ question, which is about days inside their own café. She gives the pooled figure too, so nobody who sees it elsewhere thinks it was hidden, and she names the third variable that explains the difference. And she fixes the dashboard so that the misleading comparison doesn’t keep arriving every month.' },
     { p: 'The same structure turns up across business analytics. Store-level data pool stores of different sizes and locations; customer data pool segments that differ in income and habit; data across years pool periods with different prices. A chain whose larger stores have lower margins may find that within every store, busier weeks have higher margins; a lender whose regions with more applications approve fewer may find the opposite inside each region. In each case the first step is the same: plot by group, compute within-group and pooled correlations, and compare the group means.' },
     { p: 'When summaries are all you have, say so. A correlation between regional averages, monthly figures or store totals is a statement about regions, months or stores. It can guide decisions about those units, such as where to open, what to stock, which months to staff, but it should not be repeated as a fact about individual customers or days without data at that level.' },
@@ -240,7 +244,7 @@ export default {
     { what: 'Pooled r', value: D.footTicket.r, shown: -0.324, tol: 0.0005 },
     { what: 'Pooled r (2 dp)', value: D.footTicket.r, shown: -0.32 },
     { what: 'Harbourside r', value: D.footTicketH.r, shown: 0.735, tol: 0.0005 },
-    { what: 'Harbourside r (2 dp)', value: D.footTicketH.r, shown: 0.74 },
+    { what: 'Harbourside r (2 dp)', value: D.footTicketH.r, shown: 0.73 },
     { what: 'Millbrook r', value: D.footTicketM.r, shown: 0.517, tol: 0.0005 },
     { what: 'Millbrook r (2 dp)', value: D.footTicketM.r, shown: 0.52 },
     { what: 'Days', value: n, shown: 612 },
@@ -266,8 +270,8 @@ export default {
     { what: 'Within SP', value: spWithin, shown: 8845.3, tol: 0.05 },
     { what: 'Between SP', value: spBetween, shown: -27529.9, tol: 0.05 },
     { what: 'Split adds up', value: spWithin + spBetween, shown: spTotal, tol: 1e-6 },
-    { what: 'H within SP', value: GH.spW, shown: 6911, tol: 0.5 },
-    { what: 'M within SP', value: GM.spW, shown: 1934, tol: 0.5 },
+    { what: 'H within SP', value: GH.spW, shown: 5240.6, tol: 0.05 },
+    { what: 'M within SP', value: GM.spW, shown: 3604.8, tol: 0.05 },
     { what: 'Between about three times within', value: Math.abs(spBetween) / spWithin, shown: 3, tol: 0.15 },
     { what: 'Within SS footfall', value: GH.ssx + GM.ssx, shown: 3491519, tol: 0.5 },
     { what: 'Within SS ticket', value: GH.ssy + GM.ssy, shown: 58.73 },

@@ -111,7 +111,8 @@ fl[order[:short]] += 1
 salesc = [fl[:306], fl[306:]]
 assert salesc[0].sum() + salesc[1].sum() == TARGET
 
-# loyalty members (cumulative sign-ups per café): about 4% of transactions sign up, early more than late
+# loyalty members (cumulative sign-ups per café): about 4% of transactions sign up, the rate falling
+# through the year (5.6% in March to 3.4% in December); monthly counts still follow transactions, peaking in July
 members = []
 for c in range(2):
     signups = r.binomial(rows[c]['trans'], 0.045 * (1.25 - 0.5 * np.arange(306) / 306))

@@ -1,6 +1,6 @@
 // correlation-matrices.ex.js — B05 · Correlation matrices: widgets, practice and the knowledge check (answer keys
 // live here). The cafés’ log comes from case.js (Harbourside’s 30 June days for the worksheets); Brightside Gym,
-// Northgate Books and Harbour Light Ferries are fictional. Formula items are marked by their results
+// Hartley Books and Harbour Light Ferries are fictional. Formula items are marked by their results
 // (core/sheet.js gradeFormula); num items recompute their answers in `check`.
 import { MATRIX, MATRIX_COLUMNS, column } from './case.js?v=20';
 import * as C from '../../../core/correlation.js?v=20';
@@ -79,7 +79,7 @@ export const widgets = {
 export const guided = [
   {
     id: 'b05-mat-g1', type: 'num', kind: 'numerical',
-    prompt: 'Northgate Books (fictional) tracks 12 weekly measures for each of its shops and wants a correlation matrix of all of them. How many distinct pairs, and so how many tests of H₀: ρ = 0, does the matrix hold?',
+    prompt: 'Hartley Books (fictional) tracks 12 weekly measures for each of its shops and wants a correlation matrix of all of them. How many distinct pairs, and so how many tests of H₀: ρ = 0, does the matrix hold?',
     answer: 66, check: () => (12 * 11) / 2, unit: 'pairs', places: 0, tol: 0,
     wrong: [
       { value: 132, say: 'That is 12 × 11, which counts every pair twice: the matrix is symmetric, so the cell for (sales, footfall) is the cell for (footfall, sales). Divide by 2.' },

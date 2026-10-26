@@ -91,7 +91,7 @@ export const widgets = {
     formats: { D: '$#,##0.00', G1: '0.000', G2: '0.000', G3: '0.000', G5: '0.0', G6: '0.0', H5: '$#,##0.00', H6: '$#,##0.00' },
     widths: { F: 26, D: 13 },
     tools: ['formulas', 'reset'],
-    note: `As recorded, the pooled r is ${fx(MAY.pooled)} while each café’s is positive (${fx(MAY.h)} and ${fx(MAY.m)}). Type 2 in G8: Millbrook’s mean ticket moves up to Harbourside’s, the between-café part of the covariance nearly vanishes, and the pooled r becomes ${fx(shifted(2))}. The cafés’ own correlations don’t move at all, because adding a constant to one café’s tickets changes none of its deviations from its own mean.`,
+    note: `As recorded, the pooled r is ${fx(MAY.pooled)} while each café’s is positive (${fx(MAY.h)} and ${fx(MAY.m)}). Type 2 in G8: Millbrook’s mean ticket moves up close to Harbourside’s, the between-café part of the covariance nearly vanishes, and the pooled r becomes ${fx(shifted(2))}. The cafés’ own correlations don’t move at all, because adding a constant to one café’s tickets changes none of its deviations from its own mean.`,
   },
 };
 
@@ -128,7 +128,7 @@ export const guided = [
       },
       {
         id: 'b05-simp-g1-s3', type: 'formula',
-        prompt: 'In G3, calculate Harbourside’s mean footfall with AVERAGEIF; then fill G4 with Millbrook’s (the page fills G4 for you if your formula works for any café name typed in F3:F4’s labels; just enter G3).',
+        prompt: 'In G3, calculate Harbourside’s mean footfall with AVERAGEIF. (G4 already shows Millbrook’s.)',
         sheet: { cells: { ...NOV.cells, F1: 'r, pooled', G1: '=CORREL(C2:C25,D2:D25)', F2: 'r, Harbourside', G2: '=CORREL(FILTER(C2:C25,B2:B25="Harbourside"),FILTER(D2:D25,B2:B25="Harbourside"))', F3: 'Mean footfall, Harbourside', F4: 'Mean footfall, Millbrook', G4: '=AVERAGEIF(B2:B25,"Millbrook",C2:C25)' } },
         cell: 'G3', answer: '=AVERAGEIF(B2:B25,"Harbourside",C2:C25)',
         alt: ['=AVERAGE(C2:C13)', '=AVERAGEIFS(C2:C25,B2:B25,"Harbourside")', '=AVERAGE(FILTER(C2:C25,B2:B25="Harbourside"))'],
@@ -164,7 +164,7 @@ export const guided = [
     prompt: 'Two fictional shops each have 50 days of data. Shop 1 averages 300 visitors a day and a $12 basket; shop 2 averages 100 visitors and a $25 basket. Calculate the between-group part of the sum of products, Σ n_g (x̄_g − x̄)(ȳ_g − ȳ), for visitors and basket.',
     answer: between(G3), check: () => { const xb = 200, yb = 18.5; return 50 * (300 - xb) * (12 - yb) + 50 * (100 - xb) * (25 - yb); }, unit: '', places: 0, tol: 1,
     wrong: [
-      { value: -650, say: 'You left out n_g: each shop’s product of deviations counts once for each of its 50 days.' },
+      { value: -1300, say: 'You left out n_g: each shop’s product of deviations counts once for each of its 50 days.' },
       { value: -32500, say: 'That is one shop’s term. Add both shops’ terms: they have the same sign.' },
     ],
     hints: ['Overall means: (300 + 100) ÷ 2 = 200 visitors and (12 + 25) ÷ 2 = $18.50, since the shops have equal numbers of days.', 'Shop 1: 50 × (300 − 200) × (12 − 18.5); shop 2: 50 × (100 − 200) × (25 − 18.5).'],
@@ -265,8 +265,8 @@ export const independent = [
     prompt: 'A fictional gym chain has two clubs. Inside the clubs, the within-group sums of products of class size and member rating add up to +1,200, the within-group sums of squares are 9,000 for class size and 640 for rating. Calculate the pooled within-group correlation. Give three decimal places.',
     answer: 0.5, check: () => 1200 / Math.sqrt(9000 * 640), unit: '', places: 3, tol: 0.0005,
     wrong: [
-      { value: 0.208, say: 'You divided by √9,000 × 640 without square-rooting both. r_W = 1,200 ÷ √(9,000 × 640).' },
-      { value: 0.25, say: 'Divide by the square root of the product of the two sums of squares: √(9,000 × 640) = 2,400.' },
+      { value: 0.124, say: 'You divided by the sum of the two sums of squares. Divide by the square root of their product: √(9,000 × 640) = 2,400.' },
+      { value: 0.133, say: 'You divided by the class-size sum of squares alone. Divide by √(9,000 × 640) = 2,400.' },
     ],
     solution: 'r_W = 1,200 ÷ √(9,000 × 640) = 1,200 ÷ √5,760,000 = 1,200 ÷ 2,400 = 0.500. It measures how class size and rating move together inside a club, whatever the difference between the clubs.',
   },
@@ -295,7 +295,7 @@ export const check = [
     prompt: 'A fictional chain has two stores. Store 1: 120 days, mean 80 deliveries and mean delivery time 30 minutes. Store 2: 80 days, mean 30 deliveries and mean delivery time 45 minutes. Calculate the between-group part of the sum of products of deliveries and delivery time, Σ n_g (x̄_g − x̄)(ȳ_g − ȳ).',
     answer: between(K2), check: () => { const xb = (120 * 80 + 80 * 30) / 200, yb = (120 * 30 + 80 * 45) / 200; return 120 * (80 - xb) * (30 - yb) + 80 * (30 - xb) * (45 - yb); }, unit: '', places: 0, tol: 1,
     wrong: [
-      { value: -18750, say: 'You used the simple average of the store means (55 and 37.5). With unequal days, the overall means weight each store by its days: 60 and 36.' },
+      { value: -37500, say: 'You used the simple average of the store means (55 and 37.5). With unequal days, the overall means weight each store by its days: 60 and 36.' },
       { value: -360, say: 'Multiply each store’s product of deviations by its number of days.' },
     ],
     solution: 'Overall means, weighted by days: x̄ = (120 × 80 + 80 × 30) ÷ 200 = 60; ȳ = (120 × 30 + 80 × 45) ÷ 200 = 36. Store 1: 120 × 20 × (−6) = −14,400; store 2: 80 × (−30) × 9 = −21,600. Between-group part = −36,000: the busier store is faster, so pooling pushes the correlation of deliveries and delivery time negative, whatever happens inside each store.',

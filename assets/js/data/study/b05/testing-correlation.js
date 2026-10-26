@@ -22,6 +22,17 @@ const rhoH = C.spearman(column('rain_in', H), column('footfall', H)), tauH = C.k
 const TH = C.pearson(column('high_f', H), column('footfall', H)), TM = C.pearson(column('high_f', M), column('footfall', M));
 const cmpTemp = C.compareIndependent(TH.r, TH.n, TM.r, TM.n);
 const footHM = C.pearson(column('footfall', H), column('footfall', M)).r;
+// Steiger's (1980) Z for two correlations sharing one variable (x) in the same sample, with the pooled r̄
+const steiger = (r1, r2, r12, n) => {
+  const rb = (r1 + r2) / 2, s = (r12 * (1 - 2 * rb * rb) - 0.5 * rb * rb * (1 - 2 * rb * rb - r12 * r12)) / (1 - rb * rb) ** 2;
+  const z = ((Math.atanh(r1) - Math.atanh(r2)) * Math.sqrt(n - 3)) / Math.sqrt(2 - 2 * s);
+  return { z, p: 2 * (1 - I.normCdf(Math.abs(z))) };
+};
+const stRain = steiger(RH.r, RM.r, footHM, 306), stTemp = steiger(TH.r, TM.r, footHM, 306);
+const lag1 = (v) => C.pearson(v.slice(0, -1), v.slice(1)).r;
+const lagHigh = lag1(column('high_f', H)), lagRain = lag1(column('rain_in', H));
+// fictional, independent: a cinema chain's sites in two countries; a hardware chain's 200 stores
+const CIN = C.compareIndependent(0.48, 90, 0.22, 110), HW = C.fisherTest(0.42, 200, 0.3), HWci = C.fisherCI(0.42, 200);
 // ---------------------------------------------------------------- eight April days at Harbourside
 const harb = CLEAN_ROWS.filter((r) => r[at('cafe')] === 'Harbourside');
 const i8 = harb.findIndex((r) => r[at('date')] === '2027-04-05');
@@ -36,21 +47,25 @@ const RHOS = [0.1, 0.2, 0.3, 0.5];
 const fx = (v, d = 3) => (v < 0 ? '−' : '') + Math.abs(v).toFixed(d);
 
 function critFigure() {
-  const L = 60, R = 610, T = 30, B = 230;
+  const L = 58, R = 420, T = 24, B = 236;
   const lx = (n) => L + ((Math.log10(n) - Math.log10(4)) / (Math.log10(1000) - Math.log10(4))) * (R - L);
   const Y = (r) => B - r * (B - T);
   const pts = []; for (let n = 4; n <= 1000; n = Math.ceil(n * 1.06)) pts.push([n, C.criticalR(n)]);
-  let svg = '<svg viewBox="0 0 660 290" xmlns="http://www.w3.org/2000/svg" font-size="12" fill="currentColor">';
+  pts.push([1000, C.criticalR(1000)]);
+  let svg = '<svg viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg" font-size="15" fill="currentColor">';
   svg += `<path d="M${lx(4).toFixed(1)},${Y(0).toFixed(1)} ${pts.map(([n, r]) => `L${lx(n).toFixed(1)},${Y(r).toFixed(1)}`).join(' ')} L${lx(1000).toFixed(1)},${Y(0).toFixed(1)} Z" fill="var(--series-2)" opacity="0.18"/>`;
-  svg += `<path d="${pts.map(([n, r], k) => `${k ? 'L' : 'M'}${lx(n).toFixed(1)},${Y(r).toFixed(1)}`).join(' ')}" fill="none" stroke="var(--series-2)" stroke-width="2"/>`;
+  svg += `<path d="${pts.map(([n, r], k) => `${k ? 'L' : 'M'}${lx(n).toFixed(1)},${Y(r).toFixed(1)}`).join(' ')}" fill="none" stroke="var(--series-2)" stroke-width="2.5"/>`;
   svg += `<line x1="${L}" x2="${R}" y1="${B}" y2="${B}" stroke="var(--ink)"/><line x1="${L}" x2="${L}" y1="${T}" y2="${B}" stroke="var(--ink)"/>`;
-  [5, 10, 20, 50, 100, 200, 500, 1000].forEach((n) => { svg += `<line x1="${lx(n).toFixed(1)}" x2="${lx(n).toFixed(1)}" y1="${B}" y2="${B + 5}" stroke="var(--ink)"/><text x="${lx(n).toFixed(1)}" y="${B + 19}" text-anchor="middle" font-size="11" fill="var(--ink-3)">${n.toLocaleString('en-US')}</text>`; });
-  [0, 0.25, 0.5, 0.75, 1].forEach((r) => { svg += `<text x="${L - 8}" y="${(Y(r) + 4).toFixed(1)}" text-anchor="end" font-size="11" fill="var(--ink-3)">${r.toFixed(2)}</text>`; });
-  svg += `<circle cx="${lx(8).toFixed(1)}" cy="${Y(0.639).toFixed(1)}" r="6" fill="var(--series-1)"/><text x="${(lx(8) + 10).toFixed(1)}" y="${(Y(0.639) + 18).toFixed(1)}" font-size="11">8 April days: r = 0.64, not significant</text>`;
-  svg += `<circle cx="${lx(612).toFixed(1)}" cy="${Y(0.138).toFixed(1)}" r="6" fill="var(--series-1)"/><text x="${(lx(612) - 10).toFixed(1)}" y="${(Y(0.138) - 12).toFixed(1)}" text-anchor="end" font-size="11">rain, 612 café-days: |r| = 0.14, significant</text>`;
-  svg += `<text x="${lx(30).toFixed(1)}" y="${(Y(0.36) - 12).toFixed(1)}" font-size="11" fill="var(--ink-3)">critical |r| at α = 0.05 (two-sided)</text>`;
-  svg += `<text x="${(L + R) / 2}" y="${B + 42}" text-anchor="middle" font-size="11" fill="var(--ink-3)">pairs, n (log scale)</text>`;
-  svg += `<text x="16" y="${(T + B) / 2}" text-anchor="middle" font-size="11" fill="var(--ink-3)" transform="rotate(-90 16 ${(T + B) / 2})">|r|</text>`;
+  [5, 10, 50, 100, 500].forEach((n) => { svg += `<line x1="${lx(n).toFixed(1)}" x2="${lx(n).toFixed(1)}" y1="${B}" y2="${B + 5}" stroke="var(--ink)"/><text x="${lx(n).toFixed(1)}" y="${B + 22}" text-anchor="middle" fill="var(--ink-3)">${n}</text>`; });
+  [0, 0.5, 1].forEach((r) => { svg += `<text x="${L - 8}" y="${(Y(r) + 5).toFixed(1)}" text-anchor="end" fill="var(--ink-3)">${r.toFixed(1)}</text>`; });
+  // A: eight April days (below the curve); label to the lower left, clear of the curve
+  svg += `<circle cx="${lx(8).toFixed(1)}" cy="${Y(0.639).toFixed(1)}" r="7" fill="var(--series-1)"/><text x="${(lx(8) - 12).toFixed(1)}" y="${(Y(0.639) + 5).toFixed(1)}" text-anchor="end" font-weight="bold">A</text>`;
+  // B: rain, 612 café-days (above the curve); label directly above
+  svg += `<circle cx="${lx(612).toFixed(1)}" cy="${Y(0.138).toFixed(1)}" r="7" fill="var(--series-1)"/><text x="${lx(612).toFixed(1)}" y="${(Y(0.138) - 14).toFixed(1)}" text-anchor="middle" font-weight="bold">B</text>`;
+  // curve label in the unshaded area above the curve
+  svg += `<text x="${lx(60).toFixed(1)}" y="${Y(0.62).toFixed(1)}" fill="var(--ink-3)">critical |r|, α = 0.05</text>`;
+  svg += `<text x="${(L + R) / 2}" y="${B + 50}" text-anchor="middle" fill="var(--ink-3)">pairs, n (log scale)</text>`;
+  svg += `<text x="16" y="${(T + B) / 2}" text-anchor="middle" fill="var(--ink-3)" transform="rotate(-90 16 ${(T + B) / 2})">|r|</text>`;
   return `${svg}</svg>`;
 }
 
@@ -86,24 +101,24 @@ export default {
     { h: 'The t statistic' },
     { p: String.raw`If <m>H_0</m> is true and the conditions below hold, the statistic` },
     { math: String.raw`t = \dfrac{r\sqrt{n - 2}}{\sqrt{1 - r^2}}` },
-    { p: String.raw`follows the t distribution with <m>n - 2</m> <g>degrees of freedom</g>. Two degrees of freedom are used up because a correlation is measured round two estimated means. For Harbourside, <m>t = -0.2276 \times \sqrt{304} \div \sqrt{1 - 0.2276^2} = -4.08</m> with 304 degrees of freedom, and the two-sided p-value, <x>=T.DIST.2T(ABS(-4.075),304)</x>, is below 0.001. If rain made no difference to Harbourside’s footfall, a correlation as far from 0 as −0.23 would turn up in fewer than 1 sample of 306 days in 1,000. Ana rejects <m>H_0</m>: rainier days go with fewer people at Harbourside.` },
+    { p: String.raw`follows the t distribution with <m>n - 2</m> <g>degrees of freedom</g>. As in fitting a straight line (B06), two quantities are estimated from the data, an intercept and a slope, and each costs a degree of freedom. For Harbourside, <m>t = -0.2276 \times \sqrt{304} \div \sqrt{1 - 0.2276^2} = -4.08</m> with 304 degrees of freedom, and the two-sided p-value, <x>=T.DIST.2T(ABS(-4.075),304)</x>, is below 0.001. If rain made no difference to Harbourside’s footfall, a correlation as far from 0 as −0.23 would turn up in fewer than 1 sample of 306 days in 1,000. Ana rejects <m>H_0</m>: rainier days go with fewer people at Harbourside.` },
     { p: String.raw`At Millbrook, r = −0.102 gives t = −1.79 and a two-sided p-value of 0.074. At α = 0.05 Ana fails to reject <m>H_0</m>: the log is compatible with no linear association between rain and footfall at Millbrook, though, as B04 stressed, that is not evidence that there is none.` },
 
     { h: 'Why n matters so much' },
     { p: String.raw`The formula rewards sample size. Turned round, it gives the smallest |r| that is significant for a given n, the <g>critical value of r</g>. At α = 0.05, two-sided, it is 0.707 for 8 pairs, 0.361 for 30, 0.197 for 100 and 0.079 for 612.` },
     { figure: {
       svg: critFigure(),
-      caption: 'The critical value of |r| at α = 0.05 (two-sided) against the number of pairs, on a log scale. Correlations above the curve are significant. Eight April days at Harbourside give r = 0.64 for temperature and footfall, below the curve; the 612 café-days give |r| = 0.14 for rain and footfall, above it.',
-      alt: 'A falling curve over a horizontal axis of the number of pairs from 4 to 1,000 on a log scale, with |r| from 0 to 1 on the vertical axis. The curve starts near 0.95 at 4 pairs, passes 0.71 at 8 and about 0.36 at 30, and falls below 0.1 by about 500 pairs. The area under the curve is shaded. One point at 8 pairs and r = 0.64 sits under the curve, labelled 8 April days: r = 0.64, not significant. Another at 612 pairs and |r| = 0.14 sits above the curve, labelled rain, 612 café-days: |r| = 0.14, significant.',
+      caption: 'The critical value of |r| at α = 0.05 (two-sided) against the number of pairs, on a log scale. Correlations above the curve are significant. A: eight April days at Harbourside, r = 0.64 for temperature and footfall, below the curve. B: the 612 café-days, |r| = 0.14 for rain and footfall, above it.',
+      alt: 'A falling curve over a horizontal axis of the number of pairs from 4 to 1,000 on a log scale, with |r| from 0 to 1 on the vertical axis. The curve, labelled critical |r|, α = 0.05, starts near 0.95 at 4 pairs, passes 0.71 at 8 and about 0.36 at 30, and falls below 0.1 at about 385 pairs. The area under the curve is shaded. Point A, at 8 pairs and r = 0.64, sits under the curve: not significant. Point B, at 612 pairs and |r| = 0.14, sits just above the curve: significant.',
     } },
-    { p: 'Two consequences follow. With 612 café-days, rain’s pooled correlation with footfall, r = −0.14, is significant (p = 0.001) although r² = 0.019: rain accounts for under 2% of the day-to-day variation in footfall. And eight days in April, 5–12 April at Harbourside, give r = 0.64 between the day’s high and footfall, which looks strong, but p = 0.088: with 8 pairs a correlation that size is well within what chance produces. A <g>p-value</g> answers “could this be chance?”, not “is this large?”.' },
+    { p: 'Two consequences follow. With 612 café-days, rain’s pooled correlation with footfall, r = −0.14, is significant (p below 0.001, though the 612 rows hold only 306 weather days; see Conditions) although r² = 0.019: rain accounts for under 2% of the day-to-day variation in footfall. And eight days in April, 5–12 April at Harbourside, give r = 0.64 between the day’s high and footfall, which looks strong, but p = 0.088: with 8 pairs a correlation that size is well within what chance produces. A <g>p-value</g> answers “could this be chance?”, not “is this large?”.' },
     { callout: 'key', title: 'What the test does and doesn’t say', html: 'Rejecting H₀: ρ = 0 says the sample correlation is unlikely to have arisen by chance if the population correlation were 0. It doesn’t say the association is strong, that it is linear, that one variable causes the other, or that it holds outside the period sampled. Report r with its confidence interval, not the p-value alone.' },
   ],
 
   theory: [
     { h: 'Conditions' },
     { p: 'The t test of r rests on assumptions. OpenStax lists them in regression terms: a linear relationship; for each x, y values roughly normal around the line with the same spread; independent errors; and data from a random sample or a randomised experiment. In practice: plot the data first (a curve or a slip can make r, and its test, misleading), and ask whether the pairs are independent.' },
-    { p: 'Independence is the condition most often broken by business data. Ana’s days come in sequence, and neighbouring days are alike: a wet spell lasts several days, and footfall drifts with the season. Days that resemble their neighbours carry less independent information than their number suggests, so the test treats 306 days as more evidence than they are and its p-values come out too small. Pooling the cafés adds a second problem: each day’s rain appears twice, once for each café, so the 612 rows hold only 306 different weather days. Treat a p-value from a time series as a rough guide, and be most cautious when it is near α.' },
+    { p: 'Independence is the condition most often broken by business data. Ana’s days come in sequence, and some of her columns follow the season: a warm day is usually followed by another warm day, and footfall at the waterfront rises and falls with the summer. At Harbourside the correlation between one day’s high and the next day’s is 0.93. Days that resemble their neighbours carry less independent information than their number suggests, so the test treats 306 days as more evidence than they are and its p-values come out too small; for temperature against footfall the effective number of days is far below 306. Rain, by contrast, is close to independent from one day to the next in this log (the same day-to-day correlation is −0.08), so its tests are less affected. Pooling the cafés adds a different problem: each day’s rain appears twice, once for each café, so the 612 rows hold only 306 different weather days. Treat a p-value from a time series as a rough guide, and be most cautious when it is near α or when both variables follow the season.' },
 
     { h: 'One-sided and two-sided tests' },
     { p: String.raw`If the question, fixed before looking at the data, is whether rain goes with <i>fewer</i> customers, the alternative is one-sided, <m>H_1: \rho < 0</m>, and the p-value is the lower tail, <x>=T.DIST(t,n-2,TRUE)</x>. For Millbrook that is 0.037, half the two-sided 0.074, and below 0.05. This is exactly the temptation the hypothesis-testing lesson warned about: switching to one-sided after seeing the two-sided p-value doubles the real false-alarm rate. Ana’s question when she started the log was “does rain make any difference?”, so she keeps the two-sided test.` },
@@ -125,7 +140,7 @@ export default {
     { p: 'The interval is not symmetric about r: it stretches further on the side away from ±1. It also agrees with the test: it excludes 0, as a two-sided test at 5% that rejects ρ = 0 requires (approximately, since the test uses t and the interval Fisher’s z). Millbrook’s interval, −0.212 to 0.010, includes 0. For the eight April days it runs from −0.120 to 0.926: anything from a weak negative association to a near-perfect positive one. That width is the honest summary of what eight days can say.' },
 
     { h: 'Testing a value other than 0' },
-    { p: String.raw`Sometimes the question is not whether <m>\rho</m> is 0 but whether it exceeds some value that matters, such as 0.3. The t test above works only for <m>\rho_0 = 0</m>; Fisher’s z handles any value: <m>z = (\operatorname{atanh} r - \operatorname{atanh}\rho_0)\sqrt{n-3}</m>, compared with the standard normal. For Harbourside’s day’s high and footfall, r = 0.436 over 306 days; against <m>\rho_0 = 0.3</m>, z = 2.75 and the two-sided p-value is 0.006.` },
+    { p: String.raw`Sometimes the question is not whether <m>\rho</m> is 0 but whether it exceeds some value that matters, such as 0.3. The t test above works only for <m>\rho_0 = 0</m>; Fisher’s z handles any value: <m>z = (\operatorname{atanh} r - \operatorname{atanh}\rho_0)\sqrt{n-3}</m>, compared with the standard normal. A hardware chain (fictional) finds r = 0.42 between store floor area and the number of product lines sold, across 200 stores, and wants to know whether the correlation is above 0.3. Then <m>z = (0.448 - 0.310) \times \sqrt{197} = 1.94</m>, and the two-sided p-value is 0.052: not quite significant at 5%, which matches the 95% interval for <m>\rho</m>, 0.299 to 0.528, whose lower end sits just below 0.3.` },
 
     { h: 'Tests of rank correlations' },
     { p: 'Spearman’s ρ is usually tested with the same t statistic, applied to the ranks, and Kendall’s τ with a normal approximation to its distribution. Both are approximations, good for moderate samples; for small samples without ties, exact tables or permutation tests are better. For rain and footfall at Harbourside, Spearman’s ρ = −0.226 and τ-b = −0.173, both with p below 0.001: the same conclusion as r, without relying on normality.' },
@@ -144,8 +159,9 @@ export default {
     { h: 'Comparing two correlations' },
     { p: String.raw`Harbourside’s rain correlation is significant and Millbrook’s is not. It is tempting to conclude that rain matters more at the waterfront, but “significant here, not significant there” is not a test of a difference. Compare the correlations directly. For two independent samples, transform each with Fisher’s z and use` },
     { math: String.raw`z = \dfrac{\operatorname{atanh} r_1 - \operatorname{atanh} r_2}{\sqrt{\dfrac{1}{n_1 - 3} + \dfrac{1}{n_2 - 3}}}` },
-    { p: 'For rain and footfall, −0.228 at Harbourside against −0.102 at Millbrook gives z = −1.59 and a two-sided p-value of 0.11: no convincing evidence that the two correlations differ. For the day’s high and footfall the picture is different: 0.436 at Harbourside against 0.157 at Millbrook gives z = 3.81, p below 0.001. Warm weather goes with more customers at the waterfront than in the office district, which fits what each café is.' },
-    { p: 'One caution. This formula assumes the samples are independent, and the cafés’ logs are not quite: they cover the same 306 days, share the same rain and temperatures, and their daily footfalls are themselves correlated (−0.39: weekends are busy at Harbourside and quiet at Millbrook). Tests that allow for overlapping samples exist but are beyond this course; treat the z here as approximate.' },
+    { p: 'A cinema chain (fictional) has 90 sites in one country, where local population and annual ticket sales correlate at r = 0.48, and 110 sites in another, where r = 0.22. The sites are different cinemas, so the samples are independent. Then z = (atanh 0.48 − atanh 0.22) ÷ √(1/87 + 1/107) = 2.07, and the two-sided p-value is 0.038: at 5%, population goes with ticket sales more closely in the first country.' },
+    { p: 'Ana’s two cafés are not independent samples, and the formula above doesn’t apply to them. Both correlations are measured on the same 306 days, they share the same rain (or temperature) variable, and the cafés’ daily footfalls are themselves correlated (−0.39: weekends are busy at Harbourside and quiet at Millbrook). Correlations that overlap like this need a test for dependent correlations; the usual one is Steiger’s (1980) Z, which allows for the correlation between the two footfall columns. It is beyond this course to derive, but its results are easy to read. For rain, −0.228 at Harbourside against −0.102 at Millbrook gives Z = −1.34, p = 0.18: no convincing evidence that the correlations differ. For the day’s high, 0.436 against 0.157 gives Z = 3.19, p = 0.0014. The independent-samples formula would have given z = −1.59 and 3.81: different numbers, the same conclusions.' },
+    { p: 'The temperature result needs one more caution. Temperature and Harbourside’s footfall both follow the season, so neighbouring days are far from independent (see Conditions) and every p-value involving temperature here, including 0.0014, is much too small. The direction of the difference (warm weather goes with more customers at the waterfront than in the office district) is plausible for the two cafés, but its strength of evidence is overstated.' },
 
     { h: 'Statistical and practical significance' },
     { p: 'A significant correlation can be too small to matter, and an important one can fail to reach significance in a small sample. Judge size by r, its interval and r², in the context of the decision. Rain’s pooled r of −0.14 is significant but explains under 2% of the variation in footfall; Ana would not reschedule staff on rain forecasts on that evidence. How many customers an inch of rain costs is a slope, a question for regression in B06, not for r.' },
@@ -202,7 +218,7 @@ export default {
         String.raw`Interval: <m>\operatorname{atanh}(0.639) = 0.756</m>, SE <m>= 1/\sqrt{5} = 0.447</m>, so z runs from <m>0.756 - 1.96 \times 0.447 = -0.121</m> to 1.632; back-transformed, ρ is between −0.120 and 0.926.`,
         String.raw`Power for ρ = 0.436 with 8 pairs: <m>\operatorname{atanh}(0.436) \times \sqrt{5} - 1.96</m> is about −0.92, and <m>\Phi(-0.92) \approx 0.18</m>. Eight days would detect a correlation of that size less than one time in five.`,
         String.raw`Pairs for 80% power: <m>n = ((1.960 + 0.842) \div \operatorname{atanh}(0.436))^2 + 3 \approx 38.9</m>, so 39 days.`,
-        'Compare with the year: over all 306 days r = 0.436, t = 8.45, p below 0.001.',
+        'Compare with the year: over all 306 days r = 0.436 and t = 8.45. The p-value from the formula is below 0.001, but temperature and footfall both follow the season, so the 306 days are far from independent and that p-value is much too small; the size of r is the more trustworthy part.',
       ],
       answer: 'Not significant: t = 2.03, 6 df, p = 0.088; 95% interval −0.120 to 0.926. Eight days had about 18% power for ρ = 0.436; 80% power needs 39 days.',
       interpretation: 'A large r from a small sample is weak evidence: the interval covers almost everything from a slight negative link to a near-perfect positive one, and the test had little chance of succeeding. Failing to reject was not evidence that temperature doesn’t matter; the full year shows it does. A one-sided test would have given p = 0.044, but choosing it after seeing the direction would be p-hacking. The useful habit is to plan the number of days from the smallest correlation worth detecting before collecting the data.' },
@@ -210,16 +226,16 @@ export default {
       setup: 'Ana is deciding whether to put a rain-day promotion (a free pastry with a coffee on wet days) at Harbourside only. Her evidence: rain and footfall correlate at r = −0.228 at Harbourside (p below 0.001) and r = −0.102 at Millbrook (p = 0.074), 306 days each. Does the log show that rain’s association with footfall differs between the cafés, and how large is it?',
       steps: [
         'Don’t compare the p-values. “Significant at Harbourside, not at Millbrook” doesn’t show a difference: Millbrook’s test had only about 42% power for a correlation of −0.1.',
-        String.raw`Compare the correlations: <m>\operatorname{atanh}(-0.228) = -0.232</m> and <m>\operatorname{atanh}(-0.102) = -0.103</m>; <m>SE = \sqrt{1/303 + 1/303} = 0.0812</m>; <m>z = (-0.232 + 0.103) \div 0.0812 = -1.59</m>; two-sided p = 0.11.`,
-        'Check the assumption: the samples share the same 306 days and the same weather, and the cafés’ daily footfalls correlate at −0.39, so the formula’s independence assumption holds only roughly. The p-value is an approximation.',
+        'Check whether the samples are independent. They aren’t: both correlations use the same 306 days and the same rain column, and the cafés’ daily footfalls correlate at −0.39. The independent-samples Fisher formula doesn’t apply.',
+        'Use a test for dependent correlations. Steiger’s Z, which allows for the −0.39, gives Z = −1.34 and a two-sided p-value of 0.18. (Wrongly treating the cafés as independent would give z = −1.59, p = 0.11; the conclusion is the same.)',
         'Judge the size: r² is 0.052 at Harbourside and 0.010 at Millbrook. Even at Harbourside rain accounts for about 5% of the day-to-day variation in footfall.',
       ],
-      answer: 'No convincing evidence of a difference: z = −1.59, p = 0.11. Both associations are small (r² of 5% and 1%).',
-      interpretation: 'The log supports “rainy days are a little quieter at Harbourside”, not “rain matters at Harbourside and not at Millbrook”. If Ana wants to know whether a rain-day promotion pays, the correlation can’t tell her: she could run it on some wet days and not others and compare (the correlation-and-causation lesson discusses why that is stronger evidence). Temperature is a different story: its correlation with footfall is 0.436 at Harbourside against 0.157 at Millbrook, a difference with p below 0.001.' },
+      answer: 'No convincing evidence of a difference: Steiger’s Z = −1.34, p = 0.18. Both associations are small (r² of 5% and 1%).',
+      interpretation: 'The log supports “rainy days are a little quieter at Harbourside”, not “rain matters at Harbourside and not at Millbrook”. If Ana wants to know whether a rain-day promotion pays, the correlation can’t tell her: she could run it on some wet days and not others and compare (the correlation-and-causation lesson discusses why that is stronger evidence). Temperature looks different: 0.436 at Harbourside against 0.157 at Millbrook, Steiger’s Z = 3.19, though temperature’s seasonality makes that p-value, 0.0014, much too small.' },
   ],
 
   demo: [
-    { widget: 'test-rain', intro: 'All 612 café-days: rain against footfall. Pooled, r = −0.138 with p = 0.001. Tick “Colour by café” to see each café’s own r: −0.228 at Harbourside, −0.102 at Millbrook. Note how narrow the 95% interval is with 612 pairs.' },
+    { widget: 'test-rain', intro: 'All 612 café-days: rain against footfall. Pooled, r = −0.138 with p below 0.001 (though the 612 rows hold only 306 weather days). Tick “Colour by café” to see each café’s own r: −0.228 at Harbourside, −0.102 at Millbrook. Note how narrow the 95% interval is with 612 pairs.' },
     { widget: 'test-explorer', intro: 'Set r and n and read t, the p-value, the critical value of r and the Fisher-z interval. Try r = 0.64 with n = 8, then with n = 30; then r = 0.14 with n = 612 and with n = 50. The chart shows how the critical value falls as n grows.' },
     { widget: 'test-power', intro: 'How many pairs does a study need? Set the smallest correlation worth detecting and the power you want; the panel shows the pairs needed and the power of Ana’s 306 days. Halve ρ and watch n roughly quadruple.' },
     { widget: 'test-sheet', intro: 'The eight April days with the whole test as formulas: CORREL, the t statistic, T.DIST.2T, the critical r and the Fisher-z interval with FISHER and FISHERINV. Change a footfall figure, or the confidence level in E9, and watch every result update.' },
@@ -228,16 +244,16 @@ export default {
   mistakes: [
     { title: '“p is below 0.001, so the correlation is strong.”', html: 'The p-value measures how surprising r would be if ρ were 0; with hundreds of pairs even a trivial r passes. Rain’s pooled r = −0.14 is significant with 612 pairs and explains under 2% of the variation in footfall. Report r, its interval and r².' },
     { title: '“r = 0.64 isn’t significant, so temperature and footfall are unrelated.”', html: 'With 8 pairs the critical value is 0.707 and the test had about 18% power for the true correlation. Failing to reject is a lack of evidence, not evidence of no link; the interval, −0.12 to 0.93, shows how little 8 days can say.' },
-    { title: '“Harbourside is significant and Millbrook isn’t, so rain matters more at Harbourside.”', html: 'A difference in significance is not a significant difference. Test the difference directly with Fisher’s z: for rain, z = −1.59 and p = 0.11. Here too the two samples share their days, so even that test is approximate.' },
+    { title: '“Harbourside is significant and Millbrook isn’t, so rain matters more at Harbourside.”', html: 'A difference in significance is not a significant difference. Test the difference directly: with Fisher’s z for independent samples, or, because the two cafés share their days, with a test for dependent correlations such as Steiger’s Z (for rain, Z = −1.34, p = 0.18).' },
     { title: 'Building the interval as r ± 1.96 × SE', html: 'The sampling distribution of r is skewed and bounded by ±1, so a symmetric interval can be wrong or even run past 1. Transform with FISHER, add and subtract 1.96 ÷ √(n − 3), and transform back with FISHERINV.' },
     { title: 'Treating 612 rows as 612 independent observations', html: 'Pooling the cafés repeats each day’s rain twice, and neighbouring days are alike. The test assumes independent pairs; when that fails its p-values are too small. Analyse each café separately and treat p-values from daily series as approximate.' },
     { title: 'Choosing the one-sided test after seeing the result', html: 'Millbrook’s two-sided p = 0.074 becomes 0.037 one-sided. Unless the one-sided question was fixed before the data were seen, halving the p-value doubles the real chance of a false alarm.' },
   ],
 
   application: [
-    { case: 'Ana’s note on weather for the year-end review reads: “Rain: at Harbourside, r = −0.23 between rain and footfall (306 days; 95% CI −0.33 to −0.12; p &lt; 0.001); at Millbrook r = −0.10 (CI −0.21 to 0.01; p = 0.07). The difference between the cafés is not significant (p = 0.11). Rain accounts for about 5% of the day-to-day variation in footfall at Harbourside and 1% at Millbrook. Temperature matters more at the waterfront: r = 0.44 at Harbourside against 0.16 at Millbrook (difference p &lt; 0.001). Days are not independent, so treat p-values as approximate.”' },
+    { case: 'Ana’s note on weather for the year-end review reads: “Rain: at Harbourside, r = −0.23 between rain and footfall (306 days; 95% CI −0.33 to −0.12; p &lt; 0.001); at Millbrook r = −0.10 (CI −0.21 to 0.01; p = 0.07). The difference between the cafés is not significant (Steiger’s test for correlations on the same days, p = 0.18). Rain accounts for about 5% of the day-to-day variation in footfall at Harbourside and 1% at Millbrook. Temperature matters more at the waterfront: r = 0.44 at Harbourside against 0.16 at Millbrook (Steiger’s Z = 3.19). Temperature and footfall both follow the season, so the temperature p-values overstate the evidence; days are not independent, so treat all p-values as approximate.”' },
     { p: 'The note gives every correlation with its interval and its n, says which test was used, and separates three questions that are easily blurred: is there an association (the test), how large is it (r, r² and the interval), and does it differ between groups (the comparison). It also states the limitation that matters most for daily data. A manager reading it can see that the rain effect is real but small, and that temperature, not rain, is the weather variable worth planning around at Harbourside.' },
-    { p: 'The same pattern appears wherever correlations are reported. A retailer with millions of loyalty-card transactions will find significant correlations everywhere, and must ask which are large enough to act on. A hotel testing whether guest satisfaction tracks room price at its 12 properties can’t expect significance for anything but a very strong link, and should plan more data (or report the interval) rather than conclude “no relationship”. A battery-storage installer comparing the correlation between site temperature and system efficiency in two regions needs the Fisher-z comparison, not two separate p-values.' },
+    { p: 'The same pattern appears wherever correlations are reported. A retailer with millions of loyalty-card transactions will find significant correlations everywhere, and must ask which are large enough to act on. A hotel testing whether guest satisfaction tracks room price at its 12 properties can’t expect significance for anything but a very strong link, and should plan more data (or report the interval) rather than conclude “no relationship”. A battery-storage installer comparing the correlation between site temperature and system efficiency in two regions, with different sites in each, needs the Fisher-z comparison, not two separate p-values.' },
     { p: 'Two habits carry over. Plan the sample from the smallest correlation that would change a decision: 85 pairs for ρ = 0.3 at 80% power, 783 for ρ = 0.1. And when a correlation is significant, remember it is still only an association: whether warm days bring customers to the waterfront or something else drives both is the correlation-and-causation lesson’s question.' },
   ],
 
@@ -246,9 +262,9 @@ export default {
     'The critical |r| falls fast with n: 0.707 for 8 pairs, 0.197 for 100, 0.079 for 612. Large samples make small correlations significant; small samples leave large ones unproven.',
     'A confidence interval for ρ uses Fisher’s z: atanh(r) ± 1.96 ÷ √(n − 3), transformed back with tanh (FISHER and FISHERINV). It is not symmetric about r.',
     'Pairs needed for 80% power, two-sided at 5%: about 783 for ρ = 0.1, 194 for 0.2, 85 for 0.3 and 30 for 0.5.',
-    'Compare two independent correlations with Fisher’s z, not by their separate p-values; samples that share days are not independent.',
+    'Compare two independent correlations with Fisher’s z, not by their separate p-values. Correlations measured on the same days or people are dependent and need a test such as Steiger’s Z.',
     'Significance is not size: report r, its interval and r², and judge whether the association matters for the decision.',
-    'The test assumes independent pairs and a linear relationship: plot first, and treat p-values from daily time series as approximate.',
+    'The test assumes independent pairs and a linear relationship: plot first, and treat p-values from daily series that follow the season (temperature, footfall) as much too small.',
   ],
 
   glossary: [
@@ -297,12 +313,13 @@ export default {
     { what: 'Critical r, 612 pairs', value: C.criticalR(612), shown: 0.079, tol: 0.0005 },
     { what: 'Critical r formula agrees (8)', value: tCrit6 / Math.sqrt(6 + tCrit6 ** 2), shown: C.criticalR(8), tol: 1e-12 },
     { what: 'Figure: critical r at 4 pairs near 0.95', value: C.criticalR(4), shown: 0.95, tol: 0.005 },
-    { what: 'Figure: critical r below 0.1 by about 500', value: Number(C.criticalR(500) < 0.1 && C.criticalR(380) > 0.1), shown: 1 },
+    { what: 'Figure: critical r crosses 0.1 at about 385 pairs', value: Number(C.criticalR(380) > 0.1 && C.criticalR(390) < 0.1), shown: 1 },
     // pooled rain
     { what: 'Pooled rows', value: RP.n, shown: 612 },
     { what: 'Pooled rain r', value: RP.r, shown: -0.14 },
     { what: 'Pooled rain r (3 dp)', value: RP.r, shown: -0.138, tol: 0.0005 },
-    { what: 'Pooled rain p', value: RP.p, shown: 0.001, tol: 0.0005 },
+    { what: 'Pooled rain p below 0.001', value: Number(RP.p < 0.001), shown: 1 },
+    { what: 'Distinct weather days in pooled rows', value: new Set(column('date')).size, shown: 306 },
     { what: 'Pooled rain r²', value: RP.r2, shown: 0.019, tol: 0.0005 },
     { what: 'Under 2%', value: Number(RP.r2 < 0.02), shown: 1 },
     // eight April days
@@ -352,8 +369,27 @@ export default {
     { what: 'Millbrook CI upper (2 dp)', value: RM.ci[1], shown: 0.01 },
     { what: '1.96', value: z975, shown: 1.96 },
     // rho0 test
-    { what: 'Fisher test vs 0.3: z', value: C.fisherTest(TH.r, TH.n, 0.3).z, shown: 2.75, tol: 0.005 },
-    { what: 'Fisher test vs 0.3: p', value: C.fisherTest(TH.r, TH.n, 0.3).p, shown: 0.006, tol: 0.0005 },
+    { what: 'Hardware stores', value: 200, shown: 200 },
+    { what: 'atanh 0.42', value: Math.atanh(0.42), shown: 0.448, tol: 0.0005 },
+    { what: 'atanh 0.3', value: Math.atanh(0.3), shown: 0.310, tol: 0.0005 },
+    { what: '√197 term from 200 − 3', value: 200 - 3, shown: 197 },
+    { what: 'Hardware z vs 0.3', value: HW.z, shown: 1.94 },
+    { what: 'Hardware p vs 0.3', value: HW.p, shown: 0.052, tol: 0.0005 },
+    { what: 'Hardware CI lower', value: HWci[0], shown: 0.299, tol: 0.0005 },
+    { what: 'Hardware CI upper', value: HWci[1], shown: 0.528, tol: 0.0005 },
+    { what: 'CI lower just below 0.3', value: Number(HWci[0] < 0.3), shown: 1 },
+    // seasonality and independence
+    { what: 'Lag-1 correlation of the high (Harbourside)', value: lagHigh, shown: 0.93 },
+    { what: 'Lag-1 correlation of rain (Harbourside)', value: lagRain, shown: -0.08 },
+    // cinema chain (independent samples)
+    { what: 'Cinema z', value: CIN.z, shown: 2.07 },
+    { what: 'Cinema p', value: CIN.p, shown: 0.038, tol: 0.0005 },
+    { what: 'Cinema df terms', value: (90 - 3) + (110 - 3), shown: 87 + 107 },
+    // Steiger's Z for the cafés (dependent, overlapping correlations)
+    { what: 'Steiger rain Z', value: stRain.z, shown: -1.34 },
+    { what: 'Steiger rain p', value: stRain.p, shown: 0.18 },
+    { what: 'Steiger temp Z', value: stTemp.z, shown: 3.19 },
+    { what: 'Steiger temp p', value: stTemp.p, shown: 0.0014, tol: 0.00005 },
     // ranks
     { what: 'Spearman rain Harbourside', value: rhoH.rho, shown: -0.226, tol: 0.0005 },
     { what: 'Kendall rain Harbourside', value: tauH.tau, shown: -0.173, tol: 0.0005 },
@@ -370,14 +406,9 @@ export default {
     // comparing
     { what: 'Compare rain z', value: cmpRain.z, shown: -1.59 },
     { what: 'Compare rain p', value: cmpRain.p, shown: 0.11 },
-    { what: 'atanh(−0.228)', value: Math.atanh(RH.r), shown: -0.232, tol: 0.0005 },
-    { what: 'atanh(−0.102)', value: Math.atanh(RM.r), shown: -0.103, tol: 0.0005 },
-    { what: 'Compare SE', value: cmpRain.se, shown: 0.0812, tol: 0.00005 },
-    { what: 'Compare z from printed', value: (-0.232 + 0.103) / 0.0812, shown: -1.59 },
     { what: 'Millbrook r (2 dp) in prose', value: TM.r, shown: 0.16 },
     { what: 'Millbrook high–footfall r', value: TM.r, shown: 0.157, tol: 0.0005 },
     { what: 'Compare temp z', value: cmpTemp.z, shown: 3.81 },
-    { what: 'Compare temp p below 0.001', value: Number(cmpTemp.p < 0.001), shown: 1 },
     { what: 'Cafés’ daily footfalls correlated', value: footHM, shown: -0.39 },
     { what: 'Harbourside r² (3 dp)', value: RH.r2, shown: 0.052, tol: 0.0005 },
     { what: 'Millbrook r² (3 dp)', value: RM.r2, shown: 0.010, tol: 0.0005 },

@@ -1,7 +1,7 @@
 // partial-correlation.js — B05 · Partial correlation. Content only; exercises are in partial-correlation.ex.js.
 // Uses the cafés' daily log (case.js: column, DERIVED.staffWait, DERIVED.staffWaitGivenTrans) for peak barista hours,
 // peak waits and transactions, Harbourside's weather, footfall and sales for the mediator and collider cases.
-// Kestrel Air is fictional. Regression slopes and prediction are B06's; causal reasoning is correlation-and-causation's.
+// Swiftwing Air is fictional. Regression slopes and prediction are B06's; causal reasoning is correlation-and-causation's.
 // Every figure printed is recomputed in `checks`.
 import { DERIVED as D, column } from './case.js?v=20';
 import * as C from '../../../core/correlation.js?v=20';
@@ -26,7 +26,7 @@ const hHigh = column('high_f', H), hSales = column('sales', H), hFoot = column('
 const MED = { r: C.pearson(hHigh, hSales).r, p: C.partial(hHigh, hSales, [hFoot]).r, foot: C.pearson(hHigh, hFoot).r };
 const COL = { r: C.pearson(hHigh, hRain).r, part: C.partial(hHigh, hRain, [hFoot]), rainFoot: C.pearson(hRain, hFoot).r };
 
-// ---------------------------------------------------------------- Kestrel Air (fictional): crew, complaints, passengers on 50 flights
+// ---------------------------------------------------------------- Swiftwing Air (fictional): crew, complaints, passengers on 50 flights
 const KA = { xy: 0.40, xz: 0.85, yz: 0.60, n: 50 };
 const kaP = C.partialFromR(KA.xy, KA.xz, KA.yz), kaDf = KA.n - 3, kaT = kaP * Math.sqrt(kaDf / (1 - kaP * kaP)), kaPv = 2 * tSf(Math.abs(kaT), kaDf);
 
@@ -113,7 +113,7 @@ export default {
 
     { h: 'What a partial correlation can’t do' },
     { list: [
-      '<b>It removes only the straight-line part of the control.</b> Waits rise along a curve as trade grows, and the bands show the link between baristas and waits is weak on quiet days and strong on busy ones. The single partial correlation, −0.72, averages over that. Partial correlation on ranks (−0.47 here) or a comparison within bands can show what the straight line misses.',
+      '<b>It removes only the straight-line part of the control.</b> Waits rise along a curve as trade grows (a <g>threshold effect</g>), and the bands show the link between baristas and waits is weak on quiet days and strong on busy ones. The single partial correlation, −0.72, averages over that. Partial correlation on ranks (−0.47 here) or a comparison within bands can show what the straight line misses.',
       '<b>It can’t hold fixed what wasn’t measured.</b> If something else drives both variables, such as a school holiday that brings both a crowd and extra staff, holding transactions fixed doesn’t remove it.',
       '<b>A control measured with error controls only partly.</b> If the door counter misses some customers, holding footfall fixed leaves some of the busy-day effect in, a problem called <g>residual confounding</g>.',
       '<b>It is still a correlation.</b> A partial correlation says how two variables go together at given values of a third; whether one causes the other needs the evidence of the next lesson.',
@@ -151,7 +151,7 @@ export default {
 
   examples: [
     { level: 'simple', title: 'Cabin crew and complaints', fictional: true,
-      setup: 'Kestrel Air (fictional) looked at 50 flights. The number of cabin crew and the number of passenger complaints correlate at 0.40, which worries the operations director. Crew correlate with the number of passengers at 0.85 (bigger flights carry more crew) and complaints with passengers at 0.60. What is the correlation of crew and complaints holding passengers fixed, and is it significant at 5%?',
+      setup: 'Swiftwing Air (fictional) looked at 50 flights. The number of cabin crew and the number of passenger complaints correlate at 0.40, which worries the operations director. Crew correlate with the number of passengers at 0.85 (bigger flights carry more crew) and complaints with passengers at 0.60. What is the correlation of crew and complaints holding passengers fixed, and is it significant at 5%?',
       steps: [
         String.raw`Name the variables: x = crew, y = complaints, z = passengers; <m>r_{xy} = 0.40</m>, <m>r_{xz} = 0.85</m>, <m>r_{yz} = 0.60</m>.`,
         String.raw`Numerator: <m>r_{xy} - r_{xz} r_{yz} = 0.40 - 0.85 \times 0.60 = 0.40 - 0.51 = -0.11</m>.`,
@@ -274,7 +274,7 @@ export default {
     { what: 'Harbourside high–rain | footfall', value: COL.part.r, shown: 0.17 },
     { what: 'Collider p', value: COL.part.p, shown: 0.004, tol: 0.0005 },
     { what: 'Rain lowers footfall at Harbourside (negative r)', value: Number(COL.rainFoot < 0), shown: 1 },
-    // Kestrel Air
+    // Swiftwing Air
     { what: 'KA numerator', value: KA.xy - KA.xz * KA.yz, shown: -0.11 },
     { what: 'KA product', value: KA.xz * KA.yz, shown: 0.51 },
     { what: 'KA 1 − 0.85²', value: 1 - KA.xz ** 2, shown: 0.2775, tol: 0.00005 },

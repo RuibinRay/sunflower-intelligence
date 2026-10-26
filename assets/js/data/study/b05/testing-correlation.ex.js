@@ -52,7 +52,7 @@ const augSheet = { cells: { A1: 'Date', B1: 'High (°F)', C1: 'Footfall', ...col
 // ---------------------------------------------------------------- small inputs
 const ciSheet = { cells: { A1: 'r', B1: 0.45, A2: 'n (pairs)', B2: 50, A3: 'Confidence level', B3: 0.95, A5: 'Interval for ρ, lower', A6: 'Interval for ρ, upper' }, vary: { B1: [0.3, 0.62, -0.25], B3: [0.9, 0.99] } };
 const ci45 = C.fisherCI(0.45, 50);
-const cmpSheet = { cells: { A1: '', B1: 'r', C1: 'n', A2: 'North region', B2: 0.58, C2: 64, A3: 'South region', B3: 0.31, C3: 81, A5: 'z', A6: 'p-value (two-sided)' }, vary: { B2: [0.5, 0.66, 0.42], B3: [0.2, 0.38, 0.45] } };
+const cmpSheet = { cells: { A1: 'Country', B1: 'r', C1: 'Stores', A2: 'North', B2: 0.58, C2: 64, A3: 'South', B3: 0.31, C3: 81, A5: 'z', A6: 'p-value (two-sided)' }, vary: { B2: [0.5, 0.66, 0.42], B3: [0.2, 0.38, 0.45] } };
 const CMP = C.compareIndependent(0.58, 64, 0.31, 81);
 
 export const widgets = {
@@ -65,7 +65,7 @@ export const widgets = {
     labels: column('date').map((d, i) => `${short(d)}, ${column('cafe')[i]}`),
     show: ['pearson', 'ci', 'p', 'r2', 'spearman'],
     toggles: ['group'],
-    note: 'The column of points at 0 inches is the 209 dry days at each café. Pooled, r = −0.138 and p = 0.001, with r² = 0.019. By café, Harbourside’s r is −0.228 and Millbrook’s −0.102; the Fisher-z comparison of the two gives p = 0.11. Each day’s rain appears twice in the pooled plot, once per café, which the test’s p-value doesn’t know.',
+    note: 'The column of points at 0 inches is the 209 dry days at each café. Pooled, r = −0.138 with p below 0.001 and r² = 0.019, though the 612 rows hold only 306 weather days: each day’s rain appears twice, once per café, which the p-value doesn’t know. By café, Harbourside’s r is −0.228 and Millbrook’s −0.102. The cafés share their days, so comparing the two correlations needs a test for dependent correlations (Steiger’s Z = −1.34, p = 0.18), not the independent-samples formula.',
   },
   'test-explorer': {
     type: 'formula',
@@ -136,7 +136,7 @@ export const guided = [
   {
     id: 'b05-test-g1', type: 'steps', kind: 'numerical',
     prompt: 'Millbrook, 1–24 October 2027: the day’s high in B2:B25 and hot drinks sold in C2:C25. F1 holds r (CORREL) and F2 the number of pairs. Test H₀: ρ = 0 against H₁: ρ ≠ 0 at α = 0.05.',
-    solution: `r = ${fx(OP.r)} with 24 pairs; t = ${fx(OP.t)} with 22 degrees of freedom; p = ${fx(OP.p)}. Fail to reject H₀ at 5%: 24 October days are compatible with no linear association. Over Millbrook’s whole year the correlation is ${fx(yearHot.r)} (p below 0.001): the October sample was simply too small, and October’s narrow range of temperatures makes r smaller too (the nonlinear-and-restricted lesson explains why).`,
+    solution: `r = ${fx(OP.r)} with 24 pairs; t = ${fx(OP.t)} with 22 degrees of freedom; p = ${fx(OP.p)}. Fail to reject H₀ at 5%: 24 October days are compatible with no linear association. Over Millbrook’s whole year the correlation is ${fx(yearHot.r)}, with a formula p-value below 0.001 that overstates the evidence, because temperature and hot-drink sales both follow the season and neighbouring days are alike. Still, the October sample was too small to say much, and October’s narrow range of temperatures makes r smaller too (the nonlinear-and-restricted lesson explains why).`,
     steps: [
       {
         id: 'b05-test-g1-s1', type: 'formula',
@@ -148,7 +148,7 @@ export const guided = [
         wrong: [
           { formula: '=F1*SQRT(F2-1)/SQRT(1-F1^2)', say: 'A correlation test has n − 2 degrees of freedom, so the numerator uses √(n − 2).' },
           { formula: '=F1*SQRT(F2-2)/(1-F1^2)', say: 'The denominator is √(1 − r²), not 1 − r²: wrap it in SQRT.' },
-          { formula: '=F1*SQRT(F2)/SQRT(1-F1^2)', say: 'Use n − 2, not n: two degrees of freedom go on the two means.' },
+          { formula: '=F1*SQRT(F2)/SQRT(1-F1^2)', say: 'Use n − 2, not n: as in fitting a straight line, two quantities (an intercept and a slope) are estimated, and each costs a degree of freedom.' },
         ],
         hints: ['t = r√(n − 2) ÷ √(1 − r²).', '<x>=F1*SQRT(F2-2)/SQRT(1-F1^2)</x>'],
       },
@@ -235,9 +235,9 @@ export const guided = [
     feedback: {
       1: 'One significant result and one not is not evidence of a difference: the East’s test may simply lack power.',
       2: 'Failing to reject ρ = 0 in the East doesn’t show there is no link; r = 0.27 is compatible with a sizeable correlation.',
-      3: 'Significance of a difference has to be tested. Here z = (atanh 0.41 − atanh 0.27) ÷ √(1/37 + 1/37) ≈ 0.68, p ≈ 0.49: no evidence of a difference.',
+      3: 'Significance of a difference has to be tested. Treating the regions as independent, z = (atanh 0.41 − atanh 0.27) ÷ √(1/37 + 1/37) ≈ 0.68, p ≈ 0.49: no evidence of a difference.',
     },
-    solution: `Comparing p-values doesn’t test the difference. Fisher’s z: (atanh 0.41 − atanh 0.27) ÷ √(1/37 + 1/37) = ${fx(C.compareIndependent(0.41, 40, 0.27, 40).z, 2)}, p = ${C.compareIndependent(0.41, 40, 0.27, 40).p.toFixed(2)}. The data give no evidence that the regions differ.`,
+    solution: `Comparing p-values doesn’t test the difference. Fisher’s z, treating the regions as independent: (atanh 0.41 − atanh 0.27) ÷ √(1/37 + 1/37) = ${fx(C.compareIndependent(0.41, 40, 0.27, 40).z, 2)}, p = ${C.compareIndependent(0.41, 40, 0.27, 40).p.toFixed(2)}. Strictly the samples are dependent, because both regions cover the same 40 weeks (the same seasons and holidays), so a test for dependent correlations would be more exact; but with p near 0.5 there is no sign that the regions differ.`,
   },
 ];
 
@@ -266,7 +266,7 @@ export const independent = [
       { value: rnd(p2(0.3, 40) / 2, 3), say: 'That is the one-sided p-value. The question asks for two-sided: T.DIST.2T.' },
       { value: rnd(2 * (1 - I.normCdf(tOf(0.3, 40))), 3), say: 'That uses the normal distribution. The statistic follows the t distribution with n − 2 = 38 degrees of freedom: T.DIST.2T.' },
     ],
-    solution: `t = 0.30 × √38 ÷ √(1 − 0.09) = ${tOf(0.3, 40).toFixed(3)} with 38 df; <x>=T.DIST.2T(${tOf(0.3, 40).toFixed(3)},38)</x> = ${p2(0.3, 40).toFixed(3)}. Significant at 5%, though r² = 0.09: photos go with 9% of the variation in viewing requests, and the correlation doesn’t show that adding photos would bring more.`,
+    solution: `t = 0.30 × √38 ÷ √(1 − 0.09) = ${tOf(0.3, 40).toFixed(3)} with 38 df; <x>=T.DIST.2T(${tOf(0.3, 40).toFixed(3)},38)</x> = ${p2(0.3, 40).toFixed(3)}. Not significant at 5%: t = ${tOf(0.3, 40).toFixed(3)} is below the critical t of ${I.tInv(0.975, 38).toFixed(3)} on 38 df (equivalently, r = 0.30 is below the critical r of ${C.criticalR(40).toFixed(3)}). Forty listings can’t separate r = 0.30 from chance, and r² = 0.09 would be small even if the association were real; nor would a correlation show that adding photos brings more requests.`,
   },
   {
     id: 'b05-test-i3', type: 'num', kind: 'applied',
@@ -281,7 +281,7 @@ export const independent = [
   },
   {
     id: 'b05-test-i4', type: 'formula', kind: 'numerical',
-    prompt: 'A retailer (fictional) correlates weekly temperature with weekly sales of cold drinks in two regions: r and the number of weeks for each are in B2:C3. In B5, calculate the z statistic that compares the two correlations, North minus South.',
+    prompt: 'An ice-cream maker (fictional) correlates each store’s local average summer temperature with its summer sales, separately for its stores in two countries: r and the number of stores for each are in B2:C3. In B5, calculate the z statistic that compares the two correlations, North minus South.',
     sheet: cmpSheet,
     cell: 'B5', answer: '=(FISHER(B2)-FISHER(B3))/SQRT(1/(C2-3)+1/(C3-3))',
     alt: ['=(ATANH(B2)-ATANH(B3))/SQRT(1/(C2-3)+1/(C3-3))'],
@@ -291,7 +291,7 @@ export const independent = [
       { formula: '=(FISHER(B2)-FISHER(B3))/SQRT(1/C2+1/C3)', say: 'Fisher’s z has variance 1 ÷ (n − 3) in each sample, not 1 ÷ n.' },
       { formula: '=(FISHER(B2)-FISHER(B3))/(1/SQRT(C2-3)+1/SQRT(C3-3))', say: 'Add the variances, then take the square root: SQRT(1/(C2-3)+1/(C3-3)). Standard errors don’t add.' },
     ],
-    solution: `z = (atanh 0.58 − atanh 0.31) ÷ √(1/61 + 1/78) = ${fx(CMP.z)}; the two-sided p-value, <x>=2*(1-NORM.S.DIST(ABS(B5),TRUE))</x>, is ${CMP.p.toFixed(3)}. The North’s correlation is significantly higher at 5%, assuming the two regions’ weeks are independent samples; they share the same weeks and weather, so the test is approximate.`,
+    solution: `z = (atanh 0.58 − atanh 0.31) ÷ √(1/61 + 1/78) = ${fx(CMP.z)}; the two-sided p-value, <x>=2*(1-NORM.S.DIST(ABS(B5),TRUE))</x>, is ${CMP.p.toFixed(3)}. The North’s correlation is significantly higher at 5%. Different stores in different countries are independent samples, which is what this formula needs; had the two correlations come from the same stores or the same weeks, it wouldn’t apply.`,
   },
   {
     id: 'b05-test-i5', type: 'mc', kind: 'applied',
@@ -327,7 +327,7 @@ export const independent = [
       3: 'A one-sided test must be chosen before seeing the data. Choosing it after doubles the false-alarm rate.',
       4: 'Power for ρ = −0.1 with 306 pairs is about 42%: less than even odds.',
     },
-    solution: 'p = 0.074 > 0.05, so the test fails to reject ρ = 0, but the interval (−0.21 to 0.01) still includes moderate negative correlations such as −0.15, so “no effect” isn’t supported. A one-sided test chosen after seeing r is p-hacking. The test’s power for ρ = −0.1 was about 42%.',
+    solution: 'p = 0.074 > 0.05, so the test fails to reject ρ = 0, but the interval (−0.21 to 0.01) still includes weak negative correlations such as −0.15, so “no effect” isn’t supported. A one-sided test chosen after seeing r is p-hacking. The test’s power for ρ = −0.1 was about 42%.',
   },
 ];
 
