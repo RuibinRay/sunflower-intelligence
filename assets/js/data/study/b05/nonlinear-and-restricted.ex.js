@@ -297,7 +297,7 @@ export const independent = [
     options: [
       'Hired drivers cover only the top of the score range, which shrinks r; the test may separate good and poor drivers well across all applicants.',
       'An r of 0.15 is statistically significant once enough drivers are included, which is reason enough to keep the test whatever HR thinks.',
-      'The correlation should be computed with Spearman’s ρ, which would show that the test predicts much better.',
+      'The correlation should be computed with Spearman’s ρ, which would show that the test predicts much better than Pearson’s r suggests among hired drivers.',
       'Performance depends on many factors, so a single test can only be expected to correlate weakly with it.',
     ],
     answer: 0,
