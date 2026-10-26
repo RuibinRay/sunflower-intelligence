@@ -101,7 +101,7 @@ export function compute(data, prevData, o = {}) {
 
 /** Ratios that divide by equity (or by debt plus equity) mean nothing when equity is zero or negative. */
 const BY_EQUITY = new Set(['liabilitiesToEquity', 'debtToEquity', 'debtToCapital', 'equityMultiplier', 'roe', 'dupontMultiplier', 'dupontRoe']);
-const nm = (k, c) => BY_EQUITY.has(k) && typeof c.p.equity === 'number' && (c.p.equity <= 0 || (k.startsWith('dupont') || k === 'roe' ? (c.avg('equity') ?? 1) <= 0 : false));
+const nm = (k, c) => (k === 'cfoToNetIncome' && typeof c.p.netIncome === 'number' && c.p.netIncome <= 0) || BY_EQUITY.has(k) && typeof c.p.equity === 'number' && (c.p.equity <= 0 || (k.startsWith('dupont') || k === 'roe' ? (c.avg('equity') ?? 1) <= 0 : false));
 const applyDelta = (data, delta) => { const out = { ...data }; for (const [k, v] of Object.entries(delta || {})) out[k] = (out[k] || 0) + v; return out; };
 
 export function mount(el, cfg, ctx) {
@@ -154,7 +154,7 @@ export function mount(el, cfg, ctx) {
     const r = RATIOS[st.sel];
     how.replaceChildren(h('p', { class: 'fx-note' }, h('b', {}, r.label)), h('ul', {}, ...cols.map((c) => {
       const v = r.f(c.c);
-      const text = nm(st.sel, c.c) ? 'not meaningful: equity is negative (a deficit), so a ratio that divides by it, or by debt plus it, has no useful reading' : v == null || !Number.isFinite(v) ? 'not defined: an input is missing or a divisor is zero' : `${r.how(c.c)} = ${FMT[r.fmt](v)}${r.fmt === 'days' ? ' days' : ''}`.replace(/(^|[\s(×÷=+])-(?=\d)/g, '$1−');
+      const text = nm(st.sel, c.c) ? (st.sel === 'cfoToNetIncome' ? 'not meaningful: net income is zero or negative, so compare the dollar amounts instead' : 'not meaningful: equity is negative (a deficit), so a ratio that divides by it, or by debt plus it, has no useful reading') : v == null || !Number.isFinite(v) ? 'not defined: an input is missing or a divisor is zero' : `${r.how(c.c)} = ${FMT[r.fmt](v)}${r.fmt === 'days' ? ' days' : ''}`.replace(/(^|[\s(×÷=+])-(?=\d)/g, '$1−');
       return h('li', {}, h('b', {}, `${c.label}: `), text);
     })));
   }
