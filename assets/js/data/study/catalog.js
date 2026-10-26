@@ -277,10 +277,26 @@ const ALL = [
     related: [{ plate: 'describe' }, { tool: 'analytics/explore/#describe', label: 'Describe' }],
   }),
   C({
-    id: 'b05', school: 'analytics', code: 'B05', level: 'intermediate', requires: ['b04'],
+    id: 'b05', school: 'analytics', code: 'B05', level: 'intermediate', status: 'in-progress', requires: ['b04'], recommends: ['b03'],
     title: 'Correlation Analysis',
     blurb: 'Measure how variables move together, test it, and avoid reading causation into it.',
     topics: ['Covariance', 'Pearson correlation', 'Spearman correlation', 'Strength and direction', 'Scatterplots', 'Correlation matrices and heatmaps', 'Outliers', 'Nonlinear relationships', 'Statistical significance', 'Correlation versus causation', 'Spurious correlations'],
+    case: 'lantern',
+    outcomes: [
+      'Read a scatterplot for direction, form, strength and unusual points, and choose a plot that shows what a single number hides.',
+      'Calculate and interpret covariance, Pearson’s r, r², Spearman’s ρ and Kendall’s τ, and choose between them for the data and the question.',
+      'Test a correlation, give a confidence interval for it, judge the sample size needed to detect one, and control for testing many pairs at once.',
+      'Find what outliers, skew, curved relationships, groups and restricted ranges do to a correlation, and handle each honestly.',
+      'Build and read a correlation matrix and use partial correlation to ask what remains when a third variable is held fixed.',
+      'Explain why correlation does not show causation (confounding, reverse causation, trends, selection, chance), and say what evidence would.',
+    ],
+    modules: [
+      { n: 1, title: 'Seeing relationships', lessons: ['scatterplots', 'covariance-and-pearson'] },
+      { n: 2, title: 'Measuring and testing', lessons: ['rank-correlation', 'testing-correlation'] },
+      { n: 3, title: 'When correlations mislead', lessons: ['outliers-and-influence', 'nonlinear-and-restricted', 'groups-and-simpsons-paradox'] },
+      { n: 4, title: 'Many variables and causation', lessons: ['correlation-matrices', 'partial-correlation', 'correlation-and-causation'] },
+    ],
+    project: { title: 'Does paid social sell beans?', blurb: 'Ana wants to double her paid-social budget because spend and sales are correlated. Analyse the online shop’s 52 weeks of 2027: plots, the right correlations, an outage week, ratings and delivery, trends, and what a correlation can and can’t say about her budget. Then recommend how she should find out.' },
     related: [{ tool: 'analytics/explore/#correlate', label: 'Correlate' }],
   }),
   C({
