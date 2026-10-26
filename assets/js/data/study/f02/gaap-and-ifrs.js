@@ -5,7 +5,7 @@
 // The rules taught in Modules 1–3 (LIFO, write-downs, revaluation, components, development costs, cash-flow
 // classification) are summarised here with links back, not re-taught. Lantern’s figures come from case.js.
 // Aldgate Coffee plc, Voltmere Energy and Fairhaven Hotel are fictional and appear only in this lesson.
-import { FACTS as F, LEDGER, DERIVED as D, COSTING } from './case.js?v=16';
+import { FACTS as F, LEDGER, DERIVED as D, COSTING } from './case.js?v=17';
 
 const bal = (n) => LEDGER[n]?.balance || 0;
 const t = F.tax.rate;

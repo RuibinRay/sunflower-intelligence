@@ -2,7 +2,7 @@
 // No hints. Each item has a full solution, shown when the student reviews the test. New questions, not copies of the
 // lesson exercises. All businesses and people are fictional; item 11 uses COASTLINE_NOTE from case.js (a $10,000 note
 // at 6% paid quarterly, valued at the 8% market rate) at a later date than the lessons do.
-import { COASTLINE_NOTE as N } from './case.js?v=16';
+import { COASTLINE_NOTE as N } from './case.js?v=17';
 
 const q = N.marketRateMarch2027 / 100 / 4;   // 2% a quarter
 

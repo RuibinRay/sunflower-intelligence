@@ -1,7 +1,7 @@
 // tables-and-cleaning.ex.js — B03 · Excel tables and cleaning data: widgets, practice and the knowledge check (answer
 // keys live here). Lantern's orders and raw export come from case.js; other businesses and records are fictional.
 // Every num item's `check` recomputes its answer; every formula item is marked by its results on changed copies too.
-import { ORDERS, ORDER_COLUMNS, RAW, RAW_COLUMNS, ordersCells } from './case.js?v=16';
+import { ORDERS, ORDER_COLUMNS, RAW, RAW_COLUMNS, ordersCells } from './case.js?v=17';
 
 const MONEY = '$#,##0.00';
 const oc = (name) => ORDER_COLUMNS.indexOf(name);

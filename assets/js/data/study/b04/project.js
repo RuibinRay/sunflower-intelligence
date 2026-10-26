@@ -4,10 +4,10 @@
 // Every figure comes from case.js (COURIER_TRIAL, EMAIL_TEST, WORKSHOP_SCORES, SUBSCRIBER_SURVEY, SURVEY_PLAN, DERIVED
 // .project); each `check` recomputes its answer from the raw data, and `verify` compares the figures shown with SciPy-
 // checked engine results and the spreadsheet engine's Excel functions.
-import { COURIER_TRIAL, EMAIL_TEST, MAILING_LIST, WORKSHOP_SCORES, SUBSCRIBER_SURVEY, SURVEY_PLAN, DERIVED as D } from './case.js?v=16';
-import * as I from '../../../core/inference.js?v=16';
-import { mean, sd, variance } from '../../../core/stats.js?v=16';
-import { Sheet } from '../../../core/sheet.js?v=16';
+import { COURIER_TRIAL, EMAIL_TEST, MAILING_LIST, WORKSHOP_SCORES, SUBSCRIBER_SURVEY, SURVEY_PLAN, DERIVED as D } from './case.js?v=17';
+import * as I from '../../../core/inference.js?v=17';
+import { mean, sd, variance } from '../../../core/stats.js?v=17';
+import { Sheet } from '../../../core/sheet.js?v=17';
 
 const num = (id, prompt, answer, check, solution, wrong, { unit = '', places = 2, tol = 0.005, kind = 'numerical' } = {}) =>
   ({ id, type: 'num', kind, unit, places, prompt, answer, check, tol, solution, ...(wrong ? { wrong } : {}) });

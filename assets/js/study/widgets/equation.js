@@ -2,9 +2,9 @@
 // config: { type: 'equation', transactions: ['m1', …] | [inline], mode: 'watch' | 'predict', opening?: { acct: balance } }
 // Watch mode steps through the transactions; predict mode asks for the change in assets, liabilities and equity
 // before each one is revealed. The balances, the totals and the bars always come from the engine and always balance.
-import { h } from '../../core/dom.js?v=16';
-import { verdict } from '../../core/ui.js?v=16';
-import * as U from '../labs/accounting-ui.js?v=16';
+import { h } from '../../core/dom.js?v=17';
+import { verdict } from '../../core/ui.js?v=17';
+import * as U from '../labs/accounting-ui.js?v=17';
 
 const { A } = U;
 const ELEMENTS = [['assets', 'Assets'], ['liabilities', 'Liabilities'], ['equity', 'Equity']];

@@ -1,14 +1,14 @@
 // learn.js — the Learn room: adaptive placement (IRT), practice by mastery (BKT) and spaced review (HLR).
-import { initSite, syncRanges } from '../core/site.js?v=16';
-import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=16';
-import * as F from '../core/format.js?v=16';
-import { lineChart, tableTwin } from '../core/charts.js?v=16';
-import * as L from '../core/learn.js?v=16';
-import { SKILLS, ITEMS } from '../data/learn-items.js?v=16';
-import { LESSON_META } from '../data/lessons/meta.js?v=16';
+import { initSite, syncRanges } from '../core/site.js?v=17';
+import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=17';
+import * as F from '../core/format.js?v=17';
+import { lineChart, tableTwin } from '../core/charts.js?v=17';
+import * as L from '../core/learn.js?v=17';
+import { SKILLS, ITEMS } from '../data/learn-items.js?v=17';
+import { LESSON_META } from '../data/lessons/meta.js?v=17';
 // The skills check lives at learn/practise/, two levels below the site root.
 const ROOT = '../../';
-import { DAY, ITEM, SKILL, loadState, saveState, clearState, updateTheta as thetaOf, questionCard as card, meter, button, listWords, durationWords, lessonHref, toolHref, nextLesson } from './learn-common.js?v=16';
+import { DAY, ITEM, SKILL, loadState, saveState, clearState, updateTheta as thetaOf, questionCard as card, meter, button, listWords, durationWords, lessonHref, toolHref, nextLesson } from './learn-common.js?v=17';
 
 initSite();
 const LESSON = Object.fromEntries(LESSON_META.map((m) => [m.id, m]));

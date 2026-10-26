@@ -5,10 +5,10 @@
 // project), so the axes stay fixed; the movement per rating point is the component weight ÷ the attribute's standard
 // deviation across the brands, cross-checked against NumPy. Tarnley Fitness (the gym map from perceptual-maps) and the
 // bookshop are fictional. Every printed figure is recomputed in `checks`.
-import { BRANDS, NEEDS, RESPONDENTS, STUDY, COMPETITORS, DERIVED as D } from './case.js?v=16';
-import { CHANNELS, TIERS } from '../m02/market.js?v=16';
-import { perceptualMap, distance } from '../../../core/percmap.js?v=16';
-import { tInv, sampleSizeForPower, normCdf, normInv } from '../../../core/inference.js?v=16';
+import { BRANDS, NEEDS, RESPONDENTS, STUDY, COMPETITORS, DERIVED as D } from './case.js?v=17';
+import { CHANNELS, TIERS } from '../m02/market.js?v=17';
+import { perceptualMap, distance } from '../../../core/percmap.js?v=17';
+import { tInv, sampleSizeForPower, normCdf, normInv } from '../../../core/inference.js?v=17';
 
 const M = D.map.brandMeans, MAP = perceptualMap(M), SEG = D.segments.names, SIZE = D.segments.sizes;
 const B = (name) => BRANDS.indexOf(name), S = (name) => SEG.indexOf(name), A = (key) => NEEDS.findIndex((n) => n.key === key);

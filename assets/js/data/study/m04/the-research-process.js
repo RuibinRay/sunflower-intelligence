@@ -2,8 +2,8 @@
 // Lantern facts come from ./case.js (fictional) and B04's survey plan; `checks` recompute them. Ana's planning figures for
 // the Cold Brew decision, the research costs and the brief's wording are new and fictional (this lesson only). Tallowfield
 // Bakery and Ferrow Buses are fictional.
-import { SIZES, STRATA, SURVEY_2027, FOCUS_GROUPS, SUBSCRIBER_SURVEY, SURVEY_PLAN, MAILING_LIST, DEFAULT_PLAN, CLIENT_INTERVIEWS } from './case.js?v=16';
-import { DERIVED as B04 } from '../b04/case.js?v=16';
+import { SIZES, STRATA, SURVEY_2027, FOCUS_GROUPS, SUBSCRIBER_SURVEY, SURVEY_PLAN, MAILING_LIST, DEFAULT_PLAN, CLIENT_INTERVIEWS } from './case.js?v=17';
+import { DERIVED as B04 } from '../b04/case.js?v=17';
 
 const f = (n) => n.toLocaleString('en-US');
 const PLAN = B04.project.surveyPlan;                       // 601 replies, 2,004 invitations

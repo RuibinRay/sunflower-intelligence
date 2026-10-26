@@ -197,18 +197,18 @@ export const independent = [
   },
   {
     id: 'b02-dup-i2', type: 'mc', kind: 'applied',
-    prompt: 'Lantern merges its online-shop customers with the customer list from the loyalty app in its cafés. For the 300 people in both, the shop record has a verified email address but no phone number; the loyalty record has a phone number and a postal address updated last month, but an email address that was never verified. Which survivorship rule fits best?',
+    prompt: 'Lantern merges its online-shop customers with the customer list from its catering and workshop bookings. For the 300 people in both, the shop record has a verified email address but no phone number; the bookings record has a phone number and a postal address updated last month, but an email address that was never verified. Which survivorship rule fits best?',
     options: [
-      'Merge field by field: email from the shop, phone and address from the loyalty app, noting each value’s source.',
+      'Merge field by field: email from the shop, phone and address from the bookings list, noting each value’s source.',
       'Keep the most complete record, the one with the most fields filled in.',
       'Keep the first record, from the shop, because it is older.',
-      'Keep the latest record, from the loyalty app, because it was updated last month and so holds the newest details.',
+      'Keep the latest record, from the bookings list, because it was updated last month and so holds the newest details.',
     ],
     answer: 0,
     feedback: {
       1: 'Both records are incomplete in different ways, so “most complete” would throw away a verified email or a current address, whichever record lost.',
       2: 'Age is not quality here: the shop record lacks a phone number and may have an old address.',
-      3: 'The loyalty record’s address is newer, but its email was never verified. Taking the whole record discards the better email.',
+      3: 'The bookings record’s address is newer, but its email was never verified. Taking the whole record discards the better email.',
     },
     solution: 'Each source is best for different fields, which is the situation merging is for. Take the verified email from the shop and the phone and recent address from the loyalty app, and record where each value came from so it can be checked later.',
   },

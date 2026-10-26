@@ -3,7 +3,7 @@
 // don't change on the marker's test copies, so COUNTIFS items `vary` the label cells. The cinema chain, the hotel
 // group, the soft-drink maker and the other businesses named here are fictional. Every num item's `check` recomputes
 // its answer.
-import { DERIVED as D, RESPONDENTS, LEVELS, tableCells } from './case.js?v=16';
+import { DERIVED as D, RESPONDENTS, LEVELS, tableCells } from './case.js?v=17';
 
 const S = D.segments, NAMES = S.names, LAB = S.labels, R = RESPONDENTS, N = R.length, L = N + 1;
 const G = (name) => NAMES.indexOf(name);

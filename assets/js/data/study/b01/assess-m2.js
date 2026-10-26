@@ -1,7 +1,7 @@
 // assess-m2.js — B01 module 2 test: Data and where it comes from (data-types, data-collection, data-quality).
 // No hints. Each item has a full solution, shown when the student reviews the test.
 // Every business and figure is fictional except Lantern’s October order count, which comes from case.js.
-import { DERIVED, UTC_OFFSET_HOURS } from './case.js?v=16';
+import { DERIVED, UTC_OFFSET_HOURS } from './case.js?v=17';
 
 const OCT = 3;   // index of Oct 2026 in case.js arrays
 const BEHIND = -UTC_OFFSET_HOURS;   // hours Lantern's local time is behind UTC

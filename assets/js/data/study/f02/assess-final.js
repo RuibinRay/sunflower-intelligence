@@ -7,7 +7,7 @@
 // and appears nowhere else in the site. Lantern’s 2027 events are hypothetical (“Suppose…”) and agree with case.js.
 // No hints; solutions show in review. 70% passes. Gains and losses on disposals sit inside operating income
 // (ASC 360-10-45-5), as in the course chart.
-import { FACTS } from './case.js?v=16';
+import { FACTS } from './case.js?v=17';
 
 const usd = (x) => `$${x.toLocaleString('en-US')}`;
 

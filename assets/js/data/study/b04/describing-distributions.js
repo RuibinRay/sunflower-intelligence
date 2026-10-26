@@ -4,10 +4,10 @@
 // only, Kilnworth's 1 kg bags (DERIVED.kg: their normal model and tests are later lessons'). The three-value population
 // in the n − 1 demonstration and the $5.20 delivery charge are illustrations, labelled. Every printed figure is
 // recomputed in `checks`.
-import { ORDER_VALUES, RATINGS, PER_GUEST_BY_TYPE, EVENT_TYPES, EVENTS, EVENT_COLUMNS, ORDERS, ORDER_COLUMNS, SUBSCRIPTION_FLAGS, DERIVED as D } from './case.js?v=16';
-import { mean, sd, variance, median, quantile, skewness, kurtosis } from '../../../core/stats.js?v=16';
-import { normCdf } from '../../../core/inference.js?v=16';
-import { QUOTE } from '../b03/case.js?v=16';
+import { ORDER_VALUES, RATINGS, PER_GUEST_BY_TYPE, EVENT_TYPES, EVENTS, EVENT_COLUMNS, ORDERS, ORDER_COLUMNS, SUBSCRIPTION_FLAGS, DERIVED as D } from './case.js?v=17';
+import { mean, sd, variance, median, quantile, skewness, kurtosis } from '../../../core/stats.js?v=17';
+import { normCdf } from '../../../core/inference.js?v=17';
+import { QUOTE } from '../b03/case.js?v=17';
 
 // ---------------------------------------------------------------- helpers
 const sum = (a) => a.reduce((s, x) => s + x, 0);

@@ -4,9 +4,9 @@
 //   { type: 'pivot', title, records: [{ field: value }], fields: ['Month', 'Region', …], values: ['Revenue', …],
 //     defaults: { rows, cols, value, agg: 'sum'|'count'|'average'|'max'|'min', show: 'value'|'pct-total'|'pct-row'|'pct-col', filter: [field, value] },
 //     formats: { Revenue: '$#,##0.00', Quantity: '#,##0' }, order: { Month: ['Mar', 'Apr', …] }, note }
-import { h } from '../../core/dom.js?v=16';
-import { xl } from '../xl.js?v=16';
-import { pivot, display } from '../../core/sheet.js?v=16';
+import { h } from '../../core/dom.js?v=17';
+import { xl } from '../xl.js?v=17';
+import { pivot, display } from '../../core/sheet.js?v=17';
 
 const AGG = [['sum', 'Sum'], ['count', 'Count'], ['average', 'Average'], ['max', 'Max'], ['min', 'Min']];
 const SHOW = [['value', 'No calculation'], ['pct-total', '% of Grand Total'], ['pct-col', '% of Column Total'], ['pct-row', '% of Row Total']];

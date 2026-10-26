@@ -9,8 +9,8 @@
 // Keyboard (the grid is one tab stop, as a spreadsheet is): arrow keys move; Home / End go to the row's ends;
 // Ctrl+Home to A1; Page Up / Page Down move ten rows; Enter or F2 edits the cell (when editable), and typing starts
 // editing; in the formula bar Enter saves and moves down, Tab saves and moves right, Escape cancels.
-import { h } from '../core/dom.js?v=16';
-import { parseRange, parseAddr, addr, indexToCol, display, isErr, criterion, shiftFormula, evaluate } from '../core/sheet.js?v=16';
+import { h } from '../core/dom.js?v=17';
+import { parseRange, parseAddr, addr, indexToCol, display, isErr, criterion, shiftFormula, evaluate } from '../core/sheet.js?v=17';
 
 let gid = 0;
 const inRange = (rg, r, c) => r >= rg.r0 && r <= rg.r1 && c >= rg.c0 && c <= rg.c1;

@@ -6,8 +6,8 @@
 //   mastery   Bayesian knowledge tracing per lesson (core/learn.js), updated only by first attempts at questions
 //             on your own, knowledge-check and test questions, and by review answers. It decays: half-life
 //             regression predicts recall, and a lesson is due for review when predicted recall falls to 50%.
-import * as L from '../core/learn.js?v=16';
-import { MAP } from '../data/study/map.js?v=16';
+import * as L from '../core/learn.js?v=17';
+import { MAP } from '../data/study/map.js?v=17';
 
 const KEY = 'si:study';
 const DAY = 86400000;

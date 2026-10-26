@@ -2,7 +2,7 @@
 // Lantern’s figures come from case.js (STATEMENTS.cashDirect, DERIVED, RESULTS, LEDGER, FACTS); checks recompute them.
 // Other businesses are fictional: Merrow Veterinary Clinic (simple example), Coldharbour Tile Supply (challenging),
 // Pellow Roasters (application). The indirect method is the next lesson; ratios built on cash flows are F03’s.
-import { FACTS as F, DERIVED as D, STATEMENTS as S, RESULTS as R, LEDGER } from './case.js?v=16';
+import { FACTS as F, DERIVED as D, STATEMENTS as S, RESULTS as R, LEDGER } from './case.js?v=17';
 
 const bal = (n) => LEDGER[n]?.balance || 0;
 const money = (v) => `${v < 0 ? '−' : ''}$${Math.abs(v).toLocaleString('en-US')}`;

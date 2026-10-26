@@ -1,6 +1,6 @@
 // study-glossary.js — filter the glossary by words and by course; ?course=f01 preselects a course.
-import { initSite } from '../core/site.js?v=16';
-import { $, $$, debounce } from '../core/dom.js?v=16';
+import { initSite } from '../core/site.js?v=17';
+import { $, $$, debounce } from '../core/dom.js?v=17';
 
 initSite();
 const q = $('#g-search'), sel = $('#g-course'), count = $('#g-count'), empty = $('#g-empty');

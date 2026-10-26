@@ -1,12 +1,12 @@
 // marketing-growth.js — unit economics and A/B tests.
-import { initSite, syncRanges } from '../core/site.js?v=16';
-import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=16';
-import * as F from '../core/format.js?v=16';
-import * as S from '../core/stats.js?v=16';
-import { parseTable, isNumeric } from '../core/csv.js?v=16';
-import { barChart, scatter, tableTwin, Tooltip, lineChart } from '../core/charts.js?v=16';
-import { unitEconomics, readUnitEconomics, PRESETS } from '../core/saas.js?v=16';
-import { compareRates, sampleSize } from '../core/abtest.js?v=16';
+import { initSite, syncRanges } from '../core/site.js?v=17';
+import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=17';
+import * as F from '../core/format.js?v=17';
+import * as S from '../core/stats.js?v=17';
+import { parseTable, isNumeric } from '../core/csv.js?v=17';
+import { barChart, scatter, tableTwin, Tooltip, lineChart } from '../core/charts.js?v=17';
+import { unitEconomics, readUnitEconomics, PRESETS } from '../core/saas.js?v=17';
+import { compareRates, sampleSize } from '../core/abtest.js?v=17';
 initSite();
 
 const DAY = 86400000;

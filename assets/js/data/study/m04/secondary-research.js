@@ -3,11 +3,11 @@
 // `checks` recompute them. The Harbour City Statistics Office, the Harbour City Grocers’ Association, the town of Kelstow
 // and every figure attached to them are fictional. Facts about real statistics offices and registers are from the pages
 // cited in `references`, checked on 24 October 2026.
-import { CATEGORY, CHANNELS, DEFAULT_PLAN, MAILING_LIST, SUBSCRIBER_SURVEY, CLIENT_INTERVIEWS, STRATA, SIZES } from './case.js?v=16';
-import { SHOP } from '../b01/case.js?v=16';
-import { ORDERS, ORDER_COLUMNS } from '../b03/case.js?v=16';
-import { HARBOURLINE } from '../f00/case.js?v=16';
-import { ciProp } from '../../../core/inference.js?v=16';
+import { CATEGORY, CHANNELS, DEFAULT_PLAN, MAILING_LIST, SUBSCRIBER_SURVEY, CLIENT_INTERVIEWS, STRATA, SIZES } from './case.js?v=17';
+import { SHOP } from '../b01/case.js?v=17';
+import { ORDERS, ORDER_COLUMNS } from '../b03/case.js?v=17';
+import { HARBOURLINE } from '../f00/case.js?v=17';
+import { ciProp } from '../../../core/inference.js?v=17';
 
 const f = (n) => Math.round(n).toLocaleString('en-US');
 const product = ORDER_COLUMNS.indexOf('product');

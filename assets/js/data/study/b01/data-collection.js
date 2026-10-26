@@ -1,7 +1,7 @@
 // data-collection.js — B01 · Collecting data: sources, samples and bias. Content only; exercises are in data-collection.ex.js.
 // Uses SHOP and SURVEY from case.js. The survey's response rate and verdict are left to the course project.
 // Every other business, person and number is fictional unless a source is cited.
-import { SHOP, SURVEY } from './case.js?v=16';
+import { SHOP, SURVEY } from './case.js?v=17';
 
 export default {
   slug: 'data-collection',
