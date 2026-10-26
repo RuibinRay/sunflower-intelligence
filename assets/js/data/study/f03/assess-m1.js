@@ -47,7 +47,7 @@ export const items = [
     answer: -11.1, check: () => R.growth(640000, 540000, { annualised: true, prevMonths: 9 }) * 100, unit: '%', places: 1, tol: 0.1,
     wrong: [
       { value: 18.5, say: 'That compares nine months with twelve. Annualise 2026 first: 540,000 × 12 ÷ 9.' },
-      { value: -15.6, say: 'Divide the change by the annualised 2026 figure (720,000), not by 640,000.' },
+      { value: -12.5, say: 'Divide the change by the annualised 2026 figure (720,000), not by 640,000.' },
     ],
     solution: 'Annualised 2026: 540,000 × 12 ÷ 9 = 720,000. Growth: 640,000 ÷ 720,000 − 1 = −11.1%. Spring is a garden centre’s busiest season, and the nine months began with it while January to March are quiet, so annualising overstates the base: the true change lies between −11.1% and the unadjusted +18.5%.',
   },
@@ -59,14 +59,14 @@ export const items = [
       'A new revenue line, previously zero, brought in $85,000',
       'A cost of $8,000 fell to zero after a contract ended',
       'A liability doubled from $40,000 to $80,000',
-      'Operating cash flow went from −$20,000 to −$5,000',
+      'Operating cash flow went from −$20,000 to +$5,000',
     ],
     answer: [0, 1, 4],
     feedback: {
       2: 'A fall from $8,000 to zero is a well-defined −100%: the base is positive.',
       3: 'A positive base gives a clear +100%.',
     },
-    solution: 'n/m when the base is zero (the new revenue line) or negative (the loss and the negative cash flow), because the percentage either doesn’t exist or has a misleading sign. Changes on positive bases, including a fall to zero (−100%), are reported normally.',
+    solution: 'n/m when the base is zero (the new revenue line) or when the sign changes from negative to positive (the loss turning into a profit, the cash outflow turning into an inflow), because the percentage either doesn’t exist or has no natural meaning. Changes on positive bases, including a fall to zero (−100%), are reported normally.',
   },
   {
     id: 'f03-m1-5', lesson: 'horizontal-analysis', type: 'num', kind: 'numerical',
@@ -86,7 +86,7 @@ export const items = [
     wrong: [
       { value: 76.8, say: 'Right to take out the café sales, but 2026 covers ten months: annualise it (× 12 ÷ 10) first.' },
       { value: 149.1, say: 'That is the growth of all revenue. The cafés did not exist in 2026: take their sales out of 2027.' },
-      { value: 22.8, say: 'Take the cafés out of 2027 only; 2026 had none.' },
+      { value: 32.1, say: 'You divided the change by 2027’s non-café revenue; the base is annualised 2026.' },
     ],
     solution: `Non-café revenue in 2027: 577,860 − 236,000 = 341,860. Annualised 2026: 193,320 × 12 ÷ 10 = 231,984. Growth: 341,860 ÷ 231,984 − 1 = 47.4%, against 149.1% for all revenue. (The law firm’s new contract is still inside the 47.4%.)`,
   },

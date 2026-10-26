@@ -9,12 +9,18 @@ import { onResize } from '../../core/dom.js?v=18';
 import { drawChart } from './chart.js?v=18';
 
 function digitsOf(inp) { return inp.digits ?? (inp.step < 1 ? Math.min(3, Math.ceil(-Math.log10(inp.step) - 1e-9)) : 0); }
+/** The unit, singular when the value is exactly 1 ("1 year", not "1 years"); `unitOne` overrides the singular. */
+function unitFor(inp, v) {
+  if (!inp.unit) return '';
+  const one = Math.abs(v) === 1 ? (inp.unitOne ?? (/^(years|months|days|weeks|units|periods|times)$/.test(inp.unit) ? inp.unit.slice(0, -1) : inp.unit)) : inp.unit;
+  return ` ${one}`;
+}
 function show(inp, v) {
   const d = digitsOf(inp);
   if (inp.fmt === 'pct') return `${F.num(v, d)}%`;
-  if (inp.fmt === 'money') return `${F.money(v, { digits: d })}${inp.unit ? ` ${inp.unit}` : ''}`;
-  if (inp.fmt === 'int') return `${F.int(v)}${inp.unit ? ` ${inp.unit}` : ''}`;
-  return `${F.num(v, d)}${inp.unit ? ` ${inp.unit}` : ''}`;
+  if (inp.fmt === 'money') return `${F.money(v, { digits: d })}${unitFor(inp, v)}`;
+  if (inp.fmt === 'int') return `${F.int(v)}${unitFor(inp, v)}`;
+  return `${F.num(v, d)}${unitFor(inp, v)}`;
 }
 
 export function mount(el, cfg, ctx) {

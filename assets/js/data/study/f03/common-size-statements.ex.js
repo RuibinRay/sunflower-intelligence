@@ -49,13 +49,13 @@ export const widgets = {
   'cs-bars': {
     type: 'chart', kind: 'bar',
     title: 'Lantern: where each dollar of revenue went (% of net revenue)',
-    x: { label: 'Line', values: ['Cost of goods sold', 'Cost of services', 'Wages expense', 'Rent and café leases', 'Other operating expenses', 'Operating income'] },
+    x: { label: 'Line', values: ['Goods', 'Services', 'Wages', 'Occupancy', 'Other opex', 'Op. income'] },
     series: [
       { name: '2026 (ten months)', values: [r1(share('Cost of Goods Sold', 0)), r1(share('Cost of Services', 0)), r1(share('Wages Expense', 0)), r1(occ(0) / P26.revenue), r1((opex(P26) - IS['Wages Expense'][0] - occ(0)) / P26.revenue), r1(P26.operatingIncome / P26.revenue)] },
       { name: '2027', values: [r1(share('Cost of Goods Sold', 1)), r1(share('Cost of Services', 1)), r1(share('Wages Expense', 1)), r1(occ(1) / P27.revenue), r1((opex(P27) - IS['Wages Expense'][1] - occ(1)) / P27.revenue), r1(P27.operatingIncome / P27.revenue)] },
     ],
     y: { label: '% of net revenue' },
-    note: 'Fictional figures from the case. Each year’s six bars add to 100% of net revenue (to rounding). Wages and occupancy rose by 18.4 and 3.2 points; operating income fell by 13.8 points.',
+    note: 'Fictional figures from the case. Goods: cost of goods sold; Services: cost of services; Wages: wages expense; Occupancy: kitchen rent and café lease cost; Other opex: the other operating expenses; Op. income: operating income. Each year’s six bars add to 100% of net revenue (to rounding). Wages and occupancy rose by 18.4 and 3.2 points; operating income fell by 13.8 points.',
   },
   'cs-sheet': {
     type: 'sheet',
@@ -262,7 +262,7 @@ export const check = [
       { value: 5.7, say: 'Include the noncurrent part, which is the larger.' },
       { value: 21.4, say: 'That divides by total net revenues ($36,176.2 million). A balance sheet line is divided by total assets.' },
     ],
-    solution: '(1,781.2 + 5,963.6) ÷ 31,339.3 = 7,744.8 ÷ 31,339.3 = 24.7%. Customers’ prepayments finance about a quarter of Starbucks’ assets.',
+    solution: '(1,781.2 + 5,963.6) ÷ 31,339.3 = 7,744.8 ÷ 31,339.3 = 24.7%. But most of it is not customer money: the bulk of the noncurrent part is a royalty prepaid in 2018 by Nestlé, recognised over 40 years (the deferred-revenue note, R79). Read the note before calling a liability customer funding.',
   },
   {
     id: 'f03-cs-k4', type: 'mc', kind: 'applied',

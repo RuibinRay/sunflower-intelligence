@@ -82,7 +82,7 @@ export const widgets = {
   'hor-index': {
     type: 'chart', kind: 'line',
     title: 'Starbucks: trend percentages, fiscal 2022 = 100',
-    x: { label: 'Fiscal year', values: ['FY2022', 'FY2023', 'FY2024'] },
+    x: { label: 'Fiscal year', values: [2022, 2023, 2024] },
     series: [
       { name: 'Total net revenues', values: idx(SB.rev) },
       { name: 'Operating income', values: idx(SB.oi) },
