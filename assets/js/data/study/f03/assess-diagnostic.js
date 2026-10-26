@@ -2,7 +2,7 @@
 // method, not what F00 and F02 already teach (preparing the statements, the current ratio and working capital, the
 // cash-flow statement) or F04 (the time value of money), so that a student who knows only those courses misses a
 // module’s items and one who already has the module’s method gets them right.
-// Module 1: a change read from base-year index numbers (a percentage, not index points); a gross margin restated onto a
+// Module 1: growth across a six-month first period, on annualised figures; a gross margin restated onto a
 // rival’s classification of crew wages; which line of a comparative statement is material (dollars against operating
 // income, not the largest percentage).
 // Module 2: a quick ratio that leaves out a contract asset and prepaid expenses; net debt ÷ EBITDA on interest-bearing
@@ -22,9 +22,9 @@ const usd = (v) => `${v < 0 ? '−' : ''}$${Math.abs(Math.round(v)).toLocaleStri
 const pc = (v, d = 1) => `${v < 0 ? '−' : ''}${fx(Math.abs(v) * 100, d)}%`;
 
 // ---------------------------------------------------------------- module 1
-// Thrushcombe Aquarium (fictional): operating expenses as index numbers, 2023 = 100
-const AQ = { i2026: 128, i2027: 144 };
-const aqChange = AQ.i2027 / AQ.i2026 - 1;
+// Thrushcombe Aquarium (fictional): opened 1 July 2026, so 2026 covers six months
+const AQ = { months26: 6, rev26: 1_140_000, rev27: 2_052_000 };
+const aqChange = R.growth(AQ.rev27, AQ.rev26, { annualised: true, prevMonths: AQ.months26 });
 // Quillan Removals (fictional): crews’ wages sit in its cost of sales; its rival puts them in operating expenses
 const QR = { revenue: 900_000, costOfSales: 558_000, crewWages: 207_000, rivalMargin: 0.58 };
 const qrReported = (QR.revenue - QR.costOfSales) / QR.revenue;
@@ -74,14 +74,14 @@ export const items = [
   // ================================================================ Module 1: comparing statements
   {
     id: 'f03-dg-1', lesson: 'horizontal-analysis', type: 'num', kind: 'numerical',
-    prompt: `Thrushcombe Aquarium, a fictional visitor attraction, shows its operating expenses as index numbers with 2023 = 100. The index is ${AQ.i2026} for 2026 and ${AQ.i2027} for 2027. By what percentage did operating expenses rise from 2026 to 2027? Enter a percentage to one decimal place.`,
-    answer: 12.5, check: () => aqChange * 100, unit: '%', places: 1, tol: 0.05,
+    prompt: `Thrushcombe Aquarium, a fictional visitor attraction, opened on 1 July 2026. Its revenue was ${usd(AQ.rev26)} for the six months to 31 December 2026 and ${usd(AQ.rev27)} for 2027. What is the growth in revenue on annualised figures? Enter a percentage to one decimal place, negative for a fall.`,
+    answer: -10, check: () => aqChange * 100, unit: '%', places: 1, tol: 0.05,
     wrong: [
-      { value: 16, say: `That is the rise in index points (${AQ.i2027} − ${AQ.i2026}). Points are measured against the 2023 base, so they are a percentage only of 2023’s expenses. Divide the 2027 index by the 2026 index.` },
-      { value: 44, say: 'That is the rise since the base year, 2023. The question asks for the change from 2026 to 2027.' },
-      { value: 11.1, say: `That divides the change by the 2027 index. A percentage change is measured on the earlier year: ${AQ.i2027} ÷ ${AQ.i2026} − 1.` },
+      { value: 80, say: 'That compares six months with twelve. Annualise 2026 first: × 12 ÷ 6.' },
+      { value: -11.1, say: `Divide the change by the annualised 2026 figure (${usd(AQ.rev26 * 12 / AQ.months26)}), not by 2027’s revenue.` },
+      { value: -55, say: 'That annualises 2027 as well. 2027 is already a full year; only the six-month period is scaled.' },
     ],
-    solution: `Index numbers keep the ratios between years: 2027 ÷ 2026 = ${AQ.i2027} ÷ ${AQ.i2026} = ${fx(AQ.i2027 / AQ.i2026, 3)}, a rise of ${pc(aqChange)}. The ${AQ.i2027 - AQ.i2026}-point rise is ${AQ.i2027 - AQ.i2026}% of 2023’s expenses, not of 2026’s.`,
+    solution: `Annualised 2026: ${usd(AQ.rev26)} × 12 ÷ ${AQ.months26} = ${usd(AQ.rev26 * 12 / AQ.months26)}. Growth: ${usd(AQ.rev27)} ÷ ${usd(AQ.rev26 * 12 / AQ.months26)} − 1 = ${pc(aqChange)}, against +80.0% unadjusted. Annualising assumes July to December are typical months; for an attraction whose summer holidays fall in those months they are not, so the annualised base is probably too high and the true change somewhere between the two figures.`,
   },
   {
     id: 'f03-dg-2', lesson: 'common-size-statements', type: 'num', kind: 'applied',
@@ -210,7 +210,7 @@ export const items = [
       { value: r2(mtWrongX4), say: 'X₄ is book equity ÷ total liabilities, not equity ÷ total assets.' },
       { value: r2(mtWrongX1), say: 'X₁ is working capital (current assets − current liabilities) ÷ total assets, not current assets ÷ total assets.' },
     ],
-    solution: `X₁ = working capital ÷ total assets = (${MT.currentAssets} − ${MT.currentLiabilities}) ÷ ${fx(MT.totalAssets, 0)} = ${fx(mtZ.x[0], 3)}; X₂ = retained earnings ÷ total assets = ${fx(mtZ.x[1], 4)}; X₃ = EBIT ÷ total assets = ${fx(mtZ.x[2], 3)}; X₄ = book equity ÷ total liabilities = ${fx(mtZ.x[3], 2)}. Z″ = ${fx(mtZ.terms[0], 3)} + ${fx(mtZ.terms[1], 3)} + ${fx(mtZ.terms[2], 3)} + ${fx(mtZ.terms[3], 3)} = ${fx(mtZ.score)}, between the zone boundaries of ${fx(R.ALTMAN.zdouble.zones[0])} and ${fx(R.ALTMAN.zdouble.zones[1])}: the grey zone. Revenue is not used: Z″ has no sales term.`,
+    solution: `X₁ = working capital ÷ total assets = (${MT.currentAssets} − ${MT.currentLiabilities}) ÷ ${fx(MT.totalAssets, 0)} = ${fx(mtZ.x[0], 3)}; X₂ = retained earnings ÷ total assets = ${fx(mtZ.x[1], 4)}; X₃ = EBIT ÷ total assets = ${fx(mtZ.x[2], 3)}; X₄ = book equity ÷ total liabilities = ${fx(mtZ.x[3], 2)}. Z″ = ${fx(mtZ.terms[0], 3)} + ${fx(mtZ.terms[1], 3)} + ${fx(mtZ.terms[2], 3)} + ${fx(mtZ.terms[3], 3)} = ${fx(mtZ.score)}, between the zone boundaries of ${fx(R.ALTMAN.zdouble.zones[0])} and ${fx(R.ALTMAN.zdouble.zones[1])} (Altman’s 4.35 and 5.85 for Z″ with its +3.25 constant, less 3.25): the grey zone. Revenue is not used: Z″ has no sales term.`,
   },
   {
     id: 'f03-dg-12', lesson: 'benchmarking-and-annual-reports', type: 'mc', kind: 'conceptual',

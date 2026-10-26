@@ -12,7 +12,8 @@
 //   payable $1,050 = 2026's $2,000 of tax less $950 paid during the year;
 // - cash: the statement of cash flows it implies ties to $17,450 of cash at 31 December 2026 (see IDENTITIES).
 // Brightwater's accountant puts the mechanics' wages and the parts used in cost of sales (F02), unlike Lantern.
-// The workshop is rented month to month (no lease liability).
+// The workshop is rented on a lease of 12 months or less, so ASC 842's short-term exemption applies: rent is an expense
+// and there is no lease liability.
 import * as R from '../../../core/ratios.js?v=18';
 import { RESULTS as B27, OPENING as B26_BS, AGING } from '../f02/brightwater.js?v=18';
 
@@ -59,6 +60,8 @@ export const PERIODS = {
     leaseLiabilities: 0, equity: B27.equity, retainedEarnings: B27.retainedEarnings,
     cfo: B27.cfo, capex: -S.cash.lines.find((l) => l[0] === 'Purchase of equipment')[1], dividends: B27.dividends,
     creditSales: 26_800,       // repairs invoiced in 2027 (F02's project: receivables $2,860 + $26,800 − $22,780 − $380 = $6,500)
+    purchases: 11_960 + 6_300 + 8_100,   // bought on account (bikes, accessories, parts): AP $1,180 + $26,360 − $25,490 paid = $2,050
+    goodsMonths: 10,           // the shop sold goods only from March
   },
 };
 
@@ -76,9 +79,10 @@ export const BENCHMARK = {
   grossMargin: 0.42, operatingMargin: 0.08, netMargin: 0.05, roa: 0.08, roe: 0.16, cfoToNetIncome: 1.1, payout: 0.35,
 };
 
-/** December 2027: Mateo asks for a five-year loan, drawn on 1 January 2028, to add e-bikes and an e-bike service bay. */
+/** December 2027: Mateo asks for a five-year loan, drawn on 1 January 2028, to add e-bikes and an e-bike service bay.
+ *  Repaid $5,000 each 31 December from 2028, with the year's interest, so the first $5,000 is current at 31 December 2027. */
 export const LOAN_REQUEST = {
-  applied: '2027-12-10', drawn: '2028-01-01', amount: 25_000, rate: 0.08, years: 5, instalment: 5_000,   // $5,000 of principal each 1 January from 2029, with the year's interest
+  applied: '2027-12-10', drawn: '2028-01-01', amount: 25_000, rate: 0.08, years: 5, instalment: 5_000,   // $5,000 of principal each 31 December from 2028, with the year's interest
   uses: { inventory: 15_000, equipment: 10_000 },
   existing: { principal: 12_000, rate: 0.07, instalment: 3_000, next: '2028-03-01' },  // F02: $3,000 each 1 March from 2028
   covenants: { minCurrent: 1.5, maxDebtToEquity: 2.0, minInterestCoverage: 3.0, maxPayout: 0.5 },
@@ -120,4 +124,6 @@ export const IDENTITIES = [
   ['the balance sheet still balances pro forma', Math.abs(PRO_FORMA.totalAssets - PRO_FORMA.totalLiabilities - p27.equity) < 1e-9],
   ['2027 periods agree with F02: equity', p27.equity === bs27.equityTotal],
   ['2027 receivables = aging total − allowance', p27.receivables === AGING.reduce((s, b) => s + b.amount, 0) - B27.allowanceNeeded],
+  ['2027 payables = opening + purchases on account − payments', B26_BS['Accounts Payable'] + p27.purchases - 25_490 === p27.payables],
+  ['July 2026 lies inside the six months', I.costOfSales.wages >= 1_920 && I.costOfSales.supplies >= 820 && I.operating.utilities >= 185 && I.dividends >= 400],
 ];

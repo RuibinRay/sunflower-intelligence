@@ -7,9 +7,9 @@
 // Items that combine lessons: growth per store from a 10-K’s statements and its Item 1 store counts (f03-fn-2:
 // horizontal analysis and reading a filing); common-size margins against dollar growth, then the line behind the change
 // (f03-fn-4: common-size and horizontal); a margin compared across two classifications (f03-fn-5: common-size and
-// benchmarking); the new money a current-ratio covenant needs, with and without terming out the line (f03-fn-7:
+// benchmarking); the new money a current-ratio covenant needs, and how the agreement’s definition changes it (f03-fn-7:
 // liquidity and solvency); which liabilities are debt and lease debt, then a lease-adjusted covenant recomputed and
-// judged (f03-fn-8, f03-fn-10: solvency, liquidity, benchmarking); growth tying up working capital (f03-fn-12:
+// judged (f03-fn-8: what counts as debt; f03-fn-10: solvency and the covenant judgement); growth tying up working capital (f03-fn-12:
 // efficiency and cash flow); ROE across a ten-month first period and an owner’s salary (f03-fn-14: horizontal analysis
 // and returns); the equity multiplier with and without leases, then what it does to ROE (f03-fn-15: solvency and
 // DuPont); 2027’s ROE on 2026’s leverage (f03-fn-16: returns and DuPont); payouts against free cash flow and a
@@ -40,7 +40,8 @@ const b27 = (label) => COMPARATIVE.balance.find((r) => r[0] === label)[2];
 const LOC = b27('Line of Credit');
 const COVENANT = 1.2;                                            // f03/case.js header: Coastline’s 2028 loan (from F00)
 const needCash = COVENANT * P27.currentLiabilities - P27.currentAssets;
-const needCashTermed = COVENANT * (P27.currentLiabilities - LOC) - P27.currentAssets;
+const LEASE_CUR = b27('Current Portion of Operating Lease Liabilities');
+const needCashNoLease = COVENANT * (P27.currentLiabilities - LEASE_CUR) - P27.currentAssets;   // the test leaves lease liabilities out
 const S26 = R.solvency(P26), S27 = R.solvency(P27), S27L = R.solvency(P27, { withLeases: true });
 const DEBT_LINES = ['Current Portion of Long-Term Debt', 'Line of Credit', 'Notes Payable', 'Instalment Note Payable'];
 const LEASE_LINES = ['Current Portion of Operating Lease Liabilities', 'Operating Lease Liabilities'];
@@ -292,8 +293,8 @@ export const items = [
   },
   {
     id: 'f03-fn-7', lesson: 'liquidity', type: 'steps', kind: 'applied',
-    prompt: `Suppose Coastline’s 2028 loan to Lantern requires a current ratio of at least ${fx(COVENANT, 1)}, tested on the balance sheet. At 31 December 2027 Lantern had current assets of ${usd(P27.currentAssets)} and current liabilities of ${usd(P27.currentLiabilities)}, including the ${usd(LOC)} drawn on its line of credit. Work out what it would take to meet the test on those figures.`,
-    solution: `Cash raised from a long-term source adds to current assets only: ${usd(P27.currentAssets)} + x = ${fx(COVENANT, 1)} × ${usd(P27.currentLiabilities)}, so x = ${usd(needCash)}. Terming out the line takes ${usd(LOC)} out of current liabilities: ${fx(COVENANT, 1)} × ${usd(P27.currentLiabilities - LOC)} − ${usd(P27.currentAssets)} = ${usd(needCashTermed)}. Using new cash to repay the line would help less: below a ratio of 1, paying down current liabilities with current assets lowers the ratio. Either route also needs the cash to stay in the business, so dividends would be restricted.`,
+    prompt: `Suppose Coastline’s 2028 loan to Lantern requires a current ratio of at least ${fx(COVENANT, 1)}, tested on the balance sheet. At 31 December 2027 Lantern had current assets of ${usd(P27.currentAssets)} and current liabilities of ${usd(P27.currentLiabilities)}, including ${usd(LEASE_CUR)} of operating lease liabilities due in 2028. Work out what it would take to meet the test on those figures.`,
+    solution: `Cash raised from a long-term source adds to current assets only: ${usd(P27.currentAssets)} + x = ${fx(COVENANT, 1)} × ${usd(P27.currentLiabilities)}, so x = ${usd(needCash)}. If the agreement leaves the current lease liabilities out of the test, the target falls: ${fx(COVENANT, 1)} × (${usd(P27.currentLiabilities)} − ${usd(LEASE_CUR)}) − ${usd(P27.currentAssets)} = ${usd(needCashNoLease)}. The definition in the agreement matters as much as the balances. Using new cash to repay the line would help less: below a ratio of 1, paying down current liabilities with current assets lowers the ratio. Either route also needs the cash to stay in the business, so dividends would be restricted.`,
     steps: [
       {
         id: 'f03-fn-7-s1', type: 'num',
@@ -306,11 +307,11 @@ export const items = [
       },
       {
         id: 'f03-fn-7-s2', type: 'num',
-        prompt: 'If Coastline also turned the line of credit into a term loan with nothing repayable in 2028, how much new long-term cash would then be needed? Enter whole dollars.',
-        answer: Math.round(needCashTermed), check: () => needCashTermed, unit: '$', places: 0, tol: 1,
+        prompt: `If instead the loan agreement defined current liabilities for the test without the ${usd(LEASE_CUR)} current portion of the operating lease liabilities, how much new long-term cash would be needed? Enter whole dollars.`,
+        answer: Math.round(needCashNoLease), check: () => needCashNoLease, unit: '$', places: 0, tol: 1,
         wrong: [
-          { value: Math.round(needCash - LOC), say: 'Removing the line from current liabilities lowers the target by 1.2 × $24,000, not by $24,000.' },
-          { value: Math.round(COVENANT * (P27.currentLiabilities - LOC)), say: 'That is the current assets needed in total; subtract the current assets already there.' },
+          { value: Math.round(needCash - LEASE_CUR), say: 'Leaving the lease liabilities out lowers the target by 1.2 × that amount, not by the amount itself.' },
+          { value: Math.round(COVENANT * (P27.currentLiabilities - LEASE_CUR)), say: 'That is the current assets needed in total; subtract the current assets already there.' },
         ],
       },
     ],
@@ -451,7 +452,7 @@ export const items = [
   {
     id: 'f03-fn-15', lesson: 'dupont-analysis', type: 'steps', kind: 'applied',
     prompt: 'Use Bramblegate’s statements to see how much of its leverage comes from its leases.',
-    solution: `Equity multiplier = average total assets ÷ average equity = ${fx(avg2(bgTA[0], bgTA[1]), 0)} ÷ ${fx(avg2(BG.equity[0], BG.equity[1]), 0)} = ${fx(bgDup.equityMultiplier)}. Without the right-of-use assets (and the lease liabilities that match them), average assets are ${fx(avg2(bgTA[0] - BG.rou[0], bgTA[1] - BG.rou[1]), 0)} and the multiplier ${fx(bgEmNoLease)}. ROE = ${pc(bgDup.netMargin, 2)} × ${fx(bgDup.assetTurnover)} × ${fx(bgDup.equityMultiplier)} = ${pc(bgDup.roe)}: the leases lower the turnover and raise the multiplier, so most of the “leverage” in its ROE is rented premises.`,
+    solution: `Equity multiplier = average total assets ÷ average equity = ${fx(avg2(bgTA[0], bgTA[1]), 0)} ÷ ${fx(avg2(BG.equity[0], BG.equity[1]), 0)} = ${fx(bgDup.equityMultiplier)}. Without the right-of-use assets and the lease liabilities, average assets are ${fx(avg2(bgTA[0] - BG.rou[0], bgTA[1] - BG.rou[1]), 0)} and the multiplier ${fx(bgEmNoLease)}. ROE = ${pc(bgDup.netMargin, 2)} × ${fx(bgDup.assetTurnover)} × ${fx(bgDup.equityMultiplier)} = ${pc(bgDup.roe)}: the leases lower the turnover and raise the multiplier, so most of the “leverage” in its ROE is rented premises.`,
     steps: [
       {
         id: 'f03-fn-15-s1', type: 'formula',
@@ -536,7 +537,7 @@ export const items = [
   {
     id: 'f03-fn-19', lesson: 'cash-flow-and-earnings-quality', type: 'steps', kind: 'applied',
     prompt: `Nethercote Signs, a fictional private sign maker and installer, reports for 2027 (in $ thousands): net income ${NS.netIncome}; net cash from operating activities ${NS.cfo}; total assets ${fx(NS.taOpen, 0)} on 1 January and ${fx(NS.totalAssets, 0)} on 31 December. At 31 December: current assets ${fx(NS.currentAssets, 0)}; current liabilities ${fx(NS.currentLiabilities, 0)}; total liabilities ${fx(NS.totalLiabilities, 0)}; retained earnings ${NS.retainedEarnings}; book equity ${fx(NS.equity, 0)}. EBIT was ${NS.ebit}. Revenue grew ${pc(NS.revGrowth, 0)} and receivables ${pc(NS.recGrowth, 0)}.`,
-    solution: `Accruals ratio = (${NS.netIncome} − ${NS.cfo}) ÷ ${fx(avg2(NS.taOpen, NS.totalAssets), 0)} = ${pc(nsAccr)}: less than a quarter of profit arrived as cash, and receivables grew five times as fast as revenue. Z″ = ${fx(nsZ.terms[0], 3)} + ${fx(nsZ.terms[1], 3)} + ${fx(nsZ.terms[2], 3)} + ${fx(nsZ.terms[3], 3)} = ${fx(nsZ.score)}, in the grey zone (${fx(R.ALTMAN.zdouble.zones[0])}–${fx(R.ALTMAN.zdouble.zones[1])}). The score uses EBIT and retained earnings as reported, so it inherits the doubtful profit; the receivables are inside its working capital. Read it as a ceiling, and test the receivables (aging, subsequent collections) before relying on either.`,
+    solution: `Accruals ratio = (${NS.netIncome} − ${NS.cfo}) ÷ ${fx(avg2(NS.taOpen, NS.totalAssets), 0)} = ${pc(nsAccr)}: less than a quarter of profit arrived as cash, and receivables grew five times as fast as revenue. Z″ = ${fx(nsZ.terms[0], 3)} + ${fx(nsZ.terms[1], 3)} + ${fx(nsZ.terms[2], 3)} + ${fx(nsZ.terms[3], 3)} = ${fx(nsZ.score)}, in the grey zone (${fx(R.ALTMAN.zdouble.zones[0])}–${fx(R.ALTMAN.zdouble.zones[1])}, Altman’s 4.35 and 5.85 for Z″ with its +3.25 constant, less 3.25). The score uses EBIT and retained earnings as reported, so it inherits the doubtful profit; the receivables are inside its working capital. Read it as a ceiling, and test the receivables (aging, subsequent collections) before relying on either.`,
     steps: [
       {
         id: 'f03-fn-19-s1', type: 'num',
@@ -594,7 +595,7 @@ export const items = [
       { value: r2(pcfZ0.score - pcfOnlyLiab.score), say: 'The right-of-use asset adds to total assets, the denominator of X₁, X₂ and X₃, so those ratios fall too.' },
       { value: r2(pcfZ1.score), say: 'That is the score after the lease. The question asks how far it falls.' },
     ],
-    solution: `Before: Z″ = ${pcfZ0.terms.map((t) => fx(t, 3)).join(' + ')} = ${fx(pcfZ0.score)}. After: total assets ${fx(pcfAfter.totalAssets, 0)}, current liabilities ${pcfAfter.currentLiabilities}, total liabilities ${fx(pcfAfter.totalLiabilities, 0)}, so Z″ = ${pcfZ1.terms.map((t) => fx(t, 3)).join(' + ')} = ${fx(pcfZ1.score)}, a fall of ${fx(pcfZ0.score - pcfZ1.score)} from the grey zone towards distress, with nothing yet earned or paid. Every term falls: working capital, the asset base and the equity cushion. That is why a score fitted on pre-2019 balance sheets reads lease-heavy businesses harshly.`,
+    solution: `Before: Z″ = ${pcfZ0.terms.map((t) => fx(t, 3)).join(' + ')} = ${fx(pcfZ0.score)}. After: total assets ${fx(pcfAfter.totalAssets, 0)}, current liabilities ${pcfAfter.currentLiabilities}, total liabilities ${fx(pcfAfter.totalLiabilities, 0)}, so Z″ = ${pcfZ1.terms.map((t) => fx(t, 3)).join(' + ')} = ${fx(pcfZ1.score)}, a fall of ${fx(pcfZ0.score - pcfZ1.score)} from the grey zone (${fx(R.ALTMAN.zdouble.zones[0])}–${fx(R.ALTMAN.zdouble.zones[1])}, Altman’s 4.35 and 5.85 for Z″ with its +3.25 constant, less 3.25) towards distress, with nothing yet earned or paid. Every term falls: working capital, the asset base and the equity cushion. That is why a score fitted on pre-2019 balance sheets reads lease-heavy businesses harshly.`,
   },
   {
     id: 'f03-fn-22', lesson: 'distress-scores', type: 'mc', kind: 'conceptual',
@@ -627,14 +628,14 @@ export const items = [
     id: 'f03-fn-24', lesson: 'benchmarking-and-annual-reports', type: 'mc', kind: 'applied',
     prompt: `Amazon’s 2014 Form 10-K reports free cash flow of $${AMZN.fcf14.toLocaleString('en-US')} million, which it defines as net cash provided by operating activities less purchases of property and equipment (${AMZN.cfo14.toLocaleString('en-US')} − ${AMZN.capex14.toLocaleString('en-US')}). For a 2014–2023 comparison, a colleague takes the same two lines from the 2023 cash-flow statement and gets $${(AMZN.cfo23 - AMZN.capex23).toLocaleString('en-US')} million. What should the analyst do before using the comparison?`,
     options: [
-      'Find how the 2023 filing defines free cash flow, since each company sets its own definition and may change it, and use one for both years',
+      'Read the 2023 filing’s own definition and apply one definition to both years',
       'Use it as it stands, because free cash flow is defined by US GAAP and every filing computes it the same way',
       'Replace both figures with net income, which is audited and so comparable from one year to another',
       'Check the auditor’s report, which confirms each non-GAAP measure that management reports in the 10-K',
     ],
     answer: 0,
     feedback: {
-      1: 'Free cash flow is a non-GAAP measure: each company defines it, and the definition can change. Amazon’s did.',
+      1: 'Free cash flow is a non-GAAP measure: each company defines it, and the definition can change. Amazon’s results release for the first quarter of 2024 reduces cash from operations by purchases of property and equipment net of proceeds from sales and incentives.',
       2: 'Net income answers a different question; the point of free cash flow is the cash left after investment.',
       3: 'The audit opinion covers the financial statements; non-GAAP measures in the MD&A or Item 6 are management’s and are not covered by it.',
     },
