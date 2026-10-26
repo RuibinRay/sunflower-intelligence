@@ -65,13 +65,13 @@ export const items = [
       'Little: ROE is huge because equity is tiny; ROA of 5% describes the business better.',
       'It is outstanding: few companies of any size earn 300% on their owners’ capital.',
       'It is wrong: ROE can never be above 100%, so the numbers must be misstated.',
-      'It should be recomputed on total assets, because a start-up has no meaningful equity.',
+      'It is fair, since a return should be judged on the owners’ $10,000 at risk.',
     ],
     answer: 0,
     feedback: {
       1: 'The 300% says more about the $10,000 denominator than about the business. Assets of $600,000 earned 5%.',
       2: 'ROE has no upper limit; a tiny denominator can make it any size. That is why it misleads here.',
-      3: 'That would be ROA, which is a different ratio. The equity is real but too small for ROE to mean much.',
+      3: 'The $10,000 didn’t earn the profit: $600,000 of assets did, almost all financed by others. Here ROE measures leverage, not performance.',
     },
     solution: 'ROE = 30,000 ÷ 10,000 = 300%, but the business finances $60 of assets with each dollar of equity. ROA = 30,000 ÷ 600,000 = 5%. With equity this thin, ROE describes the denominator and the risk, not performance: compare ROA (or ROIC) with other businesses.',
   },
@@ -91,7 +91,7 @@ export const items = [
         answer: 1.2, check: () => 4.8 - 4.8 * (0.18 / (0.75 * 0.10 * 0.80 * 4.0)), unit: '$ millions', places: 1, tol: 0.05,
         wrong: [
           { value: 3.6, say: 'That is income before tax (interest burden × EBIT). Interest is EBIT minus income before tax.' },
-          { value: 2.1, say: 'That subtracts net income (2.7) as well as interest. Interest is EBIT − income before tax = 4.8 − 3.6.' },
+          { value: 2.1, say: 'That is EBIT − net income (4.8 − 2.7), which is interest and tax together (1.2 + 0.9). Interest alone is EBIT − income before tax = 4.8 − 3.6.' },
         ] },
     ],
   },
@@ -166,6 +166,6 @@ export const items = [
       2: 'Margin measures profitability, not safety. Safety needs the leverage, liquidity and coverage ratios.',
       3: 'Different business models are exactly what DuPont helps compare, as long as the bases are stated and differences in scale are kept in mind.',
     },
-    solution: 'Lantern’s ROA is 3.9% × 2.74 = 10.6% against Harbourline’s 5.9% × 0.97 = 5.8%: turnover, not margin, puts Lantern ahead. Its multiplier of 4.01 against 2.20 then nearly doubles the gap in ROE. The bases differ (averages against closing balances), which should be noted in any comparison.',
+    solution: 'With the factors unrounded, Lantern’s ROA is 3.88% × 2.742 = 10.6% against Harbourline’s 5.94% × 0.970 = 5.8%: turnover, not margin, puts Lantern ahead. Its multiplier of 4.01 against 2.20 then nearly doubles the gap in ROE. The bases differ (averages against closing balances), which should be noted in any comparison.',
   },
 ];

@@ -2,7 +2,7 @@
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // Lantern’s figures come from case.js and core/ratios.js; Harbourline from f00/case.js (fictional, $ millions);
 // Starbucks from its FY2024 Form 10-K, as cited in the lesson; every other business is fictional.
-import { PERIODS, FACTS } from './case.js?v=18';
+import { PERIODS, FACTS, LEASE } from './case.js?v=18';
 import * as R from '../../../core/ratios.js?v=18';
 import { HARBOURLINE as HL, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=18';
 
@@ -33,7 +33,8 @@ export const widgets = {
     toggles: ['average', 'annualise'],
     adjust: [
       { id: 'leases', label: 'Take the cafés’ right-of-use assets and lease liabilities off the 2027 balance sheet', period: 1,
-        delta: { totalAssets: -P27.rightOfUse, rightOfUse: -P27.rightOfUse, totalLiabilities: -P27.leaseLiabilities, leaseLiabilities: -P27.leaseLiabilities } },
+        delta: { totalAssets: -P27.rightOfUse, rightOfUse: -P27.rightOfUse, totalLiabilities: -P27.leaseLiabilities, leaseLiabilities: -P27.leaseLiabilities, currentLiabilities: -LEASE.current2027 },
+        note: 'Total assets and total liabilities both fall by the leases ($173,379), and current liabilities by the lease liability due in 2028. Net income is unchanged, so turnover rises and the multiplier falls in the same proportion: ROE doesn’t move.' },
       { id: 'research', label: 'Treat 2027’s $21,000 of market research as a one-off', period: 1,
         delta: { operatingIncome: research, ebit: research, pretax: research, tax: research * t, netIncome: research * (1 - t) } },
     ],
@@ -45,7 +46,7 @@ export const widgets = {
     title: 'Three levers against Lantern’s 2026',
     intro: 'Each factor is compared with Lantern’s 2026 (ten months, closing balances): net margin 14.2%, asset turnover 2.06, equity multiplier 2.21, ROE 64.6%.',
     inputs: [
-      { id: 'm', label: 'Net margin', min: 0.5, max: 20, step: 0.1, value: 3.9, fmt: 'pct' },
+      { id: 'm', label: 'Net margin', min: 0.5, max: 20, step: 0.01, value: 3.88, fmt: 'pct' },
       { id: 'a', label: 'Asset turnover', min: 0.5, max: 6, step: 0.01, value: 2.74, fmt: 'num' },
       { id: 'e', label: 'Equity multiplier', min: 1, max: 8, step: 0.01, value: 4.01, fmt: 'num' },
     ],
@@ -68,7 +69,7 @@ export const widgets = {
           ['ROE against 2026 (the product of the three)', fx(roe / roe0)],
         ],
         note,
-        chart: { kind: 'bar', x: { label: 'Factor', values: ['Net margin', 'Asset turnover', 'Equity multiplier', 'ROE'] },
+        chart: { kind: 'bar', x: { label: 'Factor', values: ['Margin', 'Turnover', 'Multiplier', 'ROE'] },
           series: [{ name: 'Change from 2026 (× 1.00 = unchanged)', values: [...f, roe / roe0].map(r2) }], y: { label: 'Times the 2026 value' } },
       };
     },
