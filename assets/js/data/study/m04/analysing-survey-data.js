@@ -3,9 +3,9 @@
 // derived NPS, Cold Brew intent, weights, cups and themes (DERIVED). The truth (DERIVED.nps.truth, coldbrew.truthTopTwo)
 // appears only in the "What Ana couldn't see" callout. Pindlebury Garden Centre, Rookwell Fitness and Tallyroot Software
 // (with Saoirse Adeyemi) are fictional. Every printed figure is recomputed in `checks`.
-import { RESPONDENTS, STRATA, SIZES, LEVELS, DISPOSITIONS, DERIVED as D } from './case.js?v=15';
-import * as S from '../../../core/survey.js?v=15';
-import * as I from '../../../core/inference.js?v=15';
+import { RESPONDENTS, STRATA, SIZES, LEVELS, DISPOSITIONS, DERIVED as D } from './case.js?v=16';
+import * as S from '../../../core/survey.js?v=16';
+import * as I from '../../../core/inference.js?v=16';
 
 // ---------------------------------------------------------------- the figures this lesson quotes
 const R = RESPONDENTS, N = R.length, LIST = SIZES.reduce((a, b) => a + b, 0);

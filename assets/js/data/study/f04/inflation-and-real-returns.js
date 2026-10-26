@@ -3,7 +3,7 @@
 // re-teaching. Case facts: Ana's 2.8% inflation assumption (ANA_PLAN.inflation, as in F00) and Lantern in March 2027. New fictional facts used
 // here and only here: the law firm's three-year catering offer ($42,000 fixed or $40,000 indexed) and Lantern's 10%
 // required return. Deliberately does not use ANA_PLAN's home, saving, mortgage or salary figures: the project uses those.
-import { ANA_PLAN } from './case.js?v=15';
+import { ANA_PLAN } from './case.js?v=16';
 
 const INF = ANA_PLAN.inflation / 100;                            // 2.8% a year, Ana's working assumption
 const idx = [100, 103.2, 109.7, 116.4, 119.6, 122.9];          // fictional index, Year 0 = 100

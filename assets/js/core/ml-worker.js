@@ -1,6 +1,6 @@
 // ml-worker.js — runs the model comparison off the main thread so sliders stay responsive while forests grow.
 // Only the newest request is worked on; older ones that queued up behind a long run are skipped.
-import { compareModels } from './ml.js?v=15';
+import { compareModels } from './ml.js?v=16';
 
 const cache = {};
 let pending = null, scheduled = false;

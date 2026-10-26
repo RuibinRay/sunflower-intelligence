@@ -10,11 +10,11 @@
 //     Up to three plans side by side, differences marked in words and symbols. Returns { update(plans) }.
 //
 // Every number shown comes from the engine (assets/js/core/mixsim.js). Styles: assets/css/lab-mix.css.
-import { h, s, rafThrottle, debounce, onResize } from '../../core/dom.js?v=15';
-import * as F from '../../core/format.js?v=15';
-import { barChart, lineChart, tableTwin, niceTicks, lin, Tooltip } from '../../core/charts.js?v=15';
-import { fillRange } from '../../core/site.js?v=15';
-import * as X from '../../core/mixsim.js?v=15';
+import { h, s, rafThrottle, debounce, onResize } from '../../core/dom.js?v=16';
+import * as F from '../../core/format.js?v=16';
+import { barChart, lineChart, tableTwin, niceTicks, lin, Tooltip } from '../../core/charts.js?v=16';
+import { fillRange } from '../../core/site.js?v=16';
+import * as X from '../../core/mixsim.js?v=16';
 
 const { TIERS, RANGES, CHANNELS, COMPETITORS, PROMOTION, LANTERN, DEFAULT_PLAN, PRICE, BUDGET, CATEGORY } = X;
 const TIER = Object.fromEntries(TIERS.map((t) => [t.id, t]));
@@ -44,7 +44,7 @@ const listWords = (xs) => (xs.length <= 1 ? xs.join('') : `${xs.slice(0, -1).joi
 /** The lesson pages may not load lab-mix.css; widgets call this so their styles always arrive. */
 export function ensureStyles() {
   if (typeof document === 'undefined' || document.querySelector('link[data-mix-css], link[href*="lab-mix.css"]')) return;
-  document.head.append(h('link', { rel: 'stylesheet', href: new URL('../../../css/lab-mix.css?v=15', import.meta.url).href, 'data-mix-css': '' }));
+  document.head.append(h('link', { rel: 'stylesheet', href: new URL('../../../css/lab-mix.css?v=16', import.meta.url).href, 'data-mix-css': '' }));
 }
 
 /** Allowed inline HTML in author notes (AUTHORING.md §2): rebuilt node by node, so nothing else gets through. */

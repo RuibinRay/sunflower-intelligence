@@ -2,7 +2,7 @@
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // The note widget starts from COASTLINE_NOTE in case.js ($10,000 at 6%, paid quarterly; 8% market rate in March 2027);
 // the NPV widget starts from Ana's fictional cold-brew estimates in discounting-cash-flows.js.
-import { COASTLINE_NOTE as N } from './case.js?v=15';
+import { COASTLINE_NOTE as N } from './case.js?v=16';
 
 const qInt = N.quarterlyInterest;   // $150
 

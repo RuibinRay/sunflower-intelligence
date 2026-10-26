@@ -45,7 +45,7 @@
 // Functional forms: multinomial logit (McFadden, 1974), attraction / market-share models (Cooper & Nakanishi,
 // 1988), advertising carryover as adstock (Broadbent, 1979). The coefficient values are invented for teaching and
 // were calibrated so the default plan behaves sensibly (targets and results in tests/mixsim.test.mjs).
-import { CATEGORY, TIERS, RANGES, CHANNELS, COMPETITORS, PROMOTION, LANTERN, DEFAULT_PLAN } from '../data/study/m02/market.js?v=15';
+import { CATEGORY, TIERS, RANGES, CHANNELS, COMPETITORS, PROMOTION, LANTERN, DEFAULT_PLAN } from '../data/study/m02/market.js?v=16';
 
 export { CATEGORY, TIERS, RANGES, CHANNELS, COMPETITORS, PROMOTION, LANTERN, DEFAULT_PLAN };
 

@@ -2,8 +2,8 @@
 // (answer keys live here). Lantern's figures come from case.js (B01's monthly shop figures, the spring weekdays and the
 // channel and region tables); every other business is fictional. Formula items are marked by their results
 // (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { WEEKDAYS, CHANNEL_SUBSCRIPTION, REGION_SUBSCRIPTION, RATING_BY_CHANNEL, SHOP, DERIVED as D } from './case.js?v=15';
-import * as I from '../../../core/inference.js?v=15';
+import { WEEKDAYS, CHANNEL_SUBSCRIPTION, REGION_SUBSCRIPTION, RATING_BY_CHANNEL, SHOP, DERIVED as D } from './case.js?v=16';
+import * as I from '../../../core/inference.js?v=16';
 
 const WK = D.weekdays, CS = D.channelSubscription, RG = D.regionSubscription;
 const cs = CHANNEL_SUBSCRIPTION.counts, rg = REGION_SUBSCRIPTION.counts;

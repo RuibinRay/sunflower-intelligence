@@ -1,7 +1,7 @@
 // perpetuities-and-growth.js — F04 · Perpetuities and growth. Content only; exercises are in perpetuities-and-growth.ex.js.
 // The scholarship (Bayside Community College Foundation) is a new fictional fact introduced here; it uses ANA_PLAN.inflation
 // (2.8%, Ana’s working assumption from F00 and case.js) as the growth rate that keeps the award’s purchasing power.
-import { ANA_PLAN } from './case.js?v=15';
+import { ANA_PLAN } from './case.js?v=16';
 
 const a = (n, r) => (1 - (1 + r) ** -n) / r;
 const ga = (c, r, g, n) => c / (r - g) * (1 - ((1 + g) / (1 + r)) ** n);

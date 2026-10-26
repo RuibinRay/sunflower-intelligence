@@ -2,7 +2,7 @@
 // Uses STATEMENTS.balance and STATEMENTS.equity, ADJUSTMENTS (e8), FACTS and DERIVED from case.js. New fictional detail
 // introduced here: Lantern’s shares have no par value (consistent with case.js, where all $20,000 is in Common Stock and
 // Additional Paid-in Capital has no balance). The December dividend payable and the van lender’s ratio test are hypothetical.
-import { FACTS, DERIVED, STATEMENTS, ADJUSTMENTS, LEDGER } from './case.js?v=15';
+import { FACTS, DERIVED, STATEMENTS, ADJUSTMENTS, LEDGER } from './case.js?v=16';
 
 const D = DERIVED;
 const bal = (n) => LEDGER[n]?.balance || 0;

@@ -1,11 +1,11 @@
 // home.js — the homepage: frames the painting, places the five doorways, runs the living painting,
 // and opens a room through the chosen flower. Works without WebGL (still image + CSS) and without JS (plain links).
-import meta from '../../painting/meta.js?v=15';
-import { ROOMS, byId } from '../data/rooms.js?v=15';
-import { LivingPainting } from './painting.js?v=15';
-import { initSite } from '../core/site.js?v=15';
-import { leave, reset as resetPortal } from '../core/portal.js?v=15';
-import { $, $$, h, reducedMotion } from '../core/dom.js?v=15';
+import meta from '../../painting/meta.js?v=16';
+import { ROOMS, byId } from '../data/rooms.js?v=16';
+import { LivingPainting } from './painting.js?v=16';
+import { initSite } from '../core/site.js?v=16';
+import { leave, reset as resetPortal } from '../core/portal.js?v=16';
+import { $, $$, h, reducedMotion } from '../core/dom.js?v=16';
 
 initSite();
 

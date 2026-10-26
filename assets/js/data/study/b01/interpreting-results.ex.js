@@ -2,7 +2,7 @@
 // knowledge check. Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // The gift-box chart and the axis widget's defaults use Lantern's monthly orders (case.js); every other business and
 // figure is fictional.
-import { SHOP as S, DERIVED as D } from './case.js?v=15';
+import { SHOP as S, DERIVED as D } from './case.js?v=16';
 
 const pct = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toFixed(d)}%`;
 const signed = (v, d = 2) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(d)}`;

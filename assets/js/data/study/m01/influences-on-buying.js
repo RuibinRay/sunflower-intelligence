@@ -2,8 +2,8 @@
 // Lantern's online-shop prices come from the B02 dataset and the delivery terms (free over $35, otherwise $4.95) from
 // b01/case.js. Every other business, person and number is fictional unless a source is cited. `checks` recompute every
 // printed number.
-import { BUSINESS } from './case.js?v=15';
-import { DELIVERY as SHIP } from '../b01/case.js?v=15';
+import { BUSINESS } from './case.js?v=16';
+import { DELIVERY as SHIP } from '../b01/case.js?v=16';
 
 const PRICE = { houseBlend: 14, huila: 17, giftBox: 58 };   // 250 g bags and the Gift Box Trio (B02 dataset)
 const FREE_OVER = SHIP.freeOver;                           // free delivery on orders over this amount (b01/case.js)
@@ -86,7 +86,7 @@ export default {
     { p: 'Buyers also generalise, transferring a good experience with one product to others under the same brand, and discriminate, learning to tell similar products apart. Lantern’s subscription works partly because each satisfying delivery strengthens the habit of not looking elsewhere.' },
 
     { h: 'Beliefs and attitudes' },
-    { p: 'A belief is a descriptive thought about something: “Lantern roasts in small batches.” An <g>attitude</g> is a lasting evaluation of an object or idea, with the feelings and tendency to act that go with it: “I like Lantern and I’d buy from it again.” Attitudes are hard to change, so a business usually does better to fit its offer to existing attitudes than to fight them.' },
+    { p: 'A belief is a descriptive thought about something: “Lantern’s beans are roasted in small batches.” An <g>attitude</g> is a lasting evaluation of an object or idea, with the feelings and tendency to act that go with it: “I like Lantern and I’d buy from it again.” Attitudes are hard to change, so a business usually does better to fit its offer to existing attitudes than to fight them.' },
     { p: 'When an attitude must change, the weighted-attribute model shows three routes. Change a <i>belief</i> about your own offer (raise a score, for example by letting people taste the coffee). Change the <i>importance</i> buyers attach to an attribute (raise the weight of freshness by explaining why roast dates matter). Or add an <i>attribute</i> buyers hadn’t considered (traceable farms). A fourth route, changing beliefs about competitors, is risky and must rest on claims that are true and fair.' },
 
     { h: 'Word of mouth and reference groups at work' },

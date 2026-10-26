@@ -3,7 +3,7 @@
 // recompute them. New and fictional here: the screener, the discussion guide, the codebook's wording and which theme the
 // second coder chose for the two quotations the coders disagreed on (B4’s free can and A7’s compostable bags). Harborview
 // Hotel is B01's fictional hotel; the other businesses are fictional.
-import { FOCUS_GROUPS, DEFAULT_PLAN, CHANNELS, CLIENT_INTERVIEWS } from './case.js?v=15';
+import { FOCUS_GROUPS, DEFAULT_PLAN, CHANNELS, CLIENT_INTERVIEWS } from './case.js?v=16';
 
 const FG = FOCUS_GROUPS;
 const [GA, GB] = FG.groups;

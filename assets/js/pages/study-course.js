@@ -1,9 +1,9 @@
 // study-course.js — a course's overview page: where you are, what's next, and each lesson's and test's status.
-import { initSite } from '../core/site.js?v=15';
-import { $, $$, h } from '../core/dom.js?v=15';
-import * as P from '../study/progress.js?v=15';
-import { initOutline, paintOutline, pct, scrollersFocusable } from '../study/common.js?v=15';
-import { MAP } from '../data/study/map.js?v=15';
+import { initSite } from '../core/site.js?v=16';
+import { $, $$, h } from '../core/dom.js?v=16';
+import * as P from '../study/progress.js?v=16';
+import { initOutline, paintOutline, pct, scrollersFocusable } from '../study/common.js?v=16';
+import { MAP } from '../data/study/map.js?v=16';
 
 initSite();
 scrollersFocusable();

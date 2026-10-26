@@ -3,8 +3,8 @@
 // prints them and `checks` recomputes each one from the imports. Thornwick Bakery and Hatherley Print Studio are fictional
 // and used only in this lesson. The indirect method itself, the sign rules and the roll-forward of balance sheet accounts
 // are taught in f02/indirect-method; this lesson builds on them rather than repeating them.
-import { FACTS as F, LEDGER, DERIVED as D, STATEMENTS as S, ADJUSTMENTS } from './case.js?v=15';
-import { ANA_PLAN } from '../f04/case.js?v=15';
+import { FACTS as F, LEDGER, DERIVED as D, STATEMENTS as S, ADJUSTMENTS } from './case.js?v=16';
+import { ANA_PLAN } from '../f04/case.js?v=16';
 
 const bal = (n) => LEDGER[n]?.balance || 0;
 const adj = (id) => ADJUSTMENTS.find((e) => e.id === id);

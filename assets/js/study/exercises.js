@@ -6,10 +6,10 @@
 //   renderQuiz      a form: answer everything, submit once, then marks, feedback, solutions and a score
 //                   (knowledge checks, module tests, the diagnostic and the final).
 // Prompts, options, feedback and solutions are authored HTML from the course files (trusted, never user input).
-import { h, s } from '../core/dom.js?v=15';
-import { verdict } from '../core/ui.js?v=15';
-import { mulberry32 } from '../core/rng.js?v=15';
-import { xl } from './xl.js?v=15';
+import { h, s } from '../core/dom.js?v=16';
+import { verdict } from '../core/ui.js?v=16';
+import { mulberry32 } from '../core/rng.js?v=16';
+import { xl } from './xl.js?v=16';
 
 const LETTERS = 'ABCDEFGHIJ';
 const KIND = { conceptual: 'Concept', numerical: 'Calculation', applied: 'Application' };
@@ -555,12 +555,12 @@ export async function loadCharts(items) {
   const walk = (x) => { if (x.type === 'journal' && x.chart) need.add(x.chart); if (x.type === 'formula') formulas = true; (x.steps || []).forEach(walk); };
   items.forEach(walk);
   if (formulas && !SHEET) {
-    const [X, grid] = await Promise.all([import('../core/sheet.js?v=15'), import('./sheetgrid.js?v=15')]);
+    const [X, grid] = await Promise.all([import('../core/sheet.js?v=16'), import('./sheetgrid.js?v=16')]);
     SHEET = { X, grid };
   }
   const out = {};
   for (const ch of need) {
-    try { out[ch] = (await import(`../data/study/${ch.includes('/') ? ch : `${ch}/case`}.js?v=15`)).CHART; } catch { out[ch] = []; }   // 'f01' → f01/case.js; 'f01/brightwater' → that file
+    try { out[ch] = (await import(`../data/study/${ch.includes('/') ? ch : `${ch}/case`}.js?v=16`)).CHART; } catch { out[ch] = []; }   // 'f01' → f01/case.js; 'f01/brightwater' → that file
   }
   return out;
 }

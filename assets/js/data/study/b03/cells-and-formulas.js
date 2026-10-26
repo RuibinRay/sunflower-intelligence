@@ -2,7 +2,7 @@
 // cells-and-formulas.ex.js. Lantern's orders and prices come from case.js (ORDERS, PRODUCTS, DERIVED); the price-rise
 // sheet, the two-way price table and Riverbend Cycles are fictional and labelled. Real-world claims (Excel's behaviour,
 // Panko's spreadsheet-error research, the Reinhart–Rogoff spreadsheet) are cited in `references`.
-import { ORDERS, ORDER_COLUMNS, PRODUCTS, DERIVED as D } from './case.js?v=15';
+import { ORDERS, ORDER_COLUMNS, PRODUCTS, DERIVED as D } from './case.js?v=16';
 
 const col = (name) => ORDER_COLUMNS.indexOf(name);
 const order = (i) => Object.fromEntries(ORDER_COLUMNS.map((c, k) => [c, ORDERS[i][k]]));

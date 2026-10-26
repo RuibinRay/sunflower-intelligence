@@ -2,11 +2,11 @@
 // produces (B03), for data the lesson supplies, with a choice of X variables and, for one X, a scatter chart with the
 // fitted line. The statistics come from core/stats.js ols().
 //   { type: 'regression', title, y: { name, values }, xs: [{ name, values }], picked: [0], format?: { x, y }, note }
-import { h } from '../../core/dom.js?v=15';
-import { xl } from '../xl.js?v=15';
-import { ols } from '../../core/stats.js?v=15';
-import { scatter } from '../../core/charts.js?v=15';
-import * as F from '../../core/format.js?v=15';
+import { h } from '../../core/dom.js?v=16';
+import { xl } from '../xl.js?v=16';
+import { ols } from '../../core/stats.js?v=16';
+import { scatter } from '../../core/charts.js?v=16';
+import * as F from '../../core/format.js?v=16';
 
 /** Numbers as the ToolPak prints them, shortened: 6 significant figures (2 decimals from 10,000 up); tiny values in E notation (1.23E-08). */
 function num(v) {

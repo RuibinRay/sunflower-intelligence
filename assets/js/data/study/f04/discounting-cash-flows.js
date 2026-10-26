@@ -2,7 +2,7 @@
 // Uses COASTLINE_NOTE and DERIVED.noteValueMarch2027 (the note valued at the 8% market rate in March 2027) and
 // BREWER.price from case.js. The brewer's cash-flow estimates and Ana's 12% required return are new fictional facts,
 // introduced here. How the brewer is paid for (BREWER.loan, BREWER.vendor) is left to annuities and loan-amortisation.
-import { COASTLINE_NOTE as N, BREWER as B, DERIVED as D } from './case.js?v=15';
+import { COASTLINE_NOTE as N, BREWER as B, DERIVED as D } from './case.js?v=16';
 
 const q = N.marketRateMarch2027 / 100 / 4;                                   // 0.02 a quarter
 const noteFlows = [0, 150, 150, 150, 150 + N.principal];                    // quarters 0–4 after the 1 March 2027 payment

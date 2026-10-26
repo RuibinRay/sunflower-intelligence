@@ -2,8 +2,8 @@
 // live here). Lantern's needs indexes (module 2) and brand ratings (the map) come from case.js; Ana's screening rule is a
 // fictional rule of thumb. The swimming school, the car-share scheme, the oat drink, the museum and the other drafts are
 // fictional. Every num item's `check` recomputes its answer.
-import { BRANDS, NEEDS, DERIVED as D } from './case.js?v=15';
-import { propTest2 } from '../../../core/inference.js?v=15';
+import { BRANDS, NEEDS, DERIVED as D } from './case.js?v=16';
+import { propTest2 } from '../../../core/inference.js?v=16';
 
 const M = D.map.brandMeans, IX = D.segments.index, SEG = D.segments.names;
 const B = (name) => BRANDS.indexOf(name), S = (name) => SEG.indexOf(name), A = (key) => NEEDS.findIndex((n) => n.key === key);

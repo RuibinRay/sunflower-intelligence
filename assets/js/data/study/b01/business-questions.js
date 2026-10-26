@@ -1,5 +1,5 @@
 // business-questions.js — B01 · Business questions and measurable objectives. Content only; exercises are in business-questions.ex.js.
-import { SHOP, TARGETS } from './case.js?v=15';
+import { SHOP, TARGETS } from './case.js?v=16';
 
 const NESTED = '<svg viewBox="0 0 640 286" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="14">'
   + '<rect x="16" y="14" width="608" height="258" rx="8" style="fill:none;stroke:var(--rule-strong);stroke-width:2"/>'

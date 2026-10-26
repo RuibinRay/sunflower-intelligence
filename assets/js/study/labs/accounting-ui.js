@@ -2,10 +2,10 @@
 // statements), the lab page and the F01 project page: journals, T-accounts, trial balances, the four statements and
 // closing, the equation check, the transaction-analysis drill (mountDrill) and the record-and-post bench (mountRecorder).
 // Every number comes from the engine (core/accounting.js). Text people type goes in through value/textContent only.
-import { h, s as svg } from '../../core/dom.js?v=15';
-import { verdict } from '../../core/ui.js?v=15';
-import * as A from '../../core/accounting.js?v=15';
-import { CHART, MARCH, MARCH_ADJUSTMENTS } from '../../data/study/f01/case.js?v=15';
+import { h, s as svg } from '../../core/dom.js?v=16';
+import { verdict } from '../../core/ui.js?v=16';
+import * as A from '../../core/accounting.js?v=16';
+import { CHART, MARCH, MARCH_ADJUSTMENTS } from '../../data/study/f01/case.js?v=16';
 
 export { A, CHART, MARCH, MARCH_ADJUSTMENTS };
 
@@ -16,7 +16,7 @@ export const uid = (p = 'acc') => `${p}-${++seq}`;
 /** Lesson pages may not link lab-accounting.css themselves: add it once if it's missing. */
 export function ensureStyles() {
   if (typeof document === 'undefined' || document.querySelector('link[href*="lab-accounting.css"]')) return;
-  document.head.append(h('link', { rel: 'stylesheet', href: new URL('../../../css/lab-accounting.css?v=15', import.meta.url).href }));
+  document.head.append(h('link', { rel: 'stylesheet', href: new URL('../../../css/lab-accounting.css?v=16', import.meta.url).href }));
 }
 
 // ---------------------------------------------------------------- the case's transactions

@@ -1,6 +1,6 @@
 // receivables-and-payables.ex.js — F02 · Receivables and payables: widgets, practice and the knowledge check.
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
-import { CHART, YEAR, ADJUSTMENTS, AGING, FACTS } from './case.js?v=15';
+import { CHART, YEAR, ADJUSTMENTS, AGING, FACTS } from './case.js?v=16';
 
 /** $1,234 or $1,234.56 (cents only when needed); a real minus sign for negatives. */
 const money = (n) => {

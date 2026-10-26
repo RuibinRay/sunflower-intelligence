@@ -295,7 +295,7 @@ export const check = [
   },
   {
     id: 'm01-ib-k4', type: 'mc', kind: 'applied',
-    prompt: 'Office workers tell Lantern that its coffee tastes excellent, but they don’t think freshness matters much when choosing beans. Lantern roasts every week. Which action aims to change the importance buyers give an attribute, rather than their belief about Lantern?',
+    prompt: 'Office workers tell Lantern that its coffee tastes excellent, but they don’t think freshness matters much when choosing beans. Lantern’s beans arrive from its roaster every week, roasted that week. Which action aims to change the importance buyers give an attribute, rather than their belief about Lantern?',
     options: [
       'A side-by-side tasting of a week-old and a two-month-old roast.',
       'Free samples so that more office workers taste how good Lantern’s coffee is.',
@@ -308,7 +308,7 @@ export const check = [
       2: 'That adds a new attribute to the buyer’s evaluation, a third route.',
       3: 'A lower price changes Lantern’s score on price, not the importance of freshness.',
     },
-    why: 'If buyers learn that freshness changes flavour, freshness gains weight in their evaluation, and Lantern, which roasts weekly, gains from the higher weight.',
+    why: 'If buyers learn that freshness changes flavour, freshness gains weight in their evaluation, and Lantern, whose beans arrive within a week of roasting, gains from the higher weight.',
     solution: 'The weighted-attribute model gives three routes: change beliefs (scores), change importance (weights) or add an attribute. The side-by-side tasting raises the weight of freshness; samples and price change scores; farm information adds an attribute.',
   },
   {

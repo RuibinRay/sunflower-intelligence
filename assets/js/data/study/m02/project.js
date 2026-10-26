@@ -2,7 +2,7 @@
 // Marketing Mix Simulator. Every market figure comes from market.js (through mixsim.js, which re-exports it).
 // Questions never depend on the student's own choices: they use market-file calculations, or simulator estimates
 // for fixed plans (the default plan and named variations), which `verify` recomputes with the engine.
-import * as X from '../../../core/mixsim.js?v=15';
+import * as X from '../../../core/mixsim.js?v=16';
 
 const { CATEGORY, TIERS, CHANNELS, LANTERN, DEFAULT_PLAN: D } = X;
 const TIER = Object.fromEntries(TIERS.map((t) => [t.id, t]));
