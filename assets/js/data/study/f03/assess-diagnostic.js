@@ -79,9 +79,8 @@ export const items = [
     wrong: [
       { value: 80, say: 'That compares six months with twelve. Annualise 2026 first: × 12 ÷ 6.' },
       { value: -11.1, say: `Divide the change by the annualised 2026 figure (${usd(AQ.rev26 * 12 / AQ.months26)}), not by 2027’s revenue.` },
-      { value: -55, say: 'That annualises 2027 as well. 2027 is already a full year; only the six-month period is scaled.' },
     ],
-    solution: `Annualised 2026: ${usd(AQ.rev26)} × 12 ÷ ${AQ.months26} = ${usd(AQ.rev26 * 12 / AQ.months26)}. Growth: ${usd(AQ.rev27)} ÷ ${usd(AQ.rev26 * 12 / AQ.months26)} − 1 = ${pc(aqChange)}, against +80.0% unadjusted. Annualising assumes July to December are typical months; for an attraction whose summer holidays fall in those months they are not, so the annualised base is probably too high and the true change somewhere between the two figures.`,
+    solution: `Annualised 2026: ${usd(AQ.rev26)} × 12 ÷ ${AQ.months26} = ${usd(AQ.rev26 * 12 / AQ.months26)}. Growth: ${usd(AQ.rev27)} ÷ ${usd(AQ.rev26 * 12 / AQ.months26)} − 1 = ${pc(aqChange)}, against +80.0% unadjusted. Annualising assumes July to December are typical months. Thrushcombe’s busiest weeks are the summer holidays, which fall inside them, so the annualised base is probably too high and the true change somewhere between the two figures.`,
   },
   {
     id: 'f03-dg-2', lesson: 'common-size-statements', type: 'num', kind: 'applied',
