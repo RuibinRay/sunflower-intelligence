@@ -42,7 +42,7 @@ export const items = [
     answer: 0.39, check: () => (P27.currentAssets - b27('Line of Credit')) / (P27.currentLiabilities - b27('Line of Credit')), unit: '', places: 2, tol: 0.005,
     wrong: [
       { value: 0.52, say: 'Collecting the contract asset leaves current assets unchanged, but repaying the line takes $24,000 off both totals, and a ratio below 1 then falls.' },
-      { value: 0.73, say: 'Repaying the line uses cash: current assets fall by $24,000 as well as current liabilities.' },
+      { value: 0.65, say: 'Repaying the line uses cash: current assets fall by $24,000 as well as current liabilities.' },
       { value: 0.25, say: 'The $30,840 does not leave current assets: it turns from a contract asset into cash.' },
     ],
     solution: 'Collecting the $30,840 turns a contract asset into cash: current assets stay at 59,104. Repaying the line takes 24,000 off both totals: 35,104 ÷ 90,537 = 0.39. The quick and cash ratios would improve, but the current ratio falls, because it was below 1 to begin with.',
@@ -149,7 +149,7 @@ export const items = [
     feedback: {
       1: 'Card settlement is a small effect; the large one is dividing by sales that never became receivables.',
       2: 'Receivables are carried at the invoiced amount, so the matching flow is sales on credit, not cost.',
-      3: 'Averages are the better divisor for a flow earned over the year; the problem is the numerator.',
+      3: 'Averages are the better divisor for a flow earned over the year; the problem is the flow you divide by.',
     },
     solution: 'Only the invoiced office sales create receivables. Dividing those receivables by all revenue, mostly paid at once, makes collection look almost instant. Use the invoiced sales, or say that the figure understates the days.',
   },

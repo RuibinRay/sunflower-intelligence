@@ -138,7 +138,8 @@ export const independent = [
     wrong: [
       { value: 0.78, say: 'That is the current ratio. The quick ratio leaves out spare parts, fuel and prepaid expenses.' },
       { value: 0.85, say: 'Tickets sold in advance are still current liabilities in the standard ratio. You can discuss them separately, but keep the standard ratio standard.' },
-      { value: 0.42, say: 'Short-term investments are quick assets: include the $85 million.' },
+      { value: 0.35, say: 'Short-term investments are quick assets: include the $85 million.' },
+      { value: 0.42, say: 'That is the cash ratio: it leaves out receivables. The quick ratio includes the $47 million owed by customers.' },
     ],
     solution: 'Quick assets = 140 + 85 + 47 = $272 million. Quick ratio = 272 ÷ 530 = 0.51. The $210 million of advance ticket sales is settled by flying passengers, so the airline is less stretched than 0.51 suggests, but that is an interpretation, not a change to the ratio.',
   },
