@@ -162,6 +162,10 @@ export function cashQuality(p, prev = null) {
 /** Altman's Z-scores. variant 'z' (public manufacturers, market value of equity), 'zprime' (private firms, book
  *  equity), 'zdouble' (non-manufacturers and private firms, no sales term). Ratios: X1 working capital ÷ total
  *  assets, X2 retained earnings ÷ total assets, X3 EBIT ÷ total assets, X4 equity ÷ total liabilities, X5 sales ÷ total assets. */
+// Sources: coefficients and the Z′ zones (1.23–2.90) from Altman (2000), "Predicting financial distress of companies:
+// revisiting the Z-score and ZETA models" (NYU Stern working paper); Z's 1.81 lower bound from the same paper and 2.99
+// from Altman's own slides (Hofstra 2017, LSE 2019: "1.8 < Z < 2.99 grey"); Z″'s zones are Altman's 4.35 and 5.85 for
+// the emerging-market form with its +3.25 constant (Hofstra 2017, slide 27), less 3.25.
 export const ALTMAN = {
   z: { w: [1.2, 1.4, 3.3, 0.6, 1.0], zones: [1.81, 2.99], equity: 'marketEquity', label: 'Z (1968): public manufacturers' },
   zprime: { w: [0.717, 0.847, 3.107, 0.42, 0.998], zones: [1.23, 2.9], equity: 'equity', label: 'Z′: private manufacturers' },

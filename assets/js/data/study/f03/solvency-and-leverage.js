@@ -244,7 +244,7 @@ export default {
   ],
 
   demo: [
-    { widget: 'solv-ratios', intro: 'Lantern’s two year ends beside Starbucks and the fictional Harbourline. Tick “Count operating lease liabilities as debt” and watch Lantern’s 2027 debt to equity and net debt to EBITDA jump; then tick the lease adjustment as well, so that EBITDA and interest are restated on the same basis, and see the ratios settle at their consistent values. Starbucks’ debt to equity shows why negative equity breaks the ratio.' },
+    { widget: 'solv-ratios', intro: 'Lantern’s two year ends beside Starbucks and the fictional Harbourline. Tick “Count operating lease liabilities as debt”: Lantern’s 2027 debt to equity rises to 3.80, and because the widget restates EBIT, interest and EBITDA on the same basis, coverage falls to 3.14 and net debt to EBITDA rises to 2.51 (not the mismatched 4.41). Starbucks’ debt to equity shows why negative equity breaks the ratio.' },
     { widget: 'solv-equity', intro: 'Change the balance sheet and watch the leverage ratios. Lower total assets until equity approaches zero: liabilities to equity and the equity multiplier explode, then become meaningless below zero, while the debt ratio keeps telling a sensible story.' },
   ],
 

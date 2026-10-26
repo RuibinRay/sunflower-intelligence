@@ -63,6 +63,7 @@ export const RATIOS = {
   accrualsRatio: { group: 'cash', label: 'Accruals ratio', fmt: 'pct', f: (c) => c.Q.accrualsRatio, how: (c) => `(net income − CFO) ÷ ${c.bTA} total assets = (${n0(c.p.netIncome)} − ${n0(c.p.cfo)}) ÷ ${n0(c.avg('totalAssets'))}` },
   freeCashFlow: { group: 'cash', label: 'Free cash flow', fmt: 'usd', f: (c) => c.Q.freeCashFlow, how: (c) => `CFO − capital expenditure = ${n0(c.p.cfo)} − ${n0(c.p.capex)}` },
   zdouble: { group: 'altman', label: 'Altman Z″', fmt: 'z', f: (c) => R.altman(c.p, 'zdouble').score, how: (c) => { const a = R.altman(c.p, 'zdouble'); return a.x[0] == null ? '' : `6.56 × ${a.x[0].toFixed(3)} + 3.26 × ${a.x[1].toFixed(3)} + 6.72 × ${a.x[2].toFixed(3)} + 1.05 × ${a.x[3].toFixed(3)} (zone: ${a.zone})`; } },
+  z: { group: 'altman', optIn: true, label: 'Altman Z (market value of equity)', fmt: 'z', f: (c) => R.altman(c.p, 'z').score, how: (c) => { const a = R.altman(c.p, 'z'); return a.x[0] == null ? '' : `1.2 × ${a.x[0].toFixed(3)} + 1.4 × ${a.x[1].toFixed(3)} + 3.3 × ${a.x[2].toFixed(3)} + 0.6 × ${a.x[3].toFixed(3)} + 1.0 × ${a.x[4].toFixed(3)} (zone: ${a.zone})`; } },
   zprime: { group: 'altman', label: 'Altman Z′', fmt: 'z', f: (c) => R.altman(c.p, 'zprime').score, how: (c) => { const a = R.altman(c.p, 'zprime'); return a.x[0] == null ? '' : `0.717 × ${a.x[0].toFixed(3)} + 0.847 × ${a.x[1].toFixed(3)} + 3.107 × ${a.x[2].toFixed(3)} + 0.420 × ${a.x[3].toFixed(3)} + 0.998 × ${a.x[4].toFixed(3)} (zone: ${a.zone})`; } },
 };
 export const GROUPS = {
@@ -102,7 +103,7 @@ const applyDelta = (data, delta) => { const out = { ...data }; for (const [k, v]
 
 export function mount(el, cfg, ctx) {
   const base = `ra-${ctx.id}`;
-  const keys = cfg.ratios || Object.keys(RATIOS).filter((k) => (cfg.groups || ['liquidity', 'solvency', 'efficiency', 'profitability']).includes(RATIOS[k].group));
+  const keys = cfg.ratios || Object.keys(RATIOS).filter((k) => !RATIOS[k].optIn && (cfg.groups || ['liquidity', 'solvency', 'efficiency', 'profitability']).includes(RATIOS[k].group));   // opt-in ratios (Z, which needs a market value) only when listed in `ratios`
   const st = { average: true, leases: false, annualise: false, creditSales: false, ...(cfg.defaults || {}), on: new Set(), sel: cfg.select && keys.includes(cfg.select) ? cfg.select : keys[0], col: 0 };
   const check = (id, label, on, set) => {
     const inp = h('input', { type: 'checkbox', id, ...(on ? { checked: '' } : {}) });
@@ -113,9 +114,10 @@ export function mount(el, cfg, ctx) {
     ...(cfg.toggles || []).map((t) => check(`${base}-${t}`, TOGGLES[t] || t, st[t], (v) => { st[t] = v; })),
     ...(cfg.adjust || []).map((a, i) => check(`${base}-adj${i}`, a.label, false, (v) => { v ? st.on.add(i) : st.on.delete(i); })));
   const table = h('div', { class: 'table-scroll', tabindex: '0', role: 'region', 'aria-label': 'Ratios by period' });
+  const adjNotes = h('div', { 'aria-live': 'polite' });
   const how = h('div', { class: 'cv-out', 'aria-live': 'polite' });
   el.classList.add('cv-widget');
-  el.append(...[cfg.title ? h('p', { class: 'fx-title' }, cfg.title) : null, toggles.childNodes.length ? toggles : null, table, how,
+  el.append(...[cfg.title ? h('p', { class: 'fx-title' }, cfg.title) : null, toggles.childNodes.length ? toggles : null, adjNotes, table, how,
     cfg.note ? (() => { const p = h('p', { class: 'fx-note' }); p.innerHTML = xl(cfg.note); return p; })() : null].filter(Boolean));
 
   function columns() {
@@ -124,7 +126,7 @@ export function mount(el, cfg, ctx) {
       for (const j of st.on) if ((cfg.adjust[j].period ?? cfg.periods.length - 1) === i) data = applyDelta(data, cfg.adjust[j].delta);
       return { label: per.label, data };
     });
-    const cols = periods.map((per, i) => ({ label: per.label, c: compute(per.data, i > 0 && st.average ? periods[i - 1].data : null, st) }));
+    const cols = periods.map((per, i) => ({ label: st.annualise && (per.data.months ?? 12) !== 12 ? `${per.label}, annualised` : per.label, c: compute(per.data, i > 0 && st.average ? periods[i - 1].data : null, st) }));
     for (const peer of cfg.peers || []) cols.push({ label: peer.label, peer: true, c: compute(peer.data, st.average ? peer.prev || null : null, st) });
     return cols;
   }
@@ -143,11 +145,13 @@ export function mount(el, cfg, ctx) {
       rows.push(h('tr', { class: st.sel === k ? 'is-selected' : '' }, h('th', { scope: 'row' }, pick),
         ...cols.map((c) => { const v = r.f(c.c); return h('td', { class: 'num' }, v == null || !Number.isFinite(v) ? '—' : FMT[r.fmt](v)); })));
     }
+    const notes = [...st.on].map((j) => cfg.adjust[j]).filter((a) => a.note);
+    adjNotes.replaceChildren(...notes.map((a) => { const p = h('p', { class: 'fx-note' }); p.innerHTML = xl(`<b>${a.label}.</b> ${a.note}`); return p; }));
     table.replaceChildren(h('table', { class: 'data-table ra-table' }, h('caption', { class: 'fx-cap' }, 'Pick a ratio to see how it is worked out.'), thead, h('tbody', {}, ...rows)));
     const r = RATIOS[st.sel];
     how.replaceChildren(h('p', { class: 'fx-note' }, h('b', {}, r.label)), h('ul', {}, ...cols.map((c) => {
       const v = r.f(c.c);
-      const text = v == null || !Number.isFinite(v) ? 'not defined: an input is missing or a divisor is zero' : `${r.how(c.c)} = ${FMT[r.fmt](v)}${r.fmt === 'days' ? ' days' : ''}`;
+      const text = v == null || !Number.isFinite(v) ? 'not defined: an input is missing or a divisor is zero' : `${r.how(c.c)} = ${FMT[r.fmt](v)}${r.fmt === 'days' ? ' days' : ''}`.replace(/(^|[\s(×÷=+])-(?=\d)/g, '$1−');
       return h('li', {}, h('b', {}, `${c.label}: `), text);
     })));
   }

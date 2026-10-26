@@ -1,7 +1,7 @@
 // solvency-and-leverage.ex.js — F03 · Solvency and leverage: widgets, practice and the knowledge check.
 // Lantern’s figures come from case.js and the ratios from core/ratios.js; Starbucks FY2024 is from its Form 10-K;
 // Harbourline is F00’s fictional roaster; every other business is fictional and invented for the exercise.
-import { PERIODS, LEASE } from './case.js?v=18';
+import { PERIODS } from './case.js?v=18';
 import { HARBOURLINE as HB, HARBOURLINE_DETAIL as HBD } from '../f00/case.js?v=18';
 import * as R from '../../../core/ratios.js?v=18';
 
@@ -16,14 +16,14 @@ export const widgets = {
     title: 'Solvency and leverage: Lantern, Starbucks and Harbourline',
     periods: [{ label: '2026 (10 months)', data: P26 }, { label: '2027', data: P27 }],
     peers: [
-      { label: 'Starbucks FY2024 ($m)', data: { months: 12, totalAssets: 31339.3, totalLiabilities: 38780.9, equity: -7441.6, debt: 15568.4, leaseLiabilities: 10234.7, cash: 3286.2, shortTermInvestments: 257.0, ebit: 5408.8, da: 1592.4, interestExpense: 562.0 },
-        note: 'Debt is long-term debt and its current portion; cash excludes short-term investments in net debt here.' },
+      { label: 'Starbucks FY2024 ($m)', data: { months: 12, totalAssets: 31339.3, totalLiabilities: 38780.9, equity: -7441.6, debt: 15568.4, cash: 3286.2, shortTermInvestments: 257.0, ebit: 5408.8, da: 1592.4, interestExpense: 562.0 },
+        note: 'Debt is long-term debt and its current portion; cash excludes short-term investments in net debt here. Its lease liabilities (10,234.7) are left out because the lease cost needed to adjust its earnings is not in our verified figures, so the lease box doesn’t change it.' },
       { label: 'Harbourline ($m, fictional)', data: { months: 12, totalAssets: HBD.totalAssets, totalLiabilities: HBD.totalAssets - HBD.bookEquity, equity: HBD.bookEquity, debt: HB.debt, leaseLiabilities: 0, cash: HB.cash, ebit: HB.ebit, da: HB.da, interestExpense: HBD.interest } },
     ],
     ratios: ['debtRatio', 'liabilitiesToEquity', 'debtToEquity', 'debtToCapital', 'equityMultiplier', 'interestCoverage', 'netDebtToEbitda'],
     toggles: ['leases', 'annualise'],
     select: 'debtToEquity',
-    note: 'The consistent lease-adjusted view needs both boxes: leases in debt and the lease cost treated as financing. With only the first, net debt ÷ EBITDA mixes two bases (4.41 for Lantern in 2027). Annualising matters only for 2026’s net debt ÷ EBITDA; coverage divides two flows of the same period.',
+    note: 'Counting operating lease liabilities as debt also treats the lease cost as financing: its interest part ($11,124 for Lantern in 2027) moves below EBIT into interest expense, and the whole lease cost is added back to EBITDA, so debt and earnings stay on one basis. Annualising matters only for 2026’s net debt ÷ EBITDA; coverage divides two flows of the same period.',
   },
   'solv-equity': {
     type: 'formula',

@@ -1,33 +1,25 @@
 // efficiency-and-working-capital.js — F03 · Efficiency and working capital. Content only; exercises are in
 // efficiency-and-working-capital.ex.js.
-// Lantern’s figures come from case.js (PERIODS, COMPARATIVE, FACTS), F02’s facts for 2026’s purchases and invoiced
-// catering, and the ratios from core/ratios.js. Conventions in this lesson (stated in the text):
-//  - receivables days use credit sales BILLED to receivables: invoiced catering (2026 $59,920; 2027 $85,880). PERIODS’
-//    creditSales is all catering revenue, which also contains revenue that never passed through receivables (the law
-//    firm’s $30,840 in the contract asset; events paid by deposit). The lesson shows both and explains the mismatch.
-//  - inventory turnover uses cost of goods sold (goods only); Lantern’s cost of sales also holds cost of services.
-//  - payables days use purchases on account (stock, supplies and unpaid utility bills), as core/ratios.js does when
-//    `purchases` is given.
+// Lantern’s figures come from case.js (PERIODS, COMPARATIVE, FACTS) and the ratios from core/ratios.js. PERIODS carries
+// the matched flows: creditSales (invoiced catering, the only sales through receivables), cogsGoods (cost of goods sold,
+// used for inventory turnover) and purchases (on account, used for payables days). All catering revenue and total
+// revenue appear only as the classic slips for DSO; cost of sales including services as the slip for DIO.
 // 2026 uses closing balances and 304.17 days; 2027 average balances and 365 days. Amazon 2013–2014 figures are from
 // its 10-Ks (EDGAR XBRL R pages).
 import { PERIODS, COMPARATIVE, FACTS } from './case.js?v=18';
-import { FACTS as F02 } from '../f02/case.js?v=18';
 import * as R from '../../../core/ratios.js?v=18';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const inc = (label) => COMPARATIVE.income.find((r) => r[0] === label);
-const COGS26 = inc('Cost of Goods Sold')[1], COGS27 = inc('Cost of Goods Sold')[2];
-const PUR26 = F02.inventory.purchases + F02.supplies.bought + F02.utilities.unpaid;           // 70,430
-const PUR27 = FACTS.inventory.purchases + FACTS.supplies.bought + FACTS.utilities.unpaid;     // 187,780
-const INV26 = F02.catering.invoiced, INV27 = FACTS.catering.invoiced;                          // 59,920; 85,880
-const E26d = { ...P26, cogs: COGS26, purchases: PUR26, revenue: INV26 };
-const E27d = { ...P27, cogs: COGS27, purchases: PUR27, revenue: INV27 };
-const E26 = R.efficiency(E26d), E27 = R.efficiency(E27d, E26d);
+const COGS26 = P26.cogsGoods, COGS27 = P27.cogsGoods;                                        // 52,800; 163,125
+const PUR26 = P26.purchases, PUR27 = P27.purchases;                                            // 70,430; 187,780
+const INV26 = P26.creditSales, INV27 = P27.creditSales;                                        // 59,920; 85,880 invoiced
+const E26 = R.efficiency({ ...P26, revenue: INV26 }), E27 = R.efficiency({ ...P27, revenue: INV27 }, P26);
 const T26 = R.efficiency(P26), T27 = R.efficiency(P27, P26);                                   // turnovers on revenue
-const conv27 = R.efficiency({ ...P27, revenue: P27.creditSales }, P26);                        // all catering revenue
-const conv26 = R.efficiency({ ...P26, revenue: P26.creditSales });
+const cateringRev27 = inc('Catering Revenue')[2];                                             // 118,360: the slip
+const conv27 = R.efficiency({ ...P27, revenue: cateringRev27 }, P26);                          // DSO on all catering revenue
 const total27 = R.efficiency(P27, P26);                                                        // total revenue (the slip)
-const cos27 = R.efficiency({ ...P27 }, P26);                                                   // cost of sales incl. services
+const cos27 = R.efficiency({ ...P27, cogsGoods: undefined }, { ...P26, cogsGoods: undefined }); // cost of sales incl. services (the slip)
 const avgAR = (P26.receivables + P27.receivables) / 2;
 const withCA = { ar: (P26.receivables + P27.receivables + P27.contractAsset) / 2, sales: INV27 + P27.contractAsset };
 const dsoCA = withCA.ar / withCA.sales * 365;
@@ -290,10 +282,11 @@ export default {
     { what: 'Average assets without ROU', value: (P26.totalAssets + P27.totalAssets - P27.rightOfUse) / 2, shown: 124090 },
     { what: 'Asset turnover without ROU', value: atExROU, shown: 4.66 },
     // receivables
-    { what: 'Catering revenue 2027', value: P27.creditSales, shown: 118360 },
+    { what: 'Catering revenue 2027', value: cateringRev27, shown: 118360 },
     { what: 'Law firm revenue', value: P27.contractAsset, shown: 30840 },
     { what: 'Deposits earned', value: FACTS.catering.depositsEarned, shown: 1640 },
     { what: 'Invoiced 2027', value: INV27, shown: 85880 },
+    { what: 'Invoiced 2027 (facts)', value: FACTS.catering.invoiced, shown: 85880 },
     { what: 'Catering = parts', value: INV27 + P27.contractAsset + FACTS.catering.depositsEarned, shown: 118360 },
     { what: 'Invoiced 2026', value: INV26, shown: 59920 },
     { what: 'Receivables 2026', value: P26.receivables, shown: 6796 },
@@ -307,7 +300,6 @@ export default {
     { what: 'Gross receivables 2027', value: COMPARATIVE.balance.find((r) => r[0] === 'Accounts Receivable')[2], shown: 11460 },
     { what: 'Receivables over 30 days', value: 2100 + 960, shown: 3060 },
     { what: 'Days in ten months', value: R.days(P26), shown: 304.17, tol: 0.005 },
-    { what: 'DSO 2026 on all catering (course creditSales)', value: conv26.dso, shown: 33.2, tol: 0.05 },
     // contract asset
     { what: 'Contract asset days of revenue', value: caDaysRev, shown: 19.5, tol: 0.05 },
     { what: 'Contract asset days of the fee', value: caDaysFee, shown: 274, tol: 0.5 },
@@ -315,6 +307,7 @@ export default {
     { what: 'Law firm fee', value: fee, shown: 41120 },
     // inventory
     { what: 'Cost of sales 2027', value: P27.cogs, shown: 224205 },
+    { what: 'COGS = PERIODS cogsGoods = statement line', value: inc('Cost of Goods Sold')[2], shown: COGS27 },
     { what: 'Cost of services 2027', value: inc('Cost of Services')[2], shown: 61080 },
     { what: 'COGS 2027', value: COGS27, shown: 163125 },
     { what: 'COGS 2026', value: COGS26, shown: 52800 },
@@ -328,6 +321,7 @@ export default {
     { what: 'DIO 2026 with 365 days', value: P26.inventory / COGS26 * 365, shown: 40.1, tol: 0.05 },
     // payables
     { what: 'Purchases 2027', value: PUR27, shown: 187780 },
+    { what: 'Purchases 2027 by parts', value: FACTS.inventory.purchases + FACTS.supplies.bought + FACTS.utilities.unpaid, shown: 187780 },
     { what: 'Stock purchases 2027', value: FACTS.inventory.purchases, shown: 166800 },
     { what: 'Supplies 2027', value: FACTS.supplies.bought, shown: 19800 },
     { what: 'Utilities unpaid 2027', value: FACTS.utilities.unpaid, shown: 1180 },

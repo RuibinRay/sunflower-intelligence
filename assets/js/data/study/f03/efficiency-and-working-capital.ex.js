@@ -1,15 +1,11 @@
 // efficiency-and-working-capital.ex.js — F03 · Efficiency and working capital: widgets, practice and the knowledge check.
-// Lantern’s figures come from case.js (and F02’s facts for 2026); the ratios from core/ratios.js. Lantern’s widget data
-// use the lesson’s conventions: cost of goods sold (not cost of services), purchases on account, and credit sales =
-// invoiced catering. Amazon 2013–2014 is from its 10-Ks; every other business is fictional.
-import { PERIODS, COMPARATIVE, FACTS } from './case.js?v=18';
-import { FACTS as F02 } from '../f02/case.js?v=18';
+// Lantern’s figures come from case.js PERIODS, whose creditSales (invoiced catering), cogsGoods and purchases are the
+// matched flows; the ratios from core/ratios.js. Amazon 2013–2014 is from its 10-Ks; every other business is fictional.
+import { PERIODS } from './case.js?v=18';
 import * as R from '../../../core/ratios.js?v=18';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
-const inc = (label) => COMPARATIVE.income.find((r) => r[0] === label);
-const D26 = { ...P26, cogs: inc('Cost of Goods Sold')[1], purchases: F02.inventory.purchases + F02.supplies.bought + F02.utilities.unpaid, creditSales: F02.catering.invoiced };
-const D27 = { ...P27, cogs: inc('Cost of Goods Sold')[2], purchases: FACTS.inventory.purchases + FACTS.supplies.bought + FACTS.utilities.unpaid, creditSales: FACTS.catering.invoiced };
+const D26 = P26, D27 = P27;   // PERIODS carries creditSales (invoiced catering), cogsGoods and purchases
 const E27 = R.efficiency({ ...D27, revenue: D27.creditSales }, D26);
 const money = (v) => `${v < 0 ? '−' : ''}$${Math.abs(Math.round(v)).toLocaleString('en-US')}`;
 const d1 = (v) => v.toFixed(1);
@@ -63,7 +59,7 @@ export const widgets = {
     intro: 'Starting values: Lantern’s 2027 invoiced catering, cost of goods sold, purchases on account and days.',
     inputs: [
       { id: 'sales', label: 'Credit sales a year', min: 0, max: 500000, step: 1000, value: D27.creditSales, fmt: 'money' },
-      { id: 'cogs', label: 'Cost of goods sold a year', min: 0, max: 500000, step: 1000, value: D27.cogs, fmt: 'money' },
+      { id: 'cogs', label: 'Cost of goods sold a year', min: 0, max: 500000, step: 1000, value: D27.cogsGoods, fmt: 'money' },
       { id: 'pur', label: 'Purchases on account a year', min: 0, max: 500000, step: 1000, value: D27.purchases, fmt: 'money' },
       { id: 'dso', label: 'Receivables days (DSO)', min: 0, max: 120, step: 0.5, value: Math.round(E27.dso * 2) / 2, fmt: 'num', unit: 'days' },
       { id: 'dio', label: 'Inventory days (DIO)', min: 0, max: 120, step: 0.5, value: Math.round(E27.dio * 2) / 2, fmt: 'num', unit: 'days' },

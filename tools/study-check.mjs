@@ -453,7 +453,7 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
     if (!per.length || !per.every((p) => p && typeof p.label === 'string' && p.data && typeof p.data === 'object')) r.err(`${w}: ratios needs periods [{ label, data }]`);
     const all = [...per, ...(wd.peers || [])];
     all.forEach((p, i) => { for (const [k, v] of Object.entries(p.data || {})) if (typeof v !== 'number' || !Number.isFinite(v)) r.err(`${w}: period ${i}'s ${k} must be a finite number`); });
-    const keys = wd.ratios || Object.keys(RW.RATIOS).filter((k) => (wd.groups || ['liquidity', 'solvency', 'efficiency', 'profitability']).includes(RW.RATIOS[k].group));
+    const keys = wd.ratios || Object.keys(RW.RATIOS).filter((k) => !RW.RATIOS[k].optIn && (wd.groups || ['liquidity', 'solvency', 'efficiency', 'profitability']).includes(RW.RATIOS[k].group));
     for (const k of wd.ratios || []) if (!RW.RATIOS[k]) r.err(`${w}: unknown ratio ${k} (one of ${Object.keys(RW.RATIOS).join(', ')})`);
     for (const g of wd.groups || []) if (!RW.GROUPS[g]) r.err(`${w}: unknown group ${g}`);
     for (const t of wd.toggles || []) if (!['average', 'leases', 'annualise', 'creditSales'].includes(t)) r.err(`${w}: unknown toggle ${t}`);
