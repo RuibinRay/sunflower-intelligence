@@ -205,9 +205,9 @@ export const independent = [
     prompt: 'In Ana’s year matrix, footfall and sales correlate at 0.89 over both cafés pooled, but at 0.98 inside Harbourside and 0.97 inside Millbrook. What is the best explanation?',
     options: [
       'Millbrook has more customers but smaller tickets, so pooling blurs two tight lines into one looser cloud.',
-      'The pooled correlation uses 612 days, so its estimate is more precise than either café’s estimate.',
+      'The pooled correlation uses all 612 days, so its estimate is more precise than either café’s 306-day estimate.',
       'Footfall counts customers while sales are in dollars, so the units bring the pooled r down a little.',
-      'A correlation computed over more rows is always closer to zero, whatever the data happen to be.',
+      'A correlation worked out over more rows is always pulled closer to zero, whatever the data happen to show.',
     ],
     answer: 0,
     feedback: {
@@ -330,7 +330,7 @@ export const check = [
     id: 'b05-mat-k6', type: 'mc', kind: 'applied',
     prompt: 'Ana wants a small dashboard of the café measures that tell her most about a day. Footfall and transactions correlate at 0.98, and each correlates with sales, peak barista hours and waits at almost the same values. What should she do?',
     options: [
-      'Show one of the two, such as transactions, which the till records, and note that footfall adds little.',
+      'Show one, such as transactions from the till, and keep footfall as a check on it.',
       'Show both, because two strong correlations with sales are stronger evidence than one would be.',
       'Drop both, because measures that are so highly correlated must contain an error of some kind.',
       'Show footfall only, because a door counter is always more accurate than the till’s transaction count.',
