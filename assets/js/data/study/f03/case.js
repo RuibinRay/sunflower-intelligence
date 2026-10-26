@@ -316,14 +316,21 @@ const periodOf = (L, IS_, BS_, CF_, months, extra = {}) => {
     leaseLiabilities: b('Operating Lease Liabilities') + b('Current Portion of Operating Lease Liabilities'),
     equity: BS_.equityTotal, retainedEarnings: b('Retained Earnings') + (IS_.netIncome) - b('Dividends'),
     cfo: CF_.operating, capex: -CF_.investing, dividends: b('Dividends'),
-    creditSales: b('Catering Revenue'),          // only catering is sold on credit; café, shop and workshop sales are paid for at once
     ...extra,
   };
 };
 /** 2026 (ten months, F02) and 2027 (twelve months). */
 export const PERIODS = {
-  2026: periodOf(L26, IS26, BS26, F02.RESULTS.cashFlows, 10),
-  2027: periodOf(LEDGER, IS, BS, CF, 12),
+  // creditSales: catering invoiced on 30-day terms (the only sales that pass through receivables; deposits and the law
+  //   firm's unbilled fee don't). cogsGoods: the cost of the goods sold (inventory turnover), not cost of services.
+  // purchases: bought on account (stock, supplies, unpaid utilities), for payables days. leaseInterest and leaseCost:
+  //   the interest inside the operating lease cost and the whole cost, for lease-adjusted coverage and EBITDA.
+  2026: periodOf(L26, IS26, BS26, F02.RESULTS.cashFlows, 10, {
+    creditSales: F02.FACTS.catering.invoiced, cogsGoods: L26['Cost of Goods Sold'].balance,
+    purchases: F02.FACTS.inventory.purchases + F02.FACTS.supplies.bought + F02.FACTS.utilities.unpaid, leaseInterest: 0, leaseCost: 0 }),
+  2027: periodOf(LEDGER, IS, BS, CF, 12, {
+    creditSales: F.catering.invoiced, cogsGoods: LEDGER['Cost of Goods Sold'].balance,
+    purchases: F.inventory.purchases + F.supplies.bought + F.utilities.unpaid, leaseInterest: LEASE.interest2027, leaseCost: LEASE.cost2027 }),
 };
 
 // ---------------------------------------------------------------- comparative statements (rows: [label, 2026, 2027])

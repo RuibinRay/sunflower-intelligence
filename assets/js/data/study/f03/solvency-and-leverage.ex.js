@@ -179,9 +179,9 @@ export const independent = [
     prompt: 'A data provider lists Starbucks’ FY2024 debt-to-equity ratio as −2.09. What is the right way to read it?',
     options: [
       'Equity is negative, so the ratio has no meaning; use debt to EBITDA and coverage instead',
-      'Starbucks holds more cash than debt, so its leverage is negative',
-      'Starbucks has repaid all its debt, and the ratio shows the surplus',
-      'The ratio is low, so Starbucks has unusually little leverage for its size',
+      'Starbucks holds more cash and short-term investments than debt, so its net leverage is negative',
+      'Starbucks has repaid all its borrowings, and the negative figure shows the surplus cash it now holds instead',
+      'The ratio is low, so Starbucks carries unusually little leverage for a company of its size',
     ],
     answer: 0,
     feedback: {
@@ -209,7 +209,7 @@ export const check = [
     id: 'f03-solv-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Why does interest coverage use EBIT rather than net income?',
     options: [
-      'Interest is paid out of earnings before interest and tax, so those are the earnings available to cover it',
+      'Interest is paid before tax, out of earnings before interest',
       'EBIT is always larger than net income, which gives a more favourable ratio',
       'Net income excludes depreciation, so it overstates the cash available',
       'US GAAP requires EBIT to be shown on the income statement, while net income is optional',
@@ -264,7 +264,7 @@ export const check = [
     id: 'f03-solv-k5', type: 'mc', kind: 'applied',
     prompt: 'A lender’s term sheet for a fictional restaurant group says: “Net debt shall not exceed 3.0 × EBITDA. Debt includes lease liabilities.” It does not mention lease costs. The group’s operating lease cost is large. What should the group’s finance director ask for before signing?',
     options: [
-      'That EBITDA be defined before operating lease costs, so that debt and earnings are on the same basis',
+      'That EBITDA be defined before operating lease costs',
       'That the ratio be tested on the group’s balance sheet before the new loan is drawn',
       'That lease liabilities be counted at their undiscounted total, to be conservative',
       'That interest coverage replace the leverage test, since coverage ignores leases',

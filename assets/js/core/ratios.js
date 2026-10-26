@@ -7,7 +7,10 @@
 //   cash, shortTermInvestments, receivables (net), inventory, currentAssets, ppeNet, totalAssets,
 //   payables, currentLiabilities, totalLiabilities, debt (interest-bearing, current + noncurrent),
 //   leaseLiabilities (operating, current + noncurrent), equity, retainedEarnings, marketEquity,
-//   cfo, capex (a positive number: cash spent), dividends, purchases, months (length of the period, default 12)
+//   cfo, capex (a positive number: cash spent), dividends, purchases, months (length of the period, default 12),
+//   creditSales (sales on credit, for receivables days), cogsGoods (cost of the goods sold, for inventory days, when cost
+//   of sales also holds services), leaseInterest and leaseCost (operating leases: the interest inside the lease cost, and
+//   the whole cost), used when leases are counted as debt
 // Ratios that divide a flow by a stock use the average of the opening and closing stock when the prior period is
 // given (`prev`), and the closing stock otherwise; `basis` in each result says which.
 
@@ -65,16 +68,23 @@ export function liquidity(p) {
 /** Solvency (leverage and coverage). `withLeases` adds operating lease liabilities to debt. */
 export function solvency(p, { withLeases = false } = {}) {
   const debt = withLeases ? add(p.debt ?? null, p.leaseLiabilities ?? 0) : num(p.debt);
-  const ebitda = add(p.ebit ?? null, p.da ?? null);
+  // Counting leases as debt means treating the lease cost as interest plus amortisation, so earnings move too: EBIT
+  // rises by the lease interest, EBITDA by the whole lease cost, and interest by the lease interest. Without leaseCost
+  // and leaseInterest the earnings are left as reported.
+  const li = withLeases ? (num(p.leaseInterest) ?? 0) : 0, lc = withLeases ? (num(p.leaseCost) ?? 0) : 0;
+  const ebit = num(p.ebit) === null ? null : p.ebit + li;
+  const interest = num(p.interestExpense) === null ? null : p.interestExpense + li;
+  const ebitda = add(p.ebit ?? null, p.da ?? null) === null ? null : p.ebit + p.da + lc;
   return {
+    ebit, ebitda, interest,
     debt,
     debtRatio: div(p.totalLiabilities, p.totalAssets),
     liabilitiesToEquity: div(p.totalLiabilities, p.equity),
     debtToEquity: div(debt, p.equity),
     debtToCapital: div(debt, add(debt, p.equity ?? null)),
     equityMultiplier: div(p.totalAssets, p.equity),
-    interestCoverage: div(p.ebit, p.interestExpense),
-    ebitdaCoverage: div(ebitda, p.interestExpense),
+    interestCoverage: div(ebit, interest),
+    ebitdaCoverage: div(ebitda, interest),
     netDebt: sub(debt, p.cash),
     netDebtToEbitda: div(sub(debt, p.cash), ebitda),
   };
@@ -86,7 +96,7 @@ export function efficiency(p, prev = null) {
   const ar = avg(p, prev, 'receivables'), inv = avg(p, prev, 'inventory'), ap = avg(p, prev, 'payables');
   const ta = avg(p, prev, 'totalAssets'), ppe = avg(p, prev, 'ppeNet');
   const receivablesTurnover = div(p.revenue, ar);
-  const inventoryTurnover = div(p.cogs, inv);
+  const inventoryTurnover = div(num(p.cogsGoods) ?? p.cogs, inv);
   const payablesTurnover = div(num(p.purchases) ?? p.cogs, ap);
   const dso = div(d, receivablesTurnover), dio = div(d, inventoryTurnover), dpo = div(d, payablesTurnover);
   return {

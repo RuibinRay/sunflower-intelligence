@@ -36,12 +36,13 @@ export const RATIOS = {
   debtToEquity: { group: 'solvency', label: 'Debt to equity', fmt: 'x', f: (c) => c.S.debtToEquity, how: (c) => `${c.o.leases ? '(interest-bearing debt + lease liabilities)' : 'interest-bearing debt'} ÷ equity = ${n0(c.S.debt)} ÷ ${n0(c.p.equity)}` },
   debtToCapital: { group: 'solvency', label: 'Debt to capital', fmt: 'pct', f: (c) => c.S.debtToCapital, how: (c) => `debt ÷ (debt + equity) = ${n0(c.S.debt)} ÷ (${n0(c.S.debt)} + ${n0(c.p.equity)})` },
   equityMultiplier: { group: 'solvency', label: 'Equity multiplier (closing)', fmt: 'x', f: (c) => c.S.equityMultiplier, how: (c) => `total assets ÷ equity = ${n0(c.p.totalAssets)} ÷ ${n0(c.p.equity)}` },
-  interestCoverage: { group: 'solvency', label: 'Interest coverage (times interest earned)', fmt: 'x', f: (c) => c.S.interestCoverage, how: (c) => `EBIT ÷ interest expense = ${n0(c.p.ebit)} ÷ ${n0(c.p.interestExpense)}` },
-  netDebtToEbitda: { group: 'solvency', label: 'Net debt ÷ EBITDA', fmt: 'x', f: (c) => c.S.netDebtToEbitda, how: (c) => `(debt − cash) ÷ (EBIT + D&A) = (${n0(c.S.debt)} − ${n0(c.p.cash)}) ÷ (${n0(c.p.ebit)} + ${n0(c.p.da)})` },
+  interestCoverage: { group: 'solvency', label: 'Interest coverage (times interest earned)', fmt: 'x', f: (c) => c.S.interestCoverage, how: (c) => `${c.o.leases ? '(EBIT + lease interest) ÷ (interest expense + lease interest)' : 'EBIT ÷ interest expense'} = ${n0(c.S.ebit)} ÷ ${n0(c.S.interest)}` },
+  netDebtToEbitda: { group: 'solvency', label: 'Net debt ÷ EBITDA', fmt: 'x', f: (c) => c.S.netDebtToEbitda, how: (c) => `(debt − cash) ÷ ${c.o.leases ? '(EBIT + D&A + lease cost)' : '(EBIT + D&A)'} = (${n0(c.S.debt)} − ${n0(c.p.cash)}) ÷ ${n0(c.S.ebitda)}` },
   assetTurnover: { group: 'efficiency', label: 'Asset turnover', fmt: 'x', f: (c) => c.E.assetTurnover, how: (c) => `revenue ÷ ${c.bTA} total assets = ${n0(c.p.revenue)} ÷ ${n0(c.avg('totalAssets'))}` },
   receivablesTurnover: { group: 'efficiency', label: 'Receivables turnover', fmt: 'x', f: (c) => c.E.receivablesTurnover, how: (c) => `${c.o.creditSales ? 'credit sales' : 'revenue'} ÷ ${c.b('receivables')} receivables = ${n0(c.rev)} ÷ ${n0(c.avg('receivables'))}` },
   dso: { group: 'efficiency', label: 'Days sales outstanding (days)', fmt: 'days', f: (c) => c.E.dso, how: (c) => `days in the period ÷ receivables turnover = ${c.E.days.toFixed(1)} ÷ ${c.E.receivablesTurnover?.toFixed(2)}` },
-  inventoryTurnover: { group: 'efficiency', label: 'Inventory turnover', fmt: 'x', f: (c) => c.E.inventoryTurnover, how: (c) => `cost of sales ÷ ${c.b('inventory')} inventory = ${n0(c.p.cogs)} ÷ ${n0(c.avg('inventory'))}` },
+  fixedAssetTurnover: { group: 'efficiency', label: 'Fixed-asset turnover', fmt: 'x', f: (c) => c.E.fixedAssetTurnover, how: (c) => `revenue ÷ ${c.b('ppeNet')} property and equipment (net) = ${n0(c.p.revenue)} ÷ ${n0(c.avg('ppeNet'))}` },
+  inventoryTurnover: { group: 'efficiency', label: 'Inventory turnover', fmt: 'x', f: (c) => c.E.inventoryTurnover, how: (c) => `${c.p.cogsGoods != null ? 'cost of goods sold' : 'cost of sales'} ÷ ${c.b('inventory')} inventory = ${n0(c.p.cogsGoods ?? c.p.cogs)} ÷ ${n0(c.avg('inventory'))}` },
   dio: { group: 'efficiency', label: 'Days inventory outstanding (days)', fmt: 'days', f: (c) => c.E.dio, how: (c) => `days in the period ÷ inventory turnover = ${c.E.days.toFixed(1)} ÷ ${c.E.inventoryTurnover?.toFixed(2)}` },
   dpo: { group: 'efficiency', label: 'Days payables outstanding (days)', fmt: 'days', f: (c) => c.E.dpo, how: (c) => `days in the period ÷ (${c.p.purchases != null ? 'purchases' : 'cost of sales'} ÷ ${c.b('payables')} payables) = ${c.E.days.toFixed(1)} ÷ ${c.E.payablesTurnover?.toFixed(2)}` },
   cashConversionCycle: { group: 'efficiency', label: 'Cash conversion cycle (days)', fmt: 'days', f: (c) => c.E.cashConversionCycle, how: (c) => `DSO + DIO − DPO = ${c.E.dso?.toFixed(1)} + ${c.E.dio?.toFixed(1)} − ${c.E.dpo?.toFixed(1)}` },
@@ -74,16 +75,22 @@ const TOGGLES = {
   annualise: 'Annualise part-year flows (revenue, costs, cash flows)',
   creditSales: 'Receivables days on credit sales only',
 };
-const FLOWS = ['revenue', 'cogs', 'grossProfit', 'operatingIncome', 'ebit', 'interestExpense', 'pretax', 'tax', 'netIncome', 'da', 'cfo', 'capex', 'dividends', 'purchases', 'creditSales'];
+const FLOWS = ['revenue', 'cogs', 'cogsGoods', 'leaseInterest', 'leaseCost', 'grossProfit', 'operatingIncome', 'ebit', 'interestExpense', 'pretax', 'tax', 'netIncome', 'da', 'cfo', 'capex', 'dividends', 'purchases', 'creditSales'];
 
 /** One period's ratios under the chosen conventions (exported for the checker and tests). */
 export function compute(data, prevData, o = {}) {
   let p = { ...data };
   if (o.annualise && (p.months ?? 12) !== 12) { for (const k of FLOWS) if (typeof p[k] === 'number') p[k] = p[k] * 12 / p.months; p.months = 12; }
   const prev = o.average === false ? null : prevData;
-  const pR = o.creditSales && typeof p.creditSales === 'number' ? { ...p, revenue: p.creditSales } : p;
-  const c = { p, o, prev, rev: pR.revenue,
-    L: R.liquidity(p), S: R.solvency(p, { withLeases: !!o.leases }), E: R.efficiency(pR, prev),
+  // credit sales replace revenue only in receivables turnover and days (and so the cycles), not in asset turnover
+  const credit = o.creditSales && typeof p.creditSales === 'number';
+  const E = R.efficiency(p, prev);
+  if (credit) {
+    const EC = R.efficiency({ ...p, revenue: p.creditSales }, prev);
+    Object.assign(E, { receivablesTurnover: EC.receivablesTurnover, dso: EC.dso, operatingCycle: EC.operatingCycle, cashConversionCycle: EC.cashConversionCycle });
+  }
+  const c = { p, o, prev, rev: credit ? p.creditSales : p.revenue,
+    L: R.liquidity(p), S: R.solvency(p, { withLeases: !!o.leases }), E,
     P: R.profitability(p, prev), D: R.dupont(p, prev), Q: R.cashQuality(p, prev) };
   c.avg = (k) => R.avg(p, prev, k);
   c.b = (k) => (prev && typeof prev[k] === 'number' ? 'average' : 'closing');

@@ -364,6 +364,7 @@ export default {
     { text: 'U.S. Securities and Exchange Commission (2007). <i>Beginners’ Guide to Financial Statements</i>.', url: 'https://www.sec.gov/reportspubs/investor-publications/investorpubsbegfinstmtguide', checked: '2026-10-26' },
     { text: 'Starbucks Corporation (2024). Form 10-K for the fiscal year ended 29 September 2024: consolidated balance sheets (SEC EDGAR financial report R7).', url: 'https://www.sec.gov/Archives/edgar/data/829224/000082922424000057/R7.htm', checked: '2026-10-26' },
     { text: 'Starbucks Corporation (2024). Form 10-K for the fiscal year ended 29 September 2024: consolidated statements of cash flows (SEC EDGAR financial report R5).', url: 'https://www.sec.gov/Archives/edgar/data/829224/000082922424000057/R5.htm', checked: '2026-10-26' },
+    { text: 'IFRS Foundation. <i>IFRS 16 Leases</i> (standard summary page).', url: 'https://www.ifrs.org/issued-standards/list-of-standards/ifrs-16-leases/', checked: '2026-10-26' },
     { text: 'Deloitte. <i>Roadmap: Leases</i>, section 1.2, “Overview” (ASU 2016-02, ASC 842, effective dates). DART.', url: 'https://dart.deloitte.com/USDART/home/codification/broad-transactions/asc842-10/roadmap-leasing/chapter-1-overview/1-2-overview', checked: '2026-10-26' },
   ],
 

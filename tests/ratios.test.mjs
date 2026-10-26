@@ -47,5 +47,15 @@ truth('horizontal change and %', JSON.stringify(R.horizontal([['x', 80, 100]])[0
 truth('Z″ zones', R.altman({ currentAssets: 1, currentLiabilities: 1, totalAssets: 10, retainedEarnings: 0, ebit: 0, equity: 1, totalLiabilities: 1 }).zone === 'distress');
 truth('unknown Altman variant throws', (() => { try { R.altman(p, 'zzz'); return false; } catch { return true; } })());
 
+// leases as debt: EBIT gains the lease interest, EBITDA the whole lease cost, interest the lease interest
+{
+  const q = { ebit: 100, da: 50, interestExpense: 10, debt: 200, cash: 20, equity: 100, totalAssets: 500, totalLiabilities: 400, leaseLiabilities: 300, leaseInterest: 15, leaseCost: 60 };
+  const a = R.solvency(q, { withLeases: true }), b = R.solvency(q);
+  truth('lease-adjusted coverage', Math.abs(a.interestCoverage - 115 / 25) < 1e-12 && Math.abs(b.interestCoverage - 10) < 1e-12);
+  truth('lease-adjusted net debt / EBITDA', Math.abs(a.netDebtToEbitda - 480 / 210) < 1e-12 && Math.abs(b.netDebtToEbitda - 180 / 150) < 1e-12);
+  truth('leases as debt without lease cost leaves earnings as reported', Math.abs(R.solvency({ ...q, leaseCost: undefined, leaseInterest: undefined }, { withLeases: true }).netDebtToEbitda - 480 / 150) < 1e-12);
+  truth('inventory days on the cost of goods sold when given', Math.abs(R.efficiency({ cogs: 300, cogsGoods: 100, inventory: 10 }).dio - 36.5) < 1e-12);
+}
+
 console.log(`${checks - fails}/${checks} ratio checks passed`);
 if (fails) process.exit(1);

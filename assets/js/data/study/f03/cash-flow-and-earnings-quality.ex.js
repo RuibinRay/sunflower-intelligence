@@ -102,7 +102,7 @@ export const guided = [
     prompt: 'In Lantern’s 2027 reconciliation of net income ($22,431) to operating cash ($8,341), which single line does most to explain why operating cash is so much lower than profit?',
     options: [
       'The increase of $30,840 in the contract asset for the law firm’s catering',
-      'Depreciation of $19,800 on the cafés’ fit-out, machines, brewer and van',
+      'Depreciation of $19,800 charged in 2027 on the cafés’ fit-out, machines, brewer and van',
       'The increase of $3,902 in catering receivables, net of the allowance',
       'The $40,000 of lease payments for the Harbourside and Millbrook cafés',
     ],
@@ -226,7 +226,7 @@ export const check = [
     id: 'f03-cfq-k1', type: 'mc', kind: 'conceptual',
     prompt: 'A company’s cash from operations divided by its net income is 0.4 for the third year running, and it is not growing quickly. What is the best reading?',
     options: [
-      'Profit keeps running ahead of cash, so look for what is absorbing it: receivables, inventory, capitalised costs or estimates',
+      'Profit keeps running ahead of cash: find what is absorbing it',
       'The company is very profitable, because it needs little cash to earn its profit',
       'Its free cash flow must have been negative in each of the three years, because operating cash is below profit',
       'Its depreciation must be unusually high for its industry',

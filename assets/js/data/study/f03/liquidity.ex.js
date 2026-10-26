@@ -118,7 +118,7 @@ export const guided = [
   {
     id: 'f03-liq-g4', type: 'mc', kind: 'conceptual',
     prompt: 'At 31 December 2027 Lantern’s current ratio is 0.52. Suppose that on that day it had used $5,000 of cash to pay suppliers early. What would have happened to its current ratio?',
-    options: ['It would have fallen slightly', 'It would have risen slightly', 'It would not have changed', 'It would have risen above 1'],
+    options: ['It would have fallen slightly', 'It would have risen slightly towards 1', 'It would not have changed at all', 'It would have risen above 1'],
     answer: 0,
     hints: ['The payment takes $5,000 off both totals.', 'Try it: (59,104 − 5,000) ÷ (114,537 − 5,000).'],
     feedback: {
@@ -222,10 +222,10 @@ export const check = [
     id: 'f03-liq-k3', type: 'mc', kind: 'applied',
     prompt: 'An analyst sees that Starbucks’ current ratio was 0.75 at 29 September 2024. Which observation best explains why this need not signal a liquidity problem?',
     options: [
-      'Its operating cash flow of $6.1 billion would pay about two-thirds of its current liabilities in a year, and part of those liabilities is settled with coffee rather than cash',
-      'Its total assets are larger than its current liabilities, so it could sell stores to pay what it owes this year',
-      'A current ratio below 1 is required by accounting standards for companies with operating leases',
-      'Its shareholders’ equity is negative, which means the owners have already put in more than enough cash',
+      'Its yearly operating cash flow covers about two-thirds of its current liabilities',
+      'Its total assets exceed its current liabilities several times over, so it could sell stores to pay what falls due this year',
+      'Accounting standards require a current ratio below 1 for any company that recognises operating lease liabilities',
+      'Its shareholders’ equity is negative, which shows that the owners have already put in more cash than the business needs',
     ],
     answer: 0,
     feedback: {

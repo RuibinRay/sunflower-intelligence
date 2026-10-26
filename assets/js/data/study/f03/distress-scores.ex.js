@@ -88,7 +88,7 @@ export const guided = [
         wrong: [{ value: 3.22, say: 'You may have used the Z weights (1.2, 1.4, 3.3, 0.6). Z″ uses 6.56, 3.26, 6.72 and 1.05.' }],
         solution: 'X₂ = 0.239, X₃ = 0.403, X₄ = 0.826. Z″ = 2.11 + 0.78 + 2.71 + 0.87 = 6.47.' },
       { id: 'f03-z-g1c', type: 'mc', kind: 'conceptual', prompt: 'Which zone is that, and what is the main caution about it?',
-        options: ['Safe; but the EBIT covers only ten months, so the score understates earning power a little', 'Grey; the model cannot call it', 'Safe; and annualising would push it into the grey zone', 'Distress; the score is below 2.60'],
+        options: ['Safe, though ten months’ EBIT understates it a little', 'Grey: between the two cut-offs, so the model cannot call it', 'Safe; and annualising would push it into the grey zone', 'Distress; the score is below 2.60'],
         answer: 0,
         hints: ['Z″ zones: below 1.10 distress, above 2.60 safe.'],
         feedback: { 1: '6.47 is far above 2.60.', 2: 'Annualising raises EBIT, so the score would rise (to about 7.01), not fall.', 3: 'Below 2.60 is not distress: distress is below 1.10, and 6.47 is above both.' },
@@ -110,7 +110,7 @@ export const guided = [
   {
     id: 'f03-z-g3', type: 'mc', kind: 'conceptual',
     prompt: 'A privately owned chain of six hotels wants a loan. Which Altman model fits it best?',
-    options: ['Z″, because it is a non-manufacturer and private, and its asset turnover would distort the other models', 'Z, because it is the original and best-tested model', 'Z′, because the chain is private', 'None: Z-scores can only be used for listed companies'],
+    options: ['Z″: a private non-manufacturer, whose asset turnover would distort the others', 'Z, because it is the original model and has been tested on the most companies over the longest time', 'Z′, because the chain is private and has no share price', 'None: Z-scores can only be used for listed companies'],
     answer: 0,
     hints: ['Is a hotel a manufacturer?', 'Which model drops sales ÷ total assets?'],
     feedback: {
@@ -198,8 +198,8 @@ export const check = [
     id: 'f03-z-k1', type: 'mc', kind: 'conceptual',
     prompt: 'What does it mean for a firm to be in the grey zone of a Z-score model?',
     options: [
-      'Its score falls in the range where firms in Altman’s samples were misclassified, so the model cannot call it',
-      'It has a 50% probability of going bankrupt within two years',
+      'It lies where Altman’s samples were misclassified, so the model can’t call it',
+      'It has a 50% probability of going bankrupt within two years, as estimated by the model',
       'It has negative working capital but positive retained earnings',
       'It is a non-manufacturer, so only the grey-zone thresholds apply',
     ],
@@ -249,8 +249,8 @@ export const check = [
     id: 'f03-z-k5', type: 'mc', kind: 'applied',
     prompt: 'Coastline’s screening policy refers any borrower with Z″ below 1.10 to the credit committee. How should the loan officer present Lantern’s 0.24?',
     options: [
-      'Explain the drivers (negative working capital, the cafés’ fit-out, leases on the balance sheet, revenue due in March 2028) and recommend terms that match them',
-      'Recommend calling in the line of credit, because the score predicts bankruptcy within two years',
+      'Explain what drives the score and what it can’t see, and recommend terms that address those causes',
+      'Recommend calling in the line of credit, because the score predicts that Lantern will go bankrupt within two years',
       'Recompute the score with Z′, which gives a grey-zone result, and present that instead',
       'Ignore the score, because Z-scores were not designed for small private businesses',
     ],
