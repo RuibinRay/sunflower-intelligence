@@ -92,7 +92,7 @@ export default {
       ],
       note: 'Quartiles by the inclusive method (QUARTILE.INC). All figures fictional.',
     } },
-    { p: 'The table changes the reading of two of the three numbers. A current ratio of 0.52 is low for a café business, but the peer file shows that café businesses commonly run below 1: the median is 1.05 and a quarter of the peers are at 0.85 or below. Lantern is still the lowest of all ten, so its liquidity is weak even by its industry’s standards. Its operating margin of 5.7% sits between Q1 and the median: ordinary for a peer, not alarming. And its Z″ of 0.24 is below all but one peer, while the peer median of 2.4 is itself in Altman’s grey zone: lease-heavy café businesses score low on the model, which is worth knowing before reading too much into Lantern’s zone.' },
+    { p: 'The table changes the reading of two of the three numbers. A current ratio of 0.52 is low for a café business, but the peer file shows that café businesses commonly run below 1: the median is 1.05 and Q1 is 0.85. Lantern is still the lowest of all ten, so its liquidity is weak even by its industry’s standards. Its operating margin of 5.7% sits between Q1 and the median: ordinary for a peer, not alarming. And its Z″ of 0.24 is below all but one peer, while the peer median of 2.4 is itself in Altman’s grey zone: lease-heavy café businesses score low on the model, which is worth knowing before reading too much into Lantern’s zone.' },
     { h: 'A much larger company: Starbucks' },
     { p: 'Students often compare a small business with the best-known company in its industry. It can be instructive, as long as you separate three kinds of difference: scale, business model and accounting.' },
     { table: {
@@ -108,7 +108,7 @@ export default {
       ],
       note: 'Lantern: fictional. Starbucks: Form 10-K for the fiscal year ended 29 September 2024 (statements of earnings and balance sheets).',
     } },
-    { p: `<b>Scale.</b> Starbucks’ revenue is about 62,600 times Lantern’s. Ratios remove size from the arithmetic, but not from the economics: Starbucks buys coffee, rents property and borrows on terms Lantern cannot get. <b>Business model.</b> Of Starbucks’ 40,199 stores at its year end, 19,181 were licensed: other companies run them and Starbucks earns licence revenue (${p1(SB.licensed / SB.revenue)}% of revenue) with little capital. Its customers also prepay on stored-value cards, a liability ($1,781.2 million, with current deferred revenue) that funds working capital. <b>Accounting and financing.</b> Starbucks has returned so much cash to shareholders that its equity is negative, so return on equity and debt-to-equity have no meaning for it. Of the five rows, only the operating margin and the lease share compare like with like, and even the margin reflects licensing.` },
+    { p: `<b>Scale.</b> Starbucks’ revenue is about 62,600 times Lantern’s. Ratios remove size from the arithmetic, but not from the economics: Starbucks buys coffee, rents property and borrows on terms Lantern cannot get. <b>Business model.</b> Of Starbucks’ 40,199 stores at its year end, 19,181 were licensed: other companies run them, bearing the operating costs and investment, and Starbucks earns revenue from licensed stores (mostly product and equipment sales to licensees, plus royalties and licence fees; ${p1(SB.licensed / SB.revenue)}% of revenue) with little capital. Its customers also prepay on stored-value cards, a liability ($1,781.2 million, with current deferred revenue) that funds working capital. <b>Accounting and financing.</b> Starbucks has returned so much cash to shareholders that its equity is negative, so return on equity and debt-to-equity have no meaning for it. Of the five rows, only the operating margin and the lease share compare like with like, and even the margin reflects licensing.` },
   ],
 
   theory: [
@@ -203,9 +203,9 @@ export default {
       setup: 'Ana reads that Starbucks earned an operating margin of about 15% in fiscal 2024 and asks whether Lantern (5.7% in 2027) should aim for the same. Using the figures in the lesson, separate the differences that come from scale, business model and accounting, and say what a fair target would be.',
       steps: [
         `Margins: Starbucks <m>5{,}408.8 \\div 36{,}176.2 = ${p1(SB.opIncome / SB.revenue)}\\%</m>; Lantern <m>32{,}787 \\div 577{,}860 = ${p1(L.opMargin)}\\%</m>.`,
-        `Business model: ${p1(SB.licensed / SB.revenue)}% of Starbucks’ revenue is licence revenue from 19,181 stores others run, which earns a margin without store wages or rent; Lantern runs every café itself. Company-operated stores carry store operating expenses of <m>15{,}286.5 \\div 36{,}176.2 = ${p1(SB.storeOps / SB.revenue)}\\%</m> of total revenue.`,
+        `Business model: ${p1(SB.licensed / SB.revenue)}% of Starbucks’ revenue comes from 19,181 licensed stores that others run (mostly product and equipment sales to licensees, plus royalties and licence fees), which earns a margin without store wages or rent; Lantern runs every café itself. Company-operated stores carry store operating expenses of <m>15{,}286.5 \\div 36{,}176.2 = ${p1(SB.storeOps / SB.revenue)}\\%</m> of total revenue.`,
         'Scale: Starbucks buys and leases at a scale about 62,600 times Lantern’s revenue; its purchasing terms and fixed-cost spread are not available to a business with two cafés and a kitchen.',
-        'Stage and accounting: Lantern’s 2027 includes the cafés’ opening costs (advertising, research) and ten months of new cafés; its owner’s $48,000 salary is an operating expense. Both companies report under US GAAP, so the lease cost is treated alike.',
+        'Stage and accounting: Lantern’s 2027 includes the cafés’ opening advertising, $21,000 of market research and only ten months of the new cafés; its owner’s $48,000 salary is an operating expense. Both companies report under US GAAP, so the lease cost is treated alike.',
       ],
       answer: 'Starbucks’ 15% is not a fair target. The peer file is: its median operating margin is 6.8% and Q3 8.1%, so moving from 5.7% to the peer median is a realistic goal for 2028, the cafés’ first full year.',
       interpretation: 'Large companies show what the industry can earn at scale with a different model; peers show what a business like Lantern does earn. Use the first for context and the second for targets.' },
@@ -339,6 +339,7 @@ export default {
     { what: 'Total debt', value: P27.debt, shown: 65250 },
     { what: 'Debt ties', value: due2028 + DEBT.van2029 + DEBT.brewer2029 + DEBT.van2030, shown: 65250 },
     { what: 'Cash at year end', value: P27.cash, shown: 6531 },
+    { what: 'Market research 2027', value: FACTS.research, shown: 21000 },
     { what: 'Memo: dividend threshold', value: 10000, shown: 10000 },
   ],
 };

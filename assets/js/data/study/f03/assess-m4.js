@@ -68,7 +68,7 @@ export const items = [
     answer: 3.90, check: () => ST_X.reduce((s, x, i) => s + x * R.ALTMAN.zdouble.w[i], 0) + 3.25, tol: 0.01, unit: '', places: 2,
     wrong: [
       { value: 0.65, say: 'That is the plain Z″. The emerging-market scale adds 3.25.' },
-      { value: 4.15, say: 'Check the sign of the first term: X₁ is negative, so 6.56 × X₁ subtracts 0.25.' },
+      { value: 4.15, say: 'You left out the first term: 6.56 × X₁ = −0.25 must be included.' },
     ],
     solution: '6.56 × (−0.0375) + 3.26 × 0.094 + 6.72 × 0.044 + 1.05 × 0.28 = −0.25 + 0.31 + 0.30 + 0.29 = 0.65; plus 3.25 gives 3.90. On that scale the zones are 4.35 and 5.85, so Saltmarsh is in the distress zone (as its plain 0.65 is below 1.10).',
   },
@@ -95,13 +95,13 @@ export const items = [
     answer: 89, check: () => qfEbit, tol: 0.5, unit: '$ thousand', places: 0,
     wrong: [
       { value: 600, say: 'You multiplied the gap in points by total assets without dividing by the weight on EBIT ÷ total assets (6.72).' },
-      { value: 220, say: 'Z″’s weight on X₃ is 6.72; 2.72 is not one of its weights.' },
+      { value: 182, say: 'That uses the original Z’s weight on EBIT ÷ total assets (3.3). Z″’s weight is 6.72.' },
     ],
     solution: 'The score must rise by 1.10 − 0.80 = 0.30 points. Each dollar of EBIT adds 6.72 ÷ 2,000 points, so EBIT must rise by 0.30 ÷ 6.72 × 2,000 = $89 thousand (ignoring the effect of extra profit on retained earnings and assets).',
   },
   {
     id: 'f03-m4-7', lesson: 'distress-scores', type: 'multi', kind: 'conceptual',
-    prompt: 'Select all that apply: which of these, each taken alone, would raise a profitable private firm’s Z″?',
+    prompt: 'Select all that apply: which of these, each taken alone, would raise Z″ for a typical profitable private firm?',
     options: [
       'Issuing new shares for cash',
       'Refinancing a bank loan due in six months with a five-year loan',

@@ -42,7 +42,7 @@ export const widgets = {
     ratios: ['current', 'quick', 'operatingMargin', 'netMargin', 'roa', 'roe', 'debtToEquity', 'interestCoverage', 'assetTurnover'],
     toggles: ['average', 'leases'],
     select: 'current',
-    note: 'Lantern: fictional. Harbourline: F00’s fictional roaster, in $ millions, with no leases reported. Starbucks: Form 10-K for fiscal 2024, $ millions; its equity is negative, so return on equity and debt to equity are not meaningful (the widget still prints the arithmetic). Ratios are scale-free, so dollars and millions of dollars compare.',
+    note: 'Lantern: fictional. Harbourline: F00’s fictional roaster, in $ millions, with no leases reported. Starbucks: Form 10-K for fiscal 2024, $ millions; its equity is negative, so the widget shows return on equity and debt to equity as n/m (not meaningful). Ratios are scale-free, so dollars and millions of dollars compare.',
   },
   'bench-sheet': {
     type: 'sheet',
@@ -234,7 +234,7 @@ export const check = [
     id: 'f03-bench-k4', type: 'multi', kind: 'applied',
     prompt: 'Select all that apply: which differences between Starbucks and Lantern come from their business models rather than from scale or accounting?',
     options: [
-      'About 12.5% of Starbucks’ revenue is licence revenue from stores other companies run',
+      'About 12.5% of Starbucks’ revenue comes from licensed stores that other companies run',
       'Starbucks’ customers prepay on stored-value cards, which funds part of its working capital',
       'Starbucks’ revenue is about 62,600 times Lantern’s',
       'Starbucks’ fiscal year ends in late September; Lantern’s on 31 December',

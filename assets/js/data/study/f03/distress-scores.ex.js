@@ -165,7 +165,7 @@ export const independent = [
       { value: 2.92, say: 'X₄ is equity ÷ total liabilities: (1,500 − 900) ÷ 900 = 0.667, not equity ÷ total assets.' },
       { value: 5.87, say: 'Working capital is current assets minus current liabilities (230), not current assets.' },
     ],
-    solution: 'X₁ = 230 ÷ 1,500 = 0.153; X₂ = 380 ÷ 1,500 = 0.253; X₃ = 150 ÷ 1,500 = 0.100; X₄ = 600 ÷ 900 = 0.667. Z″ = 1.01 + 0.83 + 0.67 + 0.70 = 3.20. Safe (above 2.60).',
+    solution: 'X₁ = 230 ÷ 1,500 = 0.153; X₂ = 380 ÷ 1,500 = 0.253; X₃ = 150 ÷ 1,500 = 0.100; X₄ = 600 ÷ 900 = 0.667. Z″ = 1.01 + 0.83 + 0.67 + 0.70 = 3.20 (3.204 unrounded). Safe (above 2.60).',
   },
   {
     id: 'f03-z-i4', type: 'mc', kind: 'conceptual',
