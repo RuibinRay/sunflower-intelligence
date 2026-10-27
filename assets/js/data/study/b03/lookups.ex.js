@@ -1,7 +1,7 @@
 // lookups.ex.js — B03 · Lookups: widgets, practice and the knowledge check (answer keys live here). Lantern's data come
 // from case.js; Spokewise Cycles, the courier and every other business here are fictional. Every num item's `check`
 // recomputes its answer; every formula item is marked by its results on the sheet and on two changed copies.
-import { ORDERS, ORDER_COLUMNS, EVENTS, PRODUCTS, DELIVERY_BANDS, SIZE_BANDS, ordersCells, productCells, eventsCells, tableCells } from './case.js?v=19';
+import { ORDERS, ORDER_COLUMNS, EVENTS, PRODUCTS, DELIVERY_BANDS, SIZE_BANDS, ordersCells, productCells, eventsCells, tableCells } from './case.js?v=22';
 
 const MONEY = '$#,##0.00';
 const col = (name) => ORDER_COLUMNS.indexOf(name);

@@ -1,7 +1,7 @@
 // kpis.ex.js — B01 · KPIs: measuring what matters: widgets, practice and the knowledge check.
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // Uses TARGETS from case.js for the widget defaults; every business and figure in the exercises is fictional.
-import { TARGETS as T } from './case.js?v=19';
+import { TARGETS as T } from './case.js?v=22';
 
 const money = (v, d = 0) => `${v < 0 ? '−' : ''}$${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const pct = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toFixed(d)}%`;

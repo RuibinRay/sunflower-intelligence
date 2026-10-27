@@ -14,8 +14,8 @@
 // diagnostic or the project, and nothing from the project’s data or scenarios. No hints; solutions are shown on review.
 // Every business, record and number is fictional; every num item’s `check` recomputes its answer, and every formula item
 // is marked by its results.
-import * as I from '../../../core/inference.js?v=19';
-import { mean, sd, quantile, skewness } from '../../../core/stats.js?v=19';
+import * as I from '../../../core/inference.js?v=22';
+import { mean, sd, quantile, skewness } from '../../../core/stats.js?v=22';
 
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
 const r = (x, p) => Math.round(x * 10 ** p) / 10 ** p;

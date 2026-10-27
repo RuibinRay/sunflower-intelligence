@@ -9,8 +9,8 @@
 //
 // Also here: the typing tool (assign a new respondent to the nearest segment centre), the elbow (k-means within-cluster
 // sum of squares for each k) and a few small helpers. Pure functions; tested in tests/percmap.test.mjs against NumPy.
-import { jacobiEigen } from './ml.js?v=19';
-import { kmeans, silhouette } from './classify.js?v=19';
+import { jacobiEigen } from './ml.js?v=22';
+import { kmeans, silhouette } from './classify.js?v=22';
 
 const sum = (xs) => xs.reduce((a, b) => a + b, 0);
 const mean = (xs) => sum(xs) / xs.length;

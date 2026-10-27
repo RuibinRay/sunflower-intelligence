@@ -2,8 +2,8 @@
 // Lantern's invoice per guest-day by event type comes from case.js (PER_GUEST_BY_TYPE, DERIVED.eventTypes.anova); every
 // other business is fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num items
 // recompute their answers in `check`.
-import { PER_GUEST_BY_TYPE, EVENT_TYPES, DERIVED as D } from './case.js?v=19';
-import * as I from '../../../core/inference.js?v=19';
+import { PER_GUEST_BY_TYPE, EVENT_TYPES, DERIVED as D } from './case.js?v=22';
+import * as I from '../../../core/inference.js?v=22';
 
 const AN = D.eventTypes.anova;
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));

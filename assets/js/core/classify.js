@@ -1,6 +1,6 @@
 // classify.js — logistic regression (with odds ratios and diagnostics) and k-means clustering.
-import { normCdf, normQuantile, invert, mean, sd } from './stats.js?v=19';
-import { mulberry32 } from './rng.js?v=19';
+import { normCdf, normQuantile, invert, mean, sd } from './stats.js?v=22';
+import { mulberry32 } from './rng.js?v=22';
 
 // ================================================================ logistic regression
 /**

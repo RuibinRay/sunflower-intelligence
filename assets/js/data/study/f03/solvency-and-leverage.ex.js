@@ -1,9 +1,9 @@
 // solvency-and-leverage.ex.js — F03 · Solvency and leverage: widgets, practice and the knowledge check.
 // Lantern’s figures come from case.js and the ratios from core/ratios.js; Starbucks FY2024 is from its Form 10-K;
 // Harbourline is F00’s fictional roaster; every other business is fictional and invented for the exercise.
-import { PERIODS } from './case.js?v=19';
-import { HARBOURLINE as HB, HARBOURLINE_DETAIL as HBD } from '../f00/case.js?v=19';
-import * as R from '../../../core/ratios.js?v=19';
+import { PERIODS } from './case.js?v=22';
+import { HARBOURLINE as HB, HARBOURLINE_DETAIL as HBD } from '../f00/case.js?v=22';
+import * as R from '../../../core/ratios.js?v=22';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const x2 = (v) => (Number.isFinite(v) ? v.toFixed(2) : 'not meaningful');

@@ -1,7 +1,7 @@
 // market-orientation.js — M01 · Market orientation: putting customers at the centre. Content only; exercises are in
 // market-orientation.ex.js. Lantern facts come from ./case.js (fictional); `checks` recompute them. The lesson reads
 // Lantern's interviews as listening; it does not build Lantern's SWOT or choose its strategy (the course project does).
-import { BUSINESS, CLIENT_INTERVIEWS as I, COMPETITOR } from './case.js?v=19';
+import { BUSINESS, CLIENT_INTERVIEWS as I, COMPETITOR } from './case.js?v=22';
 
 const R = I.reasons;
 const N = I.interviewed;

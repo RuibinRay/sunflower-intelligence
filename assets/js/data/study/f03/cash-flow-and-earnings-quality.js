@@ -3,8 +3,8 @@
 // Lantern’s figures come from case.js (PERIODS, COMPARATIVE, FACTS, LEASE) and core/ratios.js (cashQuality). Real
 // figures (Amazon 2012–2014, Enron’s 2001 restatement and the Powers Report) are from REAL-FIGURES.md and the filings
 // cited. Rowan & Pike Outfitters is fictional.
-import { PERIODS, COMPARATIVE, FACTS, LEASE, OPENING } from './case.js?v=19';
-import * as R from '../../../core/ratios.js?v=19';
+import { PERIODS, COMPARATIVE, FACTS, LEASE, OPENING } from './case.js?v=22';
+import * as R from '../../../core/ratios.js?v=22';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const Q26 = R.cashQuality(P26), Q27 = R.cashQuality(P27, P26);

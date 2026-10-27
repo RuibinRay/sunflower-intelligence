@@ -19,13 +19,13 @@
 // - b01: July 2026: 294 orders at an average order value of $41.20; free delivery on orders over $35.
 // Discounts in ORDERS: subscription orders get 10% off (B02); other discounts are a $5 promotion code, and the bulk
 // order (LC-10144, 120 bags for a Central-region office) got 10% off.
-import { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, RAW_COLUMNS, RAW } from './data.js?v=19';
-import { FACTS as F02 } from '../f02/case.js?v=19';
-import { MARCH } from '../f01/case.js?v=19';
-import { DELIVERY, SHOP as B01_SHOP } from '../b01/case.js?v=19';
-import { BUSINESS as M01 } from '../m01/case.js?v=19';
-import { ols } from '../../../core/stats.js?v=19';
-import { Sheet, isoToSerial, addr, colToIndex, solveLP, goalSeek } from '../../../core/sheet.js?v=19';
+import { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, RAW_COLUMNS, RAW } from './data.js?v=22';
+import { FACTS as F02 } from '../f02/case.js?v=22';
+import { MARCH } from '../f01/case.js?v=22';
+import { DELIVERY, SHOP as B01_SHOP } from '../b01/case.js?v=22';
+import { BUSINESS as M01 } from '../m01/case.js?v=22';
+import { ols } from '../../../core/stats.js?v=22';
+import { Sheet, isoToSerial, addr, colToIndex, solveLP, goalSeek } from '../../../core/sheet.js?v=22';
 
 export { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, RAW_COLUMNS, RAW, isoToSerial };
 

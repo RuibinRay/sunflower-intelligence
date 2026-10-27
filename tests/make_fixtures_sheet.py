@@ -158,9 +158,11 @@ FORMULAS = [
     '=T.DIST.2T(2.1,15)', '=CONFIDENCE.T(0.05,STDEV.S(F2:F13),COUNT(F2:F13))', '=CONFIDENCE.T(0.05,1,1)',
     '=SUM(D2:F2 E1:E5)', '=SUM(A1:A2 C1:C2)', '=N(TRUE)+N("7")+N(5)', '=NUMBERVALUE("2.500,27",",",".")', '=NUMBERVALUE("3.5%")',
     '=MROUND(17,5)', '=MROUND(F3,0.05)', '=LOG(8,2)', '=LOG(1000)', '=ISERR(NA())', '=ISERR(1/0)', '=ISLOGICAL(H3)',
+    '=FISHER(0.5)', '=FISHER(-0.734)', '=FISHERINV(0.5493)', '=FISHERINV(-2)', '=FISHER(1)', '=TANH(1)', '=ATANH(0.25)',
+    '=RANK.AVG(F5,F2:F13)', '=RANK.AVG(F5,F2:F13,1)', '=RANK.AVG(3,S1:S8)', '=RANK.AVG(3,S1:S8,1)', '=RANK.AVG(99,S1:S8)',
 ]
 # Functions written with Excel's "_xlfn." prefix in the file format (introduced after Excel 2007)
-XLFN = ['NUMBERVALUE', 'T.INV.2T', 'T.INV', 'T.DIST.2T', 'CONFIDENCE.T', 'CEILING.MATH', 'FLOOR.MATH', 'PERCENTILE.EXC', 'QUARTILE.EXC', 'SKEW.P', 'STDEV.S', 'STDEV.P', 'VAR.S', 'VAR.P', 'PERCENTILE.INC', 'QUARTILE.INC', 'RANK.EQ', 'MODE.SNGL', 'FORECAST.LINEAR',
+XLFN = ['RANK.AVG', 'NUMBERVALUE', 'T.INV.2T', 'T.INV', 'T.DIST.2T', 'CONFIDENCE.T', 'CEILING.MATH', 'FLOOR.MATH', 'PERCENTILE.EXC', 'QUARTILE.EXC', 'SKEW.P', 'STDEV.S', 'STDEV.P', 'VAR.S', 'VAR.P', 'PERCENTILE.INC', 'QUARTILE.INC', 'RANK.EQ', 'MODE.SNGL', 'FORECAST.LINEAR',
         'COVARIANCE.S', 'COVARIANCE.P', 'MAXIFS', 'MINIFS', 'IFS', 'SWITCH', 'IFNA', 'CONCAT', 'TEXTJOIN', 'DAYS',
         'NORM.DIST', 'NORM.S.DIST', 'NORM.INV', 'NORM.S.INV', 'BINOM.DIST.RANGE', 'BINOM.DIST', 'BINOM.INV', 'POISSON.DIST', 'EXPON.DIST', 'T.DIST.RT', 'T.DIST',
         'T.TEST', 'Z.TEST', 'CONFIDENCE.NORM', 'CHISQ.DIST.RT', 'CHISQ.DIST', 'CHISQ.INV.RT', 'CHISQ.INV', 'CHISQ.TEST', 'F.DIST.RT', 'F.DIST', 'F.INV.RT', 'F.INV', 'F.TEST', 'MODE.MULT', 'PERCENTRANK.INC', 'PERCENTRANK.EXC']
@@ -171,6 +173,7 @@ XLFN = ['NUMBERVALUE', 'T.INV.2T', 'T.INV', 'T.DIST.2T', 'CONFIDENCE.T', 'CEILIN
 #     =SUM("5", 15, TRUE) is 21. Excel orders numbers < text < FALSE < TRUE when comparing, and TRUE joins as "TRUE".
 # (b) Excel's COUNTIF help: =COUNTIF(A2:A5,"*") "Counts the number of cells containing any text".
 # (c) Excel's SQRT help: "If number is negative, SQRT returns the #NUM! error value."
+# (m) Excel's FISHER help: "If x ≤ -1 or if x ≥ 1, FISHER returns the #NUM! error value." (LibreOffice gives #VALUE!.)
 # (d) Excel's VLOOKUP help: "If col_index_num is greater than the number of columns in table-array, you'll get the
 #     #REF! error value."
 # (e) Excel treats 1900 as a leap year (Microsoft: "Excel incorrectly assumes that the year 1900 is a leap year"), so
@@ -214,6 +217,7 @@ EXCEL_DIFFERS = {
     '=AVERAGE(H1:H8)': 6.5 / 3, '=COUNT(H1:H8)': 3, '=TEXTJOIN("-",FALSE,H3,H4,H8)': 'TRUE--0',      # (a)
     '=COUNTIF(H1:H8,"*")': 3,                                                                            # (b)
     '=SQRT(-1)': {'error': '#NUM!'},                                                                     # (c)
+    '=FISHER(1)': {'error': '#NUM!'},                                                                    # (m)
     '=VLOOKUP("Pastry",C2:F13,5,FALSE)': {'error': '#REF!'},                                             # (d)
     '=DATE(1900,1,1)': 1, '=DAY(60)': 29,                                                                # (e)
 }

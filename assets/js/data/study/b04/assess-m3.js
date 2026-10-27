@@ -2,8 +2,8 @@
 // businesses, not copies of lesson exercises. No hints; solutions are shown when the student reviews the test. Every
 // business, person and number is fictional. Formula items are marked by their results (core/sheet.js gradeFormula);
 // every num item's `check` recomputes its answer.
-import * as I from '../../../core/inference.js?v=19';
-import { mean, sd } from '../../../core/stats.js?v=19';
+import * as I from '../../../core/inference.js?v=22';
+import { mean, sd } from '../../../core/stats.js?v=22';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const neg = (v, d = 2) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), d)}`;

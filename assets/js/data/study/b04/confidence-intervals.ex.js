@@ -2,8 +2,8 @@
 // here). Lantern's set-up times, bags, orders and subscription flags come from case.js; Redfern Bakery, Tamarind
 // Kitchen, Ambleside Hotel, Westcliff Gym, Tollgate Bike Hire and Brockwell Clinic are fictional. Formula items are
 // marked by their results on the sheet and on copies with the numbers changed; num items recompute their answers.
-import { SETUP_MINUTES, ORDER_VALUES, SUBSCRIPTION_FLAGS, SURVEY, DERIVED as D } from './case.js?v=19';
-import * as I from '../../../core/inference.js?v=19';
+import { SETUP_MINUTES, ORDER_VALUES, SUBSCRIPTION_FLAGS, SURVEY, DERIVED as D } from './case.js?v=22';
+import * as I from '../../../core/inference.js?v=22';
 
 const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));

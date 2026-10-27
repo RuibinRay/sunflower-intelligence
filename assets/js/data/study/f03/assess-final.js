@@ -22,8 +22,8 @@
 // the filings cited in the lessons (REAL-FIGURES.md); every other business is fictional and used nowhere else on the
 // site, and nothing comes from the project (Brightwater, Harbour Credit Union). No hints; solutions are shown on review.
 // Every num item’s `check` recomputes its answer from the inputs below.
-import { PERIODS, COMPARATIVE, FACTS } from './case.js?v=19';
-import * as R from '../../../core/ratios.js?v=19';
+import { PERIODS, COMPARATIVE, FACTS } from './case.js?v=22';
+import * as R from '../../../core/ratios.js?v=22';
 
 const fx = (v, d = 2) => `${v < 0 && Math.abs(v) >= 0.5 * 10 ** -d ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const usd = (v) => `${v < 0 ? '−' : ''}$${Math.abs(Math.round(v)).toLocaleString('en-US')}`;

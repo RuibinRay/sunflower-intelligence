@@ -9,7 +9,7 @@
 // { acct, dr } or { acct, cr }. `cash` optionally classifies the cash movement for the statement of cash flows:
 // 'operating' | 'investing' | 'financing', or { operating, investing, financing } in signed dollars for a split.
 // `cashLabel` optionally names the line on a direct-method statement of cash flows (e.g. 'Cash paid to employees').
-import { mulberry32 } from './rng.js?v=19';
+import { mulberry32 } from './rng.js?v=22';
 
 // ---------------------------------------------------------------- account types
 

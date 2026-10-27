@@ -10,9 +10,9 @@
 // - Z′: 1.23 and 2.90 in Altman (2000) text and on Altman’s 2017 slide (Altman 2000’s Table 6 also prints 1.21).
 // - Z″: Altman’s 2017 slide gives 4.35 and 5.85 for Z″ with its +3.25 constant; 1.10 and 2.60 are those bounds less the
 //   constant, which this lesson shows as arithmetic. No Altman source opened prints 1.10 and 2.60 directly.
-import { PERIODS, LEASE } from './case.js?v=19';
-import { HARBOURLINE as H, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=19';
-import * as R from '../../../core/ratios.js?v=19';
+import { PERIODS, LEASE } from './case.js?v=22';
+import { HARBOURLINE as H, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=22';
+import * as R from '../../../core/ratios.js?v=22';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const Z26 = R.altman(P26, 'zdouble'), Z27 = R.altman(P27, 'zdouble');

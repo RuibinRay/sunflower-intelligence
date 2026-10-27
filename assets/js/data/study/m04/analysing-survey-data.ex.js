@@ -3,9 +3,9 @@
 // in every worksheet). Text columns don't change on the marker's test copies, so items that count text labels `vary` a
 // label cell; numeric columns (scores, cups, weights) are scaled on the copies. Otterbridge Leisure Centre, Kettlewick
 // Bakery and the cinema chain are fictional. Every num item's `check` recomputes its answer.
-import { RESPONDENTS, RESPONDENT_COLUMNS, RESPONDENT_ROWS, SEGMENT, SIZES, LEVELS, tableCells, DERIVED as D } from './case.js?v=19';
-import * as S from '../../../core/survey.js?v=19';
-import { normInv, normCdf } from '../../../core/inference.js?v=19';
+import { RESPONDENTS, RESPONDENT_COLUMNS, RESPONDENT_ROWS, SEGMENT, SIZES, LEVELS, tableCells, DERIVED as D } from './case.js?v=22';
+import * as S from '../../../core/survey.js?v=22';
+import { normInv, normCdf } from '../../../core/inference.js?v=22';
 
 const R = RESPONDENTS, N = R.length, L = N + 1;                 // data rows 2..517
 const RC = (cols) => tableCells(RESPONDENT_COLUMNS, RESPONDENT_ROWS, { cols }).cells;

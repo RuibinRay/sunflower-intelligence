@@ -2,7 +2,7 @@
 // keys live here). Lantern's orders, ratings and catering events come from case.js; the bakery, the bike-hire firm and
 // their numbers are fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num items
 // recompute their answers in `check`.
-import { ORDER_VALUES, PER_GUEST_BY_TYPE as G, EVENTS, EVENT_COLUMNS, DERIVED as D } from './case.js?v=19';
+import { ORDER_VALUES, PER_GUEST_BY_TYPE as G, EVENTS, EVENT_COLUMNS, DERIVED as D } from './case.js?v=22';
 
 const sum = (a) => a.reduce((s, x) => s + x, 0);
 const mean = (a) => sum(a) / a.length;

@@ -1,8 +1,8 @@
 // study-notebook.js — bookmarks, notes, and moving progress between browsers (download, load, clear).
-import { initSite } from '../core/site.js?v=19';
-import { $, h, download } from '../core/dom.js?v=19';
-import * as P from '../study/progress.js?v=19';
-import { describe } from '../study/common.js?v=19';
+import { initSite } from '../core/site.js?v=22';
+import { $, h, download } from '../core/dom.js?v=22';
+import * as P from '../study/progress.js?v=22';
+import { describe } from '../study/common.js?v=22';
 
 initSite();
 const root = document.body.dataset.root;

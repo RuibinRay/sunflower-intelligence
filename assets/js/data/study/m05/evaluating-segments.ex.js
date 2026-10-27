@@ -2,9 +2,9 @@
 // here). Lantern's segments, measures and fit come from case.js (DERIVED); Ana's weights (4, 4, 2, 2, 4) are the
 // lesson's. Tarnwick Travel, Sorrelbank Software, Hollinmere Credit Union, Cobbleford Cycles and the other businesses
 // named here are fictional. Every num item's `check` recomputes its answer.
-import { DERIVED as D, BRANDS, MARGIN, LANTERN_STRENGTHS } from './case.js?v=19';
-import { weightedScore } from '../../../core/percmap.js?v=19';
-import { needsFit } from '../../../core/market.js?v=19';
+import { DERIVED as D, BRANDS, MARGIN, LANTERN_STRENGTHS } from './case.js?v=22';
+import { weightedScore } from '../../../core/percmap.js?v=22';
+import { needsFit } from '../../../core/market.js?v=22';
 
 const S = D.segments, NAMES = S.names, K = NAMES.length;
 const G = (name) => NAMES.indexOf(name);

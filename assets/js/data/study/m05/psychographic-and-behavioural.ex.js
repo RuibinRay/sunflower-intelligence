@@ -3,7 +3,7 @@
 // monthly spend, main source and the three local-loyalty items. Glisten Car Wash, the bus operator, the sportswear brand,
 // the snack brand, Ashbury Bank and the other businesses named here are fictional. Every num item's `check` recomputes
 // its answer.
-import { RESPONDENTS, LEVELS } from './case.js?v=19';
+import { RESPONDENTS, LEVELS } from './case.js?v=22';
 
 const R = RESPONDENTS, N = R.length, L = N + 1;                 // data rows 2..641
 const sum = (a) => a.reduce((s, x) => s + x, 0);

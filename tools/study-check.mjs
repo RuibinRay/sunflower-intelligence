@@ -18,7 +18,7 @@ import {
 const VERBS = /^(Explain|Describe|Define|Identify|Distinguish|Classify|Calculate|Compute|Record|Prepare|Analyse|Apply|Interpret|Evaluate|Compare|Choose|Decide|Use|Recognise|State|Construct|Build|Post|Journalise|Find|Detect|Diagnose|Handle|Transform|Scale|Encode|Write|Document|Justify|Recommend|Estimate|Assess|Plan|Design|Set|Measure|Select|Determine|Correct|Locate|Read|Summarise|Reshape|Combine|Profile|Validate|Clean|Convert|Standardise|Normalise|Map|Draft|Price|Forecast|Test|Name|List|Contrast|Close|Adjust|Trace|Reconcile)\b/;
 const KINDS = ['conceptual', 'numerical', 'applied'];
 const TYPES = ['mc', 'multi', 'num', 'fill', 'classify', 'order', 'journal', 'equation', 'rows', 'short', 'formula', 'steps'];
-const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak', 'sampler', 'cluster', 'percmap', 'ratios'];
+const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak', 'sampler', 'cluster', 'percmap', 'ratios', 'scatter', 'corrmatrix'];
 const DATASETS = ['lantern-orders', 'harborview-bookings', 'northfield-students'];
 const CLEAN_OPS = ['dedupe', 'dedupe-key', 'trim', 'case', 'map', 'to-number', 'to-date', 'fill', 'drop-missing', 'flag-missing', 'validate', 'outliers', 'transform', 'scale', 'encode', 'derive', 'rename', 'drop-column'];
 const near = (a, b, tol) => Math.abs(a - b) <= tol + 1e-9;
@@ -448,6 +448,21 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
     if (wd.highlight && !B0.includes(wd.highlight)) r.err(`${w}: highlight must name one of the brands`);
     if (wd.noun && !(Array.isArray(wd.noun) && wd.noun.length === 2 && wd.noun.every((x) => typeof x === 'string' && x))) r.err(`${w}: noun must be [singular, plural]`);
     (wd.ideals || []).forEach((d, i) => { if (!d.name || !Array.isArray(d.profile) || d.profile.length !== A0.length) r.err(`${w}: ideal ${i} needs a name and a profile with one value per attribute`); });
+  } else if (wd.type === 'scatter') {
+    const X = wd.x?.values, Y = wd.y?.values;
+    if (!wd.x?.name || !wd.y?.name || !Array.isArray(X) || !Array.isArray(Y) || X.length !== Y.length || X.length < 3) r.err(`${w}: scatter needs x and y with a name and equal-length values (3 or more)`);
+    else if (X.filter((v, i) => Number.isFinite(v) && Number.isFinite(Y[i])).length < 3) r.err(`${w}: scatter needs at least 3 complete pairs`);
+    if (wd.group && (!wd.group.name || !Array.isArray(wd.group.values) || wd.group.values.length !== (X || []).length)) r.err(`${w}: group needs a name and one value per point`);
+    if (wd.labels && wd.labels.length !== (X || []).length) r.err(`${w}: labels needs one label per point`);
+    for (const t of wd.toggles || []) if (!['ranks', 'logX', 'logY', 'group', 'line'].includes(t)) r.err(`${w}: unknown toggle ${t}`);
+    if (wd.jitter && !Object.entries(wd.jitter).every(([k, v]) => ['x', 'y'].includes(k) && Number.isFinite(v) && v >= 0)) r.err(`${w}: jitter must be { x, y } with non-negative amounts`);
+    for (const t of wd.show || []) if (!['pearson', 'spearman', 'kendall', 'ci', 'r2', 'p'].includes(t)) r.err(`${w}: unknown statistic ${t}`);
+    if ((wd.toggles || []).includes('logX') && X && X.some((v) => Number.isFinite(v) && v <= 0)) r.warn(`${w}: some x values are 0 or negative, so log x drops them (the widget says how many)`);
+  } else if (wd.type === 'corrmatrix') {
+    const cols = Object.entries(wd.columns || {});
+    if (cols.length < 2 || !cols.every(([k, v]) => k && Array.isArray(v) && v.length === cols[0][1].length)) r.err(`${w}: corrmatrix needs 2 or more named columns of equal length`);
+    if (wd.method && !['pearson', 'spearman'].includes(wd.method)) r.err(`${w}: method must be pearson or spearman`);
+    if (wd.adjust && !['none', 'bonferroni', 'holm', 'fdr_bh'].includes(wd.adjust)) r.err(`${w}: adjust must be none, bonferroni, holm or fdr_bh`);
   } else if (wd.type === 'ratios') {
     const per = wd.periods || [];
     if (!per.length || !per.every((p) => p && typeof p.label === 'string' && p.data && typeof p.data === 'object')) r.err(`${w}: ratios needs periods [{ label, data }]`);

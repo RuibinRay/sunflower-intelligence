@@ -1,7 +1,7 @@
 // cells-and-formulas.ex.js — B03 · Cells, references and formulas: widgets, practice and the knowledge check (answer
 // keys live here). Lantern's orders, prices and monthly values come from case.js; Riverbend Cycles and the Blue Heron
 // Inn are fictional. Formula items are marked by their results on the sheet and on three copies with the numbers changed.
-import { ORDERS, ORDER_COLUMNS, PRODUCTS, DERIVED as D, tableCells } from './case.js?v=19';
+import { ORDERS, ORDER_COLUMNS, PRODUCTS, DERIVED as D, tableCells } from './case.js?v=22';
 
 const r2 = (x) => Math.round(x * 100) / 100;
 const price = (p) => PRODUCTS.find((x) => x[0] === p)[3];

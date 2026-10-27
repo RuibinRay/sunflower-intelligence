@@ -2,7 +2,7 @@
 // Built from EVENTS (case.js): Lantern's 2026 catering. Ana's monthly revenue plan (PLAN) is fictional and introduced in
 // this lesson; the lesson file imports it for its checks. The shop dashboard belongs to the project and is not used.
 // Every num item's `check` recomputes its answer.
-import { EVENTS, EVENT_COLUMNS, tableCells, eventRecords } from './case.js?v=19';
+import { EVENTS, EVENT_COLUMNS, tableCells, eventRecords } from './case.js?v=22';
 
 /** Ana's 2026 catering revenue plan by month (fictional): $60,000 from March to December. */
 export const MONTHS = ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

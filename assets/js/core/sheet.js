@@ -8,8 +8,8 @@
 // function that returns several values). Dates are serial numbers in the 1900 date system (1 = 1 January 1900; the
 // fictitious 29 February 1900 is kept, so serials from 61 on match Excel's).
 
-import { tQuantile, tCdf } from './stats.js?v=19';
-import * as INF from './inference.js?v=19';
+import { tQuantile, tCdf } from './stats.js?v=22';
+import * as INF from './inference.js?v=22';
 
 // ---------------------------------------------------------------- values
 export class Err { constructor(code) { this.code = code; } toString() { return this.code; } }
@@ -824,6 +824,14 @@ FN['RANK.EQ'] = (args, ctx) => {
   return 1 + xs.filter((v) => (asc ? v < x : v > x)).length;
 };
 FN.RANK = FN['RANK.EQ'];
+FN['RANK.AVG'] = (args, ctx) => {
+  const x = numArg(args[0], ctx); if (isErr(x)) return x;
+  const xs = numbersOf([args[1]], ctx); if (isErr(xs)) return xs;
+  const asc = args[2] && numArg(args[2], ctx, 0) !== 0;
+  const ties = xs.filter((v) => p15(v) === p15(x)).length;
+  if (!ties) return ERR.NA;
+  return 1 + xs.filter((v) => (asc ? v < x : v > x)).length + (ties - 1) / 2;
+};
 FN.CORREL = (args, ctx) => { const p = pairs(args[0], args[1], ctx); if (isErr(p)) return p; if (p.xs.length < 2) return ERR.DIV0; const f = linfit(p.xs, p.ys); return Number.isFinite(f.r) ? f.r : ERR.DIV0; };
 FN.PEARSON = FN.CORREL;
 FN.RSQ = (args, ctx) => { const r = FN.CORREL(args, ctx); return isErr(r) ? r : r * r; };
@@ -1193,6 +1201,10 @@ FN.INT = num1(Math.floor);
 FN.SQRT = num1((n) => (n < 0 ? ERR.NUM : Math.sqrt(n)));
 FN.EXP = num1(Math.exp);
 FN.LN = num1((n) => (n <= 0 ? ERR.NUM : Math.log(n)));
+FN.FISHER = num1((n) => (n <= -1 || n >= 1 ? ERR.NUM : Math.atanh(n)));
+FN.FISHERINV = num1(Math.tanh);
+FN.TANH = num1(Math.tanh);
+FN.ATANH = num1((n) => (n <= -1 || n >= 1 ? ERR.NUM : Math.atanh(n)));
 FN.LOG10 = num1((n) => (n <= 0 ? ERR.NUM : Math.log10(n)));
 FN.SIGN = num1(Math.sign);
 FN.POWER = (args, ctx) => binop('^', scalar(args[0], ctx), scalar(args[1], ctx));
@@ -1209,7 +1221,7 @@ FN.PI = () => Math.PI;
 FN['CEILING.MATH'] = (args, ctx) => { const n = numArg(args[0], ctx), sg = Math.abs(numArg(args[1], ctx, 1)), md = numArg(args[2], ctx, 0); if (isErr(n)) return n; if (isErr(sg)) return sg; if (sg === 0) return 0; const q = p15(n / sg); return (n < 0 && md ? Math.floor(q) : Math.ceil(q)) * sg || 0; };
 FN['FLOOR.MATH'] = (args, ctx) => { const n = numArg(args[0], ctx), sg = Math.abs(numArg(args[1], ctx, 1)), md = numArg(args[2], ctx, 0); if (isErr(n)) return n; if (isErr(sg)) return sg; if (sg === 0) return 0; const q = p15(n / sg); return (n < 0 && md ? Math.ceil(q) : Math.floor(q)) * sg || 0; };
 FN.MROUND = (args, ctx) => { const n = numArg(args[0], ctx), m = numArg(args[1], ctx); if (isErr(n)) return n; if (isErr(m)) return m; if (m === 0) return 0; if (Math.sign(n) * Math.sign(m) < 0) return ERR.NUM; return round(n / m, 0) * m; };
-FN.LOG = (args, ctx) => { const n = numArg(args[0], ctx), b = numArg(args[1], ctx, 10); if (isErr(n)) return n; if (isErr(b)) return b; return n <= 0 || b <= 0 || b === 1 ? ERR.NUM : Math.log(n) / Math.log(b); };
+FN.LOG = (args, ctx) => { const b = numArg(args[1], ctx, 10); if (isErr(b)) return b; return lift(args[0], ctx, (v) => { const n = toNum(v); if (isErr(n)) return n; return n <= 0 || b <= 0 || b === 1 ? ERR.NUM : Math.log(n) / Math.log(b); }); };
 
 // finance (the F04 formulas, Excel's sign convention: money paid out is negative)
 FN.PMT = (args, ctx) => { const r = numArg(args[0], ctx), n = numArg(args[1], ctx), pv = numArg(args[2], ctx), fv = numArg(args[3], ctx, 0), t = numArg(args[4], ctx, 0); for (const x of [r, n, pv, fv, t]) if (isErr(x)) return x; if (r === 0) return -(pv + fv) / n; const f = (1 + r) ** n; return -(r * (pv * f + fv)) / ((1 + r * (t ? 1 : 0)) * (f - 1)); };
@@ -1472,7 +1484,7 @@ const LIFT = {
   'F.DIST': [0, 1, 2, 3], 'F.DIST.RT': [0, 1, 2], 'F.INV': [0, 1, 2], 'F.INV.RT': [0, 1, 2],
   'CONFIDENCE.NORM': [0, 1, 2], 'CONFIDENCE.T': [0, 1, 2], COMBIN: [0, 1], PERMUT: [0, 1], FACT: [0],
   LARGE: [1], SMALL: [1], 'PERCENTRANK.INC': [1, 2], 'PERCENTRANK.EXC': [1, 2], EXACT: [0, 1],
-  'RANK.EQ': [0, 2], RANK: [0, 2],
+  'RANK.EQ': [0, 2], RANK: [0, 2], 'RANK.AVG': [0, 2],
 };
 for (const [name, pos] of Object.entries(LIFT)) {
   const base = FN[name];

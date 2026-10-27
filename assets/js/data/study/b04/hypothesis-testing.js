@@ -4,9 +4,9 @@
 // the one-proportion test against the 3.0% target. Oakhaven Hotel is fictional. The two-proportion test of the website's
 // August against its September is module 4's (proportions-and-chi-square).
 // Every figure printed is recomputed in `checks`.
-import { KG_BAGS, KILNWORTH_1KG, CONVERSION, SHOP, TARGETS, DERIVED as D } from './case.js?v=19';
-import * as I from '../../../core/inference.js?v=19';
-import { mean, sd, median } from '../../../core/stats.js?v=19';
+import { KG_BAGS, KILNWORTH_1KG, CONVERSION, SHOP, TARGETS, DERIVED as D } from './case.js?v=22';
+import * as I from '../../../core/inference.js?v=22';
+import { mean, sd, median } from '../../../core/stats.js?v=22';
 
 // ---------------------------------------------------------------- the bags
 const K = KILNWORTH_1KG, KG = D.kg;

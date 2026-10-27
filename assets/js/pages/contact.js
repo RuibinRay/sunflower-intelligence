@@ -1,6 +1,6 @@
 // contact.js — the letter: composes an email in the visitor's own mail app. Nothing is sent from the page.
-import { initSite } from '../core/site.js?v=19';
-import { $, copyText } from '../core/dom.js?v=19';
+import { initSite } from '../core/site.js?v=22';
+import { $, copyText } from '../core/dom.js?v=22';
 
 initSite();
 

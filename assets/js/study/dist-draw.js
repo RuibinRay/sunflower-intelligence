@@ -1,9 +1,9 @@
 // dist-draw.js — shared by B04's distribution widgets (curve, power): each named distribution with its density, tails,
 // inverse and the Excel formula that gives the same number, and an SVG drawing of a density or probability mass
 // function with shaded regions and labelled markers.
-import { s, h } from '../core/dom.js?v=19';
-import { frame, lin, niceTicks, axisX } from '../core/charts.js?v=19';
-import * as I from '../core/inference.js?v=19';
+import { s, h } from '../core/dom.js?v=22';
+import { frame, lin, niceTicks, axisX } from '../core/charts.js?v=22';
+import * as I from '../core/inference.js?v=22';
 
 /** A number as typed into an Excel formula: plain digits, no thousands separators, at most 10 significant figures. */
 export const xn = (v) => String(Number(Number(v).toPrecision(10)));

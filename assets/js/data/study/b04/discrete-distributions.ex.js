@@ -2,9 +2,9 @@
 // live here). Lantern's subscription share and orders per day come from case.js; the café client's weekly bags, the
 // online bookshop, the autumn quotes and the gift-box markdown are fictional. Formula items are marked by their results
 // (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { DERIVED as D, ORDERS_PER_DAY } from './case.js?v=19';
-import { variance } from '../../../core/stats.js?v=19';
-import { binomPmf, binomCdf, binomSf, poissonPmf, poissonCdf, poissonSf, exponCdf } from '../../../core/inference.js?v=19';
+import { DERIVED as D, ORDERS_PER_DAY } from './case.js?v=22';
+import { variance } from '../../../core/stats.js?v=22';
+import { binomPmf, binomCdf, binomSf, poissonPmf, poissonCdf, poissonSf, exponCdf } from '../../../core/inference.js?v=22';
 
 const f = (v, d = 3) => v.toFixed(d);
 const sum = (a) => a.reduce((s, x) => s + x, 0);

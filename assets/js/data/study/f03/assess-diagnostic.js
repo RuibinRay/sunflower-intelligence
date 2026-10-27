@@ -15,7 +15,7 @@
 // is not used for routing. Every business is fictional and appears nowhere else on the site; nothing comes from the
 // project (Brightwater, Harbour Credit Union). New questions, not copies of lesson exercises or module-test items.
 // No hints; solutions are shown on review. Every num item’s `check` recomputes its answer from the inputs below.
-import * as R from '../../../core/ratios.js?v=19';
+import * as R from '../../../core/ratios.js?v=22';
 
 const fx = (v, d = 2) => `${v < 0 && Math.abs(v) >= 0.5 * 10 ** -d ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const usd = (v) => `${v < 0 ? '−' : ''}$${Math.abs(Math.round(v)).toLocaleString('en-US')}`;

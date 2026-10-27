@@ -2,7 +2,7 @@
 // benchmarking-and-annual-reports). New questions, not copies of lesson exercises: other fictional businesses and other
 // angles (cash flow from a subscription business, the EBIT needed to leave a zone, actions that move Z″, a six-firm
 // median, sorting a memo’s statements). No hints; solutions show in review. Every business here is fictional.
-import * as R from '../../../core/ratios.js?v=19';
+import * as R from '../../../core/ratios.js?v=22';
 
 // Pellham Couriers ($ thousands)
 const PC = { ni: 1200, da: 500, wc: 900, capex: 600 };

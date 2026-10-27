@@ -2,9 +2,9 @@
 // Lantern’s figures come from case.js (COMPARATIVE, PERIODS, FACTS); Harbourline Roasters (fictional peer) from
 // f00/case.js; Starbucks FY2024 from its Form 10-K. Other businesses are fictional: Larch & Loom (simple example),
 // Copperleaf Bakeries and Juniper Street Bakery (challenging example). checks recompute every printed number.
-import { COMPARATIVE, PERIODS, FACTS as F } from './case.js?v=19';
-import { HARBOURLINE as H, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=19';
-import * as R from '../../../core/ratios.js?v=19';
+import { COMPARATIVE, PERIODS, FACTS as F } from './case.js?v=22';
+import { HARBOURLINE as H, HARBOURLINE_DETAIL as HD } from '../f00/case.js?v=22';
+import * as R from '../../../core/ratios.js?v=22';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const IS = Object.fromEntries(COMPARATIVE.income.map(([n, a, b]) => [n, [a, b]]));

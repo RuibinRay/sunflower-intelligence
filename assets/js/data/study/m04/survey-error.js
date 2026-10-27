@@ -4,9 +4,9 @@
 // callout, the sampler demonstrations and their checks, never as something Ana knows. Saltreed Festival and Tamberlake
 // Gyms are fictional. Calculating and testing the NPS, top boxes and cross-tabs is module 4's; this lesson is about the
 // errors around them.
-import { SIZES, STRATA, SURVEY_2027, SURVEY_PLAN, DISPOSITIONS, DERIVED, PEOPLE } from './case.js?v=19';
-import * as S from '../../../core/survey.js?v=19';
-import * as I from '../../../core/inference.js?v=19';
+import { SIZES, STRATA, SURVEY_2027, SURVEY_PLAN, DISPOSITIONS, DERIVED, PEOPLE } from './case.js?v=22';
+import * as S from '../../../core/survey.js?v=22';
+import * as I from '../../../core/inference.js?v=22';
 
 const D = DERIVED, DS = DISPOSITIONS, ALL = DS.all;
 const N = SIZES.reduce((a, b) => a + b, 0), INV = SURVEY_2027.invited;

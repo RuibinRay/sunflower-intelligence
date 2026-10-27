@@ -5,9 +5,9 @@
 // market from the top down and the bottom up, compares competitors' offers, codes the interviews and writes Ana a memo.
 // Every figure comes from case.js (OFFICE_* exports); `verify` recomputes the figures shown, including the worksheet
 // formulas through the spreadsheet engine.
-import { OFFICE_FRAME, OFFICE_LEVELS, OFFICE_OFFER, OFFICES, OFFICE_DECISION, OFFICE_DRAFT, OFFICE_FLAWS, OFFICE_INTERVIEWS, OFFICE_INTERVIEW_THEMES, OFFICE_COMPETITORS, OFFICE_SIZING, tableCells } from './case.js?v=19';
-import * as S from '../../../core/survey.js?v=19';
-import { Sheet } from '../../../core/sheet.js?v=19';
+import { OFFICE_FRAME, OFFICE_LEVELS, OFFICE_OFFER, OFFICES, OFFICE_DECISION, OFFICE_DRAFT, OFFICE_FLAWS, OFFICE_INTERVIEWS, OFFICE_INTERVIEW_THEMES, OFFICE_COMPETITORS, OFFICE_SIZING, tableCells } from './case.js?v=22';
+import * as S from '../../../core/survey.js?v=22';
+import { Sheet } from '../../../core/sheet.js?v=22';
 
 const num = (id, prompt, answer, check, solution, wrong, { unit = '', places = 2, tol = 0.005, kind = 'numerical' } = {}) =>
   ({ id, type: 'num', kind, unit, places, prompt, answer, check, tol, solution, ...(wrong ? { wrong } : {}) });

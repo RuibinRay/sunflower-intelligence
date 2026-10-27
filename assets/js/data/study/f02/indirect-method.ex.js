@@ -1,7 +1,7 @@
 // indirect-method.ex.js — F02 · The indirect method: widgets, practice and the knowledge check.
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // Lantern’s figures come from case.js; every other business is fictional and invented for the exercise.
-import { DERIVED as D, RESULTS as R, LEDGER } from './case.js?v=19';
+import { DERIVED as D, RESULTS as R, LEDGER } from './case.js?v=22';
 
 const bal = (n) => LEDGER[n]?.balance || 0;
 const money = (v) => `${v < 0 ? '−' : ''}$${Math.abs(Math.round(v)).toLocaleString('en-US')}`;

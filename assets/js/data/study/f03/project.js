@@ -2,8 +2,8 @@
 // for Harbour Credit Union, December 2027. The data are in brightwater.js (2027 from F02's project; July–December
 // 2026 new here, consistent with F01 and F02). Each `check` recomputes its answer by hand from the statements' raw
 // figures; `verify` compares the ratio engine's results with the figures shown.
-import { PERIODS, LINES, BENCHMARK as BM, LOAN_REQUEST as LR, PRO_FORMA as PF, RATIOS, INCOME_2026 } from './brightwater.js?v=19';
-import { RESULTS as B27, AGING } from '../f02/brightwater.js?v=19';
+import { PERIODS, LINES, BENCHMARK as BM, LOAN_REQUEST as LR, PRO_FORMA as PF, RATIOS, INCOME_2026 } from './brightwater.js?v=22';
+import { RESULTS as B27, AGING } from '../f02/brightwater.js?v=22';
 
 const money = (x) => `${x < 0 ? '−' : ''}$${Math.round(Math.abs(x)).toLocaleString('en-US')}`;
 const c0 = (x) => Math.round(x).toLocaleString('en-US');
