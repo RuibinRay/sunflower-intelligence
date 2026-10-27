@@ -3,8 +3,8 @@
 // with DERIVED.segments.labels); Cold Brew's price, cost and channel margins from m02/market.js. The persona's name
 // (Quinn) is a label, not data. Quarrystone Fitness and Ferrisby Books are fictional. Every printed figure is
 // recomputed in `checks`.
-import { DERIVED as D, RESPONDENTS, LEVELS, STUDY, BRANDS } from './case.js?v=20';
-import { CHANNELS, TIERS, DEFAULT_PLAN } from '../m02/market.js?v=20';
+import { DERIVED as D, RESPONDENTS, LEVELS, STUDY, BRANDS } from './case.js?v=22';
+import { CHANNELS, TIERS, DEFAULT_PLAN } from '../m02/market.js?v=22';
 
 // ---------------------------------------------------------------- the figures this lesson quotes
 const S = D.segments, NAMES = S.names, LAB = S.labels, R = RESPONDENTS, N = R.length;

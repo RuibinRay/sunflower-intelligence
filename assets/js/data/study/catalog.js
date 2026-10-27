@@ -277,7 +277,7 @@ const ALL = [
     related: [{ plate: 'describe' }, { tool: 'analytics/explore/#describe', label: 'Describe' }],
   }),
   C({
-    id: 'b05', school: 'analytics', code: 'B05', level: 'intermediate', status: 'in-progress', requires: ['b04'], recommends: ['b03'],
+    id: 'b05', school: 'analytics', code: 'B05', level: 'intermediate', status: 'reviewed', requires: ['b04'], recommends: ['b03'],
     title: 'Correlation Analysis',
     blurb: 'Measure how variables move together, test it, and avoid reading causation into it.',
     topics: ['Covariance', 'Pearson correlation', 'Spearman correlation', 'Strength and direction', 'Scatterplots', 'Correlation matrices and heatmaps', 'Outliers', 'Nonlinear relationships', 'Statistical significance', 'Correlation versus causation', 'Spurious correlations'],

@@ -4,9 +4,9 @@
 // Harbourline Roasters is F00’s fictional roaster ($ millions). Pembury Bank (applied example) is fictional.
 // Lease-adjusted ratios are made consistent here by moving the lease cost’s interest part below EBIT and its
 // amortisation part into D&A, so that debt and EBITDA are adjusted together.
-import { PERIODS, COMPARATIVE, LEASE, BREWER, FACTS } from './case.js?v=20';
-import { HARBOURLINE as HB, HARBOURLINE_DETAIL as HBD } from '../f00/case.js?v=20';
-import * as R from '../../../core/ratios.js?v=20';
+import { PERIODS, COMPARATIVE, LEASE, BREWER, FACTS } from './case.js?v=22';
+import { HARBOURLINE as HB, HARBOURLINE_DETAIL as HBD } from '../f00/case.js?v=22';
+import * as R from '../../../core/ratios.js?v=22';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const S26 = R.solvency(P26), S27 = R.solvency(P27), SA = R.solvency(P27, { withLeases: true });   // SA: leases as debt, earnings adjusted

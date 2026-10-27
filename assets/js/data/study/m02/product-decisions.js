@@ -1,6 +1,6 @@
 // product-decisions.js — M02 · Product decisions. Content only; exercises are in product-decisions.ex.js.
 // Every Lantern figure comes from ./market.js (fictional); `checks` recompute them from that file.
-import { TIERS, RANGES, CHANNELS, CATEGORY, DEFAULT_PLAN } from './market.js?v=20';
+import { TIERS, RANGES, CHANNELS, CATEGORY, DEFAULT_PLAN } from './market.js?v=22';
 
 const tier = Object.fromEntries(TIERS.map((t) => [t.id, t]));
 const range = Object.fromEntries(RANGES.map((r) => [r.id, r]));

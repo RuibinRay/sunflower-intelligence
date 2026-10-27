@@ -3,10 +3,10 @@
 // peak waits and transactions, Harbourside's weather, footfall and sales for the mediator and collider cases.
 // Swiftwing Air is fictional. Regression slopes and prediction are B06's; causal reasoning is correlation-and-causation's.
 // Every figure printed is recomputed in `checks`.
-import { DERIVED as D, column } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
-import { mean, ranks } from '../../../core/stats.js?v=20';
-import { tSf } from '../../../core/inference.js?v=20';
+import { DERIVED as D, column } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
+import { mean, ranks } from '../../../core/stats.js?v=22';
+import { tSf } from '../../../core/inference.js?v=22';
 
 // ---------------------------------------------------------------- staffing and waits (both cafés, 612 days)
 const S = column('peak_staff_hours'), W = column('peak_wait_min'), T = column('transactions'), LOAD = column('peak_load');
@@ -59,7 +59,7 @@ export default {
   slug: 'partial-correlation',
   title: 'Partial correlation',
   blurb: 'Ask what remains of a correlation when a third variable is held fixed: by comparing like with like, by correlating residuals, or with the first-order formula. Then learn which variables to hold fixed (confounders) and which not to (mediators and colliders).',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain what it means to hold a third variable fixed, and compare days that are alike on it to see the idea at work.',
     'Calculate a partial correlation by correlating residuals and with the first-order formula, in Excel and by hand, and test it with n − 2 − k degrees of freedom.',

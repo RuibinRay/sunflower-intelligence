@@ -2,8 +2,8 @@
 // live here). The cafés’ log comes from case.js (Harbourside’s 30 June days for the worksheets); Brightside Gym,
 // Hartley Books and Harbour Light Ferries are fictional. Formula items are marked by their results
 // (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { MATRIX, MATRIX_COLUMNS, column } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
+import { MATRIX, MATRIX_COLUMNS, column } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const neg = (v, d = 2) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), d)}`;

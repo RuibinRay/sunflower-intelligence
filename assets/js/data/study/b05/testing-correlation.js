@@ -4,9 +4,9 @@
 // for the small-sample example. The t test, power and Type I and II errors are B04's (hypothesis-testing); this lesson
 // applies them to r. Testing many correlations at once is correlation-matrices'; slopes and prediction are B06's.
 // Every figure printed is recomputed in `checks`.
-import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
-import * as I from '../../../core/inference.js?v=20';
+import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
+import * as I from '../../../core/inference.js?v=22';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };
@@ -73,7 +73,7 @@ export default {
   slug: 'testing-correlation',
   title: 'Testing a correlation',
   blurb: 'Decide whether a sample correlation is evidence of a real association, put a confidence interval round it with Fisher’s z, and plan how many pairs a study needs. Test rain against footfall at both cafés, see why r = 0.14 is significant with 612 pairs while r = 0.64 is not with 8, and compare the two cafés’ correlations without confusing significance with size.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'State the null and alternative hypotheses for a correlation, and calculate the t statistic r√(n − 2) ÷ √(1 − r²) and its p-value, one- or two-sided, by hand and in Excel.',
     'Calculate the critical value of r for a given n and α, and explain why the same r can be significant with many pairs and not with few.',
@@ -271,7 +271,7 @@ export default {
     { term: 'Population correlation', def: 'The correlation between two variables across the whole population the sample comes from, written ρ (rho). A sample correlation r estimates it.' },
     { term: 'Critical value of r', def: 'The smallest absolute value of a sample correlation that is statistically significant at a chosen level for a given number of pairs: t_crit ÷ √(n − 2 + t_crit²).' },
     { term: 'Fisher’s z transformation', def: 'z = atanh(r) = ½ ln((1 + r) ÷ (1 − r)), which turns a correlation into a quantity that is close to normally distributed with standard error 1 ÷ √(n − 3). Used for confidence intervals for ρ and for comparing correlations. Excel’s FISHER; FISHERINV reverses it.' },
-    { term: 'Independent samples', def: 'Samples in which the observations in one have no connection with the observations in the other, such as different customers or different stores. Measurements of the same days, people or items are not independent samples.' },
+    { term: 'Independent samples', def: 'Two samples whose values are unrelated, such as separate groups of customers or calls, so that nothing links a value in one sample to a particular value in the other.' },
   ],
 
   references: [

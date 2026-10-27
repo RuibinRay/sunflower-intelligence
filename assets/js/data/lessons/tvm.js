@@ -1,6 +1,6 @@
 // Lesson: time value of money and discounted cash flow.
 // `checks` recompute every number printed in the worked example; tests/lessons.test.mjs compares them.
-import * as F from '../../core/format.js?v=20';
+import * as F from '../../core/format.js?v=22';
 
 const pv = (cf, r, t) => cf / (1 + r) ** t;
 

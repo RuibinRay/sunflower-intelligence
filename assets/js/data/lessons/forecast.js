@@ -1,7 +1,7 @@
 // Lesson: seasonal forecasting with Holt-Winters — level, trend and season, how they update, and how to check a forecast.
 // `checks` recompute every number printed in the worked example; tests/lessons.test.mjs compares them.
-import * as F from '../../core/format.js?v=20';
-import { filter, project } from '../../core/forecast.js?v=20';
+import * as F from '../../core/format.js?v=22';
+import { filter, project } from '../../core/forecast.js?v=22';
 
 // Invented shop: quarterly sales ($k). States at the end of last year.
 const INIT = { l0: 200, b0: 5, s0: [-30, -10, 0, 40] };

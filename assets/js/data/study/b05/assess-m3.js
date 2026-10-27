@@ -3,8 +3,8 @@
 // student reviews the test. Café data come from case.js; Lindquist Garden Centre, Ferrowby Couriers, Quarrydale Insurance, the
 // city survey and the other small datasets are fictional. Formula items are marked by their results (core/sheet.js
 // gradeFormula); every num item's `check` recomputes its answer.
-import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
+import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
 
 const at = (name) => CAFE_COLUMNS.indexOf(name);
 const fx = (v, d = 3) => (v < 0 ? '−' : '') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });

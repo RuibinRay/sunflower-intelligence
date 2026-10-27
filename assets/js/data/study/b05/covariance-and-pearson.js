@@ -2,9 +2,9 @@
 // covariance-and-pearson.ex.js. Uses the cafés' corrected log (case.js: column, CLEAN_ROWS, DERIVED) for covariance and
 // its units, r and its z-score form, changes of scale (°F to °C), r² and the footfall–transactions–sales chain.
 // Northgate Gym is fictional. Every figure printed is recomputed in `checks` with core/correlation.js.
-import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
-import { mean, sd } from '../../../core/stats.js?v=20';
+import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
+import { mean, sd } from '../../../core/stats.js?v=22';
 
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };
 const at = (n) => CAFE_COLUMNS.indexOf(n);
@@ -81,7 +81,7 @@ export default {
   slug: 'covariance-and-pearson',
   title: 'Covariance and Pearson’s r',
   blurb: 'Turn a scatterplot into a number. Build covariance from the products of deviations, see why its size depends on the units, divide by the two standard deviations to get Pearson’s r, read r as the average product of z-scores, and interpret r² with care. Then follow footfall to transactions to sales through the cafés’ log.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate the sample covariance of two variables by hand and with COVARIANCE.S, and explain what its sign and its units tell you.',
     'Calculate Pearson’s r from the covariance and the two standard deviations, and as the average product of z-scores.',

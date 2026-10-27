@@ -1,6 +1,6 @@
 // long-lived-assets.ex.js — F02 · Long-lived assets: widgets, practice and the knowledge check.
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
-import { FACTS } from './case.js?v=20';
+import { FACTS } from './case.js?v=22';
 
 /** $1,234 or $1,234.56 (cents only when needed); a real minus sign for negatives. */
 const money = (n) => {

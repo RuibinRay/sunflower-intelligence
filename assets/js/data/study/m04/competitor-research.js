@@ -4,9 +4,9 @@
 // the five lost bids, the second van). Hobbarn Dairy and Thistlecombe Pet Foods are fictional. The codes and laws cited
 // were read at their sources on the date in `references`. Not the office market or its competitors (the project's).
 // Every printed figure is recomputed in `checks`.
-import { PRICE_AUDIT, COMPETITORS, DEFAULT_PLAN, BREWLINE, CLIENT_INTERVIEWS, FOCUS_GROUPS, DERIVED as D } from './case.js?v=20';
-import { BUSINESS, OUTLOOK_2027 } from '../m01/case.js?v=20';
-import { TIERS } from '../m02/market.js?v=20';
+import { PRICE_AUDIT, COMPETITORS, DEFAULT_PLAN, BREWLINE, CLIENT_INTERVIEWS, FOCUS_GROUPS, DERIVED as D } from './case.js?v=22';
+import { BUSINESS, OUTLOOK_2027 } from '../m01/case.js?v=22';
+import { TIERS } from '../m02/market.js?v=22';
 
 // ---------------------------------------------------------------- the audit, as one row per shelf price
 const BRANDS = PRICE_AUDIT.brands;                                         // Summit Brew, Daily Grind RTD, Arcadia Coffee

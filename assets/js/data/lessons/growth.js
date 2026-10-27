@@ -1,5 +1,5 @@
 // Lesson: unit economics (LTV, CAC, payback, retention) and reading an A/B test.
-import * as F from '../../core/format.js?v=20';
+import * as F from '../../core/format.js?v=22';
 
 const m0 = 32 * 0.45, ltv0 = m0 / 0.06, cac0 = 54000 / 1200;
 

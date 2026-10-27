@@ -2,9 +2,9 @@
 // here). Kilnworth's bags, the set-up times and the web shop's months come from case.js; Beacon Fitness, Kinfolk Trust,
 // Hearthstone Bakery, Dalton Foods, Hawthorn Pharmacy and Bellwood Stores are fictional. Formula items are marked by
 // their results (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { KG_BAGS, KILNWORTH_1KG, SETUP_MINUTES, SHOP, TARGETS, DERIVED as D } from './case.js?v=20';
-import * as I from '../../../core/inference.js?v=20';
-import { mean, sd } from '../../../core/stats.js?v=20';
+import { KG_BAGS, KILNWORTH_1KG, SETUP_MINUTES, SHOP, TARGETS, DERIVED as D } from './case.js?v=22';
+import * as I from '../../../core/inference.js?v=22';
+import { mean, sd } from '../../../core/stats.js?v=22';
 
 const K = KILNWORTH_1KG, KG = D.kg;
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });

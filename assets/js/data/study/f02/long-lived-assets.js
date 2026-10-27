@@ -2,7 +2,7 @@
 // Uses FACTS.equipment and FACTS.van, ADJUSTMENTS e3 and e4, and DERIVED from case.js. Lantern sold nothing in 2026, so the
 // disposal, patent, goodwill and impairment examples use other fictional businesses; the van’s mileage, the machine’s
 // revised life and the method comparison are labelled hypothetical (“suppose”).
-import { FACTS, ADJUSTMENTS, DERIVED, LEDGER } from './case.js?v=20';
+import { FACTS, ADJUSTMENTS, DERIVED, LEDGER } from './case.js?v=22';
 
 const eq = FACTS.equipment, van = FACTS.van;
 const tx = (id) => ADJUSTMENTS.find((t) => t.id === id);

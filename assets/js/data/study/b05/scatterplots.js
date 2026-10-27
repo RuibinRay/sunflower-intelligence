@@ -2,9 +2,9 @@
 // (case.js: column, CLEAN_ROWS, CAFE_ROWS, SLIP, DERIVED) for direction, form, strength and unusual points, the
 // overplotting and time-order problems of 612 points, and Ana's iced-drink planning. Anscombe's quartet uses Anscombe's
 // (1973) values as Wikipedia prints them (the same data ship as R's datasets::anscombe). Pemberton Cinema is fictional. Every figure printed is recomputed in `checks`.
-import { column, CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, DERIVED as D } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
-import { mean, variance } from '../../../core/stats.js?v=20';
+import { column, CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, DERIVED as D } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
+import { mean, variance } from '../../../core/stats.js?v=22';
 
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };
 const at = (n) => CAFE_COLUMNS.indexOf(n);
@@ -78,7 +78,7 @@ export default {
   slug: 'scatterplots',
   title: 'Scatterplots',
   blurb: 'Plot before you calculate. Read a scatterplot for direction, form, strength and unusual points, choose which variable goes on which axis, and make 612 café-days readable when points pile on top of one another, hide their time order, or tell four different stories behind one correlation.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Describe a scatterplot by its direction, form, strength and unusual points, in the words of the business question.',
     'Choose which variable to put on each axis, and explain why the correlation is the same either way.',

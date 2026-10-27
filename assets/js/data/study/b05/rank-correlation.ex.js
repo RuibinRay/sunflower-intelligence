@@ -2,9 +2,9 @@
 // Café data come from case.js (the corrected log, or the raw log where the 14 September slip is the point); Driftwood
 // Ices, Cobble Lane Hotel, Halden University, Northway Rail and the other organisations named are fictional. Formula
 // items are marked by their results (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { column, CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
-import { ranks } from '../../../core/stats.js?v=20';
+import { column, CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
+import { ranks } from '../../../core/stats.js?v=22';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const fx = (v, d = 3) => (v < 0 ? '−' : '') + Math.abs(v).toFixed(d);

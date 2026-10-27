@@ -2,8 +2,8 @@
 // Uses the cafés' daily log (case.js: MATRIX, MATRIX_COLUMNS, column) for the year's matrix and Harbourside's June
 // (30 days) for the many-tests example. Pinecrest Hotel is fictional. Partial correlation is the next lesson's;
 // causes are correlation-and-causation's. Every figure printed is recomputed in `checks`.
-import { MATRIX, MATRIX_COLUMNS, DERIVED as D, column } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
+import { MATRIX, MATRIX_COLUMNS, DERIVED as D, column } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
 
 // ---------------------------------------------------------------- the year's matrix (both cafés, 612 days)
 const R = MATRIX.r, P = MATRIX.p, NAMES = MATRIX.names;
@@ -75,7 +75,7 @@ export default {
   slug: 'correlation-matrices',
   title: 'Correlation matrices',
   blurb: 'Put every pair of measures in one table, read it as a map of what goes with what, spot measures that say the same thing, and test 28 correlations at once without being fooled by the false alarms that many tests produce: Bonferroni, Holm and the Benjamini–Hochberg false discovery rate.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Construct a correlation matrix and its heatmap in Excel, with CORREL or the Analysis ToolPak’s Correlation tool, and read its structure: blocks, redundant measures and near-zero pairs.',
     'Calculate the number of distinct pairs among m variables and explain why testing them all at α = 0.05 produces false alarms.',

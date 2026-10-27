@@ -5,9 +5,9 @@
 // Lane Hotel is fictional. Testing a rank correlation is testing-correlation's; outliers in general are
 // outliers-and-influence's; curves that turn back (U shapes) are nonlinear-and-restricted's.
 // Every figure printed is recomputed in `checks`.
-import { column, CLEAN_ROWS, CAFE_COLUMNS, SLIP, DERIVED as D } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
-import { ranks } from '../../../core/stats.js?v=20';
+import { column, CLEAN_ROWS, CAFE_COLUMNS, SLIP, DERIVED as D } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
+import { ranks } from '../../../core/stats.js?v=22';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };
@@ -73,7 +73,7 @@ export default {
   slug: 'rank-correlation',
   title: 'Rank correlation',
   blurb: 'Replace values by their ranks and measure how consistently one variable rises (or falls) with another, whether or not the path is straight. Calculate Spearman’s ρ and Kendall’s τ-b by hand and in Excel, handle ties, and choose between r, ρ and τ for curves, data-entry slips, ratings and a rainfall column that is zero on most days.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate the ranks of a variable, giving tied values their average rank, by hand and with RANK.AVG.',
     'Calculate Spearman’s ρ as Pearson’s r of the ranks, and with the d² shortcut when there are no ties.',

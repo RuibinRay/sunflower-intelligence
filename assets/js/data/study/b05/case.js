@@ -13,10 +13,10 @@
 // Agrees with other courses (checked in IDENTITIES): F03's two cafés, their names and opening day, their ten months of
 // trading and their $236,000 of 2027 sales; F03's $189,400 of 2027 online sales (the project's weekly data). The peak
 // barista hours are the 7–11 a.m. roster only, not the day's paid hours (F03 has the year's café wages).
-import { CAFE_COLUMNS, CAFE_ROWS, SLIP, SHOP_COLUMNS, SHOP_WEEKS, OUTAGE_WEEK } from './data.js?v=20';
-import { FACTS as F03 } from '../f03/case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
-import { mean, sd } from '../../../core/stats.js?v=20';
+import { CAFE_COLUMNS, CAFE_ROWS, SLIP, SHOP_COLUMNS, SHOP_WEEKS, OUTAGE_WEEK } from './data.js?v=22';
+import { FACTS as F03 } from '../f03/case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
+import { mean, sd } from '../../../core/stats.js?v=22';
 
 export { CAFE_COLUMNS, CAFE_ROWS, SLIP };
 /** The project's data (lessons, exercises and module tests must not use these). */

@@ -2,10 +2,10 @@
 // correlation-and-causation.ex.js. Uses the cafés' daily log (case.js: DERIVED, column) for the loyalty-members trend,
 // the staffing confounder, the waiting-time gradient and rain. Seaside Cinemas and the other businesses named are
 // fictional. Every figure printed is recomputed in `checks`.
-import { DERIVED as D, column } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
-import { mean } from '../../../core/stats.js?v=20';
-import { tTest2 } from '../../../core/inference.js?v=20';
+import { DERIVED as D, column } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
+import { mean } from '../../../core/stats.js?v=22';
+import { tTest2 } from '../../../core/inference.js?v=22';
 
 // ---------------------------------------------------------------- two trends at Harbourside
 const H = { cafe: 'Harbourside' };
@@ -74,7 +74,7 @@ export default {
   slug: 'correlation-and-causation',
   title: 'Correlation and causation',
   blurb: 'Learn the six ways two variables can be correlated without one causing the other, what kinds of evidence do support a causal claim, and how to write a finding that says exactly as much as the data allow.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Identify, for a given correlation, the explanations other than cause: chance, confounding, reverse causation, common trends, selection and pooled groups.',
     'Detect and remove a common trend by correlating changes or by working within shorter periods, and explain what the result shows.',

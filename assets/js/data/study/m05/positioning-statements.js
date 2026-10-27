@@ -4,9 +4,9 @@
 // facts (price $3.49, single-origin Ethiopian steeped 20 hours, rivals' prices) through case.js's COMPETITORS. Ana's
 // screening rule (index of at least 110, a lead or gap of at least 0.5 points) is a fictional rule of thumb. Velloway
 // Cycles and Larkspan Software are fictional. Every printed figure is recomputed in `checks`.
-import { BRANDS, NEEDS, COMPETITORS, BRAND_NOTES, DERIVED as D } from './case.js?v=20';
-import { propTest2 } from '../../../core/inference.js?v=20';
-import { TIERS } from '../m02/market.js?v=20';
+import { BRANDS, NEEDS, COMPETITORS, BRAND_NOTES, DERIVED as D } from './case.js?v=22';
+import { propTest2 } from '../../../core/inference.js?v=22';
+import { TIERS } from '../m02/market.js?v=22';
 
 const M = D.map.brandMeans, IX = D.segments.index, SEG = D.segments.names, SIZE = D.segments.sizes, DIST = D.map.distances;
 const B = (name) => BRANDS.indexOf(name), S = (name) => SEG.indexOf(name), A = (key) => NEEDS.findIndex((n) => n.key === key);

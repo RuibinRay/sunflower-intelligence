@@ -29,10 +29,10 @@
 // follow the season, so their p-values are approximate (too small), and the two cafés share their days: items that test
 // say so. No hints; solutions are shown on review. Every num item’s `check` recomputes its answer, and every formula
 // item is marked by its results on the sheet and on changed copies.
-import { CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, column, DERIVED, MATRIX } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
-import { mean, sd } from '../../../core/stats.js?v=20';
-import { normCdf, tCdf } from '../../../core/inference.js?v=20';
+import { CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, column, DERIVED, MATRIX } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
+import { mean, sd } from '../../../core/stats.js?v=22';
+import { normCdf, tCdf } from '../../../core/inference.js?v=22';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const fx = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
@@ -584,6 +584,7 @@ export const items = [
       { value: rnd(partialT(P2.r, P2.n, 0), 2), say: 'That uses n − 2 degrees of freedom, as for a simple correlation. Each variable held fixed costs one more: n − 2 − k = 26.' },
       { value: rnd(partialT(P2.r, P2.n, 1), 2), say: 'Two variables are held fixed (transactions and the high), so df = 30 − 2 − 2 = 26, not 27.' },
       { value: rnd(P2.r * Math.sqrt(P2.n - 4), 2), say: 'Divide by √(1 − r²) as well: t = r √df ÷ √(1 − r²).' },
+      { value: -rnd(partialT(P2.r, P2.n, P2.k), 2), say: 'Keep the sign: the partial correlation is negative, so t is too.' },
     ],
     solution: `df = n − 2 − k = ${P2.n} − 2 − 2 = ${P2.n - 4}. t = r √df ÷ √(1 − r²) = ${fx(P2.r, 3)} × √${P2.n - 4} ÷ √(1 − ${fx(P2.r ** 2, 4)}) = ${fx(partialT(P2.r, P2.n, P2.k), 3)}; <x>=T.DIST.2T(${fx(Math.abs(partialT(P2.r, P2.n, P2.k)), 3)},26)</x> = ${fx(2 * (1 - tCdf(Math.abs(partialT(P2.r, P2.n, P2.k)), P2.n - 4)), 3)}. At a given trade and temperature, June days with more baristas had shorter waits. Neighbouring days are alike, so treat the p-value as approximate.`,
   },
@@ -623,7 +624,7 @@ export const items = [
       3: 'A believable mechanism.',
       4: 'The cause comes before the effect.',
     },
-    solution: 'Hill’s considerations are things to weigh, not a checklist: consistency (both cafés, every month), a gradient (waits rise with load), an experiment (the planned trial, the strongest evidence once it has run), plausibility (how a queue clears) and timing (the roster is set first). Together they make a much stronger case than any correlation alone.',
+    solution: `Hill’s considerations are things to weigh, not a checklist: consistency (both cafés together and Millbrook in every month, Harbourside in ${negH} of ${MONTHS.length}), a gradient (waits rise with load), an experiment (the planned trial, the strongest evidence once it has run), plausibility (how a queue clears) and timing (the roster is set first). Together they make a much stronger case than any correlation alone.`,
   },
   {
     id: 'b05-fn-24', lesson: 'correlation-and-causation', type: 'mc', kind: 'conceptual',

@@ -2,8 +2,8 @@
 // live here). Café data from case.js (the raw log keeps the footfall slip); Mossbank Bakery and the other small
 // datasets are fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num items recompute
 // their answers in `check`.
-import { column, CAFE_ROWS, CAFE_COLUMNS, SLIP } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
+import { column, CAFE_ROWS, CAFE_COLUMNS, SLIP } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
 
 const at = (name) => CAFE_COLUMNS.indexOf(name);
 const fx = (v, d = 3) => (v < 0 ? '−' : '') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });

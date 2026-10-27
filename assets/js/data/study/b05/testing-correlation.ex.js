@@ -2,9 +2,9 @@
 // here). Café data come from case.js (the corrected log); Quayside Books, Harrow & Finch, Tern Air, Brightline
 // Pharmacy and the other organisations named are fictional. Formula items are marked by their results (core/sheet.js
 // gradeFormula); num items recompute their answers in `check`.
-import { column, CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
-import * as I from '../../../core/inference.js?v=20';
+import { column, CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
+import * as I from '../../../core/inference.js?v=22';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const fx = (v, d = 3) => (v < 0 ? '−' : '') + Math.abs(v).toFixed(d);

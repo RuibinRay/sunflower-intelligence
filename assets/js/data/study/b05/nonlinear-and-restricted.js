@@ -3,9 +3,9 @@
 // threshold near a load of seven transactions per barista hour, summer-only days and Millbrook's weekdays. The Hollyford
 // Hotel, the twelve towns and the reliability figures are fictional. Fitting curves and residual plots are B06's.
 // Every figure printed is recomputed in `checks`.
-import { column, DERIVED as D } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
-import { mean, sd } from '../../../core/stats.js?v=20';
+import { column, DERIVED as D } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
+import { mean, sd } from '../../../core/stats.js?v=22';
 
 // ---------------------------------------------------------------- the iced-drink curve
 const T = column('high_f'), I = column('iced_share'), MON = column('date').map((d) => Number(d.slice(5, 7)));
@@ -79,7 +79,7 @@ export default {
   slug: 'nonlinear-and-restricted',
   title: 'Curves, thresholds and restricted ranges',
   blurb: 'Pearson’s r measures how close points come to a straight line. Learn what it says, and fails to say, about curves, thresholds and U-shapes, why looking at only part of the range shrinks it, and why noisy measurements do too.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Recognise from a scatterplot when a relationship is curved, has a threshold or is U-shaped, and explain what Pearson’s r then does and does not describe.',
     'Calculate correlations within ranges of x and with a transformed x (a log or a hinge at a threshold) to show how the strength of a link changes along its range.',

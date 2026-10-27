@@ -15,10 +15,10 @@
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}try{if(localStorage.getItem('si:outline')==='closed')document.documentElement.classList.add('outline-closed')}catch(e){}</script>
   <link rel="preload" href="../../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../../../../assets/css/base.css?v=20">
-  <link rel="stylesheet" href="../../../../assets/css/rooms.css?v=20">
-  <link rel="stylesheet" href="../../../../assets/css/study.css?v=20">
-  <link rel="stylesheet" href="../../../../assets/vendor/katex/katex.min.css?v=20">
+  <link rel="stylesheet" href="../../../../assets/css/base.css?v=22">
+  <link rel="stylesheet" href="../../../../assets/css/rooms.css?v=22">
+  <link rel="stylesheet" href="../../../../assets/css/study.css?v=22">
+  <link rel="stylesheet" href="../../../../assets/vendor/katex/katex.min.css?v=22">
 </head>
 <body class="room room--learn room--sub room--study school--analytics page--lesson" data-root="../../../../" data-course="b05" data-lesson="testing-correlation" data-module="2">
   <a class="skip-link" href="#ledger">Skip to the lesson</a>
@@ -584,7 +584,7 @@ M834 80h400000v40h-400000z"/></svg></span></span></span><span class="vlist-s">�
           <h3>Key formulas</h3>
           <ul class="key-formulas"><li><a href="#f-test-r-t">t test of a correlation (H₀: ρ = 0)</a></li><li><a href="#f-test-r-crit">Critical value of r</a></li><li><a href="#f-test-fisher-ci">Confidence interval for ρ by Fisher’s z</a></li><li><a href="#f-test-fisher-rho0">Test of H₀: ρ = ρ₀ by Fisher’s z</a></li><li><a href="#f-test-compare">Comparing two independent correlations</a></li><li><a href="#f-test-n-pairs">Pairs needed to detect a correlation</a></li></ul>
           <h3>Terms introduced</h3>
-          <dl class="define glossary-mini"><div id="term-population-correlation"><dt>Population correlation</dt><dd>The correlation between two variables across the whole population the sample comes from, written ρ (rho). A sample correlation r estimates it.</dd></div><div id="term-critical-value-of-r"><dt>Critical value of r</dt><dd>The smallest absolute value of a sample correlation that is statistically significant at a chosen level for a given number of pairs: t_crit ÷ √(n − 2 + t_crit²).</dd></div><div id="term-fishers-z-transformation"><dt>Fisher’s z transformation</dt><dd>z = atanh(r) = ½ ln((1 + r) ÷ (1 − r)), which turns a correlation into a quantity that is close to normally distributed with standard error 1 ÷ √(n − 3). Used for confidence intervals for ρ and for comparing correlations. Excel’s FISHER; FISHERINV reverses it.</dd></div><div id="term-independent-sample"><dt>Independent samples</dt><dd>Samples in which the observations in one have no connection with the observations in the other, such as different customers or different stores. Measurements of the same days, people or items are not independent samples.</dd></div></dl>
+          <dl class="define glossary-mini"><div id="term-population-correlation"><dt>Population correlation</dt><dd>The correlation between two variables across the whole population the sample comes from, written ρ (rho). A sample correlation r estimates it.</dd></div><div id="term-critical-value-of-r"><dt>Critical value of r</dt><dd>The smallest absolute value of a sample correlation that is statistically significant at a chosen level for a given number of pairs: t_crit ÷ √(n − 2 + t_crit²).</dd></div><div id="term-fishers-z-transformation"><dt>Fisher’s z transformation</dt><dd>z = atanh(r) = ½ ln((1 + r) ÷ (1 − r)), which turns a correlation into a quantity that is close to normally distributed with standard error 1 ÷ √(n − 3). Used for confidence intervals for ρ and for comparing correlations. Excel’s FISHER; FISHERINV reverses it.</dd></div><div id="term-independent-sample"><dt>Independent samples</dt><dd>Two samples whose values are unrelated, such as separate groups of customers or calls, so that nothing links a value in one sample to a particular value in the other.</dd></div></dl>
           <h3 id="references">Sources</h3>
           <ol class="ref-list">
             <li>Illowsky, B. &amp; Dean, S. (2023). <i>Introductory Statistics 2e</i>, section 12.4, “Testing the Significance of the Correlation Coefficient”. OpenStax. <a href="https://openstax.org/books/introductory-statistics-2e/pages/12-4-testing-the-significance-of-the-correlation-coefficient">openstax.org/books/introductory-statistics-2e/pages/12-4-tes…</a></li>
@@ -628,6 +628,6 @@ M834 80h400000v40h-400000z"/></svg></span></span></span><span class="vlist-s">�
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../../../../assets/js/pages/study-lesson.js?v=20"></script>
+  <script type="module" src="../../../../assets/js/pages/study-lesson.js?v=22"></script>
 </body>
 </html>

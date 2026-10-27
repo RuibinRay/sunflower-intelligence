@@ -1,7 +1,7 @@
 // distribution-channels.js — M02 · Distribution channels and decisions. Content only; exercises are in distribution-channels.ex.js.
 // Figures for Lantern Cold Brew come from ./market.js (fictional). Every number printed here is recomputed in `checks`;
 // the simulator results quoted in the applied example are recomputed with the engine (mixsim.js).
-import { simulate, DEFAULT_PLAN } from '../../../core/mixsim.js?v=20';
+import { simulate, DEFAULT_PLAN } from '../../../core/mixsim.js?v=22';
 
 const SIM = (() => {
   const base = simulate(DEFAULT_PLAN), conv = simulate({ ...DEFAULT_PLAN, channels: [...DEFAULT_PLAN.channels, 'convenience'] });

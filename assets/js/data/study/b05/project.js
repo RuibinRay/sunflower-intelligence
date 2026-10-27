@@ -3,9 +3,10 @@
 // sales, a small real effect of spend, an outage week and slower deliveries lowering ratings). Stages 1–3 use the year
 // as the agency did; from stage 4 on, week 33 (the outage) is left out, as stage 3 decides. Every figure is computed
 // here from the data with core/correlation.js; each `check` recomputes its answer with a separate, written-out formula.
-import { SHOP_COLUMNS, SHOP_WEEKS, OUTAGE_WEEK } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
-import { ranks } from '../../../core/stats.js?v=20';
+import { SHOP_COLUMNS, SHOP_WEEKS, OUTAGE_WEEK } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
+import { ranks } from '../../../core/stats.js?v=22';
+import { SHOP_MODEL } from '../b03/case.js?v=22';
 
 const col = (n) => SHOP_WEEKS.map((r) => r[SHOP_COLUMNS.indexOf(n)]);
 const WEEK = col('week'), SPEND = col('social_spend'), VALUE = col('order_value'), SESSIONS = col('sessions'), ORDERS = col('orders');
@@ -55,6 +56,10 @@ const Z80 = 1.959964 + 0.841621;
 R.detect6 = Z80 * R.ordCV * Math.sqrt(1 / 6 + 1 / 6);
 R.detectYear = Z80 * R.ordCV * Math.sqrt(1 / 20 + 1 / 19);
 R.spendTotal = SPEND.reduce((t, v) => t + v, 0);
+// break-even: B03's margin per order (order value less product cost and card fees, less the courier), at 2027's average order
+R.aov = VALUE.reduce((t, v) => t + v, 0) / ORDERS.reduce((t, v) => t + v, 0);
+R.marginShare = (R.aov * (1 - SHOP_MODEL.costShare - SHOP_MODEL.feeRate) - SHOP_MODEL.courier) / R.aov;
+R.breakEven = R.ordSpend / (R.ordMean * R.marginShare);
 
 const f3 = (x) => (x < 0 ? `−${Math.abs(x).toFixed(3)}` : x.toFixed(3));
 const f2 = (x) => (x < 0 ? `−${Math.abs(x).toFixed(2)}` : x.toFixed(2));
@@ -292,13 +297,13 @@ export default {
         { id: 'b05-pj-15', type: 'short', kind: 'applied',
           prompt: 'Write Ana a memo (about 250 words): what the agency’s 0.95 does and doesn’t show, what the rest of the data say, and a practical test that would show what paid social does for Lantern’s sales.',
           rubric: [
-            'States that r = 0.95 is real but comes from the push weeks, where the season moves both spend and sales (Spearman’s ρ about 0.49; ordinary weeks r near zero with an interval up to about 0.2).',
+            `States that r = 0.95 is real but comes from the push weeks, where the season moves both spend and sales (Spearman’s ρ about ${f2(R.rhoAll.rho)}; ordinary weeks r near zero with an interval up to about ${f2(R.ordinary.ci[1])}).`,
             'Does not conclude that spend does nothing: names the restricted range of spend in ordinary weeks and the width of the interval.',
             'Handles the outage week and the trends correctly, and rejects the partial correlation that holds sessions fixed (a mediator).',
             'Proposes a test that breaks the link between spend and season (randomly chosen high- and low-spend weeks, or a random split of customers or regions), sized so it could detect a lift worth having, with a stated measure and duration.',
             'Mentions what is already actionable (delivery speed and ratings) and stays within what the data support.',
           ],
-          model: `<b>To:</b> Ana · <b>Re:</b> the agency’s “r = 0.95”<br><br>The 0.95 is correct (${f3(R.all.r)}), but it mostly measures the season, not the ads. You raise spend before your twelve push weeks, and those are the weeks people buy most anyway; the gift-season weeks sit far from the rest and carry the correlation. Ranked, the link is only ${f2(R.rhoAll.rho)}, and in the ${R.nOrdinary} ordinary weeks (leaving out week ${OUTAGE_WEEK}, the outage) it is ${f2(R.ordinary.r)}, with a 95% interval from ${f2(R.ordinary.ci[0])} to ${f2(R.ordinary.ci[1])}.<br><br>That doesn’t show spend is wasted: in ordinary weeks it only moved between $${Math.min(...pick(SPEND, ORDINARY))} and $${Math.max(...pick(SPEND, ORDINARY))}, too little to show an effect, and the interval allows a modest one. Two tempting shortcuts mislead: holding sessions fixed removes the effect (ads work through visits), and a push-week indicator leaves most of the season in (partial r ${f2(R.givenPush.r)}).<br><br>To find out, test it, sized first. Doubling spend in an ordinary week costs about $${Math.round(R.ordSpend)}, about ${(R.ordSpend / R.ordMean * 100).toFixed(1)}% of a typical week’s $${Math.round(R.ordMean).toLocaleString('en-US')} of sales, so even a small lift would pay. But order value varies by about ${Math.round(R.ordCV * 100)}% from week to week, so six doubled weeks against six normal ones could only detect a lift of about ${Math.round(R.detect6 * 100)}% (80% power). Better: decide each ordinary week’s spend by a coin toss through the year (about 20 weeks each way detects about ${Math.round(R.detectYear * 100)}%), or, if the platform allows, show the ads to a random half of customers or regions, which compares many buyers at once. Decide the measure and the lift that would justify the change before you start.<br><br>Meanwhile, act on what the data do show: slower delivery goes with lower ratings (ρ ${f2(R.deliveryRatingRho.rho)}), in ordinary weeks as well as busy ones, and courier speed is something you control.`,
+          model: `<b>To:</b> Ana · <b>Re:</b> the agency’s “r = 0.95”<br><br>The 0.95 is correct (${f3(R.all.r)}), but it mostly measures the season, not the ads. You raise spend before your twelve push weeks, and those are the weeks people buy most anyway; the gift-season weeks sit far from the rest and carry the correlation. Ranked, the link is only ${f2(R.rhoAll.rho)}, and in the ${R.nOrdinary} ordinary weeks (leaving out week ${OUTAGE_WEEK}, the outage) it is ${f2(R.ordinary.r)}, with a 95% interval from ${f2(R.ordinary.ci[0])} to ${f2(R.ordinary.ci[1])}.<br><br>That doesn’t show spend is wasted: in ordinary weeks it only moved between $${Math.min(...pick(SPEND, ORDINARY))} and $${Math.max(...pick(SPEND, ORDINARY))}, too little to show an effect, and the interval allows a modest one. Two tempting shortcuts mislead: holding sessions fixed removes the effect (ads work through visits), and a push-week indicator leaves most of the season in (partial r ${f2(R.givenPush.r)}).<br><br>To find out, test it, sized first. Doubling spend in an ordinary week costs about $${Math.round(R.ordSpend)}. At the shop’s margin (B03’s model: order value less product cost, card fees and the courier, about ${Math.round(R.marginShare * 100)}% of sales), it pays if a typical week’s $${Math.round(R.ordMean).toLocaleString('en-US')} of sales rises by about ${Math.round(R.breakEven * 100)}%. Order value varies by about ${Math.round(R.ordCV * 100)}% from week to week, so six doubled weeks against six normal ones could only detect a lift of about ${Math.round(R.detect6 * 100)}% (80% power), and even a coin toss for every ordinary week of a year (about 20 weeks each way) only about ${Math.round(R.detectYear * 100)}%, still well above ${Math.round(R.breakEven * 100)}%. A test that can see a lift that small needs many more units than weeks: if the platform allows, show the ads to a random half of customers or regions and compare their purchases, many buyers at once. Decide the measure and the lift that would justify the change before you start.<br><br>Meanwhile, act on what the data do show: slower delivery goes with lower ratings (ρ ${f2(R.deliveryRatingRho.rho)}), in ordinary weeks as well as busy ones, and courier speed is something you control.`,
           solution: 'Compare your memo with the model and the rubric. Other designs earn full marks if they separate spend from the season, are large enough to detect the lift that matters, and say how the result will be judged. Switching spend off for a run of consecutive weeks is weaker: those weeks may differ in season or trend from the rest.' },
       ],
     },

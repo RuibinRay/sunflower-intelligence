@@ -904,6 +904,8 @@ input[type="file"]:focus-visible + .file-btn, .file-btn:focus-within { outline: 
 .cv-chart .cv-mark-alt { stroke: var(--olive-deep); stroke-dasharray: 2 3; }
 .cv-chart .cv-mark-label { font-size: 11px; fill: var(--ink-2); font-variant-numeric: tabular-nums; }
 .cv-out { display: grid; gap: var(--s-2); min-width: 0; }
+.sc-pick { display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center; }
+.sc-pick .btn { white-space: normal; max-width: 100%; text-align: left; }
 .cv-result { margin: 0; font-size: var(--t-md); font-variant-numeric: tabular-nums; }
 .cv-excel { margin: 0; font-size: var(--t-sm); overflow-wrap: anywhere; }
 .cv-line-text { margin: 0; font-size: var(--t-sm); color: var(--ink-2); }

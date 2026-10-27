@@ -2,8 +2,8 @@
 // (answer keys live here). The cafés’ log comes from case.js (Harbourside’s 31 October days and 30 April days for the
 // worksheets); every other business named is fictional. Formula items are marked by their results
 // (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { column } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
+import { column } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const neg = (v, d = 2) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), d)}`;

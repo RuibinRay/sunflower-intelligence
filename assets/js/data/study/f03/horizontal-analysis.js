@@ -2,10 +2,10 @@
 // Lantern’s figures come from case.js (COMPARATIVE, PERIODS, FACTS) and F02’s case (the 2026 shop’s order values);
 // checks recompute every printed number with core/ratios.js. Real figures (Starbucks FY2022–FY2024) are from its FY2024
 // Form 10-K. Other businesses are fictional: Fernhill Books (simple example), Voltreach Storage (challenging example).
-import { COMPARATIVE, PERIODS, FACTS as F } from './case.js?v=20';
-import { FACTS as F26 } from '../f02/case.js?v=20';
-import { DERIVED as B01 } from '../b01/case.js?v=20';
-import * as R from '../../../core/ratios.js?v=20';
+import { COMPARATIVE, PERIODS, FACTS as F } from './case.js?v=22';
+import { FACTS as F26 } from '../f02/case.js?v=22';
+import { DERIVED as B01 } from '../b01/case.js?v=22';
+import * as R from '../../../core/ratios.js?v=22';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const IS = Object.fromEntries(COMPARATIVE.income.map(([n, a, b]) => [n, [a, b]]));

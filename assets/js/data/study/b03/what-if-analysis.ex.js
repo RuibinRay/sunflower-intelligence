@@ -3,7 +3,7 @@
 // barista, coffee per guest, platter cost, van cost) and the December plan (PLAN_CELLS: contributions, hours, limits)
 // are fictional and introduced in this lesson; the lesson file imports them for its checks. Not SHOP_MODEL, SHOP_SHEET
 // or STOCK_PLAN (the project). Every num item's `check` recomputes its answer.
-import { QUOTE } from './case.js?v=20';
+import { QUOTE } from './case.js?v=22';
 
 /** Ana's 2026 direct-cost estimates for one event day (fictional). */
 export const COSTS = { wage: 23, setupHours: 1, guestsPerBarista: 40, cup: 0.8, platterCost: 70, van: 25 };

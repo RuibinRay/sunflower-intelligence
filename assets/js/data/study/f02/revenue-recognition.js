@@ -1,6 +1,6 @@
 // revenue-recognition.js — F02 · Revenue recognition. Content only; exercises are in revenue-recognition.ex.js.
 // Lantern’s figures come from case.js (FACTS, YEAR, DERIVED); the other businesses are fictional and live only here.
-import { FACTS, YEAR, DERIVED as D } from './case.js?v=20';
+import { FACTS, YEAR, DERIVED as D } from './case.js?v=22';
 
 const F = FACTS, cat = F.catering, tr = F.training, shop = F.shop;
 const tx = (id) => YEAR.find((t) => t.id === id);

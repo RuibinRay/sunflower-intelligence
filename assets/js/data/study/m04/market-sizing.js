@@ -6,9 +6,9 @@
 // 60%/20%) and a four-pack a month per regular buyer. Quarrymoor Creamery and Tillworth Bakery are fictional. The truth
 // the survey estimates (DERIVED.coldbrew.truth*) appears only in the “What Ana couldn’t see” callout. Not the office
 // market (the project's). Every printed figure is recomputed in `checks`.
-import { CATEGORY, CHANNELS, DEFAULT_PLAN, COLD_BREW_SIZING as SZ, PRICE_AUDIT, DERIVED as D } from './case.js?v=20';
-import { LANTERN, TIERS } from '../m02/market.js?v=20';
-import { simulate } from '../../../core/mixsim.js?v=20';
+import { CATEGORY, CHANNELS, DEFAULT_PLAN, COLD_BREW_SIZING as SZ, PRICE_AUDIT, DERIVED as D } from './case.js?v=22';
+import { LANTERN, TIERS } from '../m02/market.js?v=22';
+import { simulate } from '../../../core/mixsim.js?v=22';
 
 // ---------------------------------------------------------------- the figures the lesson quotes
 const TAM = CATEGORY.cansPerYear;                                        // 4,800,000

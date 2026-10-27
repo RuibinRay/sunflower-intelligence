@@ -4,8 +4,8 @@
 // Module 1: reading clusters in a scatterplot that r = 0.98 hides (scatterplots); r = cov ÷ (s_x s_y) with one standard
 // deviation in other units, which only works once the units match (covariance-and-pearson); judging strength by r, not
 // by the size of a covariance (covariance-and-pearson). Module 2: Spearman’s ρ as Pearson’s r of average ranks, in one
-// formula, on tied data (rank-correlation); Fisher’s z test of H₀: ρ = 0.6 (testing-correlation); the pairs needed for
-// 80% power by Fisher’s z (testing-correlation). Module 3: a far point on the
+// formula, on tied data (rank-correlation); Fisher’s z test of H₀: ρ = 0.6 (testing-correlation); the smallest
+// correlation a study of 60 can detect with 80% power, by Fisher’s z (testing-correlation). Module 3: a far point on the
 // line raising r (outliers-and-influence); the range-restriction formula solved for the spread at which r falls to a
 // given value (nonlinear-and-restricted); which correlation answers a within-group question when pooling reverses the sign
 // (groups-and-simpsons-paradox). Module 4: counting Holm rejections (correlation-matrices); the first-order partial
@@ -16,10 +16,10 @@
 // Lindale Stationers, Gorseway Hotels, Pelling Bakeries, Sedgemoor Garden Centre, Tollbridge Insurance, Cordwain Hotels,
 // Halsway Leisure and Orlebar Bakeries are fictional. Every num item’s `check` recomputes its answer, and the formula
 // item is marked by its results on the sheet and on changed copies.
-import { CLEAN_ROWS, CAFE_COLUMNS, column, DERIVED } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
-import { sd } from '../../../core/stats.js?v=20';
-import { normCdf } from '../../../core/inference.js?v=20';
+import { CLEAN_ROWS, CAFE_COLUMNS, column, DERIVED } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
+import { sd } from '../../../core/stats.js?v=22';
+import { normCdf } from '../../../core/inference.js?v=22';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const fx = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
@@ -61,7 +61,8 @@ const twoSidedZ = (z) => 2 * normCdf(-Math.abs(z));
 // Pelling Bakeries (fictional): 25 branches, r = 0.20
 const PB = { n: 25, rho: 0.2 };
 const pbPower = C.power(PB.rho, PB.n), pbN = C.sampleSize(PB.rho);
-const pairsFor = (rho, zPow) => Math.ceil(((normQ(0.975) + zPow) / Math.atanh(rho)) ** 2 + 3);
+const PG = { n: 60 };
+const pgRho = (zPow, df) => Math.tanh((normQ(0.975) + zPow) / Math.sqrt(df));
 function normQ(p) { let lo = -10, hi = 10; for (let i = 0; i < 200; i++) { const m = (lo + hi) / 2; if (normCdf(m) < p) lo = m; else hi = m; } return (lo + hi) / 2; }
 
 // Sedgemoor Garden Centre (fictional): coach parties booked and weekend visitors (hundreds), nine weekends,
@@ -176,17 +177,16 @@ export const items = [
   },
   {
     id: 'b05-dg-6', lesson: 'testing-correlation', type: 'num', kind: 'numerical',
-    prompt: `Pelling Bakeries (fictional) found r = ${fx(PB.rho)} between staff turnover and customer complaints across its ${PB.n} branches (two-sided p = ${fx(C.rTest(PB.rho, PB.n).p)}). Its parent group, with several hundred branches, will repeat the study. How many branches does it need for 80% power to detect a true correlation of ${fx(PB.rho, 1)} with a two-sided test at α = 0.05, by Fisher’s z? Give a whole number, rounded up.`,
-    answer: pbN,
-    check: () => pairsFor(0.2, normQ(0.8)),
-    unit: 'branches', places: 0, tol: 0.5,
+    prompt: `Pelling Bakeries (fictional) found r = ${fx(PB.rho)} between staff turnover and customer complaints across its ${PB.n} branches (two-sided p = ${fx(C.rTest(PB.rho, PB.n).p)}). Its parent group can repeat the study in ${PG.n} branches. What is the smallest true correlation that study would detect with 80% power, two-sided at α = 0.05, by Fisher’s z? Three decimal places.`,
+    answer: rnd(pgRho(normQ(0.8), PG.n - 3), 3),
+    check: () => Math.tanh((1.959964 + 0.841621) / Math.sqrt(60 - 3)),
+    unit: '', places: 3, tol: 0.0015,
     wrong: [
-      { value: Math.ceil(((normQ(0.975) + normQ(0.8)) / Math.atanh(PB.rho)) ** 2), say: 'Fisher’s z has standard error 1 ÷ √(n − 3): add 3 to (z sum ÷ atanh ρ)².' },
-      { value: C.sampleSize(PB.rho, { power: 0.9 }), say: 'That uses 1.282, the value for 90% power. For 80% power, z₁₋β = 0.842.' },
-      { value: Math.ceil((normQ(0.975) / Math.atanh(PB.rho)) ** 2 + 3), say: 'That leaves out the power term, which gives only about 50% power. Add z₁₋β = 0.842 to 1.960 before dividing.' },
-      { value: Math.ceil(((normQ(0.975) + normQ(0.8)) / PB.rho) ** 2 + 3), say: 'Divide by Fisher’s z of ρ, atanh 0.2 = 0.2027, not by ρ itself.' },
+      { value: rnd(Math.atanh(pgRho(normQ(0.8), PG.n - 3)), 3), say: 'That is Fisher’s z of the answer. Convert back to a correlation with tanh.' },
+      { value: rnd(pgRho(normQ(0.5), PG.n - 3), 3), say: 'That leaves out the power term, which gives only 50% power. Add z₁₋β = 0.842 to 1.960.' },
+      { value: rnd(pgRho(normQ(0.9), PG.n - 3), 3), say: 'That uses 1.282, the value for 90% power. For 80% power, z₁₋β = 0.842.' },
     ],
-    solution: `n = ((z₁₋α/₂ + z₁₋β) ÷ atanh ρ)² + 3 = ((1.960 + 0.842) ÷ ${fx(Math.atanh(PB.rho), 4)})² + 3 = ${fx(((normQ(0.975) + normQ(0.8)) / Math.atanh(PB.rho)) ** 2 + 3, 1)}, so ${pbN} branches. Pelling’s 25 branches gave the test only about a ${pc(pbPower)} chance of detecting ρ = 0.2, which is why its non-significant r says little either way.`,
+    solution: `Fisher’s z of r has standard error 1 ÷ √(n − 3) = 1 ÷ √${PG.n - 3}. To have 80% power, atanh ρ must be at least (1.960 + 0.842) ÷ √${PG.n - 3} = ${fx(Math.atanh(pgRho(normQ(0.8), PG.n - 3)), 4)}, so ρ = tanh(${fx(Math.atanh(pgRho(normQ(0.8), PG.n - 3)), 4)}) = ${fx(pgRho(normQ(0.8), PG.n - 3), 3)}. A true correlation of ${fx(PB.rho, 1)} is well below that: even ${PG.n} branches would probably miss it (detecting it needs about ${pbN}). Pelling’s own ${PB.n} branches had only about a ${pc(pbPower)} chance, which is why its non-significant r says little either way.`,
   },
   {
     id: 'b05-dg-7', lesson: 'outliers-and-influence', type: 'mc', kind: 'conceptual',
@@ -216,7 +216,7 @@ export const items = [
       { value: rnd(TI.S / kFor(TI.r, TI.want), 1), say: 'Restricting the range makes the spread smaller than 15, not larger: s = k × S with k below 1.' },
       { value: rnd(TI.S * kFor(TI.r, TI.want) ** 2, 1), say: 'k is the ratio of standard deviations, s ÷ S, not of variances: s = k × 15.' },
     ],
-    solution: `Solving r_r = k r ÷ √(1 − r² + k² r²) for k gives k = r_r √(1 − r²) ÷ (r √(1 − r_r²)) = ${fx(TI.want)} × ${fx(Math.sqrt(1 - TI.r ** 2), 3)} ÷ (${fx(TI.r)} × ${fx(Math.sqrt(1 - TI.want ** 2), 4)}) = ${fx(kFor(TI.r, TI.want), 4)}, so s = ${fx(kFor(TI.r, TI.want), 4)} × ${TI.S} = ${fx(TI.S * kFor(TI.r, TI.want), 2)} points. A hired group with less than about 40% of the applicants’ spread would show the score as a weak predictor, though it separates applicants well; judge the test on all applicants.`,
+    solution: `Solving r_r = k r ÷ √(1 − r² + k² r²) for k gives k = r_r √(1 − r²) ÷ (r √(1 − r_r²)) = ${fx(TI.want)} × ${fx(Math.sqrt(1 - TI.r ** 2), 3)} ÷ (${fx(TI.r)} × ${fx(Math.sqrt(1 - TI.want ** 2), 4)}) = ${fx(kFor(TI.r, TI.want), 4)}, so s = ${fx(kFor(TI.r, TI.want), 4)} × ${TI.S} = ${fx(TI.S * kFor(TI.r, TI.want), 2)} points. A hired group with less than about ${fx(kFor(TI.r, TI.want) * 100, 0)}% of the applicants’ spread would show the score as a weak predictor, though it separates applicants well; judge the test on all applicants.`,
   },
   {
     id: 'b05-dg-9', lesson: 'groups-and-simpsons-paradox', type: 'mc', kind: 'applied',

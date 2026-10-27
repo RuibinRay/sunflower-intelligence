@@ -2,7 +2,7 @@
 // correlation-and-causation). New questions on new businesses, not copies of lesson exercises. No hints; solutions
 // are shown when the student reviews the test. Every business, person and number is fictional. Formula items are
 // marked by their results (core/sheet.js gradeFormula); every num item's `check` recomputes its answer.
-import * as C from '../../../core/correlation.js?v=20';
+import * as C from '../../../core/correlation.js?v=22';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const neg = (v, d = 2) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), d)}`;

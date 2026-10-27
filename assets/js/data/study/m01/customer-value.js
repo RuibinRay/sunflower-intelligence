@@ -2,7 +2,7 @@
 // customer-value.ex.js. Lantern facts come from ./case.js (fictional). The online-subscription figures (orders, order
 // value, margin, renewal rate, campaign) are this lesson's own assumptions, labelled in the text. By design this lesson
 // does not value a Lantern catering client: that is the course project.
-import { BUSINESS, CLIENT_INTERVIEWS as I, COMPETITOR } from './case.js?v=20';
+import { BUSINESS, CLIENT_INTERVIEWS as I, COMPETITOR } from './case.js?v=22';
 
 const c = BUSINESS.catering;
 const clv = (m, r, d) => m / (1 + d - r);                                        // margins at year end, year 1 certain

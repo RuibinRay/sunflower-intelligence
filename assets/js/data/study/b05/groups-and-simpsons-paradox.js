@@ -3,9 +3,9 @@
 // café (DERIVED.footTicket*), the cafés’ monthly averages, and Millbrook’s weekdays and weekends. Tidewater Books is
 // fictional; Robinson’s 1930 census figures are as reported by Subramanian et al. (2009). Holding a third variable fixed
 // by partial correlation is module 4’s. Every figure printed is recomputed in `checks`.
-import { column, DERIVED as D } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
-import { mean, sd } from '../../../core/stats.js?v=20';
+import { column, DERIVED as D } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
+import { mean, sd } from '../../../core/stats.js?v=22';
 
 // ---------------------------------------------------------------- footfall and average ticket
 const F = column('footfall'), A = column('avg_ticket'), CAFE = column('cafe'), DATE = column('date'), T = column('high_f'), I = column('iced_share');
@@ -72,7 +72,7 @@ export default {
   slug: 'groups-and-simpsons-paradox',
   title: 'Groups and Simpson’s paradox',
   blurb: 'Busier days go with bigger tickets in each of Lantern’s cafés, yet the two cafés pooled say the opposite. Learn why combining groups can reverse, create or inflate a correlation, why correlations of averages are not correlations of individuals, and what to report.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate a correlation for pooled data and within each group, and recognise Simpson’s paradox when the two disagree in sign.',
     'Explain a reversal by a third variable whose groups differ in both x and y, using group means and a scatterplot coloured by group.',

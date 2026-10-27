@@ -2,7 +2,7 @@
 // New questions, not copies of lesson exercises: other fictional businesses and other angles (a share issue during the
 // year, solving for the leverage a target needs, the interest hidden in lease cost, Lantern without its leases).
 // Lantern’s figures come from case.js; every other business is fictional. No hints; solutions show in review.
-import { PERIODS } from './case.js?v=20';
+import { PERIODS } from './case.js?v=22';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const n = (v) => Math.round(v).toLocaleString('en-US');

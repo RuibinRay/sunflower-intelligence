@@ -2,9 +2,9 @@
 // (answer keys live here). Café data from case.js (corrected log); Tidewater Books, Cindervale Foods
 // and the regional figures are fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num
 // items recompute their answers in `check`.
-import { column, CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=20';
-import * as C from '../../../core/correlation.js?v=20';
-import { mean } from '../../../core/stats.js?v=20';
+import { column, CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=22';
+import * as C from '../../../core/correlation.js?v=22';
+import { mean } from '../../../core/stats.js?v=22';
 
 const at = (name) => CAFE_COLUMNS.indexOf(name);
 const fx = (v, d = 3) => (v < 0 ? '−' : '') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });

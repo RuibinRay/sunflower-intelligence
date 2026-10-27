@@ -2,9 +2,9 @@
 // live here). Kilnworth's specification and Ana's 40 bags come from case.js; Redfern Bakery, Tollgate Bike Hire,
 // Hatchmere Call Centre, Sedgefield Dairy, Westcliff Gym and Tamarind Kitchen are fictional. Formula items are marked
 // by their results on the sheet and on copies with the numbers changed; num items recompute their answers in `check`.
-import { KILNWORTH_1KG as K, KG_BAGS, DERIVED as D } from './case.js?v=20';
-import * as I from '../../../core/inference.js?v=20';
-import { median } from '../../../core/stats.js?v=20';
+import { KILNWORTH_1KG as K, KG_BAGS, DERIVED as D } from './case.js?v=22';
+import * as I from '../../../core/inference.js?v=22';
+import { median } from '../../../core/stats.js?v=22';
 
 const KG2 = (v) => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
