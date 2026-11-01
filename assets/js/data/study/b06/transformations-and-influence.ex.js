@@ -107,7 +107,7 @@ export const guided = [
         id: 'b06-trans-g1-s1', type: 'formula',
         prompt: 'In D2, calculate the natural log of the first day’s footfall, so that it fills down.',
         sheet: { cells: { ...auBase, D1: 'ln(footfall)' } },
-        cell: 'D2', fill: `D2:D${lastA}`, answer: '=LN(C2)', alt: ['=LOG(C2,EXP(1))'], require: ['LN'],
+        cell: 'D2', fill: `D2:D${lastA}`, answer: '=LN(C2)', require: ['LN'],
         view: `A1:D${lastA}`, maxHeight: '20rem', formats: { D: '0.000' }, widths: { A: 8, B: 10, C: 10, D: 13 },
         wrong: [{ formula: '=LOG(C2)', say: 'LOG with one argument is the base-10 log. The percentage reading of a slope uses the natural log, LN.' }],
         hints: ['Excel’s natural log is LN.', '<x>=LN(C2)</x>'],

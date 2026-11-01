@@ -242,7 +242,7 @@ export const independent = [
       { formula: '=SLOPE(C2:C31,B2:B31)-NORM.S.INV(1-(1-F1)/2)*STEYX(C2:C31,B2:B31)/SQRT(DEVSQ(B2:B31))', say: 'With s estimated from the data, the critical value comes from the t distribution, not the normal: T.INV.2T.' },
       { formula: '=SLOPE(C2:C31,B2:B31)-T.INV.2T(1-F1,COUNT(B2:B31)-2)*STEYX(C2:C31,B2:B31)/SQRT(COUNT(B2:B31))', say: 'The slope’s standard error divides s by √Sxx (DEVSQ of the highs), not by √n.' },
     ],
-    solution: `<x>=SLOPE(C2:C31,B2:B31)-T.INV.2T(1-F1,COUNT(B2:B31)-2)*STEYX(C2:C31,B2:B31)/SQRT(DEVSQ(B2:B31))</x>. At 95%: b₁ = ${FMS.coefs[1].estimate.toFixed(3)} people per °F, SE ${FMS.coefs[1].se.toFixed(3)}, so the interval runs from ${fx(FMS.coefs[1].low)} to ${fx(FMS.coefs[1].high)}. It includes 0 (p = ${FMS.coefs[1].p.toFixed(3)}): six weeks of Millbrook’s weekdays can’t show any temperature effect, which fits a café whose trade comes from offices, and the interval still allows a few people per °F either way.`,
+    solution: `<x>=SLOPE(C2:C31,B2:B31)-T.INV.2T(1-F1,COUNT(B2:B31)-2)*STEYX(C2:C31,B2:B31)/SQRT(DEVSQ(B2:B31))</x>. At 95%: b₁ = ${FMS.coefs[1].estimate.toFixed(3)} people per °F, SE ${FMS.coefs[1].se.toFixed(3)}, so the interval runs from ${fx(FMS.coefs[1].low)} to ${fx(FMS.coefs[1].high)}. It includes 0 (p = ${FMS.coefs[1].p.toFixed(3)}): six weeks of Millbrook’s weekdays can’t show any temperature effect, which fits a café whose trade comes from offices; the interval still allows anything from a slightly negative slope to about ${FMS.coefs[1].high.toFixed(1)} people per °F.`,
   },
   {
     id: 'b06-inf-i2', type: 'num', kind: 'numerical',

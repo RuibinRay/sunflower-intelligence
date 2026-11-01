@@ -138,6 +138,9 @@ export default {
     ] },
     { p: 'A rough check is how many of the fitted days fall outside their own 95% prediction intervals: here 2 of 49 (4%), about the 5% expected. That is reassuring, though not a test: the intervals were computed from the same days.' },
 
+    { h: 'Reporting a prediction' },
+    { p: 'A prediction is only useful with four things beside it: the point value, the interval and which kind it is, the confidence level, and the scope (the range of x and the kind of case the model was fitted to). Software names the two intervals differently: OpenStax’s business statistics text calls them the confidence interval and the prediction interval, Penn State’s course the confidence interval for the mean response and the prediction interval for a new response, and some statistical packages label them “mean” and “obs” (observation). Whatever the label, ask whether it contains the 1 under the square root. If a report gives a single interval for a forecast without saying which, ask; one much narrower than the residual standard error suggests is probably the interval for the mean.' },
+
     { h: 'In Excel' },
     { p: 'The ToolPak’s Regression tool prints no interval for a new x, so build them from functions. With the highs in B2:B50, transactions in C2:C50 and the new high in F1:' },
     { list: [
