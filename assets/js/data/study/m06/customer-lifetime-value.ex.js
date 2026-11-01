@@ -1,6 +1,6 @@
 // customer-lifetime-value.ex.js — M06 · Customer lifetime value: widgets, practice and the knowledge check (answer keys
 // live here). Member data from case.js (the first 24 members who joined in March 2027, as of 31 December 2027); Fader &
-// Hardie's (2007) published survival for the sBG widget. Morrowfield Lawn Care, Ouseley Tutors and every other business
+// Hardie's (2007) published survival for the sBG widget. Morrowfield Lawn Care, Callowmere Tutors and every other business
 // named are fictional. The 67% café margin is F03's (cost of goods 31%, card fees 2% of café sales), checked in the
 // lesson file. Formula items are marked by their results (core/sheet.js gradeFormula); num items recompute in `check`.
 import { members, VISIT_LIST, joinMap } from './case.js?v=25';
@@ -20,7 +20,7 @@ const R_CONST = Math.round(rn / chn * 100) / 100;
 const CT = CU.cohortTable(joinMap(), VISIT_LIST);
 const MAR = CT.revenue[0].map((v) => v / CT.cohorts[0].size);
 function memberValue(mPct, q, dYear) {
-  const dM = (1 + dYear / 100) ** (1 / 12) - 1, m = mPct / 100;
+  const dM = Math.round(((1 + dYear / 100) ** (1 / 12) - 1) * 10000) / 10000, m = mPct / 100;   // rounded to 0.01%, as the lesson rounds 0.797% to 0.8%
   const months = Array.from({ length: 36 }, (_, k) => (k < MAR.length ? MAR[k] : MAR[9] * q ** (k - 9)));
   let hist = 0, tail = 0; const cum = []; let acc = 0;
   for (let k = 0; k < 2000; k++) { const s = k < MAR.length ? MAR[k] : MAR[9] * q ** (k - 9), v = s * m / (1 + dM) ** k; if (k < MAR.length) hist += v; else tail += v; if (k < 36) { acc += v; cum.push(acc); } }
@@ -42,7 +42,7 @@ const nH = MW.filter((c) => c.cafe === 'Harbourside').length;
 const ML = { m: 85, r: 0.68, d: 0.09 };                       // Morrowfield Lawn Care (fictional), per year
 const mlA = ML.m * (1 + ML.d) / (1 + ML.d - ML.r), mlC = ML.m * ML.r / (1 + ML.d - ML.r);
 const ml3 = ML.m * (1 + ML.r / (1 + ML.d) + (ML.r / (1 + ML.d)) ** 2);
-const OT = { m: 45, r: 0.96, d: 0.008 };                      // Ouseley Tutors (fictional), per month
+const OT = { m: 45, r: 0.96, d: 0.008 };                      // Callowmere Tutors (fictional), per month
 const otA = OT.m * (1 + OT.d) / (1 + OT.d - OT.r);
 const HE = { a: 0.668, b: 3.806 };
 const ret8 = (HE.b + 7) / (HE.a + HE.b + 7);
@@ -58,7 +58,7 @@ export const widgets = {
     ranges: { m: [20, 300, 5], r: [0.5, 0.97, 0.01], d: [0, 0.2, 0.005], cac: [0, 400, 5] },
     timing: 'start', horizon: 20, unit: 'year',
     sbg: { alpha: SB.alpha, beta: SB.beta },
-    note: `Survival from Fader and Hardie (2007), years 0–7 of 1,000 Regular customers; constant retention fitted to the same years is ${fx(rn / chn * 100, 1)}%. The $100 margin and the $150 acquisition cost are fictional.`,
+    note: `Survival from Fader and Hardie (2007), years 0–7 of 1,000 Regular customers. Constant retention fitted to the same years is ${fx(rn / chn * 100, 1)}%; the slider starts at ${fx(R_CONST * 100, 0)}%, the nearest step. The $100 margin and the $150 acquisition cost are fictional.`,
   },
   'clv-members': {
     type: 'formula',
@@ -73,7 +73,7 @@ export const widgets = {
       const R = memberValue(v.m, v.q, v.d);
       return {
         headline: { label: 'Value of a new member (margin, discounted)', value: `$${fx(R.total)}` },
-        rows: [['First ten months (observed)', `$${fx(R.hist)}`], ['After month 9 (projected)', `$${fx(R.tail)}`], ['Share of the value that is projected', `${fx(R.tail / R.total * 100, 1)}%`], ['Discount rate a month', `${fx(((1 + v.d / 100) ** (1 / 12) - 1) * 100, 3)}%`]],
+        rows: [['First ten months (observed)', `$${fx(R.hist)}`], ['After month 9 (projected)', `$${fx(R.tail)}`], ['Share of the value that is projected', `${fx(R.tail / R.total * 100, 1)}%`], ['Discount rate a month (rounded to 0.01%)', `${fx(Math.round(((1 + v.d / 100) ** (1 / 12) - 1) * 10000) / 100, 2)}%`]],
         note: `With a decay of ${fx(v.q, 2)} the projected months add ${fx(R.tail / R.hist * 100, 0)}% to what the first ten months brought. The observed months carry most of the value, so the answer is more sensitive to the margin than to the projection.`,
         chart: { kind: 'line', x: { label: 'Months since joining', values: Array.from({ length: 36 }, (_, k) => k) }, series: [{ name: 'Cumulative value ($)', values: R.cum }], y: { label: 'Cumulative margin per member ($)' } },
       };
@@ -218,7 +218,7 @@ export const independent = [
       'Diners don’t announce they have stopped coming, so 64% is a repeat-visit share, not a retention rate.',
       'The formula should use 1 − 0.64 = 0.36, the churn rate, in place of r, since r stands for those who leave.',
       'Nothing, provided she uses margin per visit rather than revenue per visit.',
-      'She should use timing C instead, because diners pay after they eat, so margins arrive at the end of each period, not the start.',
+      'She should use timing B instead, because diners pay after they eat, so margins arrive at the end of each period, not the start.',
     ],
     answer: 0,
     feedback: {
@@ -280,7 +280,7 @@ export const check = [
   },
   {
     id: 'm06-clv-k2', type: 'num', kind: 'numerical',
-    prompt: 'Ouseley Tutors (fictional) earns a margin of $45 a month from each family on its monthly tutoring plan; 96% of families continue each month, and it discounts at 0.8% a month. What is a family that signs today worth, with the first month’s margin received now? Give dollars to the cent.',
+    prompt: 'Callowmere Tutors (fictional) earns a margin of $45 a month from each family on its monthly tutoring plan; 96% of families continue each month, and it discounts at 0.8% a month. What is a family that signs today worth, with the first month’s margin received now? Give dollars to the cent.',
     answer: Math.round(otA * 100) / 100, check: () => CU.clvConstant({ m: 45, r: 0.96, d: 0.008 }).value, unit: '$', places: 2, tol: 0.01,
     wrong: [{ value: Math.round(45 / (1 - 0.96) * 100) / 100, say: 'That ignores discounting. Divide by 1 + d − r and multiply by 1 + d.' }, { value: Math.round(45 * 0.96 / 0.048 * 100) / 100, say: 'That is the residual value, without the first month’s margin.' }],
     solution: `45 × 1.008 ÷ (1.008 − 0.96) = 45.36 ÷ 0.048 = $${fx(otA)}. Without discounting it would be 45 ÷ 0.04 = $1,125.`,
@@ -313,7 +313,7 @@ export const check = [
       2: 'The decision is about one group, so errors in other groups don’t cancel for it.',
       3: 'It is the long-standing customers whose value is understated most: the single rate forgets that they have already shown themselves to be stayers.',
     },
-    solution: 'Under heterogeneity, survivors are the low-churn customers. A constant rate gives everyone the same future, so it understates established customers’ residual value most (for Fader and Hardie’s Regular customers after five renewals, $237 against $626).',
+    solution: 'Under heterogeneity, survivors are the low-churn customers. A constant rate gives everyone the same future, so it understates established customers’ residual value most (for Fader and Hardie’s Regular customers after five renewals, $261 against $626, both counting the coming renewal undiscounted).',
   },
   {
     id: 'm06-clv-k5', type: 'mc', kind: 'applied',

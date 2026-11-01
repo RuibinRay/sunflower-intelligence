@@ -43,6 +43,7 @@ import * as CU from '../../../core/customer.js?v=25';
 import { propTest2 } from '../../../core/inference.js?v=25';
 import { roc } from '../../../core/classify.js?v=25';
 import { isoToSerial } from '../../../core/sheet.js?v=25';
+import { FACTS as F03 } from '../f03/case.js?v=25';
 
 const fx = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const money = (v) => `${v < 0 ? '−' : ''}$${fx(Math.abs(v), 2)}`;
@@ -81,7 +82,7 @@ const f1Who = f1At(F1WHO, OCT31);
 const f1R = CU.score([f1Who.r], { method: 'cuts', cuts: R_CUTS, higherIsBetter: false })[0];
 const f1NoWindow = dayNum('2027-10-31') - Math.max(...F1LOG.filter((x) => x.id === F1WHO).map((x) => x.day));
 claim(F1IDS.every((id) => ML.find((m) => m.id === id).joinedIso <= '2027-09-30') && F1LOG.some((v) => v.day > OCT31 && v.id === F1WHO), 'the fn-1 members joined by 30 September and A0726 visited after 31 October');
-const f1Members = F1IDS.length;
+const f1Members = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'][F1IDS.length];
 
 // fn-2: visits to date against visits in the first 30 days, March and November joiners
 const joinedIn = (mo) => ML.filter((m) => m.joinedIso.startsWith(mo));
@@ -98,7 +99,7 @@ const F3 = { s30: lapsedShare(30), s90: lapsedShare(90) };
 // fn-4 Thorneyholt Books (fictional): eleven customers’ recency (days) on 30 June
 const TH = [3, 9, 15, 22, 30, 41, 58, 77, 104, 150, 230];
 const thCuts = CU.cutPoints(TH);
-const TH_WHO = 41;
+const TH_WHO = 30;
 const thR = CU.score([TH_WHO], { method: 'cuts', cuts: thCuts, higherIsBetter: false })[0];
 
 // fn-5: the R = 5 share against the share who visited within 30 days, 31 October and 31 December
@@ -120,7 +121,7 @@ claim(S6VARY.every((n) => S6.filter((c) => c.segment === n).length >= 2) && S6.f
 const s6Champ = S6.filter((c) => c.segment === 'Champions');
 // fn-7: Loyal against About to sleep
 const LOY = segRate('Loyal'), ATS = segRate('About to sleep');
-claim(Math.abs(LOY.rec - ATS.rec) < 5 && LOY.f > 4 * ATS.f && LOY.rate < ATS.rate / 2, 'Loyal and About to sleep share recency; the frequent members came back far less');
+claim(Math.abs(LOY.rec - ATS.rec) < 5 && LOY.f > 4 * ATS.f && LOY.rate < ATS.rate / 2 && propTest2(LOY.back, LOY.n, ATS.back, ATS.n).pValue < 0.01, 'Loyal and About to sleep share recency; the frequent members came back far less');
 
 // fn-8: the base’s share active in each calendar month against cohorts’ month 1
 const T = CU.cohortTable(joinMap(), VISIT_LIST);
@@ -128,7 +129,7 @@ const calShare = (mo) => { const s = dayNum(`2027-${String(mo).padStart(2, '0')}
   const base = ML.filter((m) => m.joined < s); return { n: base.length, a: base.filter((m) => VIS.get(m.id).some((v) => v.day >= s && v.day <= e)).length }; };
 const CAL = { apr: calShare(4), jul: calShare(7), dec: calShare(12) };
 const m1Early = T.cohorts.slice(0, 7).map((_, i) => T.retention[i][1]);           // March – September cohorts, month 1
-claim(Math.max(...m1Early) - Math.min(...m1Early) < 0.05 && CAL.dec.a / CAL.dec.n < CAL.apr.a / CAL.apr.n - 0.2, 'same-age month 1 holds steady while the base’s share active falls');
+claim(T.cohorts.every((c) => c.size > 200) && Math.max(...m1Early) - Math.min(...m1Early) < 0.05 && CAL.dec.a / CAL.dec.n < CAL.apr.a / CAL.apr.n - 0.2, 'same-age month 1 holds steady while the base’s share active falls');
 
 // fn-9: October’s month 1 against March–September, by café
 const EARLY = ['2027-03', '2027-04', '2027-05', '2027-06', '2027-07', '2027-08', '2027-09'];
@@ -203,7 +204,7 @@ claim(N17[0].p < 0.001 && N17[0].near > N17[0].far && N17[1].p > 0.5 && N17[2].p
 
 // ---------------------------------------------------------------- module 4
 // fn-18 Cogwell Cycle Care (fictional): a monthly servicing plan
-const CY = { m: 9, r: 0.95, d: 0.008, cac: 45 };
+const CY = { m: 9, r: 0.95, d: 0.008, cac: 60 };
 const cyV = CU.clvConstant({ m: CY.m, r: CY.r, d: CY.d, timing: 'start' }).value;
 const cyPay = CU.payback({ cac: CY.cac, m: CY.m, r: CY.r, d: CY.d });
 const cySimple = CU.simplePayback(CY.cac, CY.m);
@@ -211,7 +212,7 @@ const cyPayNoDisc = CU.payback({ cac: CY.cac, m: CY.m, r: CY.r, d: 0 });
 // fn-19: the March cohort’s revenue per joiner, months 0–9
 const MARI = T.cohorts.findIndex((c) => c.label === '2027-03');
 const marRev = T.revenue[MARI].slice(0, 10).map((v) => rnd(v / T.cohorts[MARI].size, 2));
-const MR = 0.67, DM = 0.008;
+const MR = rnd(1 - F03.cafes.cogsShare - F03.cafeCardFees / F03.cafes.sales, 2), DM = 0.008;   // the cafés’ margin rate (F03), as customer-lifetime-value uses
 const marPV = (d) => sum(marRev.map((v, k) => (v * MR) / (1 + d) ** k));
 const marUndisc = sum(marRev) * MR;
 // fn-20 Ravenstow Insurance Brokers (fictional): customers differ (sBG α = 1, β = 3)
@@ -245,11 +246,10 @@ export const items = [
         sheet: f1Sheet, cell: 'F2', fill: 'F2:F9', view: `A1:J${f1L}`, maxHeight: '20rem',
         formats: { B: 'date', C: '$#,##0.00', J1: 'date' }, widths: { A: 8, B: 12, C: 10, E: 8, F: 10, G: 13, I: 6, J: 12 },
         answer: `=COUNTIFS($A$2:$A$${f1L},E2,$B$2:$B$${f1L},"<="&$J$1)`,
-        alt: [`=COUNTIFS(A$2:A$${f1L},E2,B$2:B$${f1L},"<="&J$1)`, `=SUMPRODUCT(($A$2:$A$${f1L}=E2)*($B$2:$B$${f1L}<=$J$1))`],
+        alt: [`=COUNTIFS(A$2:A$${f1L},E2,B$2:B$${f1L},"<="&J$1)`],
         require: ['COUNTIFS'],
         wrong: [
           { formula: `=COUNTIF($A$2:$A$${f1L},E2)`, say: 'That counts every visit in the log, including those after the as-of date. A customer table as of a date can only use what was known by then: add the condition B ≤ J1.' },
-          { formula: `=COUNTIFS($A$2:$A$${f1L},E2,$B$2:$B$${f1L},"<"&$J$1)`, say: 'A visit on the as-of date itself counts (its recency is 0). Use "<="&$J$1.' },
           { formula: `=COUNTIFS(A2:A${f1L},E2,B2:B${f1L},"<="&J1)`, say: 'Without $ signs the log’s range and J1 slide down as the formula fills, so lower rows miss visits. Anchor them.' },
         ],
         solution: `<x>=COUNTIFS($A$2:$A$${f1L},E2,$B$2:$B$${f1L},"<="&$J$1)</x>, filled down. As of 31 October these members’ frequencies are ${F1IDS.map((id) => f1At(id, OCT31).f).join(', ')}; counting the whole log would add the visits after 31 October.`,
@@ -279,7 +279,7 @@ export const items = [
           { value: 6 - f1R, say: 'Recency is reversed: the shortest absences score 5. Count the cut points the recency exceeds and subtract from 5.' },
           { value: f1R + 1, say: `${f1Who.r} days is above the ${fx(R_CUTS[2], 0)}-day cut point, so it is in the fourth group from the most recent.` },
         ],
-        solution: `${F1WHO}’s last visit on or before 31 October gives a recency of ${f1Who.r} days, above the cut points ${R_CUTS.slice(0, 3).map((c) => fx(c, 0)).join(', ')} and below ${fx(R_CUTS[3], 0)}: R = 5 − 3 = ${f1R}. Using the whole log would take the December visit and give ${f1NoWindow} days, a negative recency: the as-of date has to apply to every column of the table.`,
+        solution: `${F1WHO}’s last visit on or before 31 October gives a recency of ${f1Who.r} days, above the cut points ${R_CUTS.slice(0, 3).map((c) => fx(c, 0)).join(', ')} and below ${fx(R_CUTS[3], 0)}: R = 5 − 3 = ${f1R}. Using the whole log would take the December visit and give ${fx(f1NoWindow, 0)} days, a negative recency: the as-of date has to apply to every column of the table.`,
       },
     ],
     solution: 'Every column of a customer table is measured as of one date: count and date the visits on or before it, and score recency against cut points computed on the same date.',
@@ -295,7 +295,7 @@ export const items = [
     ],
     answer: 0,
     feedback: {
-      1: 'The window ends on the same date, but it starts when each member joined: a March joiner has had about ten months to visit, a November joiner one. Visits to date grow with tenure.',
+      1: 'The window ends on the same date, but it starts when each member joined: a March joiner has had about ten months to visit, a November joiner one or two. Visits to date grow with tenure.',
       2: 'Skew matters, but a median of visits to date still compares members of very different tenure. Compare at the same age.',
       3: 'The café mix can matter, but the larger problem is tenure, and at the same age the November joiners lead.',
     },
@@ -322,13 +322,13 @@ export const items = [
     id: 'm06-fn-4', lesson: 'rfm-scoring', type: 'num', kind: 'numerical',
     prompt: `Thorneyholt Books (fictional) has eleven customers, whose recency on 30 June was ${TH.join(', ')} days. It scores R from 1 to 5 with quintile cut points from PERCENTILE.INC (a value on a cut point goes in the more recent group). What R score does the customer last seen ${TH_WHO} days ago get?`,
     answer: thR,
-    check: () => { const s = [...TH].sort((a, b) => a - b); const cuts = [0.2, 0.4, 0.6, 0.8].map((q) => s[Math.round(10 * q)]); return 5 - cuts.filter((c) => c < 41).length; },
+    check: () => { const s = [...TH].sort((a, b) => a - b); const cuts = [0.2, 0.4, 0.6, 0.8].map((q) => s[Math.round(10 * q)]); return 5 - cuts.filter((c) => c < 30).length; },
     unit: '', places: 0, tol: 0,
     wrong: [
       { value: 6 - thR, say: 'That scores recency like spend, so long absences would score high. Reverse it: the most recent customers score 5.' },
-      { value: thR - 1, say: `${TH_WHO} days is exactly the 60th-percentile cut point, and the rule keeps it in the more recent group.` },
+      { value: thR - 1, say: `${TH_WHO} days is exactly the 40th-percentile cut point, and the rule keeps it in the more recent group.` },
     ],
-    solution: `With eleven values the positions (11 − 1) × q fall on whole numbers, so the cut points are the 3rd, 5th, 7th and 9th smallest recencies: ${thCuts.join(', ')} days. ${TH_WHO} days exceeds ${thCuts.filter((c) => c < TH_WHO).join(' and ')} and equals ${thCuts[2]}, so it is in the third group from the most recent: R = ${thR}.`,
+    solution: `With eleven values the positions (11 − 1) × q fall on whole numbers, so the cut points are the 3rd, 5th, 7th and 9th smallest recencies: ${thCuts.join(', ')} days. ${TH_WHO} days exceeds ${thCuts[0]} and equals ${thCuts[1]}, so it is in the second group from the most recent: R = ${thR}.`,
   },
   {
     id: 'm06-fn-5', lesson: 'rfm-scoring', type: 'mc', kind: 'applied',
@@ -386,7 +386,7 @@ export const items = [
     options: [
       'The base got older: each month more of it is members many months past joining, and every cohort’s share active falls with age',
       'Newer members are less engaged than the early ones, so each cohort that joins pulls the overall share of members active down a little further',
-      'Seasonality: December is a quiet month for both cafés, and the summer months were busy, which explains the whole of the fall',
+      'Seasonality: members visit less in the winter months than in the summer, and that alone explains the whole of the fall',
       'Lantern stopped recruiting members in the autumn, so far fewer new members were joining to keep up the share active each month',
     ],
     answer: 0,
@@ -421,7 +421,7 @@ export const items = [
     ],
     answer: 0,
     feedback: {
-      1: 'March’s month 1 is April. Its month 2 recovers to 44%, above February’s month 2 in April’s neighbour column; the weak cell is the calendar month, not the cohort.',
+      1: 'March’s month 1 is April, and its month 2 (May) recovers to 44%, above its month 1: the weak cell is the calendar month, not the cohort.',
       2: 'A dip at the same age would sit in one column. Here the low cells move one column left with each later cohort: January’s month 3, February’s month 2, March’s month 1, all April.',
       3: 'May has only month 0, which is 100% by definition: there is nothing yet to judge.',
     },
@@ -457,7 +457,7 @@ export const items = [
           { value: rnd(((1 - r2m) / 2) * 100, 1), say: 'Halving the two-month churn ignores compounding: the second month’s churn applies only to those kept in the first. Solve (1 − c)² = r.' },
           { value: rnd((1 - r2m) * 100, 1), say: 'That is the churn over the whole two-month period, not per month.' },
         ],
-        solution: `(1 − c)² = ${fx(r2m, 3)}, so 1 − c = √${fx(r2m, 3)} = ${fx(Math.sqrt(r2m), 3)} and c = ${pc(mChurn)} a month. It is only a convenient summary: in a noncontractual setting members skip months and come back, and the rate isn’t constant (it falls with tenure as the members who stay are the more loyal ones).`,
+        solution: `(1 − c)² = ${fx(r2m, 3)}, so 1 − c = √${fx(r2m, 3)} = ${fx(Math.sqrt(r2m), 3)} and c = ${pc(mChurn)} a month. It is only a convenient summary: in a noncontractual setting members skip months and come back, and churn isn’t constant: it falls with tenure, as the members who stay are the more loyal ones.`,
       },
     ],
     solution: 'A period’s retention rate starts from the customers who were there at the start, leaving out those won during it; a rate over several months becomes a monthly one by taking the root, not by dividing.',
@@ -622,13 +622,13 @@ export const items = [
         id: 'm06-fn-18-s2', type: 'num', kind: 'numerical',
         prompt: `In which month does a new customer’s expected discounted margin first cover the $${CY.cac} acquisition cost?`,
         answer: cyPay,
-        check: () => { let s = 0; for (let t = 0; t < 600; t++) { s += 9 * 0.95 ** t / 1.008 ** t; if (s >= 45) return t + 1; } return Infinity; },
+        check: () => { let s = 0; for (let t = 0; t < 600; t++) { s += 9 * 0.95 ** t / 1.008 ** t; if (s >= 60) return t + 1; } return Infinity; },
         unit: 'month', places: 0, tol: 0,
         wrong: [
-          { value: cySimple, say: '$45 ÷ $9 = 5 months assumes every customer stays and money now is worth the same as later. With 5% leaving each month and discounting, the expected margin builds more slowly.' },
+          { value: Math.ceil(cySimple), say: `$60 ÷ $9 = ${fx(cySimple, 1)} months, covered in month ${Math.ceil(cySimple)}, assumes every customer stays and money now is worth the same as later. With 5% leaving each month and discounting, the expected margin builds more slowly.` },
           { value: cyPayNoDisc, say: 'That allows for customers leaving but not for discounting. Discount each month’s expected margin by 1.008 per month.' },
         ],
-        solution: `Month t (from 1) adds 9 × 0.95^(t−1) ÷ 1.008^(t−1); the running total first reaches $45 in month ${cyPay}, against a simple payback of ${cySimple} months (${cyPayNoDisc} with retention but no discounting). The value-to-cost ratio is ${money(cyV)} ÷ $${CY.cac} = ${fx(cyV / CY.cac, 2)}.`,
+        solution: `Month t (from 1) adds 9 × 0.95^(t−1) ÷ 1.008^(t−1); the running total first reaches $${CY.cac} in month ${cyPay}, against a simple payback of ${fx(cySimple, 1)} months (${cyPayNoDisc} with retention but no discounting). The value-to-cost ratio is ${money(cyV)} ÷ $${CY.cac} = ${fx(cyV / CY.cac, 2)}.`,
       },
     ],
     solution: `CLV ${money(cyV)}; payback in month ${cyPay}; value ÷ cost ${fx(cyV / CY.cac, 2)}. Both rest on a constant 95% and a margin, not revenue, and are forecasts.`,
@@ -710,7 +710,6 @@ export const items = [
         unit: 'points', places: 1, tol: 0.1,
         wrong: [
           { value: rnd(cbT.diff * 100, 1), say: 'That is the point estimate of the uplift. The lower limit subtracts 1.96 standard errors.' },
-          { value: rnd((cbT.diff - 1.96 * cbT.sePool) * 100, 1), say: 'That uses the pooled standard error, which belongs to the test of no difference. The interval uses each group’s own proportion.' },
         ],
         solution: `Rates ${pc(cbT.p1)} and ${pc(cbT.p2)}; difference ${fx(cbT.diff * 100, 1)} points; SE = √(p₁(1 − p₁)/n₁ + p₂(1 − p₂)/n₂) = ${fx(cbT.se * 100, 2)} points; lower limit ${fx(cbT.low * 100, 1)} points (upper ${fx(cbT.high * 100, 1)}).`,
       },
@@ -719,7 +718,7 @@ export const items = [
         prompt: 'Should Cragwell send the voucher to all its lapsed customers?',
         options: [
           `Probably, as at the estimated uplift it gains about ${money(cbNet(cbT.diff))} per customer emailed; but at the interval’s lower limit it loses money, so the case is not secure`,
-          `Yes: ${CB.xT} customers came back after the email, worth ${money(CB.xT * CB.value)}, far more than the $${CB.xT * CB.cost} the vouchers cost`,
+          `Yes: ${CB.xT} customers came back after the email, worth $${int(CB.xT * CB.value)}, far more than the $${CB.xT * CB.cost} the vouchers cost`,
           'No: the interval doesn’t include zero, but a difference this small is not of practical significance for a business',
           'No: only a two-proportion z test can say whether to send it, and the confidence interval is no help with the decision',
         ],
@@ -738,17 +737,17 @@ export const items = [
     id: 'm06-fn-24', lesson: 'loyalty-and-retention-strategy', type: 'mc', kind: 'conceptual',
     prompt: 'The owner of a fictional sandwich bar with a ten-stamp card notices that customers with eight or nine stamps come back sooner than customers with two or three. She concludes that the card is making her customers more loyal overall. How does the research discussed in the course bear on this?',
     options: [
-      'Kivetz, Urminsky and Zheng found visits speed up as a reward nears, but that shows timing within the card, not more loyalty overall',
+      'Kivetz, Urminsky and Zheng found purchases speed up as a reward nears, but that shows timing within the card, not more loyalty overall',
       'It confirms her view: Kivetz, Urminsky and Zheng showed that stamp cards double the number of visits customers make in a year',
       'Sharp and Sharp found that loyalty programmes create large excess loyalty, so her card is very likely to be working as she thinks',
       'Double jeopardy shows that small businesses gain the most from loyalty cards, because their customers are the least loyal to start with',
     ],
     answer: 0,
     feedback: {
-      1: 'Kivetz, Urminsky and Zheng (2006) found purchases speeding up as the reward approached (about 20% from the first interval to the last), not a doubling of visits; nothing in their study measured visits a year against customers without a card.',
+      1: 'Kivetz, Urminsky and Zheng (2006) found purchases speeding up as the reward approached (about 20% from the first interval to the last), not a doubling of visits in a year.',
       2: 'Sharp and Sharp (1997) found only weak, inconsistent excess loyalty in a large programme.',
       3: 'Double jeopardy says small brands have fewer buyers who also buy less often; a loyalty scheme pushes against that pattern rather than benefiting from it.',
     },
-    solution: 'The goal-gradient effect explains her observation: customers near the reward speed up. That is a shift in timing among card holders, who chose to collect stamps, and it could partly be borrowed from after the reward. Whether the card adds visits overall needs a comparison she doesn’t have, ideally a randomised one (cards offered in some weeks or to some customers and not others). The broader evidence (Dowling and Uncles 1997; Sharp and Sharp 1997) is that typical programmes add little loyalty.',
+    solution: 'The goal-gradient effect explains her observation: customers near the reward speed up. That is a change in timing among card holders, who chose to collect stamps, near the reward. Whether the card adds visits overall needs a comparison she doesn’t have, ideally a randomised one (cards offered in some weeks or to some customers and not others). The broader evidence (Dowling and Uncles 1997; Sharp and Sharp 1997) is that typical programmes add little loyalty.',
   },
 ];

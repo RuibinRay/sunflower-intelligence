@@ -23,7 +23,7 @@ const lapsedShare = (n) => JUL.filter((c) => c.notifications === n && c.recency 
 const nJulOn = JUL.filter((c) => c.notifications === 1).length;
 
 // ---------------------------------------------------------------- fictional tests
-const OB = { nT: 900, xT: 180, nC: 700, xC: 105 };                    // Ouseley Books' reactivation email (fictional)
+const OB = { nT: 900, xT: 180, nC: 700, xC: 105 };                    // Brixley Books' reactivation email (fictional)
 const ob = propTest2(OB.xT, OB.nT, OB.xC, OB.nC);
 const testCells = { A1: 'Group', B1: 'Returned', C1: 'Customers', A2: 'Offered', B2: OB.xT, C2: OB.nT, A3: 'Holdout', B3: OB.xC, C3: OB.nC, A5: 'Difference', A6: '95% lower limit' };
 const hs = propTest2(84, 500, 60, 500);                               // a fictional hair salon's win-back text
@@ -67,7 +67,7 @@ export const widgets = {
 export const guided = [
   {
     id: 'm06-loy-g1', type: 'steps', kind: 'numerical',
-    prompt: `Ouseley Books (fictional) emailed a reactivation offer to a random ${OB.nT} of ${OB.nT + OB.nC} customers who hadn’t bought for a year; the other ${OB.nC} were held out. The worksheet shows how many in each group bought within a month.`,
+    prompt: `Brixley Books (fictional) emailed a reactivation offer to a random ${OB.nT} of ${OB.nT + OB.nC} customers who hadn’t bought for a year; the other ${OB.nC} were held out. The worksheet shows how many in each group bought within a month.`,
     solution: `B5: <x>=B2/C2-B3/C3</x> = ${fx(ob.diff * 100, 1)} points. B6: <x>=B5-1.96*SQRT(B2/C2*(1-B2/C2)/C2+B3/C3*(1-B3/C3)/C3)</x> = ${fx(ob.low * 100, 1)} points; the upper limit is ${fx(ob.high * 100, 1)}. The interval is above zero: the email added buyers, somewhere between about ${fx(ob.low * 100, 0)} and ${fx(ob.high * 100, 0)} points.`,
     steps: [
       {
@@ -94,7 +94,7 @@ export const guided = [
       },
       {
         id: 'm06-loy-g1-s3', type: 'mc',
-        prompt: `${OB.xT} customers used the offer. Ouseley’s marketing manager reports “${OB.xT} customers reactivated by the email”. What should the report say instead?`,
+        prompt: `${OB.xT} customers used the offer. Brixley’s marketing manager reports “${OB.xT} customers reactivated by the email”. What should the report say instead?`,
         options: [
           `About ${fx(ob.diff * OB.nT, 0)} customers reactivated who wouldn’t otherwise have bought, with the interval from the test.`,
           `${OB.xT} customers reactivated, since every one of them used the offer and bought something within the month.`,

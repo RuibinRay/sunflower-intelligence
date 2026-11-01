@@ -19,7 +19,7 @@ const CH = [
 ];
 const totSpend = CH.reduce((s, c) => s + c.spend, 0), totN = CH.reduce((s, c) => s + c.n, 0), paidN = CH.filter((c) => c.spend > 0).reduce((s, c) => s + c.n, 0);
 const blended = totSpend / totN, paid = totSpend / paidN;
-const GM = { m: 28, r: 0.93, d: D_M };
+const GM = { m: 28, r: 0.90, d: D_M };
 const gClv = CU.clvConstant(GM).value;
 const pb = (cac) => CU.payback({ cac, ...GM });
 const cum = CU.clvConstant(GM).curve(12);
@@ -111,8 +111,8 @@ export default {
     { callout: 'key', title: 'Average or incremental?', html: `Blended CAC answers “what did all our new customers cost on average?” Incremental CAC answers “what does each extra customer this spending wins cost?” For Lantern’s campaign the first is ${money(cacBlend)} and the second ${money(cacInc)}, more than four times as much. Decisions about spending more (or less) need the second, and it depends on an estimate of how many customers would have come anyway: here last spring’s ${spring27}, an assumption, and the most uncertain figure in the plan.` },
 
     { h: 'How long until a customer pays back?' },
-    { p: String.raw`The <g>payback period</g> is the time until the margin a newly won customer brings in covers what it cost to win them. The quick version divides CAC by the margin per period: a Glenmarra member won through social ads costs $120 and brings $28 of margin a month, so payback is <m>120 / 28 = 4.3</m> months. That assumes every member stays. With 93% of members renewing each month and discounting at 0.8% a month, the expected discounted margin builds up more slowly: $${f2(cum[0])} after the first month, $${f2(cum[3])} after four and $${f2(cum[5])} after six, so payback takes ${pb(120)} months.` },
-    { p: `For café members, payback can be read straight from the cohort table. The figure shows the cumulative margin per joiner (discounted at 0.8% a month) of two 2027 cohorts against the campaign’s two CACs. The blended ${money(cacBlend)} is covered on the join visit itself. The incremental ${money(cacInc)} is covered in the third month after joining (month 2) for the March joiners and in the second (month 1) for the August joiners.` },
+    { p: String.raw`The <g>payback period</g> is the time until the margin a newly won customer brings in covers what it cost to win them. The quick version divides CAC by the margin per period: a Glenmarra member won through social ads costs $120 and brings $28 of margin a month, <m>120 / 28 = 4.3</m>, and counting the joining month as month 1 the cost is covered in month 5. That assumes every member stays. With 90% of members renewing each month and discounting at 0.8% a month, the expected discounted margin builds up more slowly: $${f2(cum[0])} after month 1, $${f2(cum[3])} after month 4, $${f2(cum[4])} after month 5 and $${f2(cum[5])} after month 6, so payback comes in month ${pb(120)}.` },
+    { p: `For café members, payback can be read straight from the cohort table. The figure shows the cumulative margin per joiner (discounted at 0.8% a month) of two 2027 cohorts against the campaign’s two CACs. The blended ${money(cacBlend)} is covered on the join visit itself. The incremental ${money(cacInc)} is covered in month 2 (the third month, counting the join month as month 0) for the March joiners and in month 1 (the second) for the August joiners.` },
     { figure: {
       svg: paybackFigure(),
       caption: 'Cumulative margin per joiner by months since joining, March and August 2027 joiners, against the proposed campaign’s blended and incremental acquisition costs (the costs are fictional assumptions).',
@@ -124,21 +124,21 @@ export default {
     { h: 'Payback with retention and discounting' },
     { p: String.raw`With margins at the start of each period (the first on joining), retention <m>r</m> and discount rate <m>d</m>, the expected discounted margin after <m>T</m> periods is <m>\sum_{t=0}^{T-1} m\,r^t/(1+d)^t</m>, the finite-horizon value of the previous lesson. The payback period is the smallest <m>T</m> for which it reaches CAC. Because that sum can never exceed the lifetime value <m>m(1+d)/(1+d-r)</m>, a customer whose CAC is above their lifetime value never pays back. At Glenmarra, ${money(gClv)} is the most a member can bring, so a channel costing more than that per member loses money however long it waits.` },
     { table: {
-      caption: 'Glenmarra (fictional): payback and value-to-cost by channel, $28 margin a month, 93% monthly retention, 0.8% monthly discounting',
-      head: ['Channel', 'CAC', 'Simple payback (months)', 'Payback with retention', 'Value ÷ CAC'],
+      caption: 'Glenmarra (fictional): payback and value-to-cost by channel, $28 margin a month, 90% monthly retention, 0.8% monthly discounting',
+      head: ['Channel', 'CAC', 'Simple payback (month)', 'Payback with retention (month)', 'Value ÷ CAC'],
       rows: [
-        ['Member referrals', money(30), (30 / 28).toFixed(1), String(pb(30)), ratio(30).toFixed(1)],
-        ['Search ads', money(70), (70 / 28).toFixed(1), String(pb(70)), ratio(70).toFixed(1)],
-        ['Social ads', money(120), (120 / 28).toFixed(1), String(pb(120)), ratio(120).toFixed(1)],
-        ['Paid channels together', money(paid), (paid / 28).toFixed(1), String(pb(paid)), ratio(paid).toFixed(1)],
+        ['Member referrals', money(30), String(Math.ceil(30 / 28)), String(pb(30)), ratio(30).toFixed(1)],
+        ['Search ads', money(70), String(Math.ceil(70 / 28)), String(pb(70)), ratio(70).toFixed(1)],
+        ['Social ads', money(120), String(Math.ceil(120 / 28)), String(pb(120)), ratio(120).toFixed(1)],
+        ['Paid channels together', money(paid), String(Math.ceil(paid / 28)), String(pb(paid)), ratio(paid).toFixed(1)],
       ],
       align: ['l', 'r', 'r', 'r', 'r'],
-      note: `Lifetime value of a new member with the first month’s margin now: 28 × 1.008 ÷ (1.008 − 0.93) = ${money(gClv)}. Payback counts whole months, the first on joining.`,
+      note: `Lifetime value of a new member with the first month’s margin now: 28 × 1.008 ÷ (1.008 − 0.90) = ${money(gClv)}. Both payback columns count whole months, month 1 being the month of joining; simple payback is CAC ÷ $28 rounded up.`,
     } },
-    { p: `Retention matters more for payback than the simple figure admits. At 80% monthly retention instead of 93%, a social-ads member takes ${pbR(120, 0.8)} months to pay back; at 78%, ${pbR(120, 0.78)}; and at 75% they never do, because their lifetime value falls to 28 × 1.008 ÷ 0.258 = ${money(28 * 1.008 / (1.008 - 0.75))}, below the $120 they cost.` },
+    { p: `Retention matters more for payback than the simple figure admits. At 80% monthly retention instead of 90%, a social-ads member takes ${pbR(120, 0.8)} months to pay back; at 78%, ${pbR(120, 0.78)}; and at 75% they never do, because their lifetime value falls to 28 × 1.008 ÷ 0.258 = ${money(28 * 1.008 / (1.008 - 0.75))}, below the $120 they cost.` },
 
     { h: 'The value-to-cost ratio' },
-    { p: `Dividing the lifetime value of a new customer by CAC gives a <g>value-to-cost ratio</g>, often written LTV:CAC. Above 1 the customers are worth more than they cost; the margin above 1 has to cover the risk that the assumptions are wrong and the fixed costs the margin doesn’t. A widely quoted guideline, from the venture investor David Skok’s writing on software-as-a-service businesses, is a ratio above 3 and CAC recovered within 12 months. Skok himself ties the guideline to the kind of business (it assumes high gross margins) and to his firm’s experience; it is a convention for one industry, not a law of marketing. Glenmarra’s social channel sits at ${ratio(120).toFixed(2)}, search at ${ratio(70).toFixed(2)}.` },
+    { p: `Dividing the lifetime value of a new customer by CAC gives a <g>value-to-cost ratio</g>, often written LTV:CAC. Above 1 the customers are worth more than they cost; the margin above 1 has to cover the risk that the assumptions are wrong and the fixed costs the margin doesn’t. A widely quoted guideline, from the venture investor David Skok’s writing on software-as-a-service (SaaS) businesses, is a ratio above 3 and CAC recovered within 12 months. Skok states its conditions: it is for SaaS firms with gross margins of 80% or more, and the lifetime value in it is revenue-based, before the gross-margin adjustment, so on a margin basis like this lesson’s it corresponds to roughly 3 × 0.8 = 2.4. It is a guideline for one industry, not a law of marketing. Glenmarra’s social channel sits at ${ratio(120).toFixed(2)} on a margin basis, below even that equivalent; search sits at ${ratio(70).toFixed(2)}.` },
     { p: 'The ratio and the payback period answer different questions. The ratio says whether customers are worth winning at all; payback says how long the cash is tied up, which matters to a small business that must fund acquisition before the margins arrive. A channel can have a good ratio and a slow payback (long-lived customers who pay little each month) or a quick payback and a poor ratio (customers who spend early and leave).' },
 
     { h: 'Which lifetime value?' },
@@ -177,7 +177,7 @@ export default {
     { id: 'm06-value-cost', name: 'Value-to-cost ratio',
       tex: String.raw`\text{Ratio} = \frac{\text{CLV}}{\text{CAC}}`,
       where: [[String.raw`\text{CLV}`, 'Lifetime value of a new customer of the kind the spending wins (full value, first margin included)', '$'], [String.raw`\text{CAC}`, 'Acquisition cost of those customers (incremental for a decision)', '$'], [String.raw`\text{Ratio}`, 'Value per dollar of acquisition cost', '']],
-      note: 'Skok’s guideline for software businesses is above 3; it is an industry convention, not a rule.' },
+      note: 'Skok’s guideline of above 3 is for SaaS firms with gross margins of 80% or more and uses revenue-based lifetime value; on a margin basis it is roughly 2.4. An industry convention, not a rule.' },
   ],
 
   examples: [
@@ -192,16 +192,16 @@ export default {
       interpretation: 'The three figures differ almost threefold, and each answers a different question. The blended figure describes the quarter; the paid figure is a fairer cost of the members marketing brought; only the channel figure can say whether the social budget earns its keep. None of them says how many of the 85 unattributed members the advertising also nudged.' },
 
     { level: 'challenging', title: 'Payback with members who leave', fictional: true,
-      setup: `A Glenmarra member brings a margin of $28 a month, received at the start of each month from joining; 93% stay each month; Glenmarra discounts at 0.8% a month. A member won through social ads costs $120. Find the simple payback period, the payback period with retention and discounting, and the value-to-cost ratio, and judge the channel.`,
+      setup: `A Glenmarra member brings a margin of $28 a month, received at the start of each month from joining; 90% stay each month; Glenmarra discounts at 0.8% a month. A member won through social ads costs $120. Find the simple payback period, the payback period with retention and discounting, and the value-to-cost ratio, and judge the channel.`,
       steps: [
-        String.raw`Simple payback: <m>120 / 28 = 4.3</m> months, so the fifth month’s margin would complete it if no one left.`,
-        String.raw`Expected discounted margin, month by month: <m>28</m>, then <m>28 \times 0.93/1.008 = ${f2(28 * 0.93 / 1.008)}</m>, then <m>28 \times (0.93/1.008)^2 = ${f2(28 * (0.93 / 1.008) ** 2)}</m>, and so on. Cumulative: $${f2(cum[0])}, $${f2(cum[1])}, $${f2(cum[2])}, $${f2(cum[3])}, $${f2(cum[4])}, $${f2(cum[5])}.`,
+        String.raw`Simple payback: <m>120 / 28 = 4.3</m>, so with month 1 the month of joining the cost is covered in month 5 if no one leaves.`,
+        String.raw`Expected discounted margin, month by month: <m>28</m>, then <m>28 \times 0.90/1.008 = ${f2(28 * 0.90 / 1.008)}</m>, then <m>28 \times (0.90/1.008)^2 = ${f2(28 * (0.90 / 1.008) ** 2)}</m>, and so on. Cumulative: $${f2(cum[0])}, $${f2(cum[1])}, $${f2(cum[2])}, $${f2(cum[3])}, $${f2(cum[4])}, $${f2(cum[5])}.`,
         `The cumulative total first reaches $120 in month ${pb(120)} ($${f2(cum[pb(120) - 1])}): the payback period with retention and discounting is ${pb(120)} months.`,
-        String.raw`Lifetime value: <m>28 \times 1.008/(1.008 - 0.93) = ${f2(gClv)}</m> dollars, so the ratio is <m>${f2(gClv)}/120 = ${ratio(120).toFixed(2)}</m>.`,
+        String.raw`Lifetime value: <m>28 \times 1.008/(1.008 - 0.90) = ${f2(gClv)}</m> dollars, so the ratio is <m>${f2(gClv)}/120 = ${ratio(120).toFixed(2)}</m>.`,
         `Sensitivity: at 80% monthly retention the payback stretches to ${pbR(120, 0.8)} months and the ratio falls to ${(CU.clvConstant({ m: 28, r: 0.8, d: D_M }).value / 120).toFixed(2)}.`,
       ],
-      answer: `Simple payback 4.3 months; with retention and discounting ${pb(120)} months; value-to-cost ${ratio(120).toFixed(2)}.`,
-      interpretation: `Social ads pay, but only just meet a 3:1 guideline and are the weakest of Glenmarra’s channels, with each member tying up $120 for half a year. If members won through social ads stay less well than the average (a common pattern for people reached by broad advertising), the true ratio is lower. Glenmarra should check social members’ retention separately before raising that budget, and compare it with the referral channel at ${money(30)} a member.` },
+      answer: `Simple payback in month 5; with retention and discounting in month ${pb(120)}; value-to-cost ${ratio(120).toFixed(2)}.`,
+      interpretation: `Social ads pay, but they are the weakest of Glenmarra’s channels, below the roughly 2.4 that Skok’s software guideline would mean on a margin basis (a guideline for another industry, so not a verdict in itself), and each member ties up $120 for six months. If members won through social ads stay less well than the average (a common pattern for people reached by broad advertising), the true ratio is lower. Glenmarra should check social members’ retention separately before raising that budget, and compare it with the referral channel at ${money(30)} a member.` },
 
     { level: 'applied', title: 'Should Lantern run the spring campaign?', fictional: true,
       setup: `Ana’s proposal (fictional figures): $1,800 of flyers and ads plus a $1.10 free drink for every joiner from March to May 2028, with 1,000 joiners expected against ${spring27} in spring 2027. From the previous lesson, a new member is worth about ${money(memberValue)} of margin (discounted), and the 2027 cohorts’ curves show the margin per joiner month by month.`,
@@ -217,15 +217,15 @@ export default {
   ],
 
   demo: [
-    { widget: 'cac-climbing', intro: 'Glenmarra’s social-ads member: $28 a month, 93% monthly retention, $120 to win. Watch the cumulative discounted margin cross the acquisition cost. Lower retention a few points at a time and see payback stretch and then disappear once the lifetime value falls below $120; then set the acquisition cost to the referral channel’s $30.' },
+    { widget: 'cac-climbing', intro: 'Glenmarra’s social-ads member: $28 a month, 90% monthly retention, $120 to win. Watch the cumulative discounted margin cross the acquisition cost. Lower retention a few points at a time and see payback stretch and then disappear once the lifetime value falls below $120; then set the acquisition cost to the referral channel’s $30.' },
     { widget: 'cac-campaign', intro: 'Lantern’s spring campaign, with every assumption on a slider. The most important is the baseline, how many members would have joined anyway: move it towards the expected total and see the incremental cost per member explode, while the blended cost doesn’t move.' },
   ],
 
   mistakes: [
     { title: 'Dividing by every new customer', html: 'Blended CAC counts customers who came with no spending, so it understates what marketing pays per customer it brings. Glenmarra’s blended $40.50 hides a $120 social-ads cost. Use the paid or channel figure, and for a decision the incremental one.' },
     { title: 'Counting only the advertising', html: 'Offers, free products, design, printing, commissions and staff time are acquisition costs. Lantern’s free drinks are more than a third of the campaign’s cost; leaving them out would cut the incremental CAC from $12.34 to $7.66.' },
-    { title: 'Using simple payback as if customers stayed', html: 'CAC ÷ margin assumes no one leaves. With 93% monthly retention Glenmarra’s 4.3 months becomes 6; with 75% retention the member never pays back. Use the retention-weighted, discounted sum, or a cohort’s actual curve.' },
-    { title: 'Treating 3:1 as a law', html: 'The 3:1 guideline comes from one investor’s experience of software businesses with high margins. The right threshold depends on how reliable the value estimate is, the fixed costs to cover and how long the cash is tied up. A 2:1 ratio with solid evidence can beat a 5:1 ratio built on hopeful retention.' },
+    { title: 'Using simple payback as if customers stayed', html: 'CAC ÷ margin assumes no one leaves. With 90% monthly retention Glenmarra’s simple payback in month 5 becomes month 6; with 75% retention the member never pays back. Use the retention-weighted, discounted sum, or a cohort’s actual curve.' },
+    { title: 'Treating 3:1 as a law', html: 'The 3:1 guideline is one David Skok gives for software-as-a-service firms with gross margins of 80% or more, with lifetime value measured on revenue; on a margin basis it is about 2.4. The right threshold depends on how reliable the value estimate is, the fixed costs to cover and how long the cash is tied up. A 2:1 ratio with solid evidence can beat a 5:1 ratio built on hopeful retention.' },
     { title: 'Setting the acquisition ceiling with residual value', html: 'Winning a customer wins their first margin too. The ceiling is the full value of a new customer; the residual formula, which leaves the first margin out, understates it (Fader and Hardie, 2012).' },
     { title: 'Using the average when deciding on more', html: 'The average CAC of past spending says little about the cost of the next customers, who are usually harder to win. Estimate the extra customers the extra spending brings.' },
   ],
@@ -241,9 +241,9 @@ export default {
     'CAC = acquisition spending ÷ new customers won, with every cost the acquisition causes (offers and free products included), new customers only, and spending and customers in the same period.',
     'Blended CAC divides by all new customers, paid CAC by those the paid channels brought, channel CAC by each channel’s customers (Glenmarra: $40.50, $70.43, and $30 to $120); channel figures depend on the attribution rule.',
     'For a decision, use the incremental CAC: spending ÷ the customers who would not have come anyway (Lantern’s campaign: $2.90 blended, $12.34 incremental).',
-    'Simple payback, CAC ÷ margin, assumes no one leaves; with retention and discounting it is the first period in which the expected discounted margin covers CAC (Glenmarra social: 4.3 months against 6), and if CAC exceeds lifetime value there is none.',
+    'Simple payback, CAC ÷ margin, assumes no one leaves; with retention and discounting it is the first period in which the expected discounted margin covers CAC (Glenmarra social: month 5 against month 6), and if CAC exceeds lifetime value there is none.',
     'Cohort payback curves show when each cohort’s cumulative margin per joiner covers its CAC; they are averages, and many individual customers never pay back.',
-    'The value-to-cost ratio CLV ÷ CAC says whether customers are worth winning; Skok’s 3:1 guideline for software businesses is a convention. Read it with payback and with the uncertainty in both figures.',
+    'The value-to-cost ratio CLV ÷ CAC says whether customers are worth winning; Skok’s 3:1 guideline is for SaaS firms with gross margins of 80% or more and revenue-based lifetime value (about 2.4 on a margin basis), a convention. Read it with payback and with the uncertainty in both figures.',
   ],
 
   glossary: [
@@ -272,24 +272,29 @@ export default {
     { what: 'Referral CAC', value: CH[2].spend / CH[2].n, shown: 30 },
     { what: 'Almost threefold (120 ÷ 40.50)', value: 120 / blended, shown: 3, tol: 0.05 },
     { what: 'Simple payback social', value: 120 / 28, shown: 4.3, tol: 0.05 },
+    { what: 'Simple payback social: month 5', value: Math.ceil(120 / 28), shown: 5 },
+    { what: 'Payback not knife-edge: month 5 short by more than $5, month 6 over by more than $5', value: Number(cum[4] < 115 && cum[5] > 125), shown: 1 },
+    { what: 'Skok 80%', value: 80, shown: 80 },
+    { what: 'Margin-basis 2.4', value: 3 * 0.8, shown: 2.4, tol: 1e-9 },
     { what: 'Cum 1', value: cum[0], shown: Number(f2(cum[0])) },
     { what: 'Cum 2', value: cum[1], shown: Number(f2(cum[1])) },
     { what: 'Cum 3', value: cum[2], shown: Number(f2(cum[2])) },
     { what: 'Cum 4', value: cum[3], shown: Number(f2(cum[3])) },
     { what: 'Cum 5', value: cum[4], shown: Number(f2(cum[4])) },
     { what: 'Cum 6', value: cum[5], shown: Number(f2(cum[5])) },
-    { what: 'Month 2 term', value: 28 * 0.93 / 1.008, shown: Number(f2(28 * 0.93 / 1.008)) },
-    { what: 'Month 3 term', value: 28 * (0.93 / 1.008) ** 2, shown: Number(f2(28 * (0.93 / 1.008) ** 2)) },
+    { what: 'Month 2 term', value: 28 * 0.90 / 1.008, shown: Number(f2(28 * 0.90 / 1.008)) },
+    { what: 'Month 3 term', value: 28 * (0.90 / 1.008) ** 2, shown: Number(f2(28 * (0.90 / 1.008) ** 2)) },
     { what: 'Payback social', value: pb(120), shown: 6 },
     { what: 'Payback month reached', value: cum[pb(120) - 1], shown: Number(f2(cum[pb(120) - 1])) },
     { what: 'Glenmarra CLV', value: gClv, shown: Number(f2(gClv)) },
     { what: 'Ratio social', value: ratio(120), shown: Number(ratio(120).toFixed(2)) },
     { what: 'Ratio search', value: ratio(70), shown: Number(ratio(70).toFixed(2)) },
-    { what: 'Social meets 3:1 only just', value: Number(ratio(120) >= 3 && ratio(120) < 3.1), shown: 1 },
+    { what: 'Social below 2.4', value: Number(ratio(120) < 2.4), shown: 1 },
     { what: 'Social weakest channel', value: Number(ratio(120) < ratio(70) && ratio(120) < ratio(30) && ratio(120) < ratio(paid)), shown: 1 },
-    { what: 'Table referral simple', value: 30 / 28, shown: Number((30 / 28).toFixed(1)), tol: 0.05 },
-    { what: 'Table search simple', value: 70 / 28, shown: Number((70 / 28).toFixed(1)), tol: 0.05 },
-    { what: 'Table paid simple', value: paid / 28, shown: Number((paid / 28).toFixed(1)), tol: 0.05 },
+    { what: 'Table referral simple', value: Math.ceil(30 / 28), shown: 2 },
+    { what: 'Table search simple', value: Math.ceil(70 / 28), shown: 3 },
+    { what: 'Table social simple', value: Math.ceil(120 / 28), shown: 5 },
+    { what: 'Table paid simple', value: Math.ceil(paid / 28), shown: 3 },
     { what: 'Table referral payback', value: pb(30), shown: 2 },
     { what: 'Table search payback', value: pb(70), shown: 3 },
     { what: 'Table paid payback', value: pb(paid), shown: 3 },

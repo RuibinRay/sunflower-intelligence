@@ -164,7 +164,7 @@ export const items = [
     unit: '%', places: 2, tol: 0.01,
     wrong: [
       { value: rnd(((1 - ML.r) / 12) * 100, 2), say: 'Dividing the annual churn by 12 ignores compounding: each month’s churn applies only to the members still there. Solve (1 − c)¹² = 0.7.' },
-      { value: rnd(CU.compoundChurn(1 - ML.r, 12) * 100, 2), say: 'That compounds 30% churn over twelve periods, turning a monthly rate into a yearly one. Here the year is known and the month is wanted: 1 − 0.7^(1/12).' },
+      { value: rnd((1 - ML.r) * 100, 2), say: '30% is the churn over the whole year. The question asks for the constant monthly rate that compounds to it: 1 − 0.7^(1/12).' },
     ],
     solution: `Monthly retention r satisfies r¹² = 0.7, so r = 0.7^(1/12) = ${fx(1 - mlMonthly, 4)} and the monthly churn is 1 − r = ${fx(mlMonthly * 100, 2)}%, more than 30% ÷ 12 = 2.50% because each month’s losses come from a smaller base.`,
   },

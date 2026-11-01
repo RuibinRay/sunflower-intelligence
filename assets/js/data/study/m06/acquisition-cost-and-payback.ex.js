@@ -1,7 +1,7 @@
 // acquisition-cost-and-payback.ex.js — M06 · Acquisition cost and payback: widgets, practice and the knowledge check
 // (answer keys live here). Member data from case.js (the first 24 members who joined in April 2027, with their spend in
 // the join month and the two months after); the 2027 cohorts' margin per joiner for the campaign widget. Glenmarra
-// Climbing Centre, Vantrell Language School, Ouseley Tutors and every other business named are fictional, as are
+// Climbing Centre, Vantrell Language School and every other business named are fictional, as are
 // Lantern's 2028 campaign figures. Formula items are marked by their results; num items recompute in `check`.
 import { MEMBER_LIST, VISIT_LIST, joinMap } from './case.js?v=25';
 import * as CU from '../../../core/customer.js?v=25';
@@ -32,8 +32,8 @@ const vlSpend = VL.reduce((s, r) => s + r[1], 0), vlN = VL.reduce((s, r) => s + 
 const vlCells = { A1: 'Channel', B1: 'Spend ($)', C1: 'New students', D1: 'CAC ($)', ...col('A', 2, VL.map((r) => r[0])), ...col('B', 2, VL.map((r) => r[1])), ...col('C', 2, VL.map((r) => r[2])), A6: 'All channels', D7: '' };
 const PB_FIXED = ['A2:A11'];
 const paybackCells = { A1: 'Month since joining', B1: 'Margin per joiner ($)', C1: 'Cumulative ($)', E1: 'Acquisition cost ($)', F1: 12, E2: 'Payback month',
-  ...col('A', 2, MARCUM.map((_, k) => k)), ...col('B', 2, MARCUM.map((v, k) => Math.round((k ? v - MARCUM[k - 1] : v) * 100) / 100)) };
-const pbB = paybackCells; const bVals = MARCUM.map((v, k) => Math.round((k ? v - MARCUM[k - 1] : v) * 100) / 100);
+  ...col('A', 2, MARCUM.map((_, k) => k)), ...col('B', 2, MARCUM.map((v, k) => (k ? v - MARCUM[k - 1] : v))) };   // unrounded, so the sums match the lesson
+const pbB = paybackCells; const bVals = MARCUM.map((v, k) => (k ? v - MARCUM[k - 1] : v));
 const cumB = []; bVals.reduce((s, v, k) => (cumB[k] = s + v), 0);
 const cumCells = col('C', 2, bVals.map((_, k) => `=SUM($B$2:B${k + 2})`));
 const pb12 = cumB.filter((v) => v < 12).length;
@@ -44,7 +44,7 @@ export const widgets = {
   'cac-climbing': {
     type: 'clv',
     title: 'Paying back a Glenmarra member won through social ads',
-    m: 28, r: 0.93, d: D_M, cac: 120,
+    m: 28, r: 0.9, d: D_M, cac: 120,
     ranges: { m: [5, 60, 1], r: [0.6, 0.99, 0.01], d: [0, 0.02, 0.001], cac: [0, 300, 5] },
     timing: 'start', horizon: 36, unit: 'month',
     note: 'Glenmarra Climbing Centre and its figures are fictional. Margins arrive at the start of each month, the first on joining.',
@@ -217,7 +217,7 @@ export const independent = [
     answer: 0,
     feedback: {
       1: 'Rounding is trivial next to the assumptions inside the ratio.',
-      2: 'The 3:1 figure is a convention from one investor’s experience of software businesses; clearing it by a hair proves nothing if the value estimate is weak.',
+      2: 'The 3:1 figure is a guideline David Skok gives for software businesses with high gross margins, using revenue-based lifetime value; clearing it by a hair proves nothing if the value estimate is weak.',
       3: 'Serving costs belong in the margin, not in CAC; including them in CAC would be a mistake, not a check.',
     },
     solution: 'A ratio is only as good as its parts. Lifetime value built on early, optimistic retention or on revenue can make almost any CAC look justified. Ask for the margin, retention evidence, horizon, timing, and whether CAC counts every acquisition cost and only new customers.',
@@ -312,7 +312,7 @@ export const check = [
     items: [
       'If a customer’s acquisition cost exceeds their lifetime value, they never pay back, however long you wait.',
       'Blended CAC is always at least as high as paid CAC.',
-      'The 3:1 value-to-cost guideline is a convention from software businesses, not a law.',
+      'The 3:1 value-to-cost guideline is a convention for software businesses with high gross margins, not a law.',
       'A channel’s CAC can change when the attribution rule changes, even if nothing else does.',
     ],
     categories: ['True', 'False'],
@@ -320,7 +320,7 @@ export const check = [
     feedback: {
       0: 'The cumulative expected margin approaches the lifetime value and never exceeds it.',
       1: 'Blended CAC divides by more customers (including unattributed ones), so it is at most the paid CAC.',
-      2: 'It comes from one investor’s experience of software-as-a-service businesses with high margins.',
+      2: 'Skok gives it for software-as-a-service firms with gross margins of 80% or more, measuring lifetime value on revenue.',
       3: 'Attribution decides which customers each channel is credited with.',
     },
     solution: 'True, false, true, true.',

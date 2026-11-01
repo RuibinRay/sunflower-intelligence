@@ -32,7 +32,7 @@ const V = (f) => ({
   constNew: CU.clvConstant({ m: 100, r: f.r, d: 0.1 }).value,
   yr1New: CU.clvConstant({ m: 100, r: f.r1, d: 0.1 }).value,
   sbgNew: 100 * CU.sbgDEL(f.s.alpha, f.s.beta, 0.1),
-  constOld: CU.clvConstant({ m: 100, r: f.r, d: 0.1, timing: 'end' }).value,
+  constOld: f.r * CU.clvConstant({ m: 100, r: f.r, d: 0.1 }).value,   // about to renew, the coming renewal undiscounted (as DERL)
   sbgOld: 100 * CU.sbgDERL(f.s.alpha, f.s.beta, 0.1, 6),
 });
 const VR = V(FR), VH = V(FHE);
@@ -49,6 +49,7 @@ const tail = tailOf(qDecay, MAR[9], 9), total = histDisc + tail;
 const qCal = (MAR[7] / MAR[2]) ** (1 / 5), pred8 = MAR[7] * qCal, pred9 = MAR[7] * qCal ** 2;
 const tail80 = tailOf(0.8, MAR[9], 9), tail90 = tailOf(0.9, MAR[9], 9);
 const marMonth0Share = MAR[0] / marSpend;
+const first5Share = MAR.slice(0, 5).reduce((s, v, k) => s + v * MR / (1 + D_M) ** k, 0) / total;
 const ratios = MAR.slice(1).map((v, i) => v / MAR[i]);
 const marRet9 = CT.retention[0][9];
 
@@ -79,7 +80,7 @@ function timingFigure() {
     r.at.forEach((t, i) => { s += `<circle cx="${X(t)}" cy="${r.y}" r="6" fill="var(--series-1)"/><text x="${X(t)}" y="${r.y + 26}" text-anchor="middle" font-size="15">${r.lab[i]}</text>`; });
     s += `<text x="${X(4) + 34}" y="${r.y + 5}" font-size="15">…</text>`;
   }
-  s += `<line x1="${X(0)}" x2="${X(0)}" y1="20" y2="270" stroke="var(--rule-strong)" stroke-dasharray="4 3"/>`;
+  s += `<line x1="${X(0)}" x2="${X(0)}" y1="20" y2="262" stroke="var(--rule-strong)" stroke-dasharray="4 3"/>`;
   for (let t = 0; t <= 4; t++) s += `<text x="${X(t)}" y="300" text-anchor="middle" font-size="15" fill="var(--ink-3)">${t}</text>`;
   s += `<text x="8" y="300" font-size="15" fill="var(--ink-3)">Period</text><text x="${X(0)}" y="322" text-anchor="middle" font-size="15" fill="var(--ink-3)">now</text>`;
   return `${s}</svg>`;
@@ -134,7 +135,7 @@ export default {
 
     { h: 'Members who never say goodbye' },
     { p: `The cafés’ members are a <b>noncontractual</b> setting: a member who stops coming simply stops, so there is no retention rate to put in the formula. It is tempting to use the share of members who came back at least once (${(repeatRate * 100).toFixed(1)}% of all 2,584 by 31 December), but that is a repeat-purchase rate, not a retention rate, and Fader and Hardie (2012) warn that the constant-retention formulas don’t apply to such settings at all. What the data do show, directly, is how much a cohort of joiners spends in each month after joining.` },
-    { p: `The 242 March joiners spent $${f2(MAR[0])} each in March, $${f2(MAR[1])} in April and $${f2(MAR[9])} in December, the tenth month. Spend per joiner falls month by month as members drift away and the rest visit a little less often, but it hasn’t reached zero: ${(marRet9 * 100).toFixed(1)}% of them still visited in December. A simple forecast continues the fall at its recent pace. From May (month 4) to December spend per joiner fell by a factor of ${qDecay.toFixed(3)} a month on average; continuing that, and discounting at 0.8% a month, the months from January 2028 on are worth another $${f2(tail)} of margin per March joiner, on top of the $${f2(histDisc)} (discounted to the month each joined) already earned. A new member, on this evidence, is worth about $${total.toFixed(0)} of margin.` },
+    { p: `The 242 March joiners spent $${f2(MAR[0])} each in March, $${f2(MAR[1])} in April and $${f2(MAR[9])} in December, the tenth month. Spend per joiner falls month by month as members drift away, and those still coming are increasingly the less frequent visitors, but it hasn’t reached zero: ${(marRet9 * 100).toFixed(1)}% of them still visited in December. A simple forecast continues the fall at its recent pace. From May (month 4) to December spend per joiner fell by a factor of ${qDecay.toFixed(3)} a month on average; continuing that, and discounting at 0.8% a month, the months from January 2028 on are worth another $${f2(tail)} of margin per March joiner, on top of the $${f2(histDisc)} (discounted to the month each joined) already earned. A new member, on this evidence, is worth about $${total.toFixed(0)} of margin.` },
   ],
 
   theory: [
@@ -165,9 +166,9 @@ export default {
         ['High End, after five renewals (residual)', `$${f2(VH.constOld)}`, `$${f2(VH.sbgOld)}`, (VH.sbgOld / VH.constOld).toFixed(2)],
       ],
       align: ['l', 'r', 'r', 'r'],
-      note: `Both models fitted to years 0–7 of 1,000 customers. Constant retention: Regular ${(FR.r * 100).toFixed(1)}%, High End ${(FHE.r * 100).toFixed(1)}% (renewals ÷ chances to renew). sBG: Regular α = ${FR.s.alpha.toFixed(3)}, β = ${FR.s.beta.toFixed(3)}; High End α = ${FHE.s.alpha.toFixed(3)}, β = ${FHE.s.beta.toFixed(3)}. Residual: about to make the sixth renewal, the coming renewal undiscounted (Fader and Hardie’s DERL, 2010).`,
+      note: `Both models fitted to years 0–7 of 1,000 customers. Constant retention: Regular ${(FR.r * 100).toFixed(1)}%, High End ${(FHE.r * 100).toFixed(1)}% (renewals ÷ chances to renew). sBG: Regular α = ${FR.s.alpha.toFixed(3)}, β = ${FR.s.beta.toFixed(3)}; High End α = ${FHE.s.alpha.toFixed(3)}, β = ${FHE.s.beta.toFixed(3)}. Residual: a customer about to decide on the sixth renewal, the coming renewal’s margin undiscounted, as in Fader and Hardie’s DERL (2010); on the same timing constant retention gives m r(1 + d) ÷ (1 + d − r).`,
     } },
-    { p: `The constant rate’s error depends on whose value you want. For new customers it is modest (about 10% here), because the constant rate fitted to seven years already reflects some of the loyal survivors; with the year-1 rate of 63.1% instead it would be $${f2(VR.yr1New)}, far too low. For established customers it is large, because the constant rate ignores that they have already shown themselves to be the stayers. Fader and Hardie (2010) value whole customer bases with a constant retention rate and with the sBG and find the constant rate understates the base’s residual value in every case they examine, typically by roughly 25% to 50%.` },
+    { p: `The constant rate’s error depends on whose value you want. For new customers it is modest (about 10% here), because the constant rate fitted to seven years already reflects some of the loyal survivors; with the year-1 rate of 63.1% instead it would be $${f2(VR.yr1New)}, far too low. For established customers it is large, because the constant rate ignores that they have already shown themselves to be the stayers. Fader and Hardie (2010) value whole customer bases with a constant retention rate and with the sBG and find the constant rate understates the base’s residual value in all their examples (by 12% to 48%), of the order of 25% to 50% in standard settings.` },
 
     { h: 'Noncontractual value, kept simple' },
     { p: 'Where departures are never observed, value has to come from purchases. The approach in this lesson uses the cohort table directly: spend per joiner in each month since joining, times the margin, discounted, summed over the months observed, plus a projection of the months not yet seen. It needs a cohort old enough to show the shape of the decline, and it projects a pace that is itself an assumption.' },
@@ -235,7 +236,7 @@ export default {
       steps: [
         String.raw`Constant retention, new customer (timing A): <m>100 \times 1.10/(1.10 - ${FR.r.toFixed(4)}) = ${f2(VR.constNew)}</m> dollars.`,
         `sBG, new customer: the discounted expected lifetime is Σ S(t) ÷ 1.10ᵗ = ${(VR.sbgNew / 100).toFixed(3)} years, so the value is $${f2(VR.sbgNew)}.`,
-        String.raw`Constant retention, customer after five renewals (residual, about to renew): the same for every tenure, <m>100 \times ${FR.r.toFixed(4)}/(1.10 - ${FR.r.toFixed(4)}) = ${f2(VR.constOld)}</m> dollars.`,
+        String.raw`Constant retention, customer after five renewals, about to renew (the coming renewal’s margin counted undiscounted, as the sBG figure below counts it): the same for every tenure, <m>100 \times ${FR.r.toFixed(4)} \times 1.10/(1.10 - ${FR.r.toFixed(4)}) = ${f2(VR.constOld)}</m> dollars.`,
         `sBG, the same customer: the retention rate in year 6 is (β + 5) ÷ (α + β + 5) = ${FR.s.r(6).toFixed(3)}, far above the cohort’s first-year 63.1%. The discounted expected residual lifetime is ${(VR.sbgOld / 100).toFixed(3)} years, so the value is $${f2(VR.sbgOld)}.`,
         `Check against the data the models didn’t see: the sBG fitted to years 0–7 predicts ${(FR.s.S(12) * 100).toFixed(1)}% still subscribed after 12 years, against 17.3% observed; constant retention predicts ${(FR.r ** 12 * 100).toFixed(1)}%.`,
       ],
@@ -253,7 +254,7 @@ export default {
         `Check the method: fitted only to months 2–7, it predicted $${f2(pred8)} and $${f2(pred9)} for months 8 and 9; members actually spent $${f2(MAR[8])} and $${f2(MAR[9])}.`,
       ],
       answer: `About $${total.toFixed(0)} of margin per new member: $${f2(histDisc)} in the first ten months and $${f2(tail)} projected after them.`,
-      interpretation: `Most of a member’s value comes early: the join month alone is ${(marMonth0Share * 100).toFixed(0)}% of the March joiners’ ten-month spend. So the figure is fairly robust to the projection (a decay of 0.80 or 0.90 instead of ${qDecay.toFixed(2)} moves it by a few dollars), but it rests on one cohort, joining in spring, at a time when both cafés were new. Ana should present it as “about $32, possibly $27 to $35”, and recompute it as later cohorts age.` },
+      interpretation: `Most of a member’s value comes early: the join month alone is ${(marMonth0Share * 100).toFixed(0)}% of the March joiners’ ten-month spend. So the figure is fairly robust to the projection (a decay of 0.80 or 0.90 instead of ${qDecay.toFixed(2)} moves it by a few dollars), but it rests on one cohort, joining in spring, at a time when both cafés were new. Ana should present it as “about $32, roughly $${(histDisc + tail80).toFixed(0)} to $${(histDisc + tail90).toFixed(0)} depending on the decay”, and recompute it as later cohorts age.` },
   ],
 
   demo: [
@@ -264,14 +265,14 @@ export default {
   mistakes: [
     { title: 'Building value from revenue', html: 'A member who spends $40 is not worth $40: at the cafés about 33 cents of every dollar goes on goods and card fees. Revenue-based values overstate worth by the ratio of revenue to margin and justify spending too much to win customers. Use margin, and say which costs it takes off.' },
     { title: 'Quoting a CLV without its timing', html: 'With the same margin, retention and discount rate, Quillmore’s customer is worth $392.73, $363.64 or $272.73 depending on when the margins are counted. Draw the timeline and name the convention; never compare two figures built on different ones.' },
-    { title: 'Using one average retention rate for everyone', html: 'Customers differ, so retention rises with tenure as the flighty leave. A constant rate understates value, slightly for new customers and heavily for established ones ($237 against $626 for Regular customers after five renewals). Fit a model that allows customers to differ, such as the sBG, and check it on later periods.' },
+    { title: 'Using one average retention rate for everyone', html: 'Customers differ, so retention rises with tenure as the flighty leave. A constant rate understates value, slightly for new customers and heavily for established ones ($261 against $626 for Regular customers after five renewals). Fit a model that allows customers to differ, such as the sBG, and check it on later periods.' },
     { title: 'Treating a repeat-purchase rate as a retention rate', html: 'In a noncontractual business nobody is observed leaving. The 81.6% of members who came back at least once is not a retention rate, and putting it into r ÷ (1 + d − r) gives a number with no meaning. Use the cohort’s spend over time, or a model built for the setting.' },
     { title: 'Reading a segment’s value as the effect of a feature', html: 'Members with notifications on were worth more, but they chose the setting. The difference is an association; switching notifications on for others may add much less, or nothing. Test it.' },
     { title: 'Treating CLV as a fact about a person', html: 'It is a forecast for a kind of customer, with a range. Present it with its assumptions and the values plausible alternatives give, and update it as cohorts age.' },
   ],
 
   application: [
-    { case: `Ana’s note to the café managers, January 2028: “What is a new app member worth? Our March 2027 joiners are the only group with ten months of history. Each brought in $${f2(histDisc)} of margin (after goods and card fees, valued at the date they joined) in those ten months, and if their spending keeps falling at its recent pace another $${f2(tail)} after that: about $${total.toFixed(0)} in all, probably between $27 and $35. Most of it comes in the first three months. Harbourside members are worth more than Millbrook’s ($${f2(G.H.margin)} against $${f2(G.M.margin)} in their first five months) because their tickets are bigger, though Millbrook members visit more often. Members with notifications on are worth more too, but they chose the setting, so that isn’t evidence that notifications add value. I’ll redo these figures each quarter as the later cohorts build up history.”` },
+    { case: `Ana’s note to the café managers, January 2028: “What is a new app member worth? Our March 2027 joiners are the only group with ten months of history. Each brought in $${f2(histDisc)} of margin (after goods and card fees, valued at the date they joined) in those ten months, and if their spending keeps falling at its recent pace another $${f2(tail)} after that: about $${total.toFixed(0)} in all, roughly $${(histDisc + tail80).toFixed(0)} to $${(histDisc + tail90).toFixed(0)} depending on how fast spending falls. About ${(first5Share * 100).toFixed(0)}% of it comes in the first five months. Harbourside members are worth more than Millbrook’s ($${f2(G.H.margin)} against $${f2(G.M.margin)} in their first five months) because their tickets are bigger, though Millbrook members visit more often. Members with notifications on are worth more too, but they chose the setting, so that isn’t evidence that notifications add value. I’ll redo these figures each quarter as the later cohorts build up history.”` },
     { p: 'In practice lifetime value is a planning tool, not a valuation of people. Retailers, banks, telecoms companies and software firms use it to decide how much they can spend to win a customer through each channel, how much it is worth spending to keep different groups, and how to value the customer base when a business is bought or sold. The calculations that work are the transparent ones: the margin, the retention or decay assumption, the discount rate, the timing and the horizon written down, and the figure shown under alternatives.' },
     { p: 'The two failures are mirror images. Over-optimism comes from revenue instead of margin, retention rates from the best customers applied to all, or long horizons in a business whose products change quickly. Under-valuation comes from one average retention rate applied to customers who differ, which hides that the customers who have stayed are the ones most likely to keep staying. The first leads to overspending on acquisition; the second to under-investing in the loyal customers who carry the business.' },
     { p: 'For noncontractual businesses such as cafés, shops and restaurants, the honest starting point is a cohort’s history read along its row. It shows how much value comes early, which is where acquisition and onboarding decisions bite, and it gives a projection that can be checked month by month against what members actually do. The next lesson sets this value against the cost of winning a member.' },
@@ -282,7 +283,7 @@ export default {
     'Historical value adds up the past; predictive value is a forecast, and its margin, period, retention or decay assumption, discount rate, timing and horizon must be stated.',
     'Under constant retention a new customer with the first margin now is worth m(1 + d) ÷ (1 + d − r), and an existing customer’s residual value is m r ÷ (1 + d − r): $392.73 and $272.73 for Quillmore’s fictional contracts. Fader and Hardie (2012) trace the textbook versions to these timing choices.',
     'A finite horizon of H periods multiplies the value by 1 − (r ÷ (1 + d))^H; rates must refer to the same period as the margin.',
-    'When customers differ, retention rises with tenure and one average rate understates value, heavily for established customers (Regular customers after five renewals: $237 with a constant rate against $626 with the sBG).',
+    'When customers differ, retention rises with tenure and one average rate understates value, heavily for established customers (Regular customers after five renewals: $261 with a constant rate against $626 with the sBG).',
     'For noncontractual members, value comes from a cohort’s spend per joiner by month, projected forward and checked on later months: about $32 of margin per new café member.',
     'Value by segment (Harbourside against Millbrook, notifications on against off) describes groups; it is an association, not the effect of an action.',
   ],
@@ -354,7 +355,10 @@ export default {
     { what: 'Regular DEL', value: VR.sbgNew / 100, shown: Number((VR.sbgNew / 100).toFixed(3)), tol: 0.0005 },
     { what: 'Regular new, year-1 rate', value: VR.yr1New, shown: Number(f2(VR.yr1New)) },
     { what: 'Regular old, constant', value: VR.constOld, shown: Number(f2(VR.constOld)) },
-    { what: 'Regular old, constant ≈ $237', value: VR.constOld, shown: 237, tol: 0.5 },
+    { what: 'Regular old, constant ≈ $261', value: VR.constOld, shown: 261, tol: 0.5 },
+    { what: 'Regular old, constant $261.13', value: VR.constOld, shown: 261.13 },
+    { what: 'High End old, constant $485.09', value: VH.constOld, shown: 485.09 },
+    { what: 'Regular old ratio 2.40', value: VR.sbgOld / VR.constOld, shown: 2.40, tol: 0.005 },
     { what: 'Regular old, sBG', value: VR.sbgOld, shown: Number(f2(VR.sbgOld)) },
     { what: 'Regular old, sBG ≈ $626', value: VR.sbgOld, shown: 626, tol: 0.5 },
     { what: 'Regular DERL', value: VR.sbgOld / 100, shown: Number((VR.sbgOld / 100).toFixed(3)), tol: 0.0005 },
@@ -393,8 +397,10 @@ export default {
     { what: 'Tail', value: tail, shown: Number(f2(tail)) },
     { what: 'Total ≈', value: total, shown: Number(total.toFixed(0)), tol: 0.5 },
     { what: 'Summary: about $32', value: total, shown: 32, tol: 0.5 },
-    { what: 'About $32, $27 to $35 brackets the total', value: Number(total > 27 && total < 35), shown: 1 },
-    { what: 'Range $27–$35 covers decay 0.80–0.90', value: Number(histDisc + tail80 > 27 && histDisc + tail90 < 35), shown: 1 },
+    { what: 'Low end (decay 0.80)', value: histDisc + tail80, shown: Number((histDisc + tail80).toFixed(0)), tol: 0.5 },
+    { what: 'High end (decay 0.90)', value: histDisc + tail90, shown: Number((histDisc + tail90).toFixed(0)), tol: 0.5 },
+    { what: 'First five months share of the value', value: first5Share * 100, shown: Number((first5Share * 100).toFixed(0)), tol: 0.5 },
+    { what: 'Five months about 60%', value: first5Share * 100, shown: 60, tol: 0.5 },
     { what: 'Decay 0.80 and 0.90 move the value by a few dollars', value: Number(Math.abs(tail90 - tail) < 6 && Math.abs(tail - tail80) < 6), shown: 1 },
     { what: 'Month 0 margin', value: MAR[0] * MR, shown: Number(f2(MAR[0] * MR)) },
     { what: 'Month 9 margin', value: MAR[9] * MR, shown: Number(f2(MAR[9] * MR)) },
@@ -408,7 +414,7 @@ export default {
     { what: 'Tail at 0.80', value: tail80, shown: Number(f2(tail80)) },
     { what: 'Tail at 0.90', value: tail90, shown: Number(f2(tail90)) },
     { what: 'Month 0 share', value: marMonth0Share * 100, shown: Number((marMonth0Share * 100).toFixed(0)), tol: 0.5 },
-    { what: 'Most value in first three months (months 0–2 over half of ten-month spend)', value: Number(MAR.slice(0, 3).reduce((s, v) => s + v, 0) > marSpend / 2), shown: 1 },
+    { what: 'Over half of the ten months’ spend in the first three', value: Number(MAR.slice(0, 3).reduce((s, v) => s + v, 0) > marSpend / 2), shown: 1 },
     // segments
     { what: 'Joined Mar–Aug', value: G.all.n, shown: 1664 },
     { what: 'Harbourside n', value: G.H.n, shown: 603 },
