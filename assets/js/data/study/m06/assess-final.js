@@ -189,7 +189,7 @@ const top2 = LIFT.rows[1];
 const maxLift = 1 / LIFT.base;
 
 // fn-16: ten members of the churn table, recency on 31 October and whether they lapsed
-const P16 = ['back', 'lapsed'].flatMap((k) => CT.filter((c) => (k === 'lapsed' ? c.lapsed : c.back)).filter((_, i) => i % 157 === 30).slice(0, 5));
+const P16 = ['back', 'lapsed'].flatMap((k) => CT.filter((c) => (k === 'lapsed' ? c.lapsed : c.back)).filter((_, i) => i % 137 === 3).slice(0, 5)).sort((a, b) => (a.id < b.id ? -1 : 1));
 const auc16 = roc(P16.map((c) => c.lapsed), P16.map((c) => c.recency)).auc;
 const pairs16 = (() => { const L = P16.filter((c) => c.lapsed), B = P16.filter((c) => !c.lapsed); let w = 0; for (const a of L) for (const b of B) w += a.recency > b.recency ? 1 : a.recency === b.recency ? 0.5 : 0; return { w, n: L.length * B.length }; })();
 claim(auc16 > 0.6 && auc16 < 1 && P16.length === 10, 'fn-16’s ten members have a score that ranks most but not all pairs');
