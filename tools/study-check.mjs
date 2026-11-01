@@ -19,7 +19,7 @@ import {
 const VERBS = /^(Explain|Describe|Define|Identify|Distinguish|Classify|Calculate|Compute|Record|Prepare|Analyse|Apply|Interpret|Evaluate|Compare|Choose|Decide|Use|Recognise|State|Construct|Build|Post|Journalise|Find|Detect|Diagnose|Handle|Transform|Scale|Encode|Write|Document|Justify|Recommend|Estimate|Assess|Plan|Design|Set|Measure|Select|Determine|Correct|Locate|Read|Summarise|Reshape|Combine|Profile|Validate|Clean|Convert|Standardise|Normalise|Map|Draft|Price|Forecast|Test|Name|List|Contrast|Close|Adjust|Trace|Reconcile)\b/;
 const KINDS = ['conceptual', 'numerical', 'applied'];
 const TYPES = ['mc', 'multi', 'num', 'fill', 'classify', 'order', 'journal', 'equation', 'rows', 'short', 'formula', 'steps'];
-const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak', 'sampler', 'cluster', 'percmap', 'ratios', 'scatter', 'corrmatrix', 'fitline', 'diagnostics', 'logistic'];
+const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak', 'sampler', 'cluster', 'percmap', 'ratios', 'scatter', 'corrmatrix', 'fitline', 'diagnostics', 'logistic', 'rfm', 'cohort', 'survival', 'sbg', 'clv', 'lift'];
 const DATASETS = ['lantern-orders', 'harborview-bookings', 'northfield-students'];
 const CLEAN_OPS = ['dedupe', 'dedupe-key', 'trim', 'case', 'map', 'to-number', 'to-date', 'fill', 'drop-missing', 'flag-missing', 'validate', 'outliers', 'transform', 'scale', 'encode', 'derive', 'rename', 'drop-column'];
 const near = (a, b, tol) => Math.abs(a - b) <= tol + 1e-9;
@@ -424,6 +424,39 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
     if (wd.axis && !wd.xs[wd.axis]) r.err(`${w}: axis ${wd.axis} is not one of xs`);
     for (const t of wd.show || []) if (!['coefs', 'odds', 'lr', 'table'].includes(t)) r.err(`${w}: unknown show ${t}`);
     if (n && cols.length) { const m = REG.logistic(wd.y.values, wd.xs || {}); if (m.error) r.err(`${w}: logistic fit fails: ${m.error}`); else if (m.separated) r.warn(`${w}: the outcome is (nearly) perfectly separated; the coefficients are unstable`); }
+  } else if (wd.type === 'rfm') {
+    const cs = wd.customers || [];
+    if (!cs.length || !cs.every((c) => [c.recency, c.frequency, c.monetary].every(Number.isFinite))) r.err(`${w}: rfm needs customers with finite recency, frequency and monetary`);
+    if (![3, 4, 5].includes(wd.k ?? 5)) r.err(`${w}: rfm k must be 3, 4 or 5`);
+    if (wd.method && !['quantile', 'ntile'].includes(wd.method)) r.err(`${w}: unknown method ${wd.method}`);
+    for (const t of wd.show || []) if (!['cuts', 'grid', 'segments'].includes(t)) r.err(`${w}: unknown show ${t}`);
+  } else if (wd.type === 'cohort') {
+    const ts = Object.entries(wd.tables || {});
+    if (!ts.length || !ts.every(([, t]) => t.cohorts?.length && t.retention?.length === t.cohorts.length && t.pooled?.length)) r.err(`${w}: cohort needs tables from cohortTable()`);
+    if (wd.view && !['retention', 'active', 'revenue'].includes(wd.view)) r.err(`${w}: unknown view ${wd.view}`);
+    if ((wd.curves || []).length > 2) r.warn(`${w}: only two cohorts are drawn at a time`);
+    for (const c of wd.curves || []) if (ts.length && !ts[0][1].cohorts.some((k) => k.label === c)) r.err(`${w}: curve ${c} is not a cohort`);
+  } else if (wd.type === 'survival') {
+    if (wd.lapse) {
+      const L = wd.lapse; if (!L.joins || !L.visits || !Number.isFinite(L.end) || !(L.days || []).includes(L.value)) r.err(`${w}: survival lapse needs joins, visits, end, days and a value among days`);
+    } else if (!(wd.groups || []).length || !wd.groups.every((g) => g.times?.length && g.times.length === g.events?.length && g.times.every((t) => t >= 0) && g.events.every((e) => e === 0 || e === 1))) r.err(`${w}: survival needs groups with times ≥ 0 and 0/1 events of equal length`);
+    if ((wd.groups || []).length > 3) r.err(`${w}: survival draws at most three groups`);
+    for (const t of wd.show || []) if (!['ci', 'median', 'logrank', 'table'].includes(t)) r.err(`${w}: unknown show ${t}`);
+  } else if (wd.type === 'sbg') {
+    const cs = wd.cohorts || [];
+    if (!cs.length || !cs.every((c) => c.alive?.length >= 3 && c.alive.every((v, i) => Number.isInteger(v) && (i === 0 || v <= c.alive[i - 1])))) r.err(`${w}: sbg needs cohorts with non-increasing whole-number alive counts (at least 3)`);
+    const mx = Math.max(...cs.map((c) => (c.alive?.length || 1) - 1));
+    if (wd.fit != null && (wd.fit < 2 || wd.fit > mx)) r.err(`${w}: fit must be between 2 and the periods observed (${mx})`);
+  } else if (wd.type === 'clv') {
+    for (const k of ['m', 'r']) if (!Number.isFinite(wd[k])) r.err(`${w}: clv needs ${k}`);
+    if (!(wd.r < 1 + (wd.d ?? 0))) r.err(`${w}: clv needs r below 1 + d`);
+    if (wd.timing && !['start', 'end'].includes(wd.timing)) r.err(`${w}: unknown timing ${wd.timing}`);
+    for (const [k, g] of Object.entries(wd.ranges || {})) { if (!(g.length === 3 && g[0] < g[1] && g[2] > 0)) r.err(`${w}: ranges.${k} must be [lo, hi, step]`); const v = wd[k]; if (v != null && (v < g[0] || v > g[1])) r.err(`${w}: ${k} is outside its range`); }
+    if (wd.sbg && !(wd.sbg.alpha > 0 && wd.sbg.beta > 0)) r.err(`${w}: clv sbg needs alpha and beta above 0`);
+  } else if (wd.type === 'lift') {
+    const n = wd.y?.values?.length, sc = Object.entries(wd.scores || {});
+    if (!n || !wd.y.values.every((v) => v === 0 || v === 1)) r.err(`${w}: lift needs y.values of 0s and 1s`);
+    if (!sc.length || sc.length > 2 || !sc.every(([, v]) => v.length === n && v.every(Number.isFinite))) r.err(`${w}: lift needs one or two scores of the same length as y`);
   } else if (wd.type === 'curve') {
     const P = { normal: ['mean', 'sd'], t: ['df'], chisq: ['df'], f: ['df1', 'df2'], binomial: ['n', 'p'], poisson: ['lambda'] }[wd.dist];
     if (!P) r.err(`${w}: curve needs dist: normal, t, chisq, f, binomial or poisson`);

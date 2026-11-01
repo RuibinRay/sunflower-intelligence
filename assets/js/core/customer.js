@@ -211,6 +211,27 @@ export function kaplanMeier(times, events, { conf = 0.95 } = {}) {
   const at = (t) => { let s = 1; for (const st of steps) { if (st.t > t) break; s = st.S; } return s; };
   return { steps, median: med ? med.t : null, at, n: times.length, events: events.reduce((a, b) => a + (b ? 1 : 0), 0) };
 }
+/**
+ * Lapse-defined lifetimes. A member has lapsed at a visit followed by more than L days without another (within the data,
+ * which ends on `end`); the lifetime is days from joining to that visit, the event 1, so a member who never came back
+ * after joining lapses at 0. A member who lapsed and later came back counts as lapsed the first time. A member whose last
+ * visit is within L days of `end` hasn't lapsed yet: censored at their last visit (known to be active then).
+ * lapse: { joins: { id: join day }, visits: { id: [visit days, ascending] }, end: last day of data }.
+ */
+export function lapseTimes(lapse, L) {
+  const out = { times: [], events: [], ids: [] };
+  for (const [id, join] of Object.entries(lapse.joins)) {
+    const v = lapse.visits[id] || [join];
+    let t = null, ev = 0;
+    for (let i = 0; i < v.length; i++) {
+      const next = i + 1 < v.length ? v[i + 1] : lapse.end + L + 1;   // no later visit: the gap runs past the end
+      if (next - v[i] > L && (i + 1 < v.length || lapse.end - v[i] > L)) { t = v[i] - join; ev = 1; break; }
+    }
+    if (t == null) { t = v[v.length - 1] - join; ev = 0; }
+    out.ids.push(id); out.times.push(t); out.events.push(ev);
+  }
+  return out;
+}
 /** Log-rank test of equal survival across groups (χ² on groups − 1 df), as statsmodels survdiff computes it. */
 export function logRank(times, events, groups) {
   const labels = [...new Set(groups)], G = labels.length;

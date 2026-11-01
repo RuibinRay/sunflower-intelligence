@@ -89,6 +89,16 @@ fx.km.forEach((c, j) => {
   close('km log-log high', s.high, 0.8 ** Math.exp(1.959963984540054 * v), 1e-10);
 }
 
+// ---- lapse-defined lifetimes (hand case, L = 30, data end day 100)
+{
+  const lp = { joins: { a: 0, b: 10, c: 50, d: 90, e: 5 }, visits: { a: [0, 20, 40], b: [10], c: [50, 60, 95], d: [90], e: [5, 50, 60] }, end: 100 };
+  const t = C.lapseTimes(lp, 30);
+  same('lapse ids', t.ids, ['a', 'b', 'c', 'd', 'e']);
+  same('lapse times', t.times, [40, 0, 10, 0, 0]);       // a lapsed after day 40; b never returned; c's 35-day gap after day 60 (it came back: counts as lapsed); d censored at its join; e's 45-day gap after joining
+  same('lapse events', t.events, [1, 1, 1, 0, 1]);
+  same('lapse: a recent last visit is censored there', C.lapseTimes({ joins: { c: 50 }, visits: { c: [50, 60, 85] }, end: 100 }, 30), { times: [35], events: [0], ids: ['c'] });
+}
+
 // ---- sBG against SciPy
 fx.sbg.forEach((c, j) => {
   const f = C.sbgFit(c.cohorts.map((alive) => ({ alive })));
