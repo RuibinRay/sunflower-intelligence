@@ -73,7 +73,7 @@ export const widgets = {
     title: 'Fader and Hardie’s (2007) “Regular” customers, followed for 12 years',
     cohorts: [{ name: 'Regular', alive: [1000, 631, 468, 382, 326, 289, 262, 241, 223, 207, 194, 183, 173] }],
     fit: 7, fitRange: [3, 11], horizon: 12, unit: 'year',
-    note: 'Published data: Table 1’s percentages still active after each year (Fader and Hardie 2007), written as counts per 1,000 customers, as the paper’s appendix does. “Constant” uses one retention rate for every year, fitted to the years up to the slider.',
+    note: 'Published data: Table 1’s percentages still active after each year (Fader and Hardie 2007), written as counts per 1,000 customers, as the paper’s appendix does for its High End customers. “Constant” uses one retention rate for every year, fitted to the years up to the slider.',
   },
 };
 
@@ -240,9 +240,9 @@ export const check = [
     feedback: {
       1: 'Not here: each member’s rate was fixed when the data were made. The group changed, not the members.',
       2: 'Precision affects how much a rate wobbles, not which way it moves. Later months in fact have fewer members.',
-      3: 'Seasonality could move all rates together, but the comparison is by months since joining, mixing calendar months; it doesn’t explain a steady rise with tenure.',
+      3: 'The calendar may add a little, but it can’t produce a rise by months since joining in data where each member’s rate is fixed.',
     },
-    solution: 'The sorting effect: members with high drop-out chances leave early, so the members active four months in are the low-risk ones. Pooled curves also mix cohorts, but restricting to March–July joiners gives the same rise.',
+    solution: 'The sorting effect: members with high drop-out chances leave early, so the members active four months in are the low-risk ones. Pooled curves also mix cohorts; restricting to March–July joiners gives the same start and end, though not a steady climb.',
   },
   {
     id: 'm06-ret-k2', type: 'num', kind: 'numerical',
@@ -262,7 +262,7 @@ export const check = [
     id: 'm06-ret-k4', type: 'mc', kind: 'applied',
     prompt: 'On 31 December 2027, 51.2% of Lantern’s app members had not visited for more than 60 days; with a 90-day rule it is 41.4%. A manager asks which figure is “the real churn”. What is the best answer?',
     options: [
-      'Neither is the real churn: members never cancel, so churn is whatever rule is chosen. Pick one rule from how often members normally visit, check how many “lapsed” members come back, and always quote the rule with the figure.',
+      'Neither: here churn is whatever lapse rule is chosen.',
       'The 60-day figure, because a shorter rule catches churners sooner.',
       'The 90-day figure, because nobody who has been away for 90 days ever comes back.',
       'Average the two: 46.3%.',
@@ -273,7 +273,7 @@ export const check = [
       2: 'Some do: in the data, members silent for long periods still come back occasionally. No rule is error-free.',
       3: 'An average of two definitions is a third definition, with no clearer meaning.',
     },
-    solution: 'In a noncontractual setting churn is a definition applied to silence. Choose L from the business, measure its error (7.5% of members past 60 days on 31 October came back within two months) and keep the rule fixed so that figures compare.',
+    solution: 'Neither is the real churn: members never cancel, so churn is whatever rule is chosen. In a noncontractual setting churn is a definition applied to silence. Choose L from the business, measure its error (7.5% of members past 60 days on 31 October came back within two months) and keep the rule fixed so that figures compare.',
   },
   {
     id: 'm06-ret-k5', type: 'formula', kind: 'numerical',

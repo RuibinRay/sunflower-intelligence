@@ -51,7 +51,7 @@ export const widgets = {
   'surv-lapse': {
     type: 'survival', title: 'The cafés’ 2,584 app members: time from joining to lapsing, by notifications',
     lapse: { ...LD, group, days: [30, 60, 90], value: 60 },
-    unit: 'days', show: ['ci', 'median', 'logrank'], at: [30, 90, 180],
+    unit: 'days', show: ['median', 'logrank'], at: [30, 90, 180],
     note: 'A member lapses at a visit followed by more than the chosen number of days without one; members whose last visit is within that many days of 31 December 2027 are censored. Members chose notifications themselves, so any difference is an association.',
   },
   'surv-sbg': {
@@ -180,14 +180,14 @@ export const independent = [
     id: 'm06-surv-i3', type: 'mc', kind: 'applied',
     prompt: 'Comparing Millbrook and Harbourside members, the log-rank p-value is below 0.001 with a 30-day lapse rule, 0.021 with 60 days and 0.126 with 90 days. How should Ana report the café difference?',
     options: [
-      'As depending on the lapse rule: clear when short gaps count as lapses, not clear with a 90-day rule. It is not a robust finding about how long members stay.',
+      'As depending on the rule, so not a robust finding.',
       'As significant, since two of the three tests are below 0.05.',
       'As not significant, since the most generous rule gives p = 0.126.',
       'As significant at L = 30 only, so Ana should use L = 30 from now on.',
     ],
     answer: 0,
     feedback: { 1: 'Counting tests that pass is not evidence; the pattern says the difference is about short gaps, not long-run staying.', 2: 'Any one rule is a choice; the honest report shows how the answer depends on it.', 3: 'Choosing the rule that gives the wanted answer is the opposite of a fair test.' },
-    solution: 'Millbrook members visit more often, so short gaps are rarer there; with a 90-day rule the two cafés’ members lapse at similar rates. Report the dependence on L rather than one verdict.',
+    solution: 'The difference is clear when short gaps count as lapses and not clear with a 90-day rule. Millbrook members visit more often, so short gaps are rarer there; with a 90-day rule the two cafés’ members lapse at similar rates. Report the dependence on L rather than one verdict.',
   },
   {
     id: 'm06-surv-i4', type: 'num', kind: 'numerical',
@@ -241,7 +241,7 @@ export const check = [
     id: 'm06-surv-k2', type: 'num', kind: 'numerical',
     prompt: 'Brantwood Music Studio (fictional) follows six students, in months: 2 (left), 3 (still enrolled), 3 (left), 6 (left), 7 (still enrolled), 9 (still enrolled). What is the Kaplan–Meier estimate of S(6)? Give three decimal places.',
     answer: Math.round(CU.kaplanMeier([2, 3, 3, 6, 7, 9], [1, 0, 1, 1, 0, 0]).at(6) * 1000) / 1000, check: () => CU.kaplanMeier([2, 3, 3, 6, 7, 9], [1, 0, 1, 1, 0, 0]).at(6), places: 3, tol: 0.0015, unit: '',
-    wrong: [{ value: 0.5, say: 'That is 3 ÷ 6, as if the student censored at month 3 had left. Work through the risk sets.' }],
+    wrong: [{ value: 0.5, say: 'That is 3 ÷ 6, as if the student censored at month 3 were still enrolled at month 6. They leave the risk set after month 3: work through the risk sets.' }],
     solution: `Month 2: 6 at risk, 1 leaves, S = 5/6. Month 3: 5 at risk (the censored student counts at month 3), 1 leaves, S = 5/6 × 4/5 = 0.667. Month 6: 3 at risk, 1 leaves, S = 0.667 × 2/3 = ${fx(CU.kaplanMeier([2, 3, 3, 6, 7, 9], [1, 0, 1, 1, 0, 0]).at(6))}.`,
   },
   {

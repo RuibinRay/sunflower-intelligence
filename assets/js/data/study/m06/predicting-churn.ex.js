@@ -59,7 +59,7 @@ export const guided = [
   {
     id: 'm06-pred-g1', type: 'steps', kind: 'numerical',
     prompt: `The worksheet holds ${N} members of the churn table: days since their last visit on 31 October (B), visits to date (C) and whether they lapsed in November–December (D). G2 and G3 hold the intercept and slope of the recency-only logistic regression fitted to all 1,664 members.`,
-    solution: `E2: <x>${probF(2)}</x>, filled down. Lift for members silent at least G5 days: <x>=AVERAGEIFS(D2:D${LR},B2:B${LR},">="&G5)/AVERAGE(D2:D${LR})</x>. With G5 = 60: ${pct(rateAbove(60))} lapsed against ${pct(nLap / N)} of these ${N}, a lift of ${fx(rateAbove(60) / (nLap / N))}.`,
+    solution: `E2: <x>${probF(2)}</x>, filled down. Lift for members silent at least G5 days: <x>=AVERAGEIFS(D2:D${LR},B2:B${LR},">="&G5)/AVERAGE(D2:D${LR})</x>. With G5 = 60: ${pct(rateAbove(60))} lapsed against ${pct(nLap / N)} of these ${N}, a lift of ${fx(rateAbove(60) / (nLap / N))}. Most of these members lapsed anyway, so no group can be much richer in lapsers than the whole: the lift is capped at 1 ÷ ${fx(nLap / N)} = ${fx(N / nLap)}.`,
     steps: [
       {
         id: 'm06-pred-g1-s1', type: 'formula',
@@ -91,7 +91,7 @@ export const guided = [
         id: 'm06-pred-g1-s3', type: 'mc', kind: 'conceptual',
         prompt: 'On these members the lift of the longest-silent group is well below 2, however the cut-off is set. Why?',
         options: [
-          'Most of these members lapsed anyway, so no group can be much richer in lapsers than the whole: the lift is capped at 1 ÷ the overall lapse rate.',
+          'Most of them lapsed anyway, which caps the lift.',
           'Recency is a weak predictor of lapsing.',
           'The model’s coefficients are wrong for these members.',
           'Lift is always between 1 and 2.',
@@ -219,14 +219,14 @@ export const check = [
     id: 'm06-pred-k3', type: 'mc', kind: 'applied',
     prompt: 'A retention manager at Patterdale Broadband (fictional) sends a discount to the 5% of customers with the highest churn scores. Many still leave. She concludes that discounts don’t work. What is the main flaw?',
     options: [
-      'Without a randomly chosen group of similar customers who weren’t sent the discount, she can’t tell how many would have left anyway, or whether customers lower down the list would have responded.',
+      'Without a random no-discount group, she can’t tell what it changed.',
       'The churn score must have been wrong, because the customers left.',
       'She should have sent the discount to the customers least likely to leave.',
       'Discounts never work for broadband customers.',
     ],
     answer: 0,
     feedback: { 1: 'High-risk customers leaving is what the score predicted; it says nothing about the discount.', 2: 'Those customers mostly stay anyway; a discount there mostly rewards loyalty that was already there.', 3: 'A sweeping claim the evidence doesn’t support either way.' },
-    solution: 'Measuring uplift needs a randomised holdout within each band of the score. The highest-risk customers may be beyond reach; the offer may work in the middle of the list.',
+    solution: 'Without a randomly chosen group of similar customers who weren’t sent the discount, she can’t tell how many would have left anyway, or whether customers lower down the list would have responded. Measuring uplift needs a randomised holdout within each band of the score. The highest-risk customers may be beyond reach; the offer may work in the middle of the list.',
   },
   {
     id: 'm06-pred-k4', type: 'formula', kind: 'numerical',
@@ -259,7 +259,7 @@ export const check = [
       'Recency alone ranks members about as well as the full model.',
     ],
     answer: [0, 1, 4],
-    feedback: { 2: 'It is too confident at the extremes: 20.8% predicted against 14.5% actual in the lowest-risk fifth.', 3: 'They are associations in observational data, not effects of actions.' },
+    feedback: { 2: 'It overstates lapsing at both ends: 99.3% against 97.0% in the top fifth and 20.8% against 14.5% in the bottom fifth.', 3: 'They are associations in observational data, not effects of actions.' },
     solution: 'Calibration and holdout periods; a fair test with AUC 0.906 against 0.893; recency’s AUC 0.901 against 0.899. Calibration is imperfect at the extremes, and the coefficients are not levers.',
   },
 ];

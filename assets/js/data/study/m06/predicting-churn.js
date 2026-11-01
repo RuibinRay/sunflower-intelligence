@@ -31,7 +31,7 @@ const aucLeak = roc(y, CT.map((c) => decRec.get(c.id))).auc;
 const BANDS = [[0, 7], [8, 14], [15, 30], [31, 60], [61, 90], [91, 150], [151, 300]];
 const band = BANDS.map(([a, b]) => { const g = CT.filter((c) => c.recency >= a && c.recency <= b); return { a, b, n: g.length, rate: g.reduce((s, c) => s + c.lapsed, 0) / g.length }; });
 // silence of 45–75 days: frequent against infrequent members
-const quiet = CT.filter((c) => c.recency >= 45 && c.recency <= 75), qHi = quiet.filter((c) => c.frequency >= 6), qLo = quiet.filter((c) => c.frequency <= 2);
+const quiet = CT.filter((c) => c.recency >= 61 && c.recency <= 90), qHi = quiet.filter((c) => c.frequency >= 7), qLo = quiet.filter((c) => c.frequency <= 2);
 const rateOf = (g) => g.reduce((s, c) => s + c.lapsed, 0) / g.length;
 // lift tables
 const L10 = CU.liftTable(y, rec, 10), L5 = CU.liftTable(y, rec, 5);
@@ -64,7 +64,7 @@ export default {
   slug: 'predicting-churn',
   title: 'Predicting churn',
   blurb: 'Predict which customers will lapse from what you knew before they did. Set up calibration and holdout periods without leakage, fit a logistic regression and a simpler recency rule, judge the score with the base rate, lift, gains and AUC, and use it to choose whom to contact, knowing that the likeliest to leave are not necessarily the ones an offer would change.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Set up a churn prediction with a calibration period for the predictors and a later holdout period for the outcome, and identify features that leak.',
     'Build and interpret a logistic regression of lapsing on recency, frequency, spend, tenure and member characteristics, and compare it with a recency-only rule.',
@@ -84,7 +84,7 @@ export default {
     { case: 'On 1 November 2027 Ana wants a list. The cafés can send an app message with a small offer to members who seem to be drifting away, and she would like to send it to the members who would otherwise not come back before the new year. She has every member’s visits up to 31 October. She doesn’t yet know who will visit in November and December, but by January she will, and so she can test any rule she makes against what happened.' },
 
     { h: 'Before and after: calibration and holdout' },
-    { p: 'A churn model learns from the past how members who later lapsed looked beforehand. That needs two periods. The <b>calibration period</b> supplies the predictors: here, each member’s recency, frequency, spend and tenure as of 31 October, with their café, whether they live or work nearby and whether notifications are on. The <b>holdout period</b> supplies the outcome: whether the member visited at all in November–December. A member with no visit in those 61 days has <b>lapsed</b>, the definition from the retention lesson with L = 61 days fixed in advance.' },
+    { p: 'A churn model learns from the past how members who later lapsed looked beforehand. That needs two periods. The <b>calibration period</b> supplies the predictors: here, each member’s recency, frequency, spend and tenure as of 31 October, with their café, whether they live or work nearby and whether notifications are on. The <b>holdout period</b> supplies the outcome: whether the member visited at all in November–December. A member with no visit in those two months has <b>lapsed</b>: the retention lesson’s 60-day rule (more than 60 days without a visit), applied on 31 December.' },
     { p: 'The table covers the 1,664 members who joined by 31 August, so that everyone has at least two months of history. Of them, 566 came back in November–December and 1,098 did not: a <g>base rate</g> of lapsing of 66.0%. Any score has to beat what that number alone says: if Ana contacted members at random, two in three would be lapsers.' },
     { callout: 'warn', title: 'Leakage', html: 'Every predictor must be something Ana could have known on 31 October. Recency measured on 31 December instead looks harmless, but it already contains the answer: a member who visited in November or December has a recency of 60 days or less on 31 December, and one who didn’t has more. It separates lapsers from returners perfectly (AUC 1.000), and it is useless on 1 November. That is <g>data leakage</g>, the same error B02 warned about in data preparation.' },
 
@@ -117,7 +117,7 @@ export default {
       note: 'Intercept −1.2810. McFadden’s pseudo-R² 0.396. Against recency alone, the six other predictors together: G = 8.35 on 6 df, p = 0.214.',
     } },
     { p: 'Each extra day of silence multiplies the odds of lapsing by 1.039, holding the others fixed; 30 days multiply them by e raised to 30 times the coefficient, 3.19. None of the other six is clearly different from no association once recency is in the model, and together they add little (p = 0.214). That doesn’t mean they don’t matter: without recency, the other six still rank members with an AUC of 0.750, because frequent visitors tend to have visited recently. Recency carries most of what they know.' },
-    { p: 'One refinement is worth having. Allowing recency’s effect to depend on frequency (a product term, recency × frequency) improves the fit sharply (G = 104.4 on 1 df, p below 0.001). For a member silent for 60 days, the model gives a 65.5% chance of lapsing if they had made 2 visits and 89.0% if they had made 10; for one seen 10 days ago, 31.4% and 22.5%. A regular who goes quiet has probably stopped; a regular seen recently is probably still coming. Raw data say the same: among members silent for 45–75 days, 87.9% of those with six or more visits lapsed, against 69.9% of those with two or fewer.' },
+    { p: 'One refinement is worth having. Allowing recency’s effect to depend on frequency (a product term, recency × frequency) improves the fit sharply (G = 104.4 on 1 df, p below 0.001). For a member silent for 60 days, the model gives a 65.5% chance of lapsing if they had made 2 visits and 89.0% if they had made 10; for one seen 10 days ago, 31.4% and 22.5%. A regular who goes quiet has probably stopped; a regular seen recently is probably still coming. Raw data say the same, in the bands the rfm-segments lesson used: among members silent for 61–90 days, 22.3% of those with one or two visits came back in November–December, against 1.6% of those with seven or more. This is the <g>increasing frequency paradox</g> (the rfm-segments lesson found the same in return rates).' },
   ],
 
   theory: [
@@ -129,12 +129,12 @@ export default {
       rows: L5.rows.map((r) => [String(r.group), String(r.positives), `${(r.rate * 100).toFixed(1)}%`, f2(r.lift), `${(r.captured * 100).toFixed(1)}%`]),
       align: ['l', 'r', 'r', 'r', 'r'],
     } },
-    { p: 'The top fifth lapses at 96.7%, a <g>lift</g> of 1.47 over the base rate. That looks modest, and it is close to the most possible: when two-thirds of members lapse anyway, no group can be more than 1 ÷ 0.660 = 1.52 times as rich in lapsers. Lift is easy to read but depends on the base rate, so compare lifts only between scores on the same customers. The last column is the <b>gains curve</b>: contacting the top 40% finds 57.7% of all lapsers, and the top 60% finds 82.6%. A random list of the same size would find 40% and 60%.' },
-    { p: 'The <b>area under the ROC curve</b> (AUC) summarises the ranking in one number: the probability that a randomly chosen lapser scores higher than a randomly chosen returner, counting ties as half. A score that ranks at random has 0.5; a perfect one 1. Recency alone has an AUC of 0.901, the seven-predictor model 0.899, and the model with the recency × frequency term 0.910. The extra predictors buy almost nothing; the product term buys a little.' },
+    { p: 'The top fifth lapses at 96.7%, a <g>lift</g> of 1.47 over the base rate. That looks modest, and it is close to the most possible: when two-thirds of members lapse anyway, no group can be more than 1 ÷ 0.660 = 1.52 times as rich in lapsers. Lift is easy to read but depends on the base rate, so compare lifts only between scores on the same customers. The last column is the <b>gains curve</b>: contacting the top 40% finds 57.7% of all lapsers, and the top 60% finds 82.6%. A random list of the same size would find 40% and 60%. Recency has ties, and some fall on group boundaries: 9 members silent for 178 days straddle the edge of the top tenth, so the group rates depend slightly on the order of the rows; the AUC avoids this by counting ties as half.' },
+    { p: 'The <b>area under the ROC curve</b> (AUC) summarises the ranking in one number: the probability that a randomly chosen lapser scores higher than a randomly chosen returner, counting ties as half. A score that ranks at random has 0.5; a perfect one 1. Recency alone has an AUC of 0.901, the seven-predictor model 0.899, and the model with the recency × frequency term 0.910. The extra predictors buy almost nothing; the product term buys a little. The seven-predictor model even ranks a shade worse than recency alone: maximum likelihood chooses coefficients to fit the probabilities, not to maximise the ranking, and predictors that add nothing can cost a little.' },
 
     { h: 'Testing on customers the model hasn’t seen' },
     { p: 'Scores judged on the members used to fit them flatter the model, because the coefficients were chosen to fit those members. A fair estimate fits on some members and scores others. Fitting the seven-predictor model on alternate members (832) and scoring the other 832 gives an AUC of 0.906 on the scored half, against 0.893 on the fitting half: no sign of overfitting, as expected with seven predictors and hundreds of each outcome. On the scored half the top tenth lapsed at 98.8%, a lift of 1.48. A model with dozens of predictors, or one tuned repeatedly on the same data, would need this check far more. Even better is a later holdout: fit on, say, members described in August and their September–October outcome, then score 1 November’s members.' },
-    { p: '<b>Calibration</b> asks whether the predicted probabilities mean what they say: of members given about 40%, do about 40% lapse? Sorting by the model’s probability into five groups, the mean predicted and actual rates are 99.3% against 97.0%, 94.4% against 93.4%, 76.0% against 82.9%, 39.3% against 42.0% and 20.8% against 14.5%. The model is close in the second and fourth fifths, but it overstates lapsing in the top and bottom fifths and understates it in the middle one. Most of the bottom fifth are recent visitors, whose lapsing it overstates by six points. A straight line in recency on the log-odds scale can’t bend as the data do. For ranking that matters little; for budgeting how many members will come back, check calibration and fix it, for example with recency bands as predictors.' },
+    { p: '<b>Calibration</b> asks whether the predicted probabilities mean what they say: of members given about 40%, do about 40% lapse? Sorting by the model’s probability into five groups, the mean predicted and actual rates are 99.3% against 97.0%, 94.4% against 93.4%, 76.0% against 82.9%, 39.3% against 42.0% and 20.8% against 14.5%. It is within about 3 points in the top, second and fourth fifths; it understates lapsing in the middle fifth (76.0% against 82.9%) and overstates it in the bottom fifth by six points (20.8% against 14.5%). Most of the bottom fifth are recent visitors. A straight line in recency on the log-odds scale can’t bend as the data do. For ranking that matters little; for budgeting how many members will come back, check calibration and fix it, for example with recency bands as predictors.' },
 
     { h: 'Whom to contact, and at what cost' },
     { p: String.raw`The obvious rule, contact those most likely to lapse, quietly assumes that the offer works equally well on everyone. It doesn’t. What a contact is worth depends on the chance the customer lapses <m>p</m>, the chance the offer changes that (the <g>uplift</g>, <m>u</m>), the value of a customer kept <m>V</m> and the cost of contact <m>c</m>: the expected gain is <m>p \times u \times V - c</m>. A member who has been silent for six months has <m>p</m> near 1, but if they have moved away, <m>u</m> is near 0. A member seen last week has a small <m>p</m>: most would come anyway, and the offer mostly rewards visits that were going to happen. The members worth contacting are those whose behaviour the offer can change, often in the middle of the risk ranking.` },
@@ -217,7 +217,7 @@ export default {
   summary: [
     'Predict churn from a calibration period (predictors as of a date) and a later holdout period (the outcome); anything measured after the date leaks (recency on 31 December: AUC 1.000).',
     'Of 1,664 members described on 31 October, 66.0% lapsed in November–December: the base rate any score must beat.',
-    'Recency dominates: 10.2% of members seen in the last week lapsed, 96.9% of those silent five months or more. In a logistic regression, 30 more days of silence multiply the odds of lapsing by 3.19; six other predictors add little (p = 0.214). A regular who goes quiet is likelier to have stopped than an occasional visitor with the same silence.',
+    'Recency dominates: 10.2% of members seen in the last week lapsed, 96.9% of those silent five months or more. In a logistic regression, 30 more days of silence multiply the odds of lapsing by 3.19; six other predictors add little (p = 0.214). A regular who goes quiet is likelier to have stopped than an occasional visitor with the same silence: the increasing frequency paradox, which the rfm-segments lesson found in return rates too.',
     'Judge a score by how well it ranks: lift (capped at 1 ÷ base rate, 1.52 here), gains (the top 40% by recency holds 57.7% of lapsers) and the AUC (recency 0.901; seven predictors 0.899), on customers not used to fit it. Check calibration if the probabilities will be used as numbers.',
     'The expected gain from a contact is p × u × V − c. Risk (p) is not responsiveness (u): the likeliest to lapse may be beyond reach, and contact can backfire.',
     'Uplift can be measured only with a randomised holdout group within each band of the score.',
@@ -243,7 +243,7 @@ export default {
     { what: 'Lapsed', value: nL, shown: 1098 },
     { what: 'Base rate %', value: pc(base), shown: 66.0, tol: 0.05 },
     { what: 'Two in three', value: base, shown: 2 / 3, tol: 0.01 },
-    { what: 'Holdout days', value: 30 + 31, shown: 61 },
+    { what: 'No visit Nov–Dec ⇔ more than 60 days silent on 31 Dec (claim)', value: Number(CT.every((c) => (c.lapsed ? decRec.get(c.id) > 60 : decRec.get(c.id) <= 60))), shown: 1 },
     { what: 'Leaked AUC', value: aucLeak, shown: 1.000, tol: 0.0005 },
     { what: 'Leaked recency: returners ≤ 60 days on 31 Dec (claim)', value: Number(CT.every((c) => (c.back ? decRec.get(c.id) <= 60 : decRec.get(c.id) > 60))), shown: 1 },
     // bands
@@ -273,8 +273,11 @@ export default {
     { what: '60 days, 10 visits %', value: pc(pInt(60, 10)), shown: 89.0, tol: 0.05 },
     { what: '10 days, 2 visits %', value: pc(pInt(10, 2)), shown: 31.4, tol: 0.05 },
     { what: '10 days, 10 visits %', value: pc(pInt(10, 10)), shown: 22.5, tol: 0.05 },
-    { what: 'Quiet 45–75, 6+ visits lapsed %', value: pc(rateOf(qHi)), shown: 87.9, tol: 0.05 },
-    { what: 'Quiet 45–75, ≤2 visits lapsed %', value: pc(rateOf(qLo)), shown: 69.9, tol: 0.05 },
+    { what: 'Quiet 61–90, 1–2 visits came back %', value: 100 - pc(rateOf(qLo)), shown: 22.3, tol: 0.05 },
+    { what: 'Quiet 61–90, 7+ visits came back %', value: 100 - pc(rateOf(qHi)), shown: 1.6, tol: 0.05 },
+    { what: 'Ties at 178 days', value: CT.filter((c) => c.recency === 178).length, shown: 9 },
+    { what: '178 straddles the top-tenth edge (claim)', value: Number((() => { const s = [...rec].sort((a, b) => b - a); return s[166] === 178 && s[167] === 178; })()), shown: 1 },
+    { what: 'Top fifth within 3 points', value: Number(Math.abs(CAL[0].pred - CAL[0].obs) < 0.03 && Math.abs(CAL[1].pred - CAL[1].obs) < 0.03 && Math.abs(CAL[3].pred - CAL[3].obs) < 0.03), shown: 1 },
     // judging
     { what: 'Accuracy at 0.5 %', value: pc(C5.accuracy), shown: 85.1, tol: 0.05 },
     { what: 'Quintile size', value: L5.rows[0].n, shown: 333 },

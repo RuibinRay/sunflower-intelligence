@@ -105,7 +105,7 @@ export const items = [
       { formula: `=AVERAGEIFS(D2:D${LR},B2:B${LR},">"&H1,C2:C${LR},">="&H2)`, say: 'That is the group’s lapse rate. Lift divides it by the rate of all members.' },
       { formula: `=AVERAGEIFS(D2:D${LR},B2:B${LR},">"&H1)/AVERAGE(D2:D${LR})`, say: 'Add the second condition: at least H2 visits.' },
     ],
-    solution: `<x>=AVERAGEIFS(D2:D${LR},B2:B${LR},">"&H1,C2:C${LR},">="&H2)/AVERAGE(D2:D${LR})</x>. With 30 days and 3 visits: ${grp.length} members, lift ${fx(liftG, 2)}. Regulars who have gone quiet are likelier than average to have stopped.`,
+    solution: `<x>=AVERAGEIFS(D2:D${LR},B2:B${LR},">"&H1,C2:C${LR},">="&H2)/AVERAGE(D2:D${LR})</x>. With 30 days and 3 visits: ${grp.length} members, lift ${fx(liftG, 2)}. Quiet members are likelier than average to lapse; 30 members are too few to show whether frequency changes that.`,
   },
   {
     id: 'm06-m3-10', lesson: 'predicting-churn', type: 'num', kind: 'numerical',
