@@ -2,8 +2,8 @@
 // here). The October 2027 loyalty joiners come from case.js (`member`; the first 24 members for the worksheets, scored
 // with the model fitted to all 225). Kestrel Gym, Northgate Water and the other businesses named are fictional. Formula
 // items are marked by their results (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { member, DERIVED as D, MEMBERS, MEMBER_COLUMNS } from './case.js?v=22';
-import { confusion } from '../../../core/classify.js?v=22';
+import { member, DERIVED as D, MEMBERS, MEMBER_COLUMNS } from './case.js?v=24';
+import { confusion } from '../../../core/classify.js?v=24';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const neg = (v, d = 2) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), d)}`;

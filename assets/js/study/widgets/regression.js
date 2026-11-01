@@ -5,11 +5,11 @@
 //     options?: ['robust', 'predict'] (B06: a switch to heteroskedasticity-robust HC3 standard errors, which Excel's
 //     ToolPak doesn't offer; boxes to enter X values and see the predicted Y with a 95% confidence interval for the
 //     mean and a 95% prediction interval for one new case), predictAt?: [x values in the order of xs] }
-import { h } from '../../core/dom.js?v=22';
-import { xl } from '../xl.js?v=22';
-import { ols } from '../../core/stats.js?v=22';
-import { scatter } from '../../core/charts.js?v=22';
-import * as F from '../../core/format.js?v=22';
+import { h } from '../../core/dom.js?v=24';
+import { xl } from '../xl.js?v=24';
+import { ols } from '../../core/stats.js?v=24';
+import { scatter } from '../../core/charts.js?v=24';
+import * as F from '../../core/format.js?v=24';
 
 /** Numbers as the ToolPak prints them, shortened: 6 significant figures (2 decimals from 10,000 up); tiny values in E notation (1.23E-08). */
 function num(v) {
@@ -34,7 +34,7 @@ export function mount(el, cfg, ctx) {
   const opts = new Set(cfg.options || []);
   const st = { robust: false, at: cfg.xs.map((x, i) => cfg.predictAt?.[i] ?? +(x.values.reduce((t, v) => t + v, 0) / x.values.length).toFixed(2)) };
   const rob = opts.has('robust') ? (() => { const inp = h('input', { type: 'checkbox', id: `${base}-hc3` }); inp.addEventListener('change', () => { st.robust = inp.checked; draw(); });
-    return h('div', { class: 'field sp-check' }, inp, h('label', { for: inp.id }, 'Robust (HC3) standard errors')); })() : null;
+    return h('div', { class: 'field sp-check rg-robust' }, inp, h('label', { for: inp.id }, 'Robust (HC3) standard errors')); })() : null;
   const predIns = opts.has('predict') ? cfg.xs.map((x, i) => { const inp = h('input', { type: 'number', id: `${base}-p${i}`, value: st.at[i], step: 'any' });
     inp.addEventListener('input', () => { if (Number.isFinite(+inp.value) && inp.value !== '') { st.at[i] = +inp.value; draw(); } });
     return { inp, row: h('div', { class: 'field' }, h('label', { for: inp.id }, x.name), inp) }; }) : null;

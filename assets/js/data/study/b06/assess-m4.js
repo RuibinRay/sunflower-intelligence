@@ -3,8 +3,8 @@
 // No hints; solutions are shown when the student reviews the test. Café data and the October joiners come from case.js;
 // every other business, person and number is fictional. Formula items are marked by their results (core/sheet.js
 // gradeFormula); every num item's `check` recomputes its answer.
-import { CLEAN_ROWS, CAFE_COLUMNS, column, member, DERIVED as D } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
+import { CLEAN_ROWS, CAFE_COLUMNS, column, member, DERIVED as D } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -24,7 +24,7 @@ const novMin = Math.min(...novFit.resid), novMinScore = R.normQuantile((1 - 0.37
 
 // Harbourside's log model (high, rain, weekend, festival, build-up), for the rain item
 const H = { cafe: 'Harbourside' };
-const LOG = R.fit(column('log_footfall', H), { 'High (°F)': column('high_f', H), 'Rain (in)': column('rain_in', H), Weekend: column('weekend', H), Festival: column('festival01', H), 'Build-up': column('day', H).map((d) => Math.min(d, 121)) });
+const LOG = R.fit(column('log_footfall', H), { 'High (°F)': column('high_f', H), 'Rain (in)': column('rain_in', H), Weekend: column('weekend', H), Festival: column('festival01', H), 'Build-up': column('build_up', H) });
 const r4 = (v) => Math.round(v * 10000) / 10000;
 const logCells = { A1: 'Term', B1: 'Coefficient', ...col('A', 2, LOG.names), ...col('B', 2, LOG.beta.map(r4)), D1: 'Rain (in)', E1: 0.25, D2: 'Change in footfall' };
 const rainB = r4(LOG.beta[2]);

@@ -4,15 +4,15 @@
 // B05's Simpson's paradox (footfall and the average ticket) with a café dummy. Ashmere Hotel is fictional. Comparing
 // groups of dummies with a nested F test is multicollinearity-and-model-choice's. Every figure printed is recomputed in
 // `checks`.
-import { column, DERIVED as D } from './case.js?v=22';
-import { DERIVED as B05 } from '../b05/case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
-import { mean } from '../../../core/stats.js?v=22';
+import { column, DERIVED as D } from './case.js?v=24';
+import { DERIVED as B05 } from '../b05/case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
+import { mean } from '../../../core/stats.js?v=24';
 
 // ---------------------------------------------------------------- both cafés, 612 café-days
 const y = column('footfall'), mb = column('millbrook'), wk = column('weekend'), hi = column('high_f'), rain = column('rain_in');
 const fest = column('festival01'), day = column('day');
-const build = day.map((d) => Math.min(d - 1, 120) / 120);
+const build = column('build_up');
 const I = R.interaction;
 const P0 = R.fit(y, { Millbrook: mb });
 const CELL = R.fit(y, { Millbrook: mb, Weekend: wk, 'Millbrook × Weekend': I(mb, wk) });
@@ -32,6 +32,13 @@ const plantedSlope = (cafe, b0, b1, a, wet) => {
   return mean(w.map((v, i) => (v ? b1 : b0) * a * Math.min(1, 0.72 + 0.28 * (d[i] - 1) / 120) * (1 - wet * Math.min(r[i], 1)) * (f[i] ? 2.3 : 1) * Math.exp(0.09 ** 2 / 2)));
 };
 const PLH = plantedSlope('Harbourside', 122, 196, 0.011, 0.62), PLM = plantedSlope('Millbrook', 292, 118, 0.002, 0.30);
+// the estimand: the build-up model's least-squares slopes fitted to the generator's planted mean footfall of each café-day
+const PMEAN = y.map((_, i) => { const m = mb[i], base = m ? (wk[i] ? 118 : 292) : (wk[i] ? 196 : 122), a = m ? 0.002 : 0.011, wet = m ? 0.30 : 0.62;
+  return base * (1 + a * (hi[i] - 60)) * Math.min(1, 0.72 + 0.28 * (day[i] - 1) / 120) * (1 - wet * Math.min(rain[i], 1)) * (fest[i] && !m ? 2.3 : 1) * Math.exp(0.09 ** 2 / 2); });
+const PFIT = R.fit(PMEAN, { High: hi, Rain: rain, Millbrook: mb, Weekend: wk, 'Millbrook × Weekend': I(mb, wk), Festival: fest, 'High × Millbrook': I(hi, mb), 'Build-up': build, 'Build-up × Millbrook': I(build, mb) });
+const EH = est(PFIT, 'High'), EM = est(PFIT, 'High') + est(PFIT, 'High × Millbrook');
+// sales were scaled to F03's $236,000 total: the generator's ticket slopes in today's dollars
+const scaleH = mean(column('avg_ticket', { cafe: 'Harbourside' })) / 6.45, scaleM = mean(column('avg_ticket', { cafe: 'Millbrook' })) / 3.95;
 
 // ---------------------------------------------------------------- Millbrook's seven weekdays
 const M = { cafe: 'Millbrook' };
@@ -75,7 +82,7 @@ export default {
   slug: 'categorical-predictors-and-interactions',
   title: 'Categorical predictors and interactions',
   blurb: 'Put categories such as the café or the day of the week into a regression with dummy variables, read each coefficient against a reference level, and let one predictor’s effect depend on another with an interaction. Then see a café dummy resolve B05’s Simpson’s paradox.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Construct dummy variables for a categorical predictor with k levels, choosing a reference level, and explain why k − 1 dummies are needed (the dummy-variable trap).',
     'Interpret dummy coefficients as differences from the reference level, holding the other predictors fixed.',
@@ -132,13 +139,13 @@ export default {
     { h: 'An interaction with a numeric predictor' },
     { p: String.raw`An interaction can also let a slope differ between groups. Add <m>\text{High} \times \text{Millbrook}</m> to the case’s footfall model: the product equals the high on Millbrook’s rows and 0 on Harbourside’s. The slope on the high, 1.65 people per °F, is now Harbourside’s; the interaction, −0.76 (t = −5.27), is the difference, so Millbrook’s slope is <m>1.65 - 0.76 = 0.89</m> people per °F. In the generator, footfall rises 1.1% per °F of Harbourside’s expected trade and 0.2% at Millbrook, so in people the waterfront café is far more sensitive to the weather.` },
     { p: String.raw`Read the main effect of the café with care. In this model the Millbrook coefficient, 206.1, is the cafés’ difference on a weekday when the high is 0°F, which never happened in 2027. <g>Centring</g> the temperature, using <m>\text{High} - 60</m> in both terms, changes only that: the Millbrook coefficient becomes 160.6, the difference on a 60°F weekday, while the slopes, the fitted values and R² stay exactly the same. Centre a numeric predictor at a typical value whenever it enters an interaction, so the main effects describe something that exists.` },
-    { p: String.raw`The build-up of the multiple-regression lesson matters here too, and differs by café. Add the build-up and its interaction with the café, and the slopes become 1.43 people per °F at Harbourside and 0.45 at Millbrook; the generator’s planted averages are 1.46 and 0.45. Without the build-up, Millbrook’s slope of 0.89 is twice the planted one, because its spring was both cold and still building up.` },
+    { p: String.raw`The build-up of the multiple-regression lesson matters here too, and differs by café. Add the build-up and its interaction with the café, and the slopes become 1.43 people per °F at Harbourside and 0.45 at Millbrook; fitted to the generator’s planted mean footfall, the same model gives 1.46 and 0.44. Without the build-up, Millbrook’s slope of 0.89 is twice the planted one, because its spring was both cold and still building up.` },
     { callout: 'note', title: 'Why the case needs interactions', html: 'The generator multiplies: footfall is a café’s base trade times a weather factor times a weekend factor. On a multiplicative scale the same percentage change becomes a different number of people at a busy café and a quiet one, so in people every effect interacts with the café. On the log scale the factors add, and many of these interactions shrink; the transformations-and-influence lesson takes logs.' },
 
     { h: 'Simpson’s paradox, with a café dummy' },
     { p: String.raw`B05 found that across all 612 café-days footfall and the average ticket correlate at −0.324, while within each café they correlate positively (0.73 at Harbourside, 0.52 at Millbrook). In regression terms, the pooled slope of the average ticket on footfall is −$0.40 per 100 people. Add the Millbrook dummy and the slope on footfall becomes +$0.25 per 100 people, with Millbrook’s tickets $2.30 smaller at the same footfall. The dummy holds the café fixed: the slope now compares days within the same café, and the negative pooled slope came from the café difference alone (Millbrook has more people and smaller tickets).` },
-    { p: String.raw`Add the interaction <m>\text{Footfall} \times \text{Millbrook}</m> and each café gets its own slope: $0.36 per 100 people at Harbourside and <m>0.36 - 0.18 = 0.18</m> at Millbrook. The generator planted $0.40 and $0.22. The model with one shared slope, $0.25, is between the two, an average weighted towards the café whose footfall varies more.` },
-    { callout: 'warn', title: 'Two cafés, one day', html: 'Pooling both cafés doubles the rows but not the independent information about the weather: each day’s high and rain appear twice, once per café. The standard errors of the weather slopes in a pooled model treat the 612 rows as independent, so they are too small. Café-specific effects (the dummies and interactions) are less affected, but still assume days are independent of each other.' },
+    { p: String.raw`Add the interaction <m>\text{Footfall} \times \text{Millbrook}</m> and each café gets its own slope: $0.36 per 100 people at Harbourside and <m>0.36 - 0.18 = 0.18</m> at Millbrook. The generator planted $0.40 and $0.22 before sales were scaled to the year’s $236,000 total, which is about $0.33 and $0.18 in the log’s dollars, so the fitted slopes are close to the truth. The model with one shared slope, $0.25, is between the two, an average weighted towards the café whose footfall varies more.` },
+    { callout: 'warn', title: 'Two cafés, one day', html: 'Pooling both cafés doubles the rows but not the independent information about the weather: each day’s high and rain appear twice, once per café. The standard errors of a pooled model treat the 612 rows as independent, which they aren’t, so they can be off in either direction (inference-for-coefficients shows a case where the pooled one is too large). All the slopes here also assume days are independent of each other, which neighbouring days only roughly are.' },
 
     { h: 'Testing an interaction' },
     { p: 'An interaction’s t test asks whether the two groups’ slopes (or effects) differ, holding the rest of the model fixed. The café × temperature interaction’s t of −5.27 says the cafés’ temperature slopes clearly differ. When a categorical predictor has more than two levels, its interaction with a numeric predictor is several product columns, and the question “do the slopes differ at all?” needs one test of all of them together: the nested F test in the next lesson.' },
@@ -210,7 +217,7 @@ export default {
   ],
 
   application: [
-    { p: 'Dummy variables and interactions are how regression handles the categories that run through business data: region, store format, product line, channel, customer segment, month. A retailer comparing stores models sales on store size with a dummy for each format, then asks whether the payoff from extra floor space differs by format (a size × format interaction). A software company estimates whether a price rise lost more customers on its monthly plan than on its annual one (a price × plan interaction). The question “does this work the same everywhere?” is an interaction question, and averaging over groups that differ, as the pooled weekend coefficient did, is one of the commonest ways regression misleads.' },
+    { p: 'Dummy variables and interactions are how regression handles the categories that run through business data: region, store format, product line, channel, customer segment, month. A retailer comparing stores models sales on store size with a dummy for each format, then asks whether the payoff from extra floor space differs by format (a size × format interaction). A software company estimates whether slow replies from its support desk lost more customers on its monthly plan than on its annual one (a response-time × plan interaction). The question “does this work the same everywhere?” is an interaction question, and averaging over groups that differ, as the pooled weekend coefficient did, is one of the commonest ways regression misleads.' },
     { case: 'Ana’s note to her two managers: “Holding the weather and festivals fixed, a weekend day brings Harbourside about 69 more people than a weekday and costs Millbrook about 163, from a model with a café × weekend interaction. Without that interaction the model says the weekend costs both cafés about 50 people, which is wrong for both. Warm days matter more at Harbourside: about 1.4 more people per °F against 0.45 at Millbrook, after allowing for the cafés’ build-up in their first four months. And busy days don’t shrink the ticket: within each café, busier days have slightly larger tickets; the opposite pattern appears only if the cafés are pooled.”' },
     { p: 'The note reports each café’s own figure rather than the coefficients, which a manager would have to add up. It states the reference implicitly by naming both cafés, says what was held fixed, and explains in one sentence why the simpler model misleads. It doesn’t quote the Millbrook main effect at 0°F, which describes no real day.' },
     { p: 'Two habits carry over to any analysis. First, plot the group means or group slopes before fitting: crossing or diverging lines in an interaction plot are the sign that a single coefficient won’t do. Second, when interactions are in, report effects for each group with their own uncertainty rather than the raw coefficients; the ToolPak’s output gives the pieces, and the next lesson’s nested F test decides whether a whole set of interactions earns its place.' },
@@ -317,7 +324,9 @@ export default {
     { what: 'Highs never near 0°F', value: Math.min(...hi), shown: 28 },
     { what: 'Build-up model: Harbourside slope', value: est(HMB, 'High'), shown: 1.43 },
     { what: 'Build-up model: Millbrook slope', value: est(HMB, 'High') + est(HMB, 'High × Millbrook'), shown: 0.45 },
-    { what: 'Planted Harbourside slope', value: PLH, shown: 1.46 },
+    { what: 'Planted Harbourside slope (average)', value: PLH, shown: 1.46 },
+    { what: 'Estimand Harbourside slope', value: EH, shown: 1.46 },
+    { what: 'Estimand Millbrook slope', value: EM, shown: 0.44 },
     { what: 'Planted Millbrook slope', value: PLM, shown: 0.45 },
     { what: 'Millbrook 0.89 about twice the planted', value: (est(HM, 'High') + est(HM, 'High × Millbrook')) / PLM, shown: 2, tol: 0.05 },
     // Simpson
@@ -330,8 +339,12 @@ export default {
     { what: 'Interaction: Harbourside per 100', value: T2.beta[1] * 100, shown: 0.36, tol: 0.005 },
     { what: 'Interaction: difference per 100', value: T2.beta[3] * 100, shown: -0.18, tol: 0.005 },
     { what: 'Interaction: Millbrook per 100', value: (T2.beta[1] + T2.beta[3]) * 100, shown: 0.18, tol: 0.005 },
-    { what: 'Planted Harbourside $0.40 per 100 (0.0040 per person)', value: 0.0040 * 100, shown: 0.40 },
-    { what: 'Planted Millbrook $0.22 per 100', value: 0.0022 * 100, shown: 0.22 },
+    { what: 'Planted Harbourside $0.40 per 100 (0.0040 per person) before scaling', value: 0.0040 * 100, shown: 0.40 },
+    { what: 'Planted Millbrook $0.22 per 100 before scaling', value: 0.0022 * 100, shown: 0.22 },
+    { what: 'Sales scale factor about 0.829', value: scaleH, shown: 0.829, tol: 0.002 },
+    { what: 'Planted Harbourside per 100, scaled', value: 0.40 * scaleH, shown: 0.33 },
+    { what: 'Planted Millbrook per 100, scaled', value: 0.22 * scaleM, shown: 0.18 },
+    { what: 'Fitted slopes close to the scaled truth (within $0.03 per 100)', value: Number(Math.abs(T2.beta[1] * 100 - 0.40 * scaleH) < 0.03 && Math.abs((T2.beta[1] + T2.beta[3]) * 100 - 0.22 * scaleM) < 0.03), shown: 1 },
     { what: 'Shared slope lies between the two', value: Number(T1.beta[1] > T2.beta[1] + T2.beta[3] && T1.beta[1] < T2.beta[1]), shown: 1 },
     { what: 'Millbrook more people, smaller tickets', value: Number(B05.meanFootfallM > B05.meanFootfallH && B05.meanTicketM < B05.meanTicketH), shown: 1 },
     { what: 'Shared slope weighted towards the café whose footfall varies more (Millbrook’s SD larger)', value: Number(Math.abs(T1.beta[1] - (T2.beta[1] + T2.beta[3])) < Math.abs(T1.beta[1] - T2.beta[1]) === (Math.sqrt(column('footfall', M).reduce((s, v) => s + (v - mean(column('footfall', M))) ** 2, 0)) > Math.sqrt(column('footfall', { cafe: 'Harbourside' }).reduce((s, v) => s + (v - mean(column('footfall', { cafe: 'Harbourside' }))) ** 2, 0)))), shown: 1 },

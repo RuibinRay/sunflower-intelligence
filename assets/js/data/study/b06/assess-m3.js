@@ -4,8 +4,8 @@
 // solutions are shown when the student reviews the test. Café data come from case.js (the corrected log); Fallow Point
 // Ferries, Kelso Street Gyms and every other business, person and number are fictional. Formula items are marked by
 // their results (core/sheet.js gradeFormula); every num item's `check` recomputes its answer.
-import { column } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
+import { column } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
 
 const fx = (v, d = 2) => (v < 0 ? '−' : '') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
@@ -114,20 +114,20 @@ export const items = [
   },
   {
     id: 'b06-m3-7', lesson: 'categorical-predictors-and-interactions', type: 'mc', kind: 'applied',
-    prompt: 'Kelso Street Gyms (fictional) regresses monthly cancellations on the price rise ($) for its city-centre and suburban branches pooled, without a branch-type dummy, and finds that larger price rises went with fewer cancellations. City-centre branches had larger price rises and much lower cancellation rates whatever the price. What should the analyst do first?',
+    prompt: 'Kelso Street Gyms (fictional) regresses monthly cancellations on average class size (members per class) for its city-centre and suburban branches pooled, without a branch-type dummy, and finds that larger classes went with fewer cancellations. City-centre branches had larger classes and much lower cancellation rates whatever the class size. What should the analyst do first?',
     options: [
-      'Add a branch-type dummy (and test a price × branch-type interaction) before reading the price slope.',
-      'Report that price rises reduce cancellations, since the pooled data cover every branch and so are the most complete.',
+      'Add a branch-type dummy (and test a class-size × branch-type interaction) before reading the class-size slope.',
+      'Report that larger classes reduce cancellations, since the pooled data cover every branch and so are the most complete.',
       'Drop the city-centre branches, because their low cancellation rates are outliers that distort the slope.',
       'Code the branch type as 1 and 2 in a single column and treat it as a number in the regression.',
     ],
     answer: 0,
     feedback: {
-      1: 'Pooled rows mix branch types that differ in both price rises and cancellations: a confounder, and a likely Simpson’s paradox.',
+      1: 'Pooled rows mix branch types that differ in both class sizes and cancellations: a confounder, and a likely Simpson’s paradox.',
       2: 'The branches aren’t errors; they are a group, and the dummy lets them be compared fairly.',
-      3: 'With two categories a 1/2 column fits the same as a 0/1 dummy, but it does nothing to answer the question unless it is in the model alongside price, and a 0/1 dummy makes the coefficient a plain difference.',
+      3: 'With two categories a 1/2 column fits the same as a 0/1 dummy, but it does nothing to answer the question unless it is in the model alongside class size, and a 0/1 dummy makes the coefficient a plain difference.',
     },
-    solution: 'Branch type confounds price rises and cancellations, as the café confounded footfall and the ticket. A dummy holds it fixed; an interaction lets each type have its own price slope. Only then read the price slope, still as an association.',
+    solution: 'Branch type confounds class size and cancellations, as the café confounded footfall and the ticket. A dummy holds it fixed; an interaction lets each type have its own class-size slope. Only then read the class-size slope, still as an association.',
   },
   // ---------------------------------------------------------------- multicollinearity-and-model-choice
   {

@@ -379,7 +379,8 @@ code.xl { font-family: var(--f-mono); font-size: .92em; background: #F3ECDB; col
 .rg-out h4 { margin: 0; font-size: var(--t-xs); text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); }
 .rg-out table td { text-align: right; font-variant-numeric: tabular-nums; }
 .rg-vars { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4); font-size: var(--t-sm); }
-.rg-vars label { display: flex; gap: 6px; align-items: center; }
+.rg-vars label { display: flex; gap: 6px; align-items: center; min-height: 24px; }
+.rg-robust { margin-top: var(--s-2); min-height: 24px; }
 .rg-vars input { width: 18px; height: 18px; accent-color: var(--midnight); }
 
 /* ================================================================ exercises */

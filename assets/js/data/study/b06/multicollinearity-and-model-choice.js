@@ -4,10 +4,10 @@
 // tests, AIC and BIC; a hold-out check (fit March–September, test October–December); peak barista hours as a predictor
 // that forecasts without explaining; and 31 day-of-month dummies screened by p-value. Brackenfold Removals is fictional.
 // Every figure printed is recomputed in `checks`.
-import { column } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
-import * as C from '../../../core/correlation.js?v=22';
-import { mean } from '../../../core/stats.js?v=22';
+import { column } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
+import * as C from '../../../core/correlation.js?v=24';
+import { mean } from '../../../core/stats.js?v=24';
 
 const tn = (v) => Math.round(v).toLocaleString('en-US').replace(/,/g, '{,}');
 const fx = (v, d = 2) => (v < 0 ? '−' : '') + Math.abs(v).toFixed(d);
@@ -19,7 +19,8 @@ const sl = column('sales', H), ft = column('footfall', H), tr = column('transact
 const ST = R.fit(sl, { Transactions: tr }), SF = R.fit(sl, { Footfall: ft }), SB = R.fit(sl, { Footfall: ft, Transactions: tr });
 const rFT = C.pearson(ft, tr).r, VIF = R.vif([ft, tr])[0];
 const seRatio = SB.coefs[2].se / ST.coefs[1].se, seRatioFormula = Math.sqrt(VIF) * SB.sigma / ST.sigma;
-const plantedFoot = mean(tr) * 0.0040;                         // the generator's ticket rise per visitor, at the mean transactions
+const salesScale = mean(column('avg_ticket', H)) / 6.45;          // sales were scaled to F03's $236,000 total (about 0.829)
+const plantedFoot = mean(tr) * 0.0040 * salesScale;            // the generator's ticket rise per visitor, at the mean transactions, in the log's dollars
 const MONTHS = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((m) => {
   const idx = moH.map((v, i) => (v === m ? i : -1)).filter((i) => i >= 0), g = (a) => idx.map((i) => a[i]);
   const both = R.fit(g(sl), { Footfall: g(ft), Transactions: g(tr) }), alone = R.fit(g(sl), { Transactions: g(tr) });
@@ -31,7 +32,7 @@ const byM = (m) => MONTHS.find((x) => x.m === m);
 
 // ---------------------------------------------------------------- both cafés: the footfall models of this module
 const y = column('footfall'), mb = column('millbrook'), wk = column('weekend'), hi = column('high_f'), rain = column('rain_in'), fest = column('festival01');
-const build = column('day').map((d) => Math.min(d - 1, 120) / 120);
+const build = column('build_up');
 const base = { High: hi, Rain: rain, Millbrook: mb, Weekend: wk, 'Millbrook × Weekend': I(mb, wk), Festival: fest };
 const MA = R.fit(y, base);
 const MB = R.fit(y, { ...base, 'High × Millbrook': I(hi, mb) });
@@ -48,7 +49,7 @@ const est = (f, n) => f.coefs.find((k) => k.name === n).estimate;
 
 // ---------------------------------------------------------------- Harbourside: the hold-out check
 const yH = ft, hiH = column('high_f', H), rainH = column('rain_in', H), wkH = column('weekend', H), festH = column('festival01', H), dayH = column('day', H);
-const buildH = dayH.map((d) => Math.min(d - 1, 120) / 120);
+const buildH = column('build_up', H);
 const DDH = R.dummies(column('weekday', H), { reference: 'Mon', name: 'Day', levels: LV });
 const SETS = {
   A: { High: hiH, Rain: rainH, Weekend: wkH, Festival: festH },
@@ -83,7 +84,7 @@ export default {
   slug: 'multicollinearity-and-model-choice',
   title: 'Multicollinearity and model choice',
   blurb: 'See what happens when two predictors carry nearly the same information, measure it with the variance inflation factor, and decide what to do about it. Then choose between models with adjusted R², the nested F test, AIC and BIC, and check a model on data it hasn’t seen.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain how multicollinearity inflates standard errors and makes slopes unstable while leaving predictions and the overall fit almost unchanged.',
     'Calculate a variance inflation factor and the factor by which it widens a slope’s standard error.',
@@ -124,7 +125,7 @@ export default {
       head: ['Month', 'r (footfall, transactions)', 'Slope on footfall (SE)', 'Slope on transactions (SE)', 'Transactions alone (SE)'],
       align: ['l', 'r', 'r', 'r', 'r'],
       rows: MONTHS.map((x) => [MN[x.m], x.r.toFixed(3), `${fx(x.bf.estimate)} (${x.bf.se.toFixed(2)})`, `${fx(x.bt.estimate)} (${x.bt.se.toFixed(2)})`, `${fx(x.at.estimate)} (${x.at.se.toFixed(2)})`]),
-      note: 'Each month has 30 or 31 days. May and August include festival days.',
+      note: 'Each month has 30 or 31 days. May, July and August include festival days.',
     } },
     { p: 'Footfall’s slope runs from −$0.19 per person in April to $1.86 in May; the transactions slope from $3.38 to $6.25. With transactions alone the standard errors are between 0.10 and 0.18; with footfall alongside, between 0.39 and 1.18. Yet every monthly model is highly significant overall (each Significance F is below 0.001). The data can say with confidence that sales go with the two together; they can’t say how to share the credit.' },
     { callout: 'key', title: 'What multicollinearity does and doesn’t do', html: 'It inflates the standard errors of the slopes involved and makes them unstable, even changing sign between samples. It doesn’t bias them, and it doesn’t harm the fitted values or predictions for rows like the ones in the data. It is a problem for explaining (which predictor matters?) far more than for predicting.' },
@@ -133,12 +134,12 @@ export default {
   theory: [
     { h: 'The variance inflation factor' },
     { p: String.raw`Regress predictor <m>x_j</m> on all the other predictors and call that regression’s R² <m>R_j^2</m>. The <g>variance inflation factor</g> is <m>\text{VIF}_j = 1/(1 - R_j^2)</m>. It is the factor by which collinearity multiplies the variance of <m>b_j</m> compared with a predictor unrelated to the others, so the standard error is multiplied by <m>\sqrt{\text{VIF}_j}</m>. With two predictors <m>R_j^2 = r^2</m>: for Harbourside, <m>r^2 = 0.97064</m> and <m>1/(1 - 0.97064) = 34.1</m>, and <m>\sqrt{34.1} = 5.8</m>.` },
-    { p: String.raw`The standard error of a slope is <m>\text{SE}(b_j) = \dfrac{s}{\sqrt{\sum (x_j - \bar x_j)^2}}\sqrt{\text{VIF}_j}</m>. Comparing transactions alone with transactions and footfall, the residual standard error s barely changes (28.1 to 27.6), so the standard error grows by about √VIF: 0.275 ÷ 0.048 = 5.74, which is exactly <m>\sqrt{34.1} \times 27.6/28.1</m>. A VIF of 34 means that the 306 days give as much information about transactions’ separate slope as about 9 days would if the two predictors were unrelated.` },
+    { p: String.raw`The standard error of a slope is <m>\text{SE}(b_j) = \dfrac{s}{\sqrt{\sum (x_j - \bar x_j)^2}}\sqrt{\text{VIF}_j}</m>. Comparing transactions alone with transactions and footfall, the residual standard error s barely changes (28.1 to 27.6), so the standard error grows by about √VIF: 0.275 ÷ 0.048 is about 5.7, which is exactly <m>\sqrt{34.1} \times 27.6/28.1</m>. A VIF of 34 means that the 306 days give as much information about transactions’ separate slope as about 9 days would if the two predictors were unrelated.` },
     { p: 'Penn State’s STAT 462 notes treat VIFs above 4 as worth investigating and above 10 as signs of serious multicollinearity; these are conventions, and other sources use 5 and 10. A pairwise correlation can miss collinearity among three or more predictors (one can be close to a combination of two others), which the VIF catches. Collinearity is also built into models with interactions: a dummy and its product with a numeric predictor are highly correlated, which inflates the main effect’s standard error; centring the numeric predictor reduces it without changing the fit.' },
 
     { h: 'What to do about it' },
     { list: [
-      '<b>Ask which question you are answering.</b> Footfall, transactions and sales are a chain: people come in, some buy, purchases make sales. For “what is a visitor worth?”, regress sales on footfall alone ($3.18 per person); for “what is a transaction worth?”, on transactions alone ($6.64). With both in, footfall’s slope asks something narrower: at a given number of transactions, does a busier café sell more? Its $0.44 per person is consistent with the generator’s planted rise in the average ticket on busy days (roughly a quarter of a dollar per visitor at Harbourside’s typical trade), but the interval is wide.',
+      '<b>Ask which question you are answering.</b> Footfall, transactions and sales are a chain: people come in, some buy, purchases make sales. For “what is a visitor worth?”, regress sales on footfall alone ($3.18 per person); for “what is a transaction worth?”, on transactions alone ($6.64). With both in, footfall’s slope asks something narrower: at a given number of transactions, does a busier café sell more? Its $0.44 per person is consistent with the generator’s planted rise in the average ticket on busy days (about $0.22 per visitor at Harbourside’s typical trade, once the generator’s ticket rise is put in the log’s scaled dollars), but the interval is wide.',
       '<b>Don’t drop a predictor only because its slope isn’t significant.</b> If it is a confounder, dropping it brings back omitted-variable bias. Collinearity makes slopes imprecise, not wrong; a wide interval is the honest answer.',
       '<b>Combine or get better data.</b> Two measures of the same thing can be combined into one (a ratio such as transactions per visitor, or an average). More rows, or rows where the predictors move apart, are the only real cure.',
       '<b>For prediction, it hardly matters.</b> The model with both predictors predicts Harbourside’s sales as well as either alone, as long as the two keep moving together as they did in the data.',
@@ -160,7 +161,7 @@ export default {
       ],
       note: 'AIC and BIC are from the Gaussian log-likelihood, as statsmodels and the B06 engine report them. Lower is better. Only differences between models fitted to the same rows mean anything.',
     } },
-    { p: String.raw`B against A adds one term: <m>F = 27.8</m> on 1 and 604 df, which is the interaction’s t squared (<m>-5.27^2</m>); p below 0.001. C against B adds the build-up: <m>F = 330</m>, p below 0.001. D against C replaces the weekend dummy and its interaction with six weekday dummies and six interactions, ten extra coefficients: <m>F = 0.70</m> on 10 and 593 df, p = 0.73. The ten extra terms add nothing beyond what the weekend dummy already says, which the generator planted (weekdays alike, weekends alike). The rows share their days, as before, so all these p-values are somewhat too small.` },
+    { p: String.raw`B against A adds one term: <m>F = 27.8</m> on 1 and 604 df, which is the interaction’s t squared (<m>(-5.27)^2</m>); p below 0.001. C against B adds the build-up: <m>F = 330</m>, p below 0.001. D against C replaces the weekend dummy and its interaction with six weekday dummies and six interactions, ten extra coefficients: <m>F = 0.70</m> on 10 and 593 df, p = 0.73. The ten extra terms add nothing beyond what the weekend dummy already says, which the generator planted (weekdays alike, weekends alike). The rows share their days, as before, so all these p-values are somewhat too small.` },
 
     { h: 'AIC and BIC' },
     { p: String.raw`Information criteria compare models that need not be nested, as long as they are fitted to the same rows and the same y. For least squares, apart from a constant that is the same for every model on the same data,` },
@@ -169,7 +170,7 @@ export default {
 
     { h: 'Overfitting and the hold-out check' },
     { p: String.raw`A model with enough terms can follow the noise in its own data, fitting the rows it was estimated from very well and new rows badly. That is <g>overfitting</g>, and R² on the fitting data can’t detect it. The direct check is a hold-out: fit the model on one part of the data (the <g>training set</g>) and measure its errors on another part it never saw (the <g>test set</g>), for example by the root mean squared error, <m>\text{RMSE} = \sqrt{\tfrac{1}{m}\sum (y - \hat y)^2}</m> over the m test rows.` },
-    { p: 'Ana fits three models of Harbourside’s footfall on March to September (214 days) and tests them on October to December (92 days). A is the multiple-regression lesson’s third model (high, rain, weekend, festival); B adds the build-up; C throws in everything that could be tried: weekday dummies, squares of the high and rain, their interactions, and a cubic trend in the day of the year, 17 predictors.' },
+    { p: 'Ana fits three models of Harbourside’s footfall on March to September (214 days) and tests them on October to December (92 days). A is the multiple-regression lesson’s third model (high, rain, weekend, festival); B adds the build-up; C keeps the high, rain, festival and the build-up and throws in everything else that could be tried: weekday dummies, squares of the high and rain, their interactions, and a cubic trend in days since opening, 17 predictors.' },
     { table: {
       caption: 'Harbourside’s footfall: fitted on 1 March – 30 September, tested on 1 October – 31 December',
       head: ['Model', 'Coefficients', 'Training R²', 'Training s', 'AIC', 'BIC', 'Test RMSE'],
@@ -177,8 +178,8 @@ export default {
       rows: ['A', 'B', 'C'].map((k) => [k, String(TIME[k].f.p), TIME[k].f.r2.toFixed(4), TIME[k].f.sigma.toFixed(1), TIME[k].f.aic.toFixed(1), TIME[k].f.bic.toFixed(1), TIME[k].rmse.toFixed(1)]),
       note: 'Test RMSE in people. AIC and BIC from the training fit.',
     } },
-    { p: 'Model C has the best training R² and the lowest AIC, yet its test RMSE is 78.6 people, nearly five times B’s 16.5. Its cubic trend in the day, fitted to the spring build-up and the summer, bends sharply down after September: on the test days it under-predicts by 66 people on average. Model A misses the other way, under-predicting by 24 people on average, because without the build-up its temperature slope is too steep for the colder autumn. B, which BIC prefers, predicts the autumn almost as well as it fitted the spring and summer (16.5 against a training s of 16.7).' },
-    { callout: 'warn', title: 'What a hold-out check can and can’t show', html: 'One split is one test. Ana’s test months are colder than most of the training months, have no festivals and come after the build-up, so the check measures how well a model carries forward in time, which is what a forecast needs, but with 92 days from one season. A random split behaves differently: fitting on odd-numbered days of the year and testing on even ones gives test RMSEs of 19.8, 17.6 and 17.8 for A, B and C, because each test day has neighbours in the training data and the cubic trend never has to extrapolate. Neighbouring days are alike, so a random split flatters a model. Choose the split that matches how the model will be used, and keep the test data out of every choice, including the choice of which model to test.' },
+    { p: 'Model C has the best training R² and the lowest AIC, yet its test RMSE is 78.6 people, nearly five times B’s 16.5. Its cubic trend in the day, fitted to the spring build-up and the summer, bends sharply down after September: on the test days it under-predicts by 66 people on average. Model A also under-predicts, by 24 people on average, for a different reason: without the build-up its temperature slope is too steep, so it puts the colder autumn days too low. B, which BIC prefers, has a test RMSE close to its training s (16.5 against 16.7), though the comparison flatters it a little (see the caution below).' },
+    { callout: 'warn', title: 'What a hold-out check can and can’t show', html: 'One split is one test. Ana’s test months are colder than most of the training months, have no festivals and come after the build-up, so the check measures how well a model carries forward in time, which is what a forecast needs, but with 92 days from one season. The season works in two ways: quieter months have smaller day-to-day swings in people, so a test RMSE near the training s flatters the model a little; and some test days were colder than any training day (10 of 92 below the training minimum of 38°F). A random split behaves differently. An alternating split (fit on odd-numbered days counted from 1 March, test on the even ones), which behaves like a random split, gives test RMSEs of 19.8, 17.6 and 17.8 for A, B and C, because each test day has neighbours in the training data and the cubic trend never has to extrapolate. Neighbouring days are alike, so such a split flatters a model. Choose the split that matches how the model will be used, and keep the test data out of every choice, including the choice of which model to test.' },
 
     { h: 'Explaining or predicting' },
     { p: 'The two aims choose predictors differently. Peak barista hours are rostered in advance from the manager’s expectation of the day’s trade, so they are known before the day and help forecast footfall: adding them to model C raises adjusted R² from 0.9401 to 0.9420. But the roster carries the calendar and the weather with it, so the weekend’s coefficient falls from 68.8 to 58.1 and the festival’s from 330.7 to 290.6. Nobody would say the roster brings people in. For a forecast, the roster is a useful summary of what the manager knows; for explaining what the weekend or a festival is worth, holding the roster fixed takes away part of the answer.' },
@@ -241,10 +242,10 @@ export default {
       steps: [
         'Rank by the training data: C has the highest R² (0.963) and the lowest AIC; BIC prefers B. The criteria disagree, so the training data alone don’t settle it.',
         'Rank by the test data: B’s RMSE is 16.5 people, A’s 29.8 and C’s 78.6. C’s cubic trend in the day extrapolates badly; A is biased because it lacks the build-up.',
-        'Check B for bias: its average test error is −1.7 people, small beside its RMSE. Its test RMSE is close to its training s (16.7), so it has not overfitted.',
+        'Check B for bias: its average test error is −1.7 people, small beside its RMSE. Its test RMSE is close to its training s (16.7), so there is no sign of overfitting, though quieter autumn days make that comparison a little kind.',
         'State the limits: one autumn, 92 days, no festivals, the build-up over; the next spring, with festivals and a new season, could behave differently.',
       ],
-      answer: 'Use model B (high, rain, weekend, festival, build-up), refitted on all ten months. Expect typical errors of about 17 people a day.',
+      answer: 'Use model B (high, rain, weekend, festival, build-up), refitted on all ten months. Expect typical errors of about 17 people a day in quiet months, and somewhat more in busy ones.',
       interpretation: 'The test was used to choose among three models, so its RMSE is now slightly optimistic for the chosen one. Ana should keep checking the forecasts against each month’s actual footfall and refit as the year’s data come in.' },
   ],
 
@@ -265,7 +266,7 @@ export default {
 
   application: [
     { p: 'Every analyst who builds a regression with more than a couple of predictors meets both problems in this lesson. Marketing-mix models put television, search and social spend in one regression, and the channels are often bought in the same weeks: their separate returns come with wide intervals and change sign from one year’s model to the next. Credit-scoring and demand-forecasting teams choose among hundreds of candidate predictors, and the ones that survive are judged on a later time period, never on the data that chose them. In both settings the professional habit is the same: say what the model is for, choose candidates for a reason, report uncertainty honestly, and test on data the model hasn’t seen.' },
-    { case: 'Ana’s note to the operations manager: “For forecasting Harbourside’s daily footfall I recommend the five-predictor model (temperature, rain, weekend, festival days and the café’s build-up). Fitted on March to September, it predicted October to December with a typical error of about 17 people a day; a model with every term I could think of fitted the summer better and missed the autumn by nearly 80. For explaining sales, footfall and transactions move almost together (VIF 34), so a model with both can’t say which matters: a visitor is worth about $3.18 in sales and a transaction about $6.64, each on its own, and the model shouldn’t be asked to split them. Peak barista hours improve the footfall forecast a little, but they reflect the manager’s own expectations, so I have left them out of any model meant to say what the weather or the weekend is worth.”' },
+    { case: 'Ana’s note to the operations manager: “For forecasting Harbourside’s daily footfall I recommend the five-predictor model (temperature, rain, weekend, festival days and the café’s build-up). Fitted on March to September, it predicted October to December with a typical error of about 17 people a day (busier months may see larger misses); a model with every term I could think of fitted the summer better and missed the autumn by nearly 80. For explaining sales, footfall and transactions move almost together (VIF 34), so a model with both can’t say which matters: a visitor is worth about $3.18 in sales and a transaction about $6.64, each on its own, and the model shouldn’t be asked to split them. Peak barista hours improve the footfall forecast a little, but they reflect the manager’s own expectations, so I have left them out of any model meant to say what the weather or the weekend is worth.”' },
     { p: 'The note separates the two aims and gives each its own model. It reports the forecasting model’s accuracy on held-out months in the units the manager plans with, and names the alternative that looked better on paper and failed. It explains collinearity in one sentence without the jargon, and gives the two simple slopes as answers to two simple questions. And it states which predictor was left out of the explanatory model and why: the judgement that no automatic procedure makes.' },
     { p: 'Module 4 checks whether the chosen models’ assumptions hold: residual plots and the Durbin–Watson statistic for the days’ dependence in assumptions-and-diagnostics, logs and curves in transformations-and-influence. A model chosen by any of this lesson’s methods still needs those checks before its standard errors or intervals are trusted.' },
   ],
@@ -310,12 +311,17 @@ export default {
     { what: 'Both: transactions slope', value: SB.coefs[2].estimate, shown: 5.75 },
     { what: 'Transactions alone SE', value: ST.coefs[1].se, shown: 0.048, tol: 0.0005 },
     { what: 'Both: transactions SE', value: SB.coefs[2].se, shown: 0.275, tol: 0.0005 },
-    { what: 'SE almost six times', value: seRatio, shown: 5.74 },
+    { what: 'SE almost six times', value: seRatio, shown: 5.7, tol: 0.05 },
     { what: 'Footfall alone slope', value: SF.coefs[1].estimate, shown: 3.18 },
     { what: 'Both: footfall slope', value: SB.coefs[1].estimate, shown: 0.44 },
     { what: 'Footfall CI low', value: SB.coefs[1].low, shown: 0.18 },
     { what: 'Footfall CI high', value: SB.coefs[1].high, shown: 0.70 },
-    { what: 'Planted ticket rise per visitor roughly a quarter of a dollar, inside the CI', value: Number(plantedFoot > 0.2 && plantedFoot < 0.3 && plantedFoot > SB.coefs[1].low && plantedFoot < SB.coefs[1].high), shown: 1 },
+    { what: 'Planted ticket rise per visitor, scaled', value: plantedFoot, shown: 0.22 },
+    { what: 'Scaled planted rise inside the CI', value: Number(plantedFoot > SB.coefs[1].low && plantedFoot < SB.coefs[1].high), shown: 1 },
+    { what: 'Sales scale factor', value: salesScale, shown: 0.829, tol: 0.002 },
+    { what: 'Test days below the training minimum', value: hiH.filter((v, i) => moH[i] >= 10 && v < Math.min(...hiH.filter((_, j) => moH[j] <= 9))).length, shown: 10 },
+    { what: 'Training minimum high', value: Math.min(...hiH.filter((_, j) => moH[j] <= 9)), shown: 38 },
+    { what: 'Quieter months, smaller swings: SD of footfall Oct–Dec below Jun–Aug', value: Number(Math.sqrt(mean(yH.filter((_, i) => moH[i] >= 10).map((v, _, a) => (v - mean(a)) ** 2))) < Math.sqrt(mean(yH.filter((_, i) => moH[i] >= 6 && moH[i] <= 8).map((v, _, a) => (v - mean(a)) ** 2)))), shown: 1 },
     // monthly
     { what: 'Footfall monthly min (April)', value: byM(4).bf.estimate, shown: -0.19 },
     { what: 'Footfall monthly max (May)', value: byM(5).bf.estimate, shown: 1.86 },
@@ -329,7 +335,7 @@ export default {
     { what: 'Every month significant overall', value: Number(MONTHS.every((x) => x.pF < 0.001)), shown: 1 },
     { what: 'Months have 30 or 31 days', value: Number(MONTHS.every((x) => x.n === 30 || x.n === 31)), shown: 1 },
     { what: 'May correlation (demo intro)', value: byM(5).r, shown: 0.996, tol: 0.0005 },
-    { what: 'Festival days in May and August only among the months listed', value: Number(column('festival01', H).every((f, i) => !f || [5, 7, 8].includes(moH[i]))), shown: 1 },
+    { what: 'Festival days in May, July and August only', value: Number(column('festival01', H).every((f, i) => !f || [5, 7, 8].includes(moH[i])) && [5, 7, 8].every((m) => column('festival01', H).some((f, i) => f && moH[i] === m))), shown: 1 },
     { what: 'May has two festival days', value: column('festival01', H).filter((f, i) => f && moH[i] === 5).length, shown: 2 },
     // VIF
     { what: 'VIF', value: VIF, shown: 34.1, tol: 0.05 },

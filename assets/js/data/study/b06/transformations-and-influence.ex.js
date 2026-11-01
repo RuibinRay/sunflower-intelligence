@@ -2,8 +2,8 @@
 // (answer keys live here). The café log comes from case.js (Harbourside's dry autumn weekdays and its July days for the
 // worksheets); Linden Bike Hire, Quayside Books and the other businesses named are fictional. Formula items are marked
 // by their results (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { CLEAN_ROWS, CAFE_COLUMNS, column, SLIP } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
+import { CLEAN_ROWS, CAFE_COLUMNS, column, SLIP } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const neg = (v, d = 2) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), d)}`;
@@ -15,7 +15,7 @@ const dayLabel = (iso) => `${Number(iso.slice(8, 10))} ${MON[Number(iso.slice(5,
 // ---------------------------------------------------------------- widgets
 const H = { cafe: 'Harbourside' };
 const hDay = column('day', H);
-const hxs = { 'High (°F)': column('high_f', H), 'Rain (in)': column('rain_in', H), Weekend: column('weekend', H), Festival: column('festival01', H), Day: hDay, 'Build-up': hDay.map((d) => Math.min(d, 121)) };
+const hxs = { 'High (°F)': column('high_f', H), 'Rain (in)': column('rain_in', H), Weekend: column('weekend', H), Festival: column('festival01', H), 'Build-up': column('build_up', H), Day: hDay };
 const LOAD = column('peak_load'), WAIT = column('peak_wait_min');
 const allLabels = column('date').map((d, i) => `${dayLabel(d)}, ${column('cafe')[i]}`);
 
@@ -53,9 +53,9 @@ export const widgets = {
     type: 'diagnostics',
     title: 'Harbourside’s footfall in levels or in logs (306 days)',
     y: { name: 'footfall', values: column('footfall', H) },
-    xs: hxs, picked: ['High (°F)', 'Rain (in)', 'Weekend', 'Festival', 'Day'], choose: true, toggles: ['logY'],
+    xs: hxs, picked: ['High (°F)', 'Rain (in)', 'Weekend', 'Festival', 'Build-up'], choose: true, toggles: ['logY'],
     plots: ['fitted', 'qq', 'scale', 'order'], labels: column('date', H).map(dayLabel),
-    note: 'Day counts the days since opening (1 on 1 March). Build-up is the same count stopped at 121 (29 June), when the café’s first four months ended. Tick one of them, not both.',
+    note: 'Build-up is the opening build-up: 0 on 1 March, rising evenly to 1 on 29 June, when the café’s first four months ended, then 1. Day is a straight-line count (1 on 1 March), for contrast. Tick one of them, not both.',
   },
   'trans-hinge': {
     type: 'formula',
@@ -101,7 +101,7 @@ export const guided = [
   {
     id: 'b06-trans-g1', type: 'steps', kind: 'numerical',
     prompt: `The worksheet holds Harbourside’s ${nA} dry weekdays from 1 September to 15 November 2027: the day’s high and footfall. Ana wants the percentage change in footfall per °F.`,
-    solution: `D2: <x>=LN(C2)</x>, filled down. The slope of ln(footfall) on the high is ${fx(auB, 4)}, so <x>=EXP(SLOPE(D2:D${lastA},B2:B${lastA}))-1</x> = ${fx(auPct / 100, 4)}: about ${fx(auPct, 1)}% more people per °F on these days.`,
+    solution: `D2: <x>=LN(C2)</x>, filled down. The slope of ln(footfall) on the high is ${fx(auB, 4)}, so <x>=EXP(SLOPE(D2:D${lastA},B2:B${lastA}))-1</x> = ${fx(auPct / 100, 4)}: about ${fx(auPct, 2)}% more people per °F on these days. That is below the year-long model’s 1.1%. With only ${nA} days its 95% interval is wide, ${fx((Math.exp(AUF.coefs[1].low) - 1) * 100, 2)}% to ${fx((Math.exp(AUF.coefs[1].high) - 1) * 100, 2)}%, and a one-predictor model of a few autumn weeks leaves out what else was changing as the weather cooled, so treat it as a rough local figure.`,
     steps: [
       {
         id: 'b06-trans-g1-s1', type: 'formula',
@@ -297,10 +297,10 @@ export const check = [
     id: 'b06-trans-k4', type: 'mc', kind: 'applied',
     prompt: 'A colleague reviewing Ana’s raw log wants to remove every café-day whose studentized residual exceeds 3 before fitting transactions on footfall. What is the right response?',
     options: [
-      'Check those days against the source first: correct errors such as the 14 September slip, model real differences such as the festival days, and report results with and without any real day that still decides a conclusion.',
-      'Agree: a cut-off of 3 is the standard rule, so applying it is objective.',
-      'Refuse to remove anything, and fit the raw log as it is, slip included.',
-      'Remove them, but use a cut-off of 2 to be safe.',
+      'Check each day against the source: correct errors, model real differences, and report with and without.',
+      'Agree: a cut-off of 3 is the standard rule in regression, so applying it to every row is objective and easy to defend.',
+      'Refuse to remove anything, and fit the raw log exactly as it was recorded, the 14 September slip included.',
+      'Remove them, but use a stricter cut-off of 2, so that no unusual day can distort the fitted line.',
     ],
     answer: 0,
     feedback: {

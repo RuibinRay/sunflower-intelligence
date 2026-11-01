@@ -3,10 +3,10 @@
 // widgets; its 30 days of June 2027 and the first 12 days of October for the worksheets). Linthorpe Dental, Stavely
 // Cycles, Oakbridge Theatres and the other businesses named are fictional. Formula items are marked by their results
 // (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { column } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
-import { mean } from '../../../core/stats.js?v=22';
-import { fSf } from '../../../core/inference.js?v=22';
+import { column } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
+import { mean } from '../../../core/stats.js?v=24';
+import { fSf } from '../../../core/inference.js?v=24';
 
 const fx = (v, d = 2) => (v < 0 ? '−' : '') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
@@ -36,7 +36,7 @@ const statCells = {
 
 // October test rows: model B (high, rain, weekend, festival, build-up) fitted on March–September
 const y = ft, hi = column('high_f', H), rain = column('rain_in', H), wk = column('weekend', H), fe = column('festival01', H), day = column('day', H);
-const build = day.map((d) => Math.min(d - 1, 120) / 120);
+const build = column('build_up', H);
 const TR = y.map((_, i) => i).filter((i) => mo[i] <= 9);
 const FB = R.fit(g(y, TR), { High: g(hi, TR), Rain: g(rain, TR), Weekend: g(wk, TR), Festival: g(fe, TR), 'Build-up': g(build, TR) });
 const TE = y.map((_, i) => i).filter((i) => dates[i] >= '2027-10-01' && dates[i] <= '2027-10-12');
@@ -120,7 +120,7 @@ export const guided = [
       { value: rnd(((4820 - 4310) / 3) / (4310 / 57), 2), say: 'The denominator’s df is n − p of the full model: 60 − 7 = 53.' },
     ],
     hints: ['F = ((SSE_R − SSE_F) ÷ q) ÷ (SSE_F ÷ (n − p_F)).', '(510 ÷ 3) ÷ (4,310 ÷ 53).'],
-    solution: `(510 ÷ 3) ÷ (4,310 ÷ 53) = 170 ÷ ${fx(4310 / 53, 2)} = ${fx(ldF, 2)} on 3 and 53 df; <x>=F.DIST.RT(${fx(ldF, 2)},3,53)</x> ≈ ${fx(fSf(ldF, 3, 53), 3)}. The three demographic predictors together improve the fit clearly.`,
+    solution: `(510 ÷ 3) ÷ (4,310 ÷ 53) = 170 ÷ ${fx(4310 / 53, 2)} = ${fx(ldF, 2)} on 3 and 53 df; <x>=F.DIST.RT(${fx(ldF, 2)},3,53)</x> ≈ ${fx(fSf(ldF, 3, 53), 3)}. With p above 0.1, there is no clear evidence that the three demographic predictors together improve the fit.`,
   },
   {
     id: 'b06-coll-g3', type: 'mc', kind: 'applied',
@@ -197,7 +197,7 @@ export const independent = [
   },
   {
     id: 'b06-coll-i4', type: 'mc', kind: 'conceptual',
-    prompt: 'Ana fits Harbourside’s footfall models on odd-numbered days of the year and tests them on the even-numbered ones. The 17-predictor model then does almost as well as the 5-predictor one (RMSE 17.8 against 17.6), although it forecast the autumn far worse when fitted on March to September. Why the difference?',
+    prompt: 'Ana fits Harbourside’s footfall models with an alternating split: on odd-numbered days counted from 1 March, testing on the even ones. The 17-predictor model then does almost as well as the 5-predictor one (RMSE 17.8 against 17.6), although it forecast the autumn far worse when fitted on March to September. Why the difference?',
     options: [
       'Each even day sits between two odd training days that are nearly the same, so the test rewards interpolation, not forecasting ahead.',
       'The odd-day split has more test rows than the autumn split, and RMSE always falls as the number of test rows grows.',
@@ -304,7 +304,7 @@ export const check = [
       2: 'Training R² always favours the larger model and says nothing about new data.',
       3: 'Disagreement is common: the criteria charge differently for each coefficient. It is a reason to look at held-out performance, not to give up.',
     },
-    solution: 'The forecast will be used on a later season, and Q did better on exactly that kind of data. Having used the hold-out to choose, Ana-style caution applies: the 8% is a slightly optimistic estimate for Q, and the next season will be the real test.',
+    solution: 'The forecast will be used on a later season, and Q did better on exactly that kind of data. Having used the hold-out to choose, the same caution applies: the 8% is a slightly optimistic estimate for Q, and the next season will be the real test.',
   },
   {
     id: 'b06-coll-k5', type: 'num', kind: 'numerical',

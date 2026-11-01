@@ -4,10 +4,10 @@
 // (the opening build-up in time order). Tidemark Ferry Kiosk and its residuals are fictional. Transformations and
 // influence are the next lesson's; the conditions were named in inference-for-coefficients. Every figure printed is
 // recomputed in `checks`.
-import { column } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
-import { mean, sd } from '../../../core/stats.js?v=22';
-import { pearson } from '../../../core/correlation.js?v=22';
+import { column } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
+import { mean, sd } from '../../../core/stats.js?v=24';
+import { pearson } from '../../../core/correlation.js?v=24';
 
 // ---------------------------------------------------------------- Harbourside footfall on the weather and calendar
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };
@@ -25,16 +25,22 @@ const monthMean = (m) => mean(res.filter((_, i) => hMonth[i] === m));
 const ext = hInf.external, iMay29 = hDate.indexOf('2027-05-29'), iOct16 = hDate.indexOf('2027-10-16'), iMay30 = hDate.indexOf('2027-05-30');
 const over2 = ext.filter((v) => Math.abs(v) > 2).length;
 const rm = mean(res), rs = sd(res);
-const exKurt = res.reduce((a, v) => a + ((v - rm) / rs) ** 4, 0) / res.length - 3;
+const nR = res.length;
+// Excel's KURT (the bias-adjusted sample excess kurtosis)
+const exKurt = (nR * (nR + 1) / ((nR - 1) * (nR - 2) * (nR - 3))) * res.reduce((a, v) => a + ((v - rm) / rs) ** 4, 0) - 3 * (nR - 1) ** 2 / ((nR - 2) * (nR - 3));
 const coef = (f, name) => f.coefs.find((c) => c.name === name);
 const rc = (name) => HR.coefs[HF.names.indexOf(name)];
-// with a time trend
-const HD = R.fit(hy, { ...hx, Day: column('day', H) }), hdBP = R.breuschPagan(HD.cols, HD.resid);
+// with the build-up (0 on 1 March rising to 1 on 29 June, then 1), and, as a contrast, a straight-line day count
+const HD = R.fit(hy, { ...hx, 'Build-up': column('build_up', H) }), hdBP = R.breuschPagan(HD.cols, HD.resid);
+const HL = R.fit(hy, { ...hx, Day: column('day', H) });
+const hdMonth = (m) => mean(Array.from(HD.resid).filter((_, i) => hMonth[i] === m));
 // the two cafés on the same day (levels, without a trend)
 const MF0 = R.fit(column('footfall', M), { 'High (°F)': column('high_f', M), 'Rain (in)': column('rain_in', M), Weekend: column('weekend', M) });
 const crossR = pearson(res, Array.from(MF0.resid)).r;
 // Millbrook with and without a trend
-const MD = R.fit(column('footfall', M), { 'High (°F)': column('high_f', M), 'Rain (in)': column('rain_in', M), Weekend: column('weekend', M), Day: column('day', M) });
+const MD = R.fit(column('footfall', M), { 'High (°F)': column('high_f', M), 'Rain (in)': column('rain_in', M), Weekend: column('weekend', M), 'Build-up': column('build_up', M) });
+const ML = R.fit(column('footfall', M), { 'High (°F)': column('high_f', M), 'Rain (in)': column('rain_in', M), Weekend: column('weekend', M), Day: column('day', M) });
+const mHigh = column('high_f', M), mHighMonth = (m) => mean(mHigh.filter((_, i) => mMonth[i] === m));
 const mMonth = column('month', M), mRes = Array.from(MF0.resid);
 const mMonthMean = (m) => mean(mRes.filter((_, i) => mMonth[i] === m));
 
@@ -44,6 +50,7 @@ const iceBand = (lo, hi) => mean(Array.from(ICE.resid).filter((_, i) => hiAll[i]
 
 // ---------------------------------------------------------------- Tidemark Ferry Kiosk (fictional): eight weekly residuals
 const TK = [5, 7, 4, -1, -4, -7, -3, -1];
+const tkShift = pearson(TK.slice(1), TK.slice(0, -1)).r;
 const tkNum = TK.slice(1).reduce((s, v, i) => s + (v - TK[i]) ** 2, 0), tkDen = TK.reduce((s, v) => s + v * v, 0);
 const tkDW = tkNum / tkDen, tkLag = R.lag1(TK);
 
@@ -78,7 +85,7 @@ export default {
   slug: 'assumptions-and-diagnostics',
   title: 'Assumptions and diagnostics',
   blurb: 'A regression’s coefficients, p-values and intervals are only as good as the assumptions behind them. Read residual plots and two standard tests to check each assumption, and learn which failures bias the coefficients and which only distort the standard errors.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'State the four conditions of the linear regression model and say which results (coefficients, standard errors, prediction intervals) depend on each.',
     'Diagnose curvature, unequal spread, non-normal errors and dependence from residual plots, a normal Q–Q plot and residuals in time order.',
@@ -120,8 +127,8 @@ export default {
 
     { h: 'Independence: residuals in time order' },
     { p: 'Plotted in date order, Harbourside’s residuals drift (pattern D). They average −21.5 people in March, −13.8 in April and −6.8 in May, and are positive from July on (+11.4 in November). The model has no term for the café building up its trade after opening, so the early months sit below the line and the later ones above it. Neighbouring days’ residuals are alike: their lag-1 autocorrelation is 0.22.' },
-    { p: 'Adding a day count (1 on 1 March) to the model removes most of the drift. The R² rises from 0.922 to 0.943 and, more to the point, the slope for the day’s high changes from 1.66 to 1.79 people per °F. The missing trend was not just making the residuals untidy: because temperatures rose through the spring while the café was building up, leaving the trend out had mixed the two together in the temperature slope. A pattern in time order is often a sign of a missing predictor, and a missing predictor that goes with the others biases their coefficients.' },
-    { p: 'The two cafés raise a second independence question. Their rows share the same days and the same weather, and their residuals from the two cafés’ own models correlate at 0.33 day by day. Pooling both cafés’ 612 rows as if they were 612 independent observations overstates how much information there is, and the printed standard errors are too small.' },
+    { p: 'Adding a build-up term removes the drift. It is 0 on opening day, rises evenly to 1 on 29 June, the end of the café’s first four months, and stays at 1; the residuals’ monthly averages then all lie within ±3.8 people. The R² rises from 0.922 to 0.944 and, more to the point, the slope for the day’s high changes from 1.66 to 1.44 people per °F. The missing trend was not just making the residuals untidy: because temperatures rose through the spring while the café was building up, leaving the trend out let the temperature slope take credit for part of the build-up. (A straight-line day count over the whole year is not a fix: it assumes the build-up never stopped, and it pushes the slope the other way, to 1.79.) A pattern in time order is often a sign of a missing predictor, and a missing predictor that goes with the others biases their coefficients.' },
+    { p: 'The two cafés raise a second independence question. Their rows share the same days and the same weather, and their residuals from the two cafés’ own models correlate at 0.33 day by day. Pooling both cafés’ 612 rows as if they were 612 independent observations gets the standard errors wrong, and not always in the same direction: in these data, standard errors that treat each day as a cluster come out a little larger than the printed ones for some slopes and smaller for others (rain, which hits both cafés at once, is one). Fit each café separately, or use standard errors that allow for rows sharing a day.' },
   ],
 
   theory: [
@@ -141,10 +148,10 @@ export default {
     { p: 'Two further points complete the table. The predictors are treated as fixed numbers measured without error; the <i>Introductory Business Statistics</i> list of assumptions states this, and measurement error in a predictor biases its slope towards zero. And independence of the errors is not the same as independence of the predictors from each other: predictors that move together (multicollinearity) are the previous lesson’s subject and don’t break any of these conditions.' },
 
     { h: 'Checking the form' },
-    { p: 'Plot the residuals against the fitted values, and against each numerical predictor in turn: a curve against one predictor shows which term needs a different form. Band the residuals if the plot is crowded: average them within ranges of the fitted value or the predictor, as the iced-share bands above do. Averages that move steadily away from zero, or change sign more than chance would, mean the form is wrong. The NIST/SEMATECH e-Handbook makes the point that the form must be fixed first, because a wrong form can also produce what looks like a funnel or a drift.' },
+    { p: 'Plot the residuals against the fitted values, and against each numerical predictor in turn: a curve against one predictor shows which term needs a different form. Band the residuals if the plot is crowded: average them within ranges of the fitted value or the predictor, as the iced-share bands above do. Averages that move steadily away from zero, or change sign more than chance would, mean the form is wrong. The NIST/SEMATECH e-Handbook (4.4.4.2) warns that a funnel can be an artefact of a wrong functional form, which is one reason to check the form before the spread.' },
 
     { h: 'Testing for unequal spread: Breusch–Pagan' },
-    { p: String.raw`The Breusch–Pagan test asks whether the squared residuals can be predicted from the predictors. Regress <m>e_i^2</m> on the model’s predictors and take <m>LM = nR^2_{\text{aux}}</m>, where <m>R^2_{\text{aux}}</m> is that auxiliary regression’s R². Under equal variance LM follows a chi-square distribution with k degrees of freedom (the number of predictors). This is Koenker’s version, the one statistical software usually reports; the original divided by an estimate that assumes normal errors.` },
+    { p: String.raw`The Breusch–Pagan test asks whether the squared residuals can be predicted from the predictors. Regress <m>e_i^2</m> on the model’s predictors and take <m>LM = nR^2_{\text{aux}}</m>, where <m>R^2_{\text{aux}}</m> is that auxiliary regression’s R². Under equal variance LM follows a chi-square distribution with k degrees of freedom (the number of predictors). This is Koenker’s version, which statsmodels and R report by default (other packages, Stata among them, default to the original); the original divided by an estimate that assumes normal errors.` },
     { p: 'For Harbourside, LM = 55.7 on 4 degrees of freedom, a p-value below 0.001: the spread clearly changes. Read the test alongside the plot. With hundreds of rows it detects differences in spread too small to matter, and with a dozen rows it can miss a funnel you can see. A significant test also doesn’t say what to do: if the funnel comes from a wrong form, fix the form; if the spread grows in proportion to the mean, a log of y (the next lesson) often removes it.' },
 
     { h: 'Robust standard errors' },
@@ -164,16 +171,16 @@ export default {
     { p: 'Every conclusion here survives: the festival coefficient’s t statistic falls from 36 to 13.5, still far beyond any critical value. That is common with hundreds of rows and large effects, and it is the reason to look rather than assume: in a smaller sample the same switch can move a p-value from 0.01 to 0.2. Robust standard errors repair tests and confidence intervals for coefficients; they don’t repair prediction intervals for single days, which need a model of the spread itself.' },
 
     { h: 'The normal Q–Q plot' },
-    { p: String.raw`Sort the n residuals (or, better, the studentized residuals, which put every row on the same scale) and plot them against normal scores <m>\Phi^{-1}\big((i - 3/8)/(n + 1/4)\big)</m>, Blom’s plotting positions. Points on a straight line mean normal-looking residuals. A curve bending the same way at both ends means skew; points running off the line in opposite directions at the two ends (an S) mean heavier tails than a normal distribution, with more extreme residuals than it would produce. Harbourside’s residuals have an excess kurtosis of 1.06: mildly heavy-tailed, with two residuals beyond ±3 where a normal sample of 306 would expect about one, though no more beyond ±2 than expected.` },
+    { p: String.raw`Sort the n residuals (or, better, the studentized residuals, which put every row on the same scale) and plot them against normal scores <m>\Phi^{-1}\big((i - 3/8)/(n + 1/4)\big)</m>, Blom’s plotting positions. Points on a straight line mean normal-looking residuals. A curve bending the same way at both ends means skew; points running off the line in opposite directions at the two ends (an S) mean heavier tails than a normal distribution, with more extreme residuals than it would produce. Harbourside’s residuals have an excess kurtosis of 1.13 (the sample version Excel’s KURT gives): mildly heavy-tailed, with two residuals beyond ±3 where a normal sample of 306 would expect about one, though no more beyond ±2 than expected.` },
 
     { h: 'Testing for dependence: Durbin–Watson' },
     { p: String.raw`For rows in time order, the <g>Durbin–Watson statistic</g> compares neighbouring residuals: <m>DW = \sum_{t=2}^{n}(e_t - e_{t-1})^2 \big/ \sum_{t=1}^{n} e_t^2</m>. It runs from 0 to 4 and is close to <m>2(1 - r_1)</m>, where <m>r_1</m> is the residuals’ lag-1 <g>autocorrelation</g>. A value near 2 means no first-order autocorrelation; values well below 2 mean positive autocorrelation (neighbours alike), above 2 negative. Its exact critical values depend on n and the number of predictors and come from published tables; in practice a DW below about 1.5 in a daily series deserves a look at the time-order plot.` },
-    { p: 'For Harbourside, DW = 1.55 without a trend and 2.12 with one. The statistic only means something when the rows are in time order within one series. The café log lists both cafés day by day, alternating; run on that order, DW compares Harbourside with Millbrook on the same day, not one day with the next. Sort by café, then date, or fit each café separately.' },
-    { p: 'Positive autocorrelation makes the usual standard errors too small, because 306 days that resemble their neighbours carry less independent information than 306 unrelated days. The cure depends on the cause. If the residuals drift because something is missing (a trend, a season, a holiday), add it, as the day count did. If neighbouring errors are simply alike after the form is right, time-series methods or autocorrelation-consistent (Newey–West) standard errors are the tools; forecasting courses cover them.' },
+    { p: 'For Harbourside, DW = 1.55 without the build-up term and 2.15 with it. The statistic only means something when the rows are in time order within one series. The café log lists both cafés day by day, alternating; run on that order, DW compares Harbourside with Millbrook on the same day, not one day with the next. Sort by café, then date, or fit each café separately.' },
+    { p: 'Positive autocorrelation makes the usual standard errors too small, because 306 days that resemble their neighbours carry less independent information than 306 unrelated days. The cure depends on the cause. If the residuals drift because something is missing (a trend, a season, a holiday), add it, as the build-up term did. If neighbouring errors are simply alike after the form is right, time-series methods or autocorrelation-consistent (Newey–West) standard errors are the tools; forecasting courses cover them.' },
 
     { h: 'Which failures bias the coefficients' },
     { p: 'The table’s second column is the one to remember. Only a failure of linearity, in the broad sense of the wrong form or a missing predictor that goes with the included ones (<g>omitted-variable bias</g>), biases the coefficients themselves. Unequal spread, dependence and non-normal errors leave the coefficients unbiased; they make the model’s statements about its own precision wrong. That ranking tells you what to fix first: a wrong form changes the answer, the others change how sure you can be of it.' },
-    { callout: 'warn', title: 'A pattern in the residuals may be a missing variable', html: 'Autocorrelation and unequal spread are often symptoms, not causes. Harbourside’s residuals in time order looked like an independence problem, but the cause was a missing trend, and adding it changed the temperature slope from 1.66 to 1.79. Before reaching for robust or autocorrelation-consistent standard errors, ask whether a predictor is missing.' },
+    { callout: 'warn', title: 'A pattern in the residuals may be a missing variable', html: 'Autocorrelation and unequal spread are often symptoms, not causes. Harbourside’s residuals in time order looked like an independence problem, but the cause was a missing trend, and adding it changed the temperature slope from 1.66 to 1.44. Before reaching for robust or autocorrelation-consistent standard errors, ask whether a predictor is missing.' },
 
     { h: 'An order for checking' },
     { ol: [
@@ -195,7 +202,7 @@ export default {
     { id: 'b06-lag1-resid', name: 'Lag-1 autocorrelation of residuals',
       tex: String.raw`r_1 = \dfrac{\sum_{t=2}^{n}(e_t - \bar e)(e_{t-1} - \bar e)}{\sum_{t=1}^{n}(e_t - \bar e)^2}`,
       where: [[String.raw`e_t`, 'The residual for period t, in time order', 'units of y'], [String.raw`\bar e`, 'The mean residual (0 for a model with an intercept)', 'units of y'], [String.raw`r_1`, 'How alike neighbouring residuals are, from −1 to 1', '']],
-      note: 'CORREL of the residuals with the same residuals shifted one row gives almost the same value.' },
+      note: 'CORREL of the residuals with the same residuals shifted one row gives almost the same value for long series; for short ones the two differ (Tidemark’s eight weeks: 0.77 against 0.69).' },
     { id: 'b06-breusch-pagan', name: 'Breusch–Pagan test (Koenker’s form)',
       tex: String.raw`LM = n\,R^2_{\text{aux}}, \qquad \text{df} = k`,
       where: [[String.raw`R^2_{\text{aux}}`, 'R² of the regression of the squared residuals on the model’s predictors', ''], [String.raw`n`, 'Number of rows', ''], [String.raw`k`, 'Number of predictors (not counting the intercept)', ''], [String.raw`LM`, 'Test statistic, compared with the chi-square distribution on k df', '']],
@@ -226,31 +233,31 @@ export default {
       interpretation: 'The residuals run in a block of positive weeks followed by a block of negative ones: the kiosk did better than the model predicted for three weeks and worse for the next five. Something the model lacks, perhaps the school holidays or the weather, changed in week 4. Until it is found, the model’s standard errors are too small and its forecasts for next week should lean on the recent residuals.' },
 
     { level: 'challenging', title: 'What survives the checks at Harbourside', fictional: true,
-      setup: 'Ana’s Harbourside model (306 days) regresses footfall on the high, rain, a weekend dummy and a festival dummy. The diagnostics: Breusch–Pagan LM = 55.7 (4 df); Durbin–Watson 1.55; the largest studentized residual 4.66; HC3 standard errors as in the table above. A day count added as a fifth predictor gives DW = 2.12 and changes the slope for the high from 1.66 to 1.79. Which of her results can she trust, which must change, and what should she report?',
+      setup: 'Ana’s Harbourside model (306 days) regresses footfall on the high, rain, a weekend dummy and a festival dummy. The diagnostics: Breusch–Pagan LM = 55.7 (4 df); Durbin–Watson 1.55; the largest studentized residual 4.66; HC3 standard errors as in the table above. A build-up term (0 at opening, 1 from 29 June) added as a fifth predictor gives DW = 2.15 and changes the slope for the high from 1.66 to 1.44. Which of her results can she trust, which must change, and what should she report?',
       steps: [
-        'Form first: the time-order plot drifts from −21.5 in March to positive from July, and adding the day count changes the temperature slope by 0.13 people per °F. Leaving the trend out was a specification error, so the model to report includes it.',
-        'Spread: LM = 55.7 on 4 df gives a p-value below 0.001, and the residual SD rises from 14.6 on quiet days to 24.0 on busy ones. With the day count included the test still gives LM = 67.0 on 5 df. The slopes are unbiased, but the ordinary standard errors are not to be trusted: report HC3 ones.',
+        'Form first: the time-order plot drifts from −21.5 in March to positive from July, and adding the build-up term changes the temperature slope by −0.22 people per °F. Leaving the trend out was a specification error, so the model to report includes it.',
+        'Spread: LM = 55.7 on 4 df gives a p-value below 0.001, and the residual SD rises from 14.6 on quiet days to 24.0 on busy ones. With the build-up included the test still gives LM = 67.8 on 5 df. The slopes are unbiased, but the ordinary standard errors are not to be trusted: report HC3 ones.',
         'With HC3 the festival coefficient’s SE rises from 9.1 to about 24.4 people; its t is still about 13.5, so the conclusion that festival days are far busier stands, with a much wider interval.',
         'Normality: one festival day at 4.66 and one ordinary day at 3.68 aside, the Q–Q plot is close to straight. With 306 days the coefficient tests are safe; prediction intervals for single days are not, because the spread varies.',
-        'Dependence: after the day count, DW = 2.12, so neighbouring days are no longer alike in a way that matters.',
+        'Dependence: with the build-up term, DW = 2.15, so neighbouring days are no longer alike in a way that matters.',
       ],
-      answer: 'Report the model with the day count (high: 1.79 people per °F) and HC3 standard errors. The coefficients and their tests survive; the constant-width prediction interval does not, because the spread grows with the fitted value.',
-      interpretation: 'The first two results Ana wanted come out differently. The temperature slope she would have quoted, 1.66, mixed the season with the café’s build-up. And a single prediction interval, ±2 × 19.5 people or so, is too wide for a cold Tuesday and too narrow for a warm Saturday. The next lesson’s log of footfall deals with the second problem.' },
+      answer: 'Report the model with the build-up term (high: 1.44 people per °F) and HC3 standard errors. The coefficients and their tests survive; the constant-width prediction interval does not, because the spread grows with the fitted value.',
+      interpretation: 'The first two results Ana wanted come out differently. The temperature slope she would have quoted, 1.66, mixed the season with the café’s build-up. And a single prediction interval, ±2 × 16.5 people or so with the build-up term, is too wide for a cold Tuesday and too narrow for a warm Saturday. The next lesson’s log of footfall deals with the second problem.' },
 
     { level: 'applied', title: 'Millbrook’s temperature effect for the winter roster', fictional: true,
-      setup: 'Millbrook’s manager wants to know how much a cold snap cuts weekday trade, to trim the roster in January. Ana fits Millbrook’s 306 days: footfall on the high, rain and a weekend dummy. The slope for the high is 0.89 people per °F. The residuals in date order average −41.2 in March and +27.7 in December, and DW = 1.03. With a day count added, DW = 1.83 and the slope for the high is 1.17. What should Ana tell the manager?',
+      setup: 'Millbrook’s manager wants to know how much a cold snap cuts weekday trade, to trim the roster in January. Ana fits Millbrook’s 306 days: footfall on the high, rain and a weekend dummy. The slope for the high is 0.89 people per °F. The residuals in date order average −41.2 in March, +7.0 in July and +27.7 in December, and DW = 1.03. With the build-up term added (0 at opening, 1 from 29 June), DW = 1.81 and the slope for the high is 0.45. What should Ana tell the manager?',
       steps: [
-        'Read the time-order plot: the residuals climb by about 69 people from March to December, and DW = 1.03, well below 2. Neighbouring days are alike because the café was still building up its trade.',
-        'Ask what that does to the temperature slope. Temperatures rose from March to July and fell from August to December, while the build-up went one way all year. Without the trend, the slope for the high is fitted partly to the build-up, so it is biased.',
-        'Refit with the day count. DW rises to 1.83, and the slope for the high becomes 1.17 people per °F, holding the rain, the weekend and the trend fixed.',
-        'Turn it into the manager’s question: a January weekday 20°F colder than an October one goes with about 20 × 1.17 ≈ 23 fewer people, against about 18 on the slope without the trend.',
+        'Read the time-order plot: the residuals climb by about 69 people from March to December, and DW = 1.03, well below 2. From March to July the café was building up its trade.',
+        'Ask what that does to the temperature slope. Temperatures rose from March to July, just when the café was building up, so without a build-up term the slope for the high takes credit for the build-up and comes out too steep. That also explains why the residuals keep climbing after the build-up ended: as the autumn cools (from 83.5°F in July to 43.3°F in December on average), the too-steep slope predicts a larger fall in trade than happened, so the cold months sit above the line.',
+        'Refit with the build-up term. DW rises to 1.81, and the slope for the high becomes 0.45 people per °F, holding the rain, the weekend and the build-up fixed. (A straight-line day count would overshoot the other way, to 1.17, because it assumes the build-up never stopped.)',
+        'Turn it into the manager’s question: a January weekday 20°F colder than an October one goes with about 20 × 0.45 ≈ 9 fewer people, against about 18 on the slope without the build-up term.',
       ],
-      answer: 'About 1.2 fewer people per °F colder (1.17, holding rain, weekday and the trend fixed): roughly 23 fewer for a 20°F colder weekday, not the 18 the model without a trend implies.',
-      interpretation: 'The number the manager can roster from comes from the model that passed its checks. Ana should add two caveats: the trend term assumes the build-up continued at an even pace through 1 January, which no data yet confirm, and 2027 is the only winter in the log, so the temperature slope rests on one season.' },
+      answer: 'About 0.45 fewer people per °F colder (holding rain, weekday and the build-up fixed): roughly 9 fewer for a 20°F colder weekday, half the 18 the model without the build-up implies.',
+      interpretation: 'The number the manager can roster from comes from the model that passed its checks. Ana should add a caveat: 2027 is the only winter in the log, and January is colder than any day the slope was fitted to, so the figure rests on one season and a modest extrapolation.' },
   ],
 
   demo: [
-    { widget: 'diag-harbour', intro: 'Harbourside’s footfall model with all five residual plots. Start with the four predictors ticked: see the funnel in the first plot, the festival days off the line in the Q–Q plot, and the drift in the time-order plot (DW 1.55). Then tick Day: DW moves close to 2, but Breusch–Pagan still flags the funnel.' },
+    { widget: 'diag-harbour', intro: 'Harbourside’s footfall model with all five residual plots. Start with the four predictors ticked: see the funnel in the first plot, the festival days off the line in the Q–Q plot, and the drift in the time-order plot (DW 1.55). Then tick Build-up: DW moves to 2.15, but Breusch–Pagan still flags the funnel. The panel’s largest Cook’s distance, 1.02 on 29 May, comes from the festival dummy: with only five festival days, each has a leverage of about 0.2 for its own coefficient, so its large residual counts for a lot.' },
     { widget: 'diag-iced', intro: 'The iced share against the day’s high across 612 café-days. R² is 0.883, yet the residuals against fitted values trace a wave: the straight line is the wrong form. Compare its Q–Q plot, which is pulled out of line by the same curve.' },
     { widget: 'diag-robust', intro: 'The same Harbourside model as Excel’s ToolPak would print it. Switch to HC3 standard errors and watch which ones grow (Festival, Weekend) and which shrink (Rain). Do any conclusions change?' },
   ],
@@ -260,12 +267,12 @@ export default {
     { title: '“The residuals aren’t normal, so the regression is invalid.”', html: 'With hundreds of rows, the coefficient tests barely depend on normality. Non-normal errors matter for prediction intervals and for small samples. Check the Q–Q plot for a few extreme points (which deserve checking in the data) before worrying about the shape.' },
     { title: '“Robust standard errors fix heteroskedasticity.”', html: 'HC3 standard errors repair the tests and intervals for coefficients. They leave the coefficients and the fitted values as they were, they don’t make a single prediction interval right for every row, and they can be smaller as well as larger than the ordinary ones (Harbourside’s rain SE fell from 5.75 to 4.35).' },
     { title: 'Running Durbin–Watson on rows in any order', html: 'The statistic compares each row with the row before it, so it only means something for one series in time order. On the café log as listed, alternating Harbourside and Millbrook, it compares two cafés on the same day. Sort by café and date first, or fit each café separately.' },
-    { title: '“Autocorrelation only affects the standard errors.”', html: 'True when the form is right; but residuals that drift are often a sign of a missing trend or season, and a missing predictor that goes with the others biases their slopes. Harbourside’s temperature slope changed from 1.66 to 1.79 when the trend was added.' },
+    { title: '“Autocorrelation only affects the standard errors.”', html: 'True when the form is right; but residuals that drift are often a sign of a missing trend or season, and a missing predictor that goes with the others biases their slopes. Harbourside’s temperature slope changed from 1.66 to 1.44 when the build-up was added.' },
     { title: 'Treating a non-significant test as proof', html: 'A Breusch–Pagan or Durbin–Watson result that isn’t significant doesn’t show the condition holds, especially in a small sample, where the tests have little power. Judge the plot and the size of the problem, not only the p-value.' },
   ],
 
   application: [
-    { case: 'Ana’s model note for the 2028 roster: “Harbourside footfall on high, rain, weekend, festival and a day count (306 days, 2027). Checked: form (residuals against fitted and each predictor: no curve), time order (DW 2.12 with the trend; without it the temperature slope is biased), spread (Breusch–Pagan LM = 67.0, 5 df, p < 0.001: busy days vary more, so HC3 standard errors reported), normality (Q–Q close to straight apart from 29 May and 16 October, both checked against the till). Not usable as it stands: a single ±40-person prediction interval for rostering. Next: refit footfall in logs.”' },
+    { case: 'Ana’s model note for the 2028 roster: “Harbourside footfall on high, rain, weekend, festival and the opening build-up (306 days, 2027). Checked: form (residuals against fitted and each predictor: no curve), time order (DW 2.15 with the build-up; without it the temperature slope is biased), spread (Breusch–Pagan LM = 67.8, 5 df, p < 0.001: busy days vary more, so HC3 standard errors reported), normality (Q–Q close to straight apart from 29 May and 16 October, both checked against the till). Not usable as it stands: a single ±33-person prediction interval for rostering. Next: refit footfall in logs.”' },
     { p: 'A note like this is what model validation looks like in practice. Banks, insurers and public bodies that rely on regression models usually have someone other than the model’s builder check it, and the checks are the ones in this lesson, done in a fixed order and written down: what was looked at, what was found, what was changed, and what the model should not be used for. The habit is useful far beyond regulated industries, because it turns “the model has an R² of 0.92” into a statement someone else can rely on.' },
     { p: 'The most useful line in such a note is often the last one: the use the model isn’t fit for. A footfall model with unbiased slopes and honest robust standard errors can support a statement about how much a warm day goes with, and still be the wrong tool for a prediction interval for one Saturday. Saying which is which saves a manager from rostering by an interval that is too narrow on exactly the days that matter.' },
     { p: 'Two judgements recur. The first is how large a departure has to be before it matters. A Breusch–Pagan test on 306 days can be significant for a modest change in spread; the question is whether it changes a decision, which you answer by comparing the ordinary and robust results, or the intervals, side by side. The second is when to stop. Every model of real data fails some check slightly; the aim is a model whose remaining failures are small, known and written down, not one that passes every test.' },
@@ -276,7 +283,7 @@ export default {
     'Residuals against fitted values show the form (a curve, as in the iced share with R² = 0.883) and the spread (a funnel, as in Harbourside’s footfall).',
     'Unequal spread leaves the slopes unbiased but makes ordinary standard errors and a single prediction interval wrong; Breusch–Pagan tests for it (Harbourside: LM = 55.7, 4 df) and HC3 robust standard errors repair the coefficient tests.',
     'The normal Q–Q plot shows tails and skew; normality matters most for prediction intervals and small samples.',
-    'Residuals in time order and the Durbin–Watson statistic (≈ 2(1 − r₁), near 2 is good) show dependence; Harbourside’s 1.55 came from a missing trend, and adding it moved the temperature slope from 1.66 to 1.79.',
+    'Residuals in time order and the Durbin–Watson statistic (≈ 2(1 − r₁), near 2 is good) show dependence; Harbourside’s 1.55 came from a missing trend, and adding it moved the temperature slope from 1.66 to 1.44.',
     'Only a wrong form or a missing predictor biases the coefficients; the other failures make the model’s statements about its own precision wrong. Fix the form first, then the standard errors, and write down what the model shouldn’t be used for.',
   ],
 
@@ -347,7 +354,7 @@ export default {
     { what: 'Normal sample would give about 14', value: 306 * 2 * (1 - R.normCdf(2)), shown: 14, tol: 0.5 },
     { what: 'Beyond ±3', value: ext.filter((v) => Math.abs(v) > 3).length, shown: 2 },
     { what: 'Normal expects about one beyond ±3', value: 306 * 2 * (1 - R.normCdf(3)), shown: 1, tol: 0.5 },
-    { what: 'Excess kurtosis', value: exKurt, shown: 1.06, tol: 0.005 },
+    { what: 'Excess kurtosis (Excel KURT)', value: exKurt, shown: 1.13, tol: 0.005 },
     { what: 'Heavy tails (positive excess kurtosis)', value: Number(exKurt > 0.5), shown: 1 },
     // time order
     { what: 'March residual mean', value: monthMean(3), shown: -21.5, tol: 0.05 },
@@ -357,12 +364,20 @@ export default {
     { what: 'Positive from July on', value: Number([7, 8, 9, 10, 11, 12].every((m) => monthMean(m) > 0)), shown: 1 },
     { what: 'Lag-1 autocorrelation', value: hLag, shown: 0.22, tol: 0.005 },
     { what: 'DW without trend', value: hDW, shown: 1.55, tol: 0.005 },
-    { what: 'DW with trend', value: R.durbinWatson(HD.resid), shown: 2.12, tol: 0.005 },
-    { what: 'R² with trend', value: HD.r2, shown: 0.943, tol: 0.0005 },
-    { what: 'High slope with trend', value: coef(HD, 'High (°F)').estimate, shown: 1.79, tol: 0.005 },
-    { what: 'Change in high slope', value: coef(HD, 'High (°F)').estimate - coef(HF, 'High (°F)').estimate, shown: 0.13, tol: 0.005 },
+    { what: 'DW with build-up', value: R.durbinWatson(HD.resid), shown: 2.15, tol: 0.005 },
+    { what: 'R² with build-up', value: HD.r2, shown: 0.944, tol: 0.0005 },
+    { what: 'High slope with build-up', value: coef(HD, 'High (°F)').estimate, shown: 1.44, tol: 0.005 },
+    { what: 'Build-up monthly residuals within ±3.8', value: Math.max(...[3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((m) => Math.abs(hdMonth(m)))), shown: 3.8, tol: 0.05 },
+    { what: 'Linear day count overshoots to 1.79', value: coef(HL, 'High (°F)').estimate, shown: 1.79, tol: 0.005 },
+    { what: 'Build-up is 1 from 29 June', value: Number(column('build_up', H)[hDate.indexOf('2027-06-29')] === 1 && column('build_up', H)[hDate.indexOf('2027-06-28')] < 1 && column('build_up', H)[0] === 0), shown: 1 },
+    { what: 'Residual SE with build-up', value: HD.sigma, shown: 16.5, tol: 0.05 },
+    { what: '±33 interval', value: 2 * HD.sigma, shown: 33, tol: 0.5 },
+    { what: 'Largest Cook (4 predictors) on 29 May', value: Math.max(...hInf.cooks), shown: 1.02, tol: 0.005 },
+    { what: 'Its leverage about 0.2', value: hInf.hat[iMay29], shown: 0.2, tol: 0.01 },
+    { what: 'Tidemark shifted CORREL', value: tkShift, shown: 0.77, tol: 0.005 },
+    { what: 'Change in high slope', value: coef(HD, 'High (°F)').estimate - coef(HF, 'High (°F)').estimate, shown: -0.22, tol: 0.005 },
     { what: 'Temperatures rose March to July', value: Number(mean(column('high_f', H).filter((_, i) => hMonth[i] === 7)) > mean(column('high_f', H).filter((_, i) => hMonth[i] === 3)) + 20), shown: 1 },
-    { what: 'BP with trend', value: hdBP.lm, shown: 67.0, tol: 0.05 },
+    { what: 'BP with build-up', value: hdBP.lm, shown: 67.8, tol: 0.05 },
     { what: 'BP with trend df', value: hdBP.df, shown: 5 },
     { what: 'BP with trend p < 0.001', value: Number(hdBP.p < 0.001), shown: 1 },
     { what: 'Cross-café residual r', value: crossR, shown: 0.33, tol: 0.005 },
@@ -386,11 +401,16 @@ export default {
     { what: 'Millbrook December mean residual', value: mMonthMean(12), shown: 27.7, tol: 0.05 },
     { what: 'Millbrook climb March to December', value: mMonthMean(12) - mMonthMean(3), shown: 69, tol: 0.5 },
     { what: 'Millbrook DW no trend', value: R.durbinWatson(MF0.resid), shown: 1.03, tol: 0.005 },
-    { what: 'Millbrook DW with trend', value: R.durbinWatson(MD.resid), shown: 1.83, tol: 0.005 },
-    { what: 'Millbrook high slope with trend', value: coef(MD, 'High (°F)').estimate, shown: 1.17, tol: 0.005 },
-    { what: '20°F × 1.17', value: 20 * 1.17, shown: 23, tol: 0.5 },
+    { what: 'Millbrook DW with build-up', value: R.durbinWatson(MD.resid), shown: 1.81, tol: 0.005 },
+    { what: 'Millbrook high slope with build-up', value: coef(MD, 'High (°F)').estimate, shown: 0.45, tol: 0.005 },
+    { what: 'Millbrook linear day count overshoots to 1.17', value: coef(ML, 'High (°F)').estimate, shown: 1.17, tol: 0.005 },
+    { what: '20°F × 0.45', value: 20 * 0.45, shown: 9, tol: 0.5 },
+    { what: 'Millbrook July mean residual (no trend)', value: mMonthMean(7), shown: 7.0, tol: 0.05 },
+    { what: 'Residuals keep climbing after July (no trend)', value: Number(mMonthMean(12) > mMonthMean(7) && mMonthMean(10) > mMonthMean(7)), shown: 1 },
+    { what: 'Millbrook July mean high', value: mHighMonth(7), shown: 83.5, tol: 0.05 },
+    { what: 'Millbrook December mean high', value: mHighMonth(12), shown: 43.3, tol: 0.05 },
+    { what: 'No-trend slope too steep: above the build-up slope', value: Number(coef(MF0, 'High (°F)').estimate > coef(MD, 'High (°F)').estimate), shown: 1 },
+    { what: 'Half of 18', value: 18 / 2, shown: 9 },
     { what: '20°F × 0.89', value: 20 * 0.89, shown: 18, tol: 0.5 },
-    { what: 'Prediction interval about ±40', value: 2 * HF.sigma, shown: 40, tol: 1.5 },
-    { what: 'Prediction interval about ±2 × 19.5', value: 2 * r1(HF.sigma), shown: 39, tol: 1.5 },
   ],
 };

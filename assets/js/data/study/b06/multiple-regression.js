@@ -4,17 +4,17 @@
 // Ferrowick Bike Hire is fictional. Inference for one slope is inference-for-coefficients'; categorical predictors and
 // interactions are the next lesson's; collinearity and model choice the one after. Every figure printed is recomputed in
 // `checks`.
-import { column } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
-import * as C from '../../../core/correlation.js?v=22';
-import { mean, sd } from '../../../core/stats.js?v=22';
+import { column } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
+import * as C from '../../../core/correlation.js?v=24';
+import { mean, sd } from '../../../core/stats.js?v=24';
 
 // ---------------------------------------------------------------- Harbourside's footfall (306 days)
 const H = { cafe: 'Harbourside' };
 const y = column('footfall', H), hi = column('high_f', H), rain = column('rain_in', H), wk = column('weekend', H);
 const fest = column('festival01', H), day = column('day', H), mo = column('month', H);
 /** The opening build-up as a column: 0 on 1 March, rising evenly to 1 on 29 June (day 121), then 1. */
-const build = day.map((d) => Math.min(d - 1, 120) / 120);
+const build = column('build_up', H);
 const M1 = R.fit(y, { 'High (°F)': hi });
 const M2 = R.fit(y, { 'High (°F)': hi, 'Rain (in)': rain });
 const M3 = R.fit(y, { 'High (°F)': hi, 'Rain (in)': rain, Weekend: wk, Festival: fest });
@@ -24,7 +24,12 @@ const MDAY = R.fit(y, { 'High (°F)': hi, 'Rain (in)': rain, Weekend: wk, Festiv
 const b = (f, j) => f.coefs[j].estimate;
 const festHigh = mean(hi.filter((_, i) => fest[i])), otherHigh = mean(hi.filter((_, i) => !fest[i]));
 // the planted per-°F effect, averaged over Harbourside's days: base × 1.1% × build-up × rain factor × festival × E[noise]
-const planted = mean(wk.map((w, i) => (w ? 196 : 122) * 0.011 * Math.min(1, 0.72 + 0.28 * (day[i] - 1) / 120) * (1 - 0.62 * Math.min(rain[i], 1)) * (fest[i] ? 2.3 : 1) * Math.exp(0.09 ** 2 / 2)));
+const plantedDer = wk.map((w, i) => (w ? 196 : 122) * 0.011 * Math.min(1, 0.72 + 0.28 * (day[i] - 1) / 120) * (1 - 0.62 * Math.min(rain[i], 1)) * (fest[i] ? 2.3 : 1) * Math.exp(0.09 ** 2 / 2));
+const plantedAvg = mean(plantedDer);
+// the estimand: the fourth model's least-squares slope fitted to the planted mean footfall of each day
+const plantedMean = wk.map((w, i) => (w ? 196 : 122) * (1 + 0.011 * (hi[i] - 60)) * Math.min(1, 0.72 + 0.28 * (day[i] - 1) / 120) * (1 - 0.62 * Math.min(rain[i], 1)) * (fest[i] ? 2.3 : 1) * Math.exp(0.09 ** 2 / 2));
+const planted = R.fit(plantedMean, { h: hi, r: rain, w: wk, f: fest, b: build }).beta[1];
+const julySat = mean(hi.filter((_, i) => mo[i] === 7 && column('weekday', H)[i] === 'Sat'));
 const resMonth = (f, m) => mean(Array.from(f.resid).filter((_, i) => mo[i] === m));
 const STD = R.standardized(M4, [hi, rain, wk, fest, build], y);
 const lagM3 = R.lag1(Array.from(M3.resid)), lagM4 = R.lag1(Array.from(M4.resid));
@@ -52,7 +57,7 @@ export default {
   slug: 'multiple-regression',
   title: 'Multiple regression',
   blurb: 'Fit one equation with several predictors, read each slope as a comparison with the others held fixed, and see why a slope changes when a predictor joins the model. Then judge the whole model with adjusted R² and the overall F test, and read the output in Excel.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Interpret each slope of a multiple regression as the change in the fitted value per unit of its predictor, holding the other predictors fixed, with units.',
     'Explain why a slope changes when a predictor is added or left out, and calculate the change with the omitted-variable formula.',
@@ -88,7 +93,7 @@ export default {
     { callout: 'key', title: 'Holding the other predictors fixed', html: 'Every slope in a multiple regression is a comparison between rows that are alike on the other predictors in the model. Change the other predictors and you change the question, so the slope can change too. Say which predictors were held fixed whenever you quote one.' },
 
     { h: 'Why the slope changed' },
-    { p: 'The high temperature’s slope fell from 2.02 to 1.66 when the weekend and festival columns joined. The festival days explain most of it: their highs were 77–84°F against an average of 63.9°F on the other days, and their crowds were about 330 people above a normal day. With temperature alone in the model, the line has to account for those hot, packed days, so it tilts up: part of the festival effect is credited to the weather. Fitting high and festival alone gives a slope of 1.55. The weekend column changes the slope hardly at all, because Saturdays are no warmer than Wednesdays.' },
+    { p: 'The high temperature’s slope moved from 2.02 to 2.07 when rain joined, then fell to 1.66 when the weekend and festival columns joined. The festival days explain most of it: their highs were 77–84°F against an average of 63.9°F on the other days, and their crowds were about 330 people above a normal day. With temperature alone in the model, the line has to account for those hot, packed days, so it tilts up: part of the festival effect is credited to the weather. Fitting high and festival alone gives a slope of 1.55. The weekend column changes the slope hardly at all, because Saturdays are no warmer than Wednesdays.' },
     { p: String.raw`This is <g>omitted-variable bias</g>: a slope estimated without a predictor that both affects y and goes with the included x absorbs part of that predictor’s effect. It is the regression version of a <g>confounding variable</g>, and it is the same thing the partial-correlation lesson did with residuals. A multiple-regression slope can even reverse sign, as the next example shows.` },
 
     { h: 'Baristas and waits, as slopes' },
@@ -113,7 +118,7 @@ export default {
 
     { h: 'A trend left out' },
     { p: 'New cafés take time to find their customers. The generator planted a build-up: each café’s trade starts at 72% of its eventual level on 1 March and reaches 100% after four months. The weather follows the season, and March and April were both cold and quiet; so a model without the build-up credits some of the build-up to temperature. The third model’s residuals show it: they average −21.5 people in March and −13.8 in April, and +9.5 to +11.4 from October to December. The model over-predicts the early months and under-predicts the late ones.' },
-    { p: String.raw`The fourth model adds a build-up column that rises evenly from 0 on 1 March to 1 on 29 June and stays at 1, the shape the generator used. Its slope, 35.5 people, is the build-up’s size; the temperature slope falls to 1.44, and the monthly residual averages shrink to within ±4 people. The planted per-°F effect, averaged over Harbourside’s days, is 1.46 people, so the fourth model recovers it and the third overstates it by about 13%. With real data no one tells you the trend’s shape. A straight-line “day” column is the wrong shape here and makes things worse (the temperature slope rises to 1.79); plotting residuals in time order, as the assumptions-and-diagnostics lesson does, is how you find out what is missing.` },
+    { p: String.raw`The fourth model adds a build-up column that rises evenly from 0 on 1 March to 1 on 29 June and stays at 1, the shape the generator used. Its slope, 35.5 people, is the build-up’s size; the temperature slope falls to 1.44, and the monthly residual averages shrink to within ±4 people. The planted effect is multiplicative, so it differs from day to day: from about 0.4 people per °F on a wet weekday in March to about 5 on a festival day. Fitting the fourth model to the generator’s planted mean footfall for each day gives a temperature slope of 1.47 people per °F, the average effect the linear slope estimates; the fourth model recovers it and the third overstates it by about 13%. With real data no one tells you the trend’s shape. A straight-line “day” column is the wrong shape here: R² rises, but the temperature slope moves further from the truth, to 1.79; plotting residuals in time order, as the assumptions-and-diagnostics lesson does, is how you find out what is missing.` },
     { callout: 'warn', title: 'Rows that aren’t independent', html: 'The standard errors in every model here treat Harbourside’s 306 days as independent. Neighbouring days share the season and the build-up, so they aren’t: the third model’s residuals have a lag-1 autocorrelation of 0.22, which makes its standard errors too small and its p-values too small. Adding the build-up brings it to −0.08. Models that pool both cafés have a second problem, since the two rows of a day share its weather.' },
 
     { h: 'R² and adjusted R²' },
@@ -167,9 +172,9 @@ export default {
       steps: [
         'Read each slope with the others held fixed. High: among days with the same rain and the same weekend status, each extra °F goes with 2.5 more rentals. Rain: holding the temperature and the day fixed, each hour of rain goes with 18 fewer. Weekend: a Saturday or Sunday has 40 more rentals than a weekday with the same weather.',
         String.raw`Substitute: <m>12 + 2.5 \times 70 - 18 \times 2 + 40 \times 1 = 12 + 175 - 36 + 40 = 191</m> rentals.`,
-        'Compare slopes with the omitted-variable rule. The simple slope, 3.1, also carries rain’s effect if warm days were drier: rain lowers rentals (b₂ < 0) and goes down as temperature goes up (δ < 0), so b₂δ is positive and the short slope is pushed up.',
+        'Compare slopes with the omitted-variable rule. The simple slope, 3.1, also carries rain’s effect (and possibly the weekend’s) if warm days were drier: rain lowers rentals (b₂ < 0) and goes down as temperature goes up (δ < 0), so b₂δ is positive and the short slope is pushed up.',
       ],
-      answer: 'About 191 rentals. The multiple-regression slope on the high, 2.5 rentals per °F, compares days with the same rain and day of the week; the simple slope of 3.1 also credits the temperature with warm days’ drier weather.',
+      answer: 'About 191 rentals. The multiple-regression slope on the high, 2.5 rentals per °F, compares days with the same rain and day of the week; the simple slope of 3.1 also credits the temperature with warm days’ drier weather, and with any weekend crowds if warm days fell more often at weekends.',
       interpretation: 'If the manager staffs from the temperature forecast alone, she should use the simple slope only if she has no rain forecast; with both forecasts, the multiple regression keeps rain’s effect from being counted twice.' },
 
     { level: 'challenging', title: 'Why barista hours looked harmful', fictional: true,
@@ -185,7 +190,7 @@ export default {
       interpretation: 'For a roster decision Ana needs the long slope, because she wants to compare a day with and without an extra barista at the same trade. The planted mechanism agrees with its sign. Its size should be treated as rough until the curve is modelled and the dependence between rows is allowed for.' },
 
     { level: 'applied', title: 'What a hot Saturday is worth', fictional: true,
-      setup: 'Harbourside’s manager sees a forecast of 82°F and no rain for a Saturday in July, against a typical July Saturday of 68°F. Using the fourth model (high, rain, weekend, festival and the build-up, which is complete by July), how many more people should she expect, and roughly how many more transactions? Which model should she not use, and why?',
+      setup: 'Harbourside’s manager sees a forecast of 82°F and no rain for a Saturday in July, against a cool Saturday of 68°F (July Saturdays averaged 81.4°F). Using the fourth model (high, rain, weekend, festival and the build-up, which is complete by July), how many more people should she expect, and roughly how many more transactions? Which model should she not use, and why?',
       steps: [
         String.raw`The fourth model’s fitted values for a dry, non-festival Saturday after the build-up: <m>\hat y = b_0 + b_1 \times \text{high} + b_3 + b_5</m>, so the difference between two such days depends only on the high: <m>1.436 \times (82 - 68) = 20.1</m> people.`,
         'The fitted values themselves are about 223 people at 82°F and 203 people at 68°F. Their difference is 20.1, as the slope says.',
@@ -222,7 +227,7 @@ export default {
     'A multiple regression ŷ = b₀ + b₁x₁ + … + b_kx_k is fitted by least squares; each slope is the change in ŷ per unit of its predictor, holding the other predictors fixed.',
     'A partial slope equals the slope of y’s residuals on x_j’s residuals after both are regressed on the other predictors: the same idea as B05’s partial correlation, in y’s units.',
     'Leaving out a predictor that matters and goes with an included one biases its slope: b̃₁ = b₁ + b₂δ, exactly. Barista hours’ slope on waits is +0.548 alone and −1.264 holding transactions fixed.',
-    'A time trend can be the omitted predictor: without the build-up, Harbourside’s temperature slope is 1.66 people per °F; with it, 1.44, close to the planted 1.46.',
+    'A time trend can be the omitted predictor: without the build-up, Harbourside’s temperature slope is 1.66 people per °F; with it, 1.44, close to the planted average of 1.47.',
     'R² never falls when a predictor is added; adjusted R² = 1 − (1 − R²)(n − 1)/(n − p) charges for each coefficient.',
     'The overall F test, F = (R²/k) ÷ ((1 − R²)/(n − p)) on k and n − p df, tests whether all the slopes are zero; each t test asks about one slope given the others.',
     'LINEST returns several slopes in reverse order; the ToolPak prints them in order with their names. Standardised slopes describe one sample and mislead for 0/1 or skewed predictors.',
@@ -309,7 +314,15 @@ export default {
     { what: 'M3 October residual mean', value: resMonth(M3, 10), shown: 9.5, tol: 0.05 },
     { what: 'M3 November residual mean', value: resMonth(M3, 11), shown: 11.4, tol: 0.05 },
     { what: 'M4 monthly residual means within ±4', value: Number([3, 4, 5, 6, 7, 8, 9, 10, 11, 12].every((m) => Math.abs(resMonth(M4, m)) < 4)), shown: 1 },
-    { what: 'Planted per-°F effect', value: planted, shown: 1.46 },
+    { what: 'Planted per-°F effect (estimand)', value: planted, shown: 1.47 },
+    { what: 'Planted average derivative close to the estimand', value: plantedAvg, shown: 1.46 },
+    { what: 'Planted effect min (wet March weekday)', value: Math.min(...plantedDer), shown: 0.4, tol: 0.05 },
+    { what: 'Min is on a wet March weekday', value: Number(plantedDer.some((v, i) => v === Math.min(...plantedDer) && mo[i] === 3 && !wk[i] && rain[i] > 0.5)), shown: 1 },
+    { what: 'Planted effect max (festival day)', value: Math.max(...plantedDer), shown: 5, tol: 0.05 },
+    { what: 'Max is on a festival day', value: Number(fest[plantedDer.indexOf(Math.max(...plantedDer))] === 1), shown: 1 },
+    { what: 'Day column raises R²', value: Number(MDAY.r2 > M3.r2), shown: 1 },
+    { what: 'July Saturdays mean high', value: julySat, shown: 81.4, tol: 0.05 },
+    { what: '68°F is cool for a July Saturday', value: Number(julySat > 75), shown: 1 },
     { what: 'M3 overstates by about 13%', value: b(M3, 1) / planted - 1, shown: 0.13, tol: 0.01 },
     { what: 'Day-trend slope on high', value: b(MDAY, 1), shown: 1.79 },
     { what: 'Build-up is 1 from day 121 (29 June)', value: Number(build[120] === 1 && build[119] < 1 && column('date', H)[120] === '2027-06-29'), shown: 1 },

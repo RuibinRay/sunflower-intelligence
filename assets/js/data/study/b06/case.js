@@ -9,11 +9,11 @@
 // of sales); each October member row is one of the log's daily sign-ups; the project's quotes use B03's January 2027
 // quote sheet, and the won events' invoices total F03's $85,880 of 2027 catering invoiced on 30-day terms (the law
 // firm's contract events and the two January events prepaid in 2026 are not in the quotes).
-import { CAFE_COLUMNS, CAFE_ROWS, CLEAN_ROWS, SLIP, column as b05column, DERIVED as B05 } from '../b05/case.js?v=22';
-import { QUOTE_COLUMNS, QUOTES, PRICE_TEST_START, MEMBER_COLUMNS, MEMBERS } from './data.js?v=22';
-import { FACTS as F03 } from '../f03/case.js?v=22';
-import { QUOTE } from '../b03/case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
+import { CAFE_COLUMNS, CAFE_ROWS, CLEAN_ROWS, SLIP, column as b05column, DERIVED as B05 } from '../b05/case.js?v=24';
+import { QUOTE_COLUMNS, QUOTES, PRICE_TEST_START, MEMBER_COLUMNS, MEMBERS } from './data.js?v=24';
+import { FACTS as F03 } from '../f03/case.js?v=24';
+import { QUOTE } from '../b03/case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
 
 export { CAFE_COLUMNS, CAFE_ROWS, CLEAN_ROWS, SLIP, MEMBER_COLUMNS, MEMBERS };
 /** The project's data (lessons, exercises and module tests must not use these). */
@@ -22,7 +22,9 @@ export { QUOTE_COLUMNS, QUOTES, PRICE_TEST_START };
 const WEEKEND = ['Sat', 'Sun'];
 /** A column of the café log (B05's), optionally for one café and from the raw log. Besides B05's columns and derived
  *  columns (iced_share, avg_ticket, peak_load, day), B06 adds: weekend (1 on Saturdays and Sundays), millbrook (1 for
- *  Millbrook's rows), festival01 (1 on a festival day), month (3–12), log_footfall and log_sales (natural logs). */
+ *  Millbrook's rows), festival01 (1 on a festival day), month (3–12), log_footfall and log_sales (natural logs), and
+ *  build_up (the new cafés' build-up over their first four months, as the generator plants it: min(day − 1, 120) ÷ 120,
+ *  0 on 1 March rising to 1 from 29 June). */
 export function column(name, opts = {}) {
   const extra = {
     weekend: () => b05column('weekday', opts).map((d) => (WEEKEND.includes(d) ? 1 : 0)),
@@ -31,6 +33,7 @@ export function column(name, opts = {}) {
     month: () => b05column('date', opts).map((d) => +d.slice(5, 7)),
     log_footfall: () => b05column('footfall', opts).map(Math.log),
     log_sales: () => b05column('sales', opts).map(Math.log),
+    build_up: () => b05column('day', opts).map((d) => Math.min(d - 1, 120) / 120),
   }[name];
   return extra ? extra() : b05column(name, opts);
 }

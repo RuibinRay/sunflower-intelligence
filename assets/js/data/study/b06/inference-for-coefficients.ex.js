@@ -4,8 +4,8 @@
 // June. Brambleby Bakery, Corrieside Car Wash, Marlpit Outdoor, Inchmore Ferries, Saltby Clinic and every other
 // business named are fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num items
 // recompute their answers in `check`.
-import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
+import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
@@ -64,7 +64,7 @@ const P_ONE = '=T.DIST.2T(ABS(SLOPE(C2:C31,B2:B31)/(STEYX(C2:C31,B2:B31)/SQRT(DE
 const BAKE = { b: 14.2, se: 4.1, n: 26 };
 const ANOVA = { ssr: 4820, sse: 6300, n: 32 };
 const WASH = { b: 9.4, se: 1.1, n: 40, h0: 12 };
-const FERRY = { s: 12, n: 25, xbar: 40, sxx: 2500 };
+const FERRY = { s: 12, n: 25, xbar: 65, sxx: 2500 };
 const CLINIC = { b: -3.6, se: 1.5, n: 22 };
 const ROW = { b: 0.42, se: 0.2, n: 20 };
 
@@ -75,7 +75,7 @@ export const widgets = {
     y: { name: 'Transactions', values: wy },
     xs: [{ name: 'High (°F)', values: wx }, { name: 'Rain (in)', values: wr }],
     picked: [0],
-    note: `With High alone: b₁ = ${FW.coefs[1].estimate.toFixed(3)} transactions per °F, SE ${FW.coefs[1].se.toFixed(3)}, t = ${FW.coefs[1].t.toFixed(2)} on ${FW.df} df, and F = t² = ${FW.F.toFixed(2)}. The P-value tests β₁ = 0 only. The 49 days come from the second half of the year, after Harbourside’s build-up, and their residuals in date order are close to independent, so these standard errors can be believed; the same fit to all 306 days would not be. Adding Rain is multiple regression (module 3): watch the residual standard error, and the temperature slope’s standard error, fall.`,
+    note: `With High alone: b₁ = ${FW.coefs[1].estimate.toFixed(3)} transactions per °F, SE ${FW.coefs[1].se.toFixed(3)}, t = ${FW.coefs[1].t.toFixed(2)} on ${FW.df} df, and F = t² = ${FW.F.toFixed(2)}. The P-value tests β₁ = 0 only. The 49 days come from the second half of the year, after Harbourside’s build-up, and their residuals in date order are close to independent, so these standard errors can be believed; a fit to all 306 days would mix weekdays with weekends and include the build-up. Adding Rain is multiple regression (module 3): watch the residual standard error, and the temperature slope’s standard error, fall.`,
   },
   'inf-se': {
     type: 'formula',
@@ -123,7 +123,7 @@ export const guided = [
   {
     id: 'b06-inf-g1', type: 'steps', kind: 'numerical',
     prompt: 'Harbourside’s weekdays, 16 August – 24 September 2027: the day’s high in B2:B31 and transactions in C2:C31. F1 holds the slope. Test H₀: β₁ = 0 against H₁: β₁ ≠ 0 at α = 0.05.',
-    solution: `SE(b₁) = STEYX ÷ √DEVSQ = ${FAS.coefs[1].se.toFixed(4)}; t = ${FAS.coefs[1].estimate.toFixed(3)} ÷ ${FAS.coefs[1].se.toFixed(4)} = ${FAS.coefs[1].t.toFixed(2)} on 28 df; p = ${FAS.coefs[1].p.toFixed(4)}. Reject H₀: warmer weekdays in this stretch went with more transactions, about ${FAS.coefs[1].estimate.toFixed(2)} per °F (95% interval ${FAS.coefs[1].low.toFixed(2)} to ${FAS.coefs[1].high.toFixed(2)}). Thirty consecutive weekdays from late summer into autumn are not independent: the high drifts down through the window and neighbouring days resemble each other, so the p-value is somewhat too small.`,
+    solution: `SE(b₁) = STEYX ÷ √DEVSQ = ${FAS.coefs[1].se.toFixed(4)}; t = ${FAS.coefs[1].estimate.toFixed(3)} ÷ ${FAS.coefs[1].se.toFixed(4)} = ${FAS.coefs[1].t.toFixed(2)} on 28 df; p = ${FAS.coefs[1].p.toFixed(4)}. Reject H₀: warmer weekdays in this stretch went with more transactions, about ${FAS.coefs[1].estimate.toFixed(2)} per °F (95% interval ${FAS.coefs[1].low.toFixed(2)} to ${FAS.coefs[1].high.toFixed(2)}). The days are consecutive, so check the residuals in date order before trusting p: here one day’s residual and the next correlate at ${fx(R.lag1(Array.from(FAS.resid)), 2)}, so there is no sign that neighbouring days repeat each other and make p too small. The high drifts down through the window, but it is dependence in the errors, not in x, that would matter.`,
     steps: [
       {
         id: 'b06-inf-g1-s1', type: 'formula',
@@ -168,13 +168,13 @@ export const guided = [
         id: 'b06-inf-g1-s4', type: 'mc',
         prompt: `The test gives t = ${FAS.coefs[1].t.toFixed(2)} and p = ${FAS.coefs[1].p.toFixed(4)}. Which conclusion should Ana write?`,
         options: [
-          'More transactions went with warmer weekdays here, though alike neighbouring days make p too small.',
+          'Warmer weekdays went with more transactions here; the days are consecutive, so check residuals by date.',
           'Each degree warmer causes exactly one more transaction on Harbourside’s weekdays, whatever the time of year.',
           'There is a 99.9% probability that the population slope is positive, so no further checks are needed.',
           'The slope is significant, so the line will predict each weekday’s transactions to within a few transactions.',
         ],
         answer: 0,
-        hints: ['A test speaks about evidence for β₁ ≠ 0 under its conditions. Which condition is shaky here?'],
+        hints: ['A test speaks about evidence for β₁ ≠ 0 under its conditions. Which condition needs checking for consecutive days?'],
         feedback: {
           1: 'A regression slope is an association with an interval, not an exact causal rate, and it describes this window of days only.',
           2: '1 − p is not the probability that the alternative is true, and a small p doesn’t remove the need to check independence.',
@@ -275,31 +275,31 @@ export const independent = [
     id: 'b06-inf-i4', type: 'classify', kind: 'conceptual',
     prompt: 'For each regression, decide whether the usual standard errors are trustworthy as far as independence goes, or likely too small.',
     items: [
-      'Footfall on rain using both cafés’ rows for the same 306 days (612 rows).',
+      'Sales on advertising for 30 branches in one city, each measured on the same 10 days, when a sunny day lifts every branch at once.',
       'Transactions on the high for 49 weekend days whose residuals in date order correlate at 0.03.',
-      'Footfall on the high for 306 consecutive days whose residuals correlate at 0.30 from one day to the next.',
+      'Footfall on the high for 220 consecutive weekdays whose residuals correlate at 0.23 from one day to the next.',
       'Spending on age for 400 customers drawn at random from a loyalty list, each surveyed once.',
       'A store’s weekly sales on advertising over three years, with a strong Christmas season left out of the model.',
     ],
     categories: ['Independence plausible', 'Standard errors likely too small'],
     answer: [1, 0, 1, 0, 1],
     feedback: {
-      0: 'Each day’s weather appears twice, and the two cafés’ rows on a day share its calendar: the 612 rows are far fewer independent observations.',
+      0: 'Branches on the same day move together (a sunny day lifts them all), so the 300 rows hold far fewer independent observations than the formula assumes.',
       2: 'Positively correlated residuals mean neighbouring days repeat each other, so the formula overstates the evidence.',
       4: 'An omitted season makes the residuals of nearby weeks alike (and may bias the slope too).',
     },
-    solution: 'Dependence comes from shared units (two cafés on one day), from time (neighbouring days and weeks), and from omitted patterns that make nearby residuals alike (a season). Rows with near-zero residual autocorrelation, or a random sample of different people, give no such warning.',
+    solution: 'Dependence comes from shared units (branches on the same day), from time (neighbouring days and weeks), and from omitted patterns that make nearby residuals alike (a season). When the related rows resemble each other, as in all three of these, the formula’s standard errors are too small. (Rows that offset each other, like Harbourside and Millbrook on the same day, can make them too large instead: the lesson’s pooled rain example.) Rows with near-zero residual autocorrelation, or a random sample of different people, give no such warning.',
   },
   {
     id: 'b06-inf-i5', type: 'num', kind: 'numerical',
     prompt: `Inchmore Ferries (fictional) regresses daily foot passengers on the day’s high over ${FERRY.n} days: s = ${FERRY.s} passengers, x̄ = ${FERRY.xbar}°F and Sxx = ${FERRY.sxx.toLocaleString('en-US')}. Calculate the standard error of the intercept, to two decimal places.`,
-    answer: rnd(FERRY.s * Math.sqrt(1 / FERRY.n + FERRY.xbar ** 2 / FERRY.sxx), 2), check: () => 12 * Math.sqrt(1 / 25 + 1600 / 2500), unit: 'passengers', places: 2, tol: 0.01,
+    answer: rnd(FERRY.s * Math.sqrt(1 / FERRY.n + FERRY.xbar ** 2 / FERRY.sxx), 2), check: () => 12 * Math.sqrt(1 / 25 + 4225 / 2500), unit: 'passengers', places: 2, tol: 0.01,
     wrong: [
       { value: rnd(FERRY.s / Math.sqrt(FERRY.sxx), 2), say: 'That is the slope’s standard error. The intercept’s is s√(1/n + x̄²/Sxx).' },
       { value: rnd(FERRY.s * Math.sqrt(1 / FERRY.n), 2), say: 'You left out the x̄²/Sxx term, which grows the further 0 lies from the data.' },
       { value: rnd(FERRY.s * (1 / FERRY.n + FERRY.xbar ** 2 / FERRY.sxx), 2), say: 'Take the square root of 1/n + x̄²/Sxx before multiplying by s.' },
     ],
-    solution: `SE(b₀) = 12 × √(1/25 + 40²/2,500) = 12 × √(0.04 + 0.64) = 12 × ${Math.sqrt(0.68).toFixed(4)} = ${(12 * Math.sqrt(0.68)).toFixed(2)} passengers. Most of it comes from x̄²/Sxx: 0°F is far from the data, so the intercept is poorly pinned down, and at 0°F a ferry timetable may not even run.`,
+    solution: `SE(b₀) = 12 × √(1/25 + 65²/2,500) = 12 × √(0.04 + 1.69) = 12 × ${Math.sqrt(1.73).toFixed(4)} = ${(12 * Math.sqrt(1.73)).toFixed(2)} passengers. Most of it comes from x̄²/Sxx: 0°F is far from the data, so the intercept is poorly pinned down, and at 0°F a ferry timetable may not even run.`,
   },
   {
     id: 'b06-inf-i6', type: 'mc', kind: 'conceptual',
@@ -365,20 +365,20 @@ export const check = [
   },
   {
     id: 'b06-inf-k4', type: 'mc', kind: 'applied',
-    prompt: 'A colleague fits footfall on rain to all 612 rows of the café log (both cafés, 306 days) and reports “−62 people per inch, SE 18.0, p &lt; 0.001: rain clearly costs both cafés customers.” What is the main problem with the standard error?',
+    prompt: 'A colleague fits footfall on rain to all 612 rows of the café log (both cafés, 306 days) and reports “−62 people per inch, SE 18.0, p &lt; 0.001: rain clearly costs both cafés customers.” On the same day the two cafés’ residuals correlate at −0.43. What is wrong with the standard error?',
     options: [
-      'The 612 rows hold only 306 days of weather, and each day’s two rows share it: far fewer independent cases.',
-      'Rain is zero on most days, so the slope can’t be estimated and the standard error is meaningless.',
-      'The standard error is too large, because the two cafés differ so much that they hide the real effect of rain.',
+      'It treats each day’s two rows as independent; their residuals offset each other, so here it is too large.',
+      'Rain is zero on most days, so the slope can’t be estimated properly and its standard error is meaningless.',
+      'It is too small, because each day’s rain is counted twice and the 612 rows hold only 306 independent days.',
       'Nothing at all: 612 rows is a large sample, so the standard error and the p-value can be taken at face value.',
     ],
     answer: 0,
     feedback: {
       1: 'Zero-heavy x makes the regression contrast dry days with wet ones, but the slope and its SE are still defined.',
-      2: 'The cafés’ differences add residual spread, but the bigger problem goes the other way: dependence makes the SE too small.',
-      3: 'A large n helps only if the rows are independent. Here each day’s weather is counted twice.',
+      2: 'Counting each day twice is the problem, but its direction depends on how the two rows are related. Negatively correlated residuals (one café busy when the other is quiet) make the formula’s SE too large, not too small.',
+      3: 'A large n helps only if the rows are independent. Here the two rows of each day are related.',
     },
-    solution: 'The formula treats 612 rows as 612 independent observations, but there are only 306 days of rain, each entered twice, and the cafés’ rows on the same day share the calendar too. The standard error is too small and the p-value too optimistic. Fit each café separately (Harbourside −81 people per inch, Millbrook −43, not significant at 5%) and say how the rows were treated.',
+    solution: 'The formula treats 612 rows as 612 independent observations, but each day’s rain is entered twice and the two cafés’ residuals on a day are related: they correlate at −0.43, because Harbourside is busy at weekends and Millbrook on weekdays. Offsetting residuals make the formula’s standard error too large: a day-clustered standard error is about 9.7, half of 18.0. Either way the printed SE is wrong. Fit each café separately (Harbourside −81 people per inch, Millbrook −43, not significant at 5%) and say how the rows were treated.',
   },
   {
     id: 'b06-inf-k5', type: 'fill', kind: 'conceptual',

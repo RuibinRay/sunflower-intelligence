@@ -277,7 +277,7 @@ const ALL = [
     related: [{ plate: 'describe' }, { tool: 'analytics/explore/#describe', label: 'Describe' }],
   }),
   C({
-    id: 'b05', school: 'analytics', code: 'B05', level: 'intermediate', status: 'reviewed', requires: ['b04'], recommends: ['b03'],
+    id: 'b05', school: 'analytics', code: 'B05', level: 'intermediate', status: 'complete', requires: ['b04'], recommends: ['b03'],
     title: 'Correlation Analysis',
     blurb: 'Measure how variables move together, test it, and avoid reading causation into it.',
     topics: ['Covariance', 'Pearson correlation', 'Spearman correlation', 'Strength and direction', 'Scatterplots', 'Correlation matrices and heatmaps', 'Outliers', 'Nonlinear relationships', 'Statistical significance', 'Correlation versus causation', 'Spurious correlations'],
@@ -300,7 +300,7 @@ const ALL = [
     related: [{ tool: 'analytics/explore/#correlate', label: 'Correlate' }],
   }),
   C({
-    id: 'b06', school: 'analytics', code: 'B06', level: 'intermediate', status: 'in-progress', requires: ['b05'], recommends: ['b03'],
+    id: 'b06', school: 'analytics', code: 'B06', level: 'intermediate', status: 'reviewed', requires: ['b05'], recommends: ['b03'],
     title: 'Regression Analysis',
     blurb: 'Fit, read and check linear and logistic regressions, and know what they can and can’t tell you.',
     topics: ['Simple and multiple regression', 'Coefficients and intercepts', 'Ordinary least squares', 'Residuals', 'R-squared and adjusted R-squared', 'Significance and confidence intervals', 'Multicollinearity', 'Heteroskedasticity', 'Model assumptions', 'Logistic regression', 'Diagnostics', 'Prediction intervals'],
