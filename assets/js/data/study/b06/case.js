@@ -56,8 +56,12 @@ export function quote(name) {
   if (qAt(name) < 0) throw new Error(`b06 case: no quote column ${name}`);
   return QUOTES.map((r) => r[qAt(name)]);
 }
-/** B03's quote sheet at a given price per guest. */
-export const quoted = (guests, hours, pastries, days, rate) => Math.max(QUOTE.minimum, days * (QUOTE.setup + rate * guests + QUOTE.perHour * hours + (pastries ? QUOTE.platter : 0)));
+/** B03's quote sheet as it stands from January 2027, at a given price per guest: $30 an hour for the first three hours of
+ *  service, then $30 an hour for each barista (one per 40 guests or part of 40) beyond the third (B03, what-if
+ *  analysis), plus setup, the price per guest and the pastry platter, with the $300 minimum, day by day. */
+export const baristas = (guests) => Math.ceil(guests / 40);
+export const quoted = (guests, hours, pastries, days, rate) => Math.max(QUOTE.minimum, days * (QUOTE.setup + rate * guests
+  + QUOTE.perHour * Math.min(hours, 3) + QUOTE.perHour * baristas(guests) * Math.max(hours - 3, 0) + (pastries ? QUOTE.platter : 0)));
 
 // ---------------------------------------------------------------- headline figures shared by the lessons
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };
@@ -86,6 +90,7 @@ export const IDENTITIES = [
   ['won events’ invoices total F03’s $85,880 of 2027 catering invoiced', Math.round(wonInvoices.reduce((s, v) => s + v, 0) * 100) === F03.catering.invoiced * 100],
   ['every quote follows B03’s quote sheet at its price per guest', QUOTES.every((r) => Math.abs(quoted(r[qAt('guests')], r[qAt('hours')], r[qAt('pastries')], r[qAt('days')], r[qAt('rate')]) - r[qAt('quoted')]) < 0.005)],
   ['B03’s sheet charges $6.50 a guest; the test’s other price is $7.00', QUOTE.perGuest === 6.5 && QUOTES.every((r) => r[qAt('rate')] === 6.5 || (r[qAt('rate')] === 7 && r[qAt('sent')] >= PRICE_TEST_START))],
+  ['every invoice is within $150 of its quote, as B03’s 2026 events are, except the gala dinner', QUOTES.every((r) => r[qAt('invoice')] === null || r[qAt('guests')] >= 200 || Math.abs(r[qAt('invoice')] - r[qAt('quoted')]) <= 150)],
   ['only won quotes have an invoice', QUOTES.every((r) => (r[qAt('won')] === 1) === (r[qAt('invoice')] !== null))],
   ['every event falls in 2027, after its quote', QUOTES.every((r) => r[qAt('event')].startsWith('2027') && r[qAt('event')] > r[qAt('sent')])],
 ];

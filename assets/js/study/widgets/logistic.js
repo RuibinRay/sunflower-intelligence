@@ -41,17 +41,23 @@ export function mount(el, cfg, ctx) {
     inp.addEventListener('input', () => { if (Number.isFinite(+inp.value)) { st.at[n] = +inp.value; render(); } });
     return h('div', { class: 'field' }, h('label', { for: id }, `${n} held at`), inp);
   });
+  const aid = `${base}-ax`, axIn = h('input', { type: 'number', id: aid, value: +mean(cfg.xs[axis]).toFixed(2), step: 'any' }), readout = h('p', { 'aria-live': 'polite' });
+  st.ax = +axIn.value;
+  axIn.addEventListener('input', () => { if (axIn.value !== '' && Number.isFinite(+axIn.value)) { st.ax = +axIn.value; render(); } });
   const tid = `${base}-t`, tIn = h('input', { type: 'range', id: tid, min: 0.05, max: 0.95, step: 0.05, value: st.t }), tOut = h('output', { for: tid });
   tIn.addEventListener('input', () => { st.t = +tIn.value; render(); });
   const chart = h('div', { class: 'chart-box' }), out = h('div', { class: 'cv-out', 'aria-live': 'polite' }), tbl = h('div');
   el.classList.add('cv-widget');
   el.append(...[cfg.title ? h('p', { class: 'fx-title' }, cfg.title) : null,
-    fields.length ? h('div', { class: 'cv-fields' }, ...fields) : null, chart, out,
+    fields.length ? h('div', { class: 'cv-fields' }, ...fields) : null, chart,
+    h('div', { class: 'cv-fields' }, h('div', { class: 'field' }, h('label', { for: aid }, `Probability at ${axis} =`), axIn)), readout, out,
     show.includes('table') ? h('div', { class: 'field' }, h('label', { for: tid }, 'Classify as “', cfg.y.yes || 'yes', '” when the probability is at least ', tOut), tIn) : null, tbl,
     cfg.note ? (() => { const p = h('p', { class: 'fx-note' }); p.innerHTML = xl(cfg.note); return p; })() : null].filter(Boolean));
 
   function render() {
     tOut.textContent = st.t.toFixed(2);
+    const vals = names.map((n) => (n === axis ? st.ax : st.at[n])), pc = m.predictCI(vals);
+    readout.textContent = `Predicted probability of ${cfg.y.yes || 'yes'}: ${fmt(pc.p)} (log-odds ${fmt(pc.eta)}; 95% interval ${fmt(pc.low)} to ${fmt(pc.high)}), at ${names.map((n, j) => `${n} = ${F.auto(vals[j])}`).join(', ')}.`;
     const xa = cfg.xs[axis], lo = Math.min(...xa), hi = Math.max(...xa);
     const pAt = (v) => m.predict(names.map((n) => (n === axis ? v : st.at[n])));
     chart.replaceChildren();
@@ -63,7 +69,7 @@ export function mount(el, cfg, ctx) {
     if (show.includes('coefs') || show.includes('odds')) items.push(h('div', { class: 'table-scroll' }, h('table', { class: 'data-table study-table' },
       h('caption', {}, `Logistic regression of ${cfg.y.name} (${m.n} cases)`),
       h('thead', {}, h('tr', {}, ...['', 'Coefficient (log-odds)', 'Std. error', 'z', 'p-value', ...(show.includes('odds') ? ['Odds ratio', '95% CI for the odds ratio'] : [])].map((c) => h('th', { scope: 'col' }, c)))),
-      h('tbody', {}, ...m.coefs.map((c) => h('tr', {}, h('th', { scope: 'row' }, c.name), h('td', {}, fmt(c.estimate)), h('td', {}, fmt(c.se)), h('td', {}, fmt(c.z, 2)), h('td', {}, pStr(c.p)),
+      h('tbody', {}, ...m.coefs.map((c) => h('tr', {}, h('th', { scope: 'row' }, c.name), h('td', {}, fmt(c.estimate, 4)), h('td', {}, fmt(c.se, 4)), h('td', {}, fmt(c.z, 2)), h('td', {}, pStr(c.p)),
         ...(show.includes('odds') ? [h('td', {}, c.name === 'Intercept' ? '' : fmt(c.or)), h('td', {}, c.name === 'Intercept' ? '' : `${fmt(c.orLow)} to ${fmt(c.orHigh)}`)] : [])))))));
     if (show.includes('lr')) items.push(h('p', {}, `Likelihood-ratio test against the model with no predictors: χ² = ${fmt(m.lr, 2)} on ${m.lrDf} df, p ${m.lrP < 0.001 ? 'below 0.001' : `= ${pStr(m.lrP)}`}. McFadden’s pseudo-R² = ${fmt(m.mcfadden)}.`));
     out.replaceChildren(...items);

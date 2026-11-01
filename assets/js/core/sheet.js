@@ -933,7 +933,8 @@ FN.SUBTOTAL = (args, ctx) => {
 };
 
 // TREND(known_y's, known_x's, [new_x's], [const]): the least-squares line's values at new_x (one x variable), as an
-// array shaped like new_x; const FALSE forces the line through the origin
+// array shaped like new_x; const FALSE forces the line through the origin. Several x variables are supported in
+// columns (y a column, one row of new_x's per prediction); the row orientation is not implemented.
 FN.TREND = (args, ctx) => {
   const Y = arrOf(args[0], ctx); if (isErr(Y)) return Y;
   const Xa = args[1] && args[1].t !== 'missing' ? arrOf(args[1], ctx) : new Arr(Y.rows.map((_, i) => [i + 1]));
