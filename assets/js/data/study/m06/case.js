@@ -57,6 +57,14 @@ export function members({ asOf = AS_OF, cafe = null, joinedBy = null } = {}) {
 }
 /** Member joins as a Map id → join day (for cohort tables), optionally for one café. */
 export const joinMap = ({ cafe = null } = {}) => new Map(MEMBER_LIST.filter((m) => !cafe || m.cafe === cafe).map((m) => [m.id, m.joined]));
+/** Input for core/customer.js lapseTimes and the `survival` widget's `lapse`: { joins: { id: join day }, visits: { id:
+ *  [visit days] }, end } for members (optionally of one café) up to `asOf`. */
+export function lapseData({ asOf = AS_OF, cafe = null } = {}) {
+  const joins = {}, v = {};
+  for (const m of MEMBER_LIST) if ((!cafe || m.cafe === cafe) && m.joined <= asOf) { joins[m.id] = m.joined; v[m.id] = []; }
+  for (const x of VISIT_LIST) if (v[x.id] && x.day <= asOf) v[x.id].push(x.day);
+  return { joins, visits: v, end: asOf };
+}
 /** The churn-prediction table: members who joined by 31 August 2027, described as of 31 October, with `back` = 1 if
  *  they visited in November–December (and `lapsed` = 1 − back). */
 export function churnTable() {
@@ -86,6 +94,13 @@ export const SUBS = SUBSCRIPTIONS.map((r) => {
     cancelledOn: end, cancelled: end ? 1 : 0, skipped, billings, deliveries: billings.filter((d) => !skipped.includes(d)).length,
     periods: billings.length, unitCost: p.cost * qty, listPrice: p.price * qty };
 });
+/** Acquisition costs (fictional facts of the case): the 2026 relaunch offer halved the first month's price; a referral
+ *  gives the existing subscriber and the friend $10 of shop credit each; shop and café sign-ups had no direct cost (B05's
+ *  2027 paid social spend promoted the whole shop and can't be traced to subscriptions). Ana discounts future margins at
+ *  10% a year. */
+export const ACQUISITION = { offerShare: 0.5, referralCredit: 10, referralSides: 2 };
+export const DISCOUNT_YEAR = 0.10;
+export const DISCOUNT_MONTH = (1 + DISCOUNT_YEAR) ** (1 / 12) - 1;
 /** Margin per delivered month: price − product cost − the $5.20 parcel − card fees at 3.5% of the price. */
 export const marginOf = (s) => s.price - s.unitCost - PARCEL - FEE_RATE * s.price;
 /** Active subscribers on a date (started on or before it and not yet cancelled). */

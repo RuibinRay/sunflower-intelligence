@@ -465,10 +465,27 @@ const ALL = [
     related: [{ plate: 'segment' }, { tool: 'marketing/segmentation/', label: 'Market segmentation' }],
   }),
   C({
-    id: 'm06', school: 'marketing', code: 'M06', level: 'intermediate', requires: ['m05'], recommends: ['b02'],
+    id: 'm06', school: 'marketing', code: 'M06', level: 'intermediate', requires: ['m05'], recommends: ['b02', 'b06'],
     title: 'Customer Analytics and RFM',
     blurb: 'Score customers by recency, frequency and value, and measure lifetime value, retention and churn.',
     topics: ['Recency', 'Frequency', 'Monetary value', 'RFM scoring', 'Customer segmentation', 'Customer lifetime value', 'Customer acquisition cost', 'Retention rates', 'Churn', 'Cohort analysis', 'Loyalty strategies'],
+    case: 'lantern',
+    outcomes: [
+      'Turn transaction records into a customer table (recency, frequency, monetary value, tenure) as of a stated date, and tell contractual from noncontractual settings and what “churn” can mean in each.',
+      'Score customers on recency, frequency and monetary value, explain how cut points, ties and the number of groups change the scores, and read and act on RFM segments, knowing what they can’t show.',
+      'Build and read cohort tables and retention curves, and separate changes in customers’ behaviour from changes in the mix of customers.',
+      'Calculate retention and churn rates correctly, estimate survival with censored data (Kaplan–Meier), compare groups, and project contractual retention with a model that allows customers to differ (the shifted-beta-geometric).',
+      'Predict which customers will lapse from their past behaviour, judge the prediction on later data with lift and gains, and say why a good churn score doesn’t show who a retention offer would change.',
+      'Calculate customer lifetime value and acquisition cost, payback and the value-to-cost ratio, with stated margins, discounting and timing, and show how assuming every customer is alike biases the answer.',
+      'Evaluate loyalty and retention strategies with evidence, including randomised tests with a control group, and weigh their cost against the value they add.',
+    ],
+    modules: [
+      { n: 1, title: 'Customer data and RFM', lessons: ['customer-metrics', 'rfm-scoring'] },
+      { n: 2, title: 'Segments and cohorts', lessons: ['rfm-segments', 'cohort-analysis'] },
+      { n: 3, title: 'Retention and churn', lessons: ['retention-and-churn-rates', 'survival-analysis', 'predicting-churn'] },
+      { n: 4, title: 'Customer value and strategy', lessons: ['customer-lifetime-value', 'acquisition-cost-and-payback', 'loyalty-and-retention-strategy'] },
+    ],
+    project: { title: 'Keeping Lantern’s coffee subscribers', blurb: 'Every coffee subscription since Lantern opened, and a test of offering to skip a month instead of cancelling. Measure retention by cohort and by how subscribers joined, project it, value a subscriber against what one costs to win, and decide whether the save offer and the 2026 relaunch offer were worth it.' },
     related: [{ tool: 'marketing/segmentation/#rfm', label: 'RFM customer value' }, { tool: 'marketing/growth/#unit-economics', label: 'Unit economics' }],
   }),
   C({
