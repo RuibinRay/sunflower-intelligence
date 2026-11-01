@@ -300,10 +300,26 @@ const ALL = [
     related: [{ tool: 'analytics/explore/#correlate', label: 'Correlate' }],
   }),
   C({
-    id: 'b06', school: 'analytics', code: 'B06', level: 'intermediate', requires: ['b05'],
+    id: 'b06', school: 'analytics', code: 'B06', level: 'intermediate', status: 'in-progress', requires: ['b05'], recommends: ['b03'],
     title: 'Regression Analysis',
     blurb: 'Fit, read and check linear and logistic regressions, and know what they can and can’t tell you.',
     topics: ['Simple and multiple regression', 'Coefficients and intercepts', 'Ordinary least squares', 'Residuals', 'R-squared and adjusted R-squared', 'Significance and confidence intervals', 'Multicollinearity', 'Heteroskedasticity', 'Model assumptions', 'Logistic regression', 'Diagnostics', 'Prediction intervals'],
+    case: 'lantern',
+    outcomes: [
+      'Fit a least-squares line, interpret its slope and intercept in context, and judge the fit with residuals, the residual standard error and R², knowing what each can’t show.',
+      'Test coefficients and the whole model, give confidence intervals, and tell a confidence interval for the mean from a prediction interval for one new case.',
+      'Build and interpret multiple regressions with numeric, categorical and interaction terms, reading each coefficient with the others held fixed.',
+      'Compare models with adjusted R², nested F tests and information criteria, recognise multicollinearity, and choose predictors for a purpose rather than by p-value.',
+      'Check a model with residual plots and tests, and respond to curvature, unequal variance, dependence and influential points with transformations and robust standard errors.',
+      'Fit and interpret logistic regression for a yes/no outcome: log-odds, odds ratios, predicted probabilities, the likelihood-ratio test and classification at a threshold.',
+    ],
+    modules: [
+      { n: 1, title: 'Fitting a line', lessons: ['least-squares-line', 'residuals-and-r-squared'] },
+      { n: 2, title: 'Inference and prediction', lessons: ['inference-for-coefficients', 'prediction-and-intervals'] },
+      { n: 3, title: 'Multiple regression', lessons: ['multiple-regression', 'categorical-predictors-and-interactions', 'multicollinearity-and-model-choice'] },
+      { n: 4, title: 'Checking and extending a model', lessons: ['assumptions-and-diagnostics', 'transformations-and-influence', 'logistic-regression'] },
+    ],
+    project: { title: 'Pricing Lantern’s catering', blurb: 'Ana tested a higher price per guest on her catering quotes from June 2027. Model what an event’s invoice will be, what wins a quote, and what the price test shows, with honest intervals; then advise her on the 2028 price.' },
     related: [{ plate: 'regression' }, { plate: 'classify' }, { tool: 'analytics/explore/#regress', label: 'Regress' }],
   }),
   C({

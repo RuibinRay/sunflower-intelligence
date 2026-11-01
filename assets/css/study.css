@@ -906,6 +906,13 @@ input[type="file"]:focus-visible + .file-btn, .file-btn:focus-within { outline: 
 .cv-out { display: grid; gap: var(--s-2); min-width: 0; }
 .sc-pick { display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center; }
 .sc-pick .btn { white-space: normal; max-width: 100%; text-align: left; }
+.chart .dot.m-dense { r: 2.6; stroke: none; fill-opacity: .55; }
+.fl-resid .fl-seg { stroke: var(--c-accent); stroke-width: 1.5; }
+.fl-resid .fl-square { fill: var(--c-accent); fill-opacity: .12; stroke: var(--c-accent); stroke-opacity: .5; stroke-width: 1; }
+.dg-plots { display: grid; gap: var(--s-3); grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .dg-plots.is-four { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.lg-matrix { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.lg-matrix th, .lg-matrix td { border: 1px solid var(--c-line, #d9cfb8); padding: .3rem .6rem; text-align: right; }
 .cv-result { margin: 0; font-size: var(--t-md); font-variant-numeric: tabular-nums; }
 .cv-excel { margin: 0; font-size: var(--t-sm); overflow-wrap: anywhere; }
 .cv-line-text { margin: 0; font-size: var(--t-sm); color: var(--ink-2); }
