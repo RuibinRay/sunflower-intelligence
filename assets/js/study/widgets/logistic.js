@@ -66,8 +66,7 @@ export function mount(el, cfg, ctx) {
       curves: [{ fn: pAt, cls: 'm-s2' }], yDomain: [0, 1], height: 280, xLabel: axis, yLabel: `Probability (${cfg.y.yes || 'yes'})`,
       label: `Fitted probability of ${cfg.y.yes || 'yes'} against ${axis}, with each case drawn at 1 (${cfg.y.yes || 'yes'}) or 0 (${cfg.y.no || 'no'})` });
     const items = [];
-    if (show.includes('coefs') || show.includes('odds')) items.push(h('div', { class: 'table-scroll' }, h('table', { class: 'data-table study-table' },
-      h('caption', {}, `Logistic regression of ${cfg.y.name} (${m.n} cases)`),
+    if (show.includes('coefs') || show.includes('odds')) items.push(h('p', { class: 'fx-title', id: `${base}-cap` }, `Logistic regression of ${cfg.y.name} (${m.n} cases)`), h('div', { class: 'table-scroll' }, h('table', { class: 'data-table study-table', 'aria-labelledby': `${base}-cap` },
       h('thead', {}, h('tr', {}, ...['', 'Coefficient (log-odds)', 'Std. error', 'z', 'p-value', ...(show.includes('odds') ? ['Odds ratio', '95% CI for the odds ratio'] : [])].map((c) => h('th', { scope: 'col' }, c)))),
       h('tbody', {}, ...m.coefs.map((c) => h('tr', {}, h('th', { scope: 'row' }, c.name), h('td', {}, fmt(c.estimate, 4)), h('td', {}, fmt(c.se, 4)), h('td', {}, fmt(c.z, 2)), h('td', {}, pStr(c.p)),
         ...(show.includes('odds') ? [h('td', {}, c.name === 'Intercept' ? '' : fmt(c.or)), h('td', {}, c.name === 'Intercept' ? '' : `${fmt(c.orLow)} to ${fmt(c.orHigh)}`)] : [])))))));
