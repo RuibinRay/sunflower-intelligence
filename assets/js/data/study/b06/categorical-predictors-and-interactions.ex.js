@@ -41,7 +41,7 @@ const R1 = `D2:D${last}`, X3 = `E2:G${last}`;
 
 // ---------------------------------------------------------------- fictional figures
 const DL = { b0: 140, temp: 2.0, site: -35, inter: 1.5 };     // Drovers Lane Car Wash: washes on temperature, by site
-const SW = { b0: 22, priceM: 1.8, annual: -9, inter: -1.1 };   // a subscription box: cancellations per 100 on delivery delay, by plan
+const SW = { b0: 22, delay: 1.8, annual: -9, inter: -1.1 };   // a subscription box: cancellations per 100 on delivery delay, by plan
 
 export const widgets = {
   'cat-foot': {
@@ -270,7 +270,7 @@ export const check = [
       2: 'With the interaction in, 1.8 is the reference (monthly) plan’s slope only.',
       3: 'Main effects are effects at the other predictor’s reference; combined with the interaction they give each group’s slope.',
     },
-    solution: `Annual slope = ${fx(SW.priceM, 1)} + (${fx(SW.inter, 1)}) = ${fx(SW.priceM + SW.inter, 1)} more cancellations per 100 customers per day of delay, against ${fx(SW.priceM, 1)} on the monthly plan: annual customers, already committed, react less to late deliveries. In observational data this is an association; the plans’ customers could differ in other ways that go with delays.`,
+    solution: `Annual slope = ${fx(SW.delay, 1)} + (${fx(SW.inter, 1)}) = ${fx(SW.delay + SW.inter, 1)} more cancellations per 100 customers per day of delay, against ${fx(SW.delay, 1)} on the monthly plan: annual customers, already committed, react less to late deliveries. In observational data this is an association; the plans’ customers could differ in other ways that go with delays.`,
   },
   {
     id: 'b06-cat-k5', type: 'classify', kind: 'conceptual',
