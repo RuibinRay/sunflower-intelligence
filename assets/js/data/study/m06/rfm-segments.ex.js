@@ -49,7 +49,7 @@ export const widgets = {
   'rfmseg-grid': {
     type: 'rfm', title: `Lantern’s ${N.toLocaleString('en-US')} loyalty-app members, scored as of 31 December 2027`,
     customers: MS, k: 5, method: 'quantile', choose: true, show: ['cuts', 'grid', 'segments'], unit: 'visits',
-    note: 'R scores recency (5 = visited most recently), F the number of visits since joining and M total spend, each against all members. FM is the rounded mean of F and M. The segment names are one practitioner convention, not a standard; hover over a grid cell to see its name.',
+    note: 'R scores recency (5 = visited most recently), F the number of visits since joining and M total spend, each against all members. FM is the rounded mean of F and M. The segment names are one practitioner convention, not a standard; the grid’s cells follow the naming table in the lesson.',
   },
   'rfmseg-offer': {
     type: 'formula', title: 'Does an offer to a segment pay for itself?',
@@ -210,7 +210,7 @@ export const guided = [
       `Champions: recent, frequent, high spend; ${pc(oseg('Champions').back / oseg('Champions').n, 0)} came back in November–December with no offer.`,
       'New customers: joined in the last few weeks, one or two visits.',
       `At risk: valuable once, last visit months ago; ${pc(AR.back / AR.n)} came back with no offer.`,
-      'Lost: one or two visits, last visit more than half a year ago.',
+      'Lost: one or two visits, last visit about five months or more ago.',
       `Potential loyalists: recent, middling frequency and spend; ${pc(oseg('Potential loyalists').back / oseg('Potential loyalists').n, 0)} came back.`,
       `Can’t lose them: frequent and high-spending until they went quiet; ${oseg('Can’t lose them').back === 0 ? 'none' : oseg('Can’t lose them').back} of ${oseg('Can’t lose them').n} came back.`,
     ],
@@ -220,7 +220,7 @@ export const guided = [
       0: 'They come anyway: a discount would mostly subsidise visits Lantern already gets.',
       2: 'Past value makes a test worth its small cost, but their return rate without an offer is tiny, so measure the effect against a holdout rather than assume it.',
       3: 'Repeated messages to members who have gone cost attention and can lead to notifications being switched off.',
-      5: 'Not one came back on its own, so any return after an offer could be the offer’s doing; only a holdout shows it.',
+      5: 'None of 58 came back on its own, which suggests most are gone; their past value still justifies one small test, and a holdout is still needed to show whether any return is the message’s doing.',
     },
     hints: ['Who would come anyway? Who has little history yet? Who is valuable but quiet? Who is neither?', 'Discounts belong where they change behaviour; tests belong where the effect is unknown.'],
     solution: 'Champions: thanks and recognition. New customers and Potential loyalists: a reason for the next visit. At risk and Can’t lose them: one win-back message, with a random holdout to measure it. Lost: leave alone.',
@@ -241,7 +241,7 @@ export const independent = [
       { formula: `=AVERAGEIFS(C2:C${L},J2:J${L},"At risk")`, say: 'With the name typed in, the formula ignores M1. Refer to M1.' },
       { formula: `=AVERAGEIFS(F2:F${L},J2:J${L},M1)`, say: 'Column F is the R score, not recency in days.' },
     ],
-    solution: `<x>=AVERAGEIFS(C2:C${L},J2:J${L},M1)</x>. For the three At risk members, (113 + 280 + 261) ÷ 3 = ${r1((113 + 280 + 261) / 3)} days. Across all members the At risk mean is ${r1(SEG['At risk'].meanRecency)} days.`,
+    solution: `<x>=AVERAGEIFS(C2:C${L},J2:J${L},M1)</x>. For the three At risk members, (${ROWS.filter((c) => c.segment === 'At risk').map((c) => c.recency).join(' + ')}) ÷ 3 = ${r1(sum(ROWS.filter((c) => c.segment === 'At risk').map((c) => c.recency)) / 3)} days. Across all members the At risk mean is ${r1(SEG['At risk'].meanRecency)} days.`,
   },
   {
     id: 'm06-seg-i2', type: 'num', kind: 'applied',
@@ -353,7 +353,7 @@ export const check = [
       { formula: `=COUNTIFS(J2:J${L},M1)/COUNTA(J2:J${L})`, say: 'That is the segment’s share of members. Share of spend adds its spend with SUMIFS.' },
       { formula: `=SUMIFS(E2:E${L},J2:J${L},M1)/COUNTIFS(J2:J${L},M1)`, say: 'That is the segment’s mean spend per member. A share divides by the total spend.' },
     ],
-    solution: `<x>=SUMIFS(E2:E${L},J2:J${L},M1)/SUM(E2:E${L})</x>. For Loyal in this sample: (68.75 + 118.85 + 57) ÷ ${sampleSpend.toFixed(2)} = ${pc((68.75 + 118.85 + 57) / sampleSpend)}.`,
+    solution: `<x>=SUMIFS(E2:E${L},J2:J${L},M1)/SUM(E2:E${L})</x>. For Loyal in this sample: (${ROWS.filter((c) => c.segment === 'Loyal').map((c) => c.monetary).join(' + ')}) ÷ ${sampleSpend.toFixed(2)} = ${pc(sum(ROWS.filter((c) => c.segment === 'Loyal').map((c) => c.monetary)) / sampleSpend)}.`,
   },
   {
     id: 'm06-seg-k5', type: 'mc', kind: 'conceptual',
@@ -374,19 +374,19 @@ export const check = [
   },
   {
     id: 'm06-seg-k6', type: 'mc', kind: 'applied',
-    prompt: `In the 31 October check, Promising (R = 4, FM 1–2) came back at ${pc(PR.back / PR.n)} and About to sleep (R = 3, FM 1–2) at ${pc(AS.back / AS.n)}. Ana can afford one cheap reminder to one of them. Assuming the reminder would lift both by the same few points, which segment should she test it on first, and what must the test include?`,
+    prompt: `In the 31 October check, Promising (R = 4, FM 1–2) came back at ${pc(PR.back / PR.n)} and About to sleep (R = 3, FM 1–2) at ${pc(AS.back / AS.n)}. Ana can afford to test one free-pastry offer (fictional cost $1.10 a pastry), redeemed by every member of the segment who visits in the next two months. Assuming the offer would lift both segments’ return rates by the same few points, which segment should she test it on first, and what must the test include?`,
     options: [
-      'About to sleep, with a random holdout: Promising members are already likely to come back, so a reminder to them pays mostly for visits that would happen anyway',
-      'Promising, with no holdout needed: their higher return rate proves reminders work on them',
-      'About to sleep, with no holdout needed: any member who comes back after the reminder was won back by it',
+      'About to sleep, with a random holdout: Promising members are already likely to come back, so pastries to them pay mostly for visits that would happen anyway',
+      'Promising, with no holdout needed: their higher return rate proves offers work on them',
+      'About to sleep, with no holdout needed: any member who comes back after the offer was won back by it',
       'Promising, because a higher return rate means a higher lift, which is what a campaign maximises',
     ],
     answer: 0,
     feedback: {
-      1: 'Their return rate was measured with no reminder at all; it says nothing about reminders. And a cost per redemption paid to likely returners is a subsidy.',
-      2: `${pc(AS.back / AS.n)} came back with nothing sent; without a holdout those returns would be credited to the reminder.`,
+      1: 'Their return rate was measured with no offer at all; it says nothing about offers. And pastries redeemed by likely returners are a subsidy.',
+      2: `${pc(AS.back / AS.n)} came back with nothing sent; without a holdout those returns would be credited to the offer.`,
       3: 'Lift describes who comes back without a campaign. A campaign should maximise the extra returns it causes, net of costs.',
     },
-    solution: 'With the same uplift, the segment with the lower natural return rate wastes less on members who would come anyway. Either way, a random holdout is the only way to measure the uplift.',
+    solution: 'With the same uplift and a cost paid on every redemption, the segment with the lower natural return rate wastes less on members who would come anyway. Either way, a random holdout is the only way to measure the uplift.',
   },
 ];

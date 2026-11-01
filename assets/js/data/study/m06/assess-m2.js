@@ -3,7 +3,7 @@
 // Lantern's members come from case.js (members scored on 31 October with churnTable(); the cohort triangle from
 // core/customer.js cohortTable); Halvering Hair Studio and Tolhurst Pets are fictional. Formula items are marked by
 // their results on changed copies; every num item's `check` recomputes its answer.
-import { churnTable, VISIT_LIST, joinMap } from './case.js?v=25';
+import { churnTable, VISIT_LIST, joinMap, members } from './case.js?v=25';
 import * as CU from '../../../core/customer.js?v=25';
 
 const sum = (a) => a.reduce((x, y) => x + y, 0);
@@ -22,7 +22,9 @@ const octCells = { A1: 'member', B1: 'R', C1: 'F', D1: 'M', E1: 'FM', F1: 'back 
   H1: 'R at most', I1: 4, H2: 'FM at least', I2: 4, H3: 'return rate' };
 const block = (rMax, fmMin) => { const g = SAMPLE.filter((c) => c.R <= rMax && c.FM >= fmMin); return { n: g.length, back: sum(g.map((c) => c.back)) }; };
 const B44 = block(4, 4);
-const PRO = (() => { const g = OC.filter((c) => c.segment === 'Promising'); return { n: g.length, back: sum(g.map((c) => c.back)) }; })();
+const DEC = CU.rfm(members(), { k: 5, method: 'quantile' });
+const DSEG = Object.fromEntries(CU.groupBy(DEC, 'segment').map((g) => [g.key, g]));
+const MEAN_ALL = sum(DEC.map((c) => c.monetary)) / DEC.length, LOY = DSEG.Loyal;
 
 // the cohort triangle: month 3
 const T = CU.cohortTable(joinMap(), VISIT_LIST);
@@ -101,13 +103,13 @@ export const items = [
   },
   {
     id: 'm06-m2-5', lesson: 'rfm-segments', type: 'num', kind: 'numerical',
-    prompt: `In the 31 October check, ${PRO.back} of the ${PRO.n} members in the Promising segment came back in November–December, and ${BACK} of all ${NO.toLocaleString('en-US')} scored members did. What was Promising’s lift? Give two decimal places.`,
-    answer: r2(PRO.back / PRO.n / (BACK / NO)), check: () => (PRO.back / PRO.n) / (BACK / NO), unit: '', places: 2, tol: 0.01,
+    prompt: `On 31 December 2027 Lantern’s ${LOY.n} Loyal members had spent $${LOY.meanSpend.toFixed(2)} each on average since joining, against $${MEAN_ALL.toFixed(2)} for all ${DEC.length.toLocaleString('en-US')} members. The segment is ${(LOY.share * 100).toFixed(1)}% of members. What share of all member spend does it hold? Give a percentage to one decimal place.`,
+    answer: r1(LOY.share * LOY.meanSpend / MEAN_ALL * 100), check: () => (LOY.n / DEC.length) * (LOY.meanSpend / MEAN_ALL) * 100, unit: '%', places: 1, tol: 0.1,
     wrong: [
-      { value: r2(BACK / NO / (PRO.back / PRO.n)), say: 'Upside down: the segment’s rate divided by the base rate.' },
-      { value: r1((PRO.back / PRO.n - BACK / NO) * 100), say: 'That is the gap in percentage points; lift is a ratio.' },
+      { value: r1(LOY.meanSpend / MEAN_ALL), say: 'That is the concentration ratio, mean spend ÷ the overall mean. Multiply it by the segment’s share of members to get its share of spend.' },
+      { value: r1(LOY.share * 100), say: 'That is the share of members; Loyal members spend more than average, so their share of spend is larger.' },
     ],
-    solution: `Promising ${PRO.back} ÷ ${PRO.n} = ${pc(PRO.back / PRO.n)}; base ${BACK} ÷ ${NO} = ${pc(BACK / NO)}; lift ${r2(PRO.back / PRO.n / (BACK / NO))}. Recent members with little history came back at well above the average rate.`,
+    solution: `Share of spend = share of members × (segment mean ÷ overall mean) = ${(LOY.share * 100).toFixed(1)}% × (${LOY.meanSpend.toFixed(2)} ÷ ${MEAN_ALL.toFixed(2)}) = ${(LOY.share * 100).toFixed(1)}% × ${r2(LOY.meanSpend / MEAN_ALL)} ≈ ${r1(LOY.share * LOY.meanSpend / MEAN_ALL * 100)}%. The concentration ratio, ${r2(LOY.meanSpend / MEAN_ALL)}, links the two shares.`,
   },
   {
     id: 'm06-m2-6', lesson: 'cohort-analysis', type: 'num', kind: 'numerical',

@@ -71,6 +71,7 @@ const visitCells = { A1: 'member', B1: 'joined', C1: 'visit date', D1: 'spend ($
   ...col('A', 2, VROWS.map((v) => v.id)), ...col('B', 2, VROWS.map((v) => isoToSerial(byId.get(v.id).joinedIso))), ...col('C', 2, VROWS.map((v) => isoToSerial(v.date))), ...col('D', 2, VROWS.map((v) => v.amount)) };
 const monthsSince = (v) => { const j = byId.get(v.id).joinedIso; return (+v.date.slice(0, 4) - +j.slice(0, 4)) * 12 + (+v.date.slice(5, 7) - +j.slice(5, 7)); };
 const a223 = VROWS.filter((v) => v.id === 'A0223');
+const dm = (iso) => `${+iso.slice(8)} ${['January','February','March','April','May','June','July','August','September','October','November','December'][+iso.slice(5, 7) - 1]}`;
 // thirty members: the first ten by id from the June, July and August cohorts, with month-1 visits and spend
 const COH = [['2027-06', 'June'], ['2027-07', 'July'], ['2027-08', 'August']];
 const m1Of = (m) => { const mo = +m.joinedIso.slice(5, 7) + 1, ym = `2027-${String(mo).padStart(2, '0')}`; const v = VISIT_LIST.filter((x) => x.id === m.id && x.date.startsWith(ym)); return { visits: v.length, spend: r2(sum(v.map((x) => x.amount))) }; };
@@ -101,7 +102,7 @@ export const guided = [
   {
     id: 'm06-coh-g1', type: 'steps', kind: 'numerical',
     prompt: `Columns A to D list every visit of four Lantern members: their joining date, each visit’s date and its spend. The first visit is the join. Work out each visit’s month since joining.`,
-    solution: `<x>=(YEAR(C2)-YEAR(B2))*12+MONTH(C2)-MONTH(B2)</x>, filled down. A0223 joined on 28 March and visited on 2 April: month 1, although only five days had passed. <x>=DATEDIF(B2,C2,"m")</x> would give 0, because it counts complete months.`,
+    solution: `<x>=(YEAR(C2)-YEAR(B2))*12+MONTH(C2)-MONTH(B2)</x>, filled down. A0223 joined on ${dm(byId.get('A0223').joinedIso)} and visited on ${dm(a223[1].date)}: month ${monthsSince(a223[1])}, although only ${CU.dayNum(a223[1].date) - CU.dayNum(byId.get('A0223').joinedIso)} days had passed. <x>=DATEDIF(B2,C2,"m")</x> would give 0, because it counts complete months.`,
     steps: [
       {
         id: 'm06-coh-g1-s1', type: 'formula',
@@ -111,7 +112,7 @@ export const guided = [
         alt: ['=12*(YEAR(C2)-YEAR(B2))+(MONTH(C2)-MONTH(B2))', '=(YEAR(C2)*12+MONTH(C2))-(YEAR(B2)*12+MONTH(B2))'],
         view: `A1:E${LV}`, formats: { B: 'date', C: 'date', D: '0.00', E: '0' }, widths: { A: 8, B: 12, C: 12, D: 9, E: 20 },
         wrong: [
-          { formula: '=DATEDIF(B2,C2,"m")', say: 'DATEDIF counts complete months: a member who joins on 28 March and visits on 2 April gets 0. Cohorts are by calendar month, so compare the years and months: (YEAR − YEAR) × 12 + MONTH − MONTH.' },
+          { formula: '=DATEDIF(B2,C2,"m")', say: `DATEDIF counts complete months: a member who joins on ${dm(byId.get('A0223').joinedIso)} and visits on ${dm(a223[1].date)} gets 0. Cohorts are by calendar month, so compare the years and months: (YEAR − YEAR) × 12 + MONTH − MONTH.` },
           { formula: '=(C2-B2)/30', say: 'Days ÷ 30 is neither calendar months nor whole months. Use the years and months of the two dates.' },
           { formula: '=ROUNDDOWN((C2-B2)/30,0)', say: 'That approximates complete months from days. A cohort table counts calendar months: (YEAR − YEAR) × 12 + MONTH − MONTH.' },
         ],

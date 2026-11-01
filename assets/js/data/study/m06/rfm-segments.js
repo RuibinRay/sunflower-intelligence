@@ -73,11 +73,12 @@ const sameSeg = OC.filter((c) => DEC.get(c.id).segment === c.segment).length;
 const MARGIN = 1 - F03.cafes.cogsShare;                       // F03: the cafés' cost of goods is 31% of sales
 const returners = OC.filter((c) => c.back);
 const ND_PER_RETURNER = sum(returners.map((c) => ndSpend.get(c.id))) / returners.length;
-const VALUE = ND_PER_RETURNER * MARGIN;                       // margin from a member who comes back
+const segSpend = (k) => { const r = OC.filter((c) => c.segment === k && c.back); return sum(r.map((c) => ndSpend.get(c.id))) / r.length; };
+const VALUE_OF = (k) => segSpend(k) * MARGIN;                 // margin from a returning member of that segment
 const COST = 1.1;                                             // fictional: cost to Lantern of a redeemed pastry
-const NET = VALUE - COST;
+const NET_OF = (k) => VALUE_OF(k) - COST;
 const subsidy = (k) => O[k].back * COST;
-const needed = (k) => subsidy(k) / NET;
+const needed = (k) => subsidy(k) / NET_OF(k);
 const ch = 'Champions', ar = 'At risk';
 
 // ---------------------------------------------------------------- the simple example (fictional bookshop)
@@ -129,7 +130,7 @@ export default {
       align: ['l', 'l', 'l', 'l', 'l', 'l'],
       rows: GRID_ROWS,
     } },
-    { p: `Read the grid by its corners. Top right, recent and valuable: <b>Champions</b>. Bottom right, valuable but long gone: <b>Can’t lose them</b>, and next to it <b>At risk</b>. Top left, recent but with little history: <b>New customers</b>. Bottom left, neither recent nor valuable: <b>Lost</b> and <b>Hibernating</b>. The middle row, R = 3, holds members drifting away: <b>Loyal</b> if they were valuable, <b>About to sleep</b> if not.` },
+    { p: `Read the grid by its corners. Top right, recent and valuable: <b>Champions</b>. Bottom right, valuable but long gone: <b>Can’t lose them</b>, and next to it <b>At risk</b>. Top left, recent but with little history: <b>New customers</b>. Bottom left, neither recent nor valuable: <b>Lost</b> and <b>Hibernating</b>. The middle row, R = 3, holds members drifting away: <b>Loyal</b> if they were valuable, <b>Need attention</b> in the middle, <b>About to sleep</b> if not.` },
 
     { h: 'Lantern’s members on the grid' },
     { p: `With quantile cut points on Lantern’s ${int(N)} members as of 31 December 2027, R = 5 means a last visit within ${CUT.R[0]} days (the most recent fifth), and R = 1 means more than ${CUT.R[3]} days ago. Frequency is heavily tied, as <i>RFM scoring</i> showed: F = 1 covers every member with ${fBand(1)[0]} or ${fBand(1)[1]} visits, ${int(SC.filter((c) => c.F === 1).length)} members, while F = 5 starts at ${fBand(5)[0]} visits. The table gives each segment’s size and what its members did, largest share of spend first.` },
@@ -150,7 +151,7 @@ export default {
 
   theory: [
     { h: 'Who is in each segment' },
-    { p: `Segments are partly made by tenure. Recency and frequency both depend on how long a member has had to visit, so the segments sort members by when they joined as much as by how they behave. Of the ${int(S['New customers'].n)} New customers, ${int(newDec)} joined in December; none of the ${int(S.Lost.n)} Lost members joined after July (${lostLateJoin} did). Comparing a March joiner’s frequency with a December joiner’s is comparing ten months with a few weeks. <i>Cohort analysis</i>, the next lesson, separates tenure from behaviour by comparing members who joined at the same time.` },
+    { p: `Segments are partly made by tenure. Recency and frequency both depend on how long a member has had to visit, so the segments sort members by when they joined as much as by how they behave. Of the ${int(S['New customers'].n)} New customers, ${int(newDec)} joined in December; none of the ${int(S.Lost.n)} Lost members joined after July (the latest joined on ${(() => { const d = of('Lost').map((c) => c.joinedIso).sort().pop(); return `${+d.slice(8)} ${['January','February','March','April','May','June','July','August','September','October','November','December'][+d.slice(5, 7) - 1]}`; })()}). Comparing a March joiner’s frequency with a December joiner’s is comparing ten months with a few weeks. <i>Cohort analysis</i>, the next lesson, separates tenure from behaviour by comparing members who joined at the same time.` },
     { p: `Scores are also relative to this customer base. Harbourside’s tickets are bigger (${money(tickH)} a visit for members who joined there, against ${money(tickM)} at Millbrook), so the monetary score partly measures which café a member uses: Harbourside members are ${pc(hAll, 0)} of all members but ${pc(hM5, 0)} of those with M = 5 and ${pc(hM1, 0)} of those with M = 1. If the cafés are to be managed separately, score each café’s members against each other.` },
 
     { h: 'Checking segments against later behaviour' },
@@ -166,7 +167,7 @@ export default {
     { p: `The gaps are not chance. A two-proportion z test (B04) of Loyal against Potential loyalists gives z = ${f1(LvP.z)}, p below 0.001; At risk against Hibernating gives z = ${f2(AvH.z)}, p = ${AvH.pValue.toFixed(3)}. The tests treat these members as a sample of the kind of members Lantern will have, which is the question Ana cares about.` },
 
     { h: 'Why the frequent and quiet are poor prospects' },
-    { p: `Lantern’s members, like most customers of a café or a shop, are in a <g>noncontractual setting</g>: nobody announces they have stopped coming, so being gone has to be inferred from silence. Silence means more for a member who used to come often. If a member who visited twice a week hasn’t been seen for two months, that silence is very unlikely if they were still coming; for a member who came once a month, two quiet months are unremarkable. So at the same recency, higher frequency is a <em>worse</em> sign. Fader, Hardie and Lee (2005) found this pattern in an online retailer’s customers and called it the increasing frequency paradox.` },
+    { p: `Lantern’s members, like most customers of a café or a shop, are in a <g>noncontractual setting</g>: nobody announces they have stopped coming, so being gone has to be inferred from silence. Silence means more for a member who used to come often. If a member who visited twice a week hasn’t been seen for two months, that silence is very unlikely if they were still coming; for a member who came once a month, two quiet months are unremarkable. So at the same recency, higher frequency is a <em>worse</em> sign. Fader, Hardie and Lee (2005) showed this pattern in their model of an online music retailer’s (CDNOW’s) customers, in the iso-value curves fitted to its recency and frequency, and called it the increasing frequency paradox.` },
     { p: `Lantern’s data show it plainly. Among members whose last visit was 61–90 days before 31 October, ${pc(rateOf(light), 0)} of those with one or two visits came back, against ${pc(rateOf(heavy), 0)} of those with seven or more. Within R = 3, return rates fell as FM rose: ${R3.map((x) => pc(x.rate)).join(', ')} for FM = 1 to 5. That is exactly where the grid puts “Loyal”: R = 3, FM of 4 or 5. The grid assumes value and recency add up; in this setting they interact, and the names inherited the error.` },
     { callout: 'warn', title: 'Names are hypotheses', html: `“Loyal” and “Can’t lose them” are labels from a convention written for typical businesses. On Lantern’s data, scored on 31 October, the Loyal segment came back at ${pc(O.Loyal.rate)} and Can’t lose them at 0%. Check every naming against later behaviour before acting on it, and rename segments that fail.` },
 
@@ -183,7 +184,7 @@ export default {
     ] },
 
     { h: 'Regression to the mean in win-back campaigns' },
-    { p: `A member whose last visit happened to fall just before a quiet spell scores low on recency; some of them were never gone. Pick members because their scores are low, and some will look better next time without anything being done: <g>regression to the mean</g>. Barnett, van der Pols and Dobson (2005) note it is most pronounced when follow-up is limited to a group selected on a low or high first measurement, which is exactly what a win-back list is. In Lantern’s data ${O.Lost.back} of the ${O.Lost.n} Lost members (${pc(O.Lost.rate)}) and ${O.Hibernating.back} of the ${O.Hibernating.n} Hibernating (${pc(O.Hibernating.rate)}) came back in November–December with no campaign. Had Ana mailed them a voucher, she might have credited it with those returns. The remedy is a <g>holdout group</g>: send the offer to a random part of the segment and compare its return rate with the rest. <i>Loyalty and retention strategy</i> shows how to analyse such a test.` },
+    { p: `A member whose last visit happened to fall just before a quiet spell scores low on recency; some of them were never gone. Pick members because their scores are low, and some will look better next time without anything being done: <g>regression to the mean</g>. Barnett, van der Pols and Dobson (2005) note it is more noticeable when follow-up is limited to a group selected on its first measurement, which is exactly what a win-back list is. In Lantern’s data ${O.Lost.back} of the ${O.Lost.n} Lost members (${pc(O.Lost.rate)}) and ${O.Hibernating.back} of the ${O.Hibernating.n} Hibernating (${pc(O.Hibernating.rate)}) came back in November–December with no campaign. Had Ana mailed them a voucher, she might have credited it with those returns. The remedy is a <g>holdout group</g>: send the offer to a random part of the segment and compare its return rate with the rest. <i>Loyalty and retention strategy</i> shows how to analyse such a test.` },
 
     { h: 'RFM and needs-based segments' },
     { p: `M05 segmented by needs: a survey asked what people want from coffee, and clustering found groups with similar answers. RFM is <g>behavioural segmentation</g> on a business’s own records: what each customer has done with Lantern. The two answer different questions. <g>Needs-based segmentation</g> explains why people buy, covers people who aren’t yet customers, and guides products and positioning; it depends on a survey and a typing tool to place individuals. RFM covers every customer automatically, updates daily and is cheap, but it says nothing about non-customers or about why. Used together, RFM decides whom to contact this month and the needs segments decide what to say; if some members answered the needs study, cross-tabulating their two segments shows which needs Lantern’s Champions share.` },
@@ -200,7 +201,7 @@ export default {
       assumptions: 'F and M are scored on the same scale (1–5) and are given equal weight.',
       note: 'Excel: <x>=ROUND((C2+D2)/2,0)</x>. Excel’s ROUND rounds halves away from zero, which for positive scores is the same as rounding up.' },
     { id: 'rfmseg-share', name: 'A segment’s share of members and of spend',
-      tex: String.raw`\text{share}_g = \dfrac{n_g}{n}, \qquad \text{spend share}_g = \dfrac{S_g}{S}, \qquad \text{concentration}_g = \dfrac{S_g / S}{n_g / n}`,
+      tex: String.raw`\begin{gathered} \text{share}_g = \dfrac{n_g}{n} \\[4pt] \text{spend share}_g = \dfrac{S_g}{S} \\[4pt] \text{concentration}_g = \dfrac{S_g / S}{n_g / n} \end{gathered}`,
       where: [
         [String.raw`n_g`, 'Customers in segment g', 'customers'],
         [String.raw`n`, 'All customers scored', 'customers'],
@@ -259,15 +260,15 @@ export default {
       answer: `Loyal ${pc(O.Loyal.rate)} against Potential loyalists ${pc(O['Potential loyalists'].rate)} (z = ${f2(LvP.z)}, p below 0.001): the names rank these segments the wrong way round for predicting returns.`,
       interpretation: 'High past value doesn’t protect a member who has gone quiet; it makes the quiet more telling. Ana renames R = 3, FM 4–5 “Lapsed regulars” and stops treating it as a safe group. Their past spend still makes them worth a test of a win-back message, measured against a holdout, because nothing in these data shows what an offer would do.' },
     { level: 'applied', title: 'A pastry offer: Champions or At risk?', fictional: true,
-      setup: `Ana is considering a free pastry for any member who visits in November–December, sent through the app to one segment. Fictional assumption: a redeemed pastry costs Lantern ${money(COST)}. The cafés’ cost of goods is ${pc(F03.cafes.cogsShare, 0)} of sales (F03), so a returning member’s Nov–Dec spend, ${money(ND_PER_RETURNER)} on average in the scoring check, is worth ${money(VALUE)} in margin. Use the 31 October segments and their return rates without any offer: Champions ${O[ch].back} of ${O[ch].n}, At risk ${O[ar].back} of ${O[ar].n}. How many extra returners would each segment need for the offer to break even?`,
+      setup: `Looking back, Ana asks what a free pastry for any member who visited in November–December would have needed to achieve had she sent it through the app on 31 October to one segment. Fictional assumption: a redeemed pastry costs Lantern ${money(COST)}. The cafés’ cost of goods is ${pc(F03.cafes.cogsShare, 0)} of sales (F03). Returning Champions spent ${money(segSpend(ch))} each in November–December and the five returning At risk members ${money(segSpend(ar))} each; she assumes an extra returner would spend the same as the segment’s own returners. Return rates without any offer: Champions ${O[ch].back} of ${O[ch].n}, At risk ${O[ar].back} of ${O[ar].n}. How many extra returners would each segment have needed for the offer to break even?`,
       steps: [
-        `Margin per returner: ${money(ND_PER_RETURNER)} × (1 − ${F03.cafes.cogsShare}) = ${money(VALUE)}. Each extra returner also redeems a pastry, so nets ${money(VALUE)} − ${money(COST)} = ${money(NET)}.`,
+        `Margin per returner: Champions ${money(segSpend(ch))} × (1 − ${F03.cafes.cogsShare}) = ${money(VALUE_OF(ch))}; At risk ${money(segSpend(ar))} × ${(1 - F03.cafes.cogsShare).toFixed(2)} = ${money(VALUE_OF(ar))}. Each extra returner also redeems a pastry, so nets ${money(NET_OF(ch))} (Champions) or ${money(NET_OF(ar))} (At risk).`,
         `The subsidy: members who would have come anyway redeem too. Champions: ${O[ch].back} × ${money(COST)} = ${money(subsidy(ch))}. At risk: ${O[ar].back} × ${money(COST)} = ${money(subsidy(ar))}.`,
-        `Break-even extra returners = subsidy ÷ net per extra returner. Champions: ${money(subsidy(ch))} ÷ ${money(NET)} = ${f1(needed(ch))}, so ${Math.ceil(needed(ch))} more, an uplift of ${pc(Math.ceil(needed(ch)) / O[ch].n)} on ${O[ch].n} members. At risk: ${money(subsidy(ar))} ÷ ${money(NET)} = ${f1(needed(ar))}, so one more member is enough.`,
-        `Feasibility: of the Champions, only ${O[ch].n - O[ch].back} would have stayed away, so the offer would have to bring back ${pc(Math.ceil(needed(ch)) / (O[ch].n - O[ch].back), 0)} of them. At risk members cost almost nothing to try, but ${O[ar].n - O[ar].back} of ${O[ar].n} stayed away with no offer, and nothing here shows whether a pastry would move any of them.`,
+        `Break-even extra returners = subsidy ÷ net per extra returner. Champions: ${money(subsidy(ch))} ÷ ${money(NET_OF(ch))} = ${f1(needed(ch))}, so ${Math.ceil(needed(ch))} more, an uplift of ${pc(Math.ceil(needed(ch)) / O[ch].n)} on ${O[ch].n} members. At risk: ${money(subsidy(ar))} ÷ ${money(NET_OF(ar))} = ${f1(needed(ar))}, so two more members would have been enough.`,
+        `Feasibility: of the Champions, only ${O[ch].n - O[ch].back} would have stayed away, so the offer would have had to bring back ${pc(Math.ceil(needed(ch)) / (O[ch].n - O[ch].back), 0)} of them. At risk members would have cost almost nothing to try, but ${O[ar].n - O[ar].back} of ${O[ar].n} stayed away with no offer, and nothing here shows whether a pastry would move any of them.`,
       ],
-      answer: `Champions need about ${Math.ceil(needed(ch))} extra returners (${pc(Math.ceil(needed(ch)) / O[ch].n)} uplift) just to pay for the pastries given to members who would have come anyway; At risk needs one.`,
-      interpretation: 'The offer is cheap to try on At risk members and expensive on Champions, whose visits it mostly subsidises. Ana sends it to At risk with a random half held back, so the difference in return rates measures what the pastry did. The margin and pastry cost are assumptions; the formula widget below lets her change them.' },
+      answer: `Champions would have needed about ${Math.ceil(needed(ch))} extra returners (${pc(Math.ceil(needed(ch)) / O[ch].n)} uplift) just to pay for the pastries given to members who would have come anyway; At risk would have needed two.`,
+      interpretation: 'The offer is cheap to try on At risk members and expensive on Champions, whose visits it mostly subsidises. For the next quarter Ana plans to send it to At risk with a random half held back, so the difference in return rates measures what the pastry does. The margin, the pastry cost and the spend of extra returners are assumptions (only five At risk members came back, so their $5.96 is a rough figure); the formula widget below lets her change them.' },
   ],
 
   demo: [
@@ -288,7 +289,7 @@ export default {
     { case: `January 2028. Ana meets Lantern’s two café managers to agree what the app should send members in the first quarter. She brings the 31 December segments and the 31 October check, and one rule: no segment gets a discount unless a random part of it is held back.` },
     { p: `<b>Champions get thanks, not discounts.</b> ${int(S.Champions.n)} members, ${pc(S.Champions.spendShare)} of 2027’s member spend. The managers will invite them to taste new beans first and ask them to recommend the app to a friend; no voucher, because the October check showed most come back anyway.` },
     { p: `<b>New customers and Potential loyalists get a second-visit nudge.</b> Recency is the strongest sign a member is still coming, and these members are recent but have little history. A message a week after joining, tested on a random half of January’s joiners, will show whether it lifts second visits.` },
-    { p: `<b>At risk and the renamed Lapsed regulars (R = 3, FM 4–5) get one win-back message, with a holdout.</b> Their past spend makes a test worth running; their return rates without any offer (${pc(O['At risk'].rate)} and ${pc(O.Loyal.rate)} in the October check) say not to expect much. Half of each segment, chosen at random, gets nothing, so any difference is the message’s effect and not regression to the mean.` },
+    { p: `<b>At risk, Can’t lose them and the renamed Lapsed regulars (R = 3, FM 4–5) get one win-back message, with a holdout.</b> Their past spend makes a small test worth running; their return rates without any offer (${pc(O['At risk'].rate)}, ${O['Can’t lose them'].back} of ${O['Can’t lose them'].n} and ${pc(O.Loyal.rate)} in the October check) say not to expect much, and suggest most of Can’t lose them are gone. Half of each segment, chosen at random, gets nothing, so any difference is the message’s effect and not regression to the mean.` },
     { p: `<b>Lost and Hibernating are left alone.</b> ${int(S.Lost.n + S.Hibernating.n)} members, ${pc(S.Lost.spendShare + S.Hibernating.spendShare)} of spend. Repeated messages cost attention and may lead members to switch notifications off; they will see only general news.` },
     { p: `<b>Café by café.</b> Because Harbourside’s tickets are larger, the managers will also score each café’s members against each other, so that a Millbrook regular isn’t ranked low on M only for drinking cheaper coffee. Ana rescores on the first of each month, records each list’s as-of date and checks every named segment against the next two months, as she did in October. <i>Predicting churn</i> builds on that check with a model that uses recency, frequency and the members’ other details together.` },
   ],
@@ -357,6 +358,7 @@ export default {
     { what: 'New customers', value: S['New customers'].n, shown: 121 },
     { what: 'New customers joined in December', value: newDec, shown: 95 },
     { what: 'Lost joined after July', value: lostLateJoin, shown: 0 },
+    { what: 'Latest Lost join is 10 July', value: Number(of('Lost').map((c) => c.joinedIso).sort().pop() === '2027-07-10'), shown: 1 },
     { what: 'Harbourside ticket', value: tickH, shown: 5.77, tol: 0.005 },
     { what: 'Millbrook ticket', value: tickM, shown: 3.61, tol: 0.005 },
     { what: 'Harbourside share all %', value: hAll * 100, shown: 34, tol: 0.5 },
@@ -422,19 +424,24 @@ export default {
     // applied example
     { what: 'Cost of goods %', value: F03.cafes.cogsShare * 100, shown: 31 },
     { what: 'Nov–Dec spend per returner', value: ND_PER_RETURNER, shown: 17.60, tol: 0.005 },
-    { what: 'Margin per returner', value: VALUE, shown: 12.14, tol: 0.005 },
-    { what: 'Pastry cost', value: COST, shown: 1.10 },
-    { what: 'Net per extra returner', value: NET, shown: 11.04, tol: 0.005 },
+    { what: 'Champions Nov–Dec spend per returner', value: segSpend(ch), shown: 23.11, tol: 0.005 },
+    { what: 'At risk Nov–Dec spend per returner', value: segSpend(ar), shown: 5.96, tol: 0.005 },
+    { what: 'Champions margin per returner', value: VALUE_OF(ch), shown: 15.95, tol: 0.005 },
+    { what: 'At risk margin per returner', value: VALUE_OF(ar), shown: 4.11, tol: 0.005 },
+    { what: 'Champions net per extra returner', value: NET_OF(ch), shown: 14.85, tol: 0.005 },
+    { what: 'At risk net per extra returner', value: NET_OF(ar), shown: 3.01, tol: 0.005 },
+    { what: 'Five At risk returners', value: O[ar].back, shown: 5 },
     { what: 'Champions subsidy', value: subsidy(ch), shown: 388.30, tol: 0.005 },
     { what: 'At risk subsidy', value: subsidy(ar), shown: 5.50, tol: 0.005 },
-    { what: 'Champions needed', value: needed(ch), shown: 35.2, tol: 0.05 },
-    { what: 'Champions needed (whole)', value: Math.ceil(needed(ch)), shown: 36 },
-    { what: 'Champions uplift %', value: Math.ceil(needed(ch)) / O[ch].n * 100, shown: 7.9, tol: 0.05 },
+    { what: 'Champions needed', value: needed(ch), shown: 26.2, tol: 0.05 },
+    { what: 'Champions needed (whole)', value: Math.ceil(needed(ch)), shown: 27 },
+    { what: 'Champions uplift %', value: Math.ceil(needed(ch)) / O[ch].n * 100, shown: 5.9, tol: 0.05 },
     { what: 'Champions back (Oct)', value: O[ch].back, shown: 353 },
     { what: 'Champions n (Oct)', value: O[ch].n, shown: 456 },
     { what: 'Champions stayed away', value: O[ch].n - O[ch].back, shown: 103 },
-    { what: 'Share of stayers needed %', value: Math.ceil(needed(ch)) / (O[ch].n - O[ch].back) * 100, shown: 35, tol: 0.5 },
-    { what: 'At risk needed', value: needed(ar), shown: 0.5, tol: 0.05 },
+    { what: 'Share of stayers needed %', value: Math.ceil(needed(ch)) / (O[ch].n - O[ch].back) * 100, shown: 26, tol: 0.5 },
+    { what: 'At risk needed', value: needed(ar), shown: 1.8, tol: 0.05 },
+    { what: 'At risk needed (whole)', value: Math.ceil(needed(ar)), shown: 2 },
     { what: 'At risk stayed away', value: O[ar].n - O[ar].back, shown: 196 },
     // simple example
     { what: 'Tallowby total', value: tbTot, shown: 1383.50 },

@@ -18,7 +18,13 @@ const int = (v) => v.toLocaleString('en-US');
 const num = (v) => (Number.isInteger(v) ? String(v) : v.toFixed(1));
 const R = ALL.map((m) => m.recency), F = ALL.map((m) => m.frequency), M = ALL.map((m) => m.monetary), AOV = ALL.map((m) => m.aov);
 const CR = CU.cutPoints(R), CF = CU.cutPoints(F), CM = CU.cutPoints(M);
+// who would be on a top-spenders list, and on a most-recent list
+const TOP5 = Math.round(N * 0.2), early = (m) => m.joinedIso < '2027-09', isDec = (m) => m.joinedIso >= '2027-12';
+const topEarly = ALL.slice().sort((a, b) => b.monetary - a.monetary).slice(0, TOP5).filter(early).length, allEarly = ALL.filter(early).length;
+const decAll = ALL.filter(isDec).length;
 const SQ = CU.rfm(ALL), SN = CU.rfm(ALL, { method: 'ntile' });
+const r5n = SQ.filter((c) => c.R === 5).length, decR5 = SQ.filter((c) => c.R === 5 && isDec(c)).length;
+const CR3 = CU.cutPoints(R, 3);
 const counts = (S, key, k = 5) => Array.from({ length: k }, (_, j) => S.filter((c) => c[key] === j + 1).length);
 const FQ = counts(SQ, 'F'), FN = counts(SN, 'F'), RQ = counts(SQ, 'R'), MQ = counts(SQ, 'M');
 const ones = F.filter((v) => v === 1).length, twos = F.filter((v) => v === 2).length;
@@ -78,7 +84,7 @@ export default {
   slug: 'rfm-scoring',
   title: 'RFM scoring',
   blurb: 'Score every customer from 1 to 5 on recency, frequency and monetary value, relative to the rest of the base: set quintile cut points, handle ties, reverse recency, and choose between 125 cells, a combined score and the R × FM grid. See why scores depend on the method, the number of groups and the date.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain where RFM comes from and why recency is usually put first.',
     'Calculate quintile cut points with PERCENTILE.INC and score customers 1–5 on recency, frequency and monetary value, reversing recency.',
@@ -95,7 +101,7 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: `The café managers asked Ana for a list of Lantern’s best members. A list of the top spenders would be mostly members who joined in March; a list of the most recent visitors would be mostly members who joined in December. She wants a way to describe every one of the ${int(N)} members on all three behaviours at once, in terms anyone in the cafés can read.` },
+    { case: `The café managers asked Ana for a list of Lantern’s best members. A list of the top spenders would be dominated by members who joined before September (${int(topEarly)} of the top ${int(TOP5)}, ${pc(topEarly / TOP5)}, against ${pc(allEarly / N)} of all members); a list of the most recent visitors over-represents the newest joiners (December’s are ${pc(decAll / N)} of members but ${pc(decR5 / r5n)} of the most recent fifth). She wants a way to describe every one of the ${int(N)} members on all three behaviours at once, in terms anyone in the cafés can read.` },
     { p: '<g>RFM analysis</g> does that. Each customer gets three scores, usually from 1 to 5: one for recency (R), one for frequency (F) and one for monetary value (M), where 5 means among the most recent, the most frequent or the biggest spenders in the base. A member scored 5-4-3 visited very recently, comes often and spends a middling amount.' },
     { p: 'The method comes from direct marketing. Catalogue and mail-order companies had to decide whom to send the next mailing to, and used each customer’s past buying to choose. Fader, Hardie and Lee (2005) describe RFM as drawn from the direct-marketing literature, and note, citing Hughes (2000), that it is called RFM rather than FRM because recency is usually the most powerful of the three.' },
     { h: 'From values to scores' },
@@ -112,7 +118,7 @@ export default {
     { p: 'You can force equal groups instead by sorting the customers and dealing them out in fifths (SQL’s NTILE does this). Then the members with two visits are split between F1 and F2 by nothing more than the order the rows happened to be in. Neither choice is wrong; each costs something, and the scores depend on which you make.' },
     { h: 'Three scores, or one?' },
     { p: `With five scores each, R, F and M make 5 × 5 × 5 = 125 <g>RFM cells</g>, from 111 to 555. That is too many to act on, and at Lantern only ${cellsUsed} of the 125 are used, ${small} of them by fewer than 10 members, while 555 holds ${CELLS.get('555')} and 111 holds ${CELLS.get('111')}. Analysts usually compress. A <g>combined RFM score</g> adds the three (3 to 15) or weights them. An <g>FM score</g> averages F and M, because at Lantern (and in most businesses) frequent visitors are the big spenders: the two scores are equal for ${pc(sameFM)} of members. R and FM then form a 5 × 5 grid that keeps recency separate, the grid the next lesson names.` },
-    { callout: 'key', title: 'A score is relative', html: 'An R5 member is in the most recent fifth of <i>this</i> base on <i>this</i> date. Add new members, change the window or move the as-of date, and the cut points move: a member can lose a score without doing anything. Compare scores only within one scoring run.' },
+    { callout: 'key', title: 'A score is relative', html: 'An R5 member is in about the most recent fifth of <i>this</i> base on <i>this</i> date. Add new members, change the window or move the as-of date, and the cut points move: a member can lose a score without doing anything. Compare scores only within one scoring run.' },
   ],
 
   theory: [
@@ -122,7 +128,7 @@ export default {
     { p: 'so a value exactly on a cut point stays in the lower group (the interval is closed on the right). Ties always share a score, which is the main argument for this method: two customers who behaved identically get the same score. The cost is unequal groups wherever values pile up.' },
     { figure: { svg: figure(), caption: `Quaymouth Books (fictional): ten customers’ orders in a year, with the quintile cut points ${QC.map(num).join(', ')}. The three customers with one order share score 1, so the groups are 3, 2, 1, 2 and 2 customers.`, alt: `A number line of orders from 0 to 16 with ten dots stacked at their values: three at 1, two at 2, one each at 3, 4, 6, 9 and 15. Dashed vertical lines, labelled at the top, mark the cut points: ${QC.map(num).join(', ')}. A caption line reads: scores 1 (3 customers), 2 (2), 3 (1), 4 (2), 5 (2).` } },
     { h: 'Equal-sized groups' },
-    { p: `The alternative sorts customers and deals them into k groups of near-equal size; SQL’s NTILE makes the first groups one larger when n doesn’t divide by k. Every score then has a fifth of the base, which suits a campaign that must mail exactly a fifth. The cost falls on ties: at Lantern, the ${int(twos)} members with two visits are split ${int(twoF1.length)} into F1 and ${int(twoF2.length)} into F2. Which ones go down depends on the sort’s tie-break, here the order of the rows: the ${twoF1.length} who joined first (by ${+lastJoinF1.slice(8, 10)} April) score F1. A database that returns tied rows in no fixed order can give a different answer each time it runs, so add a tie-breaker such as the customer ID.` },
+    { p: `The alternative sorts customers and deals them into k groups of near-equal size; SQL’s NTILE makes the first groups one larger when n doesn’t divide by k. Every score then has a fifth of the base, which suits a campaign that must mail exactly a fifth. The cost falls on ties: at Lantern, the ${int(twos)} members with two visits are split ${int(twoF1.length)} into F1 and ${int(twoF2.length)} into F2. Which ones go down depends on the sort’s tie-break, here the order of the rows: the ${twoF1.length} earliest in the row order (all joined by ${+lastJoinF1.slice(8, 10)} April) score F1. Microsoft’s documentation describes NTILE as nondeterministic: a database that returns tied rows in no fixed order can give a different answer each time it runs, so add a tie-breaker such as the customer ID.` },
     { table: {
       caption: 'Lantern’s members by frequency score, two methods (31 December 2027)',
       head: ['F score', '1', '2', '3', '4', '5'],
@@ -150,10 +156,11 @@ export default {
     { p: 'For one decision on one date, relative scores are exactly what you want: they rank the base. To track customers over time, either fix the cut points from a reference date and reuse them (the engine’s “cuts” method), or track the underlying recency, frequency and spend.' },
     { h: 'In Excel' },
     { ol: [
-      'Cut points: with frequency in B2:B2585 and the percentiles 0.2, 0.4, 0.6, 0.8 in G2:G5, <x>=PERCENTILE.INC($B$2:$B$2585,G2)</x> in H2, filled down to H5.',
-      'A score with nested IFs: <x>=IF(B2<=$H$2,1,IF(B2<=$H$3,2,IF(B2<=$H$4,3,IF(B2<=$H$5,4,5))))</x>. The same in one function: <x>=1+COUNTIF($H$2:$H$5,"<"&B2)</x>, which counts the cut points below the value.',
-      'Recency reversed: <x>=6-(1+COUNTIF($J$2:$J$5,"<"&D2))</x>, or nested IFs that give 5 to the smallest values.',
-      'MATCH with lower bounds: put 0 in H1 and use <x>=MATCH(B2,$H$1:$H$5,1)</x>. It is compact, but a value equal to a cut point scores one higher than with the formulas above; for frequency that changes many scores.',
+      'Lay the sheet out as in Explore: recency in B, visits in C and spend in D (rows 2–2585), the percentiles 0.2, 0.4, 0.6, 0.8 in F2:F5, and the recency, visits and spend cut points in H, I and J.',
+      'Cut points: <x>=PERCENTILE.INC($C$2:$C$2585,F2)</x> in I2, filled down to I5 (and the same with columns B and D in H and J).',
+      'A score with nested IFs: <x>=IF(C2<=$I$2,1,IF(C2<=$I$3,2,IF(C2<=$I$4,3,IF(C2<=$I$5,4,5))))</x>. The same in one function: <x>=1+COUNTIF($I$2:$I$5,"<"&C2)</x>, which counts the cut points below the value.',
+      'Recency reversed: <x>=5-COUNTIF($H$2:$H$5,"<"&B2)</x>, or nested IFs that give 5 to the smallest values.',
+      'MATCH with lower bounds: put 0 in I1 and use <x>=MATCH(C2,$I$1:$I$5,1)</x>. It is compact, but a value equal to a cut point scores one higher than with the formulas above; for frequency that changes many scores.',
       'FM: <x>=ROUND((F2+G2)/2,0)</x>, which rounds 3.5 up to 4 as Excel’s ROUND rounds halves away from zero. A cell label: <x>=R2&F2&M2</x> joins the three scores as text.',
     ] },
   ],
@@ -172,7 +179,7 @@ export default {
         [String.raw`n`, 'The number of customers', 'customers'],
       ],
       assumptions: 'Other quantile rules exist and give slightly different cut points on small bases; state the one you use.',
-      note: 'Excel: <x>=PERCENTILE.INC($B$2:$B$2585,0.2)</x> and so on for 0.4, 0.6 and 0.8.' },
+      note: 'Excel, with visits in C2:C2585: <x>=PERCENTILE.INC($C$2:$C$2585,0.2)</x> and so on for 0.4, 0.6 and 0.8.' },
     { id: 'rfms-score', name: 'A score from cut points',
       tex: String.raw`S(v) = 1 + \#\{\, j : v > c_j \,\}, \qquad R = k + 1 - S(\text{recency}), \quad F = S(\text{frequency}), \quad M = S(\text{monetary value})`,
       where: [
@@ -184,7 +191,7 @@ export default {
         [String.raw`R,\ F,\ M`, 'The recency (reversed), frequency and monetary scores, 1 to k with k best', ''],
       ],
       assumptions: 'A value equal to a cut point stays in the lower group; ties share a score, so groups can be unequal.',
-      note: 'Excel: <x>=1+COUNTIF($H$2:$H$5,"<"&B2)</x>, or nested IFs with <=.' },
+      note: 'Excel, with visits in C2 and their cut points in I2:I5: <x>=1+COUNTIF($I$2:$I$5,"<"&C2)</x>, or nested IFs with <=.' },
     { id: 'rfms-combine', name: 'Combining the scores',
       tex: String.raw`\text{FM} = \operatorname{round}\!\left(\tfrac{F + M}{2}\right), \qquad \text{Total} = R + F + M, \qquad \text{Weighted} = w_R R + w_F F + w_M M`,
       where: [
@@ -223,7 +230,7 @@ export default {
       steps: [
         `Method: quantile cut points give ${FQ.map(int).join(', ')} members in F1 to F5; equal-sized groups give ${FN.map(int).join(', ')} but split the ${int(twos)} two-visit members by row order. Ana prefers cut points: members who behaved alike get the same score, and the uneven F groups are reported honestly.`,
         `Convention: values on a cut point stay in the lower group (PERCENTILE.INC with nested IFs), because MATCH on lower bounds would move ${int(diffF)} members’ F score and make F1 the one-visit members only. She writes the rule on the report.`,
-        `k: five groups. With three, F would have ${F3.map(int).join(', ')} members and R would lump together members a month and four months quiet.`,
+        `k: five groups. With three, F would have ${F3.map(int).join(', ')} members and R would lump together members three weeks and almost four months quiet (${CR3[0] + 1}–${CR3[1]} days).`,
         `Comparisons: between 31 October and 31 December, ${int(rDown)} of the ${int(QUIET.length)} members who hadn’t visited since October dropped an R score (so far, as expected), and ${int(fMoved)} had their F score changed by the moving cut points alone. So month-to-month, managers compare the cut points and the grid’s shape, not individual members’ scores; for individuals, the report gives the underlying days, visits and spend.`,
       ],
       answer: 'Quantile cut points at the 20th, 40th, 60th and 80th percentiles, a value on a cut point in the lower group, recency reversed, k = 5, FM for the grid; the cut points are published with each run, and scores are compared only within a run.',
@@ -275,12 +282,24 @@ export default {
   references: [
     { text: 'Fader, P. S., Hardie, B. G. S. &amp; Lee, K. L. (2005). RFM and CLV: Using iso-value curves for customer base analysis. <i>Journal of Marketing Research</i>, 42(4), 415–430. (Working paper version, February 2005, which cites Hughes, A. M. (2000), <i>Strategic Database Marketing</i>, 2nd ed., on why recency comes first.)', url: 'https://www.brucehardie.com/papers/rfm_clv_2005-02-16.pdf', checked: '2026-11-01' },
     { text: 'Microsoft. PERCENTILE.INC function. Microsoft Support.', url: 'https://support.microsoft.com/office/680f9539-45eb-410b-9a5e-c1355e5fe2ed', checked: '2026-11-01' },
-    { text: 'Microsoft. NTILE (Transact-SQL). Microsoft Learn (SQL Server 2012 documentation).', url: 'https://learn.microsoft.com/en-us/previous-versions/sql/sql-server-2012/ms175126(v=sql.110)', checked: '2026-11-01' },
-    { text: 'Holmes, A., Illowsky, B. &amp; Dean, S. (2023). <i>Introductory Business Statistics</i> (2nd ed.), section 2.2: Measures of the location of the data. OpenStax.', url: 'https://openstax.org/books/introductory-business-statistics-2e/pages/2-2-measures-of-the-location-of-the-data', checked: '2026-11-01' },
+    { text: 'Microsoft. NTILE (Transact-SQL). Microsoft Learn (Remarks: “NTILE is nondeterministic”).', url: 'https://learn.microsoft.com/en-us/sql/t-sql/functions/ntile-transact-sql', checked: '2026-11-01' },
+    { text: 'Holmes, A., Illowsky, B. &amp; Dean, S. (2023). <i>Introductory Business Statistics</i> (2nd ed.), section 2.2: Measures of the location of the data. OpenStax. (Its percentile formula locates the kth percentile at (n + 1)p, a different rule from PERCENTILE.INC’s (n − 1)p.)', url: 'https://openstax.org/books/introductory-business-statistics-2e/pages/2-2-measures-of-the-location-of-the-data', checked: '2026-11-01' },
   ],
 
   checks: [
     { what: 'Members', value: N, shown: 2584 },
+    { what: 'Top 517 by spend', value: TOP5, shown: 517 },
+    { what: 'Top spenders joined before September', value: topEarly, shown: 441 },
+    { what: 'Top spenders joined before September %', value: topEarly / TOP5 * 100, shown: 85.3, tol: 0.05 },
+    { what: 'All members joined before September %', value: allEarly / N * 100, shown: 64.4, tol: 0.05 },
+    { what: 'December joiners % of members', value: decAll / N * 100, shown: 7.8, tol: 0.05 },
+    { what: 'December joiners % of R5', value: decR5 / r5n * 100, shown: 22.4, tol: 0.05 },
+    { what: 'R5 members', value: r5n, shown: 531 },
+    { what: 'R5 is about a fifth (within 1 point)', value: Math.abs(r5n / N - 0.2) < 0.01 ? 1 : 0, shown: 1 },
+    { what: 'k=3 recency cuts', value: Number(CR3.join() === '23,119'), shown: 1 },
+    { what: 'k=3 R2 from 24 days', value: CR3[0] + 1, shown: 24 },
+    { what: 'k=3 R2 to 119 days', value: CR3[1], shown: 119 },
+    { what: 'Excel layout rows 2–2585', value: N + 1, shown: 2585 },
     { what: 'R cut points', value: CR.join() === [9, 36, 94.79999999999995, 171].join() ? 1 : CR.reduce((a, c, j) => a + Math.abs(c - [9, 36, 94.8, 171][j]), 0) < 1e-6 ? 1 : 0, shown: 1 },
     { what: 'R cut 1', value: CR[0], shown: 9 }, { what: 'R cut 2', value: CR[1], shown: 36 }, { what: 'R cut 3', value: CR[2], shown: 94.8, tol: 0.05 }, { what: 'R cut 4', value: CR[3], shown: 171 },
     { what: 'F cut 1', value: CF[0], shown: 2 }, { what: 'F cut 2', value: CF[1], shown: 3 }, { what: 'F cut 3', value: CF[2], shown: 6 }, { what: 'F cut 4', value: CF[3], shown: 11 },

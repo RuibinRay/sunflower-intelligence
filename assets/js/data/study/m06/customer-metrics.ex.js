@@ -68,7 +68,7 @@ export const widgets = {
   },
   'metr-dist': {
     type: 'distribution', title: 'Members’ total spend', values: ALL.map((m) => m.monetary), label: 'Spend per member, 1 March – 31 December 2027 ($)',
-    transforms: ['none', 'log'], rules: ['iqr'],
+    transforms: ['none', 'log'],
   },
 };
 
@@ -319,17 +319,17 @@ export const check = [
     prompt: 'Which of these would make a customer table’s repeat rate look higher than it really is? Select all that apply.',
     options: [
       'Refunds recorded as separate purchases',
-      'Customers who reinstall the app and get a new ID',
+      'Shoppers who check out as guests on some orders, so those orders carry no ID',
       'A staff card that is scanned for every staff drink',
       'Members who often forget to show the app',
       'A test account used to make several small purchases',
     ],
     answer: [0, 2, 4],
     feedback: {
-      1: 'A second ID splits one customer into two with fewer purchases each, which lowers the repeat rate.',
+      1: 'Orders without an ID are missing from the customers’ rows, which can only turn repeaters into apparent one-time buyers.',
       3: 'Missing visits can only turn repeaters into apparent one-time buyers, which lowers the rate.',
     },
-    solution: 'A refund counted as a purchase can turn a one-time buyer into a “repeater”; the staff card and the test account add repeat “customers” who aren’t customers. Duplicate IDs and forgotten scans push the rate down instead.',
+    solution: 'A refund counted as a purchase can turn a one-time buyer into a “repeater”; the staff card and the test account add repeat “customers” who aren’t customers. Guest checkouts and forgotten scans leave purchases out, which can only push the rate down.',
   },
   {
     id: 'm06-metr-k6', type: 'mc', kind: 'applied',

@@ -2,7 +2,7 @@
 // The worksheet is 30 of Lantern's members on 31 December 2027 (every 86th, from the 64th: several sit exactly on a
 // frequency cut point, so the boundary convention shows). The percentiles in G2:G5 are fixed on the marker's copies;
 // cut points and scores the items don't ask for are given as formulas so the copies stay consistent. Quaymouth Books
-// and Tidewell Outfitters are fictional. Every num item's `check` recomputes its answer.
+// and Copperbeck Outfitters are fictional. Every num item's `check` recomputes its answer.
 import { members, CALIBRATION_END } from './case.js?v=25';
 import * as CU from '../../../core/customer.js?v=25';
 
@@ -165,7 +165,7 @@ export const independent = [
   },
   {
     id: 'm06-rfm-i2', type: 'num', kind: 'numerical',
-    prompt: `Tidewell Outfitters (fictional) has nine customers who spent $${TW.join(', $')} last year. Calculate the 60th percentile with Excel’s PERCENTILE.INC rule.`,
+    prompt: `Copperbeck Outfitters (fictional) has nine customers who spent $${TW.join(', $')} last year. Calculate the 60th percentile with Excel’s PERCENTILE.INC rule.`,
     answer: r1(CU.quantile(TW, 0.6)), check: () => { const h = 8 * 0.6; return TW[4] + (h - 4) * (TW[5] - TW[4]); }, unit: '$', places: 1, tol: 0.05,
     wrong: [{ value: 15, say: 'That is the value in position 6 (counting from 1). PERCENTILE.INC uses h = (n − 1)p = 4.8, counting from 0: 80% of the way from $12 to $15.' }, { value: 12, say: 'Position 4.8 lies between the values at positions 4 and 5 (counting from 0), $12 and $15: interpolate.' }],
     solution: `h = (9 − 1) × 0.6 = 4.8. Counting from 0, positions 4 and 5 hold $12 and $15, so the percentile is 12 + 0.8 × (15 − 12) = $${num(CU.quantile(TW, 0.6))}.`,
@@ -175,7 +175,7 @@ export const independent = [
     prompt: 'Lantern scores its members every month with quintile cut points. True or false?',
     items: [
       'A member who doesn’t visit can lose an F score although her number of visits hasn’t changed.',
-      'An R5 member in January was in the most recent fifth of members on the January scoring date.',
+      'An R5 member in January was in about the most recent fifth of members on the January scoring date.',
       'A member scored 444 in October and 433 in December must have spent less in November and December.',
       'Fixing the cut points from one month and reusing them makes scores comparable between months.',
       'The same member gets the same scores whichever members are included in the base.',
@@ -206,11 +206,11 @@ export const independent = [
     ],
     answer: 0,
     feedback: {
-      1: 'The combined score hides the profile: the same 10 is a recent light buyer in one case and a lapsed heavy one in the other.',
+      1: 'The combined score hides the profile: the same 10 is a recent one-visit big spender in one case and a lapsed regular big spender in the other.',
       2: 'She was valuable; with R1 she may no longer be a customer. For “still visiting”, recency is the score that matters.',
       3: 'There is no threshold of 13 in the method; and the question is about who is still visiting, which R answers.',
     },
-    solution: 'The cells show what the total hides. 514 is recent but light and low-spending; 145 spent a lot but last came long ago. For an invitation to members who are still coming, the R score decides: the 514 member.',
+    solution: 'The cells show what the total hides. 514 is recent, one visit, but a high spend; 145 came often and spent a lot but last came long ago. For an invitation to members who are still coming, the R score decides: the 514 member.',
   },
   {
     id: 'm06-rfm-i6', type: 'formula', kind: 'numerical',
@@ -280,15 +280,14 @@ export const check = [
       'Every score holds the same number of customers, give or take one',
       'Customers with identical values can get different scores',
       'The result can depend on the order the rows were in',
-      'It removes the need to reverse recency',
+      'Recency must still be reversed so the most recent customers score 5',
       'It makes scores comparable between months',
     ],
-    answer: [0, 1, 2],
+    answer: [0, 1, 2, 3],
     feedback: {
-      3: 'Reversal is about direction and is needed with either method.',
       4: 'Equal groups are still relative to each month’s base: the boundaries move as the base changes.',
     },
-    solution: 'Equal-sized groups fix the group sizes, so ties have to be split, and how they are split depends on the sort order (add a tie-breaker). Recency still has to be reversed, and the scores are still relative to each run’s base.',
+    solution: 'Equal-sized groups fix the group sizes, so ties have to be split, and how they are split depends on the sort order (add a tie-breaker). Recency still has to be reversed, as with cut points; but the scores are still relative to each run’s base, so they aren’t comparable between months.',
   },
   {
     id: 'm06-rfm-k5', type: 'formula', kind: 'numerical',

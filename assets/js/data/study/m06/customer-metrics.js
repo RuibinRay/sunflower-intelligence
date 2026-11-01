@@ -25,6 +25,7 @@ const meanAov = sum(ALL.map((m) => m.aov)) / N;
 const singles = ALL.filter((m) => m.frequency === 1).length;
 const active = (L, g = ALL) => g.filter((m) => m.recency <= L).length;
 const sorted = ALL.slice().sort((a, b) => b.monetary - a.monetary), TOPN = Math.round(N * 0.2), TOP = sorted.slice(0, TOPN);
+const topEarly = TOP.filter((m) => m.joinedIso < '2027-09').length;
 const topSpendShare = sum(TOP.map((m) => m.monetary)) / B.spend, topVisitShare = sum(TOP.map((m) => m.frequency)) / B.orders;
 const p80 = Q(spend, 0.8);
 // gaps between one visit and the same member's next
@@ -90,7 +91,7 @@ export default {
   slug: 'customer-metrics',
   title: 'Customer metrics',
   blurb: 'Turn a log of purchases into a customer table, one row per customer, as of a stated date: recency, frequency, monetary value and tenure for each customer, and the base’s average order value, repeat rate and active customers. Describe how unequal customers are, tell contractual from noncontractual settings, and clean the data before you trust any of it.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Build a customer table from transaction records as of a stated date and window, with each customer’s recency, frequency, monetary value and tenure.',
     'Calculate average order value, purchases per customer, repeat rate and active customers for a customer base, and explain why average order value is total spend ÷ purchases.',
@@ -157,16 +158,16 @@ export default {
       align: ['l', 'r', 'r', 'r', 'r'],
       rows: JM.map((j) => [`${MON[+j.k.slice(5, 7) - 1]} 2027`, int(j.n), j.f.toFixed(2), String(j.r), pc(j.act)]),
     } },
-    { p: `Mean visits fall from ${JM[0].f.toFixed(2)} for March joiners to ${JM[9].f.toFixed(2)} for December joiners, and median recency from ${JM[0].r} days to ${JM[9].r}. Two remedies are common: compare customers who joined at the same time (the cohort analysis lesson does this systematically), or divide frequency by tenure to get a rate. A rate has its own trap: a member who joined yesterday and visited twice has an enormous rate built on two days. Notice too that every November and December joiner counts as active: their join is a visit within 60 days.` },
+    { p: `Mean visits run from ${JM[0].f.toFixed(2)} to ${JM[2].f.toFixed(2)} for the spring (March–May) joiners and fall, not quite steadily, to ${JM[9].f.toFixed(2)} for December joiners; median recency falls from ${JM[0].r} days for March joiners to ${JM[9].r}. Two remedies are common: compare customers who joined at the same time (the cohort analysis lesson does this systematically), or divide frequency by tenure to get a rate. A rate has its own trap: a member who joined yesterday and visited twice has an enormous rate built on two days. Notice too that every November and December joiner counts as active: their join is a visit within 60 days.` },
     { h: 'Skewed distributions' },
     { p: `Customer spend and frequency are almost always right-skewed: many small customers and a long tail of large ones. Describe them with percentiles as well as means. Lantern’s members’ spend has a 20th percentile of ${money(Q(spend, 0.2))}, a median of ${money(Q(spend, 0.5))} and an 80th percentile of ${money(p80)}; the largest is ${money(Math.max(...spend))}. Frequency has heavy <i>ties</i>: ${int(singles)} members share the value 1, and ${int(ALL.filter((m) => m.frequency === 2).length)} share the value 2. Ties matter as soon as you cut customers into groups, as the next lesson shows.` },
     { p: 'The top-20% share is a concentration measure: 20% would be perfect equality, and the higher it is, the more the business depends on a few customers. It depends on the window (over a short window more customers look small), on the base (members only, or every customer?) and on the measure (spend or visits). Quote it with all three.' },
     { h: 'Contractual and noncontractual settings' },
     { p: 'Fader and Hardie (2009) organise customer-base analysis around this distinction. In a contractual setting (a phone contract, an insurance policy, a gym membership, software licensed by the month) the end of the relationship is recorded. Retention and churn can be counted directly, and the question is how long customers stay. In a noncontractual setting (a café, a supermarket, most online shops) the end is never recorded: the business has to infer from each customer’s purchases how likely it is that they are still a customer, and churn needs a definition, usually a lapse of L days without a purchase.' },
-    { p: 'The same business can have both: a café selling coffee across the counter and a coffee subscription with a cancellation button. Analyse them separately, because the metrics mean different things. A contractual customer who hasn’t bought for 60 days but hasn’t cancelled (a member who doesn’t use the climbing wall) is still a customer and still paying; a noncontractual customer silent for 60 days may be gone.' },
+    { p: 'The same business can have both: a climbing centre selling day passes at the desk (noncontractual) and monthly memberships that members cancel (contractual). Analyse them separately, because the metrics mean different things. A contractual customer who hasn’t bought for 60 days but hasn’t cancelled (a member who doesn’t use the climbing wall) is still a customer and still paying; a noncontractual customer silent for 60 days may be gone.' },
     { h: 'Data problems that distort every metric' },
     { list: [
-      '<b>One customer, two IDs.</b> A member who reinstalls the app, or a shopper who opens a second account, appears as two customers, each with half the purchases. The customer count rises, frequency and the repeat rate fall, and the older ID looks lapsed. Match IDs on a stable key such as an email address or phone number, as in B02’s lesson on duplicates, and decide which ID survives.',
+      '<b>One customer, two IDs.</b> A member who reinstalls the app, or a shopper who opens a second account, appears as two customers, each with half the purchases. The customer count rises, purchases per customer falls, and the repeat rate usually falls, though a split can turn one repeater into two; the older ID looks lapsed. Match IDs on a stable key such as an email address or phone number, as in B02’s lesson on duplicates, and decide which ID survives.',
       `<b>Missing IDs.</b> Only visits where the member shows the app are in the log. B05’s café log has ${int(TX)} transactions and ${money(SALES)} of sales from 1 March to 31 December; members’ logged visits are ${int(D.visits)} of the transactions (${pc(D.visits / TX)}) and ${money(D.spend)} of the sales (${pc(D.spend / SALES)}). Everything in the customer table describes members, not café customers, and a member who forgets the app is recorded as visiting less often than they did.`,
       '<b>Returns and refunds.</b> A refund is a negative amount, not a purchase. Net it against monetary value; remove a fully returned order from frequency as well (decide and state the rule for partial refunds). Counting the refund as a purchase inflates frequency and makes recency look better than it is if the refund came after the last real purchase.',
       '<b>Records that aren’t customers.</b> Staff cards, test accounts and the café’s own card used for wastage look like extreme customers. Check the largest values before reporting them; Lantern’s busiest member (111 visits, about four a week since joining in June) is plausible for a regular, but deserves a look.',
@@ -268,7 +269,7 @@ export default {
   mistakes: [
     { title: '“Average order value is the average of the customers’ average orders.”', html: `That weights each customer equally, so a one-visit member counts as much as a daily regular: ${money(meanAov)} for Lantern against the true ${money(B.aov)}. Divide total spend by total purchases.` },
     { title: '“Recency is the days since the last purchase.” Since when?', html: 'Recency is always measured to an as-of date. Use the data’s last day for historical data, state it, and recompute when the date changes; otherwise every customer drifts older while the report looks the same.' },
-    { title: '“Members who joined in March are our most loyal: they visit most.”', html: `They have had longest to visit. March joiners average ${JM[0].f.toFixed(2)} visits and December joiners ${JM[9].f.toFixed(2)}, mostly because of tenure. Compare customers who joined at the same time, or use a rate with care.` },
+    { title: '“Members who joined in the spring are our most loyal: they visit most.”', html: `They have had longest to visit. March–May joiners average ${JM[0].f.toFixed(2)} to ${JM[2].f.toFixed(2)} visits and December joiners ${JM[9].f.toFixed(2)}, mostly because of tenure. Compare customers who joined at the same time, or use a rate with care.` },
     { title: '“20% of customers bring 80% of sales: that’s the Pareto rule.”', html: `It is a rule of thumb. Lantern’s top 20% bring ${pc(topSpendShare)} of members’ spend. The share also depends on the window, the base and whether you count spend or visits; measure it.` },
     { title: '“A customer who hasn’t bought for three months has churned.”', html: 'In a noncontractual setting nobody tells you they have left; churn is a definition you choose (a lapse of L days), and the count moves with L. In a contractual setting a customer who hasn’t used the service but hasn’t cancelled is still a customer.' },
     { title: '“The export is the customer list.”', html: 'Duplicate IDs split customers, returns pose as purchases and rows without IDs vanish. Clean before summarising, and report what share of transactions the customer table covers.' },
@@ -279,7 +280,7 @@ export default {
     { p: `<b>She leads with medians and the active count.</b> The January report says ${int(active(60))} of ${int(N)} members (${pc(active(60) / N)}) were active on 31 December, with a median of ${Q(freq, 0.5)} visits and ${money(Q(spend, 0.5))} of spend. The means are in a second row, with a note that a few heavy users lift them.` },
     { p: `<b>She splits by café only where the café explains something.</b> Harbourside’s members spend more per head, ${money(H.perCustomer)} against ${money(Mb.perCustomer)}, and the report shows that this is the ticket (${money(H.aov)} against ${money(Mb.aov)}), not more visits. The Millbrook manager had been told her members were “worth less”; the identity spend per member = visits per member × average order value showed her members come more often.` },
     { p: `<b>She keeps the denominators honest.</b> The report states that members’ logged visits are about a third of the cafés’ transactions, so member figures can’t stand in for all customers, and that a member who forgets the app is undercounted. Duplicate members (a reinstalled app gives a new ID) are merged monthly on the phone number held by the app, and Ana reports how many were merged.` },
-    { p: `<b>The managers asked for a list of “our best customers”.</b> Ana could have given them the top ${TOPN} by spend, but that list is mostly members who joined early. Instead the next lesson scores every member on recency, frequency and monetary value relative to the others, so that a member who joined in October and comes every week can sit beside one who has been coming since March.` },
+    { p: `<b>The managers asked for a list of “our best customers”.</b> Ana could have given them the top ${TOPN} by spend, but that list is mostly members who joined before September (${int(topEarly)} of the ${TOPN}). Instead the next lesson scores every member on recency, frequency and monetary value relative to the others, so that a member who joined in October and comes every week can sit beside one who has been coming since March.` },
   ],
 
   summary: [
@@ -307,9 +308,9 @@ export default {
   ],
 
   references: [
-    { text: 'Fader, P. S. &amp; Hardie, B. G. S. (2009). Probability models for customer-base analysis. <i>Journal of Interactive Marketing</i>, 23(1), 61–69. (Abstract and record at London Business School.)', url: 'https://www.london.edu/faculty-and-research/academic-research/p/probability-models-for-customer-base-analysis', checked: '2026-11-01' },
+    { text: 'Fader, P. S. &amp; Hardie, B. G. S. (2009). Probability models for customer-base analysis. <i>Journal of Interactive Marketing</i>, 23(1), 61–69. doi:10.1016/j.intmar.2008.11.003.', url: 'https://www.london.edu/faculty-and-research/academic-research/p/probability-models-for-customer-base-analysis', checked: '2026-11-01' },
     { text: 'Fader, P. S., Hardie, B. G. S. &amp; Lee, K. L. (2005). RFM and CLV: Using iso-value curves for customer base analysis. <i>Journal of Marketing Research</i>, 42(4), 415–430. (Working paper version, February 2005.)', url: 'https://www.brucehardie.com/papers/rfm_clv_2005-02-16.pdf', checked: '2026-11-01' },
-    { text: 'Holmes, A., Illowsky, B. &amp; Dean, S. (2023). <i>Introductory Business Statistics</i> (2nd ed.), section 2.2: Measures of the location of the data. OpenStax.', url: 'https://openstax.org/books/introductory-business-statistics-2e/pages/2-2-measures-of-the-location-of-the-data', checked: '2026-11-01' },
+    { text: 'Holmes, A., Illowsky, B. &amp; Dean, S. (2023). <i>Introductory Business Statistics</i> (2nd ed.), section 2.2: Measures of the location of the data. OpenStax. (Its percentile formula locates the kth percentile at (n + 1)p, a different rule from Excel’s PERCENTILE.INC.)', url: 'https://openstax.org/books/introductory-business-statistics-2e/pages/2-2-measures-of-the-location-of-the-data', checked: '2026-11-01' },
     { text: 'Microsoft. MAXIFS function. Microsoft Support (Excel 2019 and later).', url: 'https://support.microsoft.com/office/maxifs-function-dfd611e6-da2c-488a-919b-9b6376b28883', checked: '2026-11-01' },
   ],
 
@@ -379,6 +380,10 @@ export default {
     ]),
     { what: 'Join months add to all members', value: sum(JM.map((j) => j.n)), shown: 2584 },
     { what: 'Mean visits fall from March to December joiners', value: Number(JM[0].f > JM[9].f && JM[0].r > JM[9].r), shown: 1 },
+    { what: 'Most visits among March–May joiners', value: Number(Math.max(...JM.map((j) => j.f)) === Math.max(JM[0].f, JM[1].f, JM[2].f)), shown: 1 },
+    { what: 'Spring range low (March)', value: Math.min(JM[0].f, JM[1].f, JM[2].f), shown: 9.34 },
+    { what: 'Spring range high (May)', value: Math.max(JM[0].f, JM[1].f, JM[2].f), shown: 9.95 },
+    { what: 'Top 517 joined before September', value: topEarly, shown: 441 },
     { what: 'Spend p20', value: Q(spend, 0.2), shown: 6.93 },
     { what: 'Spend p80', value: p80, shown: 47.02 },
     { what: 'Largest spend', value: Math.max(...spend), shown: 427.4 },
