@@ -2,8 +2,8 @@
 // scenarios, not copies of lesson exercises. No hints; solutions are shown when the student reviews the test. Café data
 // come from case.js (the corrected log); every other business, person and number is fictional. Formula items are
 // marked by their results (core/sheet.js gradeFormula); every num item's `check` recomputes its answer.
-import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
+import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));

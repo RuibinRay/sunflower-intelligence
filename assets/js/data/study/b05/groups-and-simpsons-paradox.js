@@ -3,9 +3,9 @@
 // café (DERIVED.footTicket*), the cafés’ monthly averages, and Millbrook’s weekdays and weekends. Tidewater Books is
 // fictional; Robinson’s 1930 census figures are as reported by Subramanian et al. (2009). Holding a third variable fixed
 // by partial correlation is module 4’s. Every figure printed is recomputed in `checks`.
-import { column, DERIVED as D } from './case.js?v=22';
-import * as C from '../../../core/correlation.js?v=22';
-import { mean, sd } from '../../../core/stats.js?v=22';
+import { column, DERIVED as D } from './case.js?v=24';
+import * as C from '../../../core/correlation.js?v=24';
+import { mean, sd } from '../../../core/stats.js?v=24';
 
 // ---------------------------------------------------------------- footfall and average ticket
 const F = column('footfall'), A = column('avg_ticket'), CAFE = column('cafe'), DATE = column('date'), T = column('high_f'), I = column('iced_share');

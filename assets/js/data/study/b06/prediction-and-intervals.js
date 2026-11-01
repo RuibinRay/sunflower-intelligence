@@ -6,8 +6,8 @@
 // several predictors are multiple-regression's; checking constant spread and normality is assumptions-and-diagnostics';
 // back-transforming a prediction from logs is transformations-and-influence'. Every figure printed is recomputed in
 // `checks`.
-import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
+import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const mean = (a) => a.reduce((s, v) => s + v, 0) / a.length;
@@ -73,7 +73,7 @@ export default {
   slug: 'prediction-and-intervals',
   title: 'Prediction and intervals',
   blurb: 'Use a fitted line to predict, and say how far to trust the prediction: the confidence interval for the average at a given x against the prediction interval for one new case, why both widen away from the mean of x, why the prediction interval never shrinks below the residual spread, and why extrapolation escapes them both. Then roster a Saturday’s peak from a weather forecast, by hand and in Excel.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate a point prediction ŷ₀ = b₀ + b₁x₀ for a new x, and explain why the same number estimates both the average at x₀ and a single new case.',
     'Calculate the confidence interval for the mean response and the prediction interval for one new case, using 1/n + (x₀ − x̄)²/Sxx, by hand and with FORECAST.LINEAR, STEYX, DEVSQ and T.INV.2T.',

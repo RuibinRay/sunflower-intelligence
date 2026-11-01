@@ -5,9 +5,9 @@
 // the same weekday a week later (regression toward the mean in the log). Harrier Cycle Hire is fictional. Residuals,
 // R² and the residual standard error are residuals-and-r-squared's; tests and intervals are module 2's; the festival
 // days' pull on the slope is transformations-and-influence's. Every figure printed is recomputed in `checks`.
-import { column, DERIVED as D } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
-import { mean, sd } from '../../../core/stats.js?v=22';
+import { column, DERIVED as D } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
+import { mean, sd } from '../../../core/stats.js?v=24';
 
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };
 const sum = (a) => a.reduce((s, v) => s + v, 0);
@@ -76,7 +76,7 @@ export default {
   slug: 'least-squares-line',
   title: 'The least-squares line',
   blurb: 'Turn a scatterplot into a line you can read: the least-squares criterion, the slope b₁ = r·s_y ÷ s_x and the intercept b₀ = ȳ − b₁x̄. Find what an extra transaction is worth at each café, see why Harbourside’s line crosses zero at −$76.58 and why that number means nothing, and meet the two facts that surprise everyone: the line of y on x is not the line of x on y, and extreme days are followed by ordinary ones.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain the least-squares criterion and why it measures misses vertically and squares them.',
     'Calculate the slope and intercept of the least-squares line from r, the standard deviations and the means, by hand and in Excel.',

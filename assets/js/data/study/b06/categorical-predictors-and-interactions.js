@@ -4,10 +4,10 @@
 // B05's Simpson's paradox (footfall and the average ticket) with a café dummy. Ashmere Hotel is fictional. Comparing
 // groups of dummies with a nested F test is multicollinearity-and-model-choice's. Every figure printed is recomputed in
 // `checks`.
-import { column, DERIVED as D } from './case.js?v=22';
-import { DERIVED as B05 } from '../b05/case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
-import { mean } from '../../../core/stats.js?v=22';
+import { column, DERIVED as D } from './case.js?v=24';
+import { DERIVED as B05 } from '../b05/case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
+import { mean } from '../../../core/stats.js?v=24';
 
 // ---------------------------------------------------------------- both cafés, 612 café-days
 const y = column('footfall'), mb = column('millbrook'), wk = column('weekend'), hi = column('high_f'), rain = column('rain_in');
@@ -82,7 +82,7 @@ export default {
   slug: 'categorical-predictors-and-interactions',
   title: 'Categorical predictors and interactions',
   blurb: 'Put categories such as the café or the day of the week into a regression with dummy variables, read each coefficient against a reference level, and let one predictor’s effect depend on another with an interaction. Then see a café dummy resolve B05’s Simpson’s paradox.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Construct dummy variables for a categorical predictor with k levels, choosing a reference level, and explain why k − 1 dummies are needed (the dummy-variable trap).',
     'Interpret dummy coefficients as differences from the reference level, holding the other predictors fixed.',

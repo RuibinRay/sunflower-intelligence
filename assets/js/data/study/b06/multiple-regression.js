@@ -4,10 +4,10 @@
 // Ferrowick Bike Hire is fictional. Inference for one slope is inference-for-coefficients'; categorical predictors and
 // interactions are the next lesson's; collinearity and model choice the one after. Every figure printed is recomputed in
 // `checks`.
-import { column } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
-import * as C from '../../../core/correlation.js?v=22';
-import { mean, sd } from '../../../core/stats.js?v=22';
+import { column } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
+import * as C from '../../../core/correlation.js?v=24';
+import { mean, sd } from '../../../core/stats.js?v=24';
 
 // ---------------------------------------------------------------- Harbourside's footfall (306 days)
 const H = { cafe: 'Harbourside' };
@@ -57,7 +57,7 @@ export default {
   slug: 'multiple-regression',
   title: 'Multiple regression',
   blurb: 'Fit one equation with several predictors, read each slope as a comparison with the others held fixed, and see why a slope changes when a predictor joins the model. Then judge the whole model with adjusted R² and the overall F test, and read the output in Excel.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Interpret each slope of a multiple regression as the change in the fitted value per unit of its predictor, holding the other predictors fixed, with units.',
     'Explain why a slope changes when a predictor is added or left out, and calculate the change with the omitted-variable formula.',

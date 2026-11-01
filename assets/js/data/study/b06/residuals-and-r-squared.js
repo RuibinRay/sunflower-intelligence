@@ -5,9 +5,9 @@
 // that is still useful; and Harbourside's days with 50–70 transactions for R²'s dependence on the range of x. Otterburn
 // Laundry is fictional. Fitting the line is least-squares-line's; tests are module 2's; residual plots in full (spread,
 // normality, order) are assumptions-and-diagnostics'. Every figure printed is recomputed in `checks`.
-import { column, DERIVED as D } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
-import { mean, sd } from '../../../core/stats.js?v=22';
+import { column, DERIVED as D } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
+import { mean, sd } from '../../../core/stats.js?v=24';
 
 const H = { cafe: 'Harbourside' };
 const sum = (a) => a.reduce((s, v) => s + v, 0);
@@ -79,7 +79,7 @@ export default {
   slug: 'residuals-and-r-squared',
   title: 'Residuals and R²',
   blurb: 'Judge how well a line fits: residuals, the split of the total variation into SST = SSR + SSE, R² as the share of variation the line accounts for, and the residual standard error in y’s own units. Read a first residual plot, see a line with R² = 0.88 that is the wrong shape, and learn three things R² can’t tell you.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate residuals and interpret their sign and size in the units of the response.',
     'Calculate the total, regression and residual sums of squares, show that the first is the sum of the other two, and find R² from them.',

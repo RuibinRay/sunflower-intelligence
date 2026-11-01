@@ -5,9 +5,9 @@
 // Millbrook's footfall on the high and on rain for statistical against practical significance; all 306 Harbourside days
 // and the two cafés pooled for dependence. Fitting the line, residuals and R² are module 1's; checking the conditions is
 // assumptions-and-diagnostics'; prediction is prediction-and-intervals'. Every figure printed is recomputed in `checks`.
-import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
-import * as C from '../../../core/correlation.js?v=22';
+import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
+import * as C from '../../../core/correlation.js?v=24';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };
@@ -100,7 +100,7 @@ export default {
   slug: 'inference-for-coefficients',
   title: 'Inference for coefficients',
   blurb: 'Decide whether a fitted slope is evidence of a real relationship and how precisely it is known: the population model and its conditions, the standard error of a slope, t tests and confidence intervals for slope and intercept, the F test, and the ToolPak’s output. Then the two judgements software can’t make for you: whether a significant slope matters, and whether the rows were independent enough to trust its standard error.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'State the population regression model y = β₀ + β₁x + ε and its four conditions, and say which of them each inference relies on.',
     'Calculate the standard error of a slope, s ÷ √Sxx, and explain how the residual spread, the number of rows and the spread of x change it.',

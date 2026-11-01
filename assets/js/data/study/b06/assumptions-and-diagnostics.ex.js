@@ -2,10 +2,10 @@
 // (answer keys live here). The café log comes from case.js (Millbrook's first 40 weekdays and Harbourside's summer
 // weekends for the worksheets); Brackenford Laundrette, Fairhaven Guest House and the other businesses named are
 // fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num items recompute in `check`.
-import { CLEAN_ROWS, CAFE_COLUMNS, column } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
-import { pearson } from '../../../core/correlation.js?v=22';
-import { DERIVED as D } from './case.js?v=22';
+import { CLEAN_ROWS, CAFE_COLUMNS, column } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
+import { pearson } from '../../../core/correlation.js?v=24';
+import { DERIVED as D } from './case.js?v=24';
 const pooledDW = R.durbinWatson(D.footfallModel.resid);
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });

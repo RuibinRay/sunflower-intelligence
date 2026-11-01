@@ -3,9 +3,9 @@
 // assumptions-and-diagnostics removed, coefficients as percentage changes, the opening build-up as a hinge in the day
 // count), the peak wait against the load (a squared hinge at 7), and the footfall slip in the raw log and the festival
 // days for leverage, studentized residuals and Cook's distance. Every figure printed is recomputed in `checks`.
-import { column, SLIP } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
-import { mean, sd } from '../../../core/stats.js?v=22';
+import { column, SLIP } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
+import { mean, sd } from '../../../core/stats.js?v=24';
 
 const H = { cafe: 'Harbourside' };
 const coef = (f, name) => f.coefs.find((c) => c.name === name);
@@ -80,7 +80,7 @@ export default {
   slug: 'transformations-and-influence',
   title: 'Transformations and influence',
   blurb: 'When the diagnostics fail, change the model, not the data. Fit footfall in logs and read its slopes as percentages, bend a line with polynomial and hinge terms, and find the few rows that move a regression, then decide what to do with them honestly.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Transform y with a natural log, interpret the coefficients as percentage changes (approximately 100b, exactly 100(eᵇ − 1)) and back-transform a prediction and its interval.',
     'Use polynomial and hinge terms to follow a curve or a threshold, and choose between them with residual plots and fit statistics.',

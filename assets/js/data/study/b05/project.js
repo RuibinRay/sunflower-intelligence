@@ -3,10 +3,10 @@
 // sales, a small real effect of spend, an outage week and slower deliveries lowering ratings). Stages 1–3 use the year
 // as the agency did; from stage 4 on, week 33 (the outage) is left out, as stage 3 decides. Every figure is computed
 // here from the data with core/correlation.js; each `check` recomputes its answer with a separate, written-out formula.
-import { SHOP_COLUMNS, SHOP_WEEKS, OUTAGE_WEEK } from './case.js?v=22';
-import * as C from '../../../core/correlation.js?v=22';
-import { ranks } from '../../../core/stats.js?v=22';
-import { SHOP_MODEL } from '../b03/case.js?v=22';
+import { SHOP_COLUMNS, SHOP_WEEKS, OUTAGE_WEEK } from './case.js?v=24';
+import * as C from '../../../core/correlation.js?v=24';
+import { ranks } from '../../../core/stats.js?v=24';
+import { SHOP_MODEL } from '../b03/case.js?v=24';
 
 const col = (n) => SHOP_WEEKS.map((r) => r[SHOP_COLUMNS.indexOf(n)]);
 const WEEK = col('week'), SPEND = col('social_spend'), VALUE = col('order_value'), SESSIONS = col('sessions'), ORDERS = col('orders');

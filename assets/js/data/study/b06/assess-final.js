@@ -5,31 +5,33 @@
 // transactions (b06-fn-1, Harbourside’s weekdays 12 July – 15 August, the transactions varied on the copies); the fitted
 // value and the half-width of the 95% confidence interval for the mean at a forecast high (b06-fn-6, Harbourside’s
 // weekdays 1 June – 9 July, the high varied); the lower 95% limit of the weekend coefficient from LINEST with three x
-// columns (b06-fn-12, Harbourside’s October); the exact % change in footfall for a given rain from ln(footfall) on rain
-// (b06-fn-20, Harbourside’s weekdays 12 July – 20 August, the rain varied). Café values are scaled on the marking copies,
+// columns (b06-fn-12, Harbourside’s October); the median footfall for a given rain from the line of ln(footfall) on
+// rain, back-transformed with EXP(TREND(LN(…))) (b06-fn-20, Harbourside’s weekdays 12 July – 20 August, the rain varied). Café values are scaled on the marking copies,
 // so typed results fail.
 // Items that combine lessons: x on y against y on x for an estimate (fn-1: least-squares-line, residuals-and-r-squared);
-// rescaling, centring and swapping the axes against R² (fn-2: least-squares-line, residuals-and-r-squared); the residual
-// standard error from r and s_y (fn-3: least-squares-line, residuals-and-r-squared); a low summer R² read against the
-// range of x (fn-4: residuals-and-r-squared, inference-for-coefficients); a straight line for the wait judged from its
+// rescaling, centring and swapping the axes against R² (fn-2: least-squares-line, residuals-and-r-squared); R² from the
+// residual standard error and s_y (fn-3: least-squares-line, residuals-and-r-squared); a lower R² but a smaller typical
+// miss on days with a narrow range of transactions (fn-4: residuals-and-r-squared, least-squares-line); a straight line for the wait judged from its
 // residuals by load band (fn-5: residuals-and-r-squared, transformations-and-influence); a fitted value, the mean’s
-// confidence interval and which interval a one-day roster needs (fn-6: prediction-and-intervals,
-// inference-for-coefficients); a pooled slope over both cafés, what it describes and which way its SE errs (fn-8:
+// confidence interval, and why a forecast below the data’s highs is extrapolation (fn-6: prediction-and-intervals,
+// inference-for-coefficients); a pooled slope over both cafés against each café’s slope from a café × high term, with a sentence on why
+// the printed SE is no guide either way (fn-8:
 // inference-for-coefficients, categorical-predictors-and-interactions, assumptions-and-diagnostics); a prediction
 // interval from a log model, back-transformed (fn-9: prediction-and-intervals, transformations-and-influence); a
 // constant-spread prediction interval against the weekend and weekday residual spreads (fn-10: prediction-and-intervals,
 // assumptions-and-diagnostics); why the high’s slope halves when the build-up is added (fn-11: multiple-regression,
 // multicollinearity-and-model-choice); a weekend coefficient’s interval from LINEST (fn-12: multiple-regression,
 // inference-for-coefficients); a café × weekend prediction, then whether its prediction interval fits that kind of day
-// (fn-13: categorical-predictors-and-interactions, prediction-and-intervals, assumptions-and-diagnostics); the ticket
-// slope that turns round with a café dummy (fn-14: categorical-predictors-and-interactions, multiple-regression); day
+// (fn-13: categorical-predictors-and-interactions, prediction-and-intervals, assumptions-and-diagnostics); a pooled
+// conversion slope that vanishes with a café dummy, as the generator plants (fn-14: categorical-predictors-and-interactions, multiple-regression); day
 // dummies against a weekend dummy by a nested F test (fn-15: multicollinearity-and-model-choice,
-// categorical-predictors-and-interactions); the SE inflation of transactions beside footfall (fn-16:
+// categorical-predictors-and-interactions); the correlation implied by the SE inflation of transactions beside footfall
+// (fn-16:
 // multicollinearity-and-model-choice, multiple-regression); heteroskedasticity, HC3 and the log model (fn-18:
 // assumptions-and-diagnostics, transformations-and-influence); residuals in time order and the missing build-up (fn-19:
 // assumptions-and-diagnostics, multiple-regression); the slip’s leverage and Cook’s distance (fn-21:
-// transformations-and-influence, least-squares-line); an odds ratio read, a probability predicted and the
-// classification judged against the base rate (fn-22: logistic-regression); Wald against likelihood-ratio for two terms
+// transformations-and-influence, least-squares-line); an odds ratio read, the first ticket at which the probability reaches 0.5,
+// and the classification judged against the base rate (fn-22: logistic-regression); Wald against likelihood-ratio for two terms
 // (fn-23: logistic-regression, multicollinearity-and-model-choice); a hinge model’s prediction against a line’s (fn-24:
 // transformations-and-influence, multiple-regression). Single-lesson items: fn-7, 17, 20.
 // Outcomes: 1 (fn-1–5, 21), 2 (fn-4, 6–10, 12, 13), 3 (fn-11–14, 16, 19, 24), 4 (fn-11, 15–17, 23),
@@ -41,10 +43,10 @@
 // that aren’t independent (days in sequence; both cafés on the same days) the item says so, and where it says which way
 // the error goes that direction is checked here. No hints; solutions are shown on review. Every num item’s `check`
 // recomputes its answer, and every formula item is marked by its results on the sheet and on changed copies.
-import { CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, column, member, DERIVED } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
-import { confusion } from '../../../core/classify.js?v=22';
-import { pearson } from '../../../core/correlation.js?v=22';
+import { CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, column, member, DERIVED } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
+import { confusion } from '../../../core/classify.js?v=24';
+import { pearson } from '../../../core/correlation.js?v=24';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));

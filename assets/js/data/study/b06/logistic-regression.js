@@ -2,10 +2,10 @@
 // Uses the 225 loyalty-app members who joined in October 2027 (case.js `member`) and whether each came back within
 // 30 days. Observational: members chose notifications themselves. The project's quotes are not used. Every figure
 // printed is recomputed in `checks`.
-import { member, DERIVED as D } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
-import { confusion } from '../../../core/classify.js?v=22';
-import { mean } from '../../../core/stats.js?v=22';
+import { member, DERIVED as D } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
+import { confusion } from '../../../core/classify.js?v=24';
+import { mean } from '../../../core/stats.js?v=24';
 
 const y = member('returned'), near = member('near'), notif = member('notifications'), ticket = member('first_ticket');
 const mill = member('millbrook'), wkend = member('weekend');
@@ -51,7 +51,7 @@ export default {
   slug: 'logistic-regression',
   title: 'Logistic regression',
   blurb: 'When the outcome is yes or no, a straight line predicts impossible probabilities. Model the log-odds instead: fit and read a logistic regression, turn its coefficients into odds ratios and probabilities, test them, and judge a classification against the base rate.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Explain why a straight-line model is unsuitable for a yes/no outcome, and convert between probability, odds and log-odds.',
     'Interpret logistic regression coefficients as changes in log-odds and as odds ratios, holding the other predictors fixed.',

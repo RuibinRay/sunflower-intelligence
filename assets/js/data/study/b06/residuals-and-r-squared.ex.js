@@ -2,9 +2,9 @@
 // here). Café data come from case.js (the corrected log); Otterburn Laundry, Peregrine Fitness, Lindenwood Garden Centre
 // and the other businesses named are fictional. Formula items are marked by their results (core/sheet.js
 // gradeFormula); num items recompute their answers in `check`.
-import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=22';
-import * as R from '../../../core/regression.js?v=22';
-import { mean } from '../../../core/stats.js?v=22';
+import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=24';
+import * as R from '../../../core/regression.js?v=24';
+import { mean } from '../../../core/stats.js?v=24';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const H = { cafe: 'Harbourside' };
