@@ -116,8 +116,8 @@ export const guided = [
         id: 'm06-clv-g1-s3', type: 'mc',
         prompt: 'Morrowfield is deciding the most it should pay a referral partner for each new customer introduced. Which value is the ceiling?',
         options: [
-          'The new-customer value in B5, because a referred customer brings this year’s margin as well as every renewal.',
-          'The existing-customer value in B6, because it is the more cautious of the two figures.',
+          'The new-customer value in B5: a referred customer brings this year’s margin and every renewal.',
+          'The existing-customer value in B6, because it is the more cautious figure and a partner should never be paid the full value.',
           'The margin in B1, because only the first year’s margin is certain.',
           'B5 minus B6, the margin received now, because that is the only money the referral itself causes.',
         ],
@@ -174,7 +174,7 @@ export const guided = [
     id: 'm06-clv-g4', type: 'mc', kind: 'conceptual',
     prompt: 'In Fader and Hardie’s Regular customers, 63.1% renewed after the first year but 92.0% of those remaining renewed after the seventh. What does the shifted-beta-geometric model say causes the rise?',
     options: [
-      'Customers differ in their own fixed churn probabilities; those likely to leave go early, so the survivors are mostly low-churn customers.',
+      'Customers differ in fixed churn probabilities; the likely leavers go first, leaving mostly low-churn customers.',
       'Each customer becomes more loyal the longer they stay, so everyone’s churn probability falls with tenure.',
       'Later years are measured on fewer customers, so their retention rates are inflated by sampling error.',
       'The business improved its service over the seven years, which lifted retention for every cohort.',
@@ -215,10 +215,10 @@ export const independent = [
     id: 'm06-clv-i3', type: 'mc', kind: 'conceptual',
     prompt: 'A restaurant owner finds that 64% of the diners who ate at her restaurant last year came back at least once, and values a diner as margin × (1 + d) ÷ (1 + d − 0.64). What is wrong?',
     options: [
-      'Diners don’t announce that they have stopped coming, so 64% is a repeat-visit share, not a retention rate in the formula’s sense.',
-      'The formula should use 1 − 0.64 = 0.36, the churn rate, in place of r.',
+      'Diners don’t announce they have stopped coming, so 64% is a repeat-visit share, not a retention rate.',
+      'The formula should use 1 − 0.64 = 0.36, the churn rate, in place of r, since r stands for those who leave.',
       'Nothing, provided she uses margin per visit rather than revenue per visit.',
-      'She should use timing C, because diners pay after they eat, at the end of each period.',
+      'She should use timing C instead, because diners pay after they eat, so margins arrive at the end of each period, not the start.',
     ],
     answer: 0,
     feedback: {
@@ -302,8 +302,8 @@ export const check = [
     id: 'm06-clv-k4', type: 'mc', kind: 'applied',
     prompt: 'A broadband provider values every customer with one retention rate, the average across its whole base. It is deciding how much to spend on a programme for customers who have been with it for over five years. If customers differ in how likely they are to leave, what does the single rate do to that decision?',
     options: [
-      'It understates what long-standing customers are worth, because they are disproportionately the low-churn ones, so the programme looks less worth funding than it is.',
-      'It overstates what long-standing customers are worth, because the average rate is pulled up by them.',
+      'It understates long-standing customers’ value, since they are mostly the low-churn ones, so the programme looks less worth funding.',
+      'It overstates what long-standing customers are worth, because the base-wide average retention rate is pulled up by the many loyal customers who stay.',
       'Nothing on average: the errors for new and old customers cancel out.',
       'It understates new customers’ value but gets long-standing customers right, since their churn has already settled.',
     ],
@@ -319,10 +319,10 @@ export const check = [
     id: 'm06-clv-k5', type: 'mc', kind: 'applied',
     prompt: 'Over their first five months, Harbourside’s March–August joiners brought in about $25 of margin each and Millbrook’s about $20, although Millbrook members visited more often. Which conclusion does this support?',
     options: [
-      'A typical Harbourside joiner has been worth more so far, because Harbourside’s larger tickets more than make up for fewer visits.',
-      'Moving members from Millbrook to Harbourside would raise each one’s value by about $5.',
-      'Millbrook members are more loyal, so their lifetime value must in the end be higher.',
-      'Harbourside members are worth more because they visit more often.',
+      'A typical Harbourside joiner has been worth more so far: larger tickets outweigh fewer visits.',
+      'Moving members from Millbrook to Harbourside, for example with offers redeemable only there, would raise each one’s value by about $5.',
+      'Millbrook members are more loyal, so their lifetime value must in the end be higher than Harbourside’s.',
+      'Harbourside members are worth more because they visit more often than Millbrook members.',
     ],
     answer: 0,
     feedback: {

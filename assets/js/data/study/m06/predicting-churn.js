@@ -89,7 +89,7 @@ export default {
     { callout: 'warn', title: 'Leakage', html: 'Every predictor must be something Ana could have known on 31 October. Recency measured on 31 December instead looks harmless, but it already contains the answer: a member who visited in November or December has a recency of 60 days or less on 31 December, and one who didn’t has more. It separates lapsers from returners perfectly (AUC 1.000), and it is useless on 1 November. That is <g>data leakage</g>, the same error B02 warned about in data preparation.' },
 
     { h: 'Recency does most of the work' },
-    { p: 'The simplest rule ranks members by how long ago they last visited. The holdout shows how strong it is: the longer a member has been silent, the likelier they are to stay away.' },
+    { p: 'The simplest rule ranks members by <g>recency</g>, how long ago they last visited. The holdout shows how strong it is: the longer a member has been silent, the likelier they are to stay away.' },
     { table: {
       caption: 'Share of members who lapsed in November–December, by days since their last visit on 31 October',
       head: ['Days since last visit', 'Members', 'Lapsed'],
@@ -97,7 +97,7 @@ export default {
       align: ['l', 'r', 'r'],
       note: 'The longest silence among these members was 244 days.',
     } },
-    { p: 'Of the 245 members who had visited in the last week, 10.2% lapsed; of the 286 silent for five months or more, 96.9%. This is what the members’ data were built to show, and what customer-base models predict generally: in a noncontractual business, a customer who has gone quiet may have stopped for good, and the longer the silence the more likely that is.' },
+    { p: 'Of the 245 members who had visited within a week of 31 October (0–7 days), 10.2% lapsed; of the 286 silent for five months or more, 96.9%. This is what the members’ data were built to show, and what customer-base models predict generally: in a noncontractual business, a customer who has gone quiet may have stopped for good, and the longer the silence the more likely that is.' },
 
     { h: 'A logistic regression' },
     { p: 'Logistic regression, from B06, models the log-odds of lapsing as a linear function of the predictors. With all seven:' },
@@ -116,7 +116,7 @@ export default {
       align: ['l', 'r', 'r', 'r', 'r'],
       note: 'Intercept −1.2810. McFadden’s pseudo-R² 0.396. Against recency alone, the six other predictors together: G = 8.35 on 6 df, p = 0.214.',
     } },
-    { p: 'Each extra day of silence multiplies the odds of lapsing by 1.039, holding the others fixed; 30 days multiply them by e raised to 30 times the coefficient, 3.19. None of the other six is clearly different from no association once recency is in the model, and together they add little (p = 0.214). That doesn’t mean they don’t matter: without recency, the other six still rank members with an AUC of 0.750, because frequent, nearby members tend to have visited recently. Recency carries most of what they know.' },
+    { p: 'Each extra day of silence multiplies the odds of lapsing by 1.039, holding the others fixed; 30 days multiply them by e raised to 30 times the coefficient, 3.19. None of the other six is clearly different from no association once recency is in the model, and together they add little (p = 0.214). That doesn’t mean they don’t matter: without recency, the other six still rank members with an AUC of 0.750, because frequent visitors tend to have visited recently. Recency carries most of what they know.' },
     { p: 'One refinement is worth having. Allowing recency’s effect to depend on frequency (a product term, recency × frequency) improves the fit sharply (G = 104.4 on 1 df, p below 0.001). For a member silent for 60 days, the model gives a 65.5% chance of lapsing if they had made 2 visits and 89.0% if they had made 10; for one seen 10 days ago, 31.4% and 22.5%. A regular who goes quiet has probably stopped; a regular seen recently is probably still coming. Raw data say the same: among members silent for 45–75 days, 87.9% of those with six or more visits lapsed, against 69.9% of those with two or fewer.' },
   ],
 
@@ -134,7 +134,7 @@ export default {
 
     { h: 'Testing on customers the model hasn’t seen' },
     { p: 'Scores judged on the members used to fit them flatter the model, because the coefficients were chosen to fit those members. A fair estimate fits on some members and scores others. Fitting the seven-predictor model on alternate members (832) and scoring the other 832 gives an AUC of 0.906 on the scored half, against 0.893 on the fitting half: no sign of overfitting, as expected with seven predictors and hundreds of each outcome. On the scored half the top tenth lapsed at 98.8%, a lift of 1.48. A model with dozens of predictors, or one tuned repeatedly on the same data, would need this check far more. Even better is a later holdout: fit on, say, members described in August and their September–October outcome, then score 1 November’s members.' },
-    { p: '<b>Calibration</b> asks whether the predicted probabilities mean what they say: of members given about 40%, do about 40% lapse? Sorting by the model’s probability into five groups, the mean predicted and actual rates are 99.3% against 97.0%, 94.4% against 93.4%, 76.0% against 82.9%, 39.3% against 42.0% and 20.8% against 14.5%. The model is roughly calibrated in the middle but too confident at the extremes, and it overstates lapsing among the most recent visitors. A straight line in recency on the log-odds scale can’t bend as the data do. For ranking that matters little; for budgeting how many members will come back, check calibration and fix it, for example with recency bands as predictors.' },
+    { p: '<b>Calibration</b> asks whether the predicted probabilities mean what they say: of members given about 40%, do about 40% lapse? Sorting by the model’s probability into five groups, the mean predicted and actual rates are 99.3% against 97.0%, 94.4% against 93.4%, 76.0% against 82.9%, 39.3% against 42.0% and 20.8% against 14.5%. The model is close in the second and fourth fifths, but it overstates lapsing in the top and bottom fifths and understates it in the middle one. Most of the bottom fifth are recent visitors, whose lapsing it overstates by six points. A straight line in recency on the log-odds scale can’t bend as the data do. For ranking that matters little; for budgeting how many members will come back, check calibration and fix it, for example with recency bands as predictors.' },
 
     { h: 'Whom to contact, and at what cost' },
     { p: String.raw`The obvious rule, contact those most likely to lapse, quietly assumes that the offer works equally well on everyone. It doesn’t. What a contact is worth depends on the chance the customer lapses <m>p</m>, the chance the offer changes that (the <g>uplift</g>, <m>u</m>), the value of a customer kept <m>V</m> and the cost of contact <m>c</m>: the expected gain is <m>p \times u \times V - c</m>. A member who has been silent for six months has <m>p</m> near 1, but if they have moved away, <m>u</m> is near 0. A member seen last week has a small <m>p</m>: most would come anyway, and the offer mostly rewards visits that were going to happen. The members worth contacting are those whose behaviour the offer can change, often in the middle of the risk ranking.` },
@@ -225,7 +225,6 @@ export default {
 
   glossary: [
     { term: 'Calibration period', def: 'In churn prediction, the period whose data supply the predictors, ending on the date the prediction is made; the outcome is taken from a later holdout period.' },
-    { term: 'Lift', def: 'The rate of an outcome (such as churn) in a group selected by a score, divided by the rate among all customers; with a ranked list, usually given for each tenth or fifth from the top.' },
     { term: 'Gains curve', def: 'A chart of the cumulative share of all positive outcomes (such as churners) found against the share of customers contacted, taking customers in order of their score; a random order gives the diagonal.' },
     { term: 'Area under the ROC curve', def: 'A summary of how well a score ranks two classes: the probability that a randomly chosen positive case scores higher than a randomly chosen negative one, counting ties as half. Abbreviated AUC; 0.5 is random and 1 perfect.' },
     { term: 'Uplift', def: 'The change in a customer’s probability of an outcome caused by an action, such as a retention offer; estimated by comparing randomly chosen treated and untreated customers.' },
@@ -266,6 +265,7 @@ export default {
     { what: 'Recency p < 0.001 and others ≥ 0.05 (claim)', value: Number(k('Recency').p < 0.001 && ['Frequency', 'Tenure', 'Spend ($)', 'Near', 'Notifications', 'Millbrook'].every((nm) => k(nm).p >= 0.05)), shown: 1 },
     { what: 'AUC without recency', value: aucNoRec, shown: 0.750, tol: 0.0005 },
     { what: 'Notifications OR', value: k('Notifications').or, shown: 0.963, tol: 0.0005 },
+    { what: 'Frequent members visited more recently (claim): corr(frequency, recency) < 0', value: Number((() => { const mf = freq.reduce((a, b) => a + b, 0) / n, mr = rec.reduce((a, b) => a + b, 0) / n; return freq.reduce((s, f, i) => s + (f - mf) * (rec[i] - mr), 0) < 0; })()), shown: 1 },
     // interaction
     { what: 'G interaction', value: lrInt.stat, shown: 104.4, tol: 0.05 },
     { what: 'Interaction p < 0.001', value: Number(lrInt.p < 0.001), shown: 1 },
@@ -299,6 +299,9 @@ export default {
     // calibration
     ...CAL.flatMap((c, i) => [{ what: `Cal ${i + 1} predicted %`, value: pc(c.pred), shown: [99.3, 94.4, 76.0, 39.3, 20.8][i], tol: 0.05 }, { what: `Cal ${i + 1} actual %`, value: pc(c.obs), shown: [97.0, 93.4, 82.9, 42.0, 14.5][i], tol: 0.05 }]),
     { what: 'Overstates in the lowest-risk fifth (claim)', value: Number(CAL[4].pred > CAL[4].obs + 0.03), shown: 1 },
+    { what: 'Six points', value: pc(CAL[4].pred - CAL[4].obs), shown: 6, tol: 0.5 },
+    { what: 'Bottom fifth mostly recent visitors (≤ 30 days) (claim)', value: Number(order.slice(n - CAL[4].n).filter((i) => CT[i].recency <= 30).length > CAL[4].n / 2), shown: 1 },
+    { what: 'Understates in the middle fifth (claim)', value: Number(CAL[2].pred < CAL[2].obs), shown: 1 },
     // simple example
     { what: 'Top tenth size', value: L10.rows[0].n, shown: 167 },
     { what: 'Top tenth lapsed', value: L10.rows[0].positives, shown: 161 },

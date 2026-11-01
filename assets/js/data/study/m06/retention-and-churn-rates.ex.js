@@ -93,7 +93,7 @@ export const guided = [
       {
         id: 'm06-ret-g1-s2', type: 'mc', kind: 'conceptual',
         prompt: 'The school’s newsletter says “702 ÷ 640 = 109.7%: we kept more pupils than we had”. What does 109.7% measure?',
-        options: ['Growth in the number of pupils, including the term’s new enrolments.', 'Retention, which can exceed 100% when pupils return.', 'Net revenue retention.', 'The share of new pupils who stayed.'],
+        options: ['Growth, including the new pupils.', 'Retention, which can exceed 100% when pupils return.', 'Net revenue retention.', 'The share of new pupils who stayed.'],
         answer: 0,
         hints: ['Which pupils are in 702 that weren’t in 640?'],
         feedback: { 1: 'Retention follows the 640 at the start; it can’t exceed 100%.', 2: 'Revenue retention is about money from the starting pupils; this is a head count including newcomers.', 3: 'That would be 138 ÷ 150 = 92%.' },
@@ -147,10 +147,10 @@ export const guided = [
     id: 'm06-ret-g4', type: 'mc', kind: 'conceptual',
     prompt: 'A gym’s data show that 55% of new members renew after the first year, 72% of those after the second and 81% after the third. The manager concludes that members become more committed the longer they stay. What else could explain the pattern, even if no member changed?',
     options: [
-      'Members differ in how likely they are to leave; the likeliest leave first, so those remaining are increasingly the committed ones.',
+      'Members differ: the likeliest leavers go first, so the members left are increasingly the committed ones.',
       'Retention rates always rise over time because the denominator shrinks.',
       'Rising prices drive out casual members each year.',
-      'The data must contain an error: retention can’t rise if each member’s chance of leaving is fixed.',
+      'The data must contain an error, because retention can’t rise from year to year if each member’s chance of leaving is fixed.',
     ],
     answer: 0,
     hints: ['Think of two kinds of member with different, fixed chances of renewing.', 'Who is left after year 1?'],
@@ -196,7 +196,7 @@ export const independent = [
     prompt: 'Wasdale Broadband (fictional) had 8,400 customers on 1 January and 9,100 on 31 December. It won 3,000 new customers during the year, of whom 2,300 were still customers on 31 December. Its report says “annual churn: 700 ÷ 8,400 = 8.3%”, where 700 is the number of new customers who left. What is wrong?',
     options: [
       'It counts the wrong people: churn is about the 8,400 at the start, of whom 8,400 − (9,100 − 2,300) = 1,600 left, 19.0%.',
-      'Nothing: 700 customers left and 8,400 were there at the start.',
+      'Nothing: 700 customers left during the year and 8,400 were customers at the start, so 700 ÷ 8,400 is the right calculation.',
       'Churn should be divided by the 9,100 at the end, not the 8,400 at the start.',
       'Churn should be 1 − 9,100 ÷ 8,400, which is negative, so Wasdale had no churn.',
     ],
@@ -231,10 +231,10 @@ export const check = [
     id: 'm06-ret-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Lantern’s pooled data show that of members who visited in their joining month, 60.5% visited the next month, while of those who visited four months after joining, 70.8% visited the next month. The data were generated with each member’s visit rate and drop-out chance fixed. What explains the rise?',
     options: [
-      'Members who were likely to stop have mostly stopped by month four, so those still visiting are the steadier ones.',
+      'Members likely to stop have mostly stopped by month four; those left are the steadier ones.',
       'Members visit more often the longer they have been members.',
       'Later months have more members in them, so the rate is more precise.',
-      'Seasonal footfall rises through the year.',
+      'Seasonal footfall rises through the year, so members who joined earlier are visiting in the cafés’ busiest months.',
     ],
     answer: 0,
     feedback: {

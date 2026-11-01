@@ -143,12 +143,12 @@ export default {
 
     { h: 'Projecting contractual retention' },
     { p: 'Kaplan–Meier describes the past; it can’t say what happens after the last observation. For contractual customers, who renew or don’t at known periods, a model can. The simplest assumes a constant retention rate r, so <m>S(t) = r^t</m>. The previous lesson showed why this fails when customers differ: the group’s retention rises as the flighty leave.' },
-    { p: String.raw`The <g>shifted-beta-geometric model</g> (sBG) of Fader and Hardie (2007) builds that in. Each customer has their own churn probability <m>\theta</m>, the same in every period, so their lifetime is geometric. Across customers, <m>\theta</m> follows a beta distribution with parameters <m>\alpha</m> and <m>\beta</m>, flexible enough to describe most ways customers can differ; the mean churn probability is <m>\alpha/(\alpha + \beta)</m>. Averaged over customers, the share still active after <m>t</m> periods and the retention rate in period <m>t</m> are` },
+    { p: String.raw`The <g>shifted-beta-geometric model</g> (sBG) of Fader and Hardie (2007) builds that in. Each customer has their own churn probability <m>\theta</m>, the same in every period, so their lifetime is geometric. Across customers, <m>\theta</m> follows a beta distribution with parameters <m>\alpha</m> and <m>\beta</m>, a flexible family of distributions on 0 to 1; the mean churn probability is <m>\alpha/(\alpha + \beta)</m>. Averaged over customers, the share still active after <m>t</m> periods and the retention rate in period <m>t</m> are` },
     { math: String.raw`S(t) = \frac{B(\alpha, \beta + t)}{B(\alpha, \beta)}, \qquad r_t = \frac{S(t)}{S(t-1)} = \frac{\beta + t - 1}{\alpha + \beta + t - 1},` },
     { p: String.raw`where <m>B</m> is the beta function. The retention rate rises with <m>t</m> towards 1, faster when <m>\alpha</m> is small relative to <m>\beta</m>. The two parameters are fitted by maximum likelihood to the counts still active after each period: customers who churned in period <m>t</m> contribute <m>\log P(T = t)</m>, those still active at the end <m>\log S(T)</m>. Fader and Hardie show the model can be fitted in a spreadsheet.` },
     { p: 'Their High End customers, fitted to years 0–7 only, give α = 0.668 and β = 3.806 (standard errors 0.104 and 0.786), so the average new customer has a 14.9% chance of leaving in a year, with retention rising from 85.1% in year 1 to 94.2% in year 8. The model projects that 37.8% of the customers are still active after 12 years; the actual figure, unseen when fitting, is 39.4%. A constant retention rate fitted to the same seven years (89.7% a year) projects 27.0%. For the Regular customers (α = 0.704, β = 1.182) the sBG projects 17.0% against an actual 17.3%, and constant retention 4.6%. Fader and Hardie report that regression curves fitted to survival over time project far worse, and that the sBG’s year-12 figures are within 4% (High End) and 2% (Regular) of the truth.' },
     { callout: 'note', title: 'A typo in the source', html: 'The paper’s text gives α = 0.688 for the High End segment; its appendix, and the fit in this course’s engine, give 0.668. Use 0.668.' },
-    { p: 'The sBG is for contractual settings, where a customer is either renewed or gone. For noncontractual customers such as the cafés’ members, the equivalent models (the Pareto/NBD and BG/NBD families) infer from each customer’s recency and frequency the probability that they are still “alive”; the members’ data were in fact generated from a process of that kind. They are beyond this course; the next lesson predicts lapsing with logistic regression instead.' },
+    { p: 'The sBG is for contractual settings, where a customer is either renewed or gone. For noncontractual customers such as the cafés’ members, the equivalent models (the Pareto/NBD and BG/NBD families; Fader, Hardie and Lee 2005) describe each customer’s buying and their unseen drop-out together, and give from recency and frequency the probability that a customer is still active; the members’ data were in fact generated from a process of that kind. They are beyond this course; the next lesson predicts lapsing with logistic regression instead.' },
   ],
 
   formulas: [
@@ -176,7 +176,7 @@ export default {
 
   examples: [
     { level: 'simple', title: 'A survival curve by hand', fictional: true,
-      setup: 'Tarn Swim School (fictional) follows eight pupils from their first lesson. Pupils A to H left, or were last seen still enrolled, after these months: A 1 (left), B 2 (still enrolled), C 4 (left), D 4 (left), E 5 (still enrolled), F 6 (left), G 8 (still enrolled), H 9 (still enrolled). Estimate S(t) and the median time enrolled.',
+      setup: 'Coniston Swim School (fictional) follows eight pupils from their first lesson. Pupils A to H left, or were last seen still enrolled, after these months: A 1 (left), B 2 (still enrolled), C 4 (left), D 4 (left), E 5 (still enrolled), F 6 (left), G 8 (still enrolled), H 9 (still enrolled). Estimate S(t) and the median time enrolled.',
       steps: [
         'Order the times at which pupils left: 1, 4 and 6 months. Censored pupils (B, E, G, H) never cause a step.',
         'Month 1: 8 at risk, 1 leaves: S = 7/8 = 0.875.',
@@ -255,6 +255,7 @@ export default {
     { text: 'Brunner, J. (2019). <i>The Kaplan-Meier (product limit) estimate</i>. Lecture notes, STA312, University of Toronto (the estimator and its Greenwood-type standard error).', url: 'https://utstat.utoronto.ca/~brunner/oldclass/312s19/lectures/312s19KaplanMeier.pdf', checked: '2026-11-01' },
     { text: 'Brown, E. R. (2019). <i>Introduction to survival analysis</i>, module 6, session 2. Summer Institute in Statistics for Clinical Research, University of Washington (Greenwood intervals and the log–log transformation).', url: 'https://si.biostat.washington.edu/sites/default/files/modules/module%206%20session%202.pdf', checked: '2026-11-01' },
     { text: 'Bland, J. M., & Altman, D. G. (2004). The logrank test. <i>BMJ</i>, 328, 1073.', url: 'https://www.bmj.com/content/328/7447/1073', checked: '2026-11-01' },
+    { text: 'Fader, P. S., Hardie, B. G. S., & Lee, K. L. (2005). “Counting your customers” the easy way: An alternative to the Pareto/NBD model. <i>Marketing Science</i>, 24(2).', url: 'https://www.brucehardie.com/papers/018/', checked: '2026-11-01' },
   ],
 
   checks: [
@@ -319,6 +320,7 @@ export default {
     { what: 'p café L=30 < 0.001', value: Number(LRC30.p < 0.001), shown: 1 },
     { what: 'χ² café L=90', value: LRC90.chi2, shown: 2.34, tol: 0.005 },
     { what: 'p café L=90', value: LRC90.p, shown: 0.126, tol: 0.0005 },
+    { what: 'Millbrook members visit more often (claim in exercises): visits per member-week', value: Number((() => { const v = (cafe) => { const ms = MEMBER_LIST.filter((m) => m.cafe === cafe); const ids = new Set(ms.map((m) => m.id)); let nv = 0; for (const id of Object.keys(LD.visits)) if (ids.has(id)) nv += LD.visits[id].length; const wk = ms.reduce((a, m) => a + (LD.end - m.joined + 1) / 7, 0); return nv / wk; }; return v('Millbrook') > v('Harbourside'); })()), shown: 1 },
     // sBG: High End and Regular, fitted to years 0–7
     { what: 'α High End', value: hs.alpha, shown: 0.668, tol: 0.0005 },
     { what: 'β High End', value: hs.beta, shown: 3.806, tol: 0.0005 },

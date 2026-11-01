@@ -30,6 +30,7 @@ const shareBack = s3.filter((v) => v * MR >= 10).length / N, back10 = s3.filter(
 const VL = [['Search ads', 5600, 70], ['Partner universities', 2400, 40], ['Open days', 1800, 15], ['No identified channel', 0, 75]];   // Vantrell Language School
 const vlSpend = VL.reduce((s, r) => s + r[1], 0), vlN = VL.reduce((s, r) => s + r[2], 0);
 const vlCells = { A1: 'Channel', B1: 'Spend ($)', C1: 'New students', D1: 'CAC ($)', ...col('A', 2, VL.map((r) => r[0])), ...col('B', 2, VL.map((r) => r[1])), ...col('C', 2, VL.map((r) => r[2])), A6: 'All channels', D7: '' };
+const PB_FIXED = ['A2:A11'];
 const paybackCells = { A1: 'Month since joining', B1: 'Margin per joiner ($)', C1: 'Cumulative ($)', E1: 'Acquisition cost ($)', F1: 12, E2: 'Payback month',
   ...col('A', 2, MARCUM.map((_, k) => k)), ...col('B', 2, MARCUM.map((v, k) => Math.round((k ? v - MARCUM[k - 1] : v) * 100) / 100)) };
 const pbB = paybackCells; const bVals = MARCUM.map((v, k) => Math.round((k ? v - MARCUM[k - 1] : v) * 100) / 100);
@@ -100,7 +101,7 @@ export const guided = [
         id: 'm06-cac-g1-s3', type: 'mc',
         prompt: 'The school’s director says: “Our blended CAC is under $60, so every channel is cheap.” What is wrong with that?',
         options: [
-          'The blended figure counts 75 students who came with no spending; open days cost $120 a student, twice the blended figure.',
+          'Unattributed students cost nothing and pull the blended figure down; open days cost $120 a student.',
           'Nothing: the blended figure is the right measure of what the school pays for a student.',
           'The blended figure should be calculated as the average of the three channel CACs, which is higher.',
           'Blended CAC can’t be compared with channel CACs because it includes partner universities.',
@@ -147,9 +148,9 @@ export const guided = [
         id: 'm06-cac-g3-s2', type: 'mc',
         prompt: `These ${N} members brought in $${fx(mean24)} of margin each on average in their first three months, well above a $10 acquisition cost, yet ${N - back10} of them individually brought in less than $10. Why can both be true?`,
         options: [
-          'An average is pulled up by a few members who spent far more than the rest, while many spent much less than it.',
-          'The average is of spend, while the comparison with $10 is of margin.',
-          'The average leaves out the members who never came back after joining.',
+          'An average is pulled up by a few big spenders, while many members spent much less than it.',
+          'The average is of spend, while the comparison with $10 is of margin, which is only two-thirds as large.',
+          'The average leaves out the members who never came back after joining, which raises it above most members.',
           'The average counts Harbourside members twice, once for each café they visited.',
         ],
         answer: 0,
@@ -165,7 +166,7 @@ export const guided = [
   {
     id: 'm06-cac-g4', type: 'mc', kind: 'applied',
     prompt: 'A fictional bakery gives a free loaf to anyone who signs up to its newsletter in May. 600 people sign up, against about 450 in a normal May. The loaves and the posters cost $1,200 in all. What is the cost per sign-up the offer actually won?',
-    options: ['$8.00: $1,200 ÷ 150 extra sign-ups.', '$2.00: $1,200 ÷ 600 sign-ups.', '$2.67: $1,200 ÷ 450 usual sign-ups.', '$1.20: the cost of a loaf and a share of the posters.'],
+    options: ['$8.00: $1,200 ÷ 150.', '$2.00: $1,200 ÷ 600 sign-ups.', '$2.67: $1,200 ÷ 450 usual sign-ups.', '$1.20: the cost of a loaf and a share of the posters.'],
     answer: 0,
     hints: ['How many sign-ups would there have been without the offer?'],
     feedback: {
@@ -188,7 +189,7 @@ export const independent = [
   {
     id: 'm06-cac-i2', type: 'formula', kind: 'applied',
     prompt: 'Column B holds the March 2027 café joiners’ discounted margin per joiner in each month since joining (month 0 is the join month). In C2, calculate the cumulative margin per joiner up to month 0, so that the formula fills down to month 9.',
-    sheet: { cells: { ...pbB } },
+    sheet: { cells: { ...pbB }, fixed: PB_FIXED },
     cell: 'C2', fill: 'C2:C11', answer: '=SUM($B$2:B2)',
     view: 'A1:F11', formats: { B: '$#,##0.00', C: '$#,##0.00', F1: '$#,##0.00' }, widths: { A: 18, B: 20, C: 14, E: 19 },
     wrong: [{ formula: '=SUM(B2:B2)', say: 'Anchor the start of the range ($B$2) so that it grows as the formula fills down.' }, { formula: '=SUM($B$2:$B$11)', say: 'That is the ten-month total in every row. The cumulative figure adds the months up to this row only.' }],
@@ -197,7 +198,7 @@ export const independent = [
   {
     id: 'm06-cac-i3', type: 'formula', kind: 'numerical',
     prompt: 'Column C holds the March joiners’ cumulative margin per joiner by month since joining and F1 an acquisition cost. In F2, find the payback month: the first month since joining in which the cumulative margin reaches F1 (as a month number from column A, starting at 0).',
-    sheet: { cells: { ...pbB, ...cumCells }, vary: { F1: [6, 15, 20] } },
+    sheet: { cells: { ...pbB, ...cumCells }, fixed: PB_FIXED, vary: { F1: [6, 15, 20] } },
     cell: 'F2', answer: '=COUNTIF(C2:C11,"<"&F1)',
     alt: ['=MATCH(TRUE,C2:C11>=F1,0)-1', '=INDEX(A2:A11,MATCH(TRUE,C2:C11>=F1,0))', '=MINIFS(A2:A11,C2:C11,">="&F1)'],
     view: 'A1:F11', formats: { B: '$#,##0.00', C: '$#,##0.00', F1: '$#,##0.00', F2: '0' }, widths: { A: 18, B: 20, C: 14, E: 19 },
@@ -211,7 +212,7 @@ export const independent = [
       'How the lifetime value was estimated: which retention, margin and horizon, and from which customers.',
       'Whether the ratio was rounded to one decimal place or two.',
       'Whether the benchmark is 3:1 or 3.5:1 in the start-up’s industry, since the ratio must clear it exactly.',
-      'Whether the acquisition cost includes the cost of serving customers after they join.',
+      'Whether the acquisition cost includes the cost of serving customers after they join, such as support and hosting.',
     ],
     answer: 0,
     feedback: {
@@ -269,7 +270,7 @@ export const check = [
       'The extra spending would win fewer extra members per dollar than the first $1,800; estimate what it adds, ideally by testing it, before deciding.',
       'Go ahead: at $2.90 a member, each new member pays for themselves on their first visit.',
       'Doubling the ads halves the incremental CAC, because the fixed costs are spread over more members.',
-      'Don’t: any campaign whose incremental CAC is more than four times its blended CAC is a waste.',
+      'Don’t: any campaign whose incremental CAC is more than four times its blended CAC is wasting most of its budget on people who would have joined anyway.',
     ],
     answer: 0,
     feedback: {
@@ -292,10 +293,10 @@ export const check = [
     id: 'm06-cac-k5', type: 'mc', kind: 'conceptual',
     prompt: 'Two channels have the same payback period, six months. What does that tell you about which is better?',
     options: [
-      'Not enough: payback ignores everything after the sixth month, so their customers’ lifetime values, and value-to-cost ratios, may differ greatly.',
-      'They are equally good, because they recover their cost at the same time.',
-      'The one with the higher CAC is better, because it must bring higher margins to pay back as fast.',
-      'The one with the lower CAC is better, because it risks less money.',
+      'Not enough: payback ignores everything after month six, so the channels’ lifetime values may differ greatly.',
+      'They are equally good, because they recover their acquisition cost at the same time and then both go on earning.',
+      'The one with the higher CAC is better, because it must bring in higher margins in the early months to pay back as quickly.',
+      'The one with the lower CAC is better, because it puts less of the business’s money at risk while the cost is recovered.',
     ],
     answer: 0,
     feedback: {

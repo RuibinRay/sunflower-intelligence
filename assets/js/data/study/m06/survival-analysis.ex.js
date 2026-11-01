@@ -35,7 +35,7 @@ const vary2 = { [`C${lapsZero[0] + 2}`]: [0], [`B${lapsAt(EVT[1])[0] + 2}`]: [0,
 const wsView = `A1:H${LR}`, wsFormats = { C: '0', F: '0', G: '0', H: '0.000', H2: '0.000' }, wsWidths = { A: 9, B: 7, C: 8, D: 3, E: 7, F: 8, G: 8, H: 8 };
 
 // ---------------------------------------------------------------- fictional numbers
-const MW = { t: [1, 2, 4, 4, 5, 6, 8, 9], e: [1, 0, 1, 1, 0, 1, 0, 0] };       // Mardale Wanderers walking club
+const MW = { t: [1, 3, 3, 5, 5, 7, 8, 10], e: [1, 0, 1, 1, 1, 0, 1, 0] };       // Troutbeck Wanderers walking club
 const MWKM = CU.kaplanMeier(MW.t, MW.e);
 const GW = { s: (10 / 12) * (8 / 9), sum: 2 / (12 * 10) + 1 / (9 * 8) };       // a Greenwood calculation
 const HI = [1000, 869, 743, 653, 593, 551, 517, 491, 468, 445, 427, 409, 394];
@@ -121,11 +121,11 @@ export const guided = [
   },
   {
     id: 'm06-surv-g2', type: 'num', kind: 'numerical',
-    prompt: 'Mardale Wanderers walking club (fictional) follows eight new members, in months: 1 (left), 2 (still a member), 4 (left), 4 (left), 5 (still a member), 6 (left), 8 (still a member), 9 (still a member). What is the Kaplan–Meier estimate of S(4)? Give three decimal places.',
-    answer: Math.round(MWKM.at(4) * 1000) / 1000, check: () => CU.kaplanMeier(MW.t, MW.e).at(4), places: 3, tol: 0.0015, unit: '',
-    wrong: [{ value: 0.625, say: 'That is 5 ÷ 8, treating the member censored at month 2 as if still at risk at month 4. Only 6 are at risk at month 4.' }, { value: Math.round(4 / 7 * 1000) / 1000, say: 'Work step by step: after month 1, S = 7/8; at month 4, 6 are at risk and 2 leave.' }],
-    hints: ['Month 1: 8 at risk, 1 leaves. The member censored at month 2 then leaves the risk set.', 'S(4) = (7/8) × (4/6).'],
-    solution: `S(1) = 7/8 = 0.875. At month 4 the at-risk members are the 6 with times of 4 or more; 2 leave: S(4) = 0.875 × 4/6 = ${fx(MWKM.at(4))}.`,
+    prompt: 'Troutbeck Wanderers walking club (fictional) follows eight new members, in months: 1 (left), 3 (still a member), 3 (left), 5 (left), 5 (left), 7 (still a member), 8 (left), 10 (still a member). What is the Kaplan–Meier estimate of S(5)? Give three decimal places.',
+    answer: Math.round(MWKM.at(5) * 1000) / 1000, check: () => CU.kaplanMeier(MW.t, MW.e).at(5), places: 3, tol: 0.0015, unit: '',
+    wrong: [{ value: 0.5, say: 'That is 4 ÷ 8, as if the member censored at month 3 were still at risk at month 5. Work through the risk sets.' }, { value: Math.round(0.875 * 3 / 5 * 1000) / 1000, say: 'Don’t skip month 3: one member left then, with 7 at risk (the one censored at month 3 still counts).' }],
+    hints: ['Month 1: 8 at risk, 1 leaves. Month 3: 7 at risk (the member censored at 3 counts), 1 leaves.', 'At month 5, 5 are at risk and 2 leave: S(5) = (7/8) × (6/7) × (3/5).'],
+    solution: `S(1) = 7/8 = 0.875; S(3) = 0.875 × 6/7 = 0.750; at month 5 the 5 members with times of 5 or more are at risk and 2 leave: S(5) = 0.750 × 3/5 = ${fx(MWKM.at(5))}.`,
   },
   {
     id: 'm06-surv-g3', type: 'mc', kind: 'conceptual',
@@ -133,7 +133,7 @@ export const guided = [
     options: [
       'Too short: the customers still active are the ones with the longest lifetimes so far, and they are left out.',
       'Too long: customers who cancel quickly are under-represented.',
-      'Unbiased, because the customers still active haven’t churned yet and so have no lifetime to average.',
+      'Unbiased, because the customers still active haven’t churned yet and so don’t yet have a lifetime that could be averaged.',
       'Too short, because the average is always below the median.',
     ],
     answer: 0,
@@ -170,7 +170,7 @@ export const independent = [
       'The two groups’ survival curves differ by more than chance would usually produce.',
       'Turning notifications on makes members stay longer.',
       'Members with notifications on stay 0.003 days longer.',
-      'The curves differ by 8.83 percentage points at every time.',
+      'The curves differ by 8.83 percentage points at every time since joining, the gap the test measures.',
     ],
     answer: 0,
     feedback: { 1: 'Members chose the setting, so the test can’t separate notifications from whatever made members choose them.', 2: 'The p-value is a probability, not a size of difference.', 3: 'χ² measures how far observed churn is from expected, not a gap between curves.' },
@@ -230,7 +230,7 @@ export const check = [
     options: [
       'Survival is underestimated: departures are invented for customers who may stay much longer.',
       'Survival is overestimated: more customers count towards the denominator.',
-      'Nothing, as long as the number of censored customers is small relative to the churners.',
+      'Nothing, as long as the number of censored customers is small relative to the number of customers who churned.',
       'Survival is unaffected, but the confidence interval becomes wider.',
     ],
     answer: 0,
@@ -261,9 +261,9 @@ export const check = [
     id: 'm06-surv-k4', type: 'mc', kind: 'applied',
     prompt: 'A manager sees that app members with notifications on have a median lifetime of 57 days against 48 for those with them off (log-rank p = 0.003) and proposes switching notifications on for every member, “which will add nine days to the average member’s life”. What should Ana reply?',
     options: [
-      'The groups chose their settings, so the nine days may reflect who chooses notifications; a randomised default for new members would measure the effect.',
+      'Members chose the setting, so the nine days may reflect who chooses it; test with a randomised default.',
       'Agree: a p-value of 0.003 shows notifications cause members to stay longer.',
-      'Disagree: the medians depend on the lapse rule, so there is no real difference.',
+      'Disagree: the medians depend on the lapse rule, so there is no real difference between the two groups of members to act on.',
       'Agree, but expect 9 ÷ 48 = 19% more visits from every member.',
     ],
     answer: 0,
