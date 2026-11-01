@@ -3,9 +3,9 @@
 // device. Pennyholt Bakeries, Marrowby Buses, Tamberlake Gyms, Saltreed Festival, Brindlecombe Garden Centre and
 // Orrinsby Software are fictional. Formula items are marked by their results on the sheet and on copies with the numbers
 // changed; num items recompute their answers.
-import { PEOPLE, STRATA, SIZES, SURVEY_2027, SURVEY_PLAN } from './case.js?v=24';
-import * as S from '../../../core/survey.js?v=24';
-import * as I from '../../../core/inference.js?v=24';
+import { PEOPLE, STRATA, SIZES, SURVEY_2027, SURVEY_PLAN } from './case.js?v=25';
+import * as S from '../../../core/survey.js?v=25';
+import * as I from '../../../core/inference.js?v=25';
 
 const Z = I.normInv(0.975);
 const A = SURVEY_2027.allocation, RR = SURVEY_PLAN.responseRate;
@@ -342,7 +342,7 @@ export const check = [
   },
   {
     id: 'm04-sm-k6', type: 'formula', kind: 'applied',
-    prompt: 'B2:B5 hold the size of each of Lantern’s four strata, C2:C5 the completes expected at a 30% response, and B7 the completes n₀ that a large population would need for a margin of ±10 points at 95%. In D2, calculate the completes the subscriber stratum needs for that margin with the finite population correction, n = n₀ ÷ (1 + (n₀ − 1) ÷ N), so that the formula can be filled down to D5.',
+    prompt: 'B2:B5 hold the size of each of Lantern’s four strata, C2:C5 the completes expected at a 30% response, and B7 the completes n₀ that a large population would need for a margin of ±10 points at 95%. In D2, calculate the completes the repeat-customer stratum needs for that margin with the finite population correction, n = n₀ ÷ (1 + (n₀ − 1) ÷ N), so that the formula can be filled down to D5.',
     sheet: { cells: needCells, vary: { B7: [150.06, 384.16] } },
     cell: 'D2', fill: 'D2:D5', answer: '=$B$7/(1+($B$7-1)/B2)',
     alt: ['=$B$7*B2/(B2+$B$7-1)', '=1/(1/$B$7+($B$7-1)/($B$7*B2))'],

@@ -3,8 +3,8 @@
 // worksheets, both cafés’ 612 days for the waits). Pennick Bakeries, Merrivale Garden Centres, Barrowgate Cinemas,
 // Westerholt Bookshops and the other businesses named are fictional. Formula items are marked by their results
 // (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { column } from './case.js?v=24';
-import * as R from '../../../core/regression.js?v=24';
+import { column } from './case.js?v=25';
+import * as R from '../../../core/regression.js?v=25';
 
 const fx = (v, d = 2) => (v < 0 ? '−' : '') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));

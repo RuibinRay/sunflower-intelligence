@@ -9,12 +9,12 @@
 //     defaults: { group: false, line: false }, exclude: 3 (offer the 3 most influential points to leave out),
 //     jitter: { x: 0.25, y: 0 } (draw points nudged by up to this much, seeded, so whole numbers don't hide each other;
 //     every statistic uses the true values), note }
-import { h, onResize } from '../../core/dom.js?v=24';
-import { xl } from '../xl.js?v=24';
-import { scatter as drawScatter, tableTwin } from '../../core/charts.js?v=24';
-import * as C from '../../core/correlation.js?v=24';
-import { ranks } from '../../core/stats.js?v=24';
-import * as F from '../../core/format.js?v=24';
+import { h, onResize } from '../../core/dom.js?v=25';
+import { xl } from '../xl.js?v=25';
+import { scatter as drawScatter, tableTwin } from '../../core/charts.js?v=25';
+import * as C from '../../core/correlation.js?v=25';
+import { ranks } from '../../core/stats.js?v=25';
+import * as F from '../../core/format.js?v=25';
 
 const minus = (t) => String(t).replace(/^-/, '−');
 const f3 = (v) => (Number.isFinite(v) ? minus(v.toFixed(3)) : '—');

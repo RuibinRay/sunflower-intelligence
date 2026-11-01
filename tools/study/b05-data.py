@@ -168,7 +168,8 @@ assert vf.sum() == WTARGET
 delivery = np.round(np.clip(2.4 + 0.9 * (season - 1) + r2.normal(0, 0.35, W), 1.6, None), 1)
 rating = np.round(np.clip(4.85 - 0.32 * (delivery - 2.4) + r2.normal(0, 0.08, W), 3.5, 5.0), 2)
 new_subs = r2.binomial(orders, 0.022)
-active = 520 + np.cumsum(new_subs) - np.cumsum(r2.binomial(np.full(W, 6), 0.15))
+# 120 subscribers at the end of 2026 (B04’s December survey), up from B03’s 27 in June 2026 before the relaunch’s offer
+active = 120 + np.cumsum(new_subs) - np.cumsum(r2.binomial(np.full(W, 6), 0.15))
 SHOP_COLUMNS = ['week', 'starts', 'days', 'sessions', 'orders', 'order_value', 'social_spend', 'emails', 'delivery_days',
                 'rating', 'new_subscribers', 'active_subscribers', 'avg_high_f']
 shop_rows = [[k + 1, wk_start[k].isoformat(), int(wk_days[k]), int(sessions[k]), int(orders[k]), round(int(vf[k]) / 100, 2),

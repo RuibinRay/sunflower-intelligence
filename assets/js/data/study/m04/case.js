@@ -3,7 +3,8 @@
 // invented for teaching, except where a comment cites an earlier course's case, whose figures this file imports.
 //
 // Agrees with earlier courses:
-//   - Lantern's mailing list holds 6,000 people (B04), 520 of them subscribers (B04's December survey invited all 520).
+//   - Lantern's mailing list holds 6,000 people (B04), 520 of them repeat customers (shop customers who have ordered more
+//     than once), including B04's 120 coffee subscribers (its December survey invited all 120).
 //   - About 1,500 shop customers by December 2026 (M01; B01 counts 1,406 first-time buyers from July to December).
 //   - 14 workshops of about 12 participants in 2026 (M01), so 150 workshop participants who never ordered online is
 //     within the 168 places sold.
@@ -20,20 +21,20 @@
 // Cold Brew, audits shelf prices and sizes the cold brew market from the top down and the bottom up. The project (an
 // office-coffee subscription for offices in Lantern's district) has its own data at the end of this file; lessons and
 // module tests must not use it.
-import { LIST, OFFICE_SURVEY } from './data.js?v=24';
-import { MAILING_LIST, SUBSCRIBER_SURVEY, SURVEY_PLAN, DERIVED as B04 } from '../b04/case.js?v=24';
-import { SURVEY as B01_SURVEY, SHOP } from '../b01/case.js?v=24';
-import { BUSINESS, COMPETITOR as BREWLINE, CLIENT_INTERVIEWS } from '../m01/case.js?v=24';
-import { CATEGORY, CHANNELS, COMPETITORS, DEFAULT_PLAN } from '../m02/market.js?v=24';
-import * as S from '../../../core/survey.js?v=24';
-import { tableCells } from '../b03/case.js?v=24';
+import { LIST, OFFICE_SURVEY } from './data.js?v=25';
+import { MAILING_LIST, SUBSCRIBER_SURVEY, SURVEY_PLAN, DERIVED as B04 } from '../b04/case.js?v=25';
+import { SURVEY as B01_SURVEY, SHOP } from '../b01/case.js?v=25';
+import { BUSINESS, COMPETITOR as BREWLINE, CLIENT_INTERVIEWS } from '../m01/case.js?v=25';
+import { CATEGORY, CHANNELS, COMPETITORS, DEFAULT_PLAN } from '../m02/market.js?v=25';
+import * as S from '../../../core/survey.js?v=25';
+import { tableCells } from '../b03/case.js?v=25';
 
 export { MAILING_LIST, SUBSCRIBER_SURVEY, SURVEY_PLAN, B01_SURVEY, BREWLINE, CLIENT_INTERVIEWS, CATEGORY, CHANNELS, COMPETITORS, DEFAULT_PLAN, tableCells };
 
 // ---------------------------------------------------------------- the mailing list (decoded from data.js)
-export const STRATA = ['Subscribers', 'Other shop customers', 'Workshop participants', 'Newsletter only'];
+export const STRATA = ['Repeat customers', 'Other shop customers', 'Workshop participants', 'Newsletter only'];
 /** The same strata as one respondent's segment (the label a survey tool's export would carry). */
-export const SEGMENT = ['Subscriber', 'Shop customer', 'Workshop participant', 'Newsletter only'];
+export const SEGMENT = ['Repeat customer', 'Shop customer', 'Workshop participant', 'Newsletter only'];
 export const LEVELS = {
   group: ['Detractor', 'Passive', 'Promoter'],                                   // NPS groups: 0–6, 7–8, 9–10
   coldbrew: ['Definitely would buy', 'Probably would buy', 'Might or might not', 'Probably would not', 'Definitely would not'],
@@ -145,8 +146,8 @@ export const PRICE_AUDIT = {
 
 /** Ana's cold brew sizing inputs (March 2027). Store counts are Harbour City's (fictional); the listings and the cans a
  *  store sells a week are Ana's planning assumptions after talking to two store buyers. Direct: Ana's estimate of the
- *  cans a month Lantern's own channel (shop and subscriptions) would sell, a judgement informed by what subscribers said
- *  in the February survey, not a calculation from it. */
+ *  cans a month Lantern's own channel (shop and subscriptions) would sell, a judgement informed by what repeat customers
+ *  said in the February survey, not a calculation from it. */
 export const COLD_BREW_SIZING = {
   stores: { supermarket: 120, convenience: 260, natural: 45 },
   plan: { supermarket: { listed: 30, cansPerWeek: 10 }, natural: { listed: 25, cansPerWeek: 14 } },
@@ -259,7 +260,7 @@ export const DERIVED = {
 
 export const IDENTITIES = [
   ['the list holds B04’s 6,000 people', stratum.length === MAILING_LIST],
-  ['520 subscribers on the list (B04’s December survey invited all 520)', SIZES[0] === SUBSCRIBER_SURVEY.invited],
+  ['520 repeat customers on the list, including the 120 subscribers B04’s December survey invited', SIZES[0] === 520 && SIZES[0] >= SUBSCRIBER_SURVEY.invited],
   ['1,520 shop customers on the list, about the 1,500 M01 and B01 count by December', SIZES[0] + SIZES[1] === 1_520 && Math.abs(SIZES[0] + SIZES[1] - BUSINESS.online.customers) <= 50 && SHOP.newCustomers.reduce((a, b) => a + b, 0) === 1_406],
   ['workshop participants within the 168 places M01’s 14 workshops sold', SIZES[2] <= BUSINESS.workshops.held * BUSINESS.workshops.avgParticipants],
   ['2,004 invitations: B04’s plan', DISPOSITIONS.all.invited === 2_004 && SURVEY_2027.allocation.reduce((a, b) => a + b, 0) === 2_004],

@@ -3,9 +3,9 @@
 // derived NPS, Cold Brew intent, weights, cups and themes (DERIVED). The truth (DERIVED.nps.truth, coldbrew.truthTopTwo)
 // appears only in the "What Ana couldn't see" callout. Pindlebury Garden Centre, Rookwell Fitness and Tallyroot Software
 // (with Saoirse Adeyemi) are fictional. Every printed figure is recomputed in `checks`.
-import { RESPONDENTS, STRATA, SIZES, LEVELS, DISPOSITIONS, DERIVED as D } from './case.js?v=24';
-import * as S from '../../../core/survey.js?v=24';
-import * as I from '../../../core/inference.js?v=24';
+import { RESPONDENTS, STRATA, SIZES, LEVELS, DISPOSITIONS, DERIVED as D } from './case.js?v=25';
+import * as S from '../../../core/survey.js?v=25';
+import * as I from '../../../core/inference.js?v=25';
 
 // ---------------------------------------------------------------- the figures this lesson quotes
 const R = RESPONDENTS, N = R.length, LIST = SIZES.reduce((a, b) => a + b, 0);
@@ -140,19 +140,19 @@ export default {
       rows: STRATA.map((s, h) => [s, p1(top2(byS[h]) / nS[h]), p1(mid(byS[h]) / nS[h]), p1(bot2(byS[h]) / nS[h]), String(nS[h])]),
       foot: [['All completes', p1(top2(R) / N), p1(mid(R) / N), p1(bot2(R) / N), String(N)]],
     } },
-    { p: 'Each row adds up to 100%, because Ana’s question is how each segment answered. The rule is to percentage within each category of the explanatory variable, the one you think may explain the other, and then compare across those categories. Subscribers chose the top two boxes 61.8% of the time; newsletter-only respondents, 31.0%. Percentaged the other way, the same counts answer a different question: of the 81 people who would definitely buy, 31 (38.3%) were newsletter-only respondents, because there are so many of them, although only 10.4% of newsletter-only respondents gave that answer.' },
+    { p: 'Each row adds up to 100%, because Ana’s question is how each segment answered. The rule is to percentage within each category of the explanatory variable, the one you think may explain the other, and then compare across those categories. Repeat customers chose the top two boxes 61.8% of the time; newsletter-only respondents, 31.0%. Percentaged the other way, the same counts answer a different question: of the 81 people who would definitely buy, 31 (38.3%) were newsletter-only respondents, because there are so many of them, although only 10.4% of newsletter-only respondents gave that answer.' },
 
     { h: 'Scoring: the Net Promoter Score' },
     { p: 'Q1 asked how likely each person was to recommend Lantern to a friend or colleague, from 0 to 10. The <g>Net Promoter Score</g> (NPS), proposed by Frederick Reichheld in 2003 and introduced in <i>Questionnaire design</i>, sorts the answers into promoters (9 or 10), passives (7 or 8) and detractors (0 to 6), and subtracts the percentage of detractors from the percentage of promoters. Ana had 237 promoters (45.9%), 184 passives (35.7%) and 95 detractors (18.4%), so her NPS is 45.9 − 18.4 = +27.5. The score runs from −100, when everyone is a detractor, to +100, when everyone is a promoter, and is written without a % sign: +27.5 doesn’t mean that 27.5% would recommend Lantern.' },
     { figure: {
       svg: npsFigure(),
       caption: 'Promoters, passives and detractors among Ana’s 516 completes, by segment (unweighted). The NPS is the promoters’ share minus the detractors’ share; the base is in brackets. Workshop participants (base 27) are shown for teaching; under the minimum base in Small bases they would be suppressed.',
-      alt: `Five horizontal bars, each split into three parts for detractors, passives and promoters, with each segment’s NPS and base at the right. Subscribers: 11% detractors, 16% passives, 73% promoters, NPS +61.8 (89). Other shop customers: 9%, 29%, 62%, NPS +53.4 (103). Workshop participants: 19%, 22%, 59%, NPS +40.7 (27). Newsletter only: 24%, 45%, 31%, NPS +7.1 (297). All respondents: 18%, 36%, 46%, NPS +27.5 (516).`,
+      alt: `Five horizontal bars, each split into three parts for detractors, passives and promoters, with each segment’s NPS and base at the right. Repeat customers: 11% detractors, 16% passives, 73% promoters, NPS +61.8 (89). Other shop customers: 9%, 29%, 62%, NPS +53.4 (103). Workshop participants: 19%, 22%, 59%, NPS +40.7 (27). Newsletter only: 24%, 45%, 31%, NPS +7.1 (297). All respondents: 18%, 36%, 46%, NPS +27.5 (516).`,
     } },
-    { p: 'Like any estimate from a sample, the score has a margin of error: ±6.5 points at 95% for 516 answers, so the survey puts the NPS of people like those who answered between about +21 and +34. Within segments the scores run from +62 among subscribers to +7 among newsletter-only respondents, with wider margins on the smaller bases.' },
+    { p: 'Like any estimate from a sample, the score has a margin of error: ±6.5 points at 95% for 516 answers, so the survey puts the NPS of people like those who answered between about +21 and +34. Within segments the scores run from +62 among repeat customers to +7 among newsletter-only respondents, with wider margins on the smaller bases.' },
 
     { h: 'Beyond the respondents: weighting' },
-    { p: 'Ana invited each segment in proportion to its size, but the segments didn’t reply in proportion: subscribers are 8.7% of the list but 17.2% of the completes, and newsletter-only people 72.2% of the list but 57.6% of the completes. So every all-respondent figure leans towards Lantern’s keenest customers. Weighting each respondent by the segment’s list size divided by its completes, the <g>post-stratification</g> of <i>Survey error</i>, puts the segments back in proportion: the weighted NPS is +20.4 and the weighted top-two-box score 38.2%. In Excel both come from SUMPRODUCT, as In depth shows.' },
+    { p: 'Ana invited each segment in proportion to its size, but the segments didn’t reply in proportion: repeat customers are 8.7% of the list but 17.2% of the completes, and newsletter-only people 72.2% of the list but 57.6% of the completes. So every all-respondent figure leans towards Lantern’s keenest customers. Weighting each respondent by the segment’s list size divided by its completes, the <g>post-stratification</g> of <i>Survey error</i>, puts the segments back in proportion: the weighted NPS is +20.4 and the weighted top-two-box score 38.2%. In Excel both come from SUMPRODUCT, as In depth shows.' },
     { callout: 'key', title: 'Five habits of honest survey analysis', html: 'Write the preparation rules down before you see the results. Print a base with every figure. Percentage within each category of the explanatory variable. Give every score with its margin of error, and don’t read differences smaller than it. Weight when the respondents are out of proportion to the population, and say what weighting can’t fix.' },
   ],
 
@@ -170,7 +170,7 @@ export default {
       foot: [['Total', String(N), '100%', '100%']],
       note: 'Percentages are rounded, so they may not add to exactly 100.',
     } },
-    { p: 'Both bases are honest if they are labelled; they answer different questions. Price leads with 84 suggestions, a quarter of them, ahead of range (76) and delivery speed (58). A count of mentions measures how common a theme is, not how strongly people feel or how much it would change their buying, so read the answers behind each code before acting on it. Crossed with segment, delivery speed was raised by 18.0% of subscribers and 8.1% of newsletter-only respondents, which fits the fact that subscribers are the ones waiting for deliveries.' },
+    { p: 'Both bases are honest if they are labelled; they answer different questions. Price leads with 84 suggestions, a quarter of them, ahead of range (76) and delivery speed (58). A count of mentions measures how common a theme is, not how strongly people feel or how much it would change their buying, so read the answers behind each code before acting on it. Crossed with segment, delivery speed was raised by 18.0% of repeat customers and 8.1% of newsletter-only respondents, which fits the fact that repeat customers, the subscribers among them, are the ones who wait for deliveries most often.' },
 
     { h: 'Frequency tables and cross-tabs in Excel' },
     { p: 'With Ana’s export in A1:H517 (segment in B, the 0–10 score in C, the Cold Brew answer in D), a frequency table is one COUNTIF per answer. With the five answers in J2:J6, <x>=COUNTIF($D$2:$D$517,J2)</x> filled down counts them, and <x>=K2/SUM($K$2:$K$6)</x> turns the counts into percentages of the base. A cross-tab is a grid of COUNTIFS with mixed references, as in B03: with segments down J3:J6 and answers across K2:O2, <x>=COUNTIFS($B$2:$B$517,$J3,$D$2:$D$517,K$2)</x> in K3 fills across and down, and <x>=K3/SUM($K3:$O3)</x> gives row percentages.' },
@@ -184,7 +184,7 @@ export default {
     { h: 'The Net Promoter Score and its margin of error' },
     { p: String.raw`Give each answer a value of +100 for a promoter, 0 for a passive and −100 for a detractor: the NPS is the mean of those values. Its standard error follows from their variance, which depends only on the shares of promoters and detractors (the formula cards). For Ana, <m>100\sqrt{(0.459 + 0.184 - 0.275^2) \div 516}</m> <m>\approx 3.32</m>, and the 95% margin is <m>1.96 \times 3.32 \approx 6.5</m> points. That is half as wide again as the margin for the promoters’ share alone, ±4.3 points, because the NPS is the difference of two shares that move against each other.` },
     { p: 'Rocks (2016) compared interval methods for the NPS and found that this simple (Wald) interval is too narrow, covering the true score less often than 95% of the time even at 300 answers (he also found an iterative score interval performs well). He recommends an adjusted version that adds 3/4 to the promoter and detractor counts and 3/2 to the passive count before applying the same formula. At Ana’s 516 answers the adjustment hardly matters (+27.4 ± 6.5); for the 27 workshop participants it moves the interval from +11.2 to +70.2 to +8.6 to +64.7. On bases that small, use the adjusted interval, or better, don’t report the score at all (see Small bases).' },
-    { p: String.raw`Two independent groups’ scores are compared through the standard error of their difference, <m>\sqrt{\text{SE}_1^2 + \text{SE}_2^2}</m>. Subscribers (+61.8, SE 7.20) and newsletter-only respondents (+7.1, SE 4.28) differ by 54.7 points with a standard error of 8.37, so z ≈ 6.5: far beyond chance. Two waves of a tracking survey are independent samples too, so the same calculation shows whether a change between waves is larger than chance; In practice shows why a few points usually aren’t.` },
+    { p: String.raw`Two independent groups’ scores are compared through the standard error of their difference, <m>\sqrt{\text{SE}_1^2 + \text{SE}_2^2}</m>. Repeat customers (+61.8, SE 7.20) and newsletter-only respondents (+7.1, SE 4.28) differ by 54.7 points with a standard error of 8.37, so z ≈ 6.5: far beyond chance. Two waves of a tracking survey are independent samples too, so the same calculation shows whether a change between waves is larger than chance; In practice shows why a few points usually aren’t.` },
     { p: 'Reichheld argued that this one question usually predicted growth better than others, and that in most of the industries he studied the share of enthusiastic customers tracked growth relative to competitors. Keiningham and colleagues (2007), with longitudinal data from 21 Norwegian firms, failed to replicate its claimed superiority over other measures of customer satisfaction and loyalty. The score also throws information away: a 0 and a 6 are both detractors, and half promoters with half detractors scores 0, the same as everyone a passive. Use it as one tracked indicator, with its margin of error, beside the distribution of scores and the reasons people give. Net Promoter Score is a service mark of Bain &amp; Company, NICE Systems and Fred Reichheld.' },
 
     { h: 'Weighted results in Excel' },
@@ -200,7 +200,7 @@ export default {
     { callout: 'note', title: 'What Ana couldn’t see', html: 'The case records every person’s (fictional) answers, so the truth is known: the NPS of all 6,000 people on the list is +8.4. Weighting moved Ana’s estimate from +27.5 to +20.4 by correcting for segments that replied at different rates, but within each segment promoters replied more readily than detractors, and no weight built from segments can see that. For Cold Brew intent, the weighted 38.2% is close to the true 39.3%. Non-response bias differs from one question to the next, which is why <i>Survey error</i> treats a low response rate as a warning, not as a measure of bias.' },
 
     { h: 'Comparing groups' },
-    { p: 'Differences between segments are tested with B04’s methods. Subscribers’ top-two-box score of 61.8% against newsletter-only respondents’ 31.0% gives a <g>two-proportion z test</g> statistic of 5.25 (p &lt; 0.0001) and a 95% interval for the gap of 19.4 to 42.2 points. Subscribers against other shop customers, 61.8% against 55.3%, gives z = 0.91 and p = 0.37, with an interval from −7.5 to +20.4 points: on these bases the survey can’t tell the two apart.' },
+    { p: 'Differences between segments are tested with B04’s methods. Repeat customers’ top-two-box score of 61.8% against newsletter-only respondents’ 31.0% gives a <g>two-proportion z test</g> statistic of 5.25 (p &lt; 0.0001) and a 95% interval for the gap of 19.4 to 42.2 points. Repeat customers against other shop customers, 61.8% against 55.3%, gives z = 0.91 and p = 0.37, with an interval from −7.5 to +20.4 points: on these bases the survey can’t tell the two apart.' },
     { p: 'To test all four segments at once, use the chi-square <g>test of independence</g>. The full 4 × 5 table fails its condition: the expected count of workshop participants who “definitely would not” buy is 2.56, below 5. Merging the answers into the top two boxes against the rest leaves a 4 × 2 table whose smallest expected count is 11.4, and gives χ² = 37.7 with 3 degrees of freedom, p &lt; 0.0001 and Cramér’s V = 0.27: intent clearly differs by segment.' },
     { p: 'Three cautions. B04’s tests assume simple random samples; each segment is a random sample of its stratum, so comparisons between segments stand, but an interval for a weighted all-respondent figure needs the stratified standard error from <i>Sampling methods</i>. The tests speak only about the people who replied: if keen newsletter readers replied more readily than indifferent ones, the gap the test confirms may be partly a gap in who answered. And twenty cross-tabs tested at the 5% level will produce about one “significant” difference by chance, the <g>multiple testing</g> problem, so choose the few comparisons that matter before looking.' },
 
@@ -209,7 +209,7 @@ export default {
     { p: 'All four segments have a median of 3 cups, while their means run from 3.7 to 4.0: the differences between the means come from a few heavy buyers, not from the typical respondent. Report the median for a typical customer and the mean when you need a total, because the mean times the number of people gives the cups bought. A recall question about last week also carries <g>measurement error</g>, as <i>Survey error</i> explained, so neither figure deserves more than one decimal place.' },
 
     { h: 'Small bases' },
-    { p: 'Workshop participants returned 27 completes. Their NPS is +40.7 with a margin of ±29.5 points, from about +11 to +70, and their top-two-box score is 51.9% with a margin of ±18.8 points. Figures like these invite over-reading: “workshop participants are less enthusiastic than subscribers” isn’t supported when the two intervals overlap this much. Set a minimum base before the analysis and apply it to every table. One published standard, from the US National Center for Health Statistics, withholds among other things any proportion whose sample size (or effective sample size) is under 30, or whose 95% Clopper–Pearson confidence interval is 30 percentage points wide or more (Parker et al., 2017); Ana adopts the first rule (fictional), so workshop participants count in every all-respondent figure but get no figure of their own.' },
+    { p: 'Workshop participants returned 27 completes. Their NPS is +40.7 with a margin of ±29.5 points, from about +11 to +70, and their top-two-box score is 51.9% with a margin of ±18.8 points. Figures like these invite over-reading: “workshop participants are less enthusiastic than repeat customers” isn’t supported when the two intervals overlap this much. Set a minimum base before the analysis and apply it to every table. One published standard, from the US National Center for Health Statistics, withholds among other things any proportion whose sample size (or effective sample size) is under 30, or whose 95% Clopper–Pearson confidence interval is 30 percentage points wide or more (Parker et al., 2017); Ana adopts the first rule (fictional), so workshop participants count in every all-respondent figure but get no figure of their own.' },
   ],
 
   formulas: [
@@ -270,12 +270,12 @@ export default {
     { level: 'applied', title: 'Who would buy Lantern Cold Brew?', fictional: true,
       setup: 'Ana wants one paragraph for her March planning meeting: how many people on her list would buy Cold Brew, which segments, and how sure she can be. Use the cross-tab of Q2 by segment, B04’s tests and the weights.',
       steps: [
-        'Describe with the right percentages: within each segment, the top-two-box share is 61.8% for subscribers (base 89), 55.3% for other shop customers (103), 51.9% for workshop participants (27) and 31.0% for newsletter-only respondents (297).',
-        'Test: the full 4 × 5 table has an expected count of 2.56, so merge to top two against the rest; χ² = 37.7, 3 degrees of freedom, p &lt; 0.0001, V = 0.27. Subscribers against newsletter-only: z = 5.25; other shop customers against newsletter-only: z = 4.41. Subscribers against other shop customers: z = 0.91, p = 0.37, not distinguishable.',
+        'Describe with the right percentages: within each segment, the top-two-box share is 61.8% for repeat customers (base 89), 55.3% for other shop customers (103), 51.9% for workshop participants (27) and 31.0% for newsletter-only respondents (297).',
+        'Test: the full 4 × 5 table has an expected count of 2.56, so merge to top two against the rest; χ² = 37.7, 3 degrees of freedom, p &lt; 0.0001, V = 0.27. Repeat customers against newsletter-only: z = 5.25; other shop customers against newsletter-only: z = 4.41. Repeat customers against other shop customers: z = 0.91, p = 0.37, not distinguishable.',
         'Apply the minimum base: workshop participants (27) fall below 30, so they get no figure of their own in the paragraph.',
         'Generalise: unweighted, 42.2% of completes are in the top two boxes; weighted to the list’s segment sizes, 38.2%. The weighted figure is the one to quote for the list as a whole, with its unweighted base of 516.',
       ],
-      answer: '“Weighted to the list’s segment sizes, 38.2% of people on Lantern’s mailing list say they would definitely or probably buy Cold Brew in the next three months (unweighted base 516). Intent is far higher among Lantern’s shop customers and subscribers (55% and 62%) than among newsletter-only contacts (31%).”',
+      answer: '“Weighted to the list’s segment sizes, 38.2% of people on Lantern’s mailing list say they would definitely or probably buy Cold Brew in the next three months (unweighted base 516). Intent is far higher among Lantern’s shop customers (62% for repeat customers, 55% for the others) than among newsletter-only contacts (31%).”',
       interpretation: 'The paragraph gives the figure, its base, its weighting and the one difference that is clearly real. It doesn’t say 38% will buy: these are stated intentions from people who answered a survey from Lantern, and the focus groups and the price audit must test why the newsletter-only contacts, the largest group on the list, are less keen.' },
   ],
 
@@ -287,11 +287,11 @@ export default {
 
   mistakes: [
     { title: '“42% would buy” is a finding.', html: 'Not until the reader knows 42% of whom and of how many. Print the base with every figure (“base: all completes, 516”), say whether it is weighted, and keep one base throughout a table or print each row’s.' },
-    { title: '“A cross-tab can be percentaged either way.”', html: 'Both directions are arithmetic, but they answer different questions. To compare how groups answered, percentage within each category of the explanatory variable: 61.8% of subscribers against 31.0% of newsletter-only respondents. Reading the column view (38.3% of those who would definitely buy were newsletter-only) as that group’s rate is the error.' },
+    { title: '“A cross-tab can be percentaged either way.”', html: 'Both directions are arithmetic, but they answer different questions. To compare how groups answered, percentage within each category of the explanatory variable: 61.8% of repeat customers against 31.0% of newsletter-only respondents. Reading the column view (38.3% of those who would definitely buy were newsletter-only) as that group’s rate is the error.' },
     { title: '“An NPS of +27.5 means 27.5% would recommend Lantern.”', html: 'It is the percentage of promoters minus the percentage of detractors: 45.9% − 18.4%. A score of 0 can mean half promoters and half detractors, or everyone a passive, so show the three shares beside it.' },
     { title: '“Don’t know” can be stored as 0, or as 99, and averaged.', html: '0 is a real answer on a 0–10 scale, and AVERAGE treats 99 as a score. Give each kind of missing answer its own code, exclude the codes with AVERAGEIFS or a criterion such as <x>"<99"</x>, and decide whether each base includes “don’t know”.' },
     { title: '“Weighting removes non-response bias.”', html: 'Weighting to segment sizes corrects only for segments replying at different rates. If, within a segment, the people who reply differ from those who don’t, as Lantern’s promoters did, the weighted figure is still biased, and nothing in the data shows by how much.' },
-    { title: '“Two segments differ because their figures differ.”', html: 'Every segment’s figure has a margin of error that grows as its base shrinks. Subscribers’ 61.8% and other shop customers’ 55.3% can’t be told apart (p = 0.37), and 27 workshop participants give margins of ±19 to ±30 points. Test the comparisons that matter, and don’t report bases below your minimum.' },
+    { title: '“Two segments differ because their figures differ.”', html: 'Every segment’s figure has a margin of error that grows as its base shrinks. Repeat customers’ 61.8% and other shop customers’ 55.3% can’t be told apart (p = 0.37), and 27 workshop participants give margins of ±19 to ±30 points. Test the comparisons that matter, and don’t report bases below your minimum.' },
   ],
 
   application: [
@@ -345,7 +345,7 @@ export default {
     { what: 'Range suggestions', value: TH[3], shown: 76 },
     { what: 'Delivery suggestions', value: TH[2], shown: 58 },
     { what: 'Price is about a quarter of suggestions', value: TH[1] / SUGG, shown: 0.25, tol: 0.01 },
-    { what: 'Delivery speed, subscribers %', value: (thBy(0, 2) / nS[0]) * 100, shown: 18.0, tol: 0.05 },
+    { what: 'Delivery speed, repeat customers %', value: (thBy(0, 2) / nS[0]) * 100, shown: 18.0, tol: 0.05 },
     { what: 'Delivery speed, newsletter only %', value: (thBy(3, 2) / nS[3]) * 100, shown: 8.1, tol: 0.05 },
     { what: 'Themes', value: LEVELS.theme.length, shown: 7 },
     // frequency table
@@ -355,7 +355,7 @@ export default {
     { what: 'Bottom two %', value: (bot2(R) / N) * 100, shown: 26.2, tol: 0.05 },
     { what: 'Definitely count', value: CB.colTotals[0], shown: 81 },
     // cross-tab
-    { what: 'Subscribers top two %', value: (T2[0][0] / nS[0]) * 100, shown: 61.8, tol: 0.05 },
+    { what: 'Repeat customers top two %', value: (T2[0][0] / nS[0]) * 100, shown: 61.8, tol: 0.05 },
     { what: 'Shop top two %', value: (T2[1][0] / nS[1]) * 100, shown: 55.3, tol: 0.05 },
     { what: 'Workshop top two %', value: (T2[2][0] / nS[2]) * 100, shown: 51.9, tol: 0.05 },
     { what: 'Newsletter top two %', value: (T2[3][0] / nS[3]) * 100, shown: 31.0, tol: 0.05 },
@@ -366,7 +366,7 @@ export default {
     { what: 'Shop base', value: nS[1], shown: 103 },
     { what: 'Newsletter base', value: nS[3], shown: 297 },
     { what: 'Workshop base', value: nS[2], shown: 27 },
-    { what: 'Subscriber base', value: nS[0], shown: 89 },
+    { what: 'Repeat customer base', value: nS[0], shown: 89 },
     // NPS
     { what: 'Promoters', value: NPS.promoters, shown: 237 },
     { what: 'Passives', value: NPS.passives, shown: 184 },
@@ -384,13 +384,13 @@ export default {
     { what: 'NPS high', value: NPS.high, shown: 34, tol: 0.5 },
     { what: 'Promoter-share margin', value: promMargin, shown: 4.3, tol: 0.05 },
     { what: 'Half as wide again', value: NPS.margin / promMargin, shown: 1.5, tol: 0.05 },
-    { what: 'Subscribers NPS', value: NPSS[0].score, shown: 61.8, tol: 0.05 },
+    { what: 'Repeat customers NPS', value: NPSS[0].score, shown: 61.8, tol: 0.05 },
     { what: 'Shop NPS', value: NPSS[1].score, shown: 53.4, tol: 0.05 },
     { what: 'Workshop NPS', value: NPSS[2].score, shown: 40.7, tol: 0.05 },
     { what: 'Newsletter NPS', value: NPSS[3].score, shown: 7.1, tol: 0.05 },
-    { what: 'Subscribers NPS rounded', value: NPSS[0].score, shown: 62, tol: 0.5 },
+    { what: 'Repeat customers NPS rounded', value: NPSS[0].score, shown: 62, tol: 0.5 },
     { what: 'Newsletter NPS rounded', value: NPSS[3].score, shown: 7, tol: 0.5 },
-    { what: 'Subscribers SE', value: NPSS[0].se, shown: 7.20 },
+    { what: 'Repeat customers SE', value: NPSS[0].se, shown: 7.20 },
     { what: 'Newsletter SE', value: NPSS[3].se, shown: 4.28 },
     { what: 'NPS gap sub − news', value: dNps, shown: 54.7, tol: 0.05 },
     { what: 'SE of gap', value: dSe, shown: 8.37 },
@@ -411,8 +411,8 @@ export default {
     { what: 'Norwegian firms (Keiningham et al.)', value: 21, shown: 21 },
     { what: 'Rocks: coverage short of 95% at 300 answers', value: 300, shown: 300 },
     // weighting
-    { what: 'Subscribers % of list', value: (SIZES[0] / LIST) * 100, shown: 8.7, tol: 0.05 },
-    { what: 'Subscribers % of completes', value: (nS[0] / N) * 100, shown: 17.2, tol: 0.05 },
+    { what: 'Repeat customers % of list', value: (SIZES[0] / LIST) * 100, shown: 8.7, tol: 0.05 },
+    { what: 'Repeat customers % of completes', value: (nS[0] / N) * 100, shown: 17.2, tol: 0.05 },
     { what: 'Newsletter % of list', value: (SIZES[3] / LIST) * 100, shown: 72.2, tol: 0.05 },
     { what: 'Newsletter % of completes', value: (nS[3] / N) * 100, shown: 57.6, tol: 0.05 },
     { what: 'Weighted NPS', value: D.nps.weighted.score, shown: 20.4, tol: 0.05 },
@@ -427,13 +427,13 @@ export default {
     { what: 'True top two %', value: D.coldbrew.truthTopTwo * 100, shown: 39.3, tol: 0.05 },
     { what: 'List size', value: LIST, shown: 6000 },
     // comparisons
-    { what: 'z subscribers v newsletter', value: SUBNEWS.z, shown: 5.25 },
+    { what: 'z repeat customers v newsletter', value: SUBNEWS.z, shown: 5.25 },
     { what: 'p below 0.0001', value: Number(SUBNEWS.pValue < 0.0001), shown: 1 },
     { what: 'Gap CI low', value: SUBNEWS.low * 100, shown: 19.4, tol: 0.05 },
     { what: 'Gap CI high', value: SUBNEWS.high * 100, shown: 42.2, tol: 0.05 },
-    { what: 'z subscribers v shop', value: SUBSHOP.z, shown: 0.91 },
+    { what: 'z repeat customers v shop', value: SUBSHOP.z, shown: 0.91 },
     { what: 'z shop v newsletter', value: SHOPNEWS.z, shown: 4.41 },
-    { what: 'p subscribers v shop', value: SUBSHOP.pValue, shown: 0.37 },
+    { what: 'p repeat customers v shop', value: SUBSHOP.pValue, shown: 0.37 },
     { what: 'Sub v shop CI low', value: SUBSHOP.low * 100, shown: -7.5, tol: 0.05 },
     { what: 'Sub v shop CI high', value: SUBSHOP.high * 100, shown: 20.4, tol: 0.05 },
     { what: 'Smallest expected count, 4 × 5', value: CHI5.minExpected, shown: 2.56 },
@@ -500,7 +500,7 @@ export default {
     { what: 'Grid items', value: 10, shown: 10 },
     // applied example rounding
     { what: 'Shop top two rounded', value: (T2[1][0] / nS[1]) * 100, shown: 55, tol: 0.5 },
-    { what: 'Subscribers top two rounded', value: (T2[0][0] / nS[0]) * 100, shown: 62, tol: 0.5 },
+    { what: 'Repeat customers top two rounded', value: (T2[0][0] / nS[0]) * 100, shown: 62, tol: 0.5 },
     { what: 'Newsletter top two rounded', value: (T2[3][0] / nS[3]) * 100, shown: 31, tol: 0.5 },
     // Tallyroot
     { what: 'Tallyroot wave 2 NPS', value: TB.score, shown: 23.0, tol: 0.05 },

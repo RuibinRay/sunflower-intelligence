@@ -15,9 +15,9 @@
 // not copies of lesson exercises, module tests, the final or the project, and nothing from the project’s scenario or
 // data. No hints; solutions are shown on review. Every num item’s `check` recomputes its answer, and the formula item is
 // marked by its results on the sheet and on changed copies.
-import { RESPONDENT_COLUMNS, RESPONDENT_ROWS, RESPONDENTS, LEVELS, SIZES, tableCells, DERIVED } from './case.js?v=24';
-import * as S from '../../../core/survey.js?v=24';
-import * as I from '../../../core/inference.js?v=24';
+import { RESPONDENT_COLUMNS, RESPONDENT_ROWS, RESPONDENTS, LEVELS, SIZES, tableCells, DERIVED } from './case.js?v=25';
+import * as S from '../../../core/survey.js?v=25';
+import * as I from '../../../core/inference.js?v=25';
 
 const r = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -274,7 +274,7 @@ export const items = [
       `=SUMIF(C2:C${L},F1,D2:D${L})/SUM(D2:D${L})`,
     ],
     wrong: [
-      { formula: `=COUNTIF(C2:C${L},F1)/COUNTA(C2:C${L})`, say: 'That is the unweighted share of completes. Subscribers replied far more readily than newsletter-only people, so each answer should count by its weight: sum the weights of the people who gave the route.' },
+      { formula: `=COUNTIF(C2:C${L},F1)/COUNTA(C2:C${L})`, say: 'That is the unweighted share of completes. Repeat customers replied far more readily than newsletter-only people, so each answer should count by its weight: sum the weights of the people who gave the route.' },
       { formula: `=SUMIFS(D2:D${L},C2:C${L},F1)/COUNT(D2:D${L})`, say: 'The summed weights stand for people on the list, so divide by the sum of all the weights (the list’s 6,000), not by the 516 respondents.' },
       { formula: `=SUMIFS(D2:D${L},C2:C${L},F1)/6000`, say: 'Typing the list size gives the right answer only while the weights stay as they are. Divide by SUM(D2:D517), which is the list size the weights add up to.' },
     ],

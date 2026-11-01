@@ -11,12 +11,15 @@
 // the year Ana wants to know what goes with what — and which of those links she can act on.
 //
 // Agrees with other courses (checked in IDENTITIES): F03's two cafés, their names and opening day, their ten months of
-// trading and their $236,000 of 2027 sales; F03's $189,400 of 2027 online sales (the project's weekly data). The peak
+// trading and their $236,000 of 2027 sales; F03's $189,400 of 2027 online sales (the project's weekly data); B04's 120
+// subscribers at the end of 2026, whose monthly deliveries (B03's subscription orders) fit inside the year's orders and sales. The peak
 // barista hours are the 7–11 a.m. roster only, not the day's paid hours (F03 has the year's café wages).
-import { CAFE_COLUMNS, CAFE_ROWS, SLIP, SHOP_COLUMNS, SHOP_WEEKS, OUTAGE_WEEK } from './data.js?v=24';
-import { FACTS as F03 } from '../f03/case.js?v=24';
-import * as C from '../../../core/correlation.js?v=24';
-import { mean, sd } from '../../../core/stats.js?v=24';
+import { CAFE_COLUMNS, CAFE_ROWS, SLIP, SHOP_COLUMNS, SHOP_WEEKS, OUTAGE_WEEK } from './data.js?v=25';
+import { FACTS as F03 } from '../f03/case.js?v=25';
+import { SUBSCRIBER_SURVEY } from '../b04/case.js?v=25';
+import { ORDER_COLUMNS as B03_COLS, ORDERS as B03_ORDERS } from '../b03/case.js?v=25';
+import * as C from '../../../core/correlation.js?v=25';
+import { mean, sd } from '../../../core/stats.js?v=25';
 
 export { CAFE_COLUMNS, CAFE_ROWS, SLIP };
 /** The project's data (lessons, exercises and module tests must not use these). */
@@ -95,6 +98,12 @@ export const IDENTITIES = [
   ['the project’s 52 weeks total F03’s $189,400 of online sales', Math.round(SHOP_WEEKS.reduce((s, w) => s + w[shopAt('order_value')], 0) * 100) === F03.shop.sales * 100],
   ['the project’s paid-social spend is a small part of F03’s $11,500 of 2027 advertising (mostly the cafés’ opening)', SHOP_WEEKS.reduce((s, w) => s + w[shopAt('social_spend')], 0) < F03.advertising / 3],
   ['the project’s orders at B03’s $5.20 a parcel come within 1% of F03’s $20,300 of 2027 shipping', Math.abs(SHOP_WEEKS.reduce((s, w) => s + w[shopAt('orders')], 0) * 5.20 / F03.shipping - 1) < 0.01],
+  ['the project’s active subscribers start from the 120 B04’s December 2026 survey invited', SHOP_WEEKS[0][shopAt('active_subscribers')] - SHOP_WEEKS[0][shopAt('new_subscribers')] <= SUBSCRIBER_SURVEY.invited && SHOP_WEEKS[0][shopAt('active_subscribers')] - SHOP_WEEKS[0][shopAt('new_subscribers')] >= SUBSCRIBER_SURVEY.invited - 3],
+  ['a monthly delivery for every active subscriber is under half the year’s orders, and at B03’s average subscription order under a third of its sales', (() => {
+    const months = SHOP_WEEKS.reduce((s, w) => s + w[shopAt('active_subscribers')] * w[shopAt('days')], 0) / (365 / 12);
+    const subs = B03_ORDERS.filter((r) => r[B03_COLS.indexOf('subscription')] === 'yes'), avg = subs.reduce((s, r) => s + r[B03_COLS.indexOf('order_total')], 0) / subs.length;
+    return months < 0.5 * SHOP_WEEKS.reduce((s, w) => s + w[shopAt('orders')], 0) && months * avg < F03.shop.sales / 3;
+  })()],
   ['the project covers 1 January – 31 December 2027', SHOP_WEEKS[0][shopAt('starts')] === '2027-01-01' && SHOP_WEEKS.reduce((s, w) => s + w[shopAt('days')], 0) === 365],
   ['planted: Simpson’s reversal (pooled negative, both cafés positive)', DERIVED.footTicket.r < 0 && DERIVED.footTicketH.r > 0 && DERIVED.footTicketM.r > 0],
   ['planted: staffing goes with longer waits, but shortens them at a given number of transactions', DERIVED.staffWait.r > 0 && DERIVED.staffWaitGivenTrans.r < 0],

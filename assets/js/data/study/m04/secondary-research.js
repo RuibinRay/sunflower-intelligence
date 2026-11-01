@@ -3,11 +3,11 @@
 // `checks` recompute them. The Harbour City Statistics Office, the Harbour City Grocers’ Association, the town of Kelstow
 // and every figure attached to them are fictional. Facts about real statistics offices and registers are from the pages
 // cited in `references`, checked on 24 October 2026.
-import { CATEGORY, CHANNELS, DEFAULT_PLAN, MAILING_LIST, SUBSCRIBER_SURVEY, CLIENT_INTERVIEWS, STRATA, SIZES } from './case.js?v=24';
-import { SHOP } from '../b01/case.js?v=24';
-import { ORDERS, ORDER_COLUMNS } from '../b03/case.js?v=24';
-import { HARBOURLINE } from '../f00/case.js?v=24';
-import { ciProp } from '../../../core/inference.js?v=24';
+import { CATEGORY, CHANNELS, DEFAULT_PLAN, MAILING_LIST, SUBSCRIBER_SURVEY, CLIENT_INTERVIEWS, STRATA, SIZES } from './case.js?v=25';
+import { SHOP } from '../b01/case.js?v=25';
+import { ORDERS, ORDER_COLUMNS } from '../b03/case.js?v=25';
+import { HARBOURLINE } from '../f00/case.js?v=25';
+import { ciProp } from '../../../core/inference.js?v=25';
 
 const f = (n) => Math.round(n).toLocaleString('en-US');
 const product = ORDER_COLUMNS.indexOf('product');
@@ -252,15 +252,15 @@ export default {
     // Lantern's internal and M02 figures
     { what: 'Category cans a year, millions (M02)', value: CATEGORY.cansPerYear / 1e6, shown: 4.8 },
     { what: 'First-time buyers Jul–Dec 2026 (B01)', value: newBuyers, shown: 1406 },
-    { what: 'December survey replies (B04)', value: SUBSCRIBER_SURVEY.responded, shown: 312 },
-    { what: 'December survey invited (B04)', value: SUBSCRIBER_SURVEY.invited, shown: 520 },
+    { what: 'December survey replies (B04)', value: SUBSCRIBER_SURVEY.responded, shown: 72 },
+    { what: 'December survey invited (B04)', value: SUBSCRIBER_SURVEY.invited, shown: 120 },
     { what: 'Client interviews (M01)', value: CLIENT_INTERVIEWS.interviewed, shown: 12 },
     { what: 'Bids lost (M01)', value: CLIENT_INTERVIEWS.lostBids, shown: 5 },
     { what: 'Cold Brew Pack orders, spring (B03)', value: coldBrewPacks, shown: 9 },
     { what: 'Spring orders (B03)', value: ORDERS.length, shown: 231 },
     { what: 'Cold Brew Pack share of spring orders %', value: coldBrewPacks / ORDERS.length * 100, shown: 3.9, tol: 0.05 },
     { what: 'Mailing list (B04)', value: MAILING_LIST, shown: 6000 },
-    { what: 'Subscribers on the list', value: SIZES[0], shown: 520 },
+    { what: 'Repeat customers on the list', value: SIZES[0], shown: 520 },
     { what: 'Newsletter-only contacts', value: SIZES[3], shown: 4330 },
     { what: 'Cold Brew price (M02)', value: DEFAULT_PLAN.price, shown: 3.49 },
     { what: 'Planned channels’ share of cans (M02)', value: ch.supermarket + ch.natural + ch.direct, shown: 0.7 },

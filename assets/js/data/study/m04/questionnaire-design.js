@@ -3,7 +3,7 @@
 // business here (Tamberlake Gyms, Marrowby Buses) are fictional. Pew Research Center, Krosnick & Presser (2010), the
 // U.S. Census Bureau, OpenStax and Reichheld (2003) are cited for real findings; their figures are checked below.
 // Analysing the answers (frequencies, top box, the Net Promoter Score and its standard error) is module 4's.
-import { SURVEY_2027 } from './case.js?v=24';
+import { SURVEY_2027 } from './case.js?v=25';
 
 const Q = SURVEY_2027.questions;
 const DRAFT = 12, AFTER_REVIEW = 7, FINAL = Q.length;        // Ana's draft, after her review, after the pretest
@@ -93,7 +93,7 @@ export default {
         [`<b>${Q[5].id}</b> ${Q[5].text}`, '3: what to improve', 'Coded into themes and counted'],
       ],
     } },
-    { p: 'One thing is missing on purpose: nobody is asked whether they are a subscriber, a shop customer, a workshop participant or a newsletter reader. Lantern’s mailing list already records it, so the survey tool attaches it to each reply. Ask only what you can’t learn another way.' },
+    { p: 'One thing is missing on purpose: nobody is asked whether they are a repeat customer, another shop customer, a workshop participant or a newsletter reader. Lantern’s mailing list already records it, so the survey tool attaches it to each reply. Ask only what you can’t learn another way.' },
 
     { h: 'Kinds of question' },
     { p: 'An <g>open question</g> lets people answer in their own words, as Q6 does; a <g>closed question</g> asks them to choose from a list. Closed questions come in four common forms. A <g>dichotomous question</g> offers two answers (yes or no). A <g>multiple-choice question</g> offers a list and asks for one answer, or for all that apply. A <g>ranking question</g> asks people to put options in order, and a <g>rating scale</g> asks them to place a judgement on a set of ordered points.' },
