@@ -26,7 +26,8 @@ const nJulOn = JUL.filter((c) => c.notifications === 1).length;
 const OB = { nT: 900, xT: 180, nC: 700, xC: 105 };                    // Brixley Books' reactivation email (fictional)
 const ob = propTest2(OB.xT, OB.nT, OB.xC, OB.nC);
 const testCells = { A1: 'Group', B1: 'Returned', C1: 'Customers', A2: 'Offered', B2: OB.xT, C2: OB.nT, A3: 'Holdout', B3: OB.xC, C3: OB.nC, A5: 'Difference', A6: '95% lower limit' };
-const hs = propTest2(84, 500, 60, 500);                               // a fictional hair salon's win-back text
+const hs = propTest2(84, 500, 60, 500);
+const PT = propTest2(41, 431, 22, 430);                               // the lesson’s fictional pastry test                               // a fictional hair salon's win-back text
 const netCells = { A1: 'Customers offered', B1: 1200, A2: 'Return rate, offered', B2: 0.21, A3: 'Return rate, holdout', B3: 0.16, A4: 'Cost per redemption ($)', B4: 2.5, A5: 'Value of a customer won back ($)', B5: 18, A7: 'Net value of the offer ($)' };
 const netAns = 1200 * (0.21 - 0.16) * 18 - 1200 * 0.21 * 2.5;
 const nPer = (pc, pt) => (Z + normInv(0.8)) ** 2 * (pc * (1 - pc) + pt * (1 - pt)) / (pt - pc) ** 2;
@@ -45,8 +46,8 @@ export const widgets = {
     title: 'Planning a holdout test of a retention offer',
     intro: 'Equal groups offered and held out. The power is the chance of a significant result (5% level, two-sided) if the uplift is as set.',
     inputs: [
-      { id: 'pc', label: 'Return rate without the offer', min: 5, max: 40, step: 1, value: 17, fmt: 'pct' },
-      { id: 'u', label: 'Uplift from the offer (points)', min: 1, max: 15, step: 0.5, value: 6, fmt: 'num' },
+      { id: 'pc', label: 'Return rate without the offer', min: 2, max: 40, step: 1, value: 5, fmt: 'pct' },
+      { id: 'u', label: 'Uplift from the offer (points)', min: 1, max: 15, step: 0.5, value: 4.5, fmt: 'num' },
       { id: 'n', label: 'Customers in each group', min: 100, max: 3000, step: 50, value: 450, fmt: 'int' },
       { id: 'k', label: 'Cost per redemption', min: 0, max: 3, step: 0.05, value: 0.9, fmt: 'money' },
       { id: 'v', label: 'Value of a customer won back', min: 1, max: 30, step: 0.5, value: 7.5, fmt: 'money' },
@@ -221,10 +222,10 @@ export const independent = [
   },
   {
     id: 'm06-loy-i4', type: 'num', kind: 'numerical',
-    prompt: 'Lantern wants a win-back test able to detect a rise in 30-day returns from 15% to 20% with 80% power at the 5% significance level (two-sided). About how many members does each group need? Use z = 1.96 and 0.84 and round up.',
-    answer: Math.ceil((1.96 + 0.84) ** 2 * (0.15 * 0.85 + 0.2 * 0.8) / 0.05 ** 2), check: () => Math.ceil((1.96 + 0.84) ** 2 * (0.15 * 0.85 + 0.2 * 0.8) / 0.0025), unit: 'members', places: 0, tol: 1,
-    wrong: [{ value: Math.ceil((1.96 + 0.84) * (0.15 * 0.85 + 0.2 * 0.8) / 0.0025), say: 'Square the sum of the z values: (1.96 + 0.84)².' }],
-    solution: `(1.96 + 0.84)² × (0.15 × 0.85 + 0.20 × 0.80) ÷ 0.05² = 7.84 × 0.2875 ÷ 0.0025 = ${Math.ceil(7.84 * 0.2875 / 0.0025)} a group. Lantern’s ${861} members who lapsed in the window would not be enough in one month.`,
+    prompt: 'Lantern wants a win-back test able to detect a rise in 30-day returns from 5% to 8% with 80% power at the 5% significance level (two-sided). About how many members does each group need? Use z = 1.96 and 0.84 and round up.',
+    answer: Math.ceil((1.96 + 0.84) ** 2 * (0.05 * 0.95 + 0.08 * 0.92) / 0.03 ** 2), check: () => Math.ceil(7.84 * (0.0475 + 0.0736) / 0.0009), unit: 'members', places: 0, tol: 1,
+    wrong: [{ value: Math.ceil((1.96 + 0.84) * (0.05 * 0.95 + 0.08 * 0.92) / 0.0009), say: 'Square the sum of the z values: (1.96 + 0.84)².' }],
+    solution: `(1.96 + 0.84)² × (0.05 × 0.95 + 0.08 × 0.92) ÷ 0.03² = 7.84 × 0.1211 ÷ 0.0009 = ${Math.ceil(7.84 * 0.1211 / 0.0009)} a group, over 2,100 members in all: more than the 861 who had lapsed in the window, so Lantern would need to pool several months.`,
   },
   {
     id: 'm06-loy-i5', type: 'multi', kind: 'conceptual',
@@ -290,7 +291,7 @@ export const check = [
   },
   {
     id: 'm06-loy-k4', type: 'mc', kind: 'applied',
-    prompt: 'Lantern’s fictional pastry test gave an uplift of 6.0 points (95% CI 0.7 to 11.3) against a break-even uplift of 2.76 points. What is the best summary for the owners?',
+    prompt: `Lantern’s fictional pastry test gave an uplift of ${fx(PT.diff * 100, 1)} points (95% CI ${fx(PT.low * 100, 1)} to ${fx(PT.high * 100, 1)}) against a break-even uplift of ${fx(PT.p1 * 0.9 / 7.5 * 100, 2)} points. What is the best summary for the owners?`,
     options: [
       'The offer probably pays, since the estimate is well above break-even, but the interval reaches below break-even, so keep a holdout and keep measuring.',
       'The offer pays for certain, because the result is statistically significant.',

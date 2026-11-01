@@ -107,7 +107,7 @@ export const items = [
     options: [
       'A has the higher ratio, so it is always the better use of money, whatever the chain’s cash position.',
       'A creates more value per dollar but ties cash up for over a year; while cash is short, B may be the safer place to start.',
-      'B is better because a payback of 3 months means its clients are worth more than A’s.',
+      'B is probably the better choice, because a payback of 3 months suggests its clients are worth more than A’s.',
       'Neither should be used, because B’s ratio is below the 3:1 rule that every business must meet.',
     ],
     answer: 1,

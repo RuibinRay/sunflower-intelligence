@@ -27,7 +27,7 @@ const nOn = M.filter((c) => c.notifications === 1).length, nOff = M.length - nOn
 const neverBack = (k) => 1 - k.at(0);
 
 // ---------------------------------------------------------------- fictional win-back test, January 2028 (outcomes invented)
-const TEST = { nT: 431, xT: 99, nC: 430, xC: 73, cost: 0.9, value: 7.5 };
+const TEST = { nT: 431, xT: 41, nC: 430, xC: 22, cost: 0.9, value: 7.5 };   // holdout ≈ 5%, in line with the case (3–5% of members silent 61–180 days return within 30 days)
 const T = propTest2(TEST.xT, TEST.nT, TEST.xC, TEST.nC);
 const incr = T.diff * TEST.nT, offerCost = TEST.xT * TEST.cost, net = incr * TEST.value - offerCost;
 const breakEven = TEST.xT / TEST.nT * TEST.cost / TEST.value;
@@ -35,8 +35,8 @@ const netAt = (u) => u * TEST.nT * TEST.value - offerCost;
 const seAlt = Math.sqrt(T.p1 * (1 - T.p1) / TEST.nT + T.p2 * (1 - T.p2) / TEST.nC);
 const power = normCdf(Math.abs(T.diff) / seAlt - normInv(0.975));
 const zz = normInv(0.975) + normInv(0.8);
-const nNeed = Math.ceil(zz ** 2 * (0.17 * 0.83 + 0.23 * 0.77) / 0.06 ** 2);
-const nNeed3 = Math.ceil(zz ** 2 * (0.17 * 0.83 + 0.20 * 0.8) / 0.03 ** 2);
+const nNeed = Math.ceil(zz ** 2 * (0.05 * 0.95 + 0.1 * 0.9) / 0.05 ** 2);
+const nNeed3 = Math.ceil(zz ** 2 * (0.05 * 0.95 + 0.075 * 0.925) / 0.025 ** 2);
 const wouldAnyway = TEST.nT * T.p2;
 
 // ---------------------------------------------------------------- Reichheld & Sasser's 5%: what five points of retention do to value
@@ -70,8 +70,8 @@ export default {
     { p: 'A <g>loyalty programme</g> rewards customers for buying repeatedly. The common forms are <b>stamp cards</b> (a free item after a set number of purchases), <b>points</b> (earned per dollar and exchanged for rewards), <b>tiers</b> (better treatment as spending passes thresholds, as airlines and hotels use) and <b>apps</b> that combine these with offers and messages. They promise to keep customers who would otherwise leave and to raise what each spends. They also cost money: every reward given to a customer who would have bought anyway is a discount with nothing in return.' },
 
     { h: 'What the evidence shows' },
-    { p: 'Dowling and Uncles (1997) reviewed customer loyalty programmes and argued that most mainly add to marketing costs without creating much extra loyalty to the brand. They note research finding that only about 10% of buyers of many frequently bought consumer goods are completely loyal to one brand over a year, and that most of the European business travellers surveyed belonged to more than one frequent-flyer programme. They also called the idea that loyal customers are always more profitable a gross simplification, and argued that programmes do better when they support the product’s value to the customer and when rewards are valued and not long delayed.' },
-    { p: 'Sharp and Sharp (1997) tested a large multi-brand loyalty programme against what a standard model of repeat buying (the Dirichlet) predicts for brands of each size. They found only weak “excess loyalty” overall, inconsistent across brands: two of the six participating brands deviated substantially, and those deviations also appeared among non-members, so they probably came at least partly from the brands’ other marketing.' },
+    { p: 'Dowling and Uncles (1997) reviewed customer loyalty programmes and argued, in the article’s published summary, that such programmes mainly raise marketing spending without creating much extra brand loyalty. The summary cites research finding that only about 10% of buyers of many frequently bought consumer goods are completely loyal to one brand over a year, and that more than 80% of the European business travellers surveyed belonged to more than one frequent-flyer programme. They also called the idea that loyal customers are always more profitable a gross simplification, and argued that programmes do better when they support the product’s value to the customer and when rewards are valued and not long delayed.' },
+    { p: 'Sharp and Sharp (1997) tested a large multi-brand loyalty programme against what a standard model of repeat buying (the Dirichlet) predicts for brands of each size. They found only weak “excess loyalty” overall, inconsistent across brands: two of the six participating brands deviated substantially, and those deviations also appeared among non-members, so they were probably due at least partly to the brands’ other loyalty initiatives.' },
     { p: 'The pattern behind both studies is <g>double jeopardy</g>, described by Ehrenberg, Goodhardt and Barwise (1990): a small brand typically has far fewer buyers than a large one in a given period, and its buyers also tend to buy it less often. Loyalty measures largely follow from a brand’s size, so a programme that hopes to make a small brand’s customers unusually loyal is pushing against one of the most regular findings in marketing.' },
     { p: 'Programme design can still change behaviour within the programme. Kivetz, Urminsky and Zheng (2006) studied a reward card at a café on a large university campus: ten coffee purchases earned a free coffee. As members got closer to the reward the time between purchases shrank, by about 20% from the first interval to the last. In a field experiment with 108 of the café’s customers, those given a 12-stamp card with two stamps already filled in completed the ten purchases they needed in 12.7 days on average, against 15.6 days for those with a plain 10-stamp card. And members who sped up more towards their first reward were more likely to earn a second and started on it sooner. This is the <g>goal-gradient effect</g>: effort rises as a goal comes near.' },
     { callout: 'note', title: 'What these studies don’t say', html: 'The café study shows how members of a programme behave as a reward approaches, and that a card that looks further along is completed faster. It doesn’t estimate how many more coffees the café sold over a year than it would have with no card. The programme reviews describe weak effects on loyalty for typical programmes; they don’t say no programme can pay. Neither tells Ana what her stamp card would add. Only a test at the cafés can.' },
@@ -85,7 +85,7 @@ export default {
 
     { h: 'Measuring what an offer adds' },
     { p: `The answer is to decide by chance who gets the offer. In Ana’s fictional January 2028 test, the ${lapsedWindow.length} members who had not visited for 61 to 180 days are split at random: ${TEST.nT} receive the pastry offer and ${TEST.nC} form a <g>holdout group</g> that hears nothing. Within 30 days ${TEST.xT} of the ${TEST.nT} offered (${pct(T.p1)}) visit, and so do ${TEST.xC} of the ${TEST.nC} in the holdout (${pct(T.p2)}). Because chance decided who was offered, the groups differ only by chance and by the offer, so the ${(T.diff * 100).toFixed(1)}-point difference estimates what the offer added: its <g>incrementality</g>.` },
-    { p: `The holdout also shows something an offer’s redemption count hides. Of the ${TEST.xT} offered members who came back, about ${wouldAnyway.toFixed(0)} would have come back anyway, at the holdout’s rate; only about ${incr.toFixed(0)} were won back by the offer. A report that said “${TEST.xT} lapsed members won back” would overstate the offer’s effect almost fourfold.` },
+    { p: `The holdout also shows something an offer’s redemption count hides. Of the ${TEST.xT} offered members who came back, about ${wouldAnyway.toFixed(0)} would have come back anyway, at the holdout’s rate; only about ${incr.toFixed(0)} were won back by the offer. A report that said “${TEST.xT} lapsed members won back” would overstate the offer’s effect more than twofold.` },
   ],
 
   theory: [
@@ -94,7 +94,7 @@ export default {
 
     { h: 'The difference in proportions and its interval' },
     { p: String.raw`With <m>x_T</m> of <m>n_T</m> treated customers and <m>x_C</m> of <m>n_C</m> controls returning, the estimated effect is <m>\hat p_T - \hat p_C</m>. Its standard error is <m>\sqrt{\hat p_T(1-\hat p_T)/n_T + \hat p_C(1-\hat p_C)/n_C}</m>, and a 95% <g>confidence interval</g> is the difference ± 1.96 standard errors. For Ana’s test: <m>${(T.diff * 100).toFixed(1)}</m> points with a standard error of <m>${(T.se * 100).toFixed(2)}</m> points, so the interval runs from <m>${(T.low * 100).toFixed(1)}</m> to <m>${(T.high * 100).toFixed(1)}</m> points. The <g>two-proportion z test</g> (B04) uses the pooled proportion, <m>${(T.pool * 100).toFixed(1)}\%</m>, for its standard error and gives <m>z = ${T.z.toFixed(2)}</m>, <m>p = ${T.pValue.toFixed(3)}</m>.` },
-    { p: 'The interval matters more than the test. It says the offer most likely added somewhere between about 1 and 11 points: it almost certainly did something, but whether it added a little or a lot is not settled by 861 members.' },
+    { p: `The interval matters more than the test. Uplifts from about ${(T.low * 100).toFixed(0)} to ${(T.high * 100).toFixed(0)} points are consistent with the data; zero lies just outside the interval (p = ${T.pValue.toFixed(3)}). Whether the offer added a little or a lot is not settled by 861 members.` },
 
     { h: 'Is it worth it? Cost against value' },
     { p: String.raw`An offer’s cost falls on everyone who uses it, including those who would have come back anyway; its benefit comes only from those it changed. If each redemption costs <m>k</m>, each contact costs <m>c</m> and a member won back is worth <m>V</m>, the net value of offering it to <m>n_T</m> members is <m>n_T(\hat p_T - \hat p_C)V - n_T\hat p_T k - n_T c</m>, and the offer breaks even when the uplift reaches <m>(\hat p_T k + c)/V</m>.` },
@@ -102,7 +102,7 @@ export default {
     { callout: 'key', title: 'Use the interval for the decision', html: 'A test whose interval sits entirely above the break-even uplift says the offer pays. One whose interval straddles break-even, as Ana’s does, says it probably pays but might not. With a cheap offer and small sums at stake, “probably” may be enough; with an expensive one, run a larger test first.' },
 
     { h: 'How big a test? Power in outline' },
-    { p: String.raw`<g>Power</g> is the chance a test detects a difference that is really there (B04). For two proportions with equal groups, the number per group needed for power 1 − β at a two-sided significance level α is approximately <m>n = (z_{1-\alpha/2} + z_{1-\beta})^2\,[p_C(1-p_C) + p_T(1-p_T)]/(p_T - p_C)^2</m>. To detect a rise from 17% to 23% with 80% power at the 5% level takes <m>${nNeed}</m> members in each group; to detect 17% to 20%, <m>${nNeed3}</m>. Ana’s ${TEST.nT} a group gave her only about a ${pct(power, 0)} chance of a significant result even if the true uplift were the ${(T.diff * 100).toFixed(0)} points she observed. Small effects need big tests, and a business with a few hundred lapsed customers will often have to decide with wide intervals, or pool several months.` },
+    { p: String.raw`<g>Power</g> is the chance a test detects a difference that is really there (B04). For two proportions with equal groups, the number per group needed for power 1 − β at a two-sided significance level α is approximately <m>n = (z_{1-\alpha/2} + z_{1-\beta})^2\,[p_C(1-p_C) + p_T(1-p_T)]/(p_T - p_C)^2</m>. To detect a rise from 5% to 10% with 80% power at the 5% level takes <m>${nNeed}</m> members in each group; to detect 5% to 7.5%, <m>${nNeed3}</m>. Ana’s ${TEST.nT} a group gave her only about a ${pct(power, 0)} chance of a significant result even if the true uplift were the ${(T.diff * 100).toFixed(0)} points she observed. Small effects need big tests, and a business with a few hundred lapsed customers will often have to decide with wide intervals, or pool several months.` },
 
     { h: 'Designing a test that can be trusted' },
     { list: [
@@ -180,7 +180,7 @@ export default {
     { title: 'Comparing members with non-members of a programme', html: 'People who join a programme, turn on notifications or collect stamps are already the keener customers. Their higher spending is no evidence the programme works. Randomise who gets it.' },
     { title: 'Repeating the 5% claim as a law', html: `“5% more retention nearly doubles profit” comes from an article about service companies in 1990, and the effect depends on margins and retention: five points add ${pct(lift5(0.6), 0)} to a customer’s value at 60% retention and ${pct(lift5(0.9), 0)} at 90%, before the cost of achieving them.` },
     { title: 'Reading a significant test as a profitable one', html: 'A p-value below 0.05 says the effect is probably not zero. Profit needs the effect to exceed the break-even uplift. Compare the confidence interval with the break-even point.' },
-    { title: 'Running a test too small to find the effect', html: `Detecting a rise from 17% to 23% with 80% power needs about ${nNeed} customers a group; with a few hundred, a real effect will often look “not significant”. Work out the size before the test, or accept a wide interval and say so.` },
+    { title: 'Running a test too small to find the effect', html: `Detecting a rise from 5% to 7.5% with 80% power needs about ${nNeed3} customers a group; with a few hundred, a real effect will often look “not significant”. Work out the size before the test, or accept a wide interval and say so.` },
     { title: 'Expecting a programme to make customers unusually loyal', html: 'Double jeopardy and the programme studies show loyalty mostly follows a brand’s size. A programme can reward and speed up buying among members, but large gains in loyalty beyond what penetration brings are rare. Judge it on what it adds, measured.' },
   ],
 
@@ -197,7 +197,7 @@ export default {
     'Kivetz, Urminsky and Zheng (2006): at a university café, purchases sped up by about 20% as a ten-coffee reward approached, and a 12-stamp card with two stamps filled was completed in 12.7 days against 15.6 for a plain 10-stamp card.',
     'The 5% claim (Reichheld and Sasser, 1990) depends on the business: five points of retention add more value where retention is already high, before the cost of buying them.',
     'A self-selected feature cannot show its effect: members with notifications on lapsed later (median 57 against 48 days), but they chose the setting.',
-    'A randomised holdout measures incrementality: the difference in response with a confidence interval; small effects need large groups (about 694 a group for 17% against 23% at 80% power).',
+    'A randomised holdout measures incrementality: the difference in response with a confidence interval; small effects need large groups (about 1,468 a group to detect 5% against 7.5% at 80% power).',
     'An offer pays when the uplift exceeds the break-even (p̂_T k + c) ÷ V; compare the interval, not only the estimate, with it.',
   ],
 
@@ -244,20 +244,23 @@ export default {
     { what: 'p treated', value: T.p1 * 100, shown: Number((T.p1 * 100).toFixed(1)), tol: 0.05 },
     { what: 'p holdout', value: T.p2 * 100, shown: Number((T.p2 * 100).toFixed(1)), tol: 0.05 },
     { what: 'Difference', value: T.diff * 100, shown: Number((T.diff * 100).toFixed(1)), tol: 0.05 },
-    { what: 'Difference (whole points)', value: T.diff * 100, shown: 6, tol: 0.05 },
+    { what: 'Difference (whole points)', value: T.diff * 100, shown: 4, tol: 0.5 },
     { what: 'SE', value: T.se * 100, shown: Number((T.se * 100).toFixed(2)) },
     { what: 'Low', value: T.low * 100, shown: Number((T.low * 100).toFixed(1)), tol: 0.05 },
     { what: 'High', value: T.high * 100, shown: Number((T.high * 100).toFixed(1)), tol: 0.05 },
-    { what: 'About 1 to 11 points', value: Number(Math.round(T.low * 100) === 1 && Math.round(T.high * 100) === 11), shown: 1 },
     { what: 'Pooled', value: T.pool * 100, shown: Number((T.pool * 100).toFixed(1)), tol: 0.05 },
     { what: 'z', value: T.z, shown: Number(T.z.toFixed(2)) },
     { what: 'p-value', value: T.pValue, shown: Number(T.pValue.toFixed(3)), tol: 0.0005 },
     { what: 'Would have come anyway', value: wouldAnyway, shown: Number(wouldAnyway.toFixed(0)), tol: 0.5 },
     { what: 'Won back', value: incr, shown: Number(incr.toFixed(0)), tol: 0.5 },
     { what: 'Won back (1 dp)', value: incr, shown: Number(incr.toFixed(1)), tol: 0.05 },
-    { what: 'Almost fourfold (99 ÷ 26)', value: TEST.xT / incr, shown: 3.8, tol: 0.05 },
-    { what: 'Offer cost', value: offerCost, shown: 89.1 },
-    { what: 'Offer cost (whole dollars)', value: offerCost, shown: 89, tol: 0.5 },
+    { what: 'More than twofold', value: Number(TEST.xT / incr > 2 && TEST.xT / incr < 2.5), shown: 1 },
+    { what: 'Low (whole points)', value: T.low * 100, shown: 1, tol: 0.5 },
+    { what: 'High (whole points)', value: T.high * 100, shown: 8, tol: 0.5 },
+    { what: 'Zero just outside', value: Number(T.low > 0 && T.low < 0.015), shown: 1 },
+    { what: 'Holdout rate near the case’s 3–5%', value: Number(T.p2 > 0.04 && T.p2 < 0.06), shown: 1 },
+    { what: 'Offer cost', value: offerCost, shown: 36.9 },
+    { what: 'Offer cost (whole dollars)', value: offerCost, shown: 37, tol: 0.5 },
     { what: 'Value won back', value: incr * TEST.value, shown: Number(f2(incr * TEST.value)) },
     { what: 'Value won back (whole dollars)', value: incr * TEST.value, shown: Number((incr * TEST.value).toFixed(0)), tol: 0.5 },
     { what: 'Net', value: net, shown: Number(f2(net)) },
@@ -267,8 +270,9 @@ export default {
     { what: 'Loss at the low end', value: -netAt(T.low), shown: Number(f2(-netAt(T.low))) },
     { what: 'Loss at the low end (whole dollars)', value: -netAt(T.low), shown: Number((-netAt(T.low)).toFixed(0)), tol: 0.5 },
     { what: 'Power', value: power * 100, shown: Number((power * 100).toFixed(0)), tol: 0.5 },
-    { what: 'n for 17→23', value: nNeed, shown: 694 },
-    { what: 'n for 17→20', value: nNeed3, shown: 2626 },
+    { what: 'n for 5→10', value: nNeed, shown: 432 },
+    { what: 'n for 5→7.5', value: nNeed3, shown: 1468 },
+    { what: '1,468', value: nNeed3, shown: 1468 },
     { what: 'Group size gave well under 80% power', value: Number(power < 0.8), shown: 1 },
     { what: '20% holdout', value: 20, shown: 20 },
     { what: 'A fifth', value: 100 / 5, shown: 20 },

@@ -90,7 +90,8 @@ const visitsTo = (m) => ALL.find((c) => c.id === m.id).frequency;
 const first30 = (m) => VIS.get(m.id).filter((v) => v.day <= m.joined + 29).length;
 const MAR = joinedIn('2027-03'), NOV = joinedIn('2027-11');
 const F2 = { marTo: mean(MAR.map(visitsTo)), novTo: mean(NOV.map(visitsTo)), mar30: mean(MAR.map(first30)), nov30: mean(NOV.map(first30)) };
-claim(F2.marTo > F2.novTo && F2.nov30 > F2.mar30, 'November joiners trail on visits to date but lead in their first 30 days');
+const millShare = (g) => g.filter((m) => m.cafe === 'Millbrook').length / g.length;
+claim(F2.marTo > F2.novTo && F2.nov30 > F2.mar30 && millShare(NOV) > millShare(MAR), 'November joiners trail on visits to date but lead in their first 30 days, and were more often Millbrook members');
 
 // fn-3: lapse rules on 31 December
 const lapsedShare = (L) => ALL.filter((c) => c.recency > L).length / ALL.length;
@@ -350,7 +351,7 @@ export const items = [
 
   // ================================================================ Module 2: segments and cohorts
   {
-    id: 'm06-fn-6', lesson: 'rfm-segments', type: 'formula', kind: 'applied',
+    id: 'm06-fn-6', lesson: 'rfm-segments', type: 'formula', kind: 'numerical',
     prompt: `The sheet holds ${S6.length} Lantern members scored on 31 October 2027 (every 41st of the ${int(OC.length)}), with their segment and 1 in column C if they visited in November–December. In F2, calculate the lift of the segment named in F1: its return rate divided by the return rate of all the members on the sheet.`,
     sheet: { cells: s6Cells, fixed: [`C2:C${s6L}`], vary: { F1: S6VARY } }, cell: 'F2', view: `A1:F${s6L}`, maxHeight: '20rem',
     formats: { F2: '0.00' }, widths: { A: 8, B: 18, C: 12, E: 9, F: 18 },
@@ -430,7 +431,7 @@ export const items = [
 
   // ================================================================ Module 3: retention and churn
   {
-    id: 'm06-fn-11', lesson: 'retention-and-churn-rates', type: 'steps', kind: 'applied',
+    id: 'm06-fn-11', lesson: 'retention-and-churn-rates', type: 'steps', kind: 'numerical',
     prompt: `The sheet lists ${S11.length} Lantern members who joined in August–October 2027 (every 20th), with each one’s join date and number of visits in October and in December. Ana treats a member who visited in October as a customer at the start of the period and counts them as kept if they visited in December. H1 holds the date the period starts.`,
     steps: [
       {
@@ -518,7 +519,7 @@ export const items = [
     solution: `Kaplan–Meier gives S(${AT13}) = ${fx(s13, 3)}; leaving out or mis-counting the still-active members gives ${fx(s13drop, 3)}, ${fx(s13asLapsed, 3)} or ${fx(s13survive, 3)}.`,
   },
   {
-    id: 'm06-fn-14', lesson: 'survival-analysis', type: 'mc', kind: 'applied',
+    id: 'm06-fn-14', lesson: 'survival-analysis', type: 'mc', kind: 'conceptual',
     prompt: `Fader and Hardie’s (2007) Regular customers: ${REG.slice(0, FIT + 1).map((x) => fx(x, 1)).join('%, ')}% of a cohort were still customers after 0 to ${FIT} years. Fitted to those five points, constant retention gives ${pc(regR)} a year and the sBG gives α = ${fx(regFit.alpha, 3)}, β = ${fx(regFit.beta, 3)}. For year 12 they project ${pc(reg12.cons)} and ${pc(reg12.sbg)} still customers. The data show ${pc(reg12.act)}. What explains the difference?`,
     options: [
       'Customers differ; the least loyal leave first, so the survivors’ renewal rate rises, which the sBG allows and constant retention can’t',
@@ -584,7 +585,7 @@ export const items = [
     solution: `There are 5 × 5 = 25 pairs. In ${pairs16.w} of them the lapser had been silent longer, so AUC = ${pairs16.w} ÷ 25 = ${fx(auc16, 3)}. AUC measures ranking, not calibration or profit; on all ${int(CT.length)} members recency’s AUC is ${fx(roc(CT.map((c) => c.lapsed), CT.map((c) => c.recency)).auc, 3)}.`,
   },
   {
-    id: 'm06-fn-17', lesson: 'survival-analysis', type: 'mc', kind: 'applied',
+    id: 'm06-fn-17', lesson: 'survival-analysis', type: 'mc', kind: 'conceptual',
     prompt: `Ana compares members who live or work within a mile (near) with the rest by Kaplan–Meier and the log-rank test, under three lapse rules. Median lifetimes, near against far: ${N17.map((x) => `${x.L}-day rule ${x.near} against ${x.far} days (p ${x.p < 0.001 ? 'below 0.001' : `= ${p3(x.p)}`})`).join('; ')}. What is the soundest reading?`,
     options: [
       'Near members visit more often, so they rarely go 30 days without a visit; with longer rules near and far members lapse at much the same pace',
@@ -648,7 +649,7 @@ export const items = [
     solution: `<x>=SUMPRODUCT(B2:B11*H1/(1+H2)^A2:A11)</x> = ${money(marPV(DM))} per joiner (${money(marUndisc)} undiscounted). This is historical value over ten months, not a lifetime value: a forecast would add the months still to come, and it describes the cohort, not any one member.`,
   },
   {
-    id: 'm06-fn-20', lesson: 'customer-lifetime-value', type: 'mc', kind: 'applied',
+    id: 'm06-fn-20', lesson: 'customer-lifetime-value', type: 'mc', kind: 'conceptual',
     prompt: `Ravenstow Insurance Brokers (fictional) earns $${RV.m} of margin a year per client, at the start of each year, and discounts at ${pc(RV.d, 0)}. ${pc(rvR1, 0)} of new clients renew after the first year. Valued with constant ${pc(rvR1, 0)} retention, a new client is worth ${money(rvConst)}. Clients differ, and an sBG with α = ${RV.a} and β = ${RV.b} fits the firm’s renewals (first-year retention ${pc(rvR1, 0)}). Under that model a new client is worth ${money(rvSbg)}. Why is the second figure higher?`,
     options: [
       'Clients who renew are the more loyal ones, so later retention rises above 75% and adds margins that constant retention leaves out',
