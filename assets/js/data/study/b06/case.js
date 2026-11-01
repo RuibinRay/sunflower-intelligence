@@ -22,7 +22,9 @@ export { QUOTE_COLUMNS, QUOTES, PRICE_TEST_START };
 const WEEKEND = ['Sat', 'Sun'];
 /** A column of the café log (B05's), optionally for one café and from the raw log. Besides B05's columns and derived
  *  columns (iced_share, avg_ticket, peak_load, day), B06 adds: weekend (1 on Saturdays and Sundays), millbrook (1 for
- *  Millbrook's rows), festival01 (1 on a festival day), month (3–12), log_footfall and log_sales (natural logs). */
+ *  Millbrook's rows), festival01 (1 on a festival day), month (3–12), log_footfall and log_sales (natural logs), and
+ *  build_up (the new cafés' build-up over their first four months, as the generator plants it: min(day − 1, 120) ÷ 120,
+ *  0 on 1 March rising to 1 from 29 June). */
 export function column(name, opts = {}) {
   const extra = {
     weekend: () => b05column('weekday', opts).map((d) => (WEEKEND.includes(d) ? 1 : 0)),
@@ -31,6 +33,7 @@ export function column(name, opts = {}) {
     month: () => b05column('date', opts).map((d) => +d.slice(5, 7)),
     log_footfall: () => b05column('footfall', opts).map(Math.log),
     log_sales: () => b05column('sales', opts).map(Math.log),
+    build_up: () => b05column('day', opts).map((d) => Math.min(d - 1, 120) / 120),
   }[name];
   return extra ? extra() : b05column(name, opts);
 }
