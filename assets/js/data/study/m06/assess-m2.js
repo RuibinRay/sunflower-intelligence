@@ -41,7 +41,7 @@ export const items = [
   {
     id: 'm06-m2-1', lesson: 'rfm-segments', type: 'formula', kind: 'numerical',
     prompt: `The sheet holds ${ns} of the ${NO.toLocaleString('en-US')} Lantern members scored on 31 October 2027 (every 41st member), with 1 in column F if they visited in November–December. Ana is weighing a message to the high-value members who were not among the most recent visitors: R at most I1 and FM at least I2. In I3, calculate the share of the members in that block who came back with no message at all.`,
-    sheet: { cells: octCells, fixed: [`B2:E${LS}`], vary: { I1: [5], I2: [3, 5] } }, cell: 'I3',
+    sheet: { cells: octCells, fixed: [`B2:E${LS}`], vary: { I1: [5, 3], I2: [3, 2] } }, cell: 'I3',
     answer: `=AVERAGEIFS(F2:F${LS},B2:B${LS},"<="&I1,E2:E${LS},">="&I2)`,
     alt: [`=SUMIFS(F2:F${LS},B2:B${LS},"<="&I1,E2:E${LS},">="&I2)/COUNTIFS(B2:B${LS},"<="&I1,E2:E${LS},">="&I2)`],
     view: `A1:I${LS}`, formats: { I3: '0.0%' }, widths: { A: 8, B: 4, C: 4, D: 4, E: 5, F: 13, H: 12, I: 10 },
