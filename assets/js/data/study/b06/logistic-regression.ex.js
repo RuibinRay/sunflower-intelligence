@@ -97,8 +97,7 @@ export const guided = [
       {
         id: 'b06-logit-g1-s2', type: 'formula',
         prompt: 'Column H now holds the probabilities, and K9 the threshold. In K10, count the members predicted to return (probability at or above the threshold) who did return.',
-        sheet: { cells: { ...memberCells, H1: 'Probability', ...probCells, J9: 'Threshold', K9: 0.5, J10: 'True positives' } },
-        vary: { K9: [0.45, 0.55, 0.6] },
+        sheet: { cells: { ...memberCells, H1: 'Probability', ...probCells, J9: 'Threshold', K9: 0.5, J10: 'True positives' }, vary: { K9: [0.45, 0.55, 0.6] } },
         cell: 'K10', answer: `=COUNTIFS(H2:H${last},">="&K9,G2:G${last},1)`, alt: [`=COUNTIFS(G2:G${last},1,H2:H${last},">="&K9)`], require: ['COUNTIFS'],
         view: `A1:K${last}`, maxHeight: '20rem', formats: { H: '0.000', K: '0.0000', K9: '0.00', K10: '0' }, widths: { A: 9, B: 6, C: 13, D: 14, E: 10, F: 9, G: 9, H: 11, J: 15 },
         wrong: [
@@ -270,8 +269,7 @@ export const check = [
   {
     id: 'b06-logit-k3', type: 'formula', kind: 'applied',
     prompt: 'Column H holds each member’s predicted probability and K9 the threshold. In K11, calculate the specificity: the share of members who did not return (G = 0) whom the model predicts will not return (probability below the threshold).',
-    sheet: { cells: { ...memberCells, H1: 'Probability', ...probCells, J9: 'Threshold', K9: 0.5, J11: 'Specificity' } },
-    vary: { K9: [0.45, 0.55, 0.6] },
+    sheet: { cells: { ...memberCells, H1: 'Probability', ...probCells, J9: 'Threshold', K9: 0.5, J11: 'Specificity' }, vary: { K9: [0.45, 0.55, 0.6] } },
     cell: 'K11', answer: `=COUNTIFS(H2:H${last},"<"&K9,G2:G${last},0)/COUNTIF(G2:G${last},0)`,
     alt: [`=COUNTIFS(G2:G${last},0,H2:H${last},"<"&K9)/COUNTIF(G2:G${last},0)`, `=SUMPRODUCT((H2:H${last}<K9)*(G2:G${last}=0))/COUNTIF(G2:G${last},0)`],
     view: `A1:K${last}`, maxHeight: '20rem', formats: { H: '0.000', K: '0.0000', K9: '0.00', K11: '0.0%' }, widths: { A: 9, B: 6, C: 13, D: 14, E: 10, F: 9, G: 9, H: 11, J: 15 },

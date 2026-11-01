@@ -281,8 +281,7 @@ export const check = [
   {
     id: 'b06-trans-k3', type: 'formula', kind: 'applied',
     prompt: `Column D holds ln(footfall) for Harbourside’s ${nA} dry autumn weekdays. In G2, predict the median footfall for a dry weekday at the high in G1, from the least-squares line of ln(footfall) on the high.`,
-    sheet: { cells: { ...auBase, D1: 'ln(footfall)', ...auLogs, F1: 'High (°F)', G1: auAt, F2: 'Median footfall' } },
-    vary: { G1: [55, 65, 70] },
+    sheet: { cells: { ...auBase, D1: 'ln(footfall)', ...auLogs, F1: 'High (°F)', G1: auAt, F2: 'Median footfall' }, vary: { G1: [55, 65, 70] } },
     cell: 'G2', answer: `=EXP(INTERCEPT(D2:D${lastA},B2:B${lastA})+SLOPE(D2:D${lastA},B2:B${lastA})*G1)`,
     alt: [`=EXP(TREND(D2:D${lastA},B2:B${lastA},G1))`, `=EXP(FORECAST.LINEAR(G1,D2:D${lastA},B2:B${lastA}))`],
     view: `A1:G${lastA}`, maxHeight: '20rem', formats: { D: '0.000', G2: '0' }, widths: { A: 8, B: 10, C: 10, D: 13, F: 16 },

@@ -38,7 +38,7 @@ export function mount(el, cfg, ctx) {
     if (show.includes('cuts')) {
       if (R.cuts) {
         const row = (lab, c, fmt) => h('tr', {}, h('th', { scope: 'row' }, lab), ...c.map((v) => h('td', {}, fmt(v))));
-        items.push(h('div', { class: 'table-scroll' }, h('table', { class: 'data-table study-table' }, h('caption', {}, `Cut points (quantiles at ${Array.from({ length: k - 1 }, (_, j) => F.pct((j + 1) / k, 0)).join(', ')}): a value above a cut point moves up a score`),
+        items.push(h('div', { class: 'table-scroll' }, h('table', { class: 'data-table study-table' }, h('caption', {}, `Cut points (quantiles at ${Array.from({ length: k - 1 }, (_, j) => F.pct((j + 1) / k, 0)).join(', ')}): a value above a cut point moves F and M up a score, and R down (fewer days since the last purchase scores higher)`),
           h('thead', {}, h('tr', {}, h('th', { scope: 'col' }, ''), ...Array.from({ length: k - 1 }, (_, j) => h('th', { scope: 'col' }, `Cut ${j + 1}`)))),
           h('tbody', {}, row('Recency (days)', R.cuts.R, (v) => F.num(v, 1)), row(`Frequency (${unit})`, R.cuts.F, (v) => F.num(v, 1)), row('Monetary ($)', R.cuts.M, (v) => F.num(v, 2))))));
       }
@@ -52,7 +52,7 @@ export function mount(el, cfg, ctx) {
       const val = (cs) => (st.shade === 'n' ? cs.length / n : cs.reduce((s, c) => s + c.monetary, 0) / R.total);
       const cells = Array.from({ length: k }, (_, i) => Array.from({ length: k }, (_, j) => cell(k - i, j + 1)));
       const mx = Math.max(...cells.flat().map(val), 1e-9);
-      items.push(h('div', { class: 'table-scroll' }, h('table', { class: 'rf-grid' }, h('caption', {}, `Share of ${st.shade === 'n' ? 'customers' : 'spend'} by R (rows) and FM, the rounded mean of F and M (columns)`),
+      items.push(h('p', { class: 'fx-title', id: `${base}-gc` }, `Share of ${st.shade === 'n' ? 'customers' : 'spend'} by R (rows) and FM, the rounded mean of F and M (columns)`), h('div', { class: 'table-scroll' }, h('table', { class: 'rf-grid', 'aria-labelledby': `${base}-gc` },
         h('thead', {}, h('tr', {}, h('th', { scope: 'col' }, 'R \\ FM'), ...Array.from({ length: k }, (_, j) => h('th', { scope: 'col' }, String(j + 1))))),
         h('tbody', {}, ...cells.map((row, i) => h('tr', {}, h('th', { scope: 'row' }, String(k - i)), ...row.map((cs, j) => {
           const v = val(cs), td = h('td', { title: k === 5 ? CU.segmentOf(k - i, j + 1) : '' }, F.pct(v, 1), h('span', { class: 'rf-n' }, ` (${F.int(cs.length)})`));
