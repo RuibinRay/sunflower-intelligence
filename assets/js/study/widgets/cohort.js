@@ -1,6 +1,6 @@
 // cohort.js — the `cohort` lesson widget (M06): a cohort table, one row per joining month and one column per month since
 // joining, shaded so the triangle reads at a glance, with a switch between the share of the cohort active, the number
-// active and revenue per member who joined; and the retention curves of the cohorts the student picks, with the pooled
+// active and revenue per member who joined; and the share-active curves of the cohorts the student picks, with the pooled
 // curve across every cohort observed that long. Tables come from core/customer.js cohortTable(), computed by the lesson
 // for each group it offers.
 //   { type: 'cohort', title, tables: { 'Both cafés': cohortTable(...), 'Harbourside': …, … }, view: 'retention' | 'active'
@@ -29,7 +29,7 @@ export function mount(el, cfg, ctx) {
     segmented(`${base}-v`, 'Show', [['retention', 'Share active'], ['active', 'Number active'], ['revenue', 'Revenue per joiner']], st.view, (v) => { st.view = v; render(); }));
   const tbl = h('div', { class: 'table-scroll' }), picks = h('div', { class: 'sp-toggles' }), chart = h('div', { class: 'chart-box' });
   el.classList.add('cv-widget');
-  el.append(...[cfg.title ? h('p', { class: 'fx-title' }, cfg.title) : null, controls, tbl, h('p', { class: 'fx-title' }, 'Retention curves: share of each cohort active, by months since joining'), picks, chart,
+  el.append(...[cfg.title ? h('p', { class: 'fx-title' }, cfg.title) : null, controls, tbl, h('p', { class: 'fx-title' }, 'Share of each cohort active, by months since joining'), picks, chart,
     cfg.note ? (() => { const p = h('p', { class: 'fx-note' }); p.innerHTML = xl(cfg.note); return p; })() : null].filter(Boolean));
 
   function render() {
@@ -66,7 +66,7 @@ export function mount(el, cfg, ctx) {
     series.push({ name: 'All cohorts', values: t.pooled.map((p) => p.rate), cls: 'm-s2' });
     chart.replaceChildren();
     lineChart(chart, { endLabels: false, xs, series, height: 260, xLabel: 'Months since joining', yLabel: 'Share active', yFormat: (v) => F.pct(v, 0), xFormat: (v) => String(v), yDomain: [0, 1],
-      label: `Retention curves for ${series.map((s) => s.name).join(', ')}` });
+      label: `Share active by months since joining for ${series.map((s) => s.name).join(', ')}` });
   }
   render();
   onResize(chart, draw);
