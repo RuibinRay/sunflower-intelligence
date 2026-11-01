@@ -341,6 +341,8 @@ export default {
     { what: 's alone', value: ST.sigma, shown: 28.1, tol: 0.05 },
     { what: 's both', value: SB.sigma, shown: 27.6, tol: 0.05 },
     { what: 'Equivalent unrelated days', value: 306 / VIF, shown: 9, tol: 0.5 },
+    { what: 'Interaction collinearity: Millbrook dummy VIF with High × Millbrook above 10', value: Number(R.vif([hi, mb, I(hi, mb)])[1] > 10), shown: 1 },
+    { what: 'Centring the high lowers that VIF below 4', value: Number(R.vif([hi.map((v) => v - 60), mb, I(hi.map((v) => v - 60), mb)])[1] < 4), shown: 1 },
     // nested models
     { what: 'Café-days', value: y.length, shown: 612 },
     { what: 'B vs A F', value: FBA.F, shown: 27.8, tol: 0.05 },

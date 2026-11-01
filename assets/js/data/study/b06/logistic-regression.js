@@ -100,7 +100,7 @@ export default {
       note: 'Likelihood-ratio test against the model with no predictors: 23.3 on 5 df, p below 0.001. McFadden’s pseudo-R²: 0.075.',
     } },
     { p: String.raw`Each coefficient is a change in log-odds for a one-unit change in its predictor, holding the others fixed. That is hard to picture, so exponentiate it: <m>e^{b}</m> is the <g>odds ratio</g>, the factor by which the odds are multiplied. Members with notifications on had <m>e^{0.926} = 2.52</m> times the odds of returning of otherwise similar members with them off. Each extra dollar on the first ticket multiplied the odds by 1.49. Members who joined at Millbrook had 2.33 times the odds of those who joined at Harbourside with the same ticket, notifications and the rest.` },
-    { p: 'An odds ratio is not a ratio of probabilities, and its effect on the probability depends on where you start. For a Harbourside member who lives further away, joined on a weekday with a $5 first ticket, turning notifications on in the model takes the predicted probability from 0.30 to 0.52, 22 points. For a nearby Millbrook member with an $8 ticket it takes it from 0.85 to 0.93, 8 points, with the same odds ratio of 2.52. Report odds ratios for the model and probabilities for the people.' },
+    { p: 'An odds ratio is not a ratio of probabilities, and its effect on the probability depends on where you start. For a Harbourside member who lives further away, joined on a weekday with a $5 first ticket, turning notifications on in the model takes the predicted probability from 0.30 to 0.52, 22 points. For a nearby Millbrook member with an $8 ticket it takes it from 0.83 to 0.92, 10 points, with the same odds ratio of 2.52. Report odds ratios for the model and probabilities for the people.' },
 
     { h: 'Notifications: an association, not an effect' },
     { p: 'Members chose whether to turn notifications on. Those who did may be keener on the café in the first place, and keenness, not the notifications, could be why they came back. Raw, 62% of members with notifications on returned, against 43% with them off. The log can’t separate keenness from the notifications, so the odds ratio of 2.52 says that members with notifications on returned more, holding the other four predictors fixed. It does not say that switching a member’s notifications on would multiply their odds by 2.52. To learn that, Ana would need to turn notifications on for a random half of new members and compare.' },
@@ -216,7 +216,7 @@ export default {
 
   mistakes: [
     { title: 'Fitting a straight line to a 0/1 outcome', html: 'A linear probability model can predict probabilities below 0 or above 1 (one October member gets 1.025) and assumes each predictor moves the probability by the same amount everywhere. Use logistic regression; if a linear model is used for a quick look, check its fitted range.' },
-    { title: 'Reading an odds ratio as a ratio of probabilities', html: 'An odds ratio of 2.52 does not mean “2.52 times as likely”. With a starting probability of 0.30 it gives 0.52, 1.7 times as likely; with 0.85 it gives 0.93. Convert to probabilities for a stated kind of member.' },
+    { title: 'Reading an odds ratio as a ratio of probabilities', html: 'An odds ratio of 2.52 does not mean “2.52 times as likely”. With a starting probability of 0.30 it gives 0.52, 1.7 times as likely; with 0.83 it gives 0.92. Convert to probabilities for a stated kind of member.' },
     { title: 'Reading the coefficient as a change in probability', html: 'b is a change in log-odds. 0.926 for notifications is not 92.6 percentage points, nor 0.926 of anything a manager would recognise. Exponentiate it for the odds ratio, or work through the probabilities.' },
     { title: 'Judging the model by its accuracy alone', html: '63.6% sounds modest and 90% would sound good, but neither means anything without the base rate. With 53.8% of members returning, always guessing “returns” scores 53.8%. Compare with that, and look at sensitivity and specificity.' },
     { title: '“Notifications double the odds of returning, so turn them on for everyone.”', html: 'Members chose notifications themselves, so the odds ratio describes members who chose them, holding four other things fixed. It is not the effect of switching them on. Randomise to find that.' },
@@ -320,9 +320,9 @@ export default {
     { what: 'Millbrook far $5 weekday, off', value: mFar0, shown: 0.50, tol: 0.005 },
     { what: 'Millbrook far $5 weekday, on', value: mFar1, shown: 0.72, tol: 0.005 },
     { what: 'Millbrook gain about 22 points too', value: (mFar1 - mFar0) * 100, shown: 22, tol: 0.5 },
-    { what: 'Near Millbrook $8, off', value: top0, shown: 0.85, tol: 0.005 },
-    { what: 'Near Millbrook $8, on', value: top1, shown: 0.93, tol: 0.005 },
-    { what: '8 points', value: (top1 - top0) * 100, shown: 8, tol: 0.5 },
+    { what: 'Near Millbrook $8, off', value: top0, shown: 0.83, tol: 0.005 },
+    { what: 'Near Millbrook $8, on', value: top1, shown: 0.92, tol: 0.005 },
+    { what: '10 points', value: (top1 - top0) * 100, shown: 10, tol: 0.5 },
     { what: '0.52 ÷ 0.30 = 1.7 times', value: hFar1 / hFar0, shown: 1.7, tol: 0.05 },
     { what: 'log-likelihood', value: M.ll, shown: -143.67, tol: 0.005 },
     { what: 'null log-likelihood', value: M.ll0, shown: -155.32, tol: 0.005 },

@@ -131,7 +131,7 @@ export const guided = [
         options: [
           `On dry autumn weekdays, each °F warmer goes with about ${fx(auPct, 1)}% more people through the door.`,
           `Each °F warmer adds about ${fx(auPct, 1)} people through the door.`,
-          `Warming the day by 1°F causes footfall to rise by ${fx(auPct, 1)}%.`,
+          `Warming the day by 1°F causes footfall to rise by ${fx(auPct, 1)}%, since the slope measures what temperature does to trade.`,
           `About ${fx(auPct, 1)}% of the variation in footfall is explained by the temperature.`,
         ],
         answer: 0,
@@ -164,10 +164,10 @@ export const guided = [
     id: 'b06-trans-g4', type: 'mc', kind: 'applied',
     prompt: 'Harbourside’s five festival days are real (the till confirms them) and sit far above a log model of footfall that has no festival term. What should Ana do?',
     options: [
-      'Add a festival dummy, so the days are described by their own coefficient and stop distorting the others, and say so in the report.',
+      'Add a festival dummy, so the five days get their own coefficient, and say so in the report.',
       'Delete the five days, since their studentized residuals are above 3.',
       'Keep them in the model as they are, because deleting data is never allowed.',
-      'Replace their footfall with the average weekend footfall, so they no longer stand out.',
+      'Replace their footfall with the average weekend footfall, so they no longer stand out from the other days.',
     ],
     answer: 0,
     hints: ['They are real and different for a known reason. Can the model say why?'],
@@ -238,9 +238,9 @@ export const independent = [
     id: 'b06-trans-i6', type: 'mc', kind: 'conceptual',
     prompt: 'A quadratic in the load fits the café waits with R² = 0.943, and a squared hinge at 7 with 0.961. Why prefer the hinge, apart from its slightly higher R²?',
     options: [
-      'The quadratic must turn somewhere: it predicts waits rising again as the load falls below about 6, which the data don’t show.',
+      'A parabola must turn: it predicts waits rising again as the load falls below about 6.',
       'Quadratic terms can’t be fitted by least squares, so its coefficients are approximate.',
-      'A hinge always has a higher R² than a polynomial with the same number of terms.',
+      'A hinge always has a higher R² than a polynomial with the same number of coefficients.',
       'The quadratic has more coefficients, so it is penalised by adjusted R².',
     ],
     answer: 0,
@@ -259,9 +259,9 @@ export const check = [
     prompt: 'In a model for ln(weekly sales), a promotion dummy has coefficient −0.25. What does it mean, holding the other predictors fixed?',
     options: [
       'Promotion weeks have about 22% lower sales than other weeks.',
-      'Promotion weeks have 25% lower sales than other weeks.',
-      'Promotion weeks have sales 0.25 lower than other weeks.',
-      'Promotion weeks have about 28% lower sales than other weeks.',
+      'Promotion weeks have 25% lower sales than other weeks: the coefficient times 100.',
+      'Promotion weeks have sales 0.25 lower than other weeks, in the units sales are recorded in.',
+      'Promotion weeks have about 28% lower sales than other weeks with the same predictors.',
     ],
     answer: 0,
     feedback: {
