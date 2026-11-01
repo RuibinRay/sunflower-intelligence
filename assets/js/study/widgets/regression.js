@@ -34,7 +34,7 @@ export function mount(el, cfg, ctx) {
   const opts = new Set(cfg.options || []);
   const st = { robust: false, at: cfg.xs.map((x, i) => cfg.predictAt?.[i] ?? +(x.values.reduce((t, v) => t + v, 0) / x.values.length).toFixed(2)) };
   const rob = opts.has('robust') ? (() => { const inp = h('input', { type: 'checkbox', id: `${base}-hc3` }); inp.addEventListener('change', () => { st.robust = inp.checked; draw(); });
-    return h('div', { class: 'field sp-check' }, inp, h('label', { for: inp.id }, 'Robust (HC3) standard errors')); })() : null;
+    return h('div', { class: 'field sp-check rg-robust' }, inp, h('label', { for: inp.id }, 'Robust (HC3) standard errors')); })() : null;
   const predIns = opts.has('predict') ? cfg.xs.map((x, i) => { const inp = h('input', { type: 'number', id: `${base}-p${i}`, value: st.at[i], step: 'any' });
     inp.addEventListener('input', () => { if (Number.isFinite(+inp.value) && inp.value !== '') { st.at[i] = +inp.value; draw(); } });
     return { inp, row: h('div', { class: 'field' }, h('label', { for: inp.id }, x.name), inp) }; }) : null;
