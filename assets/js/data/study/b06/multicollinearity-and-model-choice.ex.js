@@ -182,7 +182,7 @@ export const independent = [
     id: 'b06-coll-i3', type: 'mc', kind: 'applied',
     prompt: 'An analyst at Oakbridge Theatres (fictional) starts with 40 candidate predictors of weekly ticket sales, runs a stepwise procedure that keeps the 6 with p-values below 0.05, and reports the final model’s R² and p-values as evidence that those 6 drive sales. What is the main problem?',
     options: [
-      'The reported R² and p-values ignore the 34 predictors tried and dropped, so they overstate how well the model and its predictors are supported.',
+      'The R² and p-values ignore the 34 predictors tried and dropped, so they overstate the support for the six.',
       'Six predictors are too many for weekly data, because a regression can have at most five predictors.',
       'Stepwise selection always removes the true predictors, so the six kept must be the wrong ones.',
       'P-values below 0.05 are too strict for business data; the analyst should have kept everything below 0.10.',
@@ -252,7 +252,7 @@ export const check = [
     id: 'b06-coll-k1', type: 'mc', kind: 'conceptual',
     prompt: 'A regression of sales on footfall and transactions has a high R² and a tiny Significance F, but neither slope is significant on its own. What is the most likely explanation?',
     options: [
-      'The two predictors are highly correlated, so together they explain sales but the data can’t separate their effects.',
+      'They are highly correlated: together they explain sales, but not one by one.',
       'The model is overfitted, because a high R² and non-significant slopes always mean too many predictors.',
       'The overall F test is wrong, because it can’t be significant unless at least one slope is.',
       'Sales have no real relationship with either predictor, and the high R² is due to chance.',
@@ -293,7 +293,7 @@ export const check = [
     id: 'b06-coll-k4', type: 'mc', kind: 'applied',
     prompt: 'Oakbridge Theatres (fictional) must pick a model to forecast next season’s weekly ticket sales. Model P has the lowest AIC; model Q the lowest BIC; on the most recent season, held out from fitting, Q’s RMSE is 8% lower than P’s. Which choice is best supported?',
     options: [
-      'Q, because it forecast held-out later data better, which is the job; then refit it on all seasons.',
+      'Q: it forecast held-out later data better, which is the job; then refit it on all seasons.',
       'P, because AIC is designed for prediction and so overrides a single hold-out comparison.',
       'Whichever has the higher training R², because that shows which model explains the data better.',
       'Neither; when AIC and BIC disagree the data are unsuitable for regression.',
@@ -320,8 +320,8 @@ export const check = [
     id: 'b06-coll-k6', type: 'mc', kind: 'applied',
     prompt: 'A colleague proposes adding Harbourside’s loyalty-app membership (a running total) to the footfall model with high, rain, weekend and festival, because it is “highly significant” (t = 10.4). With the build-up column in the model its p-value is 0.55. What should Ana conclude?',
     options: [
-      'Membership was standing in for the café’s build-up; it adds nothing once the trend is modelled, so leave it out.',
-      'Membership drives footfall, and the build-up column hides that by sharing its credit.',
+      'It stood in for the build-up; with the trend modelled it adds nothing, so leave it out.',
+      'Membership drives footfall, and the build-up column hides that by sharing its credit with the trend.',
       'Both should go in, because two significant predictors explain more than one.',
       'The 0.55 must be an error, because a predictor can’t lose significance when another is added.',
     ],

@@ -23,6 +23,10 @@ const day = (iso) => { const i = dH.indexOf(iso); return { t: tH[i], s: sH[i], f
 const JUL = day('2027-07-14'), FEST = day('2027-05-29');
 const within2 = L.resid.filter((e) => Math.abs(e) <= 2 * L.sigma).length;
 const SB = [[0, 40], [40, 60], [60, 80], [80, 120], [120, 400]].map(([a, b]) => ({ a, b, ...band(tH, L.resid, a, b) }));
+const festH = column('festival01', H), NFI = tH.map((_, i) => i).filter((i) => !festH[i]);
+const TOP = tH.map((v, i) => (v >= 120 ? i : -1)).filter((i) => i >= 0), TOPF = TOP.filter((i) => festH[i]), TOPN = TOP.filter((i) => !festH[i]);
+const LNF = R.fit(NFI.map((i) => sH[i]), { x: NFI.map((i) => tH[i]) });
+const SBN = [[0, 40], [40, 60], [60, 80], [80, 120], [120, 400]].map(([a, b]) => ({ a, b, ...band(NFI.map((i) => tH[i]), Array.from(LNF.resid), a, b) }));
 const RANGE = (() => { const k = tH.map((v, i) => (v >= 50 && v <= 70 ? i : -1)).filter((i) => i >= 0); return { n: k.length, f: R.fit(k.map((i) => sH[i]), { x: k.map((i) => tH[i]) }) }; })();
 // ---------------------------------------------------------------- iced share against the day's high, both cafés
 const IC = column('iced_share'), HI = column('high_f');
@@ -34,6 +38,10 @@ const COLD = HI.map((v, i) => (v < 40 ? i : -1)).filter((i) => i >= 0);
 const ftH = column('footfall', H), hiH = column('high_f', H), rnH = column('rain_in', H), moH = column('month', H);
 const FT = R.fit(ftH, { x: hiH }), RN = R.fit(ftH, { x: rnH });
 const mhi = (m) => mean(hiH.filter((_, i) => moH[i] === m));
+// the cafés' opening build-up (the generator's ramp: 72% on 1 March rising to 100% after 120 days), held fixed in module 3
+const dayH = column('day', H), rampH = dayH.map((d) => Math.min(1, 0.72 + 0.28 * (d - 1) / 120));
+const FTR = R.fit(ftH, { High: hiH, Ramp: rampH });
+const FTA = R.fit(ftH, { High: hiH, Ramp: rampH, Weekend: column('weekend', H), Rain: rnH, Festival: column('festival01', H) });
 // ---------------------------------------------------------------- Otterburn Laundry (fictional): five weeks
 const OX = [2, 4, 6, 8, 10], OY = [7, 9, 14, 15, 20];
 const OF = R.fit(OY, { x: OX });
@@ -134,12 +142,12 @@ export default {
       rows: IB.map((b) => [b.a === 0 ? 'below 45' : b.b === 100 ? '85 and above' : `${b.a}–${b.b - 1}`, String(b.n), (b.e < 0 ? '−' : '+') + Math.abs(b.e).toFixed(3)]),
       align: ['l', 'r', 'r'],
     } },
-    { p: 'The residuals are positive on cold days, negative from 45 to 64 °F, near zero around 70 and positive again from 75 to 84: a wave. A straight line through an S-shaped relationship misses in a pattern, under the curve where it is flat and over it where it is steep. Worse, the line gives a negative iced share on the coldest days: it crosses zero at 42.5 °F, and on the 32 café-days below 40 °F it fits −0.13 on average where the observed share was +0.06. The data were generated with a logistic curve in temperature, centred near 69 °F, so this pattern is the truth showing through.' },
-    { p: 'Read a residual plot by looking for structure. If the line is the right shape, the residuals scatter evenly around zero with no trend, curve or funnel. A curve says the relationship bends; a funnel says the spread changes with x; isolated large residuals say some days don’t fit. Harbourside’s sales line, R² = 0.984, has a pattern too: its residuals average +$26.52 on days with fewer than 40 transactions, −$11.21 and −$22.98 in the 60–79 and 80–119 bands, and +$32.92 on the 11 days with 120 or more. Sales grow a little faster than in proportion to transactions, because tickets are larger on busy days. The assumptions-and-diagnostics lesson reads such plots in full; the transformations-and-influence lesson shows what to do about curves.' },
+    { p: 'The residuals are positive on cold days, negative from 45 to 64 °F, near zero around 70 and positive again from 75 to 84: a wave. A straight line through an S-shaped relationship misses in a pattern: the line runs below the curve on the coldest days, above it through the 50s and early 60s, and below it again in the late 70s and early 80s. Worse, the line gives a negative iced share on the coldest days: it crosses zero at 42.5 °F, and on the 32 café-days below 40 °F it fits −0.13 on average where the observed share was +0.06. The data were generated with a logistic curve in temperature, centred near 69 °F, so this pattern is the truth showing through.' },
+    { p: 'Read a residual plot by looking for structure. If the line is the right shape, the residuals scatter evenly around zero with no trend, curve or funnel. A curve says the relationship bends; a funnel says the spread changes with x; isolated large residuals say some days don’t fit. Harbourside’s sales line, R² = 0.984, has a pattern too: its residuals average +$26.52 on days with fewer than 40 transactions, −$11.21 and −$22.98 in the 60–79 and 80–119 bands, and +$32.92 on the 11 days with 120 or more. Five of the 11 busiest days are festival days; the other six sit below the line (−$27 on average), because the festivals pull the line steeper. Fitted without them, the residuals still curve upward at the top (+$24 on the six busiest days), so the bend is real: tickets are larger on busy days, so sales grow a little faster than in proportion to transactions. The assumptions-and-diagnostics lesson reads such plots in full; the transformations-and-influence lesson shows what to do about curves.' },
 
     { h: 'What R² can’t tell you' },
     { p: '<b>Whether the line is the right shape.</b> Penn State’s regression course puts it bluntly: a high R² does not mean the line fits well, and a perfect curved relationship can have an R² near zero. The iced-share line, at 0.883, describes a curve with a straight line and predicts impossible values. Always plot.' },
-    { p: String.raw`<b>Whether the line is useful.</b> At Harbourside, footfall on the day’s high gives R² = 0.190, a figure many people would dismiss. Yet the slope is 2.0 people per °F, and March days averaged 53.1 °F against 83.5 °F in July, so the line puts July’s typical footfall about 61 people above March’s. That is the difference between two baristas and three for Ana’s planning, even though on any single day the line misses by about s = 62 people, because weekends, rain and festivals matter as much as temperature. Rain is weaker still, R² = 0.052, with a slope of −81 people per inch. A low R² says the line leaves most day-to-day variation unexplained; it doesn’t say the slope is unimportant.` },
+    { p: String.raw`<b>Whether the line is useful.</b> At Harbourside, footfall on the day’s high gives R² = 0.190, a figure many people would dismiss. Yet the slope is 2.0 people per °F, and March days averaged 53.1 °F against 83.5 °F in July, so the line puts July’s typical footfall about 61 people above March’s, about one extra barista hour at the morning peak, even though on any single day the line misses by about s = 62 people, because weekends, rain and festivals matter as much as temperature. Rain is weaker still, R² = 0.052, with a slope of −81 people per inch. A low R² says the line leaves most day-to-day variation unexplained; it doesn’t say the slope is unimportant. Part of that 2.0 is the cafés’ opening build-up, which ran through the cold spring; module 3 holds it fixed and finds a smaller slope (1.79 with the build-up alone held fixed, 1.44 once weekends, rain and festivals are added).` },
     { p: String.raw`<b>Anything apart from the range of x it was computed on.</b> R² compares the spread along the line with the total spread of y, and the total spread depends on how widely x varies. Fit Harbourside’s sales line only on the 121 days with 50 to 70 transactions and R² falls from 0.984 to 0.859, while the typical miss falls too, from $28.10 to $13.51. The line fits those days at least as closely; there is simply less variation in sales for it to account for. This is B05’s restricted-range effect on r, squared. Comparing R² across data sets with different ranges of x compares the ranges as much as the fits.` },
     { p: '<b>Causes, or accuracy on new data.</b> R² measures association in the data used to fit the line. It doesn’t show that x causes y, and it is not predictive accuracy: a line fitted to one year can do worse on the next, especially when many explanatory variables are tried (the multicollinearity-and-model-choice lesson tests models on months they weren’t fitted to). Nor can R² be compared between models of different responses, such as sales and the logarithm of sales.' },
     { callout: 'note', title: 'Is 0.6 a “strong” R²?', html: 'Verbal labels for R² (or r) vary between textbooks and fields, and none is a standard; what counts as high in social science would be poor in a laboratory calibration. If you use a label, say whose convention it is. Better, report R² with the residual standard error in y’s units and let the decision decide whether the fit is good enough.' },
@@ -187,7 +195,7 @@ export default {
         String.raw`SSR = SST − SSE = <m>15{,}397{,}215 - 239{,}979 = 15{,}157{,}236</m>.`,
         String.raw`R² <m>= 15{,}157{,}236 \div 15{,}397{,}215 = 0.984</m>; the slope is positive, so <m>r = +\sqrt{0.984} = 0.992</m>, the correlation B05 reported as 0.99.`,
         String.raw`<m>s = \sqrt{239{,}979 \div 304} = 28.10</m> dollars, against a standard deviation of sales of $224.68.`,
-        'Residuals by band of transactions: on average +$26.52 below 40, +$7.28 from 40 to 59, −$11.21 from 60 to 79, −$22.98 from 80 to 119 and +$32.92 at 120 or more: a gentle curve, positive at both ends.',
+        'Residuals by band of transactions: on average +$26.52 below 40, +$7.28 from 40 to 59, −$11.21 from 60 to 79, −$22.98 from 80 to 119 and +$32.92 at 120 or more. Five of those 11 days are festivals; the other six average −$27.00. Refitted without the festivals, the bands are +$6.12, −$0.08, −$5.46, +$1.36 and +$24.44: a gentle curve, upward at the top.',
         'Restricted to the 121 days with 50–70 transactions: R² = 0.859 and s = $13.51.',
       ],
       answer: 'SSR = 15,157,236; R² = 0.984; r = 0.992; s = $28.10. On the 50–70 days alone, R² = 0.859 with s = $13.51.',
@@ -222,7 +230,7 @@ export default {
   ],
 
   application: [
-    { case: 'Ana’s review of the café models has one line per model. “Sales on transactions, Harbourside: R² = 0.984, typical miss $28 (STEYX), residuals bend gently upward at both ends; fine for budgeting inside the usual range. Iced share on the forecast high: R² = 0.883, typical miss 10 points, but the residuals wave, so I order from last year’s averages by 5 °F band instead. Footfall on the high, Harbourside: R² = 0.19, typical miss 62 people; useless for any single day, useful for the season, about 2 people per °F.”' },
+    { case: 'Ana’s review of the café models has one line per model. “Sales on transactions, Harbourside: R² = 0.984, typical miss $28 (STEYX), residuals bend gently upward at the top even without the festival days; fine for budgeting inside the usual range. Iced share on the forecast high: R² = 0.883, typical miss 10 points, but the residuals wave, so I order from last year’s averages by 5 °F band instead. Footfall on the high, Harbourside: R² = 0.19, typical miss 62 people; useless for any single day, useful for the season (once module 3 has separated the build-up).”' },
     { p: 'Each line gives three things: R² for the share of variation, s in the response’s units for the size of a typical miss, and a sentence about the residual plot. That combination is what lets a reader decide whether a model is good enough for a purpose. A budget can live with $28 a day; a barista roster for one particular Saturday can’t live with ±62 people, but a seasonal hiring plan can.' },
     { p: 'In other businesses the same habits apply. A retailer forecasting store revenue from floor area might find R² = 0.6 and a typical miss of $400,000 a year: the R² sounds respectable, the miss decides whether it can set targets with it. A battery-storage installer modelling installation hours on system size may see residuals fanning out for larger systems, a sign that a single s overstates precision on small jobs and understates it on big ones (module 4 deals with this). And a delivery firm comparing two cities’ models by R² should first check whether the cities’ routes cover the same range of distances.' },
     { p: 'Two cautions travel with every R² Ana reports. It is computed on the days used to fit the line, so it flatters how well the line will do on next year’s days. And it describes association: a high R² between baristas rostered and sales (B05 found they go together because the roster follows expected trade) would not mean that adding baristas raises sales.' },
@@ -292,7 +300,19 @@ export default {
     { what: 'Band 80–119 mean residual', value: SB[3].e, shown: -22.98 },
     { what: 'Band 120+ mean residual', value: SB[4].e, shown: 32.92 },
     { what: 'Band 120+ days', value: SB[4].n, shown: 11 },
-    { what: 'Sales residuals positive at both ends, negative in between (the curve)', value: Number(SB[0].e > 0 && SB[4].e > 0 && SB[2].e < 0 && SB[3].e < 0), shown: 1 },
+    { what: 'Festival days among the 11 busiest', value: TOPF.length, shown: 5 },
+    { what: 'Other six busiest days, mean residual', value: mean(TOPN.map((i) => L.resid[i])), shown: -27.00 },
+    { what: 'Other six', value: TOPN.length, shown: 6 },
+    { what: 'Other six below the line', value: Number(mean(TOPN.map((i) => L.resid[i])) < 0), shown: 1 },
+    { what: 'No-festival band <40', value: SBN[0].e, shown: 6.12 },
+    { what: 'No-festival band 40–59', value: SBN[1].e, shown: -0.08 },
+    { what: 'No-festival band 60–79', value: SBN[2].e, shown: -5.46 },
+    { what: 'No-festival band 80–119', value: SBN[3].e, shown: 1.36 },
+    { what: 'No-festival band 120+', value: SBN[4].e, shown: 24.44 },
+    { what: 'No-festival band 120+ (whole dollars)', value: SBN[4].e, shown: 24, tol: 0.5 },
+    { what: 'No-festival top band has six days', value: SBN[4].n, shown: 6 },
+    { what: 'Bend is real without festivals: top band well above zero (fails if no upward curve)', value: Number(SBN[4].e > 10 && SBN[4].e > SBN[2].e + 10), shown: 1 },
+    { what: 'Full-fit sales residuals positive at both ends, negative in between', value: Number(SB[0].e > 0 && SB[4].e > 0 && SB[2].e < 0 && SB[3].e < 0), shown: 1 },
     // restricted range
     { what: 'Days with 50–70 transactions', value: RANGE.n, shown: 121 },
     { what: 'Restricted R²', value: RANGE.f.r2, shown: 0.859, tol: 0.0005 },
@@ -316,6 +336,9 @@ export default {
     { what: 'Some fitted shares negative', value: Number(negFit > 0), shown: 1 },
     { what: 'Wave: + below 45, − 45–64, + 75–84 (fails if the line were the right shape)', value: Number(IB[0].e > 0.05 && IB[1].e < 0 && IB[2].e < -0.05 && IB[4].e > 0.03), shown: 1 },
     { what: 'Near zero around 70', value: Math.abs(IB[3].e), shown: 0, tol: 0.01 },
+    { what: 'Line below the curve on the coldest days (residual > 0, below 45)', value: Number(IB[0].e > 0), shown: 1 },
+    { what: 'Line above the curve in the 50s and early 60s (45–54 and 55–64 residuals < 0)', value: Number(IB[1].e < 0 && IB[2].e < 0), shown: 1 },
+    { what: 'Line below the curve in the late 70s and early 80s (75–84 residual > 0)', value: Number(IB[4].e > 0), shown: 1 },
     { what: '55–64 band days', value: IB[2].n, shown: 128 },
     { what: '55–64 band over-statement', value: -IB[2].e, shown: 0.095, tol: 0.0005 },
     { what: '55–64 band over-statement (points)', value: -IB[2].e * 100, shown: 9.5, tol: 0.05 },
@@ -329,6 +352,10 @@ export default {
     { what: 'July mean high', value: mhi(7), shown: 83.5, tol: 0.05 },
     { what: 'July above March on the line', value: FT.beta[1] * (mhi(7) - mhi(3)), shown: 61, tol: 0.5 },
     { what: 'Footfall s', value: FT.sigma, shown: 62, tol: 0.5 },
+    { what: 'High slope with the build-up held fixed', value: FTR.beta[1], shown: 1.79 },
+    { what: 'High slope with build-up, weekend, rain, festival', value: FTA.beta[1], shown: 1.44 },
+    { what: 'Build-up inflates the one-predictor slope', value: Number(FT.beta[1] > FTR.beta[1] && FTR.beta[1] > FTA.beta[1]), shown: 1 },
+    { what: '61 people ≈ one barista hour at the peak (55% of transactions, ~14 per barista hour)', value: 61 * 0.47 * 0.55 / 14, shown: 1.1, tol: 0.15 },
     { what: 'Rain R²', value: RN.r2, shown: 0.052, tol: 0.0005 },
     { what: 'Rain slope', value: RN.beta[1], shown: -81, tol: 0.5 },
     // Otterburn

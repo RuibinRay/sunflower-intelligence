@@ -94,8 +94,8 @@ export const guided = [
         id: 'b06-mult-g1-s1', type: 'mc',
         prompt: 'What does the weekend slope, 69.14, say?',
         options: [
-          'A weekend day had about 69 more people than a weekday with the same high, rain and festival status.',
-          'Weekend days averaged 69 more people than weekdays, whatever the weather on those days.',
+          'A weekend day had about 69 more people than a weekday of the same weather and festival status.',
+          'Weekend days averaged 69 more people than weekdays over the year, whatever the weather was on those days.',
           'Moving a festival from a weekday to a weekend would add about 69 people to the festival’s crowd.',
           'About 69 of each weekend day’s visitors came because it was a weekend rather than for the weather.',
         ],
@@ -188,7 +188,7 @@ export const independent = [
     id: 'b06-mult-i3', type: 'mc', kind: 'conceptual',
     prompt: 'Barrowgate Cinemas (fictional) regresses weekly attendance on the number of new films released that week and finds a slope of 950 people per film. School holidays raise attendance and studios release more films in holiday weeks. If the analyst adds a 0/1 school-holiday column, what should happen to the slope on new films?',
     options: [
-      'It should fall, because part of the 950 was holiday crowds credited to the films.',
+      'It should fall: part of the 950 was holiday crowds credited to the films.',
       'It should rise, because holidays and films both add attendance, so their effects combine.',
       'It should stay at 950, because a 0/1 column can’t change a slope on a count.',
       'It should turn negative, because adding a confounder always reverses the slope.',
@@ -218,8 +218,8 @@ export const independent = [
     id: 'b06-mult-i5', type: 'mc', kind: 'conceptual',
     prompt: 'Westerholt Bookshops (fictional) reports standardised slopes from a model of daily sales on floor staff (0.20), footfall (0.55) and a 0/1 column for the annual book-fair week (0.08). The manager concludes that the book fair barely matters. What is the best response?',
     options: [
-      'The fair’s column is 1 in only one week a year, so its SD is small; compare its slope in dollars per fair day instead.',
-      'She is right: standardised slopes rank the predictors by how much each one causes sales to change.',
+      'The fair’s column is 1 in one week a year, so its SD is tiny; judge its slope in dollars per fair day.',
+      'She is right: standardised slopes rank the predictors by how much each of them causes sales to change.',
       'She should square the standardised slopes, because squared values give the share of R² each one explains.',
       'Standardised slopes are only valid when every predictor is a 0/1 column, so none of them can be read.',
     ],
@@ -257,8 +257,8 @@ export const check = [
     id: 'b06-mult-k1', type: 'mc', kind: 'conceptual',
     prompt: 'In Harbourside’s model with the build-up, the slope on the day’s high is 1.44 people per °F. Which reading is correct?',
     options: [
-      'Comparing days alike on rain, weekend, festival status and the build-up, each extra °F goes with about 1.44 more people.',
-      'Raising the temperature by 1°F on any given day would bring exactly 1.44 more people through the door.',
+      'Among days alike on rain, weekend, festival and build-up, each °F goes with about 1.44 more people.',
+      'Raising the temperature by 1°F on any given day would bring exactly 1.44 more people through the café door.',
       'Of all the variation in footfall, 1.44% is due to temperature once the other predictors are allowed for.',
       'Warm days had 1.44 more people than cold days on average, before rain and the calendar are considered.',
     ],
@@ -325,7 +325,7 @@ export const check = [
     id: 'b06-mult-k6', type: 'mc', kind: 'applied',
     prompt: 'Ana’s operations manager reads that, over both cafés’ 612 days, the peak wait has a slope of +0.55 minutes per barista hour alone and −1.26 with transactions in the model. He wants to cut barista hours, citing the first number. Which reply is right?',
     options: [
-      'The +0.55 mixes in busy days: managers roster more hours when trade is heavy. At the same trade, extra hours go with shorter waits.',
+      'At the same trade, extra hours go with shorter waits; the +0.55 reflects busy days getting more hours.',
       'Both numbers are estimates of the same effect, so the fair figure is their average, about −0.36 minutes per barista hour.',
       'The +0.55 is right and the −1.26 is a fitting artefact, because adding a predictor always makes slopes negative.',
       'Neither number can be used, because a slope on barista hours can’t be estimated when the hours come in half-hour steps.',

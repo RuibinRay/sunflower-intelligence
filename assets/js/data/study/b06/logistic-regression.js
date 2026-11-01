@@ -115,7 +115,7 @@ export default {
     { p: String.raw`The coefficient for living nearby, 0.339, has p = 0.25 and an odds ratio interval from 0.78 to 2.51. That is not evidence that distance doesn’t matter: the fictional data were in fact built with a log-odds effect of 0.9 for living nearby (an odds ratio of 2.46), inside the interval. With 225 members the estimate is too imprecise to tell an odds ratio of 1 from one of 2.5. A non-significant coefficient means the data can’t pin it down.` },
 
     { h: 'Testing models: the likelihood-ratio test' },
-    { p: String.raw`To compare a model with a simpler one nested inside it, use twice the gain in log-likelihood: <m>G = 2(\ell_{\text{full}} - \ell_{\text{reduced}})</m>, compared with a chi-square distribution whose degrees of freedom are the number of coefficients dropped. Against the intercept-only model, <m>G = 2(-143.67 + 155.32) = 23.3</m> on 5 df, p below 0.001: the five predictors together say something. Dropping notifications alone gives G = 10.46 on 1 df, p = 0.001, close to the Wald test’s verdict. When the two disagree, prefer the likelihood-ratio test, which behaves better when coefficients are large or samples small. It is the logistic counterpart of the nested F test.` },
+    { p: String.raw`To compare a model with a simpler one nested inside it, use twice the gain in log-likelihood: <m>G = 2(\ell_{\text{full}} - \ell_{\text{reduced}})</m>, compared with a chi-square distribution whose degrees of freedom are the number of coefficients dropped. Against the intercept-only model, <m>G = 2(-143.67 + 155.32) = 23.3</m> on 5 df, p below 0.001: the five predictors together say something. Dropping notifications alone gives G = 10.46 on 1 df, p = 0.001, close to the Wald test’s verdict. When the two disagree, prefer the likelihood-ratio test, which behaves better when coefficients are large or samples small. It is the logistic counterpart of the <g>nested F test</g>.` },
     { p: String.raw`<b>McFadden’s pseudo-R²</b>, <m>1 - \ell/\ell_0</m>, is 0.075 here. It is not a share of variance, and values that look small are usual for individual yes/no outcomes; it is most useful for comparing models fitted to the same data.` },
 
     { h: 'Confounding shows up here too' },
@@ -250,7 +250,7 @@ export default {
   ],
 
   references: [
-    { text: 'Penn State Eberly College of Science. <i>STAT 462: Applied Regression Analysis</i>, “Logistic Regression” (the binary logistic model, likelihood, Wald and likelihood-ratio tests, odds ratios).', url: 'https://online.stat.psu.edu/stat462/node/207/', checked: '2026-11-01' },
+    { text: 'Penn State Eberly College of Science. <i>STAT 462: Applied Regression Analysis</i>, notes on binary logistic regression (the model, likelihood, Wald and likelihood-ratio tests, odds ratios).', url: 'https://online.stat.psu.edu/stat462/node/207/', checked: '2026-11-01' },
     { text: 'Penn State Eberly College of Science. <i>STAT 501: Regression Methods</i>, 15.3, “Further Logistic Regression Examples”.', url: 'https://online.stat.psu.edu/stat501/book/export/html/1015', checked: '2026-11-01' },
     { text: 'Microsoft Support. “LN function”.', url: 'https://support.microsoft.com/en-us/Excel/functions/ln-function', checked: '2026-11-01' },
   ],

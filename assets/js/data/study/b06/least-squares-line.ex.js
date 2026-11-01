@@ -176,7 +176,7 @@ export const guided = [
   {
     id: 'b06-ls-g2', type: 'steps', kind: 'numerical',
     prompt: 'Millbrook, 1–20 October 2027: transactions in B2:B21 and sales in C2:C21. Build the least-squares line from its parts, without SLOPE or INTERCEPT.',
-    solution: `F1: <x>=CORREL(B2:B21,C2:C21)*STDEV.S(C2:C21)/STDEV.S(B2:B21)</x> = ${OL.b1.toFixed(4)}; F2: <x>=AVERAGE(C2:C21)-F1*AVERAGE(B2:B21)</x> = ${fx(OL.b0)}. These equal SLOPE and INTERCEPT exactly. The twenty days give $${OL.b1.toFixed(2)} of sales per transaction, close to the year’s $3.60; the slope rests on the gap between the busy weekdays (over 120 transactions) and the quiet weekends (under 85).`,
+    solution: `F1: <x>=CORREL(B2:B21,C2:C21)*STDEV.S(C2:C21)/STDEV.S(B2:B21)</x> = ${OL.b1.toFixed(4)}; F2: <x>=AVERAGE(C2:C21)-F1*AVERAGE(B2:B21)</x> = ${fx(OL.b0)}. These equal SLOPE and INTERCEPT exactly. The twenty days give $${OL.b1.toFixed(2)} of sales per transaction, close to the year’s $3.60; the slope rests on the gap between the busy weekdays (120 or more transactions) and the quiet weekends (under 85).`,
     steps: [
       {
         id: 'b06-ls-g2-s1', type: 'formula',

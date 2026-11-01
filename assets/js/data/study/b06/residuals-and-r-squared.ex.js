@@ -259,7 +259,7 @@ export const independent = [
       2: 'Restricting the range of x lowers R², it doesn’t raise it.',
       3: 'Nothing here suggests a curve; weekends and rain, which the line leaves out, account for much of the variation.',
     },
-    solution: 'R² = 0.19 with s = 62 people: the forecast high alone can’t predict a particular day’s footfall well. But the slope, 2.0 people per °F, applied to March’s 53 °F and July’s 84 °F averages, puts July about 61 people a day busier, a difference worth a barista. Use the slope for the seasonal plan and other information (the day of the week) for daily rosters.',
+    solution: 'R² = 0.19 with s = 62 people: the forecast high alone can’t predict a particular day’s footfall well. But the slope, 2.0 people per °F, applied to March’s 53 °F and July’s 84 °F averages, puts July about 61 people a day busier on the line, roughly an extra barista hour at the morning peak. That 61 is the line’s figure and partly the cafés’ opening build-up through the cold spring; module 3 holds the build-up fixed and finds a smaller slope. Use the slope for the seasonal plan and other information (the day of the week) for daily rosters.',
   },
 ];
 

@@ -49,7 +49,7 @@ export const items = [
     prompt: 'The worksheet holds Millbrook’s 31 days of December 2027: footfall in B, the high in C, rain in D and the weekend dummy in E. In G2, calculate the two-sided p-value of the slope on the high in the regression of footfall on all three, in one formula: use LINEST with its statistics for the slope, its standard error and the residual degrees of freedom.',
     sheet: { cells: { ...DEC.cells, G1: 'p-value, slope on high' } },
     cell: 'G2', answer: '=T.DIST.2T(ABS(INDEX(LINEST(B2:B32,C2:E32,TRUE,TRUE),1,3)/INDEX(LINEST(B2:B32,C2:E32,TRUE,TRUE),2,3)),INDEX(LINEST(B2:B32,C2:E32,TRUE,TRUE),4,2))',
-    alt: ['=T.DIST.2T(ABS(INDEX(LINEST(B2:B32,C2:E32,1,1),1,3)/INDEX(LINEST(B2:B32,C2:E32,1,1),2,3)),27)', '=2*T.DIST.RT(ABS(INDEX(LINEST(B2:B32,C2:E32,TRUE,TRUE),1,3)/INDEX(LINEST(B2:B32,C2:E32,TRUE,TRUE),2,3)),INDEX(LINEST(B2:B32,C2:E32,TRUE,TRUE),4,2))'],
+    alt: ['=T.DIST.2T(ABS(INDEX(LINEST(B2:B32,C2:E32,1,1),1,3)/INDEX(LINEST(B2:B32,C2:E32,1,1),2,3)),27)'],
     require: ['LINEST', 'T.DIST.2T'],
     view: 'A1:H32', maxHeight: '20rem', formats: { G2: '0.000' }, widths,
     wrong: [
@@ -62,7 +62,7 @@ export const items = [
     id: 'b06-m3-3', lesson: 'multiple-regression', type: 'mc', kind: 'conceptual',
     prompt: 'A regression of x₁ on x₂ has a slope of exactly 0: the two predictors are unrelated in the data. x₂ is then added to a model of y that contained only x₁, and x₂’s slope is large. What happens to the slope on x₁ and to its standard error?',
     options: [
-      'The slope on x₁ stays the same; its standard error usually falls, because the residual standard error shrinks.',
+      'The slope on x₁ is unchanged; its standard error usually falls, as s shrinks.',
       'The slope on x₁ changes by b₂ times the correlation of x₁ and y, so its standard error rises.',
       'Both stay exactly the same, because an unrelated predictor can’t affect anything about x₁.',
       'The slope on x₁ shrinks towards zero, because x₂ now shares the credit for explaining y.',
@@ -116,7 +116,7 @@ export const items = [
     id: 'b06-m3-7', lesson: 'categorical-predictors-and-interactions', type: 'mc', kind: 'applied',
     prompt: 'Kelso Street Gyms (fictional) regresses monthly cancellations on the price rise ($) for its city-centre and suburban branches pooled, without a branch-type dummy, and finds that larger price rises went with fewer cancellations. City-centre branches had larger price rises and much lower cancellation rates whatever the price. What should the analyst do first?',
     options: [
-      'Add a branch-type dummy (and check a price × branch-type interaction), so the price slope compares branches of the same type.',
+      'Add a branch-type dummy (and test a price × branch-type interaction) before reading the price slope.',
       'Report that price rises reduce cancellations, since the pooled data cover every branch and so are the most complete.',
       'Drop the city-centre branches, because their low cancellation rates are outliers that distort the slope.',
       'Code the branch type as 1 and 2 in a single column and treat it as a number in the regression.',
@@ -175,7 +175,7 @@ export const items = [
     id: 'b06-m3-11', lesson: 'multicollinearity-and-model-choice', type: 'mc', kind: 'conceptual',
     prompt: 'In a model of a hotel’s nightly revenue on rooms occupied and guests staying (r = 0.97 between them), the slope on guests isn’t significant. The analyst drops guests to “simplify”. When is that a mistake?',
     options: [
-      'When guests matter for revenue at a given number of rooms and the question is about rooms: dropping them biases the rooms slope.',
+      'When guests matter at a given number of rooms: dropping them biases the slope on rooms.',
       'Never: a predictor that isn’t significant contributes nothing and should always be removed from the model.',
       'Always, because with r = 0.97 the two predictors are perfectly collinear and both must be kept.',
       'Only if adjusted R² falls by more than 0.05 when guests are dropped from the model.',

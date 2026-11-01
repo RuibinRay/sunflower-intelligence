@@ -136,7 +136,7 @@ export const items = [
     id: 'b06-m1-9', lesson: 'residuals-and-r-squared', type: 'mc', kind: 'conceptual',
     prompt: 'A residual plot against x shows residuals that are mostly negative for small x, mostly positive in the middle, and mostly negative again for large x, with about the same spread throughout. What does it indicate?',
     options: [
-      'The relationship bends like an upside-down U, so a straight line is the wrong shape.',
+      'It bends downward, like an upside-down U or a curve that levels off: a line is the wrong shape.',
       'The spread of y grows with x, so the line’s typical miss is too large for the small values of x.',
       'A few outliers at the two ends of the range have pulled the line too far up in the middle.',
       'Nothing at all: the residuals average zero, exactly as least squares guarantees.',
@@ -147,7 +147,7 @@ export const items = [
       2: 'Outliers show as a few isolated large residuals, not as runs of one sign across the range.',
       3: 'They average zero overall by construction; a run of signs within parts of the range is the warning.',
     },
-    solution: 'Runs of same-signed residuals across the range of x mean the straight line misses systematically: here the data rise more steeply than the line at first and flatten later, a curve with a maximum. The fix is a curved model (module 4), not a different straight line.',
+    solution: 'Runs of same-signed residuals across the range of x mean the straight line misses systematically: here the data rise more steeply than the line at first and flatten later, a curve that bends downward (concave), such as one that rises and levels off. The fix is a curved model (module 4), not a different straight line.',
   },
   {
     id: 'b06-m1-10', lesson: 'residuals-and-r-squared', type: 'classify', kind: 'applied',

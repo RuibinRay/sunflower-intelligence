@@ -76,7 +76,7 @@ export const guided = [
   {
     id: 'b06-diag-g1', type: 'steps', kind: 'numerical',
     prompt: 'The worksheet holds Millbrook’s first 40 weekdays (1 March to 23 April 2027) in date order: the day’s high and footfall. Ana fits footfall on the high alone and checks the residuals in time order.',
-    solution: `Residuals: <x>=D2-TREND(D$2:D$41,C$2:C$41,C2)</x>, filled to E41. Durbin–Watson: <x>=SUMPRODUCT((E3:E41-E2:E40)^2)/SUMSQ(E2:E41)</x> = ${fx(mbDW)}, well below 2. The first 20 weekdays average ${neg(firstHalf, 1)} people and the last 20 ${neg(secondHalf, 1)}: the café was building up its trade, which the high alone can’t describe.`,
+    solution: `Residuals: <x>=D2-TREND(D$2:D$41,C$2:C$41,C2)</x>, filled to E41. Durbin–Watson: <x>=SUMPRODUCT((E3:E41-E2:E40)^2)/SUMSQ(E2:E41)</x> = ${fx(mbDW)}, below 2. The first 20 weekdays’ residuals average ${neg(firstHalf, 1)} people and the last 20’s ${secondHalf > 0 ? '+' : ''}${neg(secondHalf, 1)}: the café was building up its trade, which the high alone can’t describe.`,
     steps: [
       {
         id: 'b06-diag-g1-s1', type: 'formula',

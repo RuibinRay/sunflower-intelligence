@@ -26,14 +26,14 @@ import numpy as np
 
 OUT = Path(__file__).resolve().parents[2] / 'assets/js/data/study/b06/data.js'
 import os
-r = np.random.default_rng(int(os.environ.get('B06_SEED', 6062)))
+r = np.random.default_rng(int(os.environ.get('B06_SEED', 6103)))
 QUOTE = dict(setup=60, perHour=30, platter=120, minimum=300)
 TEST_START = dt.date(2027, 6, 1)
 TARGET = 85_880_00
 
 # enquiries: more in spring and before the holidays, few in high summer
 month_w = np.array([0.6, 0.8, 1.0, 1.1, 1.1, 0.9, 0.6, 0.55, 1.0, 1.1, 1.4, 1.2])
-N = int(os.environ.get('B06_N', 162))
+N = int(os.environ.get('B06_N', 180))
 months = r.choice(np.arange(1, 13), N, p=month_w / month_w.sum())
 rows = []
 for k in range(N):

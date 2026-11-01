@@ -144,7 +144,7 @@ export const independent = [
     id: 'b06-cat-i2', type: 'mc', kind: 'conceptual',
     prompt: 'Ana refits the café × weekend model with Millbrook as the reference café (a Harbourside dummy instead of a Millbrook one). Which of these changes?',
     options: [
-      'The coefficients on the dummies and the intercept, but not the fitted values, residuals or R².',
+      'The dummy coefficients and the intercept, not the fitted values, residuals or R².',
       'The fitted values and R², because the reference café’s rows are now fitted less closely.',
       'Nothing at all: the coefficients are the same because the data are the same.',
       'Only the interaction’s coefficient, because the main effects don’t depend on the reference.',
@@ -171,7 +171,7 @@ export const independent = [
     id: 'b06-cat-i4', type: 'mc', kind: 'applied',
     prompt: 'Pennick Bakeries (fictional) has a city shop and a station kiosk. Pooled over both, the slope of the average spend per customer on the day’s customers is negative. With a kiosk dummy in the model the slope is positive. The kiosk serves far more customers, each spending less. What should the bakery conclude about busy days?',
     options: [
-      'Within each outlet, busier days go with slightly higher spend; the pooled slope reflects the kiosk’s many low-spend customers.',
+      'Within each outlet, busier days go with slightly higher spend; the pooled slope reflects the kiosk’s customers.',
       'Busier days lower spend per customer, because the pooled slope uses all the data and so is the more reliable figure.',
       'The dummy has created a false positive slope, so the bakery should report the model without it.',
       'The two slopes cancel, so spend per customer has no link at all with how busy the day is.',
@@ -218,8 +218,8 @@ export const check = [
     id: 'b06-cat-k1', type: 'mc', kind: 'conceptual',
     prompt: `A model of footfall on the high, rain and a Millbrook dummy (no interactions) gives the dummy a coefficient of ${km}. What does it mean?`,
     options: [
-      `On days with the same high and rain, Millbrook’s fitted footfall is ${km} people higher than Harbourside’s.`,
-      `Millbrook’s mean daily footfall over the year was ${km} people, holding the weather fixed.`,
+      `Holding the high and rain fixed, Millbrook has ${km} more people than Harbourside.`,
+      `Millbrook’s mean daily footfall over the year was ${km} people once the weather is held fixed.`,
       `Millbrook’s footfall rises ${km} people more than Harbourside’s for each extra °F.`,
       `Of all the café-days, ${km}% are Millbrook’s once the weather is held fixed.`,
     ],
@@ -259,7 +259,7 @@ export const check = [
     id: 'b06-cat-k4', type: 'mc', kind: 'applied',
     prompt: 'A subscription-box company (fictional) models monthly cancellations per 100 customers on the price rise ($) with a dummy for the annual plan and the price × annual interaction: +1.8 on price, −9 on annual, −1.1 on the interaction (the monthly plan is the reference). Which conclusion about the annual plan’s response to price is right?',
     options: [
-      'Its slope on price is 1.8 − 1.1 = 0.7 more cancellations per 100 customers per dollar, so it responds less than the monthly plan.',
+      'Its slope is 1.8 − 1.1 = 0.7 per dollar, so annual customers respond less to price.',
       'Its slope on price is −1.1 per dollar, because the interaction is the annual plan’s own slope on price.',
       'Its slope on price is 1.8, because the price coefficient applies to every customer whatever the plan.',
       'It can’t be worked out, because main effects have no meaning once an interaction is included.',
