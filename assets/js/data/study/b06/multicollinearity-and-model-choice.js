@@ -132,7 +132,7 @@ export default {
 
   theory: [
     { h: 'The variance inflation factor' },
-    { p: String.raw`Regress predictor <m>x_j</m> on all the other predictors and call that regression’s R² <m>R_j^2</m>. The <g>variance inflation factor</g> is <m>\text{VIF}_j = 1/(1 - R_j^2)</m>. It is the factor by which collinearity multiplies the variance of <m>b_j</m> compared with a predictor unrelated to the others, so the standard error is multiplied by <m>\sqrt{\text{VIF}_j}</m>. With two predictors <m>R_j^2 = r^2</m>: for Harbourside, <m>1/(1 - 0.985^2) = 34.1</m>, and <m>\sqrt{34.1} = 5.8</m>.` },
+    { p: String.raw`Regress predictor <m>x_j</m> on all the other predictors and call that regression’s R² <m>R_j^2</m>. The <g>variance inflation factor</g> is <m>\text{VIF}_j = 1/(1 - R_j^2)</m>. It is the factor by which collinearity multiplies the variance of <m>b_j</m> compared with a predictor unrelated to the others, so the standard error is multiplied by <m>\sqrt{\text{VIF}_j}</m>. With two predictors <m>R_j^2 = r^2</m>: for Harbourside, <m>r^2 = 0.97064</m> and <m>1/(1 - 0.97064) = 34.1</m>, and <m>\sqrt{34.1} = 5.8</m>.` },
     { p: String.raw`The standard error of a slope is <m>\text{SE}(b_j) = \dfrac{s}{\sqrt{\sum (x_j - \bar x_j)^2}}\sqrt{\text{VIF}_j}</m>. Comparing transactions alone with transactions and footfall, the residual standard error s barely changes (28.1 to 27.6), so the standard error grows by about √VIF: 0.275 ÷ 0.048 = 5.74, which is exactly <m>\sqrt{34.1} \times 27.6/28.1</m>. A VIF of 34 means that the 306 days give as much information about transactions’ separate slope as about 9 days would if the two predictors were unrelated.` },
     { p: 'Penn State’s STAT 462 notes treat VIFs above 4 as worth investigating and above 10 as signs of serious multicollinearity; these are conventions, and other sources use 5 and 10. A pairwise correlation can miss collinearity among three or more predictors (one can be close to a combination of two others), which the VIF catches. Collinearity is also built into models with interactions: a dummy and its product with a numeric predictor are highly correlated, which inflates the main effect’s standard error; centring the numeric predictor reduces it without changing the fit.' },
 
@@ -177,7 +177,7 @@ export default {
       rows: ['A', 'B', 'C'].map((k) => [k, String(TIME[k].f.p), TIME[k].f.r2.toFixed(4), TIME[k].f.sigma.toFixed(1), TIME[k].f.aic.toFixed(1), TIME[k].f.bic.toFixed(1), TIME[k].rmse.toFixed(1)]),
       note: 'Test RMSE in people. AIC and BIC from the training fit.',
     } },
-    { p: 'Model C has the best training R² and the lowest AIC, yet its test RMSE is 78.6 people, nearly five times B’s 16.5. Its cubic trend in the day, fitted to the spring build-up and the summer, keeps climbing after September: on the test days it over-predicts by 66 people on average. Model A misses the other way, under-predicting by 24 people on average, because without the build-up its temperature slope is too steep for the colder autumn. B, which BIC prefers, predicts the autumn almost as well as it fitted the spring and summer (16.5 against a training s of 16.7).' },
+    { p: 'Model C has the best training R² and the lowest AIC, yet its test RMSE is 78.6 people, nearly five times B’s 16.5. Its cubic trend in the day, fitted to the spring build-up and the summer, bends sharply down after September: on the test days it under-predicts by 66 people on average. Model A misses the other way, under-predicting by 24 people on average, because without the build-up its temperature slope is too steep for the colder autumn. B, which BIC prefers, predicts the autumn almost as well as it fitted the spring and summer (16.5 against a training s of 16.7).' },
     { callout: 'warn', title: 'What a hold-out check can and can’t show', html: 'One split is one test. Ana’s test months are colder than most of the training months, have no festivals and come after the build-up, so the check measures how well a model carries forward in time, which is what a forecast needs, but with 92 days from one season. A random split behaves differently: fitting on odd-numbered days of the year and testing on even ones gives test RMSEs of 19.8, 17.6 and 17.8 for A, B and C, because each test day has neighbours in the training data and the cubic trend never has to extrapolate. Neighbouring days are alike, so a random split flatters a model. Choose the split that matches how the model will be used, and keep the test data out of every choice, including the choice of which model to test.' },
 
     { h: 'Explaining or predicting' },
@@ -200,7 +200,7 @@ export default {
       note: 'With one predictor VIF = 1 and this is the simple-regression standard error.' },
     { id: 'coll-nested-f', name: 'Nested (general linear) F test',
       tex: String.raw`F = \dfrac{(\text{SSE}_R - \text{SSE}_F)/q}{\text{SSE}_F/(n - p_F)}, \qquad \text{df} = (q,\; n - p_F)`,
-      where: [[String.raw`\text{SSE}_R, \text{SSE}_F`, 'Residual sums of squares of the reduced and full models', 'units of y squared'], [String.raw`q`, 'Number of coefficients removed from the full model to get the reduced one', ''], [String.raw`n`, 'Number of rows (the same for both fits)', ''], [String.raw`p_F`, 'Number of coefficients in the full model, counting the intercept', '']],
+      where: [[String.raw`F`, 'Test statistic for H₀: every removed coefficient is 0', ''], [String.raw`\text{SSE}_R, \text{SSE}_F`, 'Residual sums of squares of the reduced and full models', 'units of y squared'], [String.raw`q`, 'Number of coefficients removed from the full model to get the reduced one', ''], [String.raw`n`, 'Number of rows (the same for both fits)', ''], [String.raw`p_F`, 'Number of coefficients in the full model, counting the intercept', '']],
       assumptions: 'The reduced model is the full model with some terms removed; both fitted to the same rows; the full model’s conditions hold.',
       note: 'Excel: F.DIST.RT(F, q, n − p_F). With q = 1, F is the removed term’s t².' },
     { id: 'coll-aic-bic', name: 'AIC and BIC for least squares',
@@ -334,7 +334,8 @@ export default {
     // VIF
     { what: 'VIF', value: VIF, shown: 34.1, tol: 0.05 },
     { what: 'VIF about 34', value: VIF, shown: 34, tol: 0.5 },
-    { what: 'VIF from rounded r', value: 1 / (1 - 0.985 ** 2), shown: 34.1, tol: 0.5 },
+    { what: 'VIF from rounded r²', value: 1 / (1 - 0.97064), shown: 34.1, tol: 0.05 },
+    { what: 'r² to 5 dp', value: rFT ** 2, shown: 0.97064, tol: 0.000005 },
     { what: '√VIF', value: Math.sqrt(VIF), shown: 5.8, tol: 0.05 },
     { what: 'SE ratio identity', value: seRatioFormula, shown: seRatio, tol: 1e-9 },
     { what: 's alone', value: ST.sigma, shown: 28.1, tol: 0.05 },
@@ -372,7 +373,8 @@ export default {
     { what: 'B test RMSE', value: TIME.B.rmse, shown: 16.5, tol: 0.05 },
     { what: 'A test RMSE', value: TIME.A.rmse, shown: 29.8, tol: 0.05 },
     { what: 'Nearly five times', value: TIME.C.rmse / TIME.B.rmse, shown: 4.8, tol: 0.05 },
-    { what: 'C over-predicts by 66', value: -TIME.C.bias, shown: 66, tol: 0.5 },
+    { what: 'C under-predicts by 66', value: TIME.C.bias, shown: 66, tol: 0.5 },
+    { what: 'C’s cubic trend falls after September (fitted trend part lower on 31 Dec than 30 Sep)', value: Number(['Day', 'Day²', 'Day³'].reduce((s, n, k) => s + TIME.C.f.coefs.find((c) => c.name === n).estimate * (306 ** (k + 1) - 214 ** (k + 1)), 0) < 0), shown: 1 },
     { what: 'A under-predicts by 24', value: TIME.A.bias, shown: 24, tol: 0.5 },
     { what: 'B training s', value: TIME.B.f.sigma, shown: 16.7, tol: 0.05 },
     { what: 'B bias', value: TIME.B.bias, shown: -1.7, tol: 0.05 },

@@ -103,7 +103,7 @@ export default {
     { p: 'An odds ratio is not a ratio of probabilities, and its effect on the probability depends on where you start. For a Harbourside member who lives further away, joined on a weekday with a $5 first ticket, turning notifications on in the model takes the predicted probability from 0.30 to 0.52, 22 points. For a nearby Millbrook member with an $8 ticket it takes it from 0.85 to 0.93, 8 points, with the same odds ratio of 2.52. Report odds ratios for the model and probabilities for the people.' },
 
     { h: 'Notifications: an association, not an effect' },
-    { p: 'Members chose whether to turn notifications on. Those who did may be keener on the café in the first place, and keenness, not the notifications, could be why they came back. The log can’t separate the two, so the odds ratio of 2.52 says that members with notifications on returned more, holding the other four predictors fixed. It does not say that switching a member’s notifications on would multiply their odds by 2.52. To learn that, Ana would need to turn notifications on for a random half of new members and compare.' },
+    { p: 'Members chose whether to turn notifications on. Those who did may be keener on the café in the first place, and keenness, not the notifications, could be why they came back. Raw, 62% of members with notifications on returned, against 43% with them off. The log can’t separate keenness from the notifications, so the odds ratio of 2.52 says that members with notifications on returned more, holding the other four predictors fixed. It does not say that switching a member’s notifications on would multiply their odds by 2.52. To learn that, Ana would need to turn notifications on for a random half of new members and compare.' },
   ],
 
   theory: [
@@ -135,7 +135,7 @@ export default {
       note: 'Sensitivity: the share of those who returned that the model flags. Specificity: the share of those who didn’t that it clears.',
     } },
     { p: '<g>Classification accuracy</g> needs a benchmark. Predicting that every member returns is right 53.8% of the time, the base rate, without any model. At a threshold of 0.5 the model is right 63.6% of the time: better, but by 10 points, not 64. Raising the threshold trades <g>sensitivity</g> (catching those who return) for <g>specificity</g> (correctly clearing those who don’t), and the right balance depends on what each kind of error costs, not on maximising accuracy.' },
-    { callout: 'warn', title: 'In-sample tables flatter the model', html: 'These tables score the model on the same 225 members it was fitted to, so they overstate how well it would classify November’s joiners. A fair estimate comes from members not used in fitting: a hold-out month, or cross-validation (B09 covers both).' },
+    { callout: 'warn', title: 'In-sample tables flatter the model', html: 'These tables score the model on the same 225 members it was fitted to, so they overstate how well it would classify November’s joiners. A fair estimate comes from members not used in fitting: a hold-out month, or cross-validation (B08, Machine Learning for Business, covers both).' },
 
     { h: 'Assumptions and cautions' },
     { list: [
