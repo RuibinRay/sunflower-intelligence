@@ -102,7 +102,7 @@ export default {
     { callout: 'key', title: 'Use the interval for the decision', html: 'A test whose interval sits entirely above the break-even uplift says the offer pays. One whose interval straddles break-even, as Ana’s does, says it probably pays but might not. With a cheap offer and small sums at stake, “probably” may be enough; with an expensive one, run a larger test first.' },
 
     { h: 'How big a test? Power in outline' },
-    { p: String.raw`<g>Power</g> is the chance a test detects a difference that is really there (B04). For two proportions with equal groups, the number per group needed for power 1 − β at a two-sided significance level α is approximately <m>n = (z_{1-\alpha/2} + z_{1-\beta})^2\,[p_C(1-p_C) + p_T(1-p_T)]/(p_T - p_C)^2</m>. To detect a rise from 5% to 10% with 80% power at the 5% level takes <m>${nNeed}</m> members in each group; to detect 5% to 7.5%, <m>${nNeed3}</m>. Ana’s ${TEST.nT} a group gave her only about a ${pct(power, 0)} chance of a significant result even if the true uplift were the ${(T.diff * 100).toFixed(0)} points she observed. Small effects need big tests, and a business with a few hundred lapsed customers will often have to decide with wide intervals, or pool several months.` },
+    { p: String.raw`<g>Power</g> is the chance a test detects a difference that is really there (B04). For two proportions with equal groups, the number per group needed for power 1 − β at a two-sided significance level α is approximately the sample-size formula in the Formulas section: it grows with the square of the z values and shrinks with the square of the difference to detect, <m>(p_T - p_C)^2</m>. To detect a rise from 5% to 10% with 80% power at the 5% level takes <m>${nNeed}</m> members in each group; to detect 5% to 7.5%, <m>${nNeed3}</m>. Ana’s ${TEST.nT} a group gave her only about a ${pct(power, 0)} chance of a significant result even if the true uplift were the ${(T.diff * 100).toFixed(0)} points she observed. Small effects need big tests, and a business with a few hundred lapsed customers will often have to decide with wide intervals, or pool several months.` },
 
     { h: 'Designing a test that can be trusted' },
     { list: [
@@ -140,7 +140,7 @@ export default {
       steps: [
         'Response rates: 66 ÷ 600 = 11.0% emailed, 48 ÷ 600 = 8.0% holdout.',
         'Difference: 11.0% − 8.0% = 3.0 points.',
-        String.raw`Standard error: <m>\sqrt{0.11 \times 0.89/600 + 0.08 \times 0.92/600} = ${(Math.sqrt(0.11 * 0.89 / 600 + 0.08 * 0.92 / 600) * 100).toFixed(2)}</m> points.`,
+        String.raw`Standard error: <m>0.11 \times 0.89/600 = 0.000163</m> and <m>0.08 \times 0.92/600 = 0.000123</m>; the square root of their sum is <m>${(Math.sqrt(0.11 * 0.89 / 600 + 0.08 * 0.92 / 600) * 100).toFixed(2)}</m> points.`,
         String.raw`Interval: <m>3.0 \pm 1.96 \times ${(Math.sqrt(0.11 * 0.89 / 600 + 0.08 * 0.92 / 600) * 100).toFixed(2)}</m> = ${((0.03 - 1.96 * Math.sqrt(0.11 * 0.89 / 600 + 0.08 * 0.92 / 600)) * 100).toFixed(1)} to ${((0.03 + 1.96 * Math.sqrt(0.11 * 0.89 / 600 + 0.08 * 0.92 / 600)) * 100).toFixed(1)} points.`,
       ],
       answer: `About 3 points (95% CI ${((0.03 - 1.96 * Math.sqrt(0.11 * 0.89 / 600 + 0.08 * 0.92 / 600)) * 100).toFixed(1)} to ${((0.03 + 1.96 * Math.sqrt(0.11 * 0.89 / 600 + 0.08 * 0.92 / 600)) * 100).toFixed(1)}): the interval includes zero.`,

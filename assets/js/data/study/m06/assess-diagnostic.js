@@ -29,7 +29,7 @@ const rnd = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
 const sum = (a) => a.reduce((s, v) => s + v, 0);
 
 // dg-1 Tarnfold Books (fictional): four customers' orders and spend last year
-const TB = [{ c: 'Customer A', n: 1, s: 96 }, { c: 'Customer B', n: 3, s: 84 }, { c: 'Customer C', n: 6, s: 108 }, { c: 'Customer D', n: 10, s: 132 }];
+const TB = [{ c: 'Customer A', n: 1, s: 96 }, { c: 'Customer B', n: 3, s: 84 }, { c: 'Customer C', n: 6, s: 108 }, { c: 'Customer D', n: 10, s: 132 }];   // s = spend; the table shows s ÷ n
 const tbAov = CU.baseMetrics(TB.map((r) => ({ frequency: r.n, monetary: r.s }))).aov;
 const tbMeanOfMeans = sum(TB.map((r) => r.s / r.n)) / TB.length;
 // dg-2 Wyndhurst Garden Centre (fictional): recency cut points (days) and one customer
@@ -40,12 +40,14 @@ const BC = [1, 1, 1, 1, 1, 2, 2, 3, 4, 6, 9, 15];
 const bcF = CU.score(BC, { k: 5, method: 'quantile' });
 const bcCuts = CU.cutPoints(BC, 5);
 const bcF1 = bcF.filter((s) => s === 1).length;
+const bcNtile = CU.score(BC, { k: 5, method: 'ntile' }).filter((s) => s === 1).length;
 // dg-4 a customer's scores
 const SC = { R: 2, F: 5, M: 4 };
 const scFM = Math.floor((SC.F + SC.M) / 2 + 0.5);                // as core/customer.js rfm() rounds FM
 const scSeg = CU.segmentOf(SC.R, scFM);
 // dg-5 Fellgate Climbing Wall (fictional): the January cohort in month 3
-const FC = { size: 400, active: 150, spend: 2700 };
+const FC = { size: 400, active: 150, perActive: 18 };
+FC.spend = FC.active * FC.perActive;
 // dg-6 Hollinsby Swim School (fictional): three cohorts, month 2
 const HS = [{ m: 'January', n: 400, a2: 120 }, { m: 'February', n: 100, a2: 60 }, { m: 'March', n: 250, a2: null }];
 const hsObs = HS.filter((c) => c.a2 != null);
@@ -82,16 +84,16 @@ export const items = [
   // ================================================================ Module 1: customer data and RFM
   {
     id: 'm06-dg-1', lesson: 'customer-metrics', type: 'num', kind: 'numerical',
-    prompt: 'Tarnfold Books (fictional) had four customers last year. What was the shop’s average order value? Give dollars to the cent.',
-    data: { table: { head: ['Customer', 'Orders', 'Spend ($)'], align: ['l', 'r', 'r'], rows: TB.map((r) => [r.c, r.n, fx(r.s, 0)]) } },
+    prompt: 'Tarnfold Books (fictional) had four customers last year. The table gives each one’s number of orders and their own average order. What was the shop’s average order value? Give dollars to the cent.',
+    data: { table: { head: ['Customer', 'Orders', 'Their average order ($)'], align: ['l', 'r', 'r'], rows: TB.map((r) => [r.c, r.n, fx(r.s / r.n, 2)]) } },
     answer: rnd(tbAov, 2),
-    check: () => (96 + 84 + 108 + 132) / (1 + 3 + 6 + 10),
+    check: () => (1 * 96 + 3 * 28 + 6 * 18 + 10 * 13.2) / (1 + 3 + 6 + 10),
     unit: '$', places: 2, tol: 0.01,
     wrong: [
       { value: rnd(tbMeanOfMeans, 2), say: 'That is the mean of each customer’s own average order. It gives the one-order customer as much weight as the ten-order one; the average order value divides total spend by total orders.' },
-      { value: rnd(sum(TB.map((r) => r.s)) / TB.length, 2), say: 'That is spend per customer. Average order value divides by the number of orders, not of customers.' },
+      { value: rnd(sum(TB.map((r) => r.s)) / TB.length, 2), say: 'That is spend per customer. Average order value divides total spend by the number of orders, not of customers.' },
     ],
-    solution: `Average order value = total spend ÷ total orders = $${sum(TB.map((r) => r.s))} ÷ ${sum(TB.map((r) => r.n))} = ${money(tbAov)}. The mean of the four customers’ own averages, ${money(tbMeanOfMeans)}, weights Customer A’s single $96 order like Customer D’s ten, so it describes a typical customer’s habit, not a typical order.`,
+    solution: `Rebuild each customer’s spend (orders × their average: ${TB.map((r) => `$${r.s}`).join(', ')}). Average order value = total spend ÷ total orders = $${sum(TB.map((r) => r.s))} ÷ ${sum(TB.map((r) => r.n))} = ${money(tbAov)}. The mean of the four customers’ own averages, ${money(tbMeanOfMeans)}, weights Customer A’s single $${TB[0].s} order like Customer D’s ten, so it describes a typical customer’s habit, not a typical order.`,
   },
   {
     id: 'm06-dg-2', lesson: 'rfm-scoring', type: 'num', kind: 'numerical',
@@ -107,15 +109,15 @@ export const items = [
   },
   {
     id: 'm06-dg-3', lesson: 'rfm-scoring', type: 'num', kind: 'numerical',
-    prompt: `Brackenwick Cycles (fictional) has twelve customers, who made ${BC.join(', ')} purchases last year. It scores frequency 1–5 with quintile cut points from Excel’s PERCENTILE.INC (the 20th, 40th, 60th and 80th percentiles); a value equal to a cut point goes in the lower group. How many customers score F = 1?`,
+    prompt: `Brackenwick Cycles (fictional) has twelve customers, who made ${BC.join(', ')} purchases last year. It scores frequency 1–5 the usual RFM way, with quintile cut points (Excel’s PERCENTILE.INC), ties sharing a score and a value equal to a cut point in the lower group. How many customers score F = 1?`,
     answer: bcF1,
     check: () => BC.filter((v) => v <= CU.quantile(BC, 0.2)).length,
     unit: 'customers', places: 0, tol: 0,
     wrong: [
-      { value: 2, say: 'That deals the twelve into equal groups of two or three. Quantile cut points put every tied value on the same side of a cut, so all the one-purchase customers share a score.' },
-      { value: 3, say: 'Twelve ÷ 5 is about 2.4, but quantile scoring doesn’t make equal groups when values tie. Find the 20th-percentile cut point first.' },
+      { value: bcNtile, say: `That is what equal-sized groups (NTILE) give: ${BC.length} customers dealt into five groups, the first ${BC.length % 5} one larger. Quantile cut points put every tied value on the same side of a cut, so all the one-purchase customers share a score.` },
+      { value: Math.floor(BC.length / 5), say: `${BC.length} ÷ 5 rounded down assumes equal groups, but quantile scoring doesn’t make equal groups when values tie. Find the 20th-percentile cut point first.` },
     ],
-    solution: `PERCENTILE.INC at 20% sits at position (12 − 1) × 0.2 = 2.2 in the sorted list (counting from 0), between two 1s, so the first cut point is ${fx(bcCuts[0], 1)}; the others are ${bcCuts.slice(1).map((c) => fx(c, 1)).join(', ')}. Every customer with one purchase is on or below the first cut point: ${bcF1} customers score F = 1, and nobody scores F = 2 (no customer is above 1 and at most ${fx(bcCuts[1], 1)}). Heavy ties make quantile groups unequal; equal-sized groups (NTILE) would instead split the tied customers between scores.`,
+    solution: `PERCENTILE.INC at 20% sits at position (${BC.length} − 1) × 0.2 = ${fx((BC.length - 1) * 0.2, 1)} in the sorted list (counting from 0), between two 1s, so the first cut point is ${fx(bcCuts[0], 1)}; the others are ${bcCuts.slice(1).map((c) => fx(c, 1)).join(', ')}. Every customer with one purchase is on or below the first cut point: ${bcF1} customers score F = 1, and nobody scores F = 2 (no customer is above 1 and at most ${fx(bcCuts[1], 1)}). Heavy ties make quantile groups unequal; equal-sized groups (NTILE) would instead split the tied customers between scores.`,
   },
 
   // ================================================================ Module 2: segments and cohorts
@@ -133,26 +135,27 @@ export const items = [
   },
   {
     id: 'm06-dg-5', lesson: 'cohort-analysis', type: 'num', kind: 'numerical',
-    prompt: `Fellgate Climbing Wall (fictional) had ${FC.size} members join in January. In month 3 of that cohort (April), ${FC.active} of them climbed, spending $${FC.spend.toLocaleString('en-US')} in all. For the cohort table of revenue per joiner, what goes in the January cohort’s month-3 cell? Give dollars to the cent.`,
+    prompt: `Fellgate Climbing Wall (fictional) had ${FC.size} members join in January. In month 3 of that cohort (April), ${FC.active} of them climbed, spending $${FC.perActive} each on average. The centre wants a cohort revenue table in which cohorts of different sizes can be compared. What figure goes in the January cohort’s month-3 cell? Give dollars to the cent.`,
     answer: FC.spend / FC.size,
-    check: () => 2700 / 400,
+    check: () => (150 * 18) / 400,
     unit: '$', places: 2, tol: 0.01,
     wrong: [
-      { value: FC.spend / FC.active, say: 'That is spend per active member. Revenue per joiner divides by everyone who joined, so it falls as members drop away and can be compared across cohorts of different sizes.' },
+      { value: FC.perActive, say: 'That is spend per active member, which ignores how many members dropped away. Cohort revenue tables show revenue per joiner: the month’s spend ÷ everyone who joined.' },
+      { value: FC.spend, say: 'That is the month’s total, which grows with the cohort’s size. Divide by the joiners so cohorts compare.' },
     ],
-    solution: `Revenue per joiner = month-3 spend ÷ cohort size = $${FC.spend.toLocaleString('en-US')} ÷ ${FC.size} = ${money(FC.spend / FC.size)}. It is the share active (${fx((FC.active / FC.size) * 100, 1)}%) times spend per active member (${money(FC.spend / FC.active)}).`,
+    solution: `Revenue per joiner: the month’s spend, ${FC.active} × $${FC.perActive} = $${FC.spend.toLocaleString('en-US')}, ÷ the ${FC.size} who joined = ${money(FC.spend / FC.size)}. Equivalently, the share active (${fx((FC.active / FC.size) * 100, 1)}%) times spend per active member. It falls as members drop away, and it compares cohorts of any size.`,
   },
   {
     id: 'm06-dg-6', lesson: 'cohort-analysis', type: 'num', kind: 'numerical',
-    prompt: `Hollinsby Swim School (fictional) has three cohorts so far. ${HS.map((c) => `${c.m}: ${c.n} joined${c.a2 == null ? ', not yet observed in month 2' : `, ${c.a2} active in month 2`}`).join('; ')}. What is the pooled share active in month 2 since joining? Give a percentage to one decimal place.`,
+    prompt: `Hollinsby Swim School (fictional) has three cohorts so far. ${HS.map((c) => `${c.m}: ${c.n} joined${c.a2 == null ? ', not yet observed in month 2' : `, ${fx((c.a2 / c.n) * 100, 0)}% of them active in month 2`}`).join('; ')}. What is the pooled share active in month 2 since joining? Give a percentage to one decimal place.`,
     answer: rnd(hsPooled * 100, 1),
-    check: () => ((120 + 60) / (400 + 100)) * 100,
+    check: () => ((0.3 * 400 + 0.6 * 100) / (400 + 100)) * 100,
     unit: '%', places: 1, tol: 0.05,
     wrong: [
       { value: rnd((sum(hsObs.map((c) => c.a2)) / sum(HS.map((c) => c.n))) * 100, 1), say: 'The March cohort hasn’t reached month 2, so it can’t count in the denominator: its members aren’t inactive in month 2, they just haven’t got there.' },
-      { value: rnd((sum(hsObs.map((c) => c.a2 / c.n)) / hsObs.length) * 100, 1), say: 'That is the plain mean of the two cohorts’ shares (30% and 60%). The pooled curve weights each by its size: total active ÷ total joiners of the cohorts observed.' },
+      { value: rnd((sum(hsObs.map((c) => c.a2 / c.n)) / hsObs.length) * 100, 1), say: `That is the plain mean of the two cohorts’ shares (${hsObs.map((c) => `${fx((c.a2 / c.n) * 100, 0)}%`).join(' and ')}). The pooled curve weights each by its size: total active ÷ total joiners of the cohorts observed.` },
     ],
-    solution: `Only January and February have reached month 2. Pooled = (120 + 60) ÷ (400 + 100) = ${fx(hsPooled * 100, 1)}%. The pooled figure is dominated by the larger January cohort; and as later months are reached by fewer cohorts, the pooled curve describes an ever-older, smaller group.`,
+    solution: `Only January and February have reached month 2. Active: ${hsObs.map((c) => `${fx((c.a2 / c.n) * 100, 0)}% of ${c.n} = ${c.a2}`).join(', ')}. Pooled = ${sum(hsObs.map((c) => c.a2))} ÷ ${sum(hsObs.map((c) => c.n))} = ${fx(hsPooled * 100, 1)}%. The pooled figure is dominated by the larger January cohort; and as later months are reached by fewer cohorts, the pooled curve describes an ever-older, smaller group.`,
   },
 
   // ================================================================ Module 3: retention and churn

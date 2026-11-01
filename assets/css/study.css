@@ -987,11 +987,10 @@ input[type="file"]:focus-visible + .file-btn, .file-btn:focus-within { outline: 
 /* ---------- M06: RFM grid, cohort triangle, lift ---------- */
 .rf-grid, .co-table { border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .9rem; }
 .rf-grid th, .rf-grid td, .co-table th, .co-table td { border: 1px solid var(--c-line, #d9cfb8); padding: .3rem .5rem; text-align: right; white-space: nowrap; }
-.rf-grid td, .co-table td { background: color-mix(in srgb, var(--series-1) calc(var(--v, 0) * 85%), transparent); }
-.rf-grid td.is-dark, .co-table td.is-dark { color: #fff; }
+/* shading stays light enough (at most 50% of the series colour) for the normal ink to pass contrast on every cell */
+.rf-grid td, .co-table td { background: color-mix(in srgb, var(--series-1) calc(var(--v, 0) * 50%), transparent); }
 .co-table td.is-empty { background: transparent; border-color: transparent; }
 .co-table .co-pooled th, .co-table .co-pooled td { font-weight: 600; background: transparent; border-top-width: 2px; }
-.rf-n { color: inherit; opacity: .75; font-size: .8em; }
+.rf-n { color: inherit; font-size: .8em; }
 .data-table tr.is-best th, .data-table tr.is-best td { font-weight: 700; }
-.on-night .rf-grid td, .on-night .co-table td { background: color-mix(in srgb, var(--series-1-night) calc(var(--v, 0) * 85%), transparent); }
-.on-night .rf-grid td.is-dark, .on-night .co-table td.is-dark { color: var(--midnight, #10131c); }
+.on-night .rf-grid td, .on-night .co-table td { background: color-mix(in srgb, var(--series-1-night) calc(var(--v, 0) * 40%), transparent); }

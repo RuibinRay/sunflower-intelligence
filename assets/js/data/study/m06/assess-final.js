@@ -9,21 +9,21 @@
 // visits, the dates fixed and J1 varied on the marking copies); a segment’s lift in its return in November–December
 // (fn-6: 40 members scored on 31 October, the 0/1 column fixed and the segment named in F1 varied); a two-month
 // retention rate with the right denominator (fn-11: 40 members who joined in August–October, the dates fixed and the
-// period start in H1 varied); the discounted margin per joiner of the March cohort’s first ten months (fn-19: the
+// period start in H1 varied); the discounted margin per joiner of the April cohort’s first eight months (fn-19: the
 // months fixed, the discount rate varied). Typed results fail on the copies.
 // Items that combine lessons: frequency and recency from visits as of a date, then an R score from cut points (fn-1:
 // customer-metrics, rfm-scoring); visits to date against visits at the same age since joining (fn-2: customer-metrics,
 // cohort-analysis); lapse rules and recency in a noncontractual setting (fn-3: customer-metrics,
 // retention-and-churn-rates); the R = 5 share against the share seen in 30 days as a tracker (fn-5: rfm-scoring,
-// customer-metrics); a segment’s lift against the base (fn-6: rfm-segments, predicting-churn); frequent and infrequent
-// members with the same silence (fn-7: rfm-segments, predicting-churn); the base’s share active falling while
-// same-age cohorts hold steady (fn-8: cohort-analysis, customer-metrics); October’s month 1 restandardised to the
-// earlier cohorts’ café mix (fn-9: cohort-analysis); a retention rate with the right denominator, then turned into a
+// customer-metrics); a segment’s lift against the base (fn-6: rfm-segments, predicting-churn); a segment name checked
+// against later behaviour and tested with a holdout before the budget follows it (fn-7: rfm-segments,
+// loyalty-and-retention-strategy); the base’s share active falling while same-age cohorts hold steady (fn-8:
+// cohort-analysis, customer-metrics); a retention rate with the right denominator, then turned into a
 // monthly churn (fn-11: retention-and-churn-rates, cohort-analysis); expected lifetime from the first year’s churn when
 // customers differ (fn-12: retention-and-churn-rates, survival-analysis); censoring and a Kaplan–Meier step (fn-13:
 // survival-analysis, retention-and-churn-rates); constant retention against the sBG fitted to early years (fn-14:
 // survival-analysis, retention-and-churn-rates); a recency score’s lift and why it isn’t an uplift estimate (fn-15:
-// predicting-churn, loyalty-and-retention-strategy); AUC from pairs (fn-16: predicting-churn); near and far members
+// predicting-churn, loyalty-and-retention-strategy); near and far members
 // under three lapse rules (fn-17: survival-analysis, retention-and-churn-rates); a customer’s value, then payback against
 // an acquisition cost (fn-18: customer-lifetime-value, acquisition-cost-and-payback); historical cohort value discounted
 // (fn-19: customer-lifetime-value, cohort-analysis); average retention against the sBG’s value (fn-20:
@@ -31,7 +31,8 @@
 // acquisition-cost-and-payback, customer-lifetime-value); paid against blended CAC (fn-22: acquisition-cost-and-payback);
 // a randomised win-back test with an interval, then its value per customer offered (fn-23:
 // loyalty-and-retention-strategy, customer-lifetime-value); what a stamp-card finding does and doesn’t show (fn-24:
-// loyalty-and-retention-strategy). Single-lesson items: fn-4, fn-10, fn-16, fn-22, fn-24.
+// loyalty-and-retention-strategy). Single-lesson items: fn-4 (NTILE against quantile cut points with ties), fn-9 (October’s
+// month 1 restandardised to the earlier café mix, a steps item), fn-10, fn-16 (AUC from pairs), fn-22, fn-24.
 // The members and their visits come from case.js; claims about the data’s shape throw below if the data stop supporting
 // them, and each matches how tools/study/m06-data.py made the data (near multiplies the visit rate, not the drop-out
 // chance; drop-out is never observed). Fader and Hardie’s (2007) Regular customers are as the brief and the survival
@@ -97,11 +98,14 @@ claim(F2.marTo > F2.novTo && F2.nov30 > F2.mar30 && millShare(NOV) > millShare(M
 const lapsedShare = (L) => ALL.filter((c) => c.recency > L).length / ALL.length;
 const F3 = { s30: lapsedShare(30), s90: lapsedShare(90) };
 
-// fn-4 Thorneyholt Books (fictional): eleven customers’ recency (days) on 30 June
-const TH = [3, 9, 15, 22, 30, 41, 58, 77, 104, 150, 230];
-const thCuts = CU.cutPoints(TH);
-const TH_WHO = 30;
-const thR = CU.score([TH_WHO], { method: 'cuts', cuts: thCuts, higherIsBetter: false })[0];
+// fn-4 Thorneyholt Books (fictional): ten customers’ orders, in customer-ID order; NTILE against quantile cut points
+const TH = [1, 2, 1, 1, 8, 1, 3, 1, 5, 1];
+const thNt = CU.score(TH, { k: 5, method: 'ntile' }), thQ = CU.score(TH, { k: 5, method: 'quantile' });
+const thOnes = TH.filter((v) => v === 1).length;
+const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+const thAbove = TH.filter((v, i) => v === 1 && thNt[i] > 1).length;
+const thQAbove = TH.filter((v, i) => v === 1 && thQ[i] > 1).length;
+const thSpread = [...new Set(TH.map((v, i) => (v === 1 ? thNt[i] : null)).filter((x) => x != null))].sort();
 
 // fn-5: the R = 5 share against the share who visited within 30 days, 31 October and 31 December
 const atDate = (asOf) => { const m = members({ asOf }); const s = CU.rfm(m); return { n: m.length, r5: s.filter((c) => c.R === 5).length / m.length, in30: m.filter((c) => c.recency <= 30).length / m.length }; };
@@ -120,9 +124,10 @@ const s6Lift = (name) => mean(S6.filter((c) => c.segment === name).map((c) => c.
 const S6VARY = ['Lost', 'About to sleep', 'Potential loyalists'];
 claim(S6VARY.every((n) => S6.filter((c) => c.segment === n).length >= 2) && S6.filter((c) => c.segment === 'Champions').length >= 4, 'the fn-6 sample holds each varied segment');
 const s6Champ = S6.filter((c) => c.segment === 'Champions');
-// fn-7: Loyal against About to sleep
-const LOY = segRate('Loyal'), ATS = segRate('About to sleep');
-claim(Math.abs(LOY.rec - ATS.rec) < 5 && LOY.f > 4 * ATS.f && LOY.rate < ATS.rate / 2 && propTest2(LOY.back, LOY.n, ATS.back, ATS.n).pValue < 0.01, 'Loyal and About to sleep share recency; the frequent members came back far less');
+// fn-7: Can’t lose them and At risk, and what came back with nothing sent
+const CLT = segRate('Can’t lose them'), ATR = segRate('At risk'), CHM = segRate('Champions');
+const meanSpend = (name) => mean(OC.filter((c) => c.segment === name).map((c) => c.monetary));
+claim(CLT.back === 0 && ATR.rate < 0.05 && CLT.f > 2 * ATR.f && meanSpend('Can’t lose them') > 2 * meanSpend('At risk'), 'Can’t lose them were frequent, big spenders and none came back; At risk came back at under 5%');
 
 // fn-8: the base’s share active in each calendar month against cohorts’ month 1
 const T = CU.cohortTable(joinMap(), VISIT_LIST);
@@ -199,9 +204,9 @@ claim(auc16 > 0.6 && auc16 < 1 && P16.length === 10, 'fn-16’s ten members have
 // fn-17: near and far members under 30-, 60- and 90-day lapse rules
 const LD = lapseData(), NEAR = new Map(ML.map((m) => [m.id, m.near]));
 const nearTest = (L) => { const lt = CU.lapseTimes(LD, L), g = lt.ids.map((id) => NEAR.get(id)), lr = CU.logRank(lt.times, lt.events, g);
-  const km = (v) => CU.kaplanMeier(lt.times.filter((_, i) => g[i] === v), lt.events.filter((_, i) => g[i] === v)); return { L, p: lr.p, near: km(1).median, far: km(0).median }; };
+  const km = (v) => CU.kaplanMeier(lt.times.filter((_, i) => g[i] === v), lt.events.filter((_, i) => g[i] === v)); return { L, p: lr.p, near: km(1).median, far: km(0).median, events: sum(lt.events) }; };
 const N17 = [30, 60, 90].map(nearTest);
-claim(N17[0].p < 0.001 && N17[0].near > N17[0].far && N17[1].p > 0.5 && N17[2].p > 0.2, 'near members lapse later only under the 30-day rule');
+claim(N17[0].p < 0.001 && N17[0].near > N17[0].far && N17[1].p > 0.5 && N17[2].p > 0.2 && Math.min(N17[1].events, N17[2].events) > 1100, 'near members lapse later only under the 30-day rule, and the longer rules have over 1,100 lapses');
 
 // ---------------------------------------------------------------- module 4
 // fn-18 Cogwell Cycle Care (fictional): a monthly servicing plan
@@ -210,10 +215,10 @@ const cyV = CU.clvConstant({ m: CY.m, r: CY.r, d: CY.d, timing: 'start' }).value
 const cyPay = CU.payback({ cac: CY.cac, m: CY.m, r: CY.r, d: CY.d });
 const cySimple = CU.simplePayback(CY.cac, CY.m);
 const cyPayNoDisc = CU.payback({ cac: CY.cac, m: CY.m, r: CY.r, d: 0 });
-// fn-19: the March cohort’s revenue per joiner, months 0–9
-const MARI = T.cohorts.findIndex((c) => c.label === '2027-03');
-const marRev = T.revenue[MARI].slice(0, 10).map((v) => rnd(v / T.cohorts[MARI].size, 2));
-const MR = rnd(1 - F03.cafes.cogsShare - F03.cafeCardFees / F03.cafes.sales, 2), DM = 0.008;   // the cafés’ margin rate (F03), as customer-lifetime-value uses
+// fn-19: the April cohort’s revenue per joiner, months 0–7 (April – November)
+const MARI = T.cohorts.findIndex((c) => c.label === '2027-04');
+const marRev = T.revenue[MARI].slice(0, 8).map((v) => rnd(v / T.cohorts[MARI].size, 2));
+const MR = rnd(1 - F03.cafes.cogsShare - F03.cafeCardFees / F03.cafes.sales, 2), DM = 0.01;   // the cafés’ margin rate (F03), as customer-lifetime-value uses
 const marPV = (d) => sum(marRev.map((v, k) => (v * MR) / (1 + d) ** k));
 const marUndisc = sum(marRev) * MR;
 // fn-20 Ravenstow Insurance Brokers (fictional): customers differ (sBG α = 1, β = 3)
@@ -243,7 +248,7 @@ export const items = [
     steps: [
       {
         id: 'm06-fn-1-s1', type: 'formula', kind: 'numerical',
-        prompt: 'In F2, calculate the first member’s frequency as of the date in J1 (visits on or before it, the join included), so that the formula fills down to F9.',
+        prompt: 'In F2, use COUNTIFS to calculate the first member’s frequency as of the date in J1 (visits on or before it, the join included), so that the formula fills down to F9.',
         sheet: f1Sheet, cell: 'F2', fill: 'F2:F9', view: `A1:J${f1L}`, maxHeight: '20rem',
         formats: { B: 'date', C: '$#,##0.00', J1: 'date' }, widths: { A: 8, B: 12, C: 10, E: 8, F: 10, G: 13, I: 6, J: 12 },
         answer: `=COUNTIFS($A$2:$A$${f1L},E2,$B$2:$B$${f1L},"<="&$J$1)`,
@@ -257,7 +262,7 @@ export const items = [
       },
       {
         id: 'm06-fn-1-s2', type: 'formula', kind: 'numerical',
-        prompt: 'In G2, calculate the first member’s recency in days as of the date in J1, so that the formula fills down to G9.',
+        prompt: 'In G2, use MAXIFS to calculate the first member’s recency in days as of the date in J1, so that the formula fills down to G9.',
         sheet: f1Sheet, cell: 'G2', fill: 'G2:G9', view: `A1:J${f1L}`, maxHeight: '20rem',
         formats: { B: 'date', C: '$#,##0.00', J1: 'date' }, widths: { A: 8, B: 12, C: 10, E: 8, F: 10, G: 13, I: 6, J: 12 },
         answer: `=$J$1-MAXIFS($B$2:$B$${f1L},$A$2:$A$${f1L},E2,$B$2:$B$${f1L},"<="&$J$1)`,
@@ -289,7 +294,7 @@ export const items = [
     id: 'm06-fn-2', lesson: 'customer-metrics', type: 'mc', kind: 'applied',
     prompt: `On 31 December 2027 Lantern’s ${MAR.length} March joiners had made ${fx(F2.marTo, 2)} visits each on average and the ${NOV.length} November joiners ${fx(F2.novTo, 2)}. The Millbrook manager says November’s sign-ups were “half as engaged”. What should Ana reply?`,
     options: [
-      `The comparison mixes ten months of visits with one; in their first 30 days November’s joiners made ${fx(F2.nov30, 2)} visits each against March’s ${fx(F2.mar30, 2)}`,
+      `The comparison mixes ten months of visits with one or two; in their first 30 days November’s joiners made ${fx(F2.nov30, 2)} visits each against March’s ${fx(F2.mar30, 2)}`,
       'He is right: frequency is the count of visits in the window, and both groups were measured over the same window ending on 31 December 2027',
       `Compare medians instead, since frequency is skewed and the means of ${fx(F2.marTo, 1)} and ${fx(F2.novTo, 1)} are pulled up by the heaviest visitors`,
       'He is right only about Harbourside, where November’s joiners made a smaller share of the cohort, so the figures need splitting by café first',
@@ -321,15 +326,15 @@ export const items = [
   },
   {
     id: 'm06-fn-4', lesson: 'rfm-scoring', type: 'num', kind: 'numerical',
-    prompt: `Thorneyholt Books (fictional) has eleven customers, whose recency on 30 June was ${TH.join(', ')} days. It scores R from 1 to 5 with quintile cut points from PERCENTILE.INC (a value on a cut point goes in the more recent group). What R score does the customer last seen ${TH_WHO} days ago get?`,
-    answer: thR,
-    check: () => { const s = [...TH].sort((a, b) => a - b); const cuts = [0.2, 0.4, 0.6, 0.8].map((q) => s[Math.round(10 * q)]); return 5 - cuts.filter((c) => c < 30).length; },
-    unit: '', places: 0, tol: 0,
+    prompt: `Thorneyholt Books (fictional) has ten customers. In customer-ID order they placed ${TH.join(', ')} orders last year. Its database scores frequency 1–5 with NTILE (five equal-sized groups), sorting by orders and breaking ties by customer ID. How many of the ${WORDS[thOnes]} customers with one order get a score above F = 1?`,
+    answer: thAbove,
+    check: () => { const ones = TH.filter((v) => v === 1).length; return Math.max(0, ones - TH.length / 5); },
+    unit: 'customers', places: 0, tol: 0,
     wrong: [
-      { value: 6 - thR, say: 'That scores recency like spend, so long absences would score high. Reverse it: the most recent customers score 5.' },
-      { value: thR - 1, say: `${TH_WHO} days is exactly the 40th-percentile cut point, and the rule keeps it in the more recent group.` },
+      { value: thQAbove, say: 'That is what quantile cut points do: every tied value is on the same side of each cut, so all the one-order customers share F = 1. NTILE deals customers into groups of fixed size instead.' },
+      { value: thOnes, say: 'F1 holds two customers under NTILE (10 ÷ 5), so two of the one-order customers do stay at F = 1.' },
     ],
-    solution: `With eleven values the positions (11 − 1) × q fall on whole numbers, so the cut points are the 3rd, 5th, 7th and 9th smallest recencies: ${thCuts.join(', ')} days. ${TH_WHO} days exceeds ${thCuts[0]} and equals ${thCuts[1]}, so it is in the second group from the most recent: R = ${thR}.`,
+    solution: `NTILE makes groups of 10 ÷ 5 = 2. Sorted by orders, the ${WORDS[thOnes]} one-order customers fill F1, F2 and F3 (scores ${thSpread.join(', ')}) in customer-ID order, so ${thAbove} of them score above 1 although they bought exactly as often as the two who score 1. Quantile cut points would give all ${WORDS[thOnes]} F = 1. With heavy ties, equal-sized groups split identical customers by an arbitrary tie-breaker; say which method you use.`,
   },
   {
     id: 'm06-fn-5', lesson: 'rfm-scoring', type: 'mc', kind: 'applied',
@@ -365,21 +370,21 @@ export const items = [
     solution: `<x>=AVERAGEIFS(C2:C${s6L},B2:B${s6L},F1)/AVERAGE(C2:C${s6L})</x>. On the sheet ${s6Champ.filter((c) => c.back).length} of ${s6Champ.length} Champions came back against ${pc(mean(S6.map((c) => c.back)))} of all ${S6.length}: lift ${fx(s6Lift('Champions'), 2)}. Across all ${int(OC.length)} members, Champions came back at ${pc(segRate('Champions').rate)} against ${pc(BASE)}. Checking segments against later behaviour like this treats the grid as a churn score; it shows which members would come back without a message, not which ones a message would change.`,
   },
   {
-    id: 'm06-fn-7', lesson: 'rfm-segments', type: 'mc', kind: 'conceptual',
-    prompt: `In the 31 October check, Loyal members (R = 3, FM 4–5) had been away ${fx(LOY.rec, 1)} days on average and had made ${fx(LOY.f, 1)} visits each; About to sleep members (R = 3, FM 1–2) had been away ${fx(ATS.rec, 1)} days and made ${fx(ATS.f, 1)} visits. ${pc(LOY.rate)} of Loyal members came back in November–December against ${pc(ATS.rate)} of About to sleep. What best explains the gap?`,
+    id: 'm06-fn-7', lesson: 'rfm-segments', type: 'mc', kind: 'applied',
+    prompt: `Ana plans the first quarter’s messages from the 31 October scores. The naming convention says to win back the ${CLT.n} members in Can’t lose them (${fx(CLT.f, 1)} visits and ${money(meanSpend('Can’t lose them'))} spent each, on average) “with the best offer”. In November–December, with nothing sent, ${CLT.back} of them came back, and ${ATR.back} of the ${ATR.n} At risk members (${pc(ATR.rate)}). What should she do?`,
     options: [
-      'For a regular, two months of silence is far out of character, so it is stronger evidence that the member has stopped coming',
-      'Regular members had used up the café’s offers and needed a new reason to come back, which a reminder would have supplied',
-      'With far fewer members, the Loyal segment’s rate is too noisy for a gap of this size to mean anything about the two groups at all',
-      'Frequency and spend scores are relative to the base, so the Loyal members were only frequent by comparison with others',
+      'Treat the name as a hypothesis: test the offer on a random half of the segment, with the other half held out',
+      `Give them the best offer, as the convention says: at ${money(meanSpend('Can’t lose them'))} each they were among the most valuable members the cafés had`,
+      `Drop them for good: none of the ${CLT.n} came back, which shows that no offer of any kind could ever bring these members back`,
+      `Move the budget to At risk, since ${ATR.back} of its members came back and so they are the members more likely to respond to an offer`,
     ],
     answer: 0,
     feedback: {
-      1: 'Nothing in the data shows what an offer or a reminder would do; no message was sent. The gap is in what members did with nothing sent.',
-      2: `${LOY.back} of ${LOY.n} against ${ATS.back} of ${ATS.n} is a large gap for groups of this size, and it fits how the members behave: drop-out is never announced.`,
-      3: 'Relative scoring changes the labels, not what happened: members who had visited about a dozen times came back far less often than members with about two visits.',
+      1: 'Past spend is history. Frequent members silent for over two months are probably gone, and none came back unprompted; a costly offer to all of them is a bet the data don’t support yet.',
+      2: 'Nothing was sent, so the data show what members did without an offer, not what an offer would do. Only a test can show that.',
+      3: 'A few returns with nothing sent say nothing about who responds to an offer; the At risk members who came back would have come anyway.',
     },
-    solution: `Members visit at their own rates and may stop at any time without saying so. A member who visited every week or two and has been silent for about ten weeks has done something out of character: the likeliest explanation is that they have stopped. A member who came twice in four months is often just between visits. So, at the same recency, frequent members are more likely to be gone: here ${pc(LOY.rate)} of Loyal came back against ${pc(ATS.rate)} of About to sleep. That is why segment names (“Loyal”) need checking against later behaviour, and why recency matters more the more frequent the customer.`,
+    solution: `Segment names come from a convention written for typical businesses. On Lantern’s data, Can’t lose them were former regulars (${fx(CLT.f, 1)} visits on average) who had been silent ${fx(CLT.rec, 0)} days on average, and none came back in November–December (At risk: ${pc(ATR.rate)}; Champions: ${pc(CHM.rate)}). A randomised holdout within the segment shows whether the offer brings any back, at the cost of a small test rather than the whole budget.`,
   },
   {
     id: 'm06-fn-8', lesson: 'cohort-analysis', type: 'mc', kind: 'applied',
@@ -399,16 +404,41 @@ export const items = [
     solution: `A cohort’s share active falls month by month after joining (the pooled curve runs ${pc(T.pooled[1].rate)} in month 1 to ${pc(T.pooled[6].rate)} in month 6). A calendar month’s figure averages members of every age, and as the base ages the old, quieter cohorts outweigh the new ones. Reading the cohort table down a column (the same month since joining) shows that cohort quality held steady: the change is in the mix of ages, not in members’ behaviour.`,
   },
   {
-    id: 'm06-fn-9', lesson: 'cohort-analysis', type: 'num', kind: 'numerical',
-    prompt: `In month 1, ${pc(OCT.H.r)} of the ${OCT.H.n} October joiners at Harbourside were active and ${pc(OCT.M.r)} of the ${OCT.M.n} at Millbrook. Of the March to September joiners, ${pc(wH)} were Harbourside members. If October’s joiners had had that café mix, with each café’s October rate unchanged, what share of them would have been active in month 1? Give a percentage to one decimal place.`,
-    answer: rnd(octStd * 100, 1),
-    check: () => (wH * OCT.H.a / OCT.H.n + (1 - wH) * OCT.M.a / OCT.M.n) * 100,
-    unit: '%', places: 1, tol: 0.1,
-    wrong: [
-      { value: rnd(((OCT.H.r + OCT.M.r) / 2) * 100, 1), say: 'That weights the two cafés equally. Use the earlier cohorts’ mix: about a third Harbourside and two thirds Millbrook.' },
-      { value: rnd((wH * ERL.H.r + (1 - wH) * ERL.M.r) * 100, 1), say: 'That uses the earlier cohorts’ rates as well as their mix, which simply gives their own month 1. Keep October’s rates and change only the mix.' },
+    id: 'm06-fn-9', lesson: 'cohort-analysis', type: 'steps', kind: 'numerical',
+    prompt: `In month 1, ${pc(OCT.H.r)} of the ${OCT.H.n} October joiners at Harbourside were active and ${pc(OCT.M.r)} of the ${OCT.M.n} at Millbrook. Of the March to September joiners, ${pc(wH)} were Harbourside members, and ${pc(earlyActual)} of them were active in month 1.`,
+    steps: [
+      {
+        id: 'm06-fn-9-s1', type: 'num', kind: 'numerical',
+        prompt: 'If October’s joiners had had the earlier cohorts’ café mix, with each café’s October rate unchanged, what share of them would have been active in month 1? Give a percentage to two decimal places.',
+        answer: rnd(octStd * 100, 2),
+        check: () => (wH * OCT.H.a / OCT.H.n + (1 - wH) * OCT.M.a / OCT.M.n) * 100,
+        unit: '%', places: 2, tol: 0.01,
+        wrong: [
+          { value: rnd(octActual * 100, 2), say: 'That is October’s own rate, with October’s own mix. Reweight the two cafés’ October rates by the earlier cohorts’ mix.' },
+          { value: rnd(((OCT.H.r + OCT.M.r) / 2) * 100, 2), say: 'That weights the two cafés equally. Use the earlier cohorts’ mix: about a third Harbourside and two thirds Millbrook.' },
+          { value: rnd(earlyActual * 100, 2), say: 'That is the earlier cohorts’ own month 1, their rates as well as their mix. Keep October’s rates and change only the mix.' },
+        ],
+        solution: `Standardised rate = ${fx(wH, 4)} × ${pc(OCT.H.r, 2)} + ${fx(1 - wH, 4)} × ${pc(OCT.M.r, 2)} = ${pc(octStd, 2)}.`,
+      },
+      {
+        id: 'm06-fn-9-s2', type: 'mc', kind: 'conceptual',
+        prompt: 'Does the change in café mix explain October’s weak month 1?',
+        options: [
+          'No: at the earlier mix October’s rate barely moves, and both cafés’ October joiners trail their earlier cohorts',
+          'Yes: Harbourside members are less active in month 1, and October drew a larger share of them than the earlier cohorts did',
+          'Yes: once the mix is fixed the rate rises back to the earlier cohorts’ level, so the cohort is no worse than the others',
+          'It can’t be told without a two-proportion test of each café’s October rate against its earlier one, so there is no answer yet',
+        ],
+        answer: 0,
+        feedback: {
+          1: `October’s mix (${pc(wHoct)} Harbourside) was close to the earlier ${pc(wH)}, and reweighting moves the rate by less than a point.`,
+          2: `The reweighted rate stays near ${pc(octStd)}, far below the earlier ${pc(earlyActual)}.`,
+          3: 'Standardisation answers the mix question directly; a test would ask a different one, whether each café’s fall is beyond chance.',
+        },
+        solution: `Reweighting gives ${pc(octStd, 2)} against October’s actual ${pc(octActual, 2)} and ${pc(earlyActual)} for March to September. The mix explains almost none of the dip. That rules out the café mix, not other causes (the November season, who joined, or chance).`,
+      },
     ],
-    solution: `Standardised rate = ${fx(wH, 3)} × ${pc(OCT.H.r)} + ${fx(1 - wH, 3)} × ${pc(OCT.M.r)} = ${pc(octStd)}, against October’s actual ${pc(octActual)} and ${pc(earlyActual)} for March to September. October’s café mix (${pc(wHoct)} Harbourside) was close to the earlier one, so the mix explains almost none of its weak month 1; both cafés’ October joiners were below their earlier cohorts. That rules out the café mix, not other causes (the season in November, who joined, or chance).`,
+    solution: `Mix-standardised month 1 ${pc(octStd, 2)} against ${pc(octActual, 2)} actual: the café mix doesn’t explain October’s weak start.`,
   },
   {
     id: 'm06-fn-10', lesson: 'cohort-analysis', type: 'mc', kind: 'applied',
@@ -467,7 +497,7 @@ export const items = [
     id: 'm06-fn-12', lesson: 'retention-and-churn-rates', type: 'mc', kind: 'conceptual',
     prompt: `Brimscombe Software (fictional) sells yearly licences. ${pc(bsFirst, 0)} of a new cohort leave at the first renewal, so the finance team plans on an expected lifetime of 1 ÷ ${fx(bsFirst, 1)} = ${fx(1 / bsFirst, 0)} years. Customers differ: a shifted-beta-geometric model with α = ${BS.a} and β = ${BS.b} fits the renewals well. What does that model imply for the expected lifetime of a new customer, counting the first year?`,
     options: [
-      `It is longer, about ${fx(bsClosed, 0)} years: the first year removes the customers most prone to leave, so later renewal rates are higher than 80%`,
+      `It is longer, about ${fx(bsClosed, 0)} years: the first year removes the least loyal, so later renewal rates rise above 80%`,
       `It is shorter than ${fx(1 / bsFirst, 0)} years, because the customers who leave early drag the average lifetime of the whole cohort down`,
       `It is the same ${fx(1 / bsFirst, 0)} years, since the model’s mean churn probability α ÷ (α + β) is 20%, just as observed`,
       'It can’t be worked out from the model, since an expected lifetime needs the renewal rates of every customer',
@@ -547,7 +577,7 @@ export const items = [
         unit: '', places: 2, tol: 0.01,
         wrong: [
           { value: rnd(top2.captured * 100, 2), say: 'That is the share of all lapsers captured (the gains curve), as a percentage. Lift divides the group’s lapse rate by the base rate.' },
-          { value: rnd(((LIFT.rows[0].positives + top2.positives) / (LIFT.rows[0].n + top2.n)) * 100, 2), say: 'That is the group’s lapse rate as a percentage. Divide it by the base rate of 66.0%.' },
+          { value: rnd(((LIFT.rows[0].positives + top2.positives) / (LIFT.rows[0].n + top2.n)) * 100, 2), say: `That is the group’s lapse rate as a percentage. Divide it by the base rate of ${pc(LIFT.base)}.` },
         ],
         solution: `The group’s lapse rate is ${LIFT.rows[0].positives + top2.positives} ÷ ${LIFT.rows[0].n + top2.n} = ${pc((LIFT.rows[0].positives + top2.positives) / (LIFT.rows[0].n + top2.n))}; ÷ ${pc(LIFT.base)} = ${fx(top2.cumLift, 2)}. With two thirds lapsing, no group can have a lift above 1 ÷ ${fx(LIFT.base, 3)} = ${fx(maxLift, 2)}, so this score is close to the ceiling.`,
       },
@@ -562,7 +592,7 @@ export const items = [
         ],
         answer: 0,
         feedback: {
-          1: 'A lift of 2 is impossible here: with 66% lapsing the ceiling is about 1.5, and this score is near it.',
+          1: `A lift of 2 is impossible here: with ${pc(LIFT.base, 0)} lapsing the ceiling is 1 ÷ ${fx(LIFT.base, 3)} = ${fx(maxLift, 2)}, and this score is near it.`,
           2: 'Recency on 31 October uses only visits before the holdout, so it doesn’t leak. It is a fair predictor; the problem is what prediction can’t tell you.',
           3: 'Size isn’t the issue: the question is whether contacting any group changes what its members do, and the score doesn’t say.',
         },
@@ -588,18 +618,18 @@ export const items = [
     id: 'm06-fn-17', lesson: 'survival-analysis', type: 'mc', kind: 'conceptual',
     prompt: `Ana compares members who live or work within a mile (near) with the rest by Kaplan–Meier and the log-rank test, under three lapse rules. Median lifetimes, near against far: ${N17.map((x) => `${x.L}-day rule ${x.near} against ${x.far} days (p ${x.p < 0.001 ? 'below 0.001' : `= ${p3(x.p)}`})`).join('; ')}. What is the soundest reading?`,
     options: [
-      'Near members visit more often, so they rarely go 30 days without a visit; with longer rules near and far members lapse at much the same pace',
+      'Near members visit more often, so they take longer to have a 30-day gap; with longer rules near and far members lapse at much the same pace',
       'Near members stay longer, as the 30-day test shows clearly; the 60- and 90-day rules have too few lapses to detect the difference',
       'The 90-day rule is the right one, because it is the longest, so near members actually leave sooner than the members who live further away',
       'Living near Lantern makes members stay longer, so the cafés should recruit members from nearby streets to cut churn',
     ],
     answer: 0,
     feedback: {
-      1: `The longer rules don’t lack lapses (most members lapse under each); they show no difference (p = ${p3(N17[1].p)} and ${p3(N17[2].p)}).`,
+      1: `The longer rules still have over ${int(Math.floor(Math.min(N17[1].events, N17[2].events) / 100) * 100)} lapses each; they show no difference (p = ${p3(N17[1].p)} and ${p3(N17[2].p)}).`,
       2: 'Longer isn’t automatically right, and the 90-day medians don’t differ significantly. The point is that the short rule confuses gaps between visits with leaving.',
       3: 'Near is a circumstance, not something assigned, so any difference is an association; and here the difference vanishes once the rule is long enough to tell a gap from a departure.',
     },
-    solution: `A lapse rule turns silence into “lapsed”. Near members visit more often (their visit rates are higher), so under a 30-day rule they less often have a long enough gap to count as lapsed. Under 60- and 90-day rules the difference disappears (p = ${p3(N17[1].p)} and ${p3(N17[2].p)}): being near goes with how often members come, not with how long they stay. Report results under more than one lapse rule, and treat any group difference as an association.`,
+    solution: `A lapse rule turns silence into “lapsed”. Near members visit more often (their visit rates are higher), so under a 30-day rule they take longer to have a gap long enough to count as lapsed (most members of both groups still lapse under it). Under 60- and 90-day rules the difference disappears (p = ${p3(N17[1].p)} and ${p3(N17[2].p)}): being near goes with how often members come, not with staying longer, and the data give no sign that near members last longer once gaps are told apart from departures. Report results under more than one lapse rule, and treat any group difference as an association.`,
   },
 
   // ================================================================ Module 4: customer value and strategy
@@ -636,17 +666,17 @@ export const items = [
   },
   {
     id: 'm06-fn-19', lesson: 'customer-lifetime-value', type: 'formula', kind: 'numerical',
-    prompt: `Column B holds Lantern’s March 2027 cohort’s spend per joiner in each month since joining (month 0 is March, month 9 December), from the cohort revenue table. H1 holds the cafés’ margin rate and H2 a monthly discount rate. In H3, calculate in one formula the value at joining of the margin these ten months brought per joiner: each month’s margin discounted back to month 0.`,
-    sheet: { cells: { A1: 'month since joining', B1: 'spend per joiner ($)', ...col('A', 2, marRev.map((_, k) => k)), ...col('B', 2, marRev), G1: 'margin rate', H1: MR, G2: 'discount rate a month', H2: DM, G3: 'value at joining ($)' }, fixed: ['A2:A11', 'H1'], vary: { H2: [0.004, 0.015] } },
-    cell: 'H3', view: 'A1:H11', formats: { B: '$#,##0.00', H1: '0%', H2: '0.0%', H3: '$#,##0.00' }, widths: { A: 10, B: 11, G: 20, H: 11 },
-    answer: '=SUMPRODUCT(B2:B11*H1/(1+H2)^A2:A11)',
-    alt: ['=H1*SUMPRODUCT(B2:B11/(1+H2)^A2:A11)', '=SUMPRODUCT(B2:B11,H1/(1+H2)^A2:A11)', '=H1*SUMPRODUCT(B2:B11,1/(1+H2)^A2:A11)'],
+    prompt: `Column B holds Lantern’s April 2027 cohort’s spend per joiner in each month since joining (month 0 is April, month 7 November), from the cohort revenue table. H1 holds the cafés’ margin rate and H2 a monthly discount rate. In H3, calculate in one formula the value at joining of the margin these eight months brought per joiner: each month’s margin discounted back to month 0.`,
+    sheet: { cells: { A1: 'month since joining', B1: 'spend per joiner ($)', ...col('A', 2, marRev.map((_, k) => k)), ...col('B', 2, marRev), G1: 'margin rate', H1: MR, G2: 'discount rate a month', H2: DM, G3: 'value at joining ($)' }, fixed: ['A2:A9', 'H1'], vary: { H2: [0.005, 0.018] } },
+    cell: 'H3', view: 'A1:H9', formats: { B: '$#,##0.00', H1: '0%', H2: '0.0%', H3: '$#,##0.00' }, widths: { A: 10, B: 11, G: 20, H: 11 },
+    answer: '=SUMPRODUCT(B2:B9*H1/(1+H2)^A2:A9)',
+    alt: ['=H1*SUMPRODUCT(B2:B9/(1+H2)^A2:A9)', '=SUMPRODUCT(B2:B9,H1/(1+H2)^A2:A9)', '=H1*SUMPRODUCT(B2:B9,1/(1+H2)^A2:A9)'],
     wrong: [
-      { formula: '=SUM(B2:B11)*H1', say: 'That is the undiscounted margin. Money in month 9 is worth less at joining: divide each month by (1 + H2) to the power of its month.' },
-      { formula: '=SUMPRODUCT(B2:B11*H1/(1+H2)^(A2:A11+1))', say: 'Month 0’s spend is at joining, so it isn’t discounted: the power is the month since joining itself.' },
-      { formula: '=SUMPRODUCT(B2:B11/(1+H2)^A2:A11)', say: 'That discounts spend, not margin. Multiply by the margin rate in H1.' },
+      { formula: '=SUM(B2:B9)*H1', say: 'That is the undiscounted margin. Money in month 7 is worth less at joining: divide each month by (1 + H2) to the power of its month.' },
+      { formula: '=SUMPRODUCT(B2:B9*H1/(1+H2)^(A2:A9+1))', say: 'Month 0’s spend is at joining, so it isn’t discounted: the power is the month since joining itself.' },
+      { formula: '=SUMPRODUCT(B2:B9/(1+H2)^A2:A9)', say: 'That discounts spend, not margin. Multiply by the margin rate in H1.' },
     ],
-    solution: `<x>=SUMPRODUCT(B2:B11*H1/(1+H2)^A2:A11)</x> = ${money(marPV(DM))} per joiner (${money(marUndisc)} undiscounted). This is historical value over ten months, not a lifetime value: a forecast would add the months still to come, and it describes the cohort, not any one member.`,
+    solution: `<x>=SUMPRODUCT(B2:B9*H1/(1+H2)^A2:A9)</x> = ${money(marPV(DM))} per joiner (${money(marUndisc)} undiscounted). This is historical value over eight months, not a lifetime value: a forecast would add the months still to come, and it describes the cohort, not any one member.`,
   },
   {
     id: 'm06-fn-20', lesson: 'customer-lifetime-value', type: 'mc', kind: 'conceptual',
@@ -718,7 +748,7 @@ export const items = [
         id: 'm06-fn-23-s2', type: 'mc', kind: 'applied',
         prompt: 'Should Cragwell send the voucher to all its lapsed customers?',
         options: [
-          `Probably, as at the estimated uplift it gains about ${money(cbNet(cbT.diff))} per customer emailed; but at the interval’s lower limit it loses money, so the case is not secure`,
+          `Not yet: it gains ${money(cbNet(cbT.diff))} per customer at the estimated uplift but loses ${money(-cbNet(cbT.low))} at the lower limit`,
           `Yes: ${CB.xT} customers came back after the email, worth $${int(CB.xT * CB.value)}, far more than the $${CB.xT * CB.cost} the vouchers cost`,
           'No: the interval doesn’t include zero, but a difference this small is not of practical significance for a business',
           'No: only a two-proportion z test can say whether to send it, and the confidence interval is no help with the decision',
