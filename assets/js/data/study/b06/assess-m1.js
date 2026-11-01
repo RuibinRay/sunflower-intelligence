@@ -76,10 +76,10 @@ export const items = [
     id: 'b06-m1-5', lesson: 'least-squares-line', type: 'mc', kind: 'applied',
     prompt: 'A coffee roaster (fictional) ranks the 200 cafés it supplies by first-quarter orders. Its ten biggest customers ordered 18% less in the second quarter, while orders across all 200 were flat. The sales director wants to call the ten to find out what went wrong. What should the analyst say first?',
     options: [
-      'The drop shows those cafés are losing customers, and calls should go out today.',
-      'Cafés picked for record orders would usually order closer to average next quarter anyway; compare them with how last year’s top ten moved before treating it as a problem.',
-      'Orders can’t regress toward the mean because they are counts, not measurements.',
-      'The drop is too large to be chance, so the roaster’s prices must have risen for big customers.',
+      'The drop shows those cafés are losing their own customers to competitors, so the calls should go out today.',
+      'Cafés picked for record orders tend to order nearer average next quarter anyway; check past top tens first.',
+      'Orders can’t regress toward the mean, because they are whole counts of bags rather than measurements with error.',
+      'The drop is too large to be chance, so the roaster’s prices must have risen for its biggest customers.',
     ],
     answer: 1,
     feedback: {
@@ -93,10 +93,10 @@ export const items = [
     id: 'b06-m1-6', lesson: 'least-squares-line', type: 'mc', kind: 'conceptual',
     prompt: 'A cinema (fictional) fits weekly snack revenue on weekly admissions (2,000 to 6,000) and gets an intercept of −$1,150. Its analyst refits with x = admissions − 4,000. What happens?',
     options: [
-      'The slope halves and the intercept becomes 0.',
-      'The slope and the intercept both stay the same.',
-      'The slope is unchanged and the intercept becomes the fitted revenue in a 4,000-admission week.',
-      'The fit gets better, so R² rises.',
+      'The slope halves and the intercept becomes 0, since the data are now centred on the middle of the range.',
+      'The slope and the intercept both stay exactly the same, because only the labels on the axis have changed.',
+      'The slope stays the same; the intercept becomes the fitted revenue in a 4,000-admission week.',
+      'The fit gets better, because the new x is closer to zero, so R² rises.',
     ],
     answer: 2,
     feedback: {
@@ -136,10 +136,10 @@ export const items = [
     id: 'b06-m1-9', lesson: 'residuals-and-r-squared', type: 'mc', kind: 'conceptual',
     prompt: 'A residual plot against x shows residuals that are mostly negative for small x, mostly positive in the middle, and mostly negative again for large x, with about the same spread throughout. What does it indicate?',
     options: [
-      'The relationship bends, here like an upside-down U, so a straight line is the wrong shape.',
-      'The spread of y grows with x, so the line’s typical miss is too large for small x.',
-      'A few outliers have pulled the line too far up.',
-      'Nothing: the residuals average zero, as least squares guarantees.',
+      'The relationship bends like an upside-down U, so a straight line is the wrong shape.',
+      'The spread of y grows with x, so the line’s typical miss is too large for the small values of x.',
+      'A few outliers at the two ends of the range have pulled the line too far up in the middle.',
+      'Nothing at all: the residuals average zero, exactly as least squares guarantees.',
     ],
     answer: 0,
     feedback: {
@@ -172,10 +172,10 @@ export const items = [
     id: 'b06-m1-11', lesson: 'residuals-and-r-squared', type: 'mc', kind: 'applied',
     prompt: 'Two models of a florist’s (fictional) daily revenue are on the table. Model A: revenue on the day’s orders, R² = 0.45, residual standard error $120. Model B: revenue on website visits, fitted to a different year with a wider range of trading, R² = 0.80, residual standard error $300. The florist needs the daily figure to within about $150. Which is more useful, and why?',
     options: [
-      'Model B: its R² is much higher, so it is the better model.',
-      'Neither: an R² below 0.9 is never good enough for planning.',
-      'Model B, because a wider range of trading always makes a model more accurate.',
-      'Model A: its typical miss, $120, is within the tolerance, and the R²s come from different ranges.',
+      'Model B: its R² is much higher, so it accounts for more of the variation and is the better model.',
+      'Neither: an R² below 0.9 is never good enough to use for day-to-day planning in a business.',
+      'Model B, because a wider range of trading always makes a model’s daily figures more accurate.',
+      'Model A: its typical miss, $120, is within the tolerance; the R²s come from different ranges.',
     ],
     answer: 3,
     feedback: {

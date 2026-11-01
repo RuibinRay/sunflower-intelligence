@@ -53,7 +53,7 @@ function splitFigure() {
   [0, 4, 8, 12].forEach((x) => { svg += `<text x="${X(x).toFixed(1)}" y="${Bt + 22}" text-anchor="middle" fill="var(--ink-3)">${x}</text>`; });
   [5, 10, 15, 20].forEach((y) => { svg += `<text x="${L0 - 8}" y="${(Y(y) + 5).toFixed(1)}" text-anchor="end" fill="var(--ink-3)">${y}</text>`; });
   svg += `<line x1="${X(0.5).toFixed(1)}" x2="${X(11.5).toFixed(1)}" y1="${Y(oym).toFixed(1)}" y2="${Y(oym).toFixed(1)}" stroke="var(--ink-3)" stroke-width="1.5" stroke-dasharray="6 4"/>`;
-  svg += `<line x1="${X(0.5).toFixed(1)}" y1="${Y(ob0 + ob1 * 0.5).toFixed(1)}" x2="${X(11.5).toFixed(1)}" y2="${Y(ob0 + ob1 * 11.5).toFixed(1)}" stroke="var(--series-2)" stroke-width="2.5"/>`;
+  svg += `<line x1="${X(0.5).toFixed(1)}" y1="${Y(ob0 + ob1 * 0.5).toFixed(1)}" x2="${X(10.6).toFixed(1)}" y2="${Y(ob0 + ob1 * 10.6).toFixed(1)}" stroke="var(--series-2)" stroke-width="2.5"/>`;
   OX.forEach((x, i) => { svg += `<circle cx="${X(x).toFixed(1)}" cy="${Y(OY[i]).toFixed(1)}" r="5.5" fill="var(--series-1)"/>`; });
   // brackets to the right of the highlighted point
   const bx = X(px) + 16;

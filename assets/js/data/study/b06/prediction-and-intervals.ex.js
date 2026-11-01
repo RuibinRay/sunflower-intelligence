@@ -170,7 +170,7 @@ export const guided = [
         prompt: 'The manager asks: “If I roster for the top of this interval, what am I covering?” Which answer is right?',
         options: [
           'About 97.5% of Sundays like this one, if the model holds: the interval leaves 2.5% in each tail.',
-          'The average Sunday at this temperature, to within 95% confidence, which is what a roster needs.',
+          'The average Sunday at this temperature, to within 95% confidence, which is exactly what a roster needs to cover.',
           'Every possible Sunday at this temperature, because the interval contains all the data.',
           'Exactly 95% of next year’s Sundays, whatever the weather and whatever happens on the harbour.',
         ],
@@ -212,7 +212,7 @@ export const guided = [
     id: 'b06-pred-g4', type: 'mc', kind: 'conceptual',
     prompt: 'Why is the confidence interval for the mean response wider at 94°F than at 64°F, the mean high?',
     options: [
-      'Errors in the estimated slope swing the line about the point of means, so its height is least certain far from x̄.',
+      'Errors in the slope swing the line about the point of means, so its height is least certain far from x̄.',
       'Days at 94°F have larger residuals, and the formula measures that directly from the hot days in the sample.',
       'There are fewer days near 94°F, and the formula counts the days near each x to set the width there.',
       'The t multiplier grows with x₀, because extreme values of x use fewer degrees of freedom than central ones.',
@@ -279,7 +279,7 @@ export const independent = [
     id: 'b06-pred-i4', type: 'mc', kind: 'conceptual',
     prompt: 'Ana keeps adding weekend days to her model for three more years, and the relationship and the day-to-day scatter stay the same. What happens to the two 95% intervals at 80°F?',
     options: [
-      'The interval for the mean shrinks towards zero width; the prediction interval shrinks only a little, towards about ±1.96 × s.',
+      'The mean’s interval shrinks towards zero width; the prediction interval only towards about ±1.96 × s.',
       'Both intervals shrink towards zero width, because three more years of data make every prediction almost exact.',
       'The prediction interval shrinks towards zero width; the interval for the mean stays about the same width.',
       'Neither changes, because the width of an interval depends only on s, and the scatter stays the same.',
@@ -306,7 +306,7 @@ export const independent = [
     id: 'b06-pred-i6', type: 'mc', kind: 'applied',
     prompt: 'Gorsefield Energy (fictional) predicts a household’s winter electricity use from floor area. Its residuals fan out: small homes vary little around the line, large homes a lot. It quotes the same ±420 kWh 95% prediction interval for every home. For which homes is the quoted interval most misleading?',
     options: [
-      'Large homes: their scatter is wider than the average s, so the interval is too narrow exactly where misses are biggest.',
+      'Large homes: their scatter is wider than the average s, so the interval is too narrow where misses are biggest.',
       'Small homes: the interval is too wide for them, which means they are the ones most likely to fall outside it.',
       'Homes near the average floor area, because that is where the interval for the mean is narrowest and least reliable.',
       'None: a 95% prediction interval contains 95% of homes by construction, whatever the pattern of residuals.',
@@ -328,8 +328,8 @@ export const check = [
     options: [
       'What is the average of y over all cases with this value of x?',
       'Where will the next single case with this value of x fall?',
-      'Is the slope of the population line different from zero?',
-      'How much of the variation in y does the line account for?',
+      'Is the slope of the population line significantly different from zero?',
+      'How much of the variation in y around its mean does the line account for?',
     ],
     answer: 0,
     feedback: {
@@ -368,7 +368,7 @@ export const check = [
     id: 'b06-pred-k4', type: 'mc', kind: 'applied',
     prompt: 'Millbrook’s manager wants to use Ana’s Harbourside weekend model to roster Millbrook’s Saturday, which is forecast at 75°F, “because 75°F is well inside the model’s range”. What should Ana tell her?',
     options: [
-      'Being inside the range of x isn’t enough: Millbrook’s weekends aren’t the cases the model was fitted to, so this is extrapolation.',
+      'Being inside the range of x isn’t enough: the model was fitted to Harbourside’s weekends, not Millbrook’s.',
       'The prediction is fine, because 75°F is close to the middle of the data, where both intervals are at their narrowest.',
       'Use it, but widen the prediction interval by 1.96 standard errors to allow for the difference between the cafés.',
       'Use the confidence interval for the mean instead, because Millbrook’s Saturdays are an average of many customers.',

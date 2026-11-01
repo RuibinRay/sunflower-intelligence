@@ -172,10 +172,10 @@ export const guided = [
     id: 'b06-resid-g3', type: 'mc', kind: 'conceptual',
     prompt: `The iced-share line for both cafés has R² = ${IL.r2.toFixed(3)}. Its average residual is ${fx(band(0, 45), 3)} on days below 45 °F, ${fx(band(55, 65), 3)} on days of 55–64 °F and ${fx(band(75, 85), 3)} on days of 75–84 °F. What should Ana conclude?`,
     options: [
-      'The relationship is curved: the line under-predicts at the cold end and the warm shoulder and over-predicts in between, so it is the wrong shape however high R² is.',
-      'The line is fine, because with R² this high the residuals are too small to matter.',
-      'The residuals average zero overall, so the positive and negative bands cancel and there is no problem.',
-      'The pattern shows the iced share was measured badly on cold days, so those days should be removed.',
+      'The relationship is curved: the line misses in a pattern, so it is the wrong shape however high R² is.',
+      'The line is fine, because with an R² this high the residuals are too small to matter for ordering.',
+      'The residuals average zero overall, so the positive and negative bands cancel out and there is no problem.',
+      'The pattern shows the iced share was measured badly on the cold days, so those days should be removed.',
     ],
     answer: 0,
     hints: ['If a line is the right shape, residuals scatter around zero in every band of x.', 'A run of positive, then negative, then positive residuals is a curve.'],
@@ -248,10 +248,10 @@ export const independent = [
     id: 'b06-resid-i5', type: 'mc', kind: 'applied',
     prompt: `Ana’s assistant manager says: “Footfall on the day’s high has R² = ${FT.r2.toFixed(2)} at Harbourside, so temperature hardly matters and we can ignore the forecast when hiring for the summer.” The slope is ${FT.beta[1].toFixed(1)} people per °F and the residual standard error ${Math.round(FT.sigma)} people. What is the best reply?`,
     options: [
-      'For seasonal hiring the slope is what matters: about 61 more people a day in July than in March; the low R² says single days vary for other reasons too.',
-      'He is right: with R² below 0.2, temperature explains so little that the line should not be used for anything.',
-      'He is right for single days but wrong for hiring, because R² rises to about 0.8 once the line is fitted to summer days alone.',
-      'R² is low because the line is the wrong shape; with a curve, temperature would explain almost all of footfall.',
+      'For seasonal hiring the slope matters: July runs about 61 people a day above March.',
+      'He is right: with R² below 0.2, temperature explains so little that the line is no use for anything.',
+      'He is right for single days but wrong for hiring, because R² rises once only summer days are used.',
+      'R² is low because the line is the wrong shape; a curve would make temperature explain almost everything.',
     ],
     answer: 0,
     feedback: {
@@ -319,10 +319,10 @@ export const check = [
     id: 'b06-resid-k5', type: 'mc', kind: 'applied',
     prompt: 'Two regional managers of a convenience-store chain (fictional) each regress store sales on store floor area. The North’s stores range from 80 to 400 square metres and its R² is 0.71; the South’s range from 150 to 220 and its R² is 0.32. Both have about the same residual standard error. What is the most likely explanation?',
     options: [
-      'The South’s narrower range of floor areas leaves less variation in sales for the line to account for, so its R² is lower though its lines fit about as closely.',
+      'The South’s narrower range of floor areas leaves less variation for the line to account for.',
       'Floor area matters much more to sales in the North, so the North should build bigger stores.',
-      'The South’s regression is wrong, because a correct regression on the same kind of data would give the same R².',
-      'The South’s stores are more profitable, which weakens the link between their size and their sales.',
+      'The South’s regression must be wrong, because correct regressions on the same kind of data give the same R².',
+      'The South’s stores are more profitable, which weakens the link between their size and their sales figures.',
     ],
     answer: 0,
     feedback: {

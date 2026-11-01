@@ -168,7 +168,7 @@ export const guided = [
         id: 'b06-inf-g1-s4', type: 'mc',
         prompt: `The test gives t = ${FAS.coefs[1].t.toFixed(2)} and p = ${FAS.coefs[1].p.toFixed(4)}. Which conclusion should Ana write?`,
         options: [
-          'Warmer weekdays went with more transactions in this period; the p-value is likely too small because consecutive days are alike.',
+          'More transactions went with warmer weekdays here, though alike neighbouring days make p too small.',
           'Each degree warmer causes exactly one more transaction on Harbourside’s weekdays, whatever the time of year.',
           'There is a 99.9% probability that the population slope is positive, so no further checks are needed.',
           'The slope is significant, so the line will predict each weekday’s transactions to within a few transactions.',
@@ -367,10 +367,10 @@ export const check = [
     id: 'b06-inf-k4', type: 'mc', kind: 'applied',
     prompt: 'A colleague fits footfall on rain to all 612 rows of the café log (both cafés, 306 days) and reports “−62 people per inch, SE 18.0, p &lt; 0.001: rain clearly costs both cafés customers.” What is the main problem with the standard error?',
     options: [
-      'The 612 rows hold only 306 days of weather, and each day’s two rows share it, so the SE treats far too few observations as independent.',
+      'The 612 rows hold only 306 days of weather, and each day’s two rows share it: far fewer independent cases.',
       'Rain is zero on most days, so the slope can’t be estimated and the standard error is meaningless.',
-      'The standard error is too large because the two cafés differ, which hides the real effect of rain.',
-      'Nothing: 612 rows is a large sample, so the standard error and the p-value can be taken at face value.',
+      'The standard error is too large, because the two cafés differ so much that they hide the real effect of rain.',
+      'Nothing at all: 612 rows is a large sample, so the standard error and the p-value can be taken at face value.',
     ],
     answer: 0,
     feedback: {
