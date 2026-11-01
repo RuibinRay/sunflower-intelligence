@@ -107,7 +107,7 @@ export default {
   slug: 'cohort-analysis',
   title: 'Cohort analysis',
   blurb: 'Group customers by when they joined and follow each group month by month: build and read the cohort triangle, choose between share active, number active and revenue per joiner, tell a better cohort from a season or a change in who joined, and avoid the mix effects that make pooled figures mislead.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Construct a cohort table by joining month, left-aligned by months since joining, from transactions, and calculate months since joining in Excel.',
     'Calculate share active, number active and revenue per joiner, and decompose revenue per joiner into share active, visits per active customer and spend per visit.',

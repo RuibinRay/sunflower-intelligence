@@ -42,7 +42,7 @@ const bcCuts = CU.cutPoints(BC, 5);
 const bcF1 = bcF.filter((s) => s === 1).length;
 // dg-4 a customer's scores
 const SC = { R: 2, F: 5, M: 4 };
-const scFM = CU.rfm([{ recency: 0, frequency: 0, monetary: 0 }], { k: 5 }) && Math.floor((SC.F + SC.M) / 2 + 0.5);
+const scFM = Math.floor((SC.F + SC.M) / 2 + 0.5);                // as core/customer.js rfm() rounds FM
 const scSeg = CU.segmentOf(SC.R, scFM);
 // dg-5 Fellgate Climbing Wall (fictional): the January cohort in month 3
 const FC = { size: 400, active: 150, spend: 2700 };
@@ -226,8 +226,8 @@ export const items = [
     unit: '$', places: 2, tol: 0.01,
     wrong: [
       { value: GS.voucher, say: '$6 is the cost per voucher used. Most of the 180 who used one would have come back anyway; only the uplift over the holdout, 60 customers, was won by the vouchers.' },
-      { value: rnd((gsExtra * GS.voucher) / gsExtra, 2) === GS.voucher ? rnd(gsCost / (GS.pT * GS.n), 2) + 0.01 * 0 + 0 : 0, say: 'Divide the cost of every voucher used by the extra returners, not by everyone who returned.' },
-    ].slice(0, 1),
+      { value: rnd(gsCost / GS.n, 2), say: 'That spreads the vouchers’ cost over everyone sent one. The question is what each extra returner cost: divide by the uplift over the holdout, 60 customers.' },
+    ],
     solution: `Vouchers used: ${GS.pT * GS.n} × $${GS.voucher} = $${gsCost.toLocaleString('en-US')}. Extra returners: (18% − 12%) × ${GS.n.toLocaleString('en-US')} = ${gsExtra}. Cost per extra customer = $${gsCost.toLocaleString('en-US')} ÷ ${gsExtra} = ${money(gsPerExtra)}, three times the voucher’s face value, because the 120 who would have come anyway used vouchers too. Compare it with what a returning customer is worth.`,
   },
 ];

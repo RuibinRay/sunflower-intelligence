@@ -101,7 +101,7 @@ export default {
   slug: 'rfm-segments',
   title: 'RFM segments',
   blurb: 'Turn R, F and M scores into named segments on the R × FM grid, size each one in members and in spend, choose what to do with each (and whom to leave alone), and check the segments against what members did next: Lantern’s “Loyal” members turned out to be among the least likely to come back.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Classify scored customers into segments on the R × FM grid, naming them with a stated convention.',
     'Calculate each segment’s size, share of members, share of spend, mean recency and mean frequency, in Excel with COUNTIFS, SUMIFS and AVERAGEIFS.',
