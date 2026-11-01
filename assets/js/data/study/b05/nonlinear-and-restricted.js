@@ -3,9 +3,9 @@
 // threshold near a load of seven transactions per barista hour, summer-only days and Millbrook's weekdays. The Hollyford
 // Hotel, the twelve towns and the reliability figures are fictional. Fitting curves and residual plots are B06's.
 // Every figure printed is recomputed in `checks`.
-import { column, DERIVED as D } from './case.js?v=22';
-import * as C from '../../../core/correlation.js?v=22';
-import { mean, sd } from '../../../core/stats.js?v=22';
+import { column, DERIVED as D } from './case.js?v=23';
+import * as C from '../../../core/correlation.js?v=23';
+import { mean, sd } from '../../../core/stats.js?v=23';
 
 // ---------------------------------------------------------------- the iced-drink curve
 const T = column('high_f'), I = column('iced_share'), MON = column('date').map((d) => Number(d.slice(5, 7)));

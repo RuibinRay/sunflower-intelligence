@@ -4,9 +4,9 @@
 // for the small-sample example. The t test, power and Type I and II errors are B04's (hypothesis-testing); this lesson
 // applies them to r. Testing many correlations at once is correlation-matrices'; slopes and prediction are B06's.
 // Every figure printed is recomputed in `checks`.
-import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=22';
-import * as C from '../../../core/correlation.js?v=22';
-import * as I from '../../../core/inference.js?v=22';
+import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=23';
+import * as C from '../../../core/correlation.js?v=23';
+import * as I from '../../../core/inference.js?v=23';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };

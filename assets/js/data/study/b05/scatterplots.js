@@ -2,9 +2,9 @@
 // (case.js: column, CLEAN_ROWS, CAFE_ROWS, SLIP, DERIVED) for direction, form, strength and unusual points, the
 // overplotting and time-order problems of 612 points, and Ana's iced-drink planning. Anscombe's quartet uses Anscombe's
 // (1973) values as Wikipedia prints them (the same data ship as R's datasets::anscombe). Pemberton Cinema is fictional. Every figure printed is recomputed in `checks`.
-import { column, CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, DERIVED as D } from './case.js?v=22';
-import * as C from '../../../core/correlation.js?v=22';
-import { mean, variance } from '../../../core/stats.js?v=22';
+import { column, CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, DERIVED as D } from './case.js?v=23';
+import * as C from '../../../core/correlation.js?v=23';
+import { mean, variance } from '../../../core/stats.js?v=23';
 
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };
 const at = (n) => CAFE_COLUMNS.indexOf(n);
