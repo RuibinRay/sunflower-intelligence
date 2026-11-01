@@ -62,7 +62,7 @@ export const items = [
       { formula: `=(SLOPE(C2:C${last},B2:B${last})-F2)/STEYX(C2:C${last},B2:B${last})`, say: 'Divide by the slope’s standard error, s ÷ √Sxx, not by s itself.' },
       { formula: `=(SLOPE(B2:B${last},C2:C${last})-F2)/(STEYX(B2:B${last},C2:C${last})/SQRT(DEVSQ(C2:C${last})))`, say: 'The regression is of sales (C) on transactions (B): known_y’s are C.' },
     ],
-    solution: `b₁ = $${FMB.coefs[1].estimate.toFixed(3)} per transaction, SE $${FMB.coefs[1].se.toFixed(3)}, so against $4.00: t = (${FMB.coefs[1].estimate.toFixed(3)} − 4) ÷ ${FMB.coefs[1].se.toFixed(3)} = ${fx(tMB, 2)} on ${FMB.df} df, p = ${R.tPTwo(tMB, FMB.df).toFixed(2)}. Six weeks of weekdays are consistent with the plan (95% interval $${FMB.coefs[1].low.toFixed(2)} to $${FMB.coefs[1].high.toFixed(2)}); the interval is wide, and consecutive weekdays are not fully independent, so it is if anything too narrow.`,
+    solution: `b₁ = $${FMB.coefs[1].estimate.toFixed(3)} per transaction, SE $${FMB.coefs[1].se.toFixed(3)}, so against $4.00: t = (${FMB.coefs[1].estimate.toFixed(3)} − 4) ÷ ${FMB.coefs[1].se.toFixed(3)} = ${fx(tMB, 2)} on ${FMB.df} df, p = ${R.tPTwo(tMB, FMB.df).toFixed(2)}. Six weeks of weekdays are consistent with the plan (95% interval $${FMB.coefs[1].low.toFixed(2)} to $${FMB.coefs[1].high.toFixed(2)}); the interval is wide, and the weekdays are consecutive, so check the residuals in date order before trusting it (here they show no sign of making it too narrow).`,
   },
   {
     id: 'b06-m2-3', lesson: 'inference-for-coefficients', type: 'num', kind: 'numerical',

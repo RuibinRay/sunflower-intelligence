@@ -1,7 +1,7 @@
 // prediction-and-intervals.ex.js — B06 · Prediction and intervals: widgets, practice and the knowledge check (answer
 // keys live here). Café data come from case.js (the corrected log): Harbourside's weekend days from 1 July (the lesson's
 // fit), its Sundays and its Saturdays from July (festival days left out), and its weekdays 4 October – 12 November.
-// Windle Hotel, Brambleby Bakery, Corrieside Car Wash, Inchmore Ferries, Gorsefield Energy and every other business
+// Windle Hotel, Brambleby Bakery, Corrieside Car Wash, Inchmore Ferries, Brackwater Energy and every other business
 // named are fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num items recompute their
 // answers in `check`.
 import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=22';
@@ -70,7 +70,7 @@ const p58 = FOC.predict([58]);
 
 // ---------------------------------------------------------------- small inputs
 const HOTEL = { s: 18, n: 36 };
-const BAKE = { b0: 180, b1: 14.2, s: 21, n: 26, xbar: 2.5, sxx: 60, x0: 4 };
+const BAKE = { b0: 180, b1: 14.2, s: 21, n: 26, xbar: 2.5, sxx: 26.2, x0: 4 };
 const bakeHat = BAKE.b0 + BAKE.b1 * BAKE.x0, bakeSE = BAKE.s * Math.sqrt(1 + 1 / BAKE.n + (BAKE.x0 - BAKE.xbar) ** 2 / BAKE.sxx);
 const WASH = { yhat: 340, sePred: 38, n: 40, per: 25 };
 const washUp = WASH.yhat + R.tQuantile(0.9, WASH.n - 2) * WASH.sePred;
@@ -111,8 +111,8 @@ export const widgets = {
           ? `${v.x0}°F is outside the data (${Math.min(...wx)}–${Math.max(...wx)}°F). The formula still gives intervals, but they assume the line continues where nothing has been observed.`
           : `The prediction interval is ${(hp(v.x0) / hm(v.x0)).toFixed(1)} times as wide as the interval for the mean here. More days shrink the mean’s interval; the prediction interval stays above ± ${(t * s).toFixed(1)}.`,
         chart: { kind: 'line', x: { label: 'High (°F)', values: xs }, series: [
-          { name: 'Half-width, interval for the mean', values: xs.map((x) => Number(hm(x).toFixed(2))) },
-          { name: 'Half-width, prediction interval', values: xs.map((x) => Number(hp(x).toFixed(2))) },
+          { name: 'Mean', values: xs.map((x) => Number(hm(x).toFixed(2))) },
+          { name: 'Prediction interval', values: xs.map((x) => Number(hp(x).toFixed(2))) },
         ], y: { label: 'Transactions either side of ŷ' } },
       };
     },
@@ -199,14 +199,14 @@ export const guided = [
   {
     id: 'b06-pred-g3', type: 'num', kind: 'numerical',
     prompt: `Brambleby Bakery (fictional) regresses weekly sourdough loaves on local events that week: ŷ = ${BAKE.b0} + ${BAKE.b1}x over ${BAKE.n} weeks, s = ${BAKE.s} loaves, x̄ = ${BAKE.xbar} events, Sxx = ${BAKE.sxx}. Next week has ${BAKE.x0} events. Calculate the upper end of the 95% prediction interval for next week’s loaves, to one decimal place.`,
-    answer: rnd(bakeHat + tq(BAKE.n - 2) * bakeSE, 1), check: () => (180 + 14.2 * 4) + R.tQuantile(0.975, 24) * 21 * Math.sqrt(1 + 1 / 26 + 2.25 / 60), unit: 'loaves', places: 1, tol: 0.1,
+    answer: rnd(bakeHat + tq(BAKE.n - 2) * bakeSE, 1), check: () => (180 + 14.2 * 4) + R.tQuantile(0.975, 24) * 21 * Math.sqrt(1 + 1 / 26 + 2.25 / 26.2), unit: 'loaves', places: 1, tol: 0.1,
     wrong: [
       { value: rnd(bakeHat + tq(BAKE.n - 2) * BAKE.s * Math.sqrt(1 / BAKE.n + 2.25 / BAKE.sxx), 1), say: 'That is the upper end for the mean of all 4-event weeks. For one week, put 1+ under the square root.' },
       { value: rnd(bakeHat + 1.96 * bakeSE, 1), say: 'Use t* on n − 2 = 24 df (2.064), not 1.96.' },
       { value: rnd(bakeHat + tq(BAKE.n - 2) * BAKE.s, 1), say: 'Close, but that leaves out 1/n and the distance term; with 26 weeks they add a few loaves.' },
     ],
-    hints: ['ŷ₀ = 180 + 14.2 × 4; the distance term is (4 − 2.5)² ÷ 60.', 'Upper end = ŷ₀ + T.INV.2T(0.05,24) × 21 × √(1 + 1/26 + 0.0375).'],
-    solution: `ŷ₀ = 180 + 14.2 × 4 = ${bakeHat.toFixed(1)} loaves. SE_pred = 21 × √(1 + 0.0385 + 0.0375) = ${bakeSE.toFixed(2)}. Upper end = ${bakeHat.toFixed(1)} + ${tq(24).toFixed(3)} × ${bakeSE.toFixed(2)} = ${(bakeHat + tq(24) * bakeSE).toFixed(1)} loaves. Baking about ${Math.ceil(bakeHat + tq(24) * bakeSE)} would sell out only in an unusually busy week, if the model holds.`,
+    hints: ['ŷ₀ = 180 + 14.2 × 4; the distance term is (4 − 2.5)² ÷ 26.2.', 'Upper end = ŷ₀ + T.INV.2T(0.05,24) × 21 × √(1 + 1/26 + 0.0859).'],
+    solution: `ŷ₀ = 180 + 14.2 × 4 = ${bakeHat.toFixed(1)} loaves. SE_pred = 21 × √(1 + 0.0385 + 0.0859) = ${bakeSE.toFixed(2)}. Upper end = ${bakeHat.toFixed(1)} + ${tq(24).toFixed(3)} × ${bakeSE.toFixed(2)} = ${(bakeHat + tq(24) * bakeSE).toFixed(1)} loaves. Baking about ${Math.ceil(bakeHat + tq(24) * bakeSE)} would sell out only in an unusually busy week, if the model holds.`,
   },
   {
     id: 'b06-pred-g4', type: 'mc', kind: 'conceptual',
@@ -304,7 +304,7 @@ export const independent = [
   },
   {
     id: 'b06-pred-i6', type: 'mc', kind: 'applied',
-    prompt: 'Gorsefield Energy (fictional) predicts a household’s winter electricity use from floor area. Its residuals fan out: small homes vary little around the line, large homes a lot. It quotes the same ±420 kWh 95% prediction interval for every home. For which homes is the quoted interval most misleading?',
+    prompt: 'Brackwater Energy (fictional) predicts a household’s winter electricity use from floor area. Its residuals fan out: small homes vary little around the line, large homes a lot. It quotes the same ±420 kWh 95% prediction interval for every home. For which homes is the quoted interval most misleading?',
     options: [
       'Large homes: their scatter is wider than the average s, so the interval is too narrow where misses are biggest.',
       'Small homes: the interval is too wide for them, which means they are the ones most likely to fall outside it.',

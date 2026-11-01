@@ -41,7 +41,7 @@ const R1 = `D2:D${last}`, X3 = `E2:G${last}`;
 
 // ---------------------------------------------------------------- fictional figures
 const DL = { b0: 140, temp: 2.0, site: -35, inter: 1.5 };     // Drovers Lane Car Wash: washes on temperature, by site
-const SW = { b0: 22, priceM: 1.8, annual: -9, inter: -1.1 };   // a subscription box: cancellations per 100 on price, by plan
+const SW = { b0: 22, priceM: 1.8, annual: -9, inter: -1.1 };   // a subscription box: cancellations per 100 on delivery delay, by plan
 
 export const widgets = {
   'cat-foot': {
@@ -257,11 +257,11 @@ export const check = [
   },
   {
     id: 'b06-cat-k4', type: 'mc', kind: 'applied',
-    prompt: 'A subscription-box company (fictional) models monthly cancellations per 100 customers on the price rise ($) with a dummy for the annual plan and the price × annual interaction: +1.8 on price, −9 on annual, −1.1 on the interaction (the monthly plan is the reference). Which conclusion about the annual plan’s response to price is right?',
+    prompt: 'A subscription-box company (fictional) models monthly cancellations per 100 customers on the month’s average delivery delay (days) with a dummy for the annual plan and the delay × annual interaction: +1.8 on delay, −9 on annual, −1.1 on the interaction (the monthly plan is the reference). Which conclusion about the annual plan’s response to delays is right?',
     options: [
-      'Its slope is 1.8 − 1.1 = 0.7 per dollar, so annual customers respond less to price.',
-      'Its slope on price is −1.1 per dollar, because the interaction is the annual plan’s own slope on price.',
-      'Its slope on price is 1.8, because the price coefficient applies to every customer whatever the plan.',
+      'Its slope is 1.8 − 1.1 = 0.7 per day of delay, so annual customers respond less to delays.',
+      'Its slope on delay is −1.1 per day, because the interaction is the annual plan’s own slope on delay.',
+      'Its slope on delay is 1.8, because the delay coefficient applies to every customer whatever the plan.',
       'It can’t be worked out, because main effects have no meaning once an interaction is included.',
     ],
     answer: 0,
@@ -270,7 +270,7 @@ export const check = [
       2: 'With the interaction in, 1.8 is the reference (monthly) plan’s slope only.',
       3: 'Main effects are effects at the other predictor’s reference; combined with the interaction they give each group’s slope.',
     },
-    solution: `Annual slope = ${fx(SW.priceM, 1)} + (${fx(SW.inter, 1)}) = ${fx(SW.priceM + SW.inter, 1)} more cancellations per 100 customers per dollar, against ${fx(SW.priceM, 1)} on the monthly plan: annual customers, already committed, react less to a price rise. In observational data this is an association; who received which price rise could differ between the plans.`,
+    solution: `Annual slope = ${fx(SW.priceM, 1)} + (${fx(SW.inter, 1)}) = ${fx(SW.priceM + SW.inter, 1)} more cancellations per 100 customers per day of delay, against ${fx(SW.priceM, 1)} on the monthly plan: annual customers, already committed, react less to late deliveries. In observational data this is an association; the plans’ customers could differ in other ways that go with delays.`,
   },
   {
     id: 'b06-cat-k5', type: 'classify', kind: 'conceptual',
@@ -283,7 +283,6 @@ export const check = [
     ],
     categories: ['Harbourside’s weekend effect', 'Millbrook’s weekend effect', 'Cafés’ difference on weekdays', 'Cafés’ difference at weekends'],
     answer: [0, 1, 2, 3],
-    fixed: true,
     feedback: {
       0: 'Main effects are effects at the other predictor’s reference: Weekend is the weekend effect when Millbrook = 0.',
       1: 'On Millbrook’s rows the product equals the weekend dummy, so its weekend effect is the sum.',

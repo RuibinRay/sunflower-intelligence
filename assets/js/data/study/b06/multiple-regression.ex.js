@@ -14,7 +14,7 @@ const rnd = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
 const H = { cafe: 'Harbourside' };
 const y = column('footfall', H), hi = column('high_f', H), rain = column('rain_in', H), wk = column('weekend', H);
 const fest = column('festival01', H), day = column('day', H), mo = column('month', H);
-const build = day.map((d) => Math.min(d - 1, 120) / 120);
+const build = column('build_up', H);
 const M3 = R.fit(y, { High: hi, Rain: rain, Weekend: wk, Festival: fest });
 const M4 = R.fit(y, { High: hi, Rain: rain, Weekend: wk, Festival: fest, Build: build });
 const c3 = M3.beta, c4 = M4.beta;
@@ -155,7 +155,7 @@ export const guided = [
       { value: rnd(1 - (1 - 0.62) * 40 / 34, 4), say: 'The numerator is n − 1 = 39, not n.' },
     ],
     hints: ['p = k + 1 = 6 coefficients.', '1 − (1 − 0.62) × 39 ÷ 34.'],
-    solution: `1 − 0.38 × 39 ÷ 34 = ${fx(adjMG, 4)}. Five predictors cost about four points of R² with only 40 centres.`,
+    solution: `1 − 0.38 × 39 ÷ 34 = ${fx(adjMG, 4)}. Five predictors cost about six points of R² (0.62 against ${fx(adjMG, 4)}) with only 40 centres.`,
   },
 ];
 
@@ -229,7 +229,7 @@ export const independent = [
       2: 'With correlated predictors, squared standardised slopes don’t split R² into shares.',
       3: 'They can be computed for any predictor; the trouble is reading them for 0/1 and skewed ones.',
     },
-    solution: 'A 0/1 column that is 1 in one week out of 52 has an SD of about 0.19, so even a large effect per fair day gives a small standardised slope. Judge the fair from its slope in its own units (extra sales per fair day), set against how often fairs happen.',
+    solution: 'A 0/1 column that is 1 in one week out of 52 has an SD of about 0.14 (√(1/52 × 51/52) = 0.137), so even a large effect per fair day gives a small standardised slope. Judge the fair from its slope in its own units (extra sales per fair day), set against how often fairs happen.',
   },
   {
     id: 'b06-mult-i6', type: 'multi', kind: 'conceptual',

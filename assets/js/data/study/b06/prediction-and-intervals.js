@@ -28,6 +28,10 @@ const resid = Array.from(FW.resid);
 const sdWarm = sdv(resid.filter((e, i) => wx[i] >= 70)), sdCool = sdv(resid.filter((e, i) => wx[i] < 55));
 const FWrain = R.fit(wy, { High: wx, Rain: wRain });
 const warmDays = WK.filter((r) => r[at('high_f')] >= 78);
+const prRain = FWrain.predict([80, 0]), rainBound = prRain.yhat + R.tQuantile(0.9, FWrain.df) * prRain.sePred;
+const ub90 = wx.map((v) => P(v).yhat + t90 * P(v).sePred), dryI = wRain.map((v, i) => i).filter((i) => wRain[i] === 0);
+const dryExceed = dryI.filter((i) => wy[i] > ub90[i]).length / dryI.length, dryMeanRes = mean(dryI.map((i) => resid[i]));
+const pAboveCI = R.tPTwo((p80.ciHigh - p80.yhat) / p80.sePred, 47) / 2;
 const warmStaff = warmDays.map((r) => r[at('peak_staff_hours')]);
 // March weekends: inside the range of highs, outside the period
 const MAR = CLEAN_ROWS.filter((r) => r[at('cafe')] === 'Harbourside' && ['Sat', 'Sun'].includes(r[at('weekday')]) && r[at('date')] < '2027-04-01');
@@ -54,7 +58,7 @@ function bandsFigure() {
   svg += `<path d="${path((v) => b0 + b1 * v)}" fill="none" stroke="var(--ink)" stroke-width="2.2"/>`;
   // axes
   svg += `<line x1="${L}" x2="${Rt}" y1="${B}" y2="${B}" stroke="var(--ink)"/><line x1="${L}" x2="${L}" y1="${T}" y2="${B}" stroke="var(--ink)"/>`;
-  [40, 60, 80, 100].forEach((v) => { svg += `<line x1="${X(v)}" x2="${X(v)}" y1="${B}" y2="${B + 5}" stroke="var(--ink)"/><text x="${X(v)}" y="${B + 22}" text-anchor="middle" fill="var(--ink-3)">${v}</text>`; });
+  [40, 60, 80, 100].forEach((v) => { svg += `<line x1="${X(v)}" x2="${X(v)}" y1="${B}" y2="${B + 5}" stroke="var(--ink)"/><text x="${X(v)}" y="${B + 22}" text-anchor="${v === 100 ? 'end' : 'middle'}" fill="var(--ink-3)">${v}</text>`; });
   [50, 100, 150].forEach((v) => { svg += `<line x1="${L - 5}" x2="${L}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--ink)"/><text x="${L - 9}" y="${Y(v) + 5}" text-anchor="end" fill="var(--ink-3)">${v}</text>`; });
   svg += `<text x="${(L + Rt) / 2}" y="${B + 48}" text-anchor="middle" fill="var(--ink-3)">Day’s high (°F)</text>`;
   svg += `<text x="16" y="${(T + B) / 2}" text-anchor="middle" fill="var(--ink-3)" transform="rotate(-90 16 ${(T + B) / 2})">Transactions</text>`;
@@ -98,9 +102,11 @@ export default {
 
     { h: 'Where the widths come from' },
     { p: String.raw`Both intervals are <m>\hat{y}_0 \pm t^{*}_{n-2} \times</m> a standard error. For the mean response,` },
-    { math: String.raw`SE_{\text{mean}} = s\sqrt{\dfrac{1}{n} + \dfrac{(x_0 - \bar{x})^2}{S_{xx}}} = 15.24 \times \sqrt{\dfrac{1}{49} + \dfrac{(80 - 64.35)^2}{13{,}529}} = 2.99` },
+    { math: String.raw`SE_{\text{mean}} = s\sqrt{\dfrac{1}{n} + \dfrac{(x_0 - \bar{x})^2}{S_{xx}}}` },
+    { math: String.raw`= 15.24 \times \sqrt{\dfrac{1}{49} + \dfrac{(80 - 64.35)^2}{13{,}529}} = 2.99` },
     { p: String.raw`and for a single new case one more <m>s^2</m> goes under the square root, for the new day’s own error:` },
-    { math: String.raw`SE_{\text{pred}} = s\sqrt{1 + \dfrac{1}{n} + \dfrac{(x_0 - \bar{x})^2}{S_{xx}}} = 15.24 \times \sqrt{1 + 0.0204 + 0.0181} = 15.53` },
+    { math: String.raw`SE_{\text{pred}} = s\sqrt{1 + \dfrac{1}{n} + \dfrac{(x_0 - \bar{x})^2}{S_{xx}}}` },
+    { math: String.raw`= 15.24 \times \sqrt{1 + 0.0204 + 0.0181} = 15.53` },
     { p: String.raw`With <m>t^{*}_{47} = 2.012</m>, the intervals are <m>106.5 \pm 2.012 \times 2.99</m> (100.5 to 112.5) and <m>106.5 \pm 2.012 \times 15.53</m> (75.3 to 137.8). The 1 under the second root dominates: the line is known to within about 3 transactions at 80°F, but a single day scatters about it by about 15.` },
     { figure: {
       svg: bandsFigure(),
@@ -178,10 +184,10 @@ export default {
     { level: 'simple', title: 'How many cones on an 80-degree day?', fictional: true,
       setup: 'Ferrybridge Ice Cream (fictional), from the previous lesson: eight days, highs from 62°F to 88°F, ŷ = −65.70 + 2.971x, s = 4.803 cones, x̄ = 74°F, Sxx = 510. Tomorrow’s forecast is 80°F. Give the 95% interval for the average number of cones on 80°F days, and the 95% prediction interval for tomorrow.',
       steps: [
-        String.raw`Point prediction: <m>\hat{y}_0 = -65.70 + 2.971 \times 80 = 171.9</m> cones.`,
+        String.raw`Point prediction: <m>\hat{y}_0 = -65.70 + 2.971 \times 80 = 171.98</m> cones with the rounded coefficients; 171.95 with the unrounded ones, which the rest of the working uses.`,
         String.raw`Distance term: <m>(80 - 74)^2 / 510 = 36/510 = 0.0706</m>; with <m>1/n = 0.125</m>, the sum is 0.1956.`,
         String.raw`Standard errors: <m>SE_{\text{mean}} = 4.803 \times \sqrt{0.1956} = 2.124</m>; <m>SE_{\text{pred}} = 4.803 \times \sqrt{1.1956} = 5.252</m>.`,
-        String.raw`Multiplier: <x>=T.INV.2T(0.05,6)</x> = 2.447. Interval for the mean: <m>171.9 \pm 2.447 \times 2.124</m>, 166.8 to 177.1. Prediction interval: <m>171.9 \pm 2.447 \times 5.252</m>, 159.1 to 184.8.`,
+        String.raw`Multiplier: <x>=T.INV.2T(0.05,6)</x> = 2.447. Interval for the mean: <m>171.95 \pm 2.447 \times 2.124</m>, 166.8 to 177.1. Prediction interval: <m>171.95 \pm 2.447 \times 5.252</m>, 159.1 to 184.8.`,
       ],
       answer: 'About 172 cones; 95% interval for the average at 80°F: 166.8 to 177.1; 95% prediction interval for tomorrow: 159.1 to 184.8 cones.',
       interpretation: 'To decide how much mix to make for tomorrow the kiosk needs the prediction interval: about 185 cones covers all but an unlucky day. The interval for the average would suit a different question, such as the season’s plan for 80-degree days. With only eight days, the 1/n term is large, so the line’s own uncertainty is a sizeable part of the prediction interval here, unlike in Ana’s 49 days.' },
@@ -201,11 +207,11 @@ export default {
         'At the point prediction, 106.5 transactions: 0.55 × 106.5 = 58.6 peak transactions, ÷ 7 = 8.4 barista hours.',
         'At the 95% prediction interval’s upper end, 137.8: 0.55 × 137.8 ÷ 7 = 10.8 barista hours.',
         'At the one-sided 90% upper bound, 106.5 + 1.300 × 15.53 = 126.7: 0.55 × 126.7 ÷ 7 = 10.0 barista hours.',
-        'Compare with practice: 6.5 to 7.5 hours on warm weekends means loads of about 8 to 9 at the predicted trade, above Ana’s rule. Rostering for the mean would put the load above 7 on about half of such Saturdays; rostering to the 90% bound, on about one in ten.',
+        'Compare with practice: 6.5 to 7.5 hours on warm weekends means loads of about 8 to 9 at the predicted trade, above Ana’s rule. B05’s rule keeps the expected peak load at about 7, which means rostering to ŷ: 8.4 hours, or 8.5 in half-hour steps. That puts the load above 7 on about half of such Saturdays. The one-sided 90% bound is Ana’s stricter choice of tail risk: a load above 7 on about one Saturday in ten.',
         'Check the conditions: Saturday is a weekend day after the build-up, the forecast is inside 33–94°F, and it is dry, while the model averages over wet and dry days, so a dry 80°F day is likely to come in a little above the line.',
       ],
       answer: 'Roster 10 barista hours (the one-sided 90% bound, in half-hour steps): about 2.5 baristas across the four-hour peak, against the 6.5–7.5 hours warm weekends have been getting.',
-      interpretation: 'The prediction interval turns a forecast into a staffing risk Ana can choose. Ten hours leaves about a one-in-ten chance of a load above 7 if the model holds; 8.5 hours would be cheaper and leave it near even odds. Because the model ignores rain, which the forecast says won’t fall, the bound is if anything conservative; a model with rain (module 3) would narrow it. The roster is the decision; the regression only prices the options.' },
+      interpretation: 'The prediction interval turns a forecast into a staffing risk Ana can choose. Ten hours leaves about a one-in-ten chance of a load above 7 if the model holds; 8.5 hours, the rule’s own roster, would be cheaper and leave it near even odds. The model ignores rain, and the forecast is dry. Dry weekend days in the sample came in about 4 transactions above the line on average, but a model with rain also has smaller residuals (s of 12.91 against 15.24), and the two effects roughly cancel: the rain model’s one-sided 90% bound for a dry 80°F day is 127.5 transactions against 126.7 here, and the dry days in the sample exceeded this lesson’s bound 9.7% of the time. The roster is the decision; the regression only prices the options.' },
   ],
 
   demo: [
@@ -215,7 +221,7 @@ export default {
   ],
 
   mistakes: [
-    { title: 'Using the confidence interval for a single day', html: 'The interval for the mean, 100.5 to 112.5 at 80°F, is about the average of all such days. One Saturday scatters about that average by roughly s, so its interval, 75.3 to 137.8, is five times as wide. Rostering from the narrow one under-staffs about half the time.' },
+    { title: 'Using the confidence interval for a single day', html: 'The interval for the mean, 100.5 to 112.5 at 80°F, is about the average of all such days. One Saturday scatters about that average by roughly s, so its interval, 75.3 to 137.8, is five times as wide. Rostering to the top of the narrow one under-staffs about a third of such Saturdays.' },
     { title: '“More data will make the prediction interval as narrow as I like.”', html: 'More data shrinks 1/n and the distance term, not the 1 under the square root. The prediction interval’s floor is about ±t × s; only a model with smaller residuals lowers it.' },
     { title: 'Extrapolating because the formula still gives an answer', html: 'At 100°F, or for a March weekend, FORECAST.LINEAR returns a number and the formula an interval. Neither knows the data stopped at 94°F or began after the café’s build-up. Check that x₀ and the conditions are inside what the model was fitted to.' },
     { title: 'Treating the interval as exact when the spread changes with x', html: 'The prediction interval has nearly the same width at every x. If the spread grows with the mean, as a multiplicative process makes it, the interval is too narrow at the busy end, where mistakes cost most. Check the residual plot (module 4) before trusting the busy end.' },
@@ -223,7 +229,7 @@ export default {
   ],
 
   application: [
-    { case: 'Ana’s weekend rostering sheet now has three columns beside the forecast: the predicted transactions, the one-sided 90% upper bound, and the barista hours at that bound. Her note to the manager reads: “Roster to the bound, rounded to the half hour. The model covers weekends from July to December 2027 between 33°F and 94°F; don’t use it for weekdays, festivals or forecasts outside that range. It ignores rain, so on a dry forecast it errs on the safe side. It will be refitted with rain and the full year once 2028’s spring weekends are in.”' },
+    { case: 'Ana’s weekend rostering sheet now has three columns beside the forecast: the predicted transactions, the one-sided 90% upper bound, and the barista hours at that bound. Her note to the manager reads: “Roster to the bound, rounded to the half hour. The model covers weekends from July to December 2027 between 33°F and 94°F; don’t use it for weekdays, festivals or forecasts outside that range. It ignores rain; on a dry 80°F forecast a model with rain gives almost the same bound (127.5 transactions against 126.7). It will be refitted with rain and the full year once 2028’s spring weekends are in.”' },
     { p: 'The sheet turns a prediction interval into a rule a manager can follow without statistics, and the note limits the rule to the cases it was built from. That is how prediction is used professionally: a point forecast for the central plan, a prediction bound for capacity, and a written scope. A bakery sets the next day’s bake from a predicted demand plus a margin for the day’s scatter; a call centre staffs to an upper bound on calls; an energy supplier hedges against the upper end of a cold-weather demand forecast.' },
     { p: 'In each case the width of the interval is itself information. A wide prediction interval says the model leaves a lot of each day unexplained; narrowing it is a job for a better model, with more predictors or a better functional form, not for more decimal places. And the interval for the mean has its own uses: a budget for the season’s average warm Saturday, or a comparison between two cafés’ typical days.' },
     { p: 'Finally, a prediction is only as good as its inputs. A 95% prediction interval treats the forecast high as known. If the forecast itself might be 5°F out, the transactions it implies are more uncertain still; a slope of about 1 transaction per °F makes that roughly 5 transactions either way, small beside the interval’s ±31 but worth knowing.' },
@@ -320,7 +326,8 @@ export default {
     { what: 't 0.90', value: t90, shown: 1.300, tol: 0.0005 },
     { what: 'Upper bound', value: upper90, shown: 126.7, tol: 0.05 },
     // kiosk
-    { what: 'Kiosk ŷ at 80', value: k80.yhat, shown: 171.9, tol: 0.06 },
+    { what: 'Kiosk ŷ at 80 (unrounded)', value: k80.yhat, shown: 171.95, tol: 0.005 },
+    { what: 'Kiosk ŷ at 80 (rounded coefficients)', value: -65.70 + 2.971 * 80, shown: 171.98, tol: 0.005 },
     { what: 'Kiosk about 172', value: k80.yhat, shown: 172, tol: 0.5 },
     { what: 'Kiosk 36/510', value: 36 / 510, shown: 0.0706, tol: 0.00005 },
     { what: 'Kiosk 1/8', value: 1 / 8, shown: 0.125 },
@@ -367,6 +374,13 @@ export default {
     { what: 'Load at 6.5 hours', value: 0.55 * p80.yhat / 6.5, shown: 9, tol: 0.05 },
     { what: 'Load at 7.5 hours', value: 0.55 * p80.yhat / 7.5, shown: 8, tol: 0.2 },
     { what: '2.5 baristas across four hours', value: 10 / 4, shown: 2.5 },
+    { what: 'Brambleby (ex g3): s ÷ √Sxx = 21 ÷ √26.2 matches inference-for-coefficients g2’s SE of 4.1', value: 21 / Math.sqrt(26.2), shown: 4.1, tol: 0.005 },
+    { what: 'Rostering to ŷ in half-hour steps', value: Math.ceil(hours(p80.yhat) * 2) / 2, shown: 8.5 },
+    { what: 'Rain model one-sided 90% bound, dry 80°F', value: rainBound, shown: 127.5, tol: 0.05 },
+    { what: 'Dry days exceed this lesson’s 90% bound', value: dryExceed * 100, shown: 9.7, tol: 0.05 },
+    { what: 'Dry days’ mean residual about +4', value: dryMeanRes, shown: 4, tol: 0.5 },
+    { what: 'Rain model s', value: FWrain.sigma, shown: 12.91 },
+    { what: 'Rostering to the CI top under-staffs about a third', value: pAboveCI, shown: 0.35, tol: 0.005 },
     { what: 'A dry 80°F day sits above the line (model with rain)', value: Number(FWrain.beta[0] + FWrain.beta[1] * 80 > p80.yhat), shown: 1 },
     { what: 'Forecast 5°F out: about 5 transactions', value: 5 * b1, shown: 5, tol: 0.1 },
     { what: 'Interval ±31 at 80', value: p80.yhat - p80.piLow, shown: 31, tol: 0.5 },
