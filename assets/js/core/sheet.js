@@ -8,7 +8,7 @@
 // function that returns several values). Dates are serial numbers in the 1900 date system (1 = 1 January 1900; the
 // fictitious 29 February 1900 is kept, so serials from 61 on match Excel's).
 
-import { tQuantile, tCdf } from './stats.js?v=22';
+import { tQuantile, tCdf, ols } from './stats.js?v=22';
 import * as INF from './inference.js?v=22';
 
 // ---------------------------------------------------------------- values
@@ -848,10 +848,39 @@ FN['COVARIANCE.P'] = (args, ctx) => { const p = pairs(args[0], args[1], ctx); if
 // known_x's are {1;2;3;…}. const FALSE forces the intercept to 0: the second column then holds 0 and #N/A for its
 // standard error, the total sum of squares is uncentred (Σy²) and the residual degrees of freedom are n − 1, as Excel
 // documents.
+// Several x columns (or rows, when y is a row): Excel returns the coefficients in reverse order, m_k … m_1, b, with
+// the standard errors below them, then R² and the standard error of y, F and the residual degrees of freedom, and the
+// regression and residual sums of squares (#N/A fills the rest of rows 3–5).
+function xColumns(Y, Xa) {
+  const n = Y.h === 1 ? Y.w : Y.h;
+  if (Y.h !== 1 && Y.w !== 1) return null;
+  const byCols = Y.h !== 1;
+  if (byCols ? Xa.h !== n : Xa.w !== n) return null;
+  const k = byCols ? Xa.w : Xa.h;
+  const cols = Array.from({ length: k }, (_, j) => Array.from({ length: n }, (_, i) => (byCols ? Xa.at(i, j) : Xa.at(j, i))));
+  return { cols, y: Y.flat(), k, n };
+}
+function linestMulti(Y, Xa, withConst, stats) {
+  const D = xColumns(Y, Xa); if (!D) return ERR.REF;
+  if (![...D.y, ...D.cols.flat()].every((v) => typeof v === 'number')) return ERR.VALUE;
+  const f = ols(D.cols, D.y, { intercept: withConst });
+  if (f.error) return ERR.NUM;
+  const coef = withConst ? [...f.beta.slice(1).reverse(), f.beta[0]] : [...[...f.beta].reverse(), 0];
+  if (!stats) return new Arr([coef]);
+  const se = withConst ? [...f.coefs.slice(1).map((c) => c.se).reverse(), f.coefs[0].se] : [...f.coefs.map((c) => c.se).reverse(), ERR.NA];
+  const w = D.k + 1, pad = (row) => [...row, ...Array(w - row.length).fill(ERR.NA)];
+  const ssreg = f.sst - f.sse;
+  return new Arr([coef, se, pad([f.r2, f.sigma]), pad([(ssreg / D.k) / (f.sse / f.df), f.df]), pad([ssreg, f.sse])]);
+}
 FN.LINEST = (args, ctx) => {
   const Y = arrOf(args[0], ctx); if (isErr(Y)) return Y;
   const Xa = args[1] && args[1].t !== 'missing' ? arrOf(args[1], ctx) : new Arr(Y.h === 1 ? [Y.rows[0].map((_, i) => i + 1)] : Y.rows.map((_, i) => [i + 1]));
   if (isErr(Xa)) return Xa;
+  if ((Y.h !== 1 && Xa.w > 1) || (Y.h === 1 && Y.w > 1 && Xa.h > 1)) {
+    const withC = !args[2] || args[2].t === 'missing' || toBool(scalar(args[2], ctx));
+    const st = args[3] && args[3].t !== 'missing' && toBool(scalar(args[3], ctx));
+    return linestMulti(Y, Xa, withC, st);
+  }
   const p = pairs({ t: 'lit', v: Xa }, { t: 'lit', v: Y }, ctx); if (isErr(p)) return p;
   const withConst = !args[2] || args[2].t === 'missing' || toBool(scalar(args[2], ctx));
   const stats = args[3] && args[3].t !== 'missing' && toBool(scalar(args[3], ctx));
@@ -904,14 +933,22 @@ FN.SUBTOTAL = (args, ctx) => {
 };
 
 // TREND(known_y's, known_x's, [new_x's], [const]): the least-squares line's values at new_x (one x variable), as an
-// array shaped like new_x; const FALSE forces the line through the origin
+// array shaped like new_x; const FALSE forces the line through the origin. Several x variables are supported in
+// columns (y a column, one row of new_x's per prediction); the row orientation is not implemented.
 FN.TREND = (args, ctx) => {
   const Y = arrOf(args[0], ctx); if (isErr(Y)) return Y;
   const Xa = args[1] && args[1].t !== 'missing' ? arrOf(args[1], ctx) : new Arr(Y.rows.map((_, i) => [i + 1]));
   if (isErr(Xa)) return Xa;
-  const p = pairs({ t: 'lit', v: Xa }, { t: 'lit', v: Y }, ctx); if (isErr(p)) return p;
   const N = args[2] && args[2].t !== 'missing' ? arrOf(args[2], ctx) : Xa; if (isErr(N)) return N;
   const withConst = !args[3] || args[3].t === 'missing' || toBool(scalar(args[3], ctx));
+  if (Y.h !== 1 && Xa.w > 1) {   // several x columns: one prediction per row of new_x's
+    const D = xColumns(Y, Xa); if (!D) return ERR.REF;
+    if (![...D.y, ...D.cols.flat()].every((v) => typeof v === 'number')) return ERR.VALUE;
+    const f = ols(D.cols, D.y, { intercept: withConst }); if (f.error) return ERR.NUM;
+    if (N.w !== D.k) return ERR.REF;
+    return new Arr(N.rows.map((row) => { let v = withConst ? f.beta[0] : 0; for (let j = 0; j < D.k; j++) { const x = toNum(row[j]); if (isErr(x)) return x; v += f.beta[j + (withConst ? 1 : 0)] * x; } return [v]; }));
+  }
+  const p = pairs({ t: 'lit', v: Xa }, { t: 'lit', v: Y }, ctx); if (isErr(p)) return p;
   let b0, b1;
   if (withConst) { const f = linfit(p.xs, p.ys); b0 = f.intercept; b1 = f.slope; }
   else { b0 = 0; b1 = p.xs.reduce((s, x, i) => s + x * p.ys[i], 0) / p.xs.reduce((s, x) => s + x * x, 0); }

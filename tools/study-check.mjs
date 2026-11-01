@@ -10,6 +10,7 @@ import * as SH from '../assets/js/core/sheet.js';
 import * as PM from '../assets/js/core/percmap.js';
 import * as RW from '../assets/js/study/widgets/ratios.js';
 import { ols } from '../assets/js/core/stats.js';
+import * as REG from '../assets/js/core/regression.js';
 import {
   catalog, BUILT, DATA, chartFor, chartSync, caseFor, lessonsOf, loadLesson, loadEx, loadModuleFile, blocks, blockWords,
   inline, tex, tagProblems, strings, words, strip, sum, glossKey,
@@ -18,7 +19,7 @@ import {
 const VERBS = /^(Explain|Describe|Define|Identify|Distinguish|Classify|Calculate|Compute|Record|Prepare|Analyse|Apply|Interpret|Evaluate|Compare|Choose|Decide|Use|Recognise|State|Construct|Build|Post|Journalise|Find|Detect|Diagnose|Handle|Transform|Scale|Encode|Write|Document|Justify|Recommend|Estimate|Assess|Plan|Design|Set|Measure|Select|Determine|Correct|Locate|Read|Summarise|Reshape|Combine|Profile|Validate|Clean|Convert|Standardise|Normalise|Map|Draft|Price|Forecast|Test|Name|List|Contrast|Close|Adjust|Trace|Reconcile)\b/;
 const KINDS = ['conceptual', 'numerical', 'applied'];
 const TYPES = ['mc', 'multi', 'num', 'fill', 'classify', 'order', 'journal', 'equation', 'rows', 'short', 'formula', 'steps'];
-const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak', 'sampler', 'cluster', 'percmap', 'ratios', 'scatter', 'corrmatrix'];
+const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak', 'sampler', 'cluster', 'percmap', 'ratios', 'scatter', 'corrmatrix', 'fitline', 'diagnostics', 'logistic'];
 const DATASETS = ['lantern-orders', 'harborview-bookings', 'northfield-students'];
 const CLEAN_OPS = ['dedupe', 'dedupe-key', 'trim', 'case', 'map', 'to-number', 'to-date', 'fill', 'drop-missing', 'flag-missing', 'validate', 'outliers', 'transform', 'scale', 'encode', 'derive', 'rename', 'drop-column'];
 const near = (a, b, tol) => Math.abs(a - b) <= tol + 1e-9;
@@ -400,6 +401,29 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
     (wd.xs || []).forEach((x) => { if (x.values?.length !== n) r.err(`${w}: x ${x.name} length ≠ y length`); });
     const fit = ols((wd.xs || []).map((x) => x.values), wd.y?.values || [], {});
     if (fit.error) r.err(`${w}: regression with every X fails: ${fit.error}`);
+    for (const o of wd.options || []) if (!['robust', 'predict'].includes(o)) r.err(`${w}: unknown option ${o}`);
+    if (wd.predictAt && wd.predictAt.length !== (wd.xs || []).length) r.err(`${w}: predictAt needs one value per x`);
+  } else if (wd.type === 'fitline') {
+    const n = wd.x?.values?.length;
+    if (!n || wd.y?.values?.length !== n || ![...wd.x.values, ...wd.y.values].every(Number.isFinite)) r.err(`${w}: fitline needs finite x.values and y.values of equal length`);
+    for (const t of wd.show || []) if (!['residuals', 'squares', 'sse', 'mean'].includes(t)) r.err(`${w}: unknown show ${t}`);
+    for (const k of ['intercept', 'slope']) { const g = wd.ranges?.[k]; if (g && !(g.length === 3 && g[0] < g[1] && g[2] > 0)) r.err(`${w}: ranges.${k} must be [lo, hi, step]`);
+      const v = wd.start?.[k]; if (g && v != null && (v < g[0] || v > g[1])) r.err(`${w}: start.${k} is outside its range`); }
+  } else if (wd.type === 'diagnostics') {
+    const n = wd.y?.values?.length, cols = Object.entries(wd.xs || {});
+    if (!n || !cols.length || !cols.every(([, v]) => Array.isArray(v) && v.length === n)) r.err(`${w}: diagnostics needs y.values and named xs of the same length`);
+    for (const p of wd.plots || []) if (!['fitted', 'qq', 'scale', 'leverage', 'order'].includes(p)) r.err(`${w}: unknown plot ${p}`);
+    for (const t of wd.toggles || []) if (t !== 'logY') r.err(`${w}: unknown toggle ${t}`);
+    if ((wd.toggles || []).includes('logY') && wd.y.values.some((v) => !(v > 0))) r.err(`${w}: logY needs every y above 0`);
+    for (const p of wd.picked || []) if (!wd.xs[p]) r.err(`${w}: picked ${p} is not one of xs`);
+    if (wd.labels && wd.labels.length !== n) r.err(`${w}: labels length ≠ rows`);
+  } else if (wd.type === 'logistic') {
+    const n = wd.y?.values?.length, cols = Object.entries(wd.xs || {});
+    if (!n || !wd.y.values.every((v) => v === 0 || v === 1)) r.err(`${w}: logistic needs y.values of 0s and 1s`);
+    if (!cols.length || !cols.every(([, v]) => Array.isArray(v) && v.length === n)) r.err(`${w}: logistic needs named xs of the same length as y`);
+    if (wd.axis && !wd.xs[wd.axis]) r.err(`${w}: axis ${wd.axis} is not one of xs`);
+    for (const t of wd.show || []) if (!['coefs', 'odds', 'lr', 'table'].includes(t)) r.err(`${w}: unknown show ${t}`);
+    if (n && cols.length) { const m = REG.logistic(wd.y.values, wd.xs || {}); if (m.error) r.err(`${w}: logistic fit fails: ${m.error}`); else if (m.separated) r.warn(`${w}: the outcome is (nearly) perfectly separated; the coefficients are unstable`); }
   } else if (wd.type === 'curve') {
     const P = { normal: ['mean', 'sd'], t: ['df'], chisq: ['df'], f: ['df1', 'df2'], binomial: ['n', 'p'], poisson: ['lambda'] }[wd.dist];
     if (!P) r.err(`${w}: curve needs dist: normal, t, chisq, f, binomial or poisson`);

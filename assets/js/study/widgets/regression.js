@@ -1,7 +1,10 @@
 // regression.js — the "regression" lesson widget: the Summary Output that Excel's Analysis ToolPak Regression tool
 // produces (B03), for data the lesson supplies, with a choice of X variables and, for one X, a scatter chart with the
 // fitted line. The statistics come from core/stats.js ols().
-//   { type: 'regression', title, y: { name, values }, xs: [{ name, values }], picked: [0], format?: { x, y }, note }
+//   { type: 'regression', title, y: { name, values }, xs: [{ name, values }], picked: [0], format?: { x, y }, note,
+//     options?: ['robust', 'predict'] (B06: a switch to heteroskedasticity-robust HC3 standard errors, which Excel's
+//     ToolPak doesn't offer; boxes to enter X values and see the predicted Y with a 95% confidence interval for the
+//     mean and a 95% prediction interval for one new case), predictAt?: [x values in the order of xs] }
 import { h } from '../../core/dom.js?v=22';
 import { xl } from '../xl.js?v=22';
 import { ols } from '../../core/stats.js?v=22';
@@ -28,6 +31,14 @@ export function mount(el, cfg, ctx) {
     cb.addEventListener('change', draw);
     return { cb, row: h('label', { for: cb.id }, cb, h('span', {}, x.name)) };
   });
+  const opts = new Set(cfg.options || []);
+  const st = { robust: false, at: cfg.xs.map((x, i) => cfg.predictAt?.[i] ?? +(x.values.reduce((t, v) => t + v, 0) / x.values.length).toFixed(2)) };
+  const rob = opts.has('robust') ? (() => { const inp = h('input', { type: 'checkbox', id: `${base}-hc3` }); inp.addEventListener('change', () => { st.robust = inp.checked; draw(); });
+    return h('div', { class: 'field sp-check' }, inp, h('label', { for: inp.id }, 'Robust (HC3) standard errors')); })() : null;
+  const predIns = opts.has('predict') ? cfg.xs.map((x, i) => { const inp = h('input', { type: 'number', id: `${base}-p${i}`, value: st.at[i], step: 'any' });
+    inp.addEventListener('input', () => { if (Number.isFinite(+inp.value) && inp.value !== '') { st.at[i] = +inp.value; draw(); } });
+    return { inp, row: h('div', { class: 'field' }, h('label', { for: inp.id }, x.name), inp) }; }) : null;
+  const predOut = h('div', { 'aria-live': 'polite' });
   const out = h('div', { class: 'rg-out', 'aria-live': 'polite' });
   const chart = h('div', { class: 'chart-box' });
   function draw() {
@@ -36,6 +47,7 @@ export function mount(el, cfg, ctx) {
     const fit = ols(use.map((x) => x.values), cfg.y.values, { names: use.map((x) => x.name) });
     if (fit.error) { out.replaceChildren(h('p', { class: 'fx-note is-error' }, fit.error)); chart.replaceChildren(); return; }
     const ssr = fit.sst - fit.sse;
+    const coefs = st.robust ? fit.robust().coefs : fit.coefs;
     out.replaceChildren(
       h('h4', {}, 'Summary output'),
       table('Regression Statistics', null, [['Multiple R', num(Math.sqrt(fit.r2))], ['R Square', num(fit.r2)], ['Adjusted R Square', num(fit.adjR2)], ['Standard Error', num(fit.sigma)], ['Observations', String(fit.n)]]),
@@ -44,7 +56,17 @@ export function mount(el, cfg, ctx) {
         ['Residual', String(fit.df), num(fit.sse), num(fit.s2), '', ''],
         ['Total', String(fit.n - 1), num(fit.sst), '', '', '']]),
       table('Coefficients', ['', 'Coefficients', 'Standard Error', 't Stat', 'P-value', 'Lower 95%', 'Upper 95%'],
-        fit.coefs.map((c) => [c.name, num(c.estimate), num(c.se), num(c.t), num(c.p), num(c.low), num(c.high)])));
+        coefs.map((c) => [c.name, num(c.estimate), num(c.se), num(c.t), num(c.p), num(c.low), num(c.high)])),
+      ...(st.robust ? [h('p', { class: 'fx-note' }, 'Standard errors, t, p and limits are heteroskedasticity-robust (HC3); the coefficients and the ANOVA table don’t change.')] : []));
+    predOut.replaceChildren();
+    if (predIns) {
+      predIns.forEach((p, i) => { p.row.hidden = !boxes[i].cb.checked; });
+      const pr = fit.predict(cfg.xs.map((x, i) => [x, i]).filter(([, i]) => boxes[i].cb.checked).map(([, i]) => st.at[i]));
+      predOut.append(h('ul', { class: 'sc-stats' },
+        h('li', {}, h('b', {}, `Predicted ${cfg.y.name}: `), num(pr.yhat)),
+        h('li', {}, h('b', {}, '95% confidence interval for the mean: '), `${num(pr.ciLow)} to ${num(pr.ciHigh)}`),
+        h('li', {}, h('b', {}, '95% prediction interval for one new case: '), `${num(pr.piLow)} to ${num(pr.piHigh)}`)));
+    }
     chart.replaceChildren();
     if (use.length === 1) {
       const xs = use[0].values, b0 = fit.beta[0], b1 = fit.beta[1];
@@ -59,7 +81,8 @@ export function mount(el, cfg, ctx) {
     cfg.title ? h('p', { class: 'fx-title' }, cfg.title) : null,
     h('p', { class: 'small' }, h('strong', {}, 'Input Y Range: '), cfg.y.name),
     h('div', { class: 'rg-vars', role: 'group', 'aria-label': 'Input X Range' }, h('strong', {}, 'Input X Range:'), boxes.map((b) => b.row)),
-    out, chart,
+    rob, out, chart,
+    predIns ? h('div', { class: 'rg-predict' }, h('p', { class: 'fx-title' }, 'Predict'), h('div', { class: 'cv-fields' }, ...predIns.map((p) => p.row)), predOut) : null,
     cfg.note ? (() => { const p = h('p', { class: 'fx-note' }); p.innerHTML = xl(cfg.note); return p; })() : null,
   ].filter(Boolean));
   draw();
