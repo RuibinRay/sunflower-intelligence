@@ -204,6 +204,49 @@ const w24 = (l) => FH24.predict([l, Math.max(0, l - 7) ** 2]).yhat;
 const PLANT = { a: 0.22, b: 0.02 };            // the generator’s wait: 1.5 + 0.22·max(0, load − 7)² + 0.02·load + noise
 const planted24 = (l1, l2) => PLANT.a * (Math.max(0, l2 - 7) ** 2 - Math.max(0, l1 - 7) ** 2) + PLANT.b * (l2 - l1);
 
+// ---------------------------------------------------------------- figures added after review
+// fn-3 R² from the residual standard error and s_y
+const F3b = { se: rnd(FH.sigma, 2), sy: rnd(Math.sqrt(FH.sst / 305), 2), n: hFoot.length };
+const r2From = (k) => 1 - (k.se ** 2 * (k.n - 2)) / (k.sy ** 2 * (k.n - 1));
+// fn-4 Harbourside’s sales on transactions: every day, and days with 40–70 transactions
+const hT = column('transactions', H), hS = column('sales', H);
+const ST4 = R.fit(hS, { Transactions: hT });
+const MID4 = hT.map((_, i) => i).filter((i) => hT[i] >= 40 && hT[i] <= 70);
+const ST4m = R.fit(MID4.map((i) => hS[i]), { Transactions: MID4.map((i) => hT[i]) });
+if (!(ST4m.r2 < ST4.r2 - 0.03 && ST4m.sigma < 0.6 * ST4.sigma)) fail('fn-4');
+// fn-6 a forecast below the data’s highs
+const s6Lo = Math.min(...s6X), s6Hi = Math.max(...s6X), s6Far = 55, P6far = F6.predict([s6Far]);
+if (!(s6Far < s6Lo - 5)) fail('fn-6');
+// fn-8 the café × high model; the pooled SE by day clusters and by Driscoll–Kraay (Newey–West on day-summed scores)
+const F8I = R.fit(column('footfall'), { 'High (°F)': column('high_f'), Millbrook: column('millbrook'), 'High × Millbrook': R.interaction(column('high_f'), column('millbrook')) });
+function dkSE(f, Xcols, time, L) {
+  const p = f.p, T = new Map();
+  for (let i = 0; i < f.n; i++) { if (!T.has(time[i])) T.set(time[i], new Array(p).fill(0)); const u = T.get(time[i]); [1, ...Xcols.map((c) => c[i])].forEach((v, a) => { u[a] += v * f.resid[i]; }); }
+  const U = [...T.keys()].sort((a, b) => a - b).map((k) => T.get(k));
+  const S = Array.from({ length: p }, () => new Array(p).fill(0));
+  for (let l = 0; l <= L; l++) { const w = 1 - l / (L + 1); for (let t = l; t < U.length; t++) for (let a = 0; a < p; a++) for (let b = 0; b < p; b++) S[a][b] += l ? w * (U[t][a] * U[t - l][b] + U[t - l][a] * U[t][b]) : U[t][a] * U[t][b]; }
+  const B = f.XtXinv, mul = (A, C) => A.map((r) => Array.from({ length: p }, (_, j) => r.reduce((s2, v, k) => s2 + v * C[k][j], 0)));
+  const V = mul(mul(B, S), B);
+  return V.map((r, i) => Math.sqrt(r[i]));
+}
+const se8dk14 = dkSE(F8, [column('high_f')], column('day'), 14)[1], se8dk28 = dkSE(F8, [column('high_f')], column('day'), 28)[1];
+if (!(se8day < 0.8 * F8.coefs[1].se && se8dk14 > 0.9 * F8.coefs[1].se && se8dk28 > F8.coefs[1].se)) fail('fn-8 (the direction of the pooled SE’s error)');
+if (!(Math.abs(F8I.beta[1] - FH.beta[1]) < 1e-6 && Math.abs(F8I.beta[1] + F8I.beta[3] - F8M.beta[1]) < 1e-6)) fail('fn-8 (the interaction model)');
+// fn-14 conversion (transactions per visitor) on footfall, pooled and with a café dummy
+const allFoot = column('footfall'), CONV = column('transactions').map((t, i) => t / allFoot[i]);
+const C14a = R.fit(CONV, { Footfall: allFoot }), C14b = R.fit(CONV, { Footfall: allFoot, Millbrook: column('millbrook') });
+const PLANT_CONV = { H: 0.47, M: 0.55 };     // the generator: transactions ~ Binomial(footfall, 0.47 Harbourside / 0.55 Millbrook)
+if (!(C14a.beta[1] > 0 && C14a.coefs[1].p < 0.001 && C14b.coefs[1].p > 0.05 && Math.abs(C14b.beta[2] - (PLANT_CONV.M - PLANT_CONV.H)) < 0.02)) fail('fn-14');
+// fn-16 the SE of the transactions slope, alone and beside footfall
+const SE16 = { alone: rnd(S16a.coefs[1].se, 4), both: rnd(S16b.coefs[2].se, 4) };
+const rFromSE = (k) => Math.sqrt(1 - (k.alone / k.both) ** 2);
+// fn-20 the median footfall on a rainy day from the log line
+const s20Med = Math.exp(F20.predict([s20At]).yhat), L20 = R.fit(s20F, { 'Rain (in)': s20R }), s20Lev = L20.predict([s20At]).yhat;
+// fn-22 the first ticket at which the probability reaches 0.5 (further away, notifications on, Harbourside, weekday)
+const tHalf = -(RM.beta[0] + RM.beta[2]) / RM.beta[3];
+const ft22 = member('first_ticket');
+if (!(tHalf > Math.min(...ft22) && tHalf < Math.max(...ft22))) fail('fn-22');
+
 export const items = [
   // ================================================================ Module 1: fitting a line
   {
@@ -243,33 +286,33 @@ export const items = [
   },
   {
     id: 'b06-fn-3', lesson: 'residuals-and-r-squared', type: 'num', kind: 'numerical',
-    prompt: `Over Harbourside’s ${F3.n} days, the high and footfall correlate at r = ${fx(F3.r, 3)}, and footfall has a standard deviation of ${fx(F3.sy, 2)} people. What is the residual standard error of the least-squares line of footfall on the high, in people? Give one decimal place.`,
-    answer: rnd(seFrom(F3), 1),
-    check: () => FH.sigma,
-    unit: 'people', places: 1, tol: 0.15,
+    prompt: `Over Harbourside’s ${F3b.n} days, footfall has a standard deviation of ${fx(F3b.sy, 2)} people, and the least-squares line of footfall on the high has a residual standard error of ${fx(F3b.se, 2)} people. What is the line’s R²? Give three decimal places.`,
+    answer: rnd(r2From(F3b), 3),
+    check: () => FH.r2,
+    unit: '', places: 3, tol: 0.001,
     wrong: [
-      { value: rnd(F3.sy * (1 - F3.r ** 2), 1), say: '1 − r² is the share of the variance left unexplained. The residual standard error is a standard deviation, so it scales with √(1 − r²).' },
-      { value: rnd(F3.sy * (1 - F3.r), 1), say: 'The spread left over depends on r², not r: s_e ≈ s_y√(1 − r²).' },
-      { value: rnd(F3.sy * F3.r, 1), say: 'r × s_y is the slope times s_x, the spread of the fitted values. The residuals’ spread is s_y√(1 − r²) (times √((n − 1)/(n − 2))).' },
+      { value: rnd(1 - F3b.se ** 2 / F3b.sy ** 2, 3), say: 'Close, but the two spreads have different degrees of freedom: SSE = (n − 2)s_e² and SST = (n − 1)s_y². R² = 1 − SSE/SST.' },
+      { value: rnd(1 - F3b.se / F3b.sy, 3), say: 'R² compares sums of squares, so the standard deviations are squared before comparing.' },
+      { value: rnd(F3b.se ** 2 / F3b.sy ** 2, 3), say: 'That is roughly the share left unexplained. R² is one minus it.' },
     ],
-    solution: `SST = (n − 1)s_y² and SSE = (1 − r²)SST, so s_e = √(SSE ÷ (n − 2)) = s_y √((1 − r²)(n − 1)/(n − 2)) = ${fx(F3.sy, 2)} × √(${fx(1 - F3.r ** 2, 4)} × 305/304) = ${fx(seFrom(F3), 1)} people. Knowing the high trims the typical miss only from ${fx(F3.sy, 1)} to ${fx(seFrom(F3), 1)}: R² = ${fx(F3.r ** 2, 3)}. The rest is the weekend, rain, festivals and the build-up, which this line leaves out.`,
+    solution: `SSE = (n − 2)s_e² = 304 × ${fx(F3b.se, 2)}² and SST = (n − 1)s_y² = 305 × ${fx(F3b.sy, 2)}², so R² = 1 − SSE/SST = ${fx(r2From(F3b), 3)}. The high cuts the typical miss only from ${fx(F3b.sy, 1)} to ${fx(F3b.se, 1)} people. The rest is the weekend, rain, festivals and the build-up, which this line leaves out.`,
   },
   {
     id: 'b06-fn-4', lesson: 'residuals-and-r-squared', type: 'mc', kind: 'applied',
-    prompt: `Over all of 2027, Harbourside’s footfall on the high has R² = ${fx(FH.r2, 3)}. Fitted to July and August alone (festival days left out, highs ${Math.min(...get(SUMMER, 'high_f'))}–${Math.max(...get(SUMMER, 'high_f'))}°F), R² is ${fx(FS.r2, 3)}. The manager concludes: “In summer the high makes no difference, so we can stop checking the forecast.” What is the best reply?`,
+    prompt: `Over all of Harbourside’s 306 days, the line of sales on transactions has R² = ${fx(ST4.r2, 3)} and a residual standard error of $${fx(ST4.sigma, 2)}. Fitted only to the ${MID4.length} days with 40 to 70 transactions, it has R² = ${fx(ST4m.r2, 3)} and $${fx(ST4m.sigma, 2)}. The manager says: “On ordinary days the till total is harder to predict from the transaction count.” What is the best reply?`,
     options: [
-      'Summer highs span only 20 degrees while weekends and rain vary as much as ever, so R² is bound to be small; that doesn’t make the high irrelevant.',
-      'He is right: an R² close to zero means the high and footfall are unrelated in summer, so a forecast of the high carries no information about footfall.',
-      'The summer R² is the trustworthy one, since it uses the most recent and most similar days; the year’s R² is inflated by mixing in the winter months.',
-      'R² can’t be compared across the two fits, because one of them has fewer than 100 days, too few for R² to mean anything at all.',
+      `No: R² is lower only because transactions span just ${70 - 40} on those days, and the typical miss, $${fx(ST4m.sigma, 0)} against $${fx(ST4.sigma, 0)}, is smaller.`,
+      'Yes: the lower R² shows that on ordinary days a larger share of the till total is left unexplained, so its predictions there are worse.',
+      'No: the ordinary-day line uses fewer days, and a line fitted to fewer days tends to report an R² that is lower than it deserves.',
+      'Yes: R² is the measure to go by, since the residual standard error is in dollars and so can’t be compared between two different fits.',
     ],
     answer: 0,
     feedback: {
-      1: `R² measures the share of footfall’s variance the line accounts for, and it shrinks when x varies little. Over the year the line climbs about ${fx(FH.beta[1], 1)} people per °F; a summer slope from ${SUMMER.length} days is very loosely pinned down (95% interval ${fx(FS.coefs[1].low, 1)} to ${fx(FS.coefs[1].high, 1)}).`,
-      2: 'Both fits use real days. The summer fit is weaker because its range of x is restricted and the weekend and rain swamp it, not because it is more trustworthy.',
-      3: `R² can be computed for any number of rows; with ${SUMMER.length} days it is just noisier. The difference here comes from the range of x.`,
+      1: `R² is a share of the variance in sales, and ordinary days vary much less in sales because their transactions vary less. In dollars, the line misses an ordinary day by less (about $${fx(ST4m.sigma, 0)}), so it predicts those days better.`,
+      2: 'R² isn’t biased downwards by a smaller sample. The drop comes from the narrower range of transactions.',
+      3: 'Both fits predict the same thing in the same units, dollars of sales, so their residual standard errors compare directly, and that is what a prediction depends on.',
     },
-    solution: `R² depends on the range of x as well as on the relationship: over July and August the high covers only ${Math.min(...get(SUMMER, 'high_f'))}–${Math.max(...get(SUMMER, 'high_f'))}°F, while weekends and rain still move footfall a lot, so the high can account for little of the variance (R² = ${fx(FS.r2, 3)} against ${fx(FH.r2, 3)} for the year). A low R² is not evidence of no effect: the summer slope’s 95% interval, ${fx(FS.coefs[1].low, 1)} to ${fx(FS.coefs[1].high, 1)} people per °F, is wide enough to include the year’s ${fx(FH.beta[1], 2)} (and treats consecutive summer days as independent, which they aren’t). Put the weekend and rain in the model before judging the high.`,
+    solution: `R² depends on the range of x. Restricting to days with ${40}–${70} transactions removes most of the variation in sales, so the share the line explains falls (${fx(ST4.r2, 3)} to ${fx(ST4m.r2, 3)}). The typical miss falls too, from $${fx(ST4.sigma, 2)} to $${fx(ST4m.sigma, 2)}, because the case’s noise grows with the level of trade. For predicting an ordinary day, the residual standard error is the figure to use.`,
   },
   {
     id: 'b06-fn-5', lesson: 'residuals-and-r-squared', type: 'mc', kind: 'conceptual',
@@ -283,17 +326,17 @@ export const items = [
     ],
     answer: 0,
     feedback: {
-      1: 'R² can’t tell a straight relationship from a curved one. Hundreds of days per band averaging the same sign, positive at both ends and negative in the middle, is a systematic pattern, not noise.',
+      1: 'R² can’t tell a straight relationship from a curved one. Dozens to hundreds of days per band averaging the same sign, positive at both ends and negative in the middle, is a systematic pattern, not noise.',
       2: 'Least-squares residuals always average zero overall; the question is whether they average zero at every x. Here they don’t.',
       3: 'The table shows the residuals’ averages, not their spread: it is about the line’s shape, not equal variance.',
     },
-    solution: `Positive residuals at low and high loads and negative ones between them mean the true relationship is convex: the line overstates the wait between loads of 6 and 10 and understates it beyond. That is a wrong functional form, which a high R² (${fx(FW.r2, 2)}) does not rule out. The case plants a hinge at a load of about 7, and a model with a squared hinge term fits the curve (transformations-and-influence).`,
+    solution: `Positive residuals at low and high loads and negative ones between them mean the true relationship is convex: the line overstates the wait between loads of 6 and 10 and understates it at both ends: below 6 (average residuals ${fx(BAND[0].e, 2)} and ${fx(BAND[1].e, 2)} minutes) and above 10. That is a wrong functional form, which a high R² (${fx(FW.r2, 2)}) does not rule out. The case plants a hinge at a load of about 7, and a model with a squared hinge term fits the curve (transformations-and-influence).`,
   },
 
   // ================================================================ Module 2: inference and prediction
   {
     id: 'b06-fn-6', lesson: 'prediction-and-intervals', type: 'steps', kind: 'applied',
-    prompt: `Harbourside’s weekdays, 1 June – 9 July 2027 (${S6.length} days): the high in B2:B${s6L} and footfall in C2:C${s6L}. F1 holds the forecast high for next Tuesday.`,
+    prompt: `Harbourside’s weekdays, 1 June – 9 July 2027 (${S6.length} days): the high in B2:B${s6L} and footfall in C2:C${s6L}. F1 holds a forecast high.`,
     steps: [
       {
         id: 'b06-fn-6-s1', type: 'formula', kind: 'numerical',
@@ -326,23 +369,23 @@ export const items = [
       },
       {
         id: 'b06-fn-6-s3', type: 'mc',
-        prompt: 'The manager will roster baristas for that one Tuesday. Which interval should she plan with?',
+        prompt: `In October the manager wants the same formulas for a weekday forecast at ${s6Far}°F. Will they give a sound estimate and interval?`,
         options: [
-          'The prediction interval: one day scatters around the mean by s as well, so it is several times as wide',
-          'The confidence interval for the mean, since the roster is set from the expected trade on that day',
-          'The confidence interval for the mean, widened by 1.96 instead of t because the forecast is for a new day',
-          'Either: at a high this close to the mean of the data the two intervals are almost the same width',
+          `No: the data’s highs run from ${s6Lo} to ${s6Hi}°F, so ${s6Far}°F is outside them, and nothing in these days shows the line holds there`,
+          'Yes: the interval widens away from the mean high, which already allows for a forecast outside the data’s range',
+          `Yes: ${s6Far}°F is only ${s6Lo - s6Far} degrees below the coolest day in the data, close enough for the line to hold`,
+          'Only for the mean: the confidence interval stays valid outside the data, though the prediction interval does not',
         ],
         answer: 0,
         feedback: {
-          1: 'The confidence interval says where the average of all such Tuesdays lies. A single Tuesday adds its own scatter, s, which the mean’s interval leaves out.',
-          2: 'The multiplier isn’t the issue: the confidence interval omits the day’s own scatter, the 1 under the root.',
-          3: 'Near x̄ the confidence interval is at its narrowest while the prediction interval is still at least ±t·s: they differ most there in relative terms.',
+          1: 'The widening allows for uncertainty in the slope, assuming the straight line holds. It can’t allow for the relationship changing outside the data.',
+          2: 'There is no safe distance: below the coolest day there is no evidence about the line at all, and October differs from June in more than the temperature.',
+          3: 'Both intervals rest on the same line. If the line is wrong at 55°F, both are wrong.',
         },
-        solution: `For one day she needs the 95% prediction interval, ŷ ± t*·s√(1 + 1/n + (x₀ − x̄)²/Sxx): ${fx(P6.piLow, 0)} to ${fx(P6.piHigh, 0)} people at ${s6At}°F, against ${fx(P6.ciLow, 0)} to ${fx(P6.ciHigh, 0)} for the mean. Both treat the ${S6.length} weekdays as independent; consecutive days could break that, though here the residuals’ lag-1 correlation is only ${fx(s6Lag, 2)}. The prediction interval also assumes the same, roughly normal, scatter on every day.`,
+        solution: `The line would give ${fx(P6far.yhat, 1)} people at ${s6Far}°F, with a 95% prediction interval of ${fx(P6far.piLow, 0)} to ${fx(P6far.piHigh, 0)}, but that is extrapolation: these ${S6.length} days had highs from ${s6Lo} to ${s6Hi}°F. The intervals’ widening allows for an uncertain slope on a line assumed to hold; it says nothing about whether it does. Fit the line on days that include cooler weather (and the season) before forecasting October.`,
       },
     ],
-    solution: `ŷ = ${fx(P6.yhat, 1)} people at ${s6At}°F; the mean’s 95% interval is ± ${fx(P6.ciHigh - P6.yhat, 1)} and one day’s ± ${fx(P6.piHigh - P6.yhat, 1)}. The roster for one day needs the prediction interval.`,
+    solution: `ŷ = ${fx(P6.yhat, 1)} people at ${s6At}°F; the mean’s 95% interval is ± ${fx(P6.ciHigh - P6.yhat, 1)} and one day’s ± ${fx(P6.piHigh - P6.yhat, 1)}. A forecast outside the data’s highs is extrapolation, which the intervals can’t cover.`,
   },
   {
     id: 'b06-fn-7', lesson: 'inference-for-coefficients', type: 'num', kind: 'numerical',
@@ -359,20 +402,20 @@ export const items = [
   },
   {
     id: 'b06-fn-8', lesson: 'inference-for-coefficients', type: 'mc', kind: 'applied',
-    prompt: `A colleague regresses footfall on the high over all 612 rows (both cafés, 306 days) and reports: “Each extra °F brings ${fx(F8.coefs[1].estimate, 2)} more people to a café (95% CI ${fx(F8.coefs[1].low, 2)} to ${fx(F8.coefs[1].high, 2)}, p ${p3(F8.coefs[1].p)}).” Fitted café by café, the slopes are ${fx(FH.beta[1], 2)} at Harbourside and ${fx(F8M.beta[1], 2)} at Millbrook. What is the main problem with the report?`,
+    prompt: `A colleague regresses footfall on the high over all 612 rows (both cafés) and reports: “Each extra °F brings ${fx(F8.coefs[1].estimate, 2)} more people to a café (95% CI ${fx(F8.coefs[1].low, 2)} to ${fx(F8.coefs[1].high, 2)}).” Ana adds a Millbrook dummy and a High × Millbrook term: the high’s slope becomes ${fx(F8I.beta[1], 3)} and the interaction ${fx(F8I.beta[3], 3)} (p ${p3(F8I.coefs[3].p)}). What should she report about the high?`,
     options: [
-      'The pooled slope fits neither café: let it differ by café with a café × high term, and check its SE, since each day gives the model two rows.',
-      'The interval is too narrow: the two cafés share their days, so the 612 rows carry only 306 days’ worth of information and the true SE is larger than reported.',
-      'Nothing serious: with 612 rows and p below 0.001 the pooled slope is precise, and its interval already covers the two cafés’ different slopes.',
-      'The pooled slope should be replaced by the average of the two cafés’ slopes, which weights them equally and so is free of any dependence problem.',
+      `A slope for each café: ${fx(F8I.beta[1], 2)} people per °F at Harbourside and ${fx(F8I.beta[1] + F8I.beta[3], 2)} at Millbrook`,
+      `The pooled ${fx(F8.coefs[1].estimate, 2)}, because it uses all 612 rows and its confidence interval clearly excludes zero`,
+      `${fx(F8I.beta[1], 2)} for both cafés, since the interaction is a correction term rather than a slope of interest`,
+      `The interaction, ${fx(F8I.beta[3], 2)}, as the effect of the high once the café has been held fixed`,
     ],
     answer: 0,
     feedback: {
-      1: 'The direction of a dependence error has to be checked, not assumed. The two cafés’ residuals on the same day tend to go opposite ways (their weekend and weekday patterns are reversed), and on these data an SE that treats each day as one unit comes out smaller than the formula’s, not larger.',
-      2: `The interval runs from ${fx(F8.coefs[1].low, 2)} to ${fx(F8.coefs[1].high, 2)}, and neither café’s own slope is in it. Precision about a blend is no help when the blend describes no café.`,
-      3: 'Averaging two slopes still gives a number that fits neither café, and it does nothing about the rows of a day being related.',
+      1: `The pooled slope is a blend of two very different slopes and fits neither café; its interval contains neither of them.`,
+      2: `With Harbourside as the reference, ${fx(F8I.beta[1], 2)} is Harbourside’s slope only. Millbrook’s is ${fx(F8I.beta[1], 2)} + (${fx(F8I.beta[3], 2)}).`,
+      3: 'The interaction is the difference between the cafés’ slopes, not a slope of its own.',
     },
-    solution: `The cafés respond very differently to the high (${fx(FH.beta[1], 2)} and ${fx(F8M.beta[1], 2)} people per °F), so a pooled slope of ${fx(F8.coefs[1].estimate, 2)} is a blend: let the slope differ by café with a café dummy and a café × high interaction, or fit them separately. The printed SE also assumes 612 independent rows, which they aren’t: each day appears twice with the same weather. Here a standard error that groups the rows by day is smaller than the formula’s, because the cafés’ same-day residuals tend to offset each other; the formula’s interval is, if anything, too wide. Days in sequence are a separate dependence that should be checked as well.`,
+    solution: `In the interaction model the high’s coefficient is the reference café’s slope (Harbourside, ${fx(F8I.beta[1], 3)}), and the interaction is how much Millbrook’s differs: ${fx(F8I.beta[1], 3)} + (${fx(F8I.beta[3], 3)}) = ${fx(F8I.beta[1] + F8I.beta[3], 3)} people per °F, the same as fitting the cafés separately. The pooled ${fx(F8.coefs[1].estimate, 2)} describes neither café. Its printed SE also treats 612 rows as independent: grouping the rows by day alone shrinks it, because the cafés’ same-day residuals offset, but allowing for days in sequence as well brings it back to about the formula’s value or above, so the printed SE is no reliable guide either way.`,
   },
   {
     id: 'b06-fn-9', lesson: 'prediction-and-intervals', type: 'num', kind: 'applied',
@@ -391,7 +434,7 @@ export const items = [
     prompt: `The same predictors with footfall in people (not logs) give, for that dry 75°F Saturday, a 95% prediction interval of ${fx(P10.piLow, 0)} to ${fx(P10.piHigh, 0)} people, using the model’s residual standard error of ${fx(LEVM.sigma, 1)}. The residuals’ root mean square is ${fx(sdWe, 1)} on weekend days and ${fx(sdWd, 1)} on weekdays. What does this mean for the interval?`,
     options: [
       'It uses one spread for every day: too narrow for weekend days like this one, too wide on weekdays',
-      'It is fine: a prediction interval already allows for days being more or less variable than average',
+      'It is fine: a prediction interval largely allows for days being more or less variable than average',
       'It is too wide: the residual standard error mixes in the festival days and overstates every day’s spread',
       'It needs HC3 standard errors, which would widen it to the right width for a busy weekend day',
     ],
@@ -462,7 +505,7 @@ export const items = [
         prompt: `The model’s 95% prediction interval for that day is ${fx(P13.piLow, 0)} to ${fx(P13.piHigh, 0)} people. The model’s residuals on Millbrook’s weekend days have a root mean square of ${fx(sdMbWe, 1)}. How good is the interval for this day?`,
         options: [
           'Too wide for this kind of day: it uses the pooled s, but Millbrook’s quiet weekends scatter less',
-          'About right: a prediction interval is built from all 612 rows, so it fits every kind of day',
+          'About right: a prediction interval built from all 612 rows should suit most kinds of day',
           'Too narrow: the 612 rows repeat each day twice, so s understates the scatter of one day',
           'Too narrow: the interaction term adds uncertainty that the interval leaves out of account',
         ],
@@ -479,20 +522,20 @@ export const items = [
   },
   {
     id: 'b06-fn-14', lesson: 'categorical-predictors-and-interactions', type: 'mc', kind: 'applied',
-    prompt: `Over all 612 rows, the average ticket regressed on footfall has a slope of ${fx(T14a.beta[1] * 100, 2)} dollars per 100 extra visitors (p ${p3(T14a.coefs[1].p)}). Adding a Millbrook dummy turns it into ${fx(T14b.beta[1] * 100, 2)} dollars per 100 visitors (p ${p3(T14b.coefs[1].p)}). Millbrook averages ${fx(meanFootM, 0)} visitors a day and Harbourside ${fx(meanFootH, 0)}. Which reading is right?`,
+    prompt: `Ana regresses conversion (transactions per visitor) on footfall over all 612 rows: the slope is ${fx(C14a.beta[1] * 10000, 2)} percentage points per 100 extra visitors (p ${p3(C14a.coefs[1].p)}). With a Millbrook dummy added, it is ${fx(C14b.beta[1] * 10000, 2)} points per 100 visitors (p = ${fx(C14b.coefs[1].p, 2)}), and the dummy’s coefficient is ${fx(C14b.beta[2] * 100, 1)} points. Millbrook averages ${fx(meanFootM, 0)} visitors a day and Harbourside ${fx(meanFootH, 0)}. Which reading is right?`,
     options: [
-      'Within each café busier days go with slightly larger tickets; the pooled slope mostly compares the busier, lower-ticket café with the other.',
-      'Busier days lower the average ticket; the dummy model reverses the sign only because two predictors are correlated and the slopes become unstable.',
-      'The pooled slope is the one to report, because it uses every row without splitting the cafés; the dummy throws away the comparison between them.',
-      'The two slopes contradict each other, so neither can be trusted; the relationship between footfall and the ticket can’t be estimated from this log.',
+      'Busier days don’t convert better within a café; the pooled slope comes from Millbrook being both busier and higher-converting.',
+      'Busier days convert better; the dummy hides it because the dummy and footfall are correlated, which tends to make slopes unreliable.',
+      'The pooled slope is the one to report, since it uses every row and is strongly significant, while the dummy model’s slope is not.',
+      'Neither model is usable: the two slopes disagree, so the link between footfall and conversion can’t be estimated from this log.',
     ],
     answer: 0,
     feedback: {
-      1: `The slope with the dummy is the comparison of days within the same café, and it is clearly positive (p ${p3(T14b.coefs[1].p)}). It is not instability: the sign is pinned down.`,
-      2: 'The dummy doesn’t throw the cafés’ difference away: its coefficient measures it. What it stops is that difference masquerading as an effect of footfall.',
-      3: 'Both are well estimated; they answer different questions. That is Simpson’s paradox, which the dummy resolves.',
+      1: `The dummy model estimates the slope well enough (its 95% interval, ${fx(C14b.coefs[1].low * 10000, 2)} to ${fx(C14b.coefs[1].high * 10000, 2)} points, is narrow and sits near zero); it is the comparison within a café, which the pooled slope never makes.`,
+      2: 'Significance doesn’t make the pooled slope the right answer to the question. It mostly measures the gap between the cafés, which the dummy now carries as its own coefficient.',
+      3: 'They answer different questions, and both are clear: across cafés, footfall and conversion rise together; within a café, they barely move together.',
     },
-    solution: `Pooled, footfall and the café are tangled: Millbrook has more visitors and smaller tickets, so across all rows more footfall goes with smaller tickets. Holding the café fixed with a dummy, busier days go with tickets about ${fx(T14b.beta[1] * 100, 2)} dollars higher per 100 extra visitors. B05 found the same reversal with correlations; the dummy puts it in one model, with the café gap as its own coefficient (${fx(T14b.beta[2], 2)} dollars). Both p-values treat the 612 rows as independent, which they aren’t (each day appears twice, and days run in sequence), so they are approximate; at this size the signs are not in doubt.`,
+    solution: `Millbrook has more visitors and a higher conversion rate, so across all rows more footfall goes with higher conversion. Holding the café fixed, the slope is ${fx(C14b.beta[1] * 10000, 2)} points per 100 visitors, indistinguishable from zero, and the café gap is ${fx(C14b.beta[2] * 100, 1)} points. That matches the case’s planted fact: each café converts a fixed share of its visitors (0.47 and 0.55), whatever the footfall. The p-values treat the 612 rows as independent, which they aren’t (each day appears twice, and days run in sequence), so they are approximate; that doesn’t change the picture.`,
   },
   {
     id: 'b06-fn-15', lesson: 'multicollinearity-and-model-choice', type: 'mc', kind: 'applied',
@@ -500,8 +543,8 @@ export const items = [
     options: [
       'The weekend dummy is enough: the models are nested and the five extra terms add nothing beyond chance',
       'Keep the six dummies: Saturday and Sunday are both significant, so the day of the week matters',
-      'The F test can’t be used here, because the weekend model isn’t one of the six-dummy model’s special cases',
-      'Keep the six dummies: the larger model has the higher R², so it must be the better description',
+      'The F test is doubtful here, because the weekend model doesn’t look like a special case of the six-dummy one',
+      'Keep the six dummies: the larger model has the higher R², so it is likely the better description',
     ],
     answer: 0,
     feedback: {
@@ -513,15 +556,15 @@ export const items = [
   },
   {
     id: 'b06-fn-16', lesson: 'multicollinearity-and-model-choice', type: 'num', kind: 'numerical',
-    prompt: `Over Millbrook’s 306 days, footfall and transactions correlate at r = ${fx(r16, 3)}. Ana regresses sales on both. By roughly what factor is the standard error of the transactions slope larger than it would be if the two predictors were unrelated (same residual spread)? Give two decimal places.`,
-    answer: rnd(Math.sqrt(1 / (1 - r16 ** 2)), 2),
-    check: () => Math.sqrt(1 / (1 - 0.985 ** 2)),
-    unit: '', places: 2, tol: 0.02,
+    prompt: `Over Millbrook’s 306 days, the slope of sales on transactions has a standard error of ${fx(SE16.alone, 4)} dollars per transaction alone and ${fx(SE16.both, 4)} with footfall in the model too. Assuming the residual standard error is the same in both models, what correlation between footfall and transactions does that inflation imply? Give three decimal places.`,
+    answer: rnd(rFromSE(SE16), 3),
+    check: () => Math.sqrt(1 - (SE16.alone / SE16.both) ** 2),
+    unit: '', places: 3, tol: 0.002,
     wrong: [
-      { value: rnd(1 / (1 - r16 ** 2), 2), say: 'That is the VIF, the factor on the variance. The standard error grows by its square root.' },
-      { value: rnd(1 / (1 - r16), 2), say: 'With two predictors the VIF is 1 ÷ (1 − r²), using r squared.' },
+      { value: rnd(1 - SE16.alone / SE16.both, 3), say: 'The SE grows by √VIF = 1/√(1 − r²). Square the ratio before solving for r.' },
+      { value: rnd(1 - (SE16.alone / SE16.both) ** 2, 3), say: 'That is r², the R² of one predictor on the other. Take its square root for r.' },
     ],
-    solution: `VIF = 1 ÷ (1 − ${fx(r16, 3)}²) = ${fx(1 / (1 - r16 ** 2), 1)}, so the SE is √${fx(1 / (1 - r16 ** 2), 1)} ≈ ${fx(Math.sqrt(1 / (1 - r16 ** 2)), 2)} times larger. The fits agree: the transactions slope’s SE is ${fx(S16a.coefs[1].se, 3)} alone and ${fx(S16b.coefs[2].se, 3)} beside footfall, whose own slope (${fx(S16b.coefs[1].estimate, 3)}, p = ${fx(S16b.coefs[1].p, 2)}) can’t be told from zero. Footfall adds nothing once transactions are known; for predicting sales either model serves, but no one should read footfall’s slope as “a visitor is worth nothing”. (The p-value treats Millbrook’s days as independent; days in sequence make it approximate.)`,
+    solution: `The SE ratio is ${fx(SE16.both, 4)} ÷ ${fx(SE16.alone, 4)} = ${fx(SE16.both / SE16.alone, 2)} = √VIF, so VIF = ${fx((SE16.both / SE16.alone) ** 2, 1)}, 1 − r² = 1/VIF and r = ${fx(rFromSE(SE16), 3)}. The actual correlation is ${fx(r16, 3)}: the assumption works because s barely changes between the models ($${fx(S16a.sigma, 2)} and $${fx(S16b.sigma, 2)}). Beside transactions, footfall’s own slope (${fx(S16b.coefs[1].estimate, 3)}, p = ${fx(S16b.coefs[1].p, 2)}, treating days as independent) can’t be told from zero: it adds nothing to predicting sales once transactions are known, which is not the same as a visitor being worth nothing.`,
   },
   {
     id: 'b06-fn-17', lesson: 'multicollinearity-and-model-choice', type: 'multi', kind: 'conceptual',
@@ -529,7 +572,7 @@ export const items = [
     options: [
       'Keeping only the predictors that stepwise selection finds with p below 0.05 gives p-values that look stronger than they are.',
       'Testing a model on months that came after the months it was fitted to checks forecasting accuracy more honestly than in-sample R², though later months may differ in other ways.',
-      'With more than seven rows, BIC charges more for each extra coefficient than AIC does.',
+      'AIC and BIC can compare two models only when both are fitted to the same rows of the same outcome.',
       'For a report on what a weekend is worth, barista hours rostered from the expected trade should be left out, since they follow from the weekend’s trade.',
       'The model with the highest R² on the fitting data will also forecast best.',
       'Adjusted R² can never fall when a predictor is added.',
@@ -539,7 +582,7 @@ export const items = [
       4: 'R² never falls as terms are added, including useless ones; the extra terms fit noise that won’t recur. Judge forecasts on data the model hasn’t seen.',
       5: 'Adjusted R² falls when a new predictor reduces SSE by less than its share of a degree of freedom is worth.',
     },
-    solution: 'True: stepwise p-values ignore the search that picked them; a hold-out on later months mimics forecasting but inherits any change between periods (the build-up, the season); BIC’s penalty per coefficient is ln n against AIC’s 2, larger once n ≥ 8; and a predictor set from the outcome’s expected value (the roster) absorbs part of the effect being reported. False: in-sample R² rewards overfitting; adjusted R² can fall.',
+    solution: 'True: stepwise p-values ignore the search that picked them; a hold-out on later months mimics forecasting but inherits any change between periods (the build-up, the season); AIC and BIC compare likelihoods, which mean nothing across different rows or a transformed outcome; and a predictor set from the outcome’s expected value (the roster) absorbs part of the effect being reported. False: in-sample R² rewards overfitting; adjusted R² can fall.',
   },
 
   // ================================================================ Module 4: checking and extending a model
@@ -547,9 +590,9 @@ export const items = [
     id: 'b06-fn-18', lesson: 'assumptions-and-diagnostics', type: 'mc', kind: 'applied',
     prompt: `Harbourside’s model of footfall in people on the high, rain, weekend, festival and build-up has a Breusch–Pagan statistic of ${fx(BP18.lm, 1)} on ${BP18.df} df (p ${p3(BP18.p)}). The festival coefficient is ${fx(fest18.estimate, 1)} people with an ordinary SE of ${fx(fest18.se, 2)} and an HC3 SE of ${fx(festR18.se, 2)}. With ln(footfall) as the outcome, the Breusch–Pagan p-value is ${fx(BP18log.p, 2)}. Which statement is right?`,
     options: [
-      `The festival estimate stays ${fx(fest18.estimate, 0)} under HC3; only its interval widens, and logging footfall removes the unequal spread.`,
+      `HC3 never changes an estimate: festival stays at ${fx(fest18.estimate, 0)} and only its interval widens; logging footfall removes the unequal spread.`,
       `HC3 shows that the festival effect is smaller than ${fx(fest18.estimate, 0)} people, since the five festival days are the noisiest rows.`,
-      'The significant Breusch–Pagan test means every coefficient is biased, so the festival days should be dropped and the model refitted.',
+      'The significant Breusch–Pagan test suggests the coefficients are biased, so the festival days should be dropped and the model refitted.',
       'HC3 standard errors also fix the model’s prediction intervals, so busy-day forecasts can now be trusted without logging footfall.',
     ],
     answer: 0,
@@ -568,7 +611,7 @@ export const items = [
       'Add a term for the café’s build-up over time: the residuals climb through the year, so a trend is missing',
       'Switch to HC3 standard errors: a Durbin–Watson value well below 2 is a sign of unequal residual spread',
       'Check a Q–Q plot: residuals that change sign in the middle of the year are a sign of non-normal errors',
-      'Nothing: Durbin–Watson is about the two cafés sharing days, which can’t apply to one café’s rows',
+      'Little: Durbin–Watson mainly concerns the two cafés sharing days, which one café’s rows don’t do',
     ],
     answer: 0,
     feedback: {
@@ -580,24 +623,24 @@ export const items = [
   },
   {
     id: 'b06-fn-20', lesson: 'transformations-and-influence', type: 'formula', kind: 'numerical',
-    prompt: `Harbourside’s weekdays, 12 July – 20 August 2027: rain in B2:B${s20L} and footfall in C2:C${s20L}. F1 holds a day’s rain in inches. In F2, calculate in one formula the proportional change in footfall that the least-squares line of ln(footfall) on rain gives for a day with that rain, compared with a dry day (−0.10 is 10% fewer people), exactly rather than by the approximation.`,
-    sheet: { cells: { A1: 'Day', B1: 'Rain (in)', C1: 'Footfall', E1: 'Rain (in)', F1: s20At, E2: 'Change against a dry day', ...col('A', 2, S20.map(label)), ...col('B', 2, s20R), ...col('C', 2, s20F) }, vary: { F1: [0.25, 0.75] } },
-    cell: 'F2', view: `A1:F${s20L}`, maxHeight: '20rem', widths: { A: 11, E: 23 }, formats: { B: '0.00', F1: '0.00', F2: '0.0%' },
-    answer: `=EXP(SLOPE(LN(C2:C${s20L}),B2:B${s20L})*F1)-1`,
-    alt: [`=EXP(F1*SLOPE(LN(C2:C${s20L}),B2:B${s20L}))-1`, `=EXP(INDEX(LINEST(LN(C2:C${s20L}),B2:B${s20L}),1)*F1)-1`, `=EXP(SLOPE(LN(C2:C${s20L}),B2:B${s20L}))^F1-1`],
+    prompt: `Harbourside’s weekdays, 12 July – 20 August 2027: rain in B2:B${s20L} and footfall in C2:C${s20L}. F1 holds a day’s rain in inches. In F2, calculate in one formula the median footfall that the least-squares line of ln(footfall) on rain predicts for a day with that rain.`,
+    sheet: { cells: { A1: 'Day', B1: 'Rain (in)', C1: 'Footfall', E1: 'Rain (in)', F1: s20At, E2: 'Median footfall', ...col('A', 2, S20.map(label)), ...col('B', 2, s20R), ...col('C', 2, s20F) }, vary: { F1: [0.25, 0.75] } },
+    cell: 'F2', view: `A1:F${s20L}`, maxHeight: '20rem', widths: { A: 11, E: 17 }, formats: { B: '0.00', F1: '0.00', F2: '0.0' },
+    answer: `=EXP(TREND(LN(C2:C${s20L}),B2:B${s20L},F1))`,
+    alt: [`=EXP(FORECAST.LINEAR(F1,LN(C2:C${s20L}),B2:B${s20L}))`, `=EXP(INTERCEPT(LN(C2:C${s20L}),B2:B${s20L})+SLOPE(LN(C2:C${s20L}),B2:B${s20L})*F1)`],
     wrong: [
-      { formula: `=SLOPE(LN(C2:C${s20L}),B2:B${s20L})*F1`, say: 'b × Δx is the change in ln(footfall), which approximates the proportional change only when it is small. The exact change is e^(b·Δx) − 1.' },
-      { formula: `=EXP(SLOPE(LN(C2:C${s20L}),B2:B${s20L}))-1`, say: 'That is the change for a whole inch of rain. Multiply the slope by the rain in F1 before exponentiating.' },
-      { formula: `=SLOPE(C2:C${s20L},B2:B${s20L})*F1/AVERAGE(C2:C${s20L})`, say: 'That uses the line in people and divides by the average day. The question asks for the log model, whose slope is already proportional.' },
+      { formula: `=TREND(LN(C2:C${s20L}),B2:B${s20L},F1)`, say: 'That is the predicted ln(footfall). Back-transform it with EXP to get people.' },
+      { formula: `=TREND(C2:C${s20L},B2:B${s20L},F1)`, say: 'That is the straight line in people. The question asks for the line of ln(footfall), back-transformed.' },
+      { formula: `=EXP(TREND(LN(C2:C${s20L}),B2:B${s20L},LN(F1)))`, say: 'Only footfall is logged; rain enters as inches, so the new x is F1 itself.' },
     ],
-    solution: `The slope of ln(footfall) on rain is ${fx(F20.beta[1], 3)} per inch, so ${s20At} in multiplies footfall by e^(${fx(F20.beta[1], 3)} × ${s20At}) = ${fx(Math.exp(F20.beta[1] * s20At), 3)}: <x>=EXP(SLOPE(LN(C2:C${s20L}),B2:B${s20L})*F1)-1</x> = ${fx(s20Pct * 100, 1)}% (the approximation says ${fx(F20.beta[1] * s20At * 100, 1)}%). Rain fell on ${s20Wet} of the ${S20.length} days and the highs stayed between ${Math.min(...s20Hi)} and ${Math.max(...s20Hi)}°F, so the high varies little here; it is still an association over consecutive summer days, not a controlled comparison.`,
+    solution: `<x>=EXP(TREND(LN(C2:C${s20L}),B2:B${s20L},F1))</x>: ln(footfall) = ${fx(F20.beta[0], 3)} + (${fx(F20.beta[1], 3)}) × ${s20At} = ${fx(F20.predict([s20At]).yhat, 3)}, and e to that is ${fx(s20Med, 1)} people. Exponentiating a predicted log gives the median, not the mean; the mean is a little higher (multiply by a smearing factor). The straight line in people gives ${fx(s20Lev, 1)}. Rain fell on ${s20Wet} of the ${S20.length} days and the highs stayed between ${Math.min(...s20Hi)} and ${Math.max(...s20Hi)}°F, so the high varies little here; the fit is still an association over consecutive summer days.`,
   },
   {
     id: 'b06-fn-21', lesson: 'transformations-and-influence', type: 'mc', kind: 'applied',
     prompt: `In the raw log, Millbrook’s September transactions regressed on footfall (${S21raw.length} days) have a slope of ${fx(F21raw.beta[1], 3)} transactions per visitor and R² = ${fx(F21raw.r2, 3)}. One day, 14 September, has leverage ${fx(INF21.hat[k21], 3)}, an internally studentized residual of ${fx(INF21.internal[k21], 2)} and a Cook’s distance of ${fx(INF21.cooks[k21], 0)}; its footfall reads ${SLIP.recorded.toLocaleString('en-US')}. What should Ana do?`,
     options: [
       'Check the door counter’s own record for that day, correct the value if it is a slip, and note the change',
-      'Delete 14 September, since a Cook’s distance above 1 means that the row has to be removed from the fit',
+      'Delete 14 September, since a Cook’s distance far above 1 marks a row that should be removed from the fit',
       'Keep the day as typed and report the slope as it stands, because changing a recorded value is manipulation',
       'Delete every September day whose studentized residual is beyond ±2, then refit and report that slope',
     ],
@@ -620,7 +663,7 @@ export const items = [
         options: [
           `Each extra dollar on the first ticket goes with odds of returning ${fx(Math.exp(cR('First ticket ($)').estimate), 2)} times as high, holding the other predictors fixed`,
           `Each extra dollar on the first ticket raises the probability of returning by ${fx((Math.exp(cR('First ticket ($)').estimate) - 1) * 100, 0)} percentage points, the others held fixed`,
-          `Members who spend an extra dollar are ${fx(Math.exp(cR('First ticket ($)').estimate), 2)} times as likely to return, whatever their other characteristics`,
+          `Members who spend an extra dollar are ${fx(Math.exp(cR('First ticket ($)').estimate), 2)} times as likely to return, largely regardless of their other characteristics`,
           `Spending an extra dollar on the first visit causes a member’s odds of returning to rise by ${fx((Math.exp(cR('First ticket ($)').estimate) - 1) * 100, 0)}%`,
         ],
         answer: 0,
@@ -633,16 +676,15 @@ export const items = [
       },
       {
         id: 'b06-fn-22-s2', type: 'num', kind: 'numerical',
-        prompt: 'What probability of returning does the model give a Harbourside member who lives further away (near = 0), joined on a weekday, turned notifications on and spent $7.00 on the first ticket? Give three decimal places.',
-        answer: rnd(P22.p, 3),
-        check: () => { const b = RM.beta, eta = b[0] + b[2] + 7 * b[3]; return 1 / (1 + Math.exp(-eta)); },
-        unit: '', places: 3, tol: 0.0015,
+        prompt: 'For a Harbourside member who lives further away (near = 0), joined on a weekday and turned notifications on, at what first ticket does the model’s predicted probability of returning reach 0.5? Give dollars to two decimal places.',
+        answer: rnd(tHalf, 2),
+        check: () => -(RM.beta[0] + RM.beta[2]) / RM.beta[3],
+        unit: '$', places: 2, tol: 0.01,
         wrong: [
-          { value: rnd(P22.eta, 3), say: 'That is the log-odds. The probability is 1 ÷ (1 + e^(−log-odds)).' },
-          { value: rnd(Math.exp(P22.eta), 3), say: 'e^(log-odds) is the odds. Convert to a probability: odds ÷ (1 + odds).' },
-          { value: rnd(1 / (1 + Math.exp(-(RM.beta[0] + RM.beta[2] + RM.beta[3]))), 3), say: 'The first ticket enters as dollars: multiply its coefficient by 7, not 1.' },
+          { value: rnd(-RM.beta[0] / RM.beta[3], 2), say: 'That leaves out notifications. This member has them on, which adds their coefficient to the log-odds.' },
+          { value: rnd((0.5 - RM.beta[0] - RM.beta[2]) / RM.beta[3], 2), say: 'A probability of 0.5 means odds of 1 and log-odds of 0, not log-odds of 0.5.' },
         ],
-        solution: `Log-odds = ${fx(RM.beta[0], 3)} + ${fx(RM.beta[2], 3)} + 7 × ${fx(RM.beta[3], 3)} = ${fx(P22.eta, 3)}; probability = 1 ÷ (1 + e^${fx(-P22.eta, 3)}) = ${fx(P22.p, 3)} (95% interval ${fx(P22.low, 2)} to ${fx(P22.high, 2)}).`,
+        solution: `p = 0.5 when the log-odds are 0: ${fx(RM.beta[0], 3)} + ${fx(RM.beta[2], 3)} + ${fx(RM.beta[3], 3)} × ticket = 0, so ticket = ${fx(-(RM.beta[0] + RM.beta[2]), 3)} ÷ ${fx(RM.beta[3], 3)} = $${fx(tHalf, 2)}. Below that the model leans to “won’t return” for such a member, above it to “will return”.`,
       },
       {
         id: 'b06-fn-22-s3', type: 'num', kind: 'numerical',
@@ -657,16 +699,16 @@ export const items = [
         solution: `Accuracy = ${CONF.tp + CONF.tn} ÷ ${DERIVED.members} = ${fx(CONF.accuracy * 100, 1)}%; always predicting “returned” is right ${DERIVED.returned} ÷ ${DERIVED.members} = ${fx(baseRate * 100, 1)}% of the time. The gain is ${fx((CONF.accuracy - baseRate) * 100, 1)} points, measured on the same members the model was fitted to, so it flatters the model; new members would be a fairer test.`,
       },
     ],
-    solution: `The odds ratio multiplies odds holding the others fixed; the member’s probability is ${fx(P22.p, 3)}; at 0.5 the model beats the base rate by ${fx((CONF.accuracy - baseRate) * 100, 1)} points in-sample.`,
+    solution: `The odds ratio multiplies odds holding the others fixed; such a member crosses 0.5 at a first ticket of $${fx(tHalf, 2)}; at 0.5 the model beats the base rate by ${fx((CONF.accuracy - baseRate) * 100, 1)} points in-sample.`,
   },
   {
     id: 'b06-fn-23', lesson: 'logistic-regression', type: 'mc', kind: 'conceptual',
     prompt: `In Ana’s model the weekend term has a Wald p-value of ${fx(cR('Weekend').p, 3)} and the Millbrook term ${fx(cR('Millbrook').p, 3)}. Dropping both, the log-likelihood falls from ${fx(RM.ll, 2)} to ${fx(RED23.ll, 2)}. A colleague says: “Weekend isn’t significant, so drop it; and while we’re at it, drop the café too.” What is the best reply?`,
     options: [
       `Together the two terms improve the fit (likelihood-ratio statistic ${fx(LR23.stat, 2)} on 2 df, p = ${fx(LR23.p, 3)}): dropping both isn’t supported`,
-      `Both should go: the weekend term’s Wald p is above 0.05, and a model must lose any term that fails its test, however the other terms fare`,
-      `Only Wald tests can judge single terms in logistic regression; the likelihood-ratio test applies to normal errors and doesn’t apply here`,
-      `The log-likelihoods can’t be compared because the smaller model has fewer coefficients and so always fits worse, whatever the data are`,
+      `Both should go: the weekend term’s Wald p is above 0.05, and a lean model is better off without terms that fail their tests`,
+      `Wald tests are the ones for single terms in logistic regression; the likelihood-ratio test is meant for normal errors rather than here`,
+      `The log-likelihoods are hard to compare because the smaller model has fewer coefficients and so is bound to fit a little worse`,
     ],
     answer: 0,
     feedback: {
