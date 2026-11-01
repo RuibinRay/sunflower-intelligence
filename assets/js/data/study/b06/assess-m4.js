@@ -24,7 +24,7 @@ const novMin = Math.min(...novFit.resid), novMinScore = R.normQuantile((1 - 0.37
 
 // Harbourside's log model (high, rain, weekend, festival, build-up), for the rain item
 const H = { cafe: 'Harbourside' };
-const LOG = R.fit(column('log_footfall', H), { 'High (°F)': column('high_f', H), 'Rain (in)': column('rain_in', H), Weekend: column('weekend', H), Festival: column('festival01', H), 'Build-up': column('day', H).map((d) => Math.min(d, 121)) });
+const LOG = R.fit(column('log_footfall', H), { 'High (°F)': column('high_f', H), 'Rain (in)': column('rain_in', H), Weekend: column('weekend', H), Festival: column('festival01', H), 'Build-up': column('build_up', H) });
 const r4 = (v) => Math.round(v * 10000) / 10000;
 const logCells = { A1: 'Term', B1: 'Coefficient', ...col('A', 2, LOG.names), ...col('B', 2, LOG.beta.map(r4)), D1: 'Rain (in)', E1: 0.25, D2: 'Change in footfall' };
 const rainB = r4(LOG.beta[2]);

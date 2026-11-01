@@ -17,7 +17,7 @@ const dayLabel = (iso) => `${Number(iso.slice(8, 10))} ${MON[Number(iso.slice(5,
 
 // ---------------------------------------------------------------- widgets: Harbourside's year, the iced share
 const H = { cafe: 'Harbourside' };
-const hxs = { 'High (°F)': column('high_f', H), 'Rain (in)': column('rain_in', H), Weekend: column('weekend', H), Festival: column('festival01', H), Day: column('day', H) };
+const hxs = { 'High (°F)': column('high_f', H), 'Rain (in)': column('rain_in', H), Weekend: column('weekend', H), Festival: column('festival01', H), 'Build-up': column('build_up', H) };
 const hLabels = column('date', H).map(dayLabel);
 const iceLabels = column('date').map((d, i) => `${dayLabel(d)}, ${column('cafe')[i]}`);
 const HF = R.fit(column('footfall', H), { 'High (°F)': hxs['High (°F)'], 'Rain (in)': hxs['Rain (in)'], Weekend: hxs.Weekend, Festival: hxs.Festival });
@@ -52,7 +52,7 @@ export const widgets = {
     y: { name: 'Footfall', values: column('footfall', H) },
     xs: hxs, picked: ['High (°F)', 'Rain (in)', 'Weekend', 'Festival'], choose: true,
     plots: ['fitted', 'qq', 'scale', 'leverage', 'order'], labels: hLabels,
-    note: 'The rows are in date order (1 March first), so the last plot is the time-order plot. Day counts the days since opening (1 on 1 March).',
+    note: 'The rows are in date order (1 March first), so the last plot is the time-order plot. Build-up is the opening build-up: 0 on 1 March, rising evenly to 1 on 29 June, then 1. With Festival ticked, the five festival days have leverage of about 0.2 each, which is why 29 May has the largest Cook’s distance.',
   },
   'diag-iced': {
     type: 'diagnostics',
@@ -76,7 +76,7 @@ export const guided = [
   {
     id: 'b06-diag-g1', type: 'steps', kind: 'numerical',
     prompt: 'The worksheet holds Millbrook’s first 40 weekdays (1 March to 23 April 2027) in date order: the day’s high and footfall. Ana fits footfall on the high alone and checks the residuals in time order.',
-    solution: `Residuals: <x>=D2-TREND(D$2:D$41,C$2:C$41,C2)</x>, filled to E41. Durbin–Watson: <x>=SUMPRODUCT((E3:E41-E2:E40)^2)/SUMSQ(E2:E41)</x> = ${fx(mbDW)}, below 2. The first 20 weekdays’ residuals average ${neg(firstHalf, 1)} people and the last 20’s ${secondHalf > 0 ? '+' : ''}${neg(secondHalf, 1)}: the café was building up its trade, which the high alone can’t describe.`,
+    solution: `Residuals: <x>=D2-TREND(D$2:D$41,C$2:C$41,C2)</x>, filled to E41. Durbin–Watson: <x>=SUMPRODUCT((E3:E41-E2:E40)^2)/SUMSQ(E2:E41)</x> = ${fx(mbDW)}, below 2. That is only modestly below 2, and with 40 rows a formal test would be borderline. The half means make the case: the first 20 weekdays’ residuals average ${neg(firstHalf, 1)} people and the last 20’s ${secondHalf > 0 ? '+' : ''}${neg(secondHalf, 1)}, because the café was building up its trade, which the high alone can’t describe. Note that the “neighbours” here skip weekends: Friday’s residual is paired with Monday’s.`,
     steps: [
       {
         id: 'b06-diag-g1-s1', type: 'formula',
@@ -106,9 +106,9 @@ export const guided = [
       },
       {
         id: 'b06-diag-g1-s3', type: 'mc',
-        prompt: `Durbin–Watson comes out at ${fx(mbDW)}. What does it tell Ana?`,
+        prompt: `Durbin–Watson comes out at ${fx(mbDW)}, and the first 20 weekdays’ residuals average ${neg(firstHalf, 1)} people against ${secondHalf > 0 ? '+' : ''}${neg(secondHalf, 1)} for the last 20. What do the two together suggest?`,
         options: [
-          'Neighbouring days’ residuals are alike: something that changes over time is missing from the model.',
+          'A modest drift over time: something that changes through the period is missing from the model.',
           'The residuals are not normally distributed, so the slope’s t test is invalid.',
           'The spread of the residuals grows with the fitted value, so robust standard errors are needed.',
           'The model has no problem, since Durbin–Watson can lie anywhere from 0 to 4 and any value in that range is acceptable.',
@@ -118,7 +118,7 @@ export const guided = [
         feedback: {
           1: 'Durbin–Watson looks at neighbouring residuals, not at their shape. Normality is checked with a Q–Q plot.',
           2: 'A funnel is a question about spread; Durbin–Watson is about rows that are next to each other in time.',
-          3: 'The statistic runs from 0 to 4; values well below 2 mean positive autocorrelation. Only values near 2 are reassuring.',
+          3: 'The statistic runs from 0 to 4; values below 2 mean positive autocorrelation. Here it is only modestly below 2, but the half means show the drift.',
         },
       },
     ],
@@ -130,7 +130,7 @@ export const guided = [
       'Iced share follows an S-shaped curve in the temperature, but the model is a straight line.',
       'Busy days’ footfall varies by more people than quiet days’ does.',
       'The residuals are heavier-tailed than a normal distribution, with 306 days of data.',
-      'A café’s trade built up through the year, the temperature rose at the same time, and the model has no time trend.',
+      'A café’s trade built up over its first four months, the temperature rose at the same time, and the model has no build-up term.',
       'Neighbouring days’ errors are alike, though the model’s form is right and nothing is missing.',
     ],
     categories: ['Biases the coefficients', 'Leaves them unbiased; distorts standard errors or intervals'],
@@ -282,7 +282,7 @@ export const check = [
     cell: 'H3', answer: '=CORREL(E3:E41,E2:E40)', alt: ['=CORREL(E2:E40,E3:E41)', '=PEARSON(E3:E41,E2:E40)'],
     view: 'A1:H41', maxHeight: '20rem', formats: { E: '0.0', H: '0.00' }, widths: { A: 8, B: 9, C: 10, D: 10, E: 10, G: 17 },
     wrong: [{ formula: '=CORREL(E2:E41,C2:C41)', say: 'That correlates the residuals with the high, which least squares makes 0. The lag-1 correlation pairs each residual with the previous day’s: E3:E41 against E2:E40.' }],
-    solution: `<x>=CORREL(E3:E41,E2:E40)</x> = ${fx(mbLagC)}. With DW = ${fx(mbDW)} in H2, 2(1 − ${fx(mbLagC)}) = ${fx(2 * (1 - mbLagC))}: the approximation DW ≈ 2(1 − r₁) holds roughly, and both say that neighbouring weekdays are alike.`,
+    solution: `<x>=CORREL(E3:E41,E2:E40)</x> = ${fx(mbLagC)}. With DW = ${fx(mbDW)} in H2, 2(1 − ${fx(mbLagC)}) = ${fx(2 * (1 - mbLagC))}: the approximation DW ≈ 2(1 − r₁) holds roughly. Both are only modestly away from no autocorrelation, and the “neighbours” skip weekends; the drift shows more clearly in the half means of the residuals.`,
   },
   {
     id: 'b06-diag-k4', type: 'mc', kind: 'applied',

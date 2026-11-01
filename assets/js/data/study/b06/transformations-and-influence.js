@@ -13,17 +13,19 @@ const pct = (b) => (Math.exp(b) - 1) * 100;
 
 // ---------------------------------------------------------------- Harbourside in levels and in logs
 const day = column('day', H), hDate = column('date', H), hMonth = column('month', H), fest = column('festival01', H);
-const BU = day.map((d) => Math.min(d, 121));
+const BU = column('build_up', H);
+const hiH = column('high_f', H), loT = Math.min(...hiH), hiT = Math.max(...hiH);
+const plantedPct = (t) => (0.011 / (1 + 0.011 * (t - 60))) * 100;
 const base = { 'High (°F)': column('high_f', H), 'Rain (in)': column('rain_in', H), Weekend: column('weekend', H), Festival: fest };
 const yL = column('footfall', H), yG = column('log_footfall', H);
-const LEV = R.fit(yL, { ...base, Day: day }), LOGD = R.fit(yG, { ...base, Day: day });
+const LOGD = R.fit(yG, { ...base, Day: day });
 const LOG = R.fit(yG, { ...base, 'Build-up': BU }), LEVB = R.fit(yL, { ...base, 'Build-up': BU });
 const bp = (f) => R.breuschPagan(f.cols, f.resid);
 const monthMean = (f, m) => mean(Array.from(f.resid).filter((_, i) => hMonth[i] === m));
 const smear = mean(Array.from(LOG.resid).map(Math.exp));
 // predictions (build-up complete, dry, no festival)
-const satP = LOG.predict([75, 0, 1, 0, 121]), tueP = LOG.predict([45, 0, 0, 0, 121]);
-const satL = LEVB.predict([75, 0, 1, 0, 121]), tueL = LEVB.predict([45, 0, 0, 0, 121]);
+const satP = LOG.predict([75, 0, 1, 0, 1]), tueP = LOG.predict([45, 0, 0, 0, 1]);
+const satL = LEVB.predict([75, 0, 1, 0, 1]), tueL = LEVB.predict([45, 0, 0, 0, 1]);
 // festival days with and without a dummy
 const keep = (a) => a.filter((_, i) => !fest[i]);
 const noDummyX = { 'High (°F)': base['High (°F)'], 'Rain (in)': base['Rain (in)'], Weekend: base.Weekend, 'Build-up': BU };
@@ -56,20 +58,21 @@ const f1 = (x) => Math.round(x * 10) / 10;
 function waitFigure() {
   const W0 = 440, x0 = 58, x1 = 425, y0 = 300, y1 = 30, lx = [0, 15], ly = [0, 16];
   const X = (v) => x0 + (v - lx[0]) / (lx[1] - lx[0]) * (x1 - x0), Y = (v) => y0 - (v - ly[0]) / (ly[1] - ly[0]) * (y0 - y1);
-  let svg = `<svg viewBox="0 0 ${W0} 400" xmlns="http://www.w3.org/2000/svg" font-size="16" fill="currentColor">`;
+  let svg = `<svg viewBox="0 0 ${W0} 405" xmlns="http://www.w3.org/2000/svg" font-size="16" fill="currentColor">`;
   svg += `<line x1="${x0}" x2="${x1}" y1="${y0}" y2="${y0}" stroke="var(--ink-3)"/><line x1="${x0}" x2="${x0}" y1="${y1}" y2="${y0}" stroke="var(--ink-3)"/>`;
   [0, 5, 10, 15].forEach((v) => { svg += `<text x="${f1(X(v))}" y="${y0 + 20}" text-anchor="middle" font-size="15" fill="var(--ink-3)">${v}</text>`; });
   [0, 5, 10, 15].forEach((v) => { svg += `<text x="${x0 - 8}" y="${f1(Y(v)) + 5}" text-anchor="end" font-size="15" fill="var(--ink-3)">${v}</text>`; });
   svg += `<text x="${(x0 + x1) / 2}" y="${y0 + 42}" text-anchor="middle" font-size="15">Load (peak transactions per barista hour)</text>`;
   svg += `<text x="16" y="${(y0 + y1) / 2}" text-anchor="middle" font-size="15" transform="rotate(-90 16 ${(y0 + y1) / 2})">Peak wait (min)</text>`;
   LOAD.forEach((v, i) => { if (i % 3 === 0) svg += `<circle cx="${f1(X(v))}" cy="${f1(Y(Math.min(WAIT[i], 16)))}" r="2.2" fill="var(--ink-3)" opacity="0.55"/>`; });
-  const path = (f, dash, colour) => { let d = ''; for (let v = 1.5; v <= 14.75; v += 0.25) d += `${d ? 'L' : 'M'}${f1(X(v))},${f1(Y(Math.max(ly[0], Math.min(ly[1], f(v)))))}`; return `<path d="${d}" fill="none" stroke="${colour}" stroke-width="2.6"${dash ? ` stroke-dasharray="${dash}"` : ''}/>`; };
+  // draw only where the curve is inside the plot (the straight line starts where it crosses 0, at a load of about 4.6)
+  const path = (f, dash, colour) => { let d = ''; for (let v = 1.5; v <= 14.75; v += 0.05) { const w = f(v); if (w < ly[0] || w > ly[1]) continue; d += `${d ? 'L' : 'M'}${f1(X(v))},${f1(Y(w))}`; } return `<path d="${d}" fill="none" stroke="${colour}" stroke-width="2.6"${dash ? ` stroke-dasharray="${dash}"` : ''}/>`; };
   svg += path((v) => WL.beta[0] + WL.beta[1] * v, '7 5', 'var(--series-2)');
   svg += path((v) => WQ.beta[0] + WQ.beta[1] * v + WQ.beta[2] * v * v, '2 4', 'var(--series-3)');
   svg += path((v) => WS.beta[0] + WS.beta[1] * v + WS.beta[2] * Math.max(0, v - 7) ** 2, '', 'var(--series-1)');
   // legend below the plot
-  const leg = [['7 5', 'var(--series-2)', 'straight line'], ['2 4', 'var(--series-3)', 'quadratic'], ['', 'var(--series-1)', 'squared hinge at 7']];
-  leg.forEach(([dash, c, t], k) => { const lx0 = 30 + k * 140; svg += `<line x1="${lx0}" x2="${lx0 + 30}" y1="378" y2="378" stroke="${c}" stroke-width="2.6"${dash ? ` stroke-dasharray="${dash}"` : ''}/><text x="${lx0 + 36}" y="383" font-size="15">${t}</text>`; });
+  const leg = [['7 5', 'var(--series-2)', 'straight line', 30, 366], ['2 4', 'var(--series-3)', 'quadratic', 230, 366], ['', 'var(--series-1)', 'squared hinge at 7', 30, 392]];
+  leg.forEach(([dash, c, t, lx0, ly0]) => { svg += `<line x1="${lx0}" x2="${lx0 + 30}" y1="${ly0 - 5}" y2="${ly0 - 5}" stroke="${c}" stroke-width="2.6"${dash ? ` stroke-dasharray="${dash}"` : ''}/><text x="${lx0 + 36}" y="${ly0}" font-size="15">${t}</text>`; });
   return `${svg}</svg>`;
 }
 
@@ -85,7 +88,7 @@ export default {
     'Handle errors and genuine extremes correctly: check the source, correct, report with and without, and never delete a point because it spoils a result.',
   ],
   prerequisites: [
-    { lesson: 'b06/assumptions-and-diagnostics', why: 'The residual plots and tests that show when a model needs changing: the funnel and the drift this lesson repairs.' },
+    { lesson: 'b06/assumptions-and-diagnostics', why: 'The residual plots and tests that show when a model needs changing, the build-up term, and the funnel this lesson repairs.' },
     { lesson: 'b06/categorical-predictors-and-interactions', why: 'Dummy variables, used here for the festival days.' },
     { lesson: 'b05/nonlinear-and-restricted', why: 'The threshold in the peak wait and the hinge transformation, met there as correlations.' },
     { lesson: 'b05/outliers-and-influence', why: 'The footfall slip and the festival days, and leave-one-out influence on a correlation.' },
@@ -97,18 +100,18 @@ export default {
 
     { h: 'Logs: when effects are percentages' },
     { p: 'Footfall grows by percentages. A weekend adds a share of an ordinary day’s trade, not a fixed number of people, and the same is true of a warm day or a festival. When effects multiply like this, a model of footfall itself fits a straight-line sum to a product, and the residuals fan out as the level rises. Taking the natural <g>log transformation</g> of y turns products into sums: if footfall = base × weekend effect × weather effect, then ln(footfall) = ln(base) + ln(weekend effect) + ln(weather effect), which is exactly the form a regression fits.' },
-    { p: 'Ana refits Harbourside’s model with ln(footfall) as y and the same predictors (the high, rain, weekend, festival and the day count). The funnel goes: Breusch–Pagan falls from LM = 67.0 in levels to 6.7 in logs, a p-value of 0.24. The time-order plot shows one more thing. With a straight-line day count, the log model’s residuals average −0.052 in March, +0.036 in June and −0.027 in December: an arch. The café’s build-up was not steady all year; it stopped. A day count that rises to 121 (29 June, the end of the first four months) and then stays flat removes the arch: the residuals’ monthly averages all lie within ±0.017, Durbin–Watson is 1.97, and Breusch–Pagan gives LM = 5.4 (p = 0.37).' },
+    { p: 'Ana refits Harbourside’s model with ln(footfall) as y and the same predictors as the last lesson’s final model (the high, rain, weekend, festival and the opening build-up, 0 on 1 March rising to 1 on 29 June). The funnel goes: Breusch–Pagan falls from LM = 67.8 in levels to 5.4 in logs, a p-value of 0.37. The time order stays clean too: the residuals’ monthly averages all lie within ±0.017 and Durbin–Watson is 1.97. The build-up term matters here as much as in levels. With a straight-line day count in its place, the log model’s residuals average −0.052 in March, +0.036 in June and −0.027 in December: an arch, because a straight line assumes the build-up never stopped.' },
 
     { h: 'Reading a log model’s coefficients' },
-    { p: String.raw`In a model for <m>\ln y</m>, a slope b is the change in ln y for a one-unit change in x, holding the other predictors fixed. Since a change of b in a log multiplies y by <m>e^b</m>, the slope means a change of <m>100(e^b - 1)</m>%. For small b this is close to 100b%: the slope for the day’s high, 0.0109, means about 1.1% more people per °F warmer, holding rain, the weekend, festivals and the build-up fixed. For larger b the shortcut fails. The weekend coefficient, 0.469, does not mean 47% more people: <m>e^{0.469} - 1 = 0.598</m>, so weekend days have about 60% more footfall than weekdays with the same weather. The festival coefficient, 0.891, means <m>e^{0.891} = 2.44</m> times an ordinary weekend day’s footfall.` },
-    { p: 'These are the numbers the café’s fictional log was built from, recovered: footfall at Harbourside was generated with 1.1% more per °F near 60°F, a weekend base 61% above the weekday one, festival days at 2.3 times normal (inside the coefficient’s 95% interval, 2.23 to 2.66) and a build-up from 72% to full trade over four months. The levels model could not express any of these as single numbers, because in levels the weekend adds more people on a warm day than on a cold one.' },
+    { p: String.raw`In a model for <m>\ln y</m>, a slope b is the change in ln y for a one-unit change in x, holding the other predictors fixed. Since a change of b in a log multiplies y by <m>e^b</m>, the slope means a change of <m>100(e^b - 1)</m>%. For small b this is close to 100b%: the slope for the day’s high, 0.0109, means about 1.1% more people per °F warmer, on average over the year’s range of temperatures, holding rain, the weekend, festivals and the build-up fixed. For larger b the shortcut fails. The weekend coefficient, 0.469, does not mean 47% more people: <m>e^{0.469} - 1 = 0.598</m>, so weekend days have about 60% more footfall than weekdays with the same weather. The festival coefficient, 0.891, means <m>e^{0.891} = 2.44</m> times an ordinary weekend day’s footfall.` },
+    { p: 'These are the numbers the café’s fictional log was built from, recovered: footfall at Harbourside was generated with 1.1% more per °F near 60°F (not exactly a constant percentage: the planted rise is about 1.7% per °F on the log’s coldest day, 28°F, and 0.8% on its hottest, 94°F, so 1.1% is an average), a weekend base 61% above the weekday one, festival days at 2.3 times normal (inside the coefficient’s 95% interval, 2.23 to 2.66) and a build-up from 72% to full trade over four months. The levels model could not express any of these as single numbers, because in levels the weekend adds more people on a warm day than on a cold one.' },
 
     { h: 'Bending a line: polynomial and hinge terms' },
     { p: 'The peak wait rises with the load, the peak transactions per barista hour, but not in a straight line. B05 found the shape: waits barely change up to a load of about 7 and climb ever faster beyond it. A regression can follow a curve by adding a transformed copy of x as another predictor. A <g>polynomial regression</g> adds x², and perhaps x³. A <g>hinge transformation</g> adds max(0, x − 7), which is zero up to the threshold and rises after it; squaring it, max(0, x − 7)², lets the rise steepen.' },
     { figure: {
       svg: waitFigure(),
       caption: 'Peak wait against the load, every third café-day, with three fitted curves. The straight line misses the flat start and the steep end; the quadratic bends the wrong way at low loads; the squared hinge at 7 follows the data.',
-      alt: 'A scatterplot of peak wait in minutes (0 to 16) against the load (0 to 15). The points form a flat band near 1.5 minutes for loads up to about 7, then rise ever more steeply, reaching about 10 to 14 minutes at loads of 13 to 15. Three curves: a dashed straight line rising from below zero at a load of 2 to about 8 minutes at 15, below the points at both ends and above them in the middle; a dotted quadratic that dips to a minimum near a load of 6 and rises at both ends, so it is too high at low loads; and a solid squared-hinge curve that stays flat near 1.6 minutes up to 7 and then curves upward through the points.',
+      alt: 'A scatterplot of peak wait in minutes (0 to 16) against the load (0 to 15). The points form a flat band near 1.5 minutes for loads up to about 7, then rise ever more steeply, reaching about 10 to 14 minutes at loads of 13 to 15. Three curves: a dashed straight line starting at zero near a load of 4.6 and rising to about 8 minutes at 15, below the points at low and high loads and above them in the middle; a dotted quadratic that dips to a minimum near a load of 6 and rises at both ends, so it is too high at low loads; and a solid squared-hinge curve that stays flat near 1.6 minutes up to 7 and then curves upward through the points.',
     } },
     { p: 'Across 612 café-days the straight line accounts for 68.9% of the variation in waits, the quadratic 94.3% and the squared hinge 96.1%. The squared hinge’s coefficient, 0.226 minutes per squared transaction above 7, is close to the 0.22 the fictional data were built with. At a load of 10 the model predicts a wait of 3.7 minutes, at 12 a wait of 7.3. The quadratic’s good R² hides a fault the figure shows: a parabola must turn somewhere, and this one has its minimum at a load of 6.0, so it predicts that waits rise again as the load falls, 4.0 minutes at a load of 2, where the 11 days with a load below 4 averaged 1.8.' },
 
@@ -121,7 +124,7 @@ export default {
     { h: 'The log transformation in detail' },
     { p: String.raw`Logs need y > 0; for counts that can be zero, B02’s <m>\ln(1 + y)</m> is a common workaround, though its coefficients no longer read as percentages. Logging y changes three things at once: the form (effects multiply), the spread (errors proportional to the level become constant in logs) and the shape of the errors (a right skew in y often becomes symmetric in ln y). Check all three after the change; here the residual standard deviation in logs, 0.098, means a typical day is within about 10% of its predicted footfall, busy or quiet.` },
     { p: String.raw`Logs can go on x instead, or on both. With <m>\ln x</m> as the predictor, a 1% rise in x goes with a change of about b/100 in y. With logs on both sides, b is an elasticity: a 1% rise in x goes with about b% change in y. Choose the scale from how the effect works (fixed amounts or percentages) and from the residual plots, not from which version has the larger R².` },
-    { callout: 'warn', title: 'Don’t compare R² across a change of y', html: 'The levels model has R² = 0.943 and the log model 0.939. They measure different things: the share of the variation in footfall, and in ln(footfall). Compare models with different y by their residual plots, or by their errors on a common scale (back-transform the log model’s predictions and compare errors in people).' },
+    { callout: 'warn', title: 'Don’t compare R² across a change of y', html: 'The levels model has R² = 0.944 and the log model 0.939. They measure different things: the share of the variation in footfall, and in ln(footfall). Compare models with different y by their residual plots, or by their errors on a common scale (back-transform the log model’s predictions and compare errors in people).' },
 
     { h: 'Back-transforming a prediction' },
     { p: String.raw`A log model predicts <m>\widehat{\ln y}</m>. Exponentiating gives <m>e^{\widehat{\ln y}}</m>, which estimates the <i>median</i> footfall for that day, not the mean, because the exponential stretches the upper half of the errors more than the lower. To estimate the mean, multiply by a correction: Duan’s smearing factor, the average of <m>e^{e_i}</m> over the log model’s residuals, or <m>e^{s^2/2}</m> if the errors are normal. For Harbourside both are 1.005, a 0.5% correction, small because s is small; with s = 0.5 it would be 13%.` },
@@ -147,7 +150,7 @@ export default {
     { p: String.raw`Leverage measures how far a row’s predictor values are from the centre of all the rows’. With one predictor, <m>h_i = 1/n + (x_i - \bar x)^2 / \sum (x - \bar x)^2</m>. Leverages lie between 1/n and 1 and average p/n, where p counts the coefficients; a common rule of thumb flags rows above 2p/n (here 2 × 2 ÷ 612 = 0.0065). For the slip, <m>h = 1/612 + (2566 - 186.8)^2 / 10{,}305{,}017 = 0.551</m>, 84 times the flag. With several predictors leverage comes from the hat matrix, but the idea is the same: an unusual combination of x values, such as a festival day on a weekend with heavy rain, can have high leverage even if no single value is extreme.` },
 
     { h: 'Studentized residuals' },
-    { p: String.raw`Residuals of high-leverage rows are small by construction, because the line is pulled towards them. Dividing by the standard deviation each residual should have puts them on one scale: the internally studentized residual is <m>r_i = e_i / (s\sqrt{1 - h_i})</m>. The externally studentized (deleted) version, <m>t_i</m>, uses s from the fit without row i, so a large error can’t hide by inflating s; it follows a t distribution on n − p − 1 df if the model is right. Values beyond ±3 are worth checking, beyond ±2 worth a look in small samples; Penn State’s regression notes treat both as warning flags, not rules.` },
+    { p: String.raw`Residuals of high-leverage rows are small by construction, because the line is pulled towards them. Dividing by the standard deviation each residual should have puts them on one scale: the internally studentized residual is <m>r_i = e_i / (s\sqrt{1 - h_i})</m>. The externally studentized (deleted) version, <m>t_i</m>, uses s from the fit without row i, so a large error can’t hide by inflating s; it follows a t distribution on n − p − 1 df if the model is right. Penn State’s regression notes call a row with an externally studentized residual beyond ±3 an outlier; ±2 is a common, looser convention for a first look, especially in small samples. Treat both as warning flags, not rules.` },
 
     { h: 'Cook’s distance' },
     { p: String.raw`Cook’s distance asks how much all the fitted values would move if row i were left out, scaled by the model’s precision: <m>D_i = \dfrac{r_i^2}{p} \cdot \dfrac{h_i}{1 - h_i}</m>. It is large only when both the residual and the leverage are. Rules of thumb vary: Penn State’s notes suggest a closer look above 0.5 and call values above 1 quite likely influential; others use 4/n. The most useful check is visual, a value that stands far apart from the rest.` },
@@ -229,7 +232,7 @@ export default {
   ],
 
   demo: [
-    { widget: 'trans-logs', intro: 'Harbourside’s footfall model with its residual plots. With the log switch off, see the funnel (Breusch–Pagan about 67). Switch to the log of footfall: the funnel goes. Then swap Day for Build-up (the day count stopped at 29 June) and watch the time-order plot flatten and Durbin–Watson move to about 1.97.' },
+    { widget: 'trans-logs', intro: 'Harbourside’s footfall model with its residual plots. With the log switch off, see the funnel (Breusch–Pagan about 67). Switch to the log of footfall: the funnel goes. Then swap Build-up for Day, a straight-line day count, and watch the arch appear in the time-order plot; swap back and Durbin–Watson returns to about 1.97.' },
     { widget: 'trans-hinge', intro: 'Fit the peak wait on the load plus a hinge at a threshold you choose, straight or squared. Move the threshold from 5 to 9 and compare R² and s; try the straight hinge against the squared one. Where does the fit peak, and how much does it matter?' },
     { widget: 'trans-slip', intro: 'Transactions on footfall in the raw log, all 612 café-days, with the residuals-against-leverage plot. One point sits alone at the right, beyond the Cook’s distance curves: Millbrook’s 14 September. Its studentized residual and Cook’s distance are printed in the panel.' },
     { widget: 'trans-clean', intro: 'The same regression on the corrected log. The largest Cook’s distances now belong to Harbourside’s festival days: real days, below a line that mixes two cafés with different conversion rates.' },
@@ -240,23 +243,23 @@ export default {
     { title: 'Exponentiating a log prediction and calling it the mean', html: 'e to the predicted log is an estimate of the median. Totals and averages built from it run low; multiply by a smearing factor (the mean of e to the residuals). For Harbourside it is 1.005; for noisier data it can be much larger.' },
     { title: 'Choosing between y and ln y by R²', html: 'The two R²s measure the share of variation in different quantities. Decide by the residual plots and by errors on a common scale, and by whether the effects work as amounts or as percentages.' },
     { title: 'Reaching for a high-degree polynomial', html: 'A polynomial bends everywhere. The quadratic for the wait has R² = 0.943 and still predicts that waits rise as the load falls below 6. A hinge at a threshold you can justify follows the data with fewer surprises; extrapolate neither.' },
-    { title: '“It has a huge residual, so it’s influential”, or “It has high leverage, so delete it”', html: 'Influence needs both: the festival days’ studentized residuals of 5 to 7 come with Cook’s distances of 0.2 or less, and a high-leverage point that sits on the line changes nothing. Measure with Cook’s distance, then go to the source.' },
+    { title: '“It has a huge residual, so it’s influential”, or “It has high leverage, so delete it”', html: 'Influence needs both: in the log model without a festival term, the festival days’ studentized residuals of 5 to 7 come with Cook’s distances of 0.2 or less, and a high-leverage point that sits on the line changes nothing. Measure with Cook’s distance, then go to the source.' },
     { title: 'Deleting the points that spoil the result', html: 'Points removed because the result looks better without them make every later p-value and interval misleading. Correct errors from the source, model real differences (a festival dummy), and report with and without when a real point decides a conclusion.' },
   ],
 
   application: [
     { case: 'Ana’s change record for the 2027 log: “Millbrook, 14 Sep, footfall typed 2,566, door counter says 256: corrected (Cook’s D for the raw value 349). Festival days (5, Harbourside): real, kept, modelled with a dummy; without it the weekend effect reads 68% instead of 60%. Harbourside footfall now modelled in logs with a build-up term (to 29 June): residuals pass the spread and time-order checks; coefficients reported as percentages; roster limits from the log model’s prediction intervals.”' },
-    { p: 'Records like this are routine wherever regression output drives money. A pricing analyst at an online retailer, say, fits demand in logs so that price effects come out as elasticities, checks the influence of the week a competitor’s site was down, and files a note saying which weeks were corrected, which were modelled and which were left as they are. The note matters as much as the model: anyone who reruns the analysis, or audits it, can see that no row was dropped to get a better answer.' },
+    { p: 'Records like this are routine wherever regression output drives money. A marketing analyst at an online retailer, say, fits sales in logs so that advertising effects come out as elasticities, checks the influence of the week a competitor’s site was down, and files a note saying which weeks were corrected, which were modelled and which were left as they are. The note matters as much as the model: anyone who reruns the analysis, or audits it, can see that no row was dropped to get a better answer.' },
     { p: 'Two habits separate a careful analyst from a hasty one. The first is choosing transformations for reasons that would hold before seeing the fit: effects that are percentages, a threshold known from the operation, a build-up known to have happened. Transformations chosen by trying many and keeping the best fit look better than they are on the next year’s data. The second is reporting results in the units a decision-maker uses. A log coefficient of 0.0109 means nothing to a café manager; “about 1% more people for every degree warmer” does, and so does “plan for 276 people on a warm Saturday”.' },
     { p: 'Finally, the influence checks belong at the start of an analysis as well as the end. Plotting the data and screening for leverage before fitting would have caught the slip in minutes. Done last, after a model has been presented, the same check becomes an awkward correction.' },
   ],
 
   summary: [
-    'When effects are percentages, model ln y: products become sums, a funnel often disappears (Harbourside: Breusch–Pagan 67.0 in levels, 6.7 in logs), and coefficients read as percentage changes, exactly 100(eᵇ − 1), about 100b when b is small.',
+    'When effects are percentages, model ln y: products become sums, a funnel often disappears (Harbourside: Breusch–Pagan 67.8 in levels, 5.4 in logs), and coefficients read as percentage changes, exactly 100(eᵇ − 1), about 100b when b is small.',
     'Back-transform a log prediction with eˣ to get a median; multiply by a smearing factor for a mean; exponentiate the interval’s limits, which then widen with the level.',
     'Polynomial terms bend the whole curve; hinge terms, max(0, x − c) or its square, change it only beyond a threshold. The wait’s squared hinge at 7 has R² = 0.961 against 0.689 for a line, and a coefficient close to the planted 0.22.',
     'Leverage measures how unusual a row’s x values are (average p/n); studentized residuals measure how far it is from the line on a common scale; Cook’s distance combines them into influence.',
-    'The raw slip had leverage 0.551, studentized residual −23.8 and Cook’s distance 349, and halved the slope; the festival days are outliers with little leverage and Cook’s distances of 0.2 or less, but still shift the weekend coefficient.',
+    'The raw slip had leverage 0.551, studentized residual −23.8 and Cook’s distance 349, and halved the slope; in a log model without a festival term the festival days are outliers with little leverage and Cook’s distances of 0.2 or less, but they still shift the weekend coefficient.',
     'Check unusual points against the source; correct errors; model real differences; report with and without; never delete a point to improve a result.',
   ],
 
@@ -278,15 +281,16 @@ export default {
 
   checks: [
     // logs
-    { what: 'BP levels with day', value: bp(LEV).lm, shown: 67.0, tol: 0.05 },
-    { what: 'BP logs with day', value: bp(LOGD).lm, shown: 6.7, tol: 0.05 },
-    { what: 'BP logs with day p', value: bp(LOGD).p, shown: 0.24, tol: 0.005 },
+    { what: 'Planted % per °F on the coldest day', value: plantedPct(loT), shown: 1.7, tol: 0.05 },
+    { what: 'Coldest day 28°F', value: loT, shown: 28 },
+    { what: 'Planted % per °F on the hottest day', value: plantedPct(hiT), shown: 0.8, tol: 0.05 },
+    { what: 'Hottest day 94°F', value: hiT, shown: 94 },
+    { what: 'Build-up reaches 1 on 29 June', value: Number(BU[hDate.indexOf('2027-06-29')] === 1 && BU[hDate.indexOf('2027-06-28')] < 1), shown: 1 },
     { what: 'Log+day March mean residual', value: monthMean(LOGD, 3), shown: -0.052, tol: 0.0005 },
     { what: 'Log+day June', value: monthMean(LOGD, 6), shown: 0.036, tol: 0.0005 },
     { what: 'Log+day December', value: monthMean(LOGD, 12), shown: -0.027, tol: 0.0005 },
     { what: 'An arch: March and December below, June above', value: Number(monthMean(LOGD, 3) < 0 && monthMean(LOGD, 12) < 0 && monthMean(LOGD, 6) > 0), shown: 1 },
-    { what: 'Day 121 is 29 June', value: Number(hDate[120] === '2027-06-29'), shown: 1 },
-    { what: 'Build-up: monthly means within ±0.017', value: Math.max(...[3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((m) => Math.abs(monthMean(LOG, m)))), shown: 0.017, tol: 0.0005 },
+        { what: 'Build-up: monthly means within ±0.017', value: Math.max(...[3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((m) => Math.abs(monthMean(LOG, m)))), shown: 0.017, tol: 0.0005 },
     { what: 'Build-up DW', value: R.durbinWatson(LOG.resid), shown: 1.97, tol: 0.005 },
     { what: 'Build-up BP', value: bp(LOG).lm, shown: 5.4, tol: 0.05 },
     { what: 'Build-up BP p', value: bp(LOG).p, shown: 0.37, tol: 0.005 },
@@ -312,10 +316,10 @@ export default {
     { what: 'Rain shortcut per inch', value: 0.784 * 100, shown: 78, tol: 0.5 },
     { what: '10°F warmer', value: pct(10 * 0.0109), shown: 12, tol: 0.5 },
     { what: '10 × 0.0109', value: 10 * 0.0109, shown: 0.109, tol: 0.0005 },
-    { what: 'Build-up from 72% (generator: 1/0.72 over the four months ≈ e^(120 b))', value: Number(Math.abs(Math.exp(120 * coef(LOG, 'Build-up').estimate) - 1 / 0.72) < 0.05), shown: 1 },
+    { what: 'Build-up from 72% (generator: 1/0.72 over the four months ≈ e^b)', value: Number(Math.abs(Math.exp(coef(LOG, 'Build-up').estimate) - 1 / 0.72) < 0.05), shown: 1 },
     { what: 'Residual SD in logs', value: LOG.sigma, shown: 0.098, tol: 0.0005 },
     { what: 'About 10%', value: (Math.exp(LOG.sigma) - 1) * 100, shown: 10, tol: 0.5 },
-    { what: 'Levels R² (with day)', value: LEV.r2, shown: 0.943, tol: 0.0005 },
+    { what: 'Levels R² (with build-up)', value: LEVB.r2, shown: 0.944, tol: 0.0005 },
     { what: 'Log R² (build-up)', value: LOG.r2, shown: 0.939, tol: 0.0005 },
     { what: 'Smearing factor', value: smear, shown: 1.005, tol: 0.0005 },
     { what: 'Normal factor', value: Math.exp(LOG.sigma ** 2 / 2), shown: 1.005, tol: 0.0005 },
@@ -363,6 +367,9 @@ export default {
     { what: 'Planted 0.22 inside the hinge² CI', value: Number(0.22 > coef(WS, 'Hinge²').low && 0.22 < coef(WS, 'Hinge²').high), shown: 1 },
     { what: 'Wait at load 10', value: WS.predict([10, 9]).yhat, shown: 3.7, tol: 0.05 },
     { what: 'Wait at load 12', value: WS.predict([12, 25]).yhat, shown: 7.3, tol: 0.05 },
+    { what: 'Line crosses 0 near 4.6', value: -WL.beta[0] / WL.beta[1], shown: 4.6, tol: 0.05 },
+    { what: 'Line below the data at 5 and 14, above at 9 (squared-hinge fit as the data’s shape)', value: Number((() => { const l = (v) => WL.beta[0] + WL.beta[1] * v, q = (v) => WS.beta[0] + WS.beta[1] * v + WS.beta[2] * Math.max(0, v - 7) ** 2; return l(5) < q(5) && l(14) < q(14) && l(9) > q(9); })()), shown: 1 },
+    { what: 'Line at 15 about 8', value: WL.beta[0] + 15 * WL.beta[1], shown: 8, tol: 0.1 },
     { what: 'Quadratic minimum', value: quadMin, shown: 6.0, tol: 0.05 },
     { what: 'Quadratic at load 2', value: WQ.predict([2, 4]).yhat, shown: 4.0, tol: 0.05 },
     { what: 'Days with load below 4', value: lowLoad.length, shown: 11 },

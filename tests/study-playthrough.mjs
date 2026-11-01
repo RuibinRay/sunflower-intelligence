@@ -1,13 +1,15 @@
 // study-playthrough.mjs — answers every exercise in every built lesson and assessment through the real pages, using
 // the answer keys, and checks the page marks each one right (practice) or scores 100% (knowledge checks and tests).
 // Needs the site served locally: node tests/study-playthrough.mjs http://127.0.0.1:8766/sunflower-intelligence/
+// or, without a server, `disk` as the base: requests to a stand-in origin are answered from the repo's files.
 // Optional filter: a course id or course/slug as the second argument. Projects are played too (items only; labs are
 // tested by their own suites).
 import { chromium } from '/opt/npm-tools/node_modules/playwright/index.mjs';
 import { pathToFileURL } from 'node:url';
 import { join } from 'node:path';
 
-const BASE = process.argv[2] || 'http://127.0.0.1:8766/sunflower-intelligence/';
+const DISK = process.argv[2] === 'disk';
+const BASE = DISK ? 'http://site.test/sunflower-intelligence/' : process.argv[2] || 'http://127.0.0.1:8766/sunflower-intelligence/';
 const ONLY = process.argv[3] || '';
 const ROOT = new URL('..', import.meta.url).pathname;
 const { MAP } = await import(pathToFileURL(join(ROOT, 'assets/js/data/study/map.js')).href);
@@ -66,6 +68,19 @@ const ANSWER = (box, item) => {
 
 const b = await chromium.launch();
 const page = await b.newPage({ viewport: { width: 1280, height: 900 } });
+if (DISK) {
+  const { readFileSync, existsSync, statSync } = await import('node:fs');
+  const { extname } = await import('node:path');
+  const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.woff2': 'font/woff2', '.ico': 'image/x-icon', '.csv': 'text/csv', '.xlsx': 'application/octet-stream' };
+  await page.route('**/*', (route) => {
+    const u = new URL(route.request().url());
+    if (u.host !== 'site.test') return route.abort();
+    let f = join(ROOT, decodeURIComponent(u.pathname.replace(/^\/sunflower-intelligence\//, '/')));
+    if (existsSync(f) && statSync(f).isDirectory()) f = join(f, 'index.html');
+    if (!existsSync(f)) return route.fulfill({ status: 404, body: 'not found' });
+    return route.fulfill({ status: 200, contentType: TYPES[extname(f)] || 'application/octet-stream', body: readFileSync(f) });
+  });
+}
 const errors = [];
 page.on('pageerror', (e) => errors.push(`pageerror ${e.message}`));
 let checked = 0;

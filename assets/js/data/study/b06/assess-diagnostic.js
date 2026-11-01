@@ -237,7 +237,7 @@ export const items = [
       { value: rnd((LIB.p0 / (1 - LIB.p0)) * LIB.or, 3), say: '3.75 is the new odds. Convert back to a probability: odds ÷ (1 + odds).' },
       { value: rnd(LIB.or / (1 + LIB.or), 3), say: 'That treats the odds ratio as the odds. Multiply the starting odds, 0.6 ÷ 0.4 = 1.5, by 2.5 first.' },
     ],
-    solution: `Odds without a reminder: 0.6 ÷ 0.4 = 1.5. The odds ratio multiplies the odds: 1.5 × 2.5 = 3.75. Back to a probability: 3.75 ÷ 4.75 = ${fx(pFromOR(LIB.p0, LIB.or), 3)}. The rise is ${fx((pFromOR(LIB.p0, LIB.or) - LIB.p0) * 100, 1)} points; the same odds ratio would move a borrower who starts at 10% far less in points. And unless reminders were assigned at random, the odds ratio is an association, not the effect of sending one.`,
+    solution: `Odds without a reminder: 0.6 ÷ 0.4 = 1.5. The odds ratio multiplies the odds: 1.5 × 2.5 = 3.75. Back to a probability: 3.75 ÷ 4.75 = ${fx(pFromOR(LIB.p0, LIB.or), 3)}. The rise is ${fx((pFromOR(LIB.p0, LIB.or) - LIB.p0) * 100, 1)} points; the same odds ratio would move a borrower who starts at 10% by only ${fx((pFromOR(0.1, LIB.or) - 0.1) * 100, 1)} points, because odds ratios act on odds, not on probabilities. And unless reminders were assigned at random, the odds ratio is an association, not the effect of sending one.`,
   },
 ];
 

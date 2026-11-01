@@ -73,7 +73,7 @@ export default {
 
     { h: 'A yes/no outcome' },
     { p: 'Whether a member returned is a binary outcome: 1 for yes, 0 for no. Its average is the share who returned, 121 ÷ 225 = 53.8%, the <g>base rate</g>. What Ana wants to model is the probability of a 1 for members with given characteristics.' },
-    { p: 'An ordinary regression of the 0/1 outcome on the five predictors, a linear probability model, is easy to fit and easy to read: each slope is a change in the probability. It also fails in two ways. Its fitted “probabilities” run from 0.118 to 1.025, and one member (a Millbrook regular with notifications on and an $8.50 first ticket) gets a value above 1, which no probability can be. And its slopes are the same everywhere: a dollar more on the first ticket adds 0.09 to the probability whether a member’s chance was 0.2 or 0.95. Real probabilities can’t keep rising by the same step; near 0 and 1 they have to flatten.' },
+    { p: 'An ordinary regression of the 0/1 outcome on the five predictors, a linear probability model, is easy to fit and easy to read: each slope is a change in the probability. It also fails in two ways. Its fitted “probabilities” run from 0.118 to 1.025, and one member (a Millbrook member with notifications on and an $8.50 first ticket) gets a value above 1, which no probability can be. And its slopes are the same everywhere: a dollar more on the first ticket adds 0.09 to the probability whether a member’s chance was 0.2 or 0.95. Real probabilities can’t keep rising by the same step; near 0 and 1 they have to flatten.' },
     { figure: {
       svg: curveFigure(),
       caption: 'A straight line through yes/no data runs below 0 and above 1; the logistic curve stays between them and flattens at both ends (schematic).',
@@ -141,7 +141,7 @@ export default {
     { list: [
       '<b>Linearity in the log-odds.</b> Each numerical predictor’s effect on the log-odds is a straight line. Check by banding the predictor and comparing the observed log-odds in each band with the model’s, or by adding a squared term or a hinge as in the previous lesson.',
       '<b>Independent cases.</b> Each member is one row. Members who joined together, or repeated rows for the same person, break this, as they would in least squares.',
-      '<b>Enough of each outcome.</b> Coefficients become unstable when a predictor almost perfectly separates the 0s from the 1s, or when there are few events per predictor; a common rule of thumb asks for at least 10 of the rarer outcome per coefficient (here 104 non-returners for 5 predictors). It is a convention, not a law.',
+      '<b>Enough of each outcome.</b> Coefficients become unstable when a predictor almost perfectly separates the 0s from the 1s, or when there are few events per predictor; a common rule of thumb asks for at least 10 of the rarer outcome per predictor (here 104 non-returners for 5 predictors, about 21 each). It is a convention, not a law.',
       '<b>No error variance to check.</b> The variance of a 0/1 outcome is set by its probability, p(1 − p), so there is no σ, no residual standard error and no equal-variance condition.',
     ] },
   ],
@@ -355,7 +355,8 @@ export default {
     { what: 'Specificity 0.6', value: T6.specificity * 100, shown: 73.1, tol: 0.05 },
     { what: 'Predicted to return 0.6', value: T6.tp + T6.fp, shown: 88 },
     { what: 'Better by 10 points', value: (T5.accuracy - base) * 100, shown: 10, tol: 0.5 },
-    { what: '10 events per coefficient satisfied', value: Number((n - nRet) / 5 >= 10), shown: 1 },
+    { what: '10 events per predictor satisfied', value: Number((n - nRet) / 5 >= 10), shown: 1 },
+    { what: 'About 21 per predictor', value: (n - nRet) / 5, shown: 21, tol: 0.5 },
     // simple example
     { what: 'Example log-odds', value: etaEx, shown: 0.736, tol: 0.0005 },
     { what: 'Example odds', value: Math.exp(etaEx), shown: 2.09, tol: 0.005 },
