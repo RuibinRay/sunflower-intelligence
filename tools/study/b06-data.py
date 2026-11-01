@@ -13,7 +13,10 @@ Planted: the chance of winning falls with the higher price (log-odds −0.55), w
 quotes (−0.9) and for bigger events, and rises for repeat clients (+1.1) and with lead time (+0.25 per 10 days, up to
 30 days); private and non-profit clients are a little less likely to book than companies. The invoice is the quote
 plus extras whose spread grows with the event's size (heteroskedastic); one gala dinner (240 guests), quoted in May before the price test, is far larger
-than any other event (high leverage, real). Event sizes follow B03's 2026 events (median about 78 guests). Lessons must not use these data.
+than any other event (high leverage, real). Event sizes follow B03's 2026 events (median about 78 guests).
+The seed (6103) and the number of enquiries (180) were chosen, among the combinations whose invoices reach F03's total
+within 1.5% without rescaling, so that the price test's estimates sit near the planted effects; with only 110 test
+quotes, other seeds give estimates from almost no price effect to a strong one. Lessons must not use these data.
 
 The lessons' logistic data: the loyalty-app members who joined at the two cafés in October 2027 (one row per member;
 the joins per café per day are exactly the B05 log's daily sign-ups), and whether each came back within 30 days.
@@ -87,7 +90,7 @@ for q in won:
     raw.append(max(QUOTE['minimum'], q['quoted'] + extra))
 raw = np.array(raw)
 print('unscaled invoices', round(raw.sum(), 2), 'scale', round(TARGET / 100 / raw.sum(), 4))
-assert 0.985 < TARGET / 100 / raw.sum() < 1.015, 'the invoices need more than a 1.5% adjustment to reach F03’s total; change N'
+assert 0.985 < TARGET / 100 / raw.sum() < 1.015, 'the invoices need more than a 1.5% adjustment to reach F03’s total; choose another seed or N'
 cents = np.round(raw * 100)
 scaled = cents * TARGET / cents.sum()
 fl = np.floor(scaled).astype(np.int64)
