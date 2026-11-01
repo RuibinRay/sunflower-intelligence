@@ -84,7 +84,9 @@ export function nextBilling(iso, dom) {
   return `${ny}-${String(nm).padStart(2, '0')}-${String(Math.min(dom, 28)).padStart(2, '0')}`;
 }
 /** Subscriptions as objects. billings = billing dates before cancellation (or up to 31 December 2027); deliveries =
- *  billings not skipped; periods = billings (months subscribed, the sBG's periods); cancelled = 1 if they cancelled. */
+ *  billings not skipped; periods = billings (months paid for); cancelled = 1 if they cancelled. time = the survival time
+ *  in months: a cancelled subscriber's lifetime is the months they paid for; one still subscribed on 31 December 2027
+ *  with k months paid has been seen to renew k − 1 times (the k-th renewal is still to come), so is censored at k − 1. */
 export const SUBS = SUBSCRIPTIONS.map((r) => {
   const start = r[sAt('start')], end = r[sAt('cancelled')] || null, skipped = r[sAt('skipped')] ? r[sAt('skipped')].split(' ') : [];
   const dom = +start.slice(8, 10), billings = [];
@@ -92,7 +94,7 @@ export const SUBS = SUBSCRIPTIONS.map((r) => {
   const p = PROD.get(r[sAt('product')]), qty = r[sAt('quantity')];
   return { id: r[sAt('subscriber')], start, channel: r[sAt('channel')], product: r[sAt('product')], quantity: qty, price: r[sAt('price')],
     cancelledOn: end, cancelled: end ? 1 : 0, skipped, billings, deliveries: billings.filter((d) => !skipped.includes(d)).length,
-    periods: billings.length, unitCost: p.cost * qty, listPrice: p.price * qty };
+    periods: billings.length, time: end ? billings.length : billings.length - 1, unitCost: p.cost * qty, listPrice: p.price * qty };
 });
 /** Acquisition costs (fictional facts of the case): the 2026 relaunch offer halved the first month's price; a referral
  *  gives the existing subscriber and the friend $10 of shop credit each; shop and café sign-ups had no direct cost (B05's
@@ -107,13 +109,14 @@ export const marginOf = (s) => s.price - s.unitCost - PARCEL - FEE_RATE * s.pric
 export const activeOn = (iso) => SUBS.filter((s) => s.start <= iso && (!s.cancelledOn || s.cancelledOn > iso)).length;
 /** The save-offer test's requests: { id, date, offered (1 = shown the skip offer), outcome, saved }. */
 export const SAVE_REQUESTS = REQUESTS.map((r) => ({ id: r[qAt('subscriber')], date: r[qAt('requested')], offered: r[qAt('offered_skip')], outcome: r[qAt('outcome')], saved: r[qAt('outcome')] === 'cancelled' ? 0 : 1 }));
-/** sBG cohorts by start month: for each, the number still subscribed after 0, 1, 2, … billing periods, observed only as
+/** sBG cohorts by start month: for each, the number still subscribed after 0, 1, 2, … renewals (alive[t] = how many
+ *  paid for more than t months), observed only as
  *  far as every member of the cohort could have reached by 31 December 2027. */
 export function subCohorts({ channel = null, from = '2026-03', to = '2027-12' } = {}) {
   const groups = new Map();
   for (const s of SUBS) { const m = s.start.slice(0, 7); if ((channel && s.channel !== channel) || m < from || m > to) continue; (groups.get(m) || groups.set(m, []).get(m)).push(s); }
   return [...groups.entries()].sort().map(([month, ss]) => {
-    const T = Math.min(...ss.map((s) => (s.cancelled ? Infinity : s.periods)));     // periods every censored member reached
+    const T = Math.min(...ss.map((s) => (s.cancelled ? Infinity : s.time)));     // renewals every censored member has been seen to make
     const reach = Number.isFinite(T) ? T : Math.max(...ss.map((s) => s.periods));
     const alive = Array.from({ length: reach + 1 }, (_, t) => ss.filter((s) => !s.cancelled || s.periods > t).length);
     return { month, size: ss.length, alive };

@@ -19,8 +19,11 @@ const MONTHLY = 1 - (KEPT / AT_START.length) ** (1 / 12);
 // ---------------------------------------------------------------- survival by how they joined
 const GROUPS = [['relaunch offer', 'Relaunch offer (Jul–Sep 2026)'], ['shop', 'Shop'], ['other', 'Referral or café']];
 const inGroup = (s, g) => (g === 'other' ? ['referral', 'café'].includes(s.channel) : s.channel === g);
-const KM = Object.fromEntries(GROUPS.map(([g]) => { const ss = SUBS.filter((s) => inGroup(s, g)); return [g, { n: ss.length, km: CU.kaplanMeier(ss.map((s) => s.periods), ss.map((s) => s.cancelled)) }]; }));
-const LR = (() => { const ss = SUBS.filter((s) => s.channel === 'relaunch offer' || s.channel === 'shop'); return CU.logRank(ss.map((s) => s.periods), ss.map((s) => s.cancelled), ss.map((s) => s.channel)); })();
+// survival time in months: a cancelled subscriber's months paid; one still subscribed is censored at the renewals seen
+// (months paid − 1), as case.js `time` defines it
+const KM = Object.fromEntries(GROUPS.map(([g]) => { const ss = SUBS.filter((s) => inGroup(s, g)); return [g, { n: ss.length, km: CU.kaplanMeier(ss.map((s) => s.time), ss.map((s) => s.cancelled)) }]; }));
+const LR = (() => { const ss = SUBS.filter((s) => s.channel === 'relaunch offer' || s.channel === 'shop'); return CU.logRank(ss.map((s) => s.time), ss.map((s) => s.cancelled), ss.map((s) => s.channel)); })();
+const LR3 = CU.logRank(SUBS.map((s) => s.time), SUBS.map((s) => s.cancelled), SUBS.map((s) => GROUPS.find(([g]) => inGroup(s, g))[0]));
 
 // ---------------------------------------------------------------- projecting the relaunch cohorts
 const OFFER_COHORTS = subCohorts({ channel: 'relaunch offer' });
@@ -40,10 +43,18 @@ const mean = (a) => a.reduce((t, v) => t + v, 0) / a.length;
 const OFFER = SUBS.filter((s) => s.channel === 'relaunch offer'), SHOP = SUBS.filter((s) => s.channel === 'shop');
 const M_OFFER = mean(OFFER.map(marginOf)), M_SHOP = mean(SHOP.map(marginOf));
 const DEL_OFFER = CU.sbgDEL(FULL.alpha, FULL.beta, DISCOUNT_MONTH), CLV_OFFER = M_OFFER * DEL_OFFER;
-const R_SHOP = KM.shop.km.at(12) ** (1 / 12), CLV_SHOP = CU.clvConstant({ m: M_SHOP, r: R_SHOP, d: DISCOUNT_MONTH }).value;
-const CAC_OFFER = mean(OFFER.map((s) => s.price * ACQUISITION.offerShare)), CAC_REF = ACQUISITION.referralCredit * ACQUISITION.referralSides;
+// constant retention as the lessons estimate it: renewals ÷ chances to renew (a cancelled subscriber had `periods` chances
+// and renewed periods − 1 times; one still subscribed renewed every one of its `time` chances)
+const SHOP_RENEW = SHOP.reduce((t, s) => t + (s.cancelled ? s.periods - 1 : s.time), 0), SHOP_CHANCES = SHOP.reduce((t, s) => t + (s.cancelled ? s.periods : s.time), 0);
+const R_SHOP = SHOP_RENEW / SHOP_CHANCES, CLV_SHOP = CU.clvConstant({ m: M_SHOP, r: R_SHOP, d: DISCOUNT_MONTH }).value;
+// the discount, less the card fee Lantern didn't pay on the half it didn't charge
+const CAC_OFFER = mean(OFFER.map((s) => s.price * ACQUISITION.offerShare * (1 - FEE_RATE))), CAC_GROSS = mean(OFFER.map((s) => s.price * ACQUISITION.offerShare)), CAC_REF = ACQUISITION.referralCredit * ACQUISITION.referralSides;
 const HB = SUBS.filter((s) => s.product === 'House Blend 250g' && s.quantity === 1);
 const HB_MARGIN = marginOf(HB[0]);
+// every plan: price, coffee cost, margin and how many subscribers chose it on each channel
+const PLANS = [...new Map(SUBS.map((s) => [`${s.product}|${s.quantity}`, s])).values()].sort((a, b) => a.price - b.price)
+  .map((s) => ({ product: s.product, quantity: s.quantity, price: s.price, cost: s.unitCost, margin: marginOf(s), offer: OFFER.filter((x) => x.product === s.product && x.quantity === s.quantity).length, shop: SHOP.filter((x) => x.product === s.product && x.quantity === s.quantity).length }));
+const SINGLES = PLANS.filter((p) => p.quantity === 1 && p.product.endsWith('250g'));
 const PAYBACK_OFFER = (() => { let acc = -CAC_OFFER; for (let t = 0; t < 600; t++) { acc += M_OFFER * CU.sbgS(FULL.alpha, FULL.beta, t) / (1 + DISCOUNT_MONTH) ** t; if (acc >= 0) return t + 1; } return Infinity; })();
 
 // ---------------------------------------------------------------- the save-offer test
@@ -52,6 +63,9 @@ const stillOn = (q) => { const s = SUBS.find((x) => x.id === q.id); return !s.ca
 const STILL_O = OFFERED.filter(stillOn).length, STILL_C = CONTROL.filter(stillOn).length, SKIPPED = OFFERED.filter((q) => q.saved).length;
 const TEST = propTest2(STILL_O, OFFERED.length, STILL_C, CONTROL.length);
 const LATER = OFFERED.filter((q) => q.saved && !stillOn(q)).length;
+const BOTH = [...new Set(OFFERED.map((q) => q.id))].filter((id) => CONTROL.some((q) => q.id === id));   // subscribers who asked twice, once in each arm
+const PAID_AGAIN = OFFERED.filter((q) => { const s = SUBS.find((x) => x.id === q.id); return s.billings.some((d) => d > q.date && !s.skipped.includes(d)); }).length;
+const nice = (iso) => { const [y, m, d] = iso.split('-').map(Number); return `${d} ${['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][m - 1]} ${y}`; };
 
 export const R06 = { AT_START: AT_START.length, KEPT, RET27, CANCELS27, NEW_CANCELLED, MONTHLY, KM, LR, P6, ACT_LAST, FULL, M_OFFER, M_SHOP, CLV_OFFER, CLV_SHOP, R_SHOP, CAC_OFFER, CAC_REF, HB_MARGIN, PAYBACK_OFFER, STILL_O, STILL_C, SKIPPED, TEST, LATER };
 
@@ -64,25 +78,33 @@ const num = (id, prompt, answer, check, solution, wrong, { unit = '', places = 2
 
 // ---------------------------------------------------------------- tools
 const survTool = { kind: 'widget', widget: { type: 'survival', title: 'Months subscribed, by how subscribers joined (March 2026 – December 2027)', unit: 'months',
-  groups: GROUPS.map(([g, name]) => { const ss = SUBS.filter((s) => inGroup(s, g)); return { name, times: ss.map((s) => s.periods), events: ss.map((s) => s.cancelled) }; }),
+  groups: GROUPS.map(([g, name]) => { const ss = SUBS.filter((s) => inGroup(s, g)); return { name, times: ss.map((s) => s.time), events: ss.map((s) => s.cancelled) }; }),
   show: ['median', 'logrank'], at: [3, 6, 12],
-  note: 'A subscriber’s time is the number of months they paid for. Subscribers still active on 31 December 2027 are censored at the months they had paid for by then.' } };
-const sbgTool = { kind: 'widget', widget: { type: 'sbg', title: `The relaunch-offer cohorts (July, August and September 2026: ${OFFER.length} subscribers)`, cohorts: OFFER_COHORTS.map((c) => ({ alive: c.alive })), fit: FIT, fitRange: [3, LAST], horizon: 36, unit: 'month',
-  note: 'Each cohort is observed up to December 2027, so the latest months rest on the July and August cohorts only.' } };
-const clvTool = { kind: 'widget', widget: { type: 'clv', title: 'Value of a subscriber (margin per delivered month, 10% a year discount)', m: r(M_SHOP, 2), r: r(R_SHOP, 3), d: r(DISCOUNT_MONTH, 4), cac: 0, unit: 'month', horizon: 60,
-  ranges: { m: [0, 20, 0.01], r: [0.8, 0.995, 0.001], d: [0, 0.02, 0.0001], cac: [0, 50, 0.5] }, sbg: { alpha: r(FULL.alpha, 3), beta: r(FULL.beta, 3) },
-  note: `The sBG curve uses the relaunch cohorts’ fit (α ${f(FULL.alpha, 3)}, β ${f(FULL.beta, 3)}); set the margin to theirs to compare.` } };
+  note: 'A cancelled subscriber’s time is the number of months they paid for. A subscriber still active on 31 December 2027 who has paid for k months has been seen to renew k − 1 times (the next renewal is still to come), so is censored at k − 1. The log-rank test here compares all three groups.' } };
+const sbgTool = { kind: 'widget', widget: { type: 'sbg', title: `The relaunch-offer cohorts (July, August and September 2026: ${OFFER.length} subscribers)`, cohorts: OFFER_COHORTS.map((c) => ({ alive: c.alive.slice(0, LAST + 1) })), fit: FIT, fitRange: [3, LAST], horizon: 36, unit: 'month',
+  note: `Each cohort is shown up to ${LAST} renewals, the most the September cohort has been seen to make by 31 December 2027.` } };
+const clvTool = { kind: 'widget', widget: { type: 'clv', title: 'Value of a subscriber (margin per delivered month, 10% a year discount)', m: r(M_SHOP, 2), r: r(R_SHOP, 4), d: r(DISCOUNT_MONTH, 4), cac: 0, unit: 'month', horizon: 60,
+  ranges: { m: [0, 20, 0.01], r: [0.8, 0.995, 0.0001], d: [0, 0.02, 0.0001], cac: [0, 50, 0.5] }, sbg: { alpha: r(FULL.alpha, 3), beta: r(FULL.beta, 3) },
+  note: `It starts at the shop sign-ups’ margin and retention (r = ${f(R_SHOP, 4)}). The sBG curve uses the relaunch cohorts’ fit (α ${f(FULL.alpha, 3)}, β ${f(FULL.beta, 3)}); set the margin to theirs to compare.` } };
 const reqCells = { A1: 'Subscriber', B1: 'Asked to cancel', C1: 'Offered a skip (1 = yes)', D1: 'Outcome', E1: 'Subscribed on 31 Dec 2027 (1 = yes)' };
-SAVE_REQUESTS.forEach((q, k) => { const row = k + 2; Object.assign(reqCells, { [`A${row}`]: q.id, [`B${row}`]: q.date, [`C${row}`]: q.offered, [`D${row}`]: q.outcome, [`E${row}`]: stillOn(q) }); });
+[...SAVE_REQUESTS].sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0)).forEach((q, k) => { const row = k + 2; Object.assign(reqCells, { [`A${row}`]: q.id, [`B${row}`]: q.date, [`C${row}`]: q.offered, [`D${row}`]: q.outcome, [`E${row}`]: stillOn(q) }); });
 const LQ = SAVE_REQUESTS.length + 1;
-const sheetTool = { kind: 'widget', widget: { type: 'sheet', title: `The save-offer test: every request to cancel from ${SAVE_TEST_START} (work in columns G to J)`, sheet: { cells: reqCells }, view: `A1:J${LQ}`, editable: `G1:J${LQ}`, maxHeight: '22rem',
+// the subscription register
+const regCells = { A1: 'Subscriber', B1: 'Started', C1: 'Channel', D1: 'Plan', E1: 'Bags', F1: 'Price ($)', G1: 'Coffee cost ($)', H1: 'Asked to cancel', I1: 'Months paid', J1: 'Subscribed 31 Dec 2026', K1: 'Subscribed 31 Dec 2027' };
+SUBS.forEach((s, k) => { const row = k + 2; Object.assign(regCells, { [`A${row}`]: s.id, [`B${row}`]: s.start, [`C${row}`]: s.channel, [`D${row}`]: s.product, [`E${row}`]: s.quantity, [`F${row}`]: s.price, [`G${row}`]: r(s.unitCost, 2),
+  [`H${row}`]: s.cancelledOn || '', [`I${row}`]: s.periods, [`J${row}`]: s.start <= '2026-12-31' && (!s.cancelledOn || s.cancelledOn > '2026-12-31') ? 1 : 0, [`K${row}`]: !s.cancelledOn || s.cancelledOn > '2027-12-31' ? 1 : 0 }); });
+const LS = SUBS.length + 1;
+const regTool = { kind: 'widget', widget: { type: 'sheet', title: `Every subscription, March 2026 – December 2027 (${SUBS.length}; work in columns M to P)`, sheet: { cells: regCells }, view: `A1:P${LS}`, editable: `M1:P${LS}`, maxHeight: '22rem',
+  widths: { A: 9, B: 11, C: 13, D: 22, E: 6, F: 9, G: 11, H: 13, I: 9, J: 12, K: 12, L: 2, M: 14, N: 11, O: 11, P: 11 } } };
+const planTable = `<div class="table-scroll"><table class="data-table study-table"><caption>Plans: price, coffee cost and margin per delivered month, and how many chose each</caption><thead><tr><th scope="col">Plan</th><th scope="col">Price</th><th scope="col">Coffee</th><th scope="col">Margin</th><th scope="col">Relaunch offer</th><th scope="col">Shop</th></tr></thead><tbody>${PLANS.map((p) => `<tr><th scope="row">${p.quantity} × ${p.product}</th><td>${money(p.price)}</td><td>${money(p.cost)}</td><td>${money(p.margin)}</td><td>${p.offer}</td><td>${p.shop}</td></tr>`).join('')}</tbody></table></div>`;
+const sheetTool = { kind: 'widget', widget: { type: 'sheet', title: `The save-offer test: every request to cancel from ${nice(SAVE_TEST_START)}, in date order (work in columns G to J)`, sheet: { cells: reqCells }, view: `A1:J${LQ}`, editable: `G1:J${LQ}`, maxHeight: '22rem',
   widths: { A: 10, B: 12, C: 12, D: 15, E: 14, F: 2, G: 16, H: 11, I: 11, J: 11 } } };
 
 export default {
   title: 'Keeping Lantern’s coffee subscribers',
   brief: [
-    { case: `January 2028. Lantern’s online shop has sold coffee subscriptions since it opened in March 2026: one delivery a month, on the same date each month (the 28th at the latest), at 90% of list price. ${SUBS.length} subscriptions have started. In July–September 2026 the relaunch offered half price on the first month, and ${OFFER.length} people joined on it; others joined at the shop, by a friend’s referral (each side gets $${ACQUISITION.referralCredit} of shop credit) or, from March 2027, at the cafés. ${AT_START.length} were subscribed on 31 December 2026 and ${activeOn('2027-12-31')} a year later. From ${SAVE_TEST_START}, a subscriber who asked to cancel was randomly either cancelled, as before, or offered to skip the next month instead. Every subscription is in the data with its start, how it joined, its plan and price, and the date it asked to cancel if it did.` },
-    { p: `A delivered month earns the price, less the coffee’s cost (B03’s product costs), the $${PARCEL.toFixed(2)} parcel and card fees of ${(FEE_RATE * 100).toFixed(1)}% of the price. Ana discounts future margins at ${(DISCOUNT_YEAR * 100).toFixed(0)}% a year (${pc(DISCOUNT_MONTH, 2)} a month). She asks: how well does Lantern keep subscribers, does it depend on how they joined, what is a subscriber worth against what one costs to win, and should she keep the skip offer and repeat a half-price launch offer in 2028?` },
+    { case: `January 2028. Lantern’s online shop has sold coffee subscriptions since it opened in March 2026: one delivery a month, on the same date each month (the 28th at the latest), at 90% of list price. ${SUBS.length} subscriptions have started. In July–September 2026 the relaunch offered half price on the first month, and ${OFFER.length} people joined on it; others joined at the shop, by a friend’s referral (each side gets $${ACQUISITION.referralCredit} of shop credit) or, from March 2027, at the cafés. ${AT_START.length} were subscribed on 31 December 2026 and ${activeOn('2027-12-31')} a year later. From ${nice(SAVE_TEST_START)}, a subscriber who asked to cancel was randomly either cancelled, as before, or offered to skip the next month instead. Every subscription is in the register below with its start, how it joined, its plan and price, and the date it asked to cancel if it did. (Some subscribers pay a few months ahead, the unearned subscription revenue in F02’s and F03’s accounts; the register counts each month when it is billed and delivered.)` },
+    { p: `Subscription deliveries ship free (the shop’s $4.95 delivery charge on orders under $35, from B01, applies to one-off orders), so a delivered month earns the price, less the coffee’s cost (B03’s product costs), the $${PARCEL.toFixed(2)} parcel Lantern pays and card fees of ${(FEE_RATE * 100).toFixed(1)}% of the price. Ana discounts future margins at ${(DISCOUNT_YEAR * 100).toFixed(0)}% a year (${pc(DISCOUNT_MONTH, 2)} a month). She asks: how well does Lantern keep subscribers, does it depend on how they joined, what is a subscriber worth against what one costs to win, and should she keep the skip offer and repeat a half-price launch offer in 2028?` },
   ],
   deliverables: [
     '2027’s retention rate for the subscribers Lantern started the year with, calculated with the right denominator, and its monthly equivalent.',
@@ -95,11 +117,12 @@ export default {
   stages: [
     {
       id: 'rates', title: 'Retention in 2027',
-      html: `<p>${AT_START.length} subscribers were active on 1 January 2027; ${SUBS.filter((s) => s.start >= '2027-01-01').length} more joined during the year and ${CANCELS27} cancellations came in; ${activeOn('2027-12-31')} were active on 31 December.</p>`,
+      html: `<p>${AT_START.length} subscribers were active on 1 January 2027; ${SUBS.filter((s) => s.start >= '2027-01-01').length} more joined during the year and ${CANCELS27} cancellations came in; ${activeOn('2027-12-31')} were active on 31 December. The register has every subscription: columns J and K flag who was subscribed at the end of each year.</p>`,
+      tool: regTool,
       items: [
         num('m06-pj-1', 'Of the subscribers active on 1 January 2027, what share were still subscribed on 31 December 2027? Give a percentage to one decimal place.', r(KEPT / AT_START.length * 100, 1),
           () => { const s0 = SUBS.filter((s) => s.start < '2027-01-01' && !(s.cancelledOn && s.cancelledOn <= '2026-12-31')); return s0.filter((s) => !(s.cancelledOn && s.cancelledOn <= '2027-12-31')).length / s0.length * 100; },
-          `${KEPT} of ${AT_START.length} = ${pc(KEPT / AT_START.length)}. Equivalently: ${activeOn('2027-12-31')} at the end, less the ${activeOn('2027-12-31') - KEPT} 2027 joiners still subscribed, leaves ${KEPT} of the original ${AT_START.length}.`,
+          `${KEPT} of ${AT_START.length} = ${pc(KEPT / AT_START.length)}: in the register, =COUNTIFS(J2:J${LS},1,K2:K${LS},1)/SUM(J2:J${LS}). Equivalently: ${activeOn('2027-12-31')} at the end, less the ${activeOn('2027-12-31') - KEPT} 2027 joiners still subscribed, leaves ${KEPT} of the original ${AT_START.length}.`,
           [{ value: r((1 - CANCELS27 / AT_START.length) * 100, 1), say: `That subtracts all ${CANCELS27} cancellations, but ${NEW_CANCELLED} of them came from people who joined in 2027 and weren’t among the ${AT_START.length}.` },
             { value: r(activeOn('2027-12-31') / AT_START.length * 100, 1), say: 'That counts 2027’s new subscribers as if they had been kept. Retention follows the people you started with.' }],
           { unit: '%', places: 1, tol: 0.06 }),
@@ -116,16 +139,16 @@ export default {
       tool: survTool,
       items: [
         num('m06-pj-3', 'Kaplan–Meier: what share of relaunch-offer subscribers were still subscribed after 12 months? Give a percentage to one decimal place.', r(KM['relaunch offer'].km.at(12) * 100, 1),
-          () => { const ss = SUBS.filter((s) => s.channel === 'relaunch offer'); let S = 1; for (let t = 1; t <= 12; t++) { const atRisk = ss.filter((s) => s.periods >= t).length, d = ss.filter((s) => s.cancelled && s.periods === t).length; if (atRisk) S *= 1 - d / atRisk; } return S * 100; },
+          () => { const ss = SUBS.filter((s) => s.channel === 'relaunch offer'); const T = (s) => (s.cancelled ? s.periods : s.periods - 1); let S = 1; for (let t = 0; t <= 12; t++) { const atRisk = ss.filter((s) => T(s) >= t).length, d = ss.filter((s) => s.cancelled && T(s) === t).length; if (atRisk) S *= 1 - d / atRisk; } return S * 100; },
           `S(12) = ${pc(KM['relaunch offer'].km.at(12))}, against ${pc(KM.shop.km.at(12))} for shop sign-ups. The median relaunch-offer subscriber stayed ${KM['relaunch offer'].km.median} months; the shop group’s survival never fell to half, so its median isn’t reached.`, null,
           { unit: '%', places: 1, tol: 0.06 }),
         { id: 'm06-pj-4', type: 'mc', kind: 'conceptual',
-          prompt: `The log-rank test comparing relaunch-offer and shop subscribers gives χ² = ${f(LR.chi2, 1)} (p ${LR.p < 0.001 ? 'below 0.001' : `= ${f(LR.p, 3)}`}). What does that establish?`,
+          prompt: `The log-rank test comparing relaunch-offer and shop subscribers only gives χ² = ${f(LR.chi2, 1)} on 1 df (p ${LR.p < 0.001 ? 'below 0.001' : `= ${f(LR.p, 3)}`}; the tool compares all three groups: χ² = ${f(LR3.chi2, 1)} on 2 df). What does that establish?`,
           options: [
-            'That the half-price offer made people cancel sooner, so any future discount will raise churn by about the same amount',
-            'Nothing, because the shop group includes subscribers who joined months before the offer and so had much longer to stay',
-            'That survival differs between the groups by more than chance explains, but not why',
-            'That relaunch-offer subscribers are worth less, since a group that churns faster always has the lower lifetime value',
+            'That the half-price offer made people cancel sooner, so a future discount would raise churn too',
+            'Nothing, since the shop group joined months earlier and had longer to stay',
+            'That survival differs between the groups by more than chance would explain, but not why it differs',
+            'That relaunch-offer subscribers are worth less, since faster churn means lower value',
           ],
           answer: 2,
           feedback: {
@@ -147,19 +170,19 @@ export default {
           { unit: '%', places: 1, tol: 0.06 }),
         num('m06-pj-6', `And what does constant retention, fitted to the same ${FIT} months, project after ${LAST} months? Give a percentage to one decimal place.`, r(P6.r ** LAST * 100, 1),
           () => { let renew = 0, ch = 0; for (const c of OFFER_COHORTS) for (let t = 1; t <= FIT; t++) { renew += c.alive[t]; ch += c.alive[t - 1]; } return (renew / ch) ** LAST * 100; },
-          `r = ${pc(P6.r)} a month (renewals ÷ chances to renew over the first ${FIT} months), so r^${LAST} = ${pc(P6.r ** LAST)}: about half what happened.`, null,
-          { unit: '%', places: 1, tol: 0.06 }),
+          `r = ${pc(P6.r, 2)} a month (renewals ÷ chances to renew over the first ${FIT} months), so r^${LAST} = ${pc(P6.r ** LAST)}: about half what happened. (Working from the tool’s rounded r gives a slightly different figure; anything within 0.2 points is accepted.)`, null,
+          { unit: '%', places: 1, tol: 0.2 }),
         { id: 'm06-pj-7', type: 'mc', kind: 'conceptual',
-          prompt: 'Why does constant retention fitted to the first months fall so far short later on?',
+          prompt: 'How does the sBG model explain why constant retention, fitted to the first months, falls so far short later on?',
           options: [
-            'Each subscriber grows more loyal the longer they stay, and a single constant rate can’t represent that growth',
-            'Subscribers differ, and the likeliest to cancel leave first, so survivors renew more often',
-            'The early months included the half-price month, so their churn was inflated by the low price alone',
-            'Six months of data are too few for any model; fitted to twelve months, constant retention would match',
+            'Each subscriber’s own churn probability falls the longer they stay, which a constant rate can’t follow',
+            'Subscribers differ, and those likeliest to cancel leave first, so the survivors renew more often',
+            'The half-price first month inflated early churn, so the early average overstates later churn',
+            'Six months are too few for any fit; with twelve, constant retention would match the later months',
           ],
           answer: 1,
           feedback: {
-            0: 'That would also make retention rise, but the sBG model gets the rise without any customer changing: each keeps one churn probability, and the mix of survivors shifts. The data can’t tell the two stories apart; the sBG’s is enough.',
+            0: 'That is a different story (customers changing). In the sBG model each customer keeps one churn probability; the rise comes from the mix of survivors shifting. The data alone can’t tell the two stories apart.',
             2: 'Only the first month was half price; the rise in retention continues long after it.',
             3: 'Refit both with more months in the tool: constant retention keeps under-projecting the later months, because the rise is in the data, not in the sample size.',
           },
@@ -168,28 +191,28 @@ export default {
     },
     {
       id: 'value', title: 'What a subscriber is worth',
-      html: `<p>A delivered month’s margin is the price less the coffee, the parcel and card fees. Plans range from a single 250 g bag to two 1 kg bags.</p>`,
+      html: `<p>A delivered month’s margin is the price less the coffee, the $${PARCEL.toFixed(2)} parcel and card fees of ${(FEE_RATE * 100).toFixed(1)}%.</p>${planTable}`,
       tool: clvTool,
       items: [
         num('m06-pj-8', 'What is the average margin per delivered month across relaunch-offer subscribers’ plans (at the full price)? Give dollars to the cent.', r(M_OFFER, 2),
           () => mean(OFFER.map((s) => s.price - s.unitCost - 5.2 - 0.035 * s.price)),
-          `${money(M_OFFER)} a month (shop sign-ups: ${money(M_SHOP)}). The average hides a wide spread: two 1 kg bags earn about $30 a month; a single 250 g bag of House Blend loses ${money(-HB_MARGIN)}.`, null, { unit: '$' }),
+          `${money(M_OFFER)} a month (shop sign-ups: ${money(M_SHOP)}). The average hides a wide spread: two 1 kg bags earn $30 to $35 a month; a single 250 g bag of House Blend loses ${money(-HB_MARGIN)}.`, null, { unit: '$' }),
         num('m06-pj-9', `With the sBG fitted to all of the relaunch cohorts’ months (α ${f(FULL.alpha, 3)}, β ${f(FULL.beta, 3)}), the discounted expected lifetime of a new subscriber is ${f(CU.sbgDEL(FULL.alpha, FULL.beta, DISCOUNT_MONTH), 2)} months (counting the first month, paid now). What is a relaunch-offer subscriber’s lifetime value at their average margin? Give dollars to the cent.`, r(CLV_OFFER, 2),
           () => { let v = 0; for (let t = 0; t < 5000; t++) v += M_OFFER * CU.sbgS(FULL.alpha, FULL.beta, t) / (1 + DISCOUNT_MONTH) ** t; return v; },
-          `${money(M_OFFER)} × ${f(CU.sbgDEL(FULL.alpha, FULL.beta, DISCOUNT_MONTH), 2)} = ${money(CLV_OFFER)}, before the cost of winning them. The first month was half price, which is that cost, below.`, null, { unit: '$', tol: 0.05 }),
-        num('m06-pj-10', `Shop sign-ups show no sign of retention rising (an sBG fit puts them all alike), so value them with constant retention: their 12-month Kaplan–Meier survival, ${pc(KM.shop.km.at(12))}, gives r = ${f(R_SHOP, 4)} a month. With margins at the start of each month (the first now), what is a shop sign-up’s lifetime value? Give dollars to the cent.`, r(CLV_SHOP, 2),
+          `${money(M_OFFER)} × ${f(CU.sbgDEL(FULL.alpha, FULL.beta, DISCOUNT_MONTH), 2)} = ${money(CLV_OFFER)}, before the cost of winning them. The first month was half price, which is that cost, below.`, null, { unit: '$', tol: 0.15 }),
+        num('m06-pj-10', `Shop sign-ups are too few to show whether their retention rises (a pooled sBG fit finds no spread among them, partly because all 27 spring subscribers stayed through June 2026, as B03’s orders show), so value them with constant retention: renewals ÷ chances to renew over every shop sign-up’s months gives r = ${SHOP_RENEW} ÷ ${SHOP_CHANCES} = ${f(R_SHOP, 5)} a month. With margins at the start of each month (the first now), what is a shop sign-up’s lifetime value? Give dollars to the cent.`, r(CLV_SHOP, 2),
           () => M_SHOP * (1 + DISCOUNT_MONTH) / (1 + DISCOUNT_MONTH - R_SHOP),
-          `m(1 + d) ÷ (1 + d − r) = ${f(M_SHOP)} × ${f(1 + DISCOUNT_MONTH, 4)} ÷ (${f(1 + DISCOUNT_MONTH, 4)} − ${f(R_SHOP, 4)}) = ${money(CLV_SHOP)}. With r this close to 1, the value is very sensitive to it: try the retention slider.`,
+          `m(1 + d) ÷ (1 + d − r) = ${f(M_SHOP)} × ${f(1 + DISCOUNT_MONTH, 5)} ÷ (${f(1 + DISCOUNT_MONTH, 5)} − ${f(R_SHOP, 5)}) = ${money(CLV_SHOP)}. With r this close to 1 the value is very sensitive to it (try the retention slider), and if shop sign-ups differ as offer joiners do, constant retention undervalues them.`,
           [{ value: r(M_SHOP * R_SHOP / (1 + DISCOUNT_MONTH - R_SHOP), 2), say: 'That is the end-of-period convention (the first margin after a renewal). A subscriber pays for the first month when they join.' },
             { value: r(M_SHOP / (1 - R_SHOP), 2), say: 'That leaves out discounting. Ana discounts at 10% a year.' }],
-          { unit: '$', tol: 0.05 }),
+          { unit: '$', tol: 1 }),
         { id: 'm06-pj-11', type: 'mc', kind: 'applied',
-          prompt: `${HB.length} subscriptions were for a single 250 g bag of House Blend at $12.60, which earns ${money(HB_MARGIN)} a month after the coffee, the $5.20 parcel and fees. What should Ana do about it?`,
+          prompt: `${HB.length} subscriptions were for a single 250 g bag of House Blend at $12.60, which earns ${money(HB_MARGIN)} a month after the coffee, the $5.20 parcel and fees (subscriptions ship free). What should Ana do about it?`,
           options: [
-            'Run a retention campaign for these subscribers, since keeping them for longer will eventually make them profitable',
-            'Cancel all of their subscriptions straight away, since every one of these plans loses money on each delivery',
-            'Nothing, because the average margin across all of the plans is positive, so the overall plan mix is fine',
-            'Change the plan’s terms for new sign-ups (a two-bag minimum or a delivery charge)',
+            'Run a retention campaign for these subscribers, so that they stay long enough to become profitable',
+            'Cancel all of these subscriptions at once, since every one of them loses money on each delivery',
+            'Nothing, since the average margin across all of the plans is positive and the mix is fine',
+            'Apply the shop’s $4.95 delivery charge (or a two-bag minimum) to new single-bag sign-ups',
           ],
           answer: 3,
           feedback: {
@@ -197,18 +220,19 @@ export default {
             1: 'Cancelling paying customers is drastic and loses any future upgrades and goodwill; change the terms and give notice.',
             2: 'An average can hide a loss: a positive mean margin is no reason to keep a plan that loses on every delivery.',
           },
-          solution: 'A single 250 g bag can’t carry a $5.20 parcel at 90% of $14. The fix is in the offer (minimum quantity, a delivery charge, or a less frequent schedule), tested on new sign-ups, with existing subscribers given notice.' },
+          solution: `A single 250 g bag can’t carry a $5.20 parcel at 90% of $14. Other single bags barely pay: ${SINGLES.filter((p) => p.margin >= 0).map((p) => `${p.product} ${money(p.margin)}`).join(', ')} a month. The fix is in the terms (the shop’s delivery charge, a minimum quantity or a less frequent schedule), tested on new sign-ups, with existing subscribers given notice.` },
       ],
     },
     {
       id: 'cost', title: 'What a subscriber costs to win',
-      html: `<p>The relaunch offer gave half the first month away; a referral costs $${ACQUISITION.referralCredit} of credit to each side; shop and café sign-ups had no direct cost. B05’s $${SOCIAL.toLocaleString('en-US')} of 2027 paid social promoted the whole shop.</p>`,
+      html: `<p>The relaunch offer gave half the first month away; a referral gives $${ACQUISITION.referralCredit} of shop credit to each side (redeemed in coffee, so it costs Lantern less than $${ACQUISITION.referralCredit * 2}); shop and café sign-ups had no direct cost. B05’s $${SOCIAL.toLocaleString('en-US')} of 2027 paid social promoted the whole shop. The register (stage 1) has every subscriber’s channel and price.</p>`,
+      tool: regTool,
       items: [
-        num('m06-pj-12', 'What did the relaunch offer cost per subscriber it signed up (half the first month’s price, on average)? Give dollars to the cent.', r(CAC_OFFER, 2),
-          () => OFFER.reduce((t, s) => t + s.price / 2, 0) / OFFER.length,
-          `${money(CAC_OFFER)} a subscriber. Against a lifetime value of ${money(CLV_OFFER)} that is a value-to-cost ratio of ${f(CLV_OFFER / CAC_OFFER, 1)}, and the discount is paid back in month ${PAYBACK_OFFER} once retention and discounting are counted.`, null, { unit: '$' }),
+        num('m06-pj-12', `What did the relaunch offer cost per subscriber it signed up: half the first month’s price, less the ${(FEE_RATE * 100).toFixed(1)}% card fee Lantern didn’t pay on that half, on average? Give dollars to the cent.`, r(CAC_OFFER, 2),
+          () => OFFER.reduce((t, s) => t + s.price / 2 - 0.035 * s.price / 2, 0) / OFFER.length,
+          `${money(CAC_OFFER)} a subscriber. Against a lifetime value of ${money(CLV_OFFER)} that is a value-to-cost ratio of ${f(CLV_OFFER / CAC_OFFER, 1)}, and the discount is paid back in month ${PAYBACK_OFFER} once retention and discounting are counted.`, [{ value: r(CAC_GROSS, 2), say: 'That is the discount before fees. Lantern also didn’t pay the card fee on the half it didn’t charge.' }], { unit: '$' }),
         { id: 'm06-pj-13', type: 'mc', kind: 'applied',
-          prompt: `Relaunch-offer subscribers churn faster than shop sign-ups but are still worth about ${money(CLV_OFFER, 0)} each against a ${money(CAC_OFFER)} discount. What is the strongest reason this does not, by itself, show that repeating the offer in 2028 would pay?`,
+          prompt: `Relaunch-offer subscribers churn faster than shop sign-ups but are still worth many times the discount that won them. What is the strongest reason this does not, by itself, show that repeating the offer in 2028 would pay?`,
           options: [
             'Some takers would have joined anyway at full price, so the cost per subscriber it added is higher',
             'The offer’s subscribers churn faster, and a channel with faster churn can never be worth paying to acquire',
@@ -219,19 +243,19 @@ export default {
           feedback: {
             1: 'Faster churn lowers value; whether a channel is worth it depends on value against cost, which is positive here.',
             2: 'Discounting reflects that later money is worth less; it isn’t a bias to correct.',
-            3: 'Any “3:1” guide is a rule of thumb, and it doesn’t answer whether these subscribers were added by the offer at all.',
+            3: 'A “3:1” guide is a rule of thumb (Skok’s is for revenue-based value at software firms with 80%+ gross margins, not margin-based value like this), and it doesn’t answer whether the offer added these subscribers at all.',
           },
           solution: 'Cost per subscriber divides by everyone who took the offer, but the offer only earns its keep through subscribers it added. Without a comparison (a holdout period or region, or a test of offer against no offer), the incremental cost per added subscriber is unknown and could be several times the average.' },
       ],
     },
     {
       id: 'test', title: 'The save-offer test',
-      html: `<p>From ${SAVE_TEST_START}, each request to cancel was assigned at random: cancel as asked, or offer to skip the next month instead. ${SAVE_REQUESTS.length} requests came in.</p>`,
+      html: `<p>From ${nice(SAVE_TEST_START)}, each request to cancel was assigned at random: cancel as asked, or offer to skip the next month instead. ${SAVE_REQUESTS.length} requests came in.</p>`,
       tool: sheetTool,
       items: [
         num('m06-pj-14', 'Of the requests offered a skip, what share were still subscribed on 31 December 2027? Give a percentage to one decimal place.', r(STILL_O / OFFERED.length * 100, 1),
           () => SAVE_REQUESTS.filter((q) => q.offered && stillOn(q)).length / SAVE_REQUESTS.filter((q) => q.offered).length * 100,
-          `${STILL_O} of ${OFFERED.length} = ${pc(STILL_O / OFFERED.length)}; of the ${CONTROL.length} cancelled as asked, ${STILL_C}. ${SKIPPED} took the skip and ${LATER} of them cancelled later in the year. In a sheet: =COUNTIFS(C2:C${LQ},1,E2:E${LQ},1)/COUNTIF(C2:C${LQ},1).`,
+          `${STILL_O} of ${OFFERED.length} = ${pc(STILL_O / OFFERED.length)}; of the ${CONTROL.length} cancelled as asked, ${STILL_C}. ${SKIPPED} took the skip and ${LATER} of them cancelled later in the year. Follow-up is short: ${PAID_AGAIN} of the ${OFFERED.length} offered paid for at least one more delivery by 31 December, and requests from late in the year have barely been followed. ${BOTH.length === 1 ? `One subscriber (${BOTH[0]}) asked twice and was assigned to each arm once, so requests aren’t quite independent.` : ''} In a sheet: =COUNTIFS(C2:C${LQ},1,E2:E${LQ},1)/COUNTIF(C2:C${LQ},1).`,
           [{ value: r(SKIPPED / OFFERED.length * 100, 1), say: 'That is the share who took the skip. Some of them cancelled later; the outcome that matters is still being a subscriber.' }],
           { unit: '%', places: 1, tol: 0.06 }),
         num('m06-pj-15', 'Give the lower limit of a 95% confidence interval for the difference between the arms in the share still subscribed (offered minus not offered; unpooled standard error). Give percentage points to one decimal place.', r(TEST.low * 100, 1),
@@ -241,10 +265,10 @@ export default {
         { id: 'm06-pj-16', type: 'mc', kind: 'conceptual',
           prompt: 'Why is the comparison made between the two arms as assigned, counting every request offered a skip whether or not they took it?',
           options: [
-            'Because those who refused the skip are a different kind of subscriber and should be left out of the analysis',
-            'Because only the subscribers who actually took the skip are any evidence of what the offer did for retention',
-            'Randomisation made the arms alike; those who took the skip chose themselves',
-            'It isn’t: the right comparison is subscribers who took the skip against subscribers who never asked to cancel',
+            'Because those who refused the skip are a different kind of subscriber and should be left out',
+            'Because only the subscribers who took the skip show what the offer did for retention',
+            'Because the coin toss made the arms alike, while those who took the skip chose themselves',
+            'It isn’t: compare those who took the skip with subscribers who never asked to cancel',
           ],
           answer: 2,
           feedback: {
@@ -265,9 +289,9 @@ export default {
             'Compares survival by how subscribers joined with censoring handled, and doesn’t read the difference as the offer’s effect.',
             'Projects with a model that lets retention rise (sBG) and explains why constant retention under-projects.',
             `Gives lifetime values with margins and discounting stated (about ${money(CLV_OFFER, 0)} for an offer joiner, ${money(CLV_SHOP, 0)} for a shop sign-up), notes the single-bag plan’s loss, and sets value against acquisition cost with the incrementality caveat.`,
-            `Reports the save-offer test by arm with its interval (about ${pc(TEST.diff, 0)} more still subscribed) and recommends keeping it while following the saved subscribers.`,
+            `Reports the save-offer test by arm with its interval (about ${(TEST.diff * 100).toFixed(0)} percentage points more still subscribed), notes the short follow-up, and recommends keeping it while following the saved subscribers.`,
           ],
-          model: `<b>To:</b> Ana · <b>Re:</b> keeping subscribers<br><br>Of the ${AT_START.length} subscribers on 1 January 2027, ${KEPT} (${pc(KEPT / AT_START.length)}) were still with us on 31 December, about ${pc(MONTHLY)} churn a month. How people joined matters: after 12 months ${pc(KM['relaunch offer'].km.at(12))} of relaunch-offer subscribers remained against ${pc(KM.shop.km.at(12))} of shop sign-ups. That reflects who an offer attracts as much as anything the offer did. Retention rises with time as the less committed leave, so a single churn rate under-projects: fitted to their first ${FIT} months it projected ${pc(P6.r ** LAST)} left after ${LAST} months, against ${pc(ACT_LAST)} actual; a model that lets subscribers differ projected ${pc(P6.sbg.S(LAST))}.<br><br>At 10% a year, an offer subscriber is worth about ${money(CLV_OFFER, 0)} in margin and a shop sign-up about ${money(CLV_SHOP, 0)}, against ${money(CAC_OFFER)} of discount for the offer. That doesn’t prove a 2028 offer would pay: some takers would have joined anyway. If you repeat it, hold it back in some weeks to measure what it adds. The single 250 g House Blend plan loses ${money(-HB_MARGIN)} a delivery; add a delivery charge or a two-bag minimum for new sign-ups.<br><br>The skip offer works: ${pc(STILL_O / OFFERED.length)} of requests offered a skip were still subscribers at year end against ${pc(STILL_C / CONTROL.length)} of those cancelled as asked (95% interval for the difference ${pc(TEST.low, 0)} to ${pc(TEST.high, 0)}). Offer it to everyone, and keep watching whether saved subscribers stay.`,
+          model: `<b>To:</b> Ana · <b>Re:</b> keeping subscribers<br><br>Of the ${AT_START.length} subscribers on 1 January 2027, ${KEPT} (${pc(KEPT / AT_START.length)}) were still with us on 31 December, about ${pc(MONTHLY)} churn a month. How people joined matters: after 12 months ${pc(KM['relaunch offer'].km.at(12))} of relaunch-offer subscribers remained against ${pc(KM.shop.km.at(12))} of shop sign-ups. That reflects who an offer attracts as much as anything the offer did. Retention rises with time as the less committed leave, so a single churn rate under-projects: fitted to their first ${FIT} months it projected ${pc(P6.r ** LAST)} left after ${LAST} months, against ${pc(ACT_LAST)} actual; a model that lets subscribers differ projected ${pc(P6.sbg.S(LAST))}.<br><br>At 10% a year, an offer subscriber is worth about ${money(CLV_OFFER, 0)} in margin and a shop sign-up about ${money(CLV_SHOP, 0)}, against ${money(CAC_OFFER)} of discount for the offer. That doesn’t prove a 2028 offer would pay: some takers would have joined anyway. If you repeat it, hold it back in some weeks to measure what it adds. The single 250 g House Blend plan loses ${money(-HB_MARGIN)} a delivery; apply the shop’s $4.95 delivery charge or a two-bag minimum to new sign-ups.<br><br>The skip offer works: ${pc(STILL_O / OFFERED.length)} of requests offered a skip were still subscribers at year end against ${pc(STILL_C / CONTROL.length)} of those cancelled as asked (95% interval for the difference ${pc(TEST.low, 0)} to ${pc(TEST.high, 0)}). Follow-up is short (only ${PAID_AGAIN} of the ${OFFERED.length} offered have paid for another delivery so far), so offer it to everyone and keep watching whether saved subscribers stay.`,
           solution: 'Compare your memo with the model and the rubric. Other recommendations earn full marks if they rest on the evidence, state its uncertainty and say what would settle the open questions.' },
       ],
     },
@@ -282,13 +306,13 @@ export default {
     return [
       ['subscriptions', SUBS.length, 261], ['on 1 January 2027', AT_START.length, 120], ['still on 31 December', KEPT, 79], ['retention via periodRetention', RET27.retention, KEPT / AT_START.length, 1e-12],
       ['2027 cancellations', CANCELS27, 52], ['monthly churn', MONTHLY, 0.034, 0.0005],
-      ['offer S(12)', KM['relaunch offer'].km.at(12), 0.411, 0.0005], ['shop S(12)', KM.shop.km.at(12), 0.792, 0.0005], ['offer median', KM['relaunch offer'].km.median, 9],
-      ['sBG fit to 6 months: S(16)', P6.sbg.S(LAST), 0.342, 0.0005], ['actual S(16)', ACT_LAST, 0.358, 0.0005], ['constant: r^16', P6.r ** LAST, 0.171, 0.0005], ['months observed', LAST, 16],
-      ['offer margin', M_OFFER, 6.94, 0.005], ['shop margin', M_SHOP, 7.03, 0.005], ['offer CLV', CLV_OFFER, 186.6, 0.5], ['shop CLV', CLV_SHOP, 260, 1.5],
-      ['offer CAC', CAC_OFFER, 14.17, 0.005], ['House Blend single margin', HB_MARGIN, -1.04, 0.005],
+      ['offer S(12)', KM['relaunch offer'].km.at(12), 0.411, 0.0005], ['shop S(12)', KM.shop.km.at(12), 0.781, 0.0005], ['offer median', KM['relaunch offer'].km.median, 9],
+      ['sBG fit to 6 months: S(15)', P6.sbg.S(LAST), 0.353, 0.0005], ['actual S(15)', ACT_LAST, 0.358, 0.0005], ['constant: r^15', P6.r ** LAST, 0.191, 0.0005], ['renewals observed in every offer cohort', LAST, 15],
+      ['offer margin', M_OFFER, 6.94, 0.005], ['shop margin', M_SHOP, 7.03, 0.005], ['offer CLV', CLV_OFFER, 178.8, 0.05], ['shop CLV', CLV_SHOP, 222.8, 0.05], ['shop r (renewals ÷ chances)', R_SHOP, 0.97617, 0.000005],
+      ['offer CAC (net of the fee)', CAC_OFFER, 13.67, 0.005], ['discount before the fee', CAC_GROSS, 14.17, 0.005], ['House Blend single margin', HB_MARGIN, -1.04, 0.005],
       ['requests', SAVE_REQUESTS.length, 54], ['offered', OFFERED.length, 26], ['still on (offered)', STILL_O, 12], ['still on (control)', STILL_C, 0], ['skipped', SKIPPED, 13],
       ['the offer’s first month is half price', ACQUISITION.offerShare, 0.5], ['shop sBG fit is homogeneous (α and β huge)', SHOP_SBG.alpha > 1000 && SHOP_SBG.beta > 1000 ? 1 : 0, 1],
-      ['payback month for the offer', PAYBACK_OFFER, PAYBACK_OFFER], ['B05 social spend', SOCIAL, 2649], ['skipped then cancelled', LATER, 1],
+      ['payback month for the offer', PAYBACK_OFFER, 3], ['B05 social spend', SOCIAL, 2649], ['skipped then cancelled', LATER, 1], ['asked in both arms', BOTH.length, 1], ['offered and paid again', PAID_AGAIN, 10], ['log-rank offer v shop', LR.chi2, 32.64, 0.005], ['full sBG α', FULL.alpha, 0.560, 0.0005], ['full sBG β', FULL.beta, 3.242, 0.0005],
     ];
   },
 };
