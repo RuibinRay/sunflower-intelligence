@@ -151,7 +151,7 @@ export const items = [
   },
   {
     id: 'b06-m4-10', lesson: 'logistic-regression', type: 'mc', kind: 'applied',
-    prompt: 'Ana scores November’s new members, who were not used to fit the model. At a threshold of 0.5 it classifies 58% correctly; 51% of November’s members returned. What should she conclude?',
+    prompt: 'Suppose (the figures are hypothetical) Ana scores November’s new members, who were not used to fit the model, and finds that at a threshold of 0.5 it classifies 58% correctly while 51% of November’s members returned. What should she conclude?',
     options: [
       'It beats always guessing “returns” by 7 points on new members: modest but real.',
       'The model has failed, because 58% is far below October’s 63.6%, so the coefficients must be wrong and need refitting.',
