@@ -336,7 +336,8 @@ export function hyp2f1(a, b, c, z, { tol = 1e-15, maxN = 1_000_000 } = {}) {
  * timing 'start': the margin arrives at the start of each period the customer is active, the first now:
  *   Σ_{t=0}^{H−1} m r^t ÷ (1 + d)^t → m (1 + d) ÷ (1 + d − r) as H → ∞.
  * timing 'end': the first margin arrives at the end of the first period, and only if the customer is retained
- *   (Gupta & Lehmann 2003): Σ_{t=1}^{H} m r^t ÷ (1 + d)^t → m r ÷ (1 + d − r).
+ *   (the value of a customer seen just after the first period's margin has been paid, before the first renewal):
+ *   Σ_{t=1}^{H} m r^t ÷ (1 + d)^t → m r ÷ (1 + d − r).
  * horizon: number of periods H (Infinity for the closed form). `curve` gives the cumulative value after each period.
  */
 export function clvConstant({ m, r, d = 0, timing = 'start', horizon = Infinity }) {
