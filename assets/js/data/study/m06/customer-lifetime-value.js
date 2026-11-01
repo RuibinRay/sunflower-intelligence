@@ -92,7 +92,7 @@ export default {
   slug: 'customer-lifetime-value',
   title: 'Customer lifetime value',
   blurb: 'Put a number on what a customer is worth: historical and predictive value, margin not revenue, the constant-retention formula with its two timing conventions, a finite horizon, why one average retention rate understates value when customers differ, and a simple projection for members who never tell you they have left.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Distinguish historical from predictive customer value, and build either from margin rather than revenue.',
     'Calculate lifetime value under constant retention with the first margin now or one period away, over a finite or an infinite horizon, stating the margin, period, retention, discount rate and timing.',

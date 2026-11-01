@@ -47,7 +47,7 @@ export default {
   slug: 'loyalty-and-retention-strategy',
   title: 'Loyalty and retention strategy',
   blurb: 'Loyalty programmes, win-back offers and other ways of keeping customers: what the published evidence shows, why self-selected members can’t tell you whether a programme works, how a randomised holdout measures what an offer adds, and how to weigh its cost against the value of the customers it keeps.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Describe the main kinds of loyalty programme and state precisely what published studies have found about their effects.',
     'Explain double jeopardy and what it implies for how much loyalty a programme can create.',

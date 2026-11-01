@@ -71,7 +71,7 @@ export default {
   slug: 'acquisition-cost-and-payback',
   title: 'Acquisition cost and payback',
   blurb: 'What does it cost to win a customer, and how long until they pay it back? Measure acquisition cost with the right costs, customers and period, blended, paid and by channel; work out payback with and without retention and discounting; read cohort payback curves; and judge the value-to-cost ratio without treating a rule of thumb as a law.',
-  status: 'draft',
+  status: 'reviewed',
   objectives: [
     'Calculate customer acquisition cost blended, for paid channels and by channel, stating which costs, which customers and which period it covers.',
     'Distinguish the average cost of the customers a campaign wins from the incremental cost of those it wins who would not have come anyway.',
