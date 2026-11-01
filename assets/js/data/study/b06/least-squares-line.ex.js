@@ -2,9 +2,9 @@
 // here). Café data come from case.js (the corrected log); Harrier Cycle Hire, Peregrine Fitness, Lindenwood Garden
 // Centre, Greywell Books and the other businesses named are fictional. Formula items are marked by their results
 // (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { column, CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=24';
-import * as R from '../../../core/regression.js?v=24';
-import { mean, sd } from '../../../core/stats.js?v=24';
+import { column, CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=25';
+import * as R from '../../../core/regression.js?v=25';
+import { mean, sd } from '../../../core/stats.js?v=25';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };

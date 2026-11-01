@@ -5,9 +5,9 @@
 // the same weekday a week later (regression toward the mean in the log). Harrier Cycle Hire is fictional. Residuals,
 // R² and the residual standard error are residuals-and-r-squared's; tests and intervals are module 2's; the festival
 // days' pull on the slope is transformations-and-influence's. Every figure printed is recomputed in `checks`.
-import { column, DERIVED as D } from './case.js?v=24';
-import * as R from '../../../core/regression.js?v=24';
-import { mean, sd } from '../../../core/stats.js?v=24';
+import { column, DERIVED as D } from './case.js?v=25';
+import * as R from '../../../core/regression.js?v=25';
+import { mean, sd } from '../../../core/stats.js?v=25';
 
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };
 const sum = (a) => a.reduce((s, v) => s + v, 0);

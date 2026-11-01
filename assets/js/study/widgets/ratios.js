@@ -10,9 +10,9 @@
 //     adjust: [{ id, label, period: 1, delta: { revenue: -30840, … }, note }],
 //     select: 'roe', note }
 // A period's `data` uses core/ratios.js's fields; each period after the first uses the one before it for averages.
-import { h } from '../../core/dom.js?v=24';
-import { xl } from '../xl.js?v=24';
-import * as R from '../../core/ratios.js?v=24';
+import { h } from '../../core/dom.js?v=25';
+import { xl } from '../xl.js?v=25';
+import * as R from '../../core/ratios.js?v=25';
 
 const minus = (t) => t.replace(/^-/, '−');
 const n0 = (v) => minus(Math.round(v).toLocaleString('en-US'));

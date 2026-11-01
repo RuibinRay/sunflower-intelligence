@@ -4,10 +4,10 @@
 // (the opening build-up in time order). Tidemark Ferry Kiosk and its residuals are fictional. Transformations and
 // influence are the next lesson's; the conditions were named in inference-for-coefficients. Every figure printed is
 // recomputed in `checks`.
-import { column } from './case.js?v=24';
-import * as R from '../../../core/regression.js?v=24';
-import { mean, sd } from '../../../core/stats.js?v=24';
-import { pearson } from '../../../core/correlation.js?v=24';
+import { column } from './case.js?v=25';
+import * as R from '../../../core/regression.js?v=25';
+import { mean, sd } from '../../../core/stats.js?v=25';
+import { pearson } from '../../../core/correlation.js?v=25';
 
 // ---------------------------------------------------------------- Harbourside footfall on the weather and calendar
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };

@@ -1,10 +1,10 @@
 // finance-valuation.js — cost of capital and discounted cash flow.
-import { initSite, syncRanges } from '../core/site.js?v=24';
-import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=24';
-import * as F from '../core/format.js?v=24';
-import { barChart, tableTwin, lineChart, scatter } from '../core/charts.js?v=24';
-import { verdict } from '../core/ui.js?v=24';
-import { wacc as costOfCapital } from '../core/fin.js?v=24';
+import { initSite, syncRanges } from '../core/site.js?v=25';
+import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=25';
+import * as F from '../core/format.js?v=25';
+import { barChart, tableTwin, lineChart, scatter } from '../core/charts.js?v=25';
+import { verdict } from '../core/ui.js?v=25';
+import { wacc as costOfCapital } from '../core/fin.js?v=25';
 initSite();
 
 // ================================================================ cost of capital
