@@ -13,7 +13,9 @@ import { lineChart, barChart, tableTwin } from '../../core/charts.js?v=28';
 const fillRange = (el) => { const min = el.min === '' ? 0 : +el.min, max = el.max === '' ? 100 : +el.max; el.style.setProperty('--fill', `${((+el.value - min) / (max - min || 1)) * 100}%`); };
 import * as CF from '../../core/corpfin.js?v=28';
 import { appraise, npv } from '../../core/invest.js?v=28';
-import * as F from '../../core/format.js?v=28';
+import * as F0 from '../../core/format.js?v=28';
+// Percentages nudged by a hair before rounding, so 5.625% shows as 5.63% (0.075 × 0.75 is 0.056249999… in floating point).
+const F = { ...F0, pct: (x, d = 1) => F0.pct(Number.isFinite(x) ? x + Math.sign(x) * 1e-12 : x, d) };
 
 const rateOf = (cfg, v) => (typeof cfg.rate === 'string' ? v[cfg.rate] / 100 : cfg.rate ?? 0.1);
 const npvAt = (cfg, v) => npv(rateOf(cfg, v), CF.projectCashFlows(cfg.model(v)).fcf);

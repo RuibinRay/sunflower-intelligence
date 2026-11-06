@@ -13,7 +13,9 @@ import { lineChart, tableTwin } from '../../core/charts.js?v=28';
 // (fillRange inlined: core/site.js touches document at load, and the checker imports this file in Node)
 const fillRange = (el) => { const min = el.min === '' ? 0 : +el.min, max = el.max === '' ? 100 : +el.max; el.style.setProperty('--fill', `${((+el.value - min) / (max - min || 1)) * 100}%`); };
 import * as CF from '../../core/corpfin.js?v=28';
-import * as F from '../../core/format.js?v=28';
+import * as F0 from '../../core/format.js?v=28';
+// Percentages nudged by a hair before rounding, so 5.625% shows as 5.63% (0.075 × 0.75 is 0.056249999… in floating point).
+const F = { ...F0, pct: (x, d = 1) => F0.pct(Number.isFinite(x) ? x + Math.sign(x) * 1e-12 : x, d) };
 import { segmented } from '../dist-draw.js?v=28';
 
 /** Cost of debt at debt share dv: the first band whose upper limit is at least dv (the last band beyond). */
@@ -63,7 +65,7 @@ export function mount(el, cfg, ctx) {
     const xs = Array.from({ length: Math.round(max * 100) + 1 }, (_, i) => i / 100);
     const pts = xs.map((d) => compute(cfg, d, st.tax));
     chart.replaceChildren();
-    lineChart(chart, { endLabels: false, xs, highlightX: st.dv, height: 260, xLabel: 'Debt share D/V', yLabel: 'Rate', xFormat: (x) => F.pct(x, 0), yFormat: (y) => F.pct(y, 0),
+    lineChart(chart, { endLabels: false, xs, highlightX: st.dv, height: 260, xLabel: 'Debt share D/V', yLabel: 'Rate', xFormat: (x) => F.pct(x, 0), yFormat: (y) => F.pct(y, Math.abs(y * 100 - Math.round(y * 100)) > 1e-9 ? 1 : 0),
       series: [{ name: 'Cost of equity', values: pts.map((p) => p.rE), cls: 'm-s1' }, { name: 'WACC', values: pts.map((p) => p.wacc), cls: 'm-s3' }, { name: 'Cost of debt after tax', values: pts.map((p) => p.rDafter), cls: 'm-s2' }],
       label: `Cost of equity, WACC and after-tax cost of debt for debt shares from 0% to ${F.pct(max, 0)}, with tax at ${F.pct(st.tax, 0)}` });
     tableTwin(chart, { caption: 'Rates by debt share', columns: [{ label: 'D/V' }, { label: 'Cost of equity', num: true }, { label: 'After-tax cost of debt', num: true }, { label: 'WACC', num: true }],
