@@ -8,7 +8,7 @@ import { npv, irr, irrAll, mirr, payback, profitabilityIndex } from '../../../co
 
 const R = WORKING_RATE * 100;
 const money = (v) => `${v < 0 ? '−' : ''}$${Math.round(Math.abs(v)).toLocaleString('en-US')}`;
-const pct = (v, d = 1) => `${v < 0 ? '−' : ''}${Math.abs(v).toFixed(d)}%`;
+const pct = (v, d = 1) => { const t = Math.abs(v).toFixed(d); return `${v < 0 && +t !== 0 ? '−' : ''}${t}%`; };
 const M = '$#,##0';
 const cb = coldBrewFlows().fcf.map((x) => Math.round(x));      // whole dollars, as the lesson’s table prints them
 
@@ -41,21 +41,22 @@ export const widgets = {
     intro: 'A fictional quarry: −$40,000 now and +$100,000 in a year, then a restoration cost at the end of year 2. The chart is the NPV profile.',
     inputs: [
       { id: 'restore', label: 'Restoration cost in year 2', min: 0, max: 80000, step: 400, value: 62400, fmt: 'money' },
-      { id: 'rate', label: 'Opportunity cost of capital', min: 0, max: 60, step: 0.5, value: R, fmt: 'pct' },
+      { id: 'rate', label: 'Opportunity cost of capital', min: 0, max: 50, step: 0.5, value: R, fmt: 'pct' },
     ],
     compute: (v) => {
       const f = [-40000, 100000, -v.restore], r = v.rate / 100, roots = irrAll(f), value = npv(r, f);
-      const xs = Array.from({ length: 41 }, (_, i) => i * 2);
+      const xs = Array.from({ length: 101 }, (_, i) => i / 2);
       const irrText = roots.length === 0 ? 'none: the NPV never reaches zero' : roots.map((x) => pct(x * 100)).join(' and ');
       let note;
       if (roots.length === 0) note = `With a restoration cost above $62,500 the NPV is negative at every rate, so there is no IRR. At ${pct(v.rate)} the NPV is ${money(value)}: reject.`;
-      else if (roots.length === 1) note = `One IRR (${irrText}). The NPV at ${pct(v.rate)} is ${money(value)}, so ${value > 0 ? 'accept' : 'reject'}; with one sign change, the IRR rule agrees.`;
+      else if (roots.length === 1 && v.restore === 0) note = `One IRR (${irrText}). The NPV at ${pct(v.rate)} is ${money(value)}, so ${value > 0 ? 'accept' : 'reject'}; with one sign change, the IRR rule agrees.`;
+      else if (roots.length === 1) note = `The cash flows change sign twice, so there are two IRRs, but the second is below −99% and meaningless; the one found is ${irrText}. The NPV at ${pct(v.rate)} is ${money(value)}, so ${value > 0 ? 'accept' : 'reject'}.`;
       else note = `Two IRRs (${irrText}): the cash flows change sign twice. The NPV is positive only between them; at ${pct(v.rate)} it is ${money(value)}, so ${value > 0 ? 'accept' : 'reject'}, whatever either IRR says.`;
       return {
         headline: { label: `NPV at ${pct(v.rate)}`, value: money(value) },
-        rows: [['IRR(s)', irrText], ['MIRR at the same rate', Number.isFinite(mirr(f, r, r)) ? pct(mirr(f, r, r) * 100) : '—'], ['Sign changes', v.restore > 0 ? '2' : '1']],
+        rows: [['Your discount rate', pct(v.rate)], ['IRR(s) between −99% and 1,000%', irrText], ['MIRR at the same rate', Number.isFinite(mirr(f, r, r)) ? pct(mirr(f, r, r) * 100) : '—'], ['Sign changes', v.restore > 0 ? '2' : '1']],
         note,
-        chart: { kind: 'line', x: { label: 'Discount rate (%)', values: xs }, series: [{ name: 'NPV', values: xs.map((x) => Math.round(npv(x / 100, f))) }, { name: 'Zero', values: xs.map(() => 0) }], y: { label: 'NPV ($)' } },
+        chart: { kind: 'line', x: { label: 'Discount rate (%)', values: xs }, series: [{ name: 'NPV', values: xs.map((x) => Math.round(npv(x / 100, f))) }, { name: 'Zero (break-even)', values: xs.map(() => 0) }], y: { label: 'NPV ($)' } },
       };
     },
   },
@@ -145,7 +146,7 @@ export const guided = [
     hints: ['Compound each inflow to year 3 at 10%: 3,000 × 1.1², 4,000 × 1.1, 6,000.', 'MIRR = (future value of inflows ÷ 10,000)^(1/3) − 1.'],
     wrong: [
       { value: 12.71, say: 'That is the IRR. The MIRR compounds the inflows at 10%, not at the IRR, which gives a lower rate.' },
-      { value: 13.3, say: 'That spreads the total gain over three years without compounding. Take the cube root of the growth factor.' },
+      { value: 13.43, say: 'That spreads the total gain over three years without compounding. Take the cube root of the growth factor.' },
     ],
     solution: 'Future value of inflows at year 3 = 3,000 × 1.21 + 4,000 × 1.1 + 6,000 = 3,630 + 4,400 + 6,000 = $14,030. MIRR = (14,030 ÷ 10,000)^(1/3) − 1 ≈ 11.95%. Above 10%, so the NPV at 10% is positive.',
   },

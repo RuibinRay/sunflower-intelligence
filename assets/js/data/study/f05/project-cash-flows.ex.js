@@ -8,7 +8,7 @@ import { depreciation, MACRS } from '../../../core/corpfin.js?v=28';
 const R = WORKING_RATE * 100;
 const af = (r, n) => (1 - (1 + r) ** -n) / r;
 const M = '$#,##0';
-const methodInput = { id: 'method', label: 'Tax depreciation (1 = MACRS, 0 = straight line)', min: 0, max: 1, step: 1, value: 1, fmt: 'int' };
+const methodInput = { id: 'method', label: 'Depreciation method: 0 = straight line, 1 = MACRS', min: 0, max: 1, step: 1, value: 1, fmt: 'int' };
 
 export const widgets = {
   'cold-brew-build': {
@@ -85,7 +85,7 @@ export const guided = [
     id: 'f05-pcf-g2', type: 'classify', kind: 'conceptual',
     prompt: 'Which of these belong in Cold Brew’s incremental cash flows?',
     items: [
-      'The $9,600 Lantern paid in 2027 for the needs study that suggested Cold Brew',
+      'The $9,600 Lantern paid for M05’s May 2027 needs study, which measured coffee drinkers’ interest in Cold Brew',
       'The iced-coffee margin the cafés lose when customers buy a can instead',
       'A $5,000 share of the website and bookkeeping costs, which are unchanged by Cold Brew',
       'Interest on the line of credit if Lantern draws on it to buy the fridges',

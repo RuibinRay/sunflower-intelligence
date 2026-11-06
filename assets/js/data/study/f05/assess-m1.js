@@ -89,7 +89,7 @@ export const items = [
   {
     id: 'f05-m1-7', lesson: 'investment-criteria', type: 'fill', kind: 'conceptual',
     prompt: 'Complete the statements about investment criteria.',
-    text: 'The payback rule ignores [[0]]. A project’s profitability index is above 1 exactly when [[1]]. When a project’s cash flows change sign twice, Excel’s IRR() returns [[2]].',
+    text: 'The payback rule ignores [[0]]. A project’s profitability index is above 1 exactly when [[1]]. When a project’s cash flows have two IRRs, Excel’s IRR() returns [[2]].',
     blanks: [
       { options: ['the size of the initial outlay', 'every cash flow after the cutoff', 'the cash flows in the first year'], answer: 1 },
       { options: ['its NPV is positive', 'its IRR is above 100%', 'its payback is under one year'], answer: 0 },

@@ -77,13 +77,13 @@ export default {
         ['− Promotion, listing, brand manager', '56,000', '44,000', '41,000', '41,000', '41,000'],
         ['− Depreciation (MACRS 5-year)', '1,800', '2,880', '1,728', '1,037', '1,037'],
         ['= EBIT', '−15,086', '17,191', '35,581', '43,391', '43,391'],
-        ['− Tax at 25%', '−3,772', '4,298', '8,895', '10,848', '10,848'],
+        ['− Tax at 25%', '−3,771', '4,298', '8,895', '10,848', '10,848'],
         ['+ Depreciation added back', '1,800', '2,880', '1,728', '1,037', '1,037'],
-        ['= Operating cash flow', '−9,515', '15,773', '28,414', '33,580', '33,580'],
+        ['= Operating cash flow', '−9,514', '15,773', '28,414', '33,580', '33,580'],
       ],
       note: 'Dollars, rounded from unrounded values, so a column may not add exactly. Year 1’s tax is negative: the loss reduces the tax Lantern pays on its other profits.',
     } },
-    { p: `Year 1 makes an operating loss, because the launch promotion is heavy and sales are still building. The case assumes that the loss saves tax against Lantern’s other profits (its 2027 EBIT, from F03, was $${F03R.incomeStatement.ebit.toLocaleString('en-US')}), so the project receives a tax credit of $3,772. A firm with no other profits could not use the loss at once, and the project would be worth less to it.` },
+    { p: `Year 1 makes an operating loss, because the launch promotion is heavy and sales are still building. The case assumes that the loss saves tax against Lantern’s other profits (its 2027 EBIT, from F03, was $${F03R.incomeStatement.ebit.toLocaleString('en-US')}), so the project receives a tax credit of $3,771. A firm with no other profits could not use the loss at once, and the project would be worth less to it.` },
 
     { h: 'From operating cash flow to free cash flow' },
     { p: 'Four more items turn operating cash flow into free cash flow: the fridges, the launch, the café sales lost, and working capital.' },
@@ -92,7 +92,7 @@ export default {
       head: ['', 'Yr 0', 'Yr 1', 'Yr 2', 'Yr 3', 'Yr 4', 'Yr 5'],
       align: ['l', 'r', 'r', 'r', 'r', 'r', 'r'],
       rows: [
-        ['Operating cash flow', '', '−9,515', '15,773', '28,414', '33,580', '33,580'],
+        ['Operating cash flow', '', '−9,514', '15,773', '28,414', '33,580', '33,580'],
         ['− Fridges bought', '−9,000', '', '', '', '', ''],
         ['− Launch, after tax', '−4,500', '', '', '', '', ''],
         ['− Café margin lost, after tax', '', '−6,000', '−6,000', '−6,000', '−6,000', '−6,000'],
@@ -121,14 +121,14 @@ export default {
     { h: 'Selling the asset: after-tax salvage' },
     { p: String.raw`When an asset is sold, the tax on the sale depends on its <g>book value</g> for tax: its cost less the depreciation already deducted. If it sells for more than book value, the gain is taxed; if for less, the loss saves tax. Either way the cash the project receives is the <g>after-tax salvage value</g>:` },
     { math: String.raw`\text{After-tax salvage} = S - T\,(S - B)` },
-    { p: String.raw`where <m>S</m> is the sale price and <m>B</m> the tax book value at the sale. Five years of MACRS deductions leave the fridges with a book value of $518 (the 5.76% never claimed). Selling them for $1,500 gives a taxable gain of $982 and tax of $245, so the project receives <m>1{,}500 - 0.25 \times (1{,}500 - 518) \approx 1{,}255</m> dollars. Strictly, the half-year convention also applies in the year of disposal, so only half of year 5’s MACRS deduction is allowed. That lowers year 5’s depreciation and raises the book value by the same $518, and the two effects on year 5’s cash flow cancel exactly: the case, like most textbooks, simply ignores the refinement.` },
+    { p: String.raw`where <m>S</m> is the sale price and <m>B</m> the tax book value at the sale. Five years of MACRS deductions leave the fridges with a book value of $518 (the 5.76% never claimed). Selling them for $1,500 gives a taxable gain of $982 and tax of $245, so the project receives <m>1{,}500 - 0.25 \times (1{,}500 - 518) \approx 1{,}255</m> dollars. Strictly, the half-year convention also applies in the year of disposal, so only half of year 5’s MACRS deduction is allowed. That lowers year 5’s depreciation and raises the book value by the same $518, and the two effects on year 5’s cash flow cancel exactly, so the case ignores the refinement.` },
 
     { h: 'Working capital: tied up, then released' },
     { p: 'A product sold on credit through stockists needs money tied up in stock and receivables before the cash from sales arrives. The amount needed is a level; the cash flow is the change in that level. Cold Brew’s working capital grows with sales, from $9,737 to $19,474, and each increase is an outflow in the year it happens. At the end of the project the level returns to zero and the whole amount flows back. Working capital therefore costs the project time, not money: it is lent to the project and repaid later without interest. At 11% that delay costs Cold Brew about $6,387 in present value. Leaving working capital out would overstate the NPV by that amount.' },
 
     { h: 'What belongs in the cash flows, and what does not' },
     { define: [
-      ['Sunk costs: out', 'Lantern has already spent $9,600 on M05’s needs study, which first suggested Cold Brew. That money is gone whether or not Lantern launches, so it is a <g>sunk cost</g> and is left out. Charging it to the project would cut the NPV to about $16,137 for no reason.'],
+      ['Sunk costs: out', 'Lantern has already spent $9,600 on M05’s May 2027 needs study, which measured coffee drinkers’ interest in Cold Brew. That money is gone whether or not Lantern launches, so it is a <g>sunk cost</g> and is left out. Charging it to the project would cut the NPV to about $16,137 for no reason.'],
       ['Opportunity costs: in', 'If the project uses something the firm already owns that has another use, the value of that use is a cost of the project. The roaster would occupy a corner of the kitchen that could be sublet for $300 a month: $3,600 a year of rent forgone is part of the roaster’s cost even though no cash is paid.'],
       ['Side effects: in', 'Effects on the rest of the firm count, good or bad: the café margin that Cold Brew takes from iced coffee ($6,000 a year after tax), or extra sales a new product brings to existing ones.'],
       ['Allocated overheads: out, unless they change', 'Ana’s accountant suggests charging Cold Brew $5,000 a year as its share of the website and bookkeeping (a fictional proposal). If those costs are the same with or without Cold Brew, the charge is not incremental and is left out; with it, the NPV would fall by about $13,860 for no real cost. Only overheads that the project actually adds, such as an extra bookkeeping hour each month, belong.'],
@@ -272,7 +272,7 @@ export default {
 
   references: [
     { text: 'Internal Revenue Service. <i>Publication 946 (2025), How To Depreciate Property</i> (MACRS, the half-year convention, Table A-1, the special depreciation allowance).', url: 'https://www.irs.gov/publications/p946', checked: '2026-11-05' },
-    { text: 'Dahlquist, J. &amp; Knight, R. (2022). <i>Principles of Finance</i>, section 16.2, “Net Present Value (NPV) Method”. OpenStax.', url: 'https://openstax.org/books/principles-finance/pages/16-2-net-present-value-npv-method', checked: '2026-11-05' },
+    { text: 'Damodaran, A. (2024). <i>Corporate Finance</i>, spring 2024, session 13 slides (project cash flows: the working-capital effect, sunk costs, allocated costs, salvage value). NYU Stern.', url: 'https://pages.stern.nyu.edu/~adamodar/podcasts/cfspr24/session13slides.pdf', checked: '2026-11-06' },
   ],
 
   checks: [
@@ -303,9 +303,9 @@ export default {
     ...rows.slice(1).map((x, i) => ({ what: `Fixed y${i + 1}`, value: x.fixed, shown: [56000, 44000, 41000, 41000, 41000][i], tol: 0.5 })),
     ...rows.slice(1).map((x, i) => ({ what: `Dep y${i + 1}`, value: x.depreciation, shown: [1800, 2880, 1728, 1037, 1037][i], tol: 0.5 })),
     ...rows.slice(1).map((x, i) => ({ what: `EBIT y${i + 1}`, value: x.ebit, shown: [-15086, 17191, 35581, 43391, 43391][i], tol: 0.5 })),
-    ...rows.slice(1).map((x, i) => ({ what: `Tax y${i + 1}`, value: x.taxes, shown: [-3772, 4298, 8895, 10848, 10848][i], tol: 0.5 })),
-    ...rows.slice(1).map((x, i) => ({ what: `OCF y${i + 1}`, value: x.ocf, shown: [-9515, 15773, 28414, 33580, 33580][i], tol: 0.5 })),
-    { what: 'Year-1 tax credit', value: -rows[1].taxes, shown: 3772, tol: 0.5 },
+    ...rows.slice(1).map((x, i) => ({ what: `Tax y${i + 1}`, value: x.taxes, shown: [-3771, 4298, 8895, 10848, 10848][i], tol: 0.5 })),
+    ...rows.slice(1).map((x, i) => ({ what: `OCF y${i + 1}`, value: x.ocf, shown: [-9514, 15773, 28414, 33580, 33580][i], tol: 0.5 })),
+    { what: 'Year-1 tax credit', value: -rows[1].taxes, shown: 3771, tol: 0.5 },
     // table 2
     ...rows.map((x, t) => ({ what: `NWC held y${t}`, value: x.nwc, shown: [9737, 14606, 17851, 19474, 19474, 0][t], tol: 0.5 })),
     ...rows.map((x, t) => ({ what: `ΔNWC y${t}`, value: -x.dNwc, shown: [-9737, -4869, -3246, -1623, 0, 19474][t], tol: 0.5 })),

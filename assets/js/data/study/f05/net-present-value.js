@@ -46,7 +46,7 @@ export default {
     { case: `It is ${TODAY}. Lantern Coffee Co. has finished its second year: an online shop and catering kitchen since 2026 and two cafés since March 2027. Ana Lim owns all its shares, and she is choosing what Lantern should invest in from 1 April 2028. Five proposals are on her desk: canned Cold Brew sold through grocers, an in-house coffee roaster, ordering kiosks for the cafés, an electric cargo bike for deliveries and solar panels on the kitchen roof. Without raising new money she can spend about $${BUDGET_2028.toLocaleString('en-US')} at the start of April. Every figure in the case is fictional.` },
 
     { h: 'Capital budgeting is a decision about value' },
-    { p: 'Every proposal on Ana’s desk has the same shape: money goes out now, and more money is expected to come back over several years. <g>Capital budgeting</g> is the process of deciding which of these long-term investments to make. It is the most important job of corporate finance, because a firm’s value comes from its assets and the cash they will produce. A good investment can be repeated and copied; a bad one ties up money for years and is hard to undo.' },
+    { p: 'Every proposal on Ana’s desk has the same shape: money goes out now, and more money is expected to come back over several years. <g>Capital budgeting</g> is the process of deciding which of these long-term investments to make. It is central to corporate finance, because a firm’s value comes from its assets and the cash they will produce. Long-term investments are also hard to reverse: a poor one can tie up money for years.' },
     { p: 'The question to ask of each proposal is not “will it make a profit?” or “will it pay for itself?” but “is it worth more than it costs?”. A project is worth the present value of the cash it will bring in. If that is more than the cash it needs today, the owners are richer by the difference the day they commit to it. That difference is the project’s <g>net present value</g>.' },
 
     { h: 'The opportunity cost of capital' },
@@ -88,7 +88,7 @@ export default {
       '<b>The cash flows are incremental.</b> Only cash that changes because of the decision belongs in the NPV: <g>incremental cash flows</g>, after tax, including effects on the rest of the firm. The lesson on project cash flows builds them line by line.',
       '<b>Risk is in the rate.</b> The discount rate carries the project’s risk; the cash flows are not trimmed for risk as well. One rate for every year means the risk adjustment compounds with time: a cash flow ten years away is penalised much more than one next year. That suits most projects, whose uncertainty grows with distance, but not all.',
       '<b>The rate fits this project.</b> A firm-wide rate is right only for projects as risky as the firm’s existing business. A new product line may be riskier than Lantern’s cafés; module 3 shows how to adjust.',
-      '<b>Now or never, and money is available.</b> The plain rule compares investing now with never investing, and assumes the firm can raise money for every positive-NPV project. Options to wait or expand (module 2) and limits on capital (choosing-between-projects) relax these.',
+      '<b>Now or never, and money is available.</b> The plain rule compares investing now with never investing, and assumes the firm can raise money for every positive-NPV project. Options to wait or expand (project-risk) and limits on capital (choosing-between-projects, both in module 2) relax these.',
     ] },
 
     { h: 'NPVs add up' },
