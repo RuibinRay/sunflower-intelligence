@@ -7,8 +7,9 @@ import { irr, ration } from '../../../core/invest.js?v=28';
 
 const af = (n, k) => (1 - (1 + k) ** -n) / k;
 const vans = { E: 48000 / af(8, 0.08) + 3000, D: 30000 / af(5, 0.08) + 7500 };
-const grants = [{ outlay: 50000, npv: 12500 }, { outlay: 35000, npv: 8400 }, { outlay: 35000, npv: 8000 }, { outlay: 15000, npv: 2400 }];
-const RG = ration(grants, 70000);
+// H1 and H2 are mutually exclusive: ration() over the list without H2 and without H1, and keep the better answer
+const garden = [{ outlay: 30000, npv: 9000 }, { outlay: 30000, npv: 8400 }, { outlay: 25000, npv: 5500 }, { outlay: 20000, npv: 3600 }];
+const RG = [ration([garden[0], garden[2], garden[3]], 60000), ration([garden[1], garden[2], garden[3]], 60000)].sort((x, y) => y.exactNpv - x.exactNpv)[0];
 const ebike = breakEvenVolumes({ price: 18, unitCost: 4, fixed: 50000, dep: 12000, capex: 60000, n: 5, r: 0.10, tax: 0.25 });
 
 export const items = [
@@ -26,7 +27,7 @@ export const items = [
   {
     id: 'f05-m2-2', lesson: 'choosing-between-projects', type: 'mc', kind: 'conceptual',
     prompt: 'Two mutually exclusive projects cost the same today. Project L pays most of its cash in years 4 and 5; project S pays most in years 1 and 2. Their NPV profiles cross at 13%, and the firm’s cost of capital is 9%. Which statement is true?',
-    options: ['At 9% L has the higher NPV, although S may well have the higher IRR', 'S has the higher NPV at 9%, because cash that arrives sooner is worth more', 'The two have equal NPVs at 9%, because they cost the same amount today', 'Each project’s IRR is 13%, so at 9% both should be accepted together'],
+    options: ['At 9% L has the higher NPV, and the ranking flips above 13%', 'S has the higher NPV at 9%, because cash that arrives sooner is worth more', 'The two have equal NPVs at 9%, because they cost the same amount today', 'Each project’s IRR is 13%, so at 9% both should be accepted together'],
     answer: 0,
     feedback: { 1: 'Quick cash is worth more per dollar, but L pays more in total. Below the crossover rate the later-paying project has the higher NPV.', 2: 'Equal NPVs happen only at the crossover rate, 13%.', 3: 'The crossover rate is where the two NPVs are equal, not where either NPV is zero; and mutually exclusive projects can’t both be accepted.' },
     solution: 'Below the crossover rate, the project with more (but later) cash has the higher NPV; above it, the quicker project wins. At 9% choose L. IRR ranks the projects as if the rate were above the crossover, so it would often favour S.',
@@ -42,14 +43,14 @@ export const items = [
   },
   {
     id: 'f05-m2-4', lesson: 'choosing-between-projects', type: 'num', kind: 'applied',
-    prompt: 'A fictional city arts fund has $70,000 and four independent grants it could make, none of which can be split: G1 costs $50,000 (NPV of the benefits $12,500), G2 $35,000 ($8,400), G3 $35,000 ($8,000) and G4 $15,000 ($2,400). What is the largest total NPV the fund can achieve within its budget?',
-    answer: 16400, check: () => RG.exactNpv, unit: '$', places: 0, tol: 1,
+    prompt: 'A fictional garden centre has $60,000 to invest this year in projects that can’t be split. H1, a glasshouse on the south plot, costs $30,000 (NPV $9,000). H2, a café on the same south plot, costs $30,000 (NPV $8,400): the plot can hold only one of them. H3, a delivery van, costs $25,000 (NPV $5,500), and H4, a new till system, $20,000 (NPV $3,600). What is the largest total NPV the centre can achieve?',
+    answer: 14500, check: () => RG.exactNpv, unit: '$', places: 0, tol: 1,
     wrong: [
-      { value: 14900, say: 'That is the profitability-index ranking: G1 (PI 1.25) then G4, because G2 no longer fits. G2 and G3 together use the whole $70,000 for more.' },
-      { value: 12500, say: 'G1 alone leaves $20,000 unused. Check every combination that fits.' },
-      { value: 31300, say: 'That is all four grants, which would cost $135,000.' },
+      { value: 17400, say: 'That is H1 + H2, the top two by profitability index. They are mutually exclusive: the south plot holds only one.' },
+      { value: 12600, say: 'H1 + H4 fits, but H1 + H3 adds more within the $60,000.' },
+      { value: 13900, say: 'H2 + H3 fits, but the glasshouse (H1) adds more than the café on the same plot.' },
     ],
-    solution: 'PIs: G1 1.25, G2 1.24, G3 1.23, G4 1.16. Taking them in PI order gives G1 + G4 ($65,000, NPV $14,900). But G2 + G3 cost exactly $70,000 and add $16,400, the best combination. The PI shortcut fails because the projects are lumpy.',
+    solution: 'PIs: H1 1.30, H2 1.28, H3 1.22, H4 1.18. Taking them in PI order would pick H1 and H2 ($60,000, NPV $17,400), but they are mutually exclusive. Allowing at most one of them, the sets that fit are H1 + H3 ($55,000, NPV $14,500), H1 + H4 ($12,600), H2 + H3 ($13,900), H2 + H4 ($12,000) and H3 + H4 ($9,100); three projects would cost at least $75,000. The best is H1 + H3: $14,500.',
   },
   {
     id: 'f05-m2-5', lesson: 'choosing-between-projects', type: 'mc', kind: 'conceptual',
@@ -100,10 +101,10 @@ export const items = [
     id: 'f05-m2-9', lesson: 'project-risk', type: 'mc', kind: 'applied',
     prompt: `Lantern’s in-house roaster would replace beans bought from Kilnworth at $${ROASTER.kilnworthPerKg} a kg (a variable cost) with a roaster costing $${(ROASTERS[0].price).toLocaleString('en-US')} and a $${ROASTER.operator.toLocaleString('en-US')}-a-year operator (largely fixed costs). What does the switch do to the risk of Lantern’s profits?`,
     options: [
-      'It raises operating leverage: if Lantern’s coffee sales fall, profit falls by a larger percentage than with bought beans',
-      'It lowers risk, because Lantern no longer depends on Kilnworth’s prices',
-      'It has no effect on risk, because the roaster has a positive NPV',
-      'It raises risk only if the roaster is financed with debt',
+      'It raises operating leverage, so a fall in sales cuts profit by a larger percentage',
+      'It lowers risk, because Lantern no longer depends on Kilnworth’s prices for its beans',
+      'It has no effect on risk, because the roaster has a positive NPV at 11%',
+      'It raises risk only if the roaster is financed with debt rather than with equity',
     ],
     answer: 0,
     feedback: {

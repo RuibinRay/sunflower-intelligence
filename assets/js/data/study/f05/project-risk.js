@@ -90,7 +90,7 @@ export default {
 
   theory: [
     { h: 'Sensitivity analysis and the tornado chart' },
-    { p: 'Take the model, hold every input at its base value except one, move that one to a plausible low and high value, and record the NPV each time. Repeat for each input. Sorting the inputs by the width of the swing and drawing them as horizontal bars, widest at the top, gives a chart shaped like a tornado.' },
+    { p: 'Take the model, hold every input at its base value except one, move that one to a plausible low and high value, and record the NPV each time. Repeat for each input. Sorting the inputs by the width of the swing and drawing each as a horizontal bar of the change in NPV from the base, widest at the top, gives a chart shaped like a tornado.' },
     { table: {
       caption: 'Cold Brew: NPV at 11% with one input moved at a time (base NPV $25,737; fictional figures)',
       head: ['Input', 'Low', 'High', 'NPV at low', 'NPV at high', 'Swing'],

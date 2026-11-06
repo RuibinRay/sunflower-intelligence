@@ -285,13 +285,13 @@ export const independent = [
   {
     id: 'f05-cbp-i5', type: 'num', kind: 'applied',
     prompt: 'Suppose Ana could spend $50,000 on 1 April 2028 instead of $40,000. Using the lesson’s outlays and NPVs at 11% (Cold Brew $23,237 / $25,737; roaster $48,000 / $18,386; kiosks $14,000 / $2,133; cargo bike $7,500 / $1,001; solar panels $19,000 / −$743), what total NPV does the best set within $50,000 add?',
-    answer: 28871, check: () => B50.exactNpv, unit: '$', places: 0, tol: 1,
+    answer: 28870, check: () => B50.exactNpv, unit: '$', places: 0, tol: 1,
     wrong: [
       { value: 27870, say: 'That is the $40,000 answer. With $50,000, the cargo bike also fits alongside Cold Brew and the kiosks.' },
       { value: 44123, say: 'Cold Brew and the roaster together cost $71,237, more than $50,000.' },
       { value: 18386, say: 'The roaster alone fits, but Cold Brew, kiosks and bike together add more.' },
     ],
-    solution: 'The roaster ($48,000) fits only alone (NPV $18,386); adding anything else breaks the budget. Without it, Cold Brew + kiosks + bike cost $44,737 and add 25,737 + 2,133 + 1,001 = $28,871 (from unrounded NPVs, $28,870). That beats the roaster alone, so the best set is Cold Brew, kiosks and bike. The extra $10,000 of budget is worth only the bike’s $1,001 here; the roaster still needs $71,237 alongside Cold Brew.',
+    solution: 'The roaster ($48,000) fits only alone (NPV $18,386); adding anything else breaks the budget. Without it, Cold Brew + kiosks + bike cost $44,737 and add about $28,870 (from unrounded NPVs; the rounded figures 25,737 + 2,133 + 1,001 add to $28,871). That beats the roaster alone, so the best set is Cold Brew, kiosks and bike. The extra $10,000 of budget is worth only the bike’s $1,001 here; the roaster still needs $71,237 alongside Cold Brew.',
   },
 ];
 
@@ -350,9 +350,9 @@ export const check = [
   {
     id: 'f05-cbp-k6', type: 'mc', kind: 'applied',
     prompt: 'With $40,000, Ana funds Cold Brew and the kiosks and leaves out the roaster (NPV $18,386 at 11%, outlay $48,000). What is the soundest advice?',
-    options: ['Raise the $48,000 if it costs no more than the roaster’s required return: the cap costs about $19,387', 'Drop Cold Brew and buy the roaster instead, because the roaster is the larger value that the budget rules out', 'Leave the roaster out: a positive-NPV project that doesn’t fit within the budget is not a real opportunity', 'Buy a roaster jointly with another café so that Lantern’s share of the cost fits within the $40,000'],
+    options: ['Raise money for the roaster if it costs no more than its required return: it adds $18,386 of the $19,387', 'Drop Cold Brew and buy the roaster instead, because the roaster is the larger value that the budget rules out', 'Leave the roaster out: a positive-NPV project that doesn’t fit within the budget is not a real opportunity', 'Buy a roaster jointly with another café so that Lantern’s share of the cost fits within the $40,000'],
     answer: 0,
     feedback: { 1: 'The roaster alone costs more than $40,000, and Cold Brew’s NPV is higher. Dropping Cold Brew loses value.', 2: 'The budget is a constraint to be priced, not a fact about the project. If finance is available at a fair cost, the project is a real opportunity.', 3: 'Sharing a roaster is a different project, with its own costs and control problems; the roaster valued in the lesson is indivisible.' },
-    solution: 'Unless the $40,000 is a hard limit, the NPV given up ($47,256 − $27,870 = $19,387 from unrounded NPVs, almost all the roaster) is the case for raising money. How to raise it and what it costs come in modules 3 and 4; the roaster’s value depends on 11% being the right rate for it.',
+    solution: 'Unless the $40,000 is a hard limit, the NPV given up ($47,256 − $27,870 = $19,387 from unrounded NPVs) is the case for raising money. $48,000 more would fund the roaster but not the bike as well, so the money buys $18,386 of the $19,387. How to raise it and what it costs come in modules 3 and 4; the roaster’s value depends on 11% being the right rate for it.',
   },
 ];

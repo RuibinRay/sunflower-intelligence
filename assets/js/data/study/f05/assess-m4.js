@@ -109,14 +109,14 @@ export const items = [
   },
   {
     id: 'f05-m4-8', lesson: 'financial-planning', type: 'num', kind: 'numerical',
-    prompt: 'Saltings Bottling (fictional) had sales of $4,000,000. Its current assets of $1,000,000 rise with sales; its fixed assets of $2,000,000 are working at 90% of capacity. Payables and accruals of $400,000 rise with sales. Its net margin is 5% and it pays out half its profit. If sales grow 20%, what are the additional funds needed?',
-    answer: 160000, check: () => { const S0 = 4000000, S1 = S0 * 1.2, dS = S1 - S0, full = S0 / 0.9; return Math.max(0, 2000000 * S1 / full - 2000000) + 0.25 * dS - 0.1 * dS - 0.05 * S1 * 0.5; }, unit: '$', places: 0, tol: 1,
+    prompt: 'Saltings Bottling (fictional) sold $4,000,000 of drinks last year on a bottling plant that cost $2,000,000 and ran at 90% of its capacity. Its plan has sales rising to $4,800,000. Once the plant is full, more output needs more plant in the same proportion to sales as at full capacity. How much must Saltings spend on new plant to deliver the plan?',
+    answer: 160000, check: () => { const full = 4000000 / 0.9; return Math.max(0, 2000000 * 4800000 / full - 2000000); }, unit: '$', places: 0, tol: 1,
     wrong: [
-      { value: 400000, say: 'That grows the fixed assets with sales from today. At 90% of capacity they can already support $4,444,444; only the sales above that need new equipment.' },
-      { value: 0, say: 'Next year’s $4,800,000 is above what the fixed assets can support ($4,444,444), so some new equipment is needed.' },
-      { value: 240000, say: 'You left out the $80,000 rise in payables and accruals.' },
+      { value: 400000, say: 'That grows the plant by the full 20% from today, ignoring the 10% of capacity standing idle.' },
+      { value: 0, say: 'The plant can support $4,444,444 of sales at full stretch, less than the $4,800,000 planned.' },
+      { value: 355556, say: 'That is the extra sales beyond capacity ($4,800,000 − $4,444,444), not the plant needed for them. Plant is 45% of sales at full capacity.' },
     ],
-    solution: 'Capacity: 4,000,000 ÷ 0.9 = 4,444,444 of sales. Fixed assets needed at 4,800,000 = 2,000,000 × 4,800,000 ÷ 4,444,444 = 2,160,000: $160,000 more. Current assets +0.25 × 800,000 = 200,000; payables +80,000; retained 0.05 × 4,800,000 × 0.5 = 120,000. AFN = 160,000 + 200,000 − 80,000 − 120,000 = $160,000.',
+    solution: 'Full-capacity sales = 4,000,000 ÷ 0.9 = 4,444,444, so the plant supports 2,000,000 ÷ 4,444,444 = 45 cents of plant per dollar of sales when full. Plant needed for 4,800,000 = 0.45 × 4,800,000 = 2,160,000: $160,000 of new plant. Growing it with sales from today would have asked for $400,000.',
   },
   {
     id: 'f05-m4-9', lesson: 'financial-planning', type: 'formula', kind: 'numerical',

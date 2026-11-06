@@ -234,7 +234,7 @@ export const check = [
     id: 'f05-risk-k1', type: 'mc', kind: 'conceptual',
     prompt: 'What is the main difference between sensitivity analysis and scenario analysis?',
     options: [
-      'Sensitivity analysis changes one input at a time; scenario analysis changes several together in a consistent story',
+      'Sensitivity moves one input at a time; a scenario moves several together',
       'Sensitivity analysis uses probabilities; scenario analysis does not',
       'Scenario analysis changes one input at a time; sensitivity analysis changes them all at once',
       'Sensitivity analysis is for the discount rate only; scenario analysis is for the cash flows',
