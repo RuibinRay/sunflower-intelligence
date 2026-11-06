@@ -1,10 +1,11 @@
 // finance-valuation.js — cost of capital and discounted cash flow.
-import { initSite, syncRanges } from '../core/site.js?v=24';
-import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=24';
-import * as F from '../core/format.js?v=24';
-import { barChart, tableTwin, lineChart, scatter } from '../core/charts.js?v=24';
-import { verdict } from '../core/ui.js?v=24';
-import { wacc as costOfCapital } from '../core/fin.js?v=24';
+import { initSite, syncRanges } from '../core/site.js?v=25';
+import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=25';
+import * as F from '../core/format.js?v=25';
+import { barChart, tableTwin, lineChart, scatter } from '../core/charts.js?v=25';
+import { verdict } from '../core/ui.js?v=25';
+import { wacc as costOfCapital } from '../core/fin.js?v=25';
+import { fcfGrowthDcf } from '../core/valuation.js?v=25';
 initSite();
 
 // ================================================================ cost of capital
@@ -38,25 +39,9 @@ renderCC();
 
 
 // ================================================================ DCF
-export function dcf({ fcf0, g1, years, path, wacc, gT, mid, debt, shares }) {
-  if (![fcf0, g1, wacc, gT].every(Number.isFinite)) return { error: 'Fill in every cash-flow and discounting field.' };
-  if (wacc <= gT) return { error: 'The cost of capital has to be higher than terminal growth. Otherwise the value of the years after the forecast has no finite answer.' };
-  const rows = [];
-  let fcf = fcf0;
-  for (let t = 1; t <= years; t++) {
-    const g = path === 'fade' ? g1 + (gT - g1) * ((t - 1) / Math.max(1, years - 1)) : g1;
-    fcf *= 1 + g;
-    const df = 1 / (1 + wacc) ** (mid ? t - 0.5 : t);
-    rows.push({ t, g, fcf, df, pv: fcf * df });
-  }
-  const last = rows[rows.length - 1];
-  const tv = (last.fcf * (1 + gT)) / (wacc - gT);
-  const pvTV = tv / (1 + wacc) ** (mid ? years - 0.5 : years);
-  const pvSum = rows.reduce((a, r) => a + r.pv, 0);
-  const ev = pvSum + pvTV;
-  const equity = ev - (Number.isFinite(debt) ? debt : 0);
-  return { rows, tv, pvTV, pvSum, ev, equity, perShare: shares > 0 ? equity / shares : NaN, tvShare: pvTV / ev, multiple: tv / last.fcf };
-}
+// The one-line DCF (a starting cash flow, a growth path, Gordon terminal value) lives in the valuation engine, which the
+// Company Valuation Studio extends to whole companies; this page keeps its name for the lessons that link here.
+export const dcf = fcfGrowthDcf;
 
 const DEFAULTS = { fcf0: 120, g1: 9, years: '5', path: 'fade', wacc: 9, gt: 2.5, mid: false, debt: 300, shares: 85 };
 const form = $('#dcf-form');

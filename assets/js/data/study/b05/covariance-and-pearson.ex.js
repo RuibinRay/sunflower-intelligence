@@ -2,9 +2,9 @@
 // keys live here). Café data come from case.js (the corrected log); Brightwater Ferries, Ashby Florist, Linden Library
 // and Elmstead Hotel are fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num items
 // recompute their answers in `check`.
-import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=24';
-import * as C from '../../../core/correlation.js?v=24';
-import { mean, sd } from '../../../core/stats.js?v=24';
+import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=25';
+import * as C from '../../../core/correlation.js?v=25';
+import { mean, sd } from '../../../core/stats.js?v=25';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });

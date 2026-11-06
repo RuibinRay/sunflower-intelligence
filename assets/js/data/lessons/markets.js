@@ -1,6 +1,6 @@
 // Lesson: market attractiveness scores (log size, rescaling, weights), CAGR, and attractiveness against reach.
-import * as F from '../../core/format.js?v=24';
-import { rescale, cagr } from '../../core/market.js?v=24';
+import * as F from '../../core/format.js?v=25';
+import { rescale, cagr } from '../../core/market.js?v=25';
 
 const GDP = [50, 400, 2000], GROWTH = [6, 3, 1.5];
 const score = (gdp, growth, w, log = true) => {
