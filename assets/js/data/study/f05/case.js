@@ -18,7 +18,7 @@
 //   to Hollis Avery so that Hollis owns 30%.
 // - m06: Ana's 10% a year used for customer lifetime value there was a round working rate; F05 estimates the cost of
 //   capital properly (lessons may say so).
-import { RESULTS as F03R, FACTS as F03F } from '../f03/case.js?v=28';
+import { RESULTS as F03R, FACTS as F03F, BREWER as F03_BREWER } from '../f03/case.js?v=28';
 import { COASTLINE_NOTE, BREWER as F04_BREWER } from '../f04/case.js?v=28';
 import { TIERS, CHANNELS } from '../m02/market.js?v=28';
 import * as CF from '../../../core/corpfin.js?v=28';
@@ -99,15 +99,28 @@ export const DEBT = {
 export const KITCHEN = {
   opens: '1 April 2028',
   equipment: 60_000,                                  // ovens, blast chiller, mixers (7-year MACRS)
-  fitOut: 36_000,                                     // leasehold improvements, straight line over the 5-year lease
+  fitOut: 36_000,                                     // leasehold improvements; the case depreciates them for tax straight line over the 5-year lease (a simplification)
   rent: 30_000,                                       // $2,500 a month, a year
   years: 5,
   revenue: [150_000, 185_000, 205_000, 215_000, 220_000],   // extra catering and wholesale bakery sales
   variableShare: 0.42,                                // ingredients, packaging, event staff
-  fixed: 40_000,                                      // two kitchen staff, utilities, insurance, besides rent
+  fixed: 40_000,                                      // a part-time kitchen supervisor, utilities, insurance and cleaning, besides rent (cooks are paid by the event: variable)
   nwcShare: 0.08,
   salvageEquipment: 12_000,
 };
+/** The accountant’s forecast of Lantern's current items on 31 March 2028, before the kitchen and its financing (the law
+ *  firm’s $41,120 arrives that day; the first Coastline note was repaid on 1 March). Current portion of long-term debt =
+ *  the van note's 1 June 2028 instalment + the brewer plan’s principal in payments 12–23 (April 2028 – March 2029), both
+ *  from F03. Coastline's covenant measures the current ratio without operating lease liabilities (the loan agreement’s
+ *  definition), tested each quarter end. */
+const brewerNext12 = Math.round((F03_BREWER.rows[10].end - F03_BREWER.rows[22].end) * 100) / 100;
+export const FORECAST_MAR28 = {
+  assets: [['Cash', 46_000], ['Accounts receivable (net)', 11_900], ['Inventory', 10_200], ['Supplies and prepaid insurance', 1_500]],
+  liabilities: [['Accounts payable', 9_800], ['Line of credit', 24_000], ['Wages payable', 4_500], ['Interest payable', 980], ['Unearned revenue', 8_900],
+    ['Income taxes payable', 3_100], ['Current portion of long-term debt', 5_000 + brewerNext12]],
+  leases: 38_000,                                     // current portion of operating lease liabilities (left out of the covenant)
+};
+export const COVENANT = { currentRatio: 1.2, excludes: 'operating lease liabilities', tested: 'each quarter end' };
 export const HOLLIS = { name: 'Hollis Avery', stake: 0.30, cash: 75_000, required: 0.20 };
 export const SHARES = { existing: 20_000 };          // Ana's 20,000 shares (F03: common stock $20,000 at $1)
 
@@ -181,5 +194,7 @@ export const IDENTITIES = [
   ['the roaster replaces Kilnworth beans worth less than 2027’s purchases of goods', ROASTER.kg * ROASTER.kilnworthPerKg < F03F.inventory.purchases],
   ['Kilnworth’s price is F02’s December 2026 House Blend price, $9.00 a 250 g bag', ROASTER.kilnworthPerKg === 9 * 4],
   ['the law firm’s first fee is due 31 March 2028', F03F.lawFirm.paidAt === '2028-03-31'],
+  ['the brewer plan’s 24 payments run May 2027 – April 2029, so 12 fall due April 2028 – March 2029', F03F.brewer.payments === 24 && F03_BREWER.rows.length === 24],
+  ['the van note: $5,000 a year each 1 June; F03 shows $10,000 of it due after 2028, so $5,000 falls due on 1 June 2028', bsLine('liabilities', 'noncurrent', 'Notes Payable') === 10_000],
 ];
 export { bsLine };
