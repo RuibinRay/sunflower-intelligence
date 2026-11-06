@@ -2,9 +2,9 @@
 // covariance-and-pearson.ex.js. Uses the cafés' corrected log (case.js: column, CLEAN_ROWS, DERIVED) for covariance and
 // its units, r and its z-score form, changes of scale (°F to °C), r² and the footfall–transactions–sales chain.
 // Northgate Gym is fictional. Every figure printed is recomputed in `checks` with core/correlation.js.
-import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=25';
-import * as C from '../../../core/correlation.js?v=25';
-import { mean, sd } from '../../../core/stats.js?v=25';
+import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=26';
+import * as C from '../../../core/correlation.js?v=26';
+import { mean, sd } from '../../../core/stats.js?v=26';
 
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };
 const at = (n) => CAFE_COLUMNS.indexOf(n);

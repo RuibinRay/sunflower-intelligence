@@ -2,10 +2,10 @@
 // correlation-and-causation.ex.js. Uses the cafés' daily log (case.js: DERIVED, column) for the loyalty-members trend,
 // the staffing confounder, the waiting-time gradient and rain. Seaside Cinemas and the other businesses named are
 // fictional. Every figure printed is recomputed in `checks`.
-import { DERIVED as D, column } from './case.js?v=25';
-import * as C from '../../../core/correlation.js?v=25';
-import { mean } from '../../../core/stats.js?v=25';
-import { tTest2 } from '../../../core/inference.js?v=25';
+import { DERIVED as D, column } from './case.js?v=26';
+import * as C from '../../../core/correlation.js?v=26';
+import { mean } from '../../../core/stats.js?v=26';
+import { tTest2 } from '../../../core/inference.js?v=26';
 
 // ---------------------------------------------------------------- two trends at Harbourside
 const H = { cafe: 'Harbourside' };

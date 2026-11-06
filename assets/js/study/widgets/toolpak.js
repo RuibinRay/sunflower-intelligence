@@ -6,11 +6,11 @@
 // keeps the unrounded df, so its p-value can differ slightly).
 //   { type: 'toolpak', title, tool: 'ttest-paired' | 'ttest-equal' | 'ttest-unequal' | 'anova',
 //     tools: [...] (offer a choice), groups: [{ name, values }], alpha: 0.05, hypothesized: 0, note }
-import { h } from '../../core/dom.js?v=25';
-import { xl } from '../xl.js?v=25';
-import * as I from '../../core/inference.js?v=25';
-import { mean, variance } from '../../core/stats.js?v=25';
-import { segmented, numberField } from '../dist-draw.js?v=25';
+import { h } from '../../core/dom.js?v=26';
+import { xl } from '../xl.js?v=26';
+import * as I from '../../core/inference.js?v=26';
+import { mean, variance } from '../../core/stats.js?v=26';
+import { segmented, numberField } from '../dist-draw.js?v=26';
 
 export const TOOLS = {
   'ttest-paired': 't-Test: Paired Two Sample for Means',

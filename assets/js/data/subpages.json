@@ -10,6 +10,17 @@
       ]
     },
     {
+      "slug": "company-valuation",
+      "name": "Company Valuation Studio",
+      "blurb": "From a company’s statements to an explained valuation report: DCF, comparables, dividend and asset-based models, scenarios, a risk register, and a tutorial for every model.",
+      "tools": [
+        "Model selection guide and eight valuation models",
+        "Statements by hand, CSV/Excel upload or SEC EDGAR",
+        "Scenarios, sensitivities, risk register, Monte Carlo",
+        "Automated report with PDF, Excel, CSV and JSON export"
+      ]
+    },
+    {
       "slug": "investment",
       "name": "Investment decisions",
       "blurb": "Which projects to fund, compared on NPV, IRR, MIRR, payback and profitability index.",

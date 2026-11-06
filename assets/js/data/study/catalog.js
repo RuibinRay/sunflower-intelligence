@@ -135,7 +135,7 @@ const ALL = [
     title: 'Corporate Finance',
     blurb: 'Which projects to fund, what capital costs, how to finance the business and what to pay shareholders.',
     topics: ['Capital budgeting', 'Net present value', 'Internal rate of return', 'Payback period', 'Profitability index', 'Free cash flow', 'Cost of capital', 'WACC', 'Cost of equity', 'Cost of debt', 'Debt versus equity financing', 'Capital structure and Modigliani–Miller', 'Dividends versus share buybacks', 'Corporate governance and the agency problem', 'Financial planning', 'Cash flow forecasting'],
-    related: [{ plate: 'invest' }, { plate: 'wacc' }, { tool: 'finance/investment/', label: 'Investment decisions' }, { tool: 'finance/valuation/', label: 'Valuation' }],
+    related: [{ plate: 'invest' }, { plate: 'wacc' }, { tool: 'finance/investment/', label: 'Investment decisions' }, { tool: 'finance/valuation/', label: 'Valuation' }, { tool: 'finance/company-valuation/', label: 'Company Valuation Studio' }],
   }),
   C({
     id: 'f06', school: 'finance', code: 'F06', level: 'intermediate', requires: ['f04'], recommends: ['b04'],
@@ -149,7 +149,7 @@ const ALL = [
     title: 'Financial Modelling',
     blurb: 'Build and check three-statement models, forecasts, debt schedules and DCF valuations.',
     topics: ['Spreadsheet modelling principles: inputs, formulas, colour conventions', 'Three-statement models', 'Revenue forecasting', 'Expense forecasting', 'Working capital schedules', 'Debt schedules', 'Scenario modelling', 'Sensitivity analysis', 'DCF valuation models', 'Reading an annual report (Form 10-K)', 'The investment research process: top-down and bottom-up', 'A framework for analysing a company', 'Financial dashboards', 'Model validation and error checking'],
-    related: [{ tool: 'finance/valuation/', label: 'Valuation' }],
+    related: [{ tool: 'finance/valuation/', label: 'Valuation' }, { tool: 'finance/company-valuation/', label: 'Company Valuation Studio' }],
   }),
   C({
     id: 'f08', school: 'finance', code: 'F08', level: 'advanced', requires: ['f05', 'f06'],
