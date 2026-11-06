@@ -32,7 +32,9 @@ export function depreciation(cost, { method = 'sl', life = 5, salvage = 0 } = {}
  * FCF = OCF − capital spending − ΔNWC + after-tax salvage.
  * inputs: { capex, years, revenue: [y1…yn], variable: [..] or variableShare, fixed: [..] or a number, dep: [..]
  *   (from depreciation()), tax, nwc?: [y0…yn], nwcShare?, salvage? (market value at the end), sunk? (ignored, listed
- *   only so lessons can show it is left out), opportunity? (after-tax value forgone, charged at year 0) }
+ *   only so lessons can show it is left out), opportunity? (after-tax value forgone, charged at year 0), upfront?
+ *   (costs expensed at year 0, such as launch marketing: tax-deductible, so they cost upfront × (1 − T)), side?: [y1…yn]
+ *   (after-tax effects on the firm's other cash flows, e.g. −lost margin from cannibalisation, added to FCF) }
  */
 export function projectCashFlows(p) {
   const n = p.years, T = p.tax ?? 0;
@@ -52,9 +54,10 @@ export function projectCashFlows(p) {
     const Fx = t >= 1 ? at(p.fixed, t) : 0, D = dep(t);
     const ebit = t >= 1 ? R - V - Fx - D : 0, taxes = ebit * T, nopat = ebit - taxes, ocf = nopat + D;
     const capex = (t === 0 ? p.capex : 0) + (p.extraCapex?.[t] ?? 0) + (t === 0 ? p.opportunity ?? 0 : 0);
+    const upfront = t === 0 ? (p.upfront ?? 0) * (1 - T) : 0, side = t >= 1 ? p.side?.[t - 1] ?? 0 : 0;
     const dNwc = nwcLevel(t) - (t === 0 ? 0 : nwcLevel(t - 1));
     const salvage = t === n && p.salvage != null ? p.salvage - T * (p.salvage - book) : 0;
-    rows.push({ t, revenue: R, variable: V, fixed: Fx, depreciation: D, ebit, taxes, nopat, ocf, capex, nwc: nwcLevel(t), dNwc, salvage, fcf: ocf - capex - dNwc + salvage });
+    rows.push({ t, revenue: R, variable: V, fixed: Fx, depreciation: D, ebit, taxes, nopat, ocf, capex, upfront, side, nwc: nwcLevel(t), dNwc, salvage, fcf: ocf - capex - upfront + side - dNwc + salvage });
   }
   return { rows, fcf: rows.map((r) => r.fcf), book, depTotal };
 }

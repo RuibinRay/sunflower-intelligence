@@ -35,6 +35,8 @@ fx.projects.forEach((p, j) => {
   const base = { capex: 5000, years: 1, revenue: [8000], variableShare: 0, fixed: 0, dep: [5000], tax: 0 };
   close('opportunity cost', C.projectCashFlows({ ...base, opportunity: 1200 }).fcf[0], -6200);
   close('sunk cost ignored', C.projectCashFlows({ ...base, sunk: 900 }).fcf[0], -5000);
+  close('upfront expense after tax', C.projectCashFlows({ ...base, tax: 0.25, upfront: 2000 }).fcf[0], -6500);
+  close('side effect added', C.projectCashFlows({ ...base, side: [-300] }).fcf[1], 8000 - 300);
 }
 
 // ---- annuities, EAC and comparing unequal lives
