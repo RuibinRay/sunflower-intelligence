@@ -1,8 +1,8 @@
 // choosing-between-projects.js — F05 · Choosing between projects. Content only; exercises are in choosing-between-projects.ex.js.
 // Uses ROASTERS (two mutually exclusive roasters with different lives), ROASTER (its maintenance, kitchen corner and the yearly
 // saving), PROPOSALS and BUDGET_2028 (capital rationing), coldBrewFlows() and roasterFlows() and WORKING_RATE from case.js.
-// The kiosks, cargo bike and solar panels are valued here with the case’s outlays, lives and savings, taxed at 25% with 5-year
-// MACRS and no resale value (stated in the lesson). Tideline Kayaks, Ravensmoor Hotel and Haverlock Events are fictional.
+// The kiosks, cargo bike and solar panels are valued as in net-present-value: the case’s yearly savings are after-tax cash
+// flows, with no resale value. Tideline Kayaks, Ravensmoor Hotel and Haverlock Events are fictional.
 import { ROASTER, ROASTERS, PROPOSALS, BUDGET_2028, WORKING_RATE, TAX, coldBrewFlows, roasterFlows, DERIVED } from './case.js?v=28';
 import { projectCashFlows, depreciation, eaa } from '../../../core/corpfin.js?v=28';
 import { npv, irr, crossover, profitabilityIndex, ration } from '../../../core/invest.js?v=28';
@@ -26,8 +26,7 @@ const fullFlows = (m) => projectCashFlows({ capex: m.price, years: m.life, reven
   fixed: m.operator + ROASTER.maintenance + ROASTER.space, dep: depreciation(m.price, { method: 7 }).slice(0, m.life), tax: TAX, salvage: m.salvage }).fcf;
 const nA = npv(r, fullFlows(A)), nB = npv(r, fullFlows(B));
 // Capital rationing
-const small = PROPOSALS.slice(2).map((p) => ({ ...p, flows: projectCashFlows({ capex: p.outlay, years: p.life, revenue: Array(p.life).fill(p.saving), variable: Array(p.life).fill(0), fixed: 0,
-  dep: depreciation(p.outlay, { method: 5 }).slice(0, p.life), tax: TAX, salvage: 0 }).fcf }));
+const small = PROPOSALS.slice(2).map((p) => ({ ...p, flows: [-p.outlay, ...Array(p.life).fill(p.saving)] }));
 const cb = coldBrewFlows().fcf, ro = roasterFlows().fcf;
 const P = [{ name: 'Cold Brew', flows: cb }, { name: 'Roaster', flows: ro }, ...small.map((p) => ({ name: p.name, flows: p.flows }))]
   .map((p) => ({ ...p, outlay: -p.flows[0], npv: npv(r, p.flows), pi: profitabilityIndex(r, p.flows) }));
@@ -121,7 +120,7 @@ export default {
       ['<g>Soft rationing</g>', 'A limit the firm sets itself: a budget for each division, a reluctance to borrow or to sell shares, or a cap that forces managers to put their best proposals forward. It can be lifted by a decision inside the firm.'],
       ['<g>Hard rationing</g>', 'A limit imposed from outside: no lender or investor will provide more on acceptable terms, perhaps because the firm is small, young or already heavily borrowed, or because a loan agreement forbids it. Common for small private firms; for large listed firms, it usually signals a deeper problem.'],
     ] },
-    { p: 'Within a single-period budget, the goal is the set of projects with the largest total NPV whose outlays fit. The <b>profitability index</b> (PI: the present value of the cash flows after today per dollar invested today, from investment-criteria) is the usual shortcut: rank the positive-NPV projects by PI and take them in order until the money runs out. Every dollar of a budget can then go where it adds the most NPV per dollar.' },
+    { p: 'Within a single-period budget, the goal is the set of projects with the largest total NPV whose outlays fit. The <g>profitability index</g> (PI: the present value of the cash flows after today per dollar invested today, from investment-criteria) is the usual shortcut: rank the positive-NPV projects by PI and take them in order until the money runs out. Every dollar of a budget can then go where it adds the most NPV per dollar.' },
     { p: 'The shortcut is exact only when projects can be taken in part. With indivisible projects it can fail, because the last project that fits may leave money idle. Haverlock Events (fictional) has $100,000 and three projects: X costs $60,000 for an NPV of $18,000 (PI 1.30), Y costs $50,000 for $14,000 (PI 1.28) and Z costs $50,000 for $13,500 (PI 1.27). Ranked by PI, Haverlock takes X and then can’t afford either of the others: total NPV $18,000. Y and Z together use the whole budget and add $27,500. With only a few projects, check every combination that fits; with many, a spreadsheet’s Solver (integer programming) does the search.' },
     { p: 'The PI also fails when the budget binds in more than one period, because a project that needs money next year competes with next year’s projects as well. And it says nothing about mutually exclusive pairs inside the list (both roasters can’t be taken), which must be handled by allowing at most one of them.' },
   ],
@@ -180,7 +179,7 @@ export default {
       answer: 'Buy roaster A: it costs about $2,012 a year less to own ($30,283 against $32,295), although its costs over one life have the higher present value.',
       interpretation: 'A’s higher price buys three more years of roasting and a lower wage bill. The answer assumes Lantern keeps roasting for the foreseeable future and can replace like with like; if Ana planned to stop roasting within four years, she should compare the two over four years, with A sold early at whatever it would then fetch. A is the better choice at every rate from 5% to 20%, so the ranking does not hang on the 11% working rate.' },
     { level: 'applied', title: 'Spending Lantern’s $40,000', fictional: true,
-      setup: 'Ana has $40,000 to invest on 1 April 2028 without new financing. The candidates are below, valued at 11%. Cold Brew and the roaster use the free cash flows from project-cash-flows; the kiosks, cargo bike and solar panels use the case’s outlays, lives and yearly savings, taxed at 25%, with 5-year MACRS and no resale value. Which projects should she fund?',
+      setup: 'Ana has $40,000 to invest on 1 April 2028 without new financing. The candidates are below, valued at 11%. Cold Brew and the roaster use the free cash flows from project-cash-flows; the kiosks, cargo bike and solar panels use the outlays, lives and after-tax yearly savings from net-present-value. Which projects should she fund?',
       table: {
         caption: 'Lantern’s 2028 proposals at 11% (fictional figures)',
         head: ['Project', 'Outlay on 1 April', 'NPV', 'PI'],
@@ -188,19 +187,19 @@ export default {
         rows: [
           ['Cold Brew launch', '$23,237', '$25,737', '2.11'],
           ['In-house roaster (A)', '$48,000', '$18,386', '1.38'],
-          ['Ordering kiosks', '$14,000', '$795', '1.06'],
-          ['Electric cargo bike', '$7,500', '$298', '1.04'],
-          ['Solar panels', '$19,000', '−$1,720', '0.91'],
+          ['Ordering kiosks', '$14,000', '$2,133', '1.15'],
+          ['Electric cargo bike', '$7,500', '$1,001', '1.13'],
+          ['Solar panels', '$19,000', '−$743', '0.96'],
         ],
       },
       steps: [
         'Drop the solar panels: a negative NPV is rejected with or without a budget.',
         'The roaster’s $48,000 is more than the whole budget, so it can’t be taken on its own money, however good it is.',
-        'Rank the rest by PI: Cold Brew (2.11), kiosks (1.06), bike (1.04). Cold Brew and the kiosks use $37,237; the bike’s $7,500 doesn’t fit in the $2,763 left. Checking every combination that fits confirms it: Cold Brew and kiosks give the largest total NPV, $26,531.',
-        'Without the cap Ana would take all four positive-NPV projects, $92,737 of outlays for a total NPV of $45,215 (the rounded figures in the table add to $45,216). The budget costs her $18,684 of value, almost all of it the roaster.',
+        'Rank the rest by PI: Cold Brew (2.11), kiosks (1.15), bike (1.13). Cold Brew and the kiosks use $37,237; the bike’s $7,500 doesn’t fit in the $2,763 left. Checking every combination that fits confirms it: Cold Brew and kiosks give the largest total NPV, $27,870.',
+        'Without the cap Ana would take all four positive-NPV projects, $92,737 of outlays for a total NPV of $47,256 (the rounded figures in the table add to $47,257). The budget costs her $19,387 of value, almost all of it the roaster.',
         'Cold Brew also needs $20,383 more during its first year (working capital and first-year losses). A budget that binds next year as well would have to cover that too.',
       ],
-      answer: 'Within $40,000: Cold Brew and the kiosks, total NPV $26,531, with $2,763 unspent. The roaster, worth $18,386, is left out only for lack of money.',
+      answer: 'Within $40,000: Cold Brew and the kiosks, total NPV $27,870, with $2,763 unspent. The roaster, worth $18,386, is left out only for lack of money.',
       interpretation: 'If the $40,000 is a limit Ana sets herself (soft rationing), the NPVs argue for lifting it: financing the roaster adds $18,386 as long as the money costs no more than the 11% used to value it. If no lender or investor will provide it (hard rationing), the best set is Cold Brew and the kiosks. How Lantern could raise more, and what it would cost, is the subject of modules 3 and 4.' },
   ],
 
@@ -222,7 +221,7 @@ export default {
 
   application: [
     { p: 'Equipment choices like Lantern’s roasters are where annual equivalents earn their keep: fleets of vehicles, ovens, servers and machine tools, where one option costs more now and less later or lasts longer. Operations managers often think in cost per year; the EAC gives them that figure with the time value of money and tax built in. When an investment would be repeated, it is the honest way to compare.' },
-    { p: 'In a growing small firm, budgets are often the binding constraint. A useful discipline is to rank proposals by PI and then check the combinations near the cut-off by hand, as Ana did, and, just as important, to price the constraint: the NPV given up by the budget. Lantern’s $40,000 cap costs $18,684 of value. That figure is the case for raising money, set against what the new money would cost and the control or risk it brings with it (modules 3 and 4).' },
+    { p: 'In a growing small firm, budgets are often the binding constraint. A useful discipline is to rank proposals by PI and then check the combinations near the cut-off by hand, as Ana did, and, just as important, to price the constraint: the NPV given up by the budget. Lantern’s $40,000 cap costs $19,387 of value. That figure is the case for raising money, set against what the new money would cost and the control or risk it brings with it (modules 3 and 4).' },
     { p: 'Most rationing in practice is soft: divisions get a capital allowance, and the board asks for the best projects within it. That can be sensible when forecasts are biased upwards (every manager’s pet project has a high NPV) or when the firm lacks people to run everything at once. But the cap should be revisited when good projects are left out, rather than treated as a law of nature.' },
     { callout: 'note', title: 'Before you rank', html: 'Check that the projects being compared were valued on the same basis: the same tax treatment, the same timing convention, the same rate for the same risk, and nominal flows with a nominal rate. A ranking can only be as consistent as the valuations behind it.' },
   ],
@@ -238,8 +237,6 @@ export default {
   ],
 
   glossary: [
-    { term: 'Independent projects', def: 'Projects whose acceptance does not affect whether others can be accepted, so each is judged on its own: accept every one with a positive NPV.' },
-    { term: 'Mutually exclusive projects', def: 'Projects of which only one can be accepted, because they compete for the same space, purpose or time; choose the one with the highest positive NPV.' },
     { term: 'Incremental IRR', def: 'The IRR of the difference between two projects’ cash flows (the larger or later-paying minus the other): the return earned on the extra investment. Prefer the larger project when it exceeds the cost of capital.' },
     { term: 'Crossover rate', def: 'The discount rate at which two projects have the same NPV, where their NPV profiles cross; the IRR of the difference in their cash flows. Also called Fisher’s rate of intersection.' },
     { term: 'Replacement chain', def: 'A way to compare projects with unequal lives: each is assumed to be repeated identically until both chains end on the same date (the least common multiple of the lives), and the chains’ NPVs are compared.' },
@@ -332,24 +329,25 @@ export default {
     { what: 'Roaster NPV', value: P[1].npv, shown: 18386, tol: 0.5 },
     { what: 'Roaster PI', value: P[1].pi, shown: 1.38, tol: 0.005 },
     { what: 'Kiosks outlay', value: P[2].outlay, shown: 14000 },
-    { what: 'Kiosks NPV', value: P[2].npv, shown: 795, tol: 0.5 },
-    { what: 'Kiosks PI', value: P[2].pi, shown: 1.06, tol: 0.005 },
+    { what: 'Kiosks NPV', value: P[2].npv, shown: 2133, tol: 0.5 },
+    { what: 'Kiosks PI', value: P[2].pi, shown: 1.15, tol: 0.005 },
     { what: 'Bike outlay', value: P[3].outlay, shown: 7500 },
-    { what: 'Bike NPV', value: P[3].npv, shown: 298, tol: 0.5 },
-    { what: 'Bike PI', value: P[3].pi, shown: 1.04, tol: 0.005 },
+    { what: 'Bike NPV', value: P[3].npv, shown: 1001, tol: 0.5 },
+    { what: 'Bike PI', value: P[3].pi, shown: 1.13, tol: 0.005 },
     { what: 'Solar outlay', value: P[4].outlay, shown: 19000 },
-    { what: 'Solar NPV', value: P[4].npv, shown: -1720, tol: 0.5 },
-    { what: 'Solar PI', value: P[4].pi, shown: 0.91, tol: 0.005 },
+    { what: 'Solar NPV', value: P[4].npv, shown: -743, tol: 0.5 },
+    { what: 'Solar PI', value: P[4].pi, shown: 0.96, tol: 0.005 },
     { what: 'Budget', value: BUDGET_2028, shown: 40000 },
     { what: 'Roaster outlay exceeds the budget (1 = yes)', value: P[1].outlay > BUDGET_2028 ? 1 : 0, shown: 1 },
     { what: 'Best set: Cold Brew and kiosks only (1 = yes)', value: RA.exact.join() === 'true,false,true,false,false' ? 1 : 0, shown: 1 },
     { what: 'PI shortcut agrees here (1 = yes)', value: RA.greedy.join() === RA.exact.join() ? 1 : 0, shown: 1 },
     { what: 'Best set outlay', value: RA.exactOutlay, shown: 37237, tol: 0.5 },
-    { what: 'Best set NPV', value: RA.exactNpv, shown: 26531, tol: 0.5 },
+    { what: 'Best set NPV', value: RA.exactNpv, shown: 27870, tol: 0.5 },
     { what: 'Unspent', value: BUDGET_2028 - RA.exactOutlay, shown: 2763, tol: 0.5 },
     { what: 'Unlimited outlay', value: sum(allPos, 'outlay'), shown: 92737, tol: 0.5 },
-    { what: 'Unlimited NPV', value: sum(allPos, 'npv'), shown: 45215, tol: 0.5 },
-    { what: 'Value the budget costs', value: sum(allPos, 'npv') - RA.exactNpv, shown: 18684, tol: 0.5 },
+    { what: 'Unlimited NPV', value: sum(allPos, 'npv'), shown: 47256, tol: 0.5 },
+    { what: 'Unlimited NPV from the rounded table', value: 25737 + 18386 + 2133 + 1001, shown: 47257 },
+    { what: 'Value the budget costs', value: sum(allPos, 'npv') - RA.exactNpv, shown: 19387, tol: 0.5 },
     { what: 'Unlimited set has four projects', value: allPos.length, shown: 4 },
     { what: 'Cold Brew year-1 outflow', value: -cb[1], shown: 20383, tol: 0.5 },
     { what: 'Haverlock X PI', value: (18000 + 60000) / 60000, shown: 1.30 },

@@ -92,7 +92,7 @@ export function breakEven(model, base, name, lo, hi, target = 0) {
   for (let i = 0; i < 200; i++) { const m = (a + b) / 2, fm = f(m); if (Math.sign(fm) === Math.sign(fa)) { a = m; fa = fm; } else b = m; }
   return (a + b) / 2;
 }
-/** Accounting break-even (EBIT = 0) and cash break-even (OCF = 0) volumes, and the financial (NPV) break-even
+/** Accounting break-even (EBIT = 0) and cash break-even (EBITDA = 0: operating cash flow before tax is zero; after tax, a firm with other profits still collects the T × D shield) volumes, and the financial (NPV) break-even
  *  volume for a project with constant volume: price, variable cost per unit, fixed costs a year, depreciation a year,
  *  capex at year 0, life n, rate r, tax T. */
 export function breakEvenVolumes({ price, unitCost, fixed, dep, capex, n, r, tax }) {

@@ -44,7 +44,7 @@ export const widgets = {
   'risk-breakeven': {
     type: 'formula',
     title: 'Break-even volumes and operating leverage',
-    intro: 'A product sold at a constant volume for five years, like a steady year of Cold Brew: grocers keep 38% of the shelf price, straight-line depreciation over five years, tax 25%. Starting values from the fictional case.',
+    intro: 'A product sold at a constant volume for five years, like a steady year of Cold Brew: grocers keep 38% of the shelf price, straight-line depreciation over five years, tax 25%. The chart shows EBIT, operating cash flow after tax (OCF) and the investment’s equivalent annual cost (EAC): OCF crosses EAC at the financial break-even. Starting values from the fictional case.',
     inputs: [
       { id: 'price', label: 'Shelf price a unit', min: 2.79, max: 4.19, step: 0.05, value: cb.shelfPrice, fmt: 'money', digits: 2 },
       { id: 'cost', label: 'Variable cost a unit', min: 0.5, max: 1.2, step: 0.01, value: cb.cogs, fmt: 'money', digits: 2 },
@@ -77,8 +77,8 @@ export const widgets = {
           : `Expected volume is below the financial break-even: on these figures the investment destroys value.`,
         chart: { kind: 'line', x: { label: 'Units a year (thousands)', values: xs.map((x) => x / 1000) },
           series: [
-            { name: 'Operating cash flow after tax', values: xs.map((q) => Math.round((q * m - v.fixed - dep) * (1 - TAX) + dep)) },
-            { name: 'Investment’s cost a year (EAC)', values: xs.map(() => Math.round(ann)) },
+            { name: 'OCF', values: xs.map((q) => Math.round((q * m - v.fixed - dep) * (1 - TAX) + dep)) },
+            { name: 'EAC', values: xs.map(() => Math.round(ann)) },
             { name: 'EBIT', values: xs.map((q) => Math.round(q * m - v.fixed - dep)) },
           ], y: { label: 'Dollars a year' } },
       };
@@ -115,7 +115,7 @@ export const guided = [
         hints: ['Weight each scenario’s NPV by its probability and add.'],
         wrong: [{ value: 43333, say: 'That is a simple average of the three NPVs. Weight each by its probability.' }, { value: 40000, say: 'That is the base case only. The expected NPV weights all three scenarios.' }] },
       { id: 'f05-risk-g2-s2', type: 'mc', prompt: 'What does scenario analysis add to the one-at-a-time sensitivity analysis the studio has already done?',
-        options: ['It shows the effect of several inputs moving together in a consistent way', 'It removes the need to choose ranges for each input', 'It turns the NPV into a probability of success that can be relied on', 'It replaces the discount rate as the way to allow for risk'],
+        options: ['It shows the effect of several inputs moving together in a consistent way', 'It removes the need to choose a low and a high value for each uncertain input', 'It turns the NPV into a probability of success that can be relied on for the decision', 'It replaces the discount rate as the way to allow for the project’s risk'],
         answer: 0,
         feedback: { 1: 'Scenarios still need judgements about each input’s value in each story, and about the probabilities.', 2: 'The probabilities are judgements; the output is no more reliable than they are.', 3: 'Systematic risk still belongs in the rate; scenarios improve the expected cash flows.' },
         hints: ['Sensitivity analysis moves one input at a time.'] },
@@ -157,12 +157,7 @@ export const independent = [
   {
     id: 'f05-risk-i1', type: 'mc', kind: 'applied',
     prompt: 'Cold Brew’s tornado (base NPV $25,737): volume 70%–130% swings the NPV by $110,789; shelf price $3.19–$3.79 by $48,814; cost a can $0.64–$0.84 by $26,834; promotion 80%–120% by $21,416; the rate 9%–13% by $9,166. Ana has a week before deciding. How should she spend it?',
-    options: [
-      'Gathering evidence on how many cans grocers will sell, for example from trial listings or buyers’ orders',
-      'Estimating the discount rate more precisely, since the rate is the most debatable input',
-      'Negotiating the co-packer’s fee, because cost is the input she controls',
-      'Nothing: the base NPV is positive, so the tornado doesn’t affect the decision',
-    ],
+    options: ['Gathering evidence on how many cans grocers will actually sell', 'Estimating the discount rate more precisely, since the rate is the most debatable input', 'Negotiating the co-packer’s fee, because cost is the input she controls', 'Nothing: the base NPV is positive, so the tornado doesn’t affect the decision'],
     answer: 0,
     feedback: {
       1: 'Over these ranges the rate moves the NPV least; refining it changes little.',
@@ -199,12 +194,7 @@ export const independent = [
   {
     id: 'f05-risk-i4', type: 'mc', kind: 'conceptual',
     prompt: 'A manager raises the discount rate on a new product from 11% to 16% “because launches are risky”. The main risk is that the product fails in its first year, and it is specific to this firm. What is wrong with this?',
-    options: [
-      'It penalises distant cash flows far more than near ones, although the risk is resolved early; the failure risk belongs in the expected cash flows',
-      'Nothing: riskier projects should always be discounted at higher rates',
-      'The rate should be lowered instead, because the product might do better than expected',
-      'It is fine as long as the same 16% is used for every project the firm takes',
-    ],
+    options: ['It cuts distant cash flows far more than near ones, though this risk is early; it belongs in the expected cash flows', 'Nothing: a project that is riskier than the firm’s average should always be discounted at a higher rate than the average, whatever the source of its risk', 'The rate should be lowered instead, because the product might also do much better than expected', 'It is fine as long as the same 16% is then used for every other project the firm takes on'],
     answer: 0,
     feedback: {
       1: 'Higher rates are for higher systematic risk, which investors can’t diversify. A launch failure specific to one firm should lower the expected cash flows instead.',
@@ -273,12 +263,7 @@ export const check = [
   {
     id: 'f05-risk-k4', type: 'mc', kind: 'applied',
     prompt: 'Cold Brew’s expected NPV is positive, but its pessimistic case loses $46,683 and its NPV break-even is 86% of forecast volume. Which plan best uses what the risk analysis shows?',
-    options: [
-      'Launch with a few grocers on short contracts, measure sell-through, and keep the right to stop or to expand',
-      'Reject Cold Brew, since there is a 25% chance of a large loss',
-      'Launch at full scale and raise the discount rate to 16% to allow for the risk',
-      'Launch at full scale, since the expected NPV is positive and the risk analysis is only a check',
-    ],
+    options: ['Launch with a few grocers on short contracts, measure sell-through, keep the right to stop', 'Reject Cold Brew, since a 25% chance of losing $46,683 is too large a risk for a small firm', 'Launch at full scale and raise the discount rate to 16% to allow for the launch risk', 'Launch at full scale: the expected NPV is positive, and the risk analysis is only a check'],
     answer: 0,
     feedback: { 1: 'A positive expected NPV with a survivable downside is worth taking; a staged launch makes the downside smaller still.', 2: 'Raising the rate double-counts a risk that is early and specific to Lantern, and does nothing to reduce it.', 3: 'The analysis also shows how to reduce the downside: staging the launch adds option value.' },
     solution: 'The risk is concentrated in early volume. A staged launch with short commitments turns that into an option to abandon (worth about $7,099 in the lesson’s example) and an option to expand, while keeping the positive expected NPV.',
@@ -286,12 +271,7 @@ export const check = [
   {
     id: 'f05-risk-k5', type: 'mc', kind: 'conceptual',
     prompt: 'For a project with an up-front investment and a positive required return, why is the financial (NPV) break-even volume higher than the accounting break-even?',
-    options: [
-      'At the accounting break-even the project recovers its depreciation but earns no return on the money invested; NPV = 0 also requires the opportunity cost of that money',
-      'Because depreciation is a cash cost that the accounting break-even leaves out',
-      'Because taxes are ignored at the accounting break-even',
-      'It isn’t: the two are always equal for a project with no working capital',
-    ],
+    options: ['Covering depreciation recovers the investment but earns no return on it; NPV = 0 also needs the opportunity cost', 'Because depreciation is a cash cost that the accounting break-even leaves out of the calculation', 'Because taxes are ignored at the accounting break-even but included in the financial break-even', 'It isn’t: for a project with no working capital the two break-even volumes are always equal'],
     answer: 0,
     feedback: { 1: 'Depreciation is not a cash cost, and the accounting break-even includes it.', 2: 'At the accounting break-even EBIT is zero, so there is no tax either way; that is not the reason.', 3: 'They are equal only if the required return is zero.' },
     solution: 'Covering depreciation recovers the investment with no return, which is zero NPV only at a 0% rate. At a positive rate, operating cash flow must cover the investment’s equivalent annual cost, which is larger than its depreciation.',

@@ -1,7 +1,7 @@
 // choosing-between-projects.ex.js — F05 · Choosing between projects: widgets, practice and the knowledge check.
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // Lantern figures come from case.js (ROASTERS, ROASTER, PROPOSALS, BUDGET_2028, coldBrewFlows, roasterFlows); the
-// kiosks, cargo bike and solar panels are valued as in the lesson (25% tax, 5-year MACRS, no resale value).
+// kiosks, cargo bike and solar panels are valued as in net-present-value (the yearly savings are after-tax cash flows).
 // Tideline Kayaks, Ravensmoor Hotel, Vellum Print Works, Penrowan Bakery, Cobbleway Laundry and the other businesses
 // named here are fictional.
 import { ROASTER, ROASTERS, PROPOSALS, BUDGET_2028, WORKING_RATE, TAX, coldBrewFlows, roasterFlows, DERIVED } from './case.js?v=28';
@@ -17,8 +17,7 @@ const r = WORKING_RATE;
 const costFlows = (m, k = {}) => projectCashFlows({ capex: m.price, years: m.life, revenue: Array(m.life).fill(0), variable: Array(m.life).fill(0), fixed: m.operator,
   dep: depreciation(m.price, { method: 7 }).slice(0, m.life), tax: TAX, salvage: m.salvage, ...k }).fcf;
 const eacOf = (m, rate) => -eaa(npv(rate, costFlows(m)), rate, m.life);
-const smallFlows = (p) => projectCashFlows({ capex: p.outlay, years: p.life, revenue: Array(p.life).fill(p.saving), variable: Array(p.life).fill(0), fixed: 0,
-  dep: depreciation(p.outlay, { method: 5 }).slice(0, p.life), tax: TAX, salvage: 0 }).fcf;
+const smallFlows = (p) => [-p.outlay, ...Array(p.life).fill(p.saving)];
 const FLOWS = [
   { name: 'Cold Brew', flows: coldBrewFlows().fcf },
   { name: 'In-house roaster (A)', flows: roasterFlows().fcf },
@@ -285,14 +284,14 @@ export const independent = [
   },
   {
     id: 'f05-cbp-i5', type: 'num', kind: 'applied',
-    prompt: 'Suppose Ana could spend $50,000 on 1 April 2028 instead of $40,000. Using the lesson’s outlays and NPVs at 11% (Cold Brew $23,237 / $25,737; roaster $48,000 / $18,386; kiosks $14,000 / $795; cargo bike $7,500 / $298; solar panels $19,000 / −$1,720), what total NPV does the best set within $50,000 add?',
-    answer: 26829, check: () => B50.exactNpv, unit: '$', places: 0, tol: 1,
+    prompt: 'Suppose Ana could spend $50,000 on 1 April 2028 instead of $40,000. Using the lesson’s outlays and NPVs at 11% (Cold Brew $23,237 / $25,737; roaster $48,000 / $18,386; kiosks $14,000 / $2,133; cargo bike $7,500 / $1,001; solar panels $19,000 / −$743), what total NPV does the best set within $50,000 add?',
+    answer: 28871, check: () => B50.exactNpv, unit: '$', places: 0, tol: 1,
     wrong: [
-      { value: 26531, say: 'That is the $40,000 answer. With $50,000, the cargo bike also fits alongside Cold Brew and the kiosks.' },
+      { value: 27870, say: 'That is the $40,000 answer. With $50,000, the cargo bike also fits alongside Cold Brew and the kiosks.' },
       { value: 44123, say: 'Cold Brew and the roaster together cost $71,237, more than $50,000.' },
       { value: 18386, say: 'The roaster alone fits, but Cold Brew, kiosks and bike together add more.' },
     ],
-    solution: 'The roaster ($48,000) fits only alone (NPV $18,386); adding anything else breaks the budget. Without it, Cold Brew + kiosks + bike cost $44,737 and add 25,737 + 795 + 298 = $26,829. That beats the roaster alone, so the best set is Cold Brew, kiosks and bike: $26,829. The extra $10,000 of budget is worth only $298 here; the roaster still needs $71,237 alongside Cold Brew.',
+    solution: 'The roaster ($48,000) fits only alone (NPV $18,386); adding anything else breaks the budget. Without it, Cold Brew + kiosks + bike cost $44,737 and add 25,737 + 2,133 + 1,001 = $28,871 (from unrounded NPVs, $28,870). That beats the roaster alone, so the best set is Cold Brew, kiosks and bike. The extra $10,000 of budget is worth only the bike’s $1,001 here; the roaster still needs $71,237 alongside Cold Brew.',
   },
 ];
 
@@ -300,7 +299,7 @@ export const check = [
   {
     id: 'f05-cbp-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Two mutually exclusive projects: A has an IRR of 24% and an NPV of $30,000; B has an IRR of 18% and an NPV of $45,000, both at the firm’s 10% cost of capital and of the same risk. What should the firm do?',
-    options: ['Choose B, because it adds more value at the cost of capital', 'Choose A, because it earns the higher rate of return', 'Choose both, because both have positive NPVs', 'Choose A if it is smaller, because it ties up less capital'],
+    options: ['Choose B, because it adds more value at the cost of capital', 'Choose A, because it earns the higher rate of return on each dollar invested', 'Choose both, because both have positive NPVs at the 10% cost of capital', 'Choose A if it is smaller, because it ties up less of the firm’s capital'],
     answer: 0,
     feedback: { 1: 'IRR is a rate, not an amount of value; it can favour a smaller project or one that pays earlier. The firm’s owners are better off by $15,000 more with B.', 2: 'They are mutually exclusive: only one can be taken.', 3: 'Capital has a cost, already charged in the NPV at 10%. Unless capital is rationed, the smaller outlay is not an advantage in itself.' },
     solution: 'For mutually exclusive projects, choose the higher NPV: B. A’s higher IRR could come from a smaller scale or earlier cash flows; the incremental IRR of B over A must be above 10%, since B’s NPV is higher at 10%.',
@@ -319,7 +318,7 @@ export const check = [
   {
     id: 'f05-cbp-k3', type: 'mc', kind: 'conceptual',
     prompt: 'The present value of roaster B’s costs ($100,195) is lower than roaster A’s ($142,700), yet the lesson recommends A. Why?',
-    options: ['B’s present value covers four years of roasting and A’s seven, so the totals aren’t comparable; per year, A is cheaper', 'A’s larger tax shield is not counted in its present value', 'B’s present value should be discounted at a higher rate because it is cheaper', 'A has a higher resale value, which is added after the comparison'],
+    options: ['The totals cover four years against seven; per year of roasting, A is cheaper', 'A’s larger depreciation tax shield is left out of its present value, which overstates its cost', 'B’s cash flows should be discounted at a higher rate, since a cheaper machine is a riskier one', 'A’s higher resale value is added after the comparison, which turns the ranking round'],
     answer: 0,
     feedback: { 1: 'Both present values already include the depreciation tax shields.', 2: 'The rate depends on risk, not on price; the two machines do the same job with the same risk.', 3: 'Each machine’s resale value is already in its present value, after tax.' },
     solution: 'The present values cover different lengths of service. Converting each to an equivalent annual cost (A $30,283, B $32,295) or extending both to a 28-year chain compares them over the same period, and A is cheaper.',
@@ -351,14 +350,9 @@ export const check = [
   {
     id: 'f05-cbp-k6', type: 'mc', kind: 'applied',
     prompt: 'With $40,000, Ana funds Cold Brew and the kiosks and leaves out the roaster (NPV $18,386 at 11%, outlay $48,000). What is the soundest advice?',
-    options: [
-      'If Lantern can raise the $48,000 at a cost no higher than the roaster’s required return, it should: the budget is costing about $18,684 of value',
-      'Drop Cold Brew and buy the roaster, because the roaster’s NPV is the larger figure that the budget rules out',
-      'Leave the roaster out: a positive NPV that doesn’t fit the budget is not a real opportunity',
-      'Take a smaller share of the roaster to fit the budget',
-    ],
+    options: ['Raise the $48,000 if it costs no more than the roaster’s required return: the cap costs about $19,387', 'Drop Cold Brew and buy the roaster instead, because the roaster is the larger value that the budget rules out', 'Leave the roaster out: a positive-NPV project that doesn’t fit within the budget is not a real opportunity', 'Buy a roaster jointly with another café so that Lantern’s share of the cost fits within the $40,000'],
     answer: 0,
-    feedback: { 1: 'The roaster alone costs more than $40,000, and Cold Brew’s NPV is higher. Dropping Cold Brew loses value.', 2: 'The budget is a constraint to be priced, not a fact about the project. If finance is available at a fair cost, the project is a real opportunity.', 3: 'A roaster can’t be bought in part: projects like this are indivisible.' },
-    solution: 'Unless the $40,000 is a hard limit, the NPV given up ($45,215 − $26,531 = $18,684, almost all the roaster) is the case for raising money. How to raise it and what it costs come in modules 3 and 4; the roaster’s value depends on 11% being the right rate for it.',
+    feedback: { 1: 'The roaster alone costs more than $40,000, and Cold Brew’s NPV is higher. Dropping Cold Brew loses value.', 2: 'The budget is a constraint to be priced, not a fact about the project. If finance is available at a fair cost, the project is a real opportunity.', 3: 'Sharing a roaster is a different project, with its own costs and control problems; the roaster valued in the lesson is indivisible.' },
+    solution: 'Unless the $40,000 is a hard limit, the NPV given up ($47,256 − $27,870 = $19,387 from unrounded NPVs, almost all the roaster) is the case for raising money. How to raise it and what it costs come in modules 3 and 4; the roaster’s value depends on 11% being the right rate for it.',
   },
 ];
