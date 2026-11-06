@@ -5,9 +5,9 @@
 // that is still useful; and Harbourside's days with 50–70 transactions for R²'s dependence on the range of x. Otterburn
 // Laundry is fictional. Fitting the line is least-squares-line's; tests are module 2's; residual plots in full (spread,
 // normality, order) are assumptions-and-diagnostics'. Every figure printed is recomputed in `checks`.
-import { column, DERIVED as D } from './case.js?v=25';
-import * as R from '../../../core/regression.js?v=25';
-import { mean, sd } from '../../../core/stats.js?v=25';
+import { column, DERIVED as D } from './case.js?v=26';
+import * as R from '../../../core/regression.js?v=26';
+import { mean, sd } from '../../../core/stats.js?v=26';
 
 const H = { cafe: 'Harbourside' };
 const sum = (a) => a.reduce((s, v) => s + v, 0);

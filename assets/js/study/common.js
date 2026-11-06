@@ -1,8 +1,8 @@
 // common.js — pieces every course page shares: the collapsible course outline with progress marks, the course
 // meter, the notes drawer and the bookmark button.
-import { $, $$, h, debounce } from '../core/dom.js?v=25';
-import * as P from './progress.js?v=25';
-import { MAP } from '../data/study/map.js?v=25';
+import { $, $$, h, debounce } from '../core/dom.js?v=26';
+import * as P from './progress.js?v=26';
+import { MAP } from '../data/study/map.js?v=26';
 
 const WIDE = matchMedia('(min-width: 961px)');
 const html = document.documentElement;

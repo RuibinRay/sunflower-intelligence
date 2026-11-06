@@ -2,8 +2,8 @@
 // (answer keys live here). The café log comes from case.js (Harbourside's dry autumn weekdays and its July days for the
 // worksheets); Linden Bike Hire, Quayside Books and the other businesses named are fictional. Formula items are marked
 // by their results (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { CLEAN_ROWS, CAFE_COLUMNS, column, SLIP } from './case.js?v=25';
-import * as R from '../../../core/regression.js?v=25';
+import { CLEAN_ROWS, CAFE_COLUMNS, column, SLIP } from './case.js?v=26';
+import * as R from '../../../core/regression.js?v=26';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const neg = (v, d = 2) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), d)}`;
