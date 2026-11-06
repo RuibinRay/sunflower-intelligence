@@ -47,7 +47,7 @@ export const items = [
       { formula: '=NPV(B1,B3:G3)', say: 'NPV() discounts its first value by a year, so the year-0 outlay would be discounted. Add B3 outside the function.' },
       { formula: '=NPV(B1,C3:G3)', say: 'That is the present value of years 1 to 5 only; add the year-0 outlay in B3.' },
     ],
-    solution: '<x>=B3+NPV(B1,C3:G3)</x> ≈ $1,230. A row works exactly like a column: NPV() takes years 1 to 5 in order, and the year-0 flow is added as it stands.',
+    solution: '<x>=B3+NPV(B1,C3:G3)</x> ≈ −$438, so the festival should not go ahead on these figures. A row works exactly like a column: NPV() takes years 1 to 5 in order, and the year-0 flow is added as it stands.',
   },
   {
     id: 'f05-m1-4', lesson: 'net-present-value', type: 'num', kind: 'applied',
@@ -148,7 +148,7 @@ export const items = [
   {
     id: 'f05-m1-11', lesson: 'project-cash-flows', type: 'num', kind: 'applied',
     prompt: 'Lantern’s roaster is depreciated by 7-year MACRS, and Ana’s accountant points out that she could instead use straight-line depreciation over the roaster’s seven-year life. The roaster’s depreciable basis is $48,000, tax is 25% and the rate 11%. Ignore the salvage value. In present value, how much larger are the depreciation tax shields over years 1 to 7 under MACRS than under straight line? Give whole dollars.',
-    answer: 220, check: () => {
+    answer: 98, check: () => {
       const basis = ROASTER.price + ROASTER.install, n = ROASTER.life;
       const pv = (d) => d.reduce((s, x, t) => s + x * TAX / 1.11 ** (t + 1), 0);
       const macrs = [14.29, 24.49, 17.49, 12.49, 8.93, 8.92, 8.93].map((p) => basis * p / 100);
@@ -157,6 +157,6 @@ export const items = [
     wrong: [
       { value: 0, say: 'Over seven years MACRS deducts less than the full cost (4.46% is left for year 8), but it deducts more of it early, and early tax savings are worth more.' },
     ],
-    solution: 'Straight line deducts 48,000 ÷ 7 ≈ $6,857 a year: shields of $1,714 a year, worth 1,714.29 × 4.712196 ≈ $8,078. MACRS deducts 14.29%, 24.49%, 17.49%, 12.49%, 8.93%, 8.92% and 8.93% of $48,000 in years 1 to 7; 25% of those, discounted at 11%, is worth about $8,298. MACRS adds about $220 in present value, even though it leaves 4.46% of the cost for year 8 (which the lesson’s full analysis recovers through a smaller taxable gain on sale).',
+    solution: 'Straight line deducts 48,000 ÷ 7 ≈ $6,857 a year: shields of $1,714 a year, worth 1,714.29 × 4.712196 ≈ $8,078. MACRS deducts 14.29%, 24.49%, 17.49%, 12.49%, 8.93%, 8.92% and 8.93% of $48,000 in years 1 to 7; 25% of those, discounted at 11%, is worth about $8,176. MACRS adds about $98 in present value, even though it leaves 4.46% of the cost for year 8 (which the lesson’s full analysis recovers through a smaller taxable gain on sale).',
   },
 ];
