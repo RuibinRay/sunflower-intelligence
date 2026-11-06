@@ -3,9 +3,9 @@
 // of 31 December 2027). Mardale Music School, Grisedale Analytics, Wasdale Broadband, Hartsop Fitness and the other
 // businesses named are fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num items
 // recompute their answers in `check`.
-import { members, AS_OF } from './case.js?v=27';
-import { isoToSerial } from '../../../core/sheet.js?v=27';
-import * as CU from '../../../core/customer.js?v=27';
+import { members, AS_OF } from './case.js?v=28';
+import { isoToSerial } from '../../../core/sheet.js?v=28';
+import * as CU from '../../../core/customer.js?v=28';
 
 const fx = (v, d = 1) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const pct = (v, d = 1) => `${fx(v * 100, d)}%`;

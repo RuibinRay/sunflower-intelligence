@@ -3,8 +3,8 @@
 // case.js; Ravensworth Garden Centre, Cobble Lane Bakery, Wayfarer Couriers, Stonebridge Cinema, Kingfisher Airways,
 // Thornbury Dairy and Marlow Gym are fictional. Formula items are marked by their results (core/sheet.js
 // gradeFormula); every num item's `check` recomputes its answer.
-import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=27';
-import * as C from '../../../core/correlation.js?v=27';
+import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=28';
+import * as C from '../../../core/correlation.js?v=28';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });

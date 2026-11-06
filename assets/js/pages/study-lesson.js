@@ -1,12 +1,12 @@
 // study-lesson.js — a course lesson page: progress marks in the outline, notes and bookmarks, the interactives,
 // guided practice, practice on your own, the knowledge check, and the lesson's completion and mastery status.
-import { initSite } from '../core/site.js?v=27';
-import { $, h } from '../core/dom.js?v=27';
-import * as P from '../study/progress.js?v=27';
-import { renderPractice, renderQuiz } from '../study/exercises.js?v=27';
-import { mountWidgets } from '../study/widgets.js?v=27';
-import { initOutline, initPartSpy, paintOutline, initNoteTools, pct, storageWarning, scrollersFocusable } from '../study/common.js?v=27';
-import { MAP } from '../data/study/map.js?v=27';
+import { initSite } from '../core/site.js?v=28';
+import { $, h } from '../core/dom.js?v=28';
+import * as P from '../study/progress.js?v=28';
+import { renderPractice, renderQuiz } from '../study/exercises.js?v=28';
+import { mountWidgets } from '../study/widgets.js?v=28';
+import { initOutline, initPartSpy, paintOutline, initNoteTools, pct, storageWarning, scrollersFocusable } from '../study/common.js?v=28';
+import { MAP } from '../data/study/map.js?v=28';
 
 initSite();
 const refocus = scrollersFocusable();
@@ -55,7 +55,7 @@ storageWarning($('#complete-card'));
 // ---------------------------------------------------------------- the exercise file: widgets and practice
 let X;
 try {
-  X = await import(`../data/study/${course}/${slug}.ex.js?v=27`);
+  X = await import(`../data/study/${course}/${slug}.ex.js?v=28`);
 } catch (e) {
   console.error(e);
   document.querySelectorAll('.ex-set, .widget').forEach((el) => el.replaceChildren(h('p', { class: 'note' }, 'The questions for this lesson didn’t load. Reload the page to try again.')));

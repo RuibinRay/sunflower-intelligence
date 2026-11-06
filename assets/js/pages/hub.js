@@ -1,4 +1,4 @@
 // hub.js — a room's overview page: shared behaviour only (menu, motion switch, arrival through the portal).
-import { initSite } from '../core/site.js?v=27';
+import { initSite } from '../core/site.js?v=28';
 
 initSite();

@@ -3,8 +3,8 @@
 // number; nothing is written that the model did not calculate. Blocks carry a `tag` saying what kind of evidence they
 // are: 'verified' (entered or sourced financial data), 'assumption' (set by the user), 'estimate' (derived by the
 // engine) or 'interpretation' (the analyst's reading). Pure functions; the page renders the blocks and charts.
-import * as V from './valuation.js?v=27';
-import * as F from './format.js?v=27';
+import * as V from './valuation.js?v=28';
+import * as F from './format.js?v=28';
 
 const fin = V.fin;
 export const TAGS = { verified: 'Verified financial data', assumption: 'Assumption', estimate: 'Estimate (derived by the model)', interpretation: 'Analyst interpretation' };

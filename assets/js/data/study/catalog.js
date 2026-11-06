@@ -465,7 +465,7 @@ const ALL = [
     related: [{ plate: 'segment' }, { tool: 'marketing/segmentation/', label: 'Market segmentation' }],
   }),
   C({
-    id: 'm06', school: 'marketing', code: 'M06', level: 'intermediate', status: 'reviewed', requires: ['m05'], recommends: ['b02', 'b06'],
+    id: 'm06', school: 'marketing', code: 'M06', level: 'intermediate', status: 'complete', requires: ['m05'], recommends: ['b02', 'b06'],
     title: 'Customer Analytics and RFM',
     blurb: 'Score customers by recency, frequency and value, and measure lifetime value, retention and churn.',
     topics: ['Recency', 'Frequency', 'Monetary value', 'RFM scoring', 'Customer segmentation', 'Customer lifetime value', 'Customer acquisition cost', 'Retention rates', 'Churn', 'Cohort analysis', 'Loyalty strategies'],

@@ -1,6 +1,6 @@
 // study-hub.js — Learn pages without progress of their own (the labs hub and the curriculum).
-import { initSite } from '../core/site.js?v=27';
-import { scrollersFocusable } from '../study/common.js?v=27';
+import { initSite } from '../core/site.js?v=28';
+import { scrollersFocusable } from '../study/common.js?v=28';
 
 initSite();
 scrollersFocusable();

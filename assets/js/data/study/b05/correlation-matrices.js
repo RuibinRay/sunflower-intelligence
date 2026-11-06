@@ -2,8 +2,8 @@
 // Uses the cafés' daily log (case.js: MATRIX, MATRIX_COLUMNS, column) for the year's matrix and Harbourside's June
 // (30 days) for the many-tests example. Pinecrest Hotel is fictional. Partial correlation is the next lesson's;
 // causes are correlation-and-causation's. Every figure printed is recomputed in `checks`.
-import { MATRIX, MATRIX_COLUMNS, DERIVED as D, column } from './case.js?v=27';
-import * as C from '../../../core/correlation.js?v=27';
+import { MATRIX, MATRIX_COLUMNS, DERIVED as D, column } from './case.js?v=28';
+import * as C from '../../../core/correlation.js?v=28';
 
 // ---------------------------------------------------------------- the year's matrix (both cafés, 612 days)
 const R = MATRIX.r, P = MATRIX.p, NAMES = MATRIX.names;
