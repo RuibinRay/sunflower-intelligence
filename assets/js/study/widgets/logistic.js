@@ -6,12 +6,12 @@
 //   { type: 'logistic', title, y: { name, values (0/1), yes: 'returned', no: 'didn’t return' },
 //     xs: { 'First ticket ($)': [...], Near: [...], … }, axis: 'First ticket ($)' (the x of the curve),
 //     binary?: ['Near', …] (predictors offered as 0/1 switches), threshold?: 0.5, show: ['coefs', 'odds', 'lr', 'table'], note }
-import { h, onResize } from '../../core/dom.js?v=26';
-import { xl } from '../xl.js?v=26';
-import { scatter } from '../../core/charts.js?v=26';
-import * as R from '../../core/regression.js?v=26';
-import { confusion } from '../../core/classify.js?v=26';
-import * as F from '../../core/format.js?v=26';
+import { h, onResize } from '../../core/dom.js?v=27';
+import { xl } from '../xl.js?v=27';
+import { scatter } from '../../core/charts.js?v=27';
+import * as R from '../../core/regression.js?v=27';
+import { confusion } from '../../core/classify.js?v=27';
+import * as F from '../../core/format.js?v=27';
 
 const fmt = (v, d = 3) => (Number.isFinite(v) ? F.num(v, d) : '—');
 const pStr = (p) => (!Number.isFinite(p) ? '—' : p < 0.001 ? 'below 0.001' : p.toFixed(3));
@@ -66,8 +66,7 @@ export function mount(el, cfg, ctx) {
       curves: [{ fn: pAt, cls: 'm-s2' }], yDomain: [0, 1], height: 280, xLabel: axis, yLabel: `Probability (${cfg.y.yes || 'yes'})`,
       label: `Fitted probability of ${cfg.y.yes || 'yes'} against ${axis}, with each case drawn at 1 (${cfg.y.yes || 'yes'}) or 0 (${cfg.y.no || 'no'})` });
     const items = [];
-    if (show.includes('coefs') || show.includes('odds')) items.push(h('div', { class: 'table-scroll' }, h('table', { class: 'data-table study-table' },
-      h('caption', {}, `Logistic regression of ${cfg.y.name} (${m.n} cases)`),
+    if (show.includes('coefs') || show.includes('odds')) items.push(h('p', { class: 'fx-title', id: `${base}-cap` }, `Logistic regression of ${cfg.y.name} (${m.n} cases)`), h('div', { class: 'table-scroll' }, h('table', { class: 'data-table study-table', 'aria-labelledby': `${base}-cap` },
       h('thead', {}, h('tr', {}, ...['', 'Coefficient (log-odds)', 'Std. error', 'z', 'p-value', ...(show.includes('odds') ? ['Odds ratio', '95% CI for the odds ratio'] : [])].map((c) => h('th', { scope: 'col' }, c)))),
       h('tbody', {}, ...m.coefs.map((c) => h('tr', {}, h('th', { scope: 'row' }, c.name), h('td', {}, fmt(c.estimate, 4)), h('td', {}, fmt(c.se, 4)), h('td', {}, fmt(c.z, 2)), h('td', {}, pStr(c.p)),
         ...(show.includes('odds') ? [h('td', {}, c.name === 'Intercept' ? '' : fmt(c.or)), h('td', {}, c.name === 'Intercept' ? '' : `${fmt(c.orLow)} to ${fmt(c.orHigh)}`)] : [])))))));

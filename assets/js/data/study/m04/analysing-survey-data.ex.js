@@ -3,9 +3,9 @@
 // in every worksheet). Text columns don't change on the marker's test copies, so items that count text labels `vary` a
 // label cell; numeric columns (scores, cups, weights) are scaled on the copies. Otterbridge Leisure Centre, Kettlewick
 // Bakery and the cinema chain are fictional. Every num item's `check` recomputes its answer.
-import { RESPONDENTS, RESPONDENT_COLUMNS, RESPONDENT_ROWS, SEGMENT, SIZES, LEVELS, tableCells, DERIVED as D } from './case.js?v=26';
-import * as S from '../../../core/survey.js?v=26';
-import { normInv, normCdf } from '../../../core/inference.js?v=26';
+import { RESPONDENTS, RESPONDENT_COLUMNS, RESPONDENT_ROWS, SEGMENT, SIZES, LEVELS, tableCells, DERIVED as D } from './case.js?v=27';
+import * as S from '../../../core/survey.js?v=27';
+import { normInv, normCdf } from '../../../core/inference.js?v=27';
 
 const R = RESPONDENTS, N = R.length, L = N + 1;                 // data rows 2..517
 const RC = (cols) => tableCells(RESPONDENT_COLUMNS, RESPONDENT_ROWS, { cols }).cells;
@@ -158,7 +158,7 @@ export const guided = [
   {
     id: 'm04-as-g2', type: 'steps', kind: 'applied',
     prompt: 'Cross Cold Brew intent (column C) with segment (column B) to see which segments are keenest.',
-    solution: `Counts: <x>=COUNTIFS($B$2:$B$517,$E2,$C$2:$C$517,F$1)</x> filled to J5. Row percentages: <x>=F2/$K2</x> in F9, filled to J12, so each segment’s row adds to 100%. Subscribers said “definitely” ${(CB.rowPct[0][0] * 100).toFixed(1)}% of the time, newsletter-only respondents ${(CB.rowPct[3][0] * 100).toFixed(1)}%: the row view answers “which segment is keener?”.`,
+    solution: `Counts: <x>=COUNTIFS($B$2:$B$517,$E2,$C$2:$C$517,F$1)</x> filled to J5. Row percentages: <x>=F2/$K2</x> in F9, filled to J12, so each segment’s row adds to 100%. Repeat customers said “definitely” ${(CB.rowPct[0][0] * 100).toFixed(1)}% of the time, newsletter-only respondents ${(CB.rowPct[3][0] * 100).toFixed(1)}%: the row view answers “which segment is keener?”.`,
     steps: [
       {
         id: 'm04-as-g2-s1', type: 'formula',
@@ -169,7 +169,7 @@ export const guided = [
         view: `A1:J${L}`, widths: { B: 17, C: 20, E: 20, F: 11, G: 11, H: 11, I: 11, J: 11 }, maxHeight: '22rem',
         wrong: [
           { formula: `=COUNTIFS(B2:B${L},E2,C2:C${L},F1)`, say: 'Without dollar signs the data ranges slide and the labels drift away from column E and row 1 as you fill. Fix the data ranges, the segment’s column ($E2) and the answer’s row (F$1).' },
-          { formula: `=COUNTIFS($B$2:$B$${L},$E$2,$C$2:$C$${L},F$1)`, say: '$E$2 fixes the row as well, so every row counts subscribers. Fix only the column: $E2.' },
+          { formula: `=COUNTIFS($B$2:$B$${L},$E$2,$C$2:$C$${L},F$1)`, say: '$E$2 fixes the row as well, so every row counts repeat customers. Fix only the column: $E2.' },
           { formula: `=COUNTIF($C$2:$C$${L},F$1)`, say: 'That counts the answer in every segment at once, so all four rows are the same. Add the segment criterion with COUNTIFS.' },
           { formula: `=COUNTIFS($B$2:$B$${L},E$2,$C$2:$C$${L},$F1)`, say: 'The locks are the wrong way round: E$2 stays on row 2 as you fill down and $F1 stays in column F as you fill across. The segments run down column E ($E2), the answers along row 1 (F$1).' },
         ],
@@ -185,7 +185,7 @@ export const guided = [
         widths: { B: 17, C: 20, E: 20, F: 11, G: 11, H: 11, I: 11, J: 11 }, maxHeight: '22rem',
         wrong: [
           { formula: '=F2/F$6', say: 'That divides by the answer’s total, a column percentage: the share of all “definitely” answers that came from this segment. To compare segments, divide by each segment’s base in column K.' },
-          { formula: '=F2/$K$2', say: '$K$2 fixes the row too, so every segment is divided by the subscribers’ base. Fix only the column: $K2.' },
+          { formula: '=F2/$K$2', say: '$K$2 fixes the row too, so every segment is divided by the repeat customers’ base. Fix only the column: $K2.' },
           { formula: '=F2/$K$6', say: 'That divides by all 516 completes, a share of the grand total. Each segment’s row should add to 100%: divide by its own base, $K2.' },
           { formula: '=F2/K2', say: 'Without $ the base slides across as you fill: G9 divides by L2, which is empty. Fix the column: $K2.' },
           { formula: '=F2/$K2*100', say: 'The cells are formatted as percentages, so Excel multiplies by 100 for you: leave out ×100.' },
@@ -195,7 +195,7 @@ export const guided = [
       },
       {
         id: 'm04-as-g2-s3', type: 'mc',
-        prompt: 'Ana asks: “Are subscribers more likely than newsletter-only people to say they’d definitely buy?” Which figures answer her question?',
+        prompt: 'Ana asks: “Are repeat customers more likely than newsletter-only people to say they’d definitely buy?” Which figures answer her question?',
         options: ['F9 and F12: each segment’s “definitely” share of its own base', 'F2 and F5: the counts of “definitely” answers in the two segments', 'Each segment’s share of the 81 people who said “definitely”', 'Each “definitely” count as a share of all 516 completes'],
         answer: 0,
         feedback: {
@@ -221,12 +221,12 @@ export const guided = [
     wrong: [
       { formula: `=100*(COUNTIFS($B$2:$B$${L},E2,$C$2:$C$${L},">9")-COUNTIFS($B$2:$B$${L},E2,$C$2:$C$${L},"<=6"))/COUNTIF($B$2:$B$${L},E2)`, say: '“>9” counts only the 10s. Promoters score 9 or 10: use ">=9".' },
       { formula: `=100*(COUNTIFS($B$2:$B$${L},E2,$C$2:$C$${L},">=9")-COUNTIFS($B$2:$B$${L},E2,$C$2:$C$${L},"<6"))/COUNTIF($B$2:$B$${L},E2)`, say: '“<6” leaves out the 6s, but detractors score 0 to 6: use "<=6".' },
-      { formula: `=(COUNTIFS($B$2:$B$${L},E2,$C$2:$C$${L},">=9")-COUNTIFS($B$2:$B$${L},E2,$C$2:$C$${L},"<=6"))/COUNTIF($B$2:$B$${L},E2)`, say: 'That is the difference as a proportion (0.62 for subscribers). The NPS is written from −100 to +100: multiply by 100.' },
+      { formula: `=(COUNTIFS($B$2:$B$${L},E2,$C$2:$C$${L},">=9")-COUNTIFS($B$2:$B$${L},E2,$C$2:$C$${L},"<=6"))/COUNTIF($B$2:$B$${L},E2)`, say: 'That is the difference as a proportion (0.62 for repeat customers). The NPS is written from −100 to +100: multiply by 100.' },
       { formula: `=100*(COUNTIFS($B$2:$B$${L},E2,$C$2:$C$${L},">=9")-COUNTIFS($B$2:$B$${L},E2,$C$2:$C$${L},"<=6"))/COUNT($C$2:$C$${L})`, say: 'Dividing by all 516 scores gives each segment’s promoters minus detractors as a share of everyone. Each segment’s NPS uses its own base: COUNTIF of the segment.' },
       { formula: `=100*COUNTIFS($B$2:$B$${L},E2,$C$2:$C$${L},">=9")/COUNTIF($B$2:$B$${L},E2)`, say: 'That is the promoters’ share alone. Subtract the detractors’ share.' },
     ],
     hints: ['NPS = 100 × (promoters − detractors) ÷ the segment’s respondents, with promoters 9–10 and detractors 0–6.', 'Two COUNTIFS on segment and score (">=9" and "<=6"), divided by <x>COUNTIF($B$2:$B$517,E2)</x>, all times 100.'],
-    solution: `<x>=100*(COUNTIFS($B$2:$B$517,E2,$C$2:$C$517,">=9")-COUNTIFS($B$2:$B$517,E2,$C$2:$C$517,"<=6"))/COUNTIF($B$2:$B$517,E2)</x> gives ${NPSS.map((x) => sg(x.score)).join(', ')} for subscribers, shop customers, workshop participants and newsletter-only respondents. On whole-number scores ">8" and "<7" give the same counts.`,
+    solution: `<x>=100*(COUNTIFS($B$2:$B$517,E2,$C$2:$C$517,">=9")-COUNTIFS($B$2:$B$517,E2,$C$2:$C$517,"<=6"))/COUNTIF($B$2:$B$517,E2)</x> gives ${NPSS.map((x) => sg(x.score)).join(', ')} for repeat customers, other shop customers, workshop participants and newsletter-only respondents. On whole-number scores ">8" and "<7" give the same counts.`,
   },
   {
     id: 'm04-as-g4', type: 'steps', kind: 'numerical',
@@ -257,10 +257,10 @@ export const guided = [
       {
         id: 'm04-as-g4-s3', type: 'mc',
         prompt: 'Ana’s minimum base is 30. What should her report do with the workshop participants’ NPS?',
-        options: ['Give it no figure of its own, since 27 is below the minimum base', 'Report it and say workshop participants are less keen than subscribers', 'Report it rounded to +41, to avoid suggesting false precision', 'Weight the 27 answers up to 150 so the base is large enough'],
+        options: ['Give it no figure of its own, since 27 is below the minimum base', 'Report it and say workshop participants are less keen than repeat customers', 'Report it rounded to +41, to avoid suggesting false precision', 'Weight the 27 answers up to 150 so the base is large enough'],
         answer: 0,
         feedback: {
-          1: 'The interval runs from about +11 to +70 and overlaps the subscribers’ widely; the data can’t support the comparison.',
+          1: 'The interval runs from about +11 to +70 and overlaps the repeat customers’ widely; the data can’t support the comparison.',
           2: 'Rounding doesn’t make 27 answers more informative: the margin is still about ±30 points.',
           3: 'Weights change how much each answer counts, not how many answers there are. The information still comes from 27 people.',
         },
@@ -292,7 +292,7 @@ export const independent = [
     require: ['SUMPRODUCT'],
     view: 'A1:E7', formats: { B: '#,##0', E: '0.00', B7: '0.0%' }, widths: { A: 22, B: 15, C: 14, D: 14, E: 15 },
     wrong: [
-      { formula: '=SUM(D2:D5)/SUM(C2:C5)', say: 'That is the unweighted share of completes, 42.2%. Subscribers replied out of proportion, so weight each segment’s answers by its weight.' },
+      { formula: '=SUM(D2:D5)/SUM(C2:C5)', say: 'That is the unweighted share of completes, 42.2%. Repeat customers replied out of proportion, so weight each segment’s answers by its weight.' },
       { formula: '=AVERAGE(D2:D5/C2:C5)', say: 'That averages the four segments’ shares as if each held a quarter of the list. The newsletter-only segment holds 72% of it: weight by size.' },
       { formula: '=SUMPRODUCT(E2:E5,D2:D5)/SUM(E2:E5)', say: 'The numerator is right (weighted top-two answers, in people on the list), but the sum of the four weights isn’t a number of people. Divide by the weighted number of completes, SUMPRODUCT(E2:E5,C2:C5), which equals the list size.' },
     ],
@@ -369,7 +369,7 @@ export const independent = [
       'Weighting to segment sizes corrects for segments that replied at different rates.',
       'Weighting corrects for promoters replying more readily than detractors within a segment.',
       'Unequal weights make the effective sample size smaller than the number of completes.',
-      'A comparison between subscribers and newsletter-only respondents must use the weights.',
+      'A comparison between repeat customers and newsletter-only respondents must use the weights.',
       'Ana’s weighted NPS is a SUMPRODUCT of weights and scores of +100, 0 and −100, divided by the weights’ sum.',
     ],
     answer: [0, 1, 3, 5],
@@ -439,7 +439,7 @@ export const check = [
   {
     id: 'm04-as-k4', type: 'formula', kind: 'numerical',
     prompt: 'F2 holds a segment name. In F3, calculate the share of that segment’s respondents who said they would definitely or probably buy Cold Brew (column C), so that the result is right for whichever segment F2 names.',
-    sheet: { cells: kTop2, vary: { F2: ['Subscriber', 'Newsletter only', 'Workshop participant'] } }, cell: 'F3',
+    sheet: { cells: kTop2, vary: { F2: ['Repeat customer', 'Newsletter only', 'Workshop participant'] } }, cell: 'F3',
     answer: `=(COUNTIFS(B2:B${L},F2,C2:C${L},"Definitely would buy")+COUNTIFS(B2:B${L},F2,C2:C${L},"Probably would buy"))/COUNTIF(B2:B${L},F2)`,
     alt: [
       `=SUM(COUNTIFS(B2:B${L},F2,C2:C${L},{"Definitely would buy","Probably would buy"}))/COUNTIF(B2:B${L},F2)`,

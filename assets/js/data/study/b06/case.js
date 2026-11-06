@@ -9,11 +9,11 @@
 // of sales); each October member row is one of the log's daily sign-ups; the project's quotes use B03's January 2027
 // quote sheet, and the won events' invoices total F03's $85,880 of 2027 catering invoiced on 30-day terms (the law
 // firm's contract events and the two January events prepaid in 2026 are not in the quotes).
-import { CAFE_COLUMNS, CAFE_ROWS, CLEAN_ROWS, SLIP, column as b05column, DERIVED as B05 } from '../b05/case.js?v=26';
-import { QUOTE_COLUMNS, QUOTES, PRICE_TEST_START, MEMBER_COLUMNS, MEMBERS } from './data.js?v=26';
-import { FACTS as F03 } from '../f03/case.js?v=26';
-import { QUOTE } from '../b03/case.js?v=26';
-import * as R from '../../../core/regression.js?v=26';
+import { CAFE_COLUMNS, CAFE_ROWS, CLEAN_ROWS, SLIP, column as b05column, DERIVED as B05 } from '../b05/case.js?v=27';
+import { QUOTE_COLUMNS, QUOTES, PRICE_TEST_START, MEMBER_COLUMNS, MEMBERS } from './data.js?v=27';
+import { FACTS as F03 } from '../f03/case.js?v=27';
+import { QUOTE } from '../b03/case.js?v=27';
+import * as R from '../../../core/regression.js?v=27';
 
 export { CAFE_COLUMNS, CAFE_ROWS, CLEAN_ROWS, SLIP, MEMBER_COLUMNS, MEMBERS };
 /** The project's data (lessons, exercises and module tests must not use these). */

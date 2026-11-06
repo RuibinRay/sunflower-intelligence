@@ -2,8 +2,8 @@
 // (answer keys live here). The café log comes from case.js (Harbourside's dry autumn weekdays and its July days for the
 // worksheets); Linden Bike Hire, Quayside Books and the other businesses named are fictional. Formula items are marked
 // by their results (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { CLEAN_ROWS, CAFE_COLUMNS, column, SLIP } from './case.js?v=26';
-import * as R from '../../../core/regression.js?v=26';
+import { CLEAN_ROWS, CAFE_COLUMNS, column, SLIP } from './case.js?v=27';
+import * as R from '../../../core/regression.js?v=27';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const neg = (v, d = 2) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), d)}`;
@@ -281,8 +281,7 @@ export const check = [
   {
     id: 'b06-trans-k3', type: 'formula', kind: 'applied',
     prompt: `Column D holds ln(footfall) for Harbourside’s ${nA} dry autumn weekdays. In G2, predict the median footfall for a dry weekday at the high in G1, from the least-squares line of ln(footfall) on the high.`,
-    sheet: { cells: { ...auBase, D1: 'ln(footfall)', ...auLogs, F1: 'High (°F)', G1: auAt, F2: 'Median footfall' } },
-    vary: { G1: [55, 65, 70] },
+    sheet: { cells: { ...auBase, D1: 'ln(footfall)', ...auLogs, F1: 'High (°F)', G1: auAt, F2: 'Median footfall' }, vary: { G1: [55, 65, 70] } },
     cell: 'G2', answer: `=EXP(INTERCEPT(D2:D${lastA},B2:B${lastA})+SLOPE(D2:D${lastA},B2:B${lastA})*G1)`,
     alt: [`=EXP(TREND(D2:D${lastA},B2:B${lastA},G1))`, `=EXP(FORECAST.LINEAR(G1,D2:D${lastA},B2:B${lastA}))`],
     view: `A1:G${lastA}`, maxHeight: '20rem', formats: { D: '0.000', G2: '0' }, widths: { A: 8, B: 10, C: 10, D: 13, F: 16 },

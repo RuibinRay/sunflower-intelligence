@@ -8,8 +8,8 @@
 // function that returns several values). Dates are serial numbers in the 1900 date system (1 = 1 January 1900; the
 // fictitious 29 February 1900 is kept, so serials from 61 on match Excel's).
 
-import { tQuantile, tCdf, ols } from './stats.js?v=26';
-import * as INF from './inference.js?v=26';
+import { tQuantile, tCdf, ols } from './stats.js?v=27';
+import * as INF from './inference.js?v=27';
 
 // ---------------------------------------------------------------- values
 export class Err { constructor(code) { this.code = code; } toString() { return this.code; } }
@@ -1575,7 +1575,7 @@ export function gradeFormula(sheetSpec, { cell, formula, answer, fill = null, va
   else targets.push({ cell, dr: 0, dc: 0 });
   const rand = mulberry(seed);
   const sheets = [new Sheet(sheetSpec)];
-  for (let k = 0; k < variants; k++) sheets.push(new Sheet(perturb ? perturb(sheetSpec, k, rand) : perturbSpec(sheetSpec, rand)));
+  for (let k = 0; k < variants; k++) sheets.push(new Sheet(perturb ? perturb(sheetSpec, k, rand) : perturbSpec(sheetSpec, rand, k)));
   const results = [];
   let ok = true;
   sheets.forEach((base, si) => {
@@ -1608,7 +1608,7 @@ export function matchFormulas(sheetSpec, { cell, fill = null, formula, candidate
   else targets.push({ cell, dr: 0, dc: 0 });
   const rand = mulberry(seed);
   const sheets = [new Sheet(sheetSpec)];
-  for (let k = 0; k < variants; k++) sheets.push(new Sheet(perturb ? perturb(sheetSpec, k, rand) : perturbSpec(sheetSpec, rand)));
+  for (let k = 0; k < variants; k++) sheets.push(new Sheet(perturb ? perturb(sheetSpec, k, rand) : perturbSpec(sheetSpec, rand, k)));
   const match = candidates.map(() => true);
   for (const base of sheets) {
     const mine = base.clone();
@@ -1628,7 +1628,7 @@ export function matchFormulas(sheetSpec, { cell, fill = null, formula, candidate
 export function variantValues(sheetSpec, { cell, answer, variants = 3, seed = 7, perturb = null }) {
   const rand = mulberry(seed);
   const specs = [sheetSpec];
-  for (let k = 0; k < variants; k++) specs.push(perturb ? perturb(sheetSpec, k, rand) : perturbSpec(sheetSpec, rand));
+  for (let k = 0; k < variants; k++) specs.push(perturb ? perturb(sheetSpec, k, rand) : perturbSpec(sheetSpec, rand, k));
   return specs.map((sp) => { const sh = new Sheet(sp); sh.set(cell, answer); return fullValue(sh, cell); });
 }
 /** A formula cell's whole result: an Arr when it spills (so a spilled answer is marked in every cell), else a value. */
@@ -1674,14 +1674,20 @@ function fixedSet(list = []) {
  *  month a dashboard shows, so a formula that only works for the shown value fails. */
 const isDateLike = (v) => Number.isInteger(v) && v >= 36526 && v <= 55153;
 function shiftMonths(serial, m) { const [y, mo, d] = serialToYMD(serial); const last = serialToYMD(dateSerial(y, mo + m + 1, 0))[2]; return dateSerial(y, mo + m, Math.min(d, last)); }
-function perturbSpec(spec, rand) {
+function perturbSpec(spec, rand, copy = 0) {
   const cells = {};
   const fixed = fixedSet(spec.fixed);
   const vary = Object.fromEntries(Object.entries(spec.vary || {}).map(([k, v]) => [k.replace(/\$/g, '').toUpperCase(), v]));
   const months = [-3, -2, -1, 1, 2, 3][Math.floor(rand() * 6)];
   for (const [k, v] of Object.entries(spec.cells || {})) {
     const key = k.replace(/\$/g, '').toUpperCase();
-    if (vary[key]?.length) cells[k] = vary[key][Math.floor(rand() * vary[key].length)];
+    if (vary[key]?.length) {
+      // marking copy number `copy` takes the listed values in turn, skipping the value shown, so every copy differs from the shown sheet
+      // and copies differ from each other where the list allows (an independent random pick often repeated one value)
+      const alt = vary[key].filter((x) => x !== v), pickFrom = alt.length ? alt : vary[key];
+      rand();                                    // keep the random stream as before, so other cells scale as they did
+      cells[k] = pickFrom[copy % pickFrom.length];
+    }
     else if (typeof v === 'number' && isDateLike(v) && !fixed.has(key)) cells[k] = shiftMonths(v, months);
     else if (typeof v === 'number' && !fixed.has(key)) {
       const f = 0.6 + rand() * 0.9;

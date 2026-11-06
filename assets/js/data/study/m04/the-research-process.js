@@ -2,8 +2,8 @@
 // Lantern facts come from ./case.js (fictional) and B04's survey plan; `checks` recompute them. Ana's planning figures for
 // the Cold Brew decision, the research costs and the brief's wording are new and fictional (this lesson only). Tallowfield
 // Bakery and Ferrow Buses are fictional.
-import { SIZES, STRATA, SURVEY_2027, FOCUS_GROUPS, SUBSCRIBER_SURVEY, SURVEY_PLAN, MAILING_LIST, DEFAULT_PLAN, CLIENT_INTERVIEWS } from './case.js?v=26';
-import { DERIVED as B04 } from '../b04/case.js?v=26';
+import { SIZES, STRATA, SURVEY_2027, FOCUS_GROUPS, SUBSCRIBER_SURVEY, SURVEY_PLAN, MAILING_LIST, DEFAULT_PLAN, CLIENT_INTERVIEWS } from './case.js?v=27';
+import { DERIVED as B04 } from '../b04/case.js?v=27';
 
 const f = (n) => n.toLocaleString('en-US');
 const PLAN = B04.project.surveyPlan;                       // 601 replies, 2,004 invitations
@@ -72,7 +72,7 @@ export default {
 
     { h: 'From a decision to a research problem' },
     { p: 'Every project starts by separating two problems that are easy to confuse. The <g>decision problem</g> is the choice a manager faces, stated as the actions on the table: launch Cold Brew in all three channels, sell it only through Lantern’s own channel for a year, or wait. The <g>research problem</g> is what the manager needs to find out to make that choice well: how many people would buy the can at its price, which people, and what would put the others off. A decision problem asks “what should we do?”; a research problem asks “what do we need to know?”' },
-    { p: `The research problem is then broken into <g>research objectives</g>: specific, measurable statements of what the study will deliver. “Find out what customers think of Cold Brew” is a topic, not an objective. “Estimate, to within about ±${SURVEY_PLAN.margin * 100} percentage points, the share of Lantern’s mailing list who would definitely or probably buy Cold Brew at $${DEFAULT_PLAN.price.toFixed(2)} in the next three months” is an objective: it names the population, the measure and the precision, and its answer bears on the launch. Where earlier evidence suggests an answer, state it as a <g>hypothesis</g>, such as “subscribers are more likely than newsletter-only contacts to say they would buy”, so that the data can show it to be wrong.` },
+    { p: `The research problem is then broken into <g>research objectives</g>: specific, measurable statements of what the study will deliver. “Find out what customers think of Cold Brew” is a topic, not an objective. “Estimate, to within about ±${SURVEY_PLAN.margin * 100} percentage points, the share of Lantern’s mailing list who would definitely or probably buy Cold Brew at $${DEFAULT_PLAN.price.toFixed(2)} in the next three months” is an objective: it names the population, the measure and the precision, and its answer bears on the launch. Where earlier evidence suggests an answer, state it as a <g>hypothesis</g>, such as “repeat customers are more likely than newsletter-only contacts to say they would buy”, so that the data can show it to be wrong.` },
     { p: 'A good test of each objective is to ask what you would do with each possible answer. If Ana would launch whether 20% or 60% of her list said they would buy, the question isn’t worth asking, or it is being asked of the wrong people. It is the test of B01’s <g>decision-focused question</g>: different answers must lead to different actions.' },
 
     { h: 'Three kinds of design' },
@@ -316,12 +316,12 @@ export default {
     { what: 'Survey plan replies (B04)', value: PLAN.n, shown: 601 },
     { what: 'Invitations (case.js)', value: SURVEY_2027.invited, shown: 2004 },
     { what: 'Invitations from B04 plan', value: PLAN.invite, shown: 2004 },
-    { what: 'Subscribers on the list', value: SIZES[0], shown: 520 },
+    { what: 'Repeat customers on the list', value: SIZES[0], shown: 520 },
     { what: 'Other shop customers', value: SIZES[1], shown: 1000 },
     { what: 'Workshop participants', value: SIZES[2], shown: 150 },
     { what: 'Newsletter only', value: SIZES[3], shown: 4330 },
-    { what: 'December survey replies (B04)', value: SUBSCRIBER_SURVEY.responded, shown: 312 },
-    { what: 'December survey invited (B04)', value: SUBSCRIBER_SURVEY.invited, shown: 520 },
+    { what: 'December survey replies (B04)', value: SUBSCRIBER_SURVEY.responded, shown: 72 },
+    { what: 'December survey invited (B04)', value: SUBSCRIBER_SURVEY.invited, shown: 120 },
     { what: 'Client interviews (M01)', value: CLIENT_INTERVIEWS.interviewed, shown: 12 },
     { what: 'Group A participants', value: GA.participants, shown: 8 },
     { what: 'Group B participants', value: GB.participants, shown: 7 },

@@ -4,9 +4,9 @@
 // callout, the sampler demonstrations and their checks, never as something Ana knows. Saltreed Festival and Tamberlake
 // Gyms are fictional. Calculating and testing the NPS, top boxes and cross-tabs is module 4's; this lesson is about the
 // errors around them.
-import { SIZES, STRATA, SURVEY_2027, SURVEY_PLAN, DISPOSITIONS, DERIVED, PEOPLE } from './case.js?v=26';
-import * as S from '../../../core/survey.js?v=26';
-import * as I from '../../../core/inference.js?v=26';
+import { SIZES, STRATA, SURVEY_2027, SURVEY_PLAN, DISPOSITIONS, DERIVED, PEOPLE } from './case.js?v=27';
+import * as S from '../../../core/survey.js?v=27';
+import * as I from '../../../core/inference.js?v=27';
 
 const D = DERIVED, DS = DISPOSITIONS, ALL = DS.all;
 const N = SIZES.reduce((a, b) => a + b, 0), INV = SURVEY_2027.invited;
@@ -81,7 +81,7 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: `Ana’s survey closed on ${SURVEY_2027.closed}. Of the ${fmt(INV)} people invited, ${n} completed the questionnaire: ${pc(RR.RR1)}, not the ${SURVEY_PLAN.responseRate * 100}% she had planned for, so the margin of error for a share near 50% is ±${(D.survey.marginAchieved * 100).toFixed(1)} points rather than ±${(D.survey.marginPlanned * 100).toFixed(0)}. Response was far from even: about half the subscribers replied, against a fifth of the newsletter-only group. The ${n} completes give a Net Promoter Score of ${sgn(NPSU.score)}. Ana’s question is the one this lesson answers: how far can she trust it?` },
+    { case: `Ana’s survey closed on ${SURVEY_2027.closed}. Of the ${fmt(INV)} people invited, ${n} completed the questionnaire: ${pc(RR.RR1)}, not the ${SURVEY_PLAN.responseRate * 100}% she had planned for, so the margin of error for a share near 50% is ±${(D.survey.marginAchieved * 100).toFixed(1)} points rather than ±${(D.survey.marginPlanned * 100).toFixed(0)}. Response was far from even: about half the repeat customers replied, against a fifth of the newsletter-only group. The ${n} completes give a Net Promoter Score of ${sgn(NPSU.score)}. Ana’s question is the one this lesson answers: how far can she trust it?` },
 
     { h: 'Total survey error' },
     { p: '<g>Total survey error</g> is the idea that a survey estimate can be wrong for many reasons, and that they should be designed against and judged together rather than one at a time. Groves and Lyberg (2010), reviewing its history, trace it back to Deming, who in 1944 listed thirteen factors affecting survey results, from non-response, sampling and interviewer effects to processing errors and timeliness, and note that the term is not tightly defined: different authors include different components. A widely used version, from Groves and colleagues’ textbook <i>Survey Methodology</i> (2004), follows the two paths an estimate travels.' },
@@ -105,18 +105,18 @@ export default {
       align: ['l', 'r', 'r', 'r', 'r', 'r', 'r'],
     } },
     { p: String.raw`<g>RR1</g>, AAPOR’s strictest response rate, counts only completes: <m>\text{RR1} = I \div (I + P + R + NC + O + U)</m>, ${n} ÷ ${fmt(INV)} = ${pc(RR.RR1)}. <g>RR2</g> counts partials as responses too: <m>(${n} + ${ALL.P}) \div ${tf(INV)}</m> = ${pc(RR.RR2)}. Everyone on Lantern’s list belongs to the population it was drawn for, so no case is ineligible, and every bounced or unanswered invitation stays in the denominator.` },
-    { p: String.raw`AAPOR’s RR3 and RR4 allow an estimated share of the unknown-eligibility cases to be removed from the denominator, which matters for samples such as random phone numbers, where many may not belong to anyone eligible. Always say which rate you report. By stratum, RR1 was ${RRS.map((r) => pc(r.RR1)).join(', ').replace(/, ([^,]*)$/, ' and $1')} for subscribers, shop customers, workshop participants and newsletter-only readers, and RR2 ${RRS.map((r) => pc(r.RR2)).join(', ').replace(/, ([^,]*)$/, ' and $1')}.` },
+    { p: String.raw`AAPOR’s RR3 and RR4 allow an estimated share of the unknown-eligibility cases to be removed from the denominator, which matters for samples such as random phone numbers, where many may not belong to anyone eligible. Always say which rate you report. By stratum, RR1 was ${RRS.map((r) => pc(r.RR1)).join(', ').replace(/, ([^,]*)$/, ' and $1')} for repeat customers, other shop customers, workshop participants and newsletter-only readers, and RR2 ${RRS.map((r) => pc(r.RR2)).join(', ').replace(/, ([^,]*)$/, ' and $1')}.` },
     { p: `Fewer completes than planned means a wider margin: with ${n} instead of ${nPlan}, ±${(D.survey.marginAchieved * 100).toFixed(2)} points instead of ±${(D.survey.marginPlanned * 100).toFixed(2)}. That loss is visible and modest. The serious question is about the ${fmt(INV - n)} people who didn’t complete.` },
 
     { h: 'Why a response rate is not a measure of bias' },
     { p: String.raw`B01 combined respondents and non-respondents as a weighted average. Rearranged, the same identity gives the bias of the respondents’ figure: <m>\bar{y}_r - \bar{y} = (1 - \text{RR})(\bar{y}_r - \bar{y}_{nr})</m>, the share who didn’t respond times the difference between respondents and non-respondents. Bias needs both: a low response rate with no difference does no harm, and a high one with a large difference still misleads.` },
     { p: 'This is why AAPOR states that response rate information alone is insufficient for determining how much non-response error exists. The U.S. National Research Council’s 2013 review of non-response cites Groves and Peytcheva’s compilation of 59 studies, which found very little correlation between non-response rates and their measures of bias, and concludes that a falling response rate means only that the potential for bias has increased. Bias belongs to each estimate, not to the survey: the same non-respondents can distort one question badly and another hardly at all.' },
-    { p: `Ana can’t see her non-respondents’ answers, but she can see who they are. Subscribers were ${pc(SIZES[0] / N)} of the list and ${pc(NC[0] / n)} of the completes; newsletter-only readers were ${pc(SIZES[3] / N)} of the list and ${pc(NC[3] / n)} of the completes. The segments also answered very differently: Net Promoter Scores of ${NPSS.map((x) => sgn(x.score, 0)).join(', ')} for subscribers, shop customers, workshop participants and newsletter-only readers. A respondent pool tilted towards subscribers will flatter Lantern, and that tilt is the one thing she can correct.` },
+    { p: `Ana can’t see her non-respondents’ answers, but she can see who they are. Repeat customers were ${pc(SIZES[0] / N)} of the list and ${pc(NC[0] / n)} of the completes; newsletter-only readers were ${pc(SIZES[3] / N)} of the list and ${pc(NC[3] / n)} of the completes. The segments also answered very differently: Net Promoter Scores of ${NPSS.map((x) => sgn(x.score, 0)).join(', ')} for repeat customers, other shop customers, workshop participants and newsletter-only readers. A respondent pool tilted towards repeat customers will flatter Lantern, and that tilt is the one thing she can correct.` },
   ],
 
   theory: [
     { h: 'Weighting to the population' },
-    { p: String.raw`<g>Post-stratification</g> gives every respondent in group h the <g>survey weight</g> <m>w_h = N_h \div n_h</m>: the number of people on the frame that each respondent stands for. Lantern’s weights are ${STRATA.map((nm, h) => `${fmt(SIZES[h])} ÷ ${NC[h]} = ${W[h].toFixed(2)}`).join('; ')}. Each newsletter-only respondent now counts about two and a half times as much as each subscriber, and the weighted respondents add back up to the ${fmt(N)} on the list.` },
+    { p: String.raw`<g>Post-stratification</g> gives every respondent in group h the <g>survey weight</g> <m>w_h = N_h \div n_h</m>: the number of people on the frame that each respondent stands for. Lantern’s weights are ${STRATA.map((nm, h) => `${fmt(SIZES[h])} ÷ ${NC[h]} = ${W[h].toFixed(2)}`).join('; ')}. Each newsletter-only respondent now counts about two and a half times as much as each repeat customer, and the weighted respondents add back up to the ${fmt(N)} on the list.` },
     { p: String.raw`A weighted share is <m>\sum w_i y_i \div \sum w_i</m>, which, with one weight per stratum, equals the stratified estimate from Sampling methods: <m>\sum W_h \hat{p}_h</m>. Weighted, ${pc(NPSW.pP)} of Lantern’s contacts are promoters and ${pc(NPSW.pD)} detractors, so the weighted Net Promoter Score is ${sgn(NPSW.score)}, against ${sgn(NPSU.score)} unweighted. Seven points of the unweighted score came from the over-representation of the three customer segments.` },
     { table: {
       caption: 'Lantern’s post-stratification weights (respondents are February’s completes)',
@@ -214,7 +214,7 @@ export default {
   ],
 
   demo: [
-    { widget: 'se-sampler-nps', intro: `The same list as in Sampling methods, now with non-response: each person invited completes the survey with their own probability (about half for subscribers, a fifth for newsletter-only readers, and higher for promoters within every segment). With non-response on and weighting off, draw 1,000 stratified samples: the estimates centre about ${(Math.round(((PEOPLE.propensity.reduce((a, p, i) => a + p * (PEOPLE.group[i] === 2 ? 1 : 0), 0) / PEOPLE.propensity.reduce((a, b) => a + b, 0)) - TRUTH_P) * 100))} points above the truth. Tick “Weight the responses” and draw again: the bias falls but doesn’t vanish.` },
+    { widget: 'se-sampler-nps', intro: `The same list as in Sampling methods, now with non-response: each person invited completes the survey with their own probability (about half for repeat customers, a fifth for newsletter-only readers, and higher for promoters within every segment). With non-response on and weighting off, draw 1,000 stratified samples: the estimates centre about ${(Math.round(((PEOPLE.propensity.reduce((a, p, i) => a + p * (PEOPLE.group[i] === 2 ? 1 : 0), 0) / PEOPLE.propensity.reduce((a, b) => a + b, 0)) - TRUTH_P) * 100))} points above the truth. Tick “Weight the responses” and draw again: the bias falls but doesn’t vanish.` },
     { widget: 'se-sampler-cb', intro: 'The same respondents, a different question: the share who would definitely or probably buy Cold Brew. Repeat the experiment. Weighting removes most of this question’s bias, because willingness to try Cold Brew is less tied to who replied once the segments are balanced.' },
     { widget: 'se-sheet', intro: 'Lantern’s dispositions, response rates and weights as live formulas. Change a stratum’s completes or partials to see RR1, RR2, the weights and Kish’s effective sample size respond; try what an even 30% response in every stratum would have done to the weights.' },
   ],
@@ -287,15 +287,15 @@ export default {
       { what: 'RR2 %', value: RR.RR2 * 100, shown: 28.5, tol: 0.05 },
       { what: 'RR1 4 dp', value: RR.RR1, shown: 0.2575, tol: 0.00005 },
       { what: 'Planned response %', value: SURVEY_PLAN.responseRate * 100, shown: 30 },
-      { what: 'RR1 subscribers %', value: RRS[0].RR1 * 100, shown: 51.1, tol: 0.05 },
+      { what: 'RR1 repeat customers %', value: RRS[0].RR1 * 100, shown: 51.1, tol: 0.05 },
       { what: 'RR1 shop %', value: RRS[1].RR1 * 100, shown: 30.8, tol: 0.05 },
       { what: 'RR1 workshop %', value: RRS[2].RR1 * 100, shown: 54.0, tol: 0.05 },
       { what: 'RR1 newsletter %', value: RRS[3].RR1 * 100, shown: 20.5, tol: 0.05 },
-      { what: 'RR2 subscribers %', value: RRS[0].RR2 * 100, shown: 57.5, tol: 0.05 },
+      { what: 'RR2 repeat customers %', value: RRS[0].RR2 * 100, shown: 57.5, tol: 0.05 },
       { what: 'RR2 shop %', value: RRS[1].RR2 * 100, shown: 33.8, tol: 0.05 },
       { what: 'RR2 workshop %', value: RRS[2].RR2 * 100, shown: 54.0, tol: 0.05 },
       { what: 'RR2 newsletter %', value: RRS[3].RR2 * 100, shown: 23.0, tol: 0.05 },
-      { what: 'About half the subscribers replied', value: RRS[0].RR1, shown: 0.5, tol: 0.02 },
+      { what: 'About half the repeat customers replied', value: RRS[0].RR1, shown: 0.5, tol: 0.02 },
       { what: 'A fifth of newsletter-only replied', value: RRS[3].RR1, shown: 0.2, tol: 0.01 },
       { what: 'Margin achieved (points)', value: D.survey.marginAchieved * 100, shown: 4.31, tol: 0.005 },
       { what: 'Margin achieved 1 dp', value: D.survey.marginAchieved * 100, shown: 4.3, tol: 0.05 },
@@ -307,14 +307,14 @@ export default {
       { what: 'Unweighted NPS', value: NPSU.score, shown: 27.5, tol: 0.05 },
       { what: 'Weighted NPS', value: NPSW.score, shown: 20.4, tol: 0.05 },
       { what: 'Unweighted − weighted ≈ 7', value: NPSU.score - NPSW.score, shown: 7, tol: 0.5 },
-      { what: 'NPS subscribers', value: NPSS[0].score, shown: 62, tol: 0.5 },
+      { what: 'NPS repeat customers', value: NPSS[0].score, shown: 62, tol: 0.5 },
       { what: 'NPS shop', value: NPSS[1].score, shown: 53, tol: 0.5 },
       { what: 'NPS workshop', value: NPSS[2].score, shown: 41, tol: 0.5 },
       { what: 'NPS newsletter', value: NPSS[3].score, shown: 7, tol: 0.5 },
       { what: 'Weighted promoters %', value: NPSW.pP * 100, shown: 40.5, tol: 0.05 },
       { what: 'Weighted detractors %', value: NPSW.pD * 100, shown: 20.1, tol: 0.05 },
-      { what: 'Subscribers share of list %', value: SIZES[0] / N * 100, shown: 8.7, tol: 0.05 },
-      { what: 'Subscribers share of completes %', value: NC[0] / n * 100, shown: 17.2, tol: 0.05 },
+      { what: 'Repeat customers share of list %', value: SIZES[0] / N * 100, shown: 8.7, tol: 0.05 },
+      { what: 'Repeat customers share of completes %', value: NC[0] / n * 100, shown: 17.2, tol: 0.05 },
       { what: 'Newsletter share of list %', value: SIZES[3] / N * 100, shown: 72.2, tol: 0.05 },
       { what: 'Newsletter share of completes %', value: NC[3] / n * 100, shown: 57.6, tol: 0.05 },
       { what: 'Shop share of list %', value: SIZES[1] / N * 100, shown: 16.7, tol: 0.05 },
@@ -322,11 +322,11 @@ export default {
       { what: 'Workshop share of list %', value: SIZES[2] / N * 100, shown: 2.5, tol: 0.05 },
       { what: 'Workshop share of completes %', value: NC[2] / n * 100, shown: 5.2, tol: 0.05 },
       // weights
-      { what: 'Weight subscribers', value: W[0], shown: 5.84 },
+      { what: 'Weight repeat customers', value: W[0], shown: 5.84 },
       { what: 'Weight shop', value: W[1], shown: 9.71 },
       { what: 'Weight workshop', value: W[2], shown: 5.56 },
       { what: 'Weight newsletter', value: W[3], shown: 14.58 },
-      { what: 'Newsletter weight ≈ 2.5 × subscriber weight', value: W[3] / W[0], shown: 2.5, tol: 0.05 },
+      { what: 'Newsletter weight ≈ 2.5 × repeat-customer weight', value: W[3] / W[0], shown: 2.5, tol: 0.05 },
       { what: 'Weighted total = list', value: W.reduce((a, w, h) => a + w * NC[h], 0), shown: 6000, tol: 1e-6 },
       { what: 'Kish n_eff', value: K.nEff, shown: 469.3, tol: 0.05 },
       { what: 'Kish n_eff whole', value: K.nEff, shown: 469, tol: 0.5 },

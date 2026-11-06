@@ -12,13 +12,13 @@
 // Lantern’s premium over a channel’s whole shelf from the audit (m04-fn-18); the interval for two segments’ NPS gap, and
 // whether weights matter (m04-fn-21); a survey and a trial on different bases, then the design that tests the insight
 // (m04-fn-23). Lantern’s data appear from new angles (the workshop stratum as a frame, the audit as a shelf average, the
-// completes’ weighted mean cups, NPS by first-heard route, subscribers against shop customers); the other businesses are
+// completes’ weighted mean cups, NPS by first-heard route, repeat customers against other shop customers); the other businesses are
 // fictional and used nowhere else on the site, and nothing comes from the project’s scenario or data. No hints;
 // solutions are shown on review. Every num item’s `check` recomputes its answer, and every formula item is marked by its
 // results on the sheet and on changed copies.
-import { RESPONDENT_COLUMNS, RESPONDENT_ROWS, RESPONDENTS, LEVELS, SIZES, STRATA, PRICE_AUDIT, DEFAULT_PLAN, DISPOSITIONS, tableCells, DERIVED } from './case.js?v=26';
-import * as S from '../../../core/survey.js?v=26';
-import * as I from '../../../core/inference.js?v=26';
+import { RESPONDENT_COLUMNS, RESPONDENT_ROWS, RESPONDENTS, LEVELS, SIZES, STRATA, PRICE_AUDIT, DEFAULT_PLAN, DISPOSITIONS, tableCells, DERIVED } from './case.js?v=27';
+import * as S from '../../../core/survey.js?v=27';
+import * as I from '../../../core/inference.js?v=27';
 
 const r = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -452,7 +452,7 @@ export const items = [
   },
   {
     id: 'm04-fn-11', lesson: 'sampling-methods', type: 'mc', kind: 'applied',
-    prompt: `Each person on Lantern’s mailing list sits in one stratum only, and anyone who has ordered online counts as a subscriber or a shop customer even if they also took a workshop: the ${SIZES[2]} people in the workshop stratum are participants who never ordered online. M01’s 14 workshops in 2026 sold about 168 places, and January 2027’s workshop about 12 more. Ana wants to know what everyone who took a Lantern workshop in 2026 thought of it, and proposes to survey all ${SIZES[2]} people in the workshop stratum. What is the main problem with that frame?`,
+    prompt: `Each person on Lantern’s mailing list sits in one stratum only, and anyone who has ordered online counts as a repeat customer or another shop customer even if they also took a workshop: the ${SIZES[2]} people in the workshop stratum are participants who never ordered online. M01’s 14 workshops in 2026 sold about 168 places, and January 2027’s workshop about 12 more. Ana wants to know what everyone who took a Lantern workshop in 2026 thought of it, and proposes to survey all ${SIZES[2]} people in the workshop stratum. What is the main problem with that frame?`,
     options: [
       'Undercoverage: participants who also order online sit in other strata, so they can never be chosen',
       'Overcoverage: some of the 150 may never have bought from Lantern, so they must be screened out first',
@@ -465,7 +465,7 @@ export const items = [
       2: 'Inviting all 150 is a census of the frame, so it has no sampling error; and the ±8 points ignores the finite population correction. The problem is who the frame misses, which no margin shows.',
       3: 'Their 54% was the highest response rate of the four strata, and a response rate shows room for bias, not bias. The bigger problem is fixed before anyone is invited.',
     },
-    solution: 'The target population is everyone who took a workshop in 2026; the frame is the workshop stratum, which holds only participants who never ordered online. Participants who are also subscribers or shop customers can’t be selected: undercoverage. Ana needs a frame built from the workshop bookings themselves, or she must say that her results describe only the participants who never ordered online.',
+    solution: 'The target population is everyone who took a workshop in 2026; the frame is the workshop stratum, which holds only participants who never ordered online. Participants who have also ordered online (repeat or other shop customers) can’t be selected: undercoverage. Ana needs a frame built from the workshop bookings themselves, or she must say that her results describe only the participants who never ordered online.',
   },
   {
     id: 'm04-fn-12', lesson: 'survey-error', type: 'steps', kind: 'numerical',
@@ -527,13 +527,13 @@ export const items = [
     prompt: 'For next year’s survey Ana can afford one extra step against non-response bias in Lantern’s Net Promoter Score, which may still flatter Lantern after weighting if, within each segment, keen customers reply more readily. Which step is most likely to help?',
     options: [
       'Phone a random sample of the non-respondents in each segment, and use their answers to estimate the gap',
-      'Send a third reminder to every subscriber, since subscribers’ views matter most to the business',
+      'Send a third reminder to every repeat customer, since repeat customers’ views matter most to the business',
       'Double the invitations to newsletter-only people, so that their completes match their share of the list',
       'Offer everyone who completes the survey a discount code for Lantern Cold Brew, to raise response in every segment',
     ],
     answer: 0,
     feedback: {
-      1: 'Subscribers already reply most readily. More replies from them add to the imbalance, and a higher rate helps only if it brings in people unlike those already responding.',
+      1: 'Repeat customers already reply most readily. More replies from them add to the imbalance, and a higher rate helps only if it brings in people unlike those already responding.',
       2: 'More invitations give more completes and the right mix of segments, which weighting already provides. If keen people reply more readily within the segment, the extra completes carry the same tilt.',
       3: 'A discount on the client’s own product turns the survey into promotion: MRS’s regulations on incentives don’t allow price discounts, or the client’s goods, as research incentives. It would also draw in Lantern’s keenest customers most.',
     },
@@ -692,7 +692,7 @@ export const items = [
     answer: `=SUMPRODUCT(D2:D${L},C2:C${L})/SUM(D2:D${L})`,
     alt: [`=SUMPRODUCT(C2:C${L},D2:D${L})/SUM(D2:D${L})`, `=SUMPRODUCT(C2:C${L}*D2:D${L})/SUM(D2:D${L})`],
     wrong: [
-      { formula: `=AVERAGE(C2:C${L})`, say: 'That is the unweighted mean of the completes, in which subscribers count about twice their share of the list. Weight each answer: SUMPRODUCT(weights, cups) ÷ SUM(weights).' },
+      { formula: `=AVERAGE(C2:C${L})`, say: 'That is the unweighted mean of the completes, in which repeat customers count about twice their share of the list. Weight each answer: SUMPRODUCT(weights, cups) ÷ SUM(weights).' },
       { formula: `=SUMPRODUCT(D2:D${L},C2:C${L})/COUNT(C2:C${L})`, say: 'The weighted total stands for the cups of everyone on the list, so divide by the sum of the weights (6,000), not by the 516 respondents.' },
       { formula: `=SUMPRODUCT(D2:D${L},C2:C${L})/6000`, say: 'Typing the list size gives the right answer only while the weights stay as they are. Divide by SUM(D2:D517), the list size the weights add up to.' },
     ],
@@ -700,17 +700,17 @@ export const items = [
   },
   {
     id: 'm04-fn-21', lesson: 'analysing-survey-data', type: 'steps', kind: 'numerical',
-    prompt: `In February, the ${NSUB.n} subscribers who completed Ana’s survey gave ${NSUB.promoters} promoters, ${NSUB.passives} passives and ${NSUB.detractors} detractors: an NPS of ${sgn(NSUB.score)} with a standard error of ${fx(NSUB.se, 2)} points. The ${NSHOP.n} other shop customers who completed it gave ${NSHOP.promoters} promoters, ${NSHOP.passives} passives and ${NSHOP.detractors} detractors: ${sgn(NSHOP.score)}, with a standard error of ${fx(NSHOP.se, 2)} points.`,
+    prompt: `In February, the ${NSUB.n} repeat customers who completed Ana’s survey gave ${NSUB.promoters} promoters, ${NSUB.passives} passives and ${NSUB.detractors} detractors: an NPS of ${sgn(NSUB.score)} with a standard error of ${fx(NSUB.se, 2)} points. The ${NSHOP.n} other shop customers who completed it gave ${NSHOP.promoters} promoters, ${NSHOP.passives} passives and ${NSHOP.detractors} detractors: ${sgn(NSHOP.score)}, with a standard error of ${fx(NSHOP.se, 2)} points.`,
     steps: [
       {
         id: 'm04-fn-21-s1', type: 'num',
-        prompt: 'What is the lower end of the 95% interval for subscribers’ NPS minus shop customers’ NPS, in points? Give one decimal place.',
+        prompt: 'What is the lower end of the 95% interval for repeat customers’ NPS minus other shop customers’ NPS, in points? Give one decimal place.',
         answer: r(gapLow(NSUB, NSHOP), 1),
         check: () => ((65 - 10) / 89 - (64 - 9) / 103) * 100 - 1.959964 * Math.hypot(7.1955, 6.4130),
         unit: 'points', places: 1, tol: 0.06,
         wrong: [
           { value: r(gapLow(NSUB, NSHOP, NSUB.se + NSHOP.se), 1), say: 'You added the standard errors. Variances add, so the standard error of the gap is √(SE₁² + SE₂²).' },
-          { value: r(gapLow(NSUB, NSHOP, NSUB.se), 1), say: 'Both scores are estimates, so both standard errors count: use √(SE₁² + SE₂²), not the subscribers’ alone.' },
+          { value: r(gapLow(NSUB, NSHOP, NSUB.se), 1), say: 'Both scores are estimates, so both standard errors count: use √(SE₁² + SE₂²), not the repeat customers’ alone.' },
           { value: r(gapLow(NSUB, NSHOP, NSHOP.se), 1), say: 'Both scores are estimates, so both standard errors count: use √(SE₁² + SE₂²), not the shop customers’ alone.' },
           { value: r(gapLow(NSUB, NSHOP, Math.hypot(NSUB.se, NSHOP.se), 1), 1), say: 'That takes one standard error off the gap. A 95% interval goes 1.96 standard errors either side.' },
           { value: r(gapLow(NSUB, NSHOP, Math.hypot(NSUB.se, NSHOP.se), I.normInv(0.95)), 1), say: '1.645 gives a 90% interval. For 95% use 1.96.' },
@@ -723,7 +723,7 @@ export const items = [
         prompt: 'Should this comparison between the two segments use the survey weights?',
         options: [
           'No: within each segment every respondent has the same weight, so each segment’s score is the same weighted or not',
-          'Yes: shop customers replied at a lower rate than subscribers, so their score must be weighted up before comparing',
+          'Yes: other shop customers replied at a lower rate than repeat customers, so their score must be weighted up before comparing',
           'Yes: weighting to the list lowers both scores, just as it lowered the overall score from +27.5 to +20.4',
           'No: weights apply only to means, so they can never change a score that is built from two shares',
         ],
@@ -736,7 +736,7 @@ export const items = [
         solution: 'Each segment’s respondents all carry the weight N_h ÷ n_h, so a weighted segment score equals the unweighted one, and comparisons between segments need no weights.',
       },
     ],
-    solution: `Subscribers ${sgn(NSUB.score)} against shop customers ${sgn(NSHOP.score)}: a gap of ${fx(NSUB.score - NSHOP.score, 1)} points with a 95% interval from about ${sgn(gapLow(NSUB, NSHOP))} to ${sgn(NSUB.score - NSHOP.score + Z * Math.hypot(NSUB.se, NSHOP.se))}. The interval includes zero and is wide, so on these bases the two segments can’t be told apart, and the comparison needs no weights. Both scores also come from people who chose to reply, so neither is the segment’s true score.`,
+    solution: `Repeat customers ${sgn(NSUB.score)} against other shop customers ${sgn(NSHOP.score)}: a gap of ${fx(NSUB.score - NSHOP.score, 1)} points with a 95% interval from about ${sgn(gapLow(NSUB, NSHOP))} to ${sgn(NSUB.score - NSHOP.score + Z * Math.hypot(NSUB.se, NSHOP.se))}. The interval includes zero and is wide, so on these bases the two segments can’t be told apart, and the comparison needs no weights. Both scores also come from people who chose to reply, so neither is the segment’s true score.`,
   },
   {
     id: 'm04-fn-22', lesson: 'analysing-survey-data', type: 'multi', kind: 'conceptual',

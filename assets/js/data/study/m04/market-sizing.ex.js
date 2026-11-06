@@ -3,7 +3,7 @@
 // sensitivity chart are the lesson's fictional assumptions. Pennock Kombucha, Wrexley Garden Centre, Pellinore Software,
 // Ormsgill Cinemas and Quillfield Juice are fictional, as are the energy-drink brand and the meal-kit start-up. Formula
 // items are marked by their results on the sheet and on copies with the numbers changed; num items recompute their answers.
-import { CATEGORY, CHANNELS, COLD_BREW_SIZING as SZ, DERIVED as D } from './case.js?v=26';
+import { CATEGORY, CHANNELS, COLD_BREW_SIZING as SZ, DERIVED as D } from './case.js?v=27';
 
 const CH = Object.fromEntries(CHANNELS.map((c) => [c.id, c]));
 const P = SZ.plan;
@@ -162,16 +162,16 @@ export const guided = [
       'Weight the answers to the list’s four groups, then apply a conversion rate to each answer and a repeat-buying assumption.',
       'Use only the 15.7% who said “definitely”, because people who answer “probably” never go on to buy the product at all.',
       'Quote 42.2% plus or minus 4.3 points instead, because the survey’s margin of error covers the uncertainty in the estimate.',
-      'Multiply 42.2% by the 520 subscribers instead, because only subscribers would buy cans through Lantern’s online shop.',
+      'Multiply 42.2% by the 520 repeat customers instead, because only repeat customers would buy cans through Lantern’s online shop.',
     ],
     answer: 0,
     feedback: {
       1: 'Some “probably” answers do turn into purchases, and some “definitely” answers don’t. Each answer needs its own conversion rate, not 100% or 0%.',
-      2: 'The margin covers sampling error only. It doesn’t turn stated intent into buying, and it leaves the over-representation of subscribers untouched.',
-      3: 'The own channel also reaches shop customers, workshop participants and newsletter readers, and the subscribers’ intent is higher than the list’s, so this mixes two errors.',
+      2: 'The margin covers sampling error only. It doesn’t turn stated intent into buying, and it leaves the over-representation of repeat customers untouched.',
+      3: 'The own channel also reaches other shop customers, workshop participants and newsletter readers, and the repeat customers’ intent is higher than the list’s, so this mixes two errors.',
     },
     hints: ['Three things are wrong: who answered, what the answers mean, and what the question asked about.'],
-    solution: 'Three corrections. Weight: the respondents over-represent subscribers, so the weighted 38.2% describes the list better than 42.2%. Convert: stated intent isn’t behaviour, so apply a conversion rate to “definitely” and a lower one to “probably”. Repeat: the question asked about buying in the next three months, so how often buyers come back is a separate assumption. With 40% and 10% and a four-pack a month, the lesson’s estimate is about 1,900 cans a month.',
+    solution: 'Three corrections. Weight: the respondents over-represent repeat customers, so the weighted 38.2% describes the list better than 42.2%. Convert: stated intent isn’t behaviour, so apply a conversion rate to “definitely” and a lower one to “probably”. Repeat: the question asked about buying in the next three months, so how often buyers come back is a separate assumption. With 40% and 10% and a four-pack a month, the lesson’s estimate is about 1,900 cans a month.',
   },
 ];
 

@@ -13,13 +13,13 @@
 // Agrees with other courses (checked in IDENTITIES): b03's 231 spring orders ($9,096.15) and 76 catering events
 // ($62,320); b01's monthly visits and orders, the September survey (79 replies, 61 would recommend) and the 3.0%
 // conversion target; b03's courier cost of $5.20 a parcel.
-import { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, PRODUCTS, SHOP_MODEL, tableCells, DERIVED as B03 } from '../b03/case.js?v=26';
-import { SHOP, SURVEY, MONTHS, TARGETS } from '../b01/case.js?v=26';
+import { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, PRODUCTS, SHOP_MODEL, tableCells, DERIVED as B03 } from '../b03/case.js?v=27';
+import { SHOP, SURVEY, MONTHS, TARGETS } from '../b01/case.js?v=27';
 import {
   KG_BAGS, SETUP_MINUTES, LATTE_PRE, LATTE_POST, SWIFTLINE_DAYS, PARCELBIRD_DAYS, WORKSHOP_IN_PERSON, WORKSHOP_ONLINE, WORKSHOP_HYBRID,
-} from './data.js?v=26';
-import * as I from '../../../core/inference.js?v=26';
-import { mean, sd, variance, median, quantile, skewness, kurtosis } from '../../../core/stats.js?v=26';
+} from './data.js?v=27';
+import * as I from '../../../core/inference.js?v=27';
+import { mean, sd, variance, median, quantile, skewness, kurtosis } from '../../../core/stats.js?v=27';
 
 export { ORDER_COLUMNS, ORDERS, EVENT_COLUMNS, EVENTS, PRODUCTS, tableCells, SHOP, SURVEY, MONTHS, TARGETS };
 export { KG_BAGS, SETUP_MINUTES, LATTE_PRE, LATTE_POST };
@@ -108,7 +108,7 @@ export const EMAIL_TEST = {
 /** Workshop satisfaction (0–10) by format, 2026. */
 export const WORKSHOP_SCORES = { 'In person': WORKSHOP_IN_PERSON, Online: WORKSHOP_ONLINE, Hybrid: WORKSHOP_HYBRID };
 /** The December subscriber survey: “Would you rather receive your coffee every two weeks instead of monthly?” */
-export const SUBSCRIBER_SURVEY = { invited: 520, responded: 312, fortnightly: 187 };
+export const SUBSCRIBER_SURVEY = { invited: 120, responded: 72, fortnightly: 43 };
 /** Ana's plan for a 2027 customer survey: a proportion to within ±4 points at 95%, expecting 30% of those invited to reply. */
 export const SURVEY_PLAN = { margin: 0.04, conf: 0.95, responseRate: 0.3 };
 

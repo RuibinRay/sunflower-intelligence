@@ -1,9 +1,9 @@
 // charts.js (valuation) — the studio's extra charts on top of core/charts.js: a waterfall (enterprise-to-equity
 // bridge), a football field, a coloured sensitivity grid, a probability–impact matrix. Each has a table twin or a
 // readable DOM form, and keyboard access where the chart is SVG.
-import { h, s } from '../core/dom.js?v=26';
-import * as F from '../core/format.js?v=26';
-import { frame, niceTicks, lin, axisY, barPath, tableTwin, legendEl, divergingColor } from '../core/charts.js?v=26';
+import { h, s } from '../core/dom.js?v=27';
+import * as F from '../core/format.js?v=27';
+import { frame, niceTicks, lin, axisY, barPath, tableTwin, legendEl, divergingColor } from '../core/charts.js?v=27';
 
 const fin = Number.isFinite;
 

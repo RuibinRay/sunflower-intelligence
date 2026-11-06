@@ -3,8 +3,8 @@
 // No hints; solutions are shown when the student reviews the test. Café data and the October joiners come from case.js;
 // every other business, person and number is fictional. Formula items are marked by their results (core/sheet.js
 // gradeFormula); every num item's `check` recomputes its answer.
-import { CLEAN_ROWS, CAFE_COLUMNS, column, member, DERIVED as D } from './case.js?v=26';
-import * as R from '../../../core/regression.js?v=26';
+import { CLEAN_ROWS, CAFE_COLUMNS, column, member, DERIVED as D } from './case.js?v=27';
+import * as R from '../../../core/regression.js?v=27';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -82,8 +82,7 @@ export const items = [
   {
     id: 'b06-m4-4', lesson: 'transformations-and-influence', type: 'formula', kind: 'applied',
     prompt: 'The worksheet holds the coefficients of Harbourside’s model for ln(footfall). Ana wants the footfall change to expect on a day with the rain in E1, compared with a dry day like it. In E2, calculate it as a proportion (−0.10 is 10% fewer people).',
-    sheet: { cells: { ...logCells } },
-    vary: { E1: [0.1, 0.5, 0.8] },
+    sheet: { cells: { ...logCells }, vary: { E1: [0.1, 0.5, 0.8] } },
     cell: 'E2', answer: '=EXP(E1*B4)-1', alt: ['=EXP(B4*E1)-1', '=EXP(B4)^E1-1'],
     view: 'A1:E7', formats: { B: '0.0000', E1: '0.00', E2: '0.0%' }, widths: { A: 13, B: 12, D: 18, E: 9 },
     wrong: [

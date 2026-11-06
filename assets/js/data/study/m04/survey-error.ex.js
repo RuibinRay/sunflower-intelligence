@@ -2,7 +2,7 @@
 // Lantern's dispositions, completes and weights come from case.js; the samplers use the list's known answers as a
 // teaching device. Brindlecombe Garden Centre, Pennyholt Bakeries, Tamberlake Gyms, Marrowby Buses and Orrinsby Software
 // are fictional. Formula items are marked by their results on the sheet and on copies with the numbers changed.
-import { PEOPLE, STRATA, SIZES, DISPOSITIONS, DERIVED } from './case.js?v=26';
+import { PEOPLE, STRATA, SIZES, DISPOSITIONS, DERIVED } from './case.js?v=27';
 
 const DS = DISPOSITIONS, NC = DERIVED.survey.completesByStratum;
 const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
@@ -41,7 +41,7 @@ export const widgets = {
     strata: PEOPLE.stratum, strataNames: STRATA, value: PEOPLE.group.map((g) => (g === 2 ? 1 : 0)), valueLabel: 'promoters',
     propensity: PEOPLE.propensity, cluster: PEOPLE.batch,
     methods: ['srs', 'stratified', 'optin'], method: 'stratified', sizes: [100, 300, 600], n: 300, nonresponse: true, weight: false, seed: 5,
-    note: 'With non-response on, each design invites enough people to expect the completes you chose and keeps only those who reply. Subscribers reply more than newsletter-only readers, and within every segment promoters reply more than detractors. Weighting to the segments removes the first problem and leaves the second, so the weighted estimates still centre above the truth. A larger sample narrows the histogram around the wrong value.',
+    note: 'With non-response on, each design invites enough people to expect the completes you chose and keeps only those who reply. Repeat customers reply more than newsletter-only readers, and within every segment promoters reply more than detractors. Weighting to the segments removes the first problem and leaves the second, so the weighted estimates still centre above the truth. A larger sample narrows the histogram around the wrong value.',
   },
   'se-sampler-cb': {
     type: 'sampler', title: 'The same respondents, another question: would definitely or probably buy Cold Brew',
@@ -109,7 +109,7 @@ export const guided = [
           { value: Math.round(DS.byStratum[3].invited / NC[3] * 100) / 100, say: 'That weights back to the invitations. Post-stratification weights back to the population on the list: 4,330.' },
         ],
         hints: ['w_h = N_h ÷ n_h', '4,330 ÷ 297'],
-        solution: `4,330 ÷ 297 = ${(4330 / 297).toFixed(2)}: each newsletter-only respondent stands for about 14.6 people on the list, against 5.84 for each subscriber.`,
+        solution: `4,330 ÷ 297 = ${(4330 / 297).toFixed(2)}: each newsletter-only respondent stands for about 14.6 people on the list, against 5.84 for each repeat customer.`,
       },
       {
         id: 'm04-se-g1-s4', type: 'mc',
@@ -127,7 +127,7 @@ export const guided = [
           2: 'Weights rescale respondents; no answers are invented for non-respondents.',
           3: 'The margin of error is about precision; weighting changes the estimate by changing the mix of segments.',
         },
-        solution: 'Subscribers are 8.7% of the list but 17.2% of respondents, and score +62; newsletter-only readers are 72.2% of the list, 57.6% of respondents and score +7. Weighting gives each segment its share of the list, which pulls the score down. It cannot correct for promoters replying more readily within a segment.',
+        solution: 'Repeat customers are 8.7% of the list but 17.2% of respondents, and score +62; newsletter-only readers are 72.2% of the list, 57.6% of respondents and score +7. Weighting gives each segment its share of the list, which pulls the score down. It cannot correct for promoters replying more readily within a segment.',
       },
     ],
   },

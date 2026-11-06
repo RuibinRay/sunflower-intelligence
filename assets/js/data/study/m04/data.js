@@ -2,7 +2,7 @@
 // case.js decodes it, describes each field and computes every figure from it.
 
 /** Lessons: Lantern's mailing list on 1 February 2027, one character per person in sign-up order.
- *  stratum: 0 subscriber, 1 other shop customer, 2 workshop participant (not a shop customer), 3 newsletter only.
+ *  stratum: 0 repeat customer, 1 other shop customer, 2 workshop participant (not a shop customer), 3 newsletter only.
  *  nps: the 0–10 answer each person would give to "How likely are you to recommend Lantern to a friend?" (a–k = 0–10).
  *  coldbrew: 1 definitely would buy Lantern Cold Brew … 5 definitely would not. age: 0 18–34, 1 35–54, 2 55+.
  *  heard: how they first heard of Lantern, 0 friend or family, 1 an event or catering, 2 a workshop, 3 social media,

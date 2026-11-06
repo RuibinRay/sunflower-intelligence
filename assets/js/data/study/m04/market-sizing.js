@@ -6,9 +6,9 @@
 // 60%/20%) and a four-pack a month per regular buyer. Quarrymoor Creamery and Tillworth Bakery are fictional. The truth
 // the survey estimates (DERIVED.coldbrew.truth*) appears only in the “What Ana couldn’t see” callout. Not the office
 // market (the project's). Every printed figure is recomputed in `checks`.
-import { CATEGORY, CHANNELS, DEFAULT_PLAN, COLD_BREW_SIZING as SZ, PRICE_AUDIT, DERIVED as D } from './case.js?v=26';
-import { LANTERN, TIERS } from '../m02/market.js?v=26';
-import { simulate } from '../../../core/mixsim.js?v=26';
+import { CATEGORY, CHANNELS, DEFAULT_PLAN, COLD_BREW_SIZING as SZ, PRICE_AUDIT, DERIVED as D } from './case.js?v=27';
+import { LANTERN, TIERS } from '../m02/market.js?v=27';
+import { simulate } from '../../../core/mixsim.js?v=27';
 
 // ---------------------------------------------------------------- the figures the lesson quotes
 const TAM = CATEGORY.cansPerYear;                                        // 4,800,000
@@ -199,7 +199,7 @@ export default {
       ],
       foot: [['Total', '', '', '', c0(BU)]],
     } },
-    { p: 'The listings and rates of sale are Ana’s planning assumptions after talking to two store buyers; the direct figure is her estimate of what Lantern’s own cafés and online shop will sell, informed by what subscribers said in the February survey, not a calculation from it. Each is a number that someone can challenge, which is the point of building from the bottom.' },
+    { p: 'The listings and rates of sale are Ana’s planning assumptions after talking to two store buyers; the direct figure is her estimate of what Lantern’s own cafés and online shop will sell, informed by what repeat customers said in the February survey, not a calculation from it. Each is a number that someone can challenge, which is the point of building from the bottom.' },
 
     { h: 'Volume into value' },
     { p: `To turn cans into dollars, multiply by an average price, and choose it with care. The right average is weighted by volume, the price of the average can actually sold, which needs each brand’s sales. Ana’s shelf-price audit (the next lesson) gives ${D.audit.observations} shelf prices from ten stores, averaging $${AUD.toFixed(2)}, so the category is worth about ${(TAM / 1e6).toFixed(1)} million × $${AUD.toFixed(2)} ≈ $${(tamValue / 1e6).toFixed(1)} million a year at shelf prices. The average of the three brands’ own averages is $${meanOfMeans.toFixed(2)}, which gives $${(TAM * meanOfMeans / 1e6).toFixed(1)} million. If the cheapest brand, Daily Grind, sells the most cans (it is the best known, at 75% awareness in M02), the true figure is lower still.` },

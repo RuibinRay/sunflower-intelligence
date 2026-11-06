@@ -3,10 +3,10 @@
 // (FOCUS_GROUPS, DERIVED.focus), the price audit (PRICE_AUDIT) and the sizing (COLD_BREW_SIZING, DERIVED.sizing), plus
 // M02's plan (DEFAULT_PLAN) and M01's client interviews. Hollowmere Folk Festival and Yarrowdale Dental are fictional.
 // Ana's recommendation and decision rule are this lesson's (fictional) additions. Every printed figure is in `checks`.
-import { RESPONDENTS, STRATA, FOCUS_GROUPS, PRICE_AUDIT, COLD_BREW_SIZING, DEFAULT_PLAN, CLIENT_INTERVIEWS, DERIVED as D } from './case.js?v=26';
-import { BUSINESS } from '../m01/case.js?v=26';
-import * as I from '../../../core/inference.js?v=26';
-import * as S from '../../../core/survey.js?v=26';
+import { RESPONDENTS, STRATA, FOCUS_GROUPS, PRICE_AUDIT, COLD_BREW_SIZING, DEFAULT_PLAN, CLIENT_INTERVIEWS, DERIVED as D } from './case.js?v=27';
+import { BUSINESS } from '../m01/case.js?v=27';
+import * as I from '../../../core/inference.js?v=27';
+import * as S from '../../../core/survey.js?v=27';
 
 // ---------------------------------------------------------------- the figures this lesson quotes
 const R = RESPONDENTS, N = R.length, Z = I.normInv(0.975);
@@ -34,7 +34,7 @@ const FG = FOCUS_GROUPS, FGN = FG.groups.reduce((s, g) => s + g.participants, 0)
 // Yarrowdale Dental (fictional): stated against revealed demand for evening appointments
 const YD = { surveyed: 640, wouldUse: 333, slots: 120, booked: 46, weeks: 8, patients: 2400 };
 const ydPeople = (YD.wouldUse / YD.surveyed) * YD.patients, ydVisits = (ydPeople * YD.weeks) / 52;
-// a truncated axis: subscribers against other shop customers on an axis starting at 50%
+// a truncated axis: repeat customers against other shop customers on an axis starting at 50%
 const AX0 = 50, sub = share[0] * 100, shop = share[1] * 100;
 
 // ---------------------------------------------------------------- figures
@@ -45,7 +45,7 @@ const money = (v) => `$${v.toFixed(2)}`;
 
 function ladderFigure() {
   const boxes = [
-    ['Finding', 'What the data show', ['Weighted, 38.2% of the list', 'say they would buy;', 'subscribers 61.8%,', 'newsletter-only 31.0%.']],
+    ['Finding', 'What the data show', ['Weighted, 38.2% of the list', 'say they would buy;', 'repeat customers 61.8%,', 'newsletter-only 31.0%.']],
     ['Insight', 'Why, and so what', ['Appeal rests on knowing', 'Lantern’s coffee; strangers', 'judge one more can', 'on price and on trial.']],
     ['Recommendation', 'Now what', ['Launch where Lantern', 'is known, sample to', 'strangers, and test', 'supermarkets first.']],
   ];
@@ -65,7 +65,7 @@ function ladderFigure() {
 }
 
 function honestFigure() {
-  const bars = [['Subscribers', share[0], marg[0], nS[0]], ['Other shop customers', share[1], marg[1], nS[1]], ['Newsletter only', share[3], marg[3], nS[3]], ['All, weighted', WT, WM, N]];
+  const bars = [['Repeat customers', share[0], marg[0], nS[0]], ['Other shop customers', share[1], marg[1], nS[1]], ['Newsletter only', share[3], marg[3], nS[3]], ['All, weighted', WT, WM, N]];
   const L = 60, Rt = 640, T = 24, B = 210, max = 0.8;
   const X = (i) => L + 40 + i * ((Rt - L - 80) / (bars.length - 1));
   const Y = (v) => B - (v / max) * (B - T);
@@ -117,13 +117,13 @@ export default {
     { p: 'A stack of accurate figures doesn’t make a decision. That, weighted, 38.2% of the list say they would definitely or probably buy, that Summit Brew averages $3.87 on the shelf and that a bottom-up estimate comes to 48,200 cans are all findings, and none of them says what to do. This lesson is about the last step of research: turning findings into insights and recommendations, saying honestly what the research can’t show, and reporting it so that readers can check the work while respondents stay protected.' },
 
     { h: 'Findings, insights and recommendations' },
-    { p: 'A <g>finding</g> is a fact the research established, stated with its base and its uncertainty: weighted to the list’s segments, 38.2% say they would definitely or probably buy Cold Brew, with 61.8% of subscribers against 31.0% of newsletter-only contacts. An <g>insight</g> explains why a finding occurs, rests on more than one piece of evidence, and points to something to do that the findings alone don’t. A recommendation is the action itself, with the conditions under which it should be taken and how its result will be checked.' },
+    { p: 'A <g>finding</g> is a fact the research established, stated with its base and its uncertainty: weighted to the list’s segments, 38.2% say they would definitely or probably buy Cold Brew, with 61.8% of repeat customers against 31.0% of newsletter-only contacts. An <g>insight</g> explains why a finding occurs, rests on more than one piece of evidence, and points to something to do that the findings alone don’t. A recommendation is the action itself, with the conditions under which it should be taken and how its result will be checked.' },
     { figure: {
       svg: ladderFigure(),
       caption: 'From finding to insight to recommendation for Lantern Cold Brew. The insight explains the gap between segments and turns it into an action.',
-      alt: 'Three boxes in a row joined by arrows. The first, headed “Finding: what the data show”, reads “Weighted, 38.2% of the list say they would buy; subscribers 61.8%, newsletter-only 31.0%.” The second, headed “Insight: why, and so what”, reads “Appeal rests on knowing Lantern’s coffee; strangers judge one more can on price and on trial.” The third, headed “Recommendation: now what”, reads “Launch where Lantern is known, sample to strangers, and test supermarkets first.” A note below says each step needs the one before it and an insight rests on more than one finding.',
+      alt: 'Three boxes in a row joined by arrows. The first, headed “Finding: what the data show”, reads “Weighted, 38.2% of the list say they would buy; repeat customers 61.8%, newsletter-only 31.0%.” The second, headed “Insight: why, and so what”, reads “Appeal rests on knowing Lantern’s coffee; strangers judge one more can on price and on trial.” The third, headed “Recommendation: now what”, reads “Launch where Lantern is known, sample to strangers, and test supermarkets first.” A note below says each step needs the one before it and an insight rests on more than one finding.',
     } },
-    { p: '“Subscribers like Lantern more than newsletter readers do” isn’t an insight: it restates the finding. “Cold Brew’s appeal rests on knowing Lantern’s coffee” is one, because it explains the gap between the segments, it is supported by the focus groups as well as the survey, and it implies something specific: the people who don’t know Lantern need a reason to try the can.' },
+    { p: '“Repeat customers like Lantern more than newsletter readers do” isn’t an insight: it restates the finding. “Cold Brew’s appeal rests on knowing Lantern’s coffee” is one, because it explains the gap between the segments, it is supported by the focus groups as well as the survey, and it implies something specific: the people who don’t know Lantern need a reason to try the can.' },
 
     { h: 'Triangulation: four views of Cold Brew' },
     { p: '<g>Triangulation</g> checks a conclusion against evidence from different methods, whose weaknesses differ, so that agreement strengthens it and disagreement shows where to look. Ana has four sources on Cold Brew, each with something the others lack: the survey, the focus groups, the <g>shelf-price audit</g> and the sizing.' },
@@ -132,16 +132,16 @@ export default {
       head: ['Source', 'What it says', 'What it can’t say'],
       align: ['l', 'l', 'l'],
       rows: [
-        ['Survey (February; 516 completes)', `Weighted, ${pct(WT)} in the top two boxes; subscribers ${pct(share[0])}, newsletter-only ${pct(share[3])}.`, 'How many will actually buy; anything about people not on Lantern’s list.'],
+        ['Survey (February; 516 completes)', `Weighted, ${pct(WT)} in the top two boxes; repeat customers ${pct(share[0])}, newsletter-only ${pct(share[3])}.`, 'How many will actually buy; anything about people not on Lantern’s list.'],
         [`Focus groups (March; ${FGN} people)`, 'Subscribers talk about taste and trust; ready-to-drink buyers who don’t know Lantern talk about price and about needing to try it.', 'How common any view is.'],
         [`Price audit (March; ${PRICE_AUDIT.stores.length} stores)`, `At ${money(PRICE)}, Cold Brew would be ${money(PRICE - brandAvg[2])} above Arcadia Coffee’s average shelf price, ${money(PRICE - brandAvg[1])} above Daily Grind RTD’s and ${money(brandAvg[0] - PRICE)} below Summit Brew’s.`, 'Sales at those prices; anything outside one week.'],
         ['Sizing (March)', `Bottom-up, ${SZ.bottomUpCans.toLocaleString('en-US')} cans in year one, ${(SZ.bottomUpShareOfSam * 100).toFixed(1)}% of the planned channels’ ${(SZ.samCans / 1e6).toFixed(2)} million; the goal of ${CBS.goalCans.toLocaleString('en-US')} is ${(SZ.goalShareOfSam * 100).toFixed(1)}%.`, 'Whether Ana’s listings and sales per store will happen.'],
       ],
     } },
-    { p: `The sources agree on the shape of the answer. The survey finds intent highest where people know Lantern; subscribers in the focus groups say “${Q('A3', 0)}” and “${Q('A3', 1)}”. The people on the list who know Lantern least, the newsletter-only contacts, are cooler in the survey, and ready-to-drink buyers who have never bought from Lantern say, in the focus group, “${Q('B2', 1)}” and “${Q('B4', 0)}”; the audit confirms that the cheapest cans on the shelf, Daily Grind RTD’s, average ${money(PRICE - brandAvg[1])} less. And the bottom-up estimate, built from listings and sales per store rather than from intent, comes to about half the goal. That is the insight: Cold Brew’s first-year volume will come from Lantern’s own customers and from turning strangers into triers, and the second is the risk.` },
+    { p: `The sources agree on the shape of the answer. The survey finds intent highest where people know Lantern; the subscribers in focus group A say “${Q('A3', 0)}” and “${Q('A3', 1)}”. The people on the list who know Lantern least, the newsletter-only contacts, are cooler in the survey, and ready-to-drink buyers who have never bought from Lantern say, in the focus group, “${Q('B2', 1)}” and “${Q('B4', 0)}”; the audit confirms that the cheapest cans on the shelf, Daily Grind RTD’s, average ${money(PRICE - brandAvg[1])} less. And the bottom-up estimate, built from listings and sales per store rather than from intent, comes to about half the goal. That is the insight: Cold Brew’s first-year volume will come from Lantern’s own customers and from turning strangers into triers, and the second is the risk.` },
 
     { h: 'What research can and can’t show' },
-    { p: 'A survey shows associations: subscribers are keener on Cold Brew. It can’t show that subscribing makes people keener, because loyalty to Lantern may lead people both to subscribe and to want its new product: a <g>confounding variable</g> of the kind B01 described. Nor can it show what people will do: intent is a <g>stated preference</g>, what people say they would choose, and <i>Survey error</i> showed that it overstates buying. A <g>revealed preference</g> is read from what people actually choose, in sales records or in a test.' },
+    { p: 'A survey shows associations: repeat customers are keener on Cold Brew. It can’t show that ordering again makes people keener, because loyalty to Lantern may lead people both to order again and to want its new product: a <g>confounding variable</g> of the kind B01 described. Nor can it show what people will do: intent is a <g>stated preference</g>, what people say they would choose, and <i>Survey error</i> showed that it overstates buying. A <g>revealed preference</g> is read from what people actually choose, in sales records or in a test.' },
     { p: 'Some questions only an experiment can answer. Whether free cans turn strangers into repeat buyers, or whether $3.49 sells fewer cans than $2.99, are questions about <g>causation</g>, and the reliable way to answer them is to vary the cause on purpose and compare. A <g>test market</g> (M02) launches in a few stores before the rest; an <g>A/B test</g> (B01) randomly assigns visitors to two versions of a web page or offer. B12 Experimental Design teaches how to design both.' },
 
     { h: 'Reporting it' },
@@ -151,11 +151,11 @@ export default {
 
   theory: [
     { h: 'Writing an insight' },
-    { p: 'An insight answers “why?” and then “so what?”. A useful test has three parts: does it explain a finding rather than restate it; does more than one piece of evidence support it; and does it suggest an action that a reader of the findings alone wouldn’t have reached? “Delivery speed was raised by 18.0% of subscribers and 8.1% of newsletter-only respondents” is a finding. “Subscribers notice delivery because the monthly box is a promise, and one late box breaks it” is a candidate insight: it explains the gap, it can be checked against the wording of the open answers and Lantern’s delivery records, and it suggests fixing the subscription deliveries first.' },
+    { p: 'An insight answers “why?” and then “so what?”. A useful test has three parts: does it explain a finding rather than restate it; does more than one piece of evidence support it; and does it suggest an action that a reader of the findings alone wouldn’t have reached? “Delivery speed was raised by 18.0% of repeat customers and 8.1% of newsletter-only respondents” is a finding. “Repeat customers notice delivery because they have come to count on it, and one late order breaks that habit” is a candidate insight: it explains the gap, it can be checked against the wording of the open answers and Lantern’s delivery records, and it suggests making repeat orders, subscription boxes among them, arrive on time first.' },
     { p: 'Insights are hypotheses with evidence, not facts. Write them so that they could turn out wrong, say what evidence supports them, and say what would show them wrong. An insight built on one striking quotation, or on a difference smaller than its margin of error, is a guess.' },
 
     { h: 'Triangulating in practice' },
-    { p: 'Sources can converge (they point the same way), complement each other (one explains what another only measures, as the focus groups explain the survey’s gap between segments) or diverge. Divergence is itself a finding: if the survey had shown newsletter readers as keen as subscribers while the focus group of non-buyers rejected the price, Ana would need to ask which sample was unusual, or whether the survey’s price wording differed from what the focus group was shown. Weigh sources by their quality for the question at hand, not by counting them like votes: two weak sources that share a weakness, such as two surveys of Lantern’s own list, don’t make a strong one.' },
+    { p: 'Sources can converge (they point the same way), complement each other (one explains what another only measures, as the focus groups explain the survey’s gap between segments) or diverge. Divergence is itself a finding: if the survey had shown newsletter readers as keen as repeat customers while the focus group of non-buyers rejected the price, Ana would need to ask which sample was unusual, or whether the survey’s price wording differed from what the focus group was shown. Weigh sources by their quality for the question at hand, not by counting them like votes: two weak sources that share a weakness, such as two surveys of Lantern’s own list, don’t make a strong one.' },
     { p: 'Qualitative evidence never becomes a share. In Ana’s two <g>focus groups</g>, four of the 20 coded quotations were about price, but that doesn’t mean 20% of buyers care about price: the quotations were chosen to illustrate themes, and the 15 participants were recruited, not sampled. Two coders agreed on 18 of the 20 codes (90%), an <g>inter-coder agreement</g> that says the themes were applied consistently, not how common they are.' },
 
     { h: 'Association, causation and experiments' },
@@ -189,14 +189,14 @@ export default {
     { list: [
       '<b>Show the base</b> under every bar or column, and say whether figures are weighted; give weighted figures with their unweighted base.',
       '<b>Show uncertainty</b>: intervals on bars, or margins in a note, so that readers don’t read differences smaller than the noise.',
-      '<b>Start bars at zero.</b> A <g>truncated axis</g> exaggerates differences between shares. With the axis starting at 50%, subscribers’ 61.8% bar is 2.2 times the height of other shop customers’ 55.3% bar, although the true ratio is 1.12 and the two can’t be told apart.',
+      '<b>Start bars at zero.</b> A <g>truncated axis</g> exaggerates differences between shares. With the axis starting at 50%, repeat customers’ 61.8% bar is 2.2 times the height of other shop customers’ 55.3% bar, although the true ratio is 1.12 and the two can’t be told apart.',
       '<b>Leave out bases below your minimum</b>, or mark them clearly, rather than plotting them like the rest. NCHS’s minimum of 30 (Parker et al., 2017) is one published standard.',
       '<b>Keep scales in their natural order</b> (definitely … definitely not), use the same axis for charts that will be compared, and label units: an NPS is in points, not per cent.',
     ] },
     { figure: {
       svg: honestFigure(),
       caption: `An honest chart of Cold Brew intent: bases under each bar, 95% intervals, a weighted overall figure labelled as such, a zero baseline, and the small segment left out with a note. Kish’s n gives a slightly wider interval for the weighted figure than the stratified standard error of <i>Sampling methods</i> (${f1(STRAT.low * 100)}% to ${f1(STRAT.high * 100)}%).`,
-      alt: `A bar chart of the share in the top two boxes for Cold Brew, with a vertical axis from 0% to 80%. Subscribers ${pct(share[0])} (base ${nS[0]}), interval about ${f1((share[0] - marg[0]) * 100)}% to ${f1((share[0] + marg[0]) * 100)}%. Other shop customers ${pct(share[1])} (base ${nS[1]}), interval ${f1((share[1] - marg[1]) * 100)}% to ${f1((share[1] + marg[1]) * 100)}%. Newsletter only ${pct(share[3])} (base ${nS[3]}), interval ${f1((share[3] - marg[3]) * 100)}% to ${f1((share[3] + marg[3]) * 100)}%. All, weighted ${pct(WT)} (base ${N}), interval ${f1((WT - WM) * 100)}% to ${f1((WT + WM) * 100)}%. Notes say the lines are 95% intervals, the weighted figure uses Kish’s effective n of 469, and workshop participants (base 27) are not shown because their base is below 30.`,
+      alt: `A bar chart of the share in the top two boxes for Cold Brew, with a vertical axis from 0% to 80%. Repeat customers ${pct(share[0])} (base ${nS[0]}), interval about ${f1((share[0] - marg[0]) * 100)}% to ${f1((share[0] + marg[0]) * 100)}%. Other shop customers ${pct(share[1])} (base ${nS[1]}), interval ${f1((share[1] - marg[1]) * 100)}% to ${f1((share[1] + marg[1]) * 100)}%. Newsletter only ${pct(share[3])} (base ${nS[3]}), interval ${f1((share[3] - marg[3]) * 100)}% to ${f1((share[3] + marg[3]) * 100)}%. All, weighted ${pct(WT)} (base ${N}), interval ${f1((WT - WM) * 100)}% to ${f1((WT + WM) * 100)}%. Notes say the lines are 95% intervals, the weighted figure uses Kish’s effective n of 469, and workshop participants (base 27) are not shown because their base is below 30.`,
     } },
 
     { h: 'Uncertainty in words' },
@@ -206,8 +206,8 @@ export default {
       head: ['What the interval shows', 'Words that fit', 'Lantern example'],
       align: ['l', 'l', 'l'],
       rows: [
-        ['The whole interval is on one side of zero', '“higher”, “clearly higher”, “by between … and … points”', `Subscribers are clearly keener than newsletter-only contacts: by ${f1(SUBNEWS.low * 100)} to ${f1(SUBNEWS.high * 100)} points.`],
-        ['The interval includes zero and is wide', '“can’t be told apart on these data”, “we can’t say which is higher”', `Subscribers and other shop customers: the gap could be anywhere from ${sgp(SUBSHOP.low * 100)} to ${sgp(SUBSHOP.high * 100)} points.`],
+        ['The whole interval is on one side of zero', '“higher”, “clearly higher”, “by between … and … points”', `Repeat customers are clearly keener than newsletter-only contacts: by ${f1(SUBNEWS.low * 100)} to ${f1(SUBNEWS.high * 100)} points.`],
+        ['The interval includes zero and is wide', '“can’t be told apart on these data”, “we can’t say which is higher”', `Repeat customers and other shop customers: the gap could be anywhere from ${sgp(SUBSHOP.low * 100)} to ${sgp(SUBSHOP.high * 100)} points.`],
         ['The interval includes zero and is narrow', '“little or no difference”', 'Only when the interval is narrow (the widget uses no more than 10 points wide), so the data could have detected a difference that mattered.'],
         ['The base is below the minimum', 'No figure: “too few answers to report separately”', 'Workshop participants (27).'],
       ],
@@ -249,7 +249,7 @@ export default {
     { level: 'applied', title: 'Ana’s recommendation on Cold Brew', fictional: true,
       setup: 'Using all four sources and their limits, write the recommendation section of Ana’s Cold Brew report: what to do, why, and what would change the plan.',
       steps: [
-        `State the findings with their bases: weighted, ${pct(WT)} of the list (unweighted base ${N}) in the top two boxes, roughly ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%; subscribers ${pct(share[0])} against newsletter-only ${pct(share[3])}; a ready-to-drink buyer in the focus group compared ${money(PRICE)} with the can they usually buy, about a dollar cheaper; bottom-up volume ${SZ.bottomUpCans.toLocaleString('en-US')} cans against a goal of ${CBS.goalCans.toLocaleString('en-US')}.`,
+        `State the findings with their bases: weighted, ${pct(WT)} of the list (unweighted base ${N}) in the top two boxes, roughly ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%; repeat customers ${pct(share[0])} against newsletter-only ${pct(share[3])}; a ready-to-drink buyer in the focus group compared ${money(PRICE)} with the can they usually buy, about a dollar cheaper; bottom-up volume ${SZ.bottomUpCans.toLocaleString('en-US')} cans against a goal of ${CBS.goalCans.toLocaleString('en-US')}.`,
         `Apply the brief’s <g>action standard</g> from <i>The research process</i> (launch widely at 45% or more, hold back below 30%): weighted, ${pct(WT)} (about ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%) falls in the brief’s middle band, so the brief itself calls for a limited launch with a test.`,
         `Draw the insight from where the sources agree: appeal rests on knowing Lantern; strangers decide on price and trial. Ana’s bottom-up plan is consistent with it, though its store figures are her assumptions rather than evidence: natural grocers, whose shoppers pay more for quality and provenance (M02), and Lantern’s own channel supply ${buNatural.toLocaleString('en-US')} and ${buDirect.toLocaleString('en-US')} cans, more than two-thirds of it; supermarkets supply ${buSuper.toLocaleString('en-US')}.`,
         `Recommend actions that match the evidence: launch in Lantern’s own channel and the natural grocers; plan year one on about ${(Math.round((buNatural + buDirect) / 1000) * 1000).toLocaleString('en-US')} cans from those two (25 × 14 × 52 + 1,200 × 12 = ${(buNatural + buDirect).toLocaleString('en-US')}), rising towards the bottom-up 48,000 if the supermarket test passes; aim the plan’s $${DEFAULT_PLAN.promotion.sampling.toLocaleString('en-US')} sampling budget at people who don’t know Lantern; and list in a few supermarkets first as a test market, with free cans in half of them chosen at random.`,
@@ -261,7 +261,7 @@ export default {
   ],
 
   demo: [
-    { widget: 'ir-words', intro: 'Two groups’ percentages and bases give an interval for the gap and the words it supports. Start with subscribers against other shop customers, then try subscribers against newsletter-only contacts (31.0%, base 297), and a base of 27 to see the small-base rule apply.' },
+    { widget: 'ir-words', intro: 'Two groups’ percentages and bases give an interval for the gap and the words it supports. Start with repeat customers against other shop customers, then try repeat customers against newsletter-only contacts (31.0%, base 297), and a base of 27 to see the small-base rule apply.' },
     { widget: 'ir-chart', intro: 'Cold Brew intent by segment as a report chart: bases in the labels, the weighted figure marked, the small segment left out. The axis starts at zero; compare what the gap between the first two bars looks like here with the truncated axis described in In depth.' },
   ],
 
@@ -269,13 +269,13 @@ export default {
     { title: '“The insight is that 38% would buy.”', html: 'That is a finding. An insight explains why a finding occurs, rests on more than one source, and implies an action the finding alone doesn’t, such as aiming sampling at people who don’t know Lantern.' },
     { title: '“Four sources agree, so the case is proven.”', html: 'Sources that share a weakness don’t strengthen each other: a survey of Lantern’s list and focus groups of its subscribers both over-represent people who know Lantern. Triangulation is strong when the methods’ weaknesses differ.' },
     { title: '“Four of the 20 quotations were about price, so 20% of buyers care about price.”', html: 'Quotations are chosen to illustrate themes from a recruited group of 15. Qualitative work shows what views exist and why, not how common they are.' },
-    { title: '“Subscribers are keener, so turning customers into subscribers will raise demand.”', html: 'The survey shows an association. Loyal customers choose to subscribe and also like Lantern’s coffee: a confounding variable. Only a design that varies the cause, such as an experiment, can show what subscribing does.' },
+    { title: '“Repeat customers are keener, so turning one-time customers into repeat customers will raise demand.”', html: 'The survey shows an association. Loyal customers choose to order again and also like Lantern’s coffee: a confounding variable. Only a design that varies the cause, such as an experiment, can show what ordering again does.' },
     { title: '“Put everything in the findings; readers can judge.”', html: 'The codes require findings, interpretation and recommendations to be told apart. Lead with the answer in the executive summary, keep each finding with its base and margin, and label conclusions as conclusions.' },
     { title: '“A quotation is anonymous if the name is removed.”', html: 'A job title, an employer, a street or a small group can identify someone just as well. Attribute by group code, cut identifying details, suppress small cells, and take extra care with business-to-business samples.' },
   ],
 
   application: [
-    { case: `Ana’s executive summary, as she presents it to her team on 6 April 2027: “Recommendation: launch Lantern Cold Brew in stages. The people who know Lantern want it: weighted to our list, ${pct(WT)} say they would definitely or probably buy (roughly ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%; 516 completes), with subscribers far keener than newsletter-only contacts (${Math.round(share[0] * 100)}% against ${Math.round(share[3] * 100)}%). In our focus group, ready-to-drink buyers who don’t know Lantern compared ${money(PRICE)} with cans that cost a dollar less and wanted to try before buying. Our bottom-up estimate is about 48,000 cans in year one, half the goal, which this plan can’t reach. So we launch in our own channel and natural grocers, planning on about 33,000 cans, aim free cans at strangers, and test a few supermarkets before listing in the rest. These are stated intentions from people on our own list, not forecasts of sales.”` },
+    { case: `Ana’s executive summary, as she presents it to her team on 6 April 2027: “Recommendation: launch Lantern Cold Brew in stages. The people who know Lantern want it: weighted to our list, ${pct(WT)} say they would definitely or probably buy (roughly ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%; 516 completes), with repeat customers far keener than newsletter-only contacts (${Math.round(share[0] * 100)}% against ${Math.round(share[3] * 100)}%). In our focus group, ready-to-drink buyers who don’t know Lantern compared ${money(PRICE)} with cans that cost a dollar less and wanted to try before buying. Our bottom-up estimate is about 48,000 cans in year one, half the goal, which this plan can’t reach. So we launch in our own channel and natural grocers, planning on about 33,000 cans, aim free cans at strangers, and test a few supermarkets before listing in the rest. These are stated intentions from people on our own list, not forecasts of sales.”` },
     { p: '<b>She answers the question behind the question.</b> Her team asks whether 38% means the goal is safe. Ana explains that the figure describes people on Lantern’s own list, who know the brand, and that intent overstates buying; the sizing, built from stores and sales per store, is the better guide to volume. She shows the chart with intervals and leaves the workshop participants out, saying why.' },
     { p: '<b>She keeps the respondents out of it.</b> A team member asks who said the can should have a lantern on it. Ana quotes the remark by its code, A2, as in the report, and declines to say more: participants were promised confidentiality. The catering interviews from November 2026 appear as counts of reasons, and any quotation is attributed only to “a catering client”, with details that could point to the firm removed, because 12 clients are few enough to recognise.' },
     { p: '<b>She writes down what would change her mind.</b> The decision log records the plan, the owner of each action, and the rule: if the test supermarkets without free cans average fewer than 10 cans a store a week over 12 weeks, Lantern stays out of the remaining supermarkets for 2027 and puts the money into its own channel. When the test ends she will compare its sales with the bottom-up assumptions, and the gap will tell her how far to trust the next round of research.' },
@@ -343,10 +343,10 @@ export default {
     // the survey
     { what: 'Weighted top two %', value: WT * 100, shown: 38.2, tol: 0.05 },
     { what: 'Weighted top two, whole %', value: WT * 100, shown: 38, tol: 0.5 },
-    { what: 'Subscribers top two %', value: share[0] * 100, shown: 61.8, tol: 0.05 },
+    { what: 'Repeat customers top two %', value: share[0] * 100, shown: 61.8, tol: 0.05 },
     { what: 'Newsletter top two %', value: share[3] * 100, shown: 31.0, tol: 0.05 },
     { what: 'Shop top two %', value: share[1] * 100, shown: 55.3, tol: 0.05 },
-    { what: 'Subscribers whole %', value: share[0] * 100, shown: 62, tol: 0.5 },
+    { what: 'Repeat customers whole %', value: share[0] * 100, shown: 62, tol: 0.5 },
     { what: 'Newsletter whole %', value: share[3] * 100, shown: 31, tol: 0.5 },
     { what: 'Completes', value: N, shown: 516 },
     { what: 'Invitations', value: D.survey.allocation.reduce((a, b) => a + b, 0), shown: 2004 },
@@ -363,7 +363,7 @@ export default {
     { what: 'Workshop 55+ by first heard: largest cell', value: Math.max(...[0, 1, 2, 3, 4].map((k) => byS[2].filter((r) => r.age === 2 && r.heard === k).length)), shown: 3 },
     { what: 'Workshop 55+ by first heard: smallest non-empty cell', value: Math.min(...[0, 1, 2, 3, 4].map((k) => byS[2].filter((r) => r.age === 2 && r.heard === k).length).filter((x) => x > 0)), shown: 2 },
     { what: 'Minimum base', value: 30, shown: 30 },
-    { what: 'Delivery speed, subscribers %', value: (byS[0].filter((r) => r.theme === 2).length / nS[0]) * 100, shown: 18.0, tol: 0.05 },
+    { what: 'Delivery speed, repeat customers %', value: (byS[0].filter((r) => r.theme === 2).length / nS[0]) * 100, shown: 18.0, tol: 0.05 },
     { what: 'Delivery speed, newsletter only %', value: (byS[3].filter((r) => r.theme === 2).length / nS[3]) * 100, shown: 8.1, tol: 0.05 },
     // truncated axis
     { what: 'Apparent ratio with axis at 50%', value: (sub - AX0) / (shop - AX0), shown: 2.2, tol: 0.05 },

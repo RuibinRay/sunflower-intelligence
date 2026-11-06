@@ -3,9 +3,9 @@
 // case.js. The list's known answers (PEOPLE) appear only in the sampler demonstration and its checks, never as something
 // Ana knows. Brindlecombe Garden Centre, Orrinsby Software and Marrowby Buses are fictional. Non-response, response
 // rates and weighting for it are survey-error's; here every design is shown with full response.
-import { SIZES, STRATA, SURVEY_2027, SURVEY_PLAN, PEOPLE } from './case.js?v=26';
-import * as S from '../../../core/survey.js?v=26';
-import * as I from '../../../core/inference.js?v=26';
+import { SIZES, STRATA, SURVEY_2027, SURVEY_PLAN, PEOPLE } from './case.js?v=27';
+import * as S from '../../../core/survey.js?v=27';
+import * as I from '../../../core/inference.js?v=27';
 
 const N = SIZES.reduce((a, b) => a + b, 0), INV = SURVEY_2027.invited, A = SURVEY_2027.allocation;
 const RAW = SIZES.map((k) => (INV * k) / N);
@@ -97,7 +97,7 @@ export default {
   case: 'lantern',
 
   concept: [
-    { case: `B04’s project gave Ana a sample size: ${nPlan} completed questionnaires for a margin of ±${SURVEY_PLAN.margin * 100} points at ${SURVEY_PLAN.conf * 100}%, which at the ${RR * 100}% response she expected meant ${fmt(INV)} invitations. It didn’t say whom to invite. Her mailing list on 1 February 2027 held ${fmt(N)} people in four groups: ${fmt(SIZES[0])} subscribers, ${fmt(SIZES[1])} other shop customers, ${fmt(SIZES[2])} workshop participants and ${fmt(SIZES[3])} people who receive only the newsletter. This lesson is about that choice, and about what it allows her to claim.` },
+    { case: `B04’s project gave Ana a sample size: ${nPlan} completed questionnaires for a margin of ±${SURVEY_PLAN.margin * 100} points at ${SURVEY_PLAN.conf * 100}%, which at the ${RR * 100}% response she expected meant ${fmt(INV)} invitations. It didn’t say whom to invite. Her mailing list on 1 February 2027 held ${fmt(N)} people in four groups: ${fmt(SIZES[0])} repeat customers, ${fmt(SIZES[1])} other shop customers, ${fmt(SIZES[2])} workshop participants and ${fmt(SIZES[3])} people who receive only the newsletter. This lesson is about that choice, and about what it allows her to claim.` },
 
     { h: 'Who the survey is about, and who it can reach' },
     { p: 'Start with the <g>target population</g>: the whole group a survey’s conclusions are meant to describe, defined by the research question. The <g>sampling frame</g> (B01) is the list or source from which the sample is actually drawn, and the <g>sampling unit</g> is what the frame lists and the design selects: a person, a household, a store, a sign-up batch. Ideally frame and target population coincide. In practice they overlap, and the two kinds of mismatch push results in different ways.' },
@@ -107,7 +107,7 @@ export default {
       caption: `Lantern’s mailing list against the customers it is meant to represent, and the February allocation. For a question about customers, ${fmt(SIZES[3])} people on the frame are outside the target, and customers who never joined the list can’t be reached.`,
       alt: `Top: two overlapping rounded rectangles. The left one is labelled “Target population: customers”, the right one “Sampling frame: the mailing list (${fmt(N)})”. The left-only part reads “Customers not on the list; undercoverage: can never be chosen”. The overlap reads “Customers on the list, ${fmt(CUSTOMERS)}”. The right-only part reads “Never bought: newsletter only, ${fmt(SIZES[3])}; overcoverage for a question about customers”. Bottom: “Proportional stratified sample: ${fmt(INV)} invitations, ${pc(INV / N)} of every stratum”, with one horizontal bar per stratum, its outline proportional to the stratum’s size and a shaded part for the invitations: ${STRATA.map((nm, h) => `${nm}, ${fmt(SIZES[h])} on the list, ${fmt(A[h])} invited`).join('; ')}.`,
     } },
-    { case: `For Ana’s question about how customers see Lantern, the target population is everyone who has bought from Lantern. Her list holds ${fmt(CUSTOMERS)} of them (subscribers, other shop customers and workshop participants) and misses some: anyone who has unsubscribed, and catering clients who deal with Lantern by invoice and never joined the list. It also holds ${fmt(SIZES[3])} newsletter readers who have never bought. For the Cold Brew question the gap is wider still: the people who will decide Cold Brew’s fate are Harbour City’s ready-to-drink coffee buyers, and the list reaches only the small, friendly slice of them who already know Lantern.` },
+    { case: `For Ana’s question about how customers see Lantern, the target population is everyone who has bought from Lantern. Her list holds ${fmt(CUSTOMERS)} of them (repeat customers, other shop customers and workshop participants) and misses some: anyone who has unsubscribed, and catering clients who deal with Lantern by invoice and never joined the list. It also holds ${fmt(SIZES[3])} newsletter readers who have never bought. For the Cold Brew question the gap is wider still: the people who will decide Cold Brew’s fate are Harbour City’s ready-to-drink coffee buyers, and the list reaches only the small, friendly slice of them who already know Lantern.` },
     { p: 'None of this makes the list useless. It makes the February survey a survey of Lantern’s contacts, whose results describe Lantern’s contacts. Ana can analyse the customer strata apart from the newsletter-only readers, and she must not read the Cold Brew answers as a measure of the city’s market; sizing that market is module 3’s job.' },
 
     { h: 'Probability and non-probability samples' },
@@ -137,7 +137,7 @@ export default {
     { p: String.raw`For clusters of equal size b the design effect is about <m>1 + (b - 1)\rho</m>, where ρ, the <g>intraclass correlation</g>, measures how alike members of the same cluster are (0 if no more alike than strangers, 1 if identical). Because ρ is multiplied by the cluster size, even a small one hurts: Marrowby Buses (fictional) surveying all 25 passengers on each of 40 buses, with ρ = 0.04, has a design effect of <m>1 + 24 \times 0.04 = ${MBdeff.toFixed(2)}</m>, so its ${fmt(MBn)} passengers carry the precision of about ${Math.round(MBn / MBdeff)} independent ones.` },
 
     { h: 'Allocating a stratified sample' },
-    { p: String.raw`<g>Proportional allocation</g> gives each stratum the same share of the sample as it has of the frame: <m>n_h = n \times N_h \div N</m>. Every unit then has the same chance of selection, and the sample is self-weighting: its plain percentages estimate the population’s. For Lantern, <m>${tf(INV)} \times 520 \div ${tf(N)} = ${RAW[0].toFixed(2)}</m>, and likewise ${RAW.slice(1).map((v) => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })).join(', ')} for the other three strata. The parts must be whole and add to ${fmt(INV)}: rounding down gives ${A.map((a, h) => Math.floor(RAW[h])).reduce((x, y) => x + y, 0).toLocaleString('en-US')}, and the largest-remainder method gives the missing invitation to the stratum with the largest fraction left over (subscribers, .68), which is how ${A.map(fmt).join(' / ')} was reached.` },
+    { p: String.raw`<g>Proportional allocation</g> gives each stratum the same share of the sample as it has of the frame: <m>n_h = n \times N_h \div N</m>. Every unit then has the same chance of selection, and the sample is self-weighting: its plain percentages estimate the population’s. For Lantern, <m>${tf(INV)} \times 520 \div ${tf(N)} = ${RAW[0].toFixed(2)}</m>, and likewise ${RAW.slice(1).map((v) => v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })).join(', ')} for the other three strata. The parts must be whole and add to ${fmt(INV)}: rounding down gives ${A.map((a, h) => Math.floor(RAW[h])).reduce((x, y) => x + y, 0).toLocaleString('en-US')}, and the largest-remainder method gives the missing invitation to the stratum with the largest fraction left over (repeat customers, .68), which is how ${A.map(fmt).join(' / ')} was reached.` },
     { p: String.raw`In Excel, put the stratum sizes in B2:B5 and the sample size in B8, and fill <x>=$B$8*B2/SUM($B$2:$B$5)</x> down for the unrounded allocation. <x>=ROUND($B$8*B2/SUM($B$2:$B$5),0)</x> usually works but can leave the total one out: Brindlecombe Garden Centre’s example below rounds to 401. Check the total, and adjust the stratum with the largest remainder by hand.` },
     { p: String.raw`<g>Disproportionate allocation</g> deliberately samples some strata at higher rates than others, usually to read a small group separately. The units then have unequal chances of selection, so the strata must be combined with population weights, not by pooling the sample: the next section shows how. <g>Neyman allocation</g> is the allocation that minimises the standard error of the overall estimate for a fixed n: <m>n_h \propto N_h S_h</m>, more sample where strata are larger or more variable. For a proportion, <m>S_h = \sqrt{p_h(1 - p_h)}</m> barely changes between 0.3 and 0.7, so Neyman allocation is close to proportional unless some strata have shares near 0 or 1.` },
 
@@ -226,11 +226,11 @@ export default {
       steps: [
         `Allocation: ${STRATA.map((nm, h) => `${nm.toLowerCase()} ${fmt(A[h])}`).join(', ')}, each ${pc(INV / N)} of its stratum.`,
         String.raw`Expected completes at ${RR * 100}%: ${EXP.map((e) => e.toFixed(1)).join(', ')}, about ${fmt(Math.round(EXP.reduce((a, b) => a + b, 0)))} in all, which delivers the planned ±4 points overall.`,
-        String.raw`Margins for each stratum read alone (p = 0.5, with the finite population correction): ${EXP.map((e, h) => `±${(moeF(e, SIZES[h]) * 100).toFixed(1)}`).join(', ')} points. The newsletter-only group is read precisely; subscribers and shop customers roughly; workshop participants hardly at all.`,
-        String.raw`Ask what each group is for. Subscribers and shop customers are the customers whose view of Lantern Ana most wants, and the likeliest early Cold Brew buyers; workshop participants are a small group she has no decision about. Reading workshop participants to ±10 points would need about ${Math.ceil(nF(n0_10, SIZES[2]))} completes from 150, which at ${RR * 100}% response would take more invitations than there are people. Even inviting all 150 would give about ${SIZES[2] * RR} completes and a margin of about ±${(wsAll * 100).toFixed(0)} points.`,
-        'Decide. Ana keeps the proportional design, which is self-weighting and simple, and reports the workshop group only as part of the whole. Had customers’ views been the priority, she could have invited every subscriber and more shop customers, and weighted the results back to the list.',
+        String.raw`Margins for each stratum read alone (p = 0.5, with the finite population correction): ${EXP.map((e, h) => `±${(moeF(e, SIZES[h]) * 100).toFixed(1)}`).join(', ')} points. The newsletter-only group is read precisely; repeat customers and other shop customers roughly; workshop participants hardly at all.`,
+        String.raw`Ask what each group is for. Repeat customers and other shop customers are the customers whose view of Lantern Ana most wants, and the likeliest early Cold Brew buyers; workshop participants are a small group she has no decision about. Reading workshop participants to ±10 points would need about ${Math.ceil(nF(n0_10, SIZES[2]))} completes from 150, which at ${RR * 100}% response would take more invitations than there are people. Even inviting all 150 would give about ${SIZES[2] * RR} completes and a margin of about ±${(wsAll * 100).toFixed(0)} points.`,
+        'Decide. Ana keeps the proportional design, which is self-weighting and simple, and reports the workshop group only as part of the whole. Had customers’ views been the priority, she could have invited every repeat customer and more other shop customers, and weighted the results back to the list.',
       ],
-      answer: `The design reads the whole list to about ±4 points and the newsletter-only group well, subscribers and shop customers to about ±${(moeF(EXP[0], SIZES[0]) * 100).toFixed(0)} and ±${(moeF(EXP[1], SIZES[1]) * 100).toFixed(0)} points, and workshop participants not at all.`,
+      answer: `The design reads the whole list to about ±4 points and the newsletter-only group well, repeat customers and other shop customers to about ±${(moeF(EXP[0], SIZES[0]) * 100).toFixed(0)} and ±${(moeF(EXP[1], SIZES[1]) * 100).toFixed(0)} points, and workshop participants not at all.`,
       interpretation: 'Sample sizes are decided group by group, for the estimates that matter. And every margin here assumes the 30% response is the same in every group and that those who reply resemble those who don’t; the next lesson shows what happened when it wasn’t.' },
   ],
 
@@ -298,7 +298,7 @@ export default {
     return [
       // case
       { what: 'List size', value: N, shown: 6000 },
-      { what: 'Subscribers', value: SIZES[0], shown: 520 },
+      { what: 'Repeat customers', value: SIZES[0], shown: 520 },
       { what: 'Other shop customers', value: SIZES[1], shown: 1000 },
       { what: 'Workshop participants', value: SIZES[2], shown: 150 },
       { what: 'Newsletter only', value: SIZES[3], shown: 4330 },
@@ -312,24 +312,24 @@ export default {
       { what: 'B04 response rate (%)', value: RR * 100, shown: 30 },
       { what: '601 ÷ 0.3', value: nPlan / RR, shown: 2003.3, tol: 0.05 },
       { what: 'Invitations = ceiling', value: Math.ceil(nPlan / RR - 1e-9), shown: 2004 },
-      { what: 'Raw subscribers', value: RAW[0], shown: 173.68 },
+      { what: 'Raw repeat customers', value: RAW[0], shown: 173.68 },
       { what: 'Raw shop', value: RAW[1], shown: 334.00 },
       { what: 'Raw workshop', value: RAW[2], shown: 50.10 },
       { what: 'Raw newsletter', value: RAW[3], shown: 1446.22 },
       { what: 'Floors sum', value: RAW.map(Math.floor).reduce((a, b) => a + b, 0), shown: 2003 },
-      { what: 'Subscribers remainder .68', value: RAW[0] - Math.floor(RAW[0]), shown: 0.68, tol: 0.005 },
+      { what: 'Repeat customers remainder .68', value: RAW[0] - Math.floor(RAW[0]), shown: 0.68, tol: 0.005 },
       { what: 'Systematic: every 3rd of 6,000', value: N / 3, shown: 2000 },
-      { what: 'Expected completes subscribers', value: EXP[0], shown: 52.2, tol: 0.05 },
+      { what: 'Expected completes repeat customers', value: EXP[0], shown: 52.2, tol: 0.05 },
       { what: 'Expected completes shop', value: EXP[1], shown: 100.2, tol: 0.05 },
       { what: 'Expected completes workshop', value: EXP[2], shown: 15 },
       { what: 'Expected completes newsletter', value: EXP[3], shown: 433.8, tol: 0.05 },
       { what: 'Expected completes total', value: EXP.reduce((a, b) => a + b, 0), shown: 601, tol: 0.5 },
-      { what: 'Margin subscribers (fpc)', value: moeF(EXP[0], SIZES[0]) * 100, shown: 12.9, tol: 0.05 },
+      { what: 'Margin repeat customers (fpc)', value: moeF(EXP[0], SIZES[0]) * 100, shown: 12.9, tol: 0.05 },
       { what: 'Margin shop (fpc)', value: moeF(EXP[1], SIZES[1]) * 100, shown: 9.3, tol: 0.05 },
       { what: 'Margin workshop (fpc)', value: moeF(EXP[2], SIZES[2]) * 100, shown: 24.1, tol: 0.05 },
       { what: 'Margin newsletter (fpc)', value: moeF(EXP[3], SIZES[3]) * 100, shown: 4.5, tol: 0.05 },
       { what: 'Workshop margin about ±24', value: moeF(EXP[2], SIZES[2]) * 100, shown: 24, tol: 0.5 },
-      { what: 'Subscribers margin about ±13', value: moeF(EXP[0], SIZES[0]) * 100, shown: 13, tol: 0.5 },
+      { what: 'Repeat customers margin about ±13', value: moeF(EXP[0], SIZES[0]) * 100, shown: 13, tol: 0.5 },
       { what: 'Shop margin about ±9', value: moeF(EXP[1], SIZES[1]) * 100, shown: 9, tol: 0.5 },
       { what: 'n0 for ±10', value: Math.ceil(n0_10), shown: 97 },
       { what: 'Workshop completes for ±10 with fpc', value: Math.ceil(nF(n0_10, SIZES[2])), shown: 59 },

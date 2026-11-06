@@ -2,8 +2,8 @@
 // tables (CSV, or the sheets of an .xlsx read in the browser) to the engine's fields, unit detection, project save
 // and reload as JSON, CSV tables, and an Excel workbook of the model with live formulas. Pure functions; no DOM.
 // Everything runs in the browser: no file leaves the visitor's device.
-import { FIELDS, FIELD, fin } from './valuation.js?v=26';
-import { parseNumber } from './csv.js?v=26';
+import { FIELDS, FIELD, fin } from './valuation.js?v=27';
+import { parseNumber } from './csv.js?v=27';
 
 // ================================================================ label matching
 // Patterns are tested against a lower-cased label with punctuation collapsed. Order matters: the first match wins,

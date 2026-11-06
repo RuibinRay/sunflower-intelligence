@@ -1,8 +1,8 @@
 // insights-and-reporting.ex.js — M04 · Insights and reporting: widgets, practice and the knowledge check (answer keys live
 // here). Lantern's figures come from case.js (the survey, focus groups, price audit and sizing); the bookshop, bakery
 // chain, bus company and catering example are fictional. Every num item's `check` recomputes its answer.
-import { RESPONDENTS, STRATA, PRICE_AUDIT, DEFAULT_PLAN, COLD_BREW_SIZING, CLIENT_INTERVIEWS, DERIVED as D } from './case.js?v=26';
-import { normInv } from '../../../core/inference.js?v=26';
+import { RESPONDENTS, STRATA, PRICE_AUDIT, DEFAULT_PLAN, COLD_BREW_SIZING, CLIENT_INTERVIEWS, DERIVED as D } from './case.js?v=27';
+import { normInv } from '../../../core/inference.js?v=27';
 
 const R = RESPONDENTS, N = R.length, Z = normInv(0.975);
 const byS = STRATA.map((_, h) => R.filter((r) => r.stratum === h));
@@ -52,7 +52,7 @@ export const widgets = {
   },
   'ir-chart': {
     type: 'chart', kind: 'bar', title: 'Lantern Cold Brew: share in the top two boxes, February 2027',
-    x: { label: 'Segment (base)', values: [`Subscribers (${nS[0]})`, `Other shop customers (${nS[1]})`, `Newsletter only (${nS[3]})`, `All, weighted (${N})`] },
+    x: { label: 'Segment (base)', values: [`Repeat customers (${nS[0]})`, `Other shop customers (${nS[1]})`, `Newsletter only (${nS[3]})`, `All, weighted (${N})`] },
     series: [{ name: 'Definitely or probably would buy (%)', values: [share[0], share[1], share[3], WT].map((p) => Math.round(p * 1000) / 10) }],
     y: { label: 'Share in the top two boxes (%)', format: 'pct' },
     note: `Bases in brackets; segment figures unweighted, the last weighted to the list’s segment sizes (unweighted base ${N}). Workshop participants (base ${nS[2]}) aren’t shown separately: base below 30. Margins of error: about ±${(Z * Math.sqrt(share[0] * (1 - share[0]) / nS[0]) * 100).toFixed(0)}, ±${(Z * Math.sqrt(share[1] * (1 - share[1]) / nS[1]) * 100).toFixed(0)}, ±${(Z * Math.sqrt(share[3] * (1 - share[3]) / nS[3]) * 100).toFixed(0)} and ±${(WM * 100).toFixed(0)} points.`,
@@ -69,7 +69,7 @@ export const guided = [
       'Ready-to-drink buyers who don’t know Lantern judge Cold Brew as one more can, so price and the chance to try it decide whether they buy.',
       `At ${money(PRICE)}, Cold Brew would cost ${money(PRICE - brandAvg[1])} more than Daily Grind RTD’s average shelf price.`,
       'Give free cans to shoppers in natural grocers during the first month, and count how many buy again.',
-      'Subscribers expect Cold Brew to taste like the coffee they already trust, which is why their intent is so much higher than other groups’.',
+      'Repeat customers expect Cold Brew to taste like the coffee they already trust, which is why their intent is so much higher than other groups’.',
       'List Cold Brew in the remaining supermarkets only if the test stores without free cans average 10 cans a store a week.',
     ],
     categories: ['Finding', 'Insight', 'Recommendation'],
@@ -80,7 +80,7 @@ export const guided = [
       4: 'It explains the gap between segments rather than stating it, which makes it an insight; the focus-group quotations support it.',
       5: 'An action with a condition set in advance: a recommendation with its decision rule.',
     },
-    solution: 'Findings: the weighted intent and the price gap. Insights: why strangers hesitate (price and trial) and why subscribers are keen (taste they trust). Recommendations: the sampling with its measure, and the supermarket listing with its decision rule.',
+    solution: 'Findings: the weighted intent and the price gap. Insights: why strangers hesitate (price and trial) and why repeat customers are keen (taste they trust). Recommendations: the sampling with its measure, and the supermarket listing with its decision rule.',
   },
   {
     id: 'm04-ir-g2', type: 'steps', kind: 'applied',
@@ -90,7 +90,7 @@ export const guided = [
       {
         id: 'm04-ir-g2-s1', type: 'mc',
         prompt: 'Which two sources bear most directly on whether people who don’t know Lantern hesitate at $3.49?',
-        options: ['Group B of the focus groups and the March shelf-price audit', 'The survey’s subscribers and the subscribers’ focus group (group A)', 'The catering client interviews and the bottom-up sizing', 'The survey’s Net Promoter Score and the shelf-price audit'],
+        options: ['Group B of the focus groups and the March shelf-price audit', 'The survey’s repeat customers and the subscribers’ focus group (group A)', 'The catering client interviews and the bottom-up sizing', 'The survey’s Net Promoter Score and the shelf-price audit'],
         answer: 0,
         feedback: {
           1: 'Both describe people who know Lantern well, so they share the same blind spot.',
@@ -113,11 +113,11 @@ export const guided = [
       {
         id: 'm04-ir-g2-s3', type: 'mc',
         prompt: 'What does the combined evidence support?',
-        options: ['Intent depends on knowing Lantern, so winning trial among strangers is the risk', 'With 38% of the list ready to buy, the goal of 100,000 cans is safe', 'Price doesn’t matter, since subscribers would pay more than for big brands', 'One buyer in five cares about price, since 4 of the 20 quotations were about it'],
+        options: ['Intent depends on knowing Lantern, so winning trial among strangers is the risk', 'With 38% of the list ready to buy, the goal of 100,000 cans is safe', 'Price doesn’t matter, since repeat customers would pay more than for big brands', 'One buyer in five cares about price, since 4 of the 20 quotations were about it'],
         answer: 0,
         feedback: {
           1: 'The 38% is stated intent from Lantern’s own list; the bottom-up estimate, about 48,000 cans, is about half the goal.',
-          2: 'Subscribers would, but the people the launch must win in supermarkets aren’t subscribers.',
+          2: 'Repeat customers might, but the people the launch must win in supermarkets aren’t Lantern’s repeat customers.',
           3: 'Quotations illustrate themes from 15 recruited people; their counts aren’t shares of any population.',
         },
         hints: ['Look for where the sources agree.', 'Qualitative counts aren’t shares; stated intent isn’t volume.'],
@@ -145,14 +145,14 @@ export const guided = [
   {
     id: 'm04-ir-g4', type: 'fill', kind: 'conceptual',
     prompt: 'Choose the words Ana’s report should use.',
-    text: `Subscribers’ top-two-box share (${pct(share[0])}, base ${nS[0]}) and other shop customers’ (${pct(share[1])}, base ${nS[1]}) differ by ${(SUBSHOP.d * 100).toFixed(1)} points, with a 95% interval for the gap of ${pts(SUBSHOP.low)} to ${pts(SUBSHOP.high)} points, so the two segments [[0]]. Subscribers’ share is higher than newsletter-only contacts’ by between ${(SUBNEWS.low * 100).toFixed(1)} and ${(SUBNEWS.high * 100).toFixed(1)} points, so subscribers are [[1]]. The weighted top-two share is ${pct(WT)} with a margin of about ±${(WM * 100).toFixed(1)} points, so the report should give it as [[2]] of the list.`,
+    text: `Repeat customers’ top-two-box share (${pct(share[0])}, base ${nS[0]}) and other shop customers’ (${pct(share[1])}, base ${nS[1]}) differ by ${(SUBSHOP.d * 100).toFixed(1)} points, with a 95% interval for the gap of ${pts(SUBSHOP.low)} to ${pts(SUBSHOP.high)} points, so the two segments [[0]]. Repeat customers’ share is higher than newsletter-only contacts’ by between ${(SUBNEWS.low * 100).toFixed(1)} and ${(SUBNEWS.high * 100).toFixed(1)} points, so repeat customers are [[1]]. The weighted top-two share is ${pct(WT)} with a margin of about ±${(WM * 100).toFixed(1)} points, so the report should give it as [[2]] of the list.`,
     blanks: [
       { options: ['are the same', 'differ significantly', 'can’t be told apart on these bases', 'differ by exactly 6.5 points'], answer: 2 },
       { options: ['possibly keener', 'clearly keener', 'no keener', 'as keen'], answer: 1 },
       { options: ['exactly 38.2%', 'between 38% and 39%', 'at least 42%', 'between about 34% and 43%'], answer: 3 },
     ],
     hints: ['If the interval includes zero, the data can’t say which is higher.', 'A margin of ±4.4 points turns 38.2% into a range.'],
-    solution: `The first interval includes zero and is wide, so the segments can’t be told apart (not “the same”). The second lies wholly above zero, so subscribers are clearly keener. The weighted share is best given as a range, about ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%, with the base and the weighting in a note.`,
+    solution: `The first interval includes zero and is wide, so the segments can’t be told apart (not “the same”). The second lies wholly above zero, so repeat customers are clearly keener. The weighted share is best given as a range, about ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%, with the base and the weighting in a note.`,
   },
 ];
 
@@ -220,7 +220,7 @@ export const independent = [
       'States the decision rule or the test that will settle what the research can’t.',
       'Keeps findings and interpretation distinguishable, and identifies no respondent.',
     ],
-    model: `Recommendation: launch Cold Brew in stages. Weighted to Lantern’s mailing list, ${pct(WT)} say they would definitely or probably buy (about ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%; 516 completes), and subscribers are clearly keener than newsletter-only contacts (${Math.round(share[0] * 100)}% against ${Math.round(share[3] * 100)}%). In our focus group, ready-to-drink buyers who don’t know Lantern compared $3.49 with cans costing about a dollar less and wanted to try first. Our bottom-up estimate is about 48,000 cans in year one, half the goal, which this plan can’t reach. We launch in our own channel and natural grocers, planning on about 33,000 cans, aim free cans at strangers, and test a few supermarkets: we list in the rest only if test stores without free cans average 10 cans a week. These are our own customers’ stated intentions, not sales.`,
+    model: `Recommendation: launch Cold Brew in stages. Weighted to Lantern’s mailing list, ${pct(WT)} say they would definitely or probably buy (about ${Math.round((WT - WM) * 100)}% to ${Math.round((WT + WM) * 100)}%; 516 completes), and repeat customers are clearly keener than newsletter-only contacts (${Math.round(share[0] * 100)}% against ${Math.round(share[3] * 100)}%). In our focus group, ready-to-drink buyers who don’t know Lantern compared $3.49 with cans costing about a dollar less and wanted to try first. Our bottom-up estimate is about 48,000 cans in year one, half the goal, which this plan can’t reach. We launch in our own channel and natural grocers, planning on about 33,000 cans, aim free cans at strangers, and test a few supermarkets: we list in the rest only if test stores without free cans average 10 cans a week. These are our own customers’ stated intentions, not sales.`,
     solution: 'Compare your summary with the model and the rubric. The model leads with the recommendation, gives each figure with its base and range, explains the gap with the focus groups and the audit, states the limits and the decision rule, and names no one.',
   },
   {
@@ -228,7 +228,7 @@ export const independent = [
     prompt: 'Where in Ana’s report does each item belong?',
     items: [
       `${N} completes from ${D.survey.allocation.reduce((a, b) => a + b, 0).toLocaleString('en-US')} invitations (AAPOR RR1, ${(D.survey.rr.RR1 * 100).toFixed(1)}%), web questionnaire, 2–16 February 2027.`,
-      `Subscribers’ top-two-box share was ${pct(share[0])}, against ${pct(share[3])} for newsletter-only contacts.`,
+      `Repeat customers’ top-two-box share was ${pct(share[0])}, against ${pct(share[3])} for newsletter-only contacts.`,
       'The mailing list covers Lantern’s own contacts, not the city’s ready-to-drink coffee buyers.',
       'Every cross-tab with its bases, and the code frame for the open answers.',
       'Launch through Lantern’s own channel and natural grocers; test supermarkets first.',
@@ -282,15 +282,15 @@ export const check = [
     options: [
       `Weighted, ${pct(WT)} of Lantern’s list say they would definitely or probably buy.`,
       `${pct(WT)} of Harbour City’s coffee drinkers will buy Cold Brew in its first three months.`,
-      'Subscribers are clearly keener on Cold Brew than newsletter-only contacts.',
-      'Becoming a Lantern subscriber makes people keener on Lantern’s new Cold Brew.',
+      'Repeat customers are clearly keener on Cold Brew than newsletter-only contacts.',
+      'Ordering from Lantern again makes people keener on Lantern’s new Cold Brew.',
       'A ready-to-drink buyer in the focus groups compared $3.49 with their usual, cheaper can.',
       '20% of ready-to-drink buyers worry about price, as 4 of 20 quotations were about it.',
     ],
     answer: [0, 2, 4],
     feedback: {
       1: 'Two over-claims: the list isn’t the city’s coffee drinkers, and stated intent isn’t buying.',
-      3: 'The survey shows an association; loyal customers choose to subscribe, so loyalty may explain both.',
+      3: 'The survey shows an association; loyal customers choose to order again, so loyalty may explain both.',
       5: 'Quotations illustrate themes; their counts aren’t shares of any population.',
     },
     solution: 'Supported: the weighted finding with its population (the list), the clear gap between segments (interval 19 to 42 points), and a description of what one focus-group participant said. Not supported: projecting intent onto the city as purchases, a causal reading of the association, and treating quotation counts as shares.',
@@ -316,7 +316,7 @@ export const check = [
     id: 'm04-ir-k5', type: 'classify', kind: 'conceptual',
     prompt: 'Which kind of evidence answers each question about Lantern Cold Brew best?',
     items: [
-      'Does intent differ between subscribers and newsletter-only contacts by more than chance?',
+      'Does intent differ between repeat customers and newsletter-only contacts by more than chance?',
       'Why do ready-to-drink buyers who don’t know Lantern hesitate at $3.49?',
       'Does handing out free cans cause more people to buy again?',
       'How many cans does each supermarket actually sell a week after launch?',
