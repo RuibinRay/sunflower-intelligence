@@ -72,11 +72,12 @@ const wfMM = CF.mm({ Vu: WF.Vu, D: WF.D, rU: 0.10, rD: 0.05, tax: WF.tax });
 const MP = { shares: 10_000_000, price: 20, cash: 20_000_000, earnings: 15_000_000, interest: 600_000 };
 const mpPay = CF.payout({ shares: MP.shares, price: MP.price, amount: MP.cash, earnings: MP.earnings, lostIncome: MP.interest });
 const mpPE0 = MP.price / mpPay.epsBefore, mpPE1 = mpPay.buyback.priceAfter / mpPay.buyback.eps;
-claim(Math.abs(mpPay.buyback.priceAfter - MP.price) < 1e-9 && mpPay.buyback.eps > mpPay.epsBefore && mpPE1 < mpPE0, 'the price is unchanged, EPS rises and the P/E falls');
+claim(Math.abs(mpPay.buyback.sharesBought / MP.shares - 0.1) < 1e-12 && Math.abs(mpPay.buyback.priceAfter - MP.price) < 1e-9 && mpPay.buyback.eps > mpPay.epsBefore && mpPE1 < mpPE0, 'the price is unchanged, EPS rises and the P/E falls');
 
 // dg-12 Treloweth Tiles: the sustainable growth rate
 const TT = { ni: 360_000, div: 90_000, equity: 2_400_000 };
 const ttRoe = TT.ni / TT.equity, ttB = 1 - TT.div / TT.ni, ttSgr = CF.sustainableGrowth(ttRoe, ttB);
+claim(Math.abs(ttB - 0.75) < 1e-12, 'Treloweth retains three-quarters of its profit');
 
 export const items = [
   // ================================================================ Module 1: Investment decisions
@@ -125,8 +126,8 @@ export const items = [
     unit: '$', places: 0, tol: 1,
     wrong: [
       { value: rnd(tdFcf0 - TD.study, 0), say: 'That includes the market study. It was paid last year and can’t be recovered whatever the dairy decides, so it is a sunk cost and stays out.' },
-      { value: rnd(tdFcf0 + TD.tax * (TD.oldPrice - TD.oldBook), 0), say: 'That takes the old filler’s full sale price. It sells for more than its tax book value, so the gain is taxed: it brings in 8,000 − 0.25 × 5,000.' },
-      { value: rnd(tdFcf0 - TD.tax * TD.training, 0), say: 'That counts the training at its full cost. It is deductible, so with tax at 25% it costs 5,000 × 0.75 after tax.' },
+      { value: rnd(tdFcf0 + TD.tax * (TD.oldPrice - TD.oldBook), 0), say: `That takes the old filler’s full sale price. It sells for more than its tax book value, so the gain is taxed: it brings in ${fx(TD.oldPrice)} − 0.25 × ${fx(TD.oldPrice - TD.oldBook)}.` },
+      { value: rnd(tdFcf0 - TD.tax * TD.training, 0), say: `That counts the training at its full cost. It is deductible, so with tax at ${pc(TD.tax, 0)} it costs ${fx(TD.training)} × 0.75 after tax.` },
       { value: rnd(tdFcf0 - TD.payables, 0), say: 'That counts the whole rise in inventory as tied-up cash. Suppliers finance part of it: the increase in working capital is inventory less payables.' },
     ],
     solution: `Equipment: −${fx(TD.equipment)}. Old filler: ${fx(TD.oldPrice)} − 0.25 × (${fx(TD.oldPrice)} − ${fx(TD.oldBook)}) = +${fx(tdOld, 0)}. Working capital: −(${fx(TD.inventory)} − ${fx(TD.payables)}) = −${fx(TD.inventory - TD.payables)}. Training after tax: −${fx(TD.training)} × 0.75 = −${fx(TD.training * 0.75)}. The study is sunk. Year-0 FCF = ${money(tdFcf0)}.`,
@@ -179,7 +180,7 @@ export const items = [
     wrong: [
       { value: rnd(fbBE.accounting, 0), say: 'That is the accounting break-even (EBIT = 0), which only recovers the van’s cost, not the 12% return on the money tied up in it.' },
       { value: rnd(fbBE.cash, 0), say: 'That is the cash break-even, which covers only the fixed cash costs. The NPV break-even must also earn back the van with a 12% return.' },
-      { value: rnd((FB.fixed + CF.eaa(FB.capex, FB.r, FB.n)) / (FB.price - FB.unitCost), 0), say: 'That ignores tax. Operating profit is taxed at 25%, and depreciation saves tax of 0.25 × $10,000 a year: OCF = (Q × 15 − 30,000 − 10,000) × 0.75 + 10,000.' },
+      { value: rnd((FB.fixed + CF.eaa(FB.capex, FB.r, FB.n)) / (FB.price - FB.unitCost), 0), say: `That ignores tax. Operating profit is taxed at ${pc(FB.tax, 0)}, and depreciation saves tax of 0.25 × ${money(FB.dep)} a year: OCF = (Q × ${FB.price - FB.unitCost} − ${fx(FB.fixed)} − ${fx(FB.dep)}) × 0.75 + ${fx(FB.dep)}.` },
     ],
     solution: `The van’s equivalent annual cost at ${pc(FB.r, 0)} over ${FB.n} years is ${fx(FB.capex)} ÷ ${fx((1 - 1.12 ** -4) / 0.12, 4)} ≈ ${money(CF.eaa(FB.capex, FB.r, FB.n), 2)}: the operating cash flow needed each year for NPV = 0. OCF = (Q × ${FB.price - FB.unitCost} − ${fx(FB.fixed)} − ${fx(FB.dep)}) × 0.75 + ${fx(FB.dep)}. Setting it equal: Q = [${fx(FB.fixed)} + (${fx(CF.eaa(FB.capex, FB.r, FB.n), 2)} − 0.25 × ${fx(FB.dep)}) ÷ 0.75] ÷ ${FB.price - FB.unitCost} ≈ ${fx(fbBE.financial, 1)}, about ${fx(fbBE.financial)} boxes a year, against an accounting break-even of ${fx(fbBE.accounting)} and a cash break-even of ${fx(fbBE.cash)}.`,
   },
