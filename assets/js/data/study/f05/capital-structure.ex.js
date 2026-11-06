@@ -77,7 +77,7 @@ export const widgets = {
         note: v.sev > 0 && t > 0 ? `At the best debt level one more dollar of debt adds ${pct(t, 0)} of tax shield and the same amount of expected distress cost. More severe distress costs, as for a firm whose value is in brands or research, move the best level down; a firm with saleable, tangible assets can borrow more.`
           : 'With one of the two forces switched off there is no balance to strike.',
         chart: { kind: 'line', x: { label: 'Debt ($)', values: xs },
-          series: [{ name: 'Firm value', values: xs.map((D) => Math.round(val(D))) }, { name: 'V_U + PV of tax shields', values: xs.map((D) => Math.round(VU + t * D)) }],
+          series: [{ name: 'Firm value', values: xs.map((D) => Math.round(val(D))) }, { name: 'No distress costs', values: xs.map((D) => Math.round(VU + t * D)) }],
           y: { label: 'Value ($)' } },
       };
     },

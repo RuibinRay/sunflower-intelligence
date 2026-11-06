@@ -33,7 +33,7 @@ export const widgets = {
         ],
         note: v.cash === 0 ? 'No payout: nothing changes.'
           : `Shareholders are equally wealthy either way. ${p.buyback.eps > p.epsBefore + 1e-9 ? `The buyback raises EPS because the cash earned ${v.ret}% after tax, less than the 15% earnings yield of the shares bought; the P/E falls to match, and the price stays at $40.` : p.buyback.eps < p.epsBefore - 1e-9 ? 'The cash earned more than the shares’ 15% earnings yield, so buying shares with it lowers EPS, and still the price stays at $40.' : 'The cash earned exactly the shares’ 15% earnings yield, so the buyback leaves EPS unchanged.'}`,
-        chart: { kind: 'bar', x: { label: 'Earnings per share', values: ['Before', 'After the dividend', 'After the buyback'] }, series: [{ name: 'EPS ($)', values: [p.epsBefore, p.dividend.eps, p.buyback.eps].map(r3) }], y: { label: 'EPS ($)' } },
+        chart: { kind: 'bar', x: { label: 'Earnings per share', values: ['Before', 'Dividend', 'Buyback'] }, series: [{ name: 'EPS ($)', values: [p.epsBefore, p.dividend.eps, p.buyback.eps].map(r3) }], y: { label: 'EPS ($)' } },
       };
     },
   },

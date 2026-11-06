@@ -60,7 +60,7 @@ export default {
     'Compare debt and equity as claims on a business: priority, control, taxes, covenants and flexibility.',
     'Calculate how financial leverage changes earnings per share and return on equity, and find the EBIT at which two financing plans give the same EPS.',
     'Apply Modigliani and Miller’s propositions without taxes, and explain the homemade-leverage argument behind them.',
-    'Calculate the present value of the interest tax shield, the levered firm’s value V_L = V_U + T·D, and the cost of equity with corporate tax.',
+    'Calculate the present value of the interest tax shield, the levered firm’s value <m>V_L = V_U + T D</m>, and the cost of equity with corporate tax.',
     'Explain the costs of financial distress, the trade-off and pecking-order theories, and the agency costs of debt and equity, and evaluate them against survey evidence.',
   ],
   prerequisites: [
@@ -130,7 +130,7 @@ export default {
     { p: 'The payoffs are identical in every state of the economy, so the two positions must cost the same. If levered shares sold for more, investors would make their own leverage with unlevered shares instead and nobody would pay the premium; if they sold for less, investors would buy them and “unlever” by lending. Any capital structure a firm can choose, an investor can copy or undo at no cost, so a firm cannot create value by choosing one.' },
     { p: String.raw`<b>Proposition II.</b> The cost of equity rises with leverage. Let <m>r_U</m> be the return investors require on the assets (the cost of capital of the unlevered firm), <m>r_D</m> the cost of debt and <m>D/E</m> the debt-to-equity ratio at market values. Then <m>r_E = r_U + (r_U - r_D)\,D/E</m>. For Brookvale, <m>r_U = 240{,}000 \div 2{,}000{,}000 = 12\%</m>, and after the recapitalisation <m>D/E = 800{,}000 \div 1{,}200{,}000 = 0.667</m>, so <m>r_E = 12\% + (12\% - 8\%) \times 0.667 = ${(mm0.rE * 100).toFixed(2)}\%</m>, the expected return on equity in the table. The weighted-average cost of capital (WACC) is unchanged: <m>0.6 \times ${(mm0.rE * 100).toFixed(2)}\% + 0.4 \times 8\% = ${(mm0.wacc * 100).toFixed(0)}\%</m>. Cheap debt is offset, exactly, by dearer equity.` },
     { figure: {
-      svg: `<svg viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg" font-size="15" fill="currentColor">
+      svg: `<svg viewBox="0 0 440 300" xmlns="http://www.w3.org/2000/svg" font-size="16" fill="currentColor">
   <line x1="60" y1="250" x2="420" y2="250" stroke="var(--rule-strong)" stroke-width="1.5"/>
   <line x1="60" y1="250" x2="60" y2="30" stroke="var(--rule-strong)" stroke-width="1.5"/>
   <text x="240" y="285" text-anchor="middle">Debt to equity, D/E</text>
@@ -138,14 +138,14 @@ export default {
   <line x1="60" y1="130" x2="400" y2="50" stroke="var(--series-1)" stroke-width="3"/>
   <line x1="60" y1="130" x2="400" y2="130" stroke="var(--series-3)" stroke-width="3" stroke-dasharray="8 5"/>
   <line x1="60" y1="190" x2="400" y2="190" stroke="var(--series-2)" stroke-width="3"/>
-  <text x="54" y="135" text-anchor="end">r_U</text>
-  <text x="54" y="195" text-anchor="end">r_D</text>
-  <text x="300" y="60" text-anchor="middle">r_E</text>
+  <text x="54" y="135" text-anchor="end">r<tspan dy="4" font-size="14">U</tspan></text>
+  <text x="54" y="195" text-anchor="end">r<tspan dy="4" font-size="14">D</tspan></text>
+  <text x="300" y="60" text-anchor="middle">r<tspan dy="4" font-size="14">E</tspan></text>
   <text x="300" y="118" text-anchor="middle">WACC</text>
-  <text x="300" y="214" text-anchor="middle">r_D</text>
+  <text x="300" y="214" text-anchor="middle">r<tspan dy="4" font-size="14">D</tspan></text>
 </svg>`,
-      caption: 'Proposition II without taxes: the cost of equity rises in a straight line with D/E, the cost of debt stays put (while debt is safe), and the WACC stays at r_U.',
-      alt: 'A chart with debt to equity on the horizontal axis and required return on the vertical axis. A horizontal line at r_D near the bottom is the cost of debt. A dashed horizontal line higher up at r_U is the WACC. A line labelled r_E starts at r_U when debt to equity is zero and rises steadily to the right, above the WACC line.',
+      caption: 'Proposition II without taxes: the cost of equity rises in a straight line with D/E, the cost of debt stays put (while debt is safe), and the WACC stays at <m>r_U</m>.',
+      alt: 'A chart with debt to equity on the horizontal axis and required return on the vertical axis. A horizontal line near the bottom is the cost of debt. A dashed horizontal line higher up, starting at the unlevered cost of capital, is the WACC. A line for the cost of equity starts at the unlevered cost of capital when debt to equity is zero and rises steadily to the right, above the WACC line.',
     } },
     { p: 'Proposition II is why “debt is cheaper” is not an argument for borrowing. The owners of levered Brookvale are not wrong to want 14.67% rather than 12%: their shares now carry all of the assets’ risk on a smaller base of equity. Module 3’s relevered beta says the same thing in CAPM’s language.' },
     { callout: 'note', title: 'Why a theory that “doesn’t hold” matters', html: 'No real market is perfect, so no one believes Proposition I literally. Its value is as a checklist: if capital structure does change value, it must be through something the propositions assume away, such as taxes, the costs of financial distress, information that managers have and investors don’t, or the incentives debt creates. The rest of the lesson takes those in turn.' },
@@ -166,7 +166,7 @@ export default {
     { math: String.raw`V_L = V_U + \text{PV(tax shields)} - \text{PV(costs of financial distress)}` },
     { p: String.raw`and the best capital structure is the debt level at which one more dollar adds as much expected distress cost as tax saving. The table uses a stylised assumption for Brookvale with tax: the present value of distress costs is <m>0.5 \times D^2 \div V_U</m>, small for a little debt and rising steeply. The widget below lets you change it.` },
     { table: {
-      caption: 'Brookvale Bakeries (fictional): value against debt under a stylised trade-off, V_U = $1,500,000, tax 25%',
+      caption: 'Brookvale Bakeries (fictional): value against debt under a stylised trade-off, unlevered value $1,500,000, tax 25%',
       head: ['Debt ($)', 'PV of tax shields ($)', 'PV of distress costs ($)', 'Firm value ($)'],
       align: ['r', 'r', 'r', 'r'],
       rows: grid.map((D) => [fmt(D), fmt(T * D), fmt(dist(D)), fmt(valueAt(D))]),
@@ -206,7 +206,7 @@ export default {
     { id: 'cap-mm2', name: 'Modigliani–Miller Proposition II: the cost of equity',
       tex: String.raw`r_E = r_U + (r_U - r_D)(1 - T)\dfrac{D}{E}`,
       where: [[String.raw`r_E`, 'Cost of equity of the levered firm', '%'], [String.raw`r_U`, 'Cost of capital of the unlevered firm (the assets’ required return)', '%'], [String.raw`r_D`, 'Cost of debt', '%'], [String.raw`T`, 'Corporate tax rate; set T = 0 for the case without taxes', ''], [String.raw`D/E`, 'Debt to equity at market values', '']],
-      note: 'Without taxes the WACC stays at r_U; with tax it falls as D/E rises. Module 3’s relevered beta is the same relationship in CAPM terms.' },
+      note: 'Without taxes the WACC stays at <m>r_U</m>; with tax it falls as D/E rises. Module 3’s relevered beta is the same relationship in CAPM terms.' },
     { id: 'cap-tax-shield', name: 'Interest tax shield and its present value',
       tex: String.raw`\text{Tax shield} = T \times r_D \times D \text{ a year}, \qquad \text{PV} = \dfrac{T r_D D}{r_D} = T D`,
       where: [[String.raw`T`, 'Corporate tax rate', ''], [String.raw`r_D`, 'Interest rate on the debt, also the discount rate for the shields', '%'], [String.raw`D`, 'Permanent debt', '$']],
@@ -256,7 +256,7 @@ export default {
 
   demo: [
     { widget: 'cap-eps', intro: 'Brookvale’s two plans, with shares bought back at $20. Move EBIT across $160,000 and watch the lines cross. Add tax: both EPS lines fall by the same proportion, so the crossing point does not move. Raise the interest rate and the crossing moves right.' },
-    { widget: 'cap-mm', intro: 'Brookvale as Modigliani and Miller see it: the assets’ beta of 0.8 gives r_U = 12% with an 8% risk-free rate and a 5% market risk premium, and debt costs the risk-free rate. With tax set to None, the WACC stays at 12% at every debt share (Proposition I) while the cost of equity climbs (Proposition II). Switch tax to 25%: the WACC falls as debt rises and the firm value line shows V_L = V_U + T·D. At 25% debt you should see the worked example’s 13% and 11.25%.' },
+    { widget: 'cap-mm', intro: 'Brookvale as Modigliani and Miller see it: the assets’ beta of 0.8 gives <m>r_U = 12\\%</m> with an 8% risk-free rate and a 5% market risk premium, and debt costs the risk-free rate. With tax set to None, the WACC stays at 12% at every debt share (Proposition I) while the cost of equity climbs (Proposition II). Switch tax to 25%: the WACC falls as debt rises and the firm value line shows V_L = V_U + T·D. At 25% debt you should see the worked example’s 13% and 11.25%.' },
     { widget: 'cap-tradeoff', intro: 'The stylised trade-off. Find the debt that maximises value at the defaults ($375,000), then make distress costs more severe (a business whose value would vanish in distress) or less severe (one with saleable, tangible assets) and watch the best debt level move. Set the tax rate to zero: with no tax shield, any debt only adds distress cost.' },
   ],
 
@@ -277,8 +277,8 @@ export default {
   summary: [
     'Capital structure is the mix of debt and equity. Debt has a fixed, prior claim, tax-deductible interest and covenants; equity has the residual claim and control.',
     'Leverage raises expected EPS and ROE when the assets earn more than the interest rate, and widens their swings. Brookvale’s plans tie at EBIT of $160,000.',
-    'Modigliani–Miller without taxes: firm value and the WACC do not depend on capital structure (homemade leverage); the cost of equity rises with D/E: r_E = r_U + (r_U − r_D)D/E.',
-    'With corporate tax and permanent debt, V_L = V_U + T·D and r_E = r_U + (r_U − r_D)(1 − T)D/E; the WACC falls as debt rises. Brookvale: $1,600,000, 13% and 11.25%.',
+    'Modigliani–Miller without taxes: firm value and the WACC do not depend on capital structure (homemade leverage); the cost of equity rises with D/E: <m>r_E = r_U + (r_U - r_D)D/E</m>.',
+    'With corporate tax and permanent debt, <m>V_L = V_U + TD</m> and <m>r_E = r_U + (r_U - r_D)(1 - T)D/E</m>; the WACC falls as debt rises. Brookvale: $1,600,000, 13% and 11.25%.',
     'The costs of financial distress, direct and indirect, including risk shifting and debt overhang, offset the tax shield: the trade-off theory gives a target debt level.',
     'The pecking order: with asymmetric information, firms use internal funds, then debt, then equity as a last resort, and have no target ratio.',
     'Debt disciplines managers but creates conflicts with lenders, which covenants control. Surveyed CFOs put financial flexibility and credit ratings first.',

@@ -210,7 +210,7 @@ export default {
     'The timetable: declaration, ex-dividend (now usually the record date in the US), record and payment. The price falls by about the dividend on the ex-dividend date.',
     'In a perfect market a dividend and a fair-price buyback of the same cash leave shareholders equally wealthy (Marisco: $40 a share either way). A buyback raises EPS but the P/E falls: no value is created.',
     'In practice: dividends are taxed in full when paid, buybacks only on sellers’ gains; dividend changes signal; clienteles form; payouts limit managers’ free cash; buybacks are more flexible.',
-    'Managers smooth dividends and avoid cuts (94% in the Brav survey); D_t = D_{t−1} + a(pE_t − D_{t−1}) captures it. Buybacks absorb the variable part.',
+    'Managers smooth dividends and avoid cuts (94% in the Brav survey); <m>D_t = D_{t-1} + a(pE_t - D_{t-1})</m> captures it. Buybacks absorb the variable part.',
     'Payouts are limited by corporate law (Delaware: surplus or recent net profits) and by loan covenants.',
   ],
 
