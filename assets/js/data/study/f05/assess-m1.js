@@ -23,9 +23,9 @@ export const items = [
     prompt: 'The argument that every owner of a firm wants it to accept all positive-NPV projects, whatever their own preference for spending now or later, depends on an assumption. In which situation is the argument weakest?',
     options: [
       'The firm is large and its shares trade every day on a stock exchange',
-      'The owners can lend at a bank deposit rate but could borrow only at a much higher rate',
+      'The owners can lend cheaply but can borrow only at a much higher rate',
       'The project’s cash flows are spread over many years',
-      'The owners disagree about when they want to spend their money',
+      'The owners disagree with one another about when they want to spend their money',
     ],
     answer: 1,
     feedback: {
@@ -64,7 +64,7 @@ export const items = [
     prompt: 'A fictional software firm sells a three-year support contract: the client pays $30,000 today and serving the contract costs the firm $12,000 at the end of each of the next three years. The cash flows’ IRR is 9.7% and the firm’s opportunity cost of capital is 10%. Should the firm sign?',
     options: [
       'No: the IRR of 9.7% is below the 10% opportunity cost',
-      'Yes: cash comes in first, so the IRR is a cost of funds, and 9.7% is less than 10%',
+      'Yes: cash comes in first, so 9.7% is a cost of funds below 10%',
       'No: a contract whose costs ($36,000) exceed its price ($30,000) always loses value',
       'It cannot be decided, because these cash flows have no IRR',
     ],
@@ -134,8 +134,8 @@ export const items = [
     options: [
       'Nothing, because inflation affects revenue and costs equally',
       'It overstates the NPV, because the nominal rate is too low for real cash flows',
-      'It understates the NPV of a project with positive future cash flows, because the rate includes inflation that the cash flows leave out',
-      'It understates the NPV only if the project has working capital',
+      'It understates it: the rate includes inflation that the cash flows leave out',
+      'It understates the NPV, but only if the project holds working capital that grows with sales',
     ],
     answer: 2,
     feedback: {

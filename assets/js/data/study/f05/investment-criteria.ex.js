@@ -77,7 +77,7 @@ export const guided = [
         wrong: [{ value: 2.5, say: 'That is the undiscounted payback. Discount each cash flow before adding.' }] },
       { id: 'f05-crit-g1-s3', type: 'mc', prompt: 'Which statement about these two payback measures is true?',
         options: [
-          'Both ignore the $3,000 in year 4, which comes after the money has been recovered',
+          'Both ignore the $3,000 that arrives in year 4',
           'Discounted payback includes every cash flow, so it equals the NPV rule',
           'Undiscounted payback is the more cautious of the two, because it is shorter',
           'Both measure the value the printer adds, in years',
@@ -125,8 +125,8 @@ export const guided = [
       { id: 'f05-crit-g3-s3', type: 'mc', prompt: 'Should the company take the deal?',
         options: [
           'No: it amounts to borrowing at 15% when money costs 11% elsewhere',
-          'Yes: its IRR of 15% is above the 11% opportunity cost',
-          'Yes: it receives cash before it spends any',
+          'Yes: its IRR of 15% is above the 11% opportunity cost of capital',
+          'Yes: it receives cash before it has to spend any, which is always attractive',
           'It cannot be decided, because the IRR rule fails for these flows',
         ],
         answer: 0,
@@ -168,8 +168,8 @@ export const independent = [
     options: [
       'P, because its IRR (60%) is much higher than Q’s (25%)',
       'Q, because its NPV ($8,182) is higher than P’s ($2,273)',
-      'P, because it needs less capital and so is less risky',
-      'Either, since both IRRs exceed 10%',
+      'P, because it needs less capital and so is the less risky choice',
+      'Either, since both IRRs exceed the 10% opportunity cost of capital',
     ],
     answer: 1,
     feedback: {
@@ -276,10 +276,10 @@ export const check = [
     id: 'f05-crit-k4', type: 'mc', kind: 'conceptual',
     prompt: 'According to the abstract of Graham and Harvey’s (2001) survey of 392 chief financial officers, which statement describes capital budgeting practice?',
     options: [
-      'Almost no firm uses present-value techniques; payback dominates at every size',
+      'Almost no firm uses present-value techniques; payback dominates at firms of every size and in every industry',
       'Large firms rely heavily on present-value techniques; small firms are relatively likely to use payback',
       'Small firms rely more on present-value techniques than large firms do',
-      'Firms of every size evaluate each project at a rate set for that project’s own risk',
+      'Firms of every size evaluate each project at a discount rate set for that particular project’s own risk',
     ],
     answer: 1,
     feedback: {

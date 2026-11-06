@@ -188,7 +188,7 @@ export const independent = [
     prompt: 'Ana’s accountant says the roaster’s cash flows should subtract interest, because Lantern would pay for it partly with borrowed money. Why is that wrong?',
     options: [
       'Interest is not tax-deductible, so it never affects cash',
-      'The discount rate already charges the project for the money it uses; subtracting interest too counts that cost twice',
+      'It counts the cost of the money twice',
       'The roaster would be paid for in cash, so there is no interest',
       'Interest is a sunk cost once the loan is signed',
     ],
@@ -218,8 +218,8 @@ export const check = [
     prompt: 'A fictional brewery spent $50,000 last year on engineering studies for a new canning line. Its managers now argue: “We have already spent $50,000, so we must go ahead, or the money is wasted.” What is wrong with the argument?',
     options: [
       'The $50,000 should be added to the line’s cost, which makes it less attractive',
-      'The $50,000 is spent whatever they decide now, so it should not affect the decision',
-      'The $50,000 should be depreciated over the line’s life',
+      'The $50,000 is gone whatever they decide, so it is irrelevant',
+      'The $50,000 should be depreciated over the canning line’s life, like any other cost of the line',
       'Nothing: past spending is an opportunity cost of stopping',
     ],
     answer: 1,
@@ -255,9 +255,9 @@ export const check = [
     id: 'f05-pcf-k4', type: 'mc', kind: 'applied',
     prompt: 'A fictional bookshop chain opens a branch expected to sell $400,000 a year. It estimates that $60,000 of those sales would otherwise have been made at its existing branch two streets away, and that the new branch will draw $15,000 of extra sales a year to the existing branch’s café. Which sales should the new branch’s appraisal count?',
     options: [
-      '$400,000: the new branch’s own sales',
-      '$355,000: its own sales, less those taken from the old branch, plus the extra café sales',
-      '$340,000: its own sales less those taken from the old branch',
+      '$400,000: the new branch’s own forecast sales, since those are what its tills will record',
+      '$355,000: its own sales, less the $60,000 taken, plus the café’s $15,000',
+      '$340,000: its own sales less the $60,000 taken from the existing branch two streets away',
       '$415,000: its own sales plus the extra café sales',
     ],
     answer: 1,

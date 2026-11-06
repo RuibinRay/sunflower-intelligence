@@ -45,9 +45,9 @@ export default {
   objectives: [
     'Describe cash dividends, special dividends, share repurchases, stock dividends and splits, and the dates in a dividend’s timetable.',
     'Calculate the payout and retention ratios, the ex-dividend share price, and the share count, price and EPS after a buyback.',
-    'Show that a dividend and a buyback of the same cash leave shareholders equally wealthy in a perfect market, and explain why the EPS increase from a buyback is not value.',
+    'Explain why a dividend and a buyback of the same cash leave shareholders equally wealthy in a perfect market, and explain why the EPS increase from a buyback is not value.',
     'Explain how taxes, signalling, clienteles, agency costs and flexibility affect the choice of payout, and summarise survey evidence on how managers decide.',
-    'Model dividend smoothing with a partial-adjustment rule, and state the legal and contractual limits on payouts.',
+    'Calculate a smoothed dividend with a partial-adjustment rule, and describe the legal and contractual limits on payouts.',
   ],
   prerequisites: [
     { lesson: 'f02/balance-sheet-and-equity', why: 'How dividends are declared and recorded, treasury stock, and the declaration, record and payment dates.' },

@@ -92,7 +92,7 @@ export const guided = [
         wrong: [{ value: 143, say: 'Check the sign: the savings are worth less than the $18,000 the oven costs.' }, { value: 6600, say: 'That is 24,600 − 18,000, which ignores the time value of money.' }] },
       { id: 'f05-npv-g1-s3', type: 'mc', prompt: 'What should the bakery conclude?',
         options: [
-          'Reject on these estimates: the oven earns a little less than the 10% available elsewhere at the same risk',
+          'Reject: on these estimates the oven earns a little under 10%',
           'Accept: the savings add up to more than the oven’s cost',
           'Accept: an NPV this close to zero counts as breaking even',
           'Reject, because any project with an NPV below $1,000 destroys value',
@@ -239,7 +239,7 @@ export const check = [
     prompt: 'At an opportunity cost of capital of 11%, a project’s NPV is exactly zero. What does that tell you?',
     options: [
       'The project only gets its money back, with no return on it',
-      'The project earns exactly 11% a year on the money invested in it',
+      'It earns exactly 11% a year on the money invested',
       'The project loses money once inflation is allowed for',
       'The project should be rejected, because it adds nothing',
     ],
@@ -266,10 +266,10 @@ export const check = [
     id: 'f05-npv-k3', type: 'mc', kind: 'conceptual',
     prompt: 'A company has two shareholders: one wants as much cash as possible now, the other is saving for retirement. Both can borrow and lend at the market rate. The company is considering a project with a positive NPV at that rate. What follows?',
     options: [
-      'Only the saver should want it, since the impatient one wants cash now',
+      'Only the saver should want it, since the impatient shareholder wants as much cash as possible right now',
       'Both should want it, since each can borrow or lend to spend the gain when they prefer',
       'The managers must ask both and choose by majority',
-      'Neither can be sure until the project’s payback period is known',
+      'Neither can be sure until the project’s payback period and its effect on this year’s dividend are known',
     ],
     answer: 1,
     feedback: {
@@ -295,8 +295,8 @@ export const check = [
     options: [
       'At years 1 to 5, since each fee belongs to one project year',
       'At years 0 to 4, since each is paid at the start of its year',
-      'All at year 0, since the contract is signed then',
-      'At years 0.5 to 4.5, following the mid-year convention',
+      'All at year 0, since the whole contract is signed on 1 April 2028',
+      'At years 0.5 to 4.5, following the mid-year convention for cash spread through a year',
     ],
     answer: 1,
     feedback: {
