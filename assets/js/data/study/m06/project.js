@@ -3,10 +3,10 @@
 // tools/study/m06-data.py: B03's 27 spring subscribers, the 2026 relaunch offer, B04's 120 on 31 December 2026 and B05's
 // weekly 2027 joins and cancellations). Every figure is computed here with core/customer.js; each `check` recomputes its
 // answer by a separate route.
-import { SUBS, SAVE_REQUESTS, SAVE_TEST_START, subCohorts, marginOf, activeOn, ACQUISITION, DISCOUNT_YEAR, DISCOUNT_MONTH, PARCEL, FEE_RATE } from './case.js?v=25';
-import * as CU from '../../../core/customer.js?v=25';
-import { propTest2 } from '../../../core/inference.js?v=25';
-import { SHOP_COLUMNS, SHOP_WEEKS } from '../b05/case.js?v=25';
+import { SUBS, SAVE_REQUESTS, SAVE_TEST_START, subCohorts, marginOf, activeOn, ACQUISITION, DISCOUNT_YEAR, DISCOUNT_MONTH, PARCEL, FEE_RATE } from './case.js?v=27';
+import * as CU from '../../../core/customer.js?v=27';
+import { propTest2 } from '../../../core/inference.js?v=27';
+import { SHOP_COLUMNS, SHOP_WEEKS } from '../b05/case.js?v=27';
 
 // ---------------------------------------------------------------- 2027 retention of the subscribers on 1 January
 const AT_START = SUBS.filter((s) => s.start <= '2026-12-31' && (!s.cancelledOn || s.cancelledOn > '2026-12-31'));

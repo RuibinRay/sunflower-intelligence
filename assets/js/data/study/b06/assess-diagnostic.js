@@ -16,7 +16,7 @@
 // log was generated); every num item’s `check` recomputes its answer, and every figure an item shows is computed below
 // with core/regression.js. New questions, not copies of lesson exercises, module tests, the final or the project.
 // No hints; solutions are shown on review.
-import * as R from '../../../core/regression.js?v=26';
+import * as R from '../../../core/regression.js?v=27';
 
 const rnd = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
 const fx = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;

@@ -3,8 +3,8 @@
 // the test. The worksheet uses 30 members of the churn table (every 53rd from case.js churnTable(), from the 21st); every
 // other business, person and number is fictional. Formula items are marked by their results (core/sheet.js
 // gradeFormula); every num item's `check` recomputes its answer.
-import { churnTable } from './case.js?v=25';
-import * as CU from '../../../core/customer.js?v=25';
+import { churnTable } from './case.js?v=27';
+import * as CU from '../../../core/customer.js?v=27';
 
 const fx = (v, d = 3) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const pct = (v, d = 1) => `${(v * 100).toFixed(d)}%`;

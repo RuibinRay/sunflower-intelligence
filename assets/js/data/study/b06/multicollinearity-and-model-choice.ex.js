@@ -3,10 +3,10 @@
 // widgets; its 30 days of June 2027 and the first 12 days of October for the worksheets). Linthorpe Dental, Stavely
 // Cycles, Oakbridge Theatres and the other businesses named are fictional. Formula items are marked by their results
 // (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { column } from './case.js?v=26';
-import * as R from '../../../core/regression.js?v=26';
-import { mean } from '../../../core/stats.js?v=26';
-import { fSf } from '../../../core/inference.js?v=26';
+import { column } from './case.js?v=27';
+import * as R from '../../../core/regression.js?v=27';
+import { mean } from '../../../core/stats.js?v=27';
+import { fSf } from '../../../core/inference.js?v=27';
 
 const fx = (v, d = 2) => (v < 0 ? '−' : '') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));

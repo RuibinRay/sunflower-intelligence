@@ -4,8 +4,8 @@
 // `fixed` on the marking copies (they are categories, not amounts), and items that pick a segment or a threshold `vary`
 // that cell. The October check uses churnTable(). Corriebeck Garden Centre and Askerby Cinemas are fictional. Every num
 // item's `check` recomputes its answer.
-import { members, churnTable } from './case.js?v=25';
-import * as CU from '../../../core/customer.js?v=25';
+import { members, churnTable } from './case.js?v=27';
+import * as CU from '../../../core/customer.js?v=27';
 
 const sum = (a) => a.reduce((x, y) => x + y, 0);
 const r1 = (x) => Math.round(x * 10) / 10, r2 = (x) => Math.round(x * 100) / 100, r3 = (x) => Math.round(x * 1000) / 1000;

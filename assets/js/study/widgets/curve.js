@@ -8,9 +8,9 @@
 //     'inverse': the probability below the value wanted),
 //     xLabel, places (decimals for x values), overlay: 'normal' (t only: the standard normal for comparison),
 //     critical: { alpha: 0.05, tails: 'two' | 'upper' | 'lower' }, stat: { value, label } (a test statistic), note }
-import { h, onResize } from '../../core/dom.js?v=26';
-import { xl } from '../xl.js?v=26';
-import { makeDist, drawDist, fmtP, fmtX, numberField, segmented } from '../dist-draw.js?v=26';
+import { h, onResize } from '../../core/dom.js?v=27';
+import { xl } from '../xl.js?v=27';
+import { makeDist, drawDist, fmtP, fmtX, numberField, segmented } from '../dist-draw.js?v=27';
 
 const PARAMS = {
   normal: [['mean', 'Mean (μ)', null, null, 'any'], ['sd', 'Standard deviation (σ)', 0.0001, null, 'any']],

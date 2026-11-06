@@ -3,8 +3,8 @@
 // 12th) with lapse times under a 60-day rule as of 31 December 2027 (core/customer.js lapseTimes). Glaisdale Climbing
 // Centre and the other businesses named are fictional; the High End data are Fader & Hardie's (2007) published Table 1.
 // Formula items are marked by their results (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { MEMBER_LIST, lapseData } from './case.js?v=25';
-import * as CU from '../../../core/customer.js?v=25';
+import { MEMBER_LIST, lapseData } from './case.js?v=27';
+import * as CU from '../../../core/customer.js?v=27';
 
 const fx = (v, d = 3) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const pct = (v, d = 1) => `${(v * 100).toFixed(d)}%`;

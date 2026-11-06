@@ -2,9 +2,9 @@
 // (case.js: column, CLEAN_ROWS, CAFE_ROWS, SLIP, DERIVED) for direction, form, strength and unusual points, the
 // overplotting and time-order problems of 612 points, and Ana's iced-drink planning. Anscombe's quartet uses Anscombe's
 // (1973) values as Wikipedia prints them (the same data ship as R's datasets::anscombe). Pemberton Cinema is fictional. Every figure printed is recomputed in `checks`.
-import { column, CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, DERIVED as D } from './case.js?v=26';
-import * as C from '../../../core/correlation.js?v=26';
-import { mean, variance } from '../../../core/stats.js?v=26';
+import { column, CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, DERIVED as D } from './case.js?v=27';
+import * as C from '../../../core/correlation.js?v=27';
+import { mean, variance } from '../../../core/stats.js?v=27';
 
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };
 const at = (n) => CAFE_COLUMNS.indexOf(n);
@@ -266,7 +266,7 @@ export default {
   references: [
     { text: 'Illowsky, B. &amp; Dean, S. (2023). <i>Introductory Statistics 2e</i>, sections 12.2, “Scatter Plots”, and 12.3, “The Regression Equation”. OpenStax.', url: 'https://openstax.org/books/introductory-statistics-2e/pages/12-2-scatter-plots', checked: '2026-10-26' },
     { text: 'NIST/SEMATECH. <i>e-Handbook of Statistical Methods</i>, section 1.3.3.26, “Scatter Plot”.', url: 'https://itl.nist.gov/div898/handbook/eda/section3/scatterp.htm', checked: '2026-10-26' },
-    { text: 'Anscombe, F. J. (1973). “Graphs in statistical analysis”. <i>The American Statistician</i>, 27(1), 17–21.', url: 'https://doi.org/10.1080/00031305.1973.10478966', checked: null },
+    { text: 'Anscombe, F. J. (1973). “Graphs in statistical analysis”. <i>The American Statistician</i>, 27, 17–21.', url: 'https://doi.org/10.1080/00031305.1973.10478966', checked: '2026-11-05' },
     { text: 'Wikipedia. “Anscombe’s quartet” (prints the four datasets and their summary statistics; the same data ship with R as datasets::anscombe).', url: 'https://en.wikipedia.org/wiki/Anscombe%27s_quartet', checked: '2026-10-26' },
     { text: 'Microsoft Support. “CORREL function”.', url: 'https://support.microsoft.com/en-US/excel/functions/correl-function', checked: '2026-10-26' },
   ],

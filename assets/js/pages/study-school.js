@@ -1,9 +1,9 @@
 // study-school.js — a school page: progress on each ready course card, and progress marks on the suggested order.
-import { initSite } from '../core/site.js?v=26';
-import { $$, h } from '../core/dom.js?v=26';
-import * as P from '../study/progress.js?v=26';
-import { pct } from '../study/common.js?v=26';
-import { MAP } from '../data/study/map.js?v=26';
+import { initSite } from '../core/site.js?v=27';
+import { $$, h } from '../core/dom.js?v=27';
+import * as P from '../study/progress.js?v=27';
+import { pct } from '../study/common.js?v=27';
+import { MAP } from '../data/study/map.js?v=27';
 
 initSite();
 function paint() {

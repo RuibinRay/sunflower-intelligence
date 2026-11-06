@@ -2,8 +2,8 @@
 // (answer keys live here). Member data from case.js (lapse curves for every member; the first 30 members who joined in
 // July 2027 for the worksheet, as of 31 December 2027). Every test result and every business other than Lantern is
 // fictional. Formula items are marked by their results; num items recompute in `check`.
-import { members, lapseData } from './case.js?v=25';
-import { propTest2, normCdf, normInv } from '../../../core/inference.js?v=25';
+import { members, lapseData } from './case.js?v=27';
+import { propTest2, normCdf, normInv } from '../../../core/inference.js?v=27';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));

@@ -3,9 +3,9 @@
 // assumptions-and-diagnostics removed, coefficients as percentage changes, the opening build-up as a hinge in the day
 // count), the peak wait against the load (a squared hinge at 7), and the footfall slip in the raw log and the festival
 // days for leverage, studentized residuals and Cook's distance. Every figure printed is recomputed in `checks`.
-import { column, SLIP } from './case.js?v=26';
-import * as R from '../../../core/regression.js?v=26';
-import { mean, sd } from '../../../core/stats.js?v=26';
+import { column, SLIP } from './case.js?v=27';
+import * as R from '../../../core/regression.js?v=27';
+import { mean, sd } from '../../../core/stats.js?v=27';
 
 const H = { cafe: 'Harbourside' };
 const coef = (f, name) => f.coefs.find((c) => c.name === name);

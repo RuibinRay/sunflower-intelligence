@@ -21,7 +21,7 @@
 // generated), and none is a subscription like the project’s; every num item’s `check` recomputes its answer, and every
 // figure an item shows is computed below with core/customer.js. New questions, not copies of lesson exercises, module
 // tests, the final or the project. No hints; solutions are shown on review.
-import * as CU from '../../../core/customer.js?v=25';
+import * as CU from '../../../core/customer.js?v=27';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const money = (v) => `$${fx(v, 2)}`;

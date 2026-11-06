@@ -1,14 +1,14 @@
 // analytics-forecast.js — Holt-Winters forecasting, on an example series or a column of the table loaded under Explore.
-import { initSite, syncRanges } from '../core/site.js?v=26';
-import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=26';
-import * as F from '../core/format.js?v=26';
-import * as S from '../core/stats.js?v=26';
-import { parseTable, isNumeric } from '../core/csv.js?v=26';
-import { histogramChart, scatter, heatmap, tableTwin, lineChart, barChart } from '../core/charts.js?v=26';
-import { fillSelect, chips, checkedIn, splitRows, verdict } from '../core/ui.js?v=26';
-import { dataSource, loadShared } from '../core/datasource.js?v=26';
-import { monthlySales } from '../core/rng.js?v=26';
-import { holtWinters, backtest } from '../core/forecast.js?v=26';
+import { initSite, syncRanges } from '../core/site.js?v=27';
+import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=27';
+import * as F from '../core/format.js?v=27';
+import * as S from '../core/stats.js?v=27';
+import { parseTable, isNumeric } from '../core/csv.js?v=27';
+import { histogramChart, scatter, heatmap, tableTwin, lineChart, barChart } from '../core/charts.js?v=27';
+import { fillSelect, chips, checkedIn, splitRows, verdict } from '../core/ui.js?v=27';
+import { dataSource, loadShared } from '../core/datasource.js?v=27';
+import { monthlySales } from '../core/rng.js?v=27';
+import { holtWinters, backtest } from '../core/forecast.js?v=27';
 
 initSite();
 

@@ -2,7 +2,7 @@
 // Lantern's May 2027 needs study comes from case.js (RESPONDENTS, NEEDS, STUDY, BRAND_NOTES): this lesson uses only the
 // spread of the eight needs, never the k-means segments, which module 2 builds. Glenarrow Cycles, Duncairn Software and
 // Tollmere Bank (with Nadia Osei) are fictional. Every printed figure is recomputed in `checks`.
-import { RESPONDENTS, NEEDS, STUDY, BRAND_NOTES, M02_LANTERN, DERIVED as D } from './case.js?v=26';
+import { RESPONDENTS, NEEDS, STUDY, BRAND_NOTES, M02_LANTERN, DERIVED as D } from './case.js?v=27';
 
 // ---------------------------------------------------------------- the figures this lesson quotes
 const R = RESPONDENTS, N = R.length;
@@ -320,10 +320,10 @@ export default {
     { text: 'Gomez Albrecht, M., Green, M. &amp; Hoffman, L. (2023). <i>Principles of Marketing</i>, section 5.1, “Market Segmentation and Consumer Markets”. OpenStax.', url: 'https://openstax.org/books/principles-marketing/pages/5-1-market-segmentation-and-consumer-markets', checked: '2026-10-25' },
     { text: 'Gomez Albrecht, M., Green, M. &amp; Hoffman, L. (2023). <i>Principles of Marketing</i>, section 5.4, “Essential Factors in Effective Market Segmentation” (ADAMS: accessible, differentiable, actionable, measurable, substantial). OpenStax.', url: 'https://openstax.org/books/principles-marketing/pages/5-4-essential-factors-in-effective-market-segmentation', checked: '2026-10-25' },
     { text: 'Gomez Albrecht, M., Green, M. &amp; Hoffman, L. (2023). <i>Principles of Marketing</i>, section 5.2, “Segmentation of B2B Markets” (firmographics, technographics, needs-, value- and behaviour-based segmentation). OpenStax.', url: 'https://openstax.org/books/principles-marketing/pages/5-2-segmentation-of-b2b-markets', checked: '2026-10-25' },
-    { text: 'Smith, W. R. (1956). Product differentiation and market segmentation as alternative marketing strategies. <i>Journal of Marketing</i>, 21(1), 3–8. JSTOR 1247695. (Quoted here from France and Ghose, 2019.)', url: 'https://www.jstor.org/stable/1247695', checked: null },
+    { text: 'Smith, W. R. (1956). Product differentiation and market segmentation as alternative marketing strategies. <i>Journal of Marketing</i>, 21(1), 3–8. JSTOR 1247695. (Quoted here from France and Ghose, 2019.)', url: 'https://doi.org/10.2307/1247695', checked: '2026-11-05' },
     { text: 'France, S. L. &amp; Ghose, S. (2019). Marketing analytics: methods, practice, implementation, and links to other fields. <i>Expert Systems with Applications</i>; preprint arXiv:1801.09185. Section 4 quotes Smith (1956) and reviews a priori and post hoc segmentation and the criteria for segments.', url: 'https://arxiv.org/abs/1801.09185', checked: '2026-10-25' },
     { text: 'Wind, Y. (2011). Yoram “Jerry” Wind’s contributions to marketing. <i>Review of Marketing Research</i>, Special Issue: Marketing Legends, 8, 269–315 (Table 5 reproduces Wind’s 1978 review of segmentation research).', url: 'https://faculty.wharton.upenn.edu/wp-content/uploads/2012/02/Rev.Mktg.Res.Special.Legends.Issue.pdf', checked: '2026-10-25' },
-    { text: 'Shapiro, B. P. &amp; Bonoma, T. V. (1984). How to segment industrial markets. <i>Harvard Business Review</i>, May 1984 (the nested approach: demographics, operating variables, purchasing approaches, situational factors and personal characteristics; summary checked in the publisher’s synopsis on Bookshare).', url: 'https://hbr.org/1984/05/how-to-segment-industrial-markets', checked: null },
+    { text: 'Shapiro, B. P. &amp; Bonoma, T. V. (1984). How to segment industrial markets. <i>Harvard Business Review</i>, May 1984 (the nested approach: demographics, operating variables, purchasing approaches, situational factors and personal characteristics; summary checked in the publisher’s synopsis on Bookshare).', url: 'https://hbr.org/1984/05/how-to-segment-industrial-markets', checked: '2026-11-05' },
   ],
 
   checks: [

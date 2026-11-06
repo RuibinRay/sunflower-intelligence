@@ -4,8 +4,8 @@
 // June. Brambleby Bakery, Corrieside Car Wash, Marlpit Outdoor, Inchmore Ferries, Saltby Clinic and every other
 // business named are fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num items
 // recompute their answers in `check`.
-import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=26';
-import * as R from '../../../core/regression.js?v=26';
+import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=27';
+import * as R from '../../../core/regression.js?v=27';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));
