@@ -137,7 +137,7 @@ export const guided = [
       { id: 'f05-cap-g3-s3', type: 'num', prompt: 'What is the value of the levered firm?',
         answer: 8500000, check: () => 8000000 + 0.25 * 2000000, unit: '$', places: 0, tol: 1,
         hints: ['V_L = V_U + T × D.'],
-        wrong: [{ value: 10000000, say: 'Adding all the debt double-counts. The debt changes who holds the claims; only the tax saving adds value.' }, { value: 6000000, say: 'That is the equity in an unlevered firm after subtracting debt, ignoring the tax gain. V_L itself is debt plus equity.' }] },
+        wrong: [{ value: 10000000, say: 'Adding all the debt double-counts. The debt changes who holds the claims; only the tax saving adds value.' }, { value: 6000000, say: 'That is V_U − D, the equity if borrowing added nothing. V_L is debt plus equity: V_U + T × D.' }] },
     ],
   },
   {
@@ -307,7 +307,7 @@ export const check = [
       'Investors assume managers sell shares when they think them overpriced, so the issue is read as bad news about value',
       'New shares dilute earnings per share, and the price always falls in proportion to the EPS dilution',
       'The factory’s NPV is shared with the new shareholders, so the old shareholders lose that much value',
-      'The issue lowers Linnet’s debt ratio and so its tax shield, which costs exactly 3% of the share price',
+      'The issue lowers Pelham’s debt ratio and so its tax shield, which costs exactly 3% of the share price',
     ],
     answer: 0,
     feedback: {
@@ -342,7 +342,7 @@ export const check = [
     id: 'f05-cap-k6', type: 'multi', kind: 'conceptual',
     prompt: 'Which of these did Graham and Harvey’s 2002 survey of US chief financial officers report? Select all that apply.',
     options: [
-      'Financial flexibility was the factor most often cited in decisions about debt.',
+      'Almost 60% rated financial flexibility and credit ratings as important or very important in debt decisions.',
       'Most firms had no target debt ratio at all.',
       'Most CFOs who had seriously considered issuing shares named dilution of earnings per share as important.',
       'Most CFOs rated the costs of bankruptcy and distress as important in setting debt.',
@@ -353,6 +353,6 @@ export const check = [
       1: 'Only 19% had no target; 44% had strict or somewhat strict targets and 37% flexible ones.',
       3: 'Only 21.4% rated distress costs important or very important, a puzzle for the trade-off theory.',
     },
-    solution: 'Flexibility (and credit ratings) led the debt factors; 69% of those considering an equity issue named EPS dilution; 4.5% cited investors’ taxes. Most firms had some target, and only about a fifth rated distress costs important.',
+    solution: 'Almost 60% rated flexibility and credit ratings important, and preserving flexibility, not minimising the WACC, was the main aim; 69% of those considering an equity issue named EPS dilution; 4.5% cited investors’ taxes. Most firms had some target, and only about a fifth rated distress costs important.',
   },
 ];

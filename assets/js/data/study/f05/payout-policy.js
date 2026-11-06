@@ -34,6 +34,9 @@ A.eps = A.ni / A.shares; A.dps = A.div / A.shares; A.payout = A.div / A.ni; A.to
 const LZ = { prev: 2.40, eps: 7.00, target: 0.40, speed: 0.3 };
 LZ.next = LZ.prev + LZ.speed * (LZ.target * LZ.eps - LZ.prev);                 // 2.52
 const special = { regular: 2.40, windfall: 4_000_000 };
+// the pay-smooth widget's data (payout-policy.ex.js): EPS path, p = 40%, last dividend $0.90; returns the size of each cut
+const SMOOTH_EPS = [2.50, 2.80, 3.10, 2.40, 3.00, 3.40, 3.60, 3.20, 3.90, 4.20];
+const smoothCuts = (a) => { let d = 0.9; const cuts = []; for (const e of SMOOTH_EPS) { const n = d + a * (0.4 * e - d); if (n < d - 1e-9) cuts.push(d - n); d = n; } return cuts; };
 const f2 = (v) => v.toFixed(2);
 const fmt = (v) => Math.round(v).toLocaleString('en-US');
 
@@ -64,13 +67,13 @@ export default {
     { list: [
       '<b>Regular cash <g>dividends</g>.</b> A payment per share, usually quarterly in the US and half-yearly in the UK. Boards treat the regular dividend as a commitment.',
       '<b>Special dividends.</b> One-off payments, usually after a windfall, labelled so that shareholders don’t expect them again.',
-      '<b>Share repurchases (buybacks).</b> The company buys its own shares, usually on the stock market over months, sometimes by a tender offer at a fixed price. The shares bought are cancelled or held as <g>treasury stock</g>. Only shareholders who sell receive cash; the others own a larger share of a smaller company.',
+      '<b><g>Share repurchases</g> (buybacks).</b> The company buys its own shares, usually on the stock market over months, sometimes by a tender offer at a fixed price. The shares bought are cancelled or held as <g>treasury stock</g>. Only shareholders who sell receive cash; the others own a larger share of a smaller company.',
       '<b>Stock dividends and splits.</b> New shares handed to existing shareholders in proportion to their holdings. No cash leaves the company, so these are not payouts at all, a point the In depth section returns to.',
     ] },
     { p: String.raw`Two ratios describe how much is paid. The <g>payout ratio</g> is dividends divided by net income; the <g>retention ratio</g>, or plowback ratio, is the share kept, 1 minus the payout ratio. Lantern paid out <m>${fmt(div26)} \div ${fmt(P26.netIncome)} = ${(div26 / P26.netIncome * 100).toFixed(1)}\%</m> of its 2026 profit and <m>${fmt(div27)} \div ${fmt(P27.netIncome)} = ${(div27 / P27.netIncome * 100).toFixed(1)}\%</m> of 2027’s, retaining ${(100 - div27 / P27.netIncome * 100).toFixed(1)}% to finance its growth. Because buybacks have become a large part of what listed companies return, analysts also use a total payout ratio: dividends plus buybacks, divided by net income.` },
 
     { h: 'The dividend timetable' },
-    { p: 'A dividend passes through four dates. On the <g>declaration date</g> the board announces the amount and the dates, and the company records a liability. The <g>date of record</g> decides who is paid: shareholders on the register at the end of that day. Because a share bought on the stock market takes time to settle onto the register, there is an <g>ex-dividend date</g>: anyone who buys on or after it does not receive the dividend. Investor.gov explains that the ex-dividend date is now usually set as the record date itself (or the business day before, if the record date is not a business day), since US trades settle one business day after the trade. Finally, on the <g>payment date</g> the cash is paid.' },
+    { p: 'A dividend passes through four dates. On the <g>declaration date</g> the board announces the amount and the dates, and the company records a liability. The <g>date of record</g> decides who is paid: shareholders on the register at the end of that day. Because a share bought on the stock market takes time to settle onto the register, there is an <g>ex-dividend date</g>: anyone who buys on or after it does not receive the dividend. Most US trades have settled one business day after the trade (“T+1”) since 28 May 2024, and Investor.gov explains that the ex-dividend date is now usually set as the record date itself, or the business day before if the record date is not a business day. Finally, on the <g>payment date</g> the cash is paid.' },
     { table: {
       caption: 'Marisco Tea Company (fictional): a dividend timetable',
       head: ['Date', 'Event'],
@@ -104,7 +107,7 @@ export default {
       note: 'The buyback retires 4,000,000 ÷ 40 = 100,000 shares. Both payouts remove the cash and the interest it earned.',
     } },
     { p: 'Shareholders end with $40 of wealth per share either way. With the dividend, each has a $36 share and $4 of cash. With the buyback, those who sold have $40 of cash and those who kept their shares hold shares still worth $40, because the company paid a fair price: the shares it bought cost exactly what they were worth. Neither form creates or destroys value, because the cash was already the shareholders’; the payout only moves it out of the company.' },
-    { p: String.raw`Shareholders can also undo either choice themselves, as investors could undo leverage in the capital-structure lesson. An investor with 1,000 shares who wants $4,000 of cash after a buyback can sell ${fmt(H.sell)} shares at $40: a <g>homemade dividend</g>. One who would rather not receive a dividend can reinvest the $4,000 in shares at $36, buying ${H.reinvest.toFixed(1)} and owning shares worth <m>${(H.n + H.reinvest).toFixed(1)} \times 36 = 40{,}000</m>. Miller and Modigliani showed in 1961 that in a perfect and frictionless market a firm’s value does not depend on its payout policy, given its investment decisions; Brav and colleagues (2003) start their survey from that result.` },
+    { p: String.raw`Shareholders can also undo either choice themselves, as investors could undo leverage under the <g>Modigliani–Miller propositions</g>. An investor with 1,000 shares who wants $4,000 of cash after a buyback can sell ${fmt(H.sell)} shares at $40: a <g>homemade dividend</g>. One who would rather not receive a dividend can reinvest the $4,000 in shares at $36, buying ${H.reinvest.toFixed(1)} and owning shares worth <m>${(H.n + H.reinvest).toFixed(1)} \times 36 = 40{,}000</m>. Miller and Modigliani showed in 1961 that in a perfect and frictionless market a firm’s value does not depend on its payout policy, given its investment decisions, as Brav and colleagues (2003) summarise it.` },
     { callout: 'key', title: 'A buyback raises EPS without raising value', html: String.raw`After the buyback, Marisco’s EPS rises from $${f2(PO.epsBefore)} to $${f2(PO.buyback.eps)}, ${((PO.buyback.eps / PO.epsBefore - 1) * 100).toFixed(1)}% higher, yet the share price stays at $40. The price-earnings ratio falls from ${f2(pe0)} to ${f2(peB)}, because the company has given away its safest asset, cash, and the remaining shares are a claim on riskier tea importing alone. The dividend shows the same fall in the ratio. Higher EPS from a buyback is arithmetic, not value.` },
 
     { h: 'Why payout policy matters in practice' },
@@ -112,7 +115,7 @@ export default {
     { p: String.raw`<b>Taxes.</b> A dividend is taxed as income for every shareholder in the year it is paid. A buyback taxes only the shareholders who sell, and only on their gain over what they paid; the others defer tax until they sell. In the US, qualified dividends are taxed at the lower capital-gains rates (IRS Topic 404), which narrows the difference, but the deferral and the taxation of gains rather than proceeds remain. Suppose a holder of 1,000 Marisco shares, bought at $25, pays 15% on both dividends and gains (an assumed rate). The $4,000 dividend costs her <m>4{,}000 \times 0.15 = ${fmt(TX.onDividend)}</m> in tax. Raising the same $4,000 by selling ${fmt(H.sell)} shares realises a gain of <m>${fmt(H.sell)} \times (40 - 25) = ${fmt(TX.gain)}</m> and costs <m>${fmt(TX.onSale)}</m>; if she does not sell, nothing now. Tax-exempt investors such as pension funds are indifferent.` },
     { p: '<b>Signals.</b> Managers know more about future earnings than investors do. Because boards are reluctant to cut a regular dividend, an increase suggests they expect earnings to stay high enough to sustain it, and a cut suggests the opposite; dividend changes therefore carry information. A buyback can suggest managers think the shares are cheap, the mirror image of the pecking order’s equity issue.' },
     { p: '<b>Clienteles.</b> Investors differ in their taxes and in whether they want regular cash. A firm may attract a <g>clientele</g> whose tastes match its policy, and if each clientele is already served, changing the policy gains nothing and may upset the existing holders.' },
-    { p: '<b>Agency costs.</b> Cash left in a mature firm with few good projects tempts managers to spend it on growth for its own sake, the free-cash-flow problem associated with Michael Jensen. Paying it out, and especially committing to a regular dividend, takes it out of their hands and makes them raise money from investors, who scrutinise it, when they need more.' },
+    { p: '<b>Agency costs.</b> Cash left in a mature firm with few good projects tempts managers to spend it on growth for its own sake, the free-cash-flow problem associated with Michael Jensen (1986), as Brav and colleagues summarise it. Free cash flow in Jensen’s sense is the cash left after funding every positive-NPV project, narrower than the accounting measure F03 calls <g>free cash flow</g>. Paying it out, and especially committing to a regular dividend, takes it out of their hands and makes them raise money from investors, who scrutinise it, when they need more.' },
     { p: '<b>Flexibility.</b> A regular dividend is hard to cut; a buyback programme can be slowed or stopped quietly. Firms with volatile or temporary cash flows therefore prefer buybacks or special dividends for the variable part of their payout.' },
 
     { h: 'What managers say' },
@@ -120,7 +123,7 @@ export default {
     { p: 'The authors also revisit John Lintner’s 1956 study of 28 industrial firms, which found dividends sticky, smoothed and tied to long-run sustainable earnings. They found the conservatism persists but the tie to earnings has weakened: managers no longer treat a target payout ratio as the main decision.' },
 
     { h: 'Smoothing as a formula' },
-    { p: String.raw`Lintner’s description is usually written as a partial-adjustment rule. The firm has a target payout ratio <m>p</m> of its earnings <m>E_t</m>, but closes only a fraction <m>a</m> of the gap between the target and last year’s dividend each year:` },
+    { p: String.raw`Lintner’s description is usually written, in standard textbook treatments, as a partial-adjustment rule. The firm has a target payout ratio <m>p</m> of its earnings <m>E_t</m>, but closes only a fraction <m>a</m> of the gap between the target and last year’s dividend each year:` },
     { math: String.raw`D_t = D_{t-1} + a\,(p\,E_t - D_{t-1})` },
     { p: String.raw`A firm paying $${f2(LZ.prev)} a share with a 40% target and an adjustment speed of 0.3, whose EPS jumps to $${f2(LZ.eps)}, raises its dividend only to <m>${f2(LZ.prev)} + 0.3 \times (0.4 \times ${f2(LZ.eps)} - ${f2(LZ.prev)}) = ${f2(LZ.next)}</m>, not to the target’s $${f2(LZ.target * LZ.eps)}. If the higher earnings last, the dividend keeps climbing towards the target; if they fall back, the board has not raised the dividend to a level it would have to cut. The widget below shows the effect on a bumpy earnings path.` },
 
@@ -128,7 +131,7 @@ export default {
     { p: String.raw`In a two-for-one <g>stock split</g> each share becomes two. Marisco would have ${fmt(split.shares)} shares and, with nothing else changed, a price of $${f2(split.price)}. A 10% <g>stock dividend</g> gives one new share for every ten held: ${fmt(sdiv.shares)} shares at <m>40 \div 1.1 = \$${f2(sdiv.price)}</m>. In both cases the company is cut into more, smaller slices and every shareholder keeps the same fraction of it. The accounting differs (a stock dividend moves an amount from retained earnings to contributed capital; a split changes the number of shares and any par value), but no cash moves and no value is created. The reason usually given is to keep the share price in a range that is convenient to trade.` },
 
     { h: 'Limits on payouts' },
-    { p: 'Payouts are limited by law and by contract. Corporate law protects creditors by limiting distributions that would leave a company unable to pay what it owes; the details vary by jurisdiction. Delaware, for example, allows a corporation to pay dividends out of its surplus or, if it has none, out of its net profits for the year in which the dividend is declared and/or the preceding year (8 Del. C. § 170). Loan agreements often add covenants that cap dividends and buybacks or forbid them while a ratio is below a threshold, which is how lenders stop shareholders paying themselves before the lenders are paid (see F00’s governance lesson). Directors who approve an unlawful distribution can be personally liable, so boards check these limits before each declaration.' },
+    { p: 'Payouts are limited by law and by contract. Corporate law protects creditors by limiting distributions that would leave a company unable to pay what it owes; the details vary by jurisdiction. Delaware, for example, allows a corporation to pay dividends out of its surplus or, if it has none, out of its net profits for the year in which the dividend is declared and/or the preceding year (8 Del. C. § 170). Loan agreements often add covenants that cap dividends and buybacks or forbid them while a ratio is below a threshold, which is how lenders stop shareholders paying themselves before the lenders are paid (see F00’s governance lesson). Directors can face personal liability for distributions the law does not allow, so boards check these limits before each declaration.' },
   ],
 
   formulas: [
@@ -147,7 +150,7 @@ export default {
     { id: 'pay-lintner', name: 'Dividend smoothing (partial adjustment)',
       tex: String.raw`D_t = D_{t-1} + a\,(p\,E_t - D_{t-1})`,
       where: [[String.raw`D_t, D_{t-1}`, 'Dividend per share this year and last year', '$'], [String.raw`p`, 'Target payout ratio', ''], [String.raw`E_t`, 'Earnings per share this year', '$'], [String.raw`a`, 'Speed of adjustment, between 0 (never change) and 1 (pay the target every year)', '']],
-      note: 'A standard way of writing Lintner’s (1956) description of how managers set dividends.' },
+      note: 'A standard textbook way of writing Lintner’s (1956) description of how managers set dividends, as summarised by Brav and colleagues (2003).' },
   ],
 
   examples: [
@@ -176,7 +179,7 @@ export default {
       fictional: true,
       setup: 'Marisco’s regular dividend is $2.40 a share. The $4,000,000 of surplus cash came from selling a warehouse, a one-off. One director proposes raising the regular dividend to $6.40 this year; another proposes a special dividend of $4; the finance director proposes a buyback. Most of Marisco’s shares are held by individuals who pay tax on dividends and gains at the same 15% rate, and many bought years ago at around $25. Which should the board choose?',
       steps: [
-        'Raising the regular dividend to $6.40 would signal that earnings of about $6 a share can sustain it, when the extra cash is a one-off. Next year the board would face a cut, which managers avoid (94% in the Brav survey) and investors read as bad news. Reject it.',
+        'Raising the regular dividend to $6.40 would pay out more than Marisco’s whole EPS of $6.00 and signal that the windfall is permanent, when it is a one-off. Next year the board would face a cut, which managers avoid (94% in the Brav survey) and investors read as bad news. Reject it.',
         String.raw`A special dividend labels the payment as one-off, but every shareholder is taxed on it: a holder of 1,000 shares pays <m>${fmt(TX.onDividend)}</m>.`,
         String.raw`A buyback at a fair price leaves non-sellers untaxed now; a holder who wants the cash sells 100 shares and pays tax only on the gain: <m>${fmt(TX.onSale)}</m>. It is also flexible: it can be spread over months and stopped if a good use for the cash appears.`,
         'Check the limits: the loan agreements and the legal test for distributions must allow it, and the buyback should not be justified by the higher EPS, which is arithmetic.',
@@ -187,7 +190,7 @@ export default {
 
   demo: [
     { widget: 'pay-compare', intro: 'Marisco’s choice. Change the cash paid out and the return the cash was earning: the wealth per share is the same under both forms every time, while the buyback’s EPS rises above the dividend’s. Set the cash’s return to the earnings yield ($6 ÷ $40 = 15%) and the buyback no longer raises EPS at all.' },
-    { widget: 'pay-smooth', intro: 'A fictional firm’s earnings per share over ten years, with a bad year in year 4 and another dip in year 8. Set the adjustment speed to 1: the dividend follows earnings and is cut twice. Lower it towards 0.2: the dividend rises steadily and is never cut, the pattern the survey managers describe.' },
+    { widget: 'pay-smooth', intro: 'A fictional firm’s earnings per share over ten years, with a bad year in year 4 and another dip in year 8. Set the adjustment speed to 1: the dividend follows earnings and is cut twice. Lower it to 0.2: the dividend lags earnings and the year-4 cut shrinks from $0.28 to about a cent; only at a very slow speed, 0.05, does it disappear. Rare, small cuts are the pattern the survey managers describe.' },
   ],
 
   mistakes: [
@@ -201,7 +204,7 @@ export default {
   application: [
     { p: '<b>A board sets a payout policy.</b> The board of a fictional mature food company with steady cash flows sets a regular dividend at about 40% of earnings it believes are sustainable, raises it only when it is confident it will not have to cut it, and returns the rest of its surplus by buybacks that can be scaled down in a bad year. Before each buyback it checks the price against its own estimate of value, because buying shares above their value transfers wealth from the shareholders who stay to those who sell. It reports buybacks as returning cash, not as boosting EPS.' },
     { p: '<b>A growing company pays nothing.</b> A fictional software firm with more positive-NPV projects than cash pays no dividend and buys back no shares: every dollar retained is invested at more than its cost of capital. Its investors expect returns from a rising share price. Paying a dividend and then raising money by selling shares would cost issue fees and, by the pecking order, a lower price.' },
-    { p: '<b>An owner-managed company.</b> In a business like Lantern, with one shareholder who also runs it, signalling and clienteles barely arise: Ana knows exactly what Lantern earns. The questions are whether the cash earns more inside the business than outside, whether Lantern’s lenders’ terms and the law allow the payment, and how a dividend, a salary and retaining the profit are each taxed, a tax-planning question beyond this course. Lantern’s payout ratios of 18.3% in 2026 and 8.9% in 2027 reflect a growing business keeping most of its profit.' },
+    { p: '<b>An owner-managed company.</b> In a business like Lantern, with one shareholder who also runs it, signalling and clienteles barely arise: Ana knows exactly what Lantern earns. The questions are whether the cash earns more inside the business than outside, whether any loan agreements and the law allow a payment, and how a dividend, a salary and retaining the profit are each taxed, a tax-planning question beyond this course. Lantern’s payout ratios of 18.3% in 2026 and 8.9% in 2027 reflect a growing business keeping most of its profit.' },
   ],
 
   summary: [
@@ -228,6 +231,7 @@ export default {
 
   references: [
     { text: 'Brav, A., Graham, J. R., Harvey, C. R. &amp; Michaely, R. (2003). “Payout Policy in the 21st Century.” NBER Working Paper 9657.', url: 'https://www.nber.org/system/files/working_papers/w9657/w9657.pdf', checked: '2026-11-05' },
+    { text: 'U.S. Securities and Exchange Commission, Investor.gov. “New ‘T+1’ Settlement Cycle – What Investors Need To Know: Investor Bulletin.”', url: 'https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/new-t1-settlement-cycle-what-investors-need-know-investor-bulletin', checked: '2026-11-06' },
     { text: 'U.S. Securities and Exchange Commission, Investor.gov. “Ex-Dividend Dates: When Are You Entitled to Stock and Cash Dividends.”', url: 'https://www.investor.gov/introduction-investing/investing-basics/glossary/ex-dividend-dates-when-are-you-entitled-stock-and', checked: '2026-11-05' },
     { text: 'Internal Revenue Service. Topic no. 404, “Dividends and other corporate distributions.”', url: 'https://www.irs.gov/taxtopics/tc404', checked: '2026-11-05' },
     { text: 'Delaware Code, Title 8, § 170, “Dividends; payment; wasting asset corporations” (2025 code, via Justia).', url: 'https://law.justia.com/codes/delaware/title-8/chapter-1/subchapter-v/section-170/', checked: '2026-11-06' },
@@ -305,6 +309,11 @@ export default {
     { what: 'Costly signal', value: 4.2, shown: 4.2 },
     { what: 'Never initiate', value: 70, shown: 70 },
     { what: 'Lintner firms', value: 28, shown: 28 },
+    { what: 'Smoothing: year-4 cut at a = 1', value: smoothCuts(1)[0], shown: 0.28 },
+    { what: 'Smoothing: one cut of about a cent at a = 0.2', value: smoothCuts(0.2).length === 1 ? smoothCuts(0.2)[0] : NaN, shown: 0.01, tol: 0.005 },
+    { what: 'Smoothing: no cut at a = 0.05', value: smoothCuts(0.05).length, shown: 0 },
+    { what: 'Smoothing: two cuts at a = 1', value: smoothCuts(1).length, shown: 2 },
+    { what: 'Marisco EPS', value: PO.epsBefore, shown: 6.00 },
     { what: 'Marisco dividend in timetable', value: 0.60, shown: 0.60 },
     { what: 'EPS rise in mistakes', value: (PO.buyback.eps / PO.epsBefore - 1) * 100, shown: 8.9, tol: 0.05 },
   ],

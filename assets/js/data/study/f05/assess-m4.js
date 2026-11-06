@@ -31,7 +31,7 @@ export const items = [
       2: 'Proposition I says value does not depend on leverage, not that firms choose leverage at random; it doesn’t explain a systematic pattern.',
       3: 'Free cash flow is an argument for more debt, to discipline managers, not for lenders to refuse.',
     },
-    solution: 'Under the pecking order, debt is the accumulated need for outside money. Profitable firms generate enough internally and so borrow little. The trade-off theory predicts the reverse, which is why Myers called the pattern part of the capital-structure puzzle.',
+    solution: 'Under the pecking order, debt is the accumulated need for outside money. Profitable firms generate enough internally and so borrow little. The trade-off theory, which says profitable firms have the most taxable profit to shield, cannot explain it; Myers (1984) gives this as a prediction of the pecking order.',
   },
   {
     id: 'f05-m4-3', lesson: 'capital-structure', type: 'num', kind: 'applied',
@@ -69,7 +69,7 @@ export const items = [
     wrong: [
       { value: 8.33, say: 'That is the P/E before the buyback (25 ÷ 3.00). The buyback raises EPS while the price stays at $25.' },
       { value: 7.5, say: 'You kept the $200,000 of interest in earnings. Once the cash is spent it earns nothing: earnings fall to $11,800,000.' },
-      { value: 6.36, say: 'The price doesn’t rise with EPS: a fair-price buyback leaves it at $25. P/E = 25 ÷ EPS after.' },
+      { value: 6.86, say: 'You lowered the price as for a dividend ($22.50). A fair-price buyback leaves the price at $25: P/E = 25 ÷ EPS after.' },
     ],
     solution: 'Shares bought = 10,000,000 ÷ 25 = 400,000; left 3,600,000. Earnings = 11,800,000; EPS = $3.28 (3.2778). Price stays $25. P/E = 25 ÷ 3.2778 = 7.63, down from 8.33: the higher EPS is matched by a lower multiple.',
   },
@@ -152,7 +152,7 @@ export const items = [
     id: 'f05-m4-11', lesson: 'financial-planning', type: 'mc', kind: 'applied',
     prompt: 'A fictional restaurant group earned net income of $400,000, paid no dividend, and ended the year with equity of $1,000,000 and total assets of $6,000,000, most of it leased restaurants. Its sustainable growth rate works out at about 67%. What is the best reading?',
     options: [
-      'It is high because equity is thin; growing at 67% would mean adding debt and leases in proportion, about five dollars for each new dollar of equity',
+      'It is high because equity is thin: growing at 67% means adding about $5 of debt and leases per new $1 of equity',
       'The group can safely plan to grow by about two-thirds a year without raising any outside money',
       'The figure is wrong, because a sustainable growth rate cannot be higher than the return on assets',
       'It shows that the group should start paying dividends, since it retains more profit than it needs',

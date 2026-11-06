@@ -3,7 +3,7 @@
 // EBIT, tax, operating cash flow, capital spending, working capital, after-tax salvage); NPV, IRR, MIRR, payback,
 // discounted payback and the profitability index; the NPV profile (NPV against the discount rate, crossing zero at the
 // IRR); and a tornado of one-at-a-time sensitivities. Numbers from core/corpfin.js projectCashFlows and core/invest.js.
-//   { type: 'capbudget', title, inputs: [{ id, label, min, max, step, value, fmt: 'money'|'pct'|'int'|'num', unit }],
+//   { type: 'capbudget', title, inputs: [{ id, label, short? (tornado label), min, max, step, value, fmt: 'money'|'pct'|'int'|'num', unit }],
 //     model: (v) => projectCashFlows inputs, rate: 'rate' (the id of an input in %, 11 = 11%) | 0.11,
 //     show: ['metrics', 'table', 'profile', 'tornado'], tornado?: { inputId: [low, high] } (bars drawn as the change from the
 //     current NPV), profileMax?: 0.4, note }
@@ -97,7 +97,7 @@ export function mount(el, cfg, ctx) {
       tableTwin(profile, { caption: 'NPV at each discount rate', columns: [{ label: 'Rate' }, { label: 'NPV ($)', num: true }], rows: xs.filter((_, i) => i % 4 === 0).map((r) => [F.pct(r, 1), money(npv(r, R.fcf))]) });
     }
     if (showing.includes('tornado') && R.tornado) {
-      const lab = (id) => cfg.inputs.find((i) => i.id === id)?.label || id;
+      const lab = (id) => { const i = cfg.inputs.find((x) => x.id === id); return i?.short || i?.label || id; };   // `short`: a tornado label
       tornado.replaceChildren();
       barChart(tornado, { horizontal: true, categories: R.tornado.map((t) => lab(t.name)), series: [{ name: 'Change in NPV at the low value', values: R.tornado.map((t) => t.lowNpv - R.npv), cls: 'm-s3' }, { name: 'Change in NPV at the high value', values: R.tornado.map((t) => t.highNpv - R.npv), cls: 'm-s1' }],
         format: (y) => (y > 0 ? '+' : '') + F.compact(y), label: `Tornado: change in NPV from ${F.money(R.npv, { digits: 0 })} with each input moved to its low and high value, the others as set above, widest swing first` });

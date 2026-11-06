@@ -240,9 +240,9 @@ export const check = [
     id: 'f05-plan-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Why can a profitable, fast-growing business run short of cash?',
     options: [
-      'Growth ties up cash in inventory, receivables and equipment before the extra sales are collected, and retained profit covers only part of it',
+      'New stock, receivables and equipment must be paid for before the extra sales are collected',
       'Profitable businesses pay more tax, and tax is always larger than the profit kept in the business',
-      'Depreciation on new equipment uses up cash as the equipment wears out',
+      'Depreciation on the new equipment uses up cash each year as the equipment wears out',
       'Faster growth always lowers the profit margin, so profit falls as sales rise',
     ],
     answer: 0,

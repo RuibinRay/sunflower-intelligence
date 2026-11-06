@@ -179,7 +179,7 @@ export const independent = [
     id: 'f05-pay-i4', type: 'mc', kind: 'conceptual',
     prompt: 'A fictional company whose shares trade at $150 announces a three-for-one stock split. Nothing else changes. Which statement is correct?',
     options: [
-      'She will hold three times as many shares at about $50; wealth is unchanged',
+      'A shareholder will hold three times as many shares at about $50; wealth is unchanged',
       'The split pays shareholders $100 a share in new shares, which is taxed like a dividend',
       'The share price will stay near $150, because the company has signalled confidence by splitting',
       'Earnings per share will stay the same, since earnings are unaffected by the split',
@@ -261,10 +261,10 @@ export const check = [
     id: 'f05-pay-k4', type: 'mc', kind: 'applied',
     prompt: 'Maddox Pharmacy (fictional) pays $1.00 a share, 40% of its usual EPS of $2.50. A rival has closed and Maddox’s managers now expect EPS of about $3.50 for the foreseeable future. Managers who behave as the survey evidence describes would most likely:',
     options: [
-      'raise the dividend part of the way towards $1.40 this year and further in later years if the higher earnings hold',
+      'raise it part of the way to $1.40 now, and further if the higher earnings last',
       'raise the dividend to $1.40 at once, because the target payout ratio is 40%',
       'keep the dividend at $1.00 and pay out the extra earnings as a special dividend every year',
-      'cut the dividend to fund a buyback, because buybacks raise EPS',
+      'cut the dividend to fund a buyback, because buybacks raise earnings per share',
     ],
     answer: 0,
     feedback: {

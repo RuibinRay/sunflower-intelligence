@@ -89,7 +89,7 @@ export const PEERS = [
   { name: 'Harbour Street Foods', beta: 1.25, de: 0.55, tax: 0.25 },
 ];
 export const DEBT = {
-  termLoan: { lender: 'Coastline Bank', amount: 60_000, rate: 0.075, years: 5, monthly: true, start: '1 March 2028', covenant: { currentRatio: 1.2 } },
+  termLoan: { lender: 'Coastline Bank', amount: 60_000, rate: 0.075, years: 5, monthly: true, start: '31 March 2028' /* drawn that day; payments at each month end from 30 April */, covenant: { currentRatio: 1.2 } },
   lineOfCredit: { limit: F03F.lineOfCredit.limit, rate: F03F.lineOfCredit.rate, drawn: 24_000 },
   firstNote: { amount: COASTLINE_NOTE.principal, rate: COASTLINE_NOTE.rate / 100, repaid: COASTLINE_NOTE.matures },
   quote2027: F04_BREWER.loan.apr / 100,
@@ -171,7 +171,12 @@ export const DERIVED = {
 }
 // The project: Lantern after the financing: equity at Hollis's post-money valuation, debt = the new term loan (the line of credit is
 // treated as working capital and left out, which lessons say).
-const E = DERIVED.postMoney, D = DEBT.termLoan.amount;
+// Debt in the weights: the term loan plus the van note and the brewer plan still owed on 31 March 2028 (interest-bearing
+// debt, as the WACC lesson defines it); the line of credit is left out as working-capital finance. All priced at
+// Coastline's 7.5%, the marginal cost of new debt.
+DERIVED.otherDebtMar28 = { van: 15_000, brewer: Math.round(F03_BREWER.rows[10].end * 100) / 100 };
+DERIVED.debtAfter = DEBT.termLoan.amount + DERIVED.otherDebtMar28.van + DERIVED.otherDebtMar28.brewer;
+const E = DERIVED.postMoney, D = DERIVED.debtAfter;
 DERIVED.targetDE = D / E;
 DERIVED.betaL = CF.releverBeta(betaU, D / E, TAX);
 DERIVED.costOfEquityCapm = CF.capm({ rf: MARKET.rf, beta: DERIVED.betaL, mrp: MARKET.mrp });
