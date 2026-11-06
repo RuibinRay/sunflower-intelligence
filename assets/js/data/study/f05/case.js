@@ -50,15 +50,17 @@ export const COLD_BREW = {
 /** An in-house roaster instead of buying roasted beans from Kilnworth. */
 export const ROASTER = {
   price: 42_000, install: 6_000, macrs: 7, life: 7, salvage: 8_000,
-  kg: 4_000,                                          // roasted coffee a year (Lantern's 2027 purchases from Kilnworth)
-  kilnworthPerKg: 24.00, greenPerKg: 9.80, weightLoss: 0.16, runningPerKg: 1.20,
-  operator: 21_000, maintenance: 2_500,               // a part-time roaster operator and servicing, a year
+  kg: 2_400,                                          // roasted coffee a year (600 kg a quarter for the online shop and cafés)
+  kilnworthPerKg: 36.00,                              // Kilnworth’s $9.00 for a 250 g bag of House Blend (its December 2026 price, F02), roasted and packed
+  greenPerKg: 9.80, weightLoss: 0.16,                 // green beans lose about 16% of their weight in roasting
+  runningPerKg: 2.80,                                 // gas, bags and labels per kg roasted
+  operator: 30_000, maintenance: 2_500,               // a part-time roaster operator and servicing, a year
   space: 3_600,                                       // the kitchen corner it occupies could be sublet for $300 a month (opportunity cost)
 };
 /** Two roasters (mutually exclusive, different lives). */
 export const ROASTERS = [
-  { name: 'Roaster A (15 kg batch)', price: 48_000, life: 7, operator: 21_000, salvage: 8_000 },
-  { name: 'Roaster B (5 kg batch)', price: 22_000, life: 4, operator: 27_000, salvage: 3_000 },
+  { name: 'Roaster A (15 kg batch)', price: 48_000, life: 7, operator: 30_000, salvage: 8_000 },
+  { name: 'Roaster B (5 kg batch)', price: 22_000, life: 4, operator: 36_000, salvage: 3_000 },
 ];
 /** 2028's capital proposals and the $40,000 Ana can spend without new financing (capital rationing). */
 export const PROPOSALS = [
@@ -69,6 +71,10 @@ export const PROPOSALS = [
   { name: 'Solar panels on the kitchen roof', outlay: 19_000, life: 10, saving: 3_100 },
 ];
 export const BUDGET_2028 = 40_000;
+/** The discount rate Ana uses in modules 1–2: her working estimate before module 3 estimates the cost of capital. */
+export const WORKING_RATE = 0.11;
+/** The debt share Ana aims for in the long run (module 3's WACC); the project uses the actual post-financing weights. */
+export const TARGET_DV = 0.20;
 
 // ================================================================ the cost of capital (Ana's assumptions)
 export const MARKET = {
@@ -143,7 +149,14 @@ export const DERIVED = {
   postMoney: HOLLIS.cash / HOLLIS.stake, preMoney: HOLLIS.cash / HOLLIS.stake - HOLLIS.cash,
   newShares: SHARES.existing * HOLLIS.stake / (1 - HOLLIS.stake),
 };
-// Lantern after the financing: equity at Hollis's post-money valuation, debt = the new term loan (the line of credit is
+// Module 3: Lantern’s WACC at its target debt share.
+{
+  const de = TARGET_DV / (1 - TARGET_DV), bL = CF.releverBeta(betaU, de, TAX);
+  DERIVED.targetBeta = bL;
+  DERIVED.targetCostOfEquity = CF.capm({ rf: MARKET.rf, beta: bL, mrp: MARKET.mrp }) + MARKET.smallFirm;
+  DERIVED.targetWacc = CF.wacc({ E: 1 - TARGET_DV, D: TARGET_DV, rE: DERIVED.targetCostOfEquity, rD: DEBT.termLoan.rate, tax: TAX }).wacc;
+}
+// The project: Lantern after the financing: equity at Hollis's post-money valuation, debt = the new term loan (the line of credit is
 // treated as working capital and left out, which lessons say).
 const E = DERIVED.postMoney, D = DEBT.termLoan.amount;
 DERIVED.targetDE = D / E;
@@ -166,6 +179,7 @@ export const IDENTITIES = [
   ['Cold Brew: M02’s single-origin cost and natural grocers’ terms', COLD_BREW.cogs === 0.74 && COLD_BREW.tradeMargin === 0.38 && COLD_BREW.listing === 2_000],
   ['Hollis ends with 30%', Math.abs(DERIVED.newShares / (SHARES.existing + DERIVED.newShares) - HOLLIS.stake) < 1e-12],
   ['the roaster replaces Kilnworth beans worth less than 2027’s purchases of goods', ROASTER.kg * ROASTER.kilnworthPerKg < F03F.inventory.purchases],
+  ['Kilnworth’s price is F02’s December 2026 House Blend price, $9.00 a 250 g bag', ROASTER.kilnworthPerKg === 9 * 4],
   ['the law firm’s first fee is due 31 March 2028', F03F.lawFirm.paidAt === '2028-03-31'],
 ];
 export { bsLine };
