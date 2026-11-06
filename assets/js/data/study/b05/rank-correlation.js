@@ -5,9 +5,9 @@
 // Lane Hotel is fictional. Testing a rank correlation is testing-correlation's; outliers in general are
 // outliers-and-influence's; curves that turn back (U shapes) are nonlinear-and-restricted's.
 // Every figure printed is recomputed in `checks`.
-import { column, CLEAN_ROWS, CAFE_COLUMNS, SLIP, DERIVED as D } from './case.js?v=24';
-import * as C from '../../../core/correlation.js?v=24';
-import { ranks } from '../../../core/stats.js?v=24';
+import { column, CLEAN_ROWS, CAFE_COLUMNS, SLIP, DERIVED as D } from './case.js?v=25';
+import * as C from '../../../core/correlation.js?v=25';
+import { ranks } from '../../../core/stats.js?v=25';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };
