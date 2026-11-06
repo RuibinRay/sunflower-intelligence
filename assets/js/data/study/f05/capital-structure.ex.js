@@ -144,9 +144,9 @@ export const guided = [
     id: 'f05-cap-g4', type: 'mc', kind: 'conceptual',
     prompt: 'In a perfect market without taxes, Sallowfield Software (fictional) has debt equal to its equity at market values. An investor holds $10,000 of its shares but would rather have the risk of an all-equity Sallowfield. What does Modigliani and Miller’s homemade-leverage argument say she can do?',
     options: [
-      'Sell half her shares and lend the $5,000 she receives, for example by buying Sallowfield’s bonds',
-      'Borrow $10,000 on her own account and buy more Sallowfield shares',
-      'Nothing: only the company can change the risk of its shares, by repaying its debt',
+      'Sell half her shares and lend the $5,000, for example by buying Sallowfield’s bonds',
+      'Borrow $10,000 on her own account at the bank’s rate and use it to buy more Sallowfield shares',
+      'Nothing: only the company itself can change the risk of its shares, by repaying some of its debt',
       'Sell all her shares, because levered shares always carry more risk than she wants',
     ],
     answer: 0,
@@ -217,10 +217,10 @@ export const independent = [
     id: 'f05-cap-i4', type: 'mc', kind: 'applied',
     prompt: 'Two fictional firms pay tax at the same rate and have the same expected EBIT. One operates a toll bridge under a 40-year concession with steady traffic; the other designs video games and its value lies in its studio’s staff and future titles. According to the trade-off theory, which should have more debt, and why?',
     options: [
-      'The bridge operator, because its cash flows are steady and its asset keeps its value in distress, so expected distress costs are lower',
+      'The bridge operator: steady cash flows and an asset that keeps its value make expected distress costs low',
       'The games studio, because its higher growth means it has more future profit to shield from tax',
       'Neither: with equal tax rates and equal expected EBIT, the trade-off theory gives them the same target',
-      'The games studio, because its shareholders can gain more from the risky projects that debt encourages',
+      'The games studio, because its shareholders can gain more from the risky new titles that extra debt would encourage them to fund',
     ],
     answer: 0,
     feedback: {
@@ -266,9 +266,9 @@ export const check = [
     id: 'f05-cap-k1', type: 'mc', kind: 'conceptual',
     prompt: 'What does Modigliani and Miller’s Proposition I, without taxes, say about a firm that borrows to buy back shares?',
     options: [
-      'Its value is unchanged: the debt changes how the assets’ cash flows are divided, not their total',
+      'Its value is unchanged; only the split of the cash flows changes',
       'Its value rises, because the debt replaces equity with cheaper finance',
-      'Its value falls, because the shares that remain are riskier',
+      'Its value falls, because the shares that remain are now riskier than before',
       'Its share price rises by the amount of debt raised divided by the number of shares',
     ],
     answer: 0,

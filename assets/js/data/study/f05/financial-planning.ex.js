@@ -140,7 +140,7 @@ export const guided = [
     id: 'f05-plan-g4', type: 'mc', kind: 'conceptual',
     prompt: 'A fictional bakery’s ovens run only six hours a day, though they could run twelve. Its manager forecasts next year’s funds needed by growing every asset with sales. Which assumption of the percent-of-sales method fails, and what is the effect?',
     options: [
-      'Fixed assets do not need to rise with sales while there is spare capacity, so the forecast overstates the funds needed',
+      'Fixed assets needn’t grow while capacity is spare, so the AFN is overstated',
       'Spontaneous liabilities do not rise with sales, so the forecast understates the funds needed',
       'The profit margin cannot stay constant, so the forecast overstates retained earnings',
       'The payout ratio must change when sales grow, so the forecast cannot be used at all',
@@ -201,10 +201,10 @@ export const independent = [
     id: 'f05-plan-i5', type: 'mc', kind: 'applied',
     prompt: 'A fictional toy wholesaler’s line of credit requires the balance to be zero for 30 consecutive days each year. Its cash budget shows the line drawn in every month of the coming year, peaking before Christmas. What does this tell the owner?',
     options: [
-      'Part of the line is financing a permanent need, such as a larger stock or slower customers, which needs longer-term finance',
-      'The budget is wrong, because a line of credit is designed to be drawn all year',
+      'The line is funding a permanent need, which calls for longer-term finance',
+      'The budget must be wrong, because a line of credit is designed to be drawn all year round',
       'Nothing, provided the peak stays below the limit',
-      'The business is unprofitable and should stop trading',
+      'The business must be unprofitable, since a profitable one would repay the line from its earnings',
     ],
     answer: 0,
     feedback: {

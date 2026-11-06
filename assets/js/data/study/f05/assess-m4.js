@@ -78,7 +78,7 @@ export const items = [
     prompt: 'Thornleigh Foods (fictional), a US-listed company, has declared a dividend with a record date of Wednesday 14 June. Trades settle one business day after the trade, and the ex-dividend date is the record date. An investor buys shares on Wednesday 14 June. Does she receive the dividend?',
     options: [
       'No: she bought on the ex-dividend date, so the seller receives it',
-      'Yes: she is a shareholder on the record date, which is what decides it',
+      'Yes: she is on the register on the record date',
       'Yes, but only if she still holds the shares on the payment date',
       'No, because only shareholders on the declaration date receive a dividend',
     ],
@@ -92,9 +92,9 @@ export const items = [
   },
   {
     id: 'f05-m4-7', lesson: 'payout-policy', type: 'mc', kind: 'conceptual',
-    prompt: 'Larkfield Systems (fictional) believes its shares are worth $50 but they trade at $60. If it buys back shares at $60, what happens to the shareholders who do not sell, assuming the board is right about the value?',
+    prompt: 'Ravenmoor Systems (fictional) believes its shares are worth $50 but they trade at $60. If it buys back shares at $60, what happens to the shareholders who do not sell, assuming the board is right about the value?',
     options: [
-      'They lose: the company pays $10 a share more than each share bought is worth, and they bear the loss',
+      'They lose: the company overpays by $10 for each share it buys',
       'They gain: fewer shares means a larger share of the earnings, so EPS rises',
       'Nothing changes for them, because a buyback never changes the value of the remaining shares',
       'They gain $10 a share, the difference between the market price and the value',
@@ -109,7 +109,7 @@ export const items = [
   },
   {
     id: 'f05-m4-8', lesson: 'financial-planning', type: 'num', kind: 'numerical',
-    prompt: 'Penrose Bottling (fictional) had sales of $4,000,000. Its current assets of $1,000,000 rise with sales; its fixed assets of $2,000,000 are working at 90% of capacity. Payables and accruals of $400,000 rise with sales. Its net margin is 5% and it pays out half its profit. If sales grow 20%, what are the additional funds needed?',
+    prompt: 'Saltings Bottling (fictional) had sales of $4,000,000. Its current assets of $1,000,000 rise with sales; its fixed assets of $2,000,000 are working at 90% of capacity. Payables and accruals of $400,000 rise with sales. Its net margin is 5% and it pays out half its profit. If sales grow 20%, what are the additional funds needed?',
     answer: 160000, check: () => { const S0 = 4000000, S1 = S0 * 1.2, dS = S1 - S0, full = S0 / 0.9; return Math.max(0, 2000000 * S1 / full - 2000000) + 0.25 * dS - 0.1 * dS - 0.05 * S1 * 0.5; }, unit: '$', places: 0, tol: 1,
     wrong: [
       { value: 400000, say: 'That grows the fixed assets with sales from today. At 90% of capacity they can already support $4,444,444; only the sales above that need new equipment.' },
@@ -139,7 +139,7 @@ export const items = [
   },
   {
     id: 'f05-m4-10', lesson: 'financial-planning', type: 'num', kind: 'applied',
-    prompt: 'Whitcombe Tours (fictional) starts January with $20,000 of cash and nothing drawn on its line of credit, which charges 1.5% a month on the balance drawn at the start of each month. It keeps at least $8,000 of cash, drawing on the line when it would fall below that and repaying the line from any cash above it. January: receipts $30,000, payments $50,000. February: receipts $45,000, payments $32,000. How much cash will it have at the end of February?',
+    prompt: 'Kestrelby Tours (fictional) starts January with $20,000 of cash and nothing drawn on its line of credit, which charges 1.5% a month on the balance drawn at the start of each month. It keeps at least $8,000 of cash, drawing on the line when it would fall below that and repaying the line from any cash above it. January: receipts $30,000, payments $50,000. February: receipts $45,000, payments $32,000. How much cash will it have at the end of February?',
     answer: 12880, check: () => CF.cashBudget({ opening: 20000, receipts: [30000, 45000], payments: [50000, 32000], minimum: 8000, rate: 0.015 }).endCash, unit: '$', places: 0, tol: 0.5,
     wrong: [
       { value: 20880, say: 'That leaves the $8,000 drawn in January unpaid. Cash above the minimum repays the line first.' },

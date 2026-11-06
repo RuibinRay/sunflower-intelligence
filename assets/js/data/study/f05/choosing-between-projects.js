@@ -53,6 +53,7 @@ export default {
     { lesson: 'f05/investment-criteria', why: 'You need the IRR, the NPV profile and the profitability index, and the warning there that IRR can mislead for mutually exclusive projects.' },
     { lesson: 'f05/project-cash-flows', why: 'The roasters’ and Cold Brew’s free cash flows are built there: tax, MACRS depreciation, working capital and after-tax salvage.' },
     { lesson: 'f04/annuities', why: 'The equivalent annual annuity is an annuity payment worked backwards from a present value.' },
+    { lesson: 'f04/inflation-and-real-returns', why: 'Comparing machines over repeated replacements is done in real terms: real cash flows with a real rate.' },
   ],
   case: 'lantern',
 
@@ -99,7 +100,7 @@ export default {
         ['Resale value at the end of its life', '$8,000', '$3,000'],
         ['Present value of its costs after tax at 11%', '$142,700', '$100,195'],
       ],
-      note: 'Both are 7-year MACRS property, taxed at 25%; each is sold at the end of its life and the gain over its remaining tax value is taxed. The costs exclude everything that is the same for both machines.',
+      note: 'Both are 7-year MACRS property, taxed at 25%; each is sold at the end of its life and the gain over its remaining tax value is taxed. As in the case’s cash-flow model, each machine takes the full Table A-1 percentage in its year of sale: the half-year rule for the year of disposal (project-cash-flows) is ignored here, a small difference that is mostly timing. The costs exclude everything that is the same for both machines.',
     } },
     { p: 'B’s costs have the lower present value, $100,195 against $142,700, so B looks cheaper. But that compares four years of roasting with seven. One fair comparison is a <g>replacement chain</g>: assume each roaster is replaced by an identical one when it wears out, and compare the chains over a period both fit into, the least common multiple of the lives. For 4 and 7 years that is 28 years: seven B roasters in a row against four As. Discounting each machine’s present value back from the date it is bought, A’s chain costs $260,485 and B’s $277,793 in today’s money. A is cheaper by $17,309.' },
 
@@ -108,7 +109,7 @@ export default {
     { math: String.raw`\text{EAA} = \text{NPV} \times \dfrac{r}{1 - (1 + r)^{-n}}` },
     { p: 'For roaster A, <m>142{,}700 \\times 0.11 \\div (1 - 1.11^{-7}) = 142{,}700 \\div 4.7122 = 30{,}283</m> dollars a year; for B, <m>100{,}195 \\div 3.1024 = 32{,}295</m> dollars a year. Owning A costs about $2,012 a year less, every year, for as long as Lantern roasts. The chain gives the same answer because each chain is just its EAC paid for 28 years: <m>30{,}283 \\times 8.6016 = 260{,}485</m>.' },
     { p: 'The things left out don’t change the ranking. With the yearly saving (Kilnworth’s price less beans and running costs), the maintenance and the kitchen corner included, roaster A has an NPV of $18,386 over seven years, an EAA of $3,902; roaster B has an NPV of $5,862 over four years, an EAA of $1,890. The gap is the same $2,012 a year: the items common to both add the same yearly amount to each.' },
-    { callout: 'warn', title: 'What the annual equivalents assume', html: 'Both methods assume the choice will be <b>repeated</b>: that Lantern will keep roasting after the first machine wears out and can buy a like-for-like replacement at the same real cost. If the need ends in four years (say Ana expects to sell the business), compare the two over four years instead, with A sold early. If technology or prices are expected to change, model the actual replacements rather than identical copies. And keep the rate and the cash flows consistent: nominal cash flows that grow with inflation call for a nominal rate (F04 inflation and real returns).' },
+    { callout: 'warn', title: 'What the annual equivalents assume', html: 'Both methods assume the choice will be <b>repeated</b>: that Lantern will keep roasting after the first machine wears out and can buy a like-for-like replacement at the same real cost. If the need ends in four years (say Ana expects to sell the business), compare the two over four years instead, with A sold early. If technology is expected to change, model the actual replacements rather than identical copies. And the chain repeats identical present values, which assumes no inflation: if prices rise, a like-for-like replacement costs more in nominal dollars each time. So work in real terms (real cash flows and a real rate, as in F04’s inflation and real returns), and read the EAC as a constant real cost a year.' },
     { p: 'In Excel, the EAA is <x>=PMT(rate, life, -NPV)</x>: <x>=PMT(11%,7,-142700)</x> returns about 30,283. PMT treats the NPV as a loan, so the minus sign makes the annual amount positive.' },
 
     { h: 'Replacement decisions' },

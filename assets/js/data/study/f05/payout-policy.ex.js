@@ -121,7 +121,7 @@ export const guided = [
     options: [
       'Sell 100 shares for $3,000; she then has $3,000 of cash and 1,900 shares, as wealthy as with the dividend',
       'Nothing: without a dividend she must wait until the company decides to pay one',
-      'Sell 100 shares for $3,000, but she ends up poorer, because she owns fewer shares than with the dividend',
+      'Sell 100 shares for $3,000, but she ends up poorer than with the dividend, because she now owns fewer shares',
       'Borrow $3,000 against her shares, since selling shares would lose part of her investment',
     ],
     answer: 0,
@@ -179,7 +179,7 @@ export const independent = [
     id: 'f05-pay-i4', type: 'mc', kind: 'conceptual',
     prompt: 'A fictional company whose shares trade at $150 announces a three-for-one stock split. Nothing else changes. Which statement is correct?',
     options: [
-      'Each shareholder will hold three times as many shares, each worth about $50, so her wealth is unchanged',
+      'She will hold three times as many shares at about $50; wealth is unchanged',
       'The split pays shareholders $100 a share in new shares, which is taxed like a dividend',
       'The share price will stay near $150, because the company has signalled confidence by splitting',
       'Earnings per share will stay the same, since earnings are unaffected by the split',
@@ -227,7 +227,7 @@ export const check = [
     id: 'f05-pay-k1', type: 'mc', kind: 'conceptual',
     prompt: 'In a perfect market, a company with surplus cash can pay it as a dividend or use it to buy back shares at their fair price. Which is true?',
     options: [
-      'Shareholders’ total wealth is the same either way; only the form in which they hold it differs',
+      'Shareholders’ total wealth is the same either way; only the form they hold it in differs',
       'The buyback makes the remaining shareholders richer, because EPS rises',
       'The dividend makes shareholders richer, because they receive cash they did not have before',
       'The buyback makes shareholders poorer, because the company now owns fewer assets per share',

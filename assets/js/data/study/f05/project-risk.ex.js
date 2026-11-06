@@ -218,13 +218,13 @@ export const independent = [
     prompt: 'Which statements about Monte Carlo simulation of a project’s NPV are correct? Select all that apply.',
     options: [
       'It shows the whole distribution of NPVs, including the chance of a loss, not just a few scenarios.',
-      'If inputs that move together are drawn independently, the simulation understates how bad (and how good) outcomes can be.',
+      'If low volume tends to come with low prices but they are drawn independently, the simulation understates how bad (and how good) outcomes can be.',
       'Its results are only as reliable as the distributions and correlations assumed for the inputs.',
       'Because it uses thousands of draws, its probability of loss can be relied on to the decimal place.',
       'The simulated NPVs should be discounted at the risk-free rate, since the simulation already shows the risk.',
     ],
     answer: [0, 1, 2],
-    feedback: { 3: 'Thousands of draws make the result precise about the assumed model, not accurate about the world.', 4: 'Simulated cash flows are expected cash flows, not certainty equivalents; discount them at the risk-adjusted rate.' },
+    feedback: { 3: 'Thousands of draws make the result precise about the assumed model, not accurate about the world.', 4: 'Each draw’s cash flows are possible outcomes, not certainty equivalents; discount them at the risk-adjusted rate.' },
     solution: 'Simulation gives a full distribution (A), but ignored correlations understate the tails (B), and everything rests on the assumed distributions (C). Many draws give false precision, not reliability (D), and the cash flows still need the risk-adjusted rate (E).',
   },
 ];
