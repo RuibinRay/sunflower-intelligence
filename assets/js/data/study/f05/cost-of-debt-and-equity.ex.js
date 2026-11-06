@@ -6,7 +6,7 @@ import { MARKET, PEERS, DEBT, TARGET_DV, TAX } from './case.js?v=28';
 import * as CF from '../../../core/corpfin.js?v=28';
 
 const { rf, mrp, smallFirm } = MARKET;
-const pct = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v * 100).toFixed(d)}%`;
+const pct = (v, d = 2) => `${v < 0 ? '−' : ''}${(Math.abs(v * 100) + 1e-9).toFixed(d)}%`;   // epsilon: 5.625 shows as 5.63
 const money = (v) => `$${v.toFixed(2)}`;
 const bondPrice = (y, coupon, years, face = 100) => { let v = 0; for (let t = 1; t <= years; t++) v += face * coupon / (1 + y) ** t; return v + face / (1 + y) ** years; };
 const peersU = PEERS.map((p) => CF.unleverBeta(p.beta, p.de, p.tax));
@@ -25,7 +25,7 @@ export const widgets = {
     compute: (v) => {
       const c = v.coupon / 100, T = v.tax / 100;
       const y = CF.ytm({ price: v.price, face: 100, coupon: c, years: v.years });
-      const cy = v.price > 0 ? 100 * c / v.price : 0;
+      const cy = v.price > 0 ? c * 100 / v.price : 0;   // a fraction
       const ys = Array.from({ length: 16 }, (_, i) => i);
       let note;
       if (Math.abs(v.price - 100) < 0.05) note = 'At a price of $100 the yield equals the coupon: the bond pays exactly what the market requires.';
@@ -37,13 +37,13 @@ export const widgets = {
         headline: { label: 'Yield to maturity (cost of debt before tax)', value: pct(y) },
         rows: [
           ['Coupon paid each year', money(100 * c)],
-          ['Current yield (coupon ÷ price)', `${cy.toFixed(2)}%`],
+          ['Current yield (coupon ÷ price)', pct(cy)],
           ['After-tax cost of debt', pct(y * (1 - T))],
           ['Price if the yield were 1 point higher', money(bondPrice(y + 0.01, c, v.years))],
         ],
         note,
         chart: { kind: 'line', x: { label: 'Yield to maturity (%)', values: ys },
-          series: [{ name: 'Price of this bond', values: ys.map((r) => Math.round(bondPrice(r / 100, c, v.years) * 100) / 100) }, { name: 'Current price', values: ys.map(() => v.price) }],
+          series: [{ name: 'Price', values: ys.map((r) => Math.round(bondPrice(r / 100, c, v.years) * 100) / 100) }, { name: 'Today', values: ys.map(() => v.price) }],
           y: { label: 'Price per $100 ($)' } },
       };
     },
@@ -122,7 +122,7 @@ export const guided = [
     feedback: {
       1: 'The 6% was agreed in 2026, and the note is repaid on 1 March 2028. It tells Ana nothing about what lenders require now.',
       2: 'That was the market’s price a year earlier. Rates have moved since: Coastline now asks 7.5%.',
-      3: 'The line of credit is short-term, floating-rate money for working capital. Long-lived projects are financed at the long-term rate.',
+      3: 'The line of credit is short-term money meant for seasonal working capital. Long-lived projects are financed at the long-term rate.',
     },
     solution: 'Use 7.5%: it is what a lender requires today for five-year money, which is what the cost of debt means. After tax it is 7.5% × 0.75 = 5.625%. The old note and the old quote are history; the line of credit is a different, short-term kind of borrowing.',
   },
@@ -235,7 +235,7 @@ export const check = [
     options: [
       'It is a judgement outside the CAPM: some add it for size and illiquidity, others find the evidence weak',
       'It is required by the CAPM for any firm whose shares are not listed',
-      'It corrects for Lantern’s higher debt, which the relevered beta leaves out',
+      'Some analysts add it, but only to correct for Lantern’s debt, which they say the relevered beta leaves out',
       'Historical data show small firms have earned at least 3% a year more than large ones in every decade since the 1920s',
     ],
     answer: 0,
@@ -249,7 +249,7 @@ export const check = [
   {
     id: 'f05-cdc-k5', type: 'multi', kind: 'conceptual',
     prompt: 'Why can’t Ana use the dividend growth model for Lantern’s cost of equity? Select all that apply.',
-    options: ['Lantern’s shares have no market price', 'Lantern’s dividends ($300 and $4,700 in 2026, $2,000 in 2027) follow no steady growth path', 'The model gives the cost of debt, not of equity', 'The model needs dividends to grow at a constant rate for ever, below the cost of equity', 'The model works only for firms with no debt'],
+    options: ['Lantern’s shares have no market price', 'Lantern’s dividends ($300 and $4,700 in 2026, $2,000 in 2027) follow no steady growth path', 'The model gives the cost of debt, not of equity', 'Lantern’s dividends cannot be expected to grow at a constant rate below the cost of equity for ever', 'The model works only for firms with no debt'],
     answer: [0, 1, 3],
     feedback: { 2: 'The model gives the return implied by a share’s price and dividends: a cost of equity.', 4: 'Debt doesn’t stop the model working; the price and dividends already reflect it.' },
     solution: 'The model needs a market price P₀ and dividends growing steadily for ever at g below r_E. Lantern has neither a price nor a steady dividend. Debt is no obstacle.',

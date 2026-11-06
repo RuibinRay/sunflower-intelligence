@@ -99,11 +99,11 @@ export const items = [
   },
   {
     id: 'f05-m3-8', lesson: 'weighted-average-cost-of-capital', type: 'num', kind: 'applied',
-    prompt: 'Linnet Foods (fictional), a frozen-food maker that keeps 20% debt (D/E 0.25) at a pre-tax cost of 6%, is considering an energy-drinks line. A listed energy-drinks maker has an equity beta of 1.60 at a D/E of 0.60. Tax is 25%, the risk-free rate 4.2% and the market risk premium 5.5%. What discount rate should Linnet use for the new line? Give a percentage to two decimal places.',
+    prompt: 'Kingsmead Foods (fictional), a frozen-food maker that keeps 20% debt (D/E 0.25) at a pre-tax cost of 6%, is considering an energy-drinks line. A listed energy-drinks maker has an equity beta of 1.60 at a D/E of 0.60. Tax is 25%, the risk-free rate 4.2% and the market risk premium 5.5%. What discount rate should Kingsmead use for the new line? Give a percentage to two decimal places.',
     answer: 10.03, check: () => { const b = CF.releverBeta(CF.unleverBeta(1.6, 0.6, 0.25), 0.25, 0.25); return CF.wacc({ E: 0.8, D: 0.2, rE: rf + b * mrp, rD: 0.06, tax: 0.25 }).wacc * 100; }, unit: '%', places: 2, tol: 0.03,
     wrong: [
-      { value: 11.3, say: 'That uses the peer’s beta as it stands. Unlever it (1.60 ÷ 1.45 = 1.103) and relever at Linnet’s D/E of 0.25.' },
-      { value: 11.41, say: 'That is the cost of equity for the line. The project’s rate also weights in Linnet’s after-tax cost of debt.' },
+      { value: 11.3, say: 'That uses the peer’s beta as it stands. Unlever it (1.60 ÷ 1.45 = 1.103) and relever at Kingsmead’s D/E of 0.25.' },
+      { value: 11.41, say: 'That is the cost of equity for the line. The project’s rate also weights in Kingsmead’s after-tax cost of debt.' },
     ],
     solution: 'Unlever: 1.60 ÷ (1 + 0.75 × 0.60) = 1.103. Relever at 0.25: 1.103 × 1.1875 = 1.310. Cost of equity 4.2% + 1.310 × 5.5% = 11.41%. Rate = 0.8 × 11.41% + 0.2 × 6% × 0.75 = 9.13% + 0.90% = 10.03%.',
   },
@@ -123,7 +123,7 @@ export const items = [
     options: [
       'Raise the WACC by 5 points for this project',
       'Ignore them: fees are a financing cost, and financing costs never enter a project’s cash flows or its discount rate',
-      'Add them to the factory’s initial outlay, grossing up the amount raised by the weighted flotation rate',
+      'Add them to the factory’s initial outlay, grossing up the amount raised by the 5% fee',
       'Deduct 5% of the factory’s cash flow every year of its life',
     ],
     answer: 2,
@@ -132,7 +132,7 @@ export const items = [
       1: 'Interest stays out because the WACC charges for it. Flotation fees are a one-off cash cost the rate doesn’t include, so they must go somewhere.',
       3: 'The fee is paid once, at the start, not as a share of every year’s cash flow.',
     },
-    solution: 'Flotation costs are a one-off cash cost of raising this project’s money. Weight them by the target mix (f_A), gross up the amount needed by 1 − f_A, and add the difference to the initial outlay; leave the WACC unchanged.',
+    solution: 'Flotation costs are a one-off cash cost of raising this project’s money. Gross up the amount needed by 1 − 0.05 (with a mix of sources, by 1 − f_A, the weighted rate) and add the difference to the initial outlay; leave the WACC unchanged.',
   },
   {
     id: 'f05-m3-11', lesson: 'weighted-average-cost-of-capital', type: 'formula', kind: 'applied',
@@ -158,6 +158,6 @@ export const items = [
       3: 'The unlevered beta measures the peers’ business risk; Lantern’s target doesn’t change it.',
       4: 'With Coastline’s rate fixed at 7.5% and tax at 25%, the after-tax cost stays at 5.625%. In practice lenders would charge more as debt grows.',
     },
-    solution: `More debt raises the relevered beta (0.850 at the base, ${CF.releverBeta(DERIVED.betaU, 0.35 / 0.65, TAX).toFixed(3)} at 35%) and the cost of equity, but more of the firm is financed by cheaper, tax-deductible debt, so the WACC falls slightly, to about ${(CF.wacc({ E: 0.65, D: 0.35, rE: rf + CF.releverBeta(DERIVED.betaU, 0.35 / 0.65, TAX) * mrp + MARKET.smallFirm, rD: DEBT.termLoan.rate, tax: TAX }).wacc * 100).toFixed(2)}%. The peers’ unlevered beta and the after-tax cost of debt don’t change.`,
+    solution: `More debt raises the relevered beta (from ${DERIVED.targetBeta.toFixed(3)} at 20% to ${CF.releverBeta(DERIVED.betaU, 0.35 / 0.65, TAX).toFixed(3)} at 35%) and the cost of equity, but more of the firm is financed by cheaper, tax-deductible debt, so the WACC falls slightly, to about ${(CF.wacc({ E: 0.65, D: 0.35, rE: rf + CF.releverBeta(DERIVED.betaU, 0.35 / 0.65, TAX) * mrp + MARKET.smallFirm, rD: DEBT.termLoan.rate, tax: TAX }).wacc * 100).toFixed(2)}%. The peers’ unlevered beta and the after-tax cost of debt don’t change.`,
   },
 ];

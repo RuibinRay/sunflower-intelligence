@@ -8,7 +8,7 @@ import { npv } from '../../../core/invest.js?v=28';
 
 const { rf, mrp, smallFirm } = MARKET;
 const rD = DEBT.termLoan.rate;
-const pct = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v * 100).toFixed(d)}%`;
+const pct = (v, d = 2) => `${v < 0 ? '−' : ''}${(Math.abs(v * 100) + 1e-9).toFixed(d)}%`;   // epsilon: 5.625 shows as 5.63
 const money0 = (v) => `${v < 0 ? '−' : ''}$${Math.round(Math.abs(v)).toLocaleString('en-US')}`;
 const CB = coldBrewFlows().fcf;
 const waccAt = (dv, prem = smallFirm) => { const b = CF.releverBeta(DERIVED.betaU, dv / (1 - dv), TAX); return CF.wacc({ E: 1 - dv, D: dv, rE: rf + b * mrp + prem, rD, tax: TAX }).wacc; };
@@ -53,7 +53,7 @@ export const widgets = {
         ],
         note: `This rate is ${cmp} Lantern’s WACC. At ${pct(r)} Cold Brew’s NPV is ${money0(n)}: ${n > 0 ? 'still worth doing on these forecasts.' : 'the project no longer pays for its risk on these forecasts.'} Only systematic risk belongs in the rate; uncertainty about sales belongs in the cash-flow analysis.`,
         chart: { kind: 'line', x: { label: 'Discount rate (%)', values: rates },
-          series: [{ name: 'Cold Brew NPV', values: rates.map((x) => Math.round(npv(x / 100, CB))) }, { name: 'Zero', values: rates.map(() => 0) }],
+          series: [{ name: 'Cold Brew NPV', values: rates.map((x) => Math.round(npv(x / 100, CB))) }],
           y: { label: 'NPV ($)' } },
       };
     },
@@ -130,7 +130,7 @@ export const guided = [
   {
     id: 'f05-wacc-g3', type: 'steps', kind: 'applied',
     prompt: 'Rowanbrook Hotels (fictional) is considering a commercial laundry that would serve other hotels. Its pure-play peer, a listed laundry firm, has an equity beta of 0.70 at a D/E of 0.40. Rowanbrook keeps 40% debt (D/E 0.6667) and pays 6.5% on it; tax is 25%, the risk-free rate 4.2% and the market risk premium 5.5%. Rowanbrook’s own WACC is 9.4%.',
-    solution: 'Unlever: 0.70 ÷ (1 + 0.75 × 0.40) = 0.538. Relever at D/E 0.6667: 0.538 × (1 + 0.75 × 0.6667) = 0.538 × 1.5 = 0.808. Cost of equity 4.2% + 0.808 × 5.5% = 8.64%. Project rate 0.6 × 8.64% + 0.4 × 6.5% × 0.75 = 5.19% + 1.95% = 7.13%, well below the hotel group’s 9.4%: laundry is a steadier business than hotels.',
+    solution: 'Unlever: 0.70 ÷ (1 + 0.75 × 0.40) = 0.538. Relever at D/E 0.6667: 0.538 × (1 + 0.75 × 0.6667) = 0.538 × 1.5 = 0.808. Cost of equity 4.2% + 0.808 × 5.5% = 8.64%. Project rate 0.6 × 8.64% + 0.4 × 6.5% × 0.75 = 5.19% + 1.95% = 7.14%, well below the hotel group’s 9.4%: laundry is a steadier business than hotels.',
     steps: [
       { id: 'f05-wacc-g3-s1', type: 'num', prompt: 'The peer’s unlevered beta, to three decimal places.',
         answer: 0.538, check: () => CF.unleverBeta(0.7, 0.4, 0.25), unit: '', places: 3, tol: 0.002,
@@ -141,11 +141,11 @@ export const guided = [
         hints: ['Multiply by 1 + 0.75 × 0.6667 = 1.5.'],
         wrong: [{ value: 0.7, say: 'That is the peer’s beta at its own leverage. Unlever, then relever at Rowanbrook’s.' }] },
       { id: 'f05-wacc-g3-s3', type: 'num', prompt: 'The rate for the laundry project. Give a percentage to two decimal places.',
-        answer: 7.13, check: () => { const b = CF.releverBeta(CF.unleverBeta(0.7, 0.4, 0.25), 0.4 / 0.6, 0.25); return (0.6 * (rf + b * mrp) + 0.4 * 0.065 * 0.75) * 100; }, unit: '%', places: 2, tol: 0.03,
+        answer: 7.14, check: () => { const b = CF.releverBeta(CF.unleverBeta(0.7, 0.4, 0.25), 0.4 / 0.6, 0.25); return (0.6 * (rf + b * mrp) + 0.4 * 0.065 * 0.75) * 100; }, unit: '%', places: 2, tol: 0.03,
         hints: ['Cost of equity 4.2% + β × 5.5%; then weight 60% equity and 40% after-tax debt.'],
         wrong: [{ value: 9.4, say: 'That is Rowanbrook’s own WACC, which reflects hotels. The laundry’s risk comes from its peer.' }, { value: 7.79, say: 'You left the tax off the debt: use 6.5% × 0.75.' }] },
       { id: 'f05-wacc-g3-s4', type: 'mc', prompt: 'The laundry is expected to earn 8.2%. What should Rowanbrook conclude?',
-        options: ['Accept: 8.2% is above the 7.13% its own risk requires', 'Reject: 8.2% is below the group’s 9.4% WACC', 'Reject: a hotel group should not invest outside hotels', 'Accept only if it can be financed entirely with debt at 6.5%'],
+        options: ['Accept: 8.2% is above the 7.14% its own risk requires', 'Reject: 8.2% is below the group’s 9.4% WACC', 'Reject: a hotel group should not invest outside hotels', 'Accept only if it can be financed entirely with debt at 6.5%'],
         answer: 0,
         hints: ['Which rate reflects the laundry’s risk?'],
         feedback: { 1: 'The group WACC reflects hotels’ risk. Judged against it, a safe project that earns more than its own risk requires would be rejected wrongly.', 2: 'Diversification by a firm is not in itself a reason to reject; what matters is whether the project earns its required return.', 3: 'The financing mix is already in the rate. Borrowing more for this project would not change the risk of its business.' } },
@@ -214,7 +214,8 @@ export const independent = [
   {
     id: 'f05-wacc-i6', type: 'formula', kind: 'applied',
     prompt: 'Column B holds a firm’s market values of equity, preferred stock and debt; column C the after-tax cost of each; D2:D4 their weights. In B6, write one formula that returns the WACC.',
-    sheet: { cells: { A1: 'Source', B1: 'Market value ($m)', C1: 'After-tax cost', D1: 'Weight', A2: 'Equity', B2: 300, C2: 0.085, D2: '=B2/SUM($B$2:$B$4)', A3: 'Preferred', B3: 50, C3: 0.062, D3: '=B3/SUM($B$2:$B$4)', A4: 'Debt', B4: 150, C4: 0.0405, D4: '=B4/SUM($B$2:$B$4)', A6: 'WACC' } },
+    sheet: { cells: { A1: 'Source', B1: 'Market value ($m)', C1: 'After-tax cost', D1: 'Weight', A2: 'Equity', B2: 300, C2: 0.085, D2: '=B2/SUM($B$2:$B$4)', A3: 'Preferred', B3: 50, C3: 0.062, D3: '=B3/SUM($B$2:$B$4)', A4: 'Debt', B4: 150, C4: 0.0405, D4: '=B4/SUM($B$2:$B$4)', A6: 'WACC' },
+      vary: { B2: [250, 420], B3: [30, 90], B4: [100, 220], C2: [0.08, 0.11] } },
     cell: 'B6', view: 'A1:D6', widths: { A: 12, B: 17, C: 14, D: 10 }, formats: { B: '#,##0.0', C: '0.00%', D: '0.0%', B6: '0.00%' },
     answer: '=SUMPRODUCT(C2:C4,D2:D4)',
     alt: ['=SUMPRODUCT(D2:D4,C2:C4)', '=SUMPRODUCT(B2:B4,C2:C4)/SUM(B2:B4)', '=C2*D2+C3*D3+C4*D4'],
@@ -233,7 +234,7 @@ export const check = [
     prompt: 'Suppose Ana set Lantern’s target at 30% debt (D/E 0.4286) and Coastline still charged 7.5%. Relevering the peers’ average unlevered beta of 0.850 and keeping her 3% premium, what would Lantern’s WACC be? Give a percentage to two decimal places.',
     answer: 11.05, check: () => waccAt(0.3) * 100, unit: '%', places: 2, tol: 0.03,
     wrong: [{ value: 11.33, say: 'That is the WACC at 20%. At 30% debt the relevered beta rises to 1.124 and the weights change.' }, { value: 10.61, say: 'That keeps the cost of equity at 12.75% while changing the weights. More debt raises the relevered beta.' }],
-    solution: 'β_L = 0.850 × (1 + 0.75 × 0.4286) = 1.124. r_E = 4.2% + 1.124 × 5.5% + 3% = 13.38%. WACC = 0.7 × 13.38% + 0.3 × 5.625% = 9.37% + 1.69% = 11.05%. At a fixed cost of debt, more debt lowers the WACC slightly; in practice the cost of debt would rise too.',
+    solution: 'β_L = 0.850 × (1 + 0.75 × 0.4286) = 1.124. r_E = 4.2% + 1.124 × 5.5% + 3% = 13.38%. WACC = 0.7 × 13.38% + 0.3 × 5.625% = 9.37% + 1.69% = 11.05%. At a fixed cost of debt, more debt lowers the WACC slightly; in practice the cost of debt would rise too. The lesson’s widget assumes it does (8.5% above 25% debt), which gives about 11.28% at 30%.',
   },
   {
     id: 'f05-wacc-k2', type: 'mc', kind: 'conceptual',
@@ -261,10 +262,10 @@ export const check = [
   {
     id: 'f05-wacc-k5', type: 'multi', kind: 'conceptual',
     prompt: 'Which of these are errors in estimating or using a WACC? Select all that apply.',
-    options: ['Weighting by book values of equity', 'Discounting real cash flows at a nominal WACC', 'Using the after-tax cost of debt in the WACC', 'Deducting interest from cash flows that are then discounted at the WACC', 'Relevering the beta at the same D/E as the WACC’s weights'],
-    answer: [0, 1, 3],
-    feedback: { 2: 'That is correct practice: free cash flow taxes EBIT as if there were no interest, so the tax saving enters through r_D(1 − T).', 4: 'That is correct practice: the beta and the weights must describe the same capital structure.' },
-    solution: 'Errors: book weights, a nominal rate for real cash flows, and charging interest in the cash flows as well as in the rate. Using the after-tax cost of debt and matching the beta’s D/E to the weights are both right.',
+    options: ['Weighting by book values of equity', 'Discounting real cash flows at a nominal WACC', 'Using the after-tax cost of debt in the WACC', 'Deducting interest from cash flows that are then discounted at the WACC', 'Relevering the beta at a D/E different from the one in the WACC’s weights'],
+    answer: [0, 1, 3, 4],
+    feedback: { 2: 'That is correct practice: free cash flow taxes EBIT as if there were no interest, so the tax saving enters through r_D(1 − T).' },
+    solution: 'Errors: book weights, a nominal rate for real cash flows, charging interest in the cash flows as well as in the rate, and a beta relevered at a different capital structure from the weights. Using the after-tax cost of debt is right.',
   },
   {
     id: 'f05-wacc-k6', type: 'num', kind: 'applied',
