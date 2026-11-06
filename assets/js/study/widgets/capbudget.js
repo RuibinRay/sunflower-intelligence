@@ -5,7 +5,8 @@
 // IRR); and a tornado of one-at-a-time sensitivities. Numbers from core/corpfin.js projectCashFlows and core/invest.js.
 //   { type: 'capbudget', title, inputs: [{ id, label, min, max, step, value, fmt: 'money'|'pct'|'int'|'num', unit }],
 //     model: (v) => projectCashFlows inputs, rate: 'rate' (the id of an input in %, 11 = 11%) | 0.11,
-//     show: ['metrics', 'table', 'profile', 'tornado'], tornado?: { inputId: [low, high] }, profileMax?: 0.4, note }
+//     show: ['metrics', 'table', 'profile', 'tornado'], tornado?: { inputId: [low, high] } (bars drawn as the change from the
+//     current NPV), profileMax?: 0.4, note }
 import { h, onResize } from '../../core/dom.js?v=28';
 import { xl } from '../xl.js?v=28';
 import { lineChart, barChart, tableTwin } from '../../core/charts.js?v=28';
@@ -98,9 +99,9 @@ export function mount(el, cfg, ctx) {
     if (showing.includes('tornado') && R.tornado) {
       const lab = (id) => cfg.inputs.find((i) => i.id === id)?.label || id;
       tornado.replaceChildren();
-      barChart(tornado, { horizontal: true, categories: R.tornado.map((t) => lab(t.name)), series: [{ name: 'NPV at the low value', values: R.tornado.map((t) => t.lowNpv), cls: 'm-s3' }, { name: 'NPV at the high value', values: R.tornado.map((t) => t.highNpv), cls: 'm-s1' }],
-        format: (y) => F.num(y, 0), label: 'Tornado: NPV with each input moved to its low and high value, the others as set above, widest swing first' });
-      tnote.textContent = `Each pair of bars moves one input, the others held where the sliders are (NPV ${F.money(R.npv, { digits: 0 })}). ${R.tornado.map((t) => `${lab(t.name)} ${show(cfg.inputs.find((i) => i.id === t.name) || {}, t.low)} to ${show(cfg.inputs.find((i) => i.id === t.name) || {}, t.high)}: NPV ${F.money(t.lowNpv, { digits: 0 })} to ${F.money(t.highNpv, { digits: 0 })}`).join('; ')}.`;
+      barChart(tornado, { horizontal: true, categories: R.tornado.map((t) => lab(t.name)), series: [{ name: 'Change in NPV at the low value', values: R.tornado.map((t) => t.lowNpv - R.npv), cls: 'm-s3' }, { name: 'Change in NPV at the high value', values: R.tornado.map((t) => t.highNpv - R.npv), cls: 'm-s1' }],
+        format: (y) => (y > 0 ? '+' : '') + F.compact(y), label: `Tornado: change in NPV from ${F.money(R.npv, { digits: 0 })} with each input moved to its low and high value, the others as set above, widest swing first` });
+      tnote.textContent = `Each pair of bars shows how far NPV moves from ${F.money(R.npv, { digits: 0 })} (the zero line) when one input moves, the others held where the sliders are. ${R.tornado.map((t) => `${lab(t.name)} ${show(cfg.inputs.find((i) => i.id === t.name) || {}, t.low)} to ${show(cfg.inputs.find((i) => i.id === t.name) || {}, t.high)}: NPV ${F.money(t.lowNpv, { digits: 0 })} to ${F.money(t.highNpv, { digits: 0 })}`).join('; ')}.`;
     }
   }
   let raf = 0;
