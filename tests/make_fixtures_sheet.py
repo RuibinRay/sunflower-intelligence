@@ -48,6 +48,11 @@ CELLS.update({'AD1': 48, 'AE1': 31, 'AF1': 21, 'AD2': 62, 'AE2': 29, 'AF2': 40})
 CELLS.update({'AP1': 100, 'AP2': 131, 'AQ1': 110, 'AR1': 60, 'AS1': 61, 'AT1': 231})  # AD1:AF2's row totals, column totals, total
 CELLS.update({'AD4': 100 * 110 / 231, 'AE4': 100 * 60 / 231, 'AF4': 100 * 61 / 231, 'AD5': 131 * 110 / 231, 'AE5': 131 * 60 / 231, 'AF5': 131 * 61 / 231})
 CELLS.update({'AH1': 38, 'AI1': 41, 'AJ1': 29, 'AK1': 33, 'AL1': 27, 'AM1': 36, 'AN1': 27})
+# F05: project cash flows (one with two IRRs), dated flows, text and a blank inside a range
+CELLS.update({f'BA{i}': v for i, v in enumerate([-24000, 6000, 7500, 8200, 8600, 5100], start=1)})
+CELLS.update({'BB1': -1000, 'BB2': 2300, 'BB3': -1320, 'BC1': -500, 'BC2': 'n/a', 'BC4': 200, 'BC5': 250, 'BC6': 180})
+CELLS.update({f'BD{i}': v for i, v in enumerate([-60000, 9000, 14000, 16500, 18000, 21000], start=1)})
+CELLS.update({f'BE{i}': serial(*d) for i, d in enumerate([(2028, 3, 1), (2028, 9, 30), (2029, 3, 1), (2029, 12, 31), (2030, 6, 15), (2031, 3, 1)], start=1)})
 CELLS.update({'AH2': 33, 'AI2': 33, 'AJ2': 33, 'AK2': 33, 'AL2': 33, 'AM2': 33, 'AN2': 33})
 
 FORMULAS = [
@@ -92,6 +97,15 @@ FORMULAS = [
     # finance (the F04 functions)
     '=PMT(0.05/12,60,20000)', '=PMT(0,12,1200)', '=FV(0.04,10,-1000)', '=FV(0.04/12,24,-100,-500,1)', '=PV(0.06,5,-2000)',
     '=NPV(0.08,-1000,300,400,500)', '=PMT(0.06,4,-20000,0)',
+    # F05: capital budgeting and loan schedules
+    '=IRR(BA1:BA6)', '=IRR(BA1:BA6,0.3)', '=IRR(BB1:BB3)', '=IRR(BB1:BB3,0.05)', '=IRR(BB1:BB3,0.25)', '=IRR(BC1:BC6)', '=IRR(BA2:BA6)',
+    '=MIRR(BA1:BA6,0.07,0.1)', '=MIRR(BB1:BB3,0.08,0.08)', '=NPV(0.09,BA2:BA6)+BA1', '=NPV(0.09,BC1:BC6)',
+    '=XNPV(0.1,BD1:BD6,BE1:BE6)', '=XIRR(BD1:BD6,BE1:BE6)', '=XNPV(0,BD1:BD6,BE1:BE6)',
+    '=RATE(48,-576.94,24000)*12', '=RATE(24,-1050,24000)', '=RATE(10,-100,800,0,1)', '=RATE(5,0,-1000,1500)',
+    '=NPER(0.006,-576.94,24000)', '=NPER(0,-100,1000)', '=NPER(0.05,-200,1000,-500,1)',
+    '=IPMT(0.006,1,48,24000)', '=IPMT(0.006,48,48,24000)', '=PPMT(0.006,1,48,24000)', '=PPMT(0.006,30,48,24000)', '=IPMT(0.05,1,10,1000,0,1)',
+    '=IPMT(0.05,3,10,1000,0,1)', '=PPMT(0.05,3,10,1000,0,1)',
+    '=SLN(24000,3000,5)', '=SLN(1000,0,0)', '=DDB(24000,3000,5,1)', '=DDB(24000,3000,5,3)', '=DDB(24000,3000,5,5)', '=DDB(24000,3000,5,2,1.5)', '=DDB(1000,900,5,2)',
     # text
     '=LEN(C2)', '=UPPER(C2)', '=LOWER(B3)', '=PROPER("lantern COFFEE co.")', '=TRIM(H7)', '=LEN(TRIM(H7))',
     '=LEFT(C2,5)', '=RIGHT(C2,5)', '=MID(C2,7,3)', '=LEFT(C2)', '=CONCAT(B2," – ",C2)', '=CONCATENATE(B2,"/",D2)',
@@ -180,6 +194,8 @@ XLFN = ['RANK.AVG', 'NUMBERVALUE', 'T.INV.2T', 'T.INV', 'T.DIST.2T', 'CONFIDENCE
 #     =SUM("5", 15, TRUE) is 21. Excel orders numbers < text < FALSE < TRUE when comparing, and TRUE joins as "TRUE".
 # (b) Excel's COUNTIF help: =COUNTIF(A2:A5,"*") "Counts the number of cells containing any text".
 # (c) Excel's SQRT help: "If number is negative, SQRT returns the #NUM! error value."
+# (n) Excel's IRR help: "Values must contain at least one positive value and one negative value" and "If IRR can't
+#     find a result that works after 20 tries, the #NUM! error value is returned." (LibreOffice gives #N/A for all-positive values.)
 # (m) Excel's FISHER help: "If x ≤ -1 or if x ≥ 1, FISHER returns the #NUM! error value." (LibreOffice gives #VALUE!.)
 # (d) Excel's VLOOKUP help: "If col_index_num is greater than the number of columns in table-array, you'll get the
 #     #REF! error value."
@@ -208,6 +224,7 @@ XLFN = ['RANK.AVG', 'NUMBERVALUE', 'T.INV.2T', 'T.INV', 'T.DIST.2T', 'CONFIDENCE
 #     times); LibreOffice, outside an array formula, uses only the first element. The expected value is SciPy's
 #     binom.sf(11, 20, 0.45), the sum over 12 to 20 successes.
 EXCEL_DIFFERS = {
+    '=IRR(BA2:BA6)': {'error': '#NUM!'},                                                                   # (n)
     '=SUM(BINOM.DIST(ROW(12:20),20,0.45,FALSE))': __import__('scipy.stats', fromlist=['binom']).binom.sf(11, 20, 0.45).item(),   # (m)
     '=PERCENTRANK.INC(S1:S8,4.5)': 0.535, '=PERCENTRANK.INC(S1:S8,4.5,2)': 0.53, '=PERCENTRANK.EXC(S1:S8,5)': 0.555,       # (l)
     '=PERCENTRANK.INC(S1:S8,3)': 0.285, '=PERCENTRANK.EXC(S1:S8,2.5,4)': 0.2777,

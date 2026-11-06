@@ -1266,6 +1266,111 @@ FN.FV = (args, ctx) => { const r = numArg(args[0], ctx), n = numArg(args[1], ctx
 FN.PV = (args, ctx) => { const r = numArg(args[0], ctx), n = numArg(args[1], ctx), pmt = numArg(args[2], ctx, 0), fv = numArg(args[3], ctx, 0), t = numArg(args[4], ctx, 0); for (const x of [r, n, pmt, fv, t]) if (isErr(x)) return x; if (r === 0) return -(fv + pmt * n); const f = (1 + r) ** n; return -(fv + pmt * (1 + r * (t ? 1 : 0)) * (f - 1) / r) / f; };
 FN.NPV = (args, ctx) => { const r = numArg(args[0], ctx); if (isErr(r)) return r; const xs = numbersOf(args.slice(1), ctx); if (isErr(xs)) return xs; return xs.reduce((s, x, i) => s + x / (1 + r) ** (i + 1), 0); };
 
+// F05 capital budgeting and loan schedules (Excel's definitions; checked against LibreOffice Calc in tests/sheet.test.mjs)
+const npvAt = (r, xs) => xs.reduce((s, x, i) => s + x / (1 + r) ** i, 0);
+/** Newton's method from a guess, falling back to bisection over a bracket found by scanning; NaN when no root. */
+function solveRate(f, guess, { lo = -0.9999, hi = 10 } = {}) {
+  let r = guess;
+  for (let i = 0; i < 100; i++) {
+    const v = f(r), h = 1e-7 * Math.max(1, Math.abs(r)), d = (f(r + h) - f(r - h)) / (2 * h);
+    if (!Number.isFinite(v) || !Number.isFinite(d) || d === 0) break;
+    const nr = r - v / d;
+    if (!(nr > -1)) break;
+    if (Math.abs(nr - r) < 1e-12 * Math.max(1, Math.abs(nr))) return nr;
+    r = nr;
+  }
+  // scan outwards from the guess for a sign change, nearest bracket first
+  const pts = []; for (let k = 0; k <= 4000; k++) pts.push(Math.expm1(Math.log1p(lo) + (Math.log1p(hi) - Math.log1p(lo)) * k / 4000));
+  let best = null;
+  for (let k = 1; k < pts.length; k++) {
+    const a = pts[k - 1], b = pts[k], fa = f(a), fb = f(b);
+    if (!Number.isFinite(fa) || !Number.isFinite(fb) || Math.sign(fa) === Math.sign(fb)) continue;
+    let x = a, y = b, fx = fa;
+    for (let i = 0; i < 200; i++) { const m = (x + y) / 2, fm = f(m); if (Math.sign(fm) === Math.sign(fx)) { x = m; fx = fm; } else y = m; }
+    const root = (x + y) / 2;
+    if (best == null || Math.abs(root - guess) < Math.abs(best - guess)) best = root;
+  }
+  return best == null ? NaN : best;
+}
+// IRR(values, [guess]): the rate at which the values (the first today, then one a period) have NPV 0; text, logical
+// values and blanks in references are ignored; needs at least one positive and one negative value
+FN.IRR = (args, ctx) => {
+  const xs = numbersOf(args.slice(0, 1), ctx); if (isErr(xs)) return xs; const g = numArg(args[1], ctx, 0.1); if (isErr(g)) return g;
+  if (!xs.some((x) => x > 0) || !xs.some((x) => x < 0)) return ERR.NUM;
+  const r = solveRate((q) => npvAt(q, xs), g); return Number.isFinite(r) ? r : ERR.NUM;
+};
+// MIRR(values, finance_rate, reinvest_rate): negative values discounted at the finance rate, positive values
+// compounded at the reinvestment rate to the last period
+FN.MIRR = (args, ctx) => {
+  const xs = numbersOf(args.slice(0, 1), ctx); if (isErr(xs)) return xs; const fr = numArg(args[1], ctx), rr = numArg(args[2], ctx); if (isErr(fr)) return fr; if (isErr(rr)) return rr;
+  const n = xs.length - 1; let pvNeg = 0, fvPos = 0;
+  xs.forEach((x, t) => { if (x < 0) pvNeg += x / (1 + fr) ** t; else fvPos += x * (1 + rr) ** (n - t); });
+  if (pvNeg === 0 || fvPos === 0) return ERR.DIV0;
+  return (fvPos / -pvNeg) ** (1 / n) - 1;
+};
+const pairsOf = (a, b, ctx) => {
+  const xs = numbersOf([a], ctx), ds = numbersOf([b], ctx); if (isErr(xs)) return xs; if (isErr(ds)) return ds;
+  if (xs.length !== ds.length || !xs.length) return ERR.NUM;
+  const d0 = Math.floor(ds[0]); if (ds.some((d) => Math.floor(d) < d0)) return ERR.NUM;
+  return { xs, ts: ds.map((d) => (Math.floor(d) - d0) / 365) };
+};
+// XNPV(rate, values, dates): each value discounted by (1 + rate)^((date − first date) ÷ 365)
+FN.XNPV = (args, ctx) => {
+  const r = numArg(args[0], ctx); if (isErr(r)) return r; const P = pairsOf(args[1], args[2], ctx); if (isErr(P)) return P;
+  return P.xs.reduce((s, x, i) => s + x / (1 + r) ** P.ts[i], 0);
+};
+// XIRR(values, dates, [guess]): the rate at which XNPV is 0
+FN.XIRR = (args, ctx) => {
+  const P = pairsOf(args[0], args[1], ctx); if (isErr(P)) return P; const g = numArg(args[2], ctx, 0.1); if (isErr(g)) return g;
+  if (!P.xs.some((x) => x > 0) || !P.xs.some((x) => x < 0)) return ERR.NUM;
+  const r = solveRate((q) => P.xs.reduce((s, x, i) => s + x / (1 + q) ** P.ts[i], 0), g); return Number.isFinite(r) ? r : ERR.NUM;
+};
+const tvm = (r, n, pmt, pv, fv, t) => (r === 0 ? pv + pmt * n + fv : pv * (1 + r) ** n + pmt * (1 + r * t) * ((1 + r) ** n - 1) / r + fv);
+// RATE(nper, pmt, pv, [fv], [type], [guess]): the rate per period that makes the annuity's values balance
+FN.RATE = (args, ctx) => {
+  const n = numArg(args[0], ctx), pmt = numArg(args[1], ctx), pv = numArg(args[2], ctx), fv = numArg(args[3], ctx, 0), t = numArg(args[4], ctx, 0), g = numArg(args[5], ctx, 0.1);
+  for (const x of [n, pmt, pv, fv, t, g]) if (isErr(x)) return x;
+  const r = solveRate((q) => tvm(q, n, pmt, pv, fv, t ? 1 : 0), g); return Number.isFinite(r) ? r : ERR.NUM;
+};
+// NPER(rate, pmt, pv, [fv], [type]): the number of periods
+FN.NPER = (args, ctx) => {
+  const r = numArg(args[0], ctx), pmt = numArg(args[1], ctx), pv = numArg(args[2], ctx), fv = numArg(args[3], ctx, 0), t = numArg(args[4], ctx, 0);
+  for (const x of [r, pmt, pv, fv, t]) if (isErr(x)) return x;
+  if (r === 0) return pmt === 0 ? ERR.NUM : -(pv + fv) / pmt;
+  const a = pmt * (1 + r * (t ? 1 : 0)), num = (a - fv * r) / (a + pv * r);
+  return num > 0 ? Math.log(num) / Math.log(1 + r) : ERR.NUM;
+};
+const pmtOf = (r, n, pv, fv, t) => (r === 0 ? -(pv + fv) / n : -(r * (pv * (1 + r) ** n + fv)) / ((1 + r * t) * ((1 + r) ** n - 1)));
+const ipmtOf = (r, per, n, pv, fv, t) => {
+  const p = pmtOf(r, n, pv, fv, t);
+  if (t && per === 1) return 0;
+  const k = per - 1, bal = r === 0 ? pv + p * k : pv * (1 + r) ** k + p * (1 + r * t) * ((1 + r) ** k - 1) / r;   // balance after per − 1 payments (sign as FV)
+  const i = -bal * r;
+  return t ? i / (1 + r) : i;
+};
+// IPMT(rate, per, nper, pv, [fv], [type]) and PPMT: the interest and principal parts of payment number `per`
+FN.IPMT = (args, ctx) => {
+  const r = numArg(args[0], ctx), per = numArg(args[1], ctx), n = numArg(args[2], ctx), pv = numArg(args[3], ctx), fv = numArg(args[4], ctx, 0), t = numArg(args[5], ctx, 0);
+  for (const x of [r, per, n, pv, fv, t]) if (isErr(x)) return x; if (per < 1 || per > n) return ERR.NUM;
+  return ipmtOf(r, per, n, pv, fv, t ? 1 : 0);
+};
+FN.PPMT = (args, ctx) => {
+  const r = numArg(args[0], ctx), per = numArg(args[1], ctx), n = numArg(args[2], ctx), pv = numArg(args[3], ctx), fv = numArg(args[4], ctx, 0), t = numArg(args[5], ctx, 0);
+  for (const x of [r, per, n, pv, fv, t]) if (isErr(x)) return x; if (per < 1 || per > n) return ERR.NUM;
+  return pmtOf(r, n, pv, fv, t ? 1 : 0) - ipmtOf(r, per, n, pv, fv, t ? 1 : 0);
+};
+// SLN(cost, salvage, life) and DDB(cost, salvage, life, period, [factor]): straight-line and declining-balance
+// depreciation (DDB never takes the book value below salvage)
+FN.SLN = (args, ctx) => { const c = numArg(args[0], ctx), sv = numArg(args[1], ctx), l = numArg(args[2], ctx); for (const x of [c, sv, l]) if (isErr(x)) return x; return l === 0 ? ERR.DIV0 : (c - sv) / l; };
+FN.DDB = (args, ctx) => {
+  const c = numArg(args[0], ctx), sv = numArg(args[1], ctx), l = numArg(args[2], ctx), per = numArg(args[3], ctx), f = numArg(args[4], ctx, 2);
+  for (const x of [c, sv, l, per, f]) if (isErr(x)) return x;
+  if (l <= 0 || per <= 0 || per > l || f <= 0 || sv < 0 || c < 0) return ERR.NUM;
+  let book = c, dep = 0;
+  for (let k = 1; k <= Math.ceil(per); k++) { dep = Math.max(0, Math.min(book * f / l, book - sv)); book -= dep; }
+  return dep;
+};
+
 // text
 const str1 = (f) => (args, ctx) => lift(args[0], ctx, (v) => (isErr(v) ? v : f(toStr(v))));
 FN.LEN = str1((s) => s.length);
