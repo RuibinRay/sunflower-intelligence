@@ -3,9 +3,9 @@
 // (CLEAN_ROWS) from case.js, and Harbourside's five festival days. Gorsefield Bike Hire and the ten-point figure are
 // fictional. Testing a correlation is module 2's; curves and restricted ranges are nonlinear-and-restricted's; groups
 // are groups-and-simpsons-paradox's. Every figure printed is recomputed in `checks`.
-import { column, DERIVED as D, SLIP, CAFE_ROWS, CAFE_COLUMNS } from './case.js?v=27';
-import * as C from '../../../core/correlation.js?v=27';
-import { mean, sd } from '../../../core/stats.js?v=27';
+import { column, DERIVED as D, SLIP, CAFE_ROWS, CAFE_COLUMNS } from './case.js?v=28';
+import * as C from '../../../core/correlation.js?v=28';
+import { mean, sd } from '../../../core/stats.js?v=28';
 
 // ---------------------------------------------------------------- the slip
 const at = (name) => CAFE_COLUMNS.indexOf(name);

@@ -6,9 +6,9 @@
 // The November–December return rates by score use case.js churnTable() (members who joined by 31 August, scored as
 // of 31 October). Naming segments is left to rfm-segments. Quaymouth Books is fictional. Every printed figure is in
 // `checks`.
-import { members, churnTable, CALIBRATION_END, DERIVED as D } from './case.js?v=27';
-import * as CU from '../../../core/customer.js?v=27';
-import { spearman } from '../../../core/correlation.js?v=27';
+import { members, churnTable, CALIBRATION_END, DERIVED as D } from './case.js?v=28';
+import * as CU from '../../../core/customer.js?v=28';
+import { spearman } from '../../../core/correlation.js?v=28';
 
 const ALL = members(), N = ALL.length;
 const sum = (a) => a.reduce((x, y) => x + y, 0);

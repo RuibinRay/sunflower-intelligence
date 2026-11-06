@@ -6,12 +6,12 @@
 //   { type: 'logistic', title, y: { name, values (0/1), yes: 'returned', no: 'didn’t return' },
 //     xs: { 'First ticket ($)': [...], Near: [...], … }, axis: 'First ticket ($)' (the x of the curve),
 //     binary?: ['Near', …] (predictors offered as 0/1 switches), threshold?: 0.5, show: ['coefs', 'odds', 'lr', 'table'], note }
-import { h, onResize } from '../../core/dom.js?v=27';
-import { xl } from '../xl.js?v=27';
-import { scatter } from '../../core/charts.js?v=27';
-import * as R from '../../core/regression.js?v=27';
-import { confusion } from '../../core/classify.js?v=27';
-import * as F from '../../core/format.js?v=27';
+import { h, onResize } from '../../core/dom.js?v=28';
+import { xl } from '../xl.js?v=28';
+import { scatter } from '../../core/charts.js?v=28';
+import * as R from '../../core/regression.js?v=28';
+import { confusion } from '../../core/classify.js?v=28';
+import * as F from '../../core/format.js?v=28';
 
 const fmt = (v, d = 3) => (Number.isFinite(v) ? F.num(v, d) : '—');
 const pStr = (p) => (!Number.isFinite(p) ? '—' : p < 0.001 ? 'below 0.001' : p.toFixed(3));

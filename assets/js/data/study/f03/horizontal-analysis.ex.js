@@ -1,8 +1,8 @@
 // horizontal-analysis.ex.js — F03 · Horizontal analysis: widgets, practice and the knowledge check.
 // Answer keys live here, not in the page's HTML. Every number is recomputed by `check` (see ../AUTHORING.md).
 // Lantern’s figures come from case.js; Starbucks’ from its FY2024 Form 10-K; every other business is fictional.
-import { PERIODS, COMPARATIVE } from './case.js?v=27';
-import * as R from '../../../core/ratios.js?v=27';
+import { PERIODS, COMPARATIVE } from './case.js?v=28';
+import * as R from '../../../core/ratios.js?v=28';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const IS = Object.fromEntries(COMPARATIVE.income.map(([n, a, b]) => [n, [a, b]]));

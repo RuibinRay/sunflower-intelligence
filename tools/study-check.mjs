@@ -9,6 +9,7 @@ import { join } from 'node:path';
 import * as SH from '../assets/js/core/sheet.js';
 import * as PM from '../assets/js/core/percmap.js';
 import * as RW from '../assets/js/study/widgets/ratios.js';
+import * as CAPB from '../assets/js/study/widgets/capbudget.js';
 import { ols } from '../assets/js/core/stats.js';
 import * as REG from '../assets/js/core/regression.js';
 import {
@@ -19,7 +20,7 @@ import {
 const VERBS = /^(Explain|Describe|Define|Identify|Distinguish|Classify|Calculate|Compute|Record|Prepare|Analyse|Apply|Interpret|Evaluate|Compare|Choose|Decide|Use|Recognise|State|Construct|Build|Post|Journalise|Find|Detect|Diagnose|Handle|Transform|Scale|Encode|Write|Document|Justify|Recommend|Estimate|Assess|Plan|Design|Set|Measure|Select|Determine|Correct|Locate|Read|Summarise|Reshape|Combine|Profile|Validate|Clean|Convert|Standardise|Normalise|Map|Draft|Price|Forecast|Test|Name|List|Contrast|Close|Adjust|Trace|Reconcile)\b/;
 const KINDS = ['conceptual', 'numerical', 'applied'];
 const TYPES = ['mc', 'multi', 'num', 'fill', 'classify', 'order', 'journal', 'equation', 'rows', 'short', 'formula', 'steps'];
-const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak', 'sampler', 'cluster', 'percmap', 'ratios', 'scatter', 'corrmatrix', 'fitline', 'diagnostics', 'logistic', 'rfm', 'cohort', 'survival', 'sbg', 'clv', 'lift'];
+const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak', 'sampler', 'cluster', 'percmap', 'ratios', 'scatter', 'corrmatrix', 'fitline', 'diagnostics', 'logistic', 'rfm', 'cohort', 'survival', 'sbg', 'clv', 'lift', 'capbudget', 'capstructure'];
 const DATASETS = ['lantern-orders', 'harborview-bookings', 'northfield-students'];
 const CLEAN_OPS = ['dedupe', 'dedupe-key', 'trim', 'case', 'map', 'to-number', 'to-date', 'fill', 'drop-missing', 'flag-missing', 'validate', 'outliers', 'transform', 'scale', 'encode', 'derive', 'rename', 'drop-column'];
 const near = (a, b, tol) => Math.abs(a - b) <= tol + 1e-9;
@@ -358,6 +359,7 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
     (wd.inputs || []).forEach((inp) => {
       if (!(inp.min < inp.max) || inp.value < inp.min || inp.value > inp.max || !(inp.step > 0)) r.err(`${w}: input ${inp.id} needs min < value ≤ max and a positive step`);
       if (!['money', 'pct', 'int', 'num'].includes(inp.fmt)) r.err(`${w}: input ${inp.id} fmt must be money, pct, int or num`);
+      if (inp.step > 0 && Math.abs((inp.value - inp.min) / inp.step - Math.round((inp.value - inp.min) / inp.step)) > 1e-6) r.err(`${w}: input ${inp.id}'s value ${inp.value} is off the slider's step grid (the slider would snap it)`);
     });
     const base = Object.fromEntries((wd.inputs || []).map((i) => [i.id, i.value]));
     const trials = [['defaults', base]];
@@ -457,6 +459,31 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
     const n = wd.y?.values?.length, sc = Object.entries(wd.scores || {});
     if (!n || !wd.y.values.every((v) => v === 0 || v === 1)) r.err(`${w}: lift needs y.values of 0s and 1s`);
     if (!sc.length || sc.length > 2 || !sc.every(([, v]) => v.length === n && v.every(Number.isFinite))) r.err(`${w}: lift needs one or two scores of the same length as y`);
+  } else if (wd.type === 'capbudget') {
+    const ins = wd.inputs || [];
+    if (!ins.length || typeof wd.model !== 'function') r.err(`${w}: capbudget needs inputs and a model function`);
+    else {
+      if (typeof wd.rate === 'string' && !ins.some((i) => i.id === wd.rate)) r.err(`${w}: rate ${wd.rate} is not an input`);
+      if (typeof wd.rate !== 'string' && !(wd.rate >= 0 && wd.rate < 1)) r.err(`${w}: rate must be an input id or a fraction between 0 and 1`);
+      for (const t of wd.show || []) if (!['metrics', 'table', 'profile', 'tornado'].includes(t)) r.err(`${w}: unknown show ${t}`);
+      for (const [k, g] of Object.entries(wd.tornado || {})) { const i = ins.find((x) => x.id === k); if (!i) r.err(`${w}: tornado ${k} is not an input`); else if (!(g.length === 2 && g[0] < g[1] && g[0] >= i.min && g[1] <= i.max)) r.err(`${w}: tornado.${k} must be [low, high] within the slider's range`); }
+      const def = Object.fromEntries(ins.map((i) => [i.id, i.value]));
+      for (const i of ins) {
+        if (!(i.min <= i.value && i.value <= i.max && i.step > 0)) r.err(`${w}: input ${i.id} needs min ≤ value ≤ max and a step`);
+        else if (Math.abs((i.value - i.min) / i.step - Math.round((i.value - i.min) / i.step)) > 1e-6) r.err(`${w}: input ${i.id}'s value ${i.value} is off the slider's step grid (the slider would snap it)`);
+        for (const x of [i.min, i.value, i.max]) {
+          try { const R = CAPB.compute(wd, { ...def, [i.id]: x }); if (!R.fcf.every(Number.isFinite) || !Number.isFinite(R.npv)) r.err(`${w}: non-finite cash flows with ${i.id} = ${x}`); }
+          catch (e) { r.err(`${w}: model fails with ${i.id} = ${x}: ${e.message}`); }
+        }
+      }
+    }
+  } else if (wd.type === 'capstructure') {
+    if (!(wd.peers || []).length || !wd.peers.every((p) => p.beta > 0 && p.de >= 0)) r.err(`${w}: capstructure needs peers with beta > 0 and D/E ≥ 0`);
+    for (const k of ['rf', 'mrp', 'tax']) if (!Number.isFinite(wd[k])) r.err(`${w}: capstructure needs ${k}`);
+    if (!Number.isFinite(wd.rD) && !(wd.rates || []).length) r.err(`${w}: capstructure needs rD or rates`);
+    if (wd.rates && !wd.rates.every((b, i) => b.length === 2 && (i === 0 || b[0] > wd.rates[i - 1][0]))) r.err(`${w}: rates must be [[upToDV, rate], …] in rising order`);
+    const mx = wd.dvMax ?? 0.7; if (!(mx > 0 && mx < 1)) r.err(`${w}: dvMax must be between 0 and 1`);
+    if (wd.dv != null && !(wd.dv >= 0 && wd.dv <= mx)) r.err(`${w}: dv must be between 0 and dvMax`);
   } else if (wd.type === 'curve') {
     const P = { normal: ['mean', 'sd'], t: ['df'], chisq: ['df'], f: ['df1', 'df2'], binomial: ['n', 'p'], poisson: ['lambda'] }[wd.dist];
     if (!P) r.err(`${w}: curve needs dist: normal, t, chisq, f, binomial or poisson`);

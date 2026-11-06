@@ -5,11 +5,11 @@
 // for each group it offers.
 //   { type: 'cohort', title, tables: { 'Both cafés': cohortTable(...), 'Harbourside': …, … }, view: 'retention' | 'active'
 //     | 'revenue', curves?: ['2027-03', '2027-06'] (cohorts drawn at first), note }
-import { h, onResize } from '../../core/dom.js?v=27';
-import { xl } from '../xl.js?v=27';
-import { lineChart } from '../../core/charts.js?v=27';
-import * as F from '../../core/format.js?v=27';
-import { segmented } from '../dist-draw.js?v=27';
+import { h, onResize } from '../../core/dom.js?v=28';
+import { xl } from '../xl.js?v=28';
+import { lineChart } from '../../core/charts.js?v=28';
+import * as F from '../../core/format.js?v=28';
+import { segmented } from '../dist-draw.js?v=28';
 
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const monthName = (label) => `${MON[+label.slice(5, 7) - 1]} ${label.slice(0, 4)}`;

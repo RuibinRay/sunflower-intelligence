@@ -1,11 +1,11 @@
 // tutorial.js — the step-by-step walkthrough drawer: ten steps per model at the chosen level, with a worked example
 // computed from the company in the workspace and the sources with authors and dates.
-import { h } from '../core/dom.js?v=27';
-import { formatter, SOURCES } from '../core/valuation-report.js?v=27';
-import { TUTORIALS, STEPS, LEVELS } from '../data/valuation-tutorials.js?v=27';
-import { state, setLevel, closeTutorial, on } from './state.js?v=27';
-import { segmented, btn } from './ui.js?v=27';
-import { inline, pi } from './inline.js?v=27';
+import { h } from '../core/dom.js?v=28';
+import { formatter, SOURCES } from '../core/valuation-report.js?v=28';
+import { TUTORIALS, STEPS, LEVELS } from '../data/valuation-tutorials.js?v=28';
+import { state, setLevel, closeTutorial, on } from './state.js?v=28';
+import { segmented, btn } from './ui.js?v=28';
+import { inline, pi } from './inline.js?v=28';
 
 const stepState = new Map();
 export function renderTutorial(container, modelId) {

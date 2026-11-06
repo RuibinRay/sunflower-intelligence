@@ -6,11 +6,11 @@
 // does to the value. Numbers from core/customer.js.
 //   { type: 'clv', title, m: 4, r: 0.9, d: 0.01, cac: 20, ranges: { m: [lo, hi, step], r: [...], d: [...], cac: [...] },
 //     timing: 'start' | 'end', horizon: 60, unit: 'month', sbg?: { alpha, beta }, note }
-import { h, onResize } from '../../core/dom.js?v=27';
-import { xl } from '../xl.js?v=27';
-import { lineChart } from '../../core/charts.js?v=27';
-import * as CU from '../../core/customer.js?v=27';
-import * as F from '../../core/format.js?v=27';
+import { h, onResize } from '../../core/dom.js?v=28';
+import { xl } from '../xl.js?v=28';
+import { lineChart } from '../../core/charts.js?v=28';
+import * as CU from '../../core/customer.js?v=28';
+import * as F from '../../core/format.js?v=28';
 
 /** Everything the widget shows for a set of inputs (exported for the checker). */
 export function compute({ m, r, d, cac, timing = 'start', horizon = 60, sbg = null }) {

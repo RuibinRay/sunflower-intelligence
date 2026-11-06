@@ -3,8 +3,8 @@
 // frequency cut point, so the boundary convention shows). The percentiles in G2:G5 are fixed on the marker's copies;
 // cut points and scores the items don't ask for are given as formulas so the copies stay consistent. Quaymouth Books
 // and Copperbeck Outfitters are fictional. Every num item's `check` recomputes its answer.
-import { members, CALIBRATION_END } from './case.js?v=27';
-import * as CU from '../../../core/customer.js?v=27';
+import { members, CALIBRATION_END } from './case.js?v=28';
+import * as CU from '../../../core/customer.js?v=28';
 
 const ALL = members(), N = ALL.length;
 const money = (v) => `$${v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

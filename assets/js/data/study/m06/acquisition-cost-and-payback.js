@@ -3,8 +3,8 @@
 // Lantern's 2028 sign-up campaign is a fictional proposal whose costs and expected joiners are stated assumptions, set
 // against the 2027 cohorts' real margin per joiner (case.js; margin 67% from F03, discounting 0.8% a month, as in
 // customer-lifetime-value). The project's subscriptions are not used. Every printed figure is recomputed in `checks`.
-import { MEMBER_LIST, VISIT_LIST, joinMap, members } from './case.js?v=27';
-import * as CU from '../../../core/customer.js?v=27';
+import { MEMBER_LIST, VISIT_LIST, joinMap, members } from './case.js?v=28';
+import * as CU from '../../../core/customer.js?v=28';
 
 const MR = 0.67, D_M = 0.008;
 const f2 = (v) => v.toFixed(2);

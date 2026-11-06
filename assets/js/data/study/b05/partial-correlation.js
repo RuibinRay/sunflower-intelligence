@@ -3,10 +3,10 @@
 // peak waits and transactions, Harbourside's weather, footfall and sales for the mediator and collider cases.
 // Swiftwing Air is fictional. Regression slopes and prediction are B06's; causal reasoning is correlation-and-causation's.
 // Every figure printed is recomputed in `checks`.
-import { DERIVED as D, column } from './case.js?v=27';
-import * as C from '../../../core/correlation.js?v=27';
-import { mean, ranks } from '../../../core/stats.js?v=27';
-import { tSf } from '../../../core/inference.js?v=27';
+import { DERIVED as D, column } from './case.js?v=28';
+import * as C from '../../../core/correlation.js?v=28';
+import { mean, ranks } from '../../../core/stats.js?v=28';
+import { tSf } from '../../../core/inference.js?v=28';
 
 // ---------------------------------------------------------------- staffing and waits (both cafés, 612 days)
 const S = column('peak_staff_hours'), W = column('peak_wait_min'), T = column('transactions'), LOAD = column('peak_load');

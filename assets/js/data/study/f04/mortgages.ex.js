@@ -26,7 +26,7 @@ export const widgets = {
     title: 'Fixed-rate mortgage explorer',
     intro: 'Principal and interest only; taxes, insurance and escrow are extra. Defaults: Jonah’s 30-year loan.',
     inputs: [
-      { id: 'pv', label: 'Amount borrowed', min: 50000, max: 1000000, step: 5000, value: 288000, fmt: 'money' },
+      { id: 'pv', label: 'Amount borrowed', min: 50000, max: 1000000, step: 1000, value: 288000, fmt: 'money' },
       { id: 'rate', label: 'Interest rate (annual, paid monthly)', min: 1, max: 12, step: 0.125, value: 6.5, fmt: 'pct' },
       { id: 'years', label: 'Term', min: 5, max: 30, step: 5, value: 30, fmt: 'int', unit: 'years' },
       { id: 'extra', label: 'Extra payment each month', min: 0, max: 2000, step: 50, value: 0, fmt: 'money' },
@@ -67,7 +67,7 @@ export const widgets = {
     title: 'Are the points worth it?',
     intro: 'A 30-year fixed loan with and without discount points. The present-value test values every cash flow of the points loan at the no-points rate, including repaying the balance when you sell or refinance. Defaults: Jonah’s offer.',
     inputs: [
-      { id: 'pv', label: 'Amount borrowed', min: 50000, max: 1000000, step: 5000, value: 288000, fmt: 'money' },
+      { id: 'pv', label: 'Amount borrowed', min: 50000, max: 1000000, step: 1000, value: 288000, fmt: 'money' },
       { id: 'rate', label: 'Rate with no points', min: 2, max: 12, step: 0.125, value: 6.5, fmt: 'pct' },
       { id: 'pts', label: 'Points bought', min: 0, max: 4, step: 0.125, value: 1.5, fmt: 'num', unit: 'points' },
       { id: 'cut', label: 'Rate cut per point', min: 0, max: 0.5, step: 0.025, value: 0.25, fmt: 'num', unit: 'percentage points' },

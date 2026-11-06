@@ -19,7 +19,7 @@ export const widgets = {
       { id: 'invoiced', label: 'Work done this month, invoiced but unpaid', min: 0, max: 10000, step: 250, value: 3000, fmt: 'money' },
       { id: 'paidCosts', label: 'This month’s costs, paid this month', min: 0, max: 20000, step: 500, value: 5000, fmt: 'money' },
       { id: 'unpaidCosts', label: 'This month’s costs, still unpaid', min: 0, max: 10000, step: 250, value: 1500, fmt: 'money' },
-      { id: 'prepaid', label: 'Paid this month for later months’ costs', min: 0, max: 10000, step: 250, value: 2400, fmt: 'money' },
+      { id: 'prepaid', label: 'Paid this month for later months’ costs', min: 0, max: 10000, step: 100, value: 2400, fmt: 'money' },
     ],
     compute: (v) => {
       const receipts = v.paidWork + v.advance;

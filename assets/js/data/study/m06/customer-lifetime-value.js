@@ -3,9 +3,9 @@
 // published Regular and High End survival for heterogeneity (with a fictional $100 margin). Noncontractual value: the
 // cafés' loyalty-app members (case.js), with the margin taken from F03 (cost of goods 31% of café sales, card fees
 // $4,720 on $236,000). The project's subscriptions are not used. Every printed figure is recomputed in `checks`.
-import { MEMBER_LIST, VISIT_LIST, joinMap, members } from './case.js?v=27';
-import * as CU from '../../../core/customer.js?v=27';
-import { FACTS as F03 } from '../f03/case.js?v=27';
+import { MEMBER_LIST, VISIT_LIST, joinMap, members } from './case.js?v=28';
+import * as CU from '../../../core/customer.js?v=28';
+import { FACTS as F03 } from '../f03/case.js?v=28';
 
 // ---------------------------------------------------------------- the margin (F03)
 const CARD = F03.cafeCardFees / F03.cafes.sales;            // 0.02

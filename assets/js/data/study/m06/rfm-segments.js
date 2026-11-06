@@ -5,10 +5,10 @@
 // whether each came back in November–December. The cafés' cost of goods (31% of sales) is F03's. Tallowby Books and the
 // pastry offer's cost are fictional. Every printed figure is in `checks`; every claim about the data's shape has a check
 // that would fail if it were false.
-import { members, churnTable, VISIT_LIST, HOLDOUT, AS_OF } from './case.js?v=27';
-import * as CU from '../../../core/customer.js?v=27';
-import { propTest2 } from '../../../core/inference.js?v=27';
-import { FACTS as F03 } from '../f03/case.js?v=27';
+import { members, churnTable, VISIT_LIST, HOLDOUT, AS_OF } from './case.js?v=28';
+import * as CU from '../../../core/customer.js?v=28';
+import { propTest2 } from '../../../core/inference.js?v=28';
+import { FACTS as F03 } from '../f03/case.js?v=28';
 
 const sum = (a) => a.reduce((x, y) => x + y, 0);
 const pc = (v, d = 1) => `${(Math.round(v * 10 ** (d + 2) * (1 + 1e-12)) / 10 ** d).toFixed(d)}%`;

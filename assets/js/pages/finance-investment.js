@@ -1,10 +1,10 @@
 // finance-investment.js — capital budgeting: compare projects, the NPV profile, and capital rationing.
-import { initSite, syncRanges } from '../core/site.js?v=27';
-import { $, $$, h, s, onResize, debounce } from '../core/dom.js?v=27';
-import * as F from '../core/format.js?v=27';
-import { lineChart, barChart, tableTwin } from '../core/charts.js?v=27';
-import { verdict } from '../core/ui.js?v=27';
-import { npv, appraise, crossover, ration } from '../core/invest.js?v=27';
+import { initSite, syncRanges } from '../core/site.js?v=28';
+import { $, $$, h, s, onResize, debounce } from '../core/dom.js?v=28';
+import * as F from '../core/format.js?v=28';
+import { lineChart, barChart, tableTwin } from '../core/charts.js?v=28';
+import { verdict } from '../core/ui.js?v=28';
+import { npv, appraise, crossover, ration } from '../core/invest.js?v=28';
 
 initSite();
 
