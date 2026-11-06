@@ -3,8 +3,8 @@
 // No hints; solutions are shown when the student reviews the test. Café data and the October joiners come from case.js;
 // every other business, person and number is fictional. Formula items are marked by their results (core/sheet.js
 // gradeFormula); every num item's `check` recomputes its answer.
-import { CLEAN_ROWS, CAFE_COLUMNS, column, member, DERIVED as D } from './case.js?v=25';
-import * as R from '../../../core/regression.js?v=25';
+import { CLEAN_ROWS, CAFE_COLUMNS, column, member, DERIVED as D } from './case.js?v=26';
+import * as R from '../../../core/regression.js?v=26';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });

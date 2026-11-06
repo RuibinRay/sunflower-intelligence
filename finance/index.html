@@ -15,8 +15,8 @@
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}</script>
   <link rel="preload" href="../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/css/base.css?v=25">
-  <link rel="stylesheet" href="../assets/css/rooms.css?v=25">
+  <link rel="stylesheet" href="../assets/css/base.css?v=26">
+  <link rel="stylesheet" href="../assets/css/rooms.css?v=26">
 </head>
 <body class="room room--finance room--hub">
   <script>/* links made before the room had sub-pages (e.g. #dcf) still land on the right tool */(function(){var m={"cost-of-capital": "valuation", "dcf": "valuation", "bonds": "markets", "options": "markets", "altman": "risk"},k=location.hash.slice(1);if(m[k])location.replace(m[k]+'/#'+k);})();</script>
@@ -58,6 +58,7 @@
         <ul role="list">
           <li><a href="./" aria-current="page">Overview</a></li>
           <li><a href="./valuation/">Valuation</a></li>
+          <li><a href="./company-valuation/">Company Valuation Studio</a></li>
           <li><a href="./investment/">Investment decisions</a></li>
           <li><a href="./stocks/">Stock analysis</a></li>
           <li><a href="./risk/">Risk management</a></li>
@@ -75,6 +76,7 @@
       <!-- chrome:hub -->
       <ul class="hub-grid" role="list">
         <li><a class="hub-card" href="valuation/"><h2>Valuation</h2><p>What a business is worth: the cost of capital, then its cash flows discounted at that rate.</p><ul class="hub-tools" role="list"><li>Cost of capital (CAPM, WACC)</li><li>Discounted cash flow with sensitivity</li></ul><span class="hub-go">Open <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li>
+        <li><a class="hub-card" href="company-valuation/"><h2>Company Valuation Studio</h2><p>From a company’s statements to an explained valuation report: DCF, comparables, dividend and asset-based models, scenarios, a risk register, and a tutorial for every model.</p><ul class="hub-tools" role="list"><li>Model selection guide and eight valuation models</li><li>Statements by hand, CSV/Excel upload or SEC EDGAR</li><li>Scenarios, sensitivities, risk register, Monte Carlo</li><li>Automated report with PDF, Excel, CSV and JSON export</li></ul><span class="hub-go">Open <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li>
         <li><a class="hub-card" href="investment/"><h2>Investment decisions</h2><p>Which projects to fund, compared on NPV, IRR, MIRR, payback and profitability index.</p><ul class="hub-tools" role="list"><li>Capital budgeting for up to three projects</li><li>NPV profile and crossover rate</li><li>Capital rationing</li></ul><span class="hub-go">Open <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li>
         <li><a class="hub-card" href="stocks/"><h2>Stock analysis</h2><p>Return, risk and beta for a share against the market, and the portfolio mix with the best return for its risk.</p><ul class="hub-tools" role="list"><li>Returns, volatility, drawdown, Sharpe</li><li>Beta and alpha by CAPM regression</li><li>Efficient frontier</li></ul><span class="hub-go">Open <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li>
         <li><a class="hub-card" href="risk/"><h2>Risk management</h2><p>How much a portfolio could lose on a bad day, whether the model has been right, and how a company’s credit looks.</p><ul class="hub-tools" role="list"><li>Value at Risk and Expected Shortfall</li><li>Kupiec backtest</li><li>Stress scenarios</li><li>Altman Z-score</li></ul><span class="hub-go">Open <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></li>
@@ -108,6 +110,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../assets/js/pages/hub.js?v=25"></script>
+  <script type="module" src="../assets/js/pages/hub.js?v=26"></script>
 </body>
 </html>
