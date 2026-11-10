@@ -2,8 +2,8 @@
 // Fisher's z interval and tests, comparing two correlations, partial correlation, correlation matrices with
 // multiple-testing adjustments, power and sample size, and leave-one-out influence. Pure functions, no DOM; tested
 // against SciPy and statsmodels in tests/correlation.test.mjs. Builds on core/stats.js and core/inference.js.
-import { mean, ranks, pearson as pearsonBasic, ols } from './stats.js?v=28';
-import { normCdf, normInv, tCdf, tInv } from './inference.js?v=28';
+import { mean, ranks, pearson as pearsonBasic, ols } from './stats.js?v=30';
+import { normCdf, normInv, tCdf, tInv } from './inference.js?v=30';
 
 const finite = (v) => typeof v === 'number' && Number.isFinite(v);
 

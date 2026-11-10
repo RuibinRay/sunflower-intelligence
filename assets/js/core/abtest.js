@@ -1,5 +1,5 @@
 // abtest.js — comparing two conversion rates, and planning how many visitors a test needs.
-import { normCdf, normQuantile } from './stats.js?v=28';
+import { normCdf, normQuantile } from './stats.js?v=30';
 
 /**
  * Two-proportion z-test (pooled standard error for the test, unpooled for the interval).
@@ -13,7 +13,7 @@ export function compareRates(a, b, { conf = 0.95 } = {}) {
   const pool = (a.conv + b.conv) / (a.n + b.n);
   const sePool = Math.sqrt(pool * (1 - pool) * (1 / a.n + 1 / b.n));
   const z = sePool > 0 ? diff / sePool : 0;
-  const p = sePool > 0 ? 2 * (1 - normCdf(Math.abs(z))) : 1;
+  const p = sePool > 0 ? 2 * normCdf(-Math.abs(z)) : 1;   // the lower tail directly: 1 − N(|z|) loses every digit once |z| passes 8
   const se = Math.sqrt((pa * (1 - pa)) / a.n + (pb * (1 - pb)) / b.n);
   const zc = normQuantile(1 - (1 - conf) / 2);
   const small = [a.conv, a.n - a.conv, b.conv, b.n - b.conv].some((v) => v < 10);

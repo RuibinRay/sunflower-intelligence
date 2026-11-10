@@ -3,8 +3,8 @@
 // loyalty-app members with a lapse rule (case.js lapseData, as of 31 December 2027); the log-rank test; then
 // contractual projection with the shifted-beta-geometric model on Fader & Hardie's (2007) published High End data.
 // The project's subscriptions are not used. Every figure printed is recomputed in `checks`.
-import { MEMBER_LIST, lapseData } from './case.js?v=28';
-import * as CU from '../../../core/customer.js?v=28';
+import { MEMBER_LIST, lapseData } from './case.js?v=30';
+import * as CU from '../../../core/customer.js?v=30';
 
 const pc = (x) => x * 100;
 const med = (a) => { const s = [...a].sort((x, y) => x - y), n = s.length; return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2; };

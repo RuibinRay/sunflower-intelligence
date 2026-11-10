@@ -2,8 +2,8 @@
 // tables (CSV, or the sheets of an .xlsx read in the browser) to the engine's fields, unit detection, project save
 // and reload as JSON, CSV tables, and an Excel workbook of the model with live formulas. Pure functions; no DOM.
 // Everything runs in the browser: no file leaves the visitor's device.
-import { FIELDS, FIELD, fin } from './valuation.js?v=28';
-import { parseNumber } from './csv.js?v=28';
+import { FIELDS, FIELD, fin } from './valuation.js?v=30';
+import { parseNumber } from './csv.js?v=30';
 
 // ================================================================ label matching
 // Patterns are tested against a lower-cased label with punctuation collapsed. Order matters: the first match wins,
@@ -222,7 +222,7 @@ function sheetXml(rows, { widths = [] } = {}) {
     if (cell == null || cell === '') return '';
     const ref = cellRef(r, c);
     const style = cell && typeof cell === 'object' && cell.s ? ` s="${cell.s}"` : '';
-    if (cell && typeof cell === 'object' && cell.f) return `<c r="${ref}"${style}><f>${xmlEsc(cell.f)}</f></c>`;
+    if (cell && typeof cell === 'object' && cell.f) return `<c r="${ref}"${style}><f>${xmlEsc(cell.f)}</f>${typeof cell.v === 'number' && Number.isFinite(cell.v) ? `<v>${cell.v}</v>` : ''}</c>`;   // the stored result lets readers that do not calculate show the value
     const v = cell && typeof cell === 'object' ? cell.v : cell;
     if (typeof v === 'number') return Number.isFinite(v) ? `<c r="${ref}"${style}><v>${v}</v></c>` : '';
     return `<c r="${ref}" t="inlineStr"${style}><is><t>${xmlEsc(v)}</t></is></c>`;

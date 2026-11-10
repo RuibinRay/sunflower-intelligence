@@ -1,10 +1,10 @@
 // models.js — the life cycle of a model (as a flower) and the overfitting lab.
-import { initSite } from '../core/site.js?v=28';
-import { $, $$, h, s, onResize, debounce } from '../core/dom.js?v=28';
-import * as F from '../core/format.js?v=28';
-import * as S from '../core/stats.js?v=28';
-import { curvePoints, mulberry32 } from '../core/rng.js?v=28';
-import { scatter, lineChart, tableTwin } from '../core/charts.js?v=28';
+import { initSite } from '../core/site.js?v=30';
+import { $, $$, h, s, onResize, debounce } from '../core/dom.js?v=30';
+import * as F from '../core/format.js?v=30';
+import * as S from '../core/stats.js?v=30';
+import { curvePoints, mulberry32 } from '../core/rng.js?v=30';
+import { scatter, lineChart, tableTwin } from '../core/charts.js?v=30';
 
 initSite();
 

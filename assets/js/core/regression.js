@@ -3,8 +3,8 @@
 // dummy and interaction columns, standardized slopes, and logistic regression with its likelihood-ratio test and
 // predicted probabilities. Built on stats.js ols() (QR least squares, HC3) and classify.js logit() (IRLS); each
 // function here is tested against statsmodels in tests/regression.test.mjs.
-import { ols, breuschPagan, vif, invert, mean, normQuantile, normCdf, tQuantile, fPUpper, chi2PUpper, tPTwo } from './stats.js?v=28';
-import { logit } from './classify.js?v=28';
+import { ols, breuschPagan, vif, invert, mean, normQuantile, normCdf, tQuantile, fPUpper, chi2PUpper, tPTwo } from './stats.js?v=30';
+import { logit } from './classify.js?v=30';
 
 export { breuschPagan, vif };
 

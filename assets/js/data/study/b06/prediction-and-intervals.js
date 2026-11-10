@@ -6,8 +6,8 @@
 // several predictors are multiple-regression's; checking constant spread and normality is assumptions-and-diagnostics';
 // back-transforming a prediction from logs is transformations-and-influence'. Every figure printed is recomputed in
 // `checks`.
-import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=28';
-import * as R from '../../../core/regression.js?v=28';
+import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=30';
+import * as R from '../../../core/regression.js?v=30';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const mean = (a) => a.reduce((s, v) => s + v, 0) / a.length;

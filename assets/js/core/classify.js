@@ -1,6 +1,6 @@
 // classify.js — logistic regression (with odds ratios and diagnostics) and k-means clustering.
-import { normCdf, normQuantile, invert, mean, sd } from './stats.js?v=28';
-import { mulberry32 } from './rng.js?v=28';
+import { normCdf, normQuantile, invert, mean, sd } from './stats.js?v=30';
+import { mulberry32 } from './rng.js?v=30';
 
 // ================================================================ logistic regression
 /**
@@ -49,7 +49,7 @@ export function logit(Xcols, y, { names, maxIter = 50, tol = 1e-10 } = {}) {
   const nm = ['Intercept', ...(names || Xcols.map((_, j) => `x${j + 1}`))];
   const coefs = beta.map((b, j) => {
     const se = Math.sqrt(cov[j][j]), z = b / se;
-    return { name: nm[j], estimate: b, se, z, p: 2 * (1 - normCdf(Math.abs(z))), low: b - z975 * se, high: b + z975 * se, or: Math.exp(b), orLow: Math.exp(b - z975 * se), orHigh: Math.exp(b + z975 * se) };
+    return { name: nm[j], estimate: b, se, z, p: 2 * normCdf(-Math.abs(z)), low: b - z975 * se, high: b + z975 * se, or: Math.exp(b), orLow: Math.exp(b - z975 * se), orHigh: Math.exp(b + z975 * se) };
   });
   const ybar = pos / n, ll0 = n * (ybar * Math.log(ybar) + (1 - ybar) * Math.log(1 - ybar));
   return {

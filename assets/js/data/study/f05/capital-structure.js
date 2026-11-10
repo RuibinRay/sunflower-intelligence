@@ -3,9 +3,9 @@
 // fictional. Lantern appears only for general points about its past financing (F03’s 2027 accounts and module 3’s 20%
 // target); the 2028 financing is the course project’s and is not used here. Modigliani–Miller numbers come from
 // core/corpfin.js (mm); survey figures from Graham & Harvey (2002) and Myers (1984), both opened on 2026-11-05.
-import { TARGET_DV, TAX, DERIVED, DEBT } from './case.js?v=28';
-import { PERIODS } from '../f03/case.js?v=28';
-import * as CF from '../../../core/corpfin.js?v=28';
+import { TARGET_DV, TAX, DERIVED, DEBT } from './case.js?v=30';
+import { PERIODS } from '../f03/case.js?v=30';
+import * as CF from '../../../core/corpfin.js?v=30';
 
 const P27 = PERIODS[2027];
 // ---------------------------------------------------------------- Brookvale Bakeries (fictional), no taxes

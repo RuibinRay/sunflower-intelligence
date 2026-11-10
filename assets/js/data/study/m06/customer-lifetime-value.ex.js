@@ -3,8 +3,8 @@
 // Hardie's (2007) published survival for the sBG widget. Morrowfield Lawn Care, Callowmere Tutors and every other business
 // named are fictional. The 67% café margin is F03's (cost of goods 31%, card fees 2% of café sales), checked in the
 // lesson file. Formula items are marked by their results (core/sheet.js gradeFormula); num items recompute in `check`.
-import { members, VISIT_LIST, joinMap } from './case.js?v=28';
-import * as CU from '../../../core/customer.js?v=28';
+import { members, VISIT_LIST, joinMap } from './case.js?v=30';
+import * as CU from '../../../core/customer.js?v=30';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));

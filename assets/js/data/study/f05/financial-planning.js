@@ -5,8 +5,8 @@
 // AFN, growth rates and the cash budget come from core/corpfin.js (afn, internalGrowth, sustainableGrowth, cashBudget).
 // The AFN, IGR and SGR formulas follow the standard textbook treatment and are derived in the lesson; the cited OpenStax
 // sections support the forecasting and cash-budget method only.
-import { PERIODS } from '../f03/case.js?v=28';
-import * as CF from '../../../core/corpfin.js?v=28';
+import { PERIODS } from '../f03/case.js?v=30';
+import * as CF from '../../../core/corpfin.js?v=30';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 // ---------------------------------------------------------------- Isbister Outdoor Gear (fictional)

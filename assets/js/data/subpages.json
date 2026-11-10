@@ -10,6 +10,17 @@
       ]
     },
     {
+      "slug": "company-intelligence",
+      "name": "Company Intelligence",
+      "blurb": "Upload a company’s workbook (.xls, .xlsx, CSV) and get its statements, ratios, checks and valuation, with every figure traced to its cell.",
+      "tools": [
+        "Reads every sheet and row in a Web Worker",
+        "Mapping review, data-quality and reconciliation checks",
+        "Ratios with the formula behind each one",
+        "Valuation, scenarios, tornado, Monte Carlo; PDF, Excel, CSV, JSON"
+      ]
+    },
+    {
       "slug": "company-valuation",
       "name": "Company Valuation Studio",
       "blurb": "From a company’s statements to an explained valuation report: DCF, comparables, dividend and asset-based models, scenarios, a risk register, and a tutorial for every model.",
@@ -191,6 +202,12 @@
       "slug": "notebook",
       "name": "Notebook",
       "blurb": "Your notes and bookmarks, and moving your progress between browsers.",
+      "tools": []
+    },
+    {
+      "slug": "model-guide",
+      "name": "Model guide",
+      "blurb": "Which model to use and why, with animated DCF, WACC, diversification and regression, and guided practice.",
       "tools": []
     },
     {

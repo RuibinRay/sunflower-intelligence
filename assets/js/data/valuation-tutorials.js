@@ -3,7 +3,7 @@
 // <b>, <i>, <sub>, <sup> and <code>, which the page renders through a whitelist (no innerHTML). The worked example
 // (`worked`) is computed live from the company in the workspace, so the numbers always match the model.
 // Sources are ids from valuation-report.js's SOURCES list; the page prints them with authors and dates.
-import * as V from '../core/valuation.js?v=28';
+import * as V from '../core/valuation.js?v=30';
 
 const fin = V.fin;
 export const LEVELS = [

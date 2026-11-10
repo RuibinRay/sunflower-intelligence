@@ -1,16 +1,16 @@
 // report-view.js — renders the generated report (valuation-report.js) on the page with its charts, and the export
 // bar: print to PDF, Markdown, every table as CSV (zipped), the model as an Excel workbook, the project as JSON.
-import { h, download } from '../core/dom.js?v=28';
-import * as F from '../core/format.js?v=28';
-import * as V from '../core/valuation.js?v=28';
-import * as IO from '../core/valuation-io.js?v=28';
-import { reportToMarkdown, reportTablesCSV } from '../core/valuation-report.js?v=28';
-import { barChart, lineChart, histogramChart, tableTwin } from '../core/charts.js?v=28';
-import { verdict } from '../core/ui.js?v=28';
-import { waterfall, football, heatGrid, riskMatrix, historyForecastBars } from './charts.js?v=28';
-import { state } from './state.js?v=28';
-import { btn } from './ui.js?v=28';
-import { inline } from './inline.js?v=28';
+import { h, download } from '../core/dom.js?v=30';
+import * as F from '../core/format.js?v=30';
+import * as V from '../core/valuation.js?v=30';
+import * as IO from '../core/valuation-io.js?v=30';
+import { reportToMarkdown, reportTablesCSV } from '../core/valuation-report.js?v=30';
+import { barChart, lineChart, histogramChart, tableTwin } from '../core/charts.js?v=30';
+import { verdict } from '../core/ui.js?v=30';
+import { waterfall, football, heatGrid, riskMatrix, historyForecastBars } from './charts.js?v=30';
+import { state } from './state.js?v=30';
+import { btn } from './ui.js?v=30';
+import { inline } from './inline.js?v=30';
 
 const fin = Number.isFinite;
 const slug = (s) => String(s || 'company').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');

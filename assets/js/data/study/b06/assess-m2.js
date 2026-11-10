@@ -4,8 +4,8 @@
 // transactions. Hollins Library, Glenfold Scooters, Brambleby Bakery, Tarnby Hardware, the launderette, the beach-hut firm and every other business and
 // number outside the log are fictional. Formula items are marked by their results (core/sheet.js gradeFormula); every
 // num item's `check` recomputes its answer.
-import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=28';
-import * as R from '../../../core/regression.js?v=28';
+import { CLEAN_ROWS, CAFE_COLUMNS } from './case.js?v=30';
+import * as R from '../../../core/regression.js?v=30';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));

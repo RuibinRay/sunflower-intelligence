@@ -9,9 +9,9 @@
 // shares are in the same unit, so equity ÷ shares is a per-share figure in whole currency; capital expenditure is a
 // positive number (cash spent). Nothing here fills a missing figure silently: derive() returns how each derived value
 // was made, validate() lists what is missing or inconsistent, and every model returns { error } when it cannot run.
-import { wacc as costOfCapital } from './fin.js?v=28';
-import * as R from './ratios.js?v=28';
-import { mulberry32, normalGen } from './rng.js?v=28';
+import { wacc as costOfCapital } from './fin.js?v=30';
+import * as R from './ratios.js?v=30';
+import { mulberry32, normalGen } from './rng.js?v=30';
 
 export const fin = (x) => typeof x === 'number' && Number.isFinite(x);
 const n0 = (x) => (fin(x) ? x : 0);
@@ -104,6 +104,7 @@ export function derive(raw) {
   set('effectiveTax', has('tax') && has('pretax') && p.pretax > 0 ? p.tax / p.pretax : NaN, 'income tax ÷ pre-tax income');
   set('debt', sumIf('currentDebt', 'longTermDebt'), 'short-term + long-term debt');
   set('debt', p.longTermDebt, 'long-term debt (no short-term debt entered)');
+  set('debt', p.currentDebt, 'short-term debt (no long-term debt entered)');
   set('currentAssets', sumIf('cash', 'receivables', 'inventory') + n0(p.shortTermInvestments) + n0(p.otherCurrentAssets), 'cash + short-term investments + receivables + inventory + other current assets');
   set('currentLiabilities', sumIf('payables') + n0(p.currentDebt) + n0(p.otherCurrentLiabilities), 'payables + short-term debt + other current liabilities');
   set('totalAssets', sumIf('currentAssets', 'ppeNet') + n0(p.goodwill) + n0(p.intangibles) + n0(p.otherNoncurrentAssets), 'current assets + PP&E + goodwill + intangibles + other non-current assets');
@@ -233,7 +234,7 @@ export function defaultAssumptions(project, { horizon = 5 } = {}) {
   const A = historical(project), L = A[A.length - 1], n = A.length;
   const last3 = A.slice(-3);
   const avg = (fn) => { const v = last3.map(fn).filter(fin); return v.length ? mean(v) : NaN; };
-  const cagr = n >= 2 ? R.cagr(L.p.revenue, A[0].p.revenue, n - 1) : null;
+  const cagr = n >= 2 ? R.cagr(L.p.revenue, A[0].p.revenue, L.year - A[0].year) : null;   // years elapsed, so a gap in the statements does not inflate the rate
   const g0 = clamp(fin(cagr) ? cagr : 0.05, -0.1, 0.25), gT = 0.025;
   const margin = clamp(fin(avg((x) => x.margins.ebitda)) ? avg((x) => x.margins.ebitda) : 0.15, -0.5, 0.8);
   const daPct = clamp(fin(avg((x) => x.drivers.daPct)) ? avg((x) => x.drivers.daPct) : 0.04, 0, 0.6);
@@ -625,6 +626,21 @@ export function monteCarlo(project, A, spec = DEFAULT_MC) {
   const bins = Array.from({ length: nb }, (_, k) => ({ x0: lo + k * w, x1: lo + (k + 1) * w, count: 0 }));
   sorted.forEach((v) => { bins[Math.min(nb - 1, Math.floor((v - lo) / w))].count++; });
   return { ok: true, n: out.length, failed, spec: s, values: sorted, p5: pct(0.05), p25: pct(0.25), p50: pct(0.5), p75: pct(0.75), p95: pct(0.95), mean: mean(out), sd: Math.sqrt(mean(out.map((v) => (v - mean(out)) ** 2))), belowPrice: fin(price) ? sorted.filter((v) => v < price).length / sorted.length : NaN, bins, price };
+}
+
+/** One-at-a-time sensitivity for a tornado chart: each driver moved down and up by a stated step, the rest held. */
+export const TORNADO = [
+  { key: 'wacc', label: 'Discount rate (WACC)', delta: 0.01, step: '±1 pt' }, { key: 'gT', label: 'Terminal growth', delta: 0.005, step: '±0.5 pt' },
+  { key: 'margin', label: 'EBITDA margin', delta: 0.02, step: '±2 pts' }, { key: 'growth', label: 'Revenue growth, every year', delta: 0.02, step: '±2 pts' },
+  { key: 'capexPct', label: 'Capex as % of revenue', delta: 0.01, step: '±1 pt' }, { key: 'nwcPct', label: 'Working capital as % of revenue', delta: 0.02, step: '±2 pts' },
+];
+export function tornado(project, A, spec = TORNADO) {
+  const base = dcf(project, A);
+  if (!base.ok) return base;
+  const perShare = fin(base.perShare), val = (r) => (r.ok ? (perShare ? r.perShare : r.equity) : NaN);
+  const rows = spec.map((d) => { const low = val(dcf(project, applyDeltas(A, { [d.key]: -d.delta }))), high = val(dcf(project, applyDeltas(A, { [d.key]: d.delta }))); return { ...d, low, high, range: Math.abs(high - low) }; })
+    .filter((r) => fin(r.low) && fin(r.high)).sort((x, y) => y.range - x.range);
+  return { ok: true, base: val(base), perShare, rows };
 }
 
 // ================================================================ model selection guide

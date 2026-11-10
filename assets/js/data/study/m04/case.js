@@ -21,13 +21,13 @@
 // Cold Brew, audits shelf prices and sizes the cold brew market from the top down and the bottom up. The project (an
 // office-coffee subscription for offices in Lantern's district) has its own data at the end of this file; lessons and
 // module tests must not use it.
-import { LIST, OFFICE_SURVEY } from './data.js?v=28';
-import { MAILING_LIST, SUBSCRIBER_SURVEY, SURVEY_PLAN, DERIVED as B04 } from '../b04/case.js?v=28';
-import { SURVEY as B01_SURVEY, SHOP } from '../b01/case.js?v=28';
-import { BUSINESS, COMPETITOR as BREWLINE, CLIENT_INTERVIEWS } from '../m01/case.js?v=28';
-import { CATEGORY, CHANNELS, COMPETITORS, DEFAULT_PLAN } from '../m02/market.js?v=28';
-import * as S from '../../../core/survey.js?v=28';
-import { tableCells } from '../b03/case.js?v=28';
+import { LIST, OFFICE_SURVEY } from './data.js?v=30';
+import { MAILING_LIST, SUBSCRIBER_SURVEY, SURVEY_PLAN, DERIVED as B04 } from '../b04/case.js?v=30';
+import { SURVEY as B01_SURVEY, SHOP } from '../b01/case.js?v=30';
+import { BUSINESS, COMPETITOR as BREWLINE, CLIENT_INTERVIEWS } from '../m01/case.js?v=30';
+import { CATEGORY, CHANNELS, COMPETITORS, DEFAULT_PLAN } from '../m02/market.js?v=30';
+import * as S from '../../../core/survey.js?v=30';
+import { tableCells } from '../b03/case.js?v=30';
 
 export { MAILING_LIST, SUBSCRIBER_SURVEY, SURVEY_PLAN, B01_SURVEY, BREWLINE, CLIENT_INTERVIEWS, CATEGORY, CHANNELS, COMPETITORS, DEFAULT_PLAN, tableCells };
 

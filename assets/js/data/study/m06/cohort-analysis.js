@@ -4,11 +4,11 @@
 // the two cafés, and two-proportion tests of the October and November cohorts (core/inference.js propTest2). Footfall
 // by month is B05's log. The October joiners are B06's 225 members. Calderwick Yarns and Ostrander Cycles are fictional.
 // Every printed figure is in `checks`; every claim about the data's shape has a check that would fail if it were false.
-import { MEMBER_LIST, VISIT_LIST, joinMap } from './case.js?v=28';
-import * as CU from '../../../core/customer.js?v=28';
-import { propTest2 } from '../../../core/inference.js?v=28';
-import { CLEAN_ROWS, CAFE_COLUMNS } from '../b05/case.js?v=28';
-import { FACTS as F03 } from '../f03/case.js?v=28';
+import { MEMBER_LIST, VISIT_LIST, joinMap } from './case.js?v=30';
+import * as CU from '../../../core/customer.js?v=30';
+import { propTest2 } from '../../../core/inference.js?v=30';
+import { CLEAN_ROWS, CAFE_COLUMNS } from '../b05/case.js?v=30';
+import { FACTS as F03 } from '../f03/case.js?v=30';
 
 const sum = (a) => a.reduce((x, y) => x + y, 0);
 const pc = (v, d = 1) => `${(Math.round(v * 10 ** (d + 2) * (1 + 1e-12)) / 10 ** d).toFixed(d)}%`;

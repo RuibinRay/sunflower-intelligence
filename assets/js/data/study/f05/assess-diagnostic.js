@@ -21,8 +21,8 @@
 // New questions, not copies of lesson exercises, module-test or project items. No hints; solutions show in review.
 // Every business, person, price and rate here is fictional, and every figure the text shows is computed below with
 // core/corpfin.js and core/invest.js (claims about the figures’ shape throw if the numbers stop supporting them).
-import * as CF from '../../../core/corpfin.js?v=28';
-import { npv, irrAll, irr, crossover } from '../../../core/invest.js?v=28';
+import * as CF from '../../../core/corpfin.js?v=30';
+import { npv, irrAll, irr, crossover } from '../../../core/invest.js?v=30';
 
 const fx = (v, d = 0) => `${v < 0 ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const money = (v, d = 0) => `${v < 0 ? '−' : ''}$${fx(Math.abs(v), d)}`;

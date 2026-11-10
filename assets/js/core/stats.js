@@ -67,10 +67,31 @@ export function gammaP(a, x) {
   }
   return 1 - Math.exp(lg) * h;
 }
+/** Regularized upper incomplete gamma Q(a, x) = 1 − P(a, x), computed directly in the tail so that tiny values keep
+ *  their relative accuracy (1 − P would cancel to a handful of digits). */
+export function gammaQ(a, x) {
+  if (x <= 0) return 1;
+  if (x < a + 1) return 1 - gammaP(a, x);
+  const lg = -x + a * Math.log(x) - lnGamma(a), FPMIN = 1e-300;
+  let b = x + 1 - a, c = 1 / FPMIN, d = 1 / b, h = d;
+  for (let i = 1; i < 1000; i++) {
+    const an = -i * (i - a);
+    b += 2;
+    d = an * d + b; if (Math.abs(d) < FPMIN) d = FPMIN;
+    c = b + an / c; if (Math.abs(c) < FPMIN) c = FPMIN;
+    d = 1 / d;
+    const del = d * c; h *= del;
+    if (Math.abs(del - 1) < 1e-16) break;
+  }
+  return Math.exp(lg) * h;
+}
 
+/** Standard normal CDF. The lower tail is computed directly (½·Q(½, z²/2)), so N(−8) keeps its relative accuracy. */
 export function normCdf(z) {
   if (!Number.isFinite(z)) return z > 0 ? 1 : 0;
-  const p = gammaP(0.5, z * z / 2);
+  const x = z * z / 2;
+  if (x >= 1.5) { const tail = 0.5 * gammaQ(0.5, x); return z < 0 ? tail : 1 - tail; }
+  const p = gammaP(0.5, x);
   return z >= 0 ? 0.5 + 0.5 * p : 0.5 - 0.5 * p;
 }
 
@@ -78,6 +99,7 @@ export function normCdf(z) {
 export function normQuantile(p) {
   if (p <= 0) return -Infinity;
   if (p >= 1) return Infinity;
+  if (p > 0.5) return -normQuantile(1 - p);     // the refinement below is accurate in the lower tail; the upper one mirrors it
   const a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02, 1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00];
   const b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02, 6.680131188771972e+01, -1.328068155288572e+01];
   const c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00, -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00];
@@ -115,7 +137,7 @@ export function tQuantile(p, df) {
 }
 /** Upper-tail p-values. */
 export const fPUpper = (f, d1, d2) => (f <= 0 ? 1 : betaInc(d2 / (d2 + d1 * f), d2 / 2, d1 / 2));
-export const chi2PUpper = (x, k) => (x <= 0 ? 1 : 1 - gammaP(k / 2, x / 2));
+export const chi2PUpper = (x, k) => (x <= 0 ? 1 : gammaQ(k / 2, x / 2));
 
 // ---------------------------------------------------------------- descriptive statistics
 export const finite = (arr) => arr.filter((v) => typeof v === 'number' && Number.isFinite(v));

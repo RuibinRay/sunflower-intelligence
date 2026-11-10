@@ -1,0 +1,30 @@
+/* Learn › Model guide: interactive explainers. Builds on valuation.css and intel.css. */
+.gd-level { margin-top: var(--s-4); display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; }
+.gd-box { display: grid; grid-template-columns: minmax(240px, 320px) minmax(0, 1fr); gap: var(--s-6); padding: var(--s-5); background: var(--paper); border: 1px solid var(--rule); border-radius: var(--r-lg); box-shadow: 0 18px 40px -28px rgba(80, 55, 10, .35); }
+.gd-box > * { min-width: 0; }
+.gd-side { display: grid; gap: var(--s-3); align-content: start; }
+.gd-main { display: grid; gap: var(--s-4); align-content: start; }
+.gd-steps { display: flex; flex-wrap: wrap; gap: 6px; }
+.gd-steps button { min-height: 38px; padding: 6px 14px; border-radius: 999px; border: 1.5px solid var(--rule-strong); background: transparent; font-weight: 600; font-size: var(--t-sm); color: var(--ink-2); }
+.gd-steps button[aria-pressed="true"] { background: var(--midnight); border-color: var(--midnight); color: var(--ivory); }
+.gd-say { font-size: var(--t-sm); max-width: 72ch; padding: var(--s-3) var(--s-4); border-left: 4px solid var(--sun); background: #FBF6EA; border-radius: 0 var(--r-sm) var(--r-sm) 0; }
+.gd-say strong { color: var(--ink); }
+.gd-svg { display: block; width: 100%; height: auto; overflow: visible; font-family: var(--f-text); }
+.gd-svg text { font-size: 12px; fill: var(--ink-3); font-variant-numeric: tabular-nums; }
+.gd-svg .strong { fill: var(--ink); font-weight: 700; }
+.gd-svg rect, .gd-svg circle, .gd-svg line, .gd-svg path { transition: all 520ms var(--ease-out); }
+.gd-svg .axis { stroke: var(--axis); } .gd-svg .gridl { stroke: var(--grid); }
+.gd-svg .fc { fill: #E2C77A; } .gd-svg .pv { fill: var(--series-2); } .gd-svg .tv { fill: var(--series-1); } .gd-svg .neg { fill: var(--neg); } .gd-svg .tot { fill: var(--midnight); }
+.gd-svg .is-off { opacity: 0; }
+.gd-blend { display: flex; height: 44px; border-radius: 10px; overflow: hidden; }
+.gd-blend span { display: grid; place-items: center; color: #fff; font-size: var(--t-xs); font-weight: 700; transition: flex-basis 500ms var(--ease-out); min-width: 0; white-space: nowrap; overflow: hidden; }
+.gd-blend .e { background: var(--series-1); } .gd-blend .d { background: var(--series-2); }
+.gd-ex { display: grid; gap: var(--s-3); padding: var(--s-4); border: 1.5px solid var(--rule-strong); border-radius: var(--r-md); background: var(--paper); }
+.gd-ex h3 { font-size: var(--t-md); }
+.gd-ex .gd-answer { display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center; }
+.gd-ex .input { max-width: 180px; }
+.gd-exs { display: grid; gap: var(--s-4); }
+.gd-score { font-weight: 700; }
+@media (max-width: 960px) { .gd-box { grid-template-columns: 1fr; padding: var(--s-4); } }
+@media (prefers-reduced-motion: reduce) { .gd-svg rect, .gd-svg circle, .gd-svg line, .gd-svg path, .gd-blend span { transition: none; } }
+html.motion-paused .gd-svg rect, html.motion-paused .gd-svg circle, html.motion-paused .gd-svg line, html.motion-paused .gd-svg path, html.motion-paused .gd-blend span { transition: none; }

@@ -5,9 +5,9 @@
 // Millbrook's footfall on the high and on rain for statistical against practical significance; all 306 Harbourside days
 // and the two cafés pooled for dependence. Fitting the line, residuals and R² are module 1's; checking the conditions is
 // assumptions-and-diagnostics'; prediction is prediction-and-intervals'. Every figure printed is recomputed in `checks`.
-import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=28';
-import * as R from '../../../core/regression.js?v=28';
-import * as C from '../../../core/correlation.js?v=28';
+import { column, CLEAN_ROWS, CAFE_COLUMNS, DERIVED as D } from './case.js?v=30';
+import * as R from '../../../core/regression.js?v=30';
+import * as C from '../../../core/correlation.js?v=30';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const H = { cafe: 'Harbourside' }, M = { cafe: 'Millbrook' };
