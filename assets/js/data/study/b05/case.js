@@ -14,12 +14,12 @@
 // trading and their $236,000 of 2027 sales; F03's $189,400 of 2027 online sales (the project's weekly data); B04's 120
 // subscribers at the end of 2026, whose monthly deliveries (B03's subscription orders) fit inside the year's orders and sales. The peak
 // barista hours are the 7–11 a.m. roster only, not the day's paid hours (F03 has the year's café wages).
-import { CAFE_COLUMNS, CAFE_ROWS, SLIP, SHOP_COLUMNS, SHOP_WEEKS, OUTAGE_WEEK } from './data.js?v=28';
-import { FACTS as F03 } from '../f03/case.js?v=28';
-import { SUBSCRIBER_SURVEY } from '../b04/case.js?v=28';
-import { ORDER_COLUMNS as B03_COLS, ORDERS as B03_ORDERS } from '../b03/case.js?v=28';
-import * as C from '../../../core/correlation.js?v=28';
-import { mean, sd } from '../../../core/stats.js?v=28';
+import { CAFE_COLUMNS, CAFE_ROWS, SLIP, SHOP_COLUMNS, SHOP_WEEKS, OUTAGE_WEEK } from './data.js?v=30';
+import { FACTS as F03 } from '../f03/case.js?v=30';
+import { SUBSCRIBER_SURVEY } from '../b04/case.js?v=30';
+import { ORDER_COLUMNS as B03_COLS, ORDERS as B03_ORDERS } from '../b03/case.js?v=30';
+import * as C from '../../../core/correlation.js?v=30';
+import { mean, sd } from '../../../core/stats.js?v=30';
 
 export { CAFE_COLUMNS, CAFE_ROWS, SLIP };
 /** The project's data (lessons, exercises and module tests must not use these). */

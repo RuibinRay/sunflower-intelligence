@@ -2,9 +2,9 @@
 // No hints. Each item has a full solution, shown when the student reviews the test. New questions, not copies of the
 // lesson exercises. Every business named here is fictional; items 4 and 12 use Lantern’s case inputs from case.js
 // (the 20% target, Coastline’s 7.5%, the peers’ average unlevered beta).
-import { MARKET, DEBT, TARGET_DV, TAX, DERIVED } from './case.js?v=28';
-import * as CF from '../../../core/corpfin.js?v=28';
-import { npv } from '../../../core/invest.js?v=28';
+import { MARKET, DEBT, TARGET_DV, TAX, DERIVED } from './case.js?v=30';
+import * as CF from '../../../core/corpfin.js?v=30';
+import { npv } from '../../../core/invest.js?v=30';
 
 const { rf, mrp } = MARKET;
 const annuity = (c, n) => Array.from({ length: n }, () => c);

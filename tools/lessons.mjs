@@ -25,6 +25,15 @@ for (const [i, id] of ORDER.entries()) {
   lessons.push({ ...L, plate: i + 1, room: SKILLS.find((s) => s.id === id).room, nQ: Math.min(3, ITEMS.filter((it) => it.skill === id).length) });
 }
 const TOTAL = ORDER.length;
+// further places to apply a lesson: the whole-company tools and the guide to choosing a model
+const TRY_MORE = {
+  tvm: [['finance/company-valuation/', 'Value a whole company'], ['learn/model-guide/', 'Which model should I use?']],
+  wacc: [['finance/company-valuation/', 'Use it in a company valuation'], ['learn/model-guide/#wacc', 'See WACC animated']],
+  invest: [['learn/model-guide/', 'Which model should I use?']],
+  credit: [['finance/company-intelligence/', 'Score a company from its workbook']],
+  stocks: [['learn/model-guide/#frontier', 'See diversification animated']],
+  regression: [['learn/model-guide/#regression', 'See least squares animated']],
+};
 const WORD = ['no', 'one', 'two', 'three', 'four', 'five'];
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -135,7 +144,8 @@ function lessonPage(L, prev, next) {
             <div class="quiz" id="lesson-quiz"><noscript><p class="note">The questions need JavaScript.</p></noscript></div>
             <div class="bench-results" id="lesson-mastery" aria-live="polite"></div>
           </div>`)}${part('use', `
-          <p>Open <a href="${root}${L.tool.href}">${L.tool.label}</a> and try the idea on your own numbers.</p>`)}
+          <p>Open <a href="${root}${L.tool.href}">${L.tool.label}</a> and try the idea on your own numbers.</p>
+          <p class="input-actions"><a class="btn btn-primary" href="${root}${L.tool.href}">Try this model</a>${TRY_MORE[L.id] ? TRY_MORE[L.id].map(([href, label]) => `<a class="btn btn-secondary" href="${root}${href}">${label}</a>`).join('') : ''}</p>`)}
       </article>
 
       <nav class="lesson-pager" aria-label="More lessons">

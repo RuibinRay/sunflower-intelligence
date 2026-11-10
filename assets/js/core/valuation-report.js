@@ -3,8 +3,8 @@
 // number; nothing is written that the model did not calculate. Blocks carry a `tag` saying what kind of evidence they
 // are: 'verified' (entered or sourced financial data), 'assumption' (set by the user), 'estimate' (derived by the
 // engine) or 'interpretation' (the analyst's reading). Pure functions; the page renders the blocks and charts.
-import * as V from './valuation.js?v=28';
-import * as F from './format.js?v=28';
+import * as V from './valuation.js?v=30';
+import * as F from './format.js?v=30';
 
 const fin = V.fin;
 export const TAGS = { verified: 'Verified financial data', assumption: 'Assumption', estimate: 'Estimate (derived by the model)', interpretation: 'Analyst interpretation' };
@@ -60,6 +60,38 @@ export function impliedWacc(project, A, price) {
   return (lo + hi) / 2;
 }
 
+/** Rule-based reading of the historical statements: growth, margins, cash conversion, leverage, liquidity, returns.
+ *  H is V.historical(project); d an optional DCF result (for the cost of capital). Shared by the valuation report and
+ *  the Company Intelligence dashboard, so both say the same thing about the same numbers. */
+export function historyNarrative(f, H, d = null) {
+  const first = H[0], last = H[H.length - 1], n = H.length;
+  const cagr = n >= 2 ? V.fin(last.p.revenue) && V.fin(first.p.revenue) && first.p.revenue > 0 ? (last.p.revenue / first.p.revenue) ** (1 / (last.year - first.year)) - 1 : NaN : NaN;
+  const mFirst = first.margins.ebitda, mLast = last.margins.ebitda;
+  const marginMove = fin(mFirst) && fin(mLast) ? mLast - mFirst : NaN;
+  const lev = last.ratios.solvency.netDebtToEbitda, levFirst = first.ratios.solvency.netDebtToEbitda;
+  const histParas = [];
+  if (n >= 2) {
+    histParas.push(`Revenue ${dir(cagr, 'grew', 'declined')} from ${f.money(first.p.revenue)} in ${first.year} to ${f.money(last.p.revenue)} in ${last.year}, a compound rate of ${f.pct(cagr)} a year.`);
+    if (fin(marginMove)) {
+      if (cagr > 0.005 && marginMove < -0.005) histParas.push(`Over the same years the EBITDA margin fell from ${f.pct(mFirst)} to ${f.pct(mLast)}: sales grew, but costs grew faster, so operating profit rose more slowly than revenue${fin(last.growth.ebitda) && last.growth.ebitda < 0 ? ' and fell in the latest year' : ''}. The question for the forecast is whether that squeeze is cyclical or structural.`);
+      else if (cagr > 0.005 && marginMove > 0.005) histParas.push(`The EBITDA margin widened from ${f.pct(mFirst)} to ${f.pct(mLast)}, so operating profit grew faster than sales: the business gained operating leverage or pricing power as it grew.`);
+      else if (cagr <= 0.005 && marginMove < -0.005) histParas.push(`With revenue ${dir(cagr, 'barely growing', 'shrinking', 'flat')} and the EBITDA margin down from ${f.pct(mFirst)} to ${f.pct(mLast)}, profit fell on both counts; the forecast should not assume a recovery without a reason.`);
+      else histParas.push(`The EBITDA margin held between ${f.pct(Math.min(mFirst, mLast))} and ${f.pct(Math.max(mFirst, mLast))}, so profit tracked revenue.`);
+    }
+    const dips = H.slice(1).filter((h) => fin(h.margins.ebitda) && fin(h.margins.gross) && h.margins.ebitda < (H[H.indexOf(h) - 1]?.margins.ebitda ?? h.margins.ebitda) - 0.015);
+    if (dips.length) histParas.push(`The margin dipped in ${dips.map((h) => h.year).join(' and ')}${dips.some((h) => h.margins.gross < H[H.indexOf(h) - 1].margins.gross - 0.01) ? ', mostly at the gross-margin line (input costs or pricing) rather than in overheads' : ', mostly in operating expenses rather than the cost of goods'}.`);
+  } else histParas.push(`Only ${last.year} is available, so no trend can be read; growth and margin assumptions rest on judgement.`);
+  if (fin(last.drivers.cashConversion)) histParas.push(`Cash conversion is ${last.drivers.cashConversion >= 0.9 ? 'strong' : last.drivers.cashConversion >= 0.6 ? 'moderate' : 'weak'}: operating cash flow was ${f.x(last.drivers.cashConversion, 2)} net income in ${last.year}${last.drivers.cashConversion < 0.6 ? ', which means profit is being absorbed by working capital or other accruals and should be investigated before it is forecast as cash' : ''}.`);
+  if (fin(lev)) {
+    const levText = lev < 1 ? 'low' : lev < 2.5 ? 'moderate' : lev < 4 ? 'high' : 'very high';
+    histParas.push(`Net debt stood at ${f.x(lev)} EBITDA at the end of ${last.year} (${levText})${fin(levFirst) && n >= 2 ? `, ${lev > levFirst + 0.2 ? `up from ${f.x(levFirst)} in ${first.year}: leverage has risen, so a weak year now leaves less room before covenants and refinancing become a concern, and the cost of new debt is likely to be higher` : lev < levFirst - 0.2 ? `down from ${f.x(levFirst)} in ${first.year}: the balance sheet has been strengthening` : `little changed from ${first.year}`}` : ''}. Interest cover is ${f.x(last.ratios.solvency.interestCoverage)}.`);
+  }
+  if (fin(last.ratios.liquidity.current)) histParas.push(`Liquidity: the current ratio is ${f.num(last.ratios.liquidity.current, 2)} and the quick ratio ${f.num(last.ratios.liquidity.quick, 2)}.`);
+  if (fin(last.drivers.roic)) histParas.push(`Return on invested capital was ${f.pct(last.drivers.roic)} in ${last.year}${d?.ok ? `, ${last.drivers.roic > d.r + 0.02 ? 'above' : last.drivers.roic < d.r - 0.02 ? 'below' : 'close to'} the ${f.pct(d.r, 2)} cost of capital${last.drivers.roic > d.r + 0.02 ? ', so growth adds value' : last.drivers.roic < d.r - 0.02 ? ', so growth destroys value until returns improve' : ''}` : ''}.`);
+
+  return { paras: histParas, cagr, mFirst, mLast, marginMove, lev, levFirst };
+}
+
 /** Sources cited in the report and the tutorials (verified 5 November 2026). */
 export const SOURCES = [
   { id: 'hbs-value', title: 'How to Value a Company: 6 Methods and Examples', author: 'Brian Misamore', publisher: 'Harvard Business School Online', date: 'Updated 23 August 2024 (first published 21 April 2017)', url: 'https://online.hbs.edu/blog/post/how-to-value-a-company' },
@@ -101,31 +133,7 @@ export function buildReport(project, A, all, extra = {}) {
   const dataTag = sourceKind === 'example' ? 'verified' : 'verified';
   const dataLabel = sourceKind === 'edgar' ? `financial statements from SEC EDGAR (${project.source?.note || ''})` : sourceKind === 'upload' ? `financial statements uploaded by the analyst (${project.source?.document || 'file'})` : sourceKind === 'example' ? 'the built-in fictional example statements' : 'financial statements entered by the analyst';
 
-  // ---------------------------------------------------------------- history narrative
-  const cagr = n >= 2 ? V.fin(last.p.revenue) && V.fin(first.p.revenue) && first.p.revenue > 0 ? (last.p.revenue / first.p.revenue) ** (1 / (n - 1)) - 1 : NaN : NaN;
-  const mFirst = first.margins.ebitda, mLast = last.margins.ebitda;
-  const marginMove = fin(mFirst) && fin(mLast) ? mLast - mFirst : NaN;
-  const lev = last.ratios.solvency.netDebtToEbitda, levFirst = first.ratios.solvency.netDebtToEbitda;
-  const histParas = [];
-  if (n >= 2) {
-    histParas.push(`Revenue ${dir(cagr, 'grew', 'declined')} from ${f.money(first.p.revenue)} in ${first.year} to ${f.money(last.p.revenue)} in ${last.year}, a compound rate of ${f.pct(cagr)} a year.`);
-    if (fin(marginMove)) {
-      if (cagr > 0.005 && marginMove < -0.005) histParas.push(`Over the same years the EBITDA margin fell from ${f.pct(mFirst)} to ${f.pct(mLast)}: sales grew, but costs grew faster, so operating profit rose more slowly than revenue${fin(last.growth.ebitda) && last.growth.ebitda < 0 ? ' and fell in the latest year' : ''}. The question for the forecast is whether that squeeze is cyclical or structural.`);
-      else if (cagr > 0.005 && marginMove > 0.005) histParas.push(`The EBITDA margin widened from ${f.pct(mFirst)} to ${f.pct(mLast)}, so operating profit grew faster than sales: the business gained operating leverage or pricing power as it grew.`);
-      else if (cagr <= 0.005 && marginMove < -0.005) histParas.push(`With revenue ${dir(cagr, 'barely growing', 'shrinking', 'flat')} and the EBITDA margin down from ${f.pct(mFirst)} to ${f.pct(mLast)}, profit fell on both counts; the forecast should not assume a recovery without a reason.`);
-      else histParas.push(`The EBITDA margin held between ${f.pct(Math.min(mFirst, mLast))} and ${f.pct(Math.max(mFirst, mLast))}, so profit tracked revenue.`);
-    }
-    const dips = H.slice(1).filter((h) => fin(h.margins.ebitda) && fin(h.margins.gross) && h.margins.ebitda < (H[H.indexOf(h) - 1]?.margins.ebitda ?? h.margins.ebitda) - 0.015);
-    if (dips.length) histParas.push(`The margin dipped in ${dips.map((h) => h.year).join(' and ')}${dips.some((h) => h.margins.gross < H[H.indexOf(h) - 1].margins.gross - 0.01) ? ', mostly at the gross-margin line (input costs or pricing) rather than in overheads' : ', mostly in operating expenses rather than the cost of goods'}.`);
-  } else histParas.push(`Only ${last.year} is available, so no trend can be read; growth and margin assumptions rest on judgement.`);
-  if (fin(last.drivers.cashConversion)) histParas.push(`Cash conversion is ${last.drivers.cashConversion >= 0.9 ? 'strong' : last.drivers.cashConversion >= 0.6 ? 'moderate' : 'weak'}: operating cash flow was ${f.x(last.drivers.cashConversion, 2)} net income in ${last.year}${last.drivers.cashConversion < 0.6 ? ', which means profit is being absorbed by working capital or other accruals and should be investigated before it is forecast as cash' : ''}.`);
-  if (fin(lev)) {
-    const levText = lev < 1 ? 'low' : lev < 2.5 ? 'moderate' : lev < 4 ? 'high' : 'very high';
-    histParas.push(`Net debt stood at ${f.x(lev)} EBITDA at the end of ${last.year} (${levText})${fin(levFirst) && n >= 2 ? `, ${lev > levFirst + 0.2 ? `up from ${f.x(levFirst)} in ${first.year}: leverage has risen, so a weak year now leaves less room before covenants and refinancing become a concern, and the cost of new debt is likely to be higher` : lev < levFirst - 0.2 ? `down from ${f.x(levFirst)} in ${first.year}: the balance sheet has been strengthening` : `little changed from ${first.year}`}` : ''}. Interest cover is ${f.x(last.ratios.solvency.interestCoverage)}.`);
-  }
-  if (fin(last.ratios.liquidity.current)) histParas.push(`Liquidity: the current ratio is ${f.num(last.ratios.liquidity.current, 2)} and the quick ratio ${f.num(last.ratios.liquidity.quick, 2)}.`);
-  if (fin(last.drivers.roic)) histParas.push(`Return on invested capital was ${f.pct(last.drivers.roic)} in ${last.year}${d?.ok ? `, ${last.drivers.roic > d.r + 0.02 ? 'above' : last.drivers.roic < d.r - 0.02 ? 'below' : 'close to'} the ${f.pct(d.r, 2)} cost of capital${last.drivers.roic > d.r + 0.02 ? ', so growth adds value' : last.drivers.roic < d.r - 0.02 ? ', so growth destroys value until returns improve' : ''}` : ''}.`);
-
+  const { paras: histParas, cagr, mFirst, mLast, marginMove, lev, levFirst } = historyNarrative(f, H, d);
   const histTable = table(`Historical statements, ${unitNote}`, [{ label: 'Line' }, ...H.map((h) => ({ label: String(h.year), num: true }))],
     [['Revenue', ...H.map((h) => f.num(h.p.revenue))], ['Revenue growth', ...H.map((h) => f.pct(h.growth.revenue))], ['Gross margin', ...H.map((h) => f.pct(h.margins.gross))], ['EBITDA', ...H.map((h) => f.num(h.p.ebitda))], ['EBITDA margin', ...H.map((h) => f.pct(h.margins.ebitda))], ['EBIT', ...H.map((h) => f.num(h.p.ebit))], ['Net income', ...H.map((h) => f.num(h.p.netIncome))], ['Net margin', ...H.map((h) => f.pct(h.margins.net))], ['Operating cash flow', ...H.map((h) => f.num(h.p.cfo))], ['Capital expenditure', ...H.map((h) => f.num(h.p.capex))], ['Free cash flow', ...H.map((h) => f.num(h.p.fcf))], ['Net debt', ...H.map((h) => f.num(h.p.netDebt))], ['Net debt / EBITDA', ...H.map((h) => f.x(h.ratios.solvency.netDebtToEbitda))], ['Equity (book)', ...H.map((h) => f.num(h.p.equity))], ['Return on equity', ...H.map((h) => f.pct(h.ratios.profitability.roe))], ['Return on invested capital', ...H.map((h) => f.pct(h.drivers.roic))]], 'verified');
 

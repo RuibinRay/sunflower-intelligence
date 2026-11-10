@@ -3,8 +3,8 @@
 // Lantern's members come from case.js (members scored on 31 October with churnTable(); the cohort triangle from
 // core/customer.js cohortTable); Halvering Hair Studio and Tolhurst Pets are fictional. Formula items are marked by
 // their results on changed copies; every num item's `check` recomputes its answer.
-import { churnTable, VISIT_LIST, joinMap, members } from './case.js?v=28';
-import * as CU from '../../../core/customer.js?v=28';
+import { churnTable, VISIT_LIST, joinMap, members } from './case.js?v=30';
+import * as CU from '../../../core/customer.js?v=30';
 
 const sum = (a) => a.reduce((x, y) => x + y, 0);
 const r1 = (x) => Math.round(x * 10) / 10, r2 = (x) => Math.round(x * 100) / 100;

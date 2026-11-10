@@ -16,10 +16,10 @@
 // Lindale Stationers, Gorseway Hotels, Pelling Bakeries, Sedgemoor Garden Centre, Tollbridge Insurance, Cordwain Hotels,
 // Halsway Leisure and Orlebar Bakeries are fictional. Every num item’s `check` recomputes its answer, and the formula
 // item is marked by its results on the sheet and on changed copies.
-import { CLEAN_ROWS, CAFE_COLUMNS, column, DERIVED } from './case.js?v=28';
-import * as C from '../../../core/correlation.js?v=28';
-import { sd } from '../../../core/stats.js?v=28';
-import { normCdf } from '../../../core/inference.js?v=28';
+import { CLEAN_ROWS, CAFE_COLUMNS, column, DERIVED } from './case.js?v=30';
+import * as C from '../../../core/correlation.js?v=30';
+import { sd } from '../../../core/stats.js?v=30';
+import { normCdf } from '../../../core/inference.js?v=30';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const fx = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;

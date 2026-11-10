@@ -3,8 +3,8 @@
 // "churn" needs a definition in a noncontractual setting; contractual examples use fictional businesses (Corriemoor
 // Mobile, Thistlebank Insurance, Tarnfield Software) and Fader & Hardie's (2007) published retention data. The project's
 // subscriptions are not used. Every figure printed is recomputed in `checks`.
-import { MEMBER_LIST, VISIT_LIST, AS_OF, CALIBRATION_END, members } from './case.js?v=28';
-import * as CU from '../../../core/customer.js?v=28';
+import { MEMBER_LIST, VISIT_LIST, AS_OF, CALIBRATION_END, members } from './case.js?v=30';
+import * as CU from '../../../core/customer.js?v=30';
 
 const { monthOf, dayNum } = CU;
 const pc = (x) => x * 100;

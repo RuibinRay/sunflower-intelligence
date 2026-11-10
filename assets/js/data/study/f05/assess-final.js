@@ -33,9 +33,9 @@
 // fictional. Every figure the text shows is computed below with core/corpfin.js and core/invest.js; claims about the
 // figures’ shape throw if the numbers stop supporting them. New questions, not copies of lesson exercises, module-test,
 // diagnostic or project items. No hints; solutions show in review.
-import { COLD_BREW, PROPOSALS, WORKING_RATE, TARGET_DV, TAX, MARKET, PEERS, DEBT, DERIVED, coldBrewFlows } from './case.js?v=28';
-import * as CF from '../../../core/corpfin.js?v=28';
-import { npv, irr, mirr, payback, profitabilityIndex, crossover, ration } from '../../../core/invest.js?v=28';
+import { COLD_BREW, PROPOSALS, WORKING_RATE, TARGET_DV, TAX, MARKET, PEERS, DEBT, DERIVED, coldBrewFlows } from './case.js?v=30';
+import * as CF from '../../../core/corpfin.js?v=30';
+import { npv, irr, mirr, payback, profitabilityIndex, crossover, ration } from '../../../core/invest.js?v=30';
 
 const fx = (v, d = 0) => `${v < 0 ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const money = (v, d = 0) => `${v < 0 ? '−' : ''}$${fx(Math.abs(v), d)}`;

@@ -43,10 +43,10 @@
 // that aren’t independent (days in sequence; both cafés on the same days) the item says so, and where it says which way
 // the error goes that direction is checked here. No hints; solutions are shown on review. Every num item’s `check`
 // recomputes its answer, and every formula item is marked by its results on the sheet and on changed copies.
-import { CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, column, member, DERIVED } from './case.js?v=28';
-import * as R from '../../../core/regression.js?v=28';
-import { confusion } from '../../../core/classify.js?v=28';
-import { pearson } from '../../../core/correlation.js?v=28';
+import { CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, column, member, DERIVED } from './case.js?v=30';
+import * as R from '../../../core/regression.js?v=30';
+import { confusion } from '../../../core/classify.js?v=30';
+import { pearson } from '../../../core/correlation.js?v=30';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));

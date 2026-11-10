@@ -3,7 +3,7 @@
 // weights, Modigliani–Miller with corporate tax, dividends against buybacks, percent-of-sales planning and a cash budget.
 // NPV, IRR, MIRR, payback and PI live in core/invest.js. Pure functions; tested in tests/corpfin.test.mjs against
 // numpy-financial, hand-worked textbook cases and the identities each formula must satisfy.
-import { npv, irr } from './invest.js?v=28';
+import { npv, irr } from './invest.js?v=30';
 
 // ================================================================ depreciation
 /** MACRS percentages, half-year convention (IRS Publication 946, Table A-1), in % of the depreciable basis. */

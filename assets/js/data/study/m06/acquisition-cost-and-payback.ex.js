@@ -3,8 +3,8 @@
 // the join month and the two months after); the 2027 cohorts' margin per joiner for the campaign widget. Glenmarra
 // Climbing Centre, Vantrell Language School and every other business named are fictional, as are
 // Lantern's 2028 campaign figures. Formula items are marked by their results; num items recompute in `check`.
-import { MEMBER_LIST, VISIT_LIST, joinMap } from './case.js?v=28';
-import * as CU from '../../../core/customer.js?v=28';
+import { MEMBER_LIST, VISIT_LIST, joinMap } from './case.js?v=30';
+import * as CU from '../../../core/customer.js?v=30';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));

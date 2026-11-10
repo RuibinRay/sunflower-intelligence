@@ -1,11 +1,12 @@
 // home.js — the homepage: frames the painting, places the five doorways, runs the living painting,
 // and opens a room through the chosen flower. Works without WebGL (still image + CSS) and without JS (plain links).
-import meta from '../../painting/meta.js?v=28';
-import { ROOMS, byId } from '../data/rooms.js?v=28';
-import { LivingPainting } from './painting.js?v=28';
-import { initSite } from '../core/site.js?v=28';
-import { leave, reset as resetPortal } from '../core/portal.js?v=28';
-import { $, $$, h, reducedMotion } from '../core/dom.js?v=28';
+import meta from '../../painting/meta.js?v=30';
+import { ROOMS, byId } from '../data/rooms.js?v=30';
+import { LivingPainting } from './painting.js?v=30';
+import { initSite } from '../core/site.js?v=30';
+import { leave, reset as resetPortal } from '../core/portal.js?v=30';
+import { $, $$, h, reducedMotion } from '../core/dom.js?v=30';
+import { initScenes } from './scenes.js?v=30';
 
 initSite();
 
@@ -43,13 +44,28 @@ function computeFrame() {
   let x0 = S.x + S.w / 2 - iw / 2, y0 = S.y + S.h / 2 + 90 - ih / 2;     // nudge down so the vase stays in frame
   x0 = iw <= W ? Math.min(Math.max(x0, 0), W - iw) : (W - iw) / 2;
   y0 = ih <= H ? Math.min(Math.max(y0, 0), H - ih) : (H - ih) / 2;
-  frameState = { view: [x0, y0, iw, ih], s, w: vw, h: vh };
-  // the still image mirrors the same framing
-  still.style.width = `${W * s}px`; still.style.height = `${H * s}px`;
-  still.style.transform = `translate(${-x0 * s}px, ${-y0 * s}px)`;
-  placeDoors();
-  if (painting) { painting.setView(x0, y0, iw, ih); dirty = true; }
+  baseView = { x0, y0, iw, ih, s, vw, vh };
+  applyView();
 }
+// The camera. zoom runs 0 → 1 as the visitor scrolls: the view narrows from the framed painting to the finance bloom
+// at the centre (the same rectangle drives the shader, the still image and the doorways, so they never drift apart).
+let baseView = null, zoom = 0;
+function applyView() {
+  const { x0, y0, iw, ih, s, vw, vh } = baseView, W = meta.width, H = meta.height;
+  const f = flowers.finance, k = 1 + zoom * 2.4;                       // up to 3.4× closer
+  const zw = iw / k, zh = ih / k;
+  let zx = x0 + (f.x - zw / 2 - x0) * zoom, zy = y0 + (f.y - zh / 2 - y0) * zoom;
+  if (zw <= W) zx = Math.min(Math.max(zx, 0), W - zw);
+  if (zh <= H) zy = Math.min(Math.max(zy, 0), H - zh);
+  const zs = s * k;
+  frameState = { view: [zx, zy, zw, zh], s: zs, w: vw, h: vh };
+  // the still image mirrors the same framing
+  still.style.width = `${W * zs}px`; still.style.height = `${H * zs}px`;
+  still.style.transform = `translate(${-zx * zs}px, ${-zy * zs}px)`;
+  placeDoors();
+  if (painting) { painting.setView(zx, zy, zw, zh); dirty = true; }
+}
+function setZoom(z) { const v = Math.min(1, Math.max(0, z)); if (!baseView || Math.abs(v - zoom) < 1e-4) return; zoom = v; applyView(); }
 const toScreen = (x, y) => [(x - frameState.view[0]) * frameState.s, (y - frameState.view[1]) * frameState.s];
 
 // ---------------------------------------------------------------- doorways
@@ -242,3 +258,4 @@ why?.addEventListener('click', (e) => { if (e.target === why) why.close(); });
 
 if (coarse) body.classList.add('is-touch');
 start();
+initScenes({ setZoom });
