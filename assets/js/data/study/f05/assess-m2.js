@@ -1,9 +1,9 @@
 // assess-m2.js — F05 module 2 test: Analysing projects (choosing-between-projects, project-risk).
 // No hints. Each item has a full solution, shown when the student reviews the test. New scenarios, not copies of the lesson
 // exercises. Every business, person and figure is fictional; item 9 uses Lantern’s roaster from case.js.
-import { ROASTER, ROASTERS } from './case.js?v=30';
-import { breakEvenVolumes } from '../../../core/corpfin.js?v=30';
-import { irr, ration } from '../../../core/invest.js?v=30';
+import { ROASTER, ROASTERS } from './case.js?v=31';
+import { breakEvenVolumes } from '../../../core/corpfin.js?v=31';
+import { irr, ration } from '../../../core/invest.js?v=31';
 
 const af = (n, k) => (1 - (1 + k) ** -n) / k;
 const vans = { E: 48000 / af(8, 0.08) + 3000, D: 30000 / af(5, 0.08) + 7500 };

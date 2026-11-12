@@ -2,19 +2,19 @@
 // the three statements (values, common-size, year-on-year) with reconciliation checks, ratios with the formula and
 // inputs behind each one, valuation on the same engine as the Company Valuation Studio, operational datasets, data
 // lineage and quality, and the report and exports. Every figure is tagged: data, derived, assumption or unavailable.
-import { h, $, $$, download, onResize } from '../core/dom.js?v=30';
-import * as F from '../core/format.js?v=30';
-import * as V from '../core/valuation.js?v=30';
-import * as R from '../core/ratios.js?v=30';
-import * as W from '../core/workbook.js?v=30';
-import * as IO from '../core/valuation-io.js?v=30';
-import * as X from '../core/intel-export.js?v=30';
-import { METRICS, GROUPS, METRIC, metricTable, missingInputs, healthSummary } from '../core/metrics.js?v=30';
-import { formatter, historyNarrative } from '../core/valuation-report.js?v=30';
-import { barChart, lineChart, histogramChart, tableTwin } from '../core/charts.js?v=30';
-import { verdict } from '../core/ui.js?v=30';
-import { waterfall, heatGrid, historyForecastBars, football } from '../valuation/charts.js?v=30';
-import { numInput, textInput, selectEl, field, pctSlider, numSlider, segmented, btn, stat, dataTable, id, ROOT } from '../valuation/ui.js?v=30';
+import { h, $, $$, download, onResize } from '../core/dom.js?v=31';
+import * as F from '../core/format.js?v=31';
+import * as V from '../core/valuation.js?v=31';
+import * as R from '../core/ratios.js?v=31';
+import * as W from '../core/workbook.js?v=31';
+import * as IO from '../core/valuation-io.js?v=31';
+import * as X from '../core/intel-export.js?v=31';
+import { METRICS, GROUPS, METRIC, metricTable, missingInputs, healthSummary } from '../core/metrics.js?v=31';
+import { formatter, historyNarrative } from '../core/valuation-report.js?v=31';
+import { barChart, lineChart, histogramChart, tableTwin } from '../core/charts.js?v=31';
+import { verdict } from '../core/ui.js?v=31';
+import { waterfall, heatGrid, historyForecastBars, football } from '../valuation/charts.js?v=31';
+import { numInput, textInput, selectEl, field, pctSlider, numSlider, segmented, btn, stat, dataTable, id, ROOT } from '../valuation/ui.js?v=31';
 
 const fin = Number.isFinite;
 const TABS = [['overview', 'Overview'], ['statements', 'Statements'], ['ratios', 'Ratios'], ['valuation', 'Valuation'], ['operations', 'Operations'], ['lineage', 'Data lineage and quality'], ['report', 'Report and exports']];

@@ -2,7 +2,7 @@
 // No hints. Each item has a full solution, shown when the student reviews the test. New questions, not copies of the
 // lesson exercises. Every business named here is fictional; none of the items uses Lantern’s 2028 financing, cash
 // budget, funds needed or dividend, which belong to the course project.
-import * as CF from '../../../core/corpfin.js?v=30';
+import * as CF from '../../../core/corpfin.js?v=31';
 
 export const items = [
   {

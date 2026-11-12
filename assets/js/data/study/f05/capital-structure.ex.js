@@ -1,7 +1,7 @@
 // capital-structure.ex.js — F05 · Capital structure: widgets, practice and the knowledge check (answer keys live here).
 // Brookvale Bakeries is the lesson’s fictional running example; every other business here is fictional and invented for
 // the exercise. Survey figures are Graham & Harvey (2002), as cited in the lesson.
-import * as CF from '../../../core/corpfin.js?v=30';
+import * as CF from '../../../core/corpfin.js?v=31';
 
 const money = (v) => `${v < 0 ? '−' : ''}$${Math.abs(Math.round(v)).toLocaleString('en-US')}`;
 const money2 = (v) => `${v < 0 ? '−' : ''}$${Math.abs(v).toFixed(2)}`;

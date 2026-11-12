@@ -3,9 +3,9 @@
 // are facts from f02/f03 (case files); whether Lantern should pay a dividend in 2028 belongs to the course project and
 // is not discussed. Survey figures are from Brav, Graham, Harvey & Michaely (NBER WP 9657, 2003), opened 2026-11-05;
 // the dividend-date rule from Investor.gov; the tax rule from IRS Topic 404; Delaware’s rule from 8 Del. C. § 170.
-import { PERIODS, FACTS } from '../f03/case.js?v=30';
-import { FACTS as F02F } from '../f02/case.js?v=30';
-import * as CF from '../../../core/corpfin.js?v=30';
+import { PERIODS, FACTS } from '../f03/case.js?v=31';
+import { FACTS as F02F } from '../f02/case.js?v=31';
+import * as CF from '../../../core/corpfin.js?v=31';
 
 const P26 = PERIODS[2026], P27 = PERIODS[2027];
 const div26 = F02F.dividends.reduce((s, d) => s + d.amount, 0);                 // 5,000

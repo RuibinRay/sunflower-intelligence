@@ -5,11 +5,11 @@
 // much a "segment" depends on choices made before any marketing. Numbers from core/customer.js.
 //   { type: 'rfm', title, customers: [{ id, recency, frequency, monetary }], k: 5, choose: true (offer method and k),
 //     method: 'quantile' | 'ntile', show: ['cuts', 'grid', 'segments'], unit: 'visits', note }
-import { h } from '../../core/dom.js?v=30';
-import { xl } from '../xl.js?v=30';
-import * as CU from '../../core/customer.js?v=30';
-import * as F from '../../core/format.js?v=30';
-import { segmented } from '../dist-draw.js?v=30';
+import { h } from '../../core/dom.js?v=31';
+import { xl } from '../xl.js?v=31';
+import * as CU from '../../core/customer.js?v=31';
+import * as F from '../../core/format.js?v=31';
+import { segmented } from '../dist-draw.js?v=31';
 
 /** The scored customers and their groupings (exported for the checker). */
 export function compute(customers, { k = 5, method = 'quantile' } = {}) {

@@ -2,9 +2,9 @@
 // Every number is recomputed by `check` (see ../AUTHORING.md). Cold Brew figures come from COLD_BREW and coldBrewFlows() in
 // case.js; the pessimistic scenario (70% volume, $3.29 shelf price, $0.80 a can) is Ana’s, as in the lesson. The food truck,
 // app studio, pottery studio, climbing wall and the other businesses named here are fictional.
-import { COLD_BREW, ROASTER, WORKING_RATE, TAX, coldBrewFlows, roasterFlows, DERIVED } from './case.js?v=30';
-import { depreciation, breakEvenVolumes, eaa } from '../../../core/corpfin.js?v=30';
-import { npv } from '../../../core/invest.js?v=30';
+import { COLD_BREW, ROASTER, WORKING_RATE, TAX, coldBrewFlows, roasterFlows, DERIVED } from './case.js?v=31';
+import { depreciation, breakEvenVolumes, eaa } from '../../../core/corpfin.js?v=31';
+import { npv } from '../../../core/invest.js?v=31';
 
 const cb = COLD_BREW, r = WORKING_RATE;
 const money = (v) => `${v < -0.5 ? '−' : ''}$${Math.round(Math.abs(v)).toLocaleString('en-US')}`;

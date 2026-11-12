@@ -3,8 +3,8 @@
 // case.js. The proposals’ yearly savings are read as after-tax cash flows (Ana’s estimates). The ferry operator and
 // every other non-Lantern business here are fictional and new to this lesson. Cold Brew and the roaster are only
 // named: investment-criteria and project-cash-flows analyse them.
-import { PROPOSALS, BUDGET_2028, WORKING_RATE, DEBT, TODAY } from './case.js?v=30';
-import { npv } from '../../../core/invest.js?v=30';
+import { PROPOSALS, BUDGET_2028, WORKING_RATE, DEBT, TODAY } from './case.js?v=31';
+import { npv } from '../../../core/invest.js?v=31';
 
 const r = WORKING_RATE;                                                      // 0.11
 const P = Object.fromEntries(PROPOSALS.filter((p) => p.outlay).map((p) => [p.name, p]));

@@ -5,8 +5,8 @@
 //   3. motion on and GSAP loaded: ScrollTrigger scrubs a camera zoom into the painting's central sunflower while the
 //      stage is pinned, and tilts each panel into place in 3D. GSAP is fetched only after the first paint.
 // Figures in the panels come from the site's fictional sample companies, and say so.
-import { $, $$, h, s, reducedMotion } from '../core/dom.js?v=30';
-import { mulberry32 } from '../core/rng.js?v=30';
+import { $, $$, h, s, reducedMotion } from '../core/dom.js?v=31';
+import { mulberry32 } from '../core/rng.js?v=31';
 
 const body = document.body, root = document.documentElement;
 const forceMotion = new URLSearchParams(location.search).get('motion') === 'force';   // ?motion=force: run the choreography even under reduced motion (testing)
@@ -74,7 +74,7 @@ const PANELS = {
   },
   async learn(box) {
     let levels = [['Introductory', 9, 10], ['Intermediate', 7, 14], ['Advanced', 0, 9]], lessons = null;
-    try { const C = await import('../data/study/catalog.js?v=30'); const key = { intro: 0, intermediate: 1, advanced: 2 }; const t = [[0, 0], [0, 0], [0, 0]]; C.COURSES.forEach((c) => { const k = key[c.level]; if (k === undefined) return; t[k][1]++; if (c.status === 'complete') t[k][0]++; }); levels = levels.map((l, i) => [l[0], t[i][0], t[i][1]]); lessons = C.COURSES.filter((c) => c.status === 'complete').reduce((a, c) => a + (c.modules || []).reduce((x, m) => x + (m.lessons || []).length, 0), 0); } catch { /* the static counts stand */ }
+    try { const C = await import('../data/study/catalog.js?v=31'); const key = { intro: 0, intermediate: 1, advanced: 2 }; const t = [[0, 0], [0, 0], [0, 0]]; C.COURSES.forEach((c) => { const k = key[c.level]; if (k === undefined) return; t[k][1]++; if (c.status === 'complete') t[k][0]++; }); levels = levels.map((l, i) => [l[0], t[i][0], t[i][1]]); lessons = C.COURSES.filter((c) => c.status === 'complete').reduce((a, c) => a + (c.modules || []).reduce((x, m) => x + (m.lessons || []).length, 0), 0); } catch { /* the static counts stand */ }
     const ring = (done, total, col) => { const r = 34, c = 2 * Math.PI * r, f = total ? done / total : 0; return s('svg', { viewBox: '0 0 84 84', 'aria-hidden': 'true' }, s('circle', { cx: 42, cy: 42, r, fill: 'none', stroke: 'rgba(255,248,232,.12)', 'stroke-width': 8 }), s('circle', { cx: 42, cy: 42, r, fill: 'none', stroke: col, 'stroke-width': 8, 'stroke-linecap': 'round', 'stroke-dasharray': `${(c * f).toFixed(1)} ${c.toFixed(1)}`, transform: 'rotate(-90 42 42)' }), s('text', { x: 42, y: 47, 'text-anchor': 'middle', style: `fill:${CREAM};font:700 17px var(--f-text)` }, `${done}/${total}`)); };
     box.append(head(h('span', { class: 'panel-chip' }, 'Course platform'), h('span', {}, `${levels.reduce((a, l) => a + l[1], 0)} courses complete${lessons ? ` · ${lessons} lessons` : ''} · progress stays in your browser`)),
       h('div', { class: 'panel-levels' }, levels.map(([name, done, total], i) => h('div', { class: 'panel-level' }, ring(done, total, [GOLD, BLUE, PLUM][i]), h('strong', {}, name), h('span', {}, done === total ? 'all built' : `${done} built · ${total - done} planned`)))),
@@ -108,7 +108,7 @@ function initDrop() {
   if (!drop || !input) return;
   const go = async (file) => {
     const note = $('.scene-drop-note', drop);
-    try { const DB = await import('../intel/store.js?v=30'); note.textContent = `Handing over ${file.name}…`; await DB.putPendingFile(file); location.href = 'finance/company-intelligence/?file=pending'; }
+    try { const DB = await import('../intel/store.js?v=31'); note.textContent = `Handing over ${file.name}…`; await DB.putPendingFile(file); location.href = 'finance/company-intelligence/?file=pending'; }
     catch { note.textContent = 'This browser would not hold the file for the handover. Open Company Intelligence and choose it there.'; }
   };
   input.addEventListener('change', () => { if (input.files[0]) go(input.files[0]); });

@@ -4,9 +4,9 @@
 // skew of the distributions and a Pareto check, contractual against noncontractual settings, and data problems. B05's
 // café log (b05/case.js) gives the cafés' transactions and sales, so members' share can be shown. Pellwick Paper and
 // Halverton Climbing Centre are fictional. Every printed figure is recomputed in `checks`.
-import { MEMBER_LIST, VISIT_LIST, members, AS_OF, DERIVED as D } from './case.js?v=30';
-import { CAFE_COLUMNS, CLEAN_ROWS } from '../b05/case.js?v=30';
-import * as CU from '../../../core/customer.js?v=30';
+import { MEMBER_LIST, VISIT_LIST, members, AS_OF, DERIVED as D } from './case.js?v=31';
+import { CAFE_COLUMNS, CLEAN_ROWS } from '../b05/case.js?v=31';
+import * as CU from '../../../core/customer.js?v=31';
 
 const ALL = members(), N = ALL.length, B = D.base;
 const sum = (a) => a.reduce((x, y) => x + y, 0);

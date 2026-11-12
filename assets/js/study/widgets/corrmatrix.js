@@ -4,12 +4,12 @@
 // scatterplot, so a single number is never read without its picture. Numbers from core/correlation.js.
 //   { type: 'corrmatrix', title, columns: { 'High temperature (°F)': [...], … }, method: 'pearson',
 //     adjust: 'none' | 'bonferroni' | 'holm' | 'fdr_bh', alpha: 0.05, choose: true (offer method and adjustment), note }
-import { h, onResize } from '../../core/dom.js?v=30';
-import { xl } from '../xl.js?v=30';
-import { heatmap, scatter as drawScatter, tableTwin } from '../../core/charts.js?v=30';
-import * as C from '../../core/correlation.js?v=30';
-import * as F from '../../core/format.js?v=30';
-import { segmented } from '../dist-draw.js?v=30';
+import { h, onResize } from '../../core/dom.js?v=31';
+import { xl } from '../xl.js?v=31';
+import { heatmap, scatter as drawScatter, tableTwin } from '../../core/charts.js?v=31';
+import * as C from '../../core/correlation.js?v=31';
+import * as F from '../../core/format.js?v=31';
+import { segmented } from '../dist-draw.js?v=31';
 
 const minus = (t) => String(t).replace(/^-/, '−');
 const f2 = (v) => (Number.isFinite(v) ? minus(v.toFixed(2)) : '—');

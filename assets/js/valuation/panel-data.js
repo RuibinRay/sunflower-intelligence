@@ -1,15 +1,15 @@
 // panel-data.js — the left panel: the company, where its statements come from (example, by hand, upload, SEC EDGAR,
 // a saved project), the statement editor with required/optional/derived markers, market data, peers and data checks.
-import { h, $, $$, download } from '../core/dom.js?v=30';
-import * as F from '../core/format.js?v=30';
-import * as V from '../core/valuation.js?v=30';
-import * as IO from '../core/valuation-io.js?v=30';
-import * as E from '../core/valuation-edgar.js?v=30';
-import { parseTable } from '../core/csv.js?v=30';
-import { verdict } from '../core/ui.js?v=30';
-import { state, on, recompute, scheduleRecompute, loadProject, loadExample, newProject, setHistory, addYear, removeYear, setYear, emit } from './state.js?v=30';
-import { numInput, textInput, selectEl, field, block, btn, helpLink, segmented, id } from './ui.js?v=30';
-import { inline } from './inline.js?v=30';
+import { h, $, $$, download } from '../core/dom.js?v=31';
+import * as F from '../core/format.js?v=31';
+import * as V from '../core/valuation.js?v=31';
+import * as IO from '../core/valuation-io.js?v=31';
+import * as E from '../core/valuation-edgar.js?v=31';
+import { parseTable } from '../core/csv.js?v=31';
+import { verdict } from '../core/ui.js?v=31';
+import { state, on, recompute, scheduleRecompute, loadProject, loadExample, newProject, setHistory, addYear, removeYear, setYear, emit } from './state.js?v=31';
+import { numInput, textInput, selectEl, field, block, btn, helpLink, segmented, id } from './ui.js?v=31';
+import { inline } from './inline.js?v=31';
 
 const fin = Number.isFinite;
 const CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY', 'CNY', 'CAD', 'AUD', 'CHF', 'INR', 'BRL', 'SEK', 'NOK', 'DKK', 'SGD', 'HKD', 'KRW', 'MXN', 'ZAR'];

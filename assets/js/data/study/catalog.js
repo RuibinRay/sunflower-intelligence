@@ -131,7 +131,7 @@ const ALL = [
     related: [{ plate: 'tvm' }, { tool: 'finance/valuation/#dcf', label: 'Discounted cash flow' }],
   }),
   C({
-    id: 'f05', school: 'finance', code: 'F05', level: 'intermediate', requires: ['f04'], recommends: ['f03'],
+    id: 'f05', school: 'finance', code: 'F05', level: 'intermediate', status: 'complete', requires: ['f04'], recommends: ['f03'],
     title: 'Corporate Finance',
     blurb: 'Which projects to fund, what capital costs, how to finance the business and what to pay shareholders.',
     topics: ['Capital budgeting', 'Net present value', 'Internal rate of return', 'Payback period', 'Profitability index', 'Free cash flow', 'Cost of capital', 'WACC', 'Cost of equity', 'Cost of debt', 'Debt versus equity financing', 'Capital structure and Modigliani–Miller', 'Dividends versus share buybacks', 'Corporate governance and the agency problem', 'Financial planning', 'Cash flow forecasting'],

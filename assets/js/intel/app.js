@@ -1,14 +1,14 @@
 // app.js — Company Intelligence: the import workflow. A workbook is read in a Web Worker (every row of every sheet),
 // each sheet is shown with its row count and a scrollable preview of ALL its rows, the proposed mappings are reviewed
 // and corrected, and the validated figures become the company project the dashboard and the Valuation Studio share.
-import { h, $, $$, store } from '../core/dom.js?v=30';
-import * as F from '../core/format.js?v=30';
-import * as V from '../core/valuation.js?v=30';
-import * as W from '../core/workbook.js?v=30';
-import { verdict } from '../core/ui.js?v=30';
-import { numInput, textInput, selectEl, field, segmented, btn, id } from '../valuation/ui.js?v=30';
-import * as DB from './store.js?v=30';
-import { renderDashboard } from './dashboard.js?v=30';
+import { h, $, $$, store } from '../core/dom.js?v=31';
+import * as F from '../core/format.js?v=31';
+import * as V from '../core/valuation.js?v=31';
+import * as W from '../core/workbook.js?v=31';
+import { verdict } from '../core/ui.js?v=31';
+import { numInput, textInput, selectEl, field, segmented, btn, id } from '../valuation/ui.js?v=31';
+import * as DB from './store.js?v=31';
+import { renderDashboard } from './dashboard.js?v=31';
 
 const fin = Number.isFinite;
 export const state = { wb: null, analysis: null, settings: null, built: null, project: null, lineage: {}, issues: [], A: null, market: {}, valuationOn: false, mc: null, savedId: null, readMs: 0, activeSheet: null };
@@ -88,7 +88,7 @@ function readBuffer(buffer, name) {
   const fail = (m) => { setProgress(null); msg(verdict('bad', 'This file could not be read.', `${m} If it is an Excel file, open it in Excel and save it again as .xlsx; if it is text, save it as CSV (UTF-8).`)); };
   try {
     if (worker) worker.terminate();
-    worker = new Worker(new URL('../core/workbook-worker.js?v=30', import.meta.url));
+    worker = new Worker(new URL('../core/workbook-worker.js?v=31', import.meta.url));
     const my = ++reqId;
     worker.onmessage = (e) => {
       const d = e.data; if (d.id !== my) return;

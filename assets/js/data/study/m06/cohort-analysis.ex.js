@@ -4,10 +4,10 @@
 // the first ten members by id of the June, July and August cohorts with their visits and spend in month 1 (cohort names
 // are text, so the items that pick one `vary` that cell). Pellbrook Cinema Club, Hartsease Books and Wrenlow Gym are
 // fictional. Every num item's `check` recomputes its answer.
-import { MEMBER_LIST, VISIT_LIST, joinMap } from './case.js?v=30';
-import * as CU from '../../../core/customer.js?v=30';
-import { propTest2 } from '../../../core/inference.js?v=30';
-import { isoToSerial } from '../../../core/sheet.js?v=30';
+import { MEMBER_LIST, VISIT_LIST, joinMap } from './case.js?v=31';
+import * as CU from '../../../core/customer.js?v=31';
+import { propTest2 } from '../../../core/inference.js?v=31';
+import { isoToSerial } from '../../../core/sheet.js?v=31';
 
 const sum = (a) => a.reduce((x, y) => x + y, 0);
 const r1 = (x) => Math.round(x * 10) / 10, r2 = (x) => Math.round(x * 100) / 100;

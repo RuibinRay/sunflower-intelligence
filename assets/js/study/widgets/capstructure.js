@@ -7,16 +7,16 @@
 // V_L = V_U + T·D is shown too. Numbers from core/corpfin.js.
 //   { type: 'capstructure', title, peers: [{ name, beta, de, tax }], rf, mrp, premium?: 0.03, tax, rD | rates: [[upToDV, rD], …],
 //     dv: 0.2, dvMax: 0.7, taxToggle?: true, Vu?: 250000, note }
-import { h, onResize } from '../../core/dom.js?v=30';
-import { xl } from '../xl.js?v=30';
-import { lineChart, tableTwin } from '../../core/charts.js?v=30';
+import { h, onResize } from '../../core/dom.js?v=31';
+import { xl } from '../xl.js?v=31';
+import { lineChart, tableTwin } from '../../core/charts.js?v=31';
 // (fillRange inlined: core/site.js touches document at load, and the checker imports this file in Node)
 const fillRange = (el) => { const min = el.min === '' ? 0 : +el.min, max = el.max === '' ? 100 : +el.max; el.style.setProperty('--fill', `${((+el.value - min) / (max - min || 1)) * 100}%`); };
-import * as CF from '../../core/corpfin.js?v=30';
-import * as F0 from '../../core/format.js?v=30';
+import * as CF from '../../core/corpfin.js?v=31';
+import * as F0 from '../../core/format.js?v=31';
 // Percentages nudged by a hair before rounding, so 5.625% shows as 5.63% (0.075 × 0.75 is 0.056249999… in floating point).
 const F = { ...F0, pct: (x, d = 1) => F0.pct(Number.isFinite(x) ? x + Math.sign(x) * 1e-12 : x, d) };
-import { segmented } from '../dist-draw.js?v=30';
+import { segmented } from '../dist-draw.js?v=31';
 
 /** Cost of debt at debt share dv: the first band whose upper limit is at least dv (the last band beyond). */
 export function debtRate(cfg, dv) {
