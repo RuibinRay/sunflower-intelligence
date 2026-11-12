@@ -10,6 +10,7 @@ import * as SH from '../assets/js/core/sheet.js';
 import * as PM from '../assets/js/core/percmap.js';
 import * as RW from '../assets/js/study/widgets/ratios.js';
 import * as CAPB from '../assets/js/study/widgets/capbudget.js';
+import * as PORTF from '../assets/js/study/widgets/portfolio.js';
 import { ols } from '../assets/js/core/stats.js';
 import * as REG from '../assets/js/core/regression.js';
 import {
@@ -20,7 +21,7 @@ import {
 const VERBS = /^(Explain|Describe|Define|Identify|Distinguish|Classify|Calculate|Compute|Record|Prepare|Analyse|Apply|Interpret|Evaluate|Compare|Choose|Decide|Use|Recognise|State|Construct|Build|Post|Journalise|Find|Detect|Diagnose|Handle|Transform|Scale|Encode|Write|Document|Justify|Recommend|Estimate|Assess|Plan|Design|Set|Measure|Select|Determine|Correct|Locate|Read|Summarise|Reshape|Combine|Profile|Validate|Clean|Convert|Standardise|Normalise|Map|Draft|Price|Forecast|Test|Name|List|Contrast|Close|Adjust|Trace|Reconcile)\b/;
 const KINDS = ['conceptual', 'numerical', 'applied'];
 const TYPES = ['mc', 'multi', 'num', 'fill', 'classify', 'order', 'journal', 'equation', 'rows', 'short', 'formula', 'steps'];
-const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak', 'sampler', 'cluster', 'percmap', 'ratios', 'scatter', 'corrmatrix', 'fitline', 'diagnostics', 'logistic', 'rfm', 'cohort', 'survival', 'sbg', 'clv', 'lift', 'capbudget', 'capstructure'];
+const WIDGETS = ['formula', 'chart', 'equation', 'journal', 'ledger', 'statements', 'cleaning', 'distribution', 'mixsim', 'plc', 'sheet', 'pivot', 'regression', 'curve', 'power', 'sampling', 'toolpak', 'sampler', 'cluster', 'percmap', 'ratios', 'scatter', 'corrmatrix', 'fitline', 'diagnostics', 'logistic', 'rfm', 'cohort', 'survival', 'sbg', 'clv', 'lift', 'capbudget', 'capstructure', 'portfolio'];
 const DATASETS = ['lantern-orders', 'harborview-bookings', 'northfield-students'];
 const CLEAN_OPS = ['dedupe', 'dedupe-key', 'trim', 'case', 'map', 'to-number', 'to-date', 'fill', 'drop-missing', 'flag-missing', 'validate', 'outliers', 'transform', 'scale', 'encode', 'derive', 'rename', 'drop-column'];
 const near = (a, b, tol) => Math.abs(a - b) <= tol + 1e-9;
@@ -477,6 +478,18 @@ function checkWidget(id, wd, r, { chart, caseMod }) {
         }
       }
     }
+  } else if (wd.type === 'portfolio') {
+    if (wd.mode === 'two') {
+      for (const k of ['a', 'b']) if (!(wd[k] && wd[k].name && Number.isFinite(wd[k].er) && wd[k].sd > 0)) r.err(`${w}: portfolio ${k} needs name, er and sd > 0`);
+      if (!(wd.corr >= -1 && wd.corr <= 1)) r.err(`${w}: corr must be between −1 and 1`);
+      if (wd.w != null && !(wd.w >= 0 && wd.w <= 1 && Math.abs(wd.w * 100 - Math.round(wd.w * 100)) < 1e-9)) r.err(`${w}: w must be 0–1 in steps of 0.01`);
+      if (wd.corrSlider && Math.abs(wd.corr * 20 - Math.round(wd.corr * 20)) > 1e-9) r.err(`${w}: with corrSlider, corr must be a multiple of 0.05 (the slider's step)`);
+    } else if (wd.mode === 'many') {
+      if (!Number.isFinite(wd.rf)) r.err(`${w}: portfolio many needs rf`);
+      try { const R = PORTF.computeMany(wd); if (!R.frontier.length || !R.mu.every(Number.isFinite)) r.err(`${w}: no frontier could be computed`); if (R.names.length > 12) r.err(`${w}: at most 12 assets`); }
+      catch (e) { r.err(`${w}: portfolio inputs fail: ${e.message}`); }
+      if (wd.y != null && !(wd.y >= 0 && wd.y <= (wd.maxY ?? 1.5) && Math.abs(wd.y * 20 - Math.round(wd.y * 20)) < 1e-9)) r.err(`${w}: y must be 0–maxY in steps of 0.05`);
+    } else r.err(`${w}: portfolio mode must be 'two' or 'many'`);
   } else if (wd.type === 'capstructure') {
     if (!(wd.peers || []).length || !wd.peers.every((p) => p.beta > 0 && p.de >= 0)) r.err(`${w}: capstructure needs peers with beta > 0 and D/E ≥ 0`);
     for (const k of ['rf', 'mrp', 'tax']) if (!Number.isFinite(wd[k])) r.err(`${w}: capstructure needs ${k}`);
