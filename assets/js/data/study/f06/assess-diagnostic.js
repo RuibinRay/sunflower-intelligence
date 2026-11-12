@@ -6,12 +6,13 @@
 // the project’s data. Every figure is computed below from its inputs with core/investments.js.
 //
 // What each item needs, and why the prerequisites alone fail:
-// dg-1  enterprise value (market cap + debt − cash) as the price of a whole business. F04/F05 value cash flows but never
-//       bridge a share price to the business; the prerequisite answer is the market capitalisation.
+// dg-1  a price-weighted index’s return across a share split (the divisor is reset so the split doesn’t move the index).
+//       F00, F04 and F05 never build an index; without the divisor the prerequisite answer is a large fall.
 // dg-2  Macaulay duration (PV-weighted time). F05 prices a bond and finds its YTM; it never weights the payment dates, so
 //       the prerequisite answer is the maturity, 3 years.
 // dg-3  convexity: equal durations, unequal convexity. Nothing in F04/F05 says price moves are asymmetric in yields.
-// dg-4  annualising a standard deviation by √(periods). B04 gives the weekly SD; the prerequisite instinct is × 52.
+// dg-4  the chance of a losing year from weekly figures: the mean scales by 52, the SD by √52. B04 gives a normal
+//       probability; scaling both alike (or neither) leaves the weekly z and the prerequisite answer near 47%.
 // dg-5  compound growth ≈ arithmetic mean − ½σ². F04 compounds a given rate; B04’s mean is the arithmetic one, so the
 //       prerequisite answer is 11%.
 // dg-6  maximum drawdown (peak to later trough) against calendar-year returns. B04 and F04 give period returns only, so the
@@ -19,26 +20,33 @@
 // dg-7  two-asset portfolio SD with the covariance term. B04’s SD of one variable gives the weighted average of SDs.
 // dg-8  the capital allocation line and the optimal risky share y* = (E − r_f) ÷ (Aσ²), here above 1 (borrowing). F05’s
 //       CAPM prices one asset; it doesn’t choose how much risk to hold.
-// dg-9  beta as the slope of a regression of excess returns. F05 takes beta as given (and unlevers it); the prerequisite
-//       guesses are the ratio of mean excess returns or of SDs.
+// dg-9  Jensen’s alpha as the intercept of a regression of excess returns (raw returns less bills). F05 takes beta as
+//       given; the prerequisite guesses are the raw-return intercept or the gap in mean returns.
 // dg-10 the EV-to-equity bridge after a Gordon value of free cash flow to the firm. F04 gives the Gordon value and F05 the
 //       WACC; without the bridge the prerequisite answer is EV ÷ shares.
-// dg-11 an EV multiple applied to EBITDA, then bridged to equity per share. Not in F04/F05; the prerequisite answer
-//       divides the EV by the shares.
+// dg-11 the justified price-to-book, (ROE − g) ÷ (r − g), from the constant-growth model with dividends set by what
+//       growth leaves unreinvested. F04’s Gordon model values a given dividend; without the payout link the
+//       prerequisite answers are ROE ÷ r or ROE ÷ (r − g).
 // dg-12 growth creates value only when new investment earns more than the WACC (the value-driver formula). F04’s Gordon
 //       model with a higher g always gives a higher value.
 import * as IV from '../../../core/investments.js?v=31';
+import { normCdf } from '../../../core/inference.js?v=31';
 
 const fx = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const pc = (v, d = 2) => `${fx(v * 100, d)}%`;
 const mil = (v, d = 0) => `$${fx(v, d)} million`;
 const rnd = (x, p) => Math.round(x * 10 ** p) / 10 ** p;
+const sum = (a) => a.reduce((s, v) => s + v, 0);
+const mean = (a) => sum(a) / a.length;
 const claim = (ok, what) => { if (!ok) throw new Error(`assess-diagnostic: the figures no longer support “${what}”`); };
 
 // ---------------------------------------------------------------- module 1
-// dg-1 Tolvane Ferries (fictional): the cost of buying the whole business
-const TF = { shares: 30, price: 24.5, debt: 310, cash: 45 };
-const tfCap = TF.shares * TF.price, tfEv = IV.enterpriseValue({ marketCap: tfCap, debt: TF.debt, cash: TF.cash });
+// dg-1 a price-weighted index of three fictional shares; X splits two for one during the month
+const PW = { start: [150, 50, 25], split: 2, end: [79, 48, 26] };
+const pwAfter = [PW.start[0] / PW.split, ...PW.start.slice(1)];
+const pwLevel0 = 100, pwDiv0 = sum(PW.start) / pwLevel0, pwDiv1 = sum(pwAfter) / pwLevel0;
+const pwRet = sum(PW.end) / pwDiv1 / pwLevel0 - 1;
+const pwNoAdj = sum(PW.end) / pwDiv0 / pwLevel0 - 1, pwEqual = mean(PW.end.map((p, i) => p / pwAfter[i] - 1));
 // dg-2 a three-year 7% annual-coupon bond at a 5% yield
 const B3 = { face: 100, couponRate: 0.07, years: 3, freq: 1, ytm: 0.05 };
 const b3 = IV.duration(B3);
@@ -49,9 +57,10 @@ const cv = (c, dy) => IV.priceChangeApprox({ modified: CVX.d, convexity: c }, dy
 claim(cv(CVX.a, CVX.dy) > cv(CVX.b, CVX.dy) && cv(CVX.a, -CVX.dy) > cv(CVX.b, -CVX.dy), 'the more convex bond does better both ways');
 
 // ---------------------------------------------------------------- module 2
-// dg-4 weekly returns
+// dg-4 weekly returns to the chance of a losing year
 const WK = { sd: 0.021, mean: 0.0018 };
-const wkAnn = IV.annualise.sd(WK.sd, 52);
+const wkMeanY = WK.mean * 52, wkSdY = IV.annualise.sd(WK.sd, 52);
+const wkP = normCdf(-wkMeanY / wkSdY), wkSame = normCdf(-WK.mean / WK.sd), wkMixed = normCdf(-wkMeanY / IV.annualise.sd(WK.sd, 12));
 // dg-5 arithmetic mean and SD to compound growth
 const VD = { a: 0.11, s: 0.30 };
 const vdG = VD.a - VD.s ** 2 / 2;
@@ -72,20 +81,22 @@ const CL = { er: 0.095, sd: 0.18, rf: 0.035, A: 1.5 };
 const clY = IV.optimalRiskyShare(CL), clEr = IV.cal({ y: clY, rf: CL.rf, er: CL.er, sd: CL.sd }).er;
 const clYsd = (CL.er - CL.rf) / (CL.A * CL.sd);
 claim(clY > 1, 'the investor borrows');
-// dg-9 five months of excess returns (per cent)
-const RX = [-2, 0, 1, 3, 3], RY = [-3, 1, 1, 4, 7];
-const rg = IV.regressBeta(RY.map((v) => v / 100), RX.map((v) => v / 100));
-const mean = (a) => a.reduce((s, v) => s + v, 0) / a.length;
+// dg-9 five months of raw returns and a constant bill return (per cent)
+const RX = [-2, 0, 1, 3, 3], RY = [-3, 1, 1, 4, 7], BILL = 0.3;   // excess returns; raw = excess + bills
+const RXr = RX.map((v) => v + BILL), RYr = RY.map((v) => v + BILL);
+const rg = IV.regressBeta(RYr.map((v) => v / 100), RXr.map((v) => v / 100), RXr.map(() => BILL / 100));
+const rgRaw = IV.regressBeta(RYr.map((v) => v / 100), RXr.map((v) => v / 100));
+claim(Math.abs(rg.alpha - rgRaw.alpha) > 0.001, 'regressing raw returns gives a visibly different intercept');
 const sdS = (a) => { const m = mean(a); return Math.sqrt(a.reduce((s, v) => s + (v - m) ** 2, 0) / (a.length - 1)); };
 
 // ---------------------------------------------------------------- module 4
-// dg-10 Dorrimer Tools (fictional): Gordon value of FCFF, then the bridge
+// dg-10 Quillmarsh Tools (fictional): Gordon value of FCFF, then the bridge
 const DT = { fcf1: 42, g: 0.03, wacc: 0.085, debt: 220, cash: 35, shares: 25 };
 const dtEv = DT.fcf1 / (DT.wacc - DT.g);
 const dtPs = IV.evToEquity({ ev: dtEv, debt: DT.debt, cash: DT.cash, shares: DT.shares }).perShare;
-// dg-11 Wyvernlake Telecom (fictional): a peer EV/EBITDA
-const WT = { mult: 7.5, ebitda: 180, debt: 520, cash: 60, shares: 80 };
-const wtPs = IV.impliedValue({ multiple: WT.mult, metric: WT.ebitda, basis: 'ev', debt: WT.debt, cash: WT.cash, shares: WT.shares }).perShare;
+// dg-11 Corvellan Telecom (fictional): the justified price-to-book
+const CT = { roe: 0.14, g: 0.05, r: 0.09 };
+const ctPb = (CT.roe - CT.g) / (CT.r - CT.g), ctNoG = CT.roe / CT.r, ctAll = CT.roe / (CT.r - CT.g);
 // dg-12 Fernhallow Foods (fictional): growth that earns less than the WACC
 const FH = { nopat: 50, wacc: 0.08, g: 0.04, ronic: 0.07 };
 const fhFlat = FH.nopat / FH.wacc, fhGrow = FH.nopat * (1 - FH.g / FH.ronic) / (FH.wacc - FH.g), fhNaive = FH.nopat / (FH.wacc - FH.g);
@@ -94,15 +105,14 @@ claim(fhGrow < fhFlat, 'growth at 7% on new investment lowers the value');
 export const items = [
   // ================================================================ Module 1: Securities and markets
   {
-    id: 'f06-dg-1', lesson: 'shares-and-markets', type: 'num', kind: 'applied',
-    prompt: `Tolvane Ferries (fictional, listed) has ${TF.shares} million shares trading at $${fx(TF.price)}, ${mil(TF.debt)} of debt and ${mil(TF.cash)} of cash. A rival offers to buy every share at the market price; it must also repay all of Tolvane’s debt, and it will own Tolvane’s cash. Ignoring any premium and fees, what does the rival effectively pay for Tolvane’s business, in $ millions?`,
-    answer: rnd(tfEv, 1), check: () => TF.shares * TF.price + TF.debt - TF.cash, unit: '$m', places: 0, tol: 1,
+    id: 'f06-dg-1', lesson: 'shares-and-markets', type: 'num', kind: 'conceptual',
+    prompt: `A fictional price-weighted index follows three shares, X, Y and Z. At the end of one month they trade at $${PW.start.join(', $')} and the index stands at ${pwLevel0}. During the next month X splits two for one (each share becomes two, at half the price), and the index provider rescales the divisor so that the split alone leaves the index unchanged. At the end of that month X, Y and Z trade at $${PW.end.join(', $')}. What did the index return over the month? Give a percentage to one decimal place.`,
+    answer: rnd(pwRet * 100, 1), check: () => ((79 + 48 + 26) / (75 + 50 + 25) - 1) * 100, unit: '%', places: 1, tol: 0.05,
     wrong: [
-      { value: tfCap, say: 'That is the market capitalisation: what the shares cost. The buyer also takes on the debt, and gets the cash back.' },
-      { value: tfCap + TF.debt, say: 'The cash comes with the company, so it reduces the net cost: subtract it.' },
-      { value: tfCap + TF.debt + TF.cash, say: 'The cash is the buyer’s once it owns Tolvane, so it lowers the net cost; it isn’t an extra payment.' },
+      { value: rnd(pwNoAdj * 100, 1), say: 'That keeps the old divisor, so the split shows up as a fall in the index that no shareholder suffered. After the split the divisor must shrink in proportion to the sum of the prices.' },
+      { value: rnd(pwEqual * 100, 1), say: 'That averages the three shares’ returns equally. A price-weighted index weights each share by its price: its return is the change in the sum of the prices over the starting sum.' },
     ],
-    solution: `Shares: ${TF.shares} × $${fx(TF.price)} = ${mil(tfCap)} (market capitalisation). Debt to repay: ${mil(TF.debt)}. Cash acquired: ${mil(TF.cash)}. Net cost of the business = ${fx(tfCap, 0)} + ${fx(TF.debt, 0)} − ${fx(TF.cash, 0)} = ${mil(tfEv)}: its enterprise value, the value of the business to all who finance it, whoever holds the claims.`,
+    solution: `Before the split the prices sum to $${sum(PW.start)}, so the divisor is ${sum(PW.start)} ÷ ${pwLevel0} = ${fx(pwDiv0)}. After it they sum to $${sum(pwAfter)}, so the divisor becomes ${sum(pwAfter)} ÷ ${pwLevel0} = ${fx(pwDiv1)}. At the month-end the index is ${sum(PW.end)} ÷ ${fx(pwDiv1)} = ${fx(sum(PW.end) / pwDiv1)}, a return of ${pc(pwRet, 1)}: the change in the sum of the prices, ${sum(PW.end) - sum(pwAfter)}, over the post-split sum, ${sum(pwAfter)}. Keeping the old divisor would show ${pc(pwNoAdj, 1)}.`,
   },
   {
     id: 'f06-dg-2', lesson: 'bond-prices-and-yields', type: 'num', kind: 'numerical',
@@ -135,14 +145,14 @@ export const items = [
 
   // ================================================================ Module 2: Risk and return
   {
-    id: 'f06-dg-4', lesson: 'measuring-risk', type: 'num', kind: 'conceptual',
-    prompt: `A fictional fund publishes weekly returns. Over five years they averaged ${pc(WK.mean)} a week with a standard deviation of ${pc(WK.sd, 1)} a week. Assuming the weeks are independent, what is its volatility (standard deviation) a year, using 52 weeks? Give a percentage to two decimal places.`,
-    answer: rnd(wkAnn * 100, 2), check: () => WK.sd * Math.sqrt(52) * 100, unit: '%', places: 2, tol: 0.03,
+    id: 'f06-dg-4', lesson: 'measuring-risk', type: 'num', kind: 'applied',
+    prompt: `A fictional fund’s weekly returns average ${pc(WK.mean)} with a standard deviation of ${pc(WK.sd, 1)}. Treat the weeks as independent, take 52 weeks to a year and suppose the yearly return is normally distributed. What is the probability that the fund loses money in a year? Give a percentage to one decimal place.`,
+    answer: rnd(wkP * 100, 1), check: () => normCdf(-(0.0018 * 52) / (0.021 * Math.sqrt(52))) * 100, unit: '%', places: 1, tol: 0.15,
     wrong: [
-      { value: rnd(WK.sd * 52 * 100, 2), say: 'Multiplying by 52 is right for the mean, not the SD. With independent weeks the variances add, so the SD grows with √52.' },
-      { value: rnd(WK.sd * Math.sqrt(12) * 100, 2), say: 'That uses √12, the factor for monthly data. There are 52 weeks in a year.' },
+      { value: rnd(wkSame * 100, 1), say: 'That is the chance of a losing week: it uses the weekly mean and SD, or scales both by the same factor, which leaves z unchanged. Over a year the mean grows with 52 but the SD only with √52.' },
+      { value: rnd(wkMixed * 100, 1), say: 'That scales the SD by √12, the factor for monthly data. With weekly returns it is √52.' },
     ],
-    solution: `With independent weeks the variance of a year’s return is 52 times the weekly variance, so the SD is √52 times the weekly SD: ${pc(WK.sd, 1)} × √52 = ${pc(wkAnn)} a year. (The mean, by contrast, scales by 52: about ${pc(WK.mean * 52, 1)} a year.)`,
+    solution: `Yearly mean = ${pc(WK.mean)} × 52 = ${pc(wkMeanY)}; yearly SD = ${pc(WK.sd, 1)} × √52 = ${pc(wkSdY)}. z = (0 − ${pc(wkMeanY)}) ÷ ${pc(wkSdY)} = ${fx(-wkMeanY / wkSdY, 3)}, and P(z < ${fx(-wkMeanY / wkSdY, 3)}) = ${pc(wkP, 1)}, against ${pc(wkSame, 1)} for a single week. Because the mean grows faster than the SD, losses get less likely as the horizon lengthens, though real returns have fatter tails than the normal.`,
   },
   {
     id: 'f06-dg-5', lesson: 'measuring-returns', type: 'num', kind: 'conceptual',
@@ -189,19 +199,20 @@ export const items = [
   },
   {
     id: 'f06-dg-9', lesson: 'capm-and-beta', type: 'num', kind: 'numerical',
-    prompt: `Over five months a fictional fund’s excess returns over bills were ${RY.map((v) => `${fx(v, 0)}%`).join(', ')} while the market’s were ${RX.map((v) => `${fx(v, 0)}%`).join(', ')} (month by month, in the same order). Estimate the fund’s beta from these months. Give two decimal places.`,
-    answer: rnd(rg.beta, 2), check: () => { const mx = 1, my = 2; return RX.reduce((s, x, i) => s + (x - mx) * (RY[i] - my), 0) / RX.reduce((s, x) => s + (x - mx) ** 2, 0); }, unit: '', places: 2, tol: 0.01,
+    prompt: `Over five months a fictional fund returned ${RYr.map((v) => `${fx(v, 1)}%`).join(', ')} and the market ${RXr.map((v) => `${fx(v, 1)}%`).join(', ')} (month by month, in the same order). One-month bills returned ${fx(BILL, 1)}% each month. Estimate the fund’s Jensen’s alpha a month: the intercept of the regression of its excess returns over bills on the market’s. Give a percentage to two decimal places.`,
+    answer: rnd(rg.alpha * 100, 2), check: () => { const x = [-2, 0, 1, 3, 3], y = [-3, 1, 1, 4, 7], mx = 1, my = 2; const b = x.reduce((s, v, i) => s + (v - mx) * (y[i] - my), 0) / x.reduce((s, v) => s + (v - mx) ** 2, 0); return my - b * mx; }, unit: '%', places: 2, tol: 0.01,
     wrong: [
-      { value: rnd(mean(RY) / mean(RX), 2), say: 'That is the ratio of the mean excess returns. Beta is the slope of the fund’s excess return on the market’s: how much the fund moves when the market moves.' },
-      { value: rnd(sdS(RY) / sdS(RX), 2), say: 'That is the ratio of the SDs, which counts all of the fund’s variation as market risk. Beta = covariance ÷ market variance, the regression slope.' },
+      { value: rnd(rgRaw.alpha * 100, 2), say: 'That regresses the raw returns. Alpha comes from excess returns: take the bill return off both series first. With a beta above 1, the raw intercept understates alpha by (β − 1) × the bill return.' },
+      { value: rnd((mean(RY) - mean(RX)), 2), say: 'That is the gap between the mean returns, which assumes a beta of exactly 1. The intercept allows for the fund’s beta.' },
+      { value: rnd(rg.beta, 2), say: 'That is the slope, the fund’s beta. Alpha is the intercept: mean fund excess return − β × mean market excess return.' },
     ],
-    solution: `Beta is the least-squares slope of the fund’s excess returns on the market’s. Means: market ${fx(mean(RX), 0)}%, fund ${fx(mean(RY), 0)}%. Deviations of the market: ${RX.map((v) => fx(v - mean(RX), 0)).join(', ')}; of the fund: ${RY.map((v) => fx(v - mean(RY), 0)).join(', ')}. Σ(products) = ${fx(RX.reduce((s, x, i) => s + (x - mean(RX)) * (RY[i] - mean(RY)), 0), 0)}; Σ(market deviations²) = ${fx(RX.reduce((s, x) => s + (x - mean(RX)) ** 2, 0), 0)}. β = ${fx(rg.beta, 2)}. The intercept, ${fx(mean(RY), 0)} − ${fx(rg.beta, 2)} × ${fx(mean(RX), 0)} = ${fx(rg.alpha * 100, 2)}% a month, is the fund’s alpha; five months are far too few to trust either figure.`,
+    solution: `Excess returns (less ${fx(BILL, 1)}%): fund ${RY.map((v) => fx(v, 0)).join(', ')}; market ${RX.map((v) => fx(v, 0)).join(', ')}. Means ${fx(mean(RY), 0)}% and ${fx(mean(RX), 0)}%. Slope β = Σ(products of deviations) ÷ Σ(market deviations²) = ${fx(RX.reduce((s, x, i) => s + (x - mean(RX)) * (RY[i] - mean(RY)), 0), 0)} ÷ ${fx(RX.reduce((s, x) => s + (x - mean(RX)) ** 2, 0), 0)} = ${fx(rg.beta)}. Alpha = ${fx(mean(RY), 0)} − ${fx(rg.beta)} × ${fx(mean(RX), 0)} = ${fx(rg.alpha * 100)}% a month: what the fund earned beyond the CAPM’s reward for its beta. Five months are far too few to trust it.`,
   },
 
   // ================================================================ Module 4: Valuing shares
   {
     id: 'f06-dg-10', lesson: 'discounted-cash-flow-valuation', type: 'num', kind: 'applied',
-    prompt: `Dorrimer Tools (fictional, listed) is expected to generate free cash flow to the firm of ${mil(DT.fcf1)} next year, growing ${pc(DT.g, 0)} a year for ever. Its WACC is ${pc(DT.wacc, 1)}. It has ${mil(DT.debt)} of debt, ${mil(DT.cash)} of cash and ${DT.shares} million shares. What is one share worth? Give dollars and cents.`,
+    prompt: `Quillmarsh Tools (fictional, listed) is expected to generate free cash flow to the firm of ${mil(DT.fcf1)} next year, growing ${pc(DT.g, 0)} a year for ever. Its WACC is ${pc(DT.wacc, 1)}. It has ${mil(DT.debt)} of debt, ${mil(DT.cash)} of cash and ${DT.shares} million shares. What is one share worth? Give dollars and cents.`,
     answer: rnd(dtPs, 2), check: () => (42 / (0.085 - 0.03) - 220 + 35) / 25, unit: '$', places: 2, tol: 0.02,
     wrong: [
       { value: rnd(dtEv / DT.shares, 2), say: 'That divides the whole enterprise value by the shares. Discounting FCFF at the WACC values the business for lenders and shareholders together: subtract the debt and add the cash first.' },
@@ -212,20 +223,20 @@ export const items = [
   },
   {
     id: 'f06-dg-11', lesson: 'relative-valuation', type: 'num', kind: 'numerical',
-    prompt: `Listed peers of Wyvernlake Telecom (fictional, listed) trade at a median of ${fx(WT.mult, 1)} times EBITDA, measured on enterprise value. Wyvernlake’s EBITDA is ${mil(WT.ebitda)}; it has ${mil(WT.debt)} of debt, ${mil(WT.cash)} of cash and ${WT.shares} million shares. What value per share does the peer multiple imply? Give dollars and cents.`,
-    answer: rnd(wtPs, 2), check: () => (7.5 * 180 - 520 + 60) / 80, unit: '$', places: 2, tol: 0.02,
+    prompt: `Corvellan Telecom (fictional, listed) earns a return on equity of ${pc(CT.roe, 0)} on its book equity and is expected to do so for ever. Each year it reinvests just enough of its earnings to grow them ${pc(CT.g, 0)} a year and pays the rest out as dividends. Its shareholders require ${pc(CT.r, 0)}. What price-to-book ratio (today’s price ÷ today’s book equity per share) does the constant-growth dividend model justify? Give two decimal places.`,
+    answer: rnd(ctPb, 2), check: () => (0.14 - 0.05) / (0.09 - 0.05), unit: '×', places: 2, tol: 0.01,
     wrong: [
-      { value: rnd(WT.mult * WT.ebitda / WT.shares, 2), say: 'That treats the multiple’s result as equity. EV/EBITDA gives an enterprise value; take off the debt and add the cash before dividing by the shares.' },
-      { value: rnd((WT.mult * WT.ebitda - WT.debt - WT.cash) / WT.shares, 2), say: 'Cash is added back in the bridge from enterprise value to equity, not subtracted.' },
+      { value: rnd(ctNoG, 2), say: 'That is the no-growth answer, ROE ÷ r. With 5% growth the shares are worth more, even though part of each year’s earnings is kept back.' },
+      { value: rnd(ctAll, 2), say: 'That pays out all the earnings and still grows them 5% a year. Growth has to be paid for: reinvesting g ÷ ROE of earnings leaves dividends of (ROE − g) × book equity.' },
     ],
-    solution: `Implied enterprise value = ${fx(WT.mult, 1)} × ${fx(WT.ebitda, 0)} = ${mil(WT.mult * WT.ebitda)}. Equity = ${fx(WT.mult * WT.ebitda, 0)} − ${WT.debt} + ${WT.cash} = ${mil(WT.mult * WT.ebitda - WT.debt + WT.cash)}; per share ÷ ${WT.shares} million = $${fx(wtPs)}. An enterprise-value multiple goes with an enterprise-value result; only after the bridge is it a share price.`,
+    solution: `Next year’s earnings = ROE × book equity. To grow ${pc(CT.g, 0)} it reinvests g ÷ ROE = ${pc(CT.g / CT.roe, 1)} of them, so the dividend is (ROE − g) × book = ${fx(CT.roe - CT.g)} × book. Gordon: price = ${fx(CT.roe - CT.g)} × book ÷ (${fx(CT.r)} − ${fx(CT.g)}), so P/B = (ROE − g) ÷ (r − g) = ${fx(CT.roe - CT.g)} ÷ ${fx(CT.r - CT.g)} = ${fx(ctPb)}. A P/B above 1 is justified because ROE exceeds the ${pc(CT.r, 0)} shareholders require.`,
   },
   {
     id: 'f06-dg-12', lesson: 'fundamental-analysis', type: 'mc', kind: 'conceptual',
     prompt: `Fernhallow Foods (fictional, listed) expects after-tax operating profit of ${mil(FH.nopat)} next year and has a WACC of ${pc(FH.wacc, 0)}. If it invests nothing beyond upkeep, the profit stays flat for ever. Its board proposes reinvesting enough to grow ${pc(FH.g, 0)} a year for ever; the new investment would earn ${pc(FH.ronic, 0)}. What does the plan do to the value of the business?`,
     options: [
       `It raises it to ${mil(fhNaive)}, because the same ${mil(FH.nopat)} now grows ${pc(FH.g, 0)} a year for ever`,
-      `It lowers it, from ${mil(fhFlat)} to about ${mil(fhGrow)}, because the new investment earns less than the WACC`,
+      `It lowers it to about ${mil(fhGrow)}: the new investment earns less than the WACC`,
       `It leaves it at ${mil(fhFlat)}: growth paid for by the company’s own profits can’t change its value`,
       `It raises it only if the ${pc(FH.g, 0)} growth rate is above the rate of inflation over the period`,
     ],

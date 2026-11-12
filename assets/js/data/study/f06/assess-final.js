@@ -1,41 +1,44 @@
 // assess-final.js — F06 final assessment: 24 questions across all four modules and all eight of the course’s outcomes,
 // two or three per lesson (four for module 1, four for module 2, nine for module 3 and seven for module 4). 70% passes.
 // Outcomes (main one per item): 1 shares, markets, market capitalisation and EV fn-1, fn-2; 2 bond prices, yields,
-// duration, convexity and credit fn-3, fn-4; 3 returns and risk fn-5, fn-6, fn-7, fn-8; 4 diversification fn-9, fn-10;
-// 5 efficient portfolios, the CAL and choosing a mix fn-11, fn-12, fn-13; 6 beta, the CAPM and alpha fn-14, fn-15;
-// 7 funds, fees and tracking fn-16, fn-17; 8 valuation by DCF and multiples, judged by fundamental analysis fn-18 to fn-24.
+// duration, convexity and credit fn-3, fn-4; 3 returns and risk fn-5, fn-6, fn-7, fn-8 (and fn-11’s scenario steps);
+// 4 diversification fn-9, fn-10; 5 efficient portfolios, the CAL and choosing a mix fn-11, fn-12, fn-13; 6 beta, the
+// CAPM and alpha fn-14, fn-15; 7 funds, fees and tracking fn-16, fn-17; 8 valuation by DCF and multiples, judged by
+// fundamental analysis fn-18 to fn-24.
 // Mixed conceptual, numerical and applied items. Five are spreadsheet formula items, two of them steps inside steps items:
-// a bond’s exact price after its spread widens by the basis points in B5 (fn-3, B5 varied); the bond fund’s real compound
+// a bond’s yield to maturity from its price with RATE (fn-3, the price in B3 varied); the bond fund’s real compound
 // return from its simulated calendar-year returns at the inflation rate in E1 (fn-5, E1 varied); the expected return of
 // the best complete portfolio for the risk aversion in B4 (fn-13, B4 varied); Northgate’s alpha a year from 60 simulated
 // months of excess returns (fn-14); the terminal value’s share of a DCF value at the WACC in B8 (fn-18, B8 varied). Typed
 // results fail on the marking copies.
-// Items that combine lessons: a takeover price turned into the EV/EBITDA paid (fn-1: shares-and-markets,
-// relative-valuation); a bond’s exact price after a spread widens, then duration and convexity against it (fn-3:
-// bond-prices-and-yields, both halves); a credit spread from interpolated government yields, then a downgrade’s price
-// effect by duration (fn-4: bond-prices-and-yields); geometric return then real return (fn-5: measuring-returns, with
-// F04’s Fisher relation); arithmetic against geometric projection in today’s dollars (fn-6: measuring-returns); the
-// spread of a 10-year average under a normal model (fn-7: measuring-risk, measuring-returns); drawdowns, worst years and
-// the normal curve across the funds (fn-8: measuring-risk, measuring-returns); a monthly covariance annualised, then the
-// two-asset SD and the minimum-variance weight (fn-9: diversification, measuring-risk); the optimal share in two risky
-// portfolios and the choice between them by Sharpe ratio (fn-11: efficient-portfolios); the SE of the mean excess return
-// (fn-12: efficient-portfolios, measuring-returns); the CAL and the optimal share in one formula (fn-13:
+// Items that combine lessons: the largest takeover premium a cap on EV/EBITDA allows (fn-1: shares-and-markets,
+// relative-valuation); a bond’s YTM from its price, then a spread widening estimated by duration and convexity and
+// repriced exactly (fn-3: bond-prices-and-yields, all of it); a credit spread over interpolated government yields, then
+// a downgrade’s price effect by duration (fn-4: bond-prices-and-yields); geometric return then real return (fn-5:
+// measuring-returns, with F04’s Fisher relation); arithmetic against geometric projection in today’s dollars (fn-6:
+// measuring-returns); the spread of a 10-year average under a normal model (fn-7: measuring-risk, measuring-returns);
+// drawdowns, worst years and the normal curve across the funds (fn-8: measuring-risk, measuring-returns); a monthly
+// covariance annualised, then the minimum-variance weight and its volatility (fn-9: diversification, measuring-risk); a
+// risky portfolio’s expected return and SD from scenarios, the optimal share in it and in a rival, and the choice by
+// Sharpe ratio (fn-11: efficient-portfolios, measuring-returns, measuring-risk); the SE of the international fund’s mean
+// excess return (fn-12: efficient-portfolios, measuring-returns); the CAL and the optimal share in one formula (fn-13:
 // efficient-portfolios); beta and alpha by regression, alpha before fees and its t-statistic (fn-14: capm-and-beta,
-// funds-and-indexing); a portfolio beta and its CAPM return (fn-15: capm-and-beta, diversification); fee drag on a
-// compounding balance, then the outperformance needed to break even (fn-16: funds-and-indexing, measuring-returns);
-// tracking error, tracking difference and alpha for Northgate (fn-17: funds-and-indexing, capm-and-beta); the terminal
-// value’s share of a DCF (fn-18: discounted-cash-flow-valuation); CAPM → WACC → Gordon EV → the bridge (fn-19:
-// discounted-cash-flow-valuation, capm-and-beta, shares-and-markets); PVGO from CAPM costs of equity (fn-20:
-// discounted-cash-flow-valuation, capm-and-beta, relative-valuation); a justified P/E from Gordon inputs against a peer
-// (fn-21: relative-valuation, discounted-cash-flow-valuation, capm-and-beta); EV and equity multiples applied to a private
-// target (fn-22: relative-valuation, shares-and-markets); a margin of safety off the conservative end of a DCF (fn-23:
-// fundamental-analysis, discounted-cash-flow-valuation). Single-lesson items: fn-2, fn-10, fn-24.
-// Data: the SIMULATED monthly series and fund facts in case.js (fn-5 to fn-9, fn-12, fn-14, fn-17), Morrow & Pike, Harbour
-// Street, their bonds and the government bonds in case.js (fn-1, fn-4, fn-15, fn-22), and fictional businesses, funds and
-// bonds built here (labelled). Nothing uses Brightcup or the project’s data or question. No hints; solutions are shown on
-// review. Every figure is computed below from its inputs with core/investments.js and case.js; claims about the data’s
-// shape throw if the data stop supporting them.
-import { MONTHS, SERIES, ASSETS, COMPANIES, BONDS, MARKET, DERIVED as D, LAST60 } from './case.js?v=31';
+// funds-and-indexing); a portfolio beta and its CAPM return (fn-15: capm-and-beta, diversification); the share of a
+// growing balance taken by fees, then the outperformance needed to break even (fn-16: funds-and-indexing,
+// measuring-returns); tracking error, tracking difference and alpha for a fictional active fund (fn-17:
+// funds-and-indexing, capm-and-beta); the terminal value’s share of a DCF (fn-18: discounted-cash-flow-valuation); CAPM
+// → WACC → Gordon EV → the bridge (fn-19: discounted-cash-flow-valuation, capm-and-beta, shares-and-markets); PVGO from
+// CAPM costs of equity (fn-20: discounted-cash-flow-valuation, capm-and-beta, relative-valuation); a justified P/E from
+// Gordon inputs against a peer (fn-21: relative-valuation, discounted-cash-flow-valuation, capm-and-beta); an EV/EBIT and
+// a price-to-book multiple applied to a private distributor (fn-22: relative-valuation, shares-and-markets); a margin of
+// safety off the conservative end of a DCF (fn-23: fundamental-analysis, discounted-cash-flow-valuation). Single-lesson
+// items: fn-2, fn-10, fn-24.
+// Data: the SIMULATED monthly series and fund facts in case.js (fn-5 to fn-9, fn-12, fn-14), the betas of Morrow & Pike
+// and Harbour Street and the government bonds in case.js (fn-4, fn-15), and fictional businesses, funds and bonds built
+// here (labelled). Nothing uses Brightcup or the project’s data or question. No hints; solutions are shown on review.
+// Every figure is computed below from its inputs with core/investments.js and case.js; claims about the data’s shape
+// throw if the data stop supporting them.
+import { MONTHS, SERIES, ASSETS, BONDS, MARKET, DERIVED as D, LAST60 } from './case.js?v=31';
 import * as IV from '../../../core/investments.js?v=31';
 import { normCdf } from '../../../core/inference.js?v=31';
 
@@ -51,36 +54,43 @@ const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'Au
 const monthName = (m) => `${MON[+m.slice(5) - 1]} ${m.slice(0, 4)}`;
 const claim = (ok, what) => { if (!ok) throw new Error(`assess-final: the data no longer support “${what}”`); };
 const { rf, mrp } = MARKET;
-const MP = COMPANIES.morrow, HS = COMPANIES.harbour;
 const S = D.stats;
 
 // ---------------------------------------------------------------- module 1
-// fn-1: an offer for Harbour Street at a premium, as an EV/EBITDA
-const BID = { premium: 0.25 };
-const bidPrice = HS.price * (1 + BID.premium);
-const bidEquity = bidPrice * HS.shares, bidEv = IV.enterpriseValue({ marketCap: bidEquity, debt: HS.debt, cash: HS.cash });
-const bidMult = bidEv / HS.ebitda;
+// fn-1: Vossmere Logistics (fictional): the largest premium a buyer capped at an EV/EBITDA multiple can offer
+const VL = { shares: 50, price: 30, debt: 400, cash: 50, ebitda: 220, cap: 10 };
+const vlCap0 = VL.shares * VL.price, vlEv0 = IV.enterpriseValue({ marketCap: vlCap0, debt: VL.debt, cash: VL.cash });
+const vlEvMax = VL.cap * VL.ebitda;
+const vlPriceMax = IV.evToEquity({ ev: vlEvMax, debt: VL.debt, cash: VL.cash, shares: VL.shares }).perShare;
+const vlPrem = vlPriceMax / VL.price - 1;
+const vlWrong = { onEv: vlEvMax / vlEv0 - 1, asEquity: vlEvMax / VL.shares / VL.price - 1, noCash: (vlEvMax - VL.debt) / VL.shares / VL.price - 1 };
+claim(vlPrem > 0 && vlEv0 / VL.ebitda < VL.cap, 'the cap is above today’s multiple');
 // fn-2: a value-weighted index of three fictional companies; C issues shares at the month-end
 const IX = { caps: [600, 300, 100], rets: [0.04, -0.02, 0.10], issue: 50 };
 const ixW = IX.caps.map((c) => c / sum(IX.caps));
 const ixRet = sum(ixW.map((w, i) => w * IX.rets[i]));
 const ixCapChange = (sum(IX.caps.map((c, i) => c * (1 + IX.rets[i]))) + IX.issue) / sum(IX.caps) - 1;
-// fn-3: Brackenmoor Mills’ bond (fictional): 8 years, 6.25% semi-annual, yielding 5.40%; the spread widens 75 bp
-const BM = { face: 100, couponRate: 0.0625, years: 8, freq: 2, ytm: 0.054, bp: 75 };
-const bmD = IV.duration(BM);
-const bmNew = IV.bondAtYield({ face: 100, couponRate: BM.couponRate, years: BM.years, freq: BM.freq }, BM.ytm + BM.bp / 10000).price;
+// fn-3: Brackenmoor Mills’ bond (fictional): 8 years, 6.25% semi-annual, priced to yield about 5.40%; the spread widens 75 bp
+const BMS = { face: 100, couponRate: 0.0625, years: 8, freq: 2 };
+const BM = { ...BMS, price: rnd(IV.bondAtYield(BMS, 0.054).price, 2), bp: 75 };
+const bmY = IV.bondYield(BMS, BM.price);
+const bmD = IV.duration({ ...BMS, ytm: bmY });
 const bmDy = BM.bp / 10000;
+const bmNew = IV.bondAtYield(BMS, bmY + bmDy).price;
 const bmEst = IV.priceChangeApprox(bmD, bmDy), bmEstD = IV.priceChangeApprox({ modified: bmD.modified }, bmDy);
-const bmExact = bmNew / bmD.price - 1;
+const bmExact = bmNew / BM.price - 1;
+const bmPerHalf = IV.bondAtYield(BMS, bmY + 2 * bmDy).price;
 claim(bmD.price > 100 && bmEstD < bmExact && Math.abs(bmEst - bmExact) < Math.abs(bmEstD - bmExact), 'the bond is at a premium, and convexity brings the estimate closer to the exact fall');
-// fn-4: Morrow & Pike’s 2031 bond: spread over interpolated government yields, then a downgrade
-const MB = BONDS.find((b) => b.name.startsWith('Morrow')), G2 = BONDS.find((b) => b.years === 2), G5 = BONDS.find((b) => b.years === 5);
-const mbD = IV.duration({ face: 100, ...MB });
-const govAt = (t) => G2.ytm + (t - G2.years) / (G5.years - G2.years) * (G5.ytm - G2.ytm);
-const mbGov = govAt(MB.years), mbSpread = MB.ytm - mbGov;
+// fn-4: Brindlecote Haulage’s bond (fictional, BBB): spread over interpolated government yields, then a downgrade
+const BH = { face: 100, couponRate: 0.056, years: 12, freq: 2, ytm: 0.0586 };
+const G5 = BONDS.find((b) => b.years === 5), G20 = BONDS.find((b) => b.years === 20);
+const bhD = IV.duration(BH);
+const govAt = (t) => G5.ytm + (t - G5.years) / (G20.years - G5.years) * (G20.ytm - G5.ytm);
+const bhGov = govAt(BH.years), bhSpread = BH.ytm - bhGov;
 const DG = { spread: 0.025 };
-const mbDy = DG.spread - mbSpread;
-const mbNewEst = mbD.price * (1 - mbD.modified * mbDy);
+const bhDy = DG.spread - bhSpread;
+const bhNewEst = bhD.price * (1 - bhD.modified * bhDy);
+claim(bhSpread > 0.01 && bhDy > 0.005, 'the bond trades at a spread well below 250 basis points');
 
 // ---------------------------------------------------------------- module 2
 // fn-5: the bond fund’s calendar-year returns, rounded to four decimals for the sheet
@@ -89,7 +99,7 @@ const byGeo = Math.exp(mean(BY.map((y) => Math.log(1 + y.ret)))) - 1;
 const INF = 0.028;
 const byReal = (1 + byGeo) / (1 + INF) - 1;
 const byL = BY.length + 1;
-const byCells = { A1: 'Year', B1: 'Bond fund', D1: 'Inflation a year', E1: INF, D3: 'Real compound return a year' };
+const byCells = { A1: 'Year', B1: 'Bond fund', D1: 'Inflation', E1: INF, D3: 'Real return' };
 BY.forEach((y, i) => { byCells[`A${i + 2}`] = `${y.year}`; byCells[`B${i + 2}`] = y.ret; });
 // fn-6: a projection with the arithmetic mean against the geometric, in today’s dollars
 const PJ = { amount: 20_000, years: 25 };
@@ -113,28 +123,30 @@ claim(Math.abs(S.bonds.sd / S.market.sd - 0.25) < 0.02 && Math.abs(wy.bonds / wy
 const MI = IV.sampleCov(SERIES.market, SERIES.intl);
 const miCovM = rnd(MI.cov, 6);
 const miCorr = (miCovM * 12) / (S.market.sd * S.intl.sd);
-const MIX = { wm: 0.3 };
-const miSd = IV.twoAsset({ w: MIX.wm, ra: 0, rb: 0, sa: S.market.sd, sb: S.intl.sd, corr: miCorr }).sd;
 const miMin = IV.twoAssetMinVarWeight({ sa: S.market.sd, sb: S.intl.sd, corr: miCorr });
+const miMinSd = IV.twoAsset({ w: miMin, ra: 0, rb: 0, sa: S.market.sd, sb: S.intl.sd, corr: miCorr }).sd;
 claim(miMin > 0.5 && miMin < 0.9, 'the least risky mix holds mostly the total-market fund');
 // fn-10: an equally weighted portfolio of 25 shares
 const EQ = { sd: 0.30, corr: 0.2, n: 25 };
 const eqSd = IV.equalWeightSd(EQ.n, EQ.sd ** 2, EQ.corr * EQ.sd ** 2);
 const eqRemoved = 1 - eqSd ** 2 / EQ.sd ** 2, eqMax = 1 - EQ.corr;
 // fn-11: two candidate risky portfolios and a client with A = 6
-const PQ = { rf: 0.03, A: 6, P: { er: 0.11, sd: 0.20 }, Q: { er: 0.08, sd: 0.10 } };
+const PSC = [{ p: 0.3, r: 0.35 }, { p: 0.5, r: 0.10 }, { p: 0.2, r: -0.20 }];
+const pSc = IV.scenarios(PSC);
+const PQ = { rf: 0.03, A: 6, P: { er: pSc.er, sd: pSc.sd }, Q: { er: 0.08, sd: 0.10 } };
+const pScEq = Math.sqrt(mean(PSC.map((s) => (s.r - mean(PSC.map((x) => x.r))) ** 2)));
 const yP = IV.optimalRiskyShare({ rf: PQ.rf, ...PQ.P, A: PQ.A }), yQ = IV.optimalRiskyShare({ rf: PQ.rf, ...PQ.Q, A: PQ.A });
 const shP = IV.sharpe(PQ.P.er, PQ.rf, PQ.P.sd), shQ = IV.sharpe(PQ.Q.er, PQ.rf, PQ.Q.sd);
 const uOf = (y, p) => { const c = IV.cal({ y, rf: PQ.rf, er: p.er, sd: p.sd }); return c.er - 0.5 * PQ.A * c.sd ** 2; };
 const uP = uOf(yP, PQ.P), uQ = uOf(yQ, PQ.Q);
-claim(shQ > shP && uQ > uP && yQ < 1, 'Q has the higher Sharpe ratio and gives the higher utility without borrowing');
-// fn-12: the standard error of the market’s mean excess return
-const EXM = SERIES.market.map((v, i) => v - SERIES.bills[i]);
+claim(shQ > shP && uQ > uP && yQ < 1 && PQ.P.er > PQ.Q.er && Math.abs(mean(PSC.map((s) => s.r)) - pSc.er) > 0.01, 'Q has the higher Sharpe ratio and gives the higher utility without borrowing');
+// fn-12: the standard error of the international fund’s mean excess return
+const EXM = SERIES.intl.map((v, i) => v - SERIES.bills[i]);
 const exMean = IV.annualise.mean(mean(EXM));
 const exSdM = Math.sqrt(sum(EXM.map((v) => (v - mean(EXM)) ** 2)) / (EXM.length - 1));
 const exSe = (exSdM / Math.sqrt(EXM.length)) * 12;
 const exLo = exMean - 1.96 * exSe, exHi = exMean + 1.96 * exSe;
-claim(exLo > 0 && exLo < 0.01, 'the lower 95% limit is just above zero');
+claim(exLo < 0 && exHi > 0 && exMean > 0.05, 'the 95% interval for the international fund’s mean excess return contains zero');
 // fn-13: the best complete portfolio’s expected return
 const CP = { er: 0.088, sd: 0.15, rf: 0.042, A: 4 };
 const cpEr = (A) => CP.rf + (CP.er - CP.rf) ** 2 / (A * CP.sd ** 2);
@@ -159,14 +171,10 @@ const fdI = IV.feeDrag({ amount: FD.amount, monthly: FD.monthly, years: FD.years
 const fdA = IV.feeDrag({ amount: FD.amount, monthly: FD.monthly, years: FD.years, r: FD.r, fee: FD.fa });
 const fdGap = fdI.net - fdA.net;
 const fdBreak = (1 + FD.r) * (1 - FD.fi) / (1 - FD.fa) - (1 + FD.r);
-// fn-17: Northgate against the index over the fifteen years
-const ngTe = IV.annualise.sd(IV.trackingError(SERIES.active, SERIES.market));
-const ngDiff = S.active.mean - S.market.mean;
-const ngFull = IV.regressBeta(SERIES.active, SERIES.market, SERIES.bills);
-const ngFullT = ngFull.alpha / ngFull.seAlpha;
-const yrA = IV.yearly(MONTHS, SERIES.active), yrM = IV.yearly(MONTHS, SERIES.market);
-const ngBeat = yrA.filter((y, i) => y.ret > yrM[i].ret).length;
-claim(ngDiff < -(ASSETS.active.fee - ASSETS.market.fee) && ngFullT > -1.5 && ngBeat >= 5, 'Northgate trailed by more than the fee gap, its alpha’s t is above −1.5, and it beat the index in at least five years');
+// fn-17: Fenwardine Equity Fund (fictional, active) against an index fund tracking its benchmark; figures given in the item
+const FW = { years: 10, sdDiffM: 0.006, diff: -0.0115, fee: 0.0100, idxFee: 0.0010, t: -0.9, beat: 4 };
+const fwTe = IV.annualise.sd(FW.sdDiffM), fwGap = FW.fee - FW.idxFee;
+claim(-FW.diff > fwGap && -FW.diff < fwTe / 1.5, 'the shortfall exceeds the fee gap and is well below the tracking error');
 
 // ---------------------------------------------------------------- module 4
 // fn-18: Lissendale Glassworks (fictional): the terminal value’s share
@@ -182,21 +190,19 @@ const ewWacc = (1 - EW.dv) * ewKe + EW.dv * EW.rd * (1 - EW.tax);
 const ewEv = EW.fcf1 / (ewWacc - EW.g);
 const ewPs = IV.evToEquity({ ev: ewEv, debt: EW.debt, cash: EW.cash, shares: EW.shares }).perShare;
 const ewNoTax = (1 - EW.dv) * ewKe + EW.dv * EW.rd;
-claim(Math.abs(EW.debt / ewEv - EW.dv) < 0.03 && ewPs > EW.price, 'Esterby’s debt is close to 40% of its DCF value, and the value exceeds the price');
+claim(Math.abs(EW.debt / ewEv - EW.dv) < 0.03 && ewPs > EW.price, 'Esterby’s debt is close to its 40% target share of its DCF value, and the value exceeds the price');
 // fn-20: two fictional companies’ PVGO
-const PV = [{ name: 'Cindral Software', price: 60, eps: 1.80, beta: 1.4 }, { name: 'Kelvarra Outdoor', price: 30, eps: 2.70, beta: 0.9 }]
+const PV = [{ name: 'Harnwick Software', price: 60, eps: 1.80, beta: 1.4 }, { name: 'Kelvarra Outdoor', price: 30, eps: 2.70, beta: 0.9 }]
   .map((c) => { const ke = IV.capm({ rf, beta: c.beta, mrp }); const g = IV.pvgo(c.price, c.eps, ke); return { ...c, ke, pvgo: g, share: g / c.price, pe: c.price / c.eps }; });
-claim(PV[0].share > 0.7 && PV[1].share < 0.05, 'most of Cindral’s price is growth; almost none of Kelvarra’s is');
+claim(PV[0].share > 0.7 && PV[1].share < 0.05, 'most of Harnwick’s price is growth; almost none of Kelvarra’s is');
 // fn-21: Marlstone Paints (fictional): a justified leading P/E against a peer
 const MS = { roe: 0.12, payout: 0.40, beta: 1.1, peerPe: 15 };
 const msKe = IV.capm({ rf, beta: MS.beta, mrp }), msG = IV.earningsGrowth(1 - MS.payout, MS.roe);
 const msPe = MS.payout / (msKe - msG);
 const msGap = MS.peerPe / msPe - 1;
-// fn-22: Orvane Roasting (fictional, private) valued with Morrow & Pike’s multiples
-const OR = { ebitda: 14, ni: 6, debt: 30, cash: 4 };
-const orEv = IV.impliedValue({ multiple: MP.m.evEbitda, metric: OR.ebitda, basis: 'ev', debt: OR.debt, cash: OR.cash, shares: 1 }).equity;
-const orPe = MP.m.pe * OR.ni;
-const orEvNoBridge = MP.m.evEbitda * OR.ebitda, orPeBridged = orPe - OR.debt + OR.cash;
+// fn-22: Kestrigan Supply (fictional, private distributor) valued with fictional listed peers’ EV/EBIT and P/B
+const KS = { ebit: 20, book: 90, debt: 60, cash: 10, evEbit: 9.0, pb: 1.6 };
+const ksEv = KS.evEbit * KS.ebit, ksFromEv = ksEv - KS.debt + KS.cash, ksFromPb = KS.pb * KS.book, ksPbBridged = ksFromPb - KS.debt + KS.cash;
 // fn-23: Saffordby Brewing (fictional): a margin of safety off the conservative DCF
 const SB = { fcf1: 30, g: 0.03, wacc: 0.08, high: 0.09, debt: 100, cash: 20, shares: 20, margin: 0.20 };
 const sbPs = (w) => IV.evToEquity({ ev: SB.fcf1 / (w - SB.g), debt: SB.debt, cash: SB.cash, shares: SB.shares }).perShare;
@@ -206,14 +212,14 @@ export const items = [
   // ================================================================ Module 1: Securities and markets
   {
     id: 'f06-fn-1', lesson: 'shares-and-markets', type: 'num', kind: 'applied',
-    prompt: `A fictional food group offers to buy every share of Harbour Street Foods (fictional; ${HS.shares} million shares at $${fx(HS.price)}, debt ${mil(HS.debt)}, cash ${mil(HS.cash)}, 2027 EBITDA ${mil(HS.ebitda)}) at a ${pc(BID.premium, 0)} premium to the share price. It would take on the debt and keep the cash. What multiple of EBITDA is it paying for the business? Give two decimal places.`,
-    answer: rnd(bidMult, 2), check: () => (18 * 1.25 * 120 + 1188 - 60) / 410, unit: '×', places: 2, tol: 0.01,
+    prompt: `Vossmere Logistics (fictional, listed) has ${VL.shares} million shares at $${fx(VL.price)}, ${mil(VL.debt)} of debt, ${mil(VL.cash)} of cash and EBITDA of ${mil(VL.ebitda)}. A fictional rival wants to buy every share; it would take on the debt and keep the cash, and its board will pay at most ${fx(VL.cap, 1)} times EBITDA for the business as a whole. What is the largest premium over today’s share price it can offer? Give a percentage to one decimal place.`,
+    answer: rnd(vlPrem * 100, 1), check: () => ((10 * 220 - 400 + 50) / 50 / 30 - 1) * 100, unit: '%', places: 1, tol: 0.1,
     wrong: [
-      { value: rnd(HS.m.evEbitda, 2), say: 'That is the multiple at the market price. The offer adds a 25% premium to every share, which raises the equity and so the enterprise value.' },
-      { value: rnd(bidEquity / HS.ebitda, 2), say: 'That divides the equity price alone by EBITDA. EBITDA belongs to lenders and shareholders together, so compare it with the enterprise value: add the debt, take off the cash.' },
-      { value: rnd((bidEquity + HS.debt + HS.cash) / HS.ebitda, 2), say: 'The cash comes with the company, so it lowers the net price of the business: subtract it.' },
+      { value: rnd(vlWrong.onEv * 100, 1), say: 'That is how far the enterprise value can rise. The debt doesn’t rise with the offer, so all the extra value goes to the shares, a smaller base: find the most the equity can be worth.' },
+      { value: rnd(vlWrong.asEquity * 100, 1), say: `That treats ${fx(VL.cap, 1)} × EBITDA as the price of the shares alone. An EBITDA multiple prices the whole business: take off the debt and add back the cash before dividing by the shares.` },
+      { value: rnd(vlWrong.noCash * 100, 1), say: 'That takes off the debt but forgets the cash, which the buyer keeps: add it back.' },
     ],
-    solution: `Offer price $${fx(HS.price)} × ${fx(1 + BID.premium, 2)} = $${fx(bidPrice)}; equity ${HS.shares} × ${fx(bidPrice)} = ${mil(bidEquity)}. Enterprise value paid = ${fx(bidEquity, 0)} + ${fx(HS.debt, 0)} − ${HS.cash} = ${mil(bidEv)}; ÷ EBITDA ${HS.ebitda} = ${fx(bidMult)} times, against ${fx(HS.m.evEbitda)} at the market price. A 25% premium on the equity raises the EV multiple by less than 25% (here by ${pc(bidMult / HS.m.evEbitda - 1, 1)}), because the debt is bought at face value.`,
+    solution: `Today: market capitalisation ${mil(vlCap0)}, enterprise value ${fx(vlCap0, 0)} + ${VL.debt} − ${VL.cash} = ${mil(vlEv0)}, or ${fx(vlEv0 / VL.ebitda)} times EBITDA. At the cap the business is worth ${fx(VL.cap, 1)} × ${VL.ebitda} = ${mil(vlEvMax)}; equity = ${fx(vlEvMax, 0)} − ${VL.debt} + ${VL.cash} = ${mil(vlEvMax - VL.debt + VL.cash)}, or $${fx(vlPriceMax)} a share. Premium = ${fx(vlPriceMax)} ÷ ${fx(VL.price)} − 1 = ${pc(vlPrem, 1)}. The enterprise value can rise only ${pc(vlWrong.onEv, 1)}, but the debt is taken on at face value, so the shareholders get all of the rise.`,
   },
   {
     id: 'f06-fn-2', lesson: 'shares-and-markets', type: 'num', kind: 'conceptual',
@@ -223,26 +229,26 @@ export const items = [
       { value: rnd(ixCapChange * 100, 1), say: 'That is the change in the index’s total market value, which includes the new shares C sold. New money paid in is not a return to anyone holding the index.' },
       { value: rnd(mean(IX.rets) * 100, 1), say: 'That is the simple average of the three returns. A value-weighted index weights each return by the company’s share of the start-of-month value.' },
     ],
-    solution: `Start weights: ${ixW.map((w) => pc(w, 0)).join(', ')}. Index return = ${ixW.map((w, i) => `${fx(w, 1)} × ${sg(IX.rets[i], 0)}`).join(' + ')} = ${sg(ixRet, 1)}. The index’s total value rose ${pc(ixCapChange, 1)}, but ${mil(IX.issue)} of that is new shares bought for cash: an index provider adjusts its divisor for issues so that only price changes count as return.`,
+    solution: `Start weights: ${ixW.map((w) => pc(w, 0)).join(', ')}. Index return = ${ixW.map((w, i) => `${fx(w, 1)} × ${sg(IX.rets[i], 0)}`).join(' + ')} = ${sg(ixRet, 1)}. The index’s total value rose ${pc(ixCapChange, 1)}, but ${mil(IX.issue)} of that is new shares bought for cash: the index counts only price changes, not new money paid in for shares.`,
   },
   {
     id: 'f06-fn-3', lesson: 'bond-prices-and-yields', type: 'steps', kind: 'applied',
-    prompt: `Brackenmoor Mills (fictional, listed) has a bond with ${BM.years} years left and a ${pc(BM.couponRate)} coupon paid twice a year; it yields ${pc(BM.ytm)}. Analysts expect a downgrade to widen its credit spread by ${BM.bp} basis points, with government yields unchanged.`,
+    prompt: `Brackenmoor Mills (fictional, listed) has a bond with ${BM.years} years left and a ${pc(BM.couponRate)} coupon paid twice a year; it trades at $${fx(BM.price)} per $100 of face value. Analysts expect a downgrade to widen its credit spread by ${BM.bp} basis points, with government yields unchanged.`,
     steps: [
       {
         id: 'f06-fn-3-s1', type: 'formula', kind: 'numerical',
-        prompt: 'B1:B4 hold the bond’s coupon rate, years to maturity, yield today and face value; B5 holds the widening in basis points. In B7, write one formula for the bond’s price per $100 after the widening, as a positive number.',
-        sheet: { cells: { A1: 'Coupon rate (a year)', B1: BM.couponRate, A2: 'Years to maturity', B2: BM.years, A3: 'Yield to maturity today', B3: BM.ytm, A4: 'Face value ($)', B4: 100, A5: 'Spread widening (basis points)', B5: BM.bp, A7: 'Price after the widening ($)' }, fixed: ['B2', 'B4'], vary: { B5: [50, 120] } },
-        cell: 'B7', view: 'A1:B7', widths: { A: 30, B: 12 }, formats: { B1: '0.00%', B3: '0.00%', B4: '$#,##0.00', B7: '$#,##0.00' },
-        answer: '=PV((B3+B5/10000)/2,B2*2,-B1*B4/2,-B4)',
-        alt: ['=-PV((B3+B5/10000)/2,B2*2,B1*B4/2,B4)', '=PV((B3+B5*0.0001)/2,2*B2,-B4*B1/2,-B4)'],
-        require: ['PV'],
+        prompt: 'B1:B4 hold the bond’s coupon rate, years to maturity, price and face value. In B6, write one formula for its yield to maturity today, as an annual rate compounded twice a year.',
+        sheet: { cells: { A1: 'Coupon rate (a year)', B1: BM.couponRate, A2: 'Years to maturity', B2: BM.years, A3: 'Price ($)', B3: BM.price, A4: 'Face value ($)', B4: 100, A6: 'Yield to maturity' }, fixed: ['B2', 'B4'], vary: { B3: [101.8, 108.9] } },
+        cell: 'B6', view: 'A1:B6', widths: { A: 20, B: 11 }, formats: { B1: '0.00%', B3: '$#,##0.00', B4: '$#,##0.00', B6: '0.00%' },
+        answer: '=RATE(B2*2,B1*B4/2,-B3,B4)*2',
+        alt: ['=2*RATE(2*B2,B4*B1/2,-B3,B4)'],
+        require: ['RATE'],
         wrong: [
-          { formula: '=PV(B3/2,B2*2,-B1*B4/2,-B4)', say: 'That is today’s price. Add the widening to the yield first: B5 ÷ 10,000 turns basis points into a decimal.' },
-          { formula: '=PV((B3+B5/100)/2,B2*2,-B1*B4/2,-B4)', say: 'A basis point is a hundredth of a percentage point, 0.0001: divide B5 by 10,000, not 100.' },
-          { formula: '=PV(B3+B5/10000,B2,-B1*B4,-B4)', say: 'That prices the bond as if it paid once a year. Coupons are paid twice a year: halve the yield and the coupon and double the periods.' },
+          { formula: '=RATE(B2*2,B1*B4/2,-B3,B4)', say: 'That is the yield per half-year. Quote it as an annual rate: × 2.' },
+          { formula: '=RATE(B2,B1*B4,-B3,B4)', say: 'That treats the coupons as paid once a year. They are paid twice a year: 2 × B2 periods of B1 × B4 ÷ 2, then double the rate.' },
+          { formula: '=B1*B4/B3', say: 'That is the current yield, the coupon over the price. It ignores the premium the holder loses as the price falls to $100 at maturity.' },
         ],
-        solution: `<x>=PV((B3+B5/10000)/2,B2*2,-B1*B4/2,-B4)</x>: at ${pc(BM.ytm + bmDy)} the price is $${fx(bmNew)}, down from $${fx(bmD.price)} (${pc(bmExact)}).`,
+        solution: `<x>=RATE(B2*2,B1*B4/2,-B3,B4)*2</x>: ${pc(bmY / 2, 3)} a half-year, ${pc(bmY)} a year. The price is above $100, so the yield is below the ${pc(BM.couponRate)} coupon; the current yield, ${pc(BM.couponRate * 100 / BM.price)}, lies between them.`,
       },
       {
         id: 'f06-fn-3-s2', type: 'num', kind: 'numerical',
@@ -252,21 +258,31 @@ export const items = [
           { value: rnd(bmEstD * 100, 2), say: 'That is duration alone. Add the convexity term, ½ × convexity × (0.0075)², which is positive whichever way yields move.' },
           { value: rnd(-bmD.macaulay * bmDy * 100, 2), say: 'That uses the Macaulay duration. The price sensitivity is the modified duration, Macaulay ÷ (1 + yield/2).' },
         ],
-        solution: `ΔP/P ≈ −${fx(bmD.modified)} × 0.0075 + ½ × ${fx(bmD.convexity, 1)} × 0.0075² = ${pc(bmEstD)} + ${pc(0.5 * bmD.convexity * bmDy ** 2, 3)} = ${pc(bmEst)}. The exact repricing in step 1 gives ${pc(bmExact, 3)}: duration alone overstates the fall (${pc(bmEstD)}), and adding convexity closes most of the gap.`,
+        solution: `ΔP/P ≈ −${fx(bmD.modified)} × 0.0075 + ½ × ${fx(bmD.convexity, 1)} × 0.0075² = ${pc(bmEstD)} + ${pc(0.5 * bmD.convexity * bmDy ** 2, 3)} = ${pc(bmEst)}.`,
+      },
+      {
+        id: 'f06-fn-3-s3', type: 'num', kind: 'numerical',
+        prompt: 'Now reprice the bond exactly at its widened yield. What is its new price per $100? Give dollars and cents.',
+        answer: rnd(bmNew, 2), check: () => IV.bondAtYield(BMS, IV.bondYield(BMS, BM.price) + 0.0075).price, unit: '$', places: 2, tol: 0.02,
+        wrong: [
+          { value: rnd(BM.price * (1 + bmEstD), 2), say: 'That applies the duration-only estimate. Reprice exactly: discount every coupon and the face value at the new half-year yield.' },
+          { value: rnd(bmPerHalf, 2), say: 'That adds 75 basis points to the half-year rate, which is 150 a year. Add them to the annual yield, then halve it.' },
+        ],
+        solution: `At ${pc(bmY + bmDy)} a year (${pc((bmY + bmDy) / 2, 3)} a half-year) the price is $${fx(bmNew)}, a change of ${pc(bmExact, 3)}. The duration-and-convexity estimate (${pc(bmEst, 3)}) is ${fx(Math.abs(bmEst - bmExact) * 100, 3)} points away; duration alone (${pc(bmEstD, 3)}) is ${fx(Math.abs(bmEstD - bmExact) * 100, 3)} points away.`,
       },
     ],
-    solution: `Reprice at the new yield for the exact answer (${money(bmD.price)} → ${money(bmNew)}); duration and convexity give a quick estimate, ${pc(bmEst, 3)} against an exact ${pc(bmExact, 3)}, where duration alone gives ${pc(bmEstD, 3)}. A credit-spread move changes the price exactly as a move in government yields of the same size would.`,
+    solution: `Find the yield from the price (${pc(bmY)}), add the widening, and reprice for the exact answer ($${fx(BM.price)} → $${fx(bmNew)}); duration and convexity give a quick estimate. A credit-spread move changes the price exactly as a move in government yields of the same size would.`,
   },
   {
     id: 'f06-fn-4', lesson: 'bond-prices-and-yields', type: 'num', kind: 'applied',
-    prompt: `The Morrow & Pike 2031 bond (fictional; ${fx(MB.years, 1)} years left, ${pc(MB.couponRate)} coupon paid twice a year) yields ${pc(MB.ytm)}, a price of $${fx(mbD.price)} per $100, and has a modified duration of ${fx(mbD.modified)}. Government notes yield ${pc(G2.ytm)} at ${G2.years} years and ${pc(G5.ytm)} at ${G5.years} years. An analyst thinks that if the bond were cut from BBB to BB it would trade at a spread of ${fx(DG.spread * 10000, 0)} basis points over a government yield of the same maturity (found by straight-line interpolation), with government yields unchanged. Using modified duration alone, what price per $100 would that imply? Give dollars and cents.`,
-    answer: rnd(mbNewEst, 2), check: () => mbD.price * (1 - mbD.modified * (0.025 - (0.0545 - (0.041 + 1.5 / 3 * 0.001)))), unit: '$', places: 2, tol: 0.03,
+    prompt: `Brindlecote Haulage (fictional, listed) has a BBB-rated bond with ${BH.years} years left and a ${pc(BH.couponRate)} coupon paid twice a year. It yields ${pc(BH.ytm)}, a price of $${fx(bhD.price)} per $100, and its modified duration is ${fx(bhD.modified)}. Government bonds yield ${pc(G5.ytm)} at ${G5.years} years and ${pc(G20.ytm)} at ${G20.years} years. An analyst thinks that if the bond were cut to BB it would trade at a spread of ${fx(DG.spread * 10000, 0)} basis points over a government yield of the same maturity (found by straight-line interpolation), with government yields unchanged. Using modified duration alone, what price per $100 would that imply? Give dollars and cents.`,
+    answer: rnd(bhNewEst, 2), check: () => bhD.price * (1 - bhD.modified * (0.025 - (0.0586 - (0.042 + (12 - 5) / 15 * 0.0045)))), unit: '$', places: 2, tol: 0.03,
     wrong: [
-      { value: rnd(mbD.price * (1 - mbD.modified * DG.spread), 2), say: 'That adds the whole 250 basis points to the yield. The bond already trades at a spread: only the widening, from today’s spread to 250, moves its yield.' },
-      { value: rnd(mbD.price * (1 - mbD.modified * (DG.spread - (MB.ytm - G5.ytm))), 2), say: 'That measures today’s spread against the five-year note. The bond has 3.5 years left: interpolate the government yield at 3.5 years.' },
-      { value: rnd(mbD.price * (1 - mbD.macaulay * mbDy), 2), say: 'That uses the Macaulay duration. Price sensitivity is the modified duration.' },
+      { value: rnd(bhD.price * (1 - bhD.modified * DG.spread), 2), say: 'That adds the whole 250 basis points to the yield. The bond already trades at a spread: only the widening, from today’s spread to 250, moves its yield.' },
+      { value: rnd(bhD.price * (1 - bhD.modified * (DG.spread - (BH.ytm - G20.ytm))), 2), say: `That measures today’s spread against the ${G20.years}-year bond. This bond has ${BH.years} years left: interpolate the government yield at ${BH.years} years.` },
+      { value: rnd(bhD.price * (1 - bhD.macaulay * bhDy), 2), say: 'That uses the Macaulay duration. Price sensitivity is the modified duration.' },
     ],
-    solution: `Government yield at ${fx(MB.years, 1)} years: ${pc(G2.ytm)} + (1.5 ÷ 3) × (${pc(G5.ytm)} − ${pc(G2.ytm)}) = ${pc(mbGov)}. Today’s spread: ${pc(MB.ytm)} − ${pc(mbGov)} = ${fx(mbSpread * 10000, 0)} basis points. At ${fx(DG.spread * 10000, 0)} the yield rises by ${fx(mbDy * 10000, 0)} basis points, so ΔP/P ≈ −${fx(mbD.modified)} × ${fx(mbDy, 4)} = ${pc(-mbD.modified * mbDy)} and the price ≈ $${fx(mbD.price)} × ${fx(1 - mbD.modified * mbDy, 4)} = $${fx(mbNewEst)}. Falling below BBB also takes the bond out of investment grade, which can force some holders to sell.`,
+    solution: `Government yield at ${BH.years} years: ${pc(G5.ytm)} + (${BH.years - G5.years} ÷ ${G20.years - G5.years}) × (${pc(G20.ytm)} − ${pc(G5.ytm)}) = ${pc(bhGov)}. Today’s spread: ${pc(BH.ytm)} − ${pc(bhGov)} = ${fx(bhSpread * 10000, 0)} basis points. At ${fx(DG.spread * 10000, 0)} the yield rises by ${fx(bhDy * 10000, 0)} basis points, so ΔP/P ≈ −${fx(bhD.modified)} × ${fx(bhDy, 4)} = ${pc(-bhD.modified * bhDy)} and the price ≈ $${fx(bhD.price)} × ${fx(1 - bhD.modified * bhDy, 4)} = $${fx(bhNewEst)}. For a move this large convexity would make the true fall a little smaller. Falling below BBB also takes the bond out of investment grade, which can force some holders to sell.`,
   },
 
   // ================================================================ Module 2: Risk and return
@@ -274,7 +290,7 @@ export const items = [
     id: 'f06-fn-5', lesson: 'measuring-returns', type: 'formula', kind: 'applied',
     prompt: `B2:B${byL} hold the Harbourline Aggregate Bond Index Fund’s calendar-year total returns for 2013–2027 (simulated for this course). E1 holds an inflation rate a year. In E3, write one formula for the fund’s real compound return a year over the fifteen years: the rate at which its purchasing power grew.`,
     sheet: { cells: byCells, vary: { E1: [0.022, 0.034] } },
-    cell: 'E3', view: `A1:E${byL}`, widths: { A: 8, B: 11, C: 2, D: 24, E: 9 }, formats: { B: '0.00%', E1: '0.0%', E3: '0.00%' },
+    cell: 'E3', view: `A1:E${byL}`, widths: { A: 8, B: 11, C: 2, D: 12, E: 9 }, formats: { B: '0.00%', E1: '0.0%', E3: '0.00%' },
     answer: `=GEOMEAN(1+B2:B${byL})/(1+E1)-1`,
     alt: [`=PRODUCT(1+B2:B${byL})^(1/COUNT(B2:B${byL}))/(1+E1)-1`, `=(PRODUCT(1+B2:B${byL})/(1+E1)^15)^(1/15)-1`],
     wrong: [
@@ -311,14 +327,14 @@ export const items = [
     options: [
       `The international fund’s worst calendar year (${pc(wy.intl, 1)}) was clearly worse than the total-market fund’s (${pc(wy.market, 1)}), though its volatility was only ${fx((S.intl.sd - S.market.sd) * 100, 1)} points higher`,
       `The total-market fund’s largest fall from a peak (${pc(dd.market.drawdown, 1)}) was deeper than its worst calendar year, because the fall began in 2021 and ended in 2022`,
-      `A normal distribution with the bond fund’s mean (${pc(S.bonds.mean)}) and volatility (${pc(S.bonds.sd)}) gives a loss in ${pc(bondLossP, 0)} of years; the history had ${bondLossYears} losing year in 15, so the normal curve must overstate bond risk`,
-      `With a volatility of ${pc(S.market.sd)}, the total-market fund never lost more than about 16% in a calendar year`,
+      `A normal distribution with the bond fund’s mean (${pc(S.bonds.mean)}) and volatility (${pc(S.bonds.sd)}) gives a loss in ${pc(bondLossP, 0)} of years; the history had ${bondLossYears} losing year in 15, which shows that the normal curve overstates bond risk`,
+      `With a volatility of ${pc(S.market.sd)}, the total-market fund lost about ${fx(S.market.sd * 100, 0)}% in its worst calendar year`,
       `The bond fund’s volatility was about a quarter of the total-market fund’s, yet its worst calendar year was about half as bad (${pc(wy.bonds, 1)} against ${pc(wy.market, 1)})`,
     ],
     answer: [0, 1, 4],
     feedback: {
       2: `One losing year in 15 is consistent with a ${pc(bondLossP, 0)} chance a year (about ${fx(15 * bondLossP, 1)} expected): fifteen years are far too few to say the normal curve overstates the risk. Fat tails, if anything, make bad years worse than the normal suggests.`,
-      3: `Volatility is a typical deviation from the mean, not a floor. The fund lost ${pc(-wy.market, 1)} in its worst year, well beyond one SD below its mean.`,
+      3: `Volatility is a typical deviation from the mean, not the size of the worst year. The fund lost ${pc(-wy.market, 1)} in its worst year, well beyond one SD below its mean.`,
     },
     solution: `Worst years and drawdowns capture what volatility hides: international’s worst year was ${pc(wy.intl, 1)}, and the market’s drawdown from the end of ${monthName(ddPeak)} to the end of ${monthName(ddTrough)} (${pc(dd.market.drawdown, 1)}) spanned two calendar years. The bond fund had ${pc(S.bonds.sd / S.market.sd, 0)} of the market’s volatility but ${pc(wy.bonds / wy.market, 0)} of its worst year, because 2022 hit both. A normal model’s ${pc(bondLossP, 1)} chance of a losing year cannot be rejected from one loss in fifteen. Simulated data: real history should be checked against published sources.`,
   },
@@ -340,23 +356,23 @@ export const items = [
       },
       {
         id: 'f06-fn-9-s2', type: 'num', kind: 'numerical',
-        prompt: `What is the volatility of a portfolio with ${pc(MIX.wm, 0)} in the total-market fund and ${pc(1 - MIX.wm, 0)} in the international fund? Give a percentage to two decimal places.`,
-        answer: rnd(miSd * 100, 2), check: () => Math.sqrt(0.09 * S.market.sd ** 2 + 0.49 * S.intl.sd ** 2 + 2 * 0.3 * 0.7 * miCovM * 12) * 100, unit: '%', places: 2, tol: 0.03,
-        wrong: [
-          { value: rnd((MIX.wm * S.market.sd + (1 - MIX.wm) * S.intl.sd) * 100, 2), say: 'That averages the volatilities, which holds only for a correlation of 1. Use the variances and the covariance.' },
-          { value: rnd(Math.sqrt(MIX.wm ** 2 * S.market.sd ** 2 + (1 - MIX.wm) ** 2 * S.intl.sd ** 2) * 100, 2), say: 'That leaves out the covariance term, 2 × 0.3 × 0.7 × the annual covariance; with a correlation this high it is large.' },
-        ],
-        solution: `σ² = 0.3² × ${fx(S.market.sd, 4)}² + 0.7² × ${fx(S.intl.sd, 4)}² + 2 × 0.3 × 0.7 × ${fx(miCovM * 12, 4)} = ${fx(miSd ** 2, 5)}, so σ = ${pc(miSd)}: only a little below the ${pc(MIX.wm * S.market.sd + (1 - MIX.wm) * S.intl.sd)} weighted average, because the two share funds are highly correlated.`,
-      },
-      {
-        id: 'f06-fn-9-s3', type: 'num', kind: 'numerical',
         prompt: 'What weight in the total-market fund gives the least risky mix of the two funds? Give a percentage to one decimal place.',
         answer: rnd(miMin * 100, 1), check: () => { const a = S.market.sd, b = S.intl.sd, c = miCovM * 12; return (b * b - c) / (a * a + b * b - 2 * c) * 100; }, unit: '%', places: 1, tol: 0.3,
         wrong: [
           { value: rnd(S.intl.sd ** 2 / (S.market.sd ** 2 + S.intl.sd ** 2) * 100, 1), say: 'That ignores the covariance: it is the minimum-variance weight only for uncorrelated assets.' },
           { value: rnd((1 - miMin) * 100, 1), say: 'That is the weight in the international fund. The formula’s numerator uses the other asset’s variance: σ_B² − cov for the weight in A.' },
         ],
-        solution: `w_market = (σ_I² − cov) ÷ (σ_M² + σ_I² − 2cov) = (${fx(S.intl.sd ** 2, 5)} − ${fx(miCovM * 12, 5)}) ÷ (${fx(S.market.sd ** 2, 5)} + ${fx(S.intl.sd ** 2, 5)} − 2 × ${fx(miCovM * 12, 5)}) = ${pc(miMin, 1)}, with ${pc(1 - miMin, 1)} in the international fund; its volatility is ${pc(IV.twoAsset({ w: miMin, ra: 0, rb: 0, sa: S.market.sd, sb: S.intl.sd, corr: miCorr }).sd)}. With a correlation of ${fx(miCorr)} the saving from mixing two share funds is small: a bond fund diversifies far more.`,
+        solution: `w_market = (σ_I² − cov) ÷ (σ_M² + σ_I² − 2cov) = (${fx(S.intl.sd ** 2, 5)} − ${fx(miCovM * 12, 5)}) ÷ (${fx(S.market.sd ** 2, 5)} + ${fx(S.intl.sd ** 2, 5)} − 2 × ${fx(miCovM * 12, 5)}) = ${pc(miMin, 1)}, with ${pc(1 - miMin, 1)} in the international fund.`,
+      },
+      {
+        id: 'f06-fn-9-s3', type: 'num', kind: 'numerical',
+        prompt: 'What is the volatility of that least risky mix? Give a percentage to two decimal places.',
+        answer: rnd(miMinSd * 100, 2), check: () => { const a = S.market.sd, b = S.intl.sd, c = miCovM * 12, w = (b * b - c) / (a * a + b * b - 2 * c); return Math.sqrt(w * w * a * a + (1 - w) ** 2 * b * b + 2 * w * (1 - w) * c) * 100; }, unit: '%', places: 2, tol: 0.03,
+        wrong: [
+          { value: rnd((miMin * S.market.sd + (1 - miMin) * S.intl.sd) * 100, 2), say: 'That averages the volatilities at those weights, which holds only for a correlation of 1. Use the variances and the covariance.' },
+          { value: rnd(Math.sqrt(miMin ** 2 * S.market.sd ** 2 + (1 - miMin) ** 2 * S.intl.sd ** 2) * 100, 2), say: 'That leaves out the covariance term, 2 × w × (1 − w) × the annual covariance; with a correlation this high it is large.' },
+        ],
+        solution: `σ² = ${fx(miMin, 4)}² × ${fx(S.market.sd, 4)}² + ${fx(1 - miMin, 4)}² × ${fx(S.intl.sd, 4)}² + 2 × ${fx(miMin, 4)} × ${fx(1 - miMin, 4)} × ${fx(miCovM * 12, 4)} = ${fx(miMinSd ** 2, 5)}, so σ = ${pc(miMinSd)}: only ${fx((S.market.sd - miMinSd) * 100)} points below the total-market fund alone. With a correlation of ${fx(miCorr)} two share funds diversify each other only a little; a bond fund does far more.`,
       },
     ],
     solution: 'Annualise a covariance by 12 (like a variance), then use the two-asset formula. Highly correlated share funds diversify each other only a little.',
@@ -374,24 +390,41 @@ export const items = [
   },
   {
     id: 'f06-fn-11', lesson: 'efficient-portfolios', type: 'steps', kind: 'conceptual',
-    prompt: `A fictional adviser offers two risky portfolios: P, with an expected return of ${pc(PQ.P.er, 0)} and a volatility of ${pc(PQ.P.sd, 0)}, and Q, with ${pc(PQ.Q.er, 0)} and ${pc(PQ.Q.sd, 0)}. Clients can lend and borrow at ${pc(PQ.rf, 0)}. A client with a risk-aversion coefficient of ${PQ.A} will combine one of them with the risk-free asset.`,
+    prompt: `A fictional adviser offers two risky portfolios. For P she gives three scenarios for next year: a return of ${PSC.map((s) => `${pc(s.r, 0)} with probability ${fx(s.p, 1)}`).join(', ')}. Q has an expected return of ${pc(PQ.Q.er, 0)} and a volatility of ${pc(PQ.Q.sd, 0)}. Clients can lend and borrow at ${pc(PQ.rf, 0)}. A client with a risk-aversion coefficient of ${PQ.A} will combine one of the two with the risk-free asset.`,
     steps: [
       {
         id: 'f06-fn-11-s1', type: 'num', kind: 'numerical',
-        prompt: 'If she uses P, what share of her money maximises her utility, E(r) − ½ × A × σ²? Give a percentage to one decimal place.',
-        answer: rnd(yP * 100, 1), check: () => (0.11 - 0.03) / (6 * 0.04) * 100, unit: '%', places: 1, tol: 0.15,
-        wrong: [{ value: rnd((PQ.P.er - PQ.rf) / (PQ.A * PQ.P.sd) * 100, 1), say: `Square the volatility: the denominator is A × σ² = ${PQ.A} × ${fx(PQ.P.sd)}² = ${fx(PQ.A * PQ.P.sd ** 2)}.` }],
-        solution: `y* = (${fx(PQ.P.er)} − ${fx(PQ.rf)}) ÷ (${PQ.A} × ${fx(PQ.P.sd)}²) = ${fx(PQ.P.er - PQ.rf)} ÷ ${fx(PQ.A * PQ.P.sd ** 2)} = ${pc(yP, 1)} in P, the rest in the risk-free asset.`,
+        prompt: 'What is P’s expected return? Give a percentage to one decimal place.',
+        answer: rnd(PQ.P.er * 100, 1), check: () => (0.3 * 0.35 + 0.5 * 0.10 + 0.2 * -0.20) * 100, unit: '%', places: 1, tol: 0.05,
+        wrong: [{ value: rnd(mean(PSC.map((s) => s.r)) * 100, 1), say: 'That averages the three outcomes equally. Weight each by its probability.' }],
+        solution: `E(r) = ${PSC.map((s) => `${fx(s.p, 1)} × ${pc(s.r, 0)}`).join(' + ')} = ${pc(PQ.P.er, 1)}.`,
       },
       {
         id: 'f06-fn-11-s2', type: 'num', kind: 'numerical',
+        prompt: 'Weighting each scenario by its probability, how volatile is P’s return next year: what is its standard deviation? Give a percentage to two decimal places.',
+        answer: rnd(PQ.P.sd * 100, 2), check: () => { const e = 0.3 * 0.35 + 0.5 * 0.10 + 0.2 * -0.20; return Math.sqrt(0.3 * (0.35 - e) ** 2 + 0.5 * (0.10 - e) ** 2 + 0.2 * (-0.20 - e) ** 2) * 100; }, unit: '%', places: 2, tol: 0.03,
+        wrong: [
+          { value: rnd(pSc.variance * 100, 2), say: 'That is the variance (in decimal form, × 100). Take its square root for the standard deviation.' },
+          { value: rnd(pScEq * 100, 2), say: 'That treats the three outcomes as equally likely. Weight each squared deviation from the expected return by its probability.' },
+        ],
+        solution: `σ² = ${PSC.map((s) => `${fx(s.p, 1)} × (${fx(s.r, 2)} − ${fx(PQ.P.er, 3)})²`).join(' + ')} = ${fx(pSc.variance, 6)}, so σ = ${pc(PQ.P.sd)}.`,
+      },
+      {
+        id: 'f06-fn-11-s3', type: 'num', kind: 'numerical',
+        prompt: 'If she uses P, what share of her money maximises her utility, E(r) − ½ × A × σ²? Give a percentage to one decimal place.',
+        answer: rnd(yP * 100, 1), check: () => IV.optimalRiskyShare({ rf: 0.03, er: pSc.er, sd: pSc.sd, A: 6 }) * 100, unit: '%', places: 1, tol: 0.2,
+        wrong: [{ value: rnd((PQ.P.er - PQ.rf) / (PQ.A * PQ.P.sd) * 100, 1), say: `Square the volatility: the denominator is A × σ² = ${PQ.A} × ${fx(PQ.P.sd, 4)}² = ${fx(PQ.A * PQ.P.sd ** 2, 4)}.` }],
+        solution: `y* = (${fx(PQ.P.er, 3)} − ${fx(PQ.rf)}) ÷ (${PQ.A} × ${fx(PQ.P.sd, 4)}²) = ${fx(PQ.P.er - PQ.rf, 3)} ÷ ${fx(PQ.A * PQ.P.sd ** 2, 4)} = ${pc(yP, 1)} in P, the rest in the risk-free asset.`,
+      },
+      {
+        id: 'f06-fn-11-s4', type: 'num', kind: 'numerical',
         prompt: 'If she uses Q instead, what share should go into Q? Give a percentage to one decimal place.',
         answer: rnd(yQ * 100, 1), check: () => (0.08 - 0.03) / (6 * 0.01) * 100, unit: '%', places: 1, tol: 0.15,
         wrong: [{ value: rnd((PQ.Q.er - PQ.rf) / (PQ.A * PQ.Q.sd) * 100, 1), say: `Square the volatility: ${PQ.A} × ${fx(PQ.Q.sd)}² = ${fx(PQ.A * PQ.Q.sd ** 2)}.` }],
         solution: `y* = (${fx(PQ.Q.er)} − ${fx(PQ.rf)}) ÷ (${PQ.A} × ${fx(PQ.Q.sd)}²) = ${fx(PQ.Q.er - PQ.rf)} ÷ ${fx(PQ.A * PQ.Q.sd ** 2)} = ${pc(yQ, 1)} in Q.`,
       },
       {
-        id: 'f06-fn-11-s3', type: 'mc', kind: 'conceptual',
+        id: 'f06-fn-11-s5', type: 'mc', kind: 'conceptual',
         prompt: 'Which portfolio should she use, and why?',
         options: [
           'Q: its higher Sharpe ratio means its line through the risk-free rate gives more return at any risk',
@@ -405,20 +438,20 @@ export const items = [
           2: 'The best share does adjust, but the two complete portfolios differ: the one on Q’s steeper line gives her a higher utility.',
           3: 'Q is right, but not because it is less volatile: Q could be levered to any volatility. It wins because its Sharpe ratio is higher, which would make it the better choice for any risk aversion.',
         },
-        solution: `Sharpe ratios: P (${fx(PQ.P.er)} − ${fx(PQ.rf)}) ÷ ${fx(PQ.P.sd)} = ${fx(shP)}, Q (${fx(PQ.Q.er)} − ${fx(PQ.rf)}) ÷ ${fx(PQ.Q.sd)} = ${fx(shQ)}. Her utility at the best mix is ${pc(uP)} with P and ${pc(uQ)} with Q. Separation: choose the risky portfolio with the highest Sharpe ratio first, then set the share in it by risk aversion. Q levered to P’s ${pc(PQ.P.sd, 0)} volatility would offer ${pc(IV.cal({ y: PQ.P.sd / PQ.Q.sd, rf: PQ.rf, er: PQ.Q.er, sd: PQ.Q.sd }).er, 0)}, more than P’s ${pc(PQ.P.er, 0)}.`,
+        solution: `Sharpe ratios: P (${fx(PQ.P.er, 3)} − ${fx(PQ.rf)}) ÷ ${fx(PQ.P.sd, 4)} = ${fx(shP, 3)}, Q (${fx(PQ.Q.er)} − ${fx(PQ.rf)}) ÷ ${fx(PQ.Q.sd)} = ${fx(shQ, 3)}. Her utility at the best mix is ${pc(uP)} with P and ${pc(uQ)} with Q. Separation: choose the risky portfolio with the highest Sharpe ratio first, then set the share in it by risk aversion. Q levered to P’s ${pc(PQ.P.sd)} volatility would offer ${pc(IV.cal({ y: PQ.P.sd / PQ.Q.sd, rf: PQ.rf, er: PQ.Q.er, sd: PQ.Q.sd }).er, 1)}, more than P’s ${pc(PQ.P.er, 1)}.`,
       },
     ],
-    solution: 'Pick the risky portfolio with the highest Sharpe ratio, then choose how much of it to hold: y* = (E − r_f) ÷ (Aσ²).',
+    solution: 'Scenarios give a portfolio’s expected return and SD; pick the risky portfolio with the highest Sharpe ratio, then choose how much of it to hold: y* = (E − r_f) ÷ (Aσ²).',
   },
   {
     id: 'f06-fn-12', lesson: 'efficient-portfolios', type: 'num', kind: 'numerical',
-    prompt: `Over the 180 simulated months of 2013–2027 the total-market fund’s mean excess return over bills was ${pc(exMean)} a year (the monthly mean × 12), and the standard deviation of its monthly excess returns was ${pc(exSdM, 3)}. What is the lower end of an approximate 95% confidence interval for its true mean excess return a year (mean ± 1.96 standard errors)? Give a percentage to two decimal places.`,
+    prompt: `Over the 180 simulated months of 2013–2027 the Harbourline International Index Fund’s mean excess return over bills was ${pc(exMean)} a year (the monthly mean × 12), and the standard deviation of its monthly excess returns was ${pc(exSdM, 3)}. What is the lower end of an approximate 95% confidence interval for its true mean excess return a year (mean ± 1.96 standard errors)? Give a percentage to two decimal places, with a minus sign if it is negative.`,
     answer: rnd(exLo * 100, 2), check: () => (exMean - 1.96 * exSdM / Math.sqrt(180) * 12) * 100, unit: '%', places: 2, tol: 0.03,
     wrong: [
       { value: rnd((exMean - 1.96 * exSdM * Math.sqrt(12)) * 100, 2), say: 'That uses the volatility of one year’s return. The uncertainty about a mean shrinks with the number of observations: the standard error is s ÷ √n.' },
       { value: rnd((exMean - 1.96 * exSdM / Math.sqrt(180)) * 100, 2), say: 'That is the standard error of the monthly mean, not annualised. The annual mean is the monthly mean × 12, so its standard error is × 12 too.' },
     ],
-    solution: `SE of the monthly mean = ${pc(exSdM, 3)} ÷ √180 = ${pc(exSdM / Math.sqrt(180), 3)}; annualised × 12 = ${pc(exSe)} (equivalently ${pc(exSdM * Math.sqrt(12))} ÷ √15). Interval: ${pc(exMean)} ± 1.96 × ${pc(exSe)} = ${pc(exLo)} to ${pc(exHi)}. Fifteen years pin the risk premium down only to within about ±${fx(1.96 * exSe * 100, 0)} points, which is why an optimiser fed historical means chases noise. (The ${pc(exMean / 12)} monthly mean excess return was planted in the simulation.)`,
+    solution: `SE of the monthly mean = ${pc(exSdM, 3)} ÷ √180 = ${pc(exSdM / Math.sqrt(180), 3)}; annualised × 12 = ${pc(exSe)} (equivalently ${pc(exSdM * Math.sqrt(12))} ÷ √15). Interval: ${pc(exMean)} ± 1.96 × ${pc(exSe)} = ${pc(exLo)} to ${pc(exHi)}. It contains zero: fifteen years of this fund’s own history can’t even show that its risk premium is positive, though the simulation built it to share in the market’s. An optimiser fed historical means treats a figure known only to within about ±${fx(1.96 * exSe * 100, 0)} points as exact, which is why it chases noise.`,
   },
   {
     id: 'f06-fn-13', lesson: 'efficient-portfolios', type: 'formula', kind: 'numerical',
@@ -500,13 +533,13 @@ export const items = [
     steps: [
       {
         id: 'f06-fn-16-s1', type: 'num', kind: 'numerical',
-        prompt: 'If the active fund’s managers add nothing before fees, how much more would she have at the end in the index fund? Give a whole number of dollars.',
-        answer: Math.round(fdGap), check: () => IV.feeDrag({ amount: 10000, monthly: 250, years: 25, r: 0.065, fee: 0.0005 }).net - IV.feeDrag({ amount: 10000, monthly: 250, years: 25, r: 0.065, fee: 0.0095 }).net, unit: '$', places: 0, tol: 40,
+        prompt: 'Suppose the active fund’s managers add nothing before fees. By the end, its fees have cost her what percentage of the balance she would have had with no fees at all? Give one decimal place.',
+        answer: rnd(fdA.share * 100, 1), check: () => { const g = IV.feeDrag({ amount: 10000, monthly: 250, years: 25, r: 0.065, fee: 0.0095 }); return (1 - g.net / g.gross) * 100; }, unit: '%', places: 1, tol: 0.1,
         wrong: [
-          { value: Math.round((FD.fa - FD.fi) * (FD.amount + FD.monthly * 12 * FD.years)), say: `That charges ${pc(FD.fa - FD.fi)} once on what she pays in. Fees are taken from the growing balance every year and lose their own growth.` },
-          { value: Math.round(fdA.cost), say: 'That is what the active fund’s whole fee costs against no fees at all. Compare the two funds: the index fund charges a little too.' },
+          { value: rnd(FD.fa * FD.years * 100, 1), say: 'That adds up 25 years of the fee rate as if the whole balance had been there from the start. Much of the money is paid in later and is charged for fewer years, while fees taken early also lose their growth.' },
+          { value: rnd(fdGap / fdI.net * 100, 1), say: 'That compares the active fund with the index fund, which charges a fee too. The question compares it with no fees at all.' },
         ],
-        solution: `With monthly compounding at the net rates (1.065 × (1 − fee) − 1): index fund ${money(fdI.net, 0)}, active fund ${money(fdA.net, 0)}; the gap is ${money(fdGap, 0)}, ${pc(fdGap / fdI.net, 1)} of the index fund’s balance, on ${money(FD.amount + FD.monthly * 12 * FD.years, 0)} paid in.`,
+        solution: `With no fees she would have ${money(fdA.gross, 0)}; after the ${pc(FD.fa)} fee, ${money(fdA.net, 0)}. The fees take ${money(fdA.cost, 0)}, ${pc(fdA.share, 1)} of the no-fee balance, on ${money(FD.amount + FD.monthly * 12 * FD.years, 0)} paid in. The index fund’s ${pc(FD.fi)} would take ${pc(fdI.share, 1)}.`,
       },
       {
         id: 'f06-fn-16-s2', type: 'num', kind: 'numerical',
@@ -523,21 +556,21 @@ export const items = [
   },
   {
     id: 'f06-fn-17', lesson: 'funds-and-indexing', type: 'multi', kind: 'conceptual',
-    prompt: `Over the fifteen simulated years 2013–2027, Northgate’s monthly returns differ from the total-market index fund’s with a standard deviation that annualises to ${pc(ngTe)}; on average Northgate returned ${fx(Math.abs(ngDiff) * 100)} points a year less (arithmetic means); and a regression of its excess returns on the market’s gives an alpha with a t-statistic of ${fx(ngFullT)}. Northgate beat the index fund in ${ngBeat} of the 15 calendar years. Which statements are true? Select all that apply.`,
+    prompt: `The Fenwardine Equity Fund (fictional, actively managed, expense ratio ${pc(FW.fee)}) is compared with an index fund (fictional, expense ratio ${pc(FW.idxFee)}) that tracks its benchmark. Over ${FW.years} years of monthly data the difference between their monthly returns had a standard deviation of ${pc(FW.sdDiffM)}; on average Fenwardine returned ${fx(-FW.diff * 100)} points a year less; a regression of its excess returns on the benchmark’s gives an alpha with a t-statistic of ${fx(FW.t, 1)}; and it beat the index fund in ${FW.beat} of the ${FW.years} calendar years. Which statements are true? Select all that apply.`,
     options: [
-      `The ${pc(ngTe)} is Northgate’s tracking error: it says how much the gap with the index varied, not how far Northgate trailed`,
-      `Northgate trailed by more than the gap in fees between the two funds (${fx((ASSETS.active.fee - ASSETS.market.fee) * 100)} points a year)`,
-      `A t-statistic of ${fx(ngFullT)} proves that Northgate’s managers have no skill at all`,
-      `Northgate trailed the index by its tracking error, ${pc(ngTe)}, every year`,
-      `Beating the index in ${ngBeat} of 15 years shows the managers have skill that the averages hide`,
+      `Its tracking error is about ${pc(fwTe)} a year; it measures how much the gap with the index fund varied and says nothing about which way the gap ran`,
+      `Its average shortfall was larger than the extra it charges over the index fund (${fx(fwGap * 100)} points a year)`,
+      `A t-statistic of ${fx(FW.t, 1)} is strong evidence that its managers’ choices lost money before fees`,
+      'Its average shortfall each year was about the size of its tracking error',
+      `Beating the index fund in ${FW.beat} of ${FW.years} years suggests the managers have a skill that the averages hide`,
     ],
     answer: [0, 1],
     feedback: {
-      2: 'Failing to reject zero alpha is not proof of zero skill: with this much noise, fifteen years can’t tell a small skill from none. The fee, though, is certain.',
-      3: `Tracking error is a standard deviation of the gap, not the gap itself. The average shortfall was ${fx(-ngDiff * 100)} points a year.`,
-      4: 'A fund whose returns scatter around the index’s will beat it in some years by chance; what matters is the average gap and whether it is distinguishable from zero.',
+      2: `A t of ${fx(FW.t, 1)} is well inside ±1.96: ${FW.years} years can’t tell the managers’ choices from luck either way. The fee, though, is certain.`,
+      3: `Tracking error is the standard deviation of the gap, ${pc(fwTe)} a year; the average shortfall was ${fx(-FW.diff * 100)} points a year.`,
+      4: 'A fund whose returns scatter around the index’s will beat it in some years by chance; what matters is the average gap and whether it can be told apart from zero.',
     },
-    solution: `Tracking error (${pc(ngTe)}) measures how far a fund strays from its benchmark; the tracking difference (here ${fx(ngDiff * 100)} points a year) is how far it trails or leads on average, which exceeded the ${fx((ASSETS.active.fee - ASSETS.market.fee) * 100)}-point fee gap. Alpha’s t of ${fx(ngFullT)} can’t separate a small skill from none, so the evidence can’t justify paying the higher fee. Simulated data, built with a small negative alpha.`,
+    solution: `Tracking error = ${pc(FW.sdDiffM)} × √12 = ${pc(fwTe)} a year: how far Fenwardine strays from its benchmark, in either direction. The tracking difference, ${fx(FW.diff * 100)} points a year, is how far it trailed on average, more than the ${fx(fwGap * 100)}-point fee gap, so other costs or poor picks cost about ${fx((-FW.diff - fwGap) * 100)} points more. An alpha t of ${fx(FW.t, 1)} can’t separate a small skill from none, so nothing in these figures justifies paying the higher fee.`,
   },
 
   // ================================================================ Module 4: Valuing shares
@@ -558,7 +591,7 @@ export const items = [
   },
   {
     id: 'f06-fn-19', lesson: 'discounted-cash-flow-valuation', type: 'steps', kind: 'applied',
-    prompt: `Esterby Water (fictional, listed) is a regulated utility with a beta of ${fx(EW.beta)}. It finances itself with ${pc(EW.dv, 0)} debt (at market values), borrows at ${pc(EW.rd, 1)} before tax and pays tax at ${pc(EW.tax, 0)}. Its free cash flow to the firm next year is expected to be ${mil(EW.fcf1)}, growing ${pc(EW.g, 1)} a year for ever. It has ${mil(EW.debt)} of debt, ${mil(EW.cash)} of cash and ${EW.shares} million shares, which trade at $${fx(EW.price)}. Use a ${pc(rf, 1)} risk-free rate and a ${pc(mrp, 1)} market risk premium.`,
+    prompt: `Esterby Water (fictional, listed) is a regulated utility with a beta of ${fx(EW.beta)}. Its long-run target is ${pc(EW.dv, 0)} debt; it borrows at ${pc(EW.rd, 1)} before tax and pays tax at ${pc(EW.tax, 0)}. Its free cash flow to the firm next year is expected to be ${mil(EW.fcf1)}, growing ${pc(EW.g, 1)} a year for ever. It has ${mil(EW.debt)} of debt, ${mil(EW.cash)} of cash and ${EW.shares} million shares, which trade at $${fx(EW.price)}. Use a ${pc(rf, 1)} risk-free rate and a ${pc(mrp, 1)} market risk premium.`,
     steps: [
       {
         id: 'f06-fn-19-s1', type: 'num', kind: 'numerical',
@@ -601,7 +634,7 @@ export const items = [
     ],
     answer: 1,
     feedback: {
-      0: 'A low P/E isn’t a bargain by itself: Kelvarra’s price is almost exactly its no-growth value, so the market expects little value from its growth, and Cindral’s higher P/E reflects growth the market expects to add value.',
+      0: 'A low P/E isn’t a bargain by itself: Kelvarra’s price is almost exactly its no-growth value, so the market expects little value from its growth, and Harnwick’s higher P/E reflects growth the market expects to add value.',
       2: 'Its higher cost of equity lowers the value of its current earnings, but the market still puts most of its price on growth.',
       3: 'Growth at the cost of equity adds nothing; prices above the no-growth value need growth that earns more than the cost of capital.',
     },
@@ -634,20 +667,20 @@ export const items = [
   },
   {
     id: 'f06-fn-22', lesson: 'relative-valuation', type: 'mc', kind: 'conceptual',
-    prompt: `Orvane Roasting (fictional) is a private coffee roaster with EBITDA of ${mil(OR.ebitda)}, net income of ${mil(OR.ni)}, debt of ${mil(OR.debt)} and cash of ${mil(OR.cash)}. A buyer values its equity using Morrow & Pike’s multiples (fictional; at the end of 2027, EV/EBITDA ${fx(MP.m.evEbitda)} and P/E ${fx(MP.m.pe)}). Which pair of equity values applies both multiples correctly?`,
+    prompt: `Kestrigan Supply (fictional) is a private distributor of building materials with EBIT of ${mil(KS.ebit)}, book equity of ${mil(KS.book)}, debt of ${mil(KS.debt)} and cash of ${mil(KS.cash)}. Its listed peers (fictional distributors) trade at a median of ${fx(KS.evEbit, 1)} times EBIT, measured on enterprise value, and ${fx(KS.pb, 1)} times book equity. Which pair of equity values applies both multiples correctly?`,
     options: [
-      `${mil(orEvNoBridge, 1)} from EV/EBITDA and ${mil(orPe, 1)} from the P/E`,
-      `${mil(orEv, 1)} from EV/EBITDA and ${mil(orPeBridged, 1)} from the P/E`,
-      `${mil(orEvNoBridge, 1)} from EV/EBITDA and ${mil(orPeBridged, 1)} from the P/E`,
-      `${mil(orEv, 1)} from EV/EBITDA and ${mil(orPe, 1)} from the P/E`,
+      `${mil(ksEv, 1)} from EV/EBIT and ${mil(ksFromPb, 1)} from price-to-book`,
+      `${mil(ksFromEv, 1)} from EV/EBIT and ${mil(ksPbBridged, 1)} from price-to-book`,
+      `${mil(ksFromEv, 1)} from EV/EBIT and ${mil(ksFromPb, 1)} from price-to-book`,
+      `${mil(ksEv, 1)} from EV/EBIT and ${mil(ksPbBridged, 1)} from price-to-book`,
     ],
-    answer: 3,
+    answer: 2,
     feedback: {
-      0: 'The EV/EBITDA result is an enterprise value: take off the debt and add the cash to reach equity. The P/E figure is right.',
-      1: 'The EV/EBITDA figure is right, but a P/E already gives equity: net income is what is left for shareholders after interest, so bridging it again counts the debt twice.',
-      2: 'Both are the wrong way round: the enterprise multiple needs the bridge, and the equity multiple must not have one.',
+      0: 'The EV/EBIT result is an enterprise value: take off the debt and add the cash to reach equity. The price-to-book figure is right.',
+      1: 'The EV/EBIT figure is right, but price-to-book already gives equity: book equity is the shareholders’ figure, after the debt, so bridging it again counts the debt twice.',
+      3: 'Both are the wrong way round: the enterprise multiple needs the bridge, and the equity multiple must not have one.',
     },
-    solution: `EV/EBITDA: EV = ${fx(MP.m.evEbitda)} × ${OR.ebitda} = ${mil(orEvNoBridge, 1)}; equity = ${fx(orEvNoBridge, 1)} − ${OR.debt} + ${OR.cash} = ${mil(orEv, 1)}. P/E: equity = ${fx(MP.m.pe)} × ${OR.ni} = ${mil(orPe, 1)}, no bridge. The two methods disagree by ${mil(orEv - orPe, 1)}, which is normal; one listed peer is a thin basis, and a private roaster may deserve a discount for its size and illiquidity.`,
+    solution: `EV/EBIT: EV = ${fx(KS.evEbit, 1)} × ${KS.ebit} = ${mil(ksEv, 1)}; equity = ${fx(ksEv, 1)} − ${KS.debt} + ${KS.cash} = ${mil(ksFromEv, 1)}. Price-to-book: equity = ${fx(KS.pb, 1)} × ${KS.book} = ${mil(ksFromPb, 1)}, no bridge. The two disagree by ${mil(Math.abs(ksFromPb - ksFromEv), 1)}, which is normal: book value records what was put into the business, EBIT what it earns. A private company may also deserve a discount for its size and illiquidity.`,
   },
   {
     id: 'f06-fn-23', lesson: 'fundamental-analysis', type: 'num', kind: 'applied',
