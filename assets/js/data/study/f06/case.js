@@ -79,6 +79,7 @@ export const BONDS = [
   { name: 'Government bond, 20-year', couponRate: 0.0450, years: 20, freq: 2, ytm: 0.0465, rating: 'government' },
   { name: 'Harbour Street Foods 2035 bond', couponRate: 0.0550, years: 7, freq: 2, ytm: 0.0610, rating: 'BBB' },
   { name: 'Morrow & Pike 2031 bond', couponRate: 0.0475, years: 3.5, freq: 2, ytm: 0.0545, rating: 'BBB' },
+  { name: 'Government note, 2-year', couponRate: 0.0400, years: 2, freq: 2, ytm: 0.0410, rating: 'government' },   // added last so earlier indices hold
 ];
 
 // ================================================================ derived figures
