@@ -89,7 +89,7 @@ export const guided = [
   {
     id: 'f06-rel-g2', type: 'mc', kind: 'conceptual',
     prompt: 'An analyst values a target company by multiplying its EBITDA by the peers’ average P/E. What is wrong?',
-    options: ['P/E prices earnings after interest and depreciation; EBITDA is before both, and partly the lenders’', 'Nothing, provided the peers have about the same debt as the target', 'P/E should be applied to revenue, the most stable figure in the accounts', 'The peers’ P/E must first be converted to a dividend yield'],
+    options: ['P/E prices earnings after interest and depreciation; EBITDA comes before both', 'Nothing is wrong, provided the peers carry about the same debt as the target company', 'P/E should be applied to revenue, the most stable figure in the accounts', 'The peers’ P/E must first be converted to a dividend yield'],
     answer: 0,
     hints: ['Whose money is in the numerator of a P/E? Whose is EBITDA?'],
     feedback: { 1: 'Even with identical debt, EBITDA is before depreciation and interest, so a P/E applied to it overstates the equity heavily.', 2: 'A P/E pairs with net income. Revenue pairs with enterprise value (EV/revenue).', 3: 'A dividend yield is another equity measure; it doesn’t fix the mismatch.' },
@@ -124,7 +124,7 @@ export const guided = [
         hints: ['Cost of equity first: 4.2% + 1.25 × 5.5%.', 'Payout × (1 + g) ÷ (r_E − g).'],
         wrong: [{ value: 8.2, say: 'That is the leading P/E, on next year’s earnings. On this year’s, multiply the payout by (1 + g).' }, { value: 14.5, say: 'That uses Morrow & Pike’s 9.15% cost of equity. Harbour Street’s beta is 1.25.' }] },
       { id: 'f06-rel-g4-s3', type: 'mc', prompt: 'What does the comparison with the market’s 12.7 suggest?',
-        options: ['The market expects Harbour Street’s return on equity to improve, or the shares are dear', 'Harbour Street is cheap, since it trades well below Morrow & Pike', 'The model proves the market price is wrong and will fall to 8.7 times earnings', 'Harbour Street’s cost of equity must be lower than the CAPM says'],
+        options: ['Investors expect its ROE to improve, or the shares are dear', 'Harbour Street is cheap, since it trades well below Morrow & Pike', 'The model proves the market price is wrong and will fall to 8.7 times earnings', 'Harbour Street’s cost of equity must be lower than the CAPM says'],
         answer: 0,
         hints: ['Which way is the gap between the market and the model?'],
         feedback: { 1: 'It trades below Morrow & Pike, but above what its own figures justify.', 2: 'A model built on today’s ROE cannot prove the price wrong; it shows what the price must be assuming.', 3: 'That is one possible explanation, but there is no evidence for it here; the simpler reading is about future returns.' } },

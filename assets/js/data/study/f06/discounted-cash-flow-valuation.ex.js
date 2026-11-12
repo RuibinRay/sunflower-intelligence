@@ -1,6 +1,6 @@
 // discounted-cash-flow-valuation.ex.js — F06 · Discounted cash flow valuation: widgets, practice and the knowledge
 // check (answer keys live here). Morrow & Pike Roasters and Harbour Street Foods come from case.js; every other business
-// named here (Windrush Water, Ivelston Bakeries, Hesketh Freight, Sandling Storage, Tarrow Mills) is fictional.
+// named here (Windrush Water, Ivelston Bakeries, Hesketh Freight, Sandling Storage, Wenning Mills) is fictional.
 // Brightcup Coffee is the course project’s and is not valued here.
 import { COMPANIES, MORROW_FORECAST as MF, BONDS, MARKET } from './case.js?v=31';
 import * as IV from '../../../core/investments.js?v=31';
@@ -23,6 +23,7 @@ function forecast({ margin = MF.ebitMargin, shift = 0 } = {}) {
 }
 const FCF = forecast();
 const KEH = IV.capm({ rf, beta: 1.25, mrp });
+const WACC_SHOWN = Math.round(WACC * 10000) / 100;   // the slider’s default; at it the widget uses the unrounded WACC, so it matches the lesson’s $30.14
 
 export const widgets = {
   'dcf-morrow': {
@@ -30,13 +31,13 @@ export const widgets = {
     title: 'Morrow & Pike Roasters: discounted cash flow',
     intro: 'A five-year forecast of free cash flow to the firm, a Gordon terminal value and the bridge to a value per share. The starting values are the lesson’s (all figures fictional): WACC 8.49%, terminal growth 3%, EBIT margin 12.1% and the consensus growth path (8%, 8%, 7%, 6%, 5%).',
     inputs: [
-      { id: 'wacc', label: 'WACC', min: 6, max: 12, step: 0.01, value: Math.round(WACC * 10000) / 100, fmt: 'pct', digits: 2 },
+      { id: 'wacc', label: 'WACC', min: 6, max: 12, step: 0.01, value: WACC_SHOWN, fmt: 'pct', digits: 2 },
       { id: 'g', label: 'Terminal growth (after 2032)', min: 0, max: 5, step: 0.25, value: 3, fmt: 'pct', digits: 2 },
       { id: 'margin', label: 'EBIT margin, every year', min: 9, max: 15, step: 0.1, value: 12.1, fmt: 'pct' },
       { id: 'shift', label: 'Change to every year’s revenue growth', min: -4, max: 4, step: 1, value: 0, fmt: 'pct', unit: ' points' },
     ],
     compute: (v) => {
-      const w = v.wacc / 100, g = v.g / 100;
+      const w = Math.abs(v.wacc - WACC_SHOWN) < 1e-9 ? WACC : v.wacc / 100, g = v.g / 100;
       if (w <= g + 0.0025) return { error: 'The WACC has to be clearly above terminal growth: as growth approaches the discount rate, the Gordon terminal value grows without limit.' };
       const fcf = forecast({ margin: v.margin / 100, shift: v.shift / 100 });
       const d = IV.dcf({ fcf, rate: w, g });
@@ -126,7 +127,7 @@ export const guided = [
         hints: ['Add back the non-cash charge; take off the two investments.', '217.5 + 120 − 125 − 10.'],
         wrong: [{ value: 222.5, say: 'You added the increase in working capital. Money tied up in stock and receivables is cash spent: subtract it.' }, { value: -37.5, say: 'Depreciation was deducted to reach EBIT but is not a cash payment: add it back.' }, { value: 154.5, say: 'That deducts interest after tax (64 × 0.75 = 48). FCFF is before any payment to lenders.' }] },
       { id: 'f06-dcf-g2-s3', type: 'mc', prompt: 'Why does free cash flow to the firm leave out the $64 million of interest?',
-        options: ['FCFF is the cash for lenders and shareholders together, and the WACC carries the interest tax saving', 'Interest is a non-cash expense, like depreciation, so it never affects cash flow', 'Interest is paid out of equity, so it belongs in the dividend model instead', 'Harbour Street’s interest is small enough to ignore in a valuation of the whole firm'],
+        options: ['Lenders are among those FCFF belongs to; the WACC holds the interest tax saving', 'Interest is a non-cash expense, like depreciation, so it never affects cash flow', 'Interest is paid out of equity, so it belongs in the dividend model instead', 'Harbour Street’s interest bill is small enough to ignore when valuing the whole firm at once'],
         answer: 0,
         hints: ['Who is FCFF available to?'],
         feedback: { 1: 'Interest is paid in cash. It is left out because lenders are among the people FCFF belongs to.', 2: 'Interest is paid to lenders before shareholders; it is not a dividend.', 3: '$64 million is a third of net income; it is left out by design, not for being small.' } },
@@ -200,14 +201,14 @@ export const independent = [
   {
     id: 'f06-dcf-i4', type: 'mc', kind: 'conceptual',
     prompt: 'Sandling Storage (fictional) installs battery-storage systems for factories. It is listed, profitable and growing about 20% a year, reinvests everything it earns and has never paid a dividend. Which approach suits it best?',
-    options: ['A DCF of free cash flow to the firm, with several years of high growth before a terminal value', 'The Gordon model, using a dividend of zero growing at 20%', 'A two-stage dividend model with 20% growth for five years', 'The no-growth value, earnings per share ÷ the cost of equity'],
+    options: ['A DCF of its free cash flow to the firm over several high-growth years', 'The Gordon model, treating its zero dividend as growing at 20% a year for ever', 'A two-stage dividend model, with dividends growing 20% a year for the next five years', 'The no-growth value: this year’s earnings per share divided by the cost of equity'],
     answer: 0,
     feedback: { 1: 'With no dividend the Gordon model gives zero, and 20% for ever would exceed any cost of equity anyway.', 2: 'There are no dividends to grow. A dividend model would have to guess when payouts start and how large they will be, which is harder than forecasting the business.', 3: 'Growth is the point of this company; the no-growth value ignores it, and the rapid reinvestment makes current earnings a poor guide.' },
     solution: 'Value the business: forecast its free cash flow to the firm through the high-growth years (which may be small or negative while it invests), add a terminal value once growth settles, and bridge to equity. Dividend models need dividends.',
   },
   {
     id: 'f06-dcf-i5', type: 'num', kind: 'numerical',
-    prompt: 'Tarrow Mills (fictional) has just paid a dividend of $1.00. Dividends will grow 10% a year for two years, then 4% a year for ever. Shareholders require 9%. What is a share worth today? Give dollars and cents.',
+    prompt: 'Wenning Mills (fictional) has just paid a dividend of $1.00. Dividends will grow 10% a year for two years, then 4% a year for ever. Shareholders require 9%. What is a share worth today? Give dollars and cents.',
     answer: 23.21, check: () => IV.multiStageDdm({ d0: 1, stages: [{ years: 2, growth: 0.1 }], gT: 0.04, ke: 0.09 }).value, unit: '$', places: 2, tol: 0.02,
     wrong: [
       { value: 20.8, say: 'That values the share as if dividends grew 4% from now (1.04 ÷ 0.05). The first two years grow faster.' },
