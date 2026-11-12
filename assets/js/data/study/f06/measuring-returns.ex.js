@@ -47,7 +47,7 @@ export const widgets = {
       { name: 'Market', values: MKT_YEARS.map((y) => Math.round(y.ret * 1000) / 10) },
       { name: 'Bonds', values: yr('bonds').map((y) => Math.round(y.ret * 1000) / 10) },
     ],
-    y: { label: 'Total return (%)', format: 'pct' },
+    y: { label: 'Total return (%)' },
     note: 'Arithmetic mean of the market fund’s fifteen years: 11.19%; geometric mean: 9.57%. Bond fund: 4.46% and 4.31%. Simulated for teaching.',
   },
   'ret-drag': {

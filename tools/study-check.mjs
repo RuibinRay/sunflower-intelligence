@@ -883,6 +883,10 @@ export function checkCatalog() {
       if (catalog.COURSE[p].school === c.school && pos[p] > pos[c.id]) r.err(`${c.code} comes before ${catalog.COURSE[p].code}, which it ${c.requires.includes(p) ? 'requires' : 'recommends'}: fix ORDER`);
     }
   }
+  // A built course without a status is shown as "Planned" on the live site (F05 went live like that).
+  for (const c of catalog.COURSES.filter((x) => BUILT.some((b) => b.id === x.id))) {
+    if (!['reviewed', 'complete'].includes(c.status)) r.err(`${c.code}: built but status is ${c.status ? `"${c.status}"` : 'missing'}; set status: 'reviewed' (or 'complete' once live)`);
+  }
   for (const path of catalog.PATHS) {
     path.courses.forEach((id, i) => {
       const c = catalog.COURSE[id];

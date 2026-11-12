@@ -156,7 +156,7 @@ const ALL = [
     related: [{ plate: 'invest' }, { plate: 'wacc' }, { tool: 'finance/investment/', label: 'Investment decisions' }, { tool: 'finance/valuation/', label: 'Valuation' }, { tool: 'finance/company-valuation/', label: 'Company Valuation Studio' }],
   }),
   C({
-    id: 'f06', school: 'finance', code: 'F06', level: 'intermediate', requires: ['f04'], recommends: ['b04'],
+    id: 'f06', school: 'finance', code: 'F06', level: 'intermediate', status: 'reviewed', requires: ['f04'], recommends: ['b04'],
     title: 'Investment Analysis',
     blurb: 'Risk and return, diversification, CAPM, bonds and equity valuation.',
     topics: ['Common and preferred stock', 'Bonds: coupon, maturity, yield to maturity, pricing', 'Risk and return', 'Expected returns', 'Volatility and standard deviation', 'Diversification and modern portfolio theory', 'Correlation of assets', 'Portfolio optimisation', 'CAPM', 'Beta', 'Sharpe ratio', 'Funds, ETFs and active versus passive investing', 'Equity valuation: DCF with terminal value', 'Relative valuation: P/E, EV/EBITDA, P/B and PEG', 'Market capitalisation and enterprise value', 'Fundamental analysis'],
