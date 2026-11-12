@@ -11,7 +11,7 @@ export const items = [
     answer: 25, check: () => 48 * 0.75 + 15 - 22 - 0.10 * (440 - 400), unit: '$m', places: 1, tol: 0.05,
     wrong: [
       { value: -15, say: 'That subtracts working capital of 10% of the whole revenue ($44 million). Only the increase in working capital uses cash: 10% of the $40 million rise.' },
-      { value: 33, say: 'That leaves out the tax: operating profit is taxed as if the firm had no debt.' },
+      { value: 48 + 15 - 22 - 0.10 * (440 - 400), say: 'That leaves out the tax: operating profit is taxed as if the firm had no debt.' },
       { value: 29, say: 'You left out the investment in working capital: 10% of the $40 million increase in revenue.' },
     ],
     solution: 'EBIT after tax 48 × 0.75 = 36. Working capital rises by 10% × (440 − 400) = 4. FCFF = 36 + 15 − 22 − 4 = $25 million.',

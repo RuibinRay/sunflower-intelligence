@@ -52,14 +52,14 @@ export const widgets = {
     compute: (v) => {
       const p = v.pay / 100, roe = v.roe / 100, ke = v.ke / 100, g = (1 - p) * roe;
       if (ke <= g + 0.0025) return { error: `Growth of ${pct(g, 2)} (retention × ROE) is at or too close to the cost of equity: the model has no finite answer. Pay out more, or lower the ROE.` };
-      const pe = p * (1 + g) / (ke - g), pb = (roe - g) / (ke - g);
+      const pe = p * (1 + g) / (ke - g), pb = roe * pe;
       const ps = [20, 30, 40, 50, 60, 70, 80, 90].filter((q) => (1 - q / 100) * roe < ke - 0.0025);
       return {
         headline: { label: 'Justified P/E (on this year’s earnings)', value: x1(pe) },
         rows: [['Growth = retention × ROE', pct(g, 2)], ['Justified price-to-book', pb.toFixed(2)], ['Morrow & Pike trades at', 'P/E 18.0, price-to-book 2.15'], ['Harbour Street trades at', 'P/E 12.7, price-to-book 1.31']],
         note: roe > ke ? 'ROE is above the cost of equity, so retaining earnings creates value: the justified price-to-book is above 1 and rises as the payout falls.'
-          : roe < ke ? 'ROE is below the cost of equity, so every dollar retained is worth less than a dollar to shareholders: the justified price-to-book is below 1, and paying out more raises the value.'
-          : 'ROE equals the cost of equity: retention neither creates nor destroys value, and the share is worth its book value whatever the payout.',
+          : roe < ke ? 'ROE is below the cost of equity, so every dollar retained is worth less than a dollar to shareholders: the justified price-to-book is below about 1, and paying out more raises the value.'
+          : 'ROE equals the cost of equity: retention neither creates nor destroys value, and the share is worth about its book value whatever the payout (exactly 1 + g on this year’s earnings).',
         chart: { kind: 'line', x: { label: 'Payout ratio (%)', values: ps }, series: [{ name: 'Justified P/E', values: ps.map((q) => { const gg = (1 - q / 100) * roe; return Math.round(q / 100 * (1 + gg) / (ke - gg) * 10) / 10; }) }], y: { label: 'P/E' } },
       };
     },
@@ -122,7 +122,7 @@ export const guided = [
       { id: 'f06-rel-g4-s2', type: 'num', prompt: 'What P/E (on this year’s earnings) does the Gordon model justify? Give one decimal place.',
         answer: 8.7, check: () => { const g = (1 - H.dps / H.eps) * (H.netIncome / H.bookEquity); return H.dps / H.eps * (1 + g) / (KH - g); }, unit: '×', places: 1, tol: 0.05,
         hints: ['Cost of equity first: 4.2% + 1.25 × 5.5%.', 'Payout × (1 + g) ÷ (r_E − g).'],
-        wrong: [{ value: 8.2, say: 'That is the leading P/E, on next year’s earnings. On this year’s, multiply the payout by (1 + g).' }, { value: 14.5, say: 'That uses Morrow & Pike’s 9.15% cost of equity. Harbour Street’s beta is 1.25.' }] },
+        wrong: [{ value: 8.2, say: 'That is the leading P/E, on next year’s earnings. On this year’s, multiply the payout by (1 + g).' }, { value: H.dps / H.eps * (1 + (1 - H.dps / H.eps) * (H.netIncome / H.bookEquity)) / (KM - (1 - H.dps / H.eps) * (H.netIncome / H.bookEquity)), say: 'That uses Morrow & Pike’s 9.15% cost of equity. Harbour Street’s beta is 1.25.' }] },
       { id: 'f06-rel-g4-s3', type: 'mc', prompt: 'What does the comparison with the market’s 12.7 suggest?',
         options: ['Investors expect its ROE to improve, or the shares are dear', 'Harbour Street is cheap, since it trades well below Morrow & Pike', 'The model proves the market price is wrong and will fall to 8.7 times earnings', 'Harbour Street’s cost of equity must be lower than the CAPM says'],
         answer: 0,
@@ -165,11 +165,11 @@ export const independent = [
   },
   {
     id: 'f06-rel-i5', type: 'mc', kind: 'applied',
-    prompt: 'A buyer must price Quarrendon Kitchens (fictional), a private chain of 12 cafés that made a one-off $1.5 million gain last year from selling a freehold, included in its net income of $2.7 million. Which approach is soundest?',
+    prompt: 'A buyer must price Quarrendon Kitchens (fictional), a private chain of 12 cafés that made a one-off after-tax gain of $1.5 million last year from selling a freehold, included in its net income of $2.7 million. Which approach is soundest?',
     options: ['Apply peer P/Es to $2.7 million, since it is the reported net income', 'Strip out the gain, then apply peer multiples to the recurring figures', 'Use the highest peer multiple, because the property sale shows the owner’s skill', 'Ignore multiples: a firm with a one-off gain can only be valued by its book value'],
     answer: 1,
     feedback: { 0: 'The freehold sale will not recur; a multiple of it prices a gain the buyer will never see again.', 2: 'A one-off property sale says nothing about how the cafés will earn in future.', 3: 'Multiples still work once the earnings are cleaned of the one-off item.' },
-    solution: 'Multiples price recurring earnings. Remove the $1.5 million gain (and its tax), apply the peers’ multiples to the recurring $1.2 million or so of net income, or better to EBITDA or EBIT, which the property sale did not touch.',
+    solution: 'Multiples price recurring earnings. Remove the $1.5 million after-tax gain, apply the peers’ multiples to the recurring $1.2 million of net income, or better to EBITDA or EBIT, which the property sale did not touch.',
   },
 ];
 
@@ -184,10 +184,10 @@ export const check = [
   },
   {
     id: 'f06-rel-k2', type: 'num', kind: 'numerical',
-    prompt: 'Morrow & Pike (fictional) earns a return on equity of 12.0% on its book equity, pays out 45% of its earnings and has a cost of equity of 9.15%. What price-to-book does the Gordon model justify? Give two decimal places.',
-    answer: 2.10, check: () => (roeM - gM) / (KM - gM), unit: '×', places: 2, tol: 0.02,
-    wrong: [{ value: 1.31, say: 'That is ROE ÷ r_E, the value with no growth. With growth, use (ROE − g) ÷ (r_E − g), where g = 0.55 × 12.0%.' }, { value: 2.15, say: 'That is the price-to-book the market pays (1,120 ÷ 520). The question asks what the model justifies.' }],
-    solution: 'g = 0.55 × 11.97% = 6.59%. Justified price-to-book = (11.97% − 6.59%) ÷ (9.15% − 6.59%) = 2.10, close to the 2.15 it trades at: Morrow & Pike earns well above its cost of equity, so it is worth more than its book value.',
+    prompt: 'Morrow & Pike (fictional) earns a return on equity of 12.0% (this year’s earnings ÷ book equity), pays out 45% of its earnings and has a cost of equity of 9.15%. Using justified price-to-book = ROE × the Gordon-justified P/E on this year’s earnings, what price-to-book does the Gordon model justify? Give two decimal places.',
+    answer: 2.24, check: () => roeM * payM * (1 + gM) / (KM - gM), unit: '×', places: 2, tol: 0.02,
+    wrong: [{ value: payM * (1 + gM) / (KM - gM), say: 'That is the justified P/E. Multiply it by ROE to reach price-to-book.' }, { value: roeM * payM / (KM - gM), say: 'That uses the leading P/E (without × (1 + g)) with this year’s ROE: keep both on this year’s earnings.' }, { value: 2.15, say: 'That is the price-to-book the market pays (1,120 ÷ 520). The question asks what the model justifies.' }],
+    solution: 'g = 0.55 × 11.97% = 6.59%. Justified P/E = 0.45 × 1.0659 ÷ (9.15% − 6.59%) = 18.7; justified price-to-book = 11.97% × 18.7 = 2.24, close to the 2.15 it trades at: Morrow & Pike earns well above its cost of equity, so it is worth more than its book value.',
   },
   {
     id: 'f06-rel-k3', type: 'num', kind: 'numerical',

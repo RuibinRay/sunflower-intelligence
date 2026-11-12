@@ -10,7 +10,7 @@ import DCF from './discounted-cash-flow-valuation.js?v=31';
 const M = COMPANIES.morrow, H = COMPANIES.harbour;
 const { rf, mrp } = MARKET;
 const KM = IV.capm({ rf, beta: 0.9, mrp }), KH = IV.capm({ rf, beta: 1.25, mrp });
-const drivers = (c, k) => { const roe = c.netIncome / c.bookEquity, p = c.dps / c.eps, g = (1 - p) * roe; return { roe, p, g, lead: p / (k - g), trail: p * (1 + g) / (k - g), pb: (roe - g) / (k - g) }; };
+const drivers = (c, k) => { const roe = c.netIncome / c.bookEquity, p = c.dps / c.eps, g = (1 - p) * roe; return { roe, p, g, lead: p / (k - g), trail: p * (1 + g) / (k - g), pb: roe * p * (1 + g) / (k - g) }; };
 const DM = drivers(M, KM), DH = drivers(H, KH);
 // Copperkettle Coffee (fictional private café chain), 2027, $ millions
 const CK = { revenue: 70, ebitda: 9.0, ebit: 6.5, interest: 0.9, netIncome: 4.2, debt: 12, cash: 2 };
@@ -83,7 +83,7 @@ export default {
     { p: 'Morrow &amp; Pike sells at 18.0 times earnings and Harbour Street at 12.7. Is Harbour Street cheap? Not necessarily: a multiple should be higher for a company that grows faster, is less risky or needs to reinvest less of its earnings to grow. The Gordon model makes this exact. If <m>P_0 = D_1 \\div (r_E - g)</m> and the dividend is a share of earnings, dividing both sides by this year’s EPS gives the P/E the model justifies:' },
     { math: String.raw`\dfrac{P_0}{E_0} = \dfrac{\text{Payout} \times (1 + g)}{r_E - g}, \qquad g = (1 - \text{Payout}) \times \text{ROE}` },
     { p: 'For Morrow &amp; Pike: payout 45.0%, ROE 12.0%, so <m>g = 6.59\\%</m>; cost of equity 9.15% (beta 0.90). The justified P/E is <m>0.450 \\times 1.0659 \\div (9.15\\% - 6.59\\%) = 18.7</m>, close to the 18.0 it trades at. For Harbour Street: payout 42.5%, ROE 10.3%, so <m>g = 5.91\\%</m>; cost of equity 11.08% (beta 1.25). Its justified P/E is <m>0.425 \\times 1.0591 \\div (11.08\\% - 5.91\\%) = 8.7</m>, well below its 12.7.' },
-    { p: 'The same logic gives a justified price-to-book: <m>P_0 \\div B_0 = (\\text{ROE} - g) \\div (r_E - g)</m>. A company earning exactly its cost of equity is worth its book value; above it, more; below it, less. Morrow &amp; Pike’s is <m>(12.0\\% - 6.59\\%) \\div (9.15\\% - 6.59\\%) = 2.10</m> against 2.15 in the market. Harbour Street earns 10.3% on its equity but its shareholders require 11.08%, so the model says it is worth less than book: 0.84, against 1.31 in the market.' },
+    { p: 'Multiplying the justified P/E by ROE (this year’s earnings ÷ book equity) gives the justified price-to-book, <m>P_0 \\div B_0 = \\text{ROE} \\times P_0 \\div E_0</m>. A company earning about its cost of equity is worth about its book value; above it, more; below it, less. Morrow &amp; Pike’s is <m>12.0\\% \\times 18.7 = 2.24</m> against 2.15 in the market. Harbour Street earns 10.3% on its equity but its shareholders require 11.08%, so the model says it is worth less than book: <m>10.3\\% \\times 8.7 = 0.89</m>, against 1.31 in the market. (With ROE measured as next year’s earnings ÷ book equity now, the same result is often written <m>(\\text{ROE} - g) \\div (r_E - g)</m>.)' },
     { p: 'So the gap in multiples is partly justified (Harbour Street is riskier, grows more slowly and earns less on its equity) and partly not: the market prices Harbour Street well above what its current return on equity supports. Either investors expect its returns to improve, or the shares are expensive, not cheap. A low multiple is a question, not an answer. The fundamental analysis lesson takes up Harbour Street’s case.' },
     { callout: 'note', title: 'Multiples in the real market differ by industry', html: 'Damodaran’s table of US enterprise value multiples for January 2026 puts EV/EBITDA for food processing firms with positive EBITDA at 10.01 and for restaurant and dining firms at 17.49. Industries differ in growth, risk and how much capital they need, and their multiples differ with them. That is why peers should come from the same business, and why a multiple borrowed from another industry means little.' },
 
@@ -119,8 +119,8 @@ export default {
       where: [[String.raw`\text{P/E}`, 'Price-to-earnings ratio', '×'], [String.raw`g`, 'Expected annual growth in earnings per share, usually over the next five years', '']],
       assumptions: 'A rough adjustment for growth only; it ignores risk and how long growth lasts.' },
     { id: 'rel-justified-pe', name: 'Justified (Gordon-implied) P/E and price-to-book',
-      tex: String.raw`\dfrac{P_0}{E_0} = \dfrac{\text{Payout}\,(1 + g)}{r_E - g}, \qquad \dfrac{P_0}{B_0} = \dfrac{\text{ROE} - g}{r_E - g}`,
-      where: [[String.raw`P_0`, 'Share price', '$'], [String.raw`E_0`, 'This year’s earnings per share', '$'], [String.raw`B_0`, 'Book equity per share', '$'], [String.raw`\text{Payout}`, 'Dividends ÷ earnings', ''], [String.raw`g`, 'Constant growth: (1 − payout) × ROE', '% per year'], [String.raw`\text{ROE}`, 'Return on equity', '% per year'], [String.raw`r_E`, 'Cost of equity', '% per year']],
+      tex: String.raw`\dfrac{P_0}{E_0} = \dfrac{\text{Payout}\,(1 + g)}{r_E - g}, \qquad \dfrac{P_0}{B_0} = \text{ROE} \times \dfrac{P_0}{E_0}`,
+      where: [[String.raw`P_0`, 'Share price', '$'], [String.raw`E_0`, 'This year’s earnings per share', '$'], [String.raw`B_0`, 'Book equity per share', '$'], [String.raw`\text{Payout}`, 'Dividends ÷ earnings', ''], [String.raw`g`, 'Constant growth: (1 − payout) × ROE', '% per year'], [String.raw`\text{ROE}`, 'Return on equity: this year’s earnings ÷ book equity', '% per year'], [String.raw`r_E`, 'Cost of equity', '% per year']],
       assumptions: 'The Gordon model’s: constant growth, payout and ROE for ever, with g below r_E.' },
   ],
 
@@ -182,7 +182,7 @@ export default {
     'Equity multiples (P/E, price-to-book, dividend yield) use equity values and shareholders’ figures; enterprise multiples (EV/EBITDA, EV/EBIT) use enterprise value and operating figures. Never mix them.',
     'An EV multiple gives enterprise value: subtract debt and add cash to reach the equity.',
     'Morrow & Pike: P/E 18.0, EV/EBITDA 10.7, price-to-book 2.15. Harbour Street: 12.7, 8.0 and 1.31.',
-    'Justified P/E = payout × (1 + g) ÷ (r_E − g); justified price-to-book = (ROE − g) ÷ (r_E − g). Higher growth, lower risk and higher ROE justify higher multiples.',
+    'Justified P/E = payout × (1 + g) ÷ (r_E − g); justified price-to-book = ROE × justified P/E. Higher growth, lower risk and higher ROE justify higher multiples.',
     'Harbour Street’s lower multiple is more than explained by its risk and its ROE below the cost of equity: low is not cheap.',
     'Choose peers on business, growth, risk and size; use medians and ranges; adjust for one-offs, cycles and accounting.',
   ],
@@ -241,8 +241,9 @@ export default {
     { what: 'H g', value: DH.g * 100, shown: 5.91 },
     { what: 'H ke', value: KH * 100, shown: 11.08 },
     { what: 'H justified P/E', value: DH.trail, shown: 8.7, tol: 0.05 },
-    { what: 'M justified P/B', value: DM.pb, shown: 2.10 },
-    { what: 'H justified P/B', value: DH.pb, shown: 0.84 },
+    { what: 'M justified P/B', value: DM.pb, shown: 2.24 },
+    { what: 'P/B equals ROE × P/E (M)', value: DM.roe * DM.trail, shown: 2.24 },
+    { what: 'H justified P/B', value: DH.pb, shown: 0.89 },
     { what: 'H ROE below cost of equity', value: DH.roe < KH ? 1 : 0, shown: 1 },
     { what: 'H trades above justified P/E', value: H.m.pe > DH.trail ? 1 : 0, shown: 1 },
     { what: 'H trades above justified P/B', value: H.m.pb > DH.pb ? 1 : 0, shown: 1 },
