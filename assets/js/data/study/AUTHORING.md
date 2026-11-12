@@ -246,7 +246,7 @@ Widgets go in `widgets` in the `.ex.js` file, keyed by an id that `demo[].widget
 
 `fmt` is `'money' | 'pct' | 'int' | 'num'` (`pct` shows the value with a % sign: 6 means 6%). `compute` must work at every input's min, max and default (the checker runs all of them) and return `{ headline, rows, note }`, optionally `chart` (`kind: 'line' | 'bar'`, up to three series) or `error` (a message when the inputs make no sense). Use this for any calculation a student should explore: depreciation, interest, break-even, markup and margin, elasticity, z-scores, scaling.
 
-**`chart`**: a fixed chart of data you supply, with its data table for screen readers.
+**`chart`**: a fixed chart of data you supply, with its data table for screen readers. `x.format: 'year'` prints years without separators; `endLabels: false` drops the line-end labels (the legend remains).
 
 ```js
 'plc-curve': { type: 'chart', kind: 'line', title: '…', x: { label: 'Year', values: [1, 2, 3] },
