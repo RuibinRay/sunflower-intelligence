@@ -7,7 +7,7 @@ import { moments } from '../../../core/portfolio.js?v=31';
 
 const st = DERIVED.stats;
 const MO = moments(['market', 'intl', 'bonds'].map((n) => SERIES[n]), 12);
-const muC = [1, DERIVED.betas60.intl.beta, DERIVED.betas60.bonds.beta].map((b) => IV.capm({ rf: MARKET.rf, beta: b, mrp: MARKET.mrp }));
+const muC = [0, 1, 2].map((i) => IV.capm({ rf: MARKET.rf, beta: MO.cov[i][0] / MO.cov[0][0], mrp: MARKET.mrp }));   // betas from the same covariances
 const pct = (x, d = 2) => `${x < 0 ? '−' : ''}${(Math.abs(x) * 100 + 1e-9).toFixed(d)}%`;
 const i27 = MONTHS.indexOf('2027-01');
 const cells27 = { A1: 'Month', B1: 'Total market', D1: 'Risk-free rate (a year)', E1: MARKET.rf, D3: 'Sharpe ratio (a year)' };
@@ -24,15 +24,15 @@ export const widgets = {
     type: 'portfolio', mode: 'many', title: 'The same funds with forward-looking expected returns',
     assets: [{ name: 'Total market', er: muC[0], sd: Math.sqrt(MO.cov[0][0]) }, { name: 'International', er: muC[1], sd: Math.sqrt(MO.cov[1][1]) }, { name: 'Bonds', er: muC[2], sd: Math.sqrt(MO.cov[2][2]) }],
     cov: MO.cov, rf: MARKET.rf, y: 1, maxY: 1.5, show: ['frontier', 'cal', 'assets', 'weights'],
-    note: 'Expected returns 9.70%, 8.24% and 4.91%: the 4.2% risk-free rate plus each fund’s 2023–2027 beta times a 5.5% market risk premium (F05’s assumptions). Standard deviations and covariances as in the first chart (simulated history).',
+    note: 'Expected returns 9.70%, 8.87% and 4.66%: the 4.2% risk-free rate plus each fund’s beta against the total-market fund (0.85 and 0.08, from the same 2013–2027 covariances) times a 5.5% market risk premium (F05’s assumptions). Standard deviations and covariances as in the first chart (simulated history). With returns set this way, the maximum-Sharpe portfolio is the total-market fund itself.',
   },
   'eff-choose': {
     type: 'formula', title: 'How much in the risky portfolio?',
-    intro: 'Mean–variance utility U = E[r] − ½Aσ² along the capital allocation line. The starting values are the forward-looking maximum-Sharpe portfolio of Ana’s funds and her risk aversion of 3.',
+    intro: 'Mean–variance utility U = E[r] − ½Aσ² along the capital allocation line. The starting values are the total-market fund with its forward-looking expected return (9.70%), its simulated standard deviation (16.00%) and Ana’s risk aversion of 3.',
     inputs: [
       { id: 'A', label: 'Risk-aversion coefficient A', min: 1, max: 10, step: 0.5, value: RISK_PROFILE.aversionA, fmt: 'num' },
-      { id: 'er', label: 'Risky portfolio’s expected return', min: 2, max: 15, step: 0.01, value: 7.53, fmt: 'pct' },
-      { id: 'sd', label: 'Risky portfolio’s standard deviation', min: 2, max: 30, step: 0.01, value: 9.51, fmt: 'pct' },
+      { id: 'er', label: 'Risky portfolio’s expected return', min: 2, max: 15, step: 0.01, value: 9.7, fmt: 'pct' },
+      { id: 'sd', label: 'Risky portfolio’s standard deviation', min: 2, max: 30, step: 0.01, value: 16, fmt: 'pct' },
       { id: 'rf', label: 'Risk-free rate', min: 0, max: 8, step: 0.1, value: 4.2, fmt: 'pct' },
     ],
     compute: (v) => {
@@ -194,7 +194,7 @@ export const check = [
     prompt: 'Why is the maximum-Sharpe portfolio the best risky portfolio to combine with a risk-free asset?',
     options: [
       'Its line with the risk-free asset is the steepest, giving the most return at every level of risk',
-      'It is the portfolio with the lowest standard deviation of all, so it suits every investor without any change at all',
+      'It has the lowest standard deviation on the frontier, so cautious and bold investors can both use it unchanged',
       'It has the highest expected return of any portfolio on the frontier, which every investor prefers',
       'It is the only portfolio that contains every asset available to the investor',
     ],
@@ -202,7 +202,7 @@ export const check = [
     feedback: {
       1: 'That is the minimum-variance portfolio. The maximum-Sharpe one usually has more risk than that.',
       2: 'The highest-return portfolio is usually 100% in one asset. More return can be had more efficiently by holding more of the maximum-Sharpe portfolio.',
-      3: 'It may leave some assets out entirely, as the forward-looking version leaves out the international fund.',
+      3: 'It may leave some assets out entirely: with CAPM-based expected returns the optimiser holds only the total-market fund.',
     },
     solution: 'Every mix with the risk-free asset lies on a straight line whose slope is the risky portfolio’s Sharpe ratio. The steepest line dominates all others at every level of risk; investors then choose a point on it.',
   },
@@ -215,10 +215,10 @@ export const check = [
   },
   {
     id: 'f06-eff-k3', type: 'num', kind: 'applied',
-    prompt: 'Ana considers holding only the total-market fund plus a safe account. With forward-looking figures (expected return 9.7%, standard deviation 16%, risk-free 4.2%) and her risk aversion of 3, what share should she put in the fund? Give a percentage to one decimal place.',
+    prompt: 'Ana considers the total-market fund plus a safe account. With forward-looking figures (expected return 9.7%, standard deviation 16%, risk-free 4.2%) and her risk aversion of 3, what share should she put in the fund? Give a percentage to one decimal place.',
     answer: 71.6, check: () => IV.optimalRiskyShare({ rf: 0.042, er: 0.097, sd: 0.16, A: RISK_PROFILE.aversionA }) * 100, unit: '%', places: 1, tol: 0.2,
     wrong: [{ value: 11.5, say: 'That divides by Aσ (3 × 0.16). Square the standard deviation: y* = 0.055 ÷ (3 × 0.0256).' }, { value: 107.4, say: 'That uses A = 2. Ana’s coefficient is 3.' }],
-    solution: 'y* = 0.055 ÷ (3 × 0.16²) = 0.055 ÷ 0.0768 = 0.716: about 72% in the fund. With bonds in the mix she could take the same risk for more return, which is why the maximum-Sharpe portfolio holds both.',
+    solution: 'y* = 0.055 ÷ (3 × 0.16²) = 0.055 ÷ 0.0768 = 0.716: about 72% in the fund and 28% in the safe account. With CAPM-based expected returns measured against this fund, it is also the maximum-Sharpe portfolio, so this is the same answer the lesson’s forward-looking optimiser gives.',
   },
   {
     id: 'f06-eff-k4', type: 'multi', kind: 'conceptual',
@@ -239,18 +239,18 @@ export const check = [
   },
   {
     id: 'f06-eff-k5', type: 'mc', kind: 'applied',
-    prompt: 'Ana’s flat deposit, about $60,000, is due in April 2032. Her efficient-portfolio analysis suggests about two-thirds in shares for her retirement account. Where should the deposit savings go?',
+    prompt: 'Ana’s flat deposit, about $60,000, is due in April 2032. Her analysis points to a mostly-shares mix for her retirement account. Where should the deposit savings go?',
     options: [
       'A safe savings account, since it is needed within a few years',
-      'The same two-thirds shares mix, since it is the efficient choice for her risk aversion',
-      'All shares, because they have the highest expected return over four years',
-      'The bond index fund, because bonds never fall in value over four years',
+      'The same mostly-shares mix, as it is the efficient choice for her risk aversion',
+      'Mostly shares, as their higher expected return should usually win over four years',
+      'The bond index fund, as its losses in the simulated history were small',
     ],
     answer: 0,
     feedback: {
-      1: 'The efficient mix was chosen for 30-year money. Over four years a 2022-type year (−22.3% for that mix in the simulated data) could leave her short when she must pay.',
+      1: 'The efficient mix was chosen for 30-year money. Over four years a 2022-type year (the 80/20 shares-and-bonds mix lost 24.1% in the simulated data) could leave her short when she must pay.',
       2: 'Higher expected return comes with a wide spread of outcomes over a short horizon.',
-      3: 'The simulated bond fund lost 13% in 2022; bonds can fall, especially longer ones when rates rise.',
+      3: 'The simulated bond fund lost 13% in 2022: not small for money that must be there on a known date.',
     },
     solution: 'The horizon and purpose of the money come before the frontier. Money for a known payment soon belongs in safe assets; the efficient-portfolio analysis applies to her long-term account.',
   },

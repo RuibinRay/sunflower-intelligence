@@ -127,7 +127,7 @@ export const items = [
     answer: 0,
     feedback: {
       1: 'Convexity curves the price–yield line upwards: the curvature term ½ × C × Δy² is positive whichever way yields move, so more of it helps in both directions.',
-      2: 'Duration is only the straight-line part of the price change. For a move of 1.5 points the curvature term differs between the bonds.',
+      2: `Duration is only the straight-line part of the price change. For a move of ${fx(CVX.dy * 100, 1)} points the curvature term differs between the bonds.`,
       3: 'Lower convexity means less of the favourable curvature, so B gains less when yields fall and loses more when they rise.',
     },
     solution: `ΔP/P ≈ −D_mod × Δy + ½ × C × Δy². Yields up ${fx(CVX.dy * 100, 1)} points: A ${pc(cv(CVX.a, CVX.dy))}, B ${pc(cv(CVX.b, CVX.dy))}. Yields down: A +${pc(cv(CVX.a, -CVX.dy))}, B +${pc(cv(CVX.b, -CVX.dy))}. With equal durations, the more convex bond is ahead either way, which is why investors pay for convexity.`,
@@ -135,7 +135,7 @@ export const items = [
 
   // ================================================================ Module 2: Risk and return
   {
-    id: 'f06-dg-4', lesson: 'measuring-risk', type: 'num', kind: 'numerical',
+    id: 'f06-dg-4', lesson: 'measuring-risk', type: 'num', kind: 'conceptual',
     prompt: `A fictional fund publishes weekly returns. Over five years they averaged ${pc(WK.mean)} a week with a standard deviation of ${pc(WK.sd, 1)} a week. Assuming the weeks are independent, what is its volatility (standard deviation) a year, using 52 weeks? Give a percentage to two decimal places.`,
     answer: rnd(wkAnn * 100, 2), check: () => WK.sd * Math.sqrt(52) * 100, unit: '%', places: 2, tol: 0.03,
     wrong: [
@@ -145,7 +145,7 @@ export const items = [
     solution: `With independent weeks the variance of a year’s return is 52 times the weekly variance, so the SD is √52 times the weekly SD: ${pc(WK.sd, 1)} × √52 = ${pc(wkAnn)} a year. (The mean, by contrast, scales by 52: about ${pc(WK.mean * 52, 1)} a year.)`,
   },
   {
-    id: 'f06-dg-5', lesson: 'measuring-returns', type: 'num', kind: 'applied',
+    id: 'f06-dg-5', lesson: 'measuring-returns', type: 'num', kind: 'conceptual',
     prompt: `A fictional emerging-markets fund’s yearly returns had an arithmetic mean of ${pc(VD.a, 0)} and a standard deviation of ${pc(VD.s, 0)}. Approximately what compound growth rate a year did money left in the fund earn? Give a percentage to one decimal place.`,
     answer: rnd(vdG * 100, 1), check: () => (VD.a - VD.s ** 2 / 2) * 100, unit: '%', places: 1, tol: 0.15,
     wrong: [
@@ -155,7 +155,7 @@ export const items = [
     solution: `Geometric mean ≈ arithmetic mean − ½σ² = ${fx(VD.a, 2)} − ½ × ${fx(VD.s, 2)}² = ${fx(VD.a, 2)} − ${fx(VD.s ** 2 / 2, 3)} = ${pc(vdG, 1)} a year. The arithmetic mean is the right estimate of one year’s expected return; the compound rate is what money actually grew at, and with an SD of 30% the two are far apart.`,
   },
   {
-    id: 'f06-dg-6', lesson: 'measuring-risk', type: 'num', kind: 'numerical',
+    id: 'f06-dg-6', lesson: 'measuring-risk', type: 'num', kind: 'applied',
     prompt: `A fictional fund was worth $${QV[0]} at the end of year 0. Its quarter-end values over the next two years were ${QV.slice(1, 5).map((v) => `$${v}`).join(', ')} (year 1) and ${QV.slice(5).map((v) => `$${v}`).join(', ')} (year 2). What was its maximum drawdown over the two years? Give a percentage to one decimal place (as a negative number).`,
     answer: rnd(qDd * 100, 1), check: () => (Math.min(...QV.map((v, i) => v / Math.max(...QV.slice(0, i + 1)))) - 1) * 100, unit: '%', places: 1, tol: 0.1,
     wrong: [
@@ -183,7 +183,7 @@ export const items = [
     answer: rnd(clEr * 100, 2), check: () => (0.035 + (0.095 - 0.035) ** 2 / (1.5 * 0.18 ** 2)) * 100, unit: '%', places: 2, tol: 0.03,
     wrong: [
       { value: CL.er * 100, say: 'That holds exactly 100% in the risky portfolio. Her best share is (E − r_f) ÷ (Aσ²), which for a risk aversion this low is above 1: she borrows to hold more.' },
-      { value: rnd(IV.cal({ y: clYsd, rf: CL.rf, er: CL.er, sd: CL.sd }).er * 100, 2), say: 'That divides by A × σ instead of A × σ². Square the standard deviation: 1.5 × 0.18² = 0.0486.' },
+      { value: rnd(IV.cal({ y: clYsd, rf: CL.rf, er: CL.er, sd: CL.sd }).er * 100, 2), say: `That divides by A × σ instead of A × σ². Square the standard deviation: ${fx(CL.A, 1)} × ${fx(CL.sd)}² = ${fx(CL.A * CL.sd ** 2, 4)}.` },
     ],
     solution: `Best share in the risky portfolio: y* = (${fx(CL.er, 3)} − ${fx(CL.rf, 3)}) ÷ (${fx(CL.A, 1)} × ${fx(CL.sd, 2)}²) = ${fx(CL.er - CL.rf, 3)} ÷ ${fx(CL.A * CL.sd ** 2, 4)} = ${fx(clY, 3)}: she borrows about $${fx((clY - 1) * 100, 0)} for every $100 she has and holds ${pc(clY, 1)} in the risky portfolio. On the capital allocation line, E(r) = ${pc(CL.rf, 1)} + ${fx(clY, 3)} × ${pc(CL.er - CL.rf, 1)} = ${pc(clEr)}, with an SD of ${pc(clY * CL.sd, 1)}.`,
   },
@@ -221,7 +221,7 @@ export const items = [
     solution: `Implied enterprise value = ${fx(WT.mult, 1)} × ${fx(WT.ebitda, 0)} = ${mil(WT.mult * WT.ebitda)}. Equity = ${fx(WT.mult * WT.ebitda, 0)} − ${WT.debt} + ${WT.cash} = ${mil(WT.mult * WT.ebitda - WT.debt + WT.cash)}; per share ÷ ${WT.shares} million = $${fx(wtPs)}. An enterprise-value multiple goes with an enterprise-value result; only after the bridge is it a share price.`,
   },
   {
-    id: 'f06-dg-12', lesson: 'fundamental-analysis', type: 'mc', kind: 'applied',
+    id: 'f06-dg-12', lesson: 'fundamental-analysis', type: 'mc', kind: 'conceptual',
     prompt: `Fernhallow Foods (fictional, listed) expects after-tax operating profit of ${mil(FH.nopat)} next year and has a WACC of ${pc(FH.wacc, 0)}. If it invests nothing beyond upkeep, the profit stays flat for ever. Its board proposes reinvesting enough to grow ${pc(FH.g, 0)} a year for ever; the new investment would earn ${pc(FH.ronic, 0)}. What does the plan do to the value of the business?`,
     options: [
       `It raises it to ${mil(fhNaive)}, because the same ${mil(FH.nopat)} now grows ${pc(FH.g, 0)} a year for ever`,

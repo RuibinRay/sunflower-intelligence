@@ -1,7 +1,7 @@
 // efficient-portfolios.js — F06 · Efficient portfolios. Content only; exercises are in efficient-portfolios.ex.js.
 // Means and covariances come from case.js (SERIES, DERIVED): SIMULATED monthly history, fictional funds. The
 // forward-looking expected returns use F05’s assumptions (MARKET: 4.2% risk-free, 5.5% premium) and each fund’s
-// 2023–2027 regression beta (DERIVED.betas60). Frontier and maximum-Sharpe portfolio from core/portfolio.js; the
+// beta against the total-market fund from the same 2013–2027 covariances. Frontier and maximum-Sharpe portfolio from core/portfolio.js; the
 // capital allocation line and the optimal risky share from core/investments.js. Ines Varga is fictional.
 import { SERIES, MONTHS, DERIVED, MARKET, RISK_PROFILE, ANA } from './case.js?v=31';
 import * as IV from '../../../core/investments.js?v=31';
@@ -25,16 +25,16 @@ const seAnn = sdEx / Math.sqrt(exM.length) * 12, T179 = 1.9733;   // t(179) 97.5
 const diff = SERIES.market.map((v, i) => v - SERIES.intl[i]); const md = diff.reduce((a, b) => a + b, 0) / 180;
 const seDiff = Math.sqrt(diff.reduce((s, v) => s + (v - md) ** 2, 0) / 179) / Math.sqrt(180) * 12;
 const tanShift = (i, d) => { const mu = muH.slice(); mu[i] += d; return IV.maxSharpe(mu, cov, rfH); };
-// forward-looking (CAPM) expected returns
-const betas = [1, DERIVED.betas60.intl.beta, DERIVED.betas60.bonds.beta];
+// forward-looking (CAPM) expected returns, with betas from the same 2013–2027 covariance matrix (cov with market ÷ var)
+const betas = NAMES.map((n, i) => cov[i][0] / cov[0][0]);
 const muC = betas.map((b) => IV.capm({ rf: MARKET.rf, beta: b, mrp: MARKET.mrp }));
 const tanC = IV.maxSharpe(muC, cov, MARKET.rf), TC = stats(tanC, muC), shC = IV.sharpe(TC.er, MARKET.rf, TC.sd);
+const shCi = NAMES.map((n, i) => IV.sharpe(muC[i], MARKET.rf, sdi(i)));
 const yC = IV.optimalRiskyShare({ rf: MARKET.rf, er: TC.er, sd: TC.sd, A });
-// best long-only portfolio without borrowing, by utility (grid of 0.5% steps)
-let best = null;
-for (let a = 0; a <= 200; a++) for (let b = 0; a + b <= 200; b++) { const w = [a / 200, b / 200, (200 - a - b) / 200]; const q = stats(w, muC), u = q.er - 0.5 * A * q.sd ** 2; if (!best || u > best.u) best = { u, w, ...q }; }
+const CC = IV.cal({ y: yC, rf: MARKET.rf, er: TC.er, sd: TC.sd });
 // worst calendar years
-const worst = (r) => Math.min(...IV.yearly(MONTHS, r).map((z) => z.ret));
+const worstY = (r) => IV.yearly(MONTHS, r).reduce((a, b) => (b.ret < a.ret ? b : a));
+const worst = (r) => worstY(r).ret;
 const mixSeries = (w, y = 1) => SERIES.market.map((v, i) => y * (w[0] * v + w[1] * SERIES.intl[i] + w[2] * SERIES.bonds[i]) + (1 - y) * SERIES.bills[i]);
 // Ines (A = 6)
 const yI = IV.optimalRiskyShare({ rf: MARKET.rf, er: TC.er, sd: TC.sd, A: 6 }), CI = IV.cal({ y: yI, rf: MARKET.rf, er: TC.er, sd: TC.sd });
@@ -80,7 +80,7 @@ export default {
     { h: 'Choosing how much risk' },
     { p: 'The usual way to formalise risk tolerance is a <g>mean–variance utility</g>, <m>U = E[r] - \\tfrac{1}{2}A\\sigma^2</m>, where <m>A</m> is the <g>risk-aversion coefficient</g>: how many units of expected return the investor gives up per unit of variance. Maximising U along the capital allocation line gives' },
     { math: String.raw`y^{*} = \dfrac{E[r_P] - r_f}{A\,\sigma_P^2}` },
-    { p: 'Ana’s provider scores her questionnaire as <m>A = 3</m>, a moderate value. Applied to the historical tangency portfolio, it gives <m>y^{*} = (5.52\\% - 2.03\\%) \\div (3 \\times 0.0524^2) = 4.24</m>: hold 424% of her money in a bond-heavy portfolio, borrowing 324% at the bill rate. That answer is a warning, not advice. It comes from treating fifteen years of average returns as if they were known expected returns, and it assumes she can borrow at the bill rate.' },
+    { p: 'Ana’s provider scores her questionnaire as <m>A = 3</m>, a moderate value. Applied to the historical tangency portfolio, it gives <m>y^{*} = (5.52\\% - 2.03\\%) \\div (3 \\times 0.0524^2) = 4.24</m>: hold 424% of her money in a bond-heavy portfolio, borrowing 324% at the bill rate. That answer is a warning, not advice. The simulation gives the bond fund a high return per unit of risk (its returns were generated with an expected Sharpe ratio a little above the market’s), and levering such a low-risk portfolio at the bill rate until its risk suits a moderate investor takes 424%. It also assumes she can borrow at the bill rate, which she can’t. Treating fifteen years of estimates as if they were known makes things worse, as the next section shows.' },
     { h: 'Estimation error: why optimisers chase noise' },
     { p: 'An average return from a sample is an estimate with a standard error. The market’s monthly excess return over bills averaged 0.70% with a monthly standard deviation of 4.62%, so the standard error of the mean is <m>4.62\\% \\div \\sqrt{180} = 0.344\\%</m> a month, or 4.13% a year on the annualised mean of 8.40%. A 95% confidence interval for the annual premium runs from 0.24% to 16.56%. Fifteen years of data can’t pin down the expected return of shares to better than several percentage points, and the difference between the home and international funds’ means (0.16% a year, with a standard error of 2.91%) is pure noise.' },
     { p: 'An optimiser, though, treats the estimates as exact and leans hardest on whichever looks best. The table shows what small changes, well within the standard errors, do to the maximum-Sharpe weights.' },
@@ -97,12 +97,13 @@ export default {
       ],
       note: 'Each change is a fraction of the standard error of the mean it alters (about 4.5, 1.1 and 4.1 points a year for international, bonds and total market).',
     } },
-    { p: 'The bond fund dominates because its historical Sharpe ratio was the highest of the three. Over 2013–2027 the simulated bond fund earned 2.28 points a year above bills, with a standard error of 1.07 points; a bond premium that large is not something to count on, and one point less halves its weight. Three remedies are common. Use expected returns from a model rather than raw averages (the CAPM, in the next lesson, gives each fund a return in line with its market risk). Constrain the weights, for example by setting limits on each asset class. And prefer simple, robust mixes to finely optimised ones.' },
+    { p: 'The bond fund dominates because its historical Sharpe ratio was the highest of the three. Over 2013–2027 the simulated bond fund earned 2.28 points a year above bills, with a standard error of 1.07 points, and one point less cuts its weight from 80% to 54%. Three remedies are common. Use expected returns from a model rather than raw averages (the CAPM, in the next lesson, gives each fund a return in line with its market risk). Constrain the weights, for example by setting limits on each asset class. And prefer simple, robust mixes to finely optimised ones.' },
     { h: 'A forward-looking version' },
-    { p: 'Suppose instead that Ana uses F05’s assumptions, a 4.2% risk-free rate and a 5.5% market risk premium, and gives each fund an expected return in line with its beta over 2023–2027 (international 0.74, bonds 0.13; the CAPM lesson explains beta). The expected returns become 9.70%, 8.24% and 4.91%, with the historical covariances. The maximum-Sharpe portfolio is now 54.6% total market, 0% international and 45.4% bonds, with an expected return of 7.53%, a standard deviation of 9.51% and a Sharpe ratio of 0.350. The second widget shows this frontier. Under these assumptions the international fund adds nothing, because its expected return is set by the same market risk that the home fund delivers more efficiently; that conclusion is no sturdier than the beta estimate behind it.' },
-    { p: 'With <m>A = 3</m>, <m>y^{*} = (7.53\\% - 4.2\\%) \\div (3 \\times 0.0951^2) = 1.23</m>: she would like 23% more than her own money in the tangency portfolio. She can’t borrow at 4.2%, so the best she can do is to hold no bills and move up the frontier itself. The long-only mix with the highest utility at <m>A = 3</m> is about 67.5% total market and 32.5% bonds, with an expected return of 8.14% and a standard deviation of 11.30%.' },
+    { p: 'Suppose instead that Ana uses F05’s assumptions, a 4.2% risk-free rate and a 5.5% market risk premium, and gives each fund the CAPM expected return for its beta against the total-market fund (the CAPM lesson explains beta). To keep the inputs consistent, the betas come from the same 2013–2027 covariances as the risks: international 0.85, bonds 0.08. The expected returns become 9.70%, 8.87% and 4.66%. The optimiser’s answer is now striking: the maximum-Sharpe portfolio is <b>100% in the total-market fund</b>, with a Sharpe ratio of 0.344, against 0.267 for international and 0.111 for bonds. The second widget shows it.' },
+    { p: 'That is not a coincidence but the CAPM’s own logic: if every asset’s expected return is set by its beta against a portfolio, that portfolio is the efficient one, so the optimiser hands it back. It also shows the model’s weak point. In the CAPM the “market” is all risky assets, home and foreign shares and bonds alike; using the home share fund as the market builds in the answer that only home shares are worth holding. The capm-and-beta lesson returns to this market-proxy problem. In practice it means the forward-looking inputs need judgement too, for example a market proxy that includes international shares and bonds.' },
+    { p: 'With the total-market fund as the risky portfolio, the choice is between it and bills. At <m>A = 3</m>, <m>y^{*} = (9.70\\% - 4.2\\%) \\div (3 \\times 0.1600^2) = 0.716</m>: 71.6% in the fund and 28.4% in bills, with an expected return of 8.14% and a standard deviation of 11.46%.' },
     { h: 'Checking the answer against a worst year and the horizon' },
-    { p: 'A utility formula is one view of risk tolerance; Ana’s own answer, that she could live with a worst year of about −25%, is another, and easier to feel. In the simulated history the total-market fund’s worst calendar year was −26.9% (2022). The 67.5/32.5 mix of shares and bonds lost 22.3% that year and a 60/40 mix 21.3%. Both views point to a portfolio around two-thirds in shares. But a fifteen-year sample’s worst year is not the worst that can happen: real share markets have had worse years than any in this simulation (Damodaran’s table lists every year since 1928), and a worst-year limit should allow for that.' },
+    { p: 'A utility formula is one view of risk tolerance; Ana’s own answer, that she could live with a worst year of about −25%, is another, and easier to feel. In the simulated history the total-market fund’s worst calendar year was −26.9% (2022), just outside her limit. The 71.6/28.4 mix of the fund and bills lost 19.2% that year; mixes of shares and bonds lost 21.3% at 60/40 and 24.1% at 80/20. These checks bracket a range of reasonable mixes rather than pick one: which she chooses within it is Ana’s decision. And a fifteen-year sample’s worst year is not the worst that can happen: real share markets have had worse years than any in this simulation (Damodaran’s table lists every year since 1928), and a worst-year limit should allow for that.' },
     { p: 'The <g>time horizon</g> matters too. This account is for retirement in about 30 years, and she keeps adding $400 a month, so she can wait for a fall to be recovered and even buy more cheaply in it. Her flat deposit, due in April 2032, is a different matter: money needed within a few years can’t wait, so it stays in her savings account, and her $6,000 emergency fund stays in cash. The measuring-risk lesson shows why: over one year the range of outcomes for shares is wide, and a bad year near the date the money is needed can’t be undone. None of this settles Ana’s mix; it shows how the pieces fit together.' },
     { callout: 'warn', title: 'Optimisation amplifies the inputs', html: 'An efficient frontier is only as good as the expected returns, standard deviations and correlations fed into it, and expected returns are the hardest to estimate. Treat optimised weights as a starting point to be checked against common sense, constraints and a worst-case view, not as a precise answer.' },
   ],
@@ -138,37 +139,37 @@ export default {
       ],
       answer: 'Sharpe ratios 0.525 (total market) and 0.551 (bonds); the 60/40 mix with bills expects 7.07% with a standard deviation of 9.60%.',
       interpretation: 'On these historical figures the bond fund gave slightly more excess return per unit of risk, which is why the historical optimiser loads up on it. Mixing a fund with bills changes its risk, never its Sharpe ratio.' },
-    { level: 'challenging', title: 'How much in the risky portfolio at A = 3?', fictional: true,
-      setup: 'With forward-looking expected returns (9.70%, 8.24%, 4.91%), the historical covariances and a 4.2% risk-free rate, the maximum-Sharpe portfolio of Ana’s funds has an expected return of 7.53% and a standard deviation of 9.51%. Her risk-aversion coefficient is 3. Find her optimal share in it, and what she should do if she cannot borrow.',
+    { level: 'challenging', title: 'Forward-looking inputs and Ana’s share at A = 3', fictional: true,
+      setup: 'Ana gives each fund a CAPM expected return with a 4.2% risk-free rate, a 5.5% market risk premium and betas against the total-market fund from the 2013–2027 covariances (international 0.85, bonds 0.08). The total-market fund’s standard deviation is 16.00%. Find the expected returns, the best risky portfolio, and her share in it at A = 3.',
       steps: [
-        String.raw`Sharpe ratio: <m>(7.53\% - 4.2\%) \div 9.51\% = 0.350</m>.`,
-        String.raw`Optimal share: <m>y^{*} = 0.0333 \div (3 \times 0.0951^2) = 0.0333 \div 0.0271 = 1.23</m>.`,
-        String.raw`At <m>y = 1.23</m>: <m>E = 4.2\% + 1.23 \times 3.33\% = 8.30\%</m> and <m>\sigma = 1.23 \times 9.51\% = 11.70\%</m>, but this needs borrowing 23% of her money at 4.2%.`,
-        'Without borrowing she holds no bills and moves along the frontier above the tangency point. Searching the long-only mixes for the highest U = E − 1.5σ² gives about 67.5% total market and 32.5% bonds: E = 8.14%, σ = 11.30%.',
+        String.raw`Expected returns: total market <m>4.2\% + 1 \times 5.5\% = 9.70\%</m>; international <m>4.2\% + 0.85 \times 5.5\% = 8.87\%</m>; bonds <m>4.2\% + 0.08 \times 5.5\% = 4.66\%</m>.`,
+        'Sharpe ratios: 0.344 (total market), 0.267 (international), 0.111 (bonds). The maximum-Sharpe portfolio is 100% total market: with returns set by beta against it, nothing improves on it.',
+        String.raw`Optimal share: <m>y^{*} = 0.055 \div (3 \times 0.1600^2) = 0.055 \div 0.0768 = 0.716</m>.`,
+        String.raw`Mix: <m>E = 4.2\% + 0.716 \times 5.5\% = 8.14\%</m>, <m>\sigma = 0.716 \times 16.00\% = 11.46\%</m>.`,
       ],
-      answer: 'y* = 1.23; without borrowing, about 67.5% total market and 32.5% bonds (expected 8.14%, standard deviation 11.30%).',
-      interpretation: 'A moderately risk-averse investor with a long horizon wants slightly more risk than the tangency portfolio carries. In the simulated history that 67.5/32.5 mix lost 22.3% in its worst year, inside Ana’s −25% limit. Every number rests on assumed expected returns.' },
+      answer: 'The optimiser returns the total-market fund itself; at A = 3 she would hold 71.6% in it and 28.4% in bills (expected 8.14%, standard deviation 11.46%).',
+      interpretation: 'The answer follows from treating the home share fund as “the market”. A wider market proxy, with international shares and bonds in it, would give those funds a place. In the simulated history the 71.6/28.4 mix lost 19.2% in its worst year (2022).' },
     { level: 'applied', title: 'A cautious investor near retirement', fictional: true,
-      setup: 'Ines Varga (fictional), 61, plans to start drawing on her savings in four years. Her adviser scores her risk aversion at A = 6 and uses the same forward-looking maximum-Sharpe portfolio (7.53%, 9.51%) and a 4.2% risk-free rate. How should she split her money, and what would the mix have lost in the worst simulated year?',
+      setup: 'Ines Varga (fictional), 61, plans to start drawing on her savings in four years. Her adviser scores her risk aversion at A = 6 and uses the same forward-looking inputs: the total-market fund with an expected return of 9.70% and a standard deviation of 16.00%, and a 4.2% risk-free rate. How should she split her money, and what would the mix have lost in the worst simulated year?',
       steps: [
-        String.raw`<m>y^{*} = 0.0333 \div (6 \times 0.0951^2) = 0.61</m>: 61% in the risky portfolio, 39% in a risk-free account.`,
-        String.raw`Expected return <m>4.2\% + 0.61 \times 3.33\% = 6.24\%</m>; standard deviation <m>0.61 \times 9.51\% = 5.83\%</m>.`,
-        'Run the mix through the simulated monthly history (with the bills’ actual returns for the safe part): its worst calendar year, 2022, was −12.2%.',
-        'Doubling risk aversion halved the share in the risky portfolio, but the risky portfolio itself did not change: she holds the same 54.6/45.4 mix of shares and bonds, just less of it.',
+        String.raw`<m>y^{*} = 0.055 \div (6 \times 0.1600^2) = 0.358</m>: 35.8% in the fund, 64.2% in a risk-free account.`,
+        String.raw`Expected return <m>4.2\% + 0.358 \times 5.5\% = 6.17\%</m>; standard deviation <m>0.358 \times 16.00\% = 5.73\%</m>.`,
+        'Run the mix through the simulated monthly history (with the bills’ actual returns for the safe part): its worst calendar year, 2022, was −8.9%.',
+        'Doubling risk aversion halved the share in the risky portfolio, but the risky portfolio itself did not change: she holds the same fund as Ana, just less of it.',
       ],
-      answer: 'About 61% in the maximum-Sharpe portfolio and 39% in the safe asset: expected return 6.24%, standard deviation 5.83%, worst simulated year −12.2%.',
+      answer: 'About 36% in the fund and 64% in the safe asset: expected return 6.17%, standard deviation 5.73%, worst simulated year −8.9%.',
       interpretation: 'The adviser would also match the safe part to the money Ines needs in the next few years, so that a bad year for shares doesn’t force her to sell them at a loss.' },
   ],
 
   demo: [
     { widget: 'eff-history', intro: 'The long-only frontier of Ana’s three funds from the simulated history, with bills at their fifteen-year average of 2.03%. The maximum-Sharpe portfolio is mostly bonds. Move the share in it and watch your mix slide along the line; the slider stops at 150%, far short of the 424% that A = 3 would ask for.' },
-    { widget: 'eff-forward', intro: 'The same covariances with forward-looking expected returns and a 4.2% risk-free rate. Compare the maximum-Sharpe weights with the first chart: a few points of difference in expected returns move the weights a long way.' },
+    { widget: 'eff-forward', intro: 'The same covariances with CAPM expected returns and a 4.2% risk-free rate. Compare the maximum-Sharpe weights in the table under the chart with the first chart’s: the optimiser now hands back the total-market fund alone.' },
     { widget: 'eff-choose', intro: 'Utility along the capital allocation line. Raise the risk-aversion coefficient and watch the best share in the risky portfolio fall; raise the risky portfolio’s standard deviation and it falls with the square.' },
   ],
 
   mistakes: [
     { title: 'Picking the highest-return fund as the best', html: 'The best risky portfolio is the one with the most expected excess return per unit of risk, not the most return. An investor who wants more return than the maximum-Sharpe portfolio offers can get it more efficiently by holding more of that portfolio (or by moving up the frontier) than by holding the highest-return asset alone.' },
-    { title: 'Treating optimiser output as exact', html: 'Optimised weights swing with small changes in expected returns that are well within their standard errors. A historical optimiser told Ana to hold 80% bonds and borrow; a model-based one, 45% bonds and no international fund. Use model-based inputs, constraints and judgement.' },
+    { title: 'Treating optimiser output as exact', html: 'Optimised weights swing with small changes in expected returns that are well within their standard errors. A historical optimiser told Ana to hold 80% bonds and borrow; a CAPM-based one, only the home share fund. Use model-based inputs, constraints and judgement.' },
     { title: 'Mixing a risk-free rate from one period with returns from another', html: 'Historical means over 2013–2027 include a period of near-zero bill rates. Comparing them with today’s 4% bill rate understates their Sharpe ratios. Compare like with like: historical means with the bills’ historical average, forward-looking expected returns with today’s risk-free rate.' },
     { title: 'Forgetting that the utility formula needs decimals', html: 'In U = E[r] − ½Aσ², use 0.10 and 0.16, not 10 and 16: with percentages the variance term is 100 times too big. The same holds for y* = (E[r_P] − r_f) ÷ (Aσ²).' },
     { title: 'Ignoring the horizon and the purpose of the money', html: 'The frontier says nothing about when the money is needed. Money due within a few years, like Ana’s deposit, belongs in safe assets whatever the efficient frontier shows.' },
@@ -177,7 +178,7 @@ export default {
   application: [
     { p: '<b>A robo-adviser’s questionnaire.</b> Online investment services ask about age, goals, horizon and how the client would react to a fall, turn the answers into a risk score, and map the score to a point along a line of model portfolios from cautious to adventurous. The model portfolios themselves are usually set by the provider’s investment team, with constraints on each asset class, rather than by an unconstrained optimiser run on history: precisely because of the instability shown in this lesson.' },
     { p: '<b>A charity’s investment policy.</b> The finance committee of a fictional charity needs its endowment to pay out about 4% a year for ever. Its consultant presents three or four efficient mixes with their expected returns, standard deviations and a stress-test loss in a 2022-type year, and the committee chooses the one whose worst-case loss it could explain to its trustees. The choice is recorded in an investment policy statement with ranges around each weight.' },
-    { p: '<b>Ana’s note to herself.</b> Ana writes down her inputs (expected returns from the CAPM with F05’s assumptions, risks from the simulated history), the answer they give, and the two checks she trusts more than the formula: the worst simulated year of her chosen mix and the fact that she won’t need the money for 30 years. She plans to review the mix once a year rather than re-optimise it every time a number changes.' },
+    { p: '<b>Ana’s note to herself.</b> Ana writes down her inputs (historical and CAPM-based expected returns, risks from the simulated history, and the market-proxy caveat), the answers they give, and the two checks she trusts more than the formula: the worst simulated year of her chosen mix and the fact that she won’t need the money for 30 years. She plans to review the mix once a year rather than re-optimise it every time a number changes.' },
   ],
 
   summary: [
@@ -250,44 +251,44 @@ export default {
     ...[1, 2, 0].map((i, k) => { const ex = SERIES[NAMES[i]].map((v, j) => v - SERIES.bills[j]); const m = ex.reduce((a, b) => a + b, 0) / 180; const s = Math.sqrt(ex.reduce((q, v) => q + (v - m) ** 2, 0) / 179); return { what: `SE ${NAMES[i]}`, value: s / Math.sqrt(180) * 1200, shown: [4.5, 1.1, 4.1][k], tol: 0.05 }; }),
     { what: 'Bond excess return', value: (st.bonds.mean - rfH) * 100, shown: 2.28 },
     { what: 'Bond SE', value: (() => { const ex = SERIES.bonds.map((v, j) => v - SERIES.bills[j]); const m = ex.reduce((a, b) => a + b, 0) / 180; return Math.sqrt(ex.reduce((q, v) => q + (v - m) ** 2, 0) / 179) / Math.sqrt(180) * 1200; })(), shown: 1.07 },
-    { what: 'Bond weight roughly halves with −1 point', value: tanShift(2, -0.01)[2] / tanH[2], shown: 0.67, tol: 0.02 },
+    { what: 'Bond weight 80% → 54%', value: tanShift(2, -0.01)[2] * 100, shown: 54, tol: 0.05 },
+    { what: 'Bond weight 80%', value: tanH[2] * 100, shown: 80, tol: 0.15 },
     { what: 'F05 rf', value: MARKET.rf * 100, shown: 4.2 },
     { what: 'F05 MRP', value: MARKET.mrp * 100, shown: 5.5 },
-    { what: 'Intl beta', value: betas[1], shown: 0.74 },
-    { what: 'Bonds beta', value: betas[2], shown: 0.13 },
+    { what: 'Intl beta', value: betas[1], shown: 0.85 },
+    { what: 'Bonds beta', value: betas[2], shown: 0.08 },
     { what: 'CAPM market', value: muC[0] * 100, shown: 9.70 },
-    { what: 'CAPM intl', value: muC[1] * 100, shown: 8.24 },
-    { what: 'CAPM bonds', value: muC[2] * 100, shown: 4.91 },
-    { what: 'CAPM tangency market', value: tanC[0] * 100, shown: 54.6, tol: 0.05 },
-    { what: 'CAPM tangency intl', value: tanC[1] * 100, shown: 0, tol: 0.05 },
-    { what: 'CAPM tangency bonds', value: tanC[2] * 100, shown: 45.4, tol: 0.05 },
-    { what: 'CAPM tangency er', value: TC.er * 100, shown: 7.53 },
-    { what: 'CAPM tangency sd', value: TC.sd * 100, shown: 9.51 },
-    { what: 'CAPM tangency Sharpe', value: shC, shown: 0.350, tol: 0.0005 },
-    { what: 'CAPM excess', value: (TC.er - MARKET.rf) * 100, shown: 3.33 },
-    { what: 'y* CAPM', value: yC, shown: 1.23 },
-    { what: 'y* CAPM borrowing %', value: (yC - 1) * 100, shown: 23, tol: 0.5 },
-    { what: 'A σ² ', value: 3 * TC.sd ** 2, shown: 0.0271, tol: 0.00005 },
-    { what: 'y=1.23 er', value: (MARKET.rf + 1.23 * (TC.er - MARKET.rf)) * 100, shown: 8.30, tol: 0.006 },
-    { what: 'y=1.23 sd', value: 1.23 * TC.sd * 100, shown: 11.70, tol: 0.006 },
-    { what: 'No-borrow best market', value: best.w[0] * 100, shown: 67.5, tol: 0.05 },
-    { what: 'No-borrow best intl', value: best.w[1] * 100, shown: 0, tol: 0.05 },
-    { what: 'No-borrow best bonds', value: best.w[2] * 100, shown: 32.5, tol: 0.05 },
-    { what: 'No-borrow er', value: best.er * 100, shown: 8.14 },
-    { what: 'No-borrow sd', value: best.sd * 100, shown: 11.30 },
+    { what: 'CAPM intl', value: muC[1] * 100, shown: 8.87 },
+    { what: 'CAPM intl from rounded beta', value: (0.042 + 0.85 * 0.055) * 100, shown: 8.88, tol: 0.006 },
+    { what: 'CAPM bonds', value: muC[2] * 100, shown: 4.66 },
+    { what: 'CAPM tangency is 100% market', value: tanC[0], shown: 1, tol: 1e-6 },
+    { what: 'Sharpe market CAPM', value: shCi[0], shown: 0.344, tol: 0.0005 },
+    { what: 'Sharpe intl CAPM', value: shCi[1], shown: 0.267, tol: 0.0005 },
+    { what: 'Sharpe bonds CAPM', value: shCi[2], shown: 0.111, tol: 0.0005 },
+    { what: 'Tangency Sharpe CAPM', value: shC, shown: 0.344, tol: 0.0005 },
+    { what: 'y* CAPM', value: yC, shown: 0.716, tol: 0.0005 },
+    { what: 'y* CAPM %', value: yC * 100, shown: 71.6, tol: 0.05 },
+    { what: 'bills share', value: (1 - yC) * 100, shown: 28.4, tol: 0.05 },
+    { what: 'A σ²', value: 3 * TC.sd ** 2, shown: 0.0768, tol: 0.00005 },
+    { what: 'CAPM mix er', value: CC.er * 100, shown: 8.14 },
+    { what: 'CAPM mix sd', value: CC.sd * 100, shown: 11.46 },
+    { what: 'Market SD', value: TC.sd * 100, shown: 16.00 },
     { what: 'Market worst year', value: DERIVED.worstYear.market * 100, shown: -26.9, tol: 0.05 },
-    { what: 'Market worst year is 2022', value: Number(IV.yearly(MONTHS, SERIES.market).find((z) => z.ret === DERIVED.worstYear.market).year), shown: 2022 },
-    { what: '67.5/32.5 worst year', value: worst(mixSeries([0.675, 0, 0.325])) * 100, shown: -22.3, tol: 0.05 },
+    { what: 'Market worst year is 2022', value: Number(worstY(SERIES.market).year), shown: 2022 },
+    { what: '71.6/28.4 worst year', value: worst(mixSeries([1, 0, 0], yC)) * 100, shown: -19.2, tol: 0.05 },
+    { what: '71.6/28.4 worst is 2022', value: Number(worstY(mixSeries([1, 0, 0], yC)).year), shown: 2022 },
     { what: '60/40 worst year', value: worst(mixSeries([0.6, 0, 0.4])) * 100, shown: -21.3, tol: 0.05 },
-    { what: 'Both inside −25%', value: worst(mixSeries([0.675, 0, 0.325])) > -0.25 && worst(mixSeries([0.6, 0, 0.4])) > -0.25 ? 1 : 0, shown: 1 },
+    { what: '80/20 worst year', value: worst(mixSeries([0.8, 0, 0.2])) * 100, shown: -24.1, tol: 0.05 },
     { what: 'Ana monthly', value: ANA.retirement.monthly, shown: 400 },
     { what: 'Emergency fund', value: ANA.emergency, shown: 6000 },
-    { what: 'Ines y', value: yI, shown: 0.61 },
-    { what: 'Ines y %', value: yI * 100, shown: 61, tol: 0.5 },
-    { what: 'Ines er', value: CI.er * 100, shown: 6.24 },
-    { what: 'Ines sd', value: CI.sd * 100, shown: 5.83 },
-    { what: 'Ines worst', value: worst(mixSeries(tanC, yI)) * 100, shown: -12.2, tol: 0.05 },
-    { what: 'Ines worst is 2022', value: Number(IV.yearly(MONTHS, mixSeries(tanC, yI)).reduce((a, b) => (b.ret < a.ret ? b : a)).year), shown: 2022 },
+    { what: 'Ines y', value: yI, shown: 0.358, tol: 0.0005 },
+    { what: 'Ines y %', value: yI * 100, shown: 35.8, tol: 0.05 },
+    { what: 'Ines y about 36%', value: yI * 100, shown: 36, tol: 0.5 },
+    { what: 'Ines safe', value: (1 - yI) * 100, shown: 64.2, tol: 0.05 },
+    { what: 'Ines er', value: CI.er * 100, shown: 6.17 },
+    { what: 'Ines sd', value: CI.sd * 100, shown: 5.73 },
+    { what: 'Ines worst', value: worst(mixSeries([1, 0, 0], yI)) * 100, shown: -8.9, tol: 0.05 },
+    { what: 'Ines worst is 2022', value: Number(worstY(mixSeries([1, 0, 0], yI)).year), shown: 2022 },
     { what: 'Doubling A halves y', value: yC / yI, shown: 2, tol: 1e-9 },
     { what: 'Utility peaks at y* along CAL', value: UC(yC) > UC(yC - 0.05) && UC(yC) > UC(yC + 0.05) ? 1 : 0, shown: 1 },
     { what: 'Charity payout', value: 4, shown: 4 },

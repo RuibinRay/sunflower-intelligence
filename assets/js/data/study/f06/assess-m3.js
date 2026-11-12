@@ -142,11 +142,11 @@ export const items = [
   },
   {
     id: 'f06-m3-12', lesson: 'funds-and-indexing', type: 'mc', kind: 'applied',
-    prompt: `Over five years a fictional index fund with an expense ratio of 0.04% (the same as the Harbourline total-market fund’s ${(ASSETS.market.fee * 100).toFixed(2)}%) trailed its index by 0.45 points a year on average. What should an investor conclude?`,
+    prompt: `Over five years a fictional index fund with an expense ratio of ${(ASSETS.market.fee * 100).toFixed(2)}% (the same as the Harbourline total-market fund’s) trailed its index by 0.45 points a year on average. What should an investor conclude?`,
     options: [
       'It tracks poorly: the gap is over ten times its fee',
-      'It is a good fund, since all index funds trail their indexes',
-      'The index must be mismeasured, since a properly run index fund can never trail its index by more than its fee',
+      'It is fine: index funds trail their indexes, and 0.45 points is small',
+      'The index return is probably mismeasured, as tracking gaps rarely exceed fees',
       'It has a high tracking error, which explains the shortfall',
     ],
     answer: 0,

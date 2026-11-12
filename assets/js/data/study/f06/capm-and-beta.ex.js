@@ -181,9 +181,9 @@ export const check = [
     prompt: 'According to the CAPM, why does a share’s expected return depend on its beta rather than its standard deviation?',
     options: [
       'Diversified investors are paid only for the market risk that beta measures',
-      'Beta is easier to estimate precisely than standard deviation',
-      'Shares with high standard deviations always have high betas too, so the two measures always rank shares the same way',
-      'Standard deviation measures past risk while beta measures future risk',
+      'Beta can be estimated more precisely than standard deviation can',
+      'Shares with high standard deviations tend to have high betas, so beta captures the same risk',
+      'Standard deviation reflects past risk, while beta is set by forecasts of future risk',
     ],
     answer: 0,
     feedback: {

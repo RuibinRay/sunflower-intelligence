@@ -25,6 +25,7 @@ const ew = (n) => IV.equalWeightSd(n, avgVar, avgCov);
 // correlations by calendar year
 const inYear = (y) => MONTHS.map((m, i) => (m.startsWith(y) ? i : -1)).filter((i) => i >= 0);
 const corrIn = (y, a, b) => { const ix = inYear(y); return IV.sampleCov(ix.map((i) => SERIES[a][i]), ix.map((i) => SERIES[b][i])).corr; };
+const YEARS = [...new Set(MONTHS.map((m) => m.slice(0, 4)))];
 const yr = (k, y) => IV.yearly(MONTHS, SERIES[k]).find((z) => z.year === y).ret;
 // the scenario example (fictional)
 const SC = [{ p: 0.3, a: 0.20, b: 0.00 }, { p: 0.4, a: 0.10, b: 0.12 }, { p: 0.3, a: -0.05, b: 0.10 }];
@@ -48,7 +49,7 @@ export default {
     { lesson: 'f06/measuring-risk', why: 'Standard deviation of returns from history and scenarios, and annualising it with √12.' },
     { lesson: 'f06/measuring-returns', why: 'Expected return, arithmetic means and the risk premium over bills.' },
     { lesson: 'f00/decision-principles', why: 'Diversification, systematic and unsystematic risk were introduced there in words.' },
-    { text: 'Covariance and Pearson’s correlation are taught in depth in B05; this lesson explains what it needs.' },
+    { lesson: 'b05/covariance-and-pearson', why: 'Covariance and Pearson’s correlation in depth (helpful, not required: this lesson explains what it needs).' },
   ],
   case: 'lantern',
 
@@ -84,7 +85,7 @@ export default {
     { p: 'With a weight <m>w</m> in asset A and <m>1 - w</m> in asset B, the portfolio’s variance is' },
     { math: String.raw`\sigma_P^2 = w^2\sigma_A^2 + (1-w)^2\sigma_B^2 + 2\,w(1-w)\,\rho_{AB}\,\sigma_A\sigma_B` },
     { p: 'The first two terms are each asset’s own risk, scaled by the square of its weight. The third is the interaction, and it is where diversification lives: it carries the correlation (<m>\\rho_{AB}\\sigma_A\\sigma_B</m> is just the covariance). The lower the correlation, the smaller the third term, and below zero it subtracts.' },
-    { p: 'For Ana’s two candidate funds, a mix of 60% total market and 40% bonds has an expected return of <m>0.6 \\times 10.43\\% + 0.4 \\times 4.31\\% = 7.98\\%</m> a year and a standard deviation of <m>\\sqrt{0.36 \\times 0.1600^2 + 0.16 \\times 0.0414^2 + 2 \\times 0.24 \\times 0.32 \\times 0.1600 \\times 0.0414} = 10.25\\%</m>. The weighted average of the two standard deviations is <m>0.6 \\times 16.00\\% + 0.4 \\times 4.14\\% = 11.25\\%</m>, so diversification removes 1.00 point of risk without costing any expected return. The formula is exact for the sample: the actual month-by-month returns of a 60/40 mix, rebalanced every month, have the same 10.25%.' },
+    { p: 'For Ana’s two candidate funds, a mix of 60% total market and 40% bonds has an expected return of <m>0.6 \\times 10.43\\% + 0.4 \\times 4.31\\% = 7.98\\%</m> a year. Its variance is the sum of three terms, <m>0.36 \\times 0.1600^2</m>, <m>0.16 \\times 0.0414^2</m> and <m>2 \\times 0.24 \\times 0.32 \\times 0.1600 \\times 0.0414</m>, which come to 0.0105, so its standard deviation is <m>\\sqrt{0.0105} = 10.25\\%</m>. The weighted average of the two standard deviations is <m>0.6 \\times 16.00\\% + 0.4 \\times 4.14\\% = 11.25\\%</m>, so diversification removes 1.00 point of risk without costing any expected return. The formula is exact for the sample: the actual month-by-month returns of a 60/40 mix, rebalanced every month, have the same 10.25%.' },
     { table: {
       caption: 'Mixes of the total-market and bond funds (simulated 2013–2027, correlation 0.32)',
       head: ['Weight in shares', 'Expected return', 'Standard deviation', 'Weighted average of the two SDs'],
@@ -111,7 +112,7 @@ export default {
     { p: 'Add more holdings and the pattern continues, up to a limit. For an <g>equally weighted portfolio</g> of <m>n</m> assets, each with the same average variance and the same average covariance with the others, the portfolio variance is' },
     { math: String.raw`\sigma_P^2 = \dfrac{1}{n}\,\overline{\sigma^2} + \left(1 - \dfrac{1}{n}\right)\overline{\text{cov}}` },
     { p: 'As <m>n</m> grows, the first term, each holding’s own risk, shrinks towards zero: that is <g>unsystematic risk</g>, the part specific to each company, being diversified away. The second term tends to the average covariance and stays. That is <g>systematic risk</g>, the part every share shares because they all respond to the same economy. No amount of spreading within shares removes it.' },
-    { p: 'Suppose typical shares are like Morrow &amp; Pike and Harbour Street: an average variance of 0.0832 a year (a standard deviation of 28.84%) and an average covariance of 0.0283. The table shows what equal weighting does. Most of the reduction comes from the first ten or so holdings, and the floor, <m>\\sqrt{0.0283} = 16.83\\%</m>, is close to the total-market fund’s own 16.00%: the market fund has already diversified away almost all the specific risk. OpenStax’s <i>Principles of Finance</i> (section 15.2) makes the same point with real shares: risk falls quickly at first and then slowly, and a portfolio of around a dozen shares already removes much of the firm-specific risk.' },
+    { p: 'Suppose typical shares are like Morrow &amp; Pike and Harbour Street: an average variance of 0.0832 a year (a standard deviation of 28.84%) and an average covariance of 0.0283. The table shows what equal weighting does. Most of the reduction comes from the first ten or so holdings, and the floor, <m>\\sqrt{0.0283} = 16.83\\%</m>, is close to the total-market fund’s own 16.00%: the market fund has already diversified away almost all the specific risk. OpenStax’s <i>Principles of Finance</i> (section 15.2) makes the same point with real shares: risk falls quickly at first and then slowly. It notes that there is no exact number, but that “the average investor can create a reasonably diversified portfolio with approximately a dozen stocks.”' },
     { table: {
       caption: 'Standard deviation of an equally weighted portfolio of n typical shares (average variance 0.0832, average covariance 0.0283; simulated)',
       head: ['Number of shares', 'Standard deviation a year'],
@@ -119,10 +120,10 @@ export default {
       rows: [['1', '28.84%'], ['2', '23.61%'], ['5', '19.83%'], ['10', '18.39%'], ['30', '17.37%'], ['100', '17.00%'], ['Very many', '16.83%']],
       note: 'From the formula above with the two companies’ simulated variances and covariance; real shares differ in their risks and correlations.',
     } },
-    { p: 'This is why the market pays no premium for unsystematic risk: anyone can get rid of it cheaply. In the simulated history Morrow &amp; Pike’s standard deviation (25.25%) was far above the market fund’s (16.00%) but its mean return was lower (9.59% against 10.43%). The CAPM lesson turns this into a rule: expected return depends only on the systematic part of risk, measured by <g>beta</g>. To remove systematic risk you have to hold something outside the share market, such as bonds or bills, and accept a lower expected return.' },
+    { p: 'This is why the market pays no premium for unsystematic risk: anyone can get rid of it cheaply. The simulated history is consistent with this, though it can’t prove it: Morrow &amp; Pike’s standard deviation (25.25%) was far above the market fund’s (16.00%) but its mean return was lower (9.59% against 10.43%). With a standard error of about 6.5 points on a fifteen-year mean, and Harbour Street earning more than the market (12.53%), single shares’ averages are too noisy to be evidence either way. The CAPM lesson turns this into a rule: expected return depends only on the systematic part of risk, measured by <g>beta</g>. To remove systematic risk you have to hold something outside the share market, such as bonds or bills, and accept a lower expected return.' },
 
     { h: 'When diversification lets you down' },
-    { p: 'Correlations are not fixed. A common observation in real markets is that shares in different countries and industries fall together in a crash, just when diversification is wanted most. The simulated data show the same pattern for shares, and show why. Measured within single calendar years, the home and international funds’ correlation was 0.90 in 2020 and 0.85 in 2022, against 0.78 over the fifteen years; for Morrow &amp; Pike and Harbour Street it was 0.78 in 2020 and 0.49 in 2022, against 0.35. In March 2020 one shock, a 17% fall in the market, hit every share at once, and a common shock that large dominates the year’s movements.' },
+    { p: 'Correlations are not fixed. A common observation in real markets is that shares in different countries and industries fall together in a crash, just when diversification is wanted most. The simulated data show it clearly for 2020 and show why. Measured within single calendar years, Morrow &amp; Pike and Harbour Street had their highest correlation of the fifteen years in 2020 (0.78, against 0.35 over the whole period), and the home and international funds their second highest (0.90, against 0.78). In March 2020 one shock, a 17% fall in the market, hit every share at once, and a common shock that large dominates the year’s movements. 2022’s share correlations (0.85 and 0.49) were higher than the fifteen-year figures but within the normal year-to-year range: the home–international correlation was 0.91 in 2025, a good year. Twelve-month estimates are too noisy to establish the crash pattern; that claim rests on real-market studies, not on this simulation.' },
     { table: {
       caption: 'Correlations of monthly returns within a calendar year (simulated)',
       head: ['Pair', '2013–2027', '2020', '2022'],
@@ -196,12 +197,12 @@ export default {
       setup: 'Owen Marsh (fictional), a coffee wholesaler, wants to invest $20,000 in “businesses he understands”: half in Morrow &amp; Pike Roasters and half in Harbour Street Foods. His adviser compares that with the total-market index fund, using the simulated 2013–2027 history (Morrow &amp; Pike: 9.59% mean, 25.25% SD; Harbour Street: 12.53%, 32.03%; correlation 0.35; the fund: 10.43%, 16.00%).',
       steps: [
         String.raw`Two-share portfolio, expected return: <m>0.5 \times 9.59\% + 0.5 \times 12.53\% = 11.06\%</m>.`,
-        String.raw`Standard deviation: <m>\sqrt{0.25 \times 0.2525^2 + 0.25 \times 0.3203^2 + 2 \times 0.25 \times 0.35 \times 0.2525 \times 0.3203} = 23.61\%</m>, below the 28.64% average of the two because the correlation is only 0.35.`,
+        String.raw`Variance: <m>0.25 \times 0.2525^2</m> plus <m>0.25 \times 0.3203^2</m> plus <m>2 \times 0.25 \times 0.35 \times 0.2525 \times 0.3203</m> = 0.0558; standard deviation <m>\sqrt{0.0558} = 23.61\%</m>, below the 28.64% average of the two because the correlation is only 0.35.`,
         'Compare with the fund: 0.63 points more mean return for 7.61 points more standard deviation. Fifteen years of simulated data cannot tell a mean difference that small from luck.',
         'Most of the extra risk is unsystematic: the formula for many holdings puts the floor for typical shares near 16.8%, so the extra 6.8 points or so comes from holding only two companies.',
       ],
       answer: 'The two shares carry a standard deviation of about 23.6% a year against the fund’s 16.0%, for a mean return only 0.6 points higher in this sample.',
-      interpretation: 'The adviser’s point is not that the two companies are bad investments but that holding only two leaves risk the market does not pay for. If Owen likes them, a small holding on top of a diversified fund keeps most of the diversification.' },
+      interpretation: 'The adviser’s point is not that the two companies are bad investments but that holding only two leaves risk the market does not pay for.' },
   ],
 
   demo: [
@@ -287,6 +288,7 @@ export default {
     { what: 'Corr Morrow–Harbour', value: MH.corr, shown: 0.35 },
     { what: 'MH 50/50 er', value: PMH.er * 100, shown: 11.06 },
     { what: 'MH 50/50 sd', value: PMH.sd * 100, shown: 23.61 },
+    { what: 'MH 50/50 variance', value: PMH.sd ** 2, shown: 0.0558, tol: 0.00005 },
     { what: 'MH average SD', value: (st.morrow.sd + st.harbour.sd) / 2 * 100, shown: 28.64 },
     { what: 'MH min-var weight', value: wMinMH * 100, shown: 67.7, tol: 0.05 },
     { what: 'MH min-var SD', value: PMHmin.sd * 100, shown: 22.88 },
@@ -309,7 +311,15 @@ export default {
     { what: 'corr mkt–bonds 2020', value: corrIn('2020', 'market', 'bonds'), shown: 0.13 },
     { what: 'corr mkt–bonds 2022', value: corrIn('2022', 'market', 'bonds'), shown: 0.15 },
     { what: 'Bond correlations lower in 2020 and 2022 than overall', value: corrIn('2020', 'market', 'bonds') < MB.corr && corrIn('2022', 'market', 'bonds') < MB.corr ? 1 : 0, shown: 1 },
-    { what: 'Share correlations higher in 2020 and 2022 than overall', value: [['market', 'intl', MI.corr], ['morrow', 'harbour', MH.corr]].every(([a, b, c]) => corrIn('2020', a, b) > c && corrIn('2022', a, b) > c) ? 1 : 0, shown: 1 },
+    { what: 'MH 2020 highest of the 15 years', value: YEARS.every((y) => corrIn(y, 'morrow', 'harbour') <= corrIn('2020', 'morrow', 'harbour')) ? 1 : 0, shown: 1 },
+    { what: 'Mkt–intl 2020 second highest', value: YEARS.filter((y) => corrIn(y, 'market', 'intl') > corrIn('2020', 'market', 'intl')).length + 1, shown: 2 },
+    { what: 'Mkt–intl 2025 highest', value: corrIn('2025', 'market', 'intl'), shown: 0.91 },
+    { what: '2025 a good year for the market', value: yr('market', '2025') > 0.2 ? 1 : 0, shown: 1 },
+    { what: '2022 share correlations within other years’ range', value: [['market', 'intl'], ['morrow', 'harbour']].every(([a, b]) => corrIn('2022', a, b) < Math.max(...YEARS.filter((y) => y !== '2022' && y !== '2020').map((y) => corrIn(y, a, b)))) ? 1 : 0, shown: 1 },
+    { what: '2022 share correlations above full period', value: corrIn('2022', 'market', 'intl') > MI.corr && corrIn('2022', 'morrow', 'harbour') > MH.corr ? 1 : 0, shown: 1 },
+    { what: 'Variance 60/40 terms sum', value: 0.36 * 0.16 ** 2 + 0.16 * 0.0414 ** 2 + 2 * 0.24 * 0.32 * 0.16 * 0.0414, shown: 0.0105, tol: 0.00005 },
+    { what: 'SE of a share’s 15-year mean (about 6.5 points)', value: st.morrow.sd / Math.sqrt(15) * 100, shown: 6.5, tol: 0.2 },
+    { what: 'Harbour beat market', value: st.harbour.mean > st.market.mean ? 1 : 0, shown: 1 },
     { what: 'March 2020 market return (about −17%)', value: SERIES.market[MONTHS.indexOf('2020-03')] * 100, shown: -17, tol: 0.5 },
     { what: 'Market 2022', value: yr('market', '2022') * 100, shown: -26.9, tol: 0.05 },
     { what: 'Bonds 2022', value: yr('bonds', '2022') * 100, shown: -13.0, tol: 0.05 },
