@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>F06 Investment Analysis · Sunflower Intelligence</title>
+  <meta name="description" content="Risk and return, diversification, CAPM, bonds and equity valuation.">
+  <meta name="theme-color" content="#192B49">
+  <link rel="canonical" href="https://ruibinray.github.io/sunflower-intelligence/learn/finance/f06/">
+  <meta property="og:title" content="F06 Investment Analysis · Sunflower Intelligence">
+  <meta property="og:description" content="Risk and return, diversification, CAPM, bonds and equity valuation.">
+  <meta property="og:image" content="https://ruibinray.github.io/sunflower-intelligence/assets/img/og-image.jpg">
+  <link rel="icon" href="../../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/img/apple-touch-icon.png">
+  <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}try{if(localStorage.getItem('si:outline')==='closed')document.documentElement.classList.add('outline-closed')}catch(e){}</script>
+  <link rel="preload" href="../../../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../../assets/css/base.css?v=31">
+  <link rel="stylesheet" href="../../../assets/css/rooms.css?v=31">
+  <link rel="stylesheet" href="../../../assets/css/study.css?v=31">
+</head>
+<body class="room room--learn room--sub room--study school--finance page--course" data-root="../../../" data-course="f06">
+  <a class="skip-link" href="#ledger">Skip to the course</a>
+  <!-- chrome:header -->
+  <header class="site-header">
+    <a class="wordmark" href="../../../"><svg viewBox="-16 -16 32 32" aria-hidden="true"><defs><path id="wm-p" d="M0,-6.3C3,-8.6 2.8,-12.8 0,-15.4C-2.8,-12.8 -3,-8.6 0,-6.3Z" fill="#E8B923" stroke="#A97A0C" stroke-width=".6"/></defs><use href="#wm-p"/><use href="#wm-p" transform="rotate(27.7)"/><use href="#wm-p" transform="rotate(55.4)"/><use href="#wm-p" transform="rotate(83.1)"/><use href="#wm-p" transform="rotate(110.8)"/><use href="#wm-p" transform="rotate(138.5)"/><use href="#wm-p" transform="rotate(166.2)"/><use href="#wm-p" transform="rotate(193.8)"/><use href="#wm-p" transform="rotate(221.5)"/><use href="#wm-p" transform="rotate(249.2)"/><use href="#wm-p" transform="rotate(276.9)"/><use href="#wm-p" transform="rotate(304.6)"/><use href="#wm-p" transform="rotate(332.3)"/><circle r="6.6" fill="#5B3A12"/><circle r="6.6" fill="none" stroke="#C99216" stroke-width="1.3"/><circle r="2.6" fill="#3B240B"/></svg><span>Sunflower Intelligence</span></a>
+    <nav class="site-nav" id="site-nav" aria-label="Rooms">
+      <ul role="list">
+        <li><a href="../../../finance/">Finance</a></li>
+        <li><a href="../../../analytics/">Business analytics</a></li>
+        <li><a href="../../../marketing/">Marketing</a></li>
+        <li><a href="../../../models/">How I build the models</a></li>
+        <li><a href="../../../contact/">Contact</a></li>
+        <li><a href="../../../learn/" aria-current="page">Learn</a></li>
+      </ul>
+    </nav>
+    <div class="header-tools">
+      <button class="icon-btn motion-btn" type="button" aria-pressed="false" aria-label="Pause motion" title="Pause motion">
+        <svg class="i-pause" viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="4" width="3.2" height="12" rx="1" fill="currentColor"/><rect x="11.8" y="4" width="3.2" height="12" rx="1" fill="currentColor"/></svg>
+        <svg class="i-play" viewBox="0 0 20 20" aria-hidden="true" hidden><path d="M6 4.2v11.6c0 .7.8 1.1 1.4.7l8.6-5.8c.5-.3.5-1.1 0-1.4L7.4 3.5C6.8 3.1 6 3.5 6 4.2z" fill="currentColor"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Rooms menu">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </header>
+  <!-- /chrome:header -->
+
+  <main>
+    
+    <header class="canvas canvas--sub canvas--course" id="course-canvas" aria-label="Course outline">
+      <div class="canvas-top">
+        <a class="canvas-room" href="../../../learn/finance/"><img src="../../../assets/img/flower-finance-160.webp" alt="" width="56" height="56"><span>Finance & Accounting</span></a>
+        <button class="outline-toggle" type="button" aria-expanded="true" aria-controls="course-outline"><span class="ot-open">Hide outline</span><span class="ot-closed">Show outline</span></button>
+      </div>
+      <p class="course-code">F06 · Intermediate</p>
+      <p class="course-name"><a href="../../../learn/finance/f06/" aria-current="page">Investment Analysis</a></p>
+      <div class="course-meter" data-course="f06"><span class="cm-bar" aria-hidden="true"><span></span></span><span class="cm-text">1 lesson</span></div>
+      <nav class="outline" id="course-outline" aria-label="F06 lessons">
+        <ol class="o-list" role="list">
+          
+          <li class="o-module"><details open><summary><span class="o-mod-n">Module 1</span> Securities and markets</summary><ol role="list"><li class="o-item o-lesson" data-lesson="f06/shares-and-markets"><a href="../../../learn/finance/f06/shares-and-markets/"><span class="o-mark" aria-hidden="true"></span><span class="o-text"><span class="o-n">1</span> Shares and markets</span><span class="o-status visually-hidden"></span></a></li></ol></details></li><li class="o-module"><details open><summary><span class="o-mod-n">Module 2</span> Risk and return</summary><ol role="list"></ol></details></li><li class="o-module"><details open><summary><span class="o-mod-n">Module 3</span> Portfolios and the market</summary><ol role="list"></ol></details></li><li class="o-module"><details open><summary><span class="o-mod-n">Module 4</span> Valuing shares</summary><ol role="list"></ol></details></li>
+          <li class="o-item o-test" data-test="f06/project"><a href="../../../learn/finance/f06/project/"><span class="o-mark" aria-hidden="true"></span><span class="o-text">Project</span><span class="o-status visually-hidden"></span></a></li>
+        </ol>
+      </nav>
+    </header>
+
+    <div class="ledger" id="ledger">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="../../../">The painting</a></li><li><a href="../../../learn/">Learn</a></li><li><a href="../../../learn/finance/">Finance</a></li><li aria-current="page">F06</li></ol></nav>
+      <header class="lesson-head course-head">
+        <p class="lesson-kicker">F06 · Intermediate · 1 lesson in four modules · about 80 minutes</p>
+        <h1 class="lesson-title">Investment Analysis</h1>
+        <p class="lead">Risk and return, diversification, CAPM, bonds and equity valuation.</p>
+        <div class="course-cta" id="course-cta"><a class="btn btn-primary" href="../../../learn/finance/f06/shares-and-markets/">Start with lesson 1</a></div>
+        <div class="course-progress" id="course-progress" aria-live="polite"></div>
+      </header>
+
+      <section class="course-section" id="about" aria-labelledby="about-h">
+        <h2 id="about-h">What you will learn</h2>
+        <ul class="objectives"><li>Describe what shares and bonds are, how they trade and are priced, and calculate market capitalisation and enterprise value.</li><li>Price a bond, calculate its yield to maturity, and use duration and convexity to estimate how its price moves with interest rates and credit risk.</li><li>Measure returns (holding-period, arithmetic, geometric, real) and risk (standard deviation, drawdowns, the spread of outcomes) from history and from scenarios, and say what each can and can’t tell you.</li><li>Explain diversification with covariance and correlation, and show how much risk it removes and what it leaves.</li><li>Build efficient portfolios, combine them with a risk-free asset along the capital allocation line, and choose a mix for an investor’s risk tolerance and horizon.</li><li>Estimate beta by regression, use the CAPM to find a required return, and judge funds by risk-adjusted performance and alpha.</li><li>Compare index funds, ETFs and active funds by cost, tracking and evidence on performance.</li><li>Value a share by discounted cash flow with a terminal value and by multiples, and judge the result with fundamental analysis.</li></ul>
+        <div class="course-facts">
+          <div><h3>Prerequisites</h3><ul class="prereq-list"><li><a href="../../../learn/finance/f04/">F04 Mathematics of Finance</a> — required</li><li><a href="../../../learn/analytics/b04/">B04 Descriptive and Inferential Statistics</a> — recommended</li></ul></div>
+          <div><h3>How it works</h3><p>Each lesson teaches the idea from first principles, works examples step by step, lets you explore it in an interactive, then has you practise with feedback. A lesson is complete when you have worked its guided problems and scored 80% on its knowledge check. Mastery is tracked separately and comes back for review before you are likely to forget. Each module ends with a test; the course ends with a project and a final assessment.</p></div>
+        </div>
+        <div class="case-block"><p class="case-tag">Fictional case</p><p><b>Lantern Coffee Co.</b> A fictional coffee business founded by Ana Lim. It starts as a catering and barista-training service, opens its own cafés and an online shop for beans, and plans a canned cold brew. Every name and figure in it is invented for teaching.</p></div>
+      </section>
+
+      <section class="course-section" id="modules" aria-labelledby="modules-h">
+        <h2 id="modules-h">Modules and lessons</h2>
+        <section class="course-module" id="module-1" aria-labelledby="module-1-h">
+          <h3 id="module-1-h"><span class="cm-n">Module 1</span> Securities and markets</h3>
+          <ol class="lesson-rows" role="list"><li class="lesson-row" data-lesson="f06/shares-and-markets"><a href="../../../learn/finance/f06/shares-and-markets/"><span class="lr-n" aria-hidden="true">1</span><span class="lr-body"><span class="lr-title">Shares and markets</span><span class="lr-blurb">What a share is, how shares are issued and traded, how an index is built, and what market capitalisation and enterprise value measure, using two listed coffee and food companies.</span><span class="lr-meta">80 min · <span class="lr-status">not started</span></span></span></a></li></ol>
+        </section>
+        <section class="course-module" id="module-2" aria-labelledby="module-2-h">
+          <h3 id="module-2-h"><span class="cm-n">Module 2</span> Risk and return</h3>
+          <ol class="lesson-rows" role="list"></ol>
+        </section>
+        <section class="course-module" id="module-3" aria-labelledby="module-3-h">
+          <h3 id="module-3-h"><span class="cm-n">Module 3</span> Portfolios and the market</h3>
+          <ol class="lesson-rows" role="list"></ol>
+        </section>
+        <section class="course-module" id="module-4" aria-labelledby="module-4-h">
+          <h3 id="module-4-h"><span class="cm-n">Module 4</span> Valuing shares</h3>
+          <ol class="lesson-rows" role="list"></ol>
+        </section>
+      </section>
+
+      <section class="course-section" id="finish" aria-labelledby="finish-h">
+        <h2 id="finish-h">Project and final assessment</h2>
+        <ol class="lesson-rows" role="list"><li class="lesson-row is-test" data-test="f06/project"><a href="../../../learn/finance/f06/project/"><span class="lr-n" aria-hidden="true">✓</span><span class="lr-body"><span class="lr-title">Project: Should Ana buy Brightcup?</span><span class="lr-blurb">Ana is tempted to put part of her new retirement savings into Brightcup Coffee, the listed chain she competes with. Value the company by discounted cash flow and against its peers, estimate the return its risk requires, and work out what holding it would do to her portfolio.</span><span class="lr-meta"><span class="lr-status">not taken</span></span></span></a></li></ol>
+        <p class="note">The course is complete when every lesson is complete, every module test is passed, the project is finished and the final assessment is passed.</p>
+      </section>
+
+      <section class="course-section" id="resources" aria-labelledby="res-h">
+        <h2 id="res-h">Resources</h2>
+        <ul class="resource-list">
+          
+          <li><a href="../../../learn/glossary/?course=f06"><b>Glossary</b></a>: every term this course defines.</li>
+          <li><a href="../../../learn/formulas/?course=f06"><b>Formulas</b></a>: every formula with its symbols and units.</li>
+          <li><a href="../../../learn/review/"><b>Review</b></a>: flashcards and the questions you missed, when they are due.</li>
+        </ul>
+        <h3>Elsewhere on this site</h3><ul class="resource-list"><li><a href="../../../learn/lessons/stocks/">Plate: Return, risk and diversification</a></li><li><a href="../../../learn/lessons/bonds/">Plate: Bonds, yields and duration</a></li><li><a href="../../../finance/stocks/">Stock analysis</a> (tool)</li><li><a href="../../../finance/markets/">Bonds and options</a> (tool)</li></ul>
+        <h3>Sources used in this course</h3>
+        <ol class="ref-list">
+            <li>U.S. Securities and Exchange Commission. <i>Stocks – FAQs</i>. Investor.gov. <a href="https://www.investor.gov/introduction-investing/investing-basics/investment-products/stocks">investor.gov/introduction-investing/investing-basics/investm…</a></li>
+            <li>U.S. Securities and Exchange Commission. <i>Types of Orders</i>. Investor.gov. <a href="https://www.investor.gov/introduction-investing/investing-basics/how-stock-markets-work/types-orders">investor.gov/introduction-investing/investing-basics/how-sto…</a></li>
+            <li>S&amp;P Dow Jones Indices. <i>Dow Jones Industrial Average</i> (index page). <a href="https://www.spglobal.com/spdji/en/indices/equity/dow-jones-industrial-average/">spglobal.com/spdji/en/indices/equity/dow-jones-industrial-av…</a></li>
+            <li>S&amp;P Dow Jones Indices. <i>S&amp;P 500</i> (index page). <a href="https://www.spglobal.com/spdji/en/indices/equity/sp-500/">spglobal.com/spdji/en/indices/equity/sp-500</a></li>
+            <li>Dahlquist, J. &amp; Knight, R. (2022). <i>Principles of Finance</i>, section 11.1, “Multiple Approaches to Stock Valuation”. OpenStax. <a href="https://openstax.org/books/principles-finance/pages/11-1-multiple-approaches-to-stock-valuation">openstax.org/books/principles-finance/pages/11-1-multiple-ap…</a></li>
+          </ol>
+      </section>
+    </div>
+  </main>
+
+  <!-- chrome:footer -->
+  <footer class="site-footer">
+    <h2>The other rooms</h2>
+    <ul class="rooms" role="list">
+      <li><a class="room-link" href="../../../finance/" data-portal="#E8B923"><img src="../../../assets/img/flower-finance-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Finance</strong><span>An obsession with yellow</span></span></a></li>
+      <li><a class="room-link" href="../../../analytics/" data-portal="#192B49"><img src="../../../assets/img/flower-analytics-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Business analytics</strong><span>The golden spiral</span></span></a></li>
+      <li><a class="room-link" href="../../../marketing/" data-portal="#56632C"><img src="../../../assets/img/flower-marketing-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Marketing</strong><span>Personal identity</span></span></a></li>
+      <li><a class="room-link" href="../../../models/" data-portal="#252A31"><img src="../../../assets/img/flower-models-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>How I build the models</strong><span>The cycle of life</span></span></a></li>
+      <li><a class="room-link" href="../../../contact/" data-portal="#F6E7C1"><img src="../../../assets/img/flower-contact-160.webp" alt="" width="64" height="64" loading="lazy" decoding="async"><span><strong>Contact</strong><span>Gratitude and friendship</span></span></a></li>
+    </ul>
+    <div class="footer-meta">
+      <p><a href="../../../">Back to the painting</a></p>
+      <p>Painting after Vincent van Gogh’s <i>Sunflowers</i> (1888–89), retouched for this site. Letters quoted from <a href="https://vangoghletters.org">vangoghletters.org</a>.</p>
+      <p>© <span data-year>2026</span> Ruibin Jin Yao</p>
+    </div>
+  </footer>
+  <!-- /chrome:footer -->
+  <script type="module" src="../../../assets/js/pages/study-course.js?v=31"></script>
+</body>
+</html>
