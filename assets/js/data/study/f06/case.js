@@ -26,7 +26,7 @@ export const ASSETS = {
   bills: { name: 'One-month bills (the risk-free rate)', kind: 'cash' },
   market: { name: 'Harbourline Total Market Index Fund', kind: 'fund', fee: 0.0004, index: 'Harbourline Total Market Index', holds: 'every listed share in the home market, weighted by market value' },
   intl: { name: 'Harbourline International Index Fund', kind: 'fund', fee: 0.0007, index: 'Harbourline International Index', holds: 'listed shares in other developed and emerging markets' },
-  bonds: { name: 'Harbourline Aggregate Bond Index Fund', kind: 'fund', fee: 0.0005, index: 'Harbourline Aggregate Bond Index', holds: 'investment-grade government and corporate bonds, average duration about 6 years' },
+  bonds: { name: 'Harbourline Aggregate Bond Index Fund', kind: 'fund', fee: 0.0005, index: 'Harbourline Aggregate Bond Index', holds: 'investment-grade government and corporate bonds, average duration about 6 years', duration: 6 },
   active: { name: 'Northgate Active Equity Fund', kind: 'fund', fee: 0.0085, benchmark: 'market', holds: 'about 60 home-market shares picked by its managers' },
   brightcup: { name: 'Brightcup Coffee', kind: 'share' },
   morrow: { name: 'Morrow & Pike Roasters', kind: 'share' },

@@ -144,7 +144,7 @@ export const guided = [
         hints: ['Market capitalisations: 80 × 5 = 400 and 10 × 100 = 1,000 ($ millions).', 'Weight each return by market capitalisation: (400 × 5% + 1,000 × (−1%)) ÷ 1,400.'],
         wrong: [{ value: 4.33, say: 'That is the price-weighted return. Weight by market capitalisation instead.' }, { value: 2, say: 'That weights the two equally. Elver is worth 2.5 times as much as Dunholm.' }] },
       { id: 'f06-shr-g4-s3', type: 'mc', prompt: 'Which index better describes how much the market’s total value changed that week?',
-        options: ['The value-weighted index, because its weights are each company’s share of the market’s value', 'The price-weighted index, because it is based on the prices investors actually paid', 'Neither: the two are equally valid measures of the change in total value', 'The price-weighted index, because Dunholm’s higher price shows it is the larger company'],
+        options: ['The value-weighted one: its weights are shares of total market value', 'The price-weighted index, because it is based on the prices investors actually paid', 'Neither: the two are equally valid measures of the change in total value', 'The price-weighted index, because Dunholm’s higher price shows it is the larger company'],
         answer: 0,
         hints: ['Total value = Σ price × shares. Which index tracks that sum?'],
         feedback: { 1: 'Both use actual prices. The question is what each price is multiplied by: one share, or all the shares.', 2: 'Only the value-weighted index equals the percentage change in the companies’ combined market capitalisation.', 3: 'A high price says nothing about size: Dunholm’s market capitalisation is $400 million, Elver’s $1,000 million.' } },
@@ -230,7 +230,7 @@ export const check = [
   {
     id: 'f06-shr-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Why does a fund that tracks a value-weighted index not need to trade when its shares’ prices change?',
-    options: ['Each holding’s value moves with its own price, so the fund’s weights move exactly as the index’s do', 'Value-weighted indexes are recalculated only once a year, so daily price changes do not affect them', 'Its manager is allowed to let the weights drift by up to a set margin before rebalancing', 'Price changes affect a price-weighted index but leave a value-weighted index unchanged'],
+    options: ['Each holding moves with its own price, so its weights track the index’s automatically', 'Value-weighted indexes are recalculated only once a year, so daily price changes do not affect them', 'Its manager is allowed to let the weights drift by up to a set margin before rebalancing', 'Price changes affect a price-weighted index but leave a value-weighted index unchanged'],
     answer: 0,
     feedback: {
       1: 'A value-weighted index changes whenever prices change. The point is that the fund’s holdings change in the same proportions without trading.',
