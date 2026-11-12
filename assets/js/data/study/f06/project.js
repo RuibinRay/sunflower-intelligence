@@ -76,7 +76,7 @@ const forecastTable = htmlTable('Brightcup: Ana’s forecast for 2028–2032 (fi
 
 // ---------------------------------------------------------------- tools
 const betaTool = { kind: 'widget', widget: { type: 'regression', title: 'Brightcup against the market: monthly excess returns, 2023–2027 (simulated)',
-  y: { name: 'Brightcup excess return', values: ex('brightcup') }, xs: { 'Market excess return': ex('market') },
+  y: { name: 'Brightcup excess return', values: ex('brightcup') }, xs: [{ name: 'Market excess return', values: ex('market') }],
   note: 'Excess return = the month’s total return minus the one-month bill return. The data are simulated for teaching, not real market history.' } };
 const dcfTool = { kind: 'widget', widget: { type: 'formula', title: 'Brightcup: discounted cash flow',
   intro: 'Change the discount rate, terminal growth and the growth path’s scale. The forecast’s margins and investment shares stay as in the table.',
@@ -135,7 +135,7 @@ export default {
         { id: 'f06-pj-4', type: 'mc', kind: 'conceptual',
           prompt: `Brightcup’s P/E (${f(B.m.pe)}) and EV/EBITDA (${f(B.m.evEbitda)}) are above both peers’, but its PEG ratio (${f(B.m.peg)}) is below theirs (${f(M.m.peg)} and ${f(H.m.peg)}). What does that suggest?`,
           options: [
-            'The market prices Brightcup higher per dollar of current earnings mainly because it expects faster growth',
+            'The market expects Brightcup’s earnings to grow faster than its peers’',
             'Brightcup is overvalued, because any company on a higher P/E than its peers costs more for the same earnings',
             'Brightcup is undervalued, because a PEG below its peers’ always means the shares are cheap',
             'The multiples cannot be compared, because Brightcup carries more debt than Morrow & Pike',
@@ -156,10 +156,10 @@ export default {
       items: [
         num('f06-pj-5', 'What is Brightcup’s beta? Give two decimal places.', r(BETA, 2), () => IV.regressBeta(SERIES.brightcup.slice(LAST60.from), SERIES.market.slice(LAST60.from), SERIES.bills.slice(LAST60.from)).beta,
           `The slope of Brightcup’s excess return on the market’s, 60 months: ${f(BETA)} (R² ${f(REG.r2, 2)}). It matches the beta F05 used for Brightcup.`,
-          [{ value: r(IV.regressBeta(SERIES.brightcup.slice(LAST60.from), SERIES.market.slice(LAST60.from)).beta, 2), say: 'That regresses total returns, not excess returns. Subtract the bill return from both first.' }], { unit: '', places: 2, tol: 0.011 }),
+          [{ value: r(REG.r2, 2), say: 'That is R², the share of Brightcup’s variance the market explains. Beta is the slope.' }], { unit: '', places: 2, tol: 0.011 }),
         num('f06-pj-6', 'The slope’s standard error is in the output. What is the upper end of a 95% confidence interval for beta? Give two decimal places.', r(BETA_HI, 2), () => BETA + 2.0017 * REG.seBeta,
           `Standard error ${f(REG.seBeta, 3)}; with 58 degrees of freedom the t value is 2.00: ${f(BETA)} ± 2.00 × ${f(REG.seBeta, 3)} = ${f(BETA_LO)} to ${f(BETA_HI)}. Five years of one company’s returns pin beta down only loosely: the cost of equity is uncertain by about a point either way.`,
-          [{ value: r(BETA + 1.96 * REG.seBeta, 2), say: 'With 58 degrees of freedom use the t value (2.00), not 1.96, though the difference is small.' }], { unit: '', places: 2, tol: 0.015 }),
+          [{ value: r(BETA + REG.seBeta, 2), say: 'A 95% interval is about two standard errors either side, not one.' }], { unit: '', places: 2, tol: 0.015 }),
         num('f06-pj-7', 'What is Brightcup’s cost of equity by the CAPM? Give a percentage to two decimal places.', r(RE * 100, 2), () => (MARKET.rf + BETA * MARKET.mrp) * 100,
           `${pc(MARKET.rf, 1)} + ${f(BETA)} × ${pc(MARKET.mrp, 1)} = ${pc(RE, 2)}.`,
           [{ value: r((MARKET.rf + BETA * MARKET.mrp + 0.03) * 100, 2), say: 'The 3% premium was Ana’s judgement for a small private firm like Lantern. Brightcup is large and listed.' }], { unit: '%', places: 2, tol: 0.02 }),
@@ -214,9 +214,9 @@ export default {
           prompt: `The peers’ multiples value Brightcup at $${Math.min(...PE_IMPL, ...EV_IMPL).toFixed(0)}–$${Math.max(...PE_IMPL, ...EV_IMPL).toFixed(0)}, well below both its price and the DCF. How should Ana read that?`,
           options: [
             'With care: two peers that grow more slowly than Brightcup are a thin basis, so the multiples mainly show how much of Brightcup’s price rests on its growth',
-            'As proof the shares are overvalued, because two independent methods agree that Brightcup is expensive',
-            'As proof the DCF is wrong, because market multiples reflect what investors actually pay',
-            'As irrelevant, because relative valuation only works for companies in different industries',
+            'As proof the shares are overvalued, because two independent methods, the P/E and the EV/EBITDA comparisons, agree that Brightcup is expensive',
+            'As proof the DCF is wrong, because market multiples reflect what investors actually pay for similar shares today, while a DCF is only one person’s forecast of the future',
+            'As irrelevant, because relative valuation is meant for companies in different industries, and these three all sell coffee or food',
           ],
           answer: 0,
           feedback: {
@@ -247,7 +247,7 @@ export default {
           options: [
             'Her income and her own business depend on the same coffee market, so Brightcup’s bad years are likely to be hers too',
             'Brightcup pays a dividend, and dividends are taxed, so a retirement account should hold only shares that pay none',
-            'Brightcup’s beta is above 1, and a retirement account should hold only assets with betas below 1',
+            'Brightcup’s beta is above 1, and a long-horizon retirement account should hold only assets whose betas are below the market’s',
             'She competes with Brightcup, so she would be breaking the law by owning its shares',
           ],
           answer: 0,
