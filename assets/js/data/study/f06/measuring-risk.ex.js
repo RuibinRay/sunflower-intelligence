@@ -65,7 +65,7 @@ export const guided = [
       { id: 'f06-risk-g1-s1', type: 'num', prompt: 'What is the variance, in squared percentage points (%²)? Give two decimal places.',
         answer: 27.25, check: () => IV.scenarios([{ p: 0.3, r: 9 }, { p: 0.5, r: 4 }, { p: 0.2, r: -6 }]).variance, unit: '%²', places: 2, tol: 0.02,
         hints: ['Square each scenario’s distance from 3.5% and weight it by its probability.', '0.3 × 5.5² + 0.5 × 0.5² + 0.2 × (−9.5)².'],
-        wrong: [{ value: 40.92, say: 'That divides the squared distances by 3 (or n − 1). Scenarios are weighted by their probabilities instead.' }, { value: 4.6, say: 'That weights the distances without squaring them first (and lets the signs cancel). Square, then weight.' }] },
+        wrong: [{ value: 40.25, say: 'That divides the squared distances by 3 instead of weighting them by their probabilities.' }, { value: 60.38, say: 'That divides the squared distances by n − 1 = 2, as for a sample. Scenarios are weighted by their probabilities.' }, { value: 3.8, say: 'That weights the distances without squaring them. Square each distance, then weight.' }, { value: 0, say: 'The signed distances cancel when weighted by their probabilities. Square them first.' }] },
       { id: 'f06-risk-g1-s2', type: 'num', prompt: 'What is the standard deviation? Give a percentage to two decimal places.',
         answer: 5.22, check: () => IV.scenarios([{ p: 0.3, r: 0.09 }, { p: 0.5, r: 0.04 }, { p: 0.2, r: -0.06 }]).sd * 100, unit: '%', places: 2, tol: 0.02,
         hints: ['The square root of the variance.'],
@@ -219,12 +219,12 @@ export const check = [
     id: 'f06-risk-k4', type: 'num', kind: 'numerical',
     prompt: 'A fictional fund’s month-end values were $50, $58, $61, $49, $55, $64, $51 and $70. What was its maximum drawdown? Give a percentage to one decimal place (as a negative number).',
     answer: -20.3, check: () => maxDD(VALS2) * 100, unit: '%', places: 1, tol: 0.1,
-    wrong: [{ value: -19.7, say: 'That is the fall from $61 to $49 measured on the low price. A drawdown divides by the peak: 49 ÷ 61 − 1.' }, { value: -2, say: 'That compares the low with the starting value. Measure from the peak before the low, $61.' }, { value: -27.1, say: 'That runs from the later peak ($70) back to an earlier low; a drawdown always runs from a peak to a later low.' }],
+    wrong: [{ value: -19.7, say: 'That is the first fall, $61 → $49. A later fall, $64 → $51 (−20.3%), was deeper; the maximum drawdown is the largest.' }, { value: -2, say: 'That compares the low with the starting value. Measure from the peak before the low, $61.' }, { value: -27.1, say: 'That runs from the later peak ($70) back to an earlier low; a drawdown always runs from a peak to a later low.' }],
     solution: 'Two falls: $61 → $49 (−19.7%) and $64 → $51 (−20.3%). The larger, −20.3%, is the maximum drawdown.',
   },
   {
     id: 'f06-risk-k5', type: 'mc', kind: 'applied',
-    prompt: 'Ana’s friend Priya (fictional) has $40,000 saved for a flat deposit she will pay in two years, and sees that the simulated market fund grew 9.57% a year. What is the best advice?',
+    prompt: 'Ana’s friend Saskia (fictional) has $40,000 saved for a flat deposit she will pay in two years, and sees that the simulated market fund grew 9.57% a year. What is the best advice?',
     options: ['Keep it in savings: over two years shares can fall far, and the deposit is due on a fixed date', 'Invest it in the market fund, since over any period it earns about 9.57% a year', 'Invest half in the market fund, since losses over two years are at most about 10%', 'Wait for a market fall and then invest it all, so the deposit buys more fund units'],
     answer: 0,
     feedback: {

@@ -9,9 +9,9 @@ const pct = (v, d = 2) => `${v < 0 ? '−' : ''}${(Math.abs(v * 100) + 1e-9).toF
 const m0 = (v) => `${v < 0 ? '−' : ''}$${Math.round(Math.abs(v)).toLocaleString('en-US')}m`;
 // the three-company index of the worked example (fictional)
 const IX = [
-  { name: 'Aldwick Rail', short: 'Aldwick', p0: 120, shares: 10 },
-  { name: 'Brisa Telecom', short: 'Brisa', p0: 15, shares: 300 },
-  { name: 'Cobham Mills', short: 'Cobham', p0: 40, shares: 50 },
+  { name: 'Ardlow Rail', short: 'Ardlow', p0: 120, shares: 10 },
+  { name: 'Brennoch Telecom', short: 'Brennoch', p0: 15, shares: 300 },
+  { name: 'Calvorth Mills', short: 'Calvorth', p0: 40, shares: 50 },
 ];
 
 export const widgets = {
@@ -46,11 +46,11 @@ export const widgets = {
   'shr-index': {
     type: 'formula',
     title: 'Price weights against value weights',
-    intro: 'Three fictional companies: Aldwick Rail ($120, 10 million shares), Brisa Telecom ($15, 300 million) and Cobham Mills ($40, 50 million). Set each one’s return for a day.',
+    intro: 'Three fictional companies: Ardlow Rail ($120, 10 million shares), Brennoch Telecom ($15, 300 million) and Calvorth Mills ($40, 50 million). Set each one’s return for a day.',
     inputs: [
-      { id: 'a', label: 'Aldwick Rail’s return', min: -20, max: 20, step: 1, value: 10, fmt: 'pct' },
-      { id: 'b', label: 'Brisa Telecom’s return', min: -20, max: 20, step: 1, value: -2, fmt: 'pct' },
-      { id: 'c', label: 'Cobham Mills’ return', min: -20, max: 20, step: 1, value: 1, fmt: 'pct' },
+      { id: 'a', label: 'Ardlow Rail’s return', min: -20, max: 20, step: 1, value: 10, fmt: 'pct' },
+      { id: 'b', label: 'Brennoch Telecom’s return', min: -20, max: 20, step: 1, value: -2, fmt: 'pct' },
+      { id: 'c', label: 'Calvorth Mills’ return', min: -20, max: 20, step: 1, value: 1, fmt: 'pct' },
     ],
     compute: (v) => {
       const r = [v.a, v.b, v.c].map((x) => x / 100);
@@ -63,11 +63,11 @@ export const widgets = {
         rows: [
           ['Value-weighted index return', pct(vw)],
           ['Price-weighted index level (starts at 100)', (100 * p1 / p0).toFixed(2)],
-          ['Weights by price (Aldwick, Brisa, Cobham)', IX.map((c) => pct(c.p0 / p0, 1)).join(', ')],
-          ['Weights by value (Aldwick, Brisa, Cobham)', IX.map((c) => pct(c.p0 * c.shares / cap0, 1)).join(', ')],
+          ['Weights by price (Ardlow, Brennoch, Calvorth)', IX.map((c) => pct(c.p0 / p0, 1)).join(', ')],
+          ['Weights by value (Ardlow, Brennoch, Calvorth)', IX.map((c) => pct(c.p0 * c.shares / cap0, 1)).join(', ')],
         ],
         note: gap < 0.0005 ? 'The two indexes agree: the returns you set happen to give the same weighted average under both sets of weights.'
-          : `The two indexes differ by ${(gap * 100).toFixed(2)} percentage points. Aldwick carries ${pct(IX[0].p0 / p0, 1)} of the price-weighted index because its share price is highest, but only ${pct(IX[0].p0 * IX[0].shares / cap0, 1)} of the market’s value; Brisa is the reverse.`,
+          : `The two indexes differ by ${(gap * 100).toFixed(2)} percentage points. Ardlow carries ${pct(IX[0].p0 / p0, 1)} of the price-weighted index because its share price is highest, but only ${pct(IX[0].p0 * IX[0].shares / cap0, 1)} of the market’s value; Brennoch is the reverse.`,
         chart: { kind: 'bar', x: { label: 'Index', values: ['Price-weighted', 'Value-weighted'] }, series: [{ name: 'Return (%)', values: [pw * 100, vw * 100] }], y: { label: 'Return (%)' } },
       };
     },
@@ -175,7 +175,7 @@ export const independent = [
   {
     id: 'f06-shr-i3', type: 'formula', kind: 'applied',
     prompt: 'Rows 2 to 4 hold three companies’ market capitalisations at the start of a month (column B, $ millions) and their returns for the month (column C). In C6, write a formula for the month’s return on a value-weighted index of the three.',
-    sheet: { cells: { A1: 'Company', B1: 'Market cap ($m)', C1: 'Return', A2: 'Morrow & Pike', B2: 1120, C2: 0.03, A3: 'Harbour Street', B3: 2160, C3: -0.01, A4: 'Cobham Mills', B4: 2000, C4: 0.02, A6: 'Index return' },
+    sheet: { cells: { A1: 'Company', B1: 'Market cap ($m)', C1: 'Return', A2: 'Morrow & Pike', B2: 1120, C2: 0.03, A3: 'Harbour Street', B3: 2160, C3: -0.01, A4: 'Calvorth Mills', B4: 2000, C4: 0.02, A6: 'Index return' },
       vary: { C2: [-0.04, 0.05], C3: [0.025, -0.03], C4: [0.01, -0.02], B2: [900, 1300], B3: [2500, 1800] } },
     cell: 'C6', view: 'A1:C6', widths: { A: 18, B: 16, C: 10 }, formats: { B: '#,##0', C: '0.00%' },
     answer: '=SUMPRODUCT(B2:B4,C2:C4)/SUM(B2:B4)',
@@ -214,7 +214,7 @@ export const independent = [
   },
   {
     id: 'f06-shr-i6', type: 'mc', kind: 'conceptual',
-    prompt: 'Tolverne Bakeries (fictional) fails. After its assets are sold, there is enough to repay its lenders in full and half of what its preferred shareholders are owed. What do its common shareholders receive?',
+    prompt: 'Marrowick Bakeries (fictional) fails. After its assets are sold, there is enough to repay its lenders in full and half of what its preferred shareholders are owed. What do its common shareholders receive?',
     options: ['Nothing: they are paid only after the preferred shareholders are paid in full', 'Half of what they paid for their shares, the same proportion as the preferred shareholders', 'Their share of whatever is left, divided equally with the preferred shareholders', 'Nothing now, but they can claim the shortfall from the directors personally'],
     answer: 0,
     feedback: {

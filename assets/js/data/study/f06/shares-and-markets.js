@@ -1,9 +1,10 @@
 // shares-and-markets.js — F06 · Shares and markets. Content only; exercises are in shares-and-markets.ex.js.
 // Morrow & Pike Roasters and Harbour Street Foods (fictional, F05's listed peers) come from case.js (COMPANIES, MARKET,
-// ANA, ASSETS); market capitalisation and enterprise value from core/investments.js. Aldwick Rail, Brisa Telecom,
-// Cobham Mills, Stoneleigh Foods Group and the Morrow & Pike quote ($27.98 bid, $28.02 ask) are fictional. Real-world
+// ANA, ASSETS); market capitalisation and enterprise value from core/investments.js. Ardlow Rail, Brennoch Telecom,
+// Calvorth Mills, Quellby Foods Group and the Morrow & Pike quote ($27.98 bid, $28.02 ask) are fictional. Real-world
 // statements are quoted from Investor.gov and S&P Dow Jones Indices pages opened on 11 November 2026.
-import { COMPANIES, MARKET, ANA, ASSETS } from './case.js?v=31';
+import { COMPANIES, MARKET, ANA, ASSETS, MORROW_FORECAST } from './case.js?v=31';
+import DCF from './discounted-cash-flow-valuation.js?v=31';
 import * as IV from '../../../core/investments.js?v=31';
 
 const MP = COMPANIES.morrow, HS = COMPANIES.harbour;
@@ -14,9 +15,9 @@ const Q = { bid: 27.98, ask: 28.02 };
 const mid = (Q.bid + Q.ask) / 2;
 // a three-company index (fictional)
 const IX = [
-  { name: 'Aldwick Rail', p0: 120, shares: 10, r: 0.10 },
-  { name: 'Brisa Telecom', p0: 15, shares: 300, r: -0.02 },
-  { name: 'Cobham Mills', p0: 40, shares: 50, r: 0.01 },
+  { name: 'Ardlow Rail', p0: 120, shares: 10, r: 0.10 },
+  { name: 'Brennoch Telecom', p0: 15, shares: 300, r: -0.02 },
+  { name: 'Calvorth Mills', p0: 40, shares: 50, r: 0.01 },
 ];
 const sumP0 = IX.reduce((s, c) => s + c.p0, 0);
 const sumP1 = IX.reduce((s, c) => s + c.p0 * (1 + c.r), 0);
@@ -29,8 +30,10 @@ const divisor1 = sumAfterSplit / pwLevel1;
 // Morrow & Pike: what the price implies (Gordon, F04) at F05's CAPM rate
 const rMP = IV.capm({ rf: MARKET.rf, beta: 0.90, mrp: MARKET.mrp });
 const gImplied = (rMP * MP.price - MP.dps) / (MP.price + MP.dps);
-// Stoneleigh's offer (fictional): 25% over the market price
+// Quellby's offer (fictional): 25% over the market price
 const OFFER = MP.price * 1.25;
+// the DCF lesson's reverse-DCF figure (implied terminal growth at $28.00)
+const dcfImpliedG = DCF.checks.find((c) => c.what === 'Implied terminal growth').value;
 const offerEquity = OFFER * MP.shares;
 const offerCost = offerEquity + MP.debt - MP.cash;
 
@@ -80,7 +83,7 @@ export default {
   theory: [
     { h: 'Common shares and preferred shares' },
     { p: 'Most shares are <b>common shares</b> (ordinary shares in the UK). Investor.gov summarises their two rights: common stock entitles owners to vote at shareholder meetings and to receive dividends. The votes elect the board of directors, which appoints management and decides whether to pay <g>dividends</g> and how much. Nothing obliges the board to pay any: a dividend is a decision, not a debt. Common shareholders also have <g>limited liability</g>: if the company fails they can lose what they paid for their shares, but creditors cannot pursue them for more.' },
-    { p: '<g>Preferred stock</g> sits between debt and common equity. It pays a fixed dividend, usually stated as a percentage of its par value, and, in Investor.gov’s words, preferred stockholders usually don’t have voting rights; in exchange they are paid their dividends before common shareholders, and they have priority over common stockholders if the company goes bankrupt and its assets are liquidated. Because the dividend is fixed and usually has no end date, F04 valued a preferred share as a perpetuity, and F05 turned that round into its cost, <m>r_P = D_P \\div P_P</m>. Preferred dividends, unlike interest, are not a contractual obligation whose non-payment is a <g>default</g>, so preferred shares carry more risk than the same company’s bonds.' },
+    { p: '<g>Preferred stock</g> sits between debt and common equity. It pays a fixed dividend, usually stated as a percentage of its par value, and Investor.gov sums up its place: “Preferred stockholders usually don’t have voting rights but they receive dividend payments before common stockholders do, and have priority over common stockholders if the company goes bankrupt and its assets are liquidated.” Because the dividend is fixed and usually has no end date, F04 valued a preferred share as a perpetuity, and F05 turned that round into its cost, <m>r_P = D_P \\div P_P</m>. Preferred dividends, unlike interest, are not a contractual obligation whose non-payment is a <g>default</g>, so preferred shares carry more risk than the same company’s bonds.' },
     { figure: {
       svg: '<svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" font-family="inherit" font-size="16"><g fill="none" stroke-width="3"><rect x="20" y="34" width="170" height="64" style="stroke:var(--series-3)"/><rect x="20" y="116" width="170" height="64" style="stroke:var(--series-2)"/><rect x="20" y="198" width="170" height="64" style="stroke:var(--series-1)"/></g><g fill="currentColor"><text x="105" y="71" text-anchor="middle" font-weight="bold">Lenders</text><text x="105" y="153" text-anchor="middle" font-weight="bold">Preferred shares</text><text x="105" y="235" text-anchor="middle" font-weight="bold">Common shares</text><text x="210" y="61">Contract: interest</text><text x="210" y="83">and repayment</text><text x="210" y="143">Fixed dividend,</text><text x="210" y="165">usually no vote</text><text x="210" y="225">Votes, and</text><text x="210" y="247">whatever is left</text></g><g style="fill:var(--ink-3)"><text x="20" y="22">Paid first</text><text x="20" y="290">Paid last</text></g></svg>',
       caption: 'Who is paid first. Lenders are paid before preferred shareholders, who are paid before common shareholders. The lower a claim sits, the more risk it carries and the higher the return its holders require.',
@@ -128,13 +131,13 @@ export default {
     { h: 'Stock market indexes' },
     { p: 'A <g>stock market index</g> measures the combined price movement of a group of shares, so that “the market rose 1% today” has a precise meaning. The group may be all the listed shares in a market, the largest companies, or one industry. S&P Dow Jones Indices describes the S&P 500 as including 500 leading US companies and covering approximately 80% of available market capitalisation. How the shares are weighted matters as much as which shares are included.' },
     { p: 'In a <g>value-weighted index</g> (also called capitalisation-weighted) each company counts in proportion to its market capitalisation, so the index’s return is the average of the companies’ returns weighted by their market values. The Harbourline Total Market Index in this course is value-weighted: Harbour Street, with $2,160 million of equity, moves it almost twice as much as Morrow & Pike, with $1,120 million. In a <g>price-weighted index</g> each company counts in proportion to its share price: the index is the sum of the prices divided by a number called the divisor. S&P Dow Jones Indices describes the Dow Jones Industrial Average as a price-weighted measure of 30 US blue-chip companies.' },
-    { p: 'The two methods can tell very different stories on the same day. The challenging worked example below builds a three-company index in which a 10% rise in the smallest company lifts the price-weighted index by 6.91% and the value-weighted one by only 0.65%. Price-weighting gives most weight to whichever share happens to have the highest price, which depends on how many shares the company chose to issue, not on its size. A <g>stock split</g> shows the problem: when a company splits each share in two, its price halves and its weight in a price-weighted index halves too, although nothing about the company has changed, so the divisor must be reset to stop the index jumping. A value-weighted index needs no such adjustment, because the market capitalisation does not change.' },
-    { callout: 'note', title: 'Why index funds use value weights', html: 'A value-weighted index has a practical virtue: a fund that holds every share in proportion to its market value keeps those proportions automatically as prices move, because each holding grows or shrinks with its own price. The fund needs to trade only when companies enter or leave the index or issue or buy back shares. A price-weighted or equally weighted fund must trade to restore its weights whenever prices change.' },
+    { p: 'The two methods can tell very different stories on the same day. The challenging worked example below builds a three-company index: on a day when Ardlow, the smallest, rises 10% while Brennoch falls 2% and Calvorth rises 1%, the price-weighted index rises 6.91% and the value-weighted one only 0.65%. Price-weighting gives most weight to whichever share happens to have the highest price, which depends on how many shares the company chose to issue, not on its size. A <g>stock split</g> shows the problem: when a company splits each share in two, its price halves and its weight in a price-weighted index halves too, although nothing about the company has changed, so the divisor must be reset to stop the index jumping. A value-weighted index needs no such adjustment, because the market capitalisation does not change.' },
+    { callout: 'note', title: 'Which indexes a fund can track without trading', html: 'A fund that holds the same fraction of every company’s shares tracks a value-weighted index automatically: each holding grows or shrinks with its own price, exactly as the company’s market capitalisation does. A fund that holds the same number of shares of each member tracks a price-weighted index just as automatically. An equally weighted index is different: when prices move, the holdings drift apart, so a fund tracking it must sell winners and buy losers to restore equal weights. For a value-weighted fund, trading is needed only when companies enter or leave the index or issue or buy back shares, and its weights measure what investors as a whole actually hold, which is why broad index funds use them.' },
     { p: 'An index can be calculated from prices alone (a price index) or with dividends reinvested (a total return index). Over long periods the difference is large, because dividends are a substantial part of what shareholders earn. The returns this course uses for the Harbourline funds are total returns, net of each fund’s fees.' },
 
     { h: 'What a share price reflects' },
     { p: 'Why does a Morrow & Pike share cost $28.00 rather than $10 or $100? A buyer is paying for the dividends the share will pay and the price she can sell it for later, which in turn depends on the dividends after that. The price is therefore the present value of the cash flows shareholders expect, discounted at the return they require for the risk, the same logic F04 used for annuities and perpetuities. Module 4 values shares carefully; here the aim is to see what the price says.' },
-    { p: 'Morrow & Pike paid a dividend of $0.70 a share in 2027, a <g>dividend yield</g> of <m>0.70 \\div 28.00 = 2.5\\%</m>. F05’s capital asset pricing model, with its beta of 0.90, a 4.2% risk-free rate and a 5.5% market risk premium, gives a required return of <m>4.2\\% + 0.90 \\times 5.5\\% = 9.15\\%</m>. If dividends grew at a constant rate for ever, the <g>Gordon growth model</g> <m>P_0 = D_0(1 + g) \\div (r - g)</m> would hold, and solving it for <m>g</m> gives <m>g = (r P_0 - D_0) \\div (P_0 + D_0) = 6.49\\%</m>. In other words, at $28.00 investors are paying for dividends that grow about 6.5% a year for ever, or faster for a while and more slowly afterwards. The price is a bundle of expectations, not a measure of what the company has already done.' },
+    { p: 'Morrow & Pike paid a dividend of $0.70 a share in 2027, a <g>dividend yield</g> of <m>0.70 \\div 28.00 = 2.5\\%</m>. F05’s capital asset pricing model, with its beta of 0.90, a 4.2% risk-free rate and a 5.5% market risk premium, gives a required return of <m>4.2\\% + 0.90 \\times 5.5\\% = 9.15\\%</m>. If dividends grew at a constant rate for ever, the <g>Gordon growth model</g> <m>P_0 = D_0(1 + g) \\div (r - g)</m> would hold, and solving it for <m>g</m> gives <m>g = (r P_0 - D_0) \\div (P_0 + D_0) = 6.49\\%</m>. Read literally, at $28.00 investors are paying for dividends that grow about 6.5% a year for ever. That is faster than an economy can grow for ever, so the realistic reading is faster growth for some years and slower growth afterwards. The discounted-cash-flow lesson in module 4 reads the same $28.00 with a five-year forecast of 5–8% growth, and finds that the price implies long-run growth of about 2.5% (2.54%) after that. The price is a bundle of expectations, not a measure of what the company has already done.' },
     { p: 'Two things move a share price, then: news about the cash flows shareholders can expect (a lost contract, a good harvest, a new product), and changes in the return they require (higher interest rates, or more fear about risk in general). A fall in the price is not always bad news about the company: when interest rates rise, the required return rises and prices of most shares fall together. Whether market prices fully reflect the available information is the question of market efficiency, which F00 introduced and the fundamental-analysis lesson in module 4 takes further.' },
   ],
 
@@ -171,32 +174,32 @@ export default {
       answer: 'Market capitalisation $1,120 million; enterprise value $1,258 million.',
       interpretation: 'Net debt is a small part of Morrow & Pike’s enterprise value (11.0%), so its two measures of size are close. For a company financed mostly with debt the gap is much wider.' },
     { level: 'challenging', title: 'One day in a three-company index', fictional: true,
-      setup: 'A small index holds three fictional listed companies: Aldwick Rail ($120.00 a share, 10 million shares), Brisa Telecom ($15.00, 300 million shares) and Cobham Mills ($40.00, 50 million shares). One day Aldwick rises 10%, Brisa falls 2% and Cobham rises 1%. What is the index’s return if it is price-weighted (starting at 100) and if it is value-weighted? The next morning Aldwick splits each share into two. What divisor keeps the price-weighted index unchanged?',
+      setup: 'A small index holds three fictional listed companies: Ardlow Rail ($120.00 a share, 10 million shares), Brennoch Telecom ($15.00, 300 million shares) and Calvorth Mills ($40.00, 50 million shares). One day Ardlow rises 10%, Brennoch falls 2% and Calvorth rises 1%. What is the index’s return if it is price-weighted (starting at 100) and if it is value-weighted? The next morning Ardlow splits each share into two. What divisor keeps the price-weighted index unchanged?',
       table: { head: ['Company', 'Price before', 'Shares (m)', 'Market cap ($m)', 'Return', 'Price after'], align: ['l', 'r', 'r', 'r', 'r', 'r'],
         rows: IX.map((c) => [c.name, `$${c.p0.toFixed(2)}`, String(c.shares), (c.p0 * c.shares).toLocaleString('en-US'), `${c.r < 0 ? '−' : ''}${Math.abs(c.r * 100)}%`, `$${(c.p0 * (1 + c.r)).toFixed(2)}`]) },
       steps: [
         'Price-weighted: the prices add up to <m>120 + 15 + 40 = 175</m> dollars. A divisor of <m>175 \\div 100 = 1.75</m> starts the index at 100. After the day the prices add up to <m>132.00 + 14.70 + 40.40 = 187.10</m>, so the index is <m>187.10 \\div 1.75 = 106.91</m>: a return of 6.91%.',
         'Value-weighted: the market capitalisations are $1,200 million, $4,500 million and $2,000 million, $7,700 million in all. The weights are 15.6%, 58.4% and 26.0%. The return is <m>(1{,}200 \\times 10\\% + 4{,}500 \\times (-2\\%) + 2{,}000 \\times 1\\%) \\div 7{,}700 = 50 \\div 7{,}700 = 0.65\\%</m>.',
         'Check: total market capitalisation after the day is <m>1{,}320 + 4{,}410 + 2{,}020 = 7{,}750</m> million, and <m>7{,}750 \\div 7{,}700 - 1 = 0.65\\%</m>.',
-        'The split halves Aldwick’s price to $66.00, so the prices add up to <m>66.00 + 14.70 + 40.40 = 121.10</m>. To keep the index at 106.91 the divisor must fall to <m>121.10 \\div 106.91 = 1.1327</m>. The value-weighted index needs no change: Aldwick’s market capitalisation is still $1,320 million.',
+        'The split halves Ardlow’s price to $66.00, so the prices add up to <m>66.00 + 14.70 + 40.40 = 121.10</m>. To keep the index at 106.91 the divisor must fall to <m>121.10 \\div 106.91 = 1.1327</m>. The value-weighted index needs no change: Ardlow’s market capitalisation is still $1,320 million.',
       ],
       answer: 'Price-weighted: +6.91% (100 to 106.91); value-weighted: +0.65%. After the split the price-weighted divisor becomes 1.1327.',
-      interpretation: 'Aldwick is the smallest company but has the highest share price, so it dominates the price-weighted index. The value-weighted index is driven by Brisa, which is 58% of the market’s value. After the split Aldwick’s influence on the price-weighted index halves, although the company is the same: price weights depend on an arbitrary choice of how many shares to issue.' },
+      interpretation: 'Ardlow is the smallest company but has the highest share price, so it dominates the price-weighted index. The value-weighted index is driven by Brennoch, which is 58% of the market’s value. After the split Ardlow’s influence on the price-weighted index halves, although the company is the same: price weights depend on an arbitrary choice of how many shares to issue.' },
     { level: 'applied', title: 'What would it cost to buy Morrow & Pike?', fictional: true,
-      setup: 'Stoneleigh Foods Group, a fictional food company, is considering an offer for the whole of Morrow & Pike. Its advisers say shareholders would accept nothing less than a 25% premium over the $28.00 market price. Stoneleigh would take on Morrow & Pike’s $168 million of debt and acquire its $30 million of cash. What would the business cost, and how does that compare with its enterprise value at the market price?',
+      setup: 'Quellby Foods Group, a fictional food company, is considering an offer for the whole of Morrow & Pike. Its advisers say shareholders would accept nothing less than a 25% premium over the $28.00 market price. Quellby would take on Morrow & Pike’s $168 million of debt and acquire its $30 million of cash. What would the business cost, and how does that compare with its enterprise value at the market price?',
       steps: [
         'Price per share offered: <m>28.00 \\times 1.25 = 35.00</m> dollars.',
         'Cost of the equity: <m>35.00 \\times 40 = 1{,}400</m> million dollars, against a market capitalisation of $1,120 million: a premium of $280 million.',
-        'Add the debt Stoneleigh takes on and subtract the cash it acquires: <m>1{,}400 + 168 - 30 = 1{,}538</m> million.',
-        'At the market price the enterprise value is $1,258 million, so Stoneleigh would pay <m>1{,}538 - 1{,}258 = 280</m> million more than the market’s value of the business: the whole premium falls on the equity, because the debt and cash are taken over at face value.',
+        'Add the debt Quellby takes on and subtract the cash it acquires: <m>1{,}400 + 168 - 30 = 1{,}538</m> million.',
+        'At the market price the enterprise value is $1,258 million, so Quellby would pay <m>1{,}538 - 1{,}258 = 280</m> million more than the market’s value of the business: the whole premium falls on the equity, because the debt and cash are taken over at face value.',
       ],
       answer: 'About $1,538 million for the business: $1,400 million to the shareholders plus $138 million of net debt, $280 million above the enterprise value at the market price.',
-      interpretation: 'The headline “a $1.4 billion offer” understates what Stoneleigh commits, because it also takes on Morrow & Pike’s net debt. The deal makes sense only if Stoneleigh expects to create more than $280 million of value, for example from cost savings, beyond what the market already expects; the discounted-cash-flow lesson shows how such a value is estimated.' },
+      interpretation: 'The headline “a $1.4 billion offer” understates what Quellby commits, because it also takes on Morrow & Pike’s net debt. The deal makes sense only if Quellby expects to create more than $280 million of value, for example from cost savings, beyond what the market already expects; the discounted-cash-flow lesson shows how such a value is estimated.' },
   ],
 
   demo: [
     { widget: 'shr-ev', intro: 'Start at Morrow & Pike’s figures, then try Harbour Street’s (price $18.00, 120 million shares, debt $1,188 million, cash $60 million). Watch how much of the enterprise value is net debt, and what happens to enterprise value if the company borrows and keeps the money as cash.' },
-    { widget: 'shr-index', intro: 'The three-company index from the worked example. Move Aldwick Rail’s return and the price-weighted index swings, though Aldwick is the smallest company; move Brisa Telecom’s and the value-weighted index follows.' },
+    { widget: 'shr-index', intro: 'The three-company index from the worked example. Move Ardlow Rail’s return and the price-weighted index swings, though Ardlow is the smallest company; move Brennoch Telecom’s and the value-weighted index follows.' },
   ],
 
   mistakes: [
@@ -211,7 +214,7 @@ export default {
     { p: '<b>Ana’s first look at the market fund.</b> Ana reads the Harbourline fund’s description: it holds every listed share in the home market, weighted by market value. That tells her that roughly twice as much of her money would go into Harbour Street as into Morrow & Pike (their market capitalisations are $2,160 million and $1,120 million), and that the fund need not trade when prices move. She also notes what it does not tell her: how risky the fund has been, how its returns compare with bonds’ and what its fees cost over 30 years. Those are the questions of modules 2 and 3.' },
     { p: '<b>An index provider’s weights.</b> An index provider building a value-weighted index decides which companies qualify and recalculates the weights whenever a company issues or buys back shares, joins or leaves. When a large company joins a widely followed index, every fund tracking that index must buy its shares on the same day, which is why index changes are announced in advance and why the rules are published. The weights are market capitalisations, not enterprise values, because the fund buys shares, not businesses.' },
     { p: '<b>A treasurer planning a share issue.</b> The finance director of a listed company that wants to raise $50 million of new equity watches the secondary-market price closely. At $28.00 a share Morrow & Pike would need to sell about 1.8 million new shares to raise $50 million (before fees); at $22.00 it would need about 2.3 million, and its existing shareholders would give up more of the company for the same money. She may delay the issue, raise debt instead, or sell the new shares at a discount to the market price so that the offering is taken up.' },
-    { p: '<b>A buyer comparing targets.</b> An acquirer such as the fictional Stoneleigh compares businesses by enterprise value, because that is what it pays once the debt it inherits is counted. Comparing Morrow & Pike and Harbour Street by market capitalisation alone would understate Harbour Street’s size relative to Morrow & Pike, since so much of Harbour Street is financed with debt.' },
+    { p: '<b>A buyer comparing targets.</b> An acquirer such as the fictional Quellby compares businesses by enterprise value, because that is what it pays once the debt it inherits is counted. Comparing Morrow & Pike and Harbour Street by market capitalisation alone would understate Harbour Street’s size relative to Morrow & Pike, since so much of Harbour Street is financed with debt.' },
   ],
 
   summary: [
@@ -281,30 +284,30 @@ export default {
     { what: 'Round trip 100 shares', value: 100 * (Q.ask - Q.bid), shown: 4.00 },
     { what: 'Index price sum before', value: sumP0, shown: 175 },
     { what: 'Divisor', value: divisor0, shown: 1.75 },
-    { what: 'Aldwick after', value: IX[0].p0 * 1.1, shown: 132 },
-    { what: 'Brisa after', value: IX[1].p0 * 0.98, shown: 14.70 },
-    { what: 'Cobham after', value: IX[2].p0 * 1.01, shown: 40.40 },
+    { what: 'Ardlow after', value: IX[0].p0 * 1.1, shown: 132 },
+    { what: 'Brennoch after', value: IX[1].p0 * 0.98, shown: 14.70 },
+    { what: 'Calvorth after', value: IX[2].p0 * 1.01, shown: 40.40 },
     { what: 'Index price sum after', value: sumP1, shown: 187.10 },
     { what: 'Price-weighted level', value: pwLevel1, shown: 106.91 },
     { what: 'Price-weighted return', value: (sumP1 / sumP0 - 1) * 100, shown: 6.91 },
-    { what: 'Aldwick cap', value: IX[0].p0 * IX[0].shares, shown: 1200 },
-    { what: 'Brisa cap', value: IX[1].p0 * IX[1].shares, shown: 4500 },
-    { what: 'Cobham cap', value: IX[2].p0 * IX[2].shares, shown: 2000 },
+    { what: 'Ardlow cap', value: IX[0].p0 * IX[0].shares, shown: 1200 },
+    { what: 'Brennoch cap', value: IX[1].p0 * IX[1].shares, shown: 4500 },
+    { what: 'Calvorth cap', value: IX[2].p0 * IX[2].shares, shown: 2000 },
     { what: 'Total cap', value: cap0, shown: 7700 },
-    { what: 'Aldwick weight', value: 1200 / cap0 * 100, shown: 15.6, tol: 0.05 },
-    { what: 'Brisa weight', value: 4500 / cap0 * 100, shown: 58.4, tol: 0.05 },
-    { what: 'Brisa weight about 58', value: 4500 / cap0 * 100, shown: 58, tol: 0.5 },
-    { what: 'Cobham weight', value: 2000 / cap0 * 100, shown: 26.0, tol: 0.05 },
+    { what: 'Ardlow weight', value: 1200 / cap0 * 100, shown: 15.6, tol: 0.05 },
+    { what: 'Brennoch weight', value: 4500 / cap0 * 100, shown: 58.4, tol: 0.05 },
+    { what: 'Brennoch weight about 58', value: 4500 / cap0 * 100, shown: 58, tol: 0.5 },
+    { what: 'Calvorth weight', value: 2000 / cap0 * 100, shown: 26.0, tol: 0.05 },
     { what: 'Weighted gain $m', value: 1200 * 0.1 - 4500 * 0.02 + 2000 * 0.01, shown: 50 },
     { what: 'Value-weighted return', value: (cap1 / cap0 - 1) * 100, shown: 0.65 },
-    { what: 'Aldwick cap after', value: 132 * 10, shown: 1320 },
-    { what: 'Brisa cap after', value: 14.7 * 300, shown: 4410 },
-    { what: 'Cobham cap after', value: 40.4 * 50, shown: 2020 },
+    { what: 'Ardlow cap after', value: 132 * 10, shown: 1320 },
+    { what: 'Brennoch cap after', value: 14.7 * 300, shown: 4410 },
+    { what: 'Calvorth cap after', value: 40.4 * 50, shown: 2020 },
     { what: 'Total cap after', value: cap1, shown: 7750 },
-    { what: 'Aldwick after split', value: IX[0].p0 * 1.1 / 2, shown: 66 },
+    { what: 'Ardlow after split', value: IX[0].p0 * 1.1 / 2, shown: 66 },
     { what: 'Sum after split', value: sumAfterSplit, shown: 121.10 },
     { what: 'New divisor', value: divisor1, shown: 1.1327, tol: 0.00005 },
-    { what: 'Aldwick is the smallest and the highest-priced', value: IX[0].p0 * IX[0].shares === Math.min(...IX.map((c) => c.p0 * c.shares)) && IX[0].p0 === Math.max(...IX.map((c) => c.p0)) ? 1 : 0, shown: 1 },
+    { what: 'Ardlow is the smallest and the highest-priced', value: IX[0].p0 * IX[0].shares === Math.min(...IX.map((c) => c.p0 * c.shares)) && IX[0].p0 === Math.max(...IX.map((c) => c.p0)) ? 1 : 0, shown: 1 },
     { what: 'Morrow dividend yield', value: MP.dps / MP.price * 100, shown: 2.5 },
     { what: 'Morrow beta (F05)', value: 0.90, shown: 0.90 },
     { what: 'Risk-free rate', value: MARKET.rf * 100, shown: 4.2 },
@@ -312,6 +315,10 @@ export default {
     { what: 'Morrow CAPM', value: rMP * 100, shown: 9.15 },
     { what: 'Implied perpetual growth', value: gImplied * 100, shown: 6.49 },
     { what: 'Implied growth about 6.5', value: gImplied * 100, shown: 6.5, tol: 0.05 },
+    { what: 'DCF lesson implied terminal growth', value: dcfImpliedG, shown: 2.54 },
+    { what: 'DCF implied growth about 2.5', value: dcfImpliedG, shown: 2.5, tol: 0.05 },
+    { what: 'Forecast growth range low', value: Math.min(...MORROW_FORECAST.growth) * 100, shown: 5 },
+    { what: 'Forecast growth range high', value: Math.max(...MORROW_FORECAST.growth) * 100, shown: 8 },
     { what: 'Gordon reproduces price', value: MP.dps * (1 + gImplied) / (rMP - gImplied), shown: 28 },
     { what: 'Offer price', value: OFFER, shown: 35 },
     { what: 'Offer equity', value: offerEquity, shown: 1400 },

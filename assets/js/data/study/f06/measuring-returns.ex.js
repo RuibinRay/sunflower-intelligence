@@ -40,12 +40,12 @@ export const widgets = {
     note: 'Market: the Harbourline Total Market Index Fund; Bonds: the Harbourline Aggregate Bond Index Fund; Bills: one-month bills. Total returns after fees, all income reinvested. Simulated for teaching: not real market history.',
   },
   'ret-years': {
-    type: 'chart', kind: 'bar',
+    type: 'chart', kind: 'line',
     title: 'Calendar-year total returns (simulated)',
-    x: { label: 'Year', values: MKT_YEARS.map((y) => `’${y.year.slice(2)}`) },
+    x: { label: 'Calendar year (1 = 2013, 15 = 2027)', values: MKT_YEARS.map((_, i) => i + 1) },
     series: [
-      { name: 'Market fund', values: MKT_YEARS.map((y) => Math.round(y.ret * 1000) / 10) },
-      { name: 'Bond fund', values: yr('bonds').map((y) => Math.round(y.ret * 1000) / 10) },
+      { name: 'Market', values: MKT_YEARS.map((y) => Math.round(y.ret * 1000) / 10) },
+      { name: 'Bonds', values: yr('bonds').map((y) => Math.round(y.ret * 1000) / 10) },
     ],
     y: { label: 'Total return (%)', format: 'pct' },
     note: 'Arithmetic mean of the market fund’s fifteen years: 11.19%; geometric mean: 9.57%. Bond fund: 4.46% and 4.31%. Simulated for teaching.',
@@ -160,7 +160,7 @@ export const independent = [
     id: 'f06-ret-i2', type: 'num', kind: 'numerical',
     prompt: 'An investor bought shares in a fictional bakery chain for $50.00, collected $3.00 a share in dividends over two and a half years, and sold at $62.00. What was the annualised holding-period return? Give a percentage to two decimal places.',
     answer: 11.07, check: () => ((1 + IV.hpr(50, 62, 3)) ** (1 / 2.5) - 1) * 100, unit: '%', places: 2, tol: 0.02,
-    wrong: [{ value: 12, say: 'That divides the 30% total by 2.5. Compound instead: 1.30^(1/2.5) − 1.' }, { value: 9.37, say: 'That leaves out the $3.00 of dividends: they are part of the return.' }, { value: 30, say: 'That is the holding-period return over the whole 2.5 years; annualise it.' }],
+    wrong: [{ value: 12, say: 'That divides the 30% total by 2.5. Compound instead: 1.30^(1/2.5) − 1.' }, { value: 8.99, say: 'That leaves out the $3.00 of dividends: they are part of the return.' }, { value: 30, say: 'That is the holding-period return over the whole 2.5 years; annualise it.' }],
     solution: 'HPR = (62 − 50 + 3) ÷ 50 = 30%. Annualised: 1.30^(1/2.5) − 1 = 11.07% a year (ignoring when within the period the dividends were paid).',
   },
   {

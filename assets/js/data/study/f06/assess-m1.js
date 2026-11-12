@@ -57,7 +57,7 @@ export const items = [
   },
   {
     id: 'f06-m1-4', lesson: 'shares-and-markets', type: 'mc', kind: 'applied',
-    prompt: 'Prices are falling fast. A fictional investor holding shares in Tolverne Bakeries, now quoted at a bid of $48.00 and an ask of $48.20, places a sell limit order at $50.00. What is the most likely outcome?',
+    prompt: 'Prices are falling fast. A fictional investor holding shares in Marrowick Bakeries, now quoted at a bid of $48.00 and an ask of $48.20, places a sell limit order at $50.00. What is the most likely outcome?',
     options: [
       'The order waits unfilled, because no buyer will pay $50.00 or more',
       'The order is filled at once at $48.00, the best bid',

@@ -76,7 +76,7 @@ export default {
       rows: TRADE.map((r) => r.slice(1)),
       note: 'Mean: arithmetic, mean monthly return × 12. SD: sample standard deviation of monthly returns × √12. Worst year: worst calendar-year return. Largest drawdown: the largest fall in value from a previous month-end peak. Simulated for teaching, not real market history.',
     } },
-    { p: 'Read down the table and the pattern of this lesson appears. Among bills, bonds and the share funds, more volatility came with a higher mean return: the <g>risk–return trade-off</g>. But the single shares had far more volatility than the market fund without more return to match, and the market fund’s worst fall, −39.1%, was much deeper than its worst calendar year.' },
+    { p: 'Read down the table and the pattern of this lesson appears. Among bills, bonds and the share funds, more volatility came with a higher mean return: the <g>risk–return trade-off</g>. But the single shares had far more volatility than the market fund without a matching reward: Morrow &amp; Pike earned less than the market, and Harbour Street only about two points more with twice the volatility; and the market fund’s worst fall, −39.1%, was much deeper than its worst calendar year.' },
   ],
 
   theory: [
@@ -87,7 +87,7 @@ export default {
     { p: String.raw`From <m>n</m> past returns with mean <m>\bar r</m>, the sample variance is <m>s^2 = \sum_t (r_t - \bar r)^2 \div (n - 1)</m>. Dividing by <m>n - 1</m> rather than <m>n</m> corrects for measuring the distances from the sample’s own mean (B04 explains why). In a spreadsheet it is <x>=STDEV.S(range)</x>. OpenStax treats the standard deviation of historical returns in the same way, as the measure of an investment’s volatility.` },
     { p: 'The simulated market fund’s 180 monthly returns have a mean of 0.869% and a standard deviation of 4.618% a month. A month 4.6 points above or below the mean was ordinary; a month of −17% was not.' },
     { h: 'Annualising a standard deviation' },
-    { p: String.raw`If monthly returns are independent and have the same distribution, the variance of a year’s total is twelve times the monthly variance, so the standard deviation grows with the square root of time: <m>\sigma_{\text{year}} = \sigma_{\text{month}}\sqrt{12}</m>. The market fund’s <m>4.618\% \times \sqrt{12} = 16.00\%</m>; the bond fund’s 1.19% a month is 4.14% a year. Means scale with time but standard deviations with its square root, which is why the course multiplies a monthly mean by 12 but a monthly SD by √12.` },
+    { p: String.raw`If monthly returns are independent and have the same distribution, the variance of a year’s total is twelve times the monthly variance, so the standard deviation grows with the square root of time: <m>\sigma_{\text{year}} = \sigma_{\text{month}}\sqrt{12}</m>. The market fund’s <m>4.618\% \times \sqrt{12} = 16.00\%</m>; the bond fund’s 1.19% a month is 4.14% a year. Means scale with time but standard deviations with its square root, which is why the course multiplies a monthly mean by 12 but a monthly SD by √12. The SD of the fund’s fifteen calendar-year returns is higher, 19.33%: fifteen observations give a noisy estimate, and the √12 rule ignores compounding within the year and any dependence between months. The course uses the monthly figure, 16.00%, built from 180 observations.` },
     { p: 'Bills’ standard deviation, 0.56% a year, needs care. A one-month bill’s return is known on the day you buy it, so a bill holder faces no risk of loss over the month. The figure measures how much the bill rate itself changed over fifteen years, from near zero to about 5%. For an investor the risk in bills is different: the rate may fall, and after inflation the return may be negative, as the previous lesson found.' },
 
     { h: 'What a normal distribution would imply' },
@@ -109,11 +109,11 @@ export default {
       align: ['l', 'r', 'r', 'r', 'r'],
       rows: HROWS,
       note: 'Windows start each month from January 2013; a 10-year window starting in January 2013 ends in December 2022. Overlapping windows share most of their months, so they are far from independent evidence, and fifteen years contain only one full 15-year period. Simulated.' } },
-    { p: 'In this history the worst one-year window lost 39.1%, the worst five-year window still lost 6.5% a year, and no ten-year window lost money. Do not read that last line as a law: the simulated data hold only about five years of starting months for ten-year windows, and real markets have had long stretches when shares trailed bonds. What the table does show reliably is the first column: over a few years, shares can lose a large part of their value and not recover in time.' },
+    { p: 'In this history the worst one-year window lost 39.1%, the worst five-year window still lost 6.5% a year, and no ten-year window lost money. Do not read that last line as a law: the simulated data hold only about five years of starting months for ten-year windows, and real markets have had long stretches when shares trailed bonds. What the table does show reliably is the Worst column: over a few years, shares can lose a large part of their value and not recover in time.' },
     { p: 'For money needed on a known date, the risk that counts is the value on that date. Investor.gov puts it plainly: “A portfolio heavily weighted in stock or stock mutual funds, for instance, would be inappropriate for a short-term goal, such as saving for a family’s summer vacation.” The same guide notes that “investing solely in cash investments may be appropriate for short-term financial goals,” and that investors willing to ride out the volatile returns of stocks over long periods have generally been rewarded. The time horizon decides which risk measure matters.' },
 
     { h: 'The risk–return trade-off, and where it fails' },
-    { p: 'Across bills, bonds and the share funds, investors who accepted more volatility earned more on average: the trade-off that makes investing worthwhile at all. It holds for broad classes of investment because they carry risk that no one can diversify away, <g>systematic risk</g>, and investors must be paid to bear it. It does not hold for every single investment. Morrow &amp; Pike’s shares had a volatility of 25.25% and earned less than the market fund; their price fell 67.9% at worst. Much of a single share’s risk is specific to the company and can be removed by holding many shares, so the market does not pay for it: the subject of the diversification lesson in module 3.' },
+    { p: 'Across bills, bonds and the share funds, investors who accepted more volatility earned more on average: the trade-off that makes investing worthwhile at all. It holds for broad classes of investment because they carry risk that no one can diversify away, <g>systematic risk</g>, and investors must be paid to bear it. It does not hold for every single investment. Morrow &amp; Pike’s shares had a volatility of 25.25% and earned less than the market fund; their value, with dividends reinvested, fell 67.9% from a peak. Much of a single share’s risk is specific to the company and can be removed by holding many shares, so the market does not pay for it: the subject of the diversification lesson in module 3.' },
     { p: 'Ana’s answer to her questionnaire, that she could live with a worst year of about −25%, can now be checked against the data. The market fund’s worst calendar year, −26.9%, was just beyond it, and its worst twelve months, −39.1%, far beyond. A portfolio entirely in shares would have tested her limit; the efficient-portfolios lesson shows how adding bonds and bills sets the risk to fit it.' },
   ],
 
@@ -167,7 +167,7 @@ export default {
         'There are 133 overlapping 48-month windows. In 46 of them, about one in three, the fund was worth less at the end than at the start.',
         'The worst window ran from January 2020 to December 2023: −28.0% in total. $10,000 invested at the start was worth $7,204 four years later.',
         'The bond fund lost money in none of its 48-month windows (its worst was +0.07%), and bills, by construction, never lose.',
-        'Her goal is a fixed sum on a fixed date: a 28% shortfall in the last year would leave her well short, with no time to wait for a recovery like the market fund’s 57 months below its 2021 peak.',
+        'Her goal is a fixed sum on a fixed date: a 28% fall over the four years would leave her well short, with no time to wait for a recovery like the market fund’s 57 months below its 2021 peak.',
       ],
       answer: 'No: in this history a four-year holding of the market fund lost money about one time in three, and could lose more than a quarter of its value.',
       interpretation: 'The higher average return does not help a goal that must be met on a date. Ana keeps the deposit savings in her savings account and the $6,000 emergency fund in cash, and takes risk only with the 30-year retirement money, where there is time for recoveries. The windows overlap and the history is simulated, so the counts are illustrations, but Investor.gov’s advice points the same way.' },
@@ -331,6 +331,9 @@ export default {
     { what: 'Bonds 48-month losses', value: roll('bonds', 48).filter((v) => v < 0).length, shown: 0 },
     { what: 'Bills never lose a month', value: SERIES.bills.every((v) => v >= 0) ? 1 : 0, shown: 1 },
     { what: 'F04 savings rate', value: 3.6, shown: 3.6 },
+    { what: 'Calendar-year SD', value: Math.sqrt(yearsM.reduce((s, v) => s + (v - yearsM.reduce((a, b) => a + b, 0) / 15) ** 2, 0) / 14) * 100, shown: 19.33 },
+    { what: 'Harbour about two points more', value: (st.harbour.mean - st.market.mean) * 100, shown: 2.1, tol: 0.05 },
+    { what: 'Harbour twice the volatility', value: st.harbour.sd / st.market.sd, shown: 2, tol: 0.01 },
     { what: 'Morrow volatility', value: st.morrow.sd * 100, shown: 25.25 },
     { what: 'Morrow worst fall', value: IV.maxDrawdown(SERIES.morrow).drawdown * 100, shown: -67.9, tol: 0.05 },
     // real figures quoted

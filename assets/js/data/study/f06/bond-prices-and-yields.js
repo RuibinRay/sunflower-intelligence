@@ -1,12 +1,12 @@
 // bond-prices-and-yields.js — F06 · Bond prices and yields. Content only; exercises are in bond-prices-and-yields.ex.js.
-// The four bonds (two government, two corporate; all fictional) come from case.js BONDS; prices, durations and
+// The five bonds (three government, two corporate; all fictional) come from case.js BONDS; prices, durations and
 // convexity from core/investments.js (bondAtYield, duration, priceChangeApprox). The bond fund's 2022 fall is the
 // SIMULATED history in data.js (tools/study/f06-data.py planted −13% for 2022). Real-world statements are quoted from
 // OpenStax Principles of Finance (sections 10.1, 10.2, 10.4) and FINRA, opened on 11 November 2026.
 import { BONDS, SERIES, MONTHS, ASSETS, ANA, COMPANIES } from './case.js?v=31';
 import * as IV from '../../../core/investments.js?v=31';
 
-const [G5, G20, HB, MB] = BONDS;
+const [G5, G20, HB, MB, G2] = BONDS;
 const at = (b, y) => IV.bondAtYield({ face: 100, ...b }, y);
 const g5 = at(G5, G5.ytm), g20 = at(G20, G20.ytm), hb = at(HB, HB.ytm), mb = at(MB, MB.ytm);
 const g5up = at(G5, G5.ytm + 0.01).price, g5dn = at(G5, G5.ytm - 0.01).price;
@@ -21,14 +21,16 @@ const g5rows = g5.flows.map((f, i) => { const pv = f.cf / (1 + G5.ytm / 2) ** (i
 const annFactor = (1 - (1 + G5.ytm / 2) ** -10) / (G5.ytm / 2);
 // spreads
 const gov7 = G5.ytm + (7 - 5) / (20 - 5) * (G20.ytm - G5.ytm);
-const spreadH = HB.ytm - gov7, spreadM = MB.ytm - G5.ytm;
+const gov35 = G2.ytm + (3.5 - 2) / (5 - 2) * (G5.ytm - G2.ytm);
+const spreadH = HB.ytm - gov7, spreadM = MB.ytm - gov35;
 const hbWide = at(HB, HB.ytm + 0.01).price;
 // the simulated bond fund
 const YB = IV.yearly(MONTHS, SERIES.bonds);
+const YBILL = IV.yearly(MONTHS, SERIES.bills), bill2021 = YBILL.find((y) => y.year === '2021').ret, bill2023 = YBILL.find((y) => y.year === '2023').ret;
 const r2022 = YB.find((y) => y.year === '2022').ret, r2023 = YB.find((y) => y.year === '2023').ret;
 const DD = IV.maxDrawdown(SERIES.bonds), W = IV.wealth(SERIES.bonds);
 const recIdx = W.findIndex((v, i) => i > DD.trough && v >= W[DD.peak]);
-const fundDur = Number(/average duration about (\d+) years/.exec(ASSETS.bonds.holds)[1]);
+const fundDur = ASSETS.bonds.duration;
 // the price–yield figure (20-year government bond)
 const FX = (y) => 70 + (y / 12) * 390, FY = (p) => 255 - (p / 200) * 230;
 const curve = Array.from({ length: 49 }, (_, i) => i * 0.25).map((y) => `${FX(y).toFixed(1)},${FY(at(G20, y / 100).price).toFixed(1)}`).join(' ');
@@ -63,7 +65,7 @@ export default {
     { p: 'The link is the one F04 taught for any stream of cash flows: a bond’s price is the present value of its remaining payments, discounted at the return investors currently require for that kind of bond. That return is its <g>yield to maturity</g>. If investors come to require more, because interest rates in the economy have risen or the issuer looks riskier, the same fixed payments are discounted at a higher rate and the price falls. Bond prices and yields move in opposite directions, always.' },
     { p: 'How far the price moves depends on how long the investor must wait for the money. A payment due in six months is barely affected by a change in the discount rate; a payment due in twenty years is affected a great deal. The measure of that waiting time, and so of a bond’s sensitivity to interest rates, is its <g>duration</g>. The Harbourline bond fund’s average duration is about 6 years, which is why 2022 hurt.' },
     { table: {
-      caption: 'Four bonds, June 2028 (fictional; coupons paid twice a year, prices per $100 of face value)',
+      caption: 'Five bonds, June 2028 (fictional; coupons paid twice a year, prices per $100 of face value)',
       head: ['Bond', 'Coupon', 'Years left', 'Rating', 'Yield to maturity'],
       align: ['l', 'r', 'r', 'l', 'r'],
       rows: BONDS.map((b) => [b.name, `${(b.couponRate * 100).toFixed(2)}%`, String(b.years), b.rating, `${(b.ytm * 100).toFixed(2)}%`]),
@@ -125,7 +127,7 @@ export default {
     { math: String.raw`D_{\text{mod}} = \dfrac{D_{\text{Mac}}}{1 + y/m}, \qquad \dfrac{\Delta P}{P} \approx -D_{\text{mod}} \times \Delta y` },
     { p: 'The five-year note’s modified duration is <m>4.58 \\div 1.021 = 4.48</m>, so a one-point rise in yields lowers its price by about 4.48%; the exact fall is 4.37%. FINRA gives investors the same rule of thumb: if a bond has a duration of 10 and interest rates increase by 1 percentage point, its price would be expected to decline by approximately 10 percent. Durations are measured in years, and for a portfolio or a fund they are the value-weighted average of the holdings’ durations.' },
     { table: {
-      caption: 'Duration and a one-point rise in yields for the four bonds (fictional; prices per $100)',
+      caption: 'Duration and a one-point rise in yields for four of the bonds (fictional; prices per $100)',
       head: ['Bond', 'Price', 'Macaulay (years)', 'Modified', 'Exact change'],
       align: ['l', 'r', 'r', 'r', 'r'],
       rows: [[G5, g5], [G20, g20], [HB, hb], [MB, mb]].map(([b, a]) => [b.name, `$${a.price.toFixed(2)}`, a.macaulay.toFixed(2), a.modified.toFixed(2), `−${Math.abs(chg(at(b, b.ytm + 0.01).price, a.price)).toFixed(2)}%`]),
@@ -133,12 +135,12 @@ export default {
 
     { h: 'Convexity' },
     { p: 'Duration draws a straight line through a curve, so it is accurate only for small changes in yield. For the 20-year bond, modified duration of 13.02 predicts a fall of 13.02% for a one-point rise; the true fall is 11.97%. For a one-point fall it predicts a rise of 13.02%; the true rise is 14.21%. The bond loses less than duration predicts when yields rise and gains more when they fall. That asymmetry is <g>convexity</g>, the curvature in the figure, and adding a second term improves the estimate:' },
-    { math: String.raw`\dfrac{\Delta P}{P} \approx -D_{\text{mod}}\,\Delta y + \tfrac{1}{2}\,C\,(\Delta y)^2` },
+    { math: String.raw`\dfrac{\Delta P}{P} \approx -D_{\text{mod}}\,\Delta y + \tfrac{1}{2}\,C_x\,(\Delta y)^2` },
     { p: 'The 20-year bond’s convexity is 223.1 (in years squared). For a one-point rise the estimate becomes <m>-13.02 \\times 0.01 + 0.5 \\times 223.1 \\times 0.01^2 = -13.02\\% + 1.12\\% = -11.90\\%</m>, close to the true −11.97%. Convexity matters most for long bonds and large moves; for the five-year note and a one-point move it adds only 0.12 points. Other things equal, investors value convexity, because it cushions losses and adds to gains.' },
 
     { h: 'Credit risk, ratings and spreads' },
     { p: 'A corporate bond carries <g>credit risk</g>: the risk that the issuer pays late, pays less or does not pay at all. Investors demand a higher yield to bear it. <g>Credit rating</g> agencies grade issuers’ ability to pay; OpenStax describes a bond rating as a grade that indicates credit quality, and states that any bond rated BBB (S&P, Fitch) or Baa (Moody’s) or higher is referred to as <g>investment grade</g>. Lower-rated bonds are often called non-investment grade or high yield.' },
-    { p: 'The extra yield over a government bond of the same maturity is the <g>credit spread</g>, usually quoted in <g>basis points</g> (hundredths of a percentage point). There is no seven-year government bond in the table, so estimate its yield by interpolating between the five-year (4.20%) and the 20-year (4.65%): <m>4.20\\% + (2 \\div 15) \\times 0.45\\% = 4.26\\%</m>. Harbour Street’s 2035 bond yields 6.10%, a spread of <m>6.10\\% - 4.26\\% = 1.84</m> points, or 184 basis points. Morrow & Pike’s 2031 bond, with three and a half years left, yields 5.45%, 125 basis points above the five-year note (a longer, and here higher-yielding, benchmark, so its spread over a matched maturity would be at least as wide).' },
+    { p: 'The extra yield over a government bond of the same maturity is the <g>credit spread</g>, usually quoted in <g>basis points</g> (hundredths of a percentage point). There is no seven-year government bond in the table, so estimate its yield by interpolating between the five-year (4.20%) and the 20-year (4.65%): <m>4.20\\% + (2 \\div 15) \\times 0.45\\% = 4.26\\%</m>. Harbour Street’s 2035 bond yields 6.10%, a spread of <m>6.10\\% - 4.26\\% = 1.84</m> points, or 184 basis points. Morrow & Pike’s 2031 bond has three and a half years left, so interpolate between the two-year note (4.10%) and the five-year note (4.20%): <m>4.10\\% + (1.5 \\div 3) \\times 0.10\\% = 4.15\\%</m>. The bond yields 5.45%, a spread of 1.30 points, or 130 basis points.' },
     { p: 'Both companies are rated BBB, yet Harbour Street’s spread is wider. Part of the gap is maturity (lenders ask more to lend for longer to a risky borrower) and part is leverage: Harbour Street’s debt is 0.55 times its market capitalisation, against 0.15 for Morrow & Pike. A spread that widens after bad news is a price fall for the bondholders: if Harbour Street’s spread widened by one point, its bond would fall from $96.62 to $91.29, 5.52%. The yield to maturity is the promised return; F05 noted that the expected return on a risky bond is lower, because some payments may not arrive.' },
 
     { h: '2022 in the bond fund' },
@@ -196,9 +198,9 @@ export default {
     { level: 'applied', title: 'What 2022 means for a bond fund holder', fictional: true,
       setup: `Ana compares the bond fund’s simulated 2022 return of ${(r2022 * 100).toFixed(0).replace('-', '−')}% with its average duration of about ${fundDur} years. She wants to know what rise in yields that loss implies, what a further one-point rise would cost on $10,000 in the fund, and why a loss on bonds she might hold for decades should not be read like a loss on bonds she needs next year.`,
       steps: [
-        `Price change ≈ −duration × change in yield, so the change in yield ≈ <m>13\\% \\div ${fundDur} \\approx 2.2</m> percentage points, ignoring the year’s coupon income (which offset part of the price fall, so the true rise in yields would be a little larger).`,
+        `Price change ≈ −duration × change in yield, so the change in yield ≈ <m>13\\% \\div ${fundDur} \\approx 2.2</m> percentage points, ignoring the year’s coupon income (which offset part of the price fall, so the rise in yields that duration implies would be a little larger).`,
         `A further one-point rise: <m>-${fundDur} \\times 1\\% = -${fundDur}\\%</m>, about <m>${fundDur / 100} \\times 10{,}000 = ${fundDur * 100}</m> dollars on $10,000, before income.`,
-        'Each year the fund replaces maturing bonds with new ones at the higher yields, so its income rises; in the simulated data it gained 9.71% in 2023 and was back at its December 2021 peak by the end of March 2025.',
+        `Each year the fund replaces maturing bonds with new ones at the higher yields, so its income rises (the simulated bills returned ${(bill2023 * 100).toFixed(2)}% in 2023, against almost nothing in 2021). The fund gained ${(r2023 * 100).toFixed(2)}% that year and was back at its December 2021 peak by the end of March 2025.`,
         `Her money will stay invested for about 30 years, far longer than the ${fundDur}-year duration: higher yields raise what she earns over most of that time. Money needed in a year, by contrast, would have to be sold at the lower price.`,
       ],
       answer: `The 2022 loss implies yields rose by roughly 2.2 points or more; another one-point rise would cost about $${fundDur * 100} on $10,000. For a 30-year investor the loss is a price change that later income can recover; for money needed soon it is a real loss.`,
@@ -217,7 +219,7 @@ export default {
     { title: 'Forgetting to halve the yield and double the periods', html: 'With coupons twice a year, discount at the yield per half-year (4.20% ÷ 2 = 2.10%) for twice as many periods (10, not 5), and use half the annual coupon ($2.00). Discounting $4.00 a year for five years at 4.20% gives a slightly different, wrong, price for a semi-annual bond.' },
     { title: 'Treating duration as the time to maturity', html: 'Macaulay duration is the average time of all the payments, weighted by present value, so a coupon bond’s duration is shorter than its maturity: 4.58 years for the five-year note, 13.32 years for the 20-year bond. Only a zero-coupon bond’s duration equals its maturity.' },
     { title: 'Using duration for large moves without convexity', html: 'Duration is a straight-line estimate. For a one-point move in a 20-year bond it is wrong by about a point; for a three-point move by much more. Add the convexity term, or reprice the bond at the new yield.' },
-    { title: 'Assuming a high-quality bond fund cannot lose money', html: 'Credit quality protects against default, not against rising rates. The simulated bond fund, holding only investment-grade bonds, fell 13% in 2022 because of its duration.' },
+    { title: 'Assuming a high-quality bond fund cannot lose money', html: 'Credit quality protects against default, not against rising rates. The simulated bond fund, holding only investment-grade bonds, fell 13% in 2022, a loss the data were built to match a rise in yields of about 2 points at a duration of 6.' },
   ],
 
   application: [
@@ -232,7 +234,7 @@ export default {
     'Coupon rate, current yield and yield to maturity differ: for a discount bond coupon < current yield < YTM; for a premium bond the order reverses.',
     'With yields unchanged a bond’s price is pulled to par as it ages, and it earns its yield each period.',
     'Macaulay duration is the present-value-weighted average time of the payments; modified duration = Macaulay ÷ (1 + y/m) gives ΔP/P ≈ −D_mod × Δy.',
-    'Convexity makes bonds fall less and rise more than duration predicts; add ½ × C × (Δy)² for large moves or long bonds.',
+    'Convexity makes bonds fall less and rise more than duration predicts; add ½ × C_x × (Δy)² for large moves or long bonds.',
     'Credit risk adds a spread over government yields: Harbour Street’s 2035 bond is 184 basis points over an interpolated 4.26%.',
     'A bond fund with a duration of about 6 years loses about 6% for each one-point rise in yields: the simulated 13% fall in 2022 needed no defaults.',
   ],
@@ -257,6 +259,7 @@ export default {
     { text: 'Dahlquist, J. &amp; Knight, R. (2022). <i>Principles of Finance</i>, section 10.1, “Characteristics of Bonds”. OpenStax.', url: 'https://openstax.org/books/principles-finance/pages/10-1-characteristics-of-bonds', checked: '2026-11-11' },
     { text: 'Dahlquist, J. &amp; Knight, R. (2022). <i>Principles of Finance</i>, section 10.2, “Bond Valuation”. OpenStax.', url: 'https://openstax.org/books/principles-finance/pages/10-2-bond-valuation', checked: '2026-11-11' },
     { text: 'Dahlquist, J. &amp; Knight, R. (2022). <i>Principles of Finance</i>, section 10.4, “Risks of Interest Rates and Default”. OpenStax.', url: 'https://openstax.org/books/principles-finance/pages/10-4-risks-of-interest-rates-and-default', checked: '2026-11-11' },
+    { text: 'Damodaran, A. <i>Historical Returns on Stocks, Bonds and Bills: 1928–2024</i> (data page, updated 5 January 2026). NYU Stern.', url: 'https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html', checked: '2026-11-11' },
     { text: 'FINRA. <i>Brush Up on Bonds: Interest Rate Changes and Duration</i>. FINRA.org.', url: 'https://www.finra.org/investors/insights/bonds-interest-rate-changes-duration', checked: '2026-11-11' },
   ],
   checks: [
@@ -311,7 +314,14 @@ export default {
     { what: 'Interpolated 7y government', value: gov7 * 100, shown: 4.26 },
     { what: 'Harbour spread', value: spreadH * 100, shown: 1.84 },
     { what: 'Harbour spread bp', value: spreadH * 10000, shown: 184, tol: 0.5 },
-    { what: 'Morrow spread bp', value: spreadM * 10000, shown: 125, tol: 0.5 },
+    { what: 'Morrow spread bp', value: spreadM * 10000, shown: 130, tol: 0.5 },
+    { what: 'Morrow spread points', value: spreadM * 100, shown: 1.30 },
+    { what: '2-year note yield', value: G2.ytm * 100, shown: 4.10 },
+    { what: 'Interpolated 3.5y government', value: gov35 * 100, shown: 4.15 },
+    { what: '5y minus 2y', value: (G5.ytm - G2.ytm) * 100, shown: 0.10 },
+    { what: 'Bills 2023', value: bill2023 * 100, shown: 4.96 },
+    { what: 'Bills 2021 almost nothing (below 0.1%)', value: bill2021 < 0.001 ? 1 : 0, shown: 1 },
+    { what: 'Implied rise about 2 points', value: 13 / fundDur, shown: 2, tol: 0.25 },
     { what: 'Harbour D/E', value: COMPANIES.harbour.debt / COMPANIES.harbour.marketCap, shown: 0.55 },
     { what: 'Morrow D/E', value: COMPANIES.morrow.debt / COMPANIES.morrow.marketCap, shown: 0.15 },
     { what: 'Both corporate bonds BBB', value: HB.rating === 'BBB' && MB.rating === 'BBB' ? 1 : 0, shown: 1 },

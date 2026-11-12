@@ -45,7 +45,7 @@ export const items = [
   },
   {
     id: 'f06-m2-3', lesson: 'measuring-returns', type: 'num', kind: 'applied',
-    prompt: 'Ana’s colleague Tomas (fictional) has $50,000 in a pension fund. He assumes it will grow at 7% a year compounded for 20 years and that inflation will average 2.8% a year. What would the fund be worth in 20 years, in today’s dollars? Give dollars to the nearest dollar.',
+    prompt: 'Ana’s colleague Idris (fictional) has $50,000 in a pension fund. He assumes it will grow at 7% a year compounded for 20 years and that inflation will average 2.8% a year. What would the fund be worth in 20 years, in today’s dollars? Give dollars to the nearest dollar.',
     answer: 111374, check: () => 50000 * (1.07 / 1.028) ** 20, unit: '$', places: 0, tol: 5,
     wrong: [
       { value: 193484, say: 'That is the value in dollars of 20 years’ time. Deflate it by 1.028^20 to get today’s purchasing power.' },
@@ -116,7 +116,7 @@ export const items = [
       { value: 179.95, say: 'That counts the months better than −15%. You want the area below −15%.' },
       { value: 0.0003, say: 'That is the probability for one month. Multiply by the 180 months.' },
     ],
-    solution: 'z = (−15 − 0.869) ÷ 4.618 = −3.44; P(z < −3.44) ≈ 0.0003, so 180 × 0.0003 ≈ 0.05 months: about one such month in 3,500. The simulated history had one (March 2020, −17.0%), as fat tails make likely; at −10% the normal and the data agree better (1.7 expected, 2 actual). The normal curve fails most in the extremes.',
+    solution: 'z = (−15 − 0.869) ÷ 4.618 = −3.44; P(z < −3.44) ≈ 0.0003, so 180 × 0.0003 ≈ 0.05 months: about one such month in 3,400. The simulated history had one (March 2020, −17.0%), as fat tails make likely; at −10% the normal and the data agree better (1.7 expected, 2 actual). The normal curve fails most in the extremes.',
   },
   {
     id: 'f06-m2-9', lesson: 'measuring-risk', type: 'mc', kind: 'applied',
@@ -138,9 +138,9 @@ export const items = [
   {
     id: 'f06-m2-10', lesson: 'measuring-risk', type: 'num', kind: 'numerical',
     prompt: 'The simulated market fund’s maximum drawdown was −39.1%. What percentage gain did it then need to get back to its previous peak? Give a percentage to one decimal place.',
-    answer: 64.2, check: () => (1 / (1 + DERIVED.drawdown.market.drawdown) - 1) * 100, unit: '%', places: 1, tol: 0.2,
+    answer: 64.1, check: () => (1 / (1 + DERIVED.drawdown.market.drawdown) - 1) * 100, unit: '%', places: 1, tol: 0.2,
     wrong: [{ value: 39.1, say: 'A gain is measured on the lower value. From 60.9% of the peak, regaining it takes 1 ÷ 0.609 − 1.' }],
-    solution: 'After a 39.1% fall, $1 of peak value is $0.609. Back to $1 needs 1 ÷ 0.609 − 1 = 64.2%. Losses need larger gains to recover, one reason volatility costs compound growth.',
+    solution: 'After a 39.1% fall, $1 of peak value is $0.609. Back to $1 needs 1 ÷ 0.6092 − 1 = 64.1%. Losses need larger gains to recover, one reason volatility costs compound growth.',
   },
   {
     id: 'f06-m2-11', lesson: 'measuring-risk', type: 'formula', kind: 'applied',
@@ -151,8 +151,7 @@ export const items = [
     alt: ['=B2/MAX(B$2:B2)-1', '=(B2-MAX($B$2:B2))/MAX($B$2:B2)'],
     wrong: [
       { formula: '=B2/MAX($B$2:$B$13)-1', say: 'That compares each value with the highest value of the whole period, including later ones. A drawdown uses only the peak so far: anchor the start of the range and let its end move.' },
-      { formula: '=B2/MAX(B2:B13)-1', say: 'That looks forward from each month. The peak must come from the months up to and including this one: MAX($B$2:B2).' },
-      { formula: '=B2/$B$2-1', say: 'That measures from the first value, not from the highest value so far.' },
+            { formula: '=B2/$B$2-1', say: 'That measures from the first value, not from the highest value so far.' },
     ],
     solution: '<x>=B2/MAX($B$2:B2)-1</x>, filled down: the range grows with each row, so MAX finds the highest value so far. The most negative result, −13.9% in month 6 (93 against the peak of 108), is the maximum drawdown.',
   },

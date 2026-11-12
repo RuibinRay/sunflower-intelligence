@@ -177,7 +177,7 @@ export default {
         'Turn each annual rate into a monthly one by compounding backwards: for 9.57%, <m>1.0957^{1/12} - 1 = 0.764\\%</m> a month (the fund’s geometric mean monthly return).',
         'Future value of the lump sum plus the monthly annuity (F04): <m>FV = 5{,}000(1+i)^{360} + 400 \\times [(1+i)^{360} - 1] \\div i</m>.',
         'At 11.19%: $1,161,046. At 9.57%: $836,742. At the real 6.58%: $467,277 in today’s dollars.',
-        'Compare: using the arithmetic mean adds $324,304 (39%) to the geometric projection; stating the result in today’s money removes almost half of it.',
+        'Compare: using the arithmetic mean adds $324,304 (39%) to the geometric projection; stating the result in today’s money removes more than two-fifths of it.',
       ],
       answer: 'About $837,000 in 30 years’ dollars at the simulated geometric mean, or about $467,000 in today’s purchasing power; the arithmetic mean would suggest $1.16 million.',
       interpretation: 'For a plan, use the geometric mean and real terms: $467,000 of today’s spending power is the figure Ana can compare with what she will need. None of these is a forecast. They rest on a simulated history, on holding only shares (module 3 decides the mix) and on no change in her deposits, and the next lesson shows how wide the range around any such figure is.' },
@@ -185,7 +185,7 @@ export default {
 
   demo: [
     { widget: 'ret-growth', intro: 'The value of $1 invested in January 2013 in each simulated asset, at each year-end. Notice the market fund’s fall in 2022 and how long it took to regain its 2021 level, and how smooth the bills line is.' },
-    { widget: 'ret-years', intro: 'The same fifteen years as calendar-year returns. The market fund’s bars swing between −27% and +47%; the bond fund’s mostly sit between 0% and 11%, with one bad year in 2022.' },
+    { widget: 'ret-years', intro: 'The same fifteen years as calendar-year returns. The market fund’s line swings between −27% and +47%; the bond fund’s mostly sits between 0% and 11%, with one bad year in 2022.' },
     { widget: 'ret-drag', intro: 'Set an arithmetic mean and a standard deviation and see the approximate compound growth rate and where a sum ends up. Raise the standard deviation with the mean fixed: the compound rate falls. Set it to 0 and the two means agree.' },
   ],
 
@@ -316,7 +316,7 @@ export default {
     { what: 'Monthly rate from 9.57%', value: ((1 + yGeo) ** (1 / 12) - 1) * 100, shown: 0.764 },
     { what: 'Extra from the arithmetic mean', value: fv(yArith) - fv(yGeo), shown: 324304, tol: 1 },
     { what: 'Extra as a share', value: (fv(yArith) / fv(yGeo) - 1) * 100, shown: 39, tol: 0.5 },
-    { what: 'Real removes almost half', value: (1 - fv(IV.realReturn(yGeo, infl)) / fv(yGeo)) * 100, shown: 44, tol: 0.5 },
+    { what: 'Real removes more than two-fifths', value: (1 - fv(IV.realReturn(yGeo, infl)) / fv(yGeo)) * 100, shown: 44, tol: 0.5 },
     { what: 'About $837,000', value: fv(yGeo) / 1000, shown: 837, tol: 0.5 },
     { what: 'About $467,000', value: fv(IV.realReturn(yGeo, infl)) / 1000, shown: 467, tol: 0.5 },
     { what: 'About $1.16 million', value: fv(yArith) / 1e6, shown: 1.16 },
