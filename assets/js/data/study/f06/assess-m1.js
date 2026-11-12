@@ -13,9 +13,9 @@ const NEW = { shares: 10, price: HS.price };
 const raised = NEW.shares * NEW.price;
 // the five-year note's payments for the duration sheet (item 7)
 const T = Array.from({ length: 10 }, (_, i) => (i + 1) / 2);
-const durCells = { A1: 'Time (years)', B1: 'Payment', C1: 'PV', E1: 'Yield (annual)', F1: G5.ytm };
+const durCells = { A1: 'Years', B1: 'Payment', C1: 'PV', E1: 'Yield', F1: G5.ytm };
 T.forEach((t, i) => { const r = i + 2; durCells[`A${r}`] = t; durCells[`B${r}`] = i === 9 ? 102 : 2; durCells[`C${r}`] = `=B${r}/(1+$F$1/2)^(A${r}*2)`; });
-durCells.A13 = 'Macaulay duration';
+durCells.A13 = 'Duration';
 
 export const items = [
   {
@@ -91,13 +91,13 @@ export const items = [
       { value: 96.62, say: 'That is the price at 6.10%. A narrower spread lowers the yield to 5.60%; reprice at 2.80% a half-year.' },
       { value: 93.91, say: 'That moves the yield the wrong way. A narrower spread means a lower yield and a higher price.' },
     ],
-    solution: 'New yield = 6.10% − 0.50% = 5.60%, or 2.80% a half-year. Price = 2.75 × (1 − 1.028^−14) ÷ 0.028 + 100 ÷ 1.028^14 = $99.43, or =PV(5.6%/2,14,−2.75,−100). Check with duration: about 5.71 × 0.5% = 2.85% up from $96.62, which gives $99.37; the exact price is a little higher because of convexity.',
+    solution: 'New yield = 6.10% − 0.50% = 5.60%, or 2.80% a half-year. Price = 2.75 × (1 − 1.028^−14) ÷ 0.028 + 100 ÷ 1.028^14 = $99.43, or =PV(5.6%/2,14,−2.75,−100). Check with duration: about 5.71 × 0.5% = 2.85% up from $96.62, which gives about $99.38; the exact price is a little higher because of convexity.',
   },
   {
     id: 'f06-m1-7', lesson: 'bond-prices-and-yields', type: 'formula', kind: 'applied',
     prompt: 'The sheet lists the five-year government note’s ten half-yearly payments (column B) at their times in years (column A), with each payment’s present value at the yield in F1 in column C. In B13, write a formula for its Macaulay duration in years.',
     sheet: { cells: durCells, fixed: ['A2:A11'] },
-    cell: 'B13', view: 'A1:F13', widths: { A: 18, B: 12, C: 12, E: 14, F: 10 }, formats: { A: '0.0', B: '$#,##0.00', C: '$#,##0.00', F1: '0.00%', B13: '0.00' },
+    cell: 'B13', view: 'A1:F13', widths: { A: 9, B: 9, C: 8, D: 2, E: 6, F: 7 }, formats: { A: '0.0', B: '$#,##0.00', C: '$#,##0.00', F1: '0.00%', B13: '0.00' },
     answer: '=SUMPRODUCT(A2:A11,C2:C11)/SUM(C2:C11)',
     alt: ['=SUMPRODUCT(C2:C11,A2:A11)/SUM(C2:C11)'],
     wrong: [

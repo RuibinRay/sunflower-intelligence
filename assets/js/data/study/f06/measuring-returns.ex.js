@@ -42,7 +42,7 @@ export const widgets = {
   'ret-years': {
     type: 'chart', kind: 'line',
     title: 'Calendar-year total returns (simulated)',
-    x: { label: 'Calendar year (1 = 2013, 15 = 2027)', values: MKT_YEARS.map((_, i) => i + 1) },
+    x: { label: 'Calendar year', values: MKT_YEARS.map((y) => +y.year), format: 'year' },
     series: [
       { name: 'Market', values: MKT_YEARS.map((y) => Math.round(y.ret * 1000) / 10) },
       { name: 'Bonds', values: yr('bonds').map((y) => Math.round(y.ret * 1000) / 10) },

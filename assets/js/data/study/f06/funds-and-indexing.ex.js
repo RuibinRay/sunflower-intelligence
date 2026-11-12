@@ -112,8 +112,8 @@ export const guided = [
     id: 'f06-fund-g4', type: 'mc', kind: 'conceptual',
     prompt: 'At 11 a.m. markets fall sharply. An investor wants to sell her fund holding at once. Which is true?',
     options: [
-      'An ETF can be sold on the exchange straight away at its market price; a mutual fund is redeemed at the NAV calculated after the market closes',
-      'A mutual fund can be sold straight away at its 11 a.m. NAV; an ETF only at the end-of-day NAV',
+      'The ETF sells at once at its market price; the mutual fund at that evening’s NAV',
+      'A mutual fund can be sold straight away at its 11 a.m. NAV, while an ETF can be sold only at the NAV calculated at the end of the day',
       'Both can only be sold at the end-of-day NAV, because both are funds',
       'Both can be sold at once at the previous day’s NAV',
     ],
@@ -175,10 +175,10 @@ export const independent = [
     id: 'f06-fund-i5', type: 'mc', kind: 'applied',
     prompt: 'A friend says: “SPIVA found 65% of active large-cap funds trailed the S&amp;P 500 in 2024, so 35% beat it. I’ll just pick one of those.” What is the main problem with this plan?',
     options: [
-      'Over longer periods far fewer beat the index (about 8% over 20 years), and last year’s winners are hard to identify in advance',
+      'Few keep winning: about 8% beat the index over 20 years',
       'The SPIVA figure is wrong: in fact every active fund trails its index every year',
       'Beating the index in one year proves skill, so the plan works if she picks quickly',
-      'Funds that beat the index always charge lower fees, so she should simply choose the cheapest',
+      'Funds that beat the index always charge lower fees, so she should simply choose the cheapest active fund she can find',
     ],
     answer: 0,
     feedback: {
@@ -202,7 +202,7 @@ export const check = [
     id: 'f06-fund-k1', type: 'mc', kind: 'conceptual',
     prompt: 'What is an index fund designed to do?',
     options: [
-      'Achieve approximately the same return as a particular index, before fees',
+      'Match an index’s return, before fees',
       'Beat a particular index by choosing its best shares',
       'Achieve the index’s return after fees, with no tracking difference',
       'Hold only the largest shares in a market to reduce its risk',
@@ -249,8 +249,8 @@ export const check = [
     id: 'f06-fund-k5', type: 'mc', kind: 'applied',
     prompt: 'Northgate’s brochure highlights that it beat the index in five of the seven years 2018–2024. What is the most useful thing for Ana to check next?',
     options: [
-      'Its full record against the index, the alpha’s standard error, and how its extra fee compares with any outperformance',
-      'Whether its managers expect to keep beating the index in the next few years',
+      'Its full record, the alpha’s standard error, and its fee',
+      'Whether its managers expect to keep beating the index in the next few years, as their brochure says',
       'Its best single year, to see how much it can gain at its peak',
       'Whether the index fund also beat the index in those years',
     ],
@@ -266,10 +266,10 @@ export const check = [
     id: 'f06-fund-k6', type: 'mc', kind: 'conceptual',
     prompt: 'Why must the average actively managed dollar trail the market after costs?',
     options: [
-      'Active and index investors together hold the market, so before costs active money earns the market return on average, and active costs are higher',
+      'Together, active money earns the market return before its higher costs',
       'Active managers are less skilled than the people who design indexes',
       'Index funds receive a subsidy that active funds do not',
-      'Markets are perfectly efficient, so no active manager can ever beat the market',
+      'Markets are perfectly efficient, so no active manager can ever beat the market in any year at all',
     ],
     answer: 0,
     feedback: {

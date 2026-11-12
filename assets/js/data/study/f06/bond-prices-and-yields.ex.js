@@ -24,18 +24,18 @@ export const widgets = {
     compute: (v) => {
       const spec = { couponRate: v.coupon / 100, years: v.years, freq: 2 };
       const a = at(spec, v.ytm / 100);
-      const cy = v.coupon > 0 ? v.coupon / a.price : 0;
+      const cy = v.coupon > 0 ? v.coupon / a.price : 0;   // a fraction: coupon per $100 ÷ price
       const ys = Array.from({ length: 25 }, (_, i) => i * 0.5);
       let note;
       if (Math.abs(a.price - 100) < 0.005) note = 'The coupon equals the yield, so the bond trades at its face value: coupon rate, current yield and yield to maturity are all the same.';
-      else if (a.price < 100) note = `The coupon is below the yield, so the bond trades at a discount: coupon ${pct(v.coupon / 100)} < current yield ${pct(cy / 100)} < yield to maturity ${pct(v.ytm / 100)}. Its price will be pulled up to $100 by maturity if the yield stays put.`;
-      else note = `The coupon is above the yield, so the bond trades at a premium, and the order of the yields reverses: coupon ${pct(v.coupon / 100)} > current yield ${pct(cy / 100)} > yield to maturity ${pct(v.ytm / 100)}.`;
+      else if (a.price < 100) note = `The coupon is below the yield, so the bond trades at a discount: coupon ${pct(v.coupon / 100)} < current yield ${pct(cy)} < yield to maturity ${pct(v.ytm / 100)}. Its price will be pulled up to $100 by maturity if the yield stays put.`;
+      else note = `The coupon is above the yield, so the bond trades at a premium, and the order of the yields reverses: coupon ${pct(v.coupon / 100)} > current yield ${pct(cy)} > yield to maturity ${pct(v.ytm / 100)}.`;
       if (v.coupon === 0) note = `A zero-coupon bond: no coupons, so its Macaulay duration equals its maturity, ${v.years} years. ` + note.replace(/: coupon .*$/, '.');
       note += ` A one-point rise in the yield would lower the price by about ${a.modified.toFixed(2)}% (modified duration).`;
       return {
         headline: { label: 'Price per $100 of face value', value: money(a.price) },
         rows: [
-          ['Current yield (annual coupon ÷ price)', v.coupon > 0 ? pct(cy / 100) : 'none (no coupons)'],
+          ['Current yield (annual coupon ÷ price)', v.coupon > 0 ? pct(cy) : 'none (no coupons)'],
           ['Macaulay duration', `${a.macaulay.toFixed(2)} years`],
           ['Modified duration', a.modified.toFixed(2)],
           ['Convexity', a.convexity.toFixed(1)],
@@ -82,14 +82,14 @@ export const widgets = {
             { name: 'Duration', values: xs.map((x) => Math.round(-a.modified * x * 100) / 100) },
             { name: 'With convexity', values: xs.map((x) => Math.round(IV.priceChangeApprox(a, x / 100) * 10000) / 100) },
           ],
-          y: { label: 'Price change (%)' } },
+          y: { label: 'Price change (%)' }, endLabels: false },
       };
     },
   },
   'bond-years': {
-    type: 'chart', kind: 'bar',
+    type: 'chart', kind: 'line', endLabels: false,
     title: 'The bond fund’s calendar-year returns, 2013–2027 (simulated)',
-    x: { label: 'Year', values: YB.map((y) => y.year) },
+    x: { label: 'Year', values: YB.map((y) => Number(y.year)), format: 'year' },
     series: [{ name: 'Bond fund', values: YB.map((y) => r2(y.ret)) }, { name: 'Bills', values: YBILL.map((y) => r2(y.ret)) }],
     y: { label: 'Return (%)' },
     note: `Simulated for teaching (tools/study/f06-data.py), not real history: the Harbourline Aggregate Bond Index Fund and one-month bills. The fund lost ${pct(-YB.find((y) => y.year === '2022').ret, 2)} in 2022, its only losing year, and gained ${pct(YB.find((y) => y.year === '2023').ret, 2)} in 2023, when bills returned ${pct(YBILL.find((y) => y.year === '2023').ret, 2)}.`,
@@ -271,10 +271,10 @@ export const check = [
   {
     id: 'f06-bond-k4', type: 'multi', kind: 'conceptual',
     prompt: 'Other things equal, which of these give a fixed-coupon bond a longer duration? Select all that apply.',
-    options: ['A longer time to maturity', 'A lower coupon rate', 'A higher yield to maturity', 'A lower yield to maturity', 'A better credit rating'],
-    answer: [0, 1, 3],
-    feedback: { 2: 'A higher yield shrinks the present value of the distant payments most, which shortens the duration.', 4: 'A rating changes the yield, not directly the timing of the payments. Duration depends on maturity, coupon and yield.' },
-    solution: 'Duration is the present-value-weighted average time of the payments. It lengthens with maturity, with a lower coupon (more of the value in the final payment) and with a lower yield (distant payments discounted less).',
+    options: ['A longer time to maturity', 'A lower coupon rate', 'A higher yield to maturity', 'A lower yield to maturity', 'A larger amount of the bond outstanding', 'A zero coupon instead of a 4% coupon'],
+    answer: [0, 1, 3, 5],
+    feedback: { 2: 'A higher yield shrinks the present value of the distant payments most, which shortens the duration.', 4: 'The size of the issue changes neither the timing nor the present values of each bond’s payments, so it does not affect duration.' },
+    solution: 'Duration is the present-value-weighted average time of the payments. It lengthens with maturity, with a lower coupon (more of the value in the final payment; with no coupon at all, duration equals maturity) and with a lower yield (distant payments discounted less). The size of the issue is irrelevant.',
   },
   {
     id: 'f06-bond-k5', type: 'mc', kind: 'applied',

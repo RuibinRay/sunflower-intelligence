@@ -145,10 +145,10 @@ export const independent = [
     id: 'f06-eff-i4', type: 'mc', kind: 'conceptual',
     prompt: 'An optimiser run on fifteen years of returns puts 80% of a portfolio in bonds. A colleague raises the bond fund’s expected return by one percentage point, less than its standard error, and the bond weight jumps to about 90%. What does this show?',
     options: [
-      'The weights are very sensitive to expected returns that history can’t estimate precisely',
+      'Optimised weights are very sensitive to imprecise expected returns',
       'The bond fund’s standard error must have been calculated wrongly',
       'Bonds are the best asset and the optimiser has found it correctly',
-      'Correlations, not expected returns, are the main source of the instability',
+      'Correlations, not expected returns, are the main source of the instability in the weights',
     ],
     answer: 0,
     feedback: {
@@ -193,8 +193,8 @@ export const check = [
     id: 'f06-eff-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Why is the maximum-Sharpe portfolio the best risky portfolio to combine with a risk-free asset?',
     options: [
-      'Its capital allocation line is the steepest, so it gives the most expected return for any chosen level of risk',
-      'It is the portfolio with the lowest standard deviation of all, so it suits every investor without change',
+      'Its line with the risk-free asset is the steepest, giving the most return at every level of risk',
+      'It is the portfolio with the lowest standard deviation of all, so it suits every investor without any change at all',
       'It has the highest expected return of any portfolio on the frontier, which every investor prefers',
       'It is the only portfolio that contains every asset available to the investor',
     ],
@@ -241,7 +241,7 @@ export const check = [
     id: 'f06-eff-k5', type: 'mc', kind: 'applied',
     prompt: 'Ana’s flat deposit, about $60,000, is due in April 2032. Her efficient-portfolio analysis suggests about two-thirds in shares for her retirement account. Where should the deposit savings go?',
     options: [
-      'A safe savings account: money needed in a few years can’t wait out a bad year for shares',
+      'A safe savings account, since it is needed within a few years',
       'The same two-thirds shares mix, since it is the efficient choice for her risk aversion',
       'All shares, because they have the highest expected return over four years',
       'The bond index fund, because bonds never fall in value over four years',

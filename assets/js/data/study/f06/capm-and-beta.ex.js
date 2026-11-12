@@ -64,7 +64,7 @@ export const guided = [
         hints: ['r_f + β × MRP.'],
         wrong: [{ value: 11.16, say: 'That multiplies the market’s whole return (4.2% + 5.5%) by beta. Beta scales only the premium.' }, { value: 6.33, say: 'That is the premium for market risk alone (1.15 × 5.5%). Add the risk-free rate.' }] },
       { id: 'f06-capm-g1-s3', type: 'mc', prompt: 'What does the R² of 0.30 tell you?',
-        options: ['30% of the variance of its excess return moves with the market; 70% is specific to the company', 'The beta is wrong 70% of the time', 'The company’s required return should be 30% of the market’s', 'The share will rise 0.30% when the market rises 1%'],
+        options: ['30% of its variance moves with the market; 70% is specific', 'The estimated beta will turn out to be wrong in about 70% of future months', 'The company’s required return should be 30% of the market’s', 'The share will rise 0.30% when the market rises 1%'],
         answer: 0,
         hints: ['R² is a share of variance explained.'],
         feedback: { 1: 'R² says how much of the variation the line explains, not how often the estimate is wrong; a low R² does make beta less precise.', 2: 'The required return comes from beta, not R².', 3: 'That would be a beta of 0.30. The slope here is 1.15.' } },
@@ -160,10 +160,10 @@ export const independent = [
     id: 'f06-capm-i6', type: 'mc', kind: 'conceptual',
     prompt: 'Two data services quote Morrow &amp; Pike’s beta as 0.82 and 1.01, and Ana’s own regression gives 0.90. Which explanation is most likely?',
     options: [
-      'They use different periods, data frequencies or market indexes, and each estimate has a standard error of about 0.2',
+      'Different periods, frequencies or indexes, and each has a standard error near 0.2',
       'One of the services must have made an error, because a company has one true beta',
       'Beta changes every month, so only the most recent estimate is meaningful',
-      'The services must be quoting unlevered betas, while Ana’s regression gives a levered one',
+      'The services must be quoting unlevered betas, while Ana’s own regression on share returns gives a levered one',
     ],
     answer: 0,
     feedback: {
@@ -180,9 +180,9 @@ export const check = [
     id: 'f06-capm-k1', type: 'mc', kind: 'conceptual',
     prompt: 'According to the CAPM, why does a share’s expected return depend on its beta rather than its standard deviation?',
     options: [
-      'Diversified investors can remove specific risk cheaply, so they are paid only for the market risk beta measures',
+      'Diversified investors are paid only for the market risk that beta measures',
       'Beta is easier to estimate precisely than standard deviation',
-      'Shares with high standard deviations always have high betas, so the two measures agree',
+      'Shares with high standard deviations always have high betas too, so the two measures always rank shares the same way',
       'Standard deviation measures past risk while beta measures future risk',
     ],
     answer: 0,

@@ -209,7 +209,7 @@ export default {
 
   demo: [
     { widget: 'bond-price', intro: 'Start with the five-year government note. Lower the yield below the coupon and watch the price rise above $100; lengthen the maturity and watch the curve steepen and the duration grow. Set the coupon to 0 to see a zero-coupon bond, whose Macaulay duration equals its maturity.' },
-    { widget: 'bond-years', intro: 'The simulated bond fund’s calendar-year returns beside one-month bills. Find 2022, the only losing year, and note how much higher the bills’ return was by 2023: the same rise in interest rates that cut bond prices raised the income on new money.' },
+    { widget: 'bond-years', intro: 'The simulated bond fund’s calendar-year returns beside one-month bills, as lines. Find 2022, the only losing year, and note how much higher the bills’ return was by 2023: the same rise in interest rates that cut bond prices raised the income on new money.' },
     { widget: 'bond-shock', intro: 'Start with the 20-year bond and a one-point rise. Compare the exact change with the duration estimate, then make the move larger and the bond shorter: the gap between the straight line and the curve is convexity.' },
   ],
 
