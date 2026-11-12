@@ -14,7 +14,9 @@ Monthly total returns (price change plus dividends or coupons, reinvested), Janu
   bonds      the Harbourline Aggregate Bond Index: bills + 0.12% a month + 0.08 × market excess + rate shocks (sd 1.2%),
              with a planted −13% across 2022 as rates rose (bond prices fall when yields rise).
   active     the Northgate Active Equity Fund: market excess + its own noise (sd 1.0%, mean zero in the sample) − 0.08% a
-             month (its 0.85% a year of fees, net of a little skill) + bills.
+             month + bills: it trails the index fund by exactly 0.08% a month (0.96 points a year), a little more than
+             the 0.81-point gap in fees. Its noise is mean zero but not exactly uncorrelated with the market, so its
+             regression alpha is about −0.079% a month, not exactly −0.08%.
   brightcup, morrow, harbour  F05's three listed peers: bills + β × market excess + their own noise (sd 6.0%, 5.5%,
              6.0% a month). Over the last 60 months (2023–2027) their own noise is made exactly uncorrelated with the
              market and mean zero (and their 2013–2022 noise is mean zero too), so a regression of their excess returns on the market's over those months gives
@@ -67,7 +69,7 @@ target_2022 = -0.13
 cur = np.prod(1 + bonds[i22]) - 1
 bonds[i22] = (1 + bonds[i22]) * ((1 + target_2022) / (1 + cur)) ** (1 / 12) - 1   # spread the planted 2022 loss across the year
 an = rng.normal(0, 0.010, N); an -= an.mean()
-active = bills + 1.00 * mkt_ex + an - 0.0008                          # sample alpha exactly −0.08% a month
+active = bills + 1.00 * mkt_ex + an - 0.0008                          # trails the index by exactly 0.08% a month
 
 BETAS = {'brightcup': 1.05, 'morrow': 0.90, 'harbour': 1.25}
 IDIO = {'brightcup': 0.060, 'morrow': 0.055, 'harbour': 0.060}

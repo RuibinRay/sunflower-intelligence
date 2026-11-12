@@ -113,7 +113,7 @@ const mixTool = { kind: 'widget', widget: { type: 'formula', title: 'Ana’s acc
 export default {
   title: 'Should Ana buy Brightcup?',
   brief: [
-    { case: `June 2028. Ana is opening her retirement account on 1 July with ${money(ANA.retirement.lump)} and will add ${money(ANA.retirement.monthly)} a month. After working through diversification she has chosen a mix of ${pc(AP.market, 0)} total-market index fund, ${pc(AP.intl, 0)} international index fund and ${pc(AP.bonds, 0)} bond index fund. Now she is tempted to put ${pc(IDEA.share, 0)} of the account into Brightcup Coffee, the listed chain whose shops she competes with: ${IDEA.why}. Brightcup, its competitors, every figure and all the market data are fictional; the monthly returns are simulated for teaching. Value Brightcup at 31 December 2027, the date of its latest accounts; its shares still trade at about $42.` },
+    { case: `June 2028. Ana is opening her retirement account on 1 July with ${money(ANA.retirement.lump)} and will add ${money(ANA.retirement.monthly)} a month. After working through the portfolio lessons she has chosen a mix of ${pc(AP.market, 0)} total-market index fund, ${pc(AP.intl, 0)} international index fund and ${pc(AP.bonds, 0)} bond index fund (in the simulated history its worst calendar year, 2022, lost 24%, just inside the −25% she said she could live with). Now she is tempted to put ${pc(IDEA.share, 0)} of the account into Brightcup Coffee, the listed chain whose shops she competes with: ${IDEA.why}. Brightcup, its competitors, every figure and all the market data are fictional; the monthly returns are simulated for teaching. Value Brightcup at 31 December 2027, the date of its latest accounts; its shares still trade at about $42.` },
     { p: 'Ana asks you to answer three questions: what Brightcup’s shares are worth, what return their risk requires, and what owning them would do to her account. The company figures are below.' },
     { html: companiesTable },
   ],
@@ -297,7 +297,7 @@ export default {
       ['a point on the rate moves value more than 2% terminal growth or slower growth', (V.perShare - V_LO.perShare > V.perShare - V_G2.perShare && V.perShare - V_LO.perShare > V.perShare - V_SLOW.perShare) ? 1 : 0, 1],
       ['peers value Brightcup below its price', Math.max(...PE_IMPL, ...EV_IMPL) < B.price ? 1 : 0, 1],
       ['SD without (2023–27)', SD0, SD0, 0], ['SD with', SD1 > SD0 ? 1 : 0, 1], ['systematic share of the added variance is between a third and nine-tenths', SYS_SHARE > 0.33 && SYS_SHARE < 0.9 ? 1 : 0, 1], ['Sharpe falls', SH1 < SH0 ? 1 : 0, 1], ['company-specific share', SPECIFIC, 0.667, 0.001],
-      ['expected return up 0.15 points', ER1 - ER0, 0.0015, 0.0001], ['the bond-to-market shift is less risky for the same return', SD2 < SD1 ? 1 : 0, 1], ['beta interval value range brackets the point value', V_BHI.perShare < V.perShare && V.perShare < V_BLO.perShare ? 1 : 0, 1], ['stake', STAKE, 500],
+      ['expected return up about 0.19 points', ER1 - ER0, 0.0019, 0.0001], ['Ana’s mix stays inside her −25% worst year', Math.min(...IV.yearly(MONTHS, SERIES.market.map((_, i) => AP.market * SERIES.market[i] + AP.intl * SERIES.intl[i] + AP.bonds * SERIES.bonds[i])).map((y) => y.ret)) > -0.25 ? 1 : 0, 1], ['the bond-to-market shift is less risky for the same return', SD2 < SD1 ? 1 : 0, 1], ['beta interval value range brackets the point value', V_BHI.perShare < V.perShare && V.perShare < V_BLO.perShare ? 1 : 0, 1], ['stake', STAKE, 500],
     ];
   },
 };

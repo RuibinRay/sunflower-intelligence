@@ -69,7 +69,7 @@ export const BRIGHTCUP_FORECAST = { growth: [0.10, 0.10, 0.09, 0.07, 0.05], ebit
 export const MARKET = { rf: F05_MARKET.rf, mrp: F05_MARKET.mrp };
 /** The project: Ana's retirement mix after module 3 (her choice), Brightcup's bond (F05 module 3: 6 years, 5% annual
  *  coupon, $96.20 per $100) and the share of her account she is tempted to put in Brightcup. */
-export const ANA_PORTFOLIO = { market: 0.60, intl: 0.20, bonds: 0.20 };
+export const ANA_PORTFOLIO = { market: 0.55, intl: 0.15, bonds: 0.30 };   // its worst simulated calendar year (2022) is −24.1%, inside her −25% limit
 export const BRIGHTCUP_BOND = { couponRate: 0.05, years: 6, freq: 1, price: 96.20, face: 100 };
 export const BRIGHTCUP_IDEA = { share: 0.10, why: 'she knows the business, sees its shops busy and thinks it is cheap' };
 
