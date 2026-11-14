@@ -1,7 +1,8 @@
 // chart.js — the "chart" lesson widget: a fixed chart of data the lesson supplies, with its numbers as a table
 // for screen readers and anyone who prefers them. Also exports drawChart, which the formula explorer reuses.
 //   { type: 'chart', kind: 'line' | 'bar', title, x: { label, values }, series: [{ name, values }],
-//     y: { label, format: 'money' | 'pct' | 'int' | 'num' }, note: 'html' }
+//     y: { label, format: 'money' | 'pct' | 'int' | 'num' }, note: 'html', endLabels?: false (legend only) }
+//   x.format: 'year' prints whole numbers without thousands separators (2014, not 2,014).
 import { h } from '../../core/dom.js?v=31';
 import { xl } from '../xl.js?v=31';
 import * as F from '../../core/format.js?v=31';
@@ -28,7 +29,7 @@ export function drawChart(box, spec, { height = 260 } = {}) {
   if (spec.kind === 'bar' || !numericX) {
     barChart(plot, { categories: xs.map(String), series, height, format: yFmt, yLabel: spec.y?.label, label, legend: series.length > 1 });
   } else {
-    lineChart(plot, { xs, series, height, xLabel: spec.x?.label, yLabel: spec.y?.label, yFormat: yFmt, xFormat: (v) => F.auto(v), label, endLabels: series.length > 1 });
+    lineChart(plot, { xs, series, height, xLabel: spec.x?.label, yLabel: spec.y?.label, yFormat: yFmt, xFormat: spec.x?.format === 'year' ? (v) => String(Math.round(v)) : (v) => F.auto(v), label, endLabels: spec.endLabels ?? series.length > 1 });
   }
   tableTwin(box, {
     caption: label,
