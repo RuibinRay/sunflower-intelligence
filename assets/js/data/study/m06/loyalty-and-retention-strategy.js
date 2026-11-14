@@ -4,9 +4,9 @@
 // which members chose themselves), and a fictional randomised win-back test on the real count of members who had
 // lapsed by 31 December 2027 (the outcomes are invented). The project's subscriptions are not used. Every printed figure
 // is recomputed in `checks`.
-import { members, lapseData } from './case.js?v=30';
-import * as CU from '../../../core/customer.js?v=30';
-import { propTest2, normCdf, normInv } from '../../../core/inference.js?v=30';
+import { members, lapseData } from './case.js?v=31';
+import * as CU from '../../../core/customer.js?v=31';
+import { propTest2, normCdf, normInv } from '../../../core/inference.js?v=31';
 
 const pct = (v, d = 1) => `${(v * 100).toFixed(d)}%`;
 const f2 = (v) => v.toFixed(2);

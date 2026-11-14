@@ -4,10 +4,10 @@
 // tests, AIC and BIC; a hold-out check (fit March–September, test October–December); peak barista hours as a predictor
 // that forecasts without explaining; and 31 day-of-month dummies screened by p-value. Brackenfold Removals is fictional.
 // Every figure printed is recomputed in `checks`.
-import { column } from './case.js?v=30';
-import * as R from '../../../core/regression.js?v=30';
-import * as C from '../../../core/correlation.js?v=30';
-import { mean } from '../../../core/stats.js?v=30';
+import { column } from './case.js?v=31';
+import * as R from '../../../core/regression.js?v=31';
+import * as C from '../../../core/correlation.js?v=31';
+import { mean } from '../../../core/stats.js?v=31';
 
 const tn = (v) => Math.round(v).toLocaleString('en-US').replace(/,/g, '{,}');
 const fx = (v, d = 2) => (v < 0 ? '−' : '') + Math.abs(v).toFixed(d);

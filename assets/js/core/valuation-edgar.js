@@ -7,7 +7,7 @@
 // factsToHistory() does the same mapping either way, locally.
 // SEC's fair-access policy asks automated clients to identify themselves and stay under ten requests a second; a
 // browser sends its own User-Agent, and the studio makes at most two requests per lookup.
-import { fin } from './valuation.js?v=30';
+import { fin } from './valuation.js?v=31';
 
 export const SUBMISSIONS_URL = (cik) => `https://data.sec.gov/submissions/CIK${String(cik).padStart(10, '0')}.json`;
 export const factsUrl = (cik) => `https://data.sec.gov/api/xbrl/companyfacts/CIK${String(cik).padStart(10, '0')}.json`;

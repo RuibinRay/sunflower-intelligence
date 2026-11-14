@@ -2,8 +2,8 @@
 // Answer keys live here. Lantern’s inputs come from case.js; yields, betas and CAPM from core/corpfin.js. Every other
 // business named here is fictional (Brightcup Coffee and Harbour Street Foods are the case’s fictional listed peers;
 // Ferncastle Utilities’ preferred share is F04’s).
-import { MARKET, PEERS, DEBT, TARGET_DV, TAX } from './case.js?v=30';
-import * as CF from '../../../core/corpfin.js?v=30';
+import { MARKET, PEERS, DEBT, TARGET_DV, TAX } from './case.js?v=31';
+import * as CF from '../../../core/corpfin.js?v=31';
 
 const { rf, mrp, smallFirm } = MARKET;
 const pct = (v, d = 2) => `${v < 0 ? '−' : ''}${(Math.abs(v * 100) + 1e-9).toFixed(d)}%`;   // epsilon: 5.625 shows as 5.63

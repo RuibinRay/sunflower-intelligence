@@ -1,7 +1,7 @@
 // financial-planning.ex.js — F05 · Financial planning: widgets, practice and the knowledge check (answer keys live here).
 // Isbister Outdoor Gear and Sallowfield Garden Centre are the lesson’s fictional examples; every other business here is
 // fictional and invented for the exercise.
-import * as CF from '../../../core/corpfin.js?v=30';
+import * as CF from '../../../core/corpfin.js?v=31';
 
 const money = (v) => `${v < 0 ? '−' : ''}$${Math.abs(Math.round(v)).toLocaleString('en-US')}`;
 const pct = (v, d = 2) => `${(v * 100).toFixed(d)}%`;

@@ -4,8 +4,8 @@
 // solutions are shown when the student reviews the test. Café data come from case.js (the corrected log); Fallow Point
 // Ferries, Kelso Street Gyms and every other business, person and number are fictional. Formula items are marked by
 // their results (core/sheet.js gradeFormula); every num item's `check` recomputes its answer.
-import { column } from './case.js?v=30';
-import * as R from '../../../core/regression.js?v=30';
+import { column } from './case.js?v=31';
+import * as R from '../../../core/regression.js?v=31';
 
 const fx = (v, d = 2) => (v < 0 ? '−' : '') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));

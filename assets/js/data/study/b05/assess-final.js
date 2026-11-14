@@ -29,10 +29,10 @@
 // follow the season, so their p-values are approximate (too small), and the two cafés share their days: items that test
 // say so. No hints; solutions are shown on review. Every num item’s `check` recomputes its answer, and every formula
 // item is marked by its results on the sheet and on changed copies.
-import { CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, column, DERIVED, MATRIX } from './case.js?v=30';
-import * as C from '../../../core/correlation.js?v=30';
-import { mean, sd } from '../../../core/stats.js?v=30';
-import { normCdf, tCdf } from '../../../core/inference.js?v=30';
+import { CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, column, DERIVED, MATRIX } from './case.js?v=31';
+import * as C from '../../../core/correlation.js?v=31';
+import { mean, sd } from '../../../core/stats.js?v=31';
+import { normCdf, tCdf } from '../../../core/inference.js?v=31';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const fx = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;

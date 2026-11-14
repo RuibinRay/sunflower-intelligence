@@ -1,8 +1,8 @@
 // state.js — the studio's single source of truth: the project (data, models, risks, scenarios), the assumptions, and
 // the results recomputed from them. Panels subscribe and re-render; every input change ends in recompute().
-import * as V from '../core/valuation.js?v=30';
-import { store, debounce } from '../core/dom.js?v=30';
-import { EXAMPLE } from '../data/valuation-example.js?v=30';
+import * as V from '../core/valuation.js?v=31';
+import { store, debounce } from '../core/dom.js?v=31';
+import { EXAMPLE } from '../data/valuation-example.js?v=31';
 
 export const SAVE_KEY = 'si:cv:project';
 export const state = {

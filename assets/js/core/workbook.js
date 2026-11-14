@@ -4,9 +4,9 @@
 // fields; checks data quality over EVERY row; and builds the company project that the dashboard and the Company
 // Valuation Studio share. Pure functions, no DOM. Nothing is guessed silently: every proposal is returned for review,
 // every figure keeps its lineage (sheet, row label, cells, scaling, sign change), and gaps stay gaps.
-import { FIELDS, FIELD, fin } from './valuation.js?v=30';
-import { matchLabel } from './valuation-io.js?v=30';
-import { parseNumber } from './csv.js?v=30';
+import { FIELDS, FIELD, fin } from './valuation.js?v=31';
+import { matchLabel } from './valuation-io.js?v=31';
+import { parseNumber } from './csv.js?v=31';
 
 // ================================================================ small helpers
 const MISSING = new Set(['', 'na', 'n/a', 'null', 'nan', 'none', '-', '—', '–', '?', '#n/a', 'nm', 'n.m.', 'n/m']);

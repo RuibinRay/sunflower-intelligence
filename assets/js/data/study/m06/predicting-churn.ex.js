@@ -4,9 +4,9 @@
 // regression fitted to all 1,664. The offer's uplifts, cost and value, and Patterdale Broadband, Rosthwaite Insurance and the
 // other businesses named, are fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num items
 // recompute their answers in `check`.
-import { churnTable } from './case.js?v=30';
-import * as R from '../../../core/regression.js?v=30';
-import * as CU from '../../../core/customer.js?v=30';
+import { churnTable } from './case.js?v=31';
+import * as R from '../../../core/regression.js?v=31';
+import * as CU from '../../../core/customer.js?v=31';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const pct = (v, d = 1) => `${(v * 100).toFixed(d)}%`;

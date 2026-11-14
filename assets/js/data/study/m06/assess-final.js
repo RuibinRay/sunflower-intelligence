@@ -39,12 +39,12 @@
 // lesson give them. Every other business, person and number is fictional; none is a subscription like the project’s,
 // and nothing uses the project’s data or question. No hints; solutions are shown on review. Every num item’s `check`
 // recomputes its answer, and every formula item is marked by its results on the sheet and on changed copies.
-import { MEMBER_LIST, VISIT_LIST, members, joinMap, lapseData, churnTable, CALIBRATION_END } from './case.js?v=30';
-import * as CU from '../../../core/customer.js?v=30';
-import { propTest2 } from '../../../core/inference.js?v=30';
-import { roc } from '../../../core/classify.js?v=30';
-import { isoToSerial } from '../../../core/sheet.js?v=30';
-import { FACTS as F03 } from '../f03/case.js?v=30';
+import { MEMBER_LIST, VISIT_LIST, members, joinMap, lapseData, churnTable, CALIBRATION_END } from './case.js?v=31';
+import * as CU from '../../../core/customer.js?v=31';
+import { propTest2 } from '../../../core/inference.js?v=31';
+import { roc } from '../../../core/classify.js?v=31';
+import { isoToSerial } from '../../../core/sheet.js?v=31';
+import { FACTS as F03 } from '../f03/case.js?v=31';
 
 const fx = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const money = (v) => `${v < 0 ? '−' : ''}$${fx(Math.abs(v), 2)}`;

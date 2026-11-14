@@ -4,10 +4,10 @@
 // Ferrowick Bike Hire is fictional. Inference for one slope is inference-for-coefficients'; categorical predictors and
 // interactions are the next lesson's; collinearity and model choice the one after. Every figure printed is recomputed in
 // `checks`.
-import { column } from './case.js?v=30';
-import * as R from '../../../core/regression.js?v=30';
-import * as C from '../../../core/correlation.js?v=30';
-import { mean, sd } from '../../../core/stats.js?v=30';
+import { column } from './case.js?v=31';
+import * as R from '../../../core/regression.js?v=31';
+import * as C from '../../../core/correlation.js?v=31';
+import { mean, sd } from '../../../core/stats.js?v=31';
 
 // ---------------------------------------------------------------- Harbourside's footfall (306 days)
 const H = { cafe: 'Harbourside' };

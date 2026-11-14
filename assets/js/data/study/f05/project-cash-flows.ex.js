@@ -2,8 +2,8 @@
 // Every number is recomputed by `check` (see ../AUTHORING.md). The two capbudget widgets rebuild coldBrewFlows() and
 // roasterFlows() from COLD_BREW, ROASTER and TAX in case.js (project-cash-flows.js checks that they agree at the
 // defaults); every other business here is fictional.
-import { COLD_BREW as C, ROASTER as RO, TAX, WORKING_RATE } from './case.js?v=30';
-import { depreciation, MACRS } from '../../../core/corpfin.js?v=30';
+import { COLD_BREW as C, ROASTER as RO, TAX, WORKING_RATE } from './case.js?v=31';
+import { depreciation, MACRS } from '../../../core/corpfin.js?v=31';
 
 const R = WORKING_RATE * 100;
 const af = (r, n) => (1 - (1 + r) ** -n) / r;

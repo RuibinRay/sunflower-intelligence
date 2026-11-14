@@ -9,9 +9,9 @@
 // shares are in the same unit, so equity ÷ shares is a per-share figure in whole currency; capital expenditure is a
 // positive number (cash spent). Nothing here fills a missing figure silently: derive() returns how each derived value
 // was made, validate() lists what is missing or inconsistent, and every model returns { error } when it cannot run.
-import { wacc as costOfCapital } from './fin.js?v=30';
-import * as R from './ratios.js?v=30';
-import { mulberry32, normalGen } from './rng.js?v=30';
+import { wacc as costOfCapital } from './fin.js?v=31';
+import * as R from './ratios.js?v=31';
+import { mulberry32, normalGen } from './rng.js?v=31';
 
 export const fin = (x) => typeof x === 'number' && Number.isFinite(x);
 const n0 = (x) => (fin(x) ? x : 0);

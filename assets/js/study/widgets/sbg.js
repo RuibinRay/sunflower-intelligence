@@ -6,11 +6,11 @@
 // period-by-period retention rates. Numbers from core/customer.js.
 //   { type: 'sbg', title, cohorts: [{ name?, alive: [n0, n1, …] }] (pooled when several), fit: 7 (periods used),
 //     fitRange: [3, 12], horizon: 24 (periods projected), unit: 'year' | 'month', note }
-import { h, onResize } from '../../core/dom.js?v=30';
-import { xl } from '../xl.js?v=30';
-import { lineChart } from '../../core/charts.js?v=30';
-import * as CU from '../../core/customer.js?v=30';
-import * as F from '../../core/format.js?v=30';
+import { h, onResize } from '../../core/dom.js?v=31';
+import { xl } from '../xl.js?v=31';
+import { lineChart } from '../../core/charts.js?v=31';
+import * as CU from '../../core/customer.js?v=31';
+import * as F from '../../core/format.js?v=31';
 
 /** Both fits to the first `fit` periods of the cohorts (exported for the checker). Constant retention is fitted by
  *  maximum likelihood too: renewals ÷ chances to renew over the window, pooled across cohorts. */

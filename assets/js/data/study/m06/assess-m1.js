@@ -2,9 +2,9 @@
 // scenarios, not copies of lesson exercises. No hints; solutions are shown when the student reviews the test. The visit
 // log and the scored members come from case.js; Fernleigh Hotels, Greenmantle Plants and Pinebrook Outdoor are
 // fictional, as are their numbers. Formula items are marked by their results; every num item's `check` recomputes it.
-import { VISIT_LIST, members } from './case.js?v=30';
-import * as CU from '../../../core/customer.js?v=30';
-import { isoToSerial } from '../../../core/sheet.js?v=30';
+import { VISIT_LIST, members } from './case.js?v=31';
+import * as CU from '../../../core/customer.js?v=31';
+import { isoToSerial } from '../../../core/sheet.js?v=31';
 
 const money = (v) => `$${v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const pc = (v, d = 1) => `${(v * 100).toFixed(d)}%`;

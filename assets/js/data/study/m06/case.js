@@ -17,12 +17,12 @@
 // subscribers on 31 December 2026 (B04's December survey invited all 120); in 2027 the joins, cancellations and active
 // subscribers in every week are B05's (100 joins, 52 cancellations, 168 at the end); prices, costs and the $5.20
 // parcel are B03's.
-import { MEMBER_COLUMNS, MEMBERS, VISITS, SUB_COLUMNS, SUBSCRIPTIONS, REQUEST_COLUMNS, REQUESTS, SAVE_TEST_START } from './data.js?v=30';
-import { CAFE_COLUMNS, CLEAN_ROWS, SHOP_COLUMNS, SHOP_WEEKS } from '../b05/case.js?v=30';
-import { MEMBER_COLUMNS as B06_COLS, MEMBERS as B06_MEMBERS } from '../b06/case.js?v=30';
-import { ORDER_COLUMNS as B03_COLS, ORDERS as B03_ORDERS, PRODUCTS, SHOP_MODEL } from '../b03/case.js?v=30';
-import { SUBSCRIBER_SURVEY } from '../b04/case.js?v=30';
-import * as CU from '../../../core/customer.js?v=30';
+import { MEMBER_COLUMNS, MEMBERS, VISITS, SUB_COLUMNS, SUBSCRIPTIONS, REQUEST_COLUMNS, REQUESTS, SAVE_TEST_START } from './data.js?v=31';
+import { CAFE_COLUMNS, CLEAN_ROWS, SHOP_COLUMNS, SHOP_WEEKS } from '../b05/case.js?v=31';
+import { MEMBER_COLUMNS as B06_COLS, MEMBERS as B06_MEMBERS } from '../b06/case.js?v=31';
+import { ORDER_COLUMNS as B03_COLS, ORDERS as B03_ORDERS, PRODUCTS, SHOP_MODEL } from '../b03/case.js?v=31';
+import { SUBSCRIBER_SURVEY } from '../b04/case.js?v=31';
+import * as CU from '../../../core/customer.js?v=31';
 
 export { MEMBER_COLUMNS, SUB_COLUMNS, REQUEST_COLUMNS, SAVE_TEST_START };
 const { dayNum, isoDay } = CU;

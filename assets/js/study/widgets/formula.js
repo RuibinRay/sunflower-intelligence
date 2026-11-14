@@ -2,11 +2,11 @@
 // the headline result, the working, a plain-language note and an optional chart update as they change.
 //   { type: 'formula', title, intro, inputs: [{ id, label, min, max, step, value, fmt: 'money'|'pct'|'int'|'num', unit, digits }],
 //     compute: (v) => ({ headline: { label, value }, rows: [[label, value]], note, chart?, error? }) }
-import { h } from '../../core/dom.js?v=30';
-import * as F from '../../core/format.js?v=30';
-import { fillRange } from '../../core/site.js?v=30';
-import { onResize } from '../../core/dom.js?v=30';
-import { drawChart } from './chart.js?v=30';
+import { h } from '../../core/dom.js?v=31';
+import * as F from '../../core/format.js?v=31';
+import { fillRange } from '../../core/site.js?v=31';
+import { onResize } from '../../core/dom.js?v=31';
+import { drawChart } from './chart.js?v=31';
 
 function digitsOf(inp) { return inp.digits ?? (inp.step < 1 ? Math.min(3, Math.ceil(-Math.log10(inp.step) - 1e-9)) : 0); }
 /** The unit, singular when the value is exactly 1 ("1 year", not "1 years"); `unitOne` overrides the singular. */

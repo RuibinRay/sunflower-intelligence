@@ -6,11 +6,11 @@
 //   { type: 'diagnostics', title, y: { name, values }, xs: { 'High (°F)': [...], … }, picked?: ['High (°F)'] (default all),
 //     choose?: true (offer the predictors as checkboxes), toggles?: ['logY'], plots: ['fitted', 'qq', 'scale', 'leverage', 'order'],
 //     labels?: ['1 Mar', …], note }
-import { h, s, onResize } from '../../core/dom.js?v=30';
-import { xl } from '../xl.js?v=30';
-import { scatter } from '../../core/charts.js?v=30';
-import * as R from '../../core/regression.js?v=30';
-import * as F from '../../core/format.js?v=30';
+import { h, s, onResize } from '../../core/dom.js?v=31';
+import { xl } from '../xl.js?v=31';
+import { scatter } from '../../core/charts.js?v=31';
+import * as R from '../../core/regression.js?v=31';
+import * as F from '../../core/format.js?v=31';
 
 const fmt = (v, d = 3) => (Number.isFinite(v) ? F.num(v, d) : '—');
 const pStr = (p) => (!Number.isFinite(p) ? '—' : p < 0.001 ? 'below 0.001' : p.toFixed(3));

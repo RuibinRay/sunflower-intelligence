@@ -2,9 +2,9 @@
 // Every number is recomputed by `check` (see ../AUTHORING.md). The Cold Brew widget rebuilds coldBrewFlows() from
 // COLD_BREW and TAX in case.js (investment-criteria.js checks that the two agree at the defaults); the quarry and every
 // other business here are fictional.
-import { COLD_BREW as C, TAX, WORKING_RATE, coldBrewFlows } from './case.js?v=30';
-import { depreciation } from '../../../core/corpfin.js?v=30';
-import { npv, irr, irrAll, mirr, payback, profitabilityIndex } from '../../../core/invest.js?v=30';
+import { COLD_BREW as C, TAX, WORKING_RATE, coldBrewFlows } from './case.js?v=31';
+import { depreciation } from '../../../core/corpfin.js?v=31';
+import { npv, irr, irrAll, mirr, payback, profitabilityIndex } from '../../../core/invest.js?v=31';
 
 const R = WORKING_RATE * 100;
 const money = (v) => `${v < 0 ? '−' : ''}$${Math.round(Math.abs(v)).toLocaleString('en-US')}`;

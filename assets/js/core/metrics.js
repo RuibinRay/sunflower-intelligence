@@ -2,8 +2,8 @@
 // how it is computed (reading the values the ratio and valuation engines already produced, never recomputing them),
 // its formula in words, the variables with the numbers used, the convention chosen where more than one exists, a
 // source, and the Learn lesson that teaches it. Pure data and functions, no DOM.
-import * as R from './ratios.js?v=30';
-import { fin } from './valuation.js?v=30';
+import * as R from './ratios.js?v=31';
+import { fin } from './valuation.js?v=31';
 
 const n = (v) => (typeof v === 'number' && Number.isFinite(v) ? v : NaN);
 const avgOf = (H, i, k) => (i > 0 && fin(H[i].p[k]) && fin(H[i - 1].p[k]) ? (H[i].p[k] + H[i - 1].p[k]) / 2 : H[i].p[k]);

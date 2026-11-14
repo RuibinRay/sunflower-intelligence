@@ -107,6 +107,7 @@ const sm = join(ROOT, 'sitemap.xml');
 if (existsSync(sm)) {
   let xml = readFileSync(sm, 'utf8').replace(/\s*<url><loc>[^<]*\/learn\/(?!lessons\/)[^<]*<\/loc><\/url>/g, '');
   const urls = ['learn/', 'learn/practise/', ...catalog.SCHOOLS.map((s) => `learn/${s.id}/`), 'learn/labs/', ...catalog.LABS.map((l) => `learn/labs/${l.id}/`), 'learn/glossary/', 'learn/formulas/', 'learn/review/', 'learn/notebook/', 'learn/curriculum/',
+    ...['learn/model-guide/'].filter((u) => existsSync(join(ROOT, u, 'index.html'))),   // hand-built pages under learn/ (the regex above removes every learn/ URL)
     ...ready.flatMap((c) => [c.href, ...c.lessons.map((l) => l.href), ...c.modules.filter((m) => m.test).map((m) => m.test.href), c.diagnostic?.href, c.project?.href, c.final?.href].filter(Boolean))];
   xml = xml.replace('</urlset>', `${urls.map((u) => `  <url><loc>${SITE}${u}</loc></url>`).join('\n')}\n</urlset>`);
   writeFileSync(sm, xml);

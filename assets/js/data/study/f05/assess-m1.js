@@ -1,8 +1,8 @@
 // assess-m1.js — F05 module 1 test: Investment decisions (net-present-value, investment-criteria, project-cash-flows).
 // No hints. Each item has a full solution, shown when the student reviews the test. New scenarios, not copies of the
 // lesson exercises; every business and figure is fictional. Item 11 uses the roaster’s seven-year life from case.js.
-import { ROASTER, TAX } from './case.js?v=30';
-import { npv, irr, mirr } from '../../../core/invest.js?v=30';
+import { ROASTER, TAX } from './case.js?v=31';
+import { npv, irr, mirr } from '../../../core/invest.js?v=31';
 
 const af = (r, n) => (1 - (1 + r) ** -n) / r;
 const M = '$#,##0';

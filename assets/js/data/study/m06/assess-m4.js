@@ -3,9 +3,9 @@
 // are shown when the student reviews the test. The café members' visits come from case.js; every other business, person
 // and number is fictional. Formula items are marked by their results (core/sheet.js gradeFormula); every num item's
 // `check` recomputes its answer.
-import { MEMBER_LIST, VISIT_LIST } from './case.js?v=30';
-import * as CU from '../../../core/customer.js?v=30';
-import { propTest2 } from '../../../core/inference.js?v=30';
+import { MEMBER_LIST, VISIT_LIST } from './case.js?v=31';
+import * as CU from '../../../core/customer.js?v=31';
+import { propTest2 } from '../../../core/inference.js?v=31';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));

@@ -4,7 +4,7 @@
 // (Fader & Hardie 2010), lifetime value under constant retention, acquisition-cost payback, and lift (gains) tables
 // for churn scores. Pure functions; each is tested against pandas, statsmodels and SciPy, and the sBG fit against
 // Fader & Hardie's published estimates, in tests/customer.test.mjs.
-import { lnGamma, normQuantile, chi2PUpper, invert } from './stats.js?v=30';
+import { lnGamma, normQuantile, chi2PUpper, invert } from './stats.js?v=31';
 
 export const DAY = 86_400_000;
 /** 'YYYY-MM-DD' → whole days since 1970-01-01 (UTC), so date arithmetic is exact. */
