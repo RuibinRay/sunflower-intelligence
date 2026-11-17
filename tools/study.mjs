@@ -3,6 +3,7 @@
 //   learn/index.html                     the study home
 //   learn/<school>/index.html            three school pages
 //   learn/<school>/<course>/…            course page, one page per lesson, module tests, diagnostic, project, final
+//   learn/arcade/…                      the Pixel Arcade hub and its five games
 //   learn/labs/index.html, glossary/, formulas/, review/, notebook/, curriculum/
 //   assets/js/data/study/map.js          the course structure for the pages' scripts (generated; don't edit)
 //   assets/data/study/search.json        the search index for the study home
@@ -15,6 +16,7 @@ import { ROOT, catalog, strip, slugify, glossKey, inline, tex } from './study/li
 import { loadAll, glossary as buildGlossary, formulas as buildFormulas, sequence } from './study/course.mjs';
 import { lessonPage, coursePage, assessPage, projectPage } from './study/pages-course.mjs';
 import { homePage, schoolPage, labsPage, glossaryPage, formulasPage, reviewPage, notebookPage, curriculumPage } from './study/pages-hub.mjs';
+import { arcadePage, arcadeGamePage } from './study/pages-arcade.mjs';
 import { checkLesson } from './study-check.mjs';
 import katex from 'katex';
 import { storyboard, authoredFor } from './study/video.mjs';
@@ -74,6 +76,8 @@ const home = homePage({ courses: ready, glossary, formulas, featured })
 out('learn/index.html', home); pages++;
 for (const s of catalog.SCHOOLS) { out(`learn/${s.id}/index.html`, schoolPage(s.id, { courses: ready, plates })); pages++; }
 out('learn/labs/index.html', labsPage({ courses: ready })); pages++;
+out('learn/arcade/index.html', arcadePage()); pages++;
+for (const g of catalog.ARCADE) { out(`learn/arcade/${g.id}/index.html`, arcadeGamePage(g)); pages++; }
 out('learn/glossary/index.html', glossaryPage({ glossary })); pages++;
 out('learn/formulas/index.html', formulasPage({ formulas, courses: ready })); pages++;
 out('learn/review/index.html', reviewPage()); pages++;
@@ -109,6 +113,7 @@ const search = [
   ...glossary.map((g) => ({ k: 'Term', t: g.term, s: strip(g.def).slice(0, 140), h: `learn/glossary/#g-${slugify(g.key)}`, x: '' })),
   ...formulas.map((f) => ({ k: 'Formula', t: strip(f.name), s: `${f.code} · ${strip(f.lessonTitle)}`, h: `${f.href}#f-${f.id}`, x: (f.where || []).map((w) => strip(w[1])).join(' ') })),
   ...catalog.LABS.map((l) => ({ k: 'Lab', t: l.name, s: l.blurb, h: `learn/labs/${l.id}/`, x: '' })),
+  ...catalog.ARCADE.map((g) => ({ k: 'Game', t: g.name, s: g.blurb, h: `learn/arcade/${g.id}/`, x: `${g.lang} arcade pixel game` })),
   ...Object.entries(plates).map(([id, t]) => ({ k: 'Plate', t, s: 'A short lesson on an idea behind the site’s tools.', h: `learn/lessons/${id}/`, x: '' })),
 ];
 out('assets/data/study/search.json', JSON.stringify(search));
@@ -118,7 +123,7 @@ const SITE = 'https://ruibinray.github.io/sunflower-intelligence/';
 const sm = join(ROOT, 'sitemap.xml');
 if (existsSync(sm)) {
   let xml = readFileSync(sm, 'utf8').replace(/\s*<url><loc>[^<]*\/learn\/(?!lessons\/)[^<]*<\/loc><\/url>/g, '');
-  const urls = ['learn/', 'learn/practise/', ...catalog.SCHOOLS.map((s) => `learn/${s.id}/`), 'learn/labs/', ...catalog.LABS.map((l) => `learn/labs/${l.id}/`), 'learn/glossary/', 'learn/formulas/', 'learn/review/', 'learn/notebook/', 'learn/curriculum/',
+  const urls = ['learn/', 'learn/practise/', ...catalog.SCHOOLS.map((s) => `learn/${s.id}/`), 'learn/labs/', ...catalog.LABS.map((l) => `learn/labs/${l.id}/`), 'learn/arcade/', ...catalog.ARCADE.map((g) => `learn/arcade/${g.id}/`), 'learn/glossary/', 'learn/formulas/', 'learn/review/', 'learn/notebook/', 'learn/curriculum/',
     ...['learn/model-guide/'].filter((u) => existsSync(join(ROOT, u, 'index.html'))),   // hand-built pages under learn/ (the regex above removes every learn/ URL)
     ...ready.flatMap((c) => [c.href, ...c.lessons.map((l) => l.href), ...c.modules.filter((m) => m.test).map((m) => m.test.href), c.diagnostic?.href, c.project?.href, c.final?.href].filter(Boolean))];
   xml = xml.replace('</urlset>', `${urls.map((u) => `  <url><loc>${SITE}${u}</loc></url>`).join('\n')}\n</urlset>`);

@@ -15,9 +15,9 @@
   <script>try{var p=JSON.parse(sessionStorage.getItem('si:portal')||'null');if(p&&Date.now()-p.t<6000&&p.url===location.pathname){document.documentElement.classList.add('is-arriving');document.documentElement.style.setProperty('--arrive',p.color)}}catch(e){}try{if(localStorage.getItem('si:outline')==='closed')document.documentElement.classList.add('outline-closed')}catch(e){}</script>
   <link rel="preload" href="../assets/fonts/bodoni-moda-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/atkinson-next-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/css/base.css?v=36">
-  <link rel="stylesheet" href="../assets/css/rooms.css?v=36">
-  <link rel="stylesheet" href="../assets/css/study.css?v=36">
+  <link rel="stylesheet" href="../assets/css/base.css?v=37">
+  <link rel="stylesheet" href="../assets/css/rooms.css?v=37">
+  <link rel="stylesheet" href="../assets/css/study.css?v=37">
 </head>
 <body class="room room--learn room--sub room--study page--home" data-root="../">
   <a class="skip-link" href="#ledger">Skip to the courses</a>
@@ -62,6 +62,7 @@
           <li><a href="./analytics/">Business Analytics</a></li>
           <li><a href="./marketing/">Marketing & Strategy</a></li>
           <li><a href="./labs/">Labs</a></li>
+          <li><a href="./arcade/">Arcade</a></li>
           <li><a href="./glossary/">Glossary</a></li>
           <li><a href="./formulas/">Formulas</a></li>
           <li><a href="./review/">Review</a></li>
@@ -73,7 +74,7 @@
         </ul>
       </nav>
       <!-- /chrome:subnav -->
-      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#continue">Start here</a></li><li><a href="#schools">Schools</a></li><li><a href="#paths">Learning paths</a></li><li><a href="#labs">Labs</a></li><li><a href="#how">How it works</a></li></ul></nav>
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#continue">Start here</a></li><li><a href="#schools">Schools</a></li><li><a href="#paths">Learning paths</a></li><li><a href="#labs">Labs</a></li><li><a href="#arcade">Arcade</a></li><li><a href="#how">How it works</a></li></ul></nav>
     </header>
 
     <div class="ledger" id="ledger">
@@ -142,6 +143,12 @@
         <ul class="lab-cards" role="list"><li class="lab-card"><a href="labs/accounting/"><span class="lab-name">Accounting Lab</span><span class="lab-blurb">Analyse transactions, post journal entries to T-accounts, and watch the trial balance and statements update.</span><span class="lab-course">F01 Introduction to Financial Accounting</span></a></li><li class="lab-card"><a href="labs/cleaning/"><span class="lab-name">Data Cleaning Lab</span><span class="lab-blurb">Inspect a messy dataset, choose cleaning steps, and see what each one does to the data and the conclusions.</span><span class="lab-course">B02 Data Cleaning and Preparation</span></a></li><li class="lab-card"><a href="labs/mix/"><span class="lab-name">Marketing Mix Simulator</span><span class="lab-blurb">Choose a product, price, channels and promotion for a fictional launch and see simulated demand, margin and share.</span><span class="lab-course">M02 The 4Ps Marketing Mix</span></a></li></ul>
       </section>
 
+      <section class="home-section" id="arcade" aria-labelledby="arcade-h">
+        <h2 id="arcade-h">Arcade</h2>
+        <p class="section-lead">Pixel games that teach Python, SQL and HTML. Three have levels that teach one idea each and run your real code; two are endless, with new questions every run and a daily run. <a href="arcade/">Open the arcade</a>.</p>
+        <ul class="lab-cards" role="list"><li class="lab-card"><a href="arcade/pyquest/"><span class="lab-name">Py Quest</span><span class="lab-blurb">Steer a bee round the garden by writing real Python: function calls, loops, variables, if and while, and your own functions.</span><span class="lab-course">Python · 10 levels</span></a></li><li class="lab-card"><a href="arcade/sqlquest/"><span class="lab-name">Query Quest</span><span class="lab-blurb">Answer the coffee shop’s questions with SQL, from SELECT and WHERE to GROUP BY and JOIN. The rows your query keeps light up on the shelf.</span><span class="lab-course">SQL · 14 levels</span></a></li><li class="lab-card"><a href="arcade/tagbuilder/"><span class="lab-name">Tag Builder</span><span class="lab-blurb">Build the shop’s web page tag by tag and watch it appear as you type: headings, links, images, lists and page landmarks.</span><span class="lab-course">HTML · 8 levels</span></a></li><li class="lab-card"><a href="arcade/arena/"><span class="lab-name">Bug Battle</span><span class="lab-blurb">An endless quiz fight. Read the code, pick what it does, sting the bug. New questions every run, and a daily run that is the same for everyone.</span><span class="lab-course">Python · SQL · HTML &amp; CSS · endless</span></a></li><li class="lab-card"><a href="arcade/catcher/"><span class="lab-name">Syntax Catcher</span><span class="lab-blurb">Words fall, the rule changes every round. Catch the real keywords, tags and properties and let the fakes drop.</span><span class="lab-course">Python · SQL · HTML · CSS · endless</span></a></li></ul>
+      </section>
+
       <section class="home-section" id="featured" aria-labelledby="featured-h">
         <h2 id="featured-h">A lesson from each course</h2>
         <ul class="feat-cards" role="list"><li class="feat-card"><a href="finance/f01/debits-and-credits/"><span class="feat-code">F01 · lesson 4</span><span class="feat-title">Debits, credits and normal balances</span><span class="feat-blurb">Debit means the left side of an account and credit means the right, nothing more. Work out from the accounting equation which side increases each kind of account, read normal balances, and calculate the balance of any T-account.</span><span class="feat-meta">85 min</span></a></li><li class="feat-card"><a href="analytics/b02/missing-values/"><span class="feat-code">B02 · lesson 6</span><span class="feat-title">Missing values</span><span class="feat-blurb">A blank cell is a question: why is the value missing? Learn to find every form missing data takes, judge whether the gaps are random, and choose between deleting and imputing without quietly biasing the answer.</span><span class="feat-meta">75 min</span></a></li><li class="feat-card"><a href="marketing/m02/pricing-approaches/"><span class="feat-code">M02 · lesson 4</span><span class="feat-title">Pricing approaches</span><span class="feat-blurb">Price is the only part of the mix that brings money in. Learn to separate fixed from variable costs, work with contribution, markups and margins, find the break-even volume, and set a price between the floor your costs set and the ceiling your customers’ alternatives set.</span><span class="feat-meta">90 min</span></a></li></ul>
@@ -202,6 +209,6 @@
     </div>
   </footer>
   <!-- /chrome:footer -->
-  <script type="module" src="../assets/js/pages/study-home.js?v=36"></script>
+  <script type="module" src="../assets/js/pages/study-home.js?v=37"></script>
 </body>
 </html>

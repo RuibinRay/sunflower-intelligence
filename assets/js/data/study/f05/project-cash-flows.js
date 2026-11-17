@@ -2,11 +2,11 @@
 // Builds coldBrewFlows() and roasterFlows() line by line from COLD_BREW, ROASTER and TAX in case.js (and checks the
 // build against them), with MACRS from core/corpfin.js. F03’s 2027 EBIT is quoted to show that Lantern has other profits
 // to absorb Cold Brew’s first-year loss. The $5,000 head-office allocation is a fictional proposal new to this lesson.
-import { COLD_BREW as C, ROASTER as RO, TAX, WORKING_RATE, coldBrewFlows, roasterFlows } from './case.js?v=36';
-import { RESULTS as F03R } from '../f03/case.js?v=36';
-import { npv, irr } from '../../../core/invest.js?v=36';
-import { depreciation, projectCashFlows, MACRS } from '../../../core/corpfin.js?v=36';
-import { widgets } from './project-cash-flows.ex.js?v=36';
+import { COLD_BREW as C, ROASTER as RO, TAX, WORKING_RATE, coldBrewFlows, roasterFlows } from './case.js?v=37';
+import { RESULTS as F03R } from '../f03/case.js?v=37';
+import { npv, irr } from '../../../core/invest.js?v=37';
+import { depreciation, projectCashFlows, MACRS } from '../../../core/corpfin.js?v=37';
+import { widgets } from './project-cash-flows.ex.js?v=37';
 
 const r = WORKING_RATE, T = TAX;
 const af = (rate, n) => (1 - (1 + rate) ** -n) / rate;

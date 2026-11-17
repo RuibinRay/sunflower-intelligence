@@ -6,12 +6,12 @@
 //   { type: 'survival', title, groups: [{ name, times, events }] — or lapse: { joins: { id: day }, visits: { id: [days] },
 //     end: day, group: { id: name }, days: [30, 60, 90], value: 60 } —, unit: 'days', show: ['ci', 'median', 'logrank',
 //     'table'], at?: [30, 90, 180] (survival read at these times), note }
-import { h, onResize } from '../../core/dom.js?v=36';
-import { xl } from '../xl.js?v=36';
-import { scatter, tableTwin } from '../../core/charts.js?v=36';
-import * as CU from '../../core/customer.js?v=36';
-import * as F from '../../core/format.js?v=36';
-import { segmented } from '../dist-draw.js?v=36';
+import { h, onResize } from '../../core/dom.js?v=37';
+import { xl } from '../xl.js?v=37';
+import { scatter, tableTwin } from '../../core/charts.js?v=37';
+import * as CU from '../../core/customer.js?v=37';
+import * as F from '../../core/format.js?v=37';
+import { segmented } from '../dist-draw.js?v=37';
 
 /** Groups (name, times, events) for a lapse threshold. */
 export function lapseGroups(lapse, L) {

@@ -1,8 +1,8 @@
 // diversification.ex.js — F06 · Diversification: widgets, practice and the knowledge check (answer keys live here).
 // Fund and company returns come from case.js (SIMULATED monthly history; fictional funds and companies). Kettlewell
 // Umbrellas, Brightsands Ice Cream and every other business named here is fictional.
-import { SERIES, MONTHS, DERIVED } from './case.js?v=36';
-import * as IV from '../../../core/investments.js?v=36';
+import { SERIES, MONTHS, DERIVED } from './case.js?v=37';
+import * as IV from '../../../core/investments.js?v=37';
 
 const st = DERIVED.stats;
 const MB = IV.sampleCov(SERIES.market, SERIES.bonds), MH = IV.sampleCov(SERIES.morrow, SERIES.harbour);

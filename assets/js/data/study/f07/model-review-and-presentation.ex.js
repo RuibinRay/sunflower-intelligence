@@ -1,6 +1,6 @@
 // model-review-and-presentation.ex.js — F07 · Model review and presentation: widgets, practice and the knowledge check
 // (answer keys live here). The error explorer plants errors in case.js's MODEL; every num item's `check` recomputes.
-import { MODEL as M, OPENING as O } from './case.js?v=36';
+import { MODEL as M, OPENING as O } from './case.js?v=37';
 
 const R = M.rows;
 const cum = (f) => R.map((r, t) => R.slice(0, t + 1).reduce((s, x, i) => s + f(x, i), 0));

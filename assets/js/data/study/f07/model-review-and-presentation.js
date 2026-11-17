@@ -1,7 +1,7 @@
 // model-review-and-presentation.js — F07 · Model review and presentation. Content only; exercises are in
 // model-review-and-presentation.ex.js. Every figure comes from case.js: MODEL (the linked forecast and its checks),
 // DCF, SCENARIO_RESULTS and HISTORY. Spreadsheet-error research is cited in `references`.
-import { MODEL as M, OPENING as O, DCF as D, SCENARIO_RESULTS as S, HISTORY, DERIVED, scenario } from './case.js?v=36';
+import { MODEL as M, OPENING as O, DCF as D, SCENARIO_RESULTS as S, HISTORY, DERIVED, scenario } from './case.js?v=37';
 
 const n = (x) => (Math.round(x) + 0).toLocaleString('en-US');
 const pc = (x, d = 1) => `${(x * 100).toFixed(d)}%`;

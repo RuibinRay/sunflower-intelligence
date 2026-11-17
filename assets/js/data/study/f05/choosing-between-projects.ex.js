@@ -4,9 +4,9 @@
 // kiosks, cargo bike and solar panels are valued as in net-present-value (the yearly savings are after-tax cash flows).
 // Tideline Kayaks, Ravensmoor Hotel, Vellum Print Works, Penrowan Bakery, Cobbleway Laundry and the other businesses
 // named here are fictional.
-import { ROASTER, ROASTERS, PROPOSALS, BUDGET_2028, WORKING_RATE, TAX, coldBrewFlows, roasterFlows, DERIVED } from './case.js?v=36';
-import { projectCashFlows, depreciation, eaa } from '../../../core/corpfin.js?v=36';
-import { npv, irr, irrAll, crossover, profitabilityIndex, ration } from '../../../core/invest.js?v=36';
+import { ROASTER, ROASTERS, PROPOSALS, BUDGET_2028, WORKING_RATE, TAX, coldBrewFlows, roasterFlows, DERIVED } from './case.js?v=37';
+import { projectCashFlows, depreciation, eaa } from '../../../core/corpfin.js?v=37';
+import { npv, irr, irrAll, crossover, profitabilityIndex, ration } from '../../../core/invest.js?v=37';
 
 const money = (v) => `${v < -0.5 ? '−' : ''}$${Math.round(Math.abs(v)).toLocaleString('en-US')}`;
 const pct = (x, d = 1) => (Number.isFinite(x) ? `${(x * 100).toFixed(d)}%` : '—');

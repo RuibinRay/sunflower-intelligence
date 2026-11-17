@@ -1,6 +1,6 @@
 // modelling-principles.ex.js — F07 · Modelling principles: widgets, practice and the knowledge check (answer keys live
 // here). Lantern's figures come from case.js (HISTORY, ASSUME); every num item's `check` recomputes its answer.
-import { HISTORY, ASSUME } from './case.js?v=36';
+import { HISTORY, ASSUME } from './case.js?v=37';
 
 const H = HISTORY[2027];
 const G = ASSUME.online.growth, CG = ASSUME.cafes.growth;

@@ -2,8 +2,8 @@
 // discounted-cash-flow-valuation.ex.js. Morrow & Pike Roasters’ 2027 figures, price, forecast and bond come from
 // case.js (COMPANIES, MORROW_FORECAST, BONDS, MARKET); DCF, the equity bridge, PVGO and the dividend discount models
 // from core/investments.js. Every company here is fictional. Brightcup Coffee is the course project’s and is not valued.
-import { COMPANIES, MORROW_FORECAST as MF, BONDS, MARKET } from './case.js?v=36';
-import * as IV from '../../../core/investments.js?v=36';
+import { COMPANIES, MORROW_FORECAST as MF, BONDS, MARKET } from './case.js?v=37';
+import * as IV from '../../../core/investments.js?v=37';
 
 const M = COMPANIES.morrow;
 const { rf, mrp } = MARKET;

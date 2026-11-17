@@ -4,10 +4,10 @@
 // (core/customer.js liftTable) and AUC (core/classify.js roc). The offer, its costs and its uplift by recency band are
 // fictional assumptions, labelled as such. The project's subscriptions are not used. Every figure printed is recomputed
 // in `checks`.
-import { churnTable, members } from './case.js?v=36';
-import * as CU from '../../../core/customer.js?v=36';
-import * as R from '../../../core/regression.js?v=36';
-import { roc, confusion } from '../../../core/classify.js?v=36';
+import { churnTable, members } from './case.js?v=37';
+import * as CU from '../../../core/customer.js?v=37';
+import * as R from '../../../core/regression.js?v=37';
+import { roc, confusion } from '../../../core/classify.js?v=37';
 
 const pc = (x) => x * 100;
 const CT = churnTable();

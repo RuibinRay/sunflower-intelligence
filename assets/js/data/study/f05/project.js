@@ -1,8 +1,8 @@
 // project.js — F05 applied project: funding Lantern's second kitchen. Every fact comes from case.js (KITCHEN, HOLLIS,
 // DEBT, PEERS, MARKET, FORECAST_MAR28, COVENANT); every number is computed below and checked by `verify` and the checker.
-import { KITCHEN as K, HOLLIS as H, DEBT, PEERS, MARKET, TAX, FORECAST_MAR28 as FC, COVENANT, WORKING_RATE, COLD_BREW, PROPOSALS, DERIVED as D, kitchenFlows } from './case.js?v=36';
-import * as CF from '../../../core/corpfin.js?v=36';
-import { appraise, npv } from '../../../core/invest.js?v=36';
+import { KITCHEN as K, HOLLIS as H, DEBT, PEERS, MARKET, TAX, FORECAST_MAR28 as FC, COVENANT, WORKING_RATE, COLD_BREW, PROPOSALS, DERIVED as D, kitchenFlows } from './case.js?v=37';
+import * as CF from '../../../core/corpfin.js?v=37';
+import { appraise, npv } from '../../../core/invest.js?v=37';
 
 // ---------------------------------------------------------------- the kitchen's cash flows
 const KF = kitchenFlows();
