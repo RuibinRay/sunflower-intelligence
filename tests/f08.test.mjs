@@ -13,6 +13,11 @@ import { widgets as PC } from '../assets/js/data/study/f08/put-call-parity.ex.js
 import { widgets as BT } from '../assets/js/data/study/f08/binomial-pricing.ex.js';
 import { widgets as BS } from '../assets/js/data/study/f08/black-scholes-and-greeks.ex.js';
 import { blackScholes, impliedVol } from '../assets/js/core/fin.js';
+import * as RK from '../assets/js/core/risk.js';
+import { mean, sd } from '../assets/js/core/stats.js';
+import { widgets as HD } from '../assets/js/data/study/f08/hedging-with-derivatives.ex.js';
+import { widgets as ML } from '../assets/js/data/study/f08/margin-leverage-and-short-selling.ex.js';
+import { widgets as VR } from '../assets/js/data/study/f08/value-at-risk-and-stress-tests.ex.js';
 
 let pass = 0, fail = 0;
 const ok = (cond, what) => { if (cond) pass++; else { fail++; console.error(`✗ ${what}`); } };
@@ -116,6 +121,37 @@ ok(BT['bt-steps'].compute({ n: 2 }).headline.value === '$3.5837', 'tree widget a
 ok(BS['bs-explorer'].compute({ S: 42, K: 42, sig: 30, m: 6 }).headline.value === `$${Q[42].call.toFixed(2)} / $${Q[42].put.toFixed(2)}`, 'Black–Scholes widget at its defaults shows the quotes');
 ok(BS['bs-iv'].compute({ c: 4.5 }).headline.value === `${(impliedVol({ S: O.S, K: 42, T: O.T, r: O.r, type: 'call' }, 4.5) * 100).toFixed(2)}%`, 'implied volatility widget at its defaults');
 ok(BS['bs-iv'].compute({ c: 0.5 }).error, 'implied volatility widget rejects a price below the arbitrage bound');
+
+// ---------------------------------------------------------------- module 3: hedging, margin and VaR
+// the minimum-variance hedge ratio minimises the residual variance (check on a grid)
+const resid = (hr) => K.sdRoasted ** 2 + hr ** 2 * K.sdFutures ** 2 - 2 * hr * K.rho * K.sdRoasted * K.sdFutures;
+ok(Array.from({ length: 201 }, (_, i) => i / 100).every((hr) => resid(hr) >= resid(D.hedge.h) - 1e-15), 'h* minimises the hedged variance');
+ok(near(resid(D.hedge.h), K.sdRoasted ** 2 * (1 - K.rho ** 2), 1e-15), 'variance left = σ_S²(1 − ρ²)');
+ok(near(D.brightcupContracts, 106.25, 1e-9), 'Brightcup needs 106.25 contracts');
+const Bq = C.BASIS;
+ok(near(Bq.spot1 + (Bq.fut0 - Bq.fut1), Bq.fut0 + (Bq.spot1 - Bq.fut1), 1e-12), 'effective price = F₀ + closing basis');
+ok(near(C.BOOK_VALUE, 500_000) && near(C.BOOK_BETA, 0.7431, 5e-5), 'Hollis’s book: $500,000, beta 0.7431');
+// the book's returns are the weighted sum of F06's series
+const F6 = await import('../assets/js/data/study/f06/case.js');
+ok(C.BOOK_RETURNS.every((x, i) => near(x * 5e5, 42_000 * F6.SERIES.brightcup[i] + 308_000 * F6.SERIES.market[i] + 150_000 * F6.SERIES.bonds[i], 1e-6)), 'book returns rebuild from F06 holdings');
+// historical VaR from a direct sort (NumPy's linear interpolation)
+const srt = [...C.BOOK_RETURNS].sort((a, b) => a - b), pos = (srt.length - 1) * 0.05, lo = Math.floor(pos);
+ok(near(-(srt[lo] + (pos - lo) * (srt[lo + 1] - srt[lo])), C.VAR.hist95.var, 1e-12), 'historical 95% VaR = the 5% quantile of the sorted returns');
+ok(near(C.VAR.norm95.var, -(mean(C.BOOK_RETURNS) - 1.6448536269514722 * sd(C.BOOK_RETURNS)), 1e-9), 'normal VaR = −(μ − 1.645σ)');
+ok(C.VAR.hist95.es >= C.VAR.hist95.var && C.VAR.hist99.es >= C.VAR.hist99.var && C.VAR.hist99.var > C.VAR.hist95.var, 'ES ≥ VaR, and 99% > 95%');
+ok(C.VAR.backtest.n === 120 && C.VAR.backtest.exceptions === 6, 'backtest: 6 exceptions in 120 months');
+ok(RK.christoffersen(C.VAR.backtest.hit, 0.05).pInd < 0.05, 'the exceptions cluster (Christoffersen p < 0.05)');
+// margin arithmetic
+const MRr = C.MARGIN_RULES, Ln = 21_000;
+ok(near((1000 * 28 - Ln) / (1000 * 28), MRr.maintenance, 1e-12), 'margin at the $28 call price is exactly 25%');
+ok(near((63_000 - 1000 * (63_000 / 1300)) / (1000 * (63_000 / 1300)), MRr.shortMaintenance, 1e-12), 'short margin at the call price is exactly 30%');
+// widgets at their defaults
+ok(HD['hd-ratio'].compute({ rho: 0.85, sS: 6, sF: 9 }).headline.value.startsWith('106 '), 'hedge-ratio widget at its defaults: 106 contracts');
+ok(HD['hd-index'].compute({ n: 1, mkt: -10 }).headline.value === '0.2431', 'index-hedge widget at its defaults: beta 0.2431');
+ok(ML['ml-margin'].compute({ im: 50, i: 8, P: 46.2 }).headline.value === '12.0%', 'margin widget at its defaults: 12.0%');
+ok(ML['ml-short'].compute({ P: 36, m: 6, fee: 1 }).headline.value === '$5,790', 'short-sale widget at its defaults: $5,790');
+ok(VR['vr-explorer'].compute({ c: 95, hist: 1, h: 1 }).headline.value === '$24,631', 'VaR widget at its defaults: $24,631');
+ok(VR['vr-stress'].compute({ b: -40, m: -20, d: 2, puts: 1, fut: 1 }).headline.value === '−$10,600', 'stress widget at its defaults: −$10,600');
 
 console.log(fail ? `${fail} failed, ${pass} passed` : `${pass}/${pass} F08 checks passed`);
 process.exit(fail ? 1 : 0);

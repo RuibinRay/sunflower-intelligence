@@ -125,6 +125,9 @@ export const PLAN = {
     'put-call-parity': { moment: 'A call plus a deposit and a share plus a put pay the same at every price, so a $2.60 put leaves $0.48 on the table.', visual: 'payoff' },
     'binomial-pricing': { moment: 'Brightcup’s two-step tree filled in from the end, with the American put exercised early at the down node.', visual: 'tree' },
     'black-scholes-and-greeks': { moment: 'The call’s value curve above its payoff, with delta as its slope and the curve sinking towards the payoff as expiry nears.', visual: 'curve' },
+    'hedging-with-derivatives': { moment: 'Risk left in Brightcup’s coffee bill traced against the hedge ratio, falling to its lowest at 0.57 and rising again at 1.', visual: 'curve' },
+    'margin-leverage-and-short-selling': { moment: 'Brightcup falls month by month while Hollis’s margin shrinks twice as fast, until the $28 call.', visual: 'timeline' },
+    'value-at-risk-and-stress-tests': { moment: 'Fifteen years of simulated months sorted into a histogram, the 5% tail shaded, then a stress scenario stepping past it.', visual: 'growth' },
   },
 };
 

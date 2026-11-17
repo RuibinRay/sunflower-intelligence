@@ -11,7 +11,7 @@ The next layer, lesson by lesson, is an authored opening chapter: a script writt
 lesson's central moment with a custom stage visual. It replaces the generated chapter it retells, and every number
 it says is recomputed in its `checks`.
 
-**Now:** 88 lessons, 39 h 3 min of narration in all (about 27 minutes a lesson at 2.6 words a second). Authored openings written: 3 of 88.
+**Now:** 91 lessons, 39 h 52 min of narration in all (about 26 minutes a lesson at 2.6 words a second). Authored openings written: 3 of 91.
 
 **Stage visuals:**
 - `timeline`: Amounts on a dated line, moved one period at a time (built).
@@ -158,9 +158,9 @@ course by course in study order, F00 to F06; each new F07–F13 lesson ships wit
 | [Put–call parity](../../../../learn/finance/f08/put-call-parity/) | 17 min | 20 | A call plus a deposit and a share plus a put pay the same at every price, so a $2.60 put leaves $0.48 on the table. | payoff | planned |
 | [Binomial pricing](../../../../learn/finance/f08/binomial-pricing/) | 17 min | 19 | Brightcup’s two-step tree filled in from the end, with the American put exercised early at the down node. | tree | planned |
 | [Black–Scholes–Merton and the Greeks](../../../../learn/finance/f08/black-scholes-and-greeks/) | 18 min | 20 | The call’s value curve above its payoff, with delta as its slope and the curve sinking towards the payoff as expiry nears. | curve | planned |
-| hedging-with-derivatives | not built | | | | |
-| margin-leverage-and-short-selling | not built | | | | |
-| value-at-risk-and-stress-tests | not built | | | | |
+| [Hedging with derivatives](../../../../learn/finance/f08/hedging-with-derivatives/) | 17 min | 18 | Risk left in Brightcup’s coffee bill traced against the hedge ratio, falling to its lowest at 0.57 and rising again at 1. | curve | planned |
+| [Margin, leverage and short selling](../../../../learn/finance/f08/margin-leverage-and-short-selling/) | 16 min | 20 | Brightcup falls month by month while Hollis’s margin shrinks twice as fast, until the $28 call. | timeline | planned |
+| [Value at Risk and stress tests](../../../../learn/finance/f08/value-at-risk-and-stress-tests/) | 16 min | 21 | Fifteen years of simulated months sorted into a histogram, the 5% tail shaded, then a stress scenario stepping past it. | growth | planned |
 
 ### F12 Managerial Accounting and Control (planned course)
 

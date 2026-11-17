@@ -9,10 +9,11 @@
 // - f06: Brightcup Coffee has $630 million of debt.
 // - f07: Lantern's base-case 2029 EBITDA, interest and scheduled principal.
 import { ROASTER, TAX, HOLLIS } from '../f05/case.js?v=39';
-import { COMPANIES } from '../f06/case.js?v=39';
+import { COMPANIES, SERIES, MONTHS, DERIVED as F06D } from '../f06/case.js?v=39';
 import { MODEL as F07M } from '../f07/case.js?v=39';
 import * as DV from '../../../core/derivatives.js?v=39';
 import { blackScholes } from '../../../core/fin.js?v=39';
+import * as RISK from '../../../core/risk.js?v=39';
 
 export const TODAY = 'September 2028';
 export const TAX_RATE = TAX;
@@ -95,6 +96,31 @@ export const QUOTES = Object.fromEntries(OPT.strikes.map((K) => [K, { call: Math
 export const CAP = { strike: 40, fee: 1.20 };
 export const capPerKg = (price) => Math.min(price, CAP.strike) + CAP.fee;
 
+// ================================================================ module 3: hedging, margin and Value at Risk
+/** Brightcup's coffee: next quarter's purchases of roasted coffee, hedged with the fictional green-coffee futures. */
+export const BRIGHTCUP_COFFEE = { quarterValue: 6_000_000 };
+DERIVED.contractValue = COFFEE.futures.size * COFFEE.futures.price;                 // $32,000
+DERIVED.brightcupContracts = DV.contractsNeeded({ h: DERIVED.hedge.h, exposure: BRIGHTCUP_COFFEE.quarterValue, size: DERIVED.contractValue });
+/** A grower's hedge and its basis: spot and futures when the hedge is set and when it is lifted (fictional). */
+export const BASIS = { spot0: 6.30, fut0: 6.40, spot1: 5.90, fut1: 6.05 };
+/** Hollis Avery's listed investments in September 2028 (fictional), and a fictional index futures contract. */
+export const BOOK = { brightcup: OPT.S * OPT.holding, market: 308_000, bonds: 150_000 };
+export const BOOK_VALUE = BOOK.brightcup + BOOK.market + BOOK.bonds;
+export const INDEX_FUTURES = { name: 'Harbourline index futures (fictional)', level: 5_000, multiplier: 50 };
+export const BOOK_BETAS = { brightcup: F06D.betas60.brightcup.beta, market: 1, bonds: F06D.betas60.bonds.beta };   // F06's 2023–2027 regression betas (simulated data)
+export const BOOK_BETA = (BOOK.brightcup * BOOK_BETAS.brightcup + BOOK.market * BOOK_BETAS.market + BOOK.bonds * BOOK_BETAS.bonds) / BOOK_VALUE;
+/** Monthly returns of Hollis's book with fixed weights, from F06's SIMULATED series (January 2013 – December 2027). */
+export const BOOK_RETURNS = SERIES.market.map((_, i) => (BOOK.brightcup * SERIES.brightcup[i] + BOOK.market * SERIES.market[i] + BOOK.bonds * SERIES.bonds[i]) / BOOK_VALUE);
+export const BOOK_MONTHS = MONTHS;
+export const VAR = {
+  hist95: RISK.historical(BOOK_RETURNS, 0.95), hist99: RISK.historical(BOOK_RETURNS, 0.99),
+  norm95: RISK.parametric(BOOK_RETURNS, 0.95), norm99: RISK.parametric(BOOK_RETURNS, 0.99),
+  backtest: RISK.backtest(BOOK_RETURNS, 0.95, { method: 'historical', window: 60 }),
+};
+VAR.kupiec = RISK.kupiec(VAR.backtest.exceptions, VAR.backtest.n, 0.05);
+/** US margin rules used in the case: Regulation T's 50% initial margin; FINRA's minimum maintenance (25% long, 30% short). */
+export const MARGIN_RULES = { initial: 0.50, maintenance: 0.25, shortMaintenance: 0.30, loanRate: 0.08 };
+
 export const IDENTITIES = [
   ['F05: 2,400 kg of roasted coffee a year from Kilnworth at $36.00 a kg', COFFEE.kgRoasted === 2_400 && COFFEE.spotPerKg === 36],
   ['F05: specialty green beans cost $9.80 a kg, more than the standard grade on the (fictional) exchange', COFFEE.specialtyGreen === 9.8 && COFFEE.futures.price < COFFEE.specialtyGreen],
@@ -104,6 +130,8 @@ export const IDENTITIES = [
   ['F07: 2029 base-case EBITDA is the model’s', Math.abs(DERIVED.ebitda2029 - F07_2029.ebitda) < 1e-9],
   ['the tax rate is 25%', TAX_RATE === 0.25],
   ['F06: Brightcup’s share price is $42.00; F05: Hollis Avery is Lantern’s investor', OPT.S === 42 && OPT.holder === 'Hollis Avery'],
+  ['F05/F06: Brightcup’s beta is 1.05; Hollis’s book is $500,000 with his 1,000 Brightcup shares in it', Math.abs(F06D.betas60.brightcup.beta - 1.05) < 1e-5 && BOOK_VALUE === 500_000],
+  ['F06: the book’s returns come from 180 simulated months, January 2013 – December 2027', BOOK_RETURNS.length === 180 && MONTHS[0] === '2013-01' && MONTHS[179] === '2027-12'],
   ['the continuous option rate matches the 4.5% annual rate', Math.abs(Math.exp(-OPT.r * OPT.T) - 1.045 ** -OPT.T) < 1e-15],
   ['the quotes satisfy put–call parity to within rounding', OPT.strikes.every((K) => Math.abs(DV.parityGap({ C: QUOTES[K].call, P: QUOTES[K].put, S: OPT.S, K, r: OPT.r, T: OPT.T })) <= 0.01 + 1e-12)],
 ];

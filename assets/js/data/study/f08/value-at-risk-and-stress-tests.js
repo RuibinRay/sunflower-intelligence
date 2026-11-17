@@ -1,0 +1,225 @@
+// value-at-risk-and-stress-tests.js — F08 · Value at Risk and stress tests. Content only; exercises are in
+// value-at-risk-and-stress-tests.ex.js. Figures from case.js: BOOK, BOOK_VALUE and BOOK_RETURNS (Hollis Avery's
+// $500,000 of investments, with F06's SIMULATED monthly returns, January 2013 – December 2027), VAR (core/risk.js:
+// historical and normal VaR and expected shortfall, a rolling backtest and Kupiec's test), QUOTES and INDEX_FUTURES.
+import { BOOK, BOOK_VALUE as V, BOOK_RETURNS as R, BOOK_MONTHS as M, VAR, OPT as O, INDEX_FUTURES as IF } from './case.js?v=39';
+import { historical, parametric, christoffersen } from '../../../core/risk.js?v=39';
+import { mean, sd } from '../../../core/stats.js?v=39';
+
+const $ = (x) => Math.round(x).toLocaleString('en-US');
+const pc = (x, d = 2) => `${(x * 100).toFixed(d)}%`;
+const mu = mean(R), sig = sd(R);
+const h95 = VAR.hist95, h99 = VAR.hist99, n95 = VAR.norm95, n99 = VAR.norm99;
+const h975 = historical(R, 0.975), n975 = parametric(R, 0.975);
+const worstIdx = R.indexOf(Math.min(...R)), worst = R[worstIdx] * V;
+const monthName = (ym) => new Date(`${ym}-01T00:00:00Z`).toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+const bt = VAR.backtest, excMonths = bt.at.filter((_, i) => bt.hit[i]).map((t) => M[t]), cInd = christoffersen(bt.hit, 0.05);
+// a hypothetical scenario: Brightcup −40%, the market −20%, bonds +2%
+const sc = { brightcup: -0.40, market: -0.20, bonds: 0.02 };
+const lossBook = -(BOOK.brightcup * sc.brightcup + BOOK.market * sc.market + BOOK.bonds * sc.bonds);
+const putsPay = Math.max(40 - O.S * (1 + sc.brightcup), 0) * O.holding, futGain = -sc.market * IF.level * IF.multiplier;
+
+export default {
+  slug: 'value-at-risk-and-stress-tests',
+  title: 'Value at Risk and stress tests',
+  blurb: 'After the hedges, how much could still be lost? Measure the risk in Hollis Avery’s investments with Value at Risk and expected shortfall, by history and by the normal distribution, test whether the measure would have worked, and ask what the numbers miss with stress tests.',
+  status: 'draft',
+  objectives: [
+    'Define Value at Risk and expected shortfall, and calculate them from historical returns and from a normal distribution.',
+    'Explain how the confidence level and horizon change VaR, and the square-root-of-time rule.',
+    'Test a VaR measure against later outcomes by counting exceptions, and interpret Kupiec’s test and the clustering of exceptions.',
+    'Design historical and hypothetical stress tests, and calculate a portfolio’s loss under a scenario with and without hedges.',
+    'Evaluate the limits of VaR, and explain why risk managers use it alongside expected shortfall and stress tests.',
+  ],
+  prerequisites: [
+    { lesson: 'f06/measuring-risk', why: 'Standard deviation, the normal distribution and F06’s simulated returns.' },
+    { lesson: 'f08/hedging-with-derivatives', why: 'Hollis’s puts and index futures, whose effect the stress tests measure.' },
+  ],
+  case: 'lantern',
+  concept: [
+    { case: `Hollis’s listed investments are worth $${$(V)}: $${$(BOOK.brightcup)} in Brightcup, $${$(BOOK.market)} in the Harbourline market fund and $${$(BOOK.bonds)} in a bond fund. He has bought puts on Brightcup and is thinking about index futures. Before deciding, he wants one number: how much could he lose in a bad month? Ana uses F06’s fifteen years of monthly returns for the three holdings, which are <b>simulated for teaching</b>, not real market data.` },
+    { h: 'Value at Risk' },
+    { p: '<g>Value at Risk</g> (VaR) answers a precise question: over a given horizon, what loss will be exceeded only with a small probability? A one-month 95% VaR of $25,000 means that in 95 months out of 100 the portfolio should lose less than $25,000, and in about 5 it should lose more. VaR has three parts: the horizon, the confidence level and the loss. Losses are written as positive numbers.' },
+    { math: String.raw`\Pr(\text{Loss} > \text{VaR}_c) = 1 - c` },
+    { h: 'Historical VaR' },
+    { p: `The simplest method uses history directly. Apply today’s holdings to each past month’s returns, sort the 180 monthly results, and read off the loss that only 5% of months exceeded. For Hollis’s book, the 95% one-month <g>historical simulation</g> VaR is ${pc(h95.var)} of its value, $${$(h95.var * V)}. At 99% it is ${pc(h99.var)}, $${$(h99.var * V)}. The worst month in the sample, ${monthName(M[worstIdx])}, lost $${$(-worst)}.` },
+    { h: 'VaR from the normal distribution' },
+    { p: `The other classic method assumes returns are normal and uses only their mean and standard deviation. The book’s monthly returns averaged ${pc(mu)} with a standard deviation of ${pc(sig)}. A loss larger than 1.645 standard deviations below the mean has a 5% chance:` },
+    { math: String.raw`\text{VaR}_c = -(\mu + z_{1-c}\,\sigma)\times V \qquad z_{0.05} = -1.645,\ z_{0.01} = -2.326` },
+    { p: `That gives (1.645 × ${pc(sig)} − ${pc(mu)}) × $${$(V)} = $${$(n95.var * V)} at 95%, and $${$(n99.var * V)} at 99%. Here the two methods agree closely; they part company when returns have fatter tails than the normal, which real returns usually do.` },
+    { h: 'Expected shortfall' },
+    { p: `VaR says where the bad tail begins, not how bad it is. <g>Expected shortfall</g> (ES), also called conditional VaR, is the average loss in the months beyond VaR. Historically, the ${h95.tail} worst months of the 180 lost an average of $${$(h95.es * V)}, against the 95% VaR of $${$(h95.var * V)}; the normal distribution gives $${$(n95.es * V)}. The historical figure is higher because the sample’s worst months were worse than a normal distribution expects.` },
+    { table: {
+      caption: 'One-month risk measures for Hollis’s $500,000 book (simulated returns, 2013–2027, dollars)',
+      head: ['', '95%', '97.5%', '99%'],
+      rows: [
+        ['Historical VaR', $(h95.var * V), $(h975.var * V), $(h99.var * V)],
+        ['Normal VaR', $(n95.var * V), $(n975.var * V), $(n99.var * V)],
+        ['Historical expected shortfall', $(h95.es * V), $(h975.es * V), $(h99.es * V)],
+        ['Normal expected shortfall', $(n95.es * V), $(n975.es * V), $(n99.es * V)],
+      ],
+      align: ['l', 'r', 'r', 'r'],
+      note: `At 99% the historical figures rest on only ${h99.tail} months, so they are imprecise.`,
+    } },
+  ],
+  theory: [
+    { h: 'A third method: Monte Carlo simulation' },
+    { p: 'Monte Carlo VaR draws thousands of possible months from a model of how the holdings’ returns behave together, revalues the portfolio in each, and reads the loss quantile from the simulated results. It can use distributions with fatter tails than the normal, and it can revalue options and other positions whose value is not a straight line in the market price, such as Hollis’s puts. The price is the model: the simulated months are only as good as the assumptions that produced them.' },
+    { h: 'Choosing the confidence level and horizon' },
+    { p: 'The confidence level and horizon depend on what the number is for. A trading desk that can close its positions in a day uses a one-day horizon; a pension fund that reviews its strategy once a year may look at a year. Higher confidence describes rarer losses but rests on fewer observations: at 99% with 180 months, the historical estimate depends on two months. Banks’ regulatory measures have used 99% over ten days for VaR and 97.5% for expected shortfall; Hollis, who looks at his portfolio monthly, uses one month at 95%.' },
+    { h: 'Horizon and the square-root-of-time rule' },
+    { p: `VaR for a longer horizon is often scaled from a short one. If returns are independent from month to month, the variance over h months is h times the monthly variance, so the standard deviation grows with √h. A three-month 95% VaR is then about √3 × $${$(h95.var * V)} = $${$(Math.sqrt(3) * h95.var * V)}. The rule ignores the mean, which matters more over long horizons, and fails when returns are not independent: in crises, bad months tend to follow bad months.` },
+    { math: String.raw`\text{VaR}_{h} \approx \sqrt{h}\;\text{VaR}_{1}` },
+    { h: 'Backtesting: would it have worked?' },
+    { p: `A VaR measure makes a testable promise: at 95%, losses should exceed it in about 5% of periods. A <g>backtest</g> checks the promise on data the measure did not see. Ana estimates the 95% historical VaR each month from the previous 60 months only, then checks the next month. Over the ${bt.n} months from ${monthName(M[bt.at[0]])} to December 2027, the loss exceeded the VaR ${bt.exceptions} times, exactly the ${(bt.n * 0.05).toFixed(0)} expected.` },
+    { p: `Kupiec’s test asks whether the number of exceptions is consistent with the promised 5%. With ${bt.exceptions} of ${bt.n} its p-value is ${VAR.kupiec.p.toFixed(2)}: no evidence against the model. But when the exceptions came matters too. They fell in ${excMonths.map(monthName).join(', ')}. Christoffersen’s test of independence asks whether an exception makes another more likely next month; its p-value here is ${cInd.pInd.toFixed(3)}, below 0.05. The exceptions came mostly in clusters, early in 2020 and in the first half of 2022, when a measure built on five calm years was slow to see the new risk. A VaR can be right on average and still wrong when it matters most.` },
+    { h: 'What VaR misses' },
+    { list: [
+      '<b>The size of the tail.</b> VaR says nothing about how much is lost beyond it. Two portfolios with the same VaR can have very different worst cases; expected shortfall partly fixes this.',
+      '<b>The past as a guide.</b> Historical VaR assumes the sample contains the kinds of month that can happen; normal VaR assumes the normal distribution. Neither sees a crisis unlike any in the data.',
+      '<b>Liquidity.</b> VaR assumes positions can be valued, and sold, at market prices. In a liquidity spiral (lesson 10) they may not be.',
+      '<b>Adding up.</b> VaR is not always subadditive: in some cases the VaR of two portfolios combined is more than the sum of their VaRs, which penalises diversification. Expected shortfall does not have this flaw.',
+    ] },
+    { p: 'For these reasons the Basel Committee’s rules for banks’ trading books moved their main measure of market risk from 99% VaR to 97.5% expected shortfall, and require banks to run stress tests alongside it.' },
+    { h: 'Stress tests' },
+    { p: `A <g>stress test</g> asks what a specific, severe scenario would do to the portfolio, without asking how likely it is. Historical scenarios replay a real episode: the worst month in Hollis’s sample, ${monthName(M[worstIdx])}, would cost $${$(-worst)} today. Hypothetical scenarios describe events that have not happened, chosen because they hit the portfolio where it is weakest. For Hollis, the obvious one is trouble at Brightcup during a market fall.` },
+    { table: {
+      caption: 'Hypothetical scenario: Brightcup −40%, the market −20%, bonds +2% (dollars)',
+      head: ['Position', 'Value', 'Change'],
+      rows: [
+        ['Brightcup shares', $(BOOK.brightcup), `(${$(-BOOK.brightcup * sc.brightcup)})`],
+        ['Market fund', $(BOOK.market), `(${$(-BOOK.market * sc.market)})`],
+        ['Bond fund', $(BOOK.bonds), $(BOOK.bonds * sc.bonds)],
+        ['<b>Book without hedges</b>', `<b>${$(V)}</b>`, `<b>(${$(lossBook)})</b>`],
+        [`${$(O.holding)} Brightcup $40 puts (Brightcup at $${(O.S * (1 + sc.brightcup)).toFixed(2)})`, '', $(putsPay)],
+        ['One index futures contract sold', '', $(futGain)],
+        ['<b>Book with both hedges</b>', '', `<b>(${$(lossBook - putsPay - futGain)})</b>`],
+      ],
+      align: ['l', 'r', 'r'],
+    } },
+    { p: `The scenario would cost Hollis $${$(lossBook)}, three times his 95% VaR and more than his worst simulated month. His puts would recover $${$(putsPay)} and one index futures contract $${$(futGain)}, leaving a loss of $${$(lossBook - putsPay - futGain)}. Stress tests show what VaR cannot: how the hedges behave in exactly the event they were bought for.` },
+    { h: 'Using the measures together' },
+    { p: 'Risk managers use the measures as a set. VaR and expected shortfall summarise ordinary risk in a number that can be compared across portfolios and over time, and used to set limits. Backtests check that the numbers can be trusted. Stress tests explore the rare events that statistics cannot see, and show which positions drive the losses. None of them says what the next crisis will be; together they make it less likely that a portfolio is exposed to one without anyone knowing.' },
+  ],
+  formulas: [
+    { id: 'vr-normal', name: 'Normal (variance–covariance) VaR',
+      tex: String.raw`\text{VaR}_c = -(\mu + z_{1-c}\,\sigma)\,V`,
+      where: [[String.raw`\mu,\ \sigma`, 'Mean and standard deviation of the portfolio’s return over the horizon', ''], [String.raw`z_{1-c}`, 'The standard normal quantile (−1.645 at 95%, −2.326 at 99%)', ''], [String.raw`V`, 'Portfolio value', '$'], [String.raw`c`, 'Confidence level', '']] },
+    { id: 'vr-es', name: 'Normal expected shortfall',
+      tex: String.raw`\text{ES}_c = \Big(\sigma\,\frac{\varphi(z_{1-c})}{1-c} - \mu\Big)\,V`,
+      where: [[String.raw`\varphi`, 'The standard normal density', ''], [String.raw`\mu,\ \sigma`, 'Mean and standard deviation of the return', ''], [String.raw`z_{1-c}`, 'The standard normal quantile', ''], [String.raw`V`, 'Portfolio value', '$'], [String.raw`c`, 'Confidence level', '']],
+      note: 'Historical ES is simply the average of the returns at or beyond the VaR.' },
+    { id: 'vr-time', name: 'Square-root-of-time scaling',
+      tex: String.raw`\text{VaR}_h \approx \sqrt{h}\,\text{VaR}_1`,
+      where: [[String.raw`h`, 'Horizon in periods', ''], [String.raw`\text{VaR}_1`, 'VaR for one period', '$']],
+      assumptions: 'Independent, identically distributed returns with mean near zero.' },
+    { id: 'vr-kupiec', name: 'Expected exceptions in a backtest',
+      tex: String.raw`\text{Expected exceptions} = n\,(1-c)`,
+      where: [ [String.raw`n`, 'Number of periods tested', ''], [String.raw`c`, 'Confidence level', '']] },
+  ],
+  examples: [
+    { level: 'simple', title: 'Normal VaR for Hollis’s book', fictional: true,
+      setup: `The book’s monthly returns have mean ${pc(mu)} and standard deviation ${pc(sig)} (simulated data). Find the one-month 95% and 99% normal VaR on $${$(V)}.`,
+      steps: [
+        `95%: (1.645 × ${pc(sig)} − ${pc(mu)}) = ${pc(n95.var)}; × ${$(V)} = ${$(n95.var * V)}.`,
+        `99%: (2.326 × ${pc(sig)} − ${pc(mu)}) = ${pc(n99.var)}; × ${$(V)} = ${$(n99.var * V)}.`,
+        `Compare: historical VaR ${$(h95.var * V)} and ${$(h99.var * V)}.`,
+      ],
+      answer: `$${$(n95.var * V)} at 95% and $${$(n99.var * V)} at 99%.`,
+      interpretation: 'The normal and historical figures agree here; their expected shortfalls differ more, because the tails differ.' },
+    { level: 'challenging', title: 'Backtesting the VaR', fictional: true,
+      setup: `A 95% VaR estimated from the previous 60 months was exceeded ${bt.exceptions} times in ${bt.n} months. How many exceptions were expected, and does the count support the model? What else should be checked?`,
+      steps: [
+        `Expected: ${bt.n} × 5% = ${(bt.n * 0.05).toFixed(0)}.`,
+        `Kupiec’s test: ${bt.exceptions} of ${bt.n} is exactly the expected rate; p-value ${VAR.kupiec.p.toFixed(2)}.`,
+        `Timing: exceptions in ${excMonths.map(monthName).join(', ')}. Christoffersen’s independence p-value ${cInd.pInd.toFixed(3)}: they cluster.`,
+      ],
+      answer: 'The count is right, but the exceptions bunch in two crises.',
+      interpretation: 'A five-year window reacts slowly to a change in volatility. A measure that weights recent months more, or stress tests alongside it, would help.' },
+    { level: 'applied', title: 'Do the hedges work when it matters?', fictional: true,
+      setup: `In a scenario with Brightcup down 40%, the market down 20% and bonds up 2%, what does Hollis lose without hedges, and with his ${$(O.holding)} $40 puts and one index futures contract sold (${$(IF.level)} × $${IF.multiplier})?`,
+      steps: [
+        `Without hedges: ${$(-BOOK.brightcup * sc.brightcup)} + ${$(-BOOK.market * sc.market)} − ${$(BOOK.bonds * sc.bonds)} = ${$(lossBook)}.`,
+        `Puts: Brightcup at ${(O.S * 0.6).toFixed(2)}; (40 − ${(O.S * 0.6).toFixed(2)}) × ${$(O.holding)} = ${$(putsPay)}.`,
+        `Futures: 20% × ${$(IF.level * IF.multiplier)} = ${$(futGain)}.`,
+        `With hedges: ${$(lossBook)} − ${$(putsPay)} − ${$(futGain)} = ${$(lossBook - putsPay - futGain)}.`,
+      ],
+      answer: `$${$(lossBook)} unhedged; $${$(lossBook - putsPay - futGain)} hedged.`,
+      interpretation: 'The hedges cost money in calm months (the put premium, the gains given up on the futures) and pay in exactly this kind of month.' },
+  ],
+  demo: [
+    { widget: 'vr-explorer', intro: 'VaR and expected shortfall for Hollis’s book from the simulated history. Change the confidence level, the method and the horizon.' },
+    { widget: 'vr-stress', intro: 'Build your own scenario for Brightcup, the market and bonds, and switch Hollis’s hedges on and off.' },
+  ],
+  mistakes: [
+    { title: 'Reading VaR as the worst case', html: 'A 95% VaR is exceeded in about one period in twenty. The worst case is much larger, which is why expected shortfall and stress tests exist.' },
+    { title: 'Mixing horizons', html: 'A monthly VaR is not an annual one. Scale with √h only if returns are independent, and remember the rule ignores the mean.' },
+    { title: 'Trusting a 99% figure from a short history', html: 'With 180 months, a 99% historical VaR rests on two observations. More confidence needs more data or a model.' },
+    { title: 'Judging a backtest by the count alone', html: 'The right number of exceptions can hide a model that fails in clusters, exactly when risk changes.' },
+    { title: 'Stress-testing only the past', html: 'Historical scenarios are useful, but the scenario that hurts most is often one that has not happened yet. Design hypothetical scenarios around the portfolio’s weak points.' },
+  ],
+  application: [
+    { p: 'Banks report VaR for their trading books every day, and regulators use VaR and expected shortfall, with backtests and traffic-light rules on the number of exceptions, to set the capital banks must hold against market risk. Since 2009, regulators’ stress tests, such as the Federal Reserve’s annual tests of large US banks, have become as important as the models: they set out a severe recession and market crash and require each bank to show it would still have enough capital. Asset managers, pension funds and insurers use the same tools to set risk limits and report to their boards.' },
+    { p: 'VaR became an industry standard in the 1990s. A bank’s chief executive famously asked for a single daily figure for the firm’s market risk, and the method the bank developed, published in 1994 as RiskMetrics, made variance–covariance VaR widely available. Its appeal was a single number that a board could understand; its danger, the same number trusted too far, became plain in 2007 and 2008, when losses far beyond VaR arrived together.' },
+    { p: 'Businesses use the ideas too. Cash flow at risk applies VaR to a company’s operating cash flow: for Lantern, the coffee price that would be exceeded only in one year in twenty, and the EBITDA it would leave, is a way to set how much coffee to hedge. Stress tests are a standard part of a lender’s credit review, as Coastline’s scenarios in F07 showed.' },
+    { case: `Hollis now has his number: in a typical bad month (one in twenty) he could lose about $${$(h95.var * V)}, and in a severe scenario $${$(lossBook)} without hedges and $${$(lossBook - putsPay - futGain)} with them. He keeps the puts and sells one index contract until Brightcup’s results. Ana writes up Lantern’s own exposures, hedges and the risk that remains for Hollis as Lantern’s investor: the course project.` },
+  ],
+  summary: [
+    'VaR at confidence c over a horizon is the loss exceeded with probability 1 − c; expected shortfall is the average loss beyond it.',
+    'Historical VaR reads the quantile from past returns applied to today’s holdings; normal VaR is −(μ + zσ) × V.',
+    'Longer horizons scale roughly with √h if returns are independent.',
+    'Backtests count exceptions (Kupiec) and check whether they cluster (Christoffersen).',
+    'VaR misses the size of the tail, unprecedented events and liquidity; regulators moved to expected shortfall and stress tests.',
+    'Stress tests revalue the portfolio under severe historical or hypothetical scenarios, and show how hedges behave when needed.',
+  ],
+  glossary: [
+    { term: 'Value at Risk', def: 'The loss over a given horizon that will be exceeded only with a stated small probability, such as 5% for a 95% VaR.' },
+    { term: 'Expected shortfall', def: 'The average loss in the cases where the loss exceeds VaR. Also called conditional VaR.' },
+    { term: 'Historical simulation', def: 'Estimating VaR by applying today’s holdings to past periods’ returns and reading the loss quantile from the results.' },
+    { term: 'Backtest', def: 'A check of a risk measure against outcomes it did not use, such as counting how often losses exceeded the VaR forecast.' },
+    { term: 'Stress test', def: 'An estimate of a portfolio’s or institution’s loss in a specified severe scenario, historical or hypothetical, without regard to its probability.' },
+  ],
+  references: [
+    { text: 'Jorion, P. (2006). <i>Value at Risk: The New Benchmark for Managing Financial Risk</i> (3rd ed.). McGraw-Hill.' },
+    { text: 'Basel Committee on Banking Supervision (2019). <i>Minimum capital requirements for market risk</i>. Bank for International Settlements.', url: 'https://www.bis.org/bcbs/publ/d457.htm' },
+  ],
+  checks: [
+    { what: 'Book', value: V, shown: 500000 },
+    { what: 'Hist 95 %', value: h95.var * 100, shown: 4.93, tol: 0.005 },
+    { what: 'Hist 95', value: h95.var * V, shown: 24631, tol: 0.5 },
+    { what: 'Hist 99 %', value: h99.var * 100, shown: 7.23, tol: 0.005 },
+    { what: 'Hist 99', value: h99.var * V, shown: 36169, tol: 0.5 },
+    { what: 'Worst', value: -worst, shown: 58644, tol: 0.5 },
+    { what: 'Mean', value: mu * 100, shown: 0.72, tol: 0.005 },
+    { what: 'SD', value: sig * 100, shown: 3.44, tol: 0.005 },
+    { what: 'Norm 95', value: n95.var * V, shown: 24671, tol: 0.5 },
+    { what: 'Norm 95 %', value: n95.var * 100, shown: 4.93, tol: 0.005 },
+    { what: 'Norm 99', value: n99.var * V, shown: 36383, tol: 0.5 },
+    { what: 'Norm 99 %', value: n99.var * 100, shown: 7.28, tol: 0.005 },
+    { what: 'Tail months', value: h95.tail, shown: 9 },
+    { what: 'Hist ES 95', value: h95.es * V, shown: 34684, tol: 0.5 },
+    { what: 'Norm ES 95', value: n95.es * V, shown: 31852, tol: 0.5 },
+    { what: 'Hist 97.5', value: h975.var * V, shown: 30300, tol: 0.5 },
+    { what: 'Norm 97.5', value: n975.var * V, shown: 30087, tol: 0.5 },
+    { what: 'Hist ES 97.5', value: h975.es * V, shown: 40063, tol: 0.5 },
+    { what: 'Norm ES 97.5', value: n975.es * V, shown: 36580, tol: 0.5 },
+    { what: 'Hist ES 99', value: h99.es * V, shown: 50809, tol: 0.5 },
+    { what: 'Norm ES 99', value: n99.es * V, shown: 42207, tol: 0.5 },
+    { what: '99 tail', value: h99.tail, shown: 2 },
+    { what: '3-month', value: Math.sqrt(3) * h95.var * V, shown: 42663, tol: 0.5 },
+    { what: 'Backtest n', value: bt.n, shown: 120 },
+    { what: 'Exceptions', value: bt.exceptions, shown: 6 },
+    { what: 'Expected exceptions', value: bt.n * 0.05, shown: 6 },
+    { what: 'Kupiec p', value: VAR.kupiec.p, shown: 1, tol: 0.005 },
+    { what: 'Christoffersen p', value: cInd.pInd, shown: 0.021, tol: 0.0005 },
+    { what: 'Brightcup loss', value: -BOOK.brightcup * sc.brightcup, shown: 16800 },
+    { what: 'Market loss', value: -BOOK.market * sc.market, shown: 61600 },
+    { what: 'Bonds gain', value: BOOK.bonds * sc.bonds, shown: 3000 },
+    { what: 'Loss book', value: lossBook, shown: 75400 },
+    { what: 'Brightcup in scenario', value: O.S * 0.6, shown: 25.2, tol: 0.005 },
+    { what: 'Puts pay', value: putsPay, shown: 14800, tol: 0.5 },
+    { what: 'Futures gain', value: futGain, shown: 50000, tol: 0.5 },
+    { what: 'Hedged loss', value: lossBook - putsPay - futGain, shown: 10600, tol: 0.5 },
+    { what: 'Futures value', value: IF.level * IF.multiplier, shown: 250000 },
+  ],
+};
