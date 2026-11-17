@@ -8,6 +8,11 @@ import { widgets as WH } from '../assets/js/data/study/f08/why-firms-hedge.ex.js
 import { widgets as FF } from '../assets/js/data/study/f08/forwards-and-futures.ex.js';
 import { widgets as NA } from '../assets/js/data/study/f08/pricing-by-no-arbitrage.ex.js';
 import { widgets as SW } from '../assets/js/data/study/f08/swaps.ex.js';
+import { widgets as OP } from '../assets/js/data/study/f08/options-payoffs.ex.js';
+import { widgets as PC } from '../assets/js/data/study/f08/put-call-parity.ex.js';
+import { widgets as BT } from '../assets/js/data/study/f08/binomial-pricing.ex.js';
+import { widgets as BS } from '../assets/js/data/study/f08/black-scholes-and-greeks.ex.js';
+import { blackScholes, impliedVol } from '../assets/js/core/fin.js';
 
 let pass = 0, fail = 0;
 const ok = (cond, what) => { if (cond) pass++; else { fail++; console.error(`✗ ${what}`); } };
@@ -73,6 +78,44 @@ const sr = SW['sw-rate'].compute({ z1: 4, z2: 4.2, z3: 4.3, z4: 4.4, z5: 4.5 });
 ok(sr.headline.value === `${(D.swapRate * 100).toFixed(4)}%`, 'swap-rate widget at its defaults shows 4.4815%');
 const sv = SW['sw-value'].compute({ bp: 0 });
 ok(sv.headline.value === `$${(D.swapValueLater / 1e6).toFixed(2)} million`, 'swap-value widget at its defaults shows $4.30 million');
+
+// ---------------------------------------------------------------- module 2: options
+const O = C.OPT, Q = C.QUOTES;
+for (const Kx of O.strikes) {
+  ok(near(Q[Kx].call, Math.round(C.bs(Kx, 'call').price * 100) / 100, 1e-12) && near(Q[Kx].put, Math.round(C.bs(Kx, 'put').price * 100) / 100, 1e-12), `quotes at $${Kx} are Black–Scholes at 30%, to the cent`);
+  ok(Math.abs(DV.parityGap({ C: C.bs(Kx, 'call').price, P: C.bs(Kx, 'put').price, S: O.S, K: Kx, r: O.r, T: O.T })) < 1e-10, `unrounded prices obey parity at $${Kx}`);
+  ok(near(impliedVol({ S: O.S, K: Kx, T: O.T, r: O.r, type: 'call' }, C.bs(Kx, 'call').price), O.sigma, 1e-7), `implied volatility recovers 30% at $${Kx}`);
+}
+ok(O.strikes.every((Kx, i) => i === 0 || (Q[Kx].call < Q[O.strikes[i - 1]].call && Q[Kx].put > Q[O.strikes[i - 1]].put)), 'calls fall and puts rise with the strike');
+// the cap is a call: cost = price − call payoff + fee
+for (const P of [24, 30, 36.3, 40, 43.2, 60]) ok(near(C.capPerKg(P), P - DV.optionPayoff(P, C.CAP.strike) + C.CAP.fee), `cap = price − call payoff + fee at $${P}`);
+ok(near(C.capPerKg(36.3), K.forwardPerKg), 'cap and fixed price cost the same at $36.30');
+// one-step replication with the six-month rate
+const rh = 1.045 ** 0.5 - 1, c1 = DV.oneStep({ S: O.S, u: 1.2, d: 0.85, K: 42, r: rh }), p1 = DV.oneStep({ S: O.S, u: 1.2, d: 0.85, K: 42, r: rh, type: 'put' });
+ok(near(c1.price - p1.price, O.S - 42 / (1 + rh), 1e-12), 'one-step call and put obey parity exactly');
+// two-step tree by hand equals the engine
+const tAm = DV.binomial({ S: O.S, K: 42, T: O.T, r: O.r, sigma: O.sigma, steps: 2, type: 'put', american: true }).price;
+ok(near(tAm, 2.897080794, 1e-8), 'two-step American put = $2.90 (exercise at the down node)');
+ok(Math.abs(DV.binomial({ S: O.S, K: 42, T: O.T, r: O.r, sigma: O.sigma, steps: 500, type: 'call' }).price - C.bs(42).price) < 0.01, '500-step tree within a cent of Black–Scholes');
+// Greeks against finite differences
+const h = 1e-4, g0 = C.bs(42);
+ok(near(g0.delta, (C.bs(42, 'call', { S: 42 + h }).price - C.bs(42, 'call', { S: 42 - h }).price) / (2 * h), 1e-6), 'delta = dC/dS');
+ok(near(g0.gamma, (C.bs(42, 'call', { S: 42 + h }).delta - C.bs(42, 'call', { S: 42 - h }).delta) / (2 * h), 1e-5), 'gamma = dΔ/dS');
+ok(near(g0.vega, (C.bs(42, 'call', { sigma: 0.3 + h }).price - C.bs(42, 'call', { sigma: 0.3 - h }).price) / (2 * h), 1e-4), 'vega = dC/dσ');
+ok(near(g0.theta, -(C.bs(42, 'call', { T: 0.5 + h }).price - C.bs(42, 'call', { T: 0.5 - h }).price) / (2 * h), 1e-4), 'theta = −dC/dT');
+ok(near(g0.rho, (C.bs(42, 'call', { r: O.r + h }).price - C.bs(42, 'call', { r: O.r - h }).price) / (2 * h), 1e-4), 'rho = dC/dr');
+// widgets at their defaults
+ok(OP['op-builder'].compute({ call: 1, side: 1, K: 42, S: 50 }).headline.value === '$4.01', 'option builder at its defaults: profit $4.01');
+ok(OP['op-cap'].compute({ p: 43.2 }).headline.value === '$98,880', 'cap widget at its defaults: $98,880');
+const pcw = PC['pc-check'].compute({ K: 42, c: Q[42].call, p: 2.6 });
+ok(pcw.headline.value === '$0.4757' && pcw.rows[2][1].startsWith('Conversion'), 'parity widget at its defaults: $0.4757, a conversion');
+ok(PC['pc-check'].compute({ K: 42, c: Q[42].call, p: Q[42].put }).rows[2][1].startsWith('None'), 'parity widget: the exchange quotes need no trade');
+ok(BT['bt-one'].compute({ u: 1.2, d: 0.85, K: 42, call: 1 }).headline.value === '$4.0441', 'one-step widget at its defaults: $4.0441');
+ok(BT['bt-one'].compute({ u: 1.2, d: 1.0, K: 42, call: 1 }).headline.value !== '—' && BT['bt-one'].compute({ u: 1.01, d: 0.85, K: 42, call: 1 }).error, 'one-step widget rejects u below the risk-free growth');
+ok(BT['bt-steps'].compute({ n: 2 }).headline.value === '$3.5837', 'tree widget at two steps: $3.5837');
+ok(BS['bs-explorer'].compute({ S: 42, K: 42, sig: 30, m: 6 }).headline.value === `$${Q[42].call.toFixed(2)} / $${Q[42].put.toFixed(2)}`, 'Black–Scholes widget at its defaults shows the quotes');
+ok(BS['bs-iv'].compute({ c: 4.5 }).headline.value === `${(impliedVol({ S: O.S, K: 42, T: O.T, r: O.r, type: 'call' }, 4.5) * 100).toFixed(2)}%`, 'implied volatility widget at its defaults');
+ok(BS['bs-iv'].compute({ c: 0.5 }).error, 'implied volatility widget rejects a price below the arbitrage bound');
 
 console.log(fail ? `${fail} failed, ${pass} passed` : `${pass}/${pass} F08 checks passed`);
 process.exit(fail ? 1 : 0);

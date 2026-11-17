@@ -8,10 +8,11 @@
 //   beans F05's roaster plan priced cost $9.80 a kg; the 25% tax rate.
 // - f06: Brightcup Coffee has $630 million of debt.
 // - f07: Lantern's base-case 2029 EBITDA, interest and scheduled principal.
-import { ROASTER, TAX } from '../f05/case.js?v=39';
+import { ROASTER, TAX, HOLLIS } from '../f05/case.js?v=39';
 import { COMPANIES } from '../f06/case.js?v=39';
 import { MODEL as F07M } from '../f07/case.js?v=39';
 import * as DV from '../../../core/derivatives.js?v=39';
+import { blackScholes } from '../../../core/fin.js?v=39';
 
 export const TODAY = 'September 2028';
 export const TAX_RATE = TAX;
@@ -73,6 +74,27 @@ DERIVED.swapRate = DV.swapRate(DERIVED.df);
 DERIVED.dfLater = DV.discountFactors(SWAP.zerosLater);
 DERIVED.swapValueLater = DV.swapValue({ notional: SWAP.notional, fixed: DERIVED.swapRate, df: DERIVED.dfLater });
 
+// ================================================================ options (module 2): Brightcup share options and Kilnworth's cap
+// Option lessons use continuously compounded rates, as option traders do: 4.5% a year compounded annually is
+// ln 1.045 = 4.402% continuously compounded, so e^(−rT) = 1.045^(−T) and the two conventions agree.
+export const OPT = {
+  r: Math.log(1 + EURO.rUsd),
+  S: COMPANIES.brightcup.price,            // $42.00 (F06)
+  sigma: 0.30,                             // Brightcup's volatility, a year (fictional estimate)
+  T: 0.5, expiry: '31 March 2029',
+  dividendMonth: 'June',                   // Brightcup pays its annual dividend in June (fictional), after these options expire
+  contract: 100,                           // shares per exchange-traded option contract
+  holder: HOLLIS.name, holding: 1_000,     // Hollis Avery owns 1,000 Brightcup shares (fictional)
+  strikes: [38, 40, 42, 44, 46],
+};
+/** Black–Scholes values for the case's Brightcup options. */
+export const bs = (K, type = 'call', over = {}) => blackScholes({ S: OPT.S, K, T: OPT.T, r: OPT.r, sigma: OPT.sigma, type, ...over });
+/** Market quotes: the Black–Scholes values at 30% volatility, rounded to the cent (fictional). */
+export const QUOTES = Object.fromEntries(OPT.strikes.map((K) => [K, { call: Math.round(bs(K, 'call').price * 100) / 100, put: Math.round(bs(K, 'put').price * 100) / 100 }]));
+/** Kilnworth's alternative to a fixed price: list price for 2029, but never more than $40.00 a kg, for $1.20 a kg. */
+export const CAP = { strike: 40, fee: 1.20 };
+export const capPerKg = (price) => Math.min(price, CAP.strike) + CAP.fee;
+
 export const IDENTITIES = [
   ['F05: 2,400 kg of roasted coffee a year from Kilnworth at $36.00 a kg', COFFEE.kgRoasted === 2_400 && COFFEE.spotPerKg === 36],
   ['F05: specialty green beans cost $9.80 a kg, more than the standard grade on the (fictional) exchange', COFFEE.specialtyGreen === 9.8 && COFFEE.futures.price < COFFEE.specialtyGreen],
@@ -81,4 +103,7 @@ export const IDENTITIES = [
   ['F06: Brightcup has $630 million of debt, more than the $200 million swapped', SWAP.debt === 630e6 && SWAP.notional < SWAP.debt],
   ['F07: 2029 base-case EBITDA is the model’s', Math.abs(DERIVED.ebitda2029 - F07_2029.ebitda) < 1e-9],
   ['the tax rate is 25%', TAX_RATE === 0.25],
+  ['F06: Brightcup’s share price is $42.00; F05: Hollis Avery is Lantern’s investor', OPT.S === 42 && OPT.holder === 'Hollis Avery'],
+  ['the continuous option rate matches the 4.5% annual rate', Math.abs(Math.exp(-OPT.r * OPT.T) - 1.045 ** -OPT.T) < 1e-15],
+  ['the quotes satisfy put–call parity to within rounding', OPT.strikes.every((K) => Math.abs(DV.parityGap({ C: QUOTES[K].call, P: QUOTES[K].put, S: OPT.S, K, r: OPT.r, T: OPT.T })) <= 0.01 + 1e-12)],
 ];

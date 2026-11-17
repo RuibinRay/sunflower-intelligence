@@ -121,6 +121,10 @@ export const PLAN = {
     'forwards-and-futures': { moment: 'A week of coffee settlement prices passes through the margin account, with a $750 call on day 2.', visual: 'timeline' },
     'pricing-by-no-arbitrage': { moment: 'Two routes to €38,000 on 31 March, a forward and a money-market hedge, arrive at the same $1.0905.', visual: 'bridge' },
     'swaps': { moment: 'Brightcup’s floating payments cancel against the swap, leaving a fixed 5.98% whatever the benchmark does.', visual: 'curve' },
+    'options-payoffs': { moment: 'Lantern’s coffee bill under no hedge, the fixed price and the $40 cap, drawn as three payoff lines that cross at $36.30.', visual: 'payoff' },
+    'put-call-parity': { moment: 'A call plus a deposit and a share plus a put pay the same at every price, so a $2.60 put leaves $0.48 on the table.', visual: 'payoff' },
+    'binomial-pricing': { moment: 'Brightcup’s two-step tree filled in from the end, with the American put exercised early at the down node.', visual: 'tree' },
+    'black-scholes-and-greeks': { moment: 'The call’s value curve above its payoff, with delta as its slope and the curve sinking towards the payoff as expiry nears.', visual: 'curve' },
   },
 };
 

@@ -11,7 +11,7 @@ The next layer, lesson by lesson, is an authored opening chapter: a script writt
 lesson's central moment with a custom stage visual. It replaces the generated chapter it retells, and every number
 it says is recomputed in its `checks`.
 
-**Now:** 84 lessons, 37 h 52 min of narration in all (about 27 minutes a lesson at 2.6 words a second). Authored openings written: 3 of 84.
+**Now:** 88 lessons, 39 h 3 min of narration in all (about 27 minutes a lesson at 2.6 words a second). Authored openings written: 3 of 88.
 
 **Stage visuals:**
 - `timeline`: Amounts on a dated line, moved one period at a time (built).
@@ -154,10 +154,10 @@ course by course in study order, F00 to F06; each new F07–F13 lesson ships wit
 | [Forwards and futures](../../../../learn/finance/f08/forwards-and-futures/) | 20 min | 19 | A week of coffee settlement prices passes through the margin account, with a $750 call on day 2. | timeline | planned |
 | [Pricing by no arbitrage](../../../../learn/finance/f08/pricing-by-no-arbitrage/) | 18 min | 19 | Two routes to €38,000 on 31 March, a forward and a money-market hedge, arrive at the same $1.0905. | bridge | planned |
 | [Swaps](../../../../learn/finance/f08/swaps/) | 19 min | 20 | Brightcup’s floating payments cancel against the swap, leaving a fixed 5.98% whatever the benchmark does. | curve | planned |
-| options-payoffs | not built | | | | |
-| put-call-parity | not built | | | | |
-| binomial-pricing | not built | | | | |
-| black-scholes-and-greeks | not built | | | | |
+| [Calls, puts, payoffs and profits](../../../../learn/finance/f08/options-payoffs/) | 19 min | 19 | Lantern’s coffee bill under no hedge, the fixed price and the $40 cap, drawn as three payoff lines that cross at $36.30. | payoff | planned |
+| [Put–call parity](../../../../learn/finance/f08/put-call-parity/) | 17 min | 20 | A call plus a deposit and a share plus a put pay the same at every price, so a $2.60 put leaves $0.48 on the table. | payoff | planned |
+| [Binomial pricing](../../../../learn/finance/f08/binomial-pricing/) | 17 min | 19 | Brightcup’s two-step tree filled in from the end, with the American put exercised early at the down node. | tree | planned |
+| [Black–Scholes–Merton and the Greeks](../../../../learn/finance/f08/black-scholes-and-greeks/) | 18 min | 20 | The call’s value curve above its payoff, with delta as its slope and the curve sinking towards the payoff as expiry nears. | curve | planned |
 | hedging-with-derivatives | not built | | | | |
 | margin-leverage-and-short-selling | not built | | | | |
 | value-at-risk-and-stress-tests | not built | | | | |
