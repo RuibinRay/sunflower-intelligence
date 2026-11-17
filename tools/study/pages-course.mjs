@@ -180,6 +180,16 @@ export function lessonPage(course, l, ctx) {
         </div>
       </header>
 
+${l.video ? `
+      <section class="lesson-video" id="video" aria-labelledby="video-h">
+        <div class="lv-intro">
+          <h2 id="video-h">Lesson video</h2>
+          <p>About ${l.video.minutes} minutes in ${l.video.chapters} chapters: the whole lesson narrated in order, with every formula built up and every worked example taken step by step. Captions throughout; your browser can read it aloud.</p>
+          <button class="btn btn-primary" type="button" id="video-btn" data-src="${root}${l.video.src}" aria-controls="video-player">Watch the lesson video</button>
+        </div>
+        <div class="lv-player" id="video-player"></div>
+      </section>
+` : ''}
       <article class="lesson study-lesson" data-lesson="${course.id}/${l.slug}">${body}
       </article>
 ${pager(course, root, l.slug)}

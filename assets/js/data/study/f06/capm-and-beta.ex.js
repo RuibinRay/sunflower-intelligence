@@ -1,9 +1,9 @@
 // capm-and-beta.ex.js — F06 · The CAPM and beta: widgets, practice and the knowledge check (answer keys live here).
 // Returns from case.js (SIMULATED monthly history; fictional funds and companies); F05’s assumptions from MARKET.
 // Every other company and fund named here is fictional.
-import { SERIES, MONTHS, LAST60, MARKET } from './case.js?v=31';
-import * as IV from '../../../core/investments.js?v=31';
-import { tInv } from '../../../core/inference.js?v=31';
+import { SERIES, MONTHS, LAST60, MARKET } from './case.js?v=32';
+import * as IV from '../../../core/investments.js?v=32';
+import { tInv } from '../../../core/inference.js?v=32';
 
 const { rf, mrp } = MARKET;
 const L = (k) => SERIES[k].slice(LAST60.from);
