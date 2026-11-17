@@ -1,7 +1,7 @@
 // revenue-and-cost-forecasts.js — F07 · Revenue and cost forecasts. Content only; exercises are in
 // revenue-and-cost-forecasts.ex.js. Every figure comes from case.js: HISTORY (F02/F03), ASSUME (F05's kitchen and Cold
 // Brew, Ana's growth and cost estimates) and FORECAST (the model's 2028–2032 income statement to EBITDA).
-import { HISTORY, ASSUME, FORECAST as F, DERIVED, calendarise } from './case.js?v=34';
+import { HISTORY, ASSUME, FORECAST as F, DERIVED, calendarise } from './case.js?v=35';
 
 const H7 = HISTORY[2027], A = ASSUME;
 const $ = (x) => Math.round(x).toLocaleString('en-US');

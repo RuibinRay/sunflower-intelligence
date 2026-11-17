@@ -8,6 +8,8 @@ import { modelCells } from '../assets/js/data/study/f07/modelling-principles.ex.
 import { historyCells } from '../assets/js/data/study/f07/setting-up-the-history.ex.js';
 import { wcCells } from '../assets/js/data/study/f07/working-capital-and-capex.ex.js';
 import { covenant2028 } from '../assets/js/data/study/f07/linking-the-statements.ex.js';
+import { widgets as DCFW } from '../assets/js/data/study/f07/dcf-model.ex.js';
+import { widgets as MRW } from '../assets/js/data/study/f07/model-review-and-presentation.ex.js';
 
 let pass = 0, fail = 0;
 const ok = (cond, what) => { if (cond) pass++; else { fail++; console.error(`✗ ${what}`); } };
@@ -75,6 +77,25 @@ const w = new Sheet({ cells: wcCells() });
 ['D', 'E', 'F', 'G', 'H'].forEach((k, t) => {
   for (const [r, key] of [[21, 'receivables'], [23, 'inventory'], [25, 'payables'], [26, 'wagesPayable'], [27, 'unearned'], [28, 'taxPayable']]) ok(near(w.get(`${k}${r}`), MM.rows[t][key], 1e-6), `working capital sheet ${k}${r} = model ${key}`);
 });
+
+// ---------------------------------------------------------------- module 3: valuation and scenarios
+const D = C.DCF;
+D.rows.forEach((r) => ok(near(r.fcff, r.ebit - r.opTax + r.dep - r.capex - r.dNwc), `${r.year}: FCFF = NOPAT + depreciation − capex − ΔNWC`));
+ok(near(D.ev, D.rows.reduce((q, r) => q + r.fcff / (1 + D.wacc) ** (D.rows.indexOf(r) + 1), 0) + D.tv / (1 + D.wacc) ** 5, 1e-6), 'EV = PV of FCFF + PV of terminal value');
+ok(near(D.tv, D.fcffNext / (D.wacc - D.g)), 'terminal value is the growing perpetuity of the normalised year');
+ok(near(D.equity, D.ev - C.NET_DEBT_2027) && near(C.NET_DEBT_2027, 58_719), 'equity = EV − net debt at 31 December 2027 ($58,719)');
+ok(near(C.VALUATION.hollisPre, 175_000) && near(C.VALUATION.hollisPost, 250_000), 'Hollis: $175,000 pre-money, $250,000 post-money (F05)');
+const sb = C.scenario({});
+ok(sb.model.rows.every((r, t) => near(r.cash, MM.rows[t].cash) && near(r.currentRatio, MM.rows[t].currentRatio)) && near(sb.equity, D.equity), 'scenario({}) reproduces the base model and DCF');
+for (const [k, v] of Object.entries(C.SCENARIO_RESULTS)) ok(v.model.rows.every((r) => Math.abs(r.check) < 1e-6), `scenario ${k}: balances every year`);
+ok(!C.scenario({ termAmount: 76_000 }).passes && C.scenario({ termAmount: 77_000 }).passes, 'the base case needs a loan between $76,000 and $77,000 to pass every year');
+ok(C.scenario({ termAmount: 80_000 }).passes, 'an $80,000 loan passes the base case');
+const s80 = C.scenario({ online: 0.5, cafeGrowth: 0.02, cans: 0.75, termAmount: 80_000 });
+ok(s80.ratios[0] >= 0.9 && s80.ratios[1] >= 1.0 && s80.ratios.slice(2).every((x) => x >= 1.2), 'slow growth with $80,000 passes the stepped covenant (0.9, 1.0, 1.2)');
+const dw = DCFW['dcf-explorer'].compute({ wacc: 11.16, g: 2.5 });
+ok(dw.headline.value === `$${Math.round(D.equity).toLocaleString('en-US')}`, 'DCF explorer at its default shows the lesson’s equity value');
+const e0 = MRW['mr-errors'].compute({ e: 0 }), e1 = MRW['mr-errors'].compute({ e: 1 });
+ok(e0.headline.value === 'Checks pass' && e1.headline.value === 'Balance check fails', 'error explorer: clean model passes, planted error fails');
 
 console.log(fail ? `${fail} failed, ${pass} passed` : `${pass}/${pass} F07 checks passed`);
 process.exit(fail ? 1 : 0);

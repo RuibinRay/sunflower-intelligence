@@ -3,9 +3,9 @@
 // Optional: 'development' at the start of `stages` adds the pre-launch stage; select: '<stage>' picks the stage shown
 // first; note: 'html'. The curves are stylised (an idealised textbook shape, not data); the student moves the stage
 // boundaries (pointer or arrow keys) and reads what each stage typically involves.
-import { h, s, debounce, onResize } from '../../core/dom.js?v=34';
-import { tableTwin } from '../../core/charts.js?v=34';
-import { ensureStyles, safeHTML } from '../labs/mix-ui.js?v=34';
+import { h, s, debounce, onResize } from '../../core/dom.js?v=35';
+import { tableTwin } from '../../core/charts.js?v=35';
+import { ensureStyles, safeHTML } from '../labs/mix-ui.js?v=35';
 
 // ---------------------------------------------------------------- the idealised curves (t = share of the life cycle since launch)
 const L = (t) => 1 / (1 + Math.exp(-13 * (t - 0.30)));          // adoption: slow start, fast middle, saturation

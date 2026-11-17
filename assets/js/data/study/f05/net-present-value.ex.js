@@ -1,9 +1,9 @@
 // net-present-value.ex.js — F05 · Net present value: widgets, practice and the knowledge check (answer keys live here).
 // Every number is recomputed by `check` (see ../AUTHORING.md). The widgets start from the cargo bike in PROPOSALS and
 // Ana’s 11% working rate (case.js); every other business here is fictional.
-import { PROPOSALS, WORKING_RATE } from './case.js?v=34';
-import { npv } from '../../../core/invest.js?v=34';
-import { isoToSerial } from '../../../core/sheet.js?v=34';
+import { PROPOSALS, WORKING_RATE } from './case.js?v=35';
+import { npv } from '../../../core/invest.js?v=35';
+import { isoToSerial } from '../../../core/sheet.js?v=35';
 
 const bike = PROPOSALS.find((p) => p.name === 'Electric cargo bike for deliveries');
 const R = WORKING_RATE * 100;                                       // 11

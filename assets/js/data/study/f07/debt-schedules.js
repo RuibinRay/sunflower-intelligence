@@ -1,7 +1,7 @@
 // debt-schedules.js — F07 · Debt schedules. Content only; exercises are in debt-schedules.ex.js. Every figure comes from
 // case.js: OPENING (F03's balance sheet), TERM_LOAN (F05's $60,000 Coastline loan), MODEL.loans (each loan's year),
 // FINANCE (the line of credit's limit and rate, the minimum cash balance), MODEL.rows (the linked forecast).
-import { OPENING as O, TERM_LOAN as T, FINANCE as FIN, MODEL as M, YEARS } from './case.js?v=34';
+import { OPENING as O, TERM_LOAN as T, FINANCE as FIN, MODEL as M, YEARS } from './case.js?v=35';
 
 const $ = (x) => Math.round(x).toLocaleString('en-US');
 const $2 = (x) => x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

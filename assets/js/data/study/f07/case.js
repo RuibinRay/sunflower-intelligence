@@ -14,8 +14,8 @@
 //   project year (April to March); Cold Brew's cans, net price, cost per can, promotion, listing and brand manager by
 //   year, launched in 2028; the 25% tax rate.
 // The model is annual, calendar years; project years are spread over calendar years by months (calendarised).
-import { RESULTS as F03R, PRIOR as F03P, FACTS as F03F } from '../f03/case.js?v=34';
-import { KITCHEN, COLD_BREW, TAX as F05_TAX } from '../f05/case.js?v=34';
+import { RESULTS as F03R, PRIOR as F03P, FACTS as F03F } from '../f03/case.js?v=35';
+import { KITCHEN, COLD_BREW, TAX as F05_TAX } from '../f05/case.js?v=35';
 
 export const TODAY = 'February 2028';
 export const TAX = F05_TAX;
@@ -134,8 +134,8 @@ export const IDENTITIES = [
 //   and are renewed on the same terms when they end in February 2032; the second kitchen's rent is expensed as paid
 //   (a simplification: a lease of over a year would normally be on the balance sheet);
 // - tax is 25% of pre-tax profit; a loss is carried forward against later profits (no other book–tax differences).
-import { BREWER as F03_BREWER, LEASE as F03_LEASE } from '../f03/case.js?v=34';
-import { DEBT as F05_DEBT, HOLLIS as F05_HOLLIS } from '../f05/case.js?v=34';
+import { BREWER as F03_BREWER, LEASE as F03_LEASE } from '../f03/case.js?v=35';
+import { DEBT as F05_DEBT, HOLLIS as F05_HOLLIS } from '../f05/case.js?v=35';
 
 const BS27 = F03R.balanceSheet;
 const line = (side, list, name) => (list ? BS27[side][list] : BS27[side]).find((x) => x[0] === name)?.[1] ?? 0;
@@ -186,8 +186,10 @@ export const FINANCE = { minCash: 15_000, locLimit: F05_DEBT.lineOfCredit.limit,
 
 // ---------------------------------------------------------------- loan schedules (calendar-year interest, principal, closing balance, interest owed)
 function amortise(P, rMonth, n) { const pay = P * rMonth / (1 - (1 + rMonth) ** -n); const rows = []; let b = P; for (let k = 1; k <= n; k++) { const i = b * rMonth; b = b + i - pay; rows.push({ k, interest: i, principal: pay - i, end: Math.max(0, b) }); } return { pay, rows }; }
-export const TERM_LOAN = (() => { const t = F05_DEBT.termLoan; const a = amortise(t.amount, t.rate / 12, t.years * 12); return { ...a, amount: t.amount, rate: t.rate, firstPayment: mo(2028, 4) }; })();
-export function loanYears() {
+/** Coastline's term loan for a given amount (F05's terms: 7.5%, 60 monthly payments from 30 April 2028). */
+export function termLoan(amount = F05_DEBT.termLoan.amount) { const t = F05_DEBT.termLoan; const a = amortise(amount, t.rate / 12, t.years * 12); return { ...a, amount, rate: t.rate, firstPayment: mo(2028, 4) }; }
+export const TERM_LOAN = termLoan();
+export function loanYears(TL = TERM_LOAN) {
   const ys = YEARS, out = {};
   // the first Coastline note: $10,000 at 6%, interest quarterly, repaid 1 March 2028
   out.note = ys.map((y) => (y === 2028 ? { interest: 10_000 * 0.06 * 2 / 12, principal: 10_000, end: 0, owed: 0 } : { interest: 0, principal: 0, end: 0, owed: 0 }));
@@ -210,7 +212,7 @@ export function loanYears() {
     return { interest, principal: start - end, end, owed: owedRow ? owedRow.interest : 0, payments: paid.length * F03F.brewer.instalment };
   });
   // the term loan: drawn 31 March 2028, payments at each month end from 30 April 2028 (interest included: nothing owed)
-  out.term = ys.map((y) => { const rows = TERM_LOAN.rows.filter((r, i) => TERM_LOAN.firstPayment + i >= mo(y, 1) && TERM_LOAN.firstPayment + i <= mo(y, 12)); const last = TERM_LOAN.rows.filter((r, i) => TERM_LOAN.firstPayment + i <= mo(y, 12)).pop(); return { interest: rows.reduce((s, r) => s + r.interest, 0), principal: rows.reduce((s, r) => s + r.principal, 0), end: last ? last.end : 0, owed: 0, drawn: y === 2028 ? TERM_LOAN.amount : 0 }; });
+  out.term = ys.map((y) => { const rows = TL.rows.filter((r, i) => TL.firstPayment + i >= mo(y, 1) && TL.firstPayment + i <= mo(y, 12)); const last = TL.rows.filter((r, i) => TL.firstPayment + i <= mo(y, 12)).pop(); return { interest: rows.reduce((q, r) => q + r.interest, 0), principal: rows.reduce((q, r) => q + r.principal, 0), end: last ? last.end : 0, owed: 0, drawn: y === 2028 ? TL.amount : 0 }; });
   return out;
 }
 /** The cafés' lease liability (= right-of-use asset) at each year end, with renewal on the same terms in March 2032. */
@@ -221,10 +223,11 @@ export function leaseYears() {
 }
 
 export function model(A = ASSUME, W = WC, Fin = FINANCE) {
-  const F = forecast(A), n = YEARS.length, L = loanYears(), lease = leaseYears();
+  const TL = termLoan(Fin.termAmount ?? F05_DEBT.termLoan.amount);
+  const F = forecast(A), n = YEARS.length, L = loanYears(TL), lease = leaseYears();
   const dep = YEARS.map((y) => ASSETS.reduce((s, a) => s + depIn(a, y), 0));
   const capex = YEARS.map((y) => ASSETS.filter((a) => a.capex === y).reduce((s, a) => s + a.cost, 0));
-  const out = { years: YEARS, F, dep, capex, lease, loans: L, rows: [] };
+  const out = { years: YEARS, F, dep, capex, lease, loans: L, termLoan: TL, rows: [] };
   let prev = { ...OPENING, nol: 0, netIncome: 0 };
   for (let t = 0; t < n; t++) {
     const y = YEARS[t];
@@ -265,7 +268,7 @@ export function model(A = ASSUME, W = WC, Fin = FINANCE) {
     const cfo = cfoBeforeLocOwed + locOwedEnd;
     const cff = cffBeforeLoc + (loc - prev.loc);
     const debtEnd = L.van[t].end + L.brewer[t].end + L.term[t].end;
-    const nextPrincipal = t + 1 < n ? L.van[t + 1].principal + L.brewer[t + 1].principal + L.term[t + 1].principal : TERM_LOAN.rows.filter((r, i) => TERM_LOAN.firstPayment + i >= mo(y + 1, 1) && TERM_LOAN.firstPayment + i <= mo(y + 1, 12)).reduce((s, r) => s + r.principal, 0);
+    const nextPrincipal = t + 1 < n ? L.van[t + 1].principal + L.brewer[t + 1].principal + L.term[t + 1].principal : TL.rows.filter((r, i) => TL.firstPayment + i >= mo(y + 1, 1) && TL.firstPayment + i <= mo(y + 1, 12)).reduce((q, r) => q + r.principal, 0);
     const commonStock = prev.commonStock + (t === 0 ? Fin.hollis : 0);
     const retained = prev.retained + netIncome - dividends;
     const row = {
@@ -288,3 +291,59 @@ export function model(A = ASSUME, W = WC, Fin = FINANCE) {
   return out;
 }
 export const MODEL = model();
+
+
+// ================================================================ module 3: valuation and scenarios
+import { DERIVED as F05_DERIVED, MARKET as F05_MARKET } from '../f05/case.js?v=35';
+/** Valuation inputs: F05's post-financing WACC; Ana's long-run growth; valued at 31 December 2027. */
+export const VALUATION = { wacc: F05_DERIVED.wacc, terminalGrowth: 0.025, hollisPre: F05_DERIVED.preMoney, hollisPost: F05_DERIVED.postMoney };
+const opNwc = (x) => x.receivables + x.contractAsset + x.inventory + x.prepaid - x.payables - x.wagesPayable - x.unearned - x.taxPayable;
+/** Net debt at the valuation date: loans and the line of credit less cash (leases excluded: their cost is inside EBITDA). */
+export const NET_DEBT_2027 = OPENING.currentDebt + OPENING.longDebt + OPENING.loc - OPENING.cash;
+
+/** Free cash flow to the firm and a DCF value of Lantern from a model run. */
+export function dcf(Mo = MODEL, V = VALUATION) {
+  const R = Mo.rows, w = V.wacc, g = V.terminalGrowth;
+  const nwc = R.map(opNwc), nwc0 = opNwc(OPENING);
+  const rows = R.map((r, t) => {
+    const opTax = TAX * Math.max(0, r.ebit);                      // operating tax on EBIT (none in a loss year)
+    const nopat = r.ebit - opTax;
+    const dNwc = nwc[t] - (t ? nwc[t - 1] : nwc0);
+    const fcff = nopat + r.dep - r.capex - dNwc;
+    const df = 1 / (1 + w) ** (t + 1);
+    return { year: r.year, ebit: r.ebit, opTax, nopat, dep: r.dep, capex: r.capex, dNwc, fcff, df, pv: fcff * df };
+  });
+  const last = rows[rows.length - 1];
+  // the terminal year is normalised: capital spending equal to depreciation, working capital growing with sales
+  const fcffNext = last.nopat * (1 + g) - nwc[nwc.length - 1] * g;
+  const tv = fcffNext / (w - g);
+  const pvTv = tv * last.df;
+  const sumPv = rows.reduce((q, r) => q + r.pv, 0);
+  const ev = sumPv + pvTv;
+  const equity = ev - NET_DEBT_2027;
+  return { rows, fcffNext, tv, pvTv, sumPv, ev, netDebt: NET_DEBT_2027, equity, tvShare: pvTv / ev, wacc: w, g };
+}
+export const DCF = dcf();
+
+/** A scenario: changes to Ana's assumptions and financing, applied to copies of the base. */
+const clone = (o) => JSON.parse(JSON.stringify(o));
+export function scenario({ online = 1, cafeGrowth = null, cans = 1, opensMonth = 4, termAmount = F05_DEBT.termLoan.amount, minCash = FINANCE.minCash, wacc = VALUATION.wacc, terminalGrowth = VALUATION.terminalGrowth } = {}) {
+  const A = clone(ASSUME);
+  A.online.growth = A.online.growth.map((x) => x * online);
+  if (cafeGrowth != null) A.cafes.growth = A.cafes.growth.map(() => cafeGrowth);
+  A.coldBrew.cans = A.coldBrew.cans.map((x) => x * cans);
+  A.kitchen.opensMonth = opensMonth;
+  const Mo = model(A, WC, { ...FINANCE, termAmount, minCash });
+  const D = dcf(Mo, { ...VALUATION, wacc, terminalGrowth });
+  const R = Mo.rows;
+  return { model: Mo, dcf: D, ratios: R.map((r) => r.currentRatio), minRatio: Math.min(...R.map((r) => r.currentRatio)), passes: R.every((r) => r.currentRatio >= 1.2), ebitda2028: R[0].ebitda, cash2028: R[0].cash, loc2028: R[0].loc, locNeed: Mo.locNeed, gap: Math.max(0, ...Mo.locNeed.map((x) => x - FINANCE.locLimit)), equity: D.equity };
+}
+/** The scenarios the lessons compare. */
+export const SCENARIOS = {
+  base: { name: 'Base case', set: {} },
+  slow: { name: 'Slow growth', set: { online: 0.5, cafeGrowth: 0.02, cans: 0.75 }, why: 'online growth halved, cafés 2% a year, a quarter fewer Cold Brew cans' },
+  late: { name: 'Kitchen opens three months late', set: { opensMonth: 7 }, why: 'the second kitchen opens on 1 July 2028 instead of 1 April' },
+  loan75: { name: 'Base case, $75,000 term loan', set: { termAmount: 75_000 }, why: 'Coastline lends $75,000 on the same terms' },
+  slow75: { name: 'Slow growth, $75,000 term loan', set: { online: 0.5, cafeGrowth: 0.02, cans: 0.75, termAmount: 75_000 } },
+};
+export const SCENARIO_RESULTS = Object.fromEntries(Object.entries(SCENARIOS).map(([k, v]) => [k, { ...v, ...scenario(v.set) }]));

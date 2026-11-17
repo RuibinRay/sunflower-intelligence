@@ -1,6 +1,6 @@
 // linking-the-statements.ex.js — F07 · Linking the statements: widgets, practice and the knowledge check (answer keys
 // live here). Figures from case.js (MODEL, OPENING, FINANCE); every num item's `check` recomputes its answer.
-import { MODEL as M, OPENING as O, FINANCE as FIN } from './case.js?v=34';
+import { MODEL as M, OPENING as O, FINANCE as FIN } from './case.js?v=35';
 
 const R0 = M.rows[0], L = M.loans;
 const otherCA = R0.currentAssets - R0.cash;                         // receivables, inventory, prepaid at 31 December 2028

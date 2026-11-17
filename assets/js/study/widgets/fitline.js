@@ -5,11 +5,11 @@
 //   { type: 'fitline', title, x: { name, values, unit? }, y: { name, values, unit? }, labels?: [...],
 //     start: { intercept, slope }, ranges: { intercept: [lo, hi, step], slope: [lo, hi, step] },
 //     show: ['residuals', 'squares', 'sse', 'mean'] (draw the mean line ȳ and its SST for comparison), note }
-import { h, s, onResize } from '../../core/dom.js?v=34';
-import { xl } from '../xl.js?v=34';
-import { scatter } from '../../core/charts.js?v=34';
-import * as R from '../../core/regression.js?v=34';
-import * as F from '../../core/format.js?v=34';
+import { h, s, onResize } from '../../core/dom.js?v=35';
+import { xl } from '../xl.js?v=35';
+import { scatter } from '../../core/charts.js?v=35';
+import * as R from '../../core/regression.js?v=35';
+import * as F from '../../core/format.js?v=35';
 
 const fmt = (v, d = 2) => (Number.isFinite(v) ? F.num(v, d) : '—');
 

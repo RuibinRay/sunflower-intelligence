@@ -7,10 +7,10 @@
 //     datatable: { target, input, values: [..], input2?, values2?: [..], format? },
 //     solver: { objective, sense: 'max' | 'min' | 'value', target?, changing: ['C3:C5'], integer: [..],
 //               constraints: [{ cell, op, rhs, label }], nonNegative: true } }
-import { h } from '../../core/dom.js?v=34';
-import { xl } from '../xl.js?v=34';
-import * as X from '../../core/sheet.js?v=34';
-import { sheetGrid } from '../sheetgrid.js?v=34';
+import { h } from '../../core/dom.js?v=35';
+import { xl } from '../xl.js?v=35';
+import * as X from '../../core/sheet.js?v=35';
+import { sheetGrid } from '../sheetgrid.js?v=35';
 
 // numbers in messages: 10 significant figures, and a solver's leftover (under a millionth) shown as 0
 const fmtNum = (v) => (typeof v === 'number' ? X.display(Math.abs(v) < 1e-6 ? 0 : Number(v.toPrecision(10))) : X.display(v));

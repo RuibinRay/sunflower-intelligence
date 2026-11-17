@@ -1,9 +1,9 @@
 // ml-charts.js — the charts the machine-learning pages need beyond charts.js: a fold-by-fold score plot, overlaid ROC
 // curves, a readable decision tree, a dendrogram, a scree chart and a PCA biplot. Same marks, classes and keyboard
 // pattern as charts.js (one tab stop per chart, arrow keys walk it, Escape clears), and every one has a table twin.
-import { s, h } from './dom.js?v=34';
-import * as F from './format.js?v=34';
-import { frame, niceTicks, lin, axisX, axisY, legendEl, scatter, Tooltip } from './charts.js?v=34';
+import { s, h } from './dom.js?v=35';
+import * as F from './format.js?v=35';
+import { frame, niceTicks, lin, axisX, axisY, legendEl, scatter, Tooltip } from './charts.js?v=35';
 
 /** One tab stop; arrow keys move an index through `count` items. */
 function roving(svg, count, onIndex, onLeave) {

@@ -3,9 +3,9 @@
 // saving), PROPOSALS and BUDGET_2028 (capital rationing), coldBrewFlows() and roasterFlows() and WORKING_RATE from case.js.
 // The kiosks, cargo bike and solar panels are valued as in net-present-value: the case’s yearly savings are after-tax cash
 // flows, with no resale value. Tideline Kayaks, Ravensmoor Hotel and Haverlock Events are fictional.
-import { ROASTER, ROASTERS, PROPOSALS, BUDGET_2028, WORKING_RATE, TAX, coldBrewFlows, roasterFlows, DERIVED } from './case.js?v=34';
-import { projectCashFlows, depreciation, eaa } from '../../../core/corpfin.js?v=34';
-import { npv, irr, crossover, profitabilityIndex, ration } from '../../../core/invest.js?v=34';
+import { ROASTER, ROASTERS, PROPOSALS, BUDGET_2028, WORKING_RATE, TAX, coldBrewFlows, roasterFlows, DERIVED } from './case.js?v=35';
+import { projectCashFlows, depreciation, eaa } from '../../../core/corpfin.js?v=35';
+import { npv, irr, crossover, profitabilityIndex, ration } from '../../../core/invest.js?v=35';
 
 const r = WORKING_RATE;
 const af = (n, k = r) => (1 - (1 + k) ** -n) / k;

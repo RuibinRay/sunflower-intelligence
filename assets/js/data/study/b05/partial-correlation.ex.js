@@ -2,10 +2,10 @@
 // here). The cafés’ log comes from case.js (Harbourside’s 31 August days and Millbrook’s 31 May days for the
 // worksheets); Riverside Library, Corner Stores, Hilltop Physio and the other businesses named are fictional. Formula
 // items are marked by their results (core/sheet.js gradeFormula); num items recompute their answers in `check`.
-import { CLEAN_ROWS, column } from './case.js?v=34';
-import * as C from '../../../core/correlation.js?v=34';
-import { mean } from '../../../core/stats.js?v=34';
-import { tSf } from '../../../core/inference.js?v=34';
+import { CLEAN_ROWS, column } from './case.js?v=35';
+import * as C from '../../../core/correlation.js?v=35';
+import { mean } from '../../../core/stats.js?v=35';
+import { tSf } from '../../../core/inference.js?v=35';
 
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const neg = (v, d = 2) => `${v < 0 ? '−' : ''}${fx(Math.abs(v), d)}`;

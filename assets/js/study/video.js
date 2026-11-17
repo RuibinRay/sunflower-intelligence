@@ -6,7 +6,7 @@
 // input: seek(t) draws the frame for t, so pausing, scrubbing, changing speed or reloading always shows the same
 // picture. Captions are always available; the narrator is the browser's own speech synthesis, off until asked for,
 // so nothing is downloaded and nothing leaves the device. Custom visuals for authored chapters live in VISUALS below.
-import { h } from '../core/dom.js?v=34';
+import { h } from '../core/dom.js?v=35';
 
 const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const ease = (x) => 1 - (1 - Math.min(1, Math.max(0, x))) ** 3;

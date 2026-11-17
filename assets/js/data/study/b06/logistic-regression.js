@@ -2,10 +2,10 @@
 // Uses the 225 loyalty-app members who joined in October 2027 (case.js `member`) and whether each came back within
 // 30 days. Observational: members chose notifications themselves. The project's quotes are not used. Every figure
 // printed is recomputed in `checks`.
-import { member, DERIVED as D } from './case.js?v=34';
-import * as R from '../../../core/regression.js?v=34';
-import { confusion } from '../../../core/classify.js?v=34';
-import { mean } from '../../../core/stats.js?v=34';
+import { member, DERIVED as D } from './case.js?v=35';
+import * as R from '../../../core/regression.js?v=35';
+import { confusion } from '../../../core/classify.js?v=35';
+import { mean } from '../../../core/stats.js?v=35';
 
 const y = member('returned'), near = member('near'), notif = member('notifications'), ticket = member('first_ticket');
 const mill = member('millbrook'), wkend = member('weekend');

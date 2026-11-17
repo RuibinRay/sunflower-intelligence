@@ -3,9 +3,9 @@
 // were drawn from a Student t distribution with 5 degrees of freedom, plus a planted March 2020 crash, a weak 2022 for
 // shares and a planted 13% fall for bonds in 2022). Ana’s plans come from case.js (F04, F00). Real-market figures are
 // quoted from Damodaran’s historical returns page and Fama (1965); the time-horizon advice from Investor.gov.
-import { MONTHS, SERIES, ANA, RISK_PROFILE, DERIVED } from './case.js?v=34';
-import * as IV from '../../../core/investments.js?v=34';
-import { normCdf } from '../../../core/inference.js?v=34';
+import { MONTHS, SERIES, ANA, RISK_PROFILE, DERIVED } from './case.js?v=35';
+import * as IV from '../../../core/investments.js?v=35';
+import { normCdf } from '../../../core/inference.js?v=35';
 
 const st = DERIVED.stats;
 const mean = (r) => r.reduce((a, b) => a + b, 0) / r.length;

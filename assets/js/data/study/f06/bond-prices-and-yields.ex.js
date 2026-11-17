@@ -1,8 +1,8 @@
 // bond-prices-and-yields.ex.js — F06 · Bond prices and yields: widgets, practice and the knowledge check (answer keys
 // live here). The four bonds come from case.js BONDS (fictional); prices, durations and convexity from
 // core/investments.js. The bond fund's yearly returns are SIMULATED (data.js). Every other bond and business is fictional.
-import { BONDS, SERIES, MONTHS } from './case.js?v=34';
-import * as IV from '../../../core/investments.js?v=34';
+import { BONDS, SERIES, MONTHS } from './case.js?v=35';
+import * as IV from '../../../core/investments.js?v=35';
 
 const [G5, G20, HB, MB] = BONDS;
 const at = (b, y) => IV.bondAtYield({ face: 100, ...b }, y);
