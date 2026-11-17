@@ -29,8 +29,8 @@
 //       prerequisite answers are ROE ÷ r or ROE ÷ (r − g).
 // dg-12 growth creates value only when new investment earns more than the WACC (the value-driver formula). F04’s Gordon
 //       model with a higher g always gives a higher value.
-import * as IV from '../../../core/investments.js?v=38';
-import { normCdf } from '../../../core/inference.js?v=38';
+import * as IV from '../../../core/investments.js?v=39';
+import { normCdf } from '../../../core/inference.js?v=39';
 
 const fx = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const pc = (v, d = 2) => `${fx(v * 100, d)}%`;

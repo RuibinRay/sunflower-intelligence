@@ -1,6 +1,6 @@
 // scenarios-and-sensitivity.ex.js — F07 · Scenarios and sensitivity: widgets, practice and the knowledge check (answer
 // keys live here). The explorer runs case.js's whole linked model through scenario(); every num item's `check` recomputes.
-import { scenario, SCENARIO_RESULTS as S } from './case.js?v=38';
+import { scenario, SCENARIO_RESULTS as S } from './case.js?v=39';
 
 const f0 = (x) => (Math.round(x) + 0).toLocaleString('en-US');
 

@@ -26,9 +26,12 @@ export const BADGES = [
   ['first', 'First bloom', 'Finish any level'],
   ['data', 'Till trained', 'Finish every Data Diner level'],
   ['py', 'Bee keeper', 'Finish every Py Quest level'],
+  ['pandas', 'Table tamer', 'Finish every Table Tamer level'],
   ['sql', 'Stock taker', 'Finish every Query Quest level'],
+  ['sheet', 'Number cruncher', 'Finish every Cell Craft level'],
   ['html', 'Sign painter', 'Finish every Tag Builder level'],
   ['css', 'Decorator', 'Finish every Style Shop level'],
+  ['js', 'Script writer', 'Finish every Script Lab level'],
   ['quiz', 'Quick thinker', 'Get 10 quick checks right'],
   ['stars', 'Tidy coder', 'Earn three stars on 10 levels'],
   ['combo', 'On a roll', '10 right in a row in Bug Battle'],
@@ -37,10 +40,10 @@ export const BADGES = [
   ['daily', 'Regular', 'Finish a daily run'],
   ['streak3', 'Three in a row', 'Play three days running'],
   ['streak7', 'A full week', 'Play seven days running'],
-  ['all', 'All-rounder', 'Play all seven games'],
+  ['all', 'All-rounder', 'Play all ten games'],
 ];
-export const GAMES = ['datadiner', 'pyquest', 'sqlquest', 'tagbuilder', 'stylelab', 'arena', 'catcher'];
-export const LEVEL_COUNTS = { datadiner: 12, pyquest: 10, sqlquest: 17, tagbuilder: 8, stylelab: 9 };
+export const GAMES = ['datadiner', 'pyquest', 'tabletamer', 'sqlquest', 'cellcraft', 'tagbuilder', 'stylelab', 'scriptlab', 'arena', 'catcher'];
+export const LEVEL_COUNTS = { datadiner: 12, pyquest: 10, tabletamer: 12, sqlquest: 17, cellcraft: 12, tagbuilder: 8, stylelab: 9, scriptlab: 12 };
 
 function award(newly) {
   const has = (id, cond) => { if (cond && !S.badges[id]) { S.badges[id] = dayKey(); newly.push(BADGES.find((b) => b[0] === id)); } };
@@ -48,6 +51,9 @@ function award(newly) {
   has('first', GAMES.some((g) => done(g) > 0));
   has('data', done('datadiner') >= LEVEL_COUNTS.datadiner);
   has('css', done('stylelab') >= LEVEL_COUNTS.stylelab);
+  has('pandas', done('tabletamer') >= LEVEL_COUNTS.tabletamer);
+  has('sheet', done('cellcraft') >= LEVEL_COUNTS.cellcraft);
+  has('js', done('scriptlab') >= LEVEL_COUNTS.scriptlab);
   has('quiz', Object.keys(S.checks || {}).length >= 10);
   has('py', done('pyquest') >= LEVEL_COUNTS.pyquest);
   has('sql', done('sqlquest') >= LEVEL_COUNTS.sqlquest);

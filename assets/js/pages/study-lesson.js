@@ -1,12 +1,12 @@
 // study-lesson.js — a course lesson page: progress marks in the outline, notes and bookmarks, the interactives,
 // guided practice, practice on your own, the knowledge check, and the lesson's completion and mastery status.
-import { initSite } from '../core/site.js?v=38';
-import { $, h } from '../core/dom.js?v=38';
-import * as P from '../study/progress.js?v=38';
-import { renderPractice, renderQuiz } from '../study/exercises.js?v=38';
-import { mountWidgets } from '../study/widgets.js?v=38';
-import { initOutline, initPartSpy, paintOutline, initNoteTools, pct, storageWarning, scrollersFocusable } from '../study/common.js?v=38';
-import { MAP } from '../data/study/map.js?v=38';
+import { initSite } from '../core/site.js?v=39';
+import { $, h } from '../core/dom.js?v=39';
+import * as P from '../study/progress.js?v=39';
+import { renderPractice, renderQuiz } from '../study/exercises.js?v=39';
+import { mountWidgets } from '../study/widgets.js?v=39';
+import { initOutline, initPartSpy, paintOutline, initNoteTools, pct, storageWarning, scrollersFocusable } from '../study/common.js?v=39';
+import { MAP } from '../data/study/map.js?v=39';
 
 initSite();
 const refocus = scrollersFocusable();
@@ -55,7 +55,7 @@ storageWarning($('#complete-card'));
 // ---------------------------------------------------------------- the exercise file: widgets and practice
 let X;
 try {
-  X = await import(`../data/study/${course}/${slug}.ex.js?v=38`);
+  X = await import(`../data/study/${course}/${slug}.ex.js?v=39`);
 } catch (e) {
   console.error(e);
   document.querySelectorAll('.ex-set, .widget').forEach((el) => el.replaceChildren(h('p', { class: 'note' }, 'The questions for this lesson didn’t load. Reload the page to try again.')));
@@ -122,7 +122,7 @@ if (location.hash.startsWith('#f-')) document.getElementById(location.hash.slice
   btn?.addEventListener('click', async () => {
     btn.disabled = true; btn.textContent = 'Loading the video…';
     try {
-      const { mountVideo } = await import('../study/video.js?v=38');
+      const { mountVideo } = await import('../study/video.js?v=39');
       const v = await mountVideo($('#video-player'), btn.dataset.src, lk);
       btn.closest('.lv-intro').hidden = true;
       $('#video-player .vid-frame')?.focus();

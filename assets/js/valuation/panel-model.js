@@ -1,16 +1,16 @@
 // panel-model.js — the central workspace: the model selection guide, the assumptions (sliders and a per-year table),
 // the DCF with its forecast, bridge and sensitivities, the other models, scenarios and Monte Carlo.
-import { h, $, $$, download, onResize } from '../core/dom.js?v=38';
-import * as F from '../core/format.js?v=38';
-import * as V from '../core/valuation.js?v=38';
-import * as IO from '../core/valuation-io.js?v=38';
-import { barChart, lineChart, tableTwin, histogramChart } from '../core/charts.js?v=38';
-import { verdict } from '../core/ui.js?v=38';
-import { formatter } from '../core/valuation-report.js?v=38';
-import { waterfall, heatGrid, historyForecastBars } from './charts.js?v=38';
-import { state, on, recompute, scheduleRecompute, resetAssumptions, toggleModel, openTutorial, emit } from './state.js?v=38';
-import { numInput, selectEl, field, pctSlider, numSlider, segmented, block, btn, stat, dataTable, helpLink, id } from './ui.js?v=38';
-import { renderTutorial } from './tutorial.js?v=38';
+import { h, $, $$, download, onResize } from '../core/dom.js?v=39';
+import * as F from '../core/format.js?v=39';
+import * as V from '../core/valuation.js?v=39';
+import * as IO from '../core/valuation-io.js?v=39';
+import { barChart, lineChart, tableTwin, histogramChart } from '../core/charts.js?v=39';
+import { verdict } from '../core/ui.js?v=39';
+import { formatter } from '../core/valuation-report.js?v=39';
+import { waterfall, heatGrid, historyForecastBars } from './charts.js?v=39';
+import { state, on, recompute, scheduleRecompute, resetAssumptions, toggleModel, openTutorial, emit } from './state.js?v=39';
+import { numInput, selectEl, field, pctSlider, numSlider, segmented, block, btn, stat, dataTable, helpLink, id } from './ui.js?v=39';
+import { renderTutorial } from './tutorial.js?v=39';
 
 const fin = Number.isFinite;
 const series = (arr, n) => Array.from({ length: n }, (_, i) => (fin(arr?.[i]) ? arr[i] : (arr?.length ? arr[arr.length - 1] : 0)));

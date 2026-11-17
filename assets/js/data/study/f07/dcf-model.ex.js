@@ -1,6 +1,6 @@
 // dcf-model.ex.js — F07 · A DCF model from the forecast: widgets, practice and the knowledge check (answer keys live
 // here). Figures from case.js (MODEL, DCF, VALUATION, NET_DEBT_2027); every num item's `check` recomputes its answer.
-import { MODEL as M, DCF as D, VALUATION as V, NET_DEBT_2027, dcf } from './case.js?v=38';
+import { MODEL as M, DCF as D, VALUATION as V, NET_DEBT_2027, dcf } from './case.js?v=39';
 
 const R = D.rows;
 const f0 = (x) => (Math.round(x) + 0).toLocaleString('en-US');

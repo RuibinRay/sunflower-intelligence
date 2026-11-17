@@ -1,8 +1,8 @@
 // setting-up-the-history.ex.js — F07 · Setting up the history: widgets, practice and the knowledge check (answer keys
 // live here). Lantern's figures come from case.js (HISTORY, condensed from F02/F03; DERIVED). Brightcup's are F06's
 // fictional listed company. Every num item's `check` recomputes its answer.
-import { HISTORY, DERIVED } from './case.js?v=38';
-import { COMPANIES } from '../f06/case.js?v=38';
+import { HISTORY, DERIVED } from './case.js?v=39';
+import { COMPANIES } from '../f06/case.js?v=39';
 
 const H6 = HISTORY[2026], H7 = HISTORY[2027], B = COMPANIES.brightcup;
 const M = '$#,##0', P = '0.0%';
