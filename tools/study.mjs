@@ -17,6 +17,10 @@ import { lessonPage, coursePage, assessPage, projectPage } from './study/pages-c
 import { homePage, schoolPage, labsPage, glossaryPage, formulasPage, reviewPage, notebookPage, curriculumPage } from './study/pages-hub.mjs';
 import { checkLesson } from './study-check.mjs';
 import katex from 'katex';
+import { storyboard, authoredFor } from './study/video.mjs';
+
+// Lesson videos: schools whose lessons get one (the finance school first; see FINANCE_PLAN.md).
+const VIDEO_SCHOOLS = new Set(['finance']);
 
 const out = (rel, html) => { const p = join(ROOT, rel); mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, html); };
 const plates = Object.fromEntries((await import(join(ROOT, 'assets/js/data/lessons/meta.js'))).LESSON_META.map((m) => [m.id, m.title]));
@@ -42,11 +46,19 @@ const glossary = buildGlossary(ready);
 const formulas = buildFormulas(ready);
 
 // ---------------------------------------------------------------- course pages
-let pages = 0;
+let pages = 0, videos = 0;
 for (const c of ready) {
   const ctx = { titles, plates, css: [LAB_CSS[catalog.COURSE[c.id].lab]].filter(Boolean) };
   out(`${c.href}index.html`, coursePage(c, ctx)); pages++;
-  for (const l of c.lessons) { out(`${l.href}index.html`, lessonPage(c, l, ctx)); pages++; }
+  for (const l of c.lessons) {
+    if (VIDEO_SCHOOLS.has(c.school)) {
+      const sb = storyboard(c, l, await authoredFor(c.id, l.slug));
+      out(`assets/data/study/video/${c.id}/${l.slug}.json`, JSON.stringify(sb));
+      l.video = { src: `assets/data/study/video/${c.id}/${l.slug}.json`, minutes: Math.max(1, Math.round(sb.seconds / 60)), chapters: sb.chapters.length, authored: sb.authored };
+      videos++;
+    }
+    out(`${l.href}index.html`, lessonPage(c, l, ctx)); pages++;
+  }
   for (const m of c.modules) if (m.test) { out(`${m.test.href}index.html`, assessPage(c, 'module', ctx, m)); pages++; }
   if (c.diagnostic) { out(`${c.diagnostic.href}index.html`, assessPage(c, 'diagnostic', ctx)); pages++; }
   if (c.final) { out(`${c.final.href}index.html`, assessPage(c, 'final', ctx)); pages++; }
@@ -112,4 +124,4 @@ if (existsSync(sm)) {
   xml = xml.replace('</urlset>', `${urls.map((u) => `  <url><loc>${SITE}${u}</loc></url>`).join('\n')}\n</urlset>`);
   writeFileSync(sm, xml);
 }
-console.log(`wrote ${pages} pages for ${ready.length} courses (${ready.reduce((n, c) => n + c.lessons.length, 0)} lessons, ${glossary.length} terms, ${formulas.length} formulas)`);
+console.log(`wrote ${pages} pages for ${ready.length} courses (${ready.reduce((n, c) => n + c.lessons.length, 0)} lessons, ${glossary.length} terms, ${formulas.length} formulas, ${videos} lesson videos)`);

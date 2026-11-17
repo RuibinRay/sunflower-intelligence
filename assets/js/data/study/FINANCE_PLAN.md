@@ -65,3 +65,58 @@ All recomputed by script on 2026-10-22.
 5. *Project:* a loan and savings plan.
 
 Next in the finance school: F02 Financial Statement Preparation (after F01), then F03 and F05.
+
+## Finance school 2.0: benchmarked against leading programmes (2026-11-17)
+
+Ray asked to compare the finance school with Harvard's and other top-rated finance classes and combine them with the
+courses already here. The comparison used the public outlines of the programmes below, read on 2026-11-17. Only topic
+lists and course structures were compared: no course material, case or problem was copied, and the site is not
+affiliated with or endorsed by any of these institutions. Where a source was a third-party copy or an older archive,
+that is noted.
+
+| Programme | What was compared | Source |
+|---|---|---|
+| Harvard Business School MBA required curriculum: Finance 1 and Financial Reporting and Control | Course list and stated aims | [HBS degree requirements](https://d3vgmmrg377kge.cloudfront.net/mba/handbook/academic-information-and-policies/Pages/degree-requirements.aspx) |
+| HBS Online: Leading with Finance; Alternative Investments | Course descriptions; Alternative Investments covers private equity, private debt, hedge funds and real estate in five modules | [Leading with Finance](https://online-learning.harvard.edu/course/leading-finance), [Alternative Investments](https://online.hbs.edu/courses/alternative-investments) |
+| Harvard Extension MGMT E-2700 Corporate Finance, and Harvard Professional Learning Corporate Finance | Topic lists: capital budgeting, risk and return, CAPM, market efficiency, capital structure, dividends, M&A, international finance, governance | [Course page](https://coursebrowser.dce.harvard.edu/course/corporate-finance/), [description](https://pll.harvard.edu/course/corporate-finance) |
+| MIT OpenCourseWare 15.401 Finance Theory I (2008) and 15.433 Investments (2003) | Session lists (archived) | [15.401](https://ocw.mit.edu/courses/15-401-finance-theory-i-fall-2008/pages/syllabus/), [15.433](https://ocw.mit.edu/courses/15-433-investments-spring-2003/pages/syllabus/) |
+| Open Yale Courses ECON 252 Financial Markets (2011) | Lecture list: banks, insurance, efficient markets, behavioural finance, exchanges, money managers, options | [ECON 252](https://oyc.yale.edu/economics/econ-252-11/lecture-1) |
+| NYU Stern, Aswath Damodaran's free Corporate Finance and Valuation classes | Scope as the author describes it | [Damodaran's teaching page](https://pages.stern.nyu.edu/~adamodar/New_Home_Page/equityUG.html) |
+| Wharton Business and Financial Modeling (Coursera) | Five-course sequence: quantitative modelling, spreadsheets, risk, decisions and scenarios, capstone | [Specialization](https://www.coursera.org/specializations/wharton-business-financial-modeling) |
+| CFA Program Level I topic areas (2026 weights, from third-party summaries) | Breadth check: ethics, quantitative methods, economics, financial statement analysis, corporate issuers, equity, fixed income, derivatives, alternatives, portfolio management | [Topic weights](https://soleadea.org/cfa-level-1/topic-weights) |
+
+### Coverage before and after
+
+| Area | Where the benchmarks teach it | Here before | Here after |
+|---|---|---|---|
+| Time value, discounting | HBS FIN1, MIT 15.401, Wharton | F00, F04 | unchanged |
+| Financial accounting and reporting | HBS FRC | F01, F02 | unchanged |
+| Statement analysis | HBS FRC, CFA | F03 | unchanged |
+| Capital budgeting, cost of capital, capital structure, payout | HBS FIN1, Harvard Extension, MIT 15.401, Damodaran | F05 | unchanged |
+| Risk and return, portfolios, CAPM, funds | MIT 15.401 and 15.433, Harvard Extension, CFA | F06 | unchanged |
+| Financial modelling | Wharton | F07 (planned) | F07, lessons planned |
+| Derivatives and risk management | MIT 15.401, Yale, CFA | part of F08 (planned) | **F08 Derivatives and Risk Management** |
+| Fixed income in depth: curve, duration, credit | MIT 15.433, CFA | one F06 lesson | **F09 Fixed Income and Credit** (new) |
+| Business valuation, M&A, LBOs, distress | Damodaran, Harvard Extension | part of F08 (planned) | **F10 Valuation, Mergers and Restructuring** (new) |
+| Private equity, venture capital, hedge funds, real estate, private credit | HBS Online Alternative Investments, CFA | none | **F11 Alternative Investments** (new) |
+| Managerial accounting and control | HBS FRC ("control") | none (flagged as a gap above) | **F12 Managerial Accounting and Control** (new) |
+| Banks, insurance, regulation, efficiency, behavioural finance, crises, FX, ethics | Yale ECON 252, Harvard Extension (international, governance), CFA (ethics) | partly F00 | **F13 Financial Markets, Institutions and Ethics** (new) |
+
+F08's planned topics were split: derivatives and risk stay in F08; valuation, M&A and distress move to F10. The study
+order is now F00, F01, F02, F04, F03, F05, F12, F06, F13, F07, F08, F09, F10, F11 (see `ORDER` in `catalog.js`), and
+the catalogue holds 38 courses. The new courses are outlines (`status: 'planned'`) until their lessons are written to
+the standard in `AUTHORING.md`. Their proposed modules and lessons are in `video-plan.js` (`NEW_COURSES`) and in
+`FINANCE_VIDEO_PLAN.md`.
+
+### Interactivity
+
+Every one of the 71 built finance lessons (F00 to F06) has at least one interactive in its Explore part, plus guided
+practice, practice on its own and a knowledge check; each course has module tests, a diagnostic, a final and a
+project. "Finishing the lessons" therefore means writing F07 to F13 to the same standard, each lesson with its
+interactive, exercises and video, in the study order above.
+
+### Lesson videos
+
+Each finance lesson now has a video built from the lesson itself (`tools/study/video.mjs`, played by
+`assets/js/study/video.js`), so it always covers the whole lesson and never disagrees with it. The plan for each
+lesson's authored opening, and each video's length and chapters, is in `FINANCE_VIDEO_PLAN.md`.

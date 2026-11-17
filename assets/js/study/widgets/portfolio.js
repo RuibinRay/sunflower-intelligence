@@ -8,12 +8,12 @@
 //   { type: 'portfolio', mode: 'two', title, a: { name, er, sd }, b: { name, er, sd }, corr, w: 0.5, corrSlider: true, note }
 //   { type: 'portfolio', mode: 'many', title, assets: [{ name, er, sd }] + cov: [[…]] | series: { name: [monthly returns] },
 //     rf, y?: 1, maxY?: 1.5, show: ['frontier', 'cal', 'assets', 'weights'], note }
-import { h, onResize } from '../../core/dom.js?v=31';
-import { xl } from '../xl.js?v=31';
-import { scatter, tableTwin } from '../../core/charts.js?v=31';
-import * as IV from '../../core/investments.js?v=31';
-import * as F0 from '../../core/format.js?v=31';
-import { moments } from '../../core/portfolio.js?v=31';
+import { h, onResize } from '../../core/dom.js?v=32';
+import { xl } from '../xl.js?v=32';
+import { scatter, tableTwin } from '../../core/charts.js?v=32';
+import * as IV from '../../core/investments.js?v=32';
+import * as F0 from '../../core/format.js?v=32';
+import { moments } from '../../core/portfolio.js?v=32';
 
 const F = { ...F0, pct: (x, d = 1) => F0.pct(Number.isFinite(x) ? x + Math.sign(x) * 1e-12 : x, d) };
 const ax = (v) => F.pct(v, Math.abs(v * 100 - Math.round(v * 100)) > 1e-9 ? 1 : 0);   // axis ticks: 7.5% not 8%

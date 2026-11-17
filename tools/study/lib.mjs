@@ -209,7 +209,11 @@ function figureHTML(f, ctx, where) {
 /** Render a list of blocks. `ctx`: { chart, errors, terms, glossaryHref }. */
 export function blocks(list, ctx = {}, where = 'blocks') {
   if (!Array.isArray(list)) { (ctx.errors ||= []).push(`${where}: expected an array of blocks`); return ''; }
-  return list.map((b, i) => {
+  // each block's first element carries data-vb="<index>", so the lesson video can show that block on its stage
+  return list.map((b, i) => renderBlock(b, i, ctx, where).replace(/^<([a-z][a-z0-9]*)/, `<$1 data-vb="${i}"`)).join('\n');
+}
+function renderBlock(b, i, ctx, where) {
+  {
     const w = `${where}[${i}]`;
     const keys = Object.keys(b || {});
     const kind = keys.find((k) => ['p', 'h', 'list', 'ol', 'callout', 'math', 'table', 'journal', 'taccounts', 'statement', 'define', 'case', 'figure', 'quote'].includes(k));
@@ -238,7 +242,7 @@ export function blocks(list, ctx = {}, where = 'blocks') {
       case 'quote': return `<blockquote class="study-quote"><p>${inline(b.quote.text, ctx, w)}</p>${b.quote.cite ? `<cite>${inline(b.quote.cite, ctx, w)}</cite>` : ''}</blockquote>`;
       default: return '';
     }
-  }).join('\n');
+  }
 }
 
 /** Words of running prose in a list of blocks (paragraphs, lists, callouts, cases, definitions, quotes). */

@@ -1,4 +1,4 @@
-// catalog.js — the whole curriculum: three schools, 33 courses in a suggested study order, their levels and prerequisites.
+// catalog.js — the whole curriculum: three schools, 38 courses in a suggested study order, their levels and prerequisites.
 // Courses with `modules` are built (lesson files live in assets/js/data/study/<id>/); the rest are planned
 // and list the topics they will cover. `status` is the course's state in the completion checklist:
 //   planned      outline only; nothing written
@@ -188,11 +188,44 @@ const ALL = [
     related: [{ tool: 'finance/valuation/', label: 'Valuation' }, { tool: 'finance/company-valuation/', label: 'Company Valuation Studio' }],
   }),
   C({
-    id: 'f08', school: 'finance', code: 'F08', level: 'advanced', requires: ['f05', 'f06'],
-    title: 'Advanced Financial Decision-Making',
-    blurb: 'Risk management, derivatives and hedging, mergers, valuation and decisions under uncertainty.',
-    topics: ['Risk management', 'Derivatives fundamentals', 'Options: calls, puts, payoffs and profits', 'Futures and forwards', 'Swaps', 'Margin, leverage and short selling', 'Hedging', 'Mergers and acquisitions', 'Business valuation', 'Financial distress and bankruptcy', 'Capital allocation', 'Decision-making under uncertainty'],
-    related: [{ plate: 'options' }, { plate: 'mrisk' }, { tool: 'finance/risk/', label: 'Risk management' }],
+    id: 'f08', school: 'finance', code: 'F08', level: 'advanced', requires: ['f05', 'f06'], recommends: ['f04'],
+    title: 'Derivatives and Risk Management',
+    blurb: 'Forwards, futures, swaps and options: how they are priced by no arbitrage, and how a business or a portfolio uses them to hedge and to measure risk.',
+    topics: ['Why firms manage risk', 'Forwards and futures: payoffs, margin and marking to market', 'Pricing forwards by no arbitrage: cost of carry', 'Interest-rate and currency swaps', 'Options: calls, puts, payoffs and profits', 'Put–call parity', 'Binomial option pricing', 'Black–Scholes–Merton and the Greeks', 'Hedging with futures and options: hedge ratios and basis risk', 'Margin, leverage and short selling', 'Value at Risk and expected shortfall', 'Stress testing and backtesting'],
+    related: [{ plate: 'options' }, { plate: 'mrisk' }, { tool: 'finance/risk/', label: 'Risk management' }, { tool: 'finance/markets/', label: 'Bonds and options' }],
+  }),
+  C({
+    id: 'f09', school: 'finance', code: 'F09', level: 'advanced', requires: ['f04', 'f06'],
+    title: 'Fixed Income and Credit',
+    blurb: 'Price and analyse bonds beyond the basics: the yield curve, duration and convexity, credit risk and spreads, and the securitised products built from loans.',
+    topics: ['Bond features, indentures and covenants', 'Yield measures: yield to maturity, current yield, yield to call', 'Spot rates, forward rates and the yield curve', 'Theories of the term structure', 'Duration and convexity', 'Immunisation and liability matching', 'Credit risk: default probability, loss given default, expected loss', 'Credit ratings and credit spreads', 'Floating-rate notes and inflation-linked bonds', 'Mortgage-backed and asset-backed securities', 'Bond portfolio strategies'],
+    related: [{ plate: 'bonds' }, { plate: 'credit' }, { tool: 'finance/markets/', label: 'Bonds and options' }],
+  }),
+  C({
+    id: 'f10', school: 'finance', code: 'F10', level: 'advanced', requires: ['f05', 'f06'], recommends: ['f03'],
+    title: 'Valuation, Mergers and Restructuring',
+    blurb: 'Value a whole business with intrinsic and relative methods, then the deals that change companies: acquisitions, leveraged buyouts, distress and restructuring.',
+    topics: ['Intrinsic and relative valuation: when each fits', 'Free cash flow to the firm and to equity', 'Terminal value and its traps', 'Valuing young, cyclical and distressed companies', 'Multiples: choosing, adjusting and reading them', 'Sum of the parts', 'Mergers and acquisitions: synergies, premiums and who gains', 'Deal structure: cash or shares, accretion and dilution', 'Leveraged buyouts', 'Financial distress, bankruptcy and restructuring', 'Corporate governance and control in deals'],
+    related: [{ tool: 'finance/company-valuation/', label: 'Company Valuation Studio' }, { tool: 'finance/company-intelligence/', label: 'Company Intelligence' }],
+  }),
+  C({
+    id: 'f11', school: 'finance', code: 'F11', level: 'advanced', requires: ['f06'], recommends: ['f10'],
+    title: 'Alternative Investments',
+    blurb: 'Private equity, venture capital, hedge funds, real estate, private credit and commodities: how each makes money, how its returns are measured, and what the reported numbers hide.',
+    topics: ['What makes an investment alternative', 'Fund structures: general and limited partners, fees and carried interest', 'Private equity: buyouts and value creation', 'Venture capital: stages, valuation and the power law', 'Measuring private returns: IRR, multiples and public market equivalent', 'Hedge fund strategies and their risks', 'Real estate: income, cap rates and leverage', 'Private credit', 'Commodities and infrastructure', 'Smoothed returns, survivorship and selection bias', 'Due diligence and portfolio allocation'],
+  }),
+  C({
+    id: 'f12', school: 'finance', code: 'F12', level: 'intermediate', requires: ['f02'], recommends: ['f03'],
+    title: 'Managerial Accounting and Control',
+    blurb: 'The numbers managers use inside the business: cost behaviour, product costing, budgets, variances and performance measures that steer decisions.',
+    topics: ['Financial versus managerial accounting', 'Cost behaviour: fixed, variable and mixed costs', 'Cost–volume–profit analysis and break-even', 'Job-order and process costing', 'Activity-based costing', 'Relevant costs for decisions: make or buy, special orders, dropping a product', 'Budgets and the master budget', 'Flexible budgets and variance analysis', 'Standard costing', 'Responsibility centres, transfer pricing and return on investment', 'Balanced scorecard and management control systems'],
+  }),
+  C({
+    id: 'f13', school: 'finance', code: 'F13', level: 'intermediate', requires: ['f00'], recommends: ['f06'],
+    title: 'Financial Markets, Institutions and Ethics',
+    blurb: 'How banks, insurers, exchanges and regulators work, why markets are efficient and when they are not, what behavioural finance adds, how currencies are priced, and the ethical standards of the profession.',
+    topics: ['Banks: deposits, lending, capital and runs', 'Central banks and monetary policy', 'Insurance and pooling risk', 'Exchanges, brokers, dealers and clearing', 'Market efficiency: forms and evidence', 'Behavioural finance: biases and limits to arbitrage', 'Bubbles and financial crises', 'Regulation and its trade-offs', 'Foreign exchange: spot, forward and interest-rate parity', 'Ethics and professional standards: duties to clients, conflicts and misconduct'],
+    related: [{ tool: 'finance/markets/', label: 'Bonds and options' }],
   }),
 
   C({
@@ -576,7 +609,7 @@ const ALL = [
  *              → services → digital → customer analytics → strategy → marketing analytics → integrated plan (capstone).
  */
 export const ORDER = [
-  'f00', 'f01', 'f02', 'f04', 'f03', 'f05', 'f06', 'f07', 'f08',
+  'f00', 'f01', 'f02', 'f04', 'f03', 'f05', 'f12', 'f06', 'f13', 'f07', 'f08', 'f09', 'f10', 'f11',
   'b01', 'b02', 'b03', 'b07', 'b04', 'b10', 'b05', 'b06', 'b08', 'b09', 'b11', 'b12',
   'm01', 'm02', 'm04', 'm05', 'm10', 'm09', 'm03', 'm07', 'm06', 'm11', 'm08', 'm12',
 ];
@@ -600,7 +633,7 @@ export const PATHS = [
   },
   {
     id: 'advanced', name: 'Advanced', blurb: 'Comfortable with statistics and corporate finance. Go on to investments, modelling, machine learning and strategy.',
-    courses: ['f06', 'f07', 'f08', 'b02', 'b08', 'b09', 'b11', 'b12', 'm07', 'm08', 'm11', 'm12'],
+    courses: ['f06', 'f07', 'f08', 'f09', 'f10', 'f11', 'b02', 'b08', 'b09', 'b11', 'b12', 'm07', 'm08', 'm11', 'm12'],
   },
 ];
 

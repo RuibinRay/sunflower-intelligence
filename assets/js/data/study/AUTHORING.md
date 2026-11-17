@@ -390,6 +390,40 @@ Segmentation uses engines tested earlier: `classify.js` `standardise(cols)` (z-s
 - **`portfolio`**: `{ type: 'portfolio', mode: 'two', a: { name, er, sd }, b: { … }, corr, w, corrSlider }` draws every mix of two assets (sliders for the weight and the correlation) with the least risky mix and the saving from diversification; `{ mode: 'many', series: { name: monthly returns } | assets + cov, rf, y, maxY, show: ['frontier', 'cal', 'assets', 'weights'] }` draws the long-only efficient frontier, the minimum-variance and maximum-Sharpe portfolios and the capital allocation line, with a slider for the share held in the risky portfolio. The checker rejects defaults off the sliders' steps.
 - Beta by regression: the shared `regression` widget on excess returns; growth of $1 and yearly returns: the `chart` widget; bond prices against yields, DCF and multiples: `formula` widgets.
 
+### Lesson videos (finance school; `tools/study/video.mjs`, player `assets/js/study/video.js`)
+
+Every finance lesson gets a video with no extra writing: `node tools/study.mjs` builds its storyboard from the lesson
+file, in page order, and the page shows a "Lesson video" panel. The narration is the lesson's own text (maths read
+from the TeX), and what appears on the stage is the lesson's own element on the page, so the video can't disagree
+with the lesson. `tests/video.test.mjs` fails if any paragraph, list item, definition, callout, formula, example
+step, mistake, objective or summary point is missing from the narration, or if a stored storyboard is out of date.
+
+To give a lesson an authored chapter, add `<slug>.video.js` next to the lesson:
+
+```js
+export default {
+  chapters: [{
+    id: 'two-repayments', title: 'Two payments of $10,000',
+    replace: 'idea',             // or before: '<chapter id>', or after: '<chapter id>' (default: after 'opening')
+    covers: ['concept[0]'],      // with replace: the blocks it retells; every number in them must be said
+    scenes: [{
+      kind: 'visual', kicker: 'Draw the timeline first', head: 'Move the repayment back one quarter at a time',
+      visual: { kind: 'timeline', … },            // optional: one custom stage visual for the scene
+      segs: [{ step: 0, say: 'Written for the ear …' }, { step: 1, say: '…' }],   // `show: '<css selector>'` clones a page element
+    }],
+  }],
+  checks: [{ what: 'Present value on 1 March 2027', value: 10000 / 1.02 ** 4, shown: 9238.45 }],
+};
+```
+
+Chapter ids are `opening`, `idea`, `idea/<heading slug>`, `depth/<heading slug>`, `formulas`, `example-<n>`,
+`explore`, `mistakes`, `practice/…` and `summary` (the built storyboard in `assets/data/study/video/` lists them).
+Write narration for the ear: short sentences, one number at a time, the term named right after the idea it names.
+Every number said or shown is recomputed in `checks`. Visuals available: `timeline` (an amount moved along dated
+periods; `values[k]` is where it stands at step k) and `growth` (bars compounding period by period; `upto[k]` is the
+last period shown at step k). The plan for each lesson's chapter, and the visuals still to build, are in
+`video-plan.js` and `FINANCE_VIDEO_PLAN.md` (`node tools/study-video-plan.mjs` rewrites it).
+
 ## 5. Assessments and projects
 
 ```js

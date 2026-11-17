@@ -2,20 +2,20 @@
 // live numbers (DCF, WACC, two-share diversification, least squares), and guided practice with hints and instant
 // feedback. Everything is computed by the site's own engines; the example company is fictional unless the visitor
 // switches to the project saved in their browser by the Valuation Studio or Company Intelligence.
-import { initSite } from '../core/site.js?v=31';
-import { $, $$, h, s, store } from '../core/dom.js?v=31';
-import * as F from '../core/format.js?v=31';
-import * as V from '../core/valuation.js?v=31';
-import * as S from '../core/stats.js?v=31';
-import { wacc as costOfCapital } from '../core/fin.js?v=31';
-import { mulberry32, normalGen } from '../core/rng.js?v=31';
-import { verdict } from '../core/ui.js?v=31';
-import { formatter } from '../core/valuation-report.js?v=31';
-import { EXAMPLE } from '../data/valuation-example.js?v=31';
-import { TUTORIALS, LEVELS } from '../data/valuation-tutorials.js?v=31';
-import { numInput, selectEl, field, pctSlider, numSlider, segmented, btn, stat, id } from '../valuation/ui.js?v=31';
-import { inline, pi } from '../valuation/inline.js?v=31';
-import { scrollersFocusable } from '../study/common.js?v=31';
+import { initSite } from '../core/site.js?v=32';
+import { $, $$, h, s, store } from '../core/dom.js?v=32';
+import * as F from '../core/format.js?v=32';
+import * as V from '../core/valuation.js?v=32';
+import * as S from '../core/stats.js?v=32';
+import { wacc as costOfCapital } from '../core/fin.js?v=32';
+import { mulberry32, normalGen } from '../core/rng.js?v=32';
+import { verdict } from '../core/ui.js?v=32';
+import { formatter } from '../core/valuation-report.js?v=32';
+import { EXAMPLE } from '../data/valuation-example.js?v=32';
+import { TUTORIALS, LEVELS } from '../data/valuation-tutorials.js?v=32';
+import { numInput, selectEl, field, pctSlider, numSlider, segmented, btn, stat, id } from '../valuation/ui.js?v=32';
+import { inline, pi } from '../valuation/inline.js?v=32';
+import { scrollersFocusable } from '../study/common.js?v=32';
 
 initSite(); scrollersFocusable();
 const fin = Number.isFinite, ROOT = '../../';
