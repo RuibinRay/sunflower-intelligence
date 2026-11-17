@@ -109,6 +109,8 @@ export function schoolPage(schoolId, { courses, plates }) {
       ${breadcrumb([['The painting', root], ['Learn', `${root}learn/`], [s.name]])}
       <div class="ledger-intro">
         <p class="lead">${esc(s.blurb)} Courses are listed in the order to take them, from introductory to advanced; each lists what it requires. Courses marked <i>Planned</i> are not written yet, but their syllabus is here and some link to plates and tools that already cover part of the ground.</p>
+      ${s.id === 'analytics' ? `
+        <p class="lead">Want to practise the languages analysts write? The <a href="${root}learn/arcade/">Pixel Arcade</a> teaches Python, SQL and HTML through five small games.</p>` : ''}
       </div>
 ${route}${groups}
       <section class="course-group" id="map" aria-labelledby="map-h">
@@ -150,7 +152,7 @@ export function homePage({ courses, glossary, formulas, featured }) {
       <p class="chapter-note">Van Gogh was largely self-taught. He worked through drawing courses page by page and copied the painters he admired, long before the sunflowers. Practice that is a little beyond you, repeated before you forget it, is still how skills grow.</p>
       <blockquote class="quote">“I keep on making what I can’t do yet in order to learn to be able to do it.”<cite class="quote-cite">Vincent van Gogh to Anthon van Rappard, Nuenen, about 18 August 1885</cite></blockquote>
       <!-- chrome:subnav --><!-- /chrome:subnav -->
-      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#continue">Start here</a></li><li><a href="#schools">Schools</a></li><li><a href="#paths">Learning paths</a></li><li><a href="#labs">Labs</a></li><li><a href="#how">How it works</a></li></ul></nav>
+      <nav aria-label="On this page"><ul class="toc" role="list"><li><a href="#continue">Start here</a></li><li><a href="#schools">Schools</a></li><li><a href="#paths">Learning paths</a></li><li><a href="#labs">Labs</a></li><li><a href="#arcade">Arcade</a></li><li><a href="#how">How it works</a></li></ul></nav>
     </header>
 
     <div class="ledger" id="ledger">
@@ -190,6 +192,12 @@ export function homePage({ courses, glossary, formulas, featured }) {
         <h2 id="labs-h">Labs</h2>
         <p class="section-lead">Workbenches where you do the work rather than read about it. Each belongs to a course but can be used on its own.</p>
         <ul class="lab-cards" role="list">${labs}</ul>
+      </section>
+
+      <section class="home-section" id="arcade" aria-labelledby="arcade-h">
+        <h2 id="arcade-h">Arcade</h2>
+        <p class="section-lead">Pixel games that teach Python, SQL and HTML. Three have levels that teach one idea each and run your real code; two are endless, with new questions every run and a daily run. <a href="arcade/">Open the arcade</a>.</p>
+        <ul class="lab-cards" role="list">${catalog.ARCADE.map((g) => `<li class="lab-card"><a href="arcade/${g.id}/"><span class="lab-name">${esc(g.name)}</span><span class="lab-blurb">${esc(g.blurb)}</span><span class="lab-course">${esc(g.lang)} · ${g.kind === 'learn' ? `${g.levels} levels` : 'endless'}</span></a></li>`).join('')}</ul>
       </section>
 
       <section class="home-section" id="featured" aria-labelledby="featured-h">
