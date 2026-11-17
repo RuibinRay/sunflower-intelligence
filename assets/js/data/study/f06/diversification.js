@@ -2,8 +2,8 @@
 // Every return figure comes from case.js (SERIES, DERIVED), which reads the SIMULATED monthly history in data.js
 // (tools/study/f06-data.py); the funds and companies are fictional. Corrie Peak Ski Resort and Sandhaven Hotels are
 // fictional businesses invented for the scenario example. Formulas from core/investments.js.
-import { SERIES, MONTHS, DERIVED, ANA, COMPANIES } from './case.js?v=39';
-import * as IV from '../../../core/investments.js?v=39';
+import { SERIES, MONTHS, DERIVED, ANA, COMPANIES } from './case.js?v=40';
+import * as IV from '../../../core/investments.js?v=40';
 
 const st = DERIVED.stats;
 const sdOf = (r) => { const m = r.reduce((a, b) => a + b, 0) / r.length; return Math.sqrt(r.reduce((s, v) => s + (v - m) ** 2, 0) / (r.length - 1)); };

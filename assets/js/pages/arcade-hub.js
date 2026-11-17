@@ -1,8 +1,8 @@
 // arcade-hub.js — the arcade's front page: the player's rank, streak and daily run, progress on each game, badges.
-import { initSite } from '../core/site.js?v=39';
-import { pixelHeadings, drawSprite, PAL } from '../arcade/pixel.js?v=39';
-import * as store from '../arcade/store.js?v=39';
-import { h } from '../arcade/ui.js?v=39';
+import { initSite } from '../core/site.js?v=40';
+import { pixelHeadings, drawSprite, PAL } from '../arcade/pixel.js?v=40';
+import * as store from '../arcade/store.js?v=40';
+import { h } from '../arcade/ui.js?v=40';
 
 initSite();
 const hub = document.getElementById('arcade-hub');

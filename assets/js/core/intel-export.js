@@ -2,9 +2,9 @@
 // over the statement rows on the same sheet (so every figure can be traced and recalculated), plus CSV tables.
 // Pure functions, no DOM. The grid it builds is the single source for the .xlsx file and for the test that
 // recalculates every formula with the site's spreadsheet engine and compares it with the dashboard's numbers.
-import * as V from './valuation.js?v=39';
-import { METRICS, metricTable } from './metrics.js?v=39';
-import { buildXlsx, cellRef, toCSV } from './valuation-io.js?v=39';
+import * as V from './valuation.js?v=40';
+import { METRICS, metricTable } from './metrics.js?v=40';
+import { buildXlsx, cellRef, toCSV } from './valuation-io.js?v=40';
 
 const fin = V.fin;
 const DERIVED_ROWS = [['debt', 'Total debt'], ['netDebt', 'Net debt'], ['nwc', 'Operating net working capital'], ['investedCapital', 'Invested capital'], ['taxUsed', 'Tax rate used for NOPAT']];

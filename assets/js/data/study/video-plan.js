@@ -116,6 +116,19 @@ export const PLAN = {
     'scenarios-and-sensitivity': { moment: 'The current ratio under base, slow-growth and late-kitchen scenarios against the 1.2 covenant line.', visual: 'curve' },
     'model-review-and-presentation': { moment: 'A reviewer’s checklist run over the model, each check turning from red to zero.', visual: 'tree' },
   },
+  f08: {
+    'why-firms-hedge': { moment: 'Lantern’s 2029 EBITDA swings with the price of coffee, then flattens at $81,093 once the price is fixed at $37.50.', visual: 'payoff' },
+    'forwards-and-futures': { moment: 'A week of coffee settlement prices passes through the margin account, with a $750 call on day 2.', visual: 'timeline' },
+    'pricing-by-no-arbitrage': { moment: 'Two routes to €38,000 on 31 March, a forward and a money-market hedge, arrive at the same $1.0905.', visual: 'bridge' },
+    'swaps': { moment: 'Brightcup’s floating payments cancel against the swap, leaving a fixed 5.98% whatever the benchmark does.', visual: 'curve' },
+    'options-payoffs': { moment: 'Lantern’s coffee bill under no hedge, the fixed price and the $40 cap, drawn as three payoff lines that cross at $36.30.', visual: 'payoff' },
+    'put-call-parity': { moment: 'A call plus a deposit and a share plus a put pay the same at every price, so a $2.60 put leaves $0.48 on the table.', visual: 'payoff' },
+    'binomial-pricing': { moment: 'Brightcup’s two-step tree filled in from the end, with the American put exercised early at the down node.', visual: 'tree' },
+    'black-scholes-and-greeks': { moment: 'The call’s value curve above its payoff, with delta as its slope and the curve sinking towards the payoff as expiry nears.', visual: 'curve' },
+    'hedging-with-derivatives': { moment: 'Risk left in Brightcup’s coffee bill traced against the hedge ratio, falling to its lowest at 0.57 and rising again at 1.', visual: 'curve' },
+    'margin-leverage-and-short-selling': { moment: 'Brightcup falls month by month while Hollis’s margin shrinks twice as fast, until the $28 call.', visual: 'timeline' },
+    'value-at-risk-and-stress-tests': { moment: 'Fifteen years of simulated months sorted into a histogram, the 5% tail shaded, then a stress scenario stepping past it.', visual: 'growth' },
+  },
 };
 
 /** Proposed modules and lessons for the finance courses not yet written, from the benchmark review in FINANCE_PLAN.md. */

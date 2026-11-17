@@ -11,7 +11,7 @@ The next layer, lesson by lesson, is an authored opening chapter: a script writt
 lesson's central moment with a custom stage visual. It replaces the generated chapter it retells, and every number
 it says is recomputed in its `checks`.
 
-**Now:** 80 lessons, 36 h 36 min of narration in all (about 27 minutes a lesson at 2.6 words a second). Authored openings written: 3 of 80.
+**Now:** 91 lessons, 39 h 52 min of narration in all (about 26 minutes a lesson at 2.6 words a second). Authored openings written: 3 of 91.
 
 **Stage visuals:**
 - `timeline`: Amounts on a dated line, moved one period at a time (built).
@@ -146,6 +146,22 @@ course by course in study order, F00 to F06; each new F07–F13 lesson ships wit
 | [Scenarios and sensitivity](../../../../learn/finance/f07/scenarios-and-sensitivity/) | 17 min | 19 | The current ratio under base, slow-growth and late-kitchen scenarios against the 1.2 covenant line. | curve | planned |
 | [Model review and presentation](../../../../learn/finance/f07/model-review-and-presentation/) | 17 min | 18 | A reviewer’s checklist run over the model, each check turning from red to zero. | tree | planned |
 
+### F08 Derivatives and Risk Management
+
+| Lesson | Length | Chapters | Authored opening: the moment acted out | Visual | Script |
+|---|---|---|---|---|---|
+| [Why firms hedge](../../../../learn/finance/f08/why-firms-hedge/) | 20 min | 18 | Lantern’s 2029 EBITDA swings with the price of coffee, then flattens at $81,093 once the price is fixed at $37.50. | payoff | planned |
+| [Forwards and futures](../../../../learn/finance/f08/forwards-and-futures/) | 20 min | 19 | A week of coffee settlement prices passes through the margin account, with a $750 call on day 2. | timeline | planned |
+| [Pricing by no arbitrage](../../../../learn/finance/f08/pricing-by-no-arbitrage/) | 18 min | 19 | Two routes to €38,000 on 31 March, a forward and a money-market hedge, arrive at the same $1.0905. | bridge | planned |
+| [Swaps](../../../../learn/finance/f08/swaps/) | 19 min | 20 | Brightcup’s floating payments cancel against the swap, leaving a fixed 5.98% whatever the benchmark does. | curve | planned |
+| [Calls, puts, payoffs and profits](../../../../learn/finance/f08/options-payoffs/) | 19 min | 19 | Lantern’s coffee bill under no hedge, the fixed price and the $40 cap, drawn as three payoff lines that cross at $36.30. | payoff | planned |
+| [Put–call parity](../../../../learn/finance/f08/put-call-parity/) | 17 min | 20 | A call plus a deposit and a share plus a put pay the same at every price, so a $2.60 put leaves $0.48 on the table. | payoff | planned |
+| [Binomial pricing](../../../../learn/finance/f08/binomial-pricing/) | 17 min | 19 | Brightcup’s two-step tree filled in from the end, with the American put exercised early at the down node. | tree | planned |
+| [Black–Scholes–Merton and the Greeks](../../../../learn/finance/f08/black-scholes-and-greeks/) | 18 min | 20 | The call’s value curve above its payoff, with delta as its slope and the curve sinking towards the payoff as expiry nears. | curve | planned |
+| [Hedging with derivatives](../../../../learn/finance/f08/hedging-with-derivatives/) | 17 min | 18 | Risk left in Brightcup’s coffee bill traced against the hedge ratio, falling to its lowest at 0.57 and rising again at 1. | curve | planned |
+| [Margin, leverage and short selling](../../../../learn/finance/f08/margin-leverage-and-short-selling/) | 16 min | 20 | Brightcup falls month by month while Hollis’s margin shrinks twice as fast, until the $28 call. | timeline | planned |
+| [Value at Risk and stress tests](../../../../learn/finance/f08/value-at-risk-and-stress-tests/) | 16 min | 21 | Fifteen years of simulated months sorted into a histogram, the 5% tail shaded, then a stress scenario stepping past it. | growth | planned |
+
 ### F12 Managerial Accounting and Control (planned course)
 
 The numbers managers use inside the business: cost behaviour, product costing, budgets, variances and performance measures that steer decisions.
@@ -163,16 +179,6 @@ How banks, insurers, exchanges and regulators work, why markets are efficient an
 1. *Institutions:* Banks and bank runs; Central banks and monetary policy; Insurance; Exchanges, brokers and clearing.
 2. *How markets behave:* Market efficiency; Behavioural finance; Bubbles and crises.
 3. *Currencies, rules and ethics:* Foreign exchange and interest-rate parity; Regulation; Ethics and professional standards.
-
-Each lesson gets its generated video when it is written, and an authored opening in the same review pass.
-
-### F08 Derivatives and Risk Management (planned course)
-
-Forwards, futures, swaps and options: how they are priced by no arbitrage, and how a business or a portfolio uses them to hedge and to measure risk.
-
-1. *Forwards, futures and swaps:* Why firms hedge; Forwards and futures; Pricing by no arbitrage; Swaps.
-2. *Options:* Calls, puts, payoffs and profits; Put–call parity; Binomial pricing; Black–Scholes–Merton and the Greeks.
-3. *Managing risk:* Hedging with derivatives; Margin, leverage and short selling; Value at Risk and stress tests.
 
 Each lesson gets its generated video when it is written, and an authored opening in the same review pass.
 

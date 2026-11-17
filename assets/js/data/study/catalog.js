@@ -203,10 +203,25 @@ const ALL = [
     related: [{ tool: 'finance/valuation/', label: 'Valuation' }, { tool: 'finance/company-valuation/', label: 'Company Valuation Studio' }, { tool: 'finance/company-intelligence/', label: 'Company Intelligence' }],
   }),
   C({
-    id: 'f08', school: 'finance', code: 'F08', level: 'advanced', requires: ['f05', 'f06'], recommends: ['f04'],
+    id: 'f08', school: 'finance', code: 'F08', level: 'advanced', status: 'in-progress', requires: ['f05', 'f06'], recommends: ['f04', 'f07'],
     title: 'Derivatives and Risk Management',
     blurb: 'Forwards, futures, swaps and options: how they are priced by no arbitrage, and how a business or a portfolio uses them to hedge and to measure risk.',
     topics: ['Why firms manage risk', 'Forwards and futures: payoffs, margin and marking to market', 'Pricing forwards by no arbitrage: cost of carry', 'Interest-rate and currency swaps', 'Options: calls, puts, payoffs and profits', 'Put–call parity', 'Binomial option pricing', 'Black–Scholes–Merton and the Greeks', 'Hedging with futures and options: hedge ratios and basis risk', 'Margin, leverage and short selling', 'Value at Risk and expected shortfall', 'Stress testing and backtesting'],
+    case: 'lantern',
+    outcomes: [
+      'Measure a business’s exposures to commodity prices, exchange rates and interest rates, and explain when hedging them adds value.',
+      'Describe how forwards, futures and swaps work, including margin and daily settlement, and calculate their payoffs and values.',
+      'Price forwards, currency forwards and interest-rate swaps by no arbitrage, and explain the trades that enforce those prices.',
+      'Calculate option payoffs and profits, apply put–call parity, and price options with binomial trees and the Black–Scholes–Merton model.',
+      'Design a hedge with futures or options, choosing the instrument and the hedge ratio, and explain the basis risk and leverage that remain.',
+      'Measure the risk left in a business or portfolio with Value at Risk, expected shortfall and stress tests, and judge whether the measures can be trusted.',
+    ],
+    modules: [
+      { n: 1, title: 'Forwards, futures and swaps', lessons: ['why-firms-hedge', 'forwards-and-futures', 'pricing-by-no-arbitrage', 'swaps'] },
+      { n: 2, title: 'Options', lessons: ['options-payoffs', 'put-call-parity', 'binomial-pricing', 'black-scholes-and-greeks'] },
+      { n: 3, title: 'Managing risk', lessons: ['hedging-with-derivatives', 'margin-leverage-and-short-selling', 'value-at-risk-and-stress-tests'] },
+    ],
+    project: { title: 'Lantern’s hedging policy', blurb: 'Write the policy Hollis Avery asks for before Lantern’s first big contracts: measure the exposures to coffee, the euro and interest rates, price the hedges on offer (a fixed price, a currency forward, futures and options), choose what to hedge and how, and report the risk that remains.' },
     related: [{ plate: 'options' }, { plate: 'mrisk' }, { tool: 'finance/risk/', label: 'Risk management' }, { tool: 'finance/markets/', label: 'Bonds and options' }],
   }),
   C({

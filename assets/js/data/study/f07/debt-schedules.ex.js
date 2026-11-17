@@ -1,6 +1,6 @@
 // debt-schedules.ex.js — F07 · Debt schedules: widgets, practice and the knowledge check (answer keys live here).
 // Figures from case.js (TERM_LOAN, MODEL, OPENING, FINANCE); every num item's `check` recomputes its answer.
-import { TERM_LOAN as T, MODEL as M, OPENING as O, FINANCE as FIN } from './case.js?v=39';
+import { TERM_LOAN as T, MODEL as M, OPENING as O, FINANCE as FIN } from './case.js?v=40';
 
 const R = M.rows, L = M.loans;
 const pmt = (P, r, n) => P * r / (1 - (1 + r) ** -n);
