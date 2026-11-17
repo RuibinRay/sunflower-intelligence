@@ -3,7 +3,7 @@
 // Python prints, SQL by running the query on minisql), never typed in by hand.
 //   makeQuestion(track, tier, rand) -> { track, prompt, code, lang, table, options, answer, why }
 //   CATCH_ROUNDS: rules for Syntax Catcher, each makes { rule, good: [text], bad: [{ t, why }] }
-import { query } from './minisql.js?v=33';
+import { query } from './minisql.js?v=38';
 
 // ---------------------------------------------------------------- helpers
 const ri = (r, a, b) => a + Math.floor(r() * (b - a + 1));

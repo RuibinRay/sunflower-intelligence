@@ -1,6 +1,6 @@
 // site.js — behaviour shared by every page: rooms menu, motion switch, arrival through the portal.
-import { $, $$, store } from './dom.js?v=33';
-import { arrive, reset, leave } from './portal.js?v=33';
+import { $, $$, store } from './dom.js?v=38';
+import { arrive, reset, leave } from './portal.js?v=38';
 
 const root = document.documentElement;
 

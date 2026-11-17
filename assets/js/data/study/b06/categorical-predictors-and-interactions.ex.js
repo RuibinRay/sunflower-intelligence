@@ -3,9 +3,9 @@
 // their 28 rows for 1–14 October 2027 for the worksheets). Drovers Lane Car Wash, Pennick Bakeries, Ashmere Hotel and the
 // other businesses named are fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num
 // items recompute their answers in `check`.
-import { column } from './case.js?v=33';
-import * as R from '../../../core/regression.js?v=33';
-import { mean } from '../../../core/stats.js?v=33';
+import { column } from './case.js?v=38';
+import * as R from '../../../core/regression.js?v=38';
+import { mean } from '../../../core/stats.js?v=38';
 
 const fx = (v, d = 2) => (v < 0 ? '−' : '') + Math.abs(v).toFixed(d);
 const col = (letter, from, values) => Object.fromEntries(values.map((v, i) => [`${letter}${from + i}`, v]));

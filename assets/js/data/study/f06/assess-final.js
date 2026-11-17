@@ -38,9 +38,9 @@
 // here (labelled). Nothing uses Brightcup or the project’s data or question. No hints; solutions are shown on review.
 // Every figure is computed below from its inputs with core/investments.js and case.js; claims about the data’s shape
 // throw if the data stop supporting them.
-import { MONTHS, SERIES, ASSETS, BONDS, MARKET, DERIVED as D, LAST60 } from './case.js?v=33';
-import * as IV from '../../../core/investments.js?v=33';
-import { normCdf } from '../../../core/inference.js?v=33';
+import { MONTHS, SERIES, ASSETS, BONDS, MARKET, DERIVED as D, LAST60 } from './case.js?v=38';
+import * as IV from '../../../core/investments.js?v=38';
+import { normCdf } from '../../../core/inference.js?v=38';
 
 const fx = (v, d = 2) => `${v < 0 ? '−' : ''}${Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const pc = (v, d = 2) => `${fx(v * 100, d)}%`;

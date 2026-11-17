@@ -1,8 +1,8 @@
 // measuring-risk.ex.js — F06 · Measuring risk: widgets, practice and the knowledge check (answer keys live here).
 // The fund returns are SIMULATED (case.js, tools/study/f06-data.py); every business and person named here is fictional.
-import { MONTHS, SERIES, DERIVED } from './case.js?v=33';
-import * as IV from '../../../core/investments.js?v=33';
-import { normCdf } from '../../../core/inference.js?v=33';
+import { MONTHS, SERIES, DERIVED } from './case.js?v=38';
+import * as IV from '../../../core/investments.js?v=38';
+import { normCdf } from '../../../core/inference.js?v=38';
 
 const st = DERIVED.stats;
 const r4 = (v) => Math.round(v * 1e4) / 1e4;

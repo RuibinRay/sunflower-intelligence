@@ -2,8 +2,8 @@
 // here). Morrow & Pike Roasters and Harbour Street Foods come from case.js; Copperkettle Coffee, Lowfield Dairies,
 // Penrock Software, Quarrendon Kitchens and every other business named here is fictional. Brightcup Coffee is the
 // course project’s and its multiples are not used.
-import { COMPANIES, MARKET } from './case.js?v=33';
-import * as IV from '../../../core/investments.js?v=33';
+import { COMPANIES, MARKET } from './case.js?v=38';
+import * as IV from '../../../core/investments.js?v=38';
 
 const M = COMPANIES.morrow, H = COMPANIES.harbour;
 const { rf, mrp } = MARKET;

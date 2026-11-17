@@ -1,8 +1,8 @@
 // ui.js — the parts every arcade game shares: the cabinet's top bar, the code editor, the level strip and
 // the end-of-level card.
-import { pixelHeadings, setMuted, sfx, spriteUrl } from './pixel.js?v=33';
-import * as store from './store.js?v=33';
-import { RECAPS, INTROS } from './recaps.js?v=33';
+import { pixelHeadings, setMuted, sfx, spriteUrl } from './pixel.js?v=38';
+import * as store from './store.js?v=38';
+import { RECAPS, INTROS } from './recaps.js?v=38';
 
 export const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 /** h('div.a.b', { id: 'x', onclick }, child, 'text') */

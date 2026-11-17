@@ -3,9 +3,9 @@
 // 30 members (every 86th, from the fifth). Text cells don't change on the marker's copies, so items that pick a member
 // `vary` the member cell. Halverton, Ostler Bike Works and the businesses in the classify item are fictional. Every num
 // item's `check` recomputes its answer.
-import { VISIT_LIST, members, AS_OF } from './case.js?v=33';
-import * as CU from '../../../core/customer.js?v=33';
-import { isoToSerial } from '../../../core/sheet.js?v=33';
+import { VISIT_LIST, members, AS_OF } from './case.js?v=38';
+import * as CU from '../../../core/customer.js?v=38';
+import { isoToSerial } from '../../../core/sheet.js?v=38';
 
 const ALL = members(), N = ALL.length;
 const sum = (a) => a.reduce((x, y) => x + y, 0);

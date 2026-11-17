@@ -2,7 +2,7 @@
 // fundamental-analysis). No hints. Each item has a full solution, shown when the student reviews the test. New
 // questions, not copies of the lesson exercises. Every business named here is fictional; Brightcup Coffee is the
 // course project’s and is not valued.
-import * as IV from '../../../core/investments.js?v=33';
+import * as IV from '../../../core/investments.js?v=38';
 
 export const items = [
   {

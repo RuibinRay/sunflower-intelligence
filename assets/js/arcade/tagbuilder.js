@@ -1,9 +1,9 @@
 // tagbuilder.js — Tag Builder: build the shop's web page one idea at a time. The preview is drawn from the
 // tree that levels.js scans out of the learner's text, never from the text itself, so nothing typed here can run.
-import { HTML_LEVELS, htmlRun } from './levels.js?v=33';
-import { spriteUrl, sfx } from './pixel.js?v=33';
-import { h, fill, teacher, topBar, editor, levelStrip, brief, resultCard, btn, tryStars } from './ui.js?v=33';
-import * as store from './store.js?v=33';
+import { HTML_LEVELS, htmlRun } from './levels.js?v=38';
+import { spriteUrl, sfx } from './pixel.js?v=38';
+import { h, fill, teacher, topBar, editor, levelStrip, brief, resultCard, btn, tryStars } from './ui.js?v=38';
+import * as store from './store.js?v=38';
 
 const PICS = { 'bee.png': 'bee', 'sunflower.png': 'flower', 'cup.png': 'cup' };
 

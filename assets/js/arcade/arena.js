@@ -1,11 +1,11 @@
 // arena.js — Bug Battle: an endless quiz fight. Every right answer stings the bug; three stings clear a wave
 // and the questions get harder. A wrong answer costs a heart and stops to explain why. Questions are made
 // fresh each time by questions.js. The daily run uses the date as its seed, so it is the same for everyone today.
-import { makeQuestion, TRACKS } from './questions.js?v=33';
-import { mulberry32 } from '../core/rng.js?v=33';
-import { PAL, stage, drawSprite, drawText, loop, sfx, calm, hash, pixelHeadings } from './pixel.js?v=33';
-import { h, fill, topBar, resultCard, btn } from './ui.js?v=33';
-import * as store from './store.js?v=33';
+import { makeQuestion, TRACKS } from './questions.js?v=38';
+import { mulberry32 } from '../core/rng.js?v=38';
+import { PAL, stage, drawSprite, drawText, loop, sfx, calm, hash, pixelHeadings } from './pixel.js?v=38';
+import { h, fill, topBar, resultCard, btn } from './ui.js?v=38';
+import * as store from './store.js?v=38';
 
 const W = 240, H = 96, DAILY_N = 12;
 const BUG_TINTS = [{ r: PAL.red, d: '#8E2F22' }, { r: PAL.terracotta, d: '#8E4A22' }, { r: '#8E5BD0', d: '#5A3691' }, { r: PAL.water, d: '#27527F' }, { r: PAL.olive, d: PAL.moss }, { r: PAL.charcoal, d: '#000000' }];

@@ -1,10 +1,10 @@
 // stylelab.js — Style Shop: the shop's page is already written; the learner styles it with CSS. levels.js reads
 // the CSS and works out each element's styles; this file paints them onto a preview as inline styles, so only
 // the properties and values the reader accepted ever reach the page.
-import { CSS_LEVELS, CSS_PAGE, CSS_PAGE_HTML, cssRun } from './levels.js?v=33';
-import { sfx } from './pixel.js?v=33';
-import { h, fill, teacher, topBar, editor, levelStrip, brief, btn, tryStars } from './ui.js?v=33';
-import * as store from './store.js?v=33';
+import { CSS_LEVELS, CSS_PAGE, CSS_PAGE_HTML, cssRun } from './levels.js?v=38';
+import { sfx } from './pixel.js?v=38';
+import { h, fill, teacher, topBar, editor, levelStrip, brief, btn, tryStars } from './ui.js?v=38';
+import * as store from './store.js?v=38';
 
 function render(nodes, styles) {
   return nodes.map((n) => {

@@ -1,9 +1,9 @@
 // sqlquest.js — Query Quest: answer the shop's questions with SQL. Each row of the table is a sprite on the
 // stockroom shelf; the rows a query keeps light up, and the result appears as a table underneath.
-import { SQL_LEVELS, SQL_DB, sqlRun } from './levels.js?v=33';
-import { PAL, stage, drawSprite, drawText, loop, sfx, calm } from './pixel.js?v=33';
-import { h, fill, teacher, topBar, editor, levelStrip, brief, resultCard, btn, tryStars } from './ui.js?v=33';
-import * as store from './store.js?v=33';
+import { SQL_LEVELS, SQL_DB, sqlRun } from './levels.js?v=38';
+import { PAL, stage, drawSprite, drawText, loop, sfx, calm } from './pixel.js?v=38';
+import { h, fill, teacher, topBar, editor, levelStrip, brief, resultCard, btn, tryStars } from './ui.js?v=38';
+import * as store from './store.js?v=38';
 
 const CW = 40, CH = 46, COLS = 6;
 const ICON = { Coffee: 'cup', Tea: 'tea', Bakery: 'bake', Other: 'mug' };

@@ -1,10 +1,10 @@
 // catcher.js — Syntax Catcher: words fall, a rule says which ones are real, and the basket catches them.
 // The rule changes every round (Python keywords, SQL clauses, HTML tags, CSS properties, …). Catching a fake
 // costs a heart and says why it is wrong; the same reasons are listed again when the run ends.
-import { CATCH_ROUNDS, shuffle } from './questions.js?v=33';
-import { PAL, stage, drawText, loop, sfx, calm, hash, spriteUrl } from './pixel.js?v=33';
-import { h, fill, topBar, resultCard, btn } from './ui.js?v=33';
-import * as store from './store.js?v=33';
+import { CATCH_ROUNDS, shuffle } from './questions.js?v=38';
+import { PAL, stage, drawText, loop, sfx, calm, hash, spriteUrl } from './pixel.js?v=38';
+import { h, fill, topBar, resultCard, btn } from './ui.js?v=38';
+import * as store from './store.js?v=38';
 
 const ROUND_SECONDS = 24;
 

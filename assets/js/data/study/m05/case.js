@@ -11,15 +11,15 @@
 //
 // The project's data (`WORKSHOP_*`) is separate: lessons and module tests must not use it or its scenario (Lantern's
 // barista workshops; a survey of past attendees and newsletter readers; rival workshop providers).
-import { DATA } from './data.js?v=33';
-import { BUSINESS } from '../m01/case.js?v=33';
-import { COMPETITORS, LANTERN as M02_LANTERN, DEFAULT_PLAN as M02_PLAN } from '../m02/market.js?v=33';
-import { standardise, kmeans, silhouette } from '../../../core/classify.js?v=33';
-import { ward, cutTree, adjustedRand } from '../../../core/ml.js?v=33';
-import { indexVsAverage, segmentSizes, needsFit } from '../../../core/market.js?v=33';
-import { chisqIndependence, anova1 } from '../../../core/inference.js?v=33';
-import * as PM from '../../../core/percmap.js?v=33';
-import { tableCells } from '../b03/case.js?v=33';
+import { DATA } from './data.js?v=38';
+import { BUSINESS } from '../m01/case.js?v=38';
+import { COMPETITORS, LANTERN as M02_LANTERN, DEFAULT_PLAN as M02_PLAN } from '../m02/market.js?v=38';
+import { standardise, kmeans, silhouette } from '../../../core/classify.js?v=38';
+import { ward, cutTree, adjustedRand } from '../../../core/ml.js?v=38';
+import { indexVsAverage, segmentSizes, needsFit } from '../../../core/market.js?v=38';
+import { chisqIndependence, anova1 } from '../../../core/inference.js?v=38';
+import * as PM from '../../../core/percmap.js?v=38';
+import { tableCells } from '../b03/case.js?v=38';
 
 export { BUSINESS, COMPETITORS, M02_LANTERN, tableCells };
 
