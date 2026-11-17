@@ -1,5 +1,5 @@
 // Lesson: needs-based segmentation, profiles against the average, and choosing a target.
-import * as F from '../../core/format.js?v=35';
+import * as F from '../../core/format.js?v=36';
 
 export default {
   id: 'segment',

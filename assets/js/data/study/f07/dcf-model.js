@@ -1,9 +1,9 @@
 // dcf-model.js — F07 · A DCF model from the forecast. Content only; exercises are in dcf-model.ex.js. Every figure comes
 // from case.js: MODEL (the linked forecast), DCF (free cash flow to the firm and its value), VALUATION (F05's WACC,
 // Ana's long-run growth, Hollis's price), NET_DEBT_2027, and F06's fictional listed peer Brightcup for comparison.
-import { MODEL as M, DCF as D, VALUATION as V, NET_DEBT_2027, OPENING as O, dcf } from './case.js?v=35';
-import { COMPANIES } from '../f06/case.js?v=35';
-import { HOLLIS } from '../f05/case.js?v=35';
+import { MODEL as M, DCF as D, VALUATION as V, NET_DEBT_2027, OPENING as O, dcf } from './case.js?v=36';
+import { COMPANIES } from '../f06/case.js?v=36';
+import { HOLLIS } from '../f05/case.js?v=36';
 
 const $ = (x) => (Math.round(x) < 0 ? `(${Math.round(-x).toLocaleString('en-US')})` : (Math.round(x) + 0).toLocaleString('en-US'));
 const n = (x) => (Math.round(x) + 0).toLocaleString('en-US');

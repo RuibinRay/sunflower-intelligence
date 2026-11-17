@@ -1,6 +1,6 @@
 // working-capital-and-capex.ex.js — F07 · Working capital and capital spending: widgets, practice and the knowledge
 // check (answer keys live here). Figures from case.js (OPENING, WC, MODEL); every num item's `check` recomputes.
-import { OPENING as O, WC, MODEL as M } from './case.js?v=35';
+import { OPENING as O, WC, MODEL as M } from './case.js?v=36';
 
 const F = M.F, R = M.rows;
 const COLS = ['D', 'E', 'F', 'G', 'H'];
@@ -158,7 +158,7 @@ export const check = [
   {
     id: 'f07-wc-k4', type: 'mc', kind: 'applied',
     prompt: 'Lantern’s working capital falls by $15,219 in 2028, releasing cash, because the law firm pays a $30,840 contract asset. How should Coastline read it?',
-    options: ['As real cash that will not recur in later years', 'As proof that Lantern now collects from its customers faster than before', 'As an error, because working capital always rises when sales grow', 'As a reason to forecast the same release of cash in every later year'],
+    options: ['As real cash that will not recur in later years', 'As proof that Lantern now collects from its customers faster than before', 'As a modelling error', 'As a reason to forecast the same release of cash in every later year'],
     answer: 0,
     feedback: { 1: 'Receivables days are unchanged at 25; the release comes from one balance being collected.', 2: 'It can fall when a large balance is collected, as here.', 3: 'The contract asset is gone after 2028; there is nothing to release again.' },
     solution: 'The cash is real but will not recur. A lender looks at what operations generate in a normal year.',

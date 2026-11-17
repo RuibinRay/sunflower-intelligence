@@ -9,12 +9,12 @@
 //     nonresponse: false (start state of the toggle; omit `propensity` to hide it), weight: false, seed: 1, note }
 //   n is the number of completed responses wanted. With non-response on, the design invites n ÷ (the list's average
 //   propensity) people and keeps those who respond; 'optin' always keeps whoever chooses to answer an open link.
-import { h, s, onResize } from '../../core/dom.js?v=35';
-import { xl } from '../xl.js?v=35';
-import { frame, lin, niceTicks, axisX } from '../../core/charts.js?v=35';
-import { mulberry32 } from '../../core/rng.js?v=35';
-import { proportionalAllocation } from '../../core/survey.js?v=35';
-import { segmented } from '../dist-draw.js?v=35';
+import { h, s, onResize } from '../../core/dom.js?v=36';
+import { xl } from '../xl.js?v=36';
+import { frame, lin, niceTicks, axisX } from '../../core/charts.js?v=36';
+import { mulberry32 } from '../../core/rng.js?v=36';
+import { proportionalAllocation } from '../../core/survey.js?v=36';
+import { segmented } from '../dist-draw.js?v=36';
 
 const NAMES = {
   srs: 'Simple random sample', stratified: 'Stratified (proportional)', cluster: 'Cluster sample', optin: 'Open link (opt-in)',

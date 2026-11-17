@@ -1,6 +1,6 @@
 // modelling-principles.ex.js — F07 · Modelling principles: widgets, practice and the knowledge check (answer keys live
 // here). Lantern's figures come from case.js (HISTORY, ASSUME); every num item's `check` recomputes its answer.
-import { HISTORY, ASSUME } from './case.js?v=35';
+import { HISTORY, ASSUME } from './case.js?v=36';
 
 const H = HISTORY[2027];
 const G = ASSUME.online.growth, CG = ASSUME.cafes.growth;
@@ -178,7 +178,7 @@ export const check = [
     options: [
       'A months-open row (9 in 2028, then 12) multiplied into every kitchen line.',
       'Typing the kitchen’s 2028 revenue and costs again for each opening date Coastline asks about.',
-      'Keeping a second complete copy of the model with the late opening built into it.',
+      'A second copy of the model',
       'A note on the summary page warning Coastline that the kitchen might open late.',
     ],
     answer: 0,

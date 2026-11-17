@@ -1,6 +1,6 @@
 // scenarios-and-sensitivity.ex.js — F07 · Scenarios and sensitivity: widgets, practice and the knowledge check (answer
 // keys live here). The explorer runs case.js's whole linked model through scenario(); every num item's `check` recomputes.
-import { scenario, SCENARIO_RESULTS as S } from './case.js?v=35';
+import { scenario, SCENARIO_RESULTS as S } from './case.js?v=36';
 
 const f0 = (x) => (Math.round(x) + 0).toLocaleString('en-US');
 
@@ -70,7 +70,7 @@ export const independent = [
   {
     id: 'f07-sc-i1', type: 'mc', kind: 'conceptual',
     prompt: 'Why should scenarios live inside one model rather than in copies of it?',
-    options: ['Copies drift apart as they are corrected', 'Because spreadsheets cannot hold more than one scenario', 'Because lenders refuse to read more than one file', 'Because copies make the model calculate more slowly'],
+    options: ['Copies drift apart as they are corrected', 'Because spreadsheets cannot hold more than one scenario', 'Lenders read only one file', 'Because copies make the model calculate more slowly'],
     answer: 0,
     feedback: { 1: 'They can hold many, through a scenario selector.', 2: 'The reason is reliability, not the number of files.', 3: 'Speed is not the issue.' },
     solution: 'With one model and a block of scenario inputs, every scenario uses the same, corrected calculations.',
@@ -121,7 +121,7 @@ export const check = [
   {
     id: 'f07-sc-k3', type: 'mc', kind: 'applied',
     prompt: 'Coastline tests the covenant at every quarter end; Lantern’s model is annual. What should Ana do?',
-    options: ['Add a quarterly cash forecast for 2028', 'Nothing: a year-end pass implies every quarter passes', 'Ask Coastline to test the covenant only at year ends', 'Divide the annual figures by four to estimate each quarter'],
+    options: ['Add a quarterly cash forecast for 2028', 'Nothing: the year end is enough', 'Ask Coastline to test the covenant only at year ends', 'Divide the annual figures by four to estimate each quarter'],
     answer: 0,
     feedback: { 1: 'Cash can dip within a year; a year-end pass does not prove the quarters.', 2: 'Asking is possible, but the risk is still there; she should know it.', 3: 'Balances at a quarter end are not a quarter of annual flows.' },
     solution: 'A short-term quarterly or monthly model shows the quarter ends the annual model cannot.',
@@ -135,7 +135,7 @@ export const check = [
   {
     id: 'f07-sc-k5', type: 'mc', kind: 'conceptual',
     prompt: 'A scenario table shows Lantern breaching its covenant under slow growth. What does it tell you about the probability of a breach?',
-    options: ['Nothing on its own about likelihood', 'That a breach is certain if growth slows at all', 'That the chance of a breach is one in five, with five scenarios', 'That the base case is the most likely outcome'],
+    options: ['Nothing on its own about likelihood', 'That a breach is certain if growth slows at all', 'That the chance of a breach is one in five, with five scenarios', 'That the base case is most likely'],
     answer: 0,
     feedback: { 1: 'It shows one specific slowdown, not every slowdown.', 2: 'Scenarios are not equally likely draws.', 3: 'The base case is the plan; the table does not say it is most likely.' },
     solution: 'Scenarios show consequences. Likelihood is a separate judgement.',

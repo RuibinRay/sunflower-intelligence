@@ -1,7 +1,7 @@
 // revenue-and-cost-forecasts.ex.js — F07 · Revenue and cost forecasts: widgets, practice and the knowledge check
 // (answer keys live here). The sheet rebuilds case.js's FORECAST with formulas (tests/f07.test.mjs checks they agree).
 // Every num item's `check` recomputes its answer.
-import { HISTORY, ASSUME as A, FORECAST as F } from './case.js?v=35';
+import { HISTORY, ASSUME as A, FORECAST as F } from './case.js?v=36';
 
 const H7 = HISTORY[2027];
 const COLS = ['D', 'E', 'F', 'G', 'H'];
@@ -234,7 +234,7 @@ export const check = [
       'Whether it outgrows the kitchens, and where the step in costs is.',
       'Whether 5% is a round enough number to present to a credit committee without explanation.',
       'Whether catering should be forecast as a share of total revenue instead of on its own.',
-      'Nothing at all, since 5% a year is a modest rate for a young and growing business.',
+      'Nothing: 5% is modest.',
     ],
     answer: 0,
     feedback: { 1: 'Precision is not the issue; capacity is.', 2: 'That would tie catering to the cafés and online shop, which have nothing to do with it.', 3: 'Modest growth can still exceed capacity.' },

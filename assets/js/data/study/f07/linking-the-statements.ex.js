@@ -1,6 +1,6 @@
 // linking-the-statements.ex.js — F07 · Linking the statements: widgets, practice and the knowledge check (answer keys
 // live here). Figures from case.js (MODEL, OPENING, FINANCE); every num item's `check` recomputes its answer.
-import { MODEL as M, OPENING as O, FINANCE as FIN } from './case.js?v=35';
+import { MODEL as M, OPENING as O, FINANCE as FIN } from './case.js?v=36';
 
 const R0 = M.rows[0], L = M.loans;
 const otherCA = R0.currentAssets - R0.cash;                         // receivables, inventory, prepaid at 31 December 2028
@@ -60,7 +60,7 @@ export const guided = [
   {
     id: 'f07-ls-g3', type: 'mc', kind: 'conceptual',
     prompt: 'A model’s balance check shows $8,000 in the first forecast year. The year’s increase in inventory is $4,000. What is the most likely cause?',
-    options: ['The inventory change has the wrong sign in cash flow', 'Inventory was left out of the balance sheet altogether', 'Depreciation has been added back twice in the cash flow statement', 'The opening balance sheet does not balance at the start'],
+    options: ['The inventory change has the wrong sign in cash flow', 'Inventory was left out of the balance sheet altogether', 'Depreciation has been added back twice in the cash flow statement', 'The opening balance sheet is wrong'],
     answer: 0,
     feedback: { 1: 'Leaving out a $4,000 balance would usually show a difference of about that size, not twice it.', 2: 'That would show a difference equal to the year’s depreciation, which is not $4,000 or $8,000 here.', 3: 'Then the check would be wrong in the opening column too.' },
     hints: ['A difference of twice an amount often means that amount went the wrong way.'],
@@ -117,7 +117,7 @@ export const check = [
   {
     id: 'f07-ls-k1', type: 'mc', kind: 'conceptual',
     prompt: 'Why is it wrong to make a balance sheet balance by typing an adjustment into one line?',
-    options: ['It hides a broken link that will fail again', 'Accounting standards forbid rounding differences on any balance sheet', 'Typed numbers make a spreadsheet recalculate more slowly', 'Lenders only accept balance sheets with an odd number of lines'],
+    options: ['It hides a broken link that will fail again', 'Accounting standards forbid rounding differences on any balance sheet', 'Typed numbers slow the spreadsheet', 'Lenders only accept balance sheets with an odd number of lines'],
     answer: 0,
     feedback: { 1: 'The issue is not rounding: a plug can hide large errors.', 2: 'Speed is not the problem; correctness is.', 3: 'There is no such rule.' },
     solution: 'A plug makes the check zero today and wrong tomorrow. Find the missing or wrong link instead.',

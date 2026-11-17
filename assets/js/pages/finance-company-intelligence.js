@@ -1,6 +1,6 @@
 // finance-company-intelligence.js — the Company Intelligence page: site chrome, then the import and dashboard workspace.
-import { initSite } from '../core/site.js?v=35';
-import { $ } from '../core/dom.js?v=35';
-import { initIntel } from '../intel/app.js?v=35';
+import { initSite } from '../core/site.js?v=36';
+import { $ } from '../core/dom.js?v=36';
+import { initIntel } from '../intel/app.js?v=36';
 initSite();
 initIntel($('#ci-root'));

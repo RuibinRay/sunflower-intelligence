@@ -1,8 +1,8 @@
 // setting-up-the-history.ex.js — F07 · Setting up the history: widgets, practice and the knowledge check (answer keys
 // live here). Lantern's figures come from case.js (HISTORY, condensed from F02/F03; DERIVED). Brightcup's are F06's
 // fictional listed company. Every num item's `check` recomputes its answer.
-import { HISTORY, DERIVED } from './case.js?v=35';
-import { COMPANIES } from '../f06/case.js?v=35';
+import { HISTORY, DERIVED } from './case.js?v=36';
+import { COMPANIES } from '../f06/case.js?v=36';
 
 const H6 = HISTORY[2026], H7 = HISTORY[2027], B = COMPANIES.brightcup;
 const M = '$#,##0', P = '0.0%';
@@ -177,7 +177,7 @@ export const check = [
   {
     id: 'f07-hs-k4', type: 'mc', kind: 'applied',
     prompt: 'A modeller needs the interest rate and repayment dates of a listed company’s bank loans. Where in its Form 10-K are they most likely to be?',
-    options: ['In the debt note to the financial statements, in Item 8', 'In Item 1A, Risk Factors, where the company lists what could go wrong', 'In Item 5, on the market for its shares, dividends and repurchases', 'In Item 9A, Controls and Procedures over financial reporting'],
+    options: ['In the debt note to the financial statements, in Item 8', 'In Item 1A, Risk Factors, where the company lists what could go wrong', 'In Item 5, on the market for its shares, dividends and repurchases', 'In Item 9A, Controls and Procedures'],
     answer: 0,
     feedback: { 1: 'Risk factors may mention that the company has debt, but not its terms.', 2: 'Item 5 covers the shares: trading, dividends and repurchases.', 3: 'Item 9A is about internal controls over financial reporting.' },
     solution: 'The notes in Item 8 give each borrowing’s rate, terms and the amounts due in each of the next years.',

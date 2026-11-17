@@ -4,9 +4,9 @@
 // Jones & Netter’s Econlib entry “Efficient Capital Markets”, the SEC’s investor bulletin on behavioural patterns
 // (16 June 2014) and Barber & Odean (2000), all opened 11 November 2026. Brightcup Coffee is the project’s and is not
 // analysed here.
-import { COMPANIES, BONDS, MARKET, SERIES } from './case.js?v=35';
-import * as IV from '../../../core/investments.js?v=35';
-import DCF from './discounted-cash-flow-valuation.js?v=35';
+import { COMPANIES, BONDS, MARKET, SERIES } from './case.js?v=36';
+import * as IV from '../../../core/investments.js?v=36';
+import DCF from './discounted-cash-flow-valuation.js?v=36';
 
 const M = COMPANIES.morrow, H = COMPANIES.harbour;
 const { rf, mrp } = MARKET;

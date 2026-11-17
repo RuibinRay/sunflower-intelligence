@@ -1,8 +1,8 @@
 // funds-and-indexing.ex.js — F06 · Funds and indexing: widgets, practice and the knowledge check (answer keys live here).
 // Fund returns and fees from case.js (SIMULATED monthly history; fictional funds). Every other fund, index and person
 // named here is fictional; the SPIVA figures are those quoted in the lesson.
-import { SERIES, MONTHS, ASSETS, ANA } from './case.js?v=35';
-import * as IV from '../../../core/investments.js?v=35';
+import { SERIES, MONTHS, ASSETS, ANA } from './case.js?v=36';
+import * as IV from '../../../core/investments.js?v=36';
 
 const money = (v) => `$${Math.round(v).toLocaleString('en-US')}`;
 const pct = (x, d = 2) => `${x < 0 ? '−' : ''}${(Math.abs(x) * 100 + 1e-9).toFixed(d)}%`;

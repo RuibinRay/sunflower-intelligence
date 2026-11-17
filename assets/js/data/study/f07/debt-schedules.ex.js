@@ -1,6 +1,6 @@
 // debt-schedules.ex.js — F07 · Debt schedules: widgets, practice and the knowledge check (answer keys live here).
 // Figures from case.js (TERM_LOAN, MODEL, OPENING, FINANCE); every num item's `check` recomputes its answer.
-import { TERM_LOAN as T, MODEL as M, OPENING as O, FINANCE as FIN } from './case.js?v=35';
+import { TERM_LOAN as T, MODEL as M, OPENING as O, FINANCE as FIN } from './case.js?v=36';
 
 const R = M.rows, L = M.loans;
 const pmt = (P, r, n) => P * r / (1 - (1 + r) ** -n);
@@ -63,7 +63,7 @@ export const guided = [
   {
     id: 'f07-ds-g4', type: 'mc', kind: 'conceptual',
     prompt: 'Why does Lantern’s model charge the line of credit’s interest on its opening balance rather than its average balance?',
-    options: ['To avoid a circular reference in the model', 'Because banks always charge interest only on the balance at the start of the year', 'Because the opening balance is always the larger of the two balances', 'Because the average of two balances cannot be calculated in a spreadsheet'],
+    options: ['To avoid a circular reference in the model', 'Because banks always charge interest only on the balance at the start of the year', 'The opening balance is larger', 'Because the average of two balances cannot be calculated in a spreadsheet'],
     answer: 0,
     feedback: { 1: 'Banks charge on the daily balance; the opening-balance convention is a modelling choice.', 2: 'Not always: if the line grows, the closing balance is larger.', 3: 'It can be; the problem is that the closing balance itself depends on interest.' },
     hints: ['What does the closing balance of the line depend on?'],
@@ -147,7 +147,7 @@ export const check = [
   {
     id: 'f07-ds-k6', type: 'mc', kind: 'conceptual',
     prompt: 'Hollis Avery pays $75,000 for new shares in Lantern. Where does it appear in the model?',
-    options: ['Common stock and a financing inflow', 'The debt schedule, as a loan with interest at Hollis’s required return', 'Revenue for 2028, because it is cash received from outside', 'Nowhere, because issuing shares does not change the balance sheet'],
+    options: ['Common stock and a financing inflow', 'The debt schedule, as a loan with interest at Hollis’s required return', 'As 2028 revenue', 'Nowhere, because issuing shares does not change the balance sheet'],
     answer: 0,
     feedback: { 1: 'Equity carries no interest or repayment schedule; Hollis is paid through ownership.', 2: 'Selling shares is financing, not revenue.', 3: 'It raises cash and equity by $75,000.' },
     solution: 'New equity raises cash and common stock; it is financing, but not debt.',

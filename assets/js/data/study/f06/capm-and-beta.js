@@ -3,10 +3,10 @@
 // the data were generated so that Morrow & Pike’s and Harbour Street’s 2023–2027 betas equal F05’s (0.90 and 1.25) with
 // zero alpha (tools/study/f06-data.py). F05’s assumptions (MARKET) for required returns. Fama & French (2004) is quoted
 // from its abstract only. Ridgeway Outdoor is a fictional company invented for an example.
-import { SERIES, LAST60, DERIVED, MARKET, COMPANIES } from './case.js?v=35';
-import * as IV from '../../../core/investments.js?v=35';
-import { tInv } from '../../../core/inference.js?v=35';
-import { PEERS } from '../f05/case.js?v=35';
+import { SERIES, LAST60, DERIVED, MARKET, COMPANIES } from './case.js?v=36';
+import * as IV from '../../../core/investments.js?v=36';
+import { tInv } from '../../../core/inference.js?v=36';
+import { PEERS } from '../f05/case.js?v=36';
 
 const { rf, mrp } = MARKET;
 const L = (k) => SERIES[k].slice(LAST60.from);

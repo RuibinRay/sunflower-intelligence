@@ -3,8 +3,8 @@
 // convexity from core/investments.js (bondAtYield, duration, priceChangeApprox). The bond fund's 2022 fall is the
 // SIMULATED history in data.js (tools/study/f06-data.py planted −13% for 2022). Real-world statements are quoted from
 // OpenStax Principles of Finance (sections 10.1, 10.2, 10.4) and FINRA, opened on 11 November 2026.
-import { BONDS, SERIES, MONTHS, ASSETS, ANA, COMPANIES } from './case.js?v=35';
-import * as IV from '../../../core/investments.js?v=35';
+import { BONDS, SERIES, MONTHS, ASSETS, ANA, COMPANIES } from './case.js?v=36';
+import * as IV from '../../../core/investments.js?v=36';
 
 const [G5, G20, HB, MB, G2] = BONDS;
 const at = (b, y) => IV.bondAtYield({ face: 100, ...b }, y);

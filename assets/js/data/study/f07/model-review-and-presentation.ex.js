@@ -1,6 +1,6 @@
 // model-review-and-presentation.ex.js — F07 · Model review and presentation: widgets, practice and the knowledge check
 // (answer keys live here). The error explorer plants errors in case.js's MODEL; every num item's `check` recomputes.
-import { MODEL as M, OPENING as O } from './case.js?v=35';
+import { MODEL as M, OPENING as O } from './case.js?v=36';
 
 const R = M.rows;
 const cum = (f) => R.map((r, t) => R.slice(0, t + 1).reduce((s, x, i) => s + f(x, i), 0));
@@ -40,7 +40,7 @@ export const guided = [
   {
     id: 'f07-mr-g2', type: 'mc', kind: 'applied',
     prompt: 'A model’s balance check reads 0, 0, −3,000, −7,000, −12,000. Dividends of 3,000, 4,000 and 5,000 start in the third year. What is the likely error?',
-    options: ['Dividends never reach retained earnings', 'Depreciation is added back twice in operating cash flow', 'The opening balance sheet does not balance', 'A loan drawn in the third year has no cash inflow'],
+    options: ['Dividends never reach retained earnings', 'Depreciation is added back twice in operating cash flow', 'An opening balance error', 'A loan drawn in the third year has no cash inflow'],
     answer: 0,
     feedback: { 1: 'That would make the check positive from the first year.', 2: 'Then the check would be wrong from the first period.', 3: 'A missing loan inflow would appear as one amount, not a total that grows with the dividends.' },
     hints: ['Compare the differences with the running total of dividends.'],

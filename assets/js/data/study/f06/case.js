@@ -9,11 +9,11 @@
 // - f05/case.js: the three listed peers and their betas and market debt-to-equity ratios (Brightcup Coffee 1.05 and
 //   0.30, Morrow & Pike Roasters 0.90 and 0.15, Harbour Street Foods 1.25 and 0.55), the assumed 4.2% risk-free rate
 //   and 5.5% market risk premium. Here the betas are what a regression of 2023–2027 monthly returns gives.
-import { RETURN_COLUMNS, RETURNS } from './data.js?v=35';
-import { ANA_PLAN, DERIVED as F04D } from '../f04/case.js?v=35';
-import { ANA as F00_ANA } from '../f00/case.js?v=35';
-import { PEERS as F05_PEERS, MARKET as F05_MARKET } from '../f05/case.js?v=35';
-import * as IV from '../../../core/investments.js?v=35';
+import { RETURN_COLUMNS, RETURNS } from './data.js?v=36';
+import { ANA_PLAN, DERIVED as F04D } from '../f04/case.js?v=36';
+import { ANA as F00_ANA } from '../f00/case.js?v=36';
+import { PEERS as F05_PEERS, MARKET as F05_MARKET } from '../f05/case.js?v=36';
+import * as IV from '../../../core/investments.js?v=36';
 
 export const TODAY = 'June 2028';
 

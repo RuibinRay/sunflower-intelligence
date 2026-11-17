@@ -1,8 +1,8 @@
 // project.js — F06 applied project: should Ana buy Brightcup? Every fact comes from case.js (COMPANIES, BRIGHTCUP_FORECAST,
 // BRIGHTCUP_BOND, MARKET, SERIES, ANA_PORTFOLIO, BRIGHTCUP_IDEA); every number is computed below and checked by `verify`.
-import { COMPANIES, BRIGHTCUP_FORECAST as BF, BRIGHTCUP_BOND as BB, BRIGHTCUP_IDEA as IDEA, MARKET, SERIES, MONTHS, LAST60, ANA, ANA_PORTFOLIO as AP, DERIVED as D } from './case.js?v=35';
-import * as IV from '../../../core/investments.js?v=35';
-import { moments } from '../../../core/portfolio.js?v=35';
+import { COMPANIES, BRIGHTCUP_FORECAST as BF, BRIGHTCUP_BOND as BB, BRIGHTCUP_IDEA as IDEA, MARKET, SERIES, MONTHS, LAST60, ANA, ANA_PORTFOLIO as AP, DERIVED as D } from './case.js?v=36';
+import * as IV from '../../../core/investments.js?v=36';
+import { moments } from '../../../core/portfolio.js?v=36';
 
 const B = COMPANIES.brightcup, M = COMPANIES.morrow, H = COMPANIES.harbour, T = B.tax;
 // ---------------------------------------------------------------- the business and its multiples

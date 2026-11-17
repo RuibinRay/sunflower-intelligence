@@ -1,8 +1,8 @@
 // shares-and-markets.ex.js — F06 · Shares and markets: widgets, practice and the knowledge check (answer keys live here).
 // Morrow & Pike Roasters and Harbour Street Foods (fictional, F05's peers) come from case.js; market capitalisation and
 // enterprise value from core/investments.js. Every other business, quote and price here is fictional.
-import { COMPANIES } from './case.js?v=35';
-import * as IV from '../../../core/investments.js?v=35';
+import { COMPANIES } from './case.js?v=36';
+import * as IV from '../../../core/investments.js?v=36';
 
 const MP = COMPANIES.morrow, HS = COMPANIES.harbour;
 const pct = (v, d = 2) => `${v < 0 ? '−' : ''}${(Math.abs(v * 100) + 1e-9).toFixed(d)}%`;

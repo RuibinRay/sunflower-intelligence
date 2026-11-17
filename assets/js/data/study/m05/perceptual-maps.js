@@ -4,9 +4,9 @@
 // cross-checked against NumPy), the five segments' ideal points and the distances from each ideal to each brand. The
 // segments themselves come from module 2 (DERIVED.segments). The bookshops and Tarnley Fitness are fictional; the gym
 // map is computed here with the same engine. Every printed figure is recomputed in `checks`.
-import { BRANDS, NEEDS, RESPONDENTS, STUDY, DERIVED as D } from './case.js?v=35';
-import { perceptualMap, distance } from '../../../core/percmap.js?v=35';
-import { tTest2, tInv } from '../../../core/inference.js?v=35';
+import { BRANDS, NEEDS, RESPONDENTS, STUDY, DERIVED as D } from './case.js?v=36';
+import { perceptualMap, distance } from '../../../core/percmap.js?v=36';
+import { tTest2, tInv } from '../../../core/inference.js?v=36';
 
 // ---------------------------------------------------------------- Lantern's map (case.js)
 const M = D.map.brandMeans, MAP = perceptualMap(M);
