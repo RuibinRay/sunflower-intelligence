@@ -145,6 +145,48 @@
 .checks li.is-ok { color: var(--a-good); }
 .check-box { display: inline-grid; place-items: center; width: 1.3em; height: 1.3em; border: 2px solid currentColor; flex: none; font-size: 0.8em; }
 
+/* ---------- lesson card, intro, notes, ticket ---------- */
+.brief.brief-lesson { border-color: var(--a-sun); text-align: left; }
+.brief.brief-lesson .result-title { justify-items: start; margin-top: 6px; }
+.brief.brief-lesson .result-stars { justify-content: flex-start; }
+.brief.brief-lesson .result-line, .brief.brief-lesson .result-xp, .brief.brief-lesson .result-badges { text-align: left; }
+.brief.brief-lesson .result-actions, .brief.brief-intro .result-actions { justify-content: flex-start; }
+.brief.brief-intro { border-color: var(--a-ochre); }
+.arc-learned, .qcheck { margin-top: 12px; padding: 10px 12px; background: var(--a-night); border-left: 4px solid var(--a-good); font-size: 0.88rem; }
+.qcheck { border-left-color: var(--a-sun); }
+.arc-learned > b, .qcheck > b { display: block; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.08em; color: var(--a-good); margin-bottom: 4px; }
+.qcheck > b { color: var(--a-sun); }
+.arc-learned p, .qcheck p { margin: 0 0 8px; }
+.arc-learned .quiz-code { margin: 0; font-size: 0.85rem; padding: 6px 10px; border-width: 2px; }
+.check-opts { display: grid; gap: 6px; }
+.check-opts .opt { min-height: 40px; }
+.check-why { margin: 8px 0 0; color: #DCE3EF; }
+.check-why:empty { display: none; }
+.check-why b { color: var(--a-sun); }
+.arc-tools { border-top: 3px solid var(--a-line); padding-top: 10px; }
+.arc-notes { background: var(--a-panel); border: 3px solid var(--a-line); padding: 14px 16px; }
+.notes-list { margin: 0; padding-left: 26px; display: grid; gap: 10px; font-size: 0.88rem; }
+.notes-list b { color: var(--a-sun); }
+.notes-list p { margin: 2px 0 6px; color: #DCE3EF; }
+.notes-list .quiz-code { margin: 0; font-size: 0.85rem; padding: 6px 10px; border-width: 2px; }
+.ticket { margin-top: 8px; background: #FFF8E8; color: #192B49; border: 3px solid #000; padding: 8px 10px; font-size: 0.85rem; box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4); }
+.ticket b { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: #8E4A22; margin-bottom: 4px; }
+.ticket ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.ticket p { margin: 0; }
+.ticket code { color: #192B49; overflow-wrap: anywhere; }
+.console-line.is-print { color: #EAF0FA; white-space: pre-wrap; }
+.console-line.is-print::before { content: "› "; color: var(--a-dim); }
+.page-src summary { cursor: pointer; color: var(--a-dim); font-size: 0.85rem; padding: 6px 0; }
+.page-src .quiz-code { font-size: 0.82rem; margin: 6px 0 0; }
+.arcade .pv-page.pv-plain h1 { border: 0; text-transform: none; letter-spacing: 0; display: block; }
+.arcade .pv-page.pv-plain a { color: #1A4FD6; font-weight: 400; text-decoration: underline; margin-right: 10px; }
+.arcade .pv-page.pv-plain nav { background: none; border: 0; padding: 0; margin: 0 0 8px; }
+.arcade .pv-page.pv-plain header, .arcade .pv-page.pv-plain main { outline: 0; }
+.arcade .pv-page.pv-plain header { padding: 6px 8px; }
+.weak { margin-top: 12px; border: 3px solid var(--a-line); padding: 10px 12px; background: var(--a-night); font-size: 0.85rem; }
+.weak b { color: var(--a-sun); }
+.weak ul { margin: 6px 0 8px; padding-left: 18px; list-style: square; color: #DCE3EF; }
+
 /* ---------- Bug Battle + Syntax Catcher ---------- */
 .arena { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 16px; align-items: start; }
 .quiz { background: var(--a-panel); border: 3px solid var(--a-line); padding: 14px 16px; min-width: 0; }
@@ -210,6 +252,7 @@ ul.review > li > code { color: var(--a-bad); font-weight: 700; }
 .xp-bar > span { display: block; height: 100%; background: var(--a-sun); }
 .player-card.is-daily { border-color: var(--a-ochre); }
 .player-card .px-btn { margin-top: 8px; }
+.weak-list { list-style: square; margin: 4px 0 0; padding-left: 18px; font-size: 0.8rem; color: #DCE3EF; }
 .arc-section { margin: 20px 0 10px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
 .arc-section h3 { margin: 0; }
 .arc-section p { margin: 0; color: var(--a-dim); font-size: 0.85rem; }

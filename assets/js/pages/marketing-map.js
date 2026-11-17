@@ -1,14 +1,14 @@
 // marketing-map.js — the Market map: a world choropleth of World Bank data, a weighted market-attractiveness score,
 // attractiveness against reach (GE–McKinsey style) and the visitor's own measures by country.
 // The outlines are prebuilt SVG paths (tools/build_map.mjs), so the page needs no map library.
-import { initSite, syncRanges } from '../core/site.js?v=32';
-import { $, $$, h, s, download, toCSV, onResize, debounce, rafThrottle, reducedMotion } from '../core/dom.js?v=32';
-import * as F from '../core/format.js?v=32';
-import * as S from '../core/stats.js?v=32';
-import { parseTable, isNumeric } from '../core/csv.js?v=32';
-import { Tooltip, frame, axisX, axisY, lin, tableTwin, legendEl } from '../core/charts.js?v=32';
-import { verdict } from '../core/ui.js?v=32';
-import { measures, attractiveness, rankDesc, haversine, reachScore } from '../core/market.js?v=32';
+import { initSite, syncRanges } from '../core/site.js?v=33';
+import { $, $$, h, s, download, toCSV, onResize, debounce, rafThrottle, reducedMotion } from '../core/dom.js?v=33';
+import * as F from '../core/format.js?v=33';
+import * as S from '../core/stats.js?v=33';
+import { parseTable, isNumeric } from '../core/csv.js?v=33';
+import { Tooltip, frame, axisX, axisY, lin, tableTwin, legendEl } from '../core/charts.js?v=33';
+import { verdict } from '../core/ui.js?v=33';
+import { measures, attractiveness, rankDesc, haversine, reachScore } from '../core/market.js?v=33';
 initSite();
 
 // ---------------------------------------------------------------- measures and colour

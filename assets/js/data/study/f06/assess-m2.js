@@ -2,9 +2,9 @@
 // No hints. Each item has a full solution, shown when the student reviews the test. New questions, not copies of the
 // lesson exercises. The fund returns are SIMULATED (case.js, tools/study/f06-data.py); every business and person named
 // here is fictional.
-import { MONTHS, SERIES, DERIVED } from './case.js?v=32';
-import * as IV from '../../../core/investments.js?v=32';
-import { normCdf } from '../../../core/inference.js?v=32';
+import { MONTHS, SERIES, DERIVED } from './case.js?v=33';
+import * as IV from '../../../core/investments.js?v=33';
+import { normCdf } from '../../../core/inference.js?v=33';
 
 const r4 = (v) => Math.round(v * 1e4) / 1e4;
 const B22 = MONTHS.map((m, i) => (m.startsWith('2022') ? i : -1)).filter((i) => i >= 0);

@@ -5,11 +5,11 @@
 //     options?: ['robust', 'predict'] (B06: a switch to heteroskedasticity-robust HC3 standard errors, which Excel's
 //     ToolPak doesn't offer; boxes to enter X values and see the predicted Y with a 95% confidence interval for the
 //     mean and a 95% prediction interval for one new case), predictAt?: [x values in the order of xs] }
-import { h } from '../../core/dom.js?v=32';
-import { xl } from '../xl.js?v=32';
-import { ols } from '../../core/stats.js?v=32';
-import { scatter } from '../../core/charts.js?v=32';
-import * as F from '../../core/format.js?v=32';
+import { h } from '../../core/dom.js?v=33';
+import { xl } from '../xl.js?v=33';
+import { ols } from '../../core/stats.js?v=33';
+import { scatter } from '../../core/charts.js?v=33';
+import * as F from '../../core/format.js?v=33';
 
 /** Numbers as the ToolPak prints them, shortened: 6 significant figures (2 decimals from 10,000 up); tiny values in E notation (1.23E-08). */
 function num(v) {

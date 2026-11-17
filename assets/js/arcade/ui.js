@@ -1,7 +1,8 @@
 // ui.js — the parts every arcade game shares: the cabinet's top bar, the code editor, the level strip and
 // the end-of-level card.
-import { pixelHeadings, setMuted, sfx, spriteUrl } from './pixel.js?v=32';
-import * as store from './store.js?v=32';
+import { pixelHeadings, setMuted, sfx, spriteUrl } from './pixel.js?v=33';
+import * as store from './store.js?v=33';
+import { RECAPS, INTROS } from './recaps.js?v=33';
 
 export const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 /** h('div.a.b', { id: 'x', onclick }, child, 'text') */
@@ -121,3 +122,64 @@ export const btn = (label, onclick, kind = '') => h(`button.px-btn${kind ? `.px-
 export const tryStars = (runs, hinted) => (!hinted && runs <= 3 ? 3 : 2);
 /** replaceChildren that skips null and false, so `cond ? node : null` can be passed straight in. */
 export const fill = (el, ...kids) => el.replaceChildren(...kids.flat().filter((k) => k != null && k !== false));
+
+/** What every teaching game shares: the opening "What is …?" card, the card shown when a level is solved
+ *  (what you learned, an example, a quick check), and the Notes list of everything learned so far.
+ *  teacher({ game, levels, briefBox, paintBrief, load, bar }) -> { start, solved, tools, notes } */
+export function teacher({ game, levels, briefBox, paintBrief, load, bar }) {
+  const intro = INTROS[game], recaps = RECAPS[game];
+  const notes = h('div.arc-notes', { hidden: true, tabindex: '-1' });
+  function showIntro() {
+    const go = btn(store.starsOf(game) && Object.keys(store.starsOf(game)).length ? 'Back to the level ▶' : 'Start level 1 ▶', () => { store.markIntro(game); paintBrief(); }, 'go');
+    fill(briefBox, h('div.brief.brief-intro', {},
+      h('p.brief-kicker', {}, 'Before you start'),
+      h('h3.brief-title', {}, `What is ${intro.name}?`),
+      h('p.brief-teach', {}, intro.what), h('p.brief-teach', {}, intro.used),
+      h('p.brief-goal', {}, h('b', {}, 'In this game '), intro.play),
+      h('div.result-actions', {}, go)));
+    return go;
+  }
+  function paintNotes() {
+    const done = store.starsOf(game);
+    const got = levels.filter((lv) => done[lv.id]);
+    fill(notes, h('h3.quiz-h', {}, `Your ${intro.name} notes`),
+      h('p.quiz-lead', {}, got.length ? `${got.length} of ${levels.length} ideas learned. Each one is added here when you finish its level.` : 'Nothing here yet. Finish a level and what it taught is added to these notes.'),
+      h('ol.notes-list', {}, got.map((lv) => h('li', {}, h('b', {}, lv.concept), h('p', {}, recaps[lv.id][0]), h('pre.quiz-code', {}, h('code', {}, recaps[lv.id][1]))))));
+  }
+  const tools = [
+    btn(`What is ${intro.name}?`, () => { showIntro().focus(); briefBox.scrollIntoView({ block: 'nearest' }); }, 'ghost'),
+    btn('Notes', () => { notes.hidden = !notes.hidden; if (!notes.hidden) { paintNotes(); notes.scrollIntoView({ block: 'nearest' }); notes.focus(); } }, 'ghost'),
+  ];
+  /** Show the solved card in place of the brief. */
+  function solved({ n, level, stars, reward, lines = [], lastHref, lastLabel }) {
+    const last = n === levels.length - 1;
+    const [learned, example, question, right, w1, w2, why] = recaps[level.id];
+    const next = btn(last ? lastLabel : 'Next level ▶', () => { if (last) location.href = lastHref; else load(n + 1); }, 'go');
+    const feedback = h('p.check-why', { role: 'status' });
+    const opts = [right, w1, w2].map((text) => ({ text, r: Math.random() })).sort((a, b) => a.r - b.r).map(({ text }) => h('button.px-btn.opt', { type: 'button', onclick: (e) => {
+      const ok = text === right;
+      opts.forEach((b) => { b.disabled = true; b.classList.add(b.textContent === right ? 'is-right' : b === e.currentTarget ? 'is-wrong' : 'is-dim'); });
+      const res = store.checkDone(game, level.id, ok);
+      fill(feedback, h('b', {}, ok ? `Right${res.xp ? ` (+${res.xp} XP)` : ''}. ` : 'Not quite. '), why);
+      sfx(ok ? 'ok' : 'bad');
+      if (bar) bar.refresh();
+      next.focus();
+    } }, text));
+    const card = h('div.brief.brief-lesson', { role: 'status' },
+      h('p.brief-kicker', {}, `Level ${n + 1} of ${levels.length} complete`),
+      h('h3.result-title', { 'data-px': '3' }, last ? 'All done!' : 'Level clear!'),
+      h('p.result-stars', { 'aria-label': `${stars} of 3 stars` }, [0, 1, 2].map((i) => h('img', { src: spriteUrl(i < stars ? 'star' : 'starOff', 5), alt: '', width: 35, height: 30 }))),
+      ...lines.map((l) => h('p.result-line', {}, l)),
+      h('p.result-xp', {}, `+${reward.xp} XP`, reward.rankUp ? h('span.result-rank', {}, ` · New rank: ${reward.rankUp}`) : null),
+      reward.badges.length ? h('ul.result-badges', { role: 'list' }, reward.badges.map((b) => h('li', {}, h('b', {}, `Badge: ${b[1]}`), ` ${b[2]}`))) : null,
+      h('div.arc-learned', {}, h('b', {}, `What you just learned: ${level.concept}`), h('p', {}, learned), h('pre.quiz-code', {}, h('code', {}, example))),
+      h('div.qcheck', {}, h('b', {}, 'Quick check'), h('p', {}, question), h('div.check-opts', { role: 'group', 'aria-label': 'Answers' }, opts), feedback),
+      h('div.result-actions', {}, next, btn('Stay on this level', () => paintBrief(), 'ghost')));
+    pixelHeadings(card);
+    fill(briefBox, card);
+    if (!notes.hidden) paintNotes();
+    briefBox.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+    opts[0].focus({ preventScroll: true });
+  }
+  return { start: () => { if (!store.seenIntro(game)) showIntro(); }, solved, tools, notes };
+}

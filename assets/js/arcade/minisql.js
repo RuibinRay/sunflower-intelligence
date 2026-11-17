@@ -1,5 +1,5 @@
 // minisql.js — a small SQL engine for the arcade: one SELECT over in-memory tables.
-//   SELECT [DISTINCT] list FROM t [JOIN u ON a = b] [WHERE …] [GROUP BY …] [HAVING …] [ORDER BY … [ASC|DESC]] [LIMIT n]
+//   SELECT [DISTINCT] list FROM t [[LEFT] JOIN u ON a = b] [WHERE …] [GROUP BY …] [HAVING …] [ORDER BY … [ASC|DESC]] [LIMIT n]
 // with =, <>, !=, <, <=, >, >=, LIKE, IN (…), BETWEEN, AND, OR, NOT, + - * /, COUNT, SUM, AVG, MIN, MAX, ROUND, UPPER, LOWER, LENGTH.
 // query(sql, db) -> { columns, rows, picked }  (picked: for a single-table query without grouping, the source rows kept)
 // db = { tableName: { columns: [...], rows: [[...], ...] } }
@@ -8,7 +8,7 @@ export class SqlError extends Error {
   constructor(message, hint = '') { super(message); this.hint = hint; }
 }
 
-const KW = new Set(['SELECT', 'DISTINCT', 'FROM', 'JOIN', 'INNER', 'ON', 'WHERE', 'GROUP', 'BY', 'HAVING', 'ORDER', 'ASC', 'DESC', 'LIMIT', 'AND', 'OR', 'NOT', 'LIKE', 'IN', 'BETWEEN', 'AS', 'IS', 'NULL']);
+const KW = new Set(['SELECT', 'DISTINCT', 'FROM', 'JOIN', 'INNER', 'LEFT', 'OUTER', 'ON', 'WHERE', 'GROUP', 'BY', 'HAVING', 'ORDER', 'ASC', 'DESC', 'LIMIT', 'AND', 'OR', 'NOT', 'LIKE', 'IN', 'BETWEEN', 'AS', 'IS', 'NULL']);
 const AGG = new Set(['COUNT', 'SUM', 'AVG', 'MIN', 'MAX']);
 const FN = new Set(['ROUND', 'UPPER', 'LOWER', 'LENGTH']);
 const ORDER = ['SELECT', 'FROM', 'JOIN', 'WHERE', 'GROUP BY', 'HAVING', 'ORDER BY', 'LIMIT'];
@@ -118,12 +118,14 @@ function parse(sql) {
   if (!kw('FROM')) throw new SqlError(tk[p] ? `Expected FROM but found “${tk[p].v}”.` : 'The query needs a FROM: which table should the rows come from?', 'After the column list, write FROM and the table name.');
   p++;
   q.from = ident('a table name after FROM');
+  let left = false;
   if (kw('INNER')) p++;
+  else if (kw('LEFT')) { left = true; p++; if (kw('OUTER')) p++; if (!kw('JOIN')) throw new SqlError('LEFT must be followed by JOIN.', 'Write LEFT JOIN.'); }
   if (kw('JOIN')) {
     p++;
     const table = ident('a table name after JOIN');
     need('ON', 'JOIN needs ON to say which columns match, e.g. ON orders.item = menu.item.');
-    q.join = { table, on: expr() };
+    q.join = { table, on: expr(), left };
   }
   if (kw('WHERE')) { p++; q.where = expr(); }
   if (kw('GROUP')) { p++; need('BY', 'It is two words: GROUP BY.'); q.group.push(expr()); while (op(',')) { p++; q.group.push(expr()); } }
@@ -144,7 +146,7 @@ function parse(sql) {
 
 const hasAgg = (e) => !!e && (e.k === 'agg' || ['a', 'b', 'lo', 'hi'].some((key) => hasAgg(e[key])) || (e.args || []).some(hasAgg) || (e.list || []).some(hasAgg));
 const likeRe = (pat) => new RegExp(`^${String(pat).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/%/g, '.*').replace(/_/g, '.')}$`, 'i');
-const cmpVal = (a, b) => (typeof a === 'string' && typeof b === 'string' ? a.localeCompare(b) : a < b ? -1 : a > b ? 1 : 0);
+const cmpVal = (a, b) => (a === null || b === null ? (a === b ? 0 : a === null ? -1 : 1) : typeof a === 'string' && typeof b === 'string' ? a.localeCompare(b) : a < b ? -1 : a > b ? 1 : 0);
 const same = (a, b) => (typeof a === 'string' && typeof b === 'string' ? a.toLowerCase() === b.toLowerCase() : a === b);
 const round = (v) => (typeof v === 'number' ? Math.round(v * 1e6) / 1e6 : v);
 
@@ -217,7 +219,11 @@ export function query(sql, db) {
     const bcols = B.columns.map((name) => ({ table: B.name, name }));
     const joined = [];
     cols = [...cols, ...bcols];
-    for (const a of rows) for (const b of B.rows) { const r = { vals: [...a.vals, ...b], src: a.src }; if (ev(q.join.on, r, null)) joined.push(r); }
+    for (const a of rows) {
+      let matched = false;
+      for (const b of B.rows) { const r = { vals: [...a.vals, ...b], src: a.src }; if (ev(q.join.on, r, null)) { joined.push(r); matched = true; } }
+      if (!matched && q.join.left) joined.push({ vals: [...a.vals, ...B.columns.map(() => null)], src: a.src });   // LEFT JOIN keeps the row, with blanks
+    }
     rows = joined;
   }
   if (q.where) { if (hasAgg(q.where)) ev(q.where, rows[0] || { vals: [] }, null); rows = rows.filter((r) => ev(q.where, r, null)); }

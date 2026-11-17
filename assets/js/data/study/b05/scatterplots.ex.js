@@ -2,9 +2,9 @@
 // data come from case.js (the corrected log, and the raw log for the footfall slip); Kestrel Bikes, Fairhaven Hotel and
 // Pemberton Cinema are fictional. Formula items are marked by their results (core/sheet.js gradeFormula); num items
 // recompute their answers in `check`.
-import { column, CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, DERIVED as D } from './case.js?v=32';
-import * as C from '../../../core/correlation.js?v=32';
-import { mean } from '../../../core/stats.js?v=32';
+import { column, CLEAN_ROWS, CAFE_ROWS, CAFE_COLUMNS, SLIP, DERIVED as D } from './case.js?v=33';
+import * as C from '../../../core/correlation.js?v=33';
+import { mean } from '../../../core/stats.js?v=33';
 
 const at = (n) => CAFE_COLUMNS.indexOf(n);
 const fx = (v, d = 2) => v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });

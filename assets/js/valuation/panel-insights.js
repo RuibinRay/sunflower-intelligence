@@ -1,17 +1,17 @@
 // panel-insights.js — the right panel: the headline results across methods (football field), what they mean,
 // the risk register with its probability–impact matrix and explicit effects on the forecast, learning notes, and the
 // report generator.
-import { h, $, $$ } from '../core/dom.js?v=32';
-import * as F from '../core/format.js?v=32';
-import * as V from '../core/valuation.js?v=32';
-import { verdict } from '../core/ui.js?v=32';
-import { formatter, buildReport } from '../core/valuation-report.js?v=32';
-import { football, riskMatrix } from './charts.js?v=32';
-import { state, on, recompute, scheduleRecompute, emit, setStep } from './state.js?v=32';
-import { numInput, textInput, selectEl, field, numSlider, block, btn, dataTable, helpLink, id } from './ui.js?v=32';
-import { renderReport } from './report-view.js?v=32';
-import { LEARN_LINKS } from '../data/valuation-tutorials.js?v=32';
-import { ROOT } from './ui.js?v=32';
+import { h, $, $$ } from '../core/dom.js?v=33';
+import * as F from '../core/format.js?v=33';
+import * as V from '../core/valuation.js?v=33';
+import { verdict } from '../core/ui.js?v=33';
+import { formatter, buildReport } from '../core/valuation-report.js?v=33';
+import { football, riskMatrix } from './charts.js?v=33';
+import { state, on, recompute, scheduleRecompute, emit, setStep } from './state.js?v=33';
+import { numInput, textInput, selectEl, field, numSlider, block, btn, dataTable, helpLink, id } from './ui.js?v=33';
+import { renderReport } from './report-view.js?v=33';
+import { LEARN_LINKS } from '../data/valuation-tutorials.js?v=33';
+import { ROOT } from './ui.js?v=33';
 
 const fin = Number.isFinite;
 
