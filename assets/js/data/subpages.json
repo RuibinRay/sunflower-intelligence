@@ -181,6 +181,12 @@
       "tools": []
     },
     {
+      "slug": "arcade",
+      "name": "Arcade",
+      "blurb": "Pixel games that teach Python, SQL and HTML, with endless runs of new questions.",
+      "tools": []
+    },
+    {
       "slug": "glossary",
       "name": "Glossary",
       "blurb": "Every term the courses define, searchable.",

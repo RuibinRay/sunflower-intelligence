@@ -643,3 +643,13 @@ export const LABS = [
   { id: 'cleaning', course: 'b02', name: 'Data Cleaning Lab', blurb: 'Inspect a messy dataset, choose cleaning steps, and see what each one does to the data and the conclusions.' },
   { id: 'mix', course: 'm02', name: 'Marketing Mix Simulator', blurb: 'Choose a product, price, channels and promotion for a fictional launch and see simulated demand, margin and share.' },
 ];
+
+/** The Pixel Arcade (learn/arcade/): games for the languages analysts write. `kind` is 'learn' (levels that
+ *  teach one idea each) or 'loop' (endless runs of freshly made questions). */
+export const ARCADE = [
+  { id: 'pyquest', kind: 'learn', lang: 'Python', name: 'Py Quest', levels: 10, blurb: 'Steer a bee round the garden by writing real Python: function calls, loops, variables, if and while, and your own functions.' },
+  { id: 'sqlquest', kind: 'learn', lang: 'SQL', name: 'Query Quest', levels: 14, blurb: 'Answer the coffee shop’s questions with SQL, from SELECT and WHERE to GROUP BY and JOIN. The rows your query keeps light up on the shelf.' },
+  { id: 'tagbuilder', kind: 'learn', lang: 'HTML', name: 'Tag Builder', levels: 8, blurb: 'Build the shop’s web page tag by tag and watch it appear as you type: headings, links, images, lists and page landmarks.' },
+  { id: 'arena', kind: 'loop', lang: 'Python · SQL · HTML & CSS', name: 'Bug Battle', blurb: 'An endless quiz fight. Read the code, pick what it does, sting the bug. New questions every run, and a daily run that is the same for everyone.' },
+  { id: 'catcher', kind: 'loop', lang: 'Python · SQL · HTML · CSS', name: 'Syntax Catcher', blurb: 'Words fall, the rule changes every round. Catch the real keywords, tags and properties and let the fakes drop.' },
+];
