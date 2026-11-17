@@ -1,6 +1,6 @@
 // assess-final.js — F07 final: all three modules, 22 items; 70% passes. No hints; solutions on review. Marlow Garden
 // Centre and its figures are fictional and introduced here; the Lantern items ask new questions of case.js's model.
-import { MODEL as M, DCF as D, OPENING as O, scenario, FORECAST as F, ASSUME as A } from './case.js?v=38';
+import { MODEL as M, DCF as D, OPENING as O, scenario, FORECAST as F, ASSUME as A } from './case.js?v=39';
 
 const R = M.rows;
 const pmt = (P, r, n) => P * r / (1 - (1 + r) ** -n);

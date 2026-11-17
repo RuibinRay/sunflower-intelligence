@@ -1,14 +1,14 @@
 // studio.js — assembles the Company Valuation Studio: the toolbar (guided or advanced mode, learning level, the six
 // steps, project actions), the three panels, and the saved-project handling.
-import { h, $, $$, download } from '../core/dom.js?v=38';
-import * as IO from '../core/valuation-io.js?v=38';
-import { verdict } from '../core/ui.js?v=38';
-import { state, on, loadProject, loadExample, newProject, loadSaved, clearSaved, setMode, setLevel, setStep, resetAssumptions } from './state.js?v=38';
-import { segmented, btn } from './ui.js?v=38';
-import { LEVELS } from '../data/valuation-tutorials.js?v=38';
-import { renderDataPanel } from './panel-data.js?v=38';
-import { renderModelPanel } from './panel-model.js?v=38';
-import { renderInsightsPanel } from './panel-insights.js?v=38';
+import { h, $, $$, download } from '../core/dom.js?v=39';
+import * as IO from '../core/valuation-io.js?v=39';
+import { verdict } from '../core/ui.js?v=39';
+import { state, on, loadProject, loadExample, newProject, loadSaved, clearSaved, setMode, setLevel, setStep, resetAssumptions } from './state.js?v=39';
+import { segmented, btn } from './ui.js?v=39';
+import { LEVELS } from '../data/valuation-tutorials.js?v=39';
+import { renderDataPanel } from './panel-data.js?v=39';
+import { renderModelPanel } from './panel-model.js?v=39';
+import { renderInsightsPanel } from './panel-insights.js?v=39';
 
 const STEPS = ['Company and data', 'Choose models', 'Assumptions and results', 'Risks', 'Scenarios', 'Report'];
 

@@ -116,6 +116,12 @@ export const PLAN = {
     'scenarios-and-sensitivity': { moment: 'The current ratio under base, slow-growth and late-kitchen scenarios against the 1.2 covenant line.', visual: 'curve' },
     'model-review-and-presentation': { moment: 'A reviewer’s checklist run over the model, each check turning from red to zero.', visual: 'tree' },
   },
+  f08: {
+    'why-firms-hedge': { moment: 'Lantern’s 2029 EBITDA swings with the price of coffee, then flattens at $81,093 once the price is fixed at $37.50.', visual: 'payoff' },
+    'forwards-and-futures': { moment: 'A week of coffee settlement prices passes through the margin account, with a $750 call on day 2.', visual: 'timeline' },
+    'pricing-by-no-arbitrage': { moment: 'Two routes to €38,000 on 31 March, a forward and a money-market hedge, arrive at the same $1.0905.', visual: 'bridge' },
+    'swaps': { moment: 'Brightcup’s floating payments cancel against the swap, leaving a fixed 5.98% whatever the benchmark does.', visual: 'curve' },
+  },
 };
 
 /** Proposed modules and lessons for the finance courses not yet written, from the benchmark review in FINANCE_PLAN.md. */

@@ -1,7 +1,7 @@
 // linking-the-statements.js — F07 · Linking the statements. Content only; exercises are in linking-the-statements.ex.js.
 // Every figure comes from case.js: OPENING (F03's 31 December 2027 balance sheet) and MODEL (the linked forecast built
 // from FORECAST, the working capital and fixed asset schedules, and the debt schedule).
-import { OPENING as O, MODEL as M, YEARS, TAX } from './case.js?v=38';
+import { OPENING as O, MODEL as M, YEARS, TAX } from './case.js?v=39';
 
 const $ = (x) => (Math.round(x) < 0 ? `(${Math.round(-x).toLocaleString('en-US')})` : (Math.round(x) + 0).toLocaleString('en-US'));
 const n = (x) => Math.round(x).toLocaleString('en-US');

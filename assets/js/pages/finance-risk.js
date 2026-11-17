@@ -1,14 +1,14 @@
 // finance-risk.js — market risk (Value at Risk, Expected Shortfall, backtest, stress) and credit risk (Altman Z).
-import { initSite, syncRanges, fillRange } from '../core/site.js?v=38';
-import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=38';
-import * as F from '../core/format.js?v=38';
-import * as S from '../core/stats.js?v=38';
-import { barChart, tableTwin, lineChart, scatter, histogramChart, lin } from '../core/charts.js?v=38';
-import { verdict, whenNear, afterPaint } from '../core/ui.js?v=38';
-import { parseTable, isNumeric } from '../core/csv.js?v=38';
-import { simulatedMarket } from '../core/finsim.js?v=38';
-import { returns } from '../core/portfolio.js?v=38';
-import * as RK from '../core/risk.js?v=38';
+import { initSite, syncRanges, fillRange } from '../core/site.js?v=39';
+import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=39';
+import * as F from '../core/format.js?v=39';
+import * as S from '../core/stats.js?v=39';
+import { barChart, tableTwin, lineChart, scatter, histogramChart, lin } from '../core/charts.js?v=39';
+import { verdict, whenNear, afterPaint } from '../core/ui.js?v=39';
+import { parseTable, isNumeric } from '../core/csv.js?v=39';
+import { simulatedMarket } from '../core/finsim.js?v=39';
+import { returns } from '../core/portfolio.js?v=39';
+import * as RK from '../core/risk.js?v=39';
 
 initSite();
 

@@ -11,7 +11,7 @@ The next layer, lesson by lesson, is an authored opening chapter: a script writt
 lesson's central moment with a custom stage visual. It replaces the generated chapter it retells, and every number
 it says is recomputed in its `checks`.
 
-**Now:** 80 lessons, 36 h 36 min of narration in all (about 27 minutes a lesson at 2.6 words a second). Authored openings written: 3 of 80.
+**Now:** 84 lessons, 37 h 52 min of narration in all (about 27 minutes a lesson at 2.6 words a second). Authored openings written: 3 of 84.
 
 **Stage visuals:**
 - `timeline`: Amounts on a dated line, moved one period at a time (built).
@@ -146,6 +146,22 @@ course by course in study order, F00 to F06; each new F07–F13 lesson ships wit
 | [Scenarios and sensitivity](../../../../learn/finance/f07/scenarios-and-sensitivity/) | 17 min | 19 | The current ratio under base, slow-growth and late-kitchen scenarios against the 1.2 covenant line. | curve | planned |
 | [Model review and presentation](../../../../learn/finance/f07/model-review-and-presentation/) | 17 min | 18 | A reviewer’s checklist run over the model, each check turning from red to zero. | tree | planned |
 
+### F08 Derivatives and Risk Management
+
+| Lesson | Length | Chapters | Authored opening: the moment acted out | Visual | Script |
+|---|---|---|---|---|---|
+| [Why firms hedge](../../../../learn/finance/f08/why-firms-hedge/) | 20 min | 18 | Lantern’s 2029 EBITDA swings with the price of coffee, then flattens at $81,093 once the price is fixed at $37.50. | payoff | planned |
+| [Forwards and futures](../../../../learn/finance/f08/forwards-and-futures/) | 20 min | 19 | A week of coffee settlement prices passes through the margin account, with a $750 call on day 2. | timeline | planned |
+| [Pricing by no arbitrage](../../../../learn/finance/f08/pricing-by-no-arbitrage/) | 18 min | 19 | Two routes to €38,000 on 31 March, a forward and a money-market hedge, arrive at the same $1.0905. | bridge | planned |
+| [Swaps](../../../../learn/finance/f08/swaps/) | 19 min | 20 | Brightcup’s floating payments cancel against the swap, leaving a fixed 5.98% whatever the benchmark does. | curve | planned |
+| options-payoffs | not built | | | | |
+| put-call-parity | not built | | | | |
+| binomial-pricing | not built | | | | |
+| black-scholes-and-greeks | not built | | | | |
+| hedging-with-derivatives | not built | | | | |
+| margin-leverage-and-short-selling | not built | | | | |
+| value-at-risk-and-stress-tests | not built | | | | |
+
 ### F12 Managerial Accounting and Control (planned course)
 
 The numbers managers use inside the business: cost behaviour, product costing, budgets, variances and performance measures that steer decisions.
@@ -163,16 +179,6 @@ How banks, insurers, exchanges and regulators work, why markets are efficient an
 1. *Institutions:* Banks and bank runs; Central banks and monetary policy; Insurance; Exchanges, brokers and clearing.
 2. *How markets behave:* Market efficiency; Behavioural finance; Bubbles and crises.
 3. *Currencies, rules and ethics:* Foreign exchange and interest-rate parity; Regulation; Ethics and professional standards.
-
-Each lesson gets its generated video when it is written, and an authored opening in the same review pass.
-
-### F08 Derivatives and Risk Management (planned course)
-
-Forwards, futures, swaps and options: how they are priced by no arbitrage, and how a business or a portfolio uses them to hedge and to measure risk.
-
-1. *Forwards, futures and swaps:* Why firms hedge; Forwards and futures; Pricing by no arbitrage; Swaps.
-2. *Options:* Calls, puts, payoffs and profits; Put–call parity; Binomial pricing; Black–Scholes–Merton and the Greeks.
-3. *Managing risk:* Hedging with derivatives; Margin, leverage and short selling; Value at Risk and stress tests.
 
 Each lesson gets its generated video when it is written, and an authored opening in the same review pass.
 

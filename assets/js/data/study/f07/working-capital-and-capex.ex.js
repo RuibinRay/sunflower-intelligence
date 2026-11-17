@@ -1,6 +1,6 @@
 // working-capital-and-capex.ex.js — F07 · Working capital and capital spending: widgets, practice and the knowledge
 // check (answer keys live here). Figures from case.js (OPENING, WC, MODEL); every num item's `check` recomputes.
-import { OPENING as O, WC, MODEL as M } from './case.js?v=38';
+import { OPENING as O, WC, MODEL as M } from './case.js?v=39';
 
 const F = M.F, R = M.rows;
 const COLS = ['D', 'E', 'F', 'G', 'H'];
