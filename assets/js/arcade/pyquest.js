@@ -1,9 +1,9 @@
 // pyquest.js — Py Quest: steer a bee round a garden by writing Python. The program is run first by
 // levels.js (pyRun), which returns every step; this file draws the garden and plays the steps back.
-import { PY_LEVELS, pyRun } from './levels.js?v=39';
-import { PAL, stage, drawSprite, drawText, hash, loop, sfx, calm } from './pixel.js?v=39';
-import { h, fill, teacher, topBar, editor, levelStrip, brief, resultCard, btn } from './ui.js?v=39';
-import * as store from './store.js?v=39';
+import { PY_LEVELS, pyRun } from './levels.js?v=40';
+import { PAL, stage, drawSprite, drawText, hash, loop, sfx, calm } from './pixel.js?v=40';
+import { h, fill, teacher, topBar, editor, levelStrip, brief, resultCard, btn } from './ui.js?v=40';
+import * as store from './store.js?v=40';
 
 const T = 16, W = 10, H = 7;
 const TURN = { N: 0, E: 1, S: 2, W: 3 };

@@ -2,10 +2,10 @@
 //   Table Tamer (pandas, run by minipy.js + minipandas.js), Cell Craft (spreadsheet formulas, run by the site's
 //   own engine in core/sheet.js) and Script Lab (JavaScript, really run: in a worker in the browser).
 // Like levels.js this file has no DOM in it, so tests/arcade.test.mjs can run every level's solution.
-import { parse, exec, PyError, show } from './minipy.js?v=39';
-import { pandasModule, plain, samePlain } from './minipandas.js?v=39';
-import { gradeFormula, shiftFormula, Sheet, parseRange, parseAddr, addr } from '../core/sheet.js?v=39';
-import { mulberry32 } from '../core/rng.js?v=39';
+import { parse, exec, PyError, show } from './minipy.js?v=40';
+import { pandasModule, plain, samePlain } from './minipandas.js?v=40';
+import { gradeFormula, shiftFormula, Sheet, parseRange, parseAddr, addr } from '../core/sheet.js?v=40';
+import { mulberry32 } from '../core/rng.js?v=40';
 
 const ri = (r, a, b) => a + Math.floor(r() * (b - a + 1));
 const pick = (r, list) => list[ri(r, 0, list.length - 1)];

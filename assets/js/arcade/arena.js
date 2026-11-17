@@ -1,11 +1,11 @@
 // arena.js — Bug Battle: an endless quiz fight. Every right answer stings the bug; three stings clear a wave
 // and the questions get harder. A wrong answer costs a heart and stops to explain why. Questions are made
 // fresh each time by questions.js. The daily run uses the date as its seed, so it is the same for everyone today.
-import { makeQuestion, TRACKS } from './questions.js?v=39';
-import { mulberry32 } from '../core/rng.js?v=39';
-import { PAL, stage, drawSprite, drawText, loop, sfx, calm, hash, pixelHeadings } from './pixel.js?v=39';
-import { h, fill, topBar, resultCard, btn } from './ui.js?v=39';
-import * as store from './store.js?v=39';
+import { makeQuestion, TRACKS } from './questions.js?v=40';
+import { mulberry32 } from '../core/rng.js?v=40';
+import { PAL, stage, drawSprite, drawText, loop, sfx, calm, hash, pixelHeadings } from './pixel.js?v=40';
+import { h, fill, topBar, resultCard, btn } from './ui.js?v=40';
+import * as store from './store.js?v=40';
 
 const W = 240, H = 96, DAILY_N = 12;
 const BUG_TINTS = [{ r: PAL.red, d: '#8E2F22' }, { r: PAL.terracotta, d: '#8E4A22' }, { r: '#8E5BD0', d: '#5A3691' }, { r: PAL.water, d: '#27527F' }, { r: PAL.olive, d: PAL.moss }, { r: PAL.charcoal, d: '#000000' }];
@@ -29,7 +29,7 @@ export function start(mount, { root }) {
     fill(panel, 
       h('h3.quiz-h', {}, 'Choose your questions'),
       h('p.quiz-lead', {}, 'Read the code, pick what it does. Three hearts. Answer fast for bonus points and keep a streak going to multiply them.'),
-      h('div.track-grid', {}, Object.entries(TRACKS).map(([id, name]) => h('button.px-btn.track-btn', { type: 'button', onclick: () => begin(id, false) }, h('b', {}, name), h('span', {}, id === 'python' ? 'What does it print?' : id === 'sql' ? 'What does the query return?' : id === 'web' ? 'Tags, selectors, the box model' : 'A bit of everything')))),
+      h('div.track-grid', {}, Object.entries(TRACKS).map(([id, name]) => h('button.px-btn.track-btn', { type: 'button', onclick: () => begin(id, false) }, h('b', {}, name), h('span', {}, ({ python: 'What does it print?', pandas: 'What does the table code give?', sql: 'What does the query return?', sheets: 'What does the formula show?', web: 'Tags, selectors, the box model', js: 'What does it log?' })[id] || 'A bit of everything')))),
       h('div.daily', {}, h('div', {}, h('b', {}, 'Daily run'), h('span', {}, today != null ? ` Done today: ${today} points. Play again to beat it.` : ` ${DAILY_N} mixed questions, the same for everyone today. +25 XP for finishing.`)), btn(today != null ? 'Replay daily' : 'Start daily run', () => begin('mixed', true), 'go')),
       weak.length ? h('div.weak', {}, h('b', {}, 'Your weak spots'), h('ul', {}, weak.map((w) => h('li', {}, `${w.topic} (${TRACKS[w.track]}): ${w.right} of ${w.right + w.wrong} right`))), btn('Practise these', () => begin('mixed', false, weak.map((w) => w.key)), 'go')) : h('p.quiz-best', {}, 'Bug Battle remembers which topics you miss and offers practice on them here.'),
       h('p.quiz-best', {}, best ? `Your best: ${best}` : 'No best score yet.'));

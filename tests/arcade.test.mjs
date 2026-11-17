@@ -281,7 +281,8 @@ eq(q('SELECT COUNT(*) FROM menu LEFT JOIN orders ON menu.item = orders.item').ro
 // ---------------------------------------------------------------- questions
 const rand = mulberry32(20261117);
 const pyQs = [];
-for (const track of ['python', 'sql', 'web', 'mixed']) {
+const pdQs = [], jsQs = [];
+for (const track of ['python', 'sql', 'web', 'pandas', 'sheets', 'js', 'mixed']) {
   for (let i = 0; i < 400; i++) {
     const tier = 1 + (i % 3);
     let qn;
@@ -289,11 +290,41 @@ for (const track of ['python', 'sql', 'web', 'mixed']) {
     ok(qn.options.length === 4 && new Set(qn.options).size === 4, `${track}: four different options (${JSON.stringify(qn.options)}) for ${qn.code || qn.prompt}`);
     ok(qn.answer >= 0 && qn.answer < 4 && qn.why && qn.prompt && qn.topic, `${track}: has an answer and a reason`);
     if (qn.track === 'python') pyQs.push(qn);
+    if (qn.track === 'pandas' && qn.code) pdQs.push(qn);
+    if (qn.track === 'js' && qn.code) jsQs.push(qn);
+    if (track !== 'mixed') ok(qn.track === track, `${track}: the question is on that track`);
   }
 }
 for (let i = 0; i < 40; i++) ok(['NULL', 'Slices'].includes(makeQuestion('mixed', 1, () => (i % 7) / 10 + 0.01 * (i % 5), ['sql|NULL', 'python|Slices']).topic) || true, 'focus runs');
 { const r2 = mulberry32(5); let hits = 0; for (let i = 0; i < 200; i++) if (makeQuestion('mixed', 1, r2, ['sql|NULL']).topic === 'NULL') hits++; ok(hits > 120, `focus favours the weak topic (${hits} of 200)`); }
-ok(QUESTION_COUNTS.python >= 25 && QUESTION_COUNTS.sql >= 15 && QUESTION_COUNTS.web >= 12, 'enough question makers');
+ok(QUESTION_COUNTS.python >= 25 && QUESTION_COUNTS.sql >= 15 && QUESTION_COUNTS.web >= 12 && QUESTION_COUNTS.pandas >= 12 && QUESTION_COUNTS.sheets >= 12 && QUESTION_COUNTS.js >= 12, 'enough question makers');
+// JavaScript's own answer for every generated JavaScript question (run here, in node)
+for (const x of jsQs) {
+  const logs = []; let got;
+  try { new Function('console', `"use strict";\n${x.code}`)({ log: (...a) => logs.push(a.map((v) => (Array.isArray(v) ? `[${v.join(', ')}]` : String(v))).join(' ')) }); got = logs.join('\n'); } catch { got = 'An error'; }
+  ok(got === x.options[x.answer], `node agrees on:\n${x.code}\n  node: ${got}  ours: ${x.options[x.answer]}`);
+}
+// real pandas' own answer for every generated pandas question
+let checkedPdQ = 0;
+try {
+  const jobs = pdQs.map((x) => ({ csv: toCsv({ columns: x.table.columns, rows: x.table.rows, float: ['price'] }), code: x.code }));
+  const script = `import io, json, sys, os, tempfile, contextlib
+import pandas as pd
+out = []
+for job in json.load(sys.stdin):
+    d = tempfile.mkdtemp()
+    open(os.path.join(d, "menu.csv"), "w").write(job["csv"] + "\\n")
+    os.chdir(d)
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        exec(job["code"], {"pd": pd})
+    out.append(buf.getvalue().rstrip("\\n"))
+print(json.dumps(out))`;
+  const res = JSON.parse(execFileSync('python3', ['-c', script], { input: JSON.stringify(jobs), encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }));
+  pdQs.forEach((x, i) => { checkedPdQ++; ok(res[i] === x.options[x.answer], `real pandas agrees on:\n${x.code}\n  pandas: ${res[i]}  ours: ${x.options[x.answer]}`); });
+} catch (e) { if (!(e.code === 'ENOENT' || /No module named/.test(String(e.stderr)))) throw e; }
+// the catcher's "true in JavaScript" round, evaluated here
+{ const { good, bad } = CATCH_ROUNDS.find((x) => x.rule.includes('true in JavaScript')).make(mulberry32(7)); [...good, ...bad.map((b) => b.t)].forEach((e, i) => ok(Boolean(new Function(`return (${e});`)()) === (i < good.length), `node truth of ${e}`)); }
 for (const round of CATCH_ROUNDS) {
   const { good, bad } = round.make(rand);
   ok(good.length >= 5 && bad.length >= 5 && bad.every((b) => b.t && b.why), `catch round "${round.rule}" has tokens with reasons`);
@@ -314,5 +345,5 @@ try {
   exprs.forEach((e, i) => ok(res[i] === (i < good.length), `python truth of ${e}`));
 } catch (e) { if (e.code !== 'ENOENT') throw e; }
 
-console.log(`${pass} passed, ${fail} failed (${checkedPy} Python questions checked against python3, ${checkedPd} pandas answers against real pandas)`);
+console.log(`${pass} passed, ${fail} failed (${checkedPy} Python questions checked against python3, ${checkedPd + checkedPdQ} pandas answers against real pandas)`);
 process.exit(fail ? 1 : 0);

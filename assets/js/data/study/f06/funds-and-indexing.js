@@ -3,8 +3,8 @@
 // was generated as the market plus its own mean-zero noise less 0.08% a month (tools/study/f06-data.py). Fee drag from
 // core/investments.js feeDrag. Real-world statements are quoted from the SEC’s Investor.gov bulletins and the S&P Dow
 // Jones Indices SPIVA U.S. Year-End 2024 scorecard, opened on 11 November 2026.
-import { SERIES, MONTHS, DERIVED, ASSETS, ANA } from './case.js?v=39';
-import * as IV from '../../../core/investments.js?v=39';
+import { SERIES, MONTHS, DERIVED, ASSETS, ANA } from './case.js?v=40';
+import * as IV from '../../../core/investments.js?v=40';
 
 const st = DERIVED.stats;
 const RA = IV.regressBeta(SERIES.active, SERIES.market, SERIES.bills);

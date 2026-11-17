@@ -1,11 +1,11 @@
 // cellcraft.js — Cell Craft: the spreadsheet-formula game. A small sheet of orders, one cell to fill, and a
 // formula bar. The formula is worked out by the site's own spreadsheet engine (core/sheet.js) as you type, and
 // checked on this sheet and on three more with different data, so a typed-in number does not pass.
-import { SHEET_LEVELS, sheetRun } from './levels2.js?v=39';
-import { display, isErr, indexToCol, parseAddr } from '../core/sheet.js?v=39';
-import { sfx } from './pixel.js?v=39';
-import { h, fill, teacher, topBar, levelStrip, brief, btn, tryStars } from './ui.js?v=39';
-import * as store from './store.js?v=39';
+import { SHEET_LEVELS, sheetRun } from './levels2.js?v=40';
+import { display, isErr, indexToCol, parseAddr } from '../core/sheet.js?v=40';
+import { sfx } from './pixel.js?v=40';
+import { h, fill, teacher, topBar, levelStrip, brief, btn, tryStars } from './ui.js?v=40';
+import * as store from './store.js?v=40';
 
 export function start(mount, { root }) {
   const bar = topBar(mount, { title: 'Cell Craft', root });

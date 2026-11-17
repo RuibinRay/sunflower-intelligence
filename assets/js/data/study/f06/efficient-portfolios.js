@@ -3,9 +3,9 @@
 // forward-looking expected returns use F05’s assumptions (MARKET: 4.2% risk-free, 5.5% premium) and each fund’s
 // beta against the total-market fund from the same 2013–2027 covariances. Frontier and maximum-Sharpe portfolio from core/portfolio.js; the
 // capital allocation line and the optimal risky share from core/investments.js. Ines Varga is fictional.
-import { SERIES, MONTHS, DERIVED, MARKET, RISK_PROFILE, ANA } from './case.js?v=39';
-import * as IV from '../../../core/investments.js?v=39';
-import { moments } from '../../../core/portfolio.js?v=39';
+import { SERIES, MONTHS, DERIVED, MARKET, RISK_PROFILE, ANA } from './case.js?v=40';
+import * as IV from '../../../core/investments.js?v=40';
+import { moments } from '../../../core/portfolio.js?v=40';
 
 const st = DERIVED.stats, rfH = st.bills.mean, A = RISK_PROFILE.aversionA;
 const NAMES = ['market', 'intl', 'bonds'];

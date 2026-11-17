@@ -3,7 +3,8 @@
 // Python prints, SQL by running the query on minisql), never typed in by hand.
 //   makeQuestion(track, tier, rand) -> { track, prompt, code, lang, table, options, answer, why }
 //   CATCH_ROUNDS: rules for Syntax Catcher, each makes { rule, good: [text], bad: [{ t, why }] }
-import { query } from './minisql.js?v=39';
+import { query } from './minisql.js?v=40';
+import { PANDAS_Q, SHEET_Q, JS_Q, CATCH2 } from './questions2.js?v=40';
 
 // ---------------------------------------------------------------- helpers
 const ri = (r, a, b) => a + Math.floor(r() * (b - a + 1));
@@ -122,7 +123,7 @@ const WEB = [
   (r) => { const px = pick(r, [8, 12, 16, 24]); return { prompt: 'Which rule adds space inside the box, between its border and its content?', answer: `padding: ${px}px;`, wrong: [`margin: ${px}px;`, `border: ${px}px;`, `spacing: ${px}px;`], why: 'Padding is inside the border; margin is outside it. There is no CSS property called spacing.' }; },
 ];
 
-export const TRACKS = { python: 'Python', sql: 'SQL', web: 'HTML & CSS', mixed: 'Mixed' };
+export const TRACKS = { python: 'Python', pandas: 'pandas', sql: 'SQL', sheets: 'Spreadsheets', web: 'HTML & CSS', js: 'JavaScript', mixed: 'Mixed' };
 
 // The idea each maker tests, in the same order as the makers above. Bug Battle keeps score by topic.
 const tag = (track, list, topics) => list.map((gen, i) => ({ track, gen, topic: topics[i] }));
@@ -134,6 +135,7 @@ const POOL = {
   sqlc: tag('sql', SQL_CONCEPTS, ['WHERE versus HAVING', 'WHERE versus HAVING', 'DISTINCT', 'ORDER BY and LIMIT', 'Quotes and =', 'Clause order', 'LIKE', 'JOIN', 'NULL', 'LEFT JOIN', 'GROUP BY']),
   web: tag('web', WEB, ['HTML tags', 'Attributes', 'Lists', 'Nesting', 'CSS specificity', 'Which rule wins', 'Class selectors', 'Selectors', 'The box model', 'Tags with no closing tag', 'Spotting mistakes', 'Flexbox', 'The box model']),
 };
+for (const [track, list] of [['pandas', PANDAS_Q], ['sheets', SHEET_Q], ['js', JS_Q]]) POOL[track] = list.map((m) => ({ track, gen: m.gen, topic: m.topic }));
 const EVERY = Object.values(POOL).flat();
 
 /** One question. tier 1 (first ideas) to 3 (harder). `focus` is a list of "track|topic" keys to favour. */
@@ -142,10 +144,10 @@ export function makeQuestion(track, tier, rand, focus = null) {
     let pool = null;
     if (focus && focus.length && rand() < 0.75) { const [ft, topic] = pick(rand, focus).split('|'); pool = EVERY.filter((x) => x.track === ft && x.topic === topic); if (!pool.length) pool = null; }
     if (!pool) {
-      const t = track === 'mixed' ? pick(rand, ['python', 'python', 'sql', 'web']) : track;
+      const t = track === 'mixed' ? pick(rand, ['python', 'python', 'sql', 'sql', 'web', 'web', 'pandas', 'sheets', 'js']) : track;
       const lv = Math.min(3, Math.max(1, tier));
       pool = t === 'python' ? (lv === 1 ? POOL.py1 : lv === 2 ? [...POOL.py2, ...POOL.py2, ...POOL.py1] : [...POOL.py3, ...POOL.py3, ...POOL.py2])
-        : t === 'sql' ? (tier > 1 || rand() < 0.6 ? [...POOL.sqlgen, ...POOL.sqlc] : POOL.sqlc) : POOL.web;
+        : t === 'sql' ? (tier > 1 || rand() < 0.6 ? [...POOL.sqlgen, ...POOL.sqlc] : POOL.sqlc) : POOL[t] || POOL.web;
     }
     const maker = pick(rand, pool);
     const q = maker.gen(rand);
@@ -155,7 +157,7 @@ export function makeQuestion(track, tier, rand, focus = null) {
   }
   throw new Error(`no question for ${track}`);
 }
-export const QUESTION_COUNTS = { python: PY[1].length + PY[2].length + PY[3].length, sql: SQLGEN.length + SQL_CONCEPTS.length, web: WEB.length };
+export const QUESTION_COUNTS = { python: PY[1].length + PY[2].length + PY[3].length, sql: SQLGEN.length + SQL_CONCEPTS.length, web: WEB.length, pandas: PANDAS_Q.length, sheets: SHEET_Q.length, js: JS_Q.length };
 
 // ================================================================ Syntax Catcher rounds
 const B = (t, why) => ({ t, why });
@@ -195,3 +197,4 @@ export const CATCH_ROUNDS = [
     good: ['"42"', "'hi'", 'str(5)', '"True"', '"3.0"', "''", 'f"{n}"'],
     bad: [B('42', '42 with no quotes is an integer.'), B('3.0', '3.0 with no quotes is a float.'), B('True', 'True with no quotes is a Boolean.'), B('[1, 2]', 'Square brackets make a list.'), B('None', 'None is its own type.'), B('int("7")', 'int() turns the string into a number.'), B('len("hi")', 'len() returns a number.')] }) },
 ];
+CATCH_ROUNDS.push(...CATCH2);

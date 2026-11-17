@@ -3,8 +3,8 @@
 // fictional. Ana’s plan (ANA) and her 2.8% inflation assumption come from case.js (F04). Corriebank Ferries is a
 // fictional listed company. Damodaran’s figures are quoted from his “Historical Returns on Stocks, Bonds and Bills”
 // page (updated 5 January 2026, opened 11 November 2026); the compound rates derived from them are our arithmetic.
-import { MONTHS, SERIES, ANA, DERIVED } from './case.js?v=39';
-import * as IV from '../../../core/investments.js?v=39';
+import { MONTHS, SERIES, ANA, DERIVED } from './case.js?v=40';
+import * as IV from '../../../core/investments.js?v=40';
 
 const st = DERIVED.stats;
 const years = IV.yearly(MONTHS, SERIES.market);

@@ -14,8 +14,8 @@
 //   project year (April to March); Cold Brew's cans, net price, cost per can, promotion, listing and brand manager by
 //   year, launched in 2028; the 25% tax rate.
 // The model is annual, calendar years; project years are spread over calendar years by months (calendarised).
-import { RESULTS as F03R, PRIOR as F03P, FACTS as F03F } from '../f03/case.js?v=39';
-import { KITCHEN, COLD_BREW, TAX as F05_TAX } from '../f05/case.js?v=39';
+import { RESULTS as F03R, PRIOR as F03P, FACTS as F03F } from '../f03/case.js?v=40';
+import { KITCHEN, COLD_BREW, TAX as F05_TAX } from '../f05/case.js?v=40';
 
 export const TODAY = 'February 2028';
 export const TAX = F05_TAX;
@@ -134,8 +134,8 @@ export const IDENTITIES = [
 //   and are renewed on the same terms when they end in February 2032; the second kitchen's rent is expensed as paid
 //   (a simplification: a lease of over a year would normally be on the balance sheet);
 // - tax is 25% of pre-tax profit; a loss is carried forward against later profits (no other book–tax differences).
-import { BREWER as F03_BREWER, LEASE as F03_LEASE } from '../f03/case.js?v=39';
-import { DEBT as F05_DEBT, HOLLIS as F05_HOLLIS } from '../f05/case.js?v=39';
+import { BREWER as F03_BREWER, LEASE as F03_LEASE } from '../f03/case.js?v=40';
+import { DEBT as F05_DEBT, HOLLIS as F05_HOLLIS } from '../f05/case.js?v=40';
 
 const BS27 = F03R.balanceSheet;
 const line = (side, list, name) => (list ? BS27[side][list] : BS27[side]).find((x) => x[0] === name)?.[1] ?? 0;
@@ -294,7 +294,7 @@ export const MODEL = model();
 
 
 // ================================================================ module 3: valuation and scenarios
-import { DERIVED as F05_DERIVED, MARKET as F05_MARKET } from '../f05/case.js?v=39';
+import { DERIVED as F05_DERIVED, MARKET as F05_MARKET } from '../f05/case.js?v=40';
 /** Valuation inputs: F05's post-financing WACC; Ana's long-run growth; valued at 31 December 2027. */
 export const VALUATION = { wacc: F05_DERIVED.wacc, terminalGrowth: 0.025, hollisPre: F05_DERIVED.preMoney, hollisPost: F05_DERIVED.postMoney };
 const opNwc = (x) => x.receivables + x.contractAsset + x.inventory + x.prepaid - x.payables - x.wagesPayable - x.unearned - x.taxPayable;

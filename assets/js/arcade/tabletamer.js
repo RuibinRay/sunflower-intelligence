@@ -1,10 +1,10 @@
 // tabletamer.js — Table Tamer: the pandas game. The day's orders arrive as a CSV file; a few lines of pandas
 // load it, shape it and serve() the answer. levels2.js runs the program on this file and on two more that are
 // not shown, so an answer typed in by hand does not pass.
-import { PANDAS_LEVELS, pandasRun } from './levels2.js?v=39';
-import { sfx } from './pixel.js?v=39';
-import { h, fill, teacher, topBar, editor, levelStrip, brief, btn, tryStars } from './ui.js?v=39';
-import * as store from './store.js?v=39';
+import { PANDAS_LEVELS, pandasRun } from './levels2.js?v=40';
+import { sfx } from './pixel.js?v=40';
+import { h, fill, teacher, topBar, editor, levelStrip, brief, btn, tryStars } from './ui.js?v=40';
+import * as store from './store.js?v=40';
 
 const num = (v, float) => (v == null ? 'NaN' : typeof v === 'number' ? (float && Number.isInteger(v) ? `${v}.0` : String(Math.round(v * 1e4) / 1e4)) : v === true ? 'True' : v === false ? 'False' : String(v));
 const td = (v, float) => h(`td${typeof v === 'number' || v == null ? '.is-num' : ''}${v == null ? '.is-nan' : ''}`, {}, num(v, float));

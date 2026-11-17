@@ -1,10 +1,10 @@
 // scriptlab.js — Script Lab: the JavaScript game. The learner's code is real JavaScript and is really run, in
 // a worker: a separate thread with no access to this page, stopped after two seconds if it never finishes.
 // The "page" the last levels change is a stand-in made of plain objects (levels2.js, jsCore); this file draws it.
-import { JS_LEVELS, jsCore, jsCases, jsJudge, jsLint } from './levels2.js?v=39';
-import { sfx } from './pixel.js?v=39';
-import { h, fill, teacher, topBar, editor, levelStrip, brief, btn, tryStars } from './ui.js?v=39';
-import * as store from './store.js?v=39';
+import { JS_LEVELS, jsCore, jsCases, jsJudge, jsLint } from './levels2.js?v=40';
+import { sfx } from './pixel.js?v=40';
+import { h, fill, teacher, topBar, editor, levelStrip, brief, btn, tryStars } from './ui.js?v=40';
+import * as store from './store.js?v=40';
 
 const TIMEOUT = { logs: [], served: null, servedText: '', hasServed: false, page: {}, error: { name: 'Timeout', message: 'the code ran for more than two seconds and was stopped' } };
 let workerUrl = null;
