@@ -885,7 +885,7 @@ export function checkCatalog() {
   }
   // A built course without a status is shown as "Planned" on the live site (F05 went live like that).
   for (const c of catalog.COURSES.filter((x) => BUILT.some((b) => b.id === x.id))) {
-    if (!['reviewed', 'complete'].includes(c.status)) r.err(`${c.code}: built but status is ${c.status ? `"${c.status}"` : 'missing'}; set status: 'reviewed' (or 'complete' once live)`);
+    if (!['in-progress', 'reviewed', 'complete'].includes(c.status)) r.err(`${c.code}: built but status is ${c.status ? `"${c.status}"` : 'missing'}; set status: 'in-progress' while lessons are being written, 'reviewed' once all are written and reviewed, 'complete' once live`);
   }
   for (const path of catalog.PATHS) {
     path.courses.forEach((id, i) => {

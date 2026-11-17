@@ -11,7 +11,7 @@ The next layer, lesson by lesson, is an authored opening chapter: a script writt
 lesson's central moment with a custom stage visual. It replaces the generated chapter it retells, and every number
 it says is recomputed in its `checks`.
 
-**Now:** 71 lessons, 33 h 40 min of narration in all (about 28 minutes a lesson at 2.6 words a second). Authored openings written: 3 of 71.
+**Now:** 74 lessons, 34 h 48 min of narration in all (about 28 minutes a lesson at 2.6 words a second). Authored openings written: 3 of 74.
 
 **Stage visuals:**
 - `timeline`: Amounts on a dated line, moved one period at a time (built).
@@ -132,6 +132,20 @@ course by course in study order, F00 to F06; each new F07–F13 lesson ships wit
 | [Relative valuation](../../../../learn/finance/f06/relative-valuation/) | 21 min | 14 | Peers’ multiples applied to Brightcup, and the range of values they give. | curve | planned |
 | [Fundamental analysis](../../../../learn/finance/f06/fundamental-analysis/) | 22 min | 17 | From industry to company to share price: a top-down research path. | tree | planned |
 
+### F07 Financial Modelling
+
+| Lesson | Length | Chapters | Authored opening: the moment acted out | Visual | Script |
+|---|---|---|---|---|---|
+| [Modelling principles](../../../../learn/finance/f07/modelling-principles/) | 26 min | 18 | One input changes and every year downstream updates, while a hard-coded cell stays frozen and is caught. | timeline | planned |
+| [Setting up the history](../../../../learn/finance/f07/setting-up-the-history/) | 21 min | 18 | Reported 2027 EBITDA of $52,587 becomes the normalised $73,587, one labelled adjustment at a time. | bridge | planned |
+| [Revenue and cost forecasts](../../../../learn/finance/f07/revenue-and-cost-forecasts/) | 21 min | 18 | Six revenue lines stack into 2028’s total, then the EBITDA bridge shows Cold Brew’s launch dip. | bridge | planned |
+| working-capital-and-capex | not built | | | | |
+| debt-schedules | not built | | | | |
+| linking-the-statements | not built | | | | |
+| dcf-model | not built | | | | |
+| scenarios-and-sensitivity | not built | | | | |
+| model-review-and-presentation | not built | | | | |
+
 ### F12 Managerial Accounting and Control (planned course)
 
 The numbers managers use inside the business: cost behaviour, product costing, budgets, variances and performance measures that steer decisions.
@@ -149,16 +163,6 @@ How banks, insurers, exchanges and regulators work, why markets are efficient an
 1. *Institutions:* Banks and bank runs; Central banks and monetary policy; Insurance; Exchanges, brokers and clearing.
 2. *How markets behave:* Market efficiency; Behavioural finance; Bubbles and crises.
 3. *Currencies, rules and ethics:* Foreign exchange and interest-rate parity; Regulation; Ethics and professional standards.
-
-Each lesson gets its generated video when it is written, and an authored opening in the same review pass.
-
-### F07 Financial Modelling (planned course)
-
-Build and check three-statement models, forecasts, debt schedules and DCF valuations.
-
-1. *Building a model:* Modelling principles: inputs, calculations, outputs; Reading a 10-K for the model; Error checks and model review.
-2. *The three statements:* Revenue and cost forecasts; Working capital and capital spending schedules; Debt schedules and interest; Linking the three statements.
-3. *Valuation and decisions:* A DCF model from the forecast; Scenarios, sensitivity and data tables; Dashboards and presenting a model.
 
 Each lesson gets its generated video when it is written, and an authored opening in the same review pass.
 

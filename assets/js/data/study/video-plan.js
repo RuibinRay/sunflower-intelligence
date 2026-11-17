@@ -105,6 +105,17 @@ export const PLAN = {
     'relative-valuation': { moment: 'Peers’ multiples applied to Brightcup, and the range of values they give.', visual: 'curve' },
     'fundamental-analysis': { moment: 'From industry to company to share price: a top-down research path.', visual: 'tree' },
   },
+  f07: {
+    'modelling-principles': { moment: 'One input changes and every year downstream updates, while a hard-coded cell stays frozen and is caught.', visual: 'timeline' },
+    'setting-up-the-history': { moment: 'Reported 2027 EBITDA of $52,587 becomes the normalised $73,587, one labelled adjustment at a time.', visual: 'bridge' },
+    'revenue-and-cost-forecasts': { moment: 'Six revenue lines stack into 2028’s total, then the EBITDA bridge shows Cold Brew’s launch dip.', visual: 'bridge' },
+    'working-capital-and-capex': { moment: 'Sales grow and cash is tied up in receivables and inventory, day by day.', visual: 'bridge' },
+    'debt-schedules': { moment: 'Coastline’s $60,000 loan amortising month by month, with interest and the year-end balance.', visual: 'growth' },
+    'linking-the-statements': { moment: 'One forecast year closes: profit flows to equity, cash flow to the balance sheet, and the check reads zero.', visual: 'bridge' },
+    'dcf-model': { moment: 'The model’s free cash flows discounted and summed into a value for Hollis Avery’s 30%.', visual: 'timeline' },
+    'scenarios-and-sensitivity': { moment: 'The current ratio under base, slow-growth and late-kitchen scenarios against the 1.2 covenant line.', visual: 'curve' },
+    'model-review-and-presentation': { moment: 'A reviewer’s checklist run over the model, each check turning from red to zero.', visual: 'tree' },
+  },
 };
 
 /** Proposed modules and lessons for the finance courses not yet written, from the benchmark review in FINANCE_PLAN.md. */
