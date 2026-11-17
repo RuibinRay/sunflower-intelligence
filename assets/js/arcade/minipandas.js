@@ -4,7 +4,7 @@
 // (tests/arcade.test.mjs runs every level's solution through real pandas when it is installed).
 // A cell is a number, a string, true/false or null (missing, shown as NaN). Each column has a dtype:
 // 'int' | 'float' | 'str' | 'bool'. Objects here speak to minipy through pyShow, pyIndex, pyMethod and friends.
-import { PyError, F, show, pyRound } from './minipy.js?v=39';
+import { PyError, F, show, pyRound } from './minipy.js?v=40';
 
 const un = (v) => (v instanceof F ? (Number.isNaN(v.n) ? null : v.n) : v);
 const out = (v, dtype) => (v == null ? new F(NaN) : dtype === 'float' ? new F(v) : v);

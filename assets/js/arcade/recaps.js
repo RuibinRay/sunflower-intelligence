@@ -3,7 +3,7 @@
 //   RECAPS[game][levelId] = [learned, example, question, right answer, wrong, wrong, why]
 // The recap is shown when a level is solved, with the question as a quick check, and kept in the game's Notes.
 
-import { INTROS2, RECAPS2 } from './recaps2.js?v=39';
+import { INTROS2, RECAPS2 } from './recaps2.js?v=40';
 
 export const INTROS = {
   datadiner: {

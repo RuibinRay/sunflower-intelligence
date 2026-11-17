@@ -1,7 +1,7 @@
 // revenue-and-cost-forecasts.ex.js — F07 · Revenue and cost forecasts: widgets, practice and the knowledge check
 // (answer keys live here). The sheet rebuilds case.js's FORECAST with formulas (tests/f07.test.mjs checks they agree).
 // Every num item's `check` recomputes its answer.
-import { HISTORY, ASSUME as A, FORECAST as F } from './case.js?v=39';
+import { HISTORY, ASSUME as A, FORECAST as F } from './case.js?v=40';
 
 const H7 = HISTORY[2027];
 const COLS = ['D', 'E', 'F', 'G', 'H'];

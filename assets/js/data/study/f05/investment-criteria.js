@@ -3,10 +3,10 @@
 // case.js. Ana’s three-year payback rule of thumb, the quarry, the events company and the two lamp projects are
 // fictional and new to this lesson. The survey evidence is Graham & Harvey (2001), reported only as far as its abstract,
 // the part opened.
-import { coldBrewFlows, PROPOSALS, WORKING_RATE } from './case.js?v=39';
-import { npv, irr, irrAll, mirr, payback, profitabilityIndex } from '../../../core/invest.js?v=39';
-import { projectCashFlows } from '../../../core/corpfin.js?v=39';
-import { widgets } from './investment-criteria.ex.js?v=39';
+import { coldBrewFlows, PROPOSALS, WORKING_RATE } from './case.js?v=40';
+import { npv, irr, irrAll, mirr, payback, profitabilityIndex } from '../../../core/invest.js?v=40';
+import { projectCashFlows } from '../../../core/corpfin.js?v=40';
+import { widgets } from './investment-criteria.ex.js?v=40';
 
 const r = WORKING_RATE;
 const cb = coldBrewFlows().fcf;

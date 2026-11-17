@@ -2,10 +2,10 @@
 // weighted-average-cost-of-capital.ex.js. Lantern’s WACC is DERIVED.targetWacc in case.js (target weights, TARGET_DV);
 // its 2027 book values come from f03/case.js. Wren Valley Storage, Fizzwell Drinks and Northmoor Group are fictional.
 // The post-financing WACC (DERIVED.wacc) belongs to the course project and is not used here.
-import { MARKET, PEERS, DEBT, TARGET_DV, TAX, WORKING_RATE, DERIVED, coldBrewFlows } from './case.js?v=39';
-import { PERIODS } from '../f03/case.js?v=39';
-import * as CF from '../../../core/corpfin.js?v=39';
-import { npv, irr } from '../../../core/invest.js?v=39';
+import { MARKET, PEERS, DEBT, TARGET_DV, TAX, WORKING_RATE, DERIVED, coldBrewFlows } from './case.js?v=40';
+import { PERIODS } from '../f03/case.js?v=40';
+import * as CF from '../../../core/corpfin.js?v=40';
+import { npv, irr } from '../../../core/invest.js?v=40';
 
 const { rf, mrp, smallFirm } = MARKET;
 const rD = DEBT.termLoan.rate, rDat = rD * (1 - TAX);

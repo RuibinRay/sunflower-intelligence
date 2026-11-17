@@ -1,9 +1,9 @@
 // levels.js — the levels of the three teaching games, and the rules that judge them. No drawing here, so
 // tests/arcade.test.mjs can run every reference solution.
-import { parse, exec, countLines, PyError, show, fromJs, toJs } from './minipy.js?v=39';
-import { parseCss, styleTree } from './minicss.js?v=39';
-import { mulberry32 } from '../core/rng.js?v=39';
-import { query, sameResult } from './minisql.js?v=39';
+import { parse, exec, countLines, PyError, show, fromJs, toJs } from './minipy.js?v=40';
+import { parseCss, styleTree } from './minicss.js?v=40';
+import { mulberry32 } from '../core/rng.js?v=40';
+import { query, sameResult } from './minisql.js?v=40';
 
 // ================================================================ Py Quest (Python)
 // Maps are 10 x 7. '#' hedge, '~' pond, '.' grass, 'F' flower, 'H' hive. start = [x, y, facing].

@@ -670,6 +670,6 @@ export const ARCADE = [
   { id: 'tagbuilder', kind: 'learn', lang: 'HTML', name: 'Tag Builder', levels: 8, blurb: 'Build the shop’s web page tag by tag and watch it appear as you type: headings, links, images, lists and page landmarks.' },
   { id: 'stylelab', kind: 'learn', lang: 'CSS', name: 'Style Shop', levels: 9, blurb: 'Dress the shop’s page with CSS: rules, classes and ids, the box model, which rule wins, and laying things out in a row.' },
   { id: 'scriptlab', kind: 'learn', lang: 'JavaScript', name: 'Script Lab', levels: 12, blurb: 'Write real JavaScript and run it: variables, template strings, if, arrays, loops, functions, objects, map and filter, then change a page and react to a click.' },
-  { id: 'arena', kind: 'loop', lang: 'Python · SQL · HTML & CSS', name: 'Bug Battle', blurb: 'An endless quiz fight. Read the code, pick what it does, sting the bug. New questions every run, a daily run, and practice on your weak spots.' },
-  { id: 'catcher', kind: 'loop', lang: 'Python · SQL · HTML · CSS', name: 'Syntax Catcher', blurb: 'Words fall, the rule changes every round. Catch the real keywords, tags and properties and let the fakes drop.' },
+  { id: 'arena', kind: 'loop', lang: 'All seven topics', name: 'Bug Battle', blurb: 'An endless quiz fight. Read the code, pick what it does, sting the bug. New questions every run, a daily run, and practice on your weak spots.' },
+  { id: 'catcher', kind: 'loop', lang: 'All seven topics', name: 'Syntax Catcher', blurb: 'Words fall, the rule changes every round. Catch the real keywords, tags, properties, formulas and pandas commands, and let the fakes drop.' },
 ];

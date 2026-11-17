@@ -1,10 +1,10 @@
 // datadiner.js — Data Diner: the first Python game. A customer hands over some data (the ticket), and a few
 // lines of Python work out the answer and serve() it. levels.js runs the program on this customer and on two
 // more that are not shown, so an answer typed in by hand does not pass.
-import { DATA_LEVELS, dataRun, showValue } from './levels.js?v=39';
-import { PAL, stage, drawSprite, drawText, loop, sfx, calm, hash } from './pixel.js?v=39';
-import { h, fill, teacher, topBar, editor, levelStrip, brief, btn, tryStars } from './ui.js?v=39';
-import * as store from './store.js?v=39';
+import { DATA_LEVELS, dataRun, showValue } from './levels.js?v=40';
+import { PAL, stage, drawSprite, drawText, loop, sfx, calm, hash } from './pixel.js?v=40';
+import { h, fill, teacher, topBar, editor, levelStrip, brief, btn, tryStars } from './ui.js?v=40';
+import * as store from './store.js?v=40';
 
 const W = 200, H = 96;
 const SHIRTS = [PAL.sun, PAL.terracotta, PAL.foam, PAL.leaf, PAL.pink, PAL.ivory];

@@ -18,11 +18,11 @@
 //   to Hollis Avery so that Hollis owns 30%.
 // - m06: Ana's 10% a year used for customer lifetime value there was a round working rate; F05 estimates the cost of
 //   capital properly (lessons may say so).
-import { RESULTS as F03R, FACTS as F03F, BREWER as F03_BREWER } from '../f03/case.js?v=39';
-import { COASTLINE_NOTE, BREWER as F04_BREWER } from '../f04/case.js?v=39';
-import { TIERS, CHANNELS } from '../m02/market.js?v=39';
-import * as CF from '../../../core/corpfin.js?v=39';
-import { npv, irr, appraise } from '../../../core/invest.js?v=39';
+import { RESULTS as F03R, FACTS as F03F, BREWER as F03_BREWER } from '../f03/case.js?v=40';
+import { COASTLINE_NOTE, BREWER as F04_BREWER } from '../f04/case.js?v=40';
+import { TIERS, CHANNELS } from '../m02/market.js?v=40';
+import * as CF from '../../../core/corpfin.js?v=40';
+import { npv, irr, appraise } from '../../../core/invest.js?v=40';
 
 export const TODAY = 'February 2028';
 export const TAX = 0.25;
