@@ -2,8 +2,8 @@
 // funds-and-indexing). No hints. Each item has a full solution, shown when the student reviews the test. New questions,
 // not copies of the lesson exercises. Every business, fund and person named here is fictional; items 2, 6 and 12 refer
 // to the course’s simulated data or its fictional funds.
-import { MARKET, ASSETS } from './case.js?v=33';
-import * as IV from '../../../core/investments.js?v=33';
+import { MARKET, ASSETS } from './case.js?v=34';
+import * as IV from '../../../core/investments.js?v=34';
 
 const { rf, mrp } = MARKET;
 // item 9: twelve months of fictional excess returns (decimals)

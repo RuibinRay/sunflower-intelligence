@@ -4,10 +4,10 @@
 // B05's Simpson's paradox (footfall and the average ticket) with a café dummy. Ashmere Hotel is fictional. Comparing
 // groups of dummies with a nested F test is multicollinearity-and-model-choice's. Every figure printed is recomputed in
 // `checks`.
-import { column, DERIVED as D } from './case.js?v=33';
-import { DERIVED as B05 } from '../b05/case.js?v=33';
-import * as R from '../../../core/regression.js?v=33';
-import { mean } from '../../../core/stats.js?v=33';
+import { column, DERIVED as D } from './case.js?v=34';
+import { DERIVED as B05 } from '../b05/case.js?v=34';
+import * as R from '../../../core/regression.js?v=34';
+import { mean } from '../../../core/stats.js?v=34';
 
 // ---------------------------------------------------------------- both cafés, 612 café-days
 const y = column('footfall'), mb = column('millbrook'), wk = column('weekend'), hi = column('high_f'), rain = column('rain_in');

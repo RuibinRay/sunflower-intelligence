@@ -11,7 +11,7 @@ The next layer, lesson by lesson, is an authored opening chapter: a script writt
 lesson's central moment with a custom stage visual. It replaces the generated chapter it retells, and every number
 it says is recomputed in its `checks`.
 
-**Now:** 74 lessons, 34 h 48 min of narration in all (about 28 minutes a lesson at 2.6 words a second). Authored openings written: 3 of 74.
+**Now:** 77 lessons, 35 h 45 min of narration in all (about 28 minutes a lesson at 2.6 words a second). Authored openings written: 3 of 77.
 
 **Stage visuals:**
 - `timeline`: Amounts on a dated line, moved one period at a time (built).
@@ -139,9 +139,9 @@ course by course in study order, F00 to F06; each new F07–F13 lesson ships wit
 | [Modelling principles](../../../../learn/finance/f07/modelling-principles/) | 26 min | 18 | One input changes and every year downstream updates, while a hard-coded cell stays frozen and is caught. | timeline | planned |
 | [Setting up the history](../../../../learn/finance/f07/setting-up-the-history/) | 21 min | 18 | Reported 2027 EBITDA of $52,587 becomes the normalised $73,587, one labelled adjustment at a time. | bridge | planned |
 | [Revenue and cost forecasts](../../../../learn/finance/f07/revenue-and-cost-forecasts/) | 21 min | 18 | Six revenue lines stack into 2028’s total, then the EBITDA bridge shows Cold Brew’s launch dip. | bridge | planned |
-| working-capital-and-capex | not built | | | | |
-| debt-schedules | not built | | | | |
-| linking-the-statements | not built | | | | |
+| [Working capital and capital spending](../../../../learn/finance/f07/working-capital-and-capex/) | 19 min | 20 | Sales grow and cash is tied up in receivables and inventory, day by day. | bridge | planned |
+| [Debt schedules](../../../../learn/finance/f07/debt-schedules/) | 19 min | 19 | Coastline’s $60,000 loan amortising month by month, with interest and the year-end balance. | growth | planned |
+| [Linking the statements](../../../../learn/finance/f07/linking-the-statements/) | 19 min | 18 | One forecast year closes: profit flows to equity, cash flow to the balance sheet, and the check reads zero. | bridge | planned |
 | dcf-model | not built | | | | |
 | scenarios-and-sensitivity | not built | | | | |
 | model-review-and-presentation | not built | | | | |

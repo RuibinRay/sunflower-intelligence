@@ -2,7 +2,7 @@
 // Lantern's figures come from case.js (HISTORY from F02/F03, ASSUME from F05 and Ana's estimates). The faulty model in
 // the challenging example is invented for teaching and labelled. Real-world claims (the ICAEW Financial Modelling
 // Code, the FAST Standard's four letters, Excel's reference behaviour) are cited in `references`.
-import { HISTORY, ASSUME } from './case.js?v=33';
+import { HISTORY, ASSUME } from './case.js?v=34';
 
 const H = HISTORY[2027];
 const g = ASSUME.online.growth;

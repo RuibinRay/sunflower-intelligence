@@ -1,9 +1,9 @@
 // ui.js (valuation) — small controls the studio's panels share: number inputs, sliders, fields, blocks, help links.
-import { h, $$ } from '../core/dom.js?v=33';
-import * as F from '../core/format.js?v=33';
-import { fillRange } from '../core/site.js?v=33';
-import { LEARN_LINKS } from '../data/valuation-tutorials.js?v=33';
-import { inline } from './inline.js?v=33';
+import { h, $$ } from '../core/dom.js?v=34';
+import * as F from '../core/format.js?v=34';
+import { fillRange } from '../core/site.js?v=34';
+import { LEARN_LINKS } from '../data/valuation-tutorials.js?v=34';
+import { inline } from './inline.js?v=34';
 
 const fin = Number.isFinite;
 export const ROOT = '../../';

@@ -1,13 +1,13 @@
 // analytics-explore.js — data quality, describe, correlate, regress. The loaded table is shared with the other analytics pages.
-import { initSite, syncRanges } from '../core/site.js?v=33';
-import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=33';
-import * as F from '../core/format.js?v=33';
-import * as S from '../core/stats.js?v=33';
-import { parseTable, audit, applyTransforms, isNumeric } from '../core/csv.js?v=33';
-import { sunflowerTrials, cafeWeeks, subscriberChurn } from '../core/rng.js?v=33';
-import { histogramChart, scatter, heatmap, tableTwin } from '../core/charts.js?v=33';
-import { fillSelect, chips, checkedIn } from '../core/ui.js?v=33';
-import { saveShared } from '../core/datasource.js?v=33';
+import { initSite, syncRanges } from '../core/site.js?v=34';
+import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=34';
+import * as F from '../core/format.js?v=34';
+import * as S from '../core/stats.js?v=34';
+import { parseTable, audit, applyTransforms, isNumeric } from '../core/csv.js?v=34';
+import { sunflowerTrials, cafeWeeks, subscriberChurn } from '../core/rng.js?v=34';
+import { histogramChart, scatter, heatmap, tableTwin } from '../core/charts.js?v=34';
+import { fillSelect, chips, checkedIn } from '../core/ui.js?v=34';
+import { saveShared } from '../core/datasource.js?v=34';
 
 initSite();
 

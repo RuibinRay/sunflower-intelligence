@@ -5,13 +5,13 @@
 // of contacting the top groups. Numbers from core/customer.js liftTable and core/classify.js roc.
 //   { type: 'lift', title, y: { name, values (0/1), yes: 'lapsed' }, scores: { 'Model': [...], 'Recency only': [...] },
 //     k: 10, cost?: { contact: 2, value: 15 }, note }
-import { h, onResize } from '../../core/dom.js?v=33';
-import { xl } from '../xl.js?v=33';
-import { lineChart } from '../../core/charts.js?v=33';
-import * as CU from '../../core/customer.js?v=33';
-import { roc } from '../../core/classify.js?v=33';
-import * as F from '../../core/format.js?v=33';
-import { segmented } from '../dist-draw.js?v=33';
+import { h, onResize } from '../../core/dom.js?v=34';
+import { xl } from '../xl.js?v=34';
+import { lineChart } from '../../core/charts.js?v=34';
+import * as CU from '../../core/customer.js?v=34';
+import { roc } from '../../core/classify.js?v=34';
+import * as F from '../../core/format.js?v=34';
+import { segmented } from '../dist-draw.js?v=34';
 
 /** Lift table and AUC for one score (exported for the checker). */
 export function compute(y, score, k = 10) { return { ...CU.liftTable(y, score, k), auc: roc(y, score).auc }; }

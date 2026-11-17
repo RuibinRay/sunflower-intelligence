@@ -2,8 +2,8 @@
 // here). Harbour Street Foods and Morrow & Pike Roasters come from case.js; the market returns are SIMULATED
 // (tools/study/f06-data.py). Cardale Outdoor, Brookmere Brewing and every other business named here is fictional.
 // Brightcup Coffee is the course project’s and is not analysed here.
-import { COMPANIES, BONDS, MARKET, MONTHS, SERIES } from './case.js?v=33';
-import * as IV from '../../../core/investments.js?v=33';
+import { COMPANIES, BONDS, MARKET, MONTHS, SERIES } from './case.js?v=34';
+import * as IV from '../../../core/investments.js?v=34';
 
 const M = COMPANIES.morrow, H = COMPANIES.harbour;
 const { rf, mrp } = MARKET;

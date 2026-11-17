@@ -2,8 +2,8 @@
 // check (answer keys live here). Morrow & Pike Roasters and Harbour Street Foods come from case.js; every other business
 // named here (Windrush Water, Ivelston Bakeries, Hesketh Freight, Sandling Storage, Wenning Mills) is fictional.
 // Brightcup Coffee is the course project’s and is not valued here.
-import { COMPANIES, MORROW_FORECAST as MF, BONDS, MARKET } from './case.js?v=33';
-import * as IV from '../../../core/investments.js?v=33';
+import { COMPANIES, MORROW_FORECAST as MF, BONDS, MARKET } from './case.js?v=34';
+import * as IV from '../../../core/investments.js?v=34';
 
 const M = COMPANIES.morrow, H = COMPANIES.harbour;
 const { rf, mrp } = MARKET;

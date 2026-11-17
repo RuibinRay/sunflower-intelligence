@@ -14,8 +14,8 @@
 //   project year (April to March); Cold Brew's cans, net price, cost per can, promotion, listing and brand manager by
 //   year, launched in 2028; the 25% tax rate.
 // The model is annual, calendar years; project years are spread over calendar years by months (calendarised).
-import { RESULTS as F03R, PRIOR as F03P, FACTS as F03F } from '../f03/case.js?v=33';
-import { KITCHEN, COLD_BREW, TAX as F05_TAX } from '../f05/case.js?v=33';
+import { RESULTS as F03R, PRIOR as F03P, FACTS as F03F } from '../f03/case.js?v=34';
+import { KITCHEN, COLD_BREW, TAX as F05_TAX } from '../f05/case.js?v=34';
 
 export const TODAY = 'February 2028';
 export const TAX = F05_TAX;
@@ -123,3 +123,168 @@ export const IDENTITIES = [
   ['the second kitchen opens on 1 April 2028 (F05)', KITCHEN.opens === '1 April 2028'],
   ['the tax rate is F03’s and F05’s 25%', F03F.tax.rate === TAX],
 ];
+
+// ================================================================ module 2: the full three-statement model
+// Everything below builds on FORECAST (to EBITDA). Conventions, each stated in the lessons:
+// - depreciation is straight line by month from the month an asset comes into use (F02/F03's convention);
+// - interest is charged loan by loan for the months each balance is outstanding; the line of credit is charged on its
+//   opening balance for the year, which keeps the model free of circular references;
+// - the line of credit is the model's balancing item: it is drawn to keep cash at a minimum and repaid when cash allows;
+// - the cafés' operating leases keep a right-of-use asset equal to the lease liability (level payments, no incentives),
+//   and are renewed on the same terms when they end in February 2032; the second kitchen's rent is expensed as paid
+//   (a simplification: a lease of over a year would normally be on the balance sheet);
+// - tax is 25% of pre-tax profit; a loss is carried forward against later profits (no other book–tax differences).
+import { BREWER as F03_BREWER, LEASE as F03_LEASE } from '../f03/case.js?v=34';
+import { DEBT as F05_DEBT, HOLLIS as F05_HOLLIS } from '../f05/case.js?v=34';
+
+const BS27 = F03R.balanceSheet;
+const line = (side, list, name) => (list ? BS27[side][list] : BS27[side]).find((x) => x[0] === name)?.[1] ?? 0;
+/** The balance sheet at 31 December 2027, condensed into the model's lines (F03). */
+export const OPENING = {
+  cash: line('assets', 'current', 'Cash'),
+  receivables: line('assets', 'current', 'Accounts Receivable') + line('assets', 'current', 'Allowance for Doubtful Accounts'),
+  contractAsset: line('assets', 'current', 'Contract Asset'),
+  inventory: line('assets', 'current', 'Inventory'),
+  prepaid: line('assets', 'current', 'Supplies') + line('assets', 'current', 'Prepaid Insurance'),
+  ppeCost: line('assets', 'noncurrent', 'Equipment') + line('assets', 'noncurrent', 'Leasehold Improvements') + line('assets', 'noncurrent', 'Van'),
+  accDep: -(line('assets', 'noncurrent', 'Accumulated Depreciation—Equipment') + line('assets', 'noncurrent', 'Accumulated Depreciation—Leasehold Improvements') + line('assets', 'noncurrent', 'Accumulated Depreciation—Van')),
+  rou: line('assets', 'noncurrent', 'Operating Lease Right-of-Use Assets'),
+  payables: line('liabilities', 'current', 'Accounts Payable'),
+  loc: line('liabilities', 'current', 'Line of Credit'),
+  wagesPayable: line('liabilities', 'current', 'Wages Payable'),
+  interestPayable: line('liabilities', 'current', 'Interest Payable'),
+  unearned: line('liabilities', 'current', 'Unearned Revenue'),
+  taxPayable: line('liabilities', 'current', 'Income Taxes Payable'),
+  currentDebt: line('liabilities', 'current', 'Current Portion of Long-Term Debt'),
+  leaseLiability: line('liabilities', 'current', 'Current Portion of Operating Lease Liabilities') + line('liabilities', 'noncurrent', 'Operating Lease Liabilities'),
+  longDebt: line('liabilities', 'noncurrent', 'Notes Payable') + line('liabilities', 'noncurrent', 'Instalment Note Payable'),
+  commonStock: line('equity', null, 'Common Stock'),
+  retained: line('equity', null, 'Retained Earnings'),
+};
+
+/** Assets: cost, first month in use (year, month 1–12), monthly depreciation and life in months. */
+const mo = (y, m) => y * 12 + (m - 1);
+export const ASSETS = [
+  { name: 'Espresso equipment (F02)', cost: 12_000, from: mo(2026, 3), monthly: 200, months: 60 },
+  { name: 'Van (F02; $6,000 residual)', cost: 30_000, from: mo(2026, 6), monthly: 400, months: 60 },
+  { name: 'Café espresso machines (F03)', cost: 18_000, from: mo(2027, 3), monthly: 300, months: 60 },
+  { name: 'Cold-brew brewer (F03)', cost: 24_000, from: mo(2027, 4), monthly: 400, months: 60 },
+  { name: 'Café fit-out (F03)', cost: 36_000, from: mo(2027, 3), monthly: 600, months: 60 },
+  { name: 'Second kitchen equipment (F05)', cost: KITCHEN.equipment, from: mo(2028, 4), monthly: KITCHEN.equipment / 84, months: 84, capex: 2028 },
+  { name: 'Second kitchen fit-out (F05)', cost: KITCHEN.fitOut, from: mo(2028, 4), monthly: KITCHEN.fitOut / 60, months: 60, capex: 2028 },
+  { name: 'Cold Brew display fridges (F05)', cost: COLD_BREW.equipment, from: mo(2028, 4), monthly: COLD_BREW.equipment / 60, months: 60, capex: 2028 },
+  ...[2029, 2030, 2031, 2032].map((y) => ({ name: `Replacements and upkeep ${y}`, cost: 25_000, from: mo(y, 7), monthly: 25_000 / 60, months: 60, capex: y })),
+  { name: 'Café refit at lease renewal (fit-out)', cost: 36_000, from: mo(2032, 3), monthly: 600, months: 60, capex: 2032 },
+  { name: 'Café refit at lease renewal (espresso machines)', cost: 18_000, from: mo(2032, 3), monthly: 300, months: 60, capex: 2032 },
+];
+/** Depreciation of one asset in calendar year y. */
+export const depIn = (a, y) => { let d = 0; for (let m = mo(y, 1); m <= mo(y, 12); m++) if (m >= a.from && m < a.from + a.months) d += a.monthly; return d; };
+
+/** Working capital assumptions (Ana's, from the 2027 accounts). */
+export const WC = { dso: 25, coldBrewDays: 60, dio: 21, dpo: 21, wageDays: 10, unearnedShare: 0.016, taxPayableShare: 0.40, prepaid: OPENING.prepaid };
+export const FINANCE = { minCash: 15_000, locLimit: F05_DEBT.lineOfCredit.limit, locRate: F05_DEBT.lineOfCredit.rate, hollis: F05_HOLLIS.cash, payout: 0.30 };   // dividends: 30% of the previous year's profit, none after a loss
+
+// ---------------------------------------------------------------- loan schedules (calendar-year interest, principal, closing balance, interest owed)
+function amortise(P, rMonth, n) { const pay = P * rMonth / (1 - (1 + rMonth) ** -n); const rows = []; let b = P; for (let k = 1; k <= n; k++) { const i = b * rMonth; b = b + i - pay; rows.push({ k, interest: i, principal: pay - i, end: Math.max(0, b) }); } return { pay, rows }; }
+export const TERM_LOAN = (() => { const t = F05_DEBT.termLoan; const a = amortise(t.amount, t.rate / 12, t.years * 12); return { ...a, amount: t.amount, rate: t.rate, firstPayment: mo(2028, 4) }; })();
+export function loanYears() {
+  const ys = YEARS, out = {};
+  // the first Coastline note: $10,000 at 6%, interest quarterly, repaid 1 March 2028
+  out.note = ys.map((y) => (y === 2028 ? { interest: 10_000 * 0.06 * 2 / 12, principal: 10_000, end: 0, owed: 0 } : { interest: 0, principal: 0, end: 0, owed: 0 }));
+  // the van note: $5,000 each 1 June with the year's interest at 6%
+  const vanBal = { 2027: 15_000, 2028: 10_000, 2029: 5_000, 2030: 0 };
+  out.van = ys.map((y) => { const open = vanBal[y - 1] ?? 0, close = vanBal[y] ?? 0; return { interest: open * 0.06 * 5 / 12 + close * 0.06 * 7 / 12, principal: open - close, end: close, owed: close * 0.06 * 7 / 12 }; });
+  // the brewer plan: payment k on the 1st of month (April 2027 + k) covers the interest of month (April 2027 + k − 1)
+  const R = F03_BREWER.rows, monthOf = (k) => mo(2027, 4) + (k - 1);          // the month whose interest payment k carries
+  const payMonth = (k) => mo(2027, 5) + (k - 1);
+  out.brewer = ys.map((y) => {
+    const interest = R.filter((r) => monthOf(r.k) >= mo(y, 1) && monthOf(r.k) <= mo(y, 12)).reduce((s, r) => s + r.interest, 0);
+    const paid = R.filter((r) => payMonth(r.k) >= mo(y, 1) && payMonth(r.k) <= mo(y, 12));
+    const endRow = R.filter((r) => payMonth(r.k) <= mo(y, 12)).pop();
+    const startRow = R.filter((r) => payMonth(r.k) <= mo(y - 1, 12)).pop();
+    const end = endRow.k === R.length ? 0 : endRow.end;
+    const owedRow = R.find((r) => monthOf(r.k) === mo(y, 12));
+    // the plan's last row leaves a cent of rounding (treated as repaid); its 2027 year-end balance is taken as F03's balance
+    // sheet shows it, to the dollar, so the model starts from the accounts
+    const start = !startRow || startRow.k === R.length ? 0 : y === 2028 ? Math.round(startRow.end) : startRow.end;
+    return { interest, principal: start - end, end, owed: owedRow ? owedRow.interest : 0, payments: paid.length * F03F.brewer.instalment };
+  });
+  // the term loan: drawn 31 March 2028, payments at each month end from 30 April 2028 (interest included: nothing owed)
+  out.term = ys.map((y) => { const rows = TERM_LOAN.rows.filter((r, i) => TERM_LOAN.firstPayment + i >= mo(y, 1) && TERM_LOAN.firstPayment + i <= mo(y, 12)); const last = TERM_LOAN.rows.filter((r, i) => TERM_LOAN.firstPayment + i <= mo(y, 12)).pop(); return { interest: rows.reduce((s, r) => s + r.interest, 0), principal: rows.reduce((s, r) => s + r.principal, 0), end: last ? last.end : 0, owed: 0, drawn: y === 2028 ? TERM_LOAN.amount : 0 }; });
+  return out;
+}
+/** The cafés' lease liability (= right-of-use asset) at each year end, with renewal on the same terms in March 2032. */
+export function leaseYears() {
+  const R = F03_LEASE.rows;                                                 // month m = 0 is March 2027; row m's end is after that month
+  const at = (y) => { const m = mo(y, 12) - mo(2027, 3); return m < R.length ? R[m].end : null; };
+  return YEARS.map((y) => { const v = at(y); return v ?? R[mo(y, 12) - mo(2032, 3)].end; });   // renewed: the same schedule restarts in March 2032
+}
+
+export function model(A = ASSUME, W = WC, Fin = FINANCE) {
+  const F = forecast(A), n = YEARS.length, L = loanYears(), lease = leaseYears();
+  const dep = YEARS.map((y) => ASSETS.reduce((s, a) => s + depIn(a, y), 0));
+  const capex = YEARS.map((y) => ASSETS.filter((a) => a.capex === y).reduce((s, a) => s + a.cost, 0));
+  const out = { years: YEARS, F, dep, capex, lease, loans: L, rows: [] };
+  let prev = { ...OPENING, nol: 0, netIncome: 0 };
+  for (let t = 0; t < n; t++) {
+    const y = YEARS[t];
+    const dividends = t === 0 ? 0 : Fin.payout * Math.max(0, prev.netIncome);
+    const ebit = F.ebitda[t] - dep[t];
+    const locInterest = prev.loc * Fin.locRate;
+    const interest = L.note[t].interest + L.van[t].interest + L.brewer[t].interest + L.term[t].interest + locInterest;
+    const ebt = ebit - interest;
+    const taxable = Math.max(0, ebt - prev.nol);
+    const nol = Math.max(0, prev.nol - Math.max(0, ebt)) + Math.max(0, -ebt);
+    const tax = taxable * TAX;
+    const netIncome = ebt - tax;
+    // working capital at the year end
+    const invoiced = F.catering[t] + F.training[t] + F.kitchen[t];
+    const wc = {
+      receivables: invoiced * W.dso / 365 + F.coldBrew[t] * W.coldBrewDays / 365, contractAsset: 0,
+      inventory: F.costOfGoods[t] * W.dio / 365, prepaid: W.prepaid,
+      payables: F.costOfGoods[t] * W.dpo / 365, wagesPayable: F.wages[t] * W.wageDays / 365,
+      unearned: F.revenue[t] * W.unearnedShare, taxPayable: tax * W.taxPayableShare,
+    };
+    const debtPrincipal = L.note[t].principal + L.van[t].principal + L.brewer[t].principal + L.term[t].principal;
+    const ppeCost = prev.ppeCost + capex[t], accDep = prev.accDep + dep[t];
+    // cash before the line of credit moves
+    const dNwcAssets = (wc.receivables - prev.receivables) + (wc.contractAsset - prev.contractAsset) + (wc.inventory - prev.inventory) + (wc.prepaid - prev.prepaid);
+    const dNwcLiabs = (wc.payables - prev.payables) + (wc.wagesPayable - prev.wagesPayable) + (wc.unearned - prev.unearned) + (wc.taxPayable - prev.taxPayable);
+    const fixedOwed = L.note[t].owed + L.van[t].owed + L.brewer[t].owed + L.term[t].owed;
+    const cfoBeforeLocOwed = netIncome + dep[t] - dNwcAssets + dNwcLiabs + (fixedOwed - prev.interestPayable);
+    const cfi = -capex[t];
+    const cffBeforeLoc = L.term[t].drawn + (t === 0 ? Fin.hollis : 0) - debtPrincipal - dividends;
+    const cashBefore = prev.cash + cfoBeforeLocOwed + cfi + cffBeforeLoc;
+    // the line of credit: draw or repay so that cash ends at the minimum, within the limit; its interest is paid in the year
+    const loc = Math.min(Fin.locLimit, Math.max(0, prev.loc + Fin.minCash - cashBefore));
+    const locOwedEnd = 0;
+    const cash = cashBefore + (loc - prev.loc);
+    const interestPayable = fixedOwed;
+    out.locNeed = out.locNeed || []; out.locNeed[t] = prev.loc + Fin.minCash - cashBefore;   // > limit means a funding gap
+    out.cashBefore = out.cashBefore || []; out.cashBefore[t] = cashBefore;
+    const cfo = cfoBeforeLocOwed + locOwedEnd;
+    const cff = cffBeforeLoc + (loc - prev.loc);
+    const debtEnd = L.van[t].end + L.brewer[t].end + L.term[t].end;
+    const nextPrincipal = t + 1 < n ? L.van[t + 1].principal + L.brewer[t + 1].principal + L.term[t + 1].principal : TERM_LOAN.rows.filter((r, i) => TERM_LOAN.firstPayment + i >= mo(y + 1, 1) && TERM_LOAN.firstPayment + i <= mo(y + 1, 12)).reduce((s, r) => s + r.principal, 0);
+    const commonStock = prev.commonStock + (t === 0 ? Fin.hollis : 0);
+    const retained = prev.retained + netIncome - dividends;
+    const row = {
+      year: y, ebitda: F.ebitda[t], dep: dep[t], ebit, interest, locInterest, ebt, tax, netIncome, nol,
+      cash, ...wc, ppeCost, accDep, ppeNet: ppeCost - accDep, rou: lease[t],
+      loc, interestPayable, currentDebt: nextPrincipal, longDebt: debtEnd - nextPrincipal, debtEnd, leaseLiability: lease[t],
+      commonStock, retained, dividends, capex: capex[t], debtPrincipal, cfo, cfi, cff, dNwcAssets, dNwcLiabs,
+    };
+    row.currentAssets = row.cash + row.receivables + row.contractAsset + row.inventory + row.prepaid;
+    row.totalAssets = row.currentAssets + row.ppeNet + row.rou;
+    row.currentLiabsCovenant = row.payables + row.loc + row.wagesPayable + row.interestPayable + row.unearned + row.taxPayable + row.currentDebt;
+    row.totalLiabs = row.currentLiabsCovenant + row.longDebt + row.leaseLiability;
+    row.equity = row.commonStock + row.retained;
+    row.check = row.totalAssets - row.totalLiabs - row.equity;
+    row.currentRatio = row.currentAssets / row.currentLiabsCovenant;
+    row.netChangeInCash = cfo + cfi + cff;
+    out.rows.push(row);
+    prev = { ...row };
+  }
+  return out;
+}
+export const MODEL = model();

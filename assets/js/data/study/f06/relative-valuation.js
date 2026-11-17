@@ -3,9 +3,9 @@
 // multiples and the bridge from core/investments.js. Copperkettle Coffee and every other business named here is
 // fictional. Brightcup Coffee is the course project’s: it is named as a peer but its multiples are not used.
 // Damodaran’s sector multiples are quoted from his January 2026 data page (opened 11 November 2026).
-import { COMPANIES, MARKET } from './case.js?v=33';
-import * as IV from '../../../core/investments.js?v=33';
-import DCF from './discounted-cash-flow-valuation.js?v=33';
+import { COMPANIES, MARKET } from './case.js?v=34';
+import * as IV from '../../../core/investments.js?v=34';
+import DCF from './discounted-cash-flow-valuation.js?v=34';
 
 const M = COMPANIES.morrow, H = COMPANIES.harbour;
 const { rf, mrp } = MARKET;

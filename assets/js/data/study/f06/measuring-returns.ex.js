@@ -1,7 +1,7 @@
 // measuring-returns.ex.js — F06 · Measuring returns: widgets, practice and the knowledge check (answer keys live here).
 // The fund and share returns are SIMULATED (case.js, tools/study/f06-data.py); every business named here is fictional.
-import { MONTHS, SERIES, ANA, DERIVED } from './case.js?v=33';
-import * as IV from '../../../core/investments.js?v=33';
+import { MONTHS, SERIES, ANA, DERIVED } from './case.js?v=34';
+import * as IV from '../../../core/investments.js?v=34';
 
 const st = DERIVED.stats;
 const yr = (k) => IV.yearly(MONTHS, SERIES[k]);
