@@ -1,9 +1,9 @@
 // tagbuilder.js — Tag Builder: build the shop's web page one idea at a time. The preview is drawn from the
 // tree that levels.js scans out of the learner's text, never from the text itself, so nothing typed here can run.
-import { HTML_LEVELS, htmlRun } from './levels.js?v=37';
-import { spriteUrl, sfx } from './pixel.js?v=37';
-import { h, fill, topBar, editor, levelStrip, brief, resultCard, btn, tryStars } from './ui.js?v=37';
-import * as store from './store.js?v=37';
+import { HTML_LEVELS, htmlRun } from './levels.js?v=38';
+import { spriteUrl, sfx } from './pixel.js?v=38';
+import { h, fill, teacher, topBar, editor, levelStrip, brief, resultCard, btn, tryStars } from './ui.js?v=38';
+import * as store from './store.js?v=38';
 
 const PICS = { 'bee.png': 'bee', 'sunflower.png': 'flower', 'cup.png': 'cup' };
 
@@ -51,10 +51,13 @@ export function start(mount, { root }) {
     fill(out, res.error ? h('p.console-line.is-error', {}, res.error.message) : h('p.console-line', {}, 'The tags are well formed.'), res.error && res.error.hint ? h('p.console-line.is-hint', {}, res.error.hint) : null);
     return res;
   }
+  function paintBrief() { fill(briefBox, brief(level, n + 1, HTML_LEVELS.length)); }
+  const teach = teacher({ game: 'tagbuilder', levels: HTML_LEVELS, briefBox, paintBrief, load: (i) => load(i), bar });
+  mount.querySelector('.arc-work').append(h('div.arc-buttons.arc-tools', {}, teach.tools), teach.notes);
   function load(i) {
     n = i; level = HTML_LEVELS[n]; checks = 0; hinted = false; solved = false;
     overlay.hidden = true; fill(overlay, );
-    fill(briefBox, brief(level, n + 1, HTML_LEVELS.length));
+    paintBrief();
     ed.set(level.starter);
     strip.paint(n, stars());
     status.textContent = level.goal;
@@ -64,22 +67,15 @@ export function start(mount, { root }) {
     checks++;
     const res = live();
     if (!res.ok) { sfx('bad'); status.textContent = res.error ? 'The page has a mistake in its tags. The message below says where.' : `${res.checks.filter((c) => !c[1]).length} thing(s) on the list still to do.`; return; }
-    if (solved) { overlay.hidden = false; return; }
+    if (solved) return;
     solved = true;
     sfx('win');
     const st = tryStars(checks, hinted);
     const reward = store.levelDone('tagbuilder', level.id, st);
     bar.refresh(); strip.paint(n, stars());
-    const last = n === HTML_LEVELS.length - 1;
     status.textContent = 'Page approved.';
-    const next = btn(last ? 'Play Syntax Catcher' : 'Next level ▶', () => { if (last) location.href = '../catcher/'; else load(n + 1); }, 'go');
-    fill(overlay, resultCard({
-      title: last ? 'Shop is open!' : 'Page approved!', stars: st, reward,
-      lines: [st === 3 ? 'Built without a hint.' : 'Three stars need no hint and three checks or fewer.', last ? 'Headings, paragraphs, links, images, lists and page landmarks: that is the skeleton of every web page.' : `You used: ${level.concept.toLowerCase()}.`],
-      actions: [next, btn('Keep editing', () => { overlay.hidden = true; }, 'ghost')],
-    }));
-    overlay.hidden = false;
-    next.focus();
+    teach.solved({ n, level, stars: st, reward, lines: [st === 3 ? 'Built without a hint.' : 'Three stars need no hint and three checks or fewer.'], lastHref: '../stylelab/', lastLabel: 'Style it in Style Shop' });
   }
   load(n);
+  teach.start();
 }

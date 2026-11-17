@@ -3,7 +3,7 @@
 // Python prints, SQL by running the query on minisql), never typed in by hand.
 //   makeQuestion(track, tier, rand) -> { track, prompt, code, lang, table, options, answer, why }
 //   CATCH_ROUNDS: rules for Syntax Catcher, each makes { rule, good: [text], bad: [{ t, why }] }
-import { query } from './minisql.js?v=37';
+import { query } from './minisql.js?v=38';
 
 // ---------------------------------------------------------------- helpers
 const ri = (r, a, b) => a + Math.floor(r() * (b - a + 1));
@@ -89,6 +89,7 @@ const SQL_CONCEPTS = [
   (r) => { const l = pick(r, ['C', 'M', 'S', 'B']); return { prompt: `Which pattern matches every item that starts with ${l}?`, answer: `LIKE '${l}%'`, wrong: [`LIKE '%${l}'`, `LIKE '${l}'`, `= '${l}*'`], why: `% stands for any run of characters. '${l}%' means ${l} followed by anything.` }; },
   (r) => ({ prompt: 'In a JOIN, what does the ON part do?', answer: 'Says which columns must match for two rows to be paired', wrong: ['Chooses which columns to show', 'Sorts the joined rows', 'Removes repeated rows'], why: 'ON orders.item = menu.item pairs each order with the menu row for the same item.' }),
   (r) => ({ prompt: 'How do you find rows where a value is missing?', answer: 'WHERE stock IS NULL', wrong: ['WHERE stock = NULL', "WHERE stock = ''", 'WHERE stock = 0'], why: 'NULL means unknown, and nothing equals unknown, so = NULL never matches. IS NULL is the test.' }),
+  (r) => ({ prompt: 'Which join keeps menu items that nobody has ordered?', answer: 'menu LEFT JOIN orders', wrong: ['menu JOIN orders', 'menu INNER JOIN orders', 'menu AND orders'], why: 'A plain (inner) JOIN drops rows with no match. LEFT JOIN keeps every row of the left table and fills the gaps with NULL.' }),
   (r) => ({ prompt: 'A query has GROUP BY category. Which SELECT is allowed?', answer: 'SELECT category, AVG(price)', wrong: ['SELECT category, item', 'SELECT *', 'SELECT item, AVG(price)'], why: 'Each column must be in GROUP BY or inside a summary function. A group has many items, so item on its own has no single value.' }),
 ];
 const SQLGEN = [
@@ -117,22 +118,40 @@ const WEB = [
   (r) => { const w = pick(r, [100, 120, 200]), p = pick(r, [5, 10, 20]), b = pick(r, [1, 2, 5]); return { prompt: 'How wide is the box on screen, edge to edge?', lang: 'css', code: `.card {\n  width: ${w}px;\n  padding: ${p}px;\n  border: ${b}px solid black;\n}`, answer: `${w + 2 * p + 2 * b}px`, wrong: [`${w}px`, `${w + p + b}px`, `${w + 2 * p}px`], why: `By default width is the content only. Padding and border are added on both sides: ${w} + 2 × ${p} + 2 × ${b} = ${w + 2 * p + 2 * b}px.` }; },
   (r) => ({ prompt: 'Which of these tags has no closing tag?', answer: pick(r, ['<img>', '<br>', '<input>']), wrong: sample(r, ['<p>', '<a>', '<li>', '<div>', '<h1>'], 3), why: 'Elements that cannot hold content, such as <img>, <br> and <input>, are written as a single tag.' }),
   (r) => { const bad = pick(r, [['<a href="menu.html>Menu</a>', 'The href value has an opening quote but no closing quote.'], ['<h2>Drinks</h3>', 'The closing tag does not match the opening tag.'], ['<img src="cup.png" alt="A cup"></img>', '<img> has no closing tag.'], ['<p>Open daily<p>', 'The closing tag is missing its slash.']]); return { prompt: 'Which line has a mistake?', answer: bad[0], wrong: ['<a href="menu.html">Menu</a>', '<h2>Drinks</h2>', '<p>Open daily</p>'], why: bad[1] }; },
+  (r) => ({ prompt: 'Which declaration lays an element’s children out side by side in a row?', answer: 'display: flex;', wrong: ['display: row;', 'float: side;', 'align: horizontal;'], why: 'display: flex makes the element a flex container, and its children line up in a row.' }),
   (r) => { const px = pick(r, [8, 12, 16, 24]); return { prompt: 'Which rule adds space inside the box, between its border and its content?', answer: `padding: ${px}px;`, wrong: [`margin: ${px}px;`, `border: ${px}px;`, `spacing: ${px}px;`], why: 'Padding is inside the border; margin is outside it. There is no CSS property called spacing.' }; },
 ];
 
 export const TRACKS = { python: 'Python', sql: 'SQL', web: 'HTML & CSS', mixed: 'Mixed' };
 
-/** One question. tier 1 (first ideas) to 3 (harder). */
-export function makeQuestion(track, tier, rand) {
-  const t = track === 'mixed' ? pick(rand, ['python', 'python', 'sql', 'web']) : track;
-  for (let tries = 0; tries < 20; tries++) {
-    let q;
-    if (t === 'python') { const lv = Math.min(3, Math.max(1, tier)); const pool = lv === 1 ? PY[1] : lv === 2 ? [...PY[2], ...PY[2], ...PY[1]] : [...PY[3], ...PY[3], ...PY[2]]; q = { lang: 'python', ...pick(rand, pool)(rand) }; }
-    else if (t === 'sql') q = (tier > 1 || rand() < 0.6 ? pick(rand, [...SQLGEN, ...SQL_CONCEPTS]) : pick(rand, SQL_CONCEPTS))(rand);
-    else q = pick(rand, WEB)(rand);
+// The idea each maker tests, in the same order as the makers above. Bug Battle keeps score by topic.
+const tag = (track, list, topics) => list.map((gen, i) => ({ track, gen, topic: topics[i] }));
+const POOL = {
+  py1: tag('python', PY[1], ['Operator order', 'Floor division and remainder', 'Division gives a float', 'Repeating text', 'Text versus numbers', 'Updating a variable', 'len()', 'Powers', 'Comparisons']),
+  py2: tag('python', PY[2], ['List positions', 'Slices', 'for and range()', 'if / elif / else', 'String methods', 'in', 'and / or', 'append()', 'f-strings', 'Nested loops']),
+  py3: tag('python', PY[3], ['Dictionaries', 'List comprehensions', 'while loops', 'Functions and defaults', 'Reversing with a slice', 'sorted, max and min', 'Two names, one list', 'Text versus numbers', 'A test inside a loop']),
+  sqlgen: tag('sql', SQLGEN, ['WHERE', 'WHERE', 'ORDER BY and LIMIT', 'Summary functions', 'GROUP BY', 'AND before OR', 'COUNT with WHERE']),
+  sqlc: tag('sql', SQL_CONCEPTS, ['WHERE versus HAVING', 'WHERE versus HAVING', 'DISTINCT', 'ORDER BY and LIMIT', 'Quotes and =', 'Clause order', 'LIKE', 'JOIN', 'NULL', 'LEFT JOIN', 'GROUP BY']),
+  web: tag('web', WEB, ['HTML tags', 'Attributes', 'Lists', 'Nesting', 'CSS specificity', 'Which rule wins', 'Class selectors', 'Selectors', 'The box model', 'Tags with no closing tag', 'Spotting mistakes', 'Flexbox', 'The box model']),
+};
+const EVERY = Object.values(POOL).flat();
+
+/** One question. tier 1 (first ideas) to 3 (harder). `focus` is a list of "track|topic" keys to favour. */
+export function makeQuestion(track, tier, rand, focus = null) {
+  for (let tries = 0; tries < 30; tries++) {
+    let pool = null;
+    if (focus && focus.length && rand() < 0.75) { const [ft, topic] = pick(rand, focus).split('|'); pool = EVERY.filter((x) => x.track === ft && x.topic === topic); if (!pool.length) pool = null; }
+    if (!pool) {
+      const t = track === 'mixed' ? pick(rand, ['python', 'python', 'sql', 'web']) : track;
+      const lv = Math.min(3, Math.max(1, tier));
+      pool = t === 'python' ? (lv === 1 ? POOL.py1 : lv === 2 ? [...POOL.py2, ...POOL.py2, ...POOL.py1] : [...POOL.py3, ...POOL.py3, ...POOL.py2])
+        : t === 'sql' ? (tier > 1 || rand() < 0.6 ? [...POOL.sqlgen, ...POOL.sqlc] : POOL.sqlc) : POOL.web;
+    }
+    const maker = pick(rand, pool);
+    const q = maker.gen(rand);
     if (!q) continue;
-    const done = finish(rand, { ...q, track: t });
-    if (done.options.length === 4 && done.answer >= 0) return done;
+    const done = finish(rand, { ...(maker.track === 'python' ? { lang: 'python' } : {}), ...q, track: maker.track });
+    if (done.options.length === 4 && done.answer >= 0) return { ...done, topic: maker.topic };
   }
   throw new Error(`no question for ${track}`);
 }

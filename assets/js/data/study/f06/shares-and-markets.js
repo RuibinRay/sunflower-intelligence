@@ -3,9 +3,9 @@
 // ANA, ASSETS); market capitalisation and enterprise value from core/investments.js. Ardlow Rail, Brennoch Telecom,
 // Calvorth Mills, Quellby Foods Group and the Morrow & Pike quote ($27.98 bid, $28.02 ask) are fictional. Real-world
 // statements are quoted from Investor.gov and S&P Dow Jones Indices pages opened on 11 November 2026.
-import { COMPANIES, MARKET, ANA, ASSETS, MORROW_FORECAST } from './case.js?v=37';
-import DCF from './discounted-cash-flow-valuation.js?v=37';
-import * as IV from '../../../core/investments.js?v=37';
+import { COMPANIES, MARKET, ANA, ASSETS, MORROW_FORECAST } from './case.js?v=38';
+import DCF from './discounted-cash-flow-valuation.js?v=38';
+import * as IV from '../../../core/investments.js?v=38';
 
 const MP = COMPANIES.morrow, HS = COMPANIES.harbour;
 const evMP = IV.enterpriseValue({ marketCap: MP.marketCap, debt: MP.debt, cash: MP.cash });

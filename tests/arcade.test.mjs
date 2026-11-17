@@ -4,7 +4,10 @@
 import { execFileSync } from 'node:child_process';
 import { parse, run, PyError } from '../assets/js/arcade/minipy.js';
 import { query, sameResult, SqlError } from '../assets/js/arcade/minisql.js';
-import { PY_LEVELS, pyRun, SQL_LEVELS, SQL_DB, sqlRun, HTML_LEVELS, htmlRun, htmlScan } from '../assets/js/arcade/levels.js';
+import { PY_LEVELS, pyRun, SQL_LEVELS, SQL_DB, sqlRun, HTML_LEVELS, htmlRun, htmlScan, DATA_LEVELS, dataRun, CSS_LEVELS, cssRun } from '../assets/js/arcade/levels.js';
+import { parseCss } from '../assets/js/arcade/minicss.js';
+import { RECAPS, INTROS } from '../assets/js/arcade/recaps.js';
+import { LEVEL_COUNTS } from '../assets/js/arcade/store.js';
 import { makeQuestion, CATCH_ROUNDS, QUESTION_COUNTS } from '../assets/js/arcade/questions.js';
 import { mulberry32 } from '../assets/js/core/rng.js';
 
@@ -106,6 +109,76 @@ ok(/lower case/.test(htmlScan('<P>hi</P>').error.message), 'html case');
 ok(/strong/.test(htmlScan('<b>hi</b>').error.hint), 'html b hint');
 ok(htmlScan('<ul>\n <li>a</li>\n <li>b <em>c</em></li>\n</ul>').nodes[0].children.length === 2, 'html tree');
 
+// ---------------------------------------------------------------- mini Python with data
+const out = (src, vars = {}) => { const log = []; const host = { actions: { serve: 1 }, free: new Set(['serve']), sensors: {}, vars }; for (const st of run(parse(src), host)) if (st.action === 'print') log.push(st.args[0]); return log; };
+eq(out('print("hi")\nprint(2 + 3 * 4, 7 // 2, 7 % 2, 8 / 2, 7 / 2)'), ['hi', '14 3 1 4.0 3.5'], 'print and number types');
+eq(out('xs = [3, 1, 2]\nxs.append(9)\nprint(xs, len(xs), xs[0], xs[-1], xs[1:3])'), ['[3, 1, 2, 9] 4 3 9 [1, 2]'], 'lists');
+eq(out('s = "latte"\nprint(s.upper(), len(s), s[0], "a" in s, s + "!", s * 2)'), ['LATTE 5 l True latte! lattelatte'], 'strings');
+eq(out('m = {"tea": 2, "latte": 3}\nm["mocha"] = 4\nm["tea"] += 1\nprint(m["tea"], m.get("x", 0), len(m), "latte" in m)\nprint(m)'), ['3 0 3 True', "{'tea': 3, 'latte': 3, 'mocha': 4}"], 'dictionaries');
+eq(out('def add(a, b):\n    return a + b\n\ndef twice(x):\n    return add(x, x)\n\nprint(twice(4), add("a", "b"))'), ['8 ab'], 'functions that return');
+eq(out('t = 0\nfor n in [1, 2, 3]:\n    if n != 2:\n        t += n\nprint(t, round(10 / 4, 1), round(2.6), str(5) + "x", int("7") + 1)'), ['4 2.5 3 5x 8'], 'loop over a list');
+eq(out('print(names[1], total)', { names: ['Ana', 'Ben'], total: 2.5 }), ['Ben 2.5'], 'variables handed in');
+eq(out('print([1, 2] == [1, 2], 1 == 1.0, "a" < "b", not [], sum([1, 2]), max([4, 9, 2]), sorted([3, 1, 2]))'), ['True True True True 3 9 [1, 2, 3]'], 'comparisons and builtins');
+pyErr('x = "a" + 1', /str\(\)/, 'text plus number');
+pyErr('xs = [1, 2]\nmove(xs[5])', /past the end/, 'index past the end');
+pyErr('m = {"a": 1}\nmove(m["b"])', /no key/, 'missing key');
+pyErr('print("hi)', /never closed/, 'open string');
+pyErr('if path_clear() {\n    move()', /curly braces/, 'braces for a block');
+pyErr('return 3', /inside a function/, 'return outside def');
+pyErr('for n in 5:\n    move()', /range\(5\)/, 'loop over a number');
+pyErr('def f(a):\n    return a\n\nmove(f())', /takes 1 input/, 'wrong number of inputs');
+
+// ---------------------------------------------------------------- Data Diner
+const dataChecks = [];
+for (const lv of DATA_LEVELS) {
+  for (let seed = 1; seed <= 5; seed++) {
+    const r = dataRun(lv, lv.solution, seed);
+    ok(r.ok, `data ${lv.id} seed ${seed}: ${r.error ? `${r.error.message} ${r.error.hint}` : ''}`);
+    dataChecks.push({ id: lv.id, vars: r.vars, code: lv.solution, want: lv.expect(r.vars), print: lv.judge === 'print' });
+  }
+  ok(!dataRun(lv, lv.starter, 1).ok, `data ${lv.id}: the starter should not already solve it`);
+}
+ok(/next one/.test(dataRun(DATA_LEVELS[1], `serve(${(() => { const v = dataRun(DATA_LEVELS[1], 'serve(0)', 1).vars; return v.price * v.cups; })()})`, 1).error.message), 'data: a typed-in answer fails the hidden customers');
+ok(/asks for a function/.test(dataRun(DATA_LEVELS[11], 'total = 0\nfor d in morning + afternoon:\n    total = total + menu[d]\nserve(total)', 1).error.message), 'data: the function level needs a def');
+try {
+  const script = 'import json, sys, io, contextlib\nout = []\nfor c in json.load(sys.stdin):\n    got = []\n    env = dict(c["vars"]); env["serve"] = got.append\n    buf = io.StringIO()\n    with contextlib.redirect_stdout(buf):\n        exec(c["code"], env)\n    out.append(buf.getvalue().strip() if c["print"] else got[-1])\nprint(json.dumps(out))';
+  const res = JSON.parse(execFileSync('python3', ['-c', script], { input: JSON.stringify(dataChecks), encoding: 'utf8' }));
+  dataChecks.forEach((c, i) => ok(JSON.stringify(res[i]) === JSON.stringify(c.want), `python agrees on data ${c.id}: python ${JSON.stringify(res[i])}, ours ${JSON.stringify(c.want)}`));
+} catch (e) { if (e.code !== 'ENOENT') throw e; }
+
+// ---------------------------------------------------------------- Style Shop
+for (const lv of CSS_LEVELS) {
+  const r = cssRun(lv, lv.solution);
+  ok(r.ok, `css ${lv.id}: solution passes (${r.error ? r.error.message : r.checks.filter((c) => !c[1]).map((c) => c[0]).join('; ')})`);
+  ok(!cssRun(lv, lv.starter).ok, `css ${lv.id}: the starter should not already solve it`);
+}
+const cssErr = (src, re, name) => { const e = parseCss(src).error; ok(e && re.test(`${e.message} ${e.hint}`), `css ${name}: ${e ? `${e.message} | ${e.hint}` : 'no error'}`); };
+cssErr('h1 { colour: red; }', /property is color/, 'british spelling');
+cssErr('h1 { color red; }', /colon/, 'missing colon');
+cssErr('h1 { color: red;', /never closed/, 'missing brace');
+cssErr('p { font-size: 20; }', /20px/, 'missing unit');
+cssErr('p { color: navy\n  font-size: 20px; }', /semicolon/, 'missing semicolon');
+cssErr('<h1> { color: red; }', /angle brackets/, 'tag in brackets');
+cssErr('p { color = red; }', /equals/, 'equals sign');
+cssErr('p { color: "red"; }', /quotes/, 'quoted value');
+ok(!cssRun(CSS_LEVELS[6], 'a { color: brown; text-decoration: none; }').ok, 'css descendant level rejects a bare a');
+ok(cssRun(CSS_LEVELS[5], '.intro { color: green; }\np { color: navy; }').ok, 'css specificity beats order');
+ok(!cssRun(CSS_LEVELS[7], 'h1 { text-align: center; }\n.intro { text-align: center; }').ok, 'css group level wants one rule');
+
+// ---------------------------------------------------------------- recaps: every level teaches something and checks it
+const GAME_LEVELS = { datadiner: DATA_LEVELS, pyquest: PY_LEVELS, sqlquest: SQL_LEVELS, tagbuilder: HTML_LEVELS, stylelab: CSS_LEVELS };
+for (const [game, levels] of Object.entries(GAME_LEVELS)) {
+  ok(INTROS[game] && INTROS[game].what && INTROS[game].used && INTROS[game].play, `${game} has an intro`);
+  ok(LEVEL_COUNTS[game] === levels.length, `${game}: store counts ${LEVEL_COUNTS[game]} levels, there are ${levels.length}`);
+  ok(Object.keys(RECAPS[game]).length === levels.length, `${game}: one recap per level`);
+  for (const lv of levels) {
+    const r = RECAPS[game][lv.id];
+    ok(r && r.length === 7 && r.every((x) => typeof x === 'string' && x.length > 0) && new Set(r.slice(3, 6)).size === 3, `${game}/${lv.id} has a recap with three different answers`);
+  }
+}
+eq(q('SELECT menu.item FROM menu LEFT JOIN orders ON menu.item = orders.item WHERE orders.id IS NULL').rows.flat(), ['Flat White', 'Green Tea', 'Earl Grey', 'Scone', 'Hot Chocolate'], 'left join');
+eq(q('SELECT COUNT(*) FROM menu LEFT JOIN orders ON menu.item = orders.item').rows, [[15]], 'left join keeps unmatched rows');
+
 // ---------------------------------------------------------------- questions
 const rand = mulberry32(20261117);
 const pyQs = [];
@@ -115,10 +188,12 @@ for (const track of ['python', 'sql', 'web', 'mixed']) {
     let qn;
     try { qn = makeQuestion(track, tier, rand); } catch (e) { ok(false, `${track} question threw: ${e.message}`); continue; }
     ok(qn.options.length === 4 && new Set(qn.options).size === 4, `${track}: four different options (${JSON.stringify(qn.options)}) for ${qn.code || qn.prompt}`);
-    ok(qn.answer >= 0 && qn.answer < 4 && qn.why && qn.prompt, `${track}: has an answer and a reason`);
+    ok(qn.answer >= 0 && qn.answer < 4 && qn.why && qn.prompt && qn.topic, `${track}: has an answer and a reason`);
     if (qn.track === 'python') pyQs.push(qn);
   }
 }
+for (let i = 0; i < 40; i++) ok(['NULL', 'Slices'].includes(makeQuestion('mixed', 1, () => (i % 7) / 10 + 0.01 * (i % 5), ['sql|NULL', 'python|Slices']).topic) || true, 'focus runs');
+{ const r2 = mulberry32(5); let hits = 0; for (let i = 0; i < 200; i++) if (makeQuestion('mixed', 1, r2, ['sql|NULL']).topic === 'NULL') hits++; ok(hits > 120, `focus favours the weak topic (${hits} of 200)`); }
 ok(QUESTION_COUNTS.python >= 25 && QUESTION_COUNTS.sql >= 15 && QUESTION_COUNTS.web >= 12, 'enough question makers');
 for (const round of CATCH_ROUNDS) {
   const { good, bad } = round.make(rand);

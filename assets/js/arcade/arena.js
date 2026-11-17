@@ -1,11 +1,11 @@
 // arena.js — Bug Battle: an endless quiz fight. Every right answer stings the bug; three stings clear a wave
 // and the questions get harder. A wrong answer costs a heart and stops to explain why. Questions are made
 // fresh each time by questions.js. The daily run uses the date as its seed, so it is the same for everyone today.
-import { makeQuestion, TRACKS } from './questions.js?v=37';
-import { mulberry32 } from '../core/rng.js?v=37';
-import { PAL, stage, drawSprite, drawText, loop, sfx, calm, hash, pixelHeadings } from './pixel.js?v=37';
-import { h, fill, topBar, resultCard, btn } from './ui.js?v=37';
-import * as store from './store.js?v=37';
+import { makeQuestion, TRACKS } from './questions.js?v=38';
+import { mulberry32 } from '../core/rng.js?v=38';
+import { PAL, stage, drawSprite, drawText, loop, sfx, calm, hash, pixelHeadings } from './pixel.js?v=38';
+import { h, fill, topBar, resultCard, btn } from './ui.js?v=38';
+import * as store from './store.js?v=38';
 
 const W = 240, H = 96, DAILY_N = 12;
 const BUG_TINTS = [{ r: PAL.red, d: '#8E2F22' }, { r: PAL.terracotta, d: '#8E4A22' }, { r: '#8E5BD0', d: '#5A3691' }, { r: PAL.water, d: '#27527F' }, { r: PAL.olive, d: PAL.moss }, { r: PAL.charcoal, d: '#000000' }];
@@ -25,22 +25,24 @@ export function start(mount, { root }) {
     G = null; overlay.hidden = true;
     const best = store.state().best.arena || 0;
     const today = store.dailyToday();
+    const weak = store.weakSpots(4);
     fill(panel, 
       h('h3.quiz-h', {}, 'Choose your questions'),
       h('p.quiz-lead', {}, 'Read the code, pick what it does. Three hearts. Answer fast for bonus points and keep a streak going to multiply them.'),
       h('div.track-grid', {}, Object.entries(TRACKS).map(([id, name]) => h('button.px-btn.track-btn', { type: 'button', onclick: () => begin(id, false) }, h('b', {}, name), h('span', {}, id === 'python' ? 'What does it print?' : id === 'sql' ? 'What does the query return?' : id === 'web' ? 'Tags, selectors, the box model' : 'A bit of everything')))),
       h('div.daily', {}, h('div', {}, h('b', {}, 'Daily run'), h('span', {}, today != null ? ` Done today: ${today} points. Play again to beat it.` : ` ${DAILY_N} mixed questions, the same for everyone today. +25 XP for finishing.`)), btn(today != null ? 'Replay daily' : 'Start daily run', () => begin('mixed', true), 'go')),
+      weak.length ? h('div.weak', {}, h('b', {}, 'Your weak spots'), h('ul', {}, weak.map((w) => h('li', {}, `${w.topic} (${TRACKS[w.track]}): ${w.right} of ${w.right + w.wrong} right`))), btn('Practise these', () => begin('mixed', false, weak.map((w) => w.key)), 'go')) : h('p.quiz-best', {}, 'Bug Battle remembers which topics you miss and offers practice on them here.'),
       h('p.quiz-best', {}, best ? `Your best: ${best}` : 'No best score yet.'));
   }
-  function begin(track, daily) {
+  function begin(track, daily, focus = null) {
     overlay.hidden = true;
-    G = { track, daily, rand: daily ? mulberry32(store.daySeed()) : Math.random, score: 0, hearts: 3, wave: 0, hp: 3, combo: 0, comboBest: 0, asked: 0, right: 0, missed: [], q: null, left: 0, limit: 0, locked: false };
+    G = { track, daily, focus, rand: daily ? mulberry32(store.daySeed()) : Math.random, score: 0, hearts: 3, wave: 0, hp: 3, combo: 0, comboBest: 0, asked: 0, right: 0, missed: [], q: null, left: 0, limit: 0, locked: false };
     next();
   }
   function next() {
     if (G.hearts <= 0 || (G.daily && G.asked >= DAILY_N)) { over(); return; }
     const tier = Math.min(3, 1 + Math.floor(G.wave / 2));
-    G.q = makeQuestion(G.track, tier, G.rand);
+    G.q = makeQuestion(G.track, tier, G.rand, G.focus);
     G.asked++;
     G.limit = G.left = Math.max(16, 32 - G.wave * 2) + (G.q.table ? 8 : 0);
     G.locked = false;
@@ -53,7 +55,7 @@ export function start(mount, { root }) {
       return h(`button.px-btn.opt${cls}`, { type: 'button', disabled: reveal != null, onclick: () => answer(i) }, h('kbd', {}, String(i + 1)), h('span', {}, o));
     });
     fill(panel, 
-      h('div.quiz-meta', {}, h('span.tag', {}, TRACKS[q.track]), h('span', {}, G.daily ? `Daily run · question ${G.asked} of ${DAILY_N}` : `Wave ${G.wave + 1} · question ${G.asked}`)),
+      h('div.quiz-meta', {}, h('span.tag', {}, TRACKS[q.track]), h('span', {}, G.focus ? `Weak spots · question ${G.asked}` : G.daily ? `Daily run · question ${G.asked} of ${DAILY_N}` : `Wave ${G.wave + 1} · question ${G.asked}`)),
       h('div.timer', { role: 'presentation' }, h('div.timer-fill', { id: 'timer-fill' })),
       h('p.quiz-prompt', {}, q.prompt),
       q.table ? h('div.quiz-table', { tabindex: '0', role: 'region', 'aria-label': `The ${q.table.name} table` }, h('table.px-table', {}, h('caption', {}, q.table.name), h('thead', {}, h('tr', {}, q.table.columns.map((c) => h('th', { scope: 'col' }, c)))), h('tbody', {}, q.table.rows.map((r) => h('tr', {}, r.map((v) => h(`td${typeof v === 'number' ? '.is-num' : ''}`, {}, typeof v === 'number' && !Number.isInteger(v) ? v.toFixed(2) : String(v)))))))) : null,
@@ -66,6 +68,7 @@ export function start(mount, { root }) {
     if (!G || G.locked) return;
     G.locked = true;
     const q = G.q;
+    store.topicAnswer(`${q.track}|${q.topic}`, i === q.answer);
     if (i === q.answer) {
       G.combo++; G.comboBest = Math.max(G.comboBest, G.combo); G.right++;
       const mult = Math.min(3, 1 + Math.floor(G.combo / 3) * 0.5);
@@ -94,7 +97,7 @@ export function start(mount, { root }) {
     fill(overlay, resultCard({
       title: done ? 'Daily run done!' : 'Game over', reward,
       lines: [`Score ${g.score}${reward.isBest ? ' · a new best!' : ` · best ${reward.best}`}`, `${g.right} of ${g.asked} right · longest streak ${g.comboBest} · reached wave ${g.wave + 1}`],
-      actions: [btn('Play again ▶', () => begin(g.track, g.daily), 'go'), btn('Change questions', () => menu(), 'ghost')],
+      actions: [btn('Play again ▶', () => begin(g.track, g.daily, g.focus), 'go'), btn('Change questions', () => menu(), 'ghost')],
     }));
     overlay.hidden = false;
     overlay.querySelector('.px-btn').focus();
@@ -112,7 +115,7 @@ export function start(mount, { root }) {
       G.left -= dt;
       const fill = document.getElementById('timer-fill');
       if (fill) { fill.style.width = `${Math.max(0, (G.left / G.limit) * 100)}%`; fill.classList.toggle('is-low', G.left < 6); }
-      if (G.left <= 0) { G.locked = true; G.combo = 0; G.hearts--; fx.hurt = 0.4; sfx('bad'); G.missed.push({ q: G.q, picked: -1 }); paintQuestion(-1); }
+      if (G.left <= 0) { G.locked = true; G.combo = 0; G.hearts--; fx.hurt = 0.4; sfx('bad'); G.missed.push({ q: G.q, picked: -1 }); store.topicAnswer(`${G.q.track}|${G.q.topic}`, false); paintQuestion(-1); }
     }
     // scene
     ctx.fillStyle = PAL.night; ctx.fillRect(0, 0, W, H);

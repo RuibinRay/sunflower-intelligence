@@ -3,9 +3,9 @@
 // Brightcup Coffee’s bond, Glenmere Mills and its figures are fictional; Ferncastle Utilities’ preferred share is F04’s
 // fictional example (par $100, 5.5% dividend). Damodaran’s implied premiums and T-bond rates are quoted from his
 // “Historical Implied Equity Risk Premiums” page (opened 5 November 2026).
-import { MARKET, PEERS, DEBT, TARGET_DV, TAX, WORKING_RATE, DERIVED } from './case.js?v=37';
-import * as CF from '../../../core/corpfin.js?v=37';
-import { RESULTS as F03R, FACTS as F03F } from '../f03/case.js?v=37';
+import { MARKET, PEERS, DEBT, TARGET_DV, TAX, WORKING_RATE, DERIVED } from './case.js?v=38';
+import * as CF from '../../../core/corpfin.js?v=38';
+import { RESULTS as F03R, FACTS as F03F } from '../f03/case.js?v=38';
 
 const { rf, mrp, smallFirm } = MARKET;
 const peersU = PEERS.map((p) => CF.unleverBeta(p.beta, p.de, p.tax));

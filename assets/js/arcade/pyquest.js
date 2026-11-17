@@ -1,9 +1,9 @@
 // pyquest.js — Py Quest: steer a bee round a garden by writing Python. The program is run first by
 // levels.js (pyRun), which returns every step; this file draws the garden and plays the steps back.
-import { PY_LEVELS, pyRun } from './levels.js?v=37';
-import { PAL, stage, drawSprite, drawText, hash, loop, sfx, calm } from './pixel.js?v=37';
-import { h, fill, topBar, editor, levelStrip, brief, resultCard, btn } from './ui.js?v=37';
-import * as store from './store.js?v=37';
+import { PY_LEVELS, pyRun } from './levels.js?v=38';
+import { PAL, stage, drawSprite, drawText, hash, loop, sfx, calm } from './pixel.js?v=38';
+import { h, fill, teacher, topBar, editor, levelStrip, brief, resultCard, btn } from './ui.js?v=38';
+import * as store from './store.js?v=38';
 
 const T = 16, W = 10, H = 7;
 const TURN = { N: 0, E: 1, S: 2, W: 3 };
@@ -37,12 +37,15 @@ export function start(mount, { root }) {
   function startOf(v) { return level.starts ? level.starts[v % level.starts.length] : level.start; }
   function resetView() { const [x, y, d] = startOf(variant); view = { x, y, d, gone: new Set(), shake: 0 }; }
 
+  function paintBrief() { fill(briefBox, brief(level, n + 1, PY_LEVELS.length, level.maps.length > 1 ? h('p.brief-note', {}, 'The garden is different every time you press Run.') : null)); }
+  const teach = teacher({ game: 'pyquest', levels: PY_LEVELS, briefBox, paintBrief, load: (i) => load(i), bar });
+  mount.querySelector('.arc-work').append(h('div.arc-buttons.arc-tools', {}, teach.tools), teach.notes);
   function load(i) {
     n = i; level = PY_LEVELS[n]; hinted = false; anim = null;
     variant = Math.floor(Math.random() * level.maps.length);
     resetView();
     overlay.hidden = true; fill(overlay, );
-    fill(briefBox, brief(level, n + 1, PY_LEVELS.length, level.maps.length > 1 ? h('p.brief-note', {}, 'The garden is different every time you press Run.') : null));
+    paintBrief();
     ed.set(level.starter);
     strip.paint(n, stars());
     status.textContent = level.goal;
@@ -75,17 +78,9 @@ export function start(mount, { root }) {
     sfx('win');
     const reward = store.levelDone('pyquest', level.id, res.stars);
     bar.refresh(); strip.paint(n, stars());
-    const last = n === PY_LEVELS.length - 1;
     say(`Solved in ${res.lines} line${res.lines > 1 ? 's' : ''}.`, 'ok');
     status.textContent = 'Level complete.';
-    const next = btn(last ? 'Play Bug Battle' : 'Next level ▶', () => { if (last) location.href = '../arena/'; else load(n + 1); }, 'go');
-    fill(overlay, resultCard({
-      title: last ? 'Garden cleared!' : 'Level clear!', stars: res.stars, reward,
-      lines: [res.stars === 3 ? `Solved in ${res.lines} lines (par ${level.par}).` : `Solved in ${res.lines} lines. Three stars need ${level.par} or fewer.`, last ? 'You have written loops, tests, variables and a function. Keep them sharp in the endless games.' : `You used: ${level.concept.toLowerCase()}.`],
-      actions: [next, btn('Try again', () => { overlay.hidden = true; resetView(); }, 'ghost')],
-    }));
-    overlay.hidden = false;
-    next.focus();
+    teach.solved({ n, level, stars: res.stars, reward, lines: [res.stars === 3 ? `Solved in ${res.lines} lines (par ${level.par}).` : `Solved in ${res.lines} lines. Three stars need ${level.par} or fewer.`], lastHref: '../arena/', lastLabel: 'Play Bug Battle' });
   }
 
   function draw(t) {
@@ -146,4 +141,5 @@ export function start(mount, { root }) {
     draw(t);
   });
   load(n);
+  teach.start();
 }

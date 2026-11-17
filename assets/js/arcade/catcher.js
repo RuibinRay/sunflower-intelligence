@@ -1,10 +1,10 @@
 // catcher.js — Syntax Catcher: words fall, a rule says which ones are real, and the basket catches them.
 // The rule changes every round (Python keywords, SQL clauses, HTML tags, CSS properties, …). Catching a fake
 // costs a heart and says why it is wrong; the same reasons are listed again when the run ends.
-import { CATCH_ROUNDS, shuffle } from './questions.js?v=37';
-import { PAL, stage, drawText, loop, sfx, calm, hash, spriteUrl } from './pixel.js?v=37';
-import { h, fill, topBar, resultCard, btn } from './ui.js?v=37';
-import * as store from './store.js?v=37';
+import { CATCH_ROUNDS, shuffle } from './questions.js?v=38';
+import { PAL, stage, drawText, loop, sfx, calm, hash, spriteUrl } from './pixel.js?v=38';
+import { h, fill, topBar, resultCard, btn } from './ui.js?v=38';
+import * as store from './store.js?v=38';
 
 const ROUND_SECONDS = 24;
 
@@ -38,7 +38,7 @@ export function start(mount, { root }) {
   function begin() {
     overlay.hidden = true;
     field.querySelectorAll('.tok').forEach((t) => t.remove());
-    G = { score: 0, hearts: 3, combo: 0, comboBest: 0, caught: 0, round: 0, order: shuffle(Math.random, CATCH_ROUNDS.map((_, i) => i)), set: null, t: 0, spawn: 0.6, toks: [], x: 0.5, mistakes: [], pause: 0 };
+    G = { score: 0, hearts: 3, combo: 0, comboBest: 0, caught: 0, round: 0, order: shuffle(Math.random, CATCH_ROUNDS.map((_, i) => i)), set: null, t: 0, spawn: 0.6, toks: [], x: 0.5, mistakes: [], dropped: [], pause: 0 };
     nextRound();
     fill(side, h('h3.quiz-h', {}, 'Caught by mistake'), h('p.quiz-lead', { id: 'catch-empty' }, 'Nothing yet. Fakes you catch are explained here.'), h('ul.review', { id: 'catch-log' }));
     field.focus();
@@ -92,6 +92,7 @@ export function start(mount, { root }) {
       lines: [`Score ${g.score}${reward.isBest ? ' · a new best!' : ` · best ${reward.best}`}`, `${g.caught} caught · best run of ${g.comboBest} · reached round ${g.round}`, g.mistakes.length ? 'The words you caught by mistake are listed beside the game, each with its correction.' : ''].filter(Boolean),
       actions: [btn('Play again ▶', () => begin(), 'go'), btn('How to play', () => intro(), 'ghost')],
     }));
+    if (g.dropped.length) side.append(h('h3.quiz-h', {}, 'Real ones you let fall'), h('p.quiz-lead', {}, g.dropped.slice(0, 14).join('   ')));
     overlay.hidden = false;
     overlay.querySelector('.px-btn').focus();
   }
@@ -133,7 +134,7 @@ export function start(mount, { root }) {
       const bottom = k.y + k.el.offsetHeight / fh;
       const over = k.x < G.x + bw / 2 && k.x + k.w > G.x - bw / 2;
       if (bottom >= top && k.y < top + 0.06 && over) { k.el.remove(); G.toks.splice(G.toks.indexOf(k), 1); caught(k); if (!G) return; continue; }
-      if (k.y > 1) { k.el.remove(); G.toks.splice(G.toks.indexOf(k), 1); if (k.good) G.combo = 0; }
+      if (k.y > 1) { k.el.remove(); G.toks.splice(G.toks.indexOf(k), 1); if (k.good) { G.combo = 0; if (!G.dropped.includes(k.text)) G.dropped.push(k.text); } }
     }
   });
   intro();

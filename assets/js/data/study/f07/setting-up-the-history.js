@@ -2,9 +2,9 @@
 // Lantern's 2026 and 2027 figures come from case.js (HISTORY, condensed from F02/F03's statements; ASSUME, DERIVED).
 // Brightcup Coffee's 2027 figures are F06's fictional listed company (f06/case.js COMPANIES). The structure of Form
 // 10-K and its filing deadlines are from the SEC's form, cited in `references`.
-import { HISTORY, ASSUME, DERIVED } from './case.js?v=37';
-import { COMPANIES } from '../f06/case.js?v=37';
-import { RESULTS as F03R } from '../f03/case.js?v=37';
+import { HISTORY, ASSUME, DERIVED } from './case.js?v=38';
+import { COMPANIES } from '../f06/case.js?v=38';
+import { RESULTS as F03R } from '../f03/case.js?v=38';
 
 const H6 = HISTORY[2026], H7 = HISTORY[2027], B = COMPANIES.brightcup;
 const BS = F03R.balanceSheet;

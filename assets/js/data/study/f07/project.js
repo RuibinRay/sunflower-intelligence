@@ -2,10 +2,10 @@
 // stage by stage on the lessons' worksheets and explorers, then answers Coastline's credit committee, which asks for
 // its own "committee case" (online growth at 65% of plan, cafés at 3% a year, Cold Brew 10% fewer cans). Every figure
 // is computed below from case.js (scenario(), MODEL, DERIVED) and checked by `verify`.
-import { scenario, MODEL as M, DERIVED, HISTORY, VALUATION as V } from './case.js?v=37';
-import { historyCells } from './setting-up-the-history.ex.js?v=37';
-import { forecastCells } from './revenue-and-cost-forecasts.ex.js?v=37';
-import { widgets as SCW } from './scenarios-and-sensitivity.ex.js?v=37';
+import { scenario, MODEL as M, DERIVED, HISTORY, VALUATION as V } from './case.js?v=38';
+import { historyCells } from './setting-up-the-history.ex.js?v=38';
+import { forecastCells } from './revenue-and-cost-forecasts.ex.js?v=38';
+import { widgets as SCW } from './scenarios-and-sensitivity.ex.js?v=38';
 
 const COMMITTEE = { online: 0.65, cafeGrowth: 0.03, cans: 0.9 };
 const C60 = scenario(COMMITTEE), C80 = scenario({ ...COMMITTEE, termAmount: 80000 });

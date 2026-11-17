@@ -1,7 +1,9 @@
 // levels.js — the levels of the three teaching games, and the rules that judge them. No drawing here, so
 // tests/arcade.test.mjs can run every reference solution.
-import { parse, run, countLines, PyError } from './minipy.js?v=37';
-import { query, sameResult } from './minisql.js?v=37';
+import { parse, exec, countLines, PyError, show, fromJs, toJs } from './minipy.js?v=38';
+import { parseCss, styleTree } from './minicss.js?v=38';
+import { mulberry32 } from '../core/rng.js?v=38';
+import { query, sameResult } from './minisql.js?v=38';
 
 // ================================================================ Py Quest (Python)
 // Maps are 10 x 7. '#' hedge, '~' pond, '.' grass, 'F' flower, 'H' hive. start = [x, y, facing].
@@ -159,8 +161,8 @@ export function pyRun(level, source, variant = 0) {
   const result = { ok: false, frames, error: null, lines: countLines(source), stars: 0, left: total, total, variant };
   try {
     const program = parse(source);
-    for (const step of run(program, host)) {
-      if (step.action === '_set') { snap(step.line, 'set', { name: step.args[0], value: step.args[1] }); continue; }
+    exec(program, host, (step) => {
+      if (step.action === '_set') { snap(step.line, 'set', { name: step.args[0], value: step.args[1] }); return; }
       if (step.action === 'move') {
         const n = step.args.length ? step.args[0] : 1;
         for (let i = 0; i < n; i++) {
@@ -175,7 +177,7 @@ export function pyRun(level, source, variant = 0) {
         if (!flowers.has(k)) { snap(step.line, 'miss'); throw new PyError('There is no flower on this tile to collect.', step.line, level.api.includes('on_flower()') ? 'Check first with if on_flower():' : 'Move onto the flower before you collect().'); }
         flowers.delete(k); snap(step.line, 'collect', { at: k });
       }
-    }
+    });
   } catch (e) {
     if (!(e instanceof PyError)) throw e;
     result.error = { message: e.message, line: e.line, hint: e.hint };
@@ -244,6 +246,14 @@ export const SQL_LEVELS = [
     teach: ['LIKE matches text against a pattern. The percent sign % stands for any run of characters.', "'C%' means starts with C. '%tea' means ends with tea. '%a%' means has an a anywhere."],
     goal: 'Show the names of items that start with the letter C.',
     starter: 'SELECT item FROM menu WHERE item LIKE ', hint: "SELECT item FROM menu WHERE item LIKE 'C%'", solution: "SELECT item FROM menu WHERE item LIKE 'C%'" },
+  { id: 'distinct', title: 'Where do they come from?', concept: 'DISTINCT', table: 'orders',
+    teach: ['The orders table has one row per order, so a city appears once for every order from it.', 'SELECT DISTINCT removes the repeats: each different value is returned once.'],
+    goal: 'Show each city that has ordered, once each.',
+    starter: 'SELECT city FROM orders', hint: 'SELECT DISTINCT city FROM orders', solution: 'SELECT DISTINCT city FROM orders' },
+  { id: 'in', title: 'One of these', concept: 'IN', table: 'menu',
+    teach: ["IN tests a value against a list: category IN ('Tea', 'Other') is true when the category is either one.", 'It says the same as two tests joined by OR, in less space.'],
+    goal: 'Show the item and category of everything that is Tea or Bakery.',
+    starter: 'SELECT item, category FROM menu WHERE category ', hint: "WHERE category IN ('Tea', 'Bakery')", solution: "SELECT item, category FROM menu WHERE category IN ('Tea', 'Bakery')" },
   { id: 'count', title: 'Running low', concept: 'COUNT', table: 'menu',
     teach: ['COUNT(*) is a <b>summary function</b>: it takes many rows and returns one number, the number of rows.', 'WHERE runs first, so COUNT(*) counts only the rows that passed the test.'],
     goal: 'How many items have fewer than 10 in stock? Return that one number.',
@@ -264,8 +274,12 @@ export const SQL_LEVELS = [
     teach: ['orders knows what was bought and menu knows what it costs. JOIN puts the two side by side.', 'ON says how rows match: orders.item = menu.item. Both tables have an item column, so write the table name, a dot, then the column.'],
     goal: 'For every order show the customer, the item and the order’s value (qty times price).',
     starter: 'SELECT orders.customer, orders.item, qty * price\nFROM orders JOIN menu ON ', hint: 'Finish with ON orders.item = menu.item', solution: 'SELECT orders.customer, orders.item, qty * price FROM orders JOIN menu ON orders.item = menu.item' },
+  { id: 'left-join', title: 'Never ordered', concept: 'LEFT JOIN and NULL', table: 'menu',
+    teach: ['A plain JOIN drops menu items that nobody ordered, because they have no matching order. LEFT JOIN keeps every row of the left table and fills the missing side with NULL, which means “no value”.', 'Nothing equals NULL, so the test is IS NULL, never = NULL.'],
+    goal: 'Show the names of menu items that have never been ordered.',
+    starter: 'SELECT menu.item\nFROM menu LEFT JOIN orders ON menu.item = orders.item\n', hint: 'Add WHERE orders.id IS NULL', solution: 'SELECT menu.item FROM menu LEFT JOIN orders ON menu.item = orders.item WHERE orders.id IS NULL' },
   { id: 'boss', title: 'The manager’s question', concept: 'Putting it together', table: 'orders', ordered: true,
-    teach: ['Real questions use several clauses at once. They always go in the same order: SELECT, FROM, JOIN, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT.', 'Build it in steps: join the tables, group by city, add up qty * price, then sort.'],
+    teach: ['Real questions use several clauses at once. They always go in this order: SELECT, FROM, JOIN, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT.', 'Build it in steps: join the tables, group by city, add up qty * price, then sort.'],
     goal: 'Show each city with its total sales value, biggest first.',
     starter: 'SELECT city, SUM(qty * price)\nFROM orders JOIN menu ON orders.item = menu.item\n', hint: 'GROUP BY city, then ORDER BY SUM(qty * price) DESC', solution: 'SELECT city, SUM(qty * price) FROM orders JOIN menu ON orders.item = menu.item GROUP BY city ORDER BY SUM(qty * price) DESC' },
 ];
@@ -381,4 +395,196 @@ export function htmlRun(level, src) {
   if (error) return { ok: false, error, checks: level.checks.map(([label]) => [label, false]), nodes };
   const checks = level.checks.map(([label, fn]) => [label, !!fn(nodes)]);
   return { ok: checks.every((c) => c[1]), error: null, checks, nodes };
+}
+
+// ================================================================ Data Diner (Python with data)
+// Each level hands the program some variables (different every run) and asks for one answer through serve()
+// or print(). A program passes only if it is right for the order on screen and for two more it has not seen.
+const ri = (r, a, b) => a + Math.floor(r() * (b - a + 1));
+const some = (r, list, n) => { const a = [...list]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a.slice(0, n); };
+const PEOPLE = ['Ana', 'Ben', 'Cleo', 'Dev', 'Eli', 'Fay', 'Gus', 'Hana'];
+const DRINKS = { latte: 3, mocha: 4, chai: 3, espresso: 2, tea: 2, scone: 2 };
+const numbers = (r) => Array.from({ length: ri(r, 4, 6) }, () => ri(r, 1, 6));
+const twoDp = (x) => Math.round((x + Number.EPSILON) * 100) / 100;
+
+export const DATA_LEVELS = [
+  { id: 'print', title: 'Say it out loud', concept: 'print() and text', judge: 'print',
+    teach: ['print() shows a value on the screen. It is how a program talks to you.', 'Text in Python is called a <b>string</b> and goes inside quotes: "Latte". Without quotes Python thinks Latte is the name of something.'],
+    goal: 'Print exactly: Welcome to Lantern',
+    given: () => ({}), expect: () => 'Welcome to Lantern',
+    starter: 'print("Hello")\n', hint: 'print("Welcome to Lantern")', solution: 'print("Welcome to Lantern")' },
+  { id: 'variables', title: 'Name your numbers', concept: 'Variables',
+    teach: ['A <b>variable</b> is a name that holds a value. total = price * cups works out the right-hand side and stores the answer under the name total.', 'The customer gives you price and cups (they change every run). serve() hands your answer back.'],
+    goal: 'Work out what the customer owes (price times cups) and serve it.',
+    given: (r) => ({ price: ri(r, 2, 5), cups: ri(r, 2, 6) }), expect: (v) => v.price * v.cups,
+    starter: 'total = price\nserve(total)\n', hint: 'total = price * cups, then serve(total).', solution: 'total = price * cups\nserve(total)' },
+  { id: 'types', title: 'Words and numbers', concept: 'Text, numbers and str()',
+    teach: ['Every value has a <b>type</b>. "3" in quotes is text; 3 without quotes is a number. They are different things.', '+ joins text to text and adds numbers to numbers, but it cannot mix them. str(cups) turns the number into text so it can be joined.'],
+    goal: 'Serve the sentence for the ticket, such as: Ana ordered 3 cups',
+    given: (r) => ({ name: some(r, PEOPLE, 1)[0], cups: ri(r, 2, 9) }), expect: (v) => `${v.name} ordered ${v.cups} cups`,
+    starter: 'ticket = name + " ordered "\nserve(ticket)\n', hint: 'name + " ordered " + str(cups) + " cups"', solution: 'ticket = name + " ordered " + str(cups) + " cups"\nserve(ticket)' },
+  { id: 'lists', title: 'The queue', concept: 'Lists and positions',
+    teach: ['A <b>list</b> holds several values in order, inside square brackets: ["Ana", "Ben", "Cleo"].', 'Each item has a position, counted from 0. queue[0] is the first person. A negative position counts from the end, so queue[-1] is always the last, however long the list is.'],
+    goal: 'Serve the name of the last person in the queue.',
+    given: (r) => ({ queue: some(r, PEOPLE, ri(r, 3, 5)) }), expect: (v) => v.queue[v.queue.length - 1],
+    starter: 'serve(queue[0])\n', hint: 'serve(queue[-1])', solution: 'serve(queue[-1])' },
+  { id: 'len', title: 'How many?', concept: 'len()',
+    teach: ['len() counts the items in a list (or the characters in a string) and gives the number back.', 'A function that gives a value back can be used anywhere a value can: inside serve(), in sums, or stored in a variable.'],
+    goal: 'Serve the number of people in the queue.',
+    given: (r) => ({ queue: some(r, PEOPLE, ri(r, 2, 7)) }), expect: (v) => v.queue.length,
+    starter: 'serve(queue)\n', hint: 'serve(len(queue))', solution: 'serve(len(queue))' },
+  { id: 'loop-total', title: 'Add them up', concept: 'Looping over a list',
+    teach: ['for n in orders: runs its indented lines once for each item, with n holding that item.', 'To add up a list, start a total at 0 before the loop and add each item to it inside the loop. This “running total” pattern is one of the most used in data work.'],
+    goal: 'orders is a list of cups per order. Serve the total number of cups.',
+    given: (r) => ({ orders: numbers(r) }), expect: (v) => v.orders.reduce((s, x) => s + x, 0),
+    starter: 'total = 0\nfor n in orders:\n    total = total\nserve(total)\n', hint: 'Inside the loop: total = total + n', solution: 'total = 0\nfor n in orders:\n    total = total + n\nserve(total)' },
+  { id: 'loop-if', title: 'Count the big ones', concept: 'if inside a loop',
+    teach: ['Put an if inside a loop to treat some items differently. Its lines are indented twice: once for the loop, once for the if.', 'Counting works like totalling: start at 0 and add 1 each time the test is True.'],
+    goal: 'Serve how many orders are for more than 3 cups.',
+    given: (r) => ({ orders: numbers(r) }), expect: (v) => v.orders.filter((x) => x > 3).length,
+    starter: 'big = 0\nfor n in orders:\n    big = big + 1\nserve(big)\n', hint: 'Add the line if n > 3: above big = big + 1, and indent that line once more.', solution: 'big = 0\nfor n in orders:\n    if n > 3:\n        big = big + 1\nserve(big)' },
+  { id: 'average', title: 'The usual order', concept: 'Division and round()',
+    teach: ['An average is the total divided by how many there are. A single / always gives a decimal number (a <b>float</b>), even when it divides exactly.', 'round(x, 2) rounds x to two decimal places.'],
+    goal: 'Serve the average cups per order, rounded to 2 decimal places.',
+    given: (r) => ({ orders: numbers(r) }), expect: (v) => twoDp(v.orders.reduce((s, x) => s + x, 0) / v.orders.length),
+    starter: 'total = 0\nfor n in orders:\n    total = total + n\nserve(total)\n', hint: 'serve(round(total / len(orders), 2))', solution: 'total = 0\nfor n in orders:\n    total = total + n\nserve(round(total / len(orders), 2))' },
+  { id: 'append', title: 'A new list', concept: 'Building a list',
+    teach: ['Start with an empty list, [], and add to it with .append(value). Each append puts one more item on the end.', 'Looping over one list and appending to another is how data gets transformed: prices in, new prices out.'],
+    goal: 'Prices are doubling for the festival. Serve a new list with every price doubled.',
+    given: (r) => ({ prices: Array.from({ length: ri(r, 3, 5) }, () => ri(r, 2, 6)) }), expect: (v) => v.prices.map((x) => x * 2),
+    starter: 'doubled = []\nfor p in prices:\n    doubled.append(p)\nserve(doubled)\n', hint: 'doubled.append(p * 2)', solution: 'doubled = []\nfor p in prices:\n    doubled.append(p * 2)\nserve(doubled)' },
+  { id: 'dict', title: 'Look it up', concept: 'Dictionaries',
+    teach: ['A <b>dictionary</b> pairs keys with values, in curly braces: {"latte": 3, "mocha": 4}.', 'You look a value up by its key, not its position: menu["latte"] is 3. Here the key you need is held in the variable item.'],
+    goal: 'menu holds each drink’s price. Serve the price of the drink named in item.',
+    given: (r) => ({ menu: DRINKS, item: some(r, Object.keys(DRINKS), 1)[0] }), expect: (v) => v.menu[v.item],
+    starter: 'serve(menu["latte"])\n', hint: 'serve(menu[item])', solution: 'serve(menu[item])' },
+  { id: 'dict-loop', title: 'Ring it up', concept: 'Looking up inside a loop',
+    teach: ['Now put the pieces together: loop over a list, look each item up in a dictionary, and keep a running total.', 'This is what a till does, and what a JOIN does in SQL: match each row to its price, then add up.'],
+    goal: 'order is a list of drinks. Serve the total cost using the prices in menu.',
+    given: (r) => ({ menu: DRINKS, order: Array.from({ length: ri(r, 2, 5) }, () => some(r, Object.keys(DRINKS), 1)[0]) }), expect: (v) => v.order.reduce((s, x) => s + v.menu[x], 0),
+    starter: 'total = 0\nfor drink in order:\n    total = total + 1\nserve(total)\n', hint: 'total = total + menu[drink]', solution: 'total = 0\nfor drink in order:\n    total = total + menu[drink]\nserve(total)' },
+  { id: 'functions', title: 'Write it once', concept: 'Functions that return', needsDef: true,
+    teach: ['def bill(items): makes your own function. items is its <b>input</b>: a name for whatever list the caller passes in.', 'return hands a value back to the line that called it, so bill(morning) can be used like a number.'],
+    goal: 'Two orders came in. Write a function bill(items) that returns an order’s cost, then serve the cost of morning plus afternoon.',
+    given: (r) => ({ menu: DRINKS, morning: Array.from({ length: ri(r, 2, 4) }, () => some(r, Object.keys(DRINKS), 1)[0]), afternoon: Array.from({ length: ri(r, 2, 4) }, () => some(r, Object.keys(DRINKS), 1)[0]) }),
+    expect: (v) => [...v.morning, ...v.afternoon].reduce((s, x) => s + v.menu[x], 0),
+    starter: 'def bill(items):\n    total = 0\n    for drink in items:\n        total = total + menu[drink]\n\nserve(bill(morning))\n', hint: 'End the function with return total (indented once), then serve(bill(morning) + bill(afternoon)).', solution: 'def bill(items):\n    total = 0\n    for drink in items:\n        total = total + menu[drink]\n    return total\n\nserve(bill(morning) + bill(afternoon))' },
+];
+
+const closeTo = (a, b) => (typeof a === 'number' && typeof b === 'number' ? Math.abs(a - b) < 1e-9 : Array.isArray(a) && Array.isArray(b) ? a.length === b.length && a.every((x, i) => closeTo(x, b[i])) : a === b);
+function dataOnce(level, program, seed) {
+  const vars = level.given(mulberry32(seed));
+  const prints = [], served = [];
+  const host = { actions: { serve: 1 }, free: new Set(['serve']), sensors: {}, vars };
+  exec(program, host, (s) => { if (s.action === 'print') prints.push(s.args[0]); else if (s.action === 'serve') served.push({ value: s.args.length ? s.args[0] : null, line: s.line }); });
+  const want = level.expect(vars);
+  const got = level.judge === 'print' ? prints.join('\n').trim() : served.length ? toJs(served[served.length - 1].value) : undefined;
+  return { vars, prints, served: served.map((x) => show(x.value, false)), want, got, ok: got !== undefined && closeTo(got, want), shown: got === undefined ? null : level.judge === 'print' ? got : show(served[served.length - 1].value, false), wantShown: level.judge === 'print' ? want : show(fromJs(want), false) };
+}
+/** Run a learner's program for a Data Diner level. Returns { ok, error, vars, prints, shown, wantShown }. */
+export function dataRun(level, source, seed = 1) {
+  const out = { ok: false, error: null, vars: level.given(mulberry32(seed)), prints: [], shown: null, wantShown: '' };
+  try {
+    const program = parse(source);
+    const first = dataOnce(level, program, seed);
+    Object.assign(out, { prints: first.prints, shown: first.shown, wantShown: first.wantShown });
+    if (first.got === undefined) { out.error = { message: level.judge === 'print' ? 'The program ran but printed nothing.' : 'The program ran but never called serve().', line: 0, hint: level.judge === 'print' ? 'Use print("…") to show text.' : 'Hand over your answer with serve(answer).' }; return out; }
+    if (!first.ok) { out.error = { message: level.judge === 'print' ? `It printed “${first.shown}”, but the goal is “${first.wantShown}”.` : `You served ${first.shown}, but the customer expected ${first.wantShown}.`, line: 0, hint: level.judge === 'print' ? 'Capitals, spaces and spelling all count.' : 'Follow your code line by line with the values on the ticket.' }; return out; }
+    if (level.needsDef && !program.defs.length) { out.error = { message: 'The answer is right, but this level asks for a function.', line: 0, hint: 'Define it with def bill(items): and use return.' }; return out; }
+    for (const s of [seed + 101, seed + 202]) {
+      const again = dataOnce(level, program, s);
+      if (!again.ok) { out.error = { message: 'That works for this customer, but not for the next one.', line: 0, hint: `With ${Object.entries(again.vars).filter(([k]) => k !== 'menu').map(([k, v]) => `${k} = ${show(fromJs(v), false)}`).join(', ')} it should serve ${again.wantShown}, and yours served ${again.shown ?? 'nothing'}. Use the variables rather than typing their values in.` }; return out; }
+    }
+    out.ok = true;
+  } catch (e) {
+    if (!(e instanceof PyError)) throw e;
+    out.error = { message: e.message, line: e.line, hint: e.hint };
+  }
+  return out;
+}
+export const showValue = (v) => show(fromJs(v), false);
+
+// ================================================================ Style Shop (CSS)
+// One page for every level. Each element has a key the checks use; the page is shown to the learner as HTML.
+const T = (text) => ({ text });
+export const CSS_PAGE = [
+  { key: 'top', tag: 'header', id: 'top', children: [
+    { key: 'h1', tag: 'h1', children: [T('Lantern Coffee')] },
+    { key: 'nav', tag: 'nav', children: [{ key: 'a1', tag: 'a', children: [T('Menu')] }, { key: 'a2', tag: 'a', children: [T('Visit')] }] }] },
+  { key: 'main', tag: 'main', children: [
+    { key: 'intro', tag: 'p', cls: ['intro'], children: [T('Fresh coffee, roasted in Leeds.')] },
+    { key: 'ul', tag: 'ul', children: [{ key: 'li1', tag: 'li', cls: ['hot'], children: [T('Latte')] }, { key: 'li2', tag: 'li', children: [T('Iced tea')] }, { key: 'li3', tag: 'li', cls: ['hot'], children: [T('Mocha')] }] },
+    { key: 'p2', tag: 'p', children: [T('Open daily. '), { key: 'a3', tag: 'a', children: [T('Our story')] }] }] },
+];
+export const CSS_PAGE_HTML = `<header id="top">
+  <h1>Lantern Coffee</h1>
+  <nav><a>Menu</a> <a>Visit</a></nav>
+</header>
+<main>
+  <p class="intro">Fresh coffee, roasted in Leeds.</p>
+  <ul>
+    <li class="hot">Latte</li>
+    <li>Iced tea</li>
+    <li class="hot">Mocha</li>
+  </ul>
+  <p>Open daily. <a>Our story</a></p>
+</main>`;
+export const CSS_LEVELS = [
+  { id: 'rule', title: 'Your first rule', concept: 'Selector, property, value',
+    teach: ['HTML says what is on a page. <b>CSS</b> says how it looks. A CSS <b>rule</b> names some elements, then lists changes inside curly braces.', 'In h1 { color: navy; } the <b>selector</b> h1 picks every h1, color is the <b>property</b> and navy is the <b>value</b>. A colon goes between them and a semicolon ends the line.'],
+    goal: 'Make the main heading orange.',
+    starter: 'h1 {\n  color: navy;\n}\n', hint: 'Change navy to orange.', solution: 'h1 {\n  color: orange;\n}',
+    checks: [['The h1 text is orange', (g) => g('h1', 'color') === 'orange']] },
+  { id: 'two', title: 'More than one change', concept: 'Several declarations',
+    teach: ['A rule can hold as many declarations as you like, one per line, each ending with a semicolon.', 'Sizes need a unit. px (pixels) is the simplest: font-size: 20px;'],
+    goal: 'Make every paragraph navy with a font size of 20px.',
+    starter: 'p {\n  color: navy;\n}\n', hint: 'Add a second line inside the braces: font-size: 20px;', solution: 'p {\n  color: navy;\n  font-size: 20px;\n}',
+    checks: [['Paragraphs are navy', (g) => g('intro', 'color') === 'navy' && g('p2', 'color') === 'navy'], ['Paragraphs are 20px', (g) => g('intro', 'font-size') === '20px' && g('p2', 'font-size') === '20px']] },
+  { id: 'class', title: 'Only some of them', concept: 'Class selectors',
+    teach: ['A tag selector changes every element of that kind. To change only some, the HTML gives them a <b>class</b>: &lt;li class="hot"&gt;.', 'In CSS a dot selects a class: .hot { … } changes every element with class="hot" and nothing else.'],
+    goal: 'Make only the hot drinks red. Iced tea stays as it is.',
+    starter: 'li {\n  color: red;\n}\n', hint: 'Change the selector from li to .hot', solution: '.hot {\n  color: red;\n}',
+    checks: [['Latte and Mocha are red', (g) => g('li1', 'color') === 'red' && g('li3', 'color') === 'red'], ['Iced tea is not red', (g) => g('li2', 'color') !== 'red']] },
+  { id: 'id', title: 'One of a kind', concept: 'id selectors and background',
+    teach: ['An <b>id</b> names one single element on the page: &lt;header id="top"&gt;. In CSS a hash selects it: #top { … }.', 'background-color fills the box behind an element’s content.'],
+    goal: 'Give the header (id="top") a gold background.',
+    starter: '#top {\n  \n}\n', hint: 'background-color: gold;', solution: '#top {\n  background-color: gold;\n}',
+    checks: [['The header’s background is gold', (g) => g('top', 'background-color') === 'gold']] },
+  { id: 'box', title: 'Room to breathe', concept: 'The box model',
+    teach: ['Every element is a box. <b>padding</b> is space inside the box, between its edge and its content. <b>border</b> is the edge itself. <b>margin</b> is space outside, pushing other boxes away.', 'A border needs three things: a width, a style and a colour, such as 2px solid navy.'],
+    goal: 'Give the intro paragraph 12px of padding and a 2px solid navy border.',
+    starter: '.intro {\n  padding: 0;\n}\n', hint: 'padding: 12px; and border: 2px solid navy;', solution: '.intro {\n  padding: 12px;\n  border: 2px solid navy;\n}',
+    checks: [['The intro has 12px padding', (g) => g('intro', 'padding') === '12px'], ['The intro has a 2px solid navy border', (g) => (g('intro', 'border') || '').split(' ').sort().join(' ') === '2px navy solid'], ['The other paragraph has no border', (g) => !g('p2', 'border')]] },
+  { id: 'specificity', title: 'Which rule wins?', concept: 'Specificity',
+    teach: ['When two rules set the same property on the same element, the more <b>specific</b> selector wins: an id beats a class, and a class beats a tag name.', 'So you can set a general rule for all paragraphs, then override it for one class without touching the first rule.'],
+    goal: 'Keep the rule that makes paragraphs navy. Add a rule so the intro paragraph alone is green.',
+    starter: 'p {\n  color: navy;\n}\n', hint: 'Add a second rule: .intro { color: green; }', solution: 'p {\n  color: navy;\n}\n.intro {\n  color: green;\n}',
+    checks: [['The intro is green', (g) => g('intro', 'color') === 'green'], ['The other paragraph is still navy', (g) => g('p2', 'color') === 'navy']] },
+  { id: 'descendant', title: 'Inside something else', concept: 'Descendant selectors',
+    teach: ['Two selectors with a space between them mean “the second, inside the first”. nav a picks only the links that are inside the nav.', 'The link in the last paragraph is not inside nav, so nav a leaves it alone.'],
+    goal: 'Make the two links in the nav brown with no underline. Leave the “Our story” link alone.',
+    starter: 'a {\n  color: brown;\n}\n', hint: 'Use the selector nav a, and add text-decoration: none;', solution: 'nav a {\n  color: brown;\n  text-decoration: none;\n}',
+    checks: [['The nav links are brown', (g) => g('a1', 'color') === 'brown' && g('a2', 'color') === 'brown'], ['The nav links have no underline', (g) => g('a1', 'text-decoration') === 'none' && g('a2', 'text-decoration') === 'none'], ['“Our story” is unchanged', (g) => g('a3', 'color') !== 'brown' && !g('a3', 'text-decoration')]] },
+  { id: 'group', title: 'Two at once', concept: 'Grouping selectors',
+    teach: ['A comma between selectors means “and also”: h1, .intro { … } applies the same declarations to both.', 'It saves writing the same rule twice, and keeps the two in step when you change it.'],
+    goal: 'Centre the heading and the intro paragraph with one rule.',
+    starter: 'h1 {\n  text-align: center;\n}\n', hint: 'Change the selector to h1, .intro', solution: 'h1, .intro {\n  text-align: center;\n}',
+    checks: [['The heading is centred', (g) => g('h1', 'text-align') === 'center'], ['The intro is centred', (g) => g('intro', 'text-align') === 'center'], ['The list is not centred', (g) => g('li1', 'text-align') !== 'center'], ['It is done in one rule', (g, n) => n === 1]] },
+  { id: 'flex', title: 'Side by side', concept: 'Flexbox',
+    teach: ['display: flex turns an element into a row and lays its children out side by side. It is the usual way to build navigation bars and card rows.', 'gap sets the space between the children, and justify-content says where they sit along the row.'],
+    goal: 'Lay the nav out as a centred row with a 16px gap between its links.',
+    starter: 'nav {\n  display: block;\n}\n', hint: 'display: flex; gap: 16px; justify-content: center;', solution: 'nav {\n  display: flex;\n  gap: 16px;\n  justify-content: center;\n}',
+    checks: [['The nav is a flex row', (g) => g('nav', 'display') === 'flex'], ['The gap is 16px', (g) => g('nav', 'gap') === '16px'], ['The links are centred', (g) => g('nav', 'justify-content') === 'center']] },
+];
+const keyed = (nodes, map = new Map()) => { nodes.forEach((n) => { if (n.key) map.set(n.key, n); if (n.children) keyed(n.children, map); }); return map; };
+/** Judge a learner's CSS for a level. Returns { ok, error, checks: [[label, passed]], styles: Map(node -> { own, all }) }. */
+export function cssRun(level, src) {
+  const { rules, error } = parseCss(src);
+  const styles = styleTree(CSS_PAGE, rules);
+  if (error) return { ok: false, error, checks: level.checks.map(([label]) => [label, false]), styles };
+  const nodes = keyed(CSS_PAGE);
+  const get = (key, prop) => styles.get(nodes.get(key)).all[prop];
+  const blocks = (src.replace(/\/\*[\s\S]*?\*\//g, '').match(/\{/g) || []).length;
+  const checks = level.checks.map(([label, fn]) => [label, !!fn(get, blocks)]);
+  return { ok: checks.every((c) => c[1]), error: null, checks, styles };
 }

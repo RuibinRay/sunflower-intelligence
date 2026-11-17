@@ -1,7 +1,7 @@
 // working-capital-and-capex.js — F07 · Working capital and capital spending. Content only; exercises are in
 // working-capital-and-capex.ex.js. Every figure comes from case.js: OPENING (F03's 31 December 2027 balance sheet),
 // WC (Ana's days and shares), ASSETS (F02/F03's assets and F05's new ones), MODEL (the linked forecast).
-import { OPENING as O, WC, ASSETS, depIn, MODEL as M, YEARS } from './case.js?v=37';
+import { OPENING as O, WC, ASSETS, depIn, MODEL as M, YEARS } from './case.js?v=38';
 
 const $ = (x) => Math.round(x).toLocaleString('en-US');
 const F = M.F, R = M.rows;

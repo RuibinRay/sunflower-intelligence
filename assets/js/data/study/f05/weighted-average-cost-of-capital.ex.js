@@ -2,9 +2,9 @@
 // knowledge check. Answer keys live here. Lantern’s figures come from case.js (DERIVED.targetWacc at TARGET_DV); every
 // other business named here is fictional. The debt-rate bands in the capstructure widget beyond 25% debt are
 // illustrative assumptions, not Coastline quotes.
-import { MARKET, PEERS, DEBT, TARGET_DV, TAX, DERIVED, coldBrewFlows } from './case.js?v=37';
-import * as CF from '../../../core/corpfin.js?v=37';
-import { npv } from '../../../core/invest.js?v=37';
+import { MARKET, PEERS, DEBT, TARGET_DV, TAX, DERIVED, coldBrewFlows } from './case.js?v=38';
+import * as CF from '../../../core/corpfin.js?v=38';
+import { npv } from '../../../core/invest.js?v=38';
 
 const { rf, mrp, smallFirm } = MARKET;
 const rD = DEBT.termLoan.rate;

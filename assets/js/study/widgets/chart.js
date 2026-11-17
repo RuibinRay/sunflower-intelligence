@@ -3,11 +3,11 @@
 //   { type: 'chart', kind: 'line' | 'bar', title, x: { label, values }, series: [{ name, values }],
 //     y: { label, format: 'money' | 'pct' | 'int' | 'num' }, note: 'html', endLabels?: false (legend only) }
 //   x.format: 'year' prints whole numbers without thousands separators (2014, not 2,014).
-import { h } from '../../core/dom.js?v=37';
-import { xl } from '../xl.js?v=37';
-import * as F from '../../core/format.js?v=37';
-import { lineChart, barChart, tableTwin } from '../../core/charts.js?v=37';
-import { onResize } from '../../core/dom.js?v=37';
+import { h } from '../../core/dom.js?v=38';
+import { xl } from '../xl.js?v=38';
+import * as F from '../../core/format.js?v=38';
+import { lineChart, barChart, tableTwin } from '../../core/charts.js?v=38';
+import { onResize } from '../../core/dom.js?v=38';
 
 const CLS = ['m-s1', 'm-s2', 'm-s3'];
 export function formatter(kind) {

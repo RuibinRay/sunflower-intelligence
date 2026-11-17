@@ -110,7 +110,7 @@ export function schoolPage(schoolId, { courses, plates }) {
       <div class="ledger-intro">
         <p class="lead">${esc(s.blurb)} Courses are listed in the order to take them, from introductory to advanced; each lists what it requires. Courses marked <i>Planned</i> are not written yet, but their syllabus is here and some link to plates and tools that already cover part of the ground.</p>
       ${s.id === 'analytics' ? `
-        <p class="lead">Want to practise the languages analysts write? The <a href="${root}learn/arcade/">Pixel Arcade</a> teaches Python, SQL and HTML through five small games.</p>` : ''}
+        <p class="lead">Want to practise the languages analysts write? The <a href="${root}learn/arcade/">Pixel Arcade</a> teaches Python, SQL, HTML and CSS from scratch through seven small games.</p>` : ''}
       </div>
 ${route}${groups}
       <section class="course-group" id="map" aria-labelledby="map-h">
@@ -196,7 +196,7 @@ export function homePage({ courses, glossary, formulas, featured }) {
 
       <section class="home-section" id="arcade" aria-labelledby="arcade-h">
         <h2 id="arcade-h">Arcade</h2>
-        <p class="section-lead">Pixel games that teach Python, SQL and HTML. Three have levels that teach one idea each and run your real code; two are endless, with new questions every run and a daily run. <a href="arcade/">Open the arcade</a>.</p>
+        <p class="section-lead">Pixel games that teach Python, SQL, HTML and CSS from the very beginning. Five have levels that explain one idea each, run your real code and check you understood it; two are endless, with new questions every run and a daily run. <a href="arcade/">Open the arcade</a>.</p>
         <ul class="lab-cards" role="list">${catalog.ARCADE.map((g) => `<li class="lab-card"><a href="arcade/${g.id}/"><span class="lab-name">${esc(g.name)}</span><span class="lab-blurb">${esc(g.blurb)}</span><span class="lab-course">${esc(g.lang)} · ${g.kind === 'learn' ? `${g.levels} levels` : 'endless'}</span></a></li>`).join('')}</ul>
       </section>
 

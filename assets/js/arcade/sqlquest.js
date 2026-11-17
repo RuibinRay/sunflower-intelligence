@@ -1,9 +1,9 @@
 // sqlquest.js — Query Quest: answer the shop's questions with SQL. Each row of the table is a sprite on the
 // stockroom shelf; the rows a query keeps light up, and the result appears as a table underneath.
-import { SQL_LEVELS, SQL_DB, sqlRun } from './levels.js?v=37';
-import { PAL, stage, drawSprite, drawText, loop, sfx, calm } from './pixel.js?v=37';
-import { h, fill, topBar, editor, levelStrip, brief, resultCard, btn, tryStars } from './ui.js?v=37';
-import * as store from './store.js?v=37';
+import { SQL_LEVELS, SQL_DB, sqlRun } from './levels.js?v=38';
+import { PAL, stage, drawSprite, drawText, loop, sfx, calm } from './pixel.js?v=38';
+import { h, fill, teacher, topBar, editor, levelStrip, brief, resultCard, btn, tryStars } from './ui.js?v=38';
+import * as store from './store.js?v=38';
 
 const CW = 40, CH = 46, COLS = 6;
 const ICON = { Coffee: 'cup', Tea: 'tea', Bakery: 'bake', Other: 'mug' };
@@ -39,10 +39,13 @@ export function start(mount, { root }) {
     if (!res.rows.length) return h('p.sql-empty', {}, 'The query ran and returned no rows.');
     return h('table.px-table', {}, h('thead', {}, h('tr', {}, res.columns.map((c) => h('th', { scope: 'col' }, c)))), h('tbody', {}, res.rows.slice(0, 40).map((r) => h('tr', {}, r.map((v) => h(`td${typeof v === 'number' ? '.is-num' : ''}`, {}, fmt(v)))))));
   }
+  function paintBrief() { fill(briefBox, brief(level, n + 1, SQL_LEVELS.length, schema())); }
+  const teach = teacher({ game: 'sqlquest', levels: SQL_LEVELS, briefBox, paintBrief, load: (i) => load(i), bar });
+  mount.querySelector('.arc-work').append(h('div.arc-buttons.arc-tools', {}, teach.tools), teach.notes);
   function load(i) {
     n = i; level = SQL_LEVELS[n]; runs = 0; hinted = false; picked = null;
     overlay.hidden = true; fill(overlay, );
-    fill(briefBox, brief(level, n + 1, SQL_LEVELS.length, schema()));
+    paintBrief();
     ed.set(level.starter);
     strip.paint(n, stars());
     status.textContent = level.goal;
@@ -68,15 +71,7 @@ export function start(mount, { root }) {
     const reward = store.levelDone('sqlquest', level.id, st);
     bar.refresh(); strip.paint(n, stars());
     say('That is the answer.', 'ok');
-    const last = n === SQL_LEVELS.length - 1;
-    const next = btn(last ? 'Play Bug Battle' : 'Next level ▶', () => { if (last) location.href = '../arena/'; else load(n + 1); }, 'go');
-    fill(overlay, resultCard({
-      title: last ? 'Stockroom mastered!' : 'Query correct!', stars: st, reward,
-      lines: [st === 3 ? 'Solved without a hint.' : 'Three stars need no hint and three runs or fewer.', last ? 'You can select, filter, sort, summarise, group and join. Those six ideas cover most of the SQL an analyst writes.' : `You used: ${level.concept}.`],
-      actions: [next, btn('Stay here', () => { overlay.hidden = true; }, 'ghost')],
-    }));
-    overlay.hidden = false;
-    next.focus();
+    teach.solved({ n, level, stars: st, reward, lines: [st === 3 ? 'Solved without a hint.' : 'Three stars need no hint and three runs or fewer.'], lastHref: '../arena/', lastLabel: 'Play Bug Battle' });
   }
 
   loop((dt, t) => {
@@ -102,4 +97,5 @@ export function start(mount, { root }) {
     });
   });
   load(n);
+  teach.start();
 }

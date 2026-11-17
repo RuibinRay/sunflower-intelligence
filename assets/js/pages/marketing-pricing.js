@@ -1,11 +1,11 @@
 // marketing-pricing.js — price elasticity of demand.
-import { initSite, syncRanges } from '../core/site.js?v=37';
-import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=37';
-import * as F from '../core/format.js?v=37';
-import * as S from '../core/stats.js?v=37';
-import { parseTable, isNumeric } from '../core/csv.js?v=37';
-import { barChart, scatter, tableTwin, Tooltip, lineChart } from '../core/charts.js?v=37';
-import { priceTests } from '../core/rng.js?v=37';
+import { initSite, syncRanges } from '../core/site.js?v=38';
+import { $, $$, h, s, download, toCSV, onResize, debounce } from '../core/dom.js?v=38';
+import * as F from '../core/format.js?v=38';
+import * as S from '../core/stats.js?v=38';
+import { parseTable, isNumeric } from '../core/csv.js?v=38';
+import { barChart, scatter, tableTwin, Tooltip, lineChart } from '../core/charts.js?v=38';
+import { priceTests } from '../core/rng.js?v=38';
 initSite();
 
 const DAY = 86400000;

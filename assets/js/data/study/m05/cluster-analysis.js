@@ -6,12 +6,12 @@
 // planted kinds Ana can never see, appears only in the "What Ana couldn't see" callout. The segments are lettered by
 // size (as the widget letters them); profiling-segments names them. Pellmark Cycles and Tollwick Software (with
 // Teodora Rafferty) are fictional. Every printed figure is recomputed in `checks`.
-import { NEEDS, RESPONDENTS, STUDY, TRUE_TYPE, DERIVED as D } from './case.js?v=37';
-import { standardise, kmeans, silhouette } from '../../../core/classify.js?v=37';
-import { ward, cutTree, adjustedRand, leafOrder } from '../../../core/ml.js?v=37';
-import { indexVsAverage } from '../../../core/market.js?v=37';
-import { nearestCentroid, agreement } from '../../../core/percmap.js?v=37';
-import { mulberry32, normalGen } from '../../../core/rng.js?v=37';
+import { NEEDS, RESPONDENTS, STUDY, TRUE_TYPE, DERIVED as D } from './case.js?v=38';
+import { standardise, kmeans, silhouette } from '../../../core/classify.js?v=38';
+import { ward, cutTree, adjustedRand, leafOrder } from '../../../core/ml.js?v=38';
+import { indexVsAverage } from '../../../core/market.js?v=38';
+import { nearestCentroid, agreement } from '../../../core/percmap.js?v=38';
+import { mulberry32, normalGen } from '../../../core/rng.js?v=38';
 
 // ---------------------------------------------------------------- the study
 const RS = RESPONDENTS, N = RS.length, P = NEEDS.length;

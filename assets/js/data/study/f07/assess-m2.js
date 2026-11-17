@@ -1,7 +1,7 @@
 // assess-m2.js — F07 module 2 test: The three statements (working-capital-and-capex, debt-schedules,
 // linking-the-statements). No hints; full solutions shown on review. Larkspur Pottery Studio and its figures are
 // fictional and introduced here; the Lantern items ask new questions of case.js's model.
-import { MODEL as M, OPENING as O, TERM_LOAN as T } from './case.js?v=37';
+import { MODEL as M, OPENING as O, TERM_LOAN as T } from './case.js?v=38';
 
 const R = M.rows;
 const pmt = (P, r, n) => P * r / (1 - (1 + r) ** -n);

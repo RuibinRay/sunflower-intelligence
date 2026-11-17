@@ -1,7 +1,7 @@
 // assess-m1.js — F07 module 1 test: Foundations of a model (modelling-principles, setting-up-the-history,
 // revenue-and-cost-forecasts). No hints; full solutions shown on review. New scenarios: Fernhill Bakery and its figures
 // are fictional and introduced here; the Lantern items ask new questions of case.js's figures.
-import { HISTORY, ASSUME } from './case.js?v=37';
+import { HISTORY, ASSUME } from './case.js?v=38';
 
 const H7 = HISTORY[2027];
 const FERN = { y2027: 312_000, months: 8, growth: [0.06, 0.05], ingredients: 0.34, rent: 26_400, inflation: 0.03 };

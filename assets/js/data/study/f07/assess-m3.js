@@ -1,7 +1,7 @@
 // assess-m3.js — F07 module 3 test: Valuation and review (dcf-model, scenarios-and-sensitivity,
 // model-review-and-presentation). No hints; full solutions shown on review. Tidewater Kayaks and its figures are
 // fictional and introduced here; the Lantern items ask new questions of case.js's model, scenarios and DCF.
-import { DCF as D, SCENARIO_RESULTS as S, scenario, MODEL as M } from './case.js?v=37';
+import { DCF as D, SCENARIO_RESULTS as S, scenario, MODEL as M } from './case.js?v=38';
 
 const TW = { ebit: 60000, tax: 0.25, dep: 14000, capex: 22000, dNwc: 3000 };
 const twFcff = TW.ebit * (1 - TW.tax) + TW.dep - TW.capex - TW.dNwc;
