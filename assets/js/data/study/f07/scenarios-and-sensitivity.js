@@ -1,7 +1,7 @@
 // scenarios-and-sensitivity.js — F07 · Scenarios and sensitivity. Content only; exercises are in
 // scenarios-and-sensitivity.ex.js. Every figure comes from case.js: scenario() runs the whole linked model (and its DCF)
 // on changed assumptions; SCENARIO_RESULTS holds the scenarios the lesson compares; MODEL and VALUATION the base case.
-import { scenario, SCENARIO_RESULTS as S, SCENARIOS, MODEL as M, VALUATION as V, dcf, FINANCE } from './case.js?v=38';
+import { scenario, SCENARIO_RESULTS as S, SCENARIOS, MODEL as M, VALUATION as V, dcf, FINANCE } from './case.js?v=39';
 
 const n = (x) => (Math.round(x) + 0).toLocaleString('en-US');
 const pc = (x, d = 1) => `${(x * 100).toFixed(d)}%`;

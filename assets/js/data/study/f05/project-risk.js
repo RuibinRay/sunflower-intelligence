@@ -3,9 +3,9 @@
 // illustration), ROASTER and DERIVED.roasterSavingPerYear (the roaster’s break-even volume) and WORKING_RATE from case.js.
 // Ana’s scenarios, probabilities, the input distributions and the fridges’ $6,000 resale after one year are assumptions made
 // for this lesson (fictional). The bike-repair van is a fictional business.
-import { COLD_BREW, ROASTER, WORKING_RATE, TAX, coldBrewFlows, DERIVED } from './case.js?v=38';
-import { projectCashFlows, depreciation, sensitivity, breakEven, breakEvenVolumes, eaa } from '../../../core/corpfin.js?v=38';
-import { npv } from '../../../core/invest.js?v=38';
+import { COLD_BREW, ROASTER, WORKING_RATE, TAX, coldBrewFlows, DERIVED } from './case.js?v=39';
+import { projectCashFlows, depreciation, sensitivity, breakEven, breakEvenVolumes, eaa } from '../../../core/corpfin.js?v=39';
+import { npv } from '../../../core/invest.js?v=39';
 
 const cb = COLD_BREW, r = WORKING_RATE;
 /** Cold Brew’s NPV with its drivers moved: volume (% of forecast), shelf price, cost per can, promotion (% of plan), rate (%). */

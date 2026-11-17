@@ -1,8 +1,8 @@
 // ui.js — the parts every arcade game shares: the cabinet's top bar, the code editor, the level strip and
 // the end-of-level card.
-import { pixelHeadings, setMuted, sfx, spriteUrl } from './pixel.js?v=38';
-import * as store from './store.js?v=38';
-import { RECAPS, INTROS } from './recaps.js?v=38';
+import { pixelHeadings, setMuted, sfx, spriteUrl } from './pixel.js?v=39';
+import * as store from './store.js?v=39';
+import { RECAPS, INTROS } from './recaps.js?v=39';
 
 export const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 /** h('div.a.b', { id: 'x', onclick }, child, 'text') */
@@ -142,7 +142,7 @@ export function teacher({ game, levels, briefBox, paintBrief, load, bar }) {
   function paintNotes() {
     const done = store.starsOf(game);
     const got = levels.filter((lv) => done[lv.id]);
-    fill(notes, h('h3.quiz-h', {}, `Your ${intro.name} notes`),
+    fill(notes, h('h3.quiz-h', {}, `Your ${intro.notes || intro.name} notes`),
       h('p.quiz-lead', {}, got.length ? `${got.length} of ${levels.length} ideas learned. Each one is added here when you finish its level.` : 'Nothing here yet. Finish a level and what it taught is added to these notes.'),
       h('ol.notes-list', {}, got.map((lv) => h('li', {}, h('b', {}, lv.concept), h('p', {}, recaps[lv.id][0]), h('pre.quiz-code', {}, h('code', {}, recaps[lv.id][1]))))));
   }

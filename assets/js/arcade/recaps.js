@@ -3,6 +3,8 @@
 //   RECAPS[game][levelId] = [learned, example, question, right answer, wrong, wrong, why]
 // The recap is shown when a level is solved, with the question as a quick check, and kept in the game's Notes.
 
+import { INTROS2, RECAPS2 } from './recaps2.js?v=39';
+
 export const INTROS = {
   datadiner: {
     name: 'Python', what: 'Python is a programming language: a way of writing instructions that a computer follows exactly, one line at a time.',
@@ -99,3 +101,5 @@ export const RECAPS = {
     flex: ['display: flex lays an element’s children out in a row. gap spaces them and justify-content positions them.', 'nav { display: flex; gap: 16px; }', 'You set display: flex on nav. What is laid out in a row?', 'The children of nav', 'nav and its neighbours', 'Every link on the page', 'Flex is set on the parent and arranges its children.'],
   },
 };
+Object.assign(INTROS, INTROS2);
+Object.assign(RECAPS, RECAPS2);
