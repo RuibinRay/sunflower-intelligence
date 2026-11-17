@@ -1,7 +1,7 @@
 // hedging-with-derivatives.js — F08 · Hedging with derivatives. Content only; exercises are in hedging-with-derivatives.ex.js.
 // Figures from case.js: COFFEE (the fictional futures and the volatility and correlation estimates), DERIVED.hedge and
 // brightcupContracts, BRIGHTCUP_COFFEE, BASIS, BOOK, BOOK_BETA and INDEX_FUTURES (Hollis's investments), QUOTES.
-import { COFFEE as K, DERIVED as D, BRIGHTCUP_COFFEE as BC, BASIS as B, BOOK, BOOK_VALUE, BOOK_BETA, BOOK_BETAS, INDEX_FUTURES as IF, QUOTES as Q, OPT as O } from './case.js?v=39';
+import { COFFEE as K, DERIVED as D, BRIGHTCUP_COFFEE as BC, BASIS as B, BOOK, BOOK_VALUE, BOOK_BETA, BOOK_BETAS, INDEX_FUTURES as IF, QUOTES as Q, OPT as O } from './case.js?v=40';
 
 const $ = (x) => Math.round(x).toLocaleString('en-US');
 const $2 = (x) => x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

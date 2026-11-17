@@ -2,8 +2,8 @@
 // No hints. Each item has a full solution, shown when the student reviews the test. New questions, not copies of the
 // lesson exercises. Morrow & Pike, Harbour Street and the four bonds come from case.js (fictional); prices, durations
 // and enterprise values from core/investments.js. Every other business, quote and figure is fictional.
-import { COMPANIES, BONDS } from './case.js?v=39';
-import * as IV from '../../../core/investments.js?v=39';
+import { COMPANIES, BONDS } from './case.js?v=40';
+import * as IV from '../../../core/investments.js?v=40';
 
 const MP = COMPANIES.morrow, HS = COMPANIES.harbour;
 const [G5, , HB] = BONDS;

@@ -1,7 +1,7 @@
 // assess-diagnostic.js — F08 diagnostic: what a student already knows about derivatives and risk. Eleven items across
 // the three modules; `route` suggests where to start. Redfern Cycles and its figures are fictional and introduced here.
 // No hints; solutions on review.
-import { forwardPrice, oneStep } from '../../../core/derivatives.js?v=39';
+import { forwardPrice, oneStep } from '../../../core/derivatives.js?v=40';
 
 export const items = [
   {

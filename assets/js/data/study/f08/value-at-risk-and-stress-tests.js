@@ -2,9 +2,9 @@
 // value-at-risk-and-stress-tests.ex.js. Figures from case.js: BOOK, BOOK_VALUE and BOOK_RETURNS (Hollis Avery's
 // $500,000 of investments, with F06's SIMULATED monthly returns, January 2013 – December 2027), VAR (core/risk.js:
 // historical and normal VaR and expected shortfall, a rolling backtest and Kupiec's test), QUOTES and INDEX_FUTURES.
-import { BOOK, BOOK_VALUE as V, BOOK_RETURNS as R, BOOK_MONTHS as M, VAR, OPT as O, INDEX_FUTURES as IF } from './case.js?v=39';
-import { historical, parametric, christoffersen } from '../../../core/risk.js?v=39';
-import { mean, sd } from '../../../core/stats.js?v=39';
+import { BOOK, BOOK_VALUE as V, BOOK_RETURNS as R, BOOK_MONTHS as M, VAR, OPT as O, INDEX_FUTURES as IF } from './case.js?v=40';
+import { historical, parametric, christoffersen } from '../../../core/risk.js?v=40';
+import { mean, sd } from '../../../core/stats.js?v=40';
 
 const $ = (x) => Math.round(x).toLocaleString('en-US');
 const pc = (x, d = 2) => `${(x * 100).toFixed(d)}%`;

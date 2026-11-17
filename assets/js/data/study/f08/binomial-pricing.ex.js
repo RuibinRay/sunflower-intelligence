@@ -1,7 +1,7 @@
 // binomial-pricing.ex.js — F08 · Binomial pricing: widgets, practice and the knowledge check (answer keys live here).
 // Figures from case.js (OPT, bs); every num item's `check` recomputes its answer.
-import { OPT as O, bs } from './case.js?v=39';
-import { binomial, oneStep } from '../../../core/derivatives.js?v=39';
+import { OPT as O, bs } from './case.js?v=40';
+import { binomial, oneStep } from '../../../core/derivatives.js?v=40';
 
 const rh = 1.045 ** 0.5 - 1;
 const usd = (x, d = 2) => `${x < 0 ? '−' : ''}$${Math.abs(x).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;

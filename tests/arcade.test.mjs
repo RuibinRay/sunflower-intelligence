@@ -6,6 +6,8 @@ import { parse, run, PyError } from '../assets/js/arcade/minipy.js';
 import { query, sameResult, SqlError } from '../assets/js/arcade/minisql.js';
 import { PY_LEVELS, pyRun, SQL_LEVELS, SQL_DB, sqlRun, HTML_LEVELS, htmlRun, htmlScan, DATA_LEVELS, dataRun, CSS_LEVELS, cssRun } from '../assets/js/arcade/levels.js';
 import { parseCss } from '../assets/js/arcade/minicss.js';
+import { PANDAS_LEVELS, pandasRun, toCsv, SHEET_LEVELS, sheetRun, JS_LEVELS, jsRunSync, jsLint } from '../assets/js/arcade/levels2.js';
+import { samePlain } from '../assets/js/arcade/minipandas.js';
 import { RECAPS, INTROS } from '../assets/js/arcade/recaps.js';
 import { LEVEL_COUNTS } from '../assets/js/arcade/store.js';
 import { makeQuestion, CATCH_ROUNDS, QUESTION_COUNTS } from '../assets/js/arcade/questions.js';
@@ -165,8 +167,105 @@ ok(!cssRun(CSS_LEVELS[6], 'a { color: brown; text-decoration: none; }').ok, 'css
 ok(cssRun(CSS_LEVELS[5], '.intro { color: green; }\np { color: navy; }').ok, 'css specificity beats order');
 ok(!cssRun(CSS_LEVELS[7], 'h1 { text-align: center; }\n.intro { text-align: center; }').ok, 'css group level wants one rule');
 
+// ---------------------------------------------------------------- Table Tamer (pandas), Cell Craft (formulas), Script Lab (JavaScript)
+const SEEDS = [1, 2, 3, 4, 5, 6, 50, 321, 777, 900];
+for (const [name, levels, runIt] of [['pandas', PANDAS_LEVELS, pandasRun], ['sheet', SHEET_LEVELS, sheetRun], ['js', JS_LEVELS, jsRunSync]]) {
+  for (const lv of levels) {
+    for (const seed of SEEDS) {
+      const r = runIt(lv, lv.solution, seed);
+      ok(r.ok, `${name} ${lv.id} seed ${seed}: the solution should pass: ${r.error ? r.error.message : r.message}`);
+      ok(!runIt(lv, lv.starter, seed).ok, `${name} ${lv.id} seed ${seed}: the starter should not already solve it`);
+    }
+    ok(lv.teach.length >= 2 && lv.goal && lv.hint && lv.concept && lv.title, `${name} ${lv.id} has its brief`);
+  }
+}
+const LOADPD = 'import pandas as pd\ndf = pd.read_csv("orders.csv")\n';
+const pdErr = (lv, src, re, name) => { const r = pandasRun(PANDAS_LEVELS.find((l) => l.id === lv), LOADPD + src, 3); ok(!r.ok && re.test(`${r.error.message} ${r.error.hint}`), `pandas ${name}: ${r.error ? `${r.error.message} | ${r.error.hint}` : 'passed'}`); };
+pdErr('and', 'serve(df[df["drink"] == "latte" & df["qty"] >= 2])', /own brackets/, 'filters without brackets');
+pdErr('filter', 'serve(df[df["Drink"] == "latte"])', /no column called .*The columns are/, 'wrong column name');
+pdErr('filter', 'serve(df[df["drink"] == latte])', /latte.*not been given a value/, 'text without quotes');
+pdErr('column', 'serve(df["qty"].sum)', /brackets/, 'method without brackets');
+pdErr('column', 'serve(df.sum())', /Pick a column first/, 'sum on the whole table');
+pdErr('column', 'serve(df[0])', /does not pick a row/, 'df[0]');
+{ const lv = PANDAS_LEVELS.find((l) => l.id === 'column'); pdErr('column', `serve(${pandasRun(lv, lv.solution, 3).want})`, /another day/, 'typed-in answer'); }
+pdErr('groupby', 'serve(df.groupby("drink").sum())', /which column/, 'groupby without a column');
+pdErr('stats', 'serve(df["drink"].mean())', /holds text/, 'mean of text');
+pdErr('read', 'serve(pd.read_csv("order.csv"))', /no file called/, 'wrong file name');
+pdErr('sort', 'serve(df.sort_values("qty", ascending=false))', /False/, 'lowercase false');
+pdErr('read', 'import numpy\nserve(df.head(3))', /no module called/, 'unknown import');
+{ const lv = PANDAS_LEVELS.find((l) => l.id === 'and'); ok(pandasRun(lv, `${LOADPD}serve(df[(df["qty"] >= 2) & (df["drink"] == "latte")])`, 9).ok, 'pandas: the two tests in either order'); }
+{ const lv = PANDAS_LEVELS.find((l) => l.id === 'size'); ok(pandasRun(lv, `${LOADPD}serve(df.shape[0])`, 9).ok, 'pandas: df.shape[0] counts rows'); }
+{ const lv = PANDAS_LEVELS.find((l) => l.id === 'sort'); ok(pandasRun(lv, `${LOADPD}df["total"] = df["price"] * df["qty"]\nserve(df.nlargest(3, "total"))`, 9).ok, 'pandas: nlargest'); }
+{ const lv = PANDAS_LEVELS.find((l) => l.id === 'merge'); ok(pandasRun(lv, 'import pandas as pd\no = pd.read_csv("orders.csv")\nm = pd.read_csv("menu.csv")\nb = pd.merge(o, m, on="drink")\nserve((b["price"] * b["qty"]).sum())', 9).ok, 'pandas: pd.merge and an unnamed column sum'); }
+{ const r = pandasRun(PANDAS_LEVELS[0], `${LOADPD}print(df.head(2))\nprint(df["qty"].head(2))\nprint(df.shape)\nserve(df.head(3))`, 4); ok(r.ok && /drink +price +qty +server/.test(r.prints[0]) && /dtype: int64/.test(r.prints[1]) && /^\(\d+, 4\)$/.test(r.prints[2]), `pandas prints tables: ${JSON.stringify(r.prints)}`); }
+
+const shErr = (lv, f, re, name) => { const r = sheetRun(SHEET_LEVELS.find((l) => l.id === lv), f, 3); ok(!r.ok && re.test(`${r.message} ${r.hint}`), `sheet ${name}: ${r.message} | ${r.hint}`); };
+shErr('formula', 'B2*C2', /equals sign/, 'no equals sign');
+shErr('sum', '=D2+D3+D4+D5+D6+D7', /practises SUM/, 'sum by hand');
+shErr('absolute', '=D2*G1', /filled down/, 'unpinned reference');
+shErr('if', '=IF(C2>=3,Bulk,Single)', /./, 'text without quotes');
+shErr('countif', '=COUNTIF(A2:A7,“latte”)', /straight double quotes|read that formula/, 'curly quotes');
+shErr('sum', '=SUMM(D2:D7)', /SUMM/, 'misspelt function');
+{ const r = sheetRun(SHEET_LEVELS.find((l) => l.id === 'sum'), '=SUM(D2:D7)', 3); const typed = sheetRun(SHEET_LEVELS.find((l) => l.id === 'sum'), `=${r.sheet.get('D8')}`, 3); ok(!typed.ok && /not when the numbers change|typed number/i.test(`${typed.message} ${typed.hint}`), `sheet: a typed-in total fails: ${typed.message}`); }
+ok(sheetRun(SHEET_LEVELS.find((l) => l.id === 'lookup'), '=XLOOKUP(A2,$F$2:$F$6,$G$2:$G$6)', 5).ok, 'sheet: XLOOKUP is accepted for the lookup level');
+ok(sheetRun(SHEET_LEVELS.find((l) => l.id === 'lookup'), '=INDEX($G$2:$G$6,MATCH(A2,$F$2:$F$6,0))', 5).ok, 'sheet: INDEX/MATCH is accepted for the lookup level');
+ok(sheetRun(SHEET_LEVELS.find((l) => l.id === 'if'), '=if(c2<3,"Single","Bulk")', 5).ok, 'sheet: lower case and the test turned round');
+ok(sheetRun(SHEET_LEVELS.find((l) => l.id === 'fill'), '=C2*B2', 5).targets.length === 6, 'sheet: a fill level fills six cells');
+
+const J = (id) => JS_LEVELS.find((l) => l.id === id);
+const jsErr = (lv, src, re, name) => { const r = jsRunSync(J(lv), src, 3); ok(!r.ok && re.test(`${r.error.message} ${r.error.hint}`), `js ${name}: ${r.error ? `${r.error.message} | ${r.error.hint}` : 'passed'}`); };
+jsErr('log', 'print("Open for coffee")', /console\.log/, 'print');
+jsErr('if', 'if cups >= 5:\n    serve("Bulk")', /colon|curly/, 'python if');
+jsErr('if', 'if (cups >= 5 and cups > 0) { serve("Bulk"); } else { serve("Single"); }', /&&/, 'the word and');
+jsErr('variables', 'const total = price * cups;\ntotal = 3;\nserve(total);', /const cannot be changed/, 'changing a const');
+jsErr('variables', 'serve(totl);', /spelling/, 'unknown name');
+jsErr('variables', 'const price = 3;\nserve(price * cups);', /already taken/, 'redeclaring a given name');
+jsErr('variables', 'serve(price * cups', /bracket/, 'syntax error');
+jsErr('variables', 'serve(String(price * cups));', /needs a number, and you served text/, 'text instead of a number');
+jsErr('functions', 'serve(price * cups);', /asks for a function/, 'no function');
+jsErr('map', 'const out = [];\nfor (const p of prices) { out.push(p + 1); }\nserve(out);', /\.map\(\)/, 'loop instead of map');
+jsErr('if', 'serve("Bulk");', /./, 'one branch only');
+jsErr('dom', 'document.querySelector("#sing").textContent = "Open until " + closes;', /found nothing.*#sign/, 'wrong id');
+jsErr('events', 'let cups = 0;\ndocument.querySelector("#add").addEventListener("click", () => { cups += 1; document.querySelector("#count").textContent = 3; });', /not for 1/, 'hard-coded click count');
+ok(jsRunSync(J('template'), 'serve(name + " ordered " + cups + " cups");', 5).ok, 'js: + also joins text and numbers');
+ok(jsRunSync(J('arrays'), 'serve(queue.at(-1));', 5).ok, 'js: .at(-1)');
+ok(jsRunSync(J('loop'), 'serve(prices.reduce((a, b) => a + b, 0));', 5).ok, 'js: reduce');
+ok(jsRunSync(J('functions'), 'const bill = (p, c) => p * c;\nserve(bill(price, cups));', 5).ok, 'js: an arrow function counts as a function');
+ok(jsRunSync(J('events'), 'let cups = 0;\ndocument.getElementById("add").onclick = () => { cups++; document.getElementById("count").textContent = cups; };', 5).ok, 'js: onclick and getElementById');
+ok(jsLint('console.log("print(1) and True");') === null && jsLint('// print(x)\nserve(1);') === null, 'js lint ignores strings and comments');
+
+// real pandas' own answer for every Table Tamer solution
+let checkedPd = 0;
+try {
+  const jobs = [];
+  for (const lv of PANDAS_LEVELS) for (const seed of SEEDS) { const r = pandasRun(lv, lv.solution, seed); jobs.push({ id: `${lv.id}/${seed}`, files: Object.fromEntries(Object.entries(r.files).map(([k, v]) => [k, toCsv(v)])), code: lv.solution, want: r.want }); }
+  const script = `import json, sys, os, tempfile
+import pandas as pd
+jobs = json.load(sys.stdin)
+out = []
+def plain(v):
+    if isinstance(v, pd.DataFrame):
+        return {"kind": "table", "columns": list(v.columns), "rows": json.loads(v.to_json(orient="values"))}
+    if isinstance(v, pd.Series):
+        return {"kind": "series", "index": [x if isinstance(x, str) else int(x) for x in v.index], "values": json.loads(v.to_json(orient="values"))}
+    if hasattr(v, "item"):
+        v = v.item()
+    return v
+for job in jobs:
+    d = tempfile.mkdtemp()
+    for name, text in job["files"].items():
+        open(os.path.join(d, name), "w").write(text + "\\n")
+    os.chdir(d)
+    got = []
+    exec(job["code"], {"serve": lambda v: got.append(plain(v))})
+    out.append(got[-1])
+print(json.dumps(out))`;
+  const res = JSON.parse(execFileSync('python3', ['-c', script], { input: JSON.stringify(jobs), encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }));
+  jobs.forEach((job, i) => { checkedPd++; ok(samePlain(res[i], job.want), `real pandas agrees on ${job.id}: pandas ${JSON.stringify(res[i])}  ours ${JSON.stringify(job.want)}`); });
+} catch (e) { if (e.code === 'ENOENT' || /No module named/.test(String(e.stderr))) console.log('pandas not found: skipped the cross-check against real pandas'); else throw e; }
+
 // ---------------------------------------------------------------- recaps: every level teaches something and checks it
-const GAME_LEVELS = { datadiner: DATA_LEVELS, pyquest: PY_LEVELS, sqlquest: SQL_LEVELS, tagbuilder: HTML_LEVELS, stylelab: CSS_LEVELS };
+const GAME_LEVELS = { datadiner: DATA_LEVELS, pyquest: PY_LEVELS, sqlquest: SQL_LEVELS, tagbuilder: HTML_LEVELS, stylelab: CSS_LEVELS, tabletamer: PANDAS_LEVELS, cellcraft: SHEET_LEVELS, scriptlab: JS_LEVELS };
 for (const [game, levels] of Object.entries(GAME_LEVELS)) {
   ok(INTROS[game] && INTROS[game].what && INTROS[game].used && INTROS[game].play, `${game} has an intro`);
   ok(LEVEL_COUNTS[game] === levels.length, `${game}: store counts ${LEVEL_COUNTS[game]} levels, there are ${levels.length}`);
@@ -215,5 +314,5 @@ try {
   exprs.forEach((e, i) => ok(res[i] === (i < good.length), `python truth of ${e}`));
 } catch (e) { if (e.code !== 'ENOENT') throw e; }
 
-console.log(`${pass} passed, ${fail} failed (${checkedPy} Python questions checked against python3)`);
+console.log(`${pass} passed, ${fail} failed (${checkedPy} Python questions checked against python3, ${checkedPd} pandas answers against real pandas)`);
 process.exit(fail ? 1 : 0);

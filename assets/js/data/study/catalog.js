@@ -679,9 +679,12 @@ export const LABS = [
 export const ARCADE = [
   { id: 'datadiner', kind: 'learn', lang: 'Python · start here', name: 'Data Diner', levels: 12, blurb: 'Never written code? Start here. Run the till with a few lines of Python: print, variables, text and numbers, lists, loops, dictionaries and your own functions.' },
   { id: 'pyquest', kind: 'learn', lang: 'Python', name: 'Py Quest', levels: 10, blurb: 'Steer a bee round the garden by writing real Python: function calls, loops, variables, if and while, and your own functions.' },
+  { id: 'tabletamer', kind: 'learn', lang: 'Python · pandas', name: 'Table Tamer', levels: 12, blurb: 'Load a file of orders with pandas and question it: pick columns, filter rows, add a column, sort, count, group, fill the gaps and merge two tables.' },
   { id: 'sqlquest', kind: 'learn', lang: 'SQL', name: 'Query Quest', levels: 17, blurb: 'Answer the coffee shop’s questions with SQL, from SELECT and WHERE to GROUP BY and JOIN. The rows your query keeps light up on the shelf.' },
+  { id: 'cellcraft', kind: 'learn', lang: 'Spreadsheets', name: 'Cell Craft', levels: 12, blurb: 'Learn spreadsheet formulas on a live sheet, with no code: cell references, filling down, SUM and AVERAGE, $ to pin a cell, IF, COUNTIF, SUMIF and VLOOKUP.' },
   { id: 'tagbuilder', kind: 'learn', lang: 'HTML', name: 'Tag Builder', levels: 8, blurb: 'Build the shop’s web page tag by tag and watch it appear as you type: headings, links, images, lists and page landmarks.' },
   { id: 'stylelab', kind: 'learn', lang: 'CSS', name: 'Style Shop', levels: 9, blurb: 'Dress the shop’s page with CSS: rules, classes and ids, the box model, which rule wins, and laying things out in a row.' },
+  { id: 'scriptlab', kind: 'learn', lang: 'JavaScript', name: 'Script Lab', levels: 12, blurb: 'Write real JavaScript and run it: variables, template strings, if, arrays, loops, functions, objects, map and filter, then change a page and react to a click.' },
   { id: 'arena', kind: 'loop', lang: 'Python · SQL · HTML & CSS', name: 'Bug Battle', blurb: 'An endless quiz fight. Read the code, pick what it does, sting the bug. New questions every run, a daily run, and practice on your weak spots.' },
   { id: 'catcher', kind: 'loop', lang: 'Python · SQL · HTML · CSS', name: 'Syntax Catcher', blurb: 'Words fall, the rule changes every round. Catch the real keywords, tags and properties and let the fakes drop.' },
 ];

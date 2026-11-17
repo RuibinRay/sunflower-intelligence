@@ -1,8 +1,8 @@
 // forwards-and-futures.js — F08 · Forwards and futures. Content only; exercises are in forwards-and-futures.ex.js. Figures
 // from case.js: EURO and DERIVED.euroBank (Coastline's six-month euro forward), COFFEE.futures and DERIVED.margin (the
 // fictional green-coffee futures contract and a week of settlement prices), DERIVED.greenEquivalent.
-import { EURO as E, COFFEE as K, DERIVED as D } from './case.js?v=39';
-import { marginAccount } from '../../../core/derivatives.js?v=39';
+import { EURO as E, COFFEE as K, DERIVED as D } from './case.js?v=40';
+import { marginAccount } from '../../../core/derivatives.js?v=40';
 
 const $ = (x) => Math.round(x).toLocaleString('en-US');
 const $2 = (x) => x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

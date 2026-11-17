@@ -3,7 +3,7 @@
 //   learn/index.html                     the study home
 //   learn/<school>/index.html            three school pages
 //   learn/<school>/<course>/…            course page, one page per lesson, module tests, diagnostic, project, final
-//   learn/arcade/…                      the Pixel Arcade hub and its five games
+//   learn/arcade/…                      the Pixel Arcade hub and its ten games
 //   learn/labs/index.html, glossary/, formulas/, review/, notebook/, curriculum/
 //   assets/js/data/study/map.js          the course structure for the pages' scripts (generated; don't edit)
 //   assets/data/study/search.json        the search index for the study home

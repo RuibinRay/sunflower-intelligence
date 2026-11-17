@@ -1,7 +1,7 @@
 // why-firms-hedge.js — F08 · Why firms hedge. Content only; exercises are in why-firms-hedge.ex.js. Every figure comes from
 // case.js: COFFEE (Kilnworth's price, its fixed-price offer and Ana's forecast), ebitda2029 (F07's base-case EBITDA with
 // the coffee bill changed), DEBT_SERVICE_2029 (F07's 2029 interest and scheduled principal) and EURO.
-import { COFFEE as K, EURO as E, DERIVED as D, ebitda2029, DEBT_SERVICE_2029 as DS } from './case.js?v=39';
+import { COFFEE as K, EURO as E, DERIVED as D, ebitda2029, DEBT_SERVICE_2029 as DS } from './case.js?v=40';
 
 const $ = (x) => Math.round(x).toLocaleString('en-US');
 const $2 = (x) => x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

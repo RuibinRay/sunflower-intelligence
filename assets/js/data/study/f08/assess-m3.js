@@ -1,8 +1,8 @@
 // assess-m3.js — F08 module 3 test: Managing risk (hedging-with-derivatives, margin-leverage-and-short-selling,
 // value-at-risk-and-stress-tests). No hints; full solutions shown on review. Copperline Foods, Westbay Pension Fund and
 // all their figures are fictional and introduced here.
-import { hedgeRatio, contractsNeeded } from '../../../core/derivatives.js?v=39';
-import { kupiec } from '../../../core/risk.js?v=39';
+import { hedgeRatio, contractsNeeded } from '../../../core/derivatives.js?v=40';
+import { kupiec } from '../../../core/risk.js?v=40';
 
 const h = hedgeRatio({ rho: 0.9, sdSpot: 0.025, sdFutures: 0.03 }).h;
 const losses = [3.1, 2.8, 2.6, 2.4, 2.2, 1.9, 1.8, 1.7];   // the 8 worst daily losses in 100 days, % of value

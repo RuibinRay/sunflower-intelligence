@@ -1,8 +1,8 @@
 // binomial-pricing.js — F08 · Binomial pricing. Content only; exercises are in binomial-pricing.ex.js. Figures from case.js:
 // OPT (Brightcup at $42.00, 30% volatility, six months to expiry, 4.5% a year = ln 1.045 continuously) and bs (the
 // Black–Scholes values the trees converge to); trees from core/derivatives.js.
-import { OPT as O, bs, QUOTES as Q } from './case.js?v=39';
-import { binomial, oneStep } from '../../../core/derivatives.js?v=39';
+import { OPT as O, bs, QUOTES as Q } from './case.js?v=40';
+import { binomial, oneStep } from '../../../core/derivatives.js?v=40';
 
 const $2 = (x) => x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const r4 = (x) => x.toFixed(4);

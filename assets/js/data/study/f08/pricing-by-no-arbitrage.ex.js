@@ -1,7 +1,7 @@
 // pricing-by-no-arbitrage.ex.js — F08 · Pricing by no arbitrage: widgets, practice and the knowledge check.
 // Figures from case.js (EURO, COFFEE, DERIVED); every num item's `check` recomputes its answer.
-import { EURO as E, COFFEE as K, DERIVED as D } from './case.js?v=39';
-import { forwardPrice, fxForward, forwardValue } from '../../../core/derivatives.js?v=39';
+import { EURO as E, COFFEE as K, DERIVED as D } from './case.js?v=40';
+import { forwardPrice, fxForward, forwardValue } from '../../../core/derivatives.js?v=40';
 
 const usd = (x, d = 0) => `${x < 0 ? '−' : ''}$${Math.abs(x).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 

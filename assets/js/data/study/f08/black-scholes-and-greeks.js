@@ -1,8 +1,8 @@
 // black-scholes-and-greeks.js — F08 · Black–Scholes–Merton and the Greeks. Content only; exercises are in
 // black-scholes-and-greeks.ex.js. Figures from case.js: OPT (Brightcup at $42.00, 30% volatility, six months, continuous
 // rate ln 1.045) and bs (core/fin.js's Black–Scholes with the case's inputs); impliedVol from core/fin.js.
-import { OPT as O, bs, QUOTES as Q } from './case.js?v=39';
-import { impliedVol } from '../../../core/fin.js?v=39';
+import { OPT as O, bs, QUOTES as Q } from './case.js?v=40';
+import { impliedVol } from '../../../core/fin.js?v=40';
 
 const $2 = (x) => x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const $ = (x) => Math.round(x).toLocaleString('en-US');

@@ -1,7 +1,7 @@
 // swaps.js — F08 · Swaps. Content only; exercises are in swaps.ex.js. Figures from case.js: SWAP (Brightcup's $200 million
 // floating-rate loan and the fictional zero curves now and a year later), DERIVED.df, swapRate, dfLater, swapValueLater.
-import { SWAP as W, DERIVED as D } from './case.js?v=39';
-import { swapRate, swapValue } from '../../../core/derivatives.js?v=39';
+import { SWAP as W, DERIVED as D } from './case.js?v=40';
+import { swapRate, swapValue } from '../../../core/derivatives.js?v=40';
 
 const m = (x, d = 2) => (x / 1e6).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
 const $ = (x) => Math.round(x).toLocaleString('en-US');

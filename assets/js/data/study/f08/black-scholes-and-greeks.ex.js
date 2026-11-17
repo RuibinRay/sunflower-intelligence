@@ -1,7 +1,7 @@
 // black-scholes-and-greeks.ex.js — F08 · Black–Scholes–Merton and the Greeks: widgets, practice and the knowledge check.
 // Figures from case.js (OPT, bs); every num item's `check` recomputes its answer with core/fin.js.
-import { OPT as O, bs } from './case.js?v=39';
-import { blackScholes, impliedVol } from '../../../core/fin.js?v=39';
+import { OPT as O, bs } from './case.js?v=40';
+import { blackScholes, impliedVol } from '../../../core/fin.js?v=40';
 
 const usd = (x, d = 2) => `${x < 0 ? '−' : ''}$${Math.abs(x).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const f4 = (x) => (x < 0 ? '−' : '') + Math.abs(x).toFixed(4);

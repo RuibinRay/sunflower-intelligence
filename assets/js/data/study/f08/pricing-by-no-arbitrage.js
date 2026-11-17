@@ -2,9 +2,9 @@
 // Figures from case.js: EURO (spot, dollar and euro rates), DERIVED.euroForward and euroBank (Coastline's quote),
 // COFFEE.futures and storagePV (the fictional exchange coffee and its carrying costs); Brightcup's price and dividend
 // from F06's COMPANIES.
-import { EURO as E, COFFEE as K, DERIVED as D } from './case.js?v=39';
-import { COMPANIES } from '../f06/case.js?v=39';
-import { forwardPrice, fxForward, forwardValue } from '../../../core/derivatives.js?v=39';
+import { EURO as E, COFFEE as K, DERIVED as D } from './case.js?v=40';
+import { COMPANIES } from '../f06/case.js?v=40';
+import { forwardPrice, fxForward, forwardValue } from '../../../core/derivatives.js?v=40';
 
 const $ = (x) => Math.round(x).toLocaleString('en-US');
 const $2 = (x) => x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

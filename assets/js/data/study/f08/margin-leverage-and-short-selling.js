@@ -1,7 +1,7 @@
 // margin-leverage-and-short-selling.js — F08 · Margin, leverage and short selling. Content only; exercises are in
 // margin-leverage-and-short-selling.ex.js. Figures from case.js: OPT (Brightcup at $42.00), MARGIN_RULES (Regulation T's
 // 50% initial margin and FINRA's minimum maintenance margins; an 8% broker loan rate, fictional), COFFEE.futures and QUOTES.
-import { OPT as O, MARGIN_RULES as MR, COFFEE as K, QUOTES as Q } from './case.js?v=39';
+import { OPT as O, MARGIN_RULES as MR, COFFEE as K, QUOTES as Q } from './case.js?v=40';
 
 const $ = (x) => Math.round(x).toLocaleString('en-US');
 const $2 = (x) => x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

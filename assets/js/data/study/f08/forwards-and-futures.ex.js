@@ -1,7 +1,7 @@
 // forwards-and-futures.ex.js — F08 · Forwards and futures: widgets, practice and the knowledge check (answer keys here).
 // Figures from case.js (EURO, COFFEE.futures, DERIVED); every num item's `check` recomputes its answer.
-import { EURO as E, COFFEE as K, DERIVED as D } from './case.js?v=39';
-import { marginAccount } from '../../../core/derivatives.js?v=39';
+import { EURO as E, COFFEE as K, DERIVED as D } from './case.js?v=40';
+import { marginAccount } from '../../../core/derivatives.js?v=40';
 
 const $ = (x) => `${x < 0 ? '−' : ''}$${Math.round(Math.abs(x)).toLocaleString('en-US')}`;
 const fut = K.futures;

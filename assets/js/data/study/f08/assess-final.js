@@ -1,8 +1,8 @@
 // assess-final.js — F08 final: all three modules, 22 items; 70% passes. No hints; solutions on review. Kestrel Air,
 // Northwind Avocado Growers, Lumen Labs and all their figures are fictional and introduced here. Option items use
 // continuously compounded rates.
-import { discountFactors, swapRate, oneStep } from '../../../core/derivatives.js?v=39';
-import { blackScholes } from '../../../core/fin.js?v=39';
+import { discountFactors, swapRate, oneStep } from '../../../core/derivatives.js?v=40';
+import { blackScholes } from '../../../core/fin.js?v=40';
 
 const df2 = discountFactors([0.035, 0.04]), k2 = swapRate(df2);
 const putOne = oneStep({ S: 80, u: 1.15, d: 0.9, K: 80, r: 0.02, type: 'put' });

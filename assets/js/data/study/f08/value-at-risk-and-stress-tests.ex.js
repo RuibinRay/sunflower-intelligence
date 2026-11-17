@@ -1,8 +1,8 @@
 // value-at-risk-and-stress-tests.ex.js — F08 · Value at Risk and stress tests: widgets, practice and the knowledge check.
 // Figures from case.js (BOOK, BOOK_RETURNS — F06's SIMULATED monthly returns — OPT, INDEX_FUTURES); every num item's
 // `check` recomputes its answer with core/risk.js or by hand.
-import { BOOK, BOOK_VALUE as V, BOOK_RETURNS as R, OPT as O, INDEX_FUTURES as IF } from './case.js?v=39';
-import { historical, parametric, kupiec } from '../../../core/risk.js?v=39';
+import { BOOK, BOOK_VALUE as V, BOOK_RETURNS as R, OPT as O, INDEX_FUTURES as IF } from './case.js?v=40';
+import { historical, parametric, kupiec } from '../../../core/risk.js?v=40';
 
 const usd = (x) => `${x < 0 ? '−' : ''}$${Math.round(Math.abs(x)).toLocaleString('en-US')}`;
 

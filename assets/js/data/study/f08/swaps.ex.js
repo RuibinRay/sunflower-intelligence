@@ -1,7 +1,7 @@
 // swaps.ex.js — F08 · Swaps: widgets, practice and the knowledge check (answer keys live here).
 // Figures from case.js (SWAP, DERIVED); every num item's `check` recomputes its answer.
-import { SWAP as W, DERIVED as D } from './case.js?v=39';
-import { discountFactors, swapRate, swapValue } from '../../../core/derivatives.js?v=39';
+import { SWAP as W, DERIVED as D } from './case.js?v=40';
+import { discountFactors, swapRate, swapValue } from '../../../core/derivatives.js?v=40';
 
 const mn = (x) => `${x < 0 ? '−' : ''}$${(Math.abs(x) / 1e6).toFixed(2)} million`;
 

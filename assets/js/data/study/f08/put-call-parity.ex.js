@@ -1,7 +1,7 @@
 // put-call-parity.ex.js — F08 · Put–call parity: widgets, practice and the knowledge check (answer keys live here).
 // Figures from case.js (OPT, QUOTES); every num item's `check` recomputes its answer.
-import { OPT as O, QUOTES as Q } from './case.js?v=39';
-import { parityGap } from '../../../core/derivatives.js?v=39';
+import { OPT as O, QUOTES as Q } from './case.js?v=40';
+import { parityGap } from '../../../core/derivatives.js?v=40';
 
 const disc = Math.exp(-O.r * O.T);
 const usd = (x, d = 2) => `${x < 0 ? '−' : ''}$${Math.abs(x).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;

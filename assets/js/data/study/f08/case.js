@@ -8,12 +8,12 @@
 //   beans F05's roaster plan priced cost $9.80 a kg; the 25% tax rate.
 // - f06: Brightcup Coffee has $630 million of debt.
 // - f07: Lantern's base-case 2029 EBITDA, interest and scheduled principal.
-import { ROASTER, TAX, HOLLIS } from '../f05/case.js?v=39';
-import { COMPANIES, SERIES, MONTHS, DERIVED as F06D } from '../f06/case.js?v=39';
-import { MODEL as F07M } from '../f07/case.js?v=39';
-import * as DV from '../../../core/derivatives.js?v=39';
-import { blackScholes } from '../../../core/fin.js?v=39';
-import * as RISK from '../../../core/risk.js?v=39';
+import { ROASTER, TAX, HOLLIS } from '../f05/case.js?v=40';
+import { COMPANIES, SERIES, MONTHS, DERIVED as F06D } from '../f06/case.js?v=40';
+import { MODEL as F07M } from '../f07/case.js?v=40';
+import * as DV from '../../../core/derivatives.js?v=40';
+import { blackScholes } from '../../../core/fin.js?v=40';
+import * as RISK from '../../../core/risk.js?v=40';
 
 export const TODAY = 'September 2028';
 export const TAX_RATE = TAX;

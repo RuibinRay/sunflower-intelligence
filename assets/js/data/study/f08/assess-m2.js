@@ -1,8 +1,8 @@
 // assess-m2.js — F08 module 2 test: Options (options-payoffs, put-call-parity, binomial-pricing,
 // black-scholes-and-greeks). No hints; full solutions shown on review. Orchard Lane Foods and its options are fictional
 // and introduced here. Rates are continuously compounded unless a step rate is stated.
-import { oneStep, binomial, parityGap } from '../../../core/derivatives.js?v=39';
-import { blackScholes } from '../../../core/fin.js?v=39';
+import { oneStep, binomial, parityGap } from '../../../core/derivatives.js?v=40';
+import { blackScholes } from '../../../core/fin.js?v=40';
 
 const OL = { S: 60, r: 0.03 };
 const putFromCall = 5.2 - 60 + 60 * Math.exp(-0.03 * 0.5);

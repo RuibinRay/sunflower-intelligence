@@ -2,11 +2,11 @@
 // policy before Lantern signs its 2029 contracts. The student measures the exposures, prices a second euro forward,
 // designs a coffee hedge that mixes Kilnworth's fixed price and its cap, stress-tests 2029 EBITDA and debt-service cover,
 // and writes the policy. Every figure is computed below from case.js and checked by `verify`.
-import { COFFEE as K, EURO as E, CAP, capPerKg, DERIVED as D, ebitda2029, DEBT_SERVICE_2029 as DS } from './case.js?v=39';
-import { fxForward } from '../../../core/derivatives.js?v=39';
-import { widgets as WH } from './why-firms-hedge.ex.js?v=39';
-import { widgets as NA } from './pricing-by-no-arbitrage.ex.js?v=39';
-import { widgets as OP } from './options-payoffs.ex.js?v=39';
+import { COFFEE as K, EURO as E, CAP, capPerKg, DERIVED as D, ebitda2029, DEBT_SERVICE_2029 as DS } from './case.js?v=40';
+import { fxForward } from '../../../core/derivatives.js?v=40';
+import { widgets as WH } from './why-firms-hedge.ex.js?v=40';
+import { widgets as NA } from './pricing-by-no-arbitrage.ex.js?v=40';
+import { widgets as OP } from './options-payoffs.ex.js?v=40';
 
 const GRINDERS = { amount: 24_000, due: '30 June 2029', T: 0.75 };
 const euroTotal = E.amount + GRINDERS.amount, perCent = euroTotal * 0.01;

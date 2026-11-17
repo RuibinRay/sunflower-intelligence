@@ -1,7 +1,7 @@
 // assess-m1.js — F08 module 1 test: Forwards, futures and swaps (why-firms-hedge, forwards-and-futures,
 // pricing-by-no-arbitrage, swaps). No hints; full solutions shown on review. Pinecrest Bakeries, Marlin Outdoor and
 // Halyard Shipping, and all their figures, are fictional and introduced here.
-import { fxForward, forwardValue, forwardPrice, marginAccount, swapRate } from '../../../core/derivatives.js?v=39';
+import { fxForward, forwardValue, forwardPrice, marginAccount, swapRate } from '../../../core/derivatives.js?v=40';
 
 const flourExposure = 120 * 50 * (1 - 0.4);
 const oil = marginAccount({ prices: [80, 80.9, 81.8], contracts: 3, size: 1000, initial: 6000, maintenance: 4500, long: false });

@@ -290,3 +290,51 @@ ul.review > li > code { color: var(--a-bad); font-weight: 700; }
 @media (prefers-reduced-motion: reduce) {
   .px-btn:active, .game-card a:hover { transform: none; }
 }
+
+/* ---------- Table Tamer (pandas): the CSV files and the served answer ---------- */
+.csv-files { display: grid; gap: 10px; }
+.pv.csv { min-height: 0; }
+.csv-body { overflow: auto; max-height: 300px; }
+.px-table--paper th { color: #8E4A22; border-bottom-color: #192B49; }
+.px-table--paper td { color: #192B49; border-bottom-color: #E7D9B4; }
+.px-table td.is-idx { color: var(--a-dim); text-align: right; border-right: 2px solid var(--a-line); }
+.px-table td.is-nan { color: var(--a-bad); }
+.px-table--paper td.is-nan { color: #B3261E; font-weight: 700; }
+.console-line.is-table { white-space: pre; overflow-x: auto; }
+.console .sql-result { margin: 6px 0; }
+
+/* ---------- Cell Craft (spreadsheet formulas): the grid and the formula bar ---------- */
+.sheet-wrap { overflow: auto; border: 4px solid #000; background: #FFF8E8; color-scheme: light; }
+.sheet { border-collapse: collapse; width: 100%; font-size: 0.85rem; color: #192B49; }
+.sheet th { background: #192B49; color: #B4BFD3; font-weight: 700; padding: 3px 8px; border: 1px solid #2A426B; min-width: 30px; text-align: center; }
+.sheet td { border: 1px solid #D9C9A0; padding: 4px 8px; white-space: nowrap; min-width: 64px; height: 30px; cursor: cell; }
+.sheet td:hover { background: #F4E4BC; }
+.sheet td.is-num { text-align: right; font-variant-numeric: tabular-nums; }
+.sheet td.is-head { font-weight: 700; color: #8E4A22; }
+.sheet td.is-fill { background: #FBEFC4; }
+.sheet td.is-target { background: #E8B923; color: #1B1403; font-weight: 700; outline: 3px solid #000; outline-offset: -3px; }
+.sheet td.is-err { color: #B3261E; font-weight: 700; }
+.sheet td.is-right { box-shadow: inset 0 0 0 3px #3F8F2F; }
+.sheet td.is-wrong { box-shadow: inset 0 0 0 3px #B3261E; }
+.fx-bar { display: flex; align-items: stretch; border: 3px solid var(--a-line); background: var(--a-code); }
+.fx-bar:focus-within { border-color: var(--a-sun); }
+.fx-cell, .fx-sign { display: grid; place-items: center; padding: 0 10px; border-right: 3px solid var(--a-line); color: var(--a-sun); font-weight: 700; }
+.fx-sign { color: var(--a-dim); font-style: italic; }
+.fx-input { flex: 1; min-width: 0; font: inherit; font-size: 1rem; color: #EAF0FA; background: transparent; border: 0; padding: 10px 12px; min-height: 48px; }
+.arcade .fx-input:focus-visible { outline: 0; }
+
+/* ---------- Script Lab (JavaScript): the stand-in page ---------- */
+.pv[hidden] { display: none; }
+.pv:has(.js-page) { min-height: 0; margin-bottom: 8px; }
+.js-page { display: grid; gap: 8px; }
+.js-el { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.js-id { font-size: 0.72rem; background: #192B49; color: #E8B923; padding: 1px 6px; }
+.arcade .js-page h1 { margin: 0; text-transform: none; letter-spacing: 0; }
+.js-page .js-text { margin: 0; font-size: 1.4rem; font-weight: 700; }
+.js-page button { cursor: pointer; min-height: 40px; }
+.js-page button:active { transform: translate(2px, 2px); }
+.js-note { margin: 0; font-size: 0.78rem; color: #6B5B3A; }
+@media (max-width: 560px) {
+  .sheet td { min-width: 52px; padding: 4px 5px; }
+  .sheet { font-size: 0.78rem; }
+}

@@ -1,9 +1,9 @@
 // efficient-portfolios.ex.js — F06 · Efficient portfolios: widgets, practice and the knowledge check (answer keys live here).
 // Fund returns come from case.js (SIMULATED monthly history; fictional funds); forward-looking expected returns use
 // F05’s assumptions (MARKET) and the funds’ 2023–2027 betas. Every other fund and person named here is fictional.
-import { SERIES, MONTHS, DERIVED, MARKET, RISK_PROFILE } from './case.js?v=39';
-import * as IV from '../../../core/investments.js?v=39';
-import { moments } from '../../../core/portfolio.js?v=39';
+import { SERIES, MONTHS, DERIVED, MARKET, RISK_PROFILE } from './case.js?v=40';
+import * as IV from '../../../core/investments.js?v=40';
+import { moments } from '../../../core/portfolio.js?v=40';
 
 const st = DERIVED.stats;
 const MO = moments(['market', 'intl', 'bonds'].map((n) => SERIES[n]), 12);

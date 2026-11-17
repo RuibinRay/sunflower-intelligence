@@ -1,8 +1,8 @@
 // put-call-parity.js — F08 · Put–call parity. Content only; exercises are in put-call-parity.ex.js. Figures from case.js:
 // OPT (Brightcup at $42.00, options expiring 31 March 2029, the continuously compounded rate equal to 4.5% a year)
 // and QUOTES (the case's fictional option prices).
-import { OPT as O, QUOTES as Q } from './case.js?v=39';
-import { parityGap } from '../../../core/derivatives.js?v=39';
+import { OPT as O, QUOTES as Q } from './case.js?v=40';
+import { parityGap } from '../../../core/derivatives.js?v=40';
 
 const $2 = (x) => x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const r4 = (x) => x.toFixed(4);

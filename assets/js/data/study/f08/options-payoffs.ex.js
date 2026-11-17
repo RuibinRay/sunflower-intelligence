@@ -1,7 +1,7 @@
 // options-payoffs.ex.js — F08 · Calls, puts, payoffs and profits: widgets, practice and the knowledge check.
 // Figures from case.js (OPT, QUOTES, CAP, COFFEE); every num item's `check` recomputes its answer.
-import { OPT as O, QUOTES as Q, CAP, capPerKg, COFFEE as K } from './case.js?v=39';
-import { optionPayoff } from '../../../core/derivatives.js?v=39';
+import { OPT as O, QUOTES as Q, CAP, capPerKg, COFFEE as K } from './case.js?v=40';
+import { optionPayoff } from '../../../core/derivatives.js?v=40';
 
 const usd = (x, d = 2) => `${x < 0 ? '−' : ''}$${Math.abs(x).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 const xs = Array.from({ length: 13 }, (_, i) => 30 + 2 * i);

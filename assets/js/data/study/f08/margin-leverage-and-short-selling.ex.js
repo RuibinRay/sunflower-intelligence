@@ -1,6 +1,6 @@
 // margin-leverage-and-short-selling.ex.js — F08 · Margin, leverage and short selling: widgets, practice and the check.
 // Figures from case.js (OPT, MARGIN_RULES); every num item's `check` recomputes its answer.
-import { OPT as O, MARGIN_RULES as MR } from './case.js?v=39';
+import { OPT as O, MARGIN_RULES as MR } from './case.js?v=40';
 
 const usd = (x) => `${x < 0 ? '−' : ''}$${Math.round(Math.abs(x)).toLocaleString('en-US')}`;
 const pct = (x) => `${x < 0 ? '−' : ''}${Math.abs(x * 100).toFixed(1)}%`;

@@ -1,8 +1,8 @@
 // hedging-with-derivatives.ex.js — F08 · Hedging with derivatives: widgets, practice and the knowledge check.
 // Figures from case.js (COFFEE, DERIVED, BRIGHTCUP_COFFEE, BOOK, BOOK_BETA, INDEX_FUTURES); every num item's `check`
 // recomputes its answer.
-import { COFFEE as K, DERIVED as D, BRIGHTCUP_COFFEE as BC, BOOK_VALUE, BOOK_BETA, INDEX_FUTURES as IF } from './case.js?v=39';
-import { hedgeRatio, contractsNeeded } from '../../../core/derivatives.js?v=39';
+import { COFFEE as K, DERIVED as D, BRIGHTCUP_COFFEE as BC, BOOK_VALUE, BOOK_BETA, INDEX_FUTURES as IF } from './case.js?v=40';
+import { hedgeRatio, contractsNeeded } from '../../../core/derivatives.js?v=40';
 
 const usd = (x) => `${x < 0 ? '−' : ''}$${Math.round(Math.abs(x)).toLocaleString('en-US')}`;
 const fv = IF.level * IF.multiplier;

@@ -1,8 +1,8 @@
 // arcade-hub.js — the arcade's front page: the player's rank, streak and daily run, progress on each game, badges.
-import { initSite } from '../core/site.js?v=39';
-import { pixelHeadings, drawSprite, PAL } from '../arcade/pixel.js?v=39';
-import * as store from '../arcade/store.js?v=39';
-import { h } from '../arcade/ui.js?v=39';
+import { initSite } from '../core/site.js?v=40';
+import { pixelHeadings, drawSprite, PAL } from '../arcade/pixel.js?v=40';
+import * as store from '../arcade/store.js?v=40';
+import { h } from '../arcade/ui.js?v=40';
 
 initSite();
 const hub = document.getElementById('arcade-hub');
@@ -14,6 +14,9 @@ if (mascot) { const c = mascot.getContext('2d'); drawSprite(c, 'flower', 1, 10);
 const ART = {
   datadiner: (c) => { c.fillStyle = PAL.midnight; c.fillRect(0, 0, 48, 16); drawSprite(c, 'beeSide', 1, 2); drawSprite(c, 'cup', 20, 3); drawSprite(c, 'person', 36, 3); c.fillStyle = PAL.brown; c.fillRect(0, 14, 48, 2); },
   stylelab: (c) => { c.fillStyle = PAL.ivory; c.fillRect(0, 0, 48, 16); c.fillStyle = PAL.sun; c.fillRect(0, 0, 48, 5); c.fillStyle = PAL.terracotta; c.fillRect(3, 7, 12, 6); c.fillStyle = PAL.water; c.fillRect(18, 7, 12, 6); c.fillStyle = PAL.olive; c.fillRect(33, 7, 12, 6); },
+  tabletamer: (c) => { c.fillStyle = PAL.ivory; c.fillRect(0, 0, 48, 16); c.fillStyle = PAL.terracotta; c.fillRect(0, 0, 48, 4); c.fillStyle = PAL.midnight; for (let r = 0; r < 3; r++) { c.fillRect(3, 6 + r * 3, 10, 2); c.fillRect(17, 6 + r * 3, 6, 2); c.fillRect(27, 6 + r * 3, 4, 2); } c.fillStyle = PAL.sun; c.fillRect(35, 5, 10, 9); c.fillStyle = PAL.midnight; c.fillRect(37, 10, 2, 4); c.fillRect(40, 8, 2, 6); c.fillRect(43, 6, 1, 8); },
+  cellcraft: (c) => { c.fillStyle = PAL.ivory; c.fillRect(0, 0, 48, 16); c.fillStyle = PAL.midnight; c.fillRect(0, 0, 48, 3); c.fillRect(0, 0, 6, 16); for (let x = 6; x < 48; x += 14) c.fillRect(x, 3, 1, 13); for (let y = 3; y < 16; y += 4) c.fillRect(6, y, 42, 1); c.fillStyle = PAL.sun; c.fillRect(21, 8, 13, 3); },
+  scriptlab: (c) => { c.fillStyle = PAL.night; c.fillRect(0, 0, 48, 16); c.fillStyle = PAL.sun; c.fillRect(3, 3, 3, 10); c.fillRect(3, 3, 5, 2); c.fillRect(3, 11, 5, 2); c.fillRect(42, 3, 3, 10); c.fillRect(40, 3, 5, 2); c.fillRect(40, 11, 5, 2); c.fillStyle = PAL.foam; c.fillRect(12, 5, 14, 2); c.fillRect(12, 9, 22, 2); c.fillStyle = PAL.terracotta; c.fillRect(29, 5, 7, 2); },
   pyquest: (c) => { c.fillStyle = '#74843B'; c.fillRect(0, 0, 48, 16); drawSprite(c, 'bee', 2, 2, { turn: 1 }); drawSprite(c, 'flower', 18, 2); drawSprite(c, 'flower', 34, 2); },
   sqlquest: (c) => { drawSprite(c, 'cup', 1, 3); drawSprite(c, 'tea', 13, 3); drawSprite(c, 'bake', 25, 3); drawSprite(c, 'mug', 37, 3); c.fillStyle = PAL.brown; c.fillRect(0, 14, 48, 2); },
   tagbuilder: (c) => { c.fillStyle = PAL.ivory; c.fillRect(0, 0, 48, 16); c.fillStyle = PAL.terracotta; c.fillRect(0, 0, 48, 4); c.fillStyle = PAL.midnight; c.fillRect(3, 6, 22, 2); c.fillRect(3, 10, 34, 1); c.fillRect(3, 13, 28, 1); c.fillStyle = PAL.sun; c.fillRect(38, 6, 7, 7); },

@@ -1,6 +1,6 @@
 // why-firms-hedge.ex.js — F08 · Why firms hedge: widgets, practice and the knowledge check (answer keys live here).
 // Figures from case.js (COFFEE, ebitda2029, DEBT_SERVICE_2029); every num item's `check` recomputes its answer.
-import { COFFEE as K, DERIVED as D, ebitda2029, DEBT_SERVICE_2029 as DS } from './case.js?v=39';
+import { COFFEE as K, DERIVED as D, ebitda2029, DEBT_SERVICE_2029 as DS } from './case.js?v=40';
 
 const $ = (x) => `$${Math.round(x).toLocaleString('en-US')}`;
 

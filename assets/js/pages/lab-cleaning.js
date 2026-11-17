@@ -1,13 +1,13 @@
 // lab-cleaning.js — the Data Cleaning Lab page (learn/labs/cleaning/). The panels come from cleaning-ui.js; this file
 // wires them to the page's sections, the dataset choice and uploads. The recipe for each course dataset is remembered
 // in this browser (localStorage key si:lab-cleaning); uploaded data never leave the tab and are not stored.
-import { initSite } from '../core/site.js?v=39';
-import { $, $$ } from '../core/dom.js?v=39';
-import * as F from '../core/format.js?v=39';
-import { afterPaint } from '../core/ui.js?v=39';
-import * as C from '../core/cleaning.js?v=39';
-import { createLab, STORE_KEY } from '../study/labs/cleaning-ui.js?v=39';
-import { scrollersFocusable } from '../study/common.js?v=39';
+import { initSite } from '../core/site.js?v=40';
+import { $, $$ } from '../core/dom.js?v=40';
+import * as F from '../core/format.js?v=40';
+import { afterPaint } from '../core/ui.js?v=40';
+import * as C from '../core/cleaning.js?v=40';
+import { createLab, STORE_KEY } from '../study/labs/cleaning-ui.js?v=40';
+import { scrollersFocusable } from '../study/common.js?v=40';
 
 initSite();
 

@@ -4,10 +4,10 @@
 // optimisation lives in core/portfolio.js (long-only frontier, maximum Sharpe), bond pricing in core/fin.js, and the
 // dividend discount models in core/valuation.js; this file re-exports what F06 needs from them.
 // Tested against NumPy, pandas, statsmodels and numpy-financial in tests/investments.test.mjs.
-import { mean, sd, ols } from './stats.js?v=39';
-export { portRet, portVar, minVariance, maxSharpe, frontier } from './portfolio.js?v=39';
-export { bondAtYield, bondYield, bondFlows } from './fin.js?v=39';
-export { gordon, multiStageDdm } from './valuation.js?v=39';
+import { mean, sd, ols } from './stats.js?v=40';
+export { portRet, portVar, minVariance, maxSharpe, frontier } from './portfolio.js?v=40';
+export { bondAtYield, bondYield, bondFlows } from './fin.js?v=40';
+export { gordon, multiStageDdm } from './valuation.js?v=40';
 
 // ---------------------------------------------------------------- returns
 /** Holding-period return: (end price − start price + income) ÷ start price. */

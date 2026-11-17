@@ -1,7 +1,7 @@
 // options-payoffs.js — F08 · Calls, puts, payoffs and profits. Content only; exercises are in options-payoffs.ex.js.
 // Figures from case.js: OPT and QUOTES (fictional Brightcup options expiring 31 March 2029, priced at 30% volatility),
 // CAP and capPerKg (Kilnworth's price cap on 2029 coffee), COFFEE and ebitda2029.
-import { OPT as O, QUOTES as Q, CAP, capPerKg, COFFEE as K, DERIVED as D } from './case.js?v=39';
+import { OPT as O, QUOTES as Q, CAP, capPerKg, COFFEE as K, DERIVED as D } from './case.js?v=40';
 
 const $ = (x) => Math.round(x).toLocaleString('en-US');
 const $2 = (x) => x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
