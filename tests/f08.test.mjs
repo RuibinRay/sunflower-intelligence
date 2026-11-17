@@ -153,5 +153,13 @@ ok(ML['ml-short'].compute({ P: 36, m: 6, fee: 1 }).headline.value === '$5,790', 
 ok(VR['vr-explorer'].compute({ c: 95, hist: 1, h: 1 }).headline.value === '$24,631', 'VaR widget at its defaults: $24,631');
 ok(VR['vr-stress'].compute({ b: -40, m: -20, d: 2, puts: 1, fut: 1 }).headline.value === '−$10,600', 'stress widget at its defaults: −$10,600');
 
+// ---------------------------------------------------------------- project and assessments
+const PJ = (await import('../assets/js/data/study/f08/project.js')).default;
+for (const [what, got, want, tol] of PJ.verify()) ok(Math.abs(got - want) <= tol, `project: ${what} (${got} vs ${want})`);
+for (const f of ['assess-m1', 'assess-m2', 'assess-m3', 'assess-diagnostic', 'assess-final']) {
+  const A = await import(`../assets/js/data/study/f08/${f}.js`);
+  for (const it of A.items) for (const x of it.type === 'steps' ? it.steps : [it]) if (x.check) ok(Math.abs(x.check() - x.answer) <= (x.tol ?? 0.005), `${f} ${x.id}: answer agrees with check`);
+}
+
 console.log(fail ? `${fail} failed, ${pass} passed` : `${pass}/${pass} F08 checks passed`);
 process.exit(fail ? 1 : 0);
